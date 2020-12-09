@@ -162,7 +162,7 @@ addonsclose )
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
 	;;
 addonslist )
-	wget https://github.com/rern/RuneAudio_Addons/raw/master/addons-list.json -qO $diraddons/addons-list.json
+	wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
@@ -175,7 +175,7 @@ addonslist )
 	[[ -n $url ]] && wget $url -qO - | sh
 	;;
 addonsupdate )
-	[[ -z ${args[1]} ]] && wget https://github.com/rern/RuneAudio_Addons/raw/master/addons-list.json -qO $diraddons/addons-list.json
+	[[ -z ${args[1]} ]] && wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	count=0
 	for addon in $installed; do
