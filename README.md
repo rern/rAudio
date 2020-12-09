@@ -26,16 +26,16 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### Image files:
 Europe server:
-- RPi 4: [RuneAudio+R_e6-RPi4.img.xz](https://cloud.s-t-franz.de/s/44rXnFYxdwJ5oqm)
-- RPi 3 and 2: [RuneAudio+R_e6-RPi2-3.img.xz](https://cloud.s-t-franz.de/s/kQsmLp3FXJ5itPE)
-- RPi 1 and Zero: [RuneAudio+R_e6-RPi0-1.img.xz](https://cloud.s-t-franz.de/s/fmS9QYKbRABMSj9)
+- RPi 4: [rAudio-1-RPi4.img.xz]()
+- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz]()
+- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz]()
 
 Asia server
-- RPi 4: [RuneAudio+R_e6-RPi4.img.xz](https://rern.org/RuneAudio+R/images/RuneAudio+R_e6-RPi4.img.xz)
-- RPi 3 and 2: [RuneAudio+R_e6-RPi2-3.img.xz](https://rern.org/RuneAudio+R/images/RuneAudio+R_e6-RPi2-3.img.xz)
-- RPi 1 and Zero: [RuneAudio+R_e6-RPi0-1.img.xz](https://rern.org/RuneAudio+R/images/RuneAudio+R_e6-RPi0-1.img.xz)
+- RPi 4: [rAudio-1-RPi4.img.xz](https://rern.org/RuneAudio+R/images/rAudio-1-RPi4.img.xz)
+- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://rern.org/RuneAudio+R/images/rAudio-1-RPi2-3.img.xz)
+- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://rern.org/RuneAudio+R/images/rAudio-1-RPi0-1.img.xz)
 	
-### DIY
+### DIY Image file
 - [rOS](https://github.com/rern/rOS)
 
 ### How-to
