@@ -94,7 +94,7 @@ $( '.boxed-group .btn' ).on( 'taphold', function () {
 	alias = $this.parent().attr( 'alias' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );
 	type = $this.text();
-	opt = [ alias, type, 'master' ];
+	opt = [ alias, type, 'main' ];
 	if ( $this.attr( 'warning' ) ) {
 		info( {
 			  icon    : 'jigsaw'

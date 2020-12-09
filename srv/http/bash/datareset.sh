@@ -39,7 +39,7 @@ dtparam=audio=on
 	echo -n "$config" > /boot/config.txt
 fi
 # addons - new/backup
-if [[ -n $1 ]]; then # from create-rune.sh
+if [[ -n $1 ]]; then # from create-ros.sh
 	version=$1
 	revision=$2
 else
@@ -50,7 +50,7 @@ fi
 mkdir -p $dirdata/{addons,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 # addons - new/restore
-if [[ -n $version ]]; then # from create-rune.sh
+if [[ -n $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
 	echo $revision > $diraddons/rr$version
 else
@@ -152,7 +152,7 @@ sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 
 # webradio default
-wget -qO - https://github.com/rern/RuneOS/raw/master/radioparadise.tar.xz | bsdtar xvf - -C /
+wget -qO - https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
 
 # set permissions and ownership
 chown -R http:http /srv/http

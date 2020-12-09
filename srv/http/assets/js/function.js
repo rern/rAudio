@@ -1543,7 +1543,7 @@ function thumbUpdate( path ) {
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">'
 					+'<input type="hidden" name="sh[]" value="cove">'
 					+'<input type="hidden" name="sh[]" value="Update">'
-					+'<input type="hidden" name="sh[]" value="master">'
+					+'<input type="hidden" name="sh[]" value="main">'
 					+'<input type="hidden" name="sh[]" value="'+ path +'">'
 			  +'</form>';
 	$( 'body' ).append( form );

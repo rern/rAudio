@@ -103,7 +103,7 @@ wgetnc() {
 }
 getinstallzip() {
 	installurl=$( jq -r .$alias.installurl $addonsjson )
-	installzip=${installurl/raw\/master\/install.sh/archive\/$branch.zip}
+	installzip=${installurl/raw\/main\/install.sh/archive\/$branch.zip}
 	
 	echo $bar Get files ...
 	wgetnc $installzip
@@ -126,7 +126,7 @@ getinstallzip() {
 }
 getuninstall() {
 	installurl=$( jq -r .$alias.installurl $addonsjson )
-	installurl=${installurl/raw\/master/raw\/$branch}
+	installurl=${installurl/raw\/main/raw\/$branch}
 	uninstallurl=${installurl/install.sh/uninstall_$alias.sh}
 	wgetnc $uninstallurl -P /usr/local/bin
 	if [[ $? != 0 ]]; then

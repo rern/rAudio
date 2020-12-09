@@ -33,7 +33,7 @@ $postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle
 $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
-if ( $branch !== 'master' ) $installurl = str_replace( 'raw/master', 'raw/'.$branch, $installurl );
+if ( $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
 <!DOCTYPE html>
 <html>
