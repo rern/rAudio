@@ -35,9 +35,10 @@ Asia server
 - RPi 3 and 2: [RuneAudio+R_e6-RPi2-3.img.xz](https://rern.org/RuneAudio+R/images/RuneAudio+R_e6-RPi2-3.img.xz)
 - RPi 1 and Zero: [RuneAudio+R_e6-RPi0-1.img.xz](https://rern.org/RuneAudio+R/images/RuneAudio+R_e6-RPi0-1.img.xz)
 	
-### DIY: [rOS](https://github.com/rern/rOS)
+### DIY
+- [rOS](https://github.com/rern/rOS)
 
-### How-to:
+### How-to
 - Windows: Download and decompress to *.img with 7-zip, WinRAR or WinZip and write the file to a micro SD card, 4GB or more, with [url=https://sourceforge.net/projects/win32diskimager/]Win32 Disk Imager[/url]
 - Linux or Windows: Write from URL to a micro SD card directly with [Etcher](https://www.balena.io/etcher/)
 
