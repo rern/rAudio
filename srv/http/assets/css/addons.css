@@ -1,0 +1,437 @@
+@font-face {
+	font-family: Lato;
+	src: url( '/assets/fonts/lato-regular-webfont.woff' ) format( 'woff' ),
+		url( '/assets/fonts/lato-regular-webfont.ttf' ) format( 'truetype' );
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( '/assets/fonts/lato-light-webfont.woff' ) format( 'woff' ),
+		url( '/assets/fonts/lato-light-webfont.ttf' ) format( 'truetype' );
+	font-weight: 300;
+	font-style: normal;
+}
+@font-face {
+	font-family: Inconsolata;
+	src: url('/assets/fonts/Inconsolata.woff') format('woff'),
+		url( '/assets/fonts/Inconsolata.ttf' ) format( 'truetype' );
+	font-weight: normal;
+	font-style: normal;
+}
+/* 'addons' declared in <head> for cache busting */
+.fa {
+	display: inline-block;
+	font-family: enhance;
+	font-style: normal;
+}
+.fa-lg { font-size: 22px }
+.fa-2x { font-size: 28px }
+.fa-addons:before { content: "\f581" }
+.fa-arrow-down:before { content: "\f601" }
+.fa-arrow-up:before { content: "\f600" }
+.fa-bars:before { content: "\f51C" }
+.fa-check:before { content: "\f51B" }
+.fa-chevron-down:before { content: "\f605" }
+.fa-eye:before { content: "\f575" }
+.fa-folder-refresh:before { content: "\f534" }
+.fa-gear:before { content: "\f509" }
+.fa-github:before { content: "\f583" }
+.fa-info-circle:before { content: "\f561" }
+.fa-input:before { content: "\f52A" }
+.fa-jigsaw:before { content: "\f50E" }
+.fa-link:before { content: "\f52C" }
+.fa-minus-circle:before { content: "\f563" }
+.fa-plus-circle:before { content: "\f564" }
+.fa-plus-o:before { content: "\f530" }
+.fa-plus-r:before { content: "\f581" }
+.fa-question-circle:before { content: "\f560" }
+.fa-refresh:before { content: "\f526" }
+.fa-reset:before { content: "\f527" }
+.fa-output:before { content: "\f52B" }
+.fa-source:before { content: "\f52A" }
+.fa-times:before { content: "\f51A" }
+.fa-undo:before { content: "\f523" }
+.fa-warning:before { content: "\f562" }
+
+body {
+	margin: 0;
+	font-family: "Lato";
+	font-size: 14px;
+	font-weight: normal;
+	color: var( --cw );
+	background-color: #000;
+}
+:focus,
+:active,
+input::-moz-focus-inner { /* dotted outline */
+	outline: 0;
+	border: 0;
+}
+.hide {
+	display: none !important;
+}
+wh, .wh { color: var( --cw ) !important; }
+gr, .gr { color: var( --cg60 ) !important; }
+grn { color: #0f0; }
+img {
+	border: 0
+}
+.blink {
+	animation: blinkopaque 1.5s linear infinite;
+}
+@keyframes blinkopaque {
+	50% { opacity: 0; }
+}
+hr {
+	margin-top: 20px;
+	margin-bottom: 20px;
+	border: 0;
+	border-top: 1px solid #eee
+}
+.container {
+	max-width: 768px;
+	margin: auto;
+	padding: 50px 55px 0 55px;
+}
+.container.progress {
+	padding-top: 0;
+}
+@media(max-width: 540px) {
+	.container {
+		padding: 0 10px 15px 10px;
+	}
+	.boxed-group {
+		padding: 10px !important;
+	}
+}
+.head {
+	position: fixed;
+	width: 100%;
+	height: 40px;
+	padding-right: 10px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+	z-index: 95;
+}
+.page-icon {
+	float: left;
+	background: var( --cm );
+}
+.page-icon, #close {
+    width: 40px;
+    height: 40px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 24px;
+    text-shadow: 1px 1px 2px #000000;
+}
+.title {
+	margin-left: 15px;
+	line-height: 40px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 5px;
+}
+#close {
+	float: right;
+	font-size: 28px;
+	color: var( --cm );
+	cursor: pointer;
+}
+heading {
+	display: inline-block;
+	margin: 20px 0 10px 0;
+	padding-bottom: 5px;
+	width: 100%;
+	line-height: 35px;
+	font-size: 24px;
+	font-weight: 300;
+	border-bottom: 1px solid var( --cg );
+}
+#list {
+	padding-left: 25px;
+	list-style: none;
+}
+#list li:before {
+	margin-right: 5px;
+	content: '\2022';
+	color: var( --cg60 );
+}
+#list li.installed:before {
+	color: #0f0;
+}
+#list li.update:before {
+	animation: blinkopaque 1.5s linear infinite;
+}
+.source {
+	display: block;
+	text-align: right;
+	color: var( --cg60 );
+}
+.source i {
+	font-size: 18px;
+}
+.revisiontext {
+	display:none;
+	padding-left: 20px;
+	    line-height: 20px;
+}
+.detailtext i {
+	color: var( --cg60 );
+}
+.boxed-group {
+	margin: 10px 0;
+	padding: 10px 20px;
+	border-radius: 6px;
+	background: var( --cga );
+}
+.boxed-group img {
+	max-width: 100px;
+}
+legend {
+	width: 100%;
+	margin-bottom: 5px;
+	font-size: 14px;
+	color: var( --cg60 );
+	border-bottom: 1px solid var( --cg );
+}
+legend span {
+	font-size: 21px;
+}
+legend p,
+legend a {
+	display: inline-block;
+	line-height: 1em;
+}
+legend > i:last-child {
+	float: right;
+}
+legend .status {
+	font-size: 24px;
+}
+legend .fa-arrow-up {
+	float: right;
+}
+@media(max-width: 480px) {
+	legend .fa-arrow-up {
+		display: none;
+	}
+}
+@media(max-width: 360px) {
+	h1 span {
+		font-size: 26px;
+	}
+}
+#hidescrollv {
+	max-height: calc( 100vh - 110px );
+	margin-top: 10px;
+	overflow: hidden;
+}
+.detailtext {
+	line-height: 18px;
+}
+.detailtext code {
+	padding: 3px;
+}
+.info {
+	display: inline-block;
+}
+i.info {
+	width: 30px;
+	vertical-align: 7px;
+}
+pre {
+	display: block;
+	max-height: calc(100vh - 160px);
+	width: 100%;
+	margin: 10px 0 0 0;
+	padding-left: 10px;
+	background-color: var( --cgd );
+	font-family: 'Inconsolata';
+	font-size: 15px;
+	line-height: 20px;
+	white-space: pre-wrap;
+	overflow-x: hidden;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch; /* ios momentum scroll */
+}
+code {
+	font-family: 'Inconsolata';
+	font-size: 14px;
+	background-color: var( --cgd );
+	padding: 0 3px;
+	border-radius: 3px;
+}
+.thumbnail {
+	float: right;
+	width: 100px;
+	cursor: pointer;
+}
+a,
+a:hover {
+	text-decoration: none;
+}
+a:active,
+a:hover {
+	outline: 0
+}
+.btn,
+.btn:hover,
+.btn:visited,
+.btn:focus,
+.btn:active {	color: var( --cw );
+}
+.btn {
+	display: inline-block;
+	min-width: 95px;
+	margin-bottom: 5px;
+	line-height: 34px;
+	text-align: center;
+	color: var( --cw );
+	background: -webkit-radial-gradient(50% -50%, 160% 200%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%); /* button highlight - last % for anti-alias edge*/
+	background: radial-gradient(160% 100% at 50% 0% ,hsla(0,0%,100%,.3) 50%,hsla(0,0%,100%,0) 55%); /* (Width% Heigth% at H-center_offset% V-center_offset%, hsla(0,0%,100%,1st-T) 1st-area%, hsla(0,0%,100%,2nd-T) 2nd-area%)) */
+	box-shadow: 2px 2px 3px 1px #000000;
+	text-shadow: 1px 1px 2px #000000;
+	border-radius: 4px;
+	border: none;
+	user-select: none;
+}
+.btn-primary {
+	background-color: var( --cm );
+}
+.btn-default,
+.btn-default.disabled {
+	background-color: var( --cg );
+}
+.red {
+	background-color: #bb2828;
+}
+.btn i {
+	margin-right: 5px;
+}
+
+#bottom {
+	min-height: calc( 100vh - 250px );
+}
+#list,
+#list li {
+	width: fit-content;
+	width: -moz-fit-content;
+	line-height: 22px;
+	color: var( --cw );
+}
+#list a {
+	color: #ff8888;
+	text-decoration: none;
+}
+#list li,
+.boxed-group legend,
+a {
+	cursor: pointer;
+}
+strike {
+	text-decoration: line-through;
+}
+li i,
+.revision,
+.boxed-group legend i,
+.bl,
+blue {
+	color: var( --cm );
+}
+span,
+pre,
+white,
+w,
+code,
+code i {
+	color: var( --cw );
+}
+gray,
+g {
+	color: var( --cg60 );
+}
+.flushdot {
+	height: 0;
+	margin: 0;
+	color: #1a1a1a;
+	overflow: hidden;
+}
+pre hr {
+	margin: 10px 0 -10px -10px;
+	border: 1px solid #00ffff;
+}
+pre hr.hrlight {
+	border-top: none;
+}
+p,
+ul,
+.disabled {
+	color: var( --cw );
+}
+.disabled:hover {
+	color: var( --cg60 );
+	background-color: var( --cg ) !important;
+	cursor: default;
+}
+.cbgr { color: #808080; background: #808080; }
+.cbw  { color: #ffffff; background: #ffffff; }
+.cbc  { color: #00ffff; background: #00ffff; }
+.cbm  { color: #ff00ff; background: #ff00ff; }
+.cbb  { color: #0000ff; background: #0000ff; }
+.cby  { color: #ffff00; background: #ffff00; }
+.cbg  { color: #00ff00; background: #00ff00; }
+.cbr  { color: #ff0000; background: #ff0000; }
+.ckby { color: #000000; background: #ffff00; }
+.cwbr { color: #ffffff; background: #ff0000; }
+.cgr  { color: #808080 }
+.cc   { color: #00ffff }
+.cm   { color: #ff00ff }
+.cb   { color: #0000ff }
+.cy   { color: #ffff00 }
+.cg   { color: #00ff00 }
+.cr   { color: #ff0000 }
+
+@media( hover:hover ) {
+	/* :hover *********************************************************/
+	a:hover,
+	.close-root:hover,
+	#list li:hover {
+		color: var( --cml );
+	}
+	.btn:hover {
+		color: var( --cw );
+	}
+	.btn-primary:hover {
+		background-color: var( --cml )
+	}
+	.btn-primary.red:hover {
+		background-color: #bb4040 ;
+	}
+	.btn-default:hover {
+		background-color: var( --cgl );
+	}
+	pre *:hover {
+		text-decoration: none;
+		cursor: text;
+	}
+	pre a.cc:hover {
+		color: #00ffff;
+	}
+	pre a.cgr:hover {
+		color: #808080;
+	}
+	/* :active *********************************************************/
+	a:active,
+	.close-root:active,
+	#list li:active {
+		color: var( --cma );
+	}
+	.btn-primary:active {
+		background: var( --cma );
+	}
+	.btn-default:active {
+		background: var( --cga );
+	}
+}

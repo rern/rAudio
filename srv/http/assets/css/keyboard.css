@@ -1,0 +1,98 @@
+.fa-arrow-down:before { content: "\f601" }
+.fa-backspace:before { content: "\f60C" }
+.fa-capslock:before { content: "\f60B" }
+.fa-check:before { content: "\f51B" }
+.fa-hide:before { content: "\f575" }
+.fa-shift:before { content: "\f60A" }
+
+/* Simple-keyboard */
+#keyboard {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+	background: var( --cga ) !important;
+	z-index: 108; /* #banner > #loader > # #keyboard > #infoOverlay */
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none;   /* Safari */
+	-moz-user-select: none;      /* Firefox */
+	-ms-user-select: none;       /* Internet Explorer and Edge */
+	user-select: none;           /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+.simple-keyboard {
+/*	max-width: 560px;*/
+	max-width: 485px;
+	margin: auto;
+	padding-right: 3px !important;
+	background: none !important;
+}
+.hg-button {
+	min-width: 25px !important;
+	padding: 0 !important;
+	font-family: Lato;
+	font-size: 22px;
+	text-shadow: 1px 1px 2px #000000;
+	background: var( --cg ) !important;
+	box-shadow: 2px 2px 2px #000000 !important;
+	border-radius: 4px !important;
+	border-bottom: none !important;
+	border-top: 1px solid var( --cg60 );
+}
+.hg-button:active {
+	opacity: 0.5;
+}
+.hg-functionBtn {
+	width: 17%;
+	max-width: 75px;
+}
+.hg-button-space {
+	width: 50%;
+	max-width: 205px;
+/*	max-width: 290px;*/
+}
+.hg-button-enter {
+	font-size: 14px;
+	background: radial-gradient(
+		150% 90% at 50% 0%,
+		hsla(0,0%,100%,.3) 50%,
+		hsla(0,0%,100%,0) 55% ) !important;
+	background-color: var( --cm ) !important;
+	border: none;
+}
+.hg-standardBtn,
+.hg-button-lock,
+.hg-button-numlock,
+.hg-button-num,
+.hg-button-alpha {
+	max-width: 40px !important;
+}
+.hgrow2 { margin-left: 10px }
+.hgrow3 { margin-left: 20px }
+.hgrow4 { margin-left: 30px }
+.bgbl { background: var( --cm ) !important; }
+
+@media (max-width: 400px) {
+	.hg-button {
+		margin-right: 3px !important;
+	}
+	.hg-button-space {
+		max-width: 190px;
+	}
+	.hg-button-enter {
+		font-size: 14px !important;
+	}
+}
+@media (max-width: 600px) {
+	.simple-keyboard { max-width: 545px }
+	.hgspace { max-width: 265px }
+	.hgrow2,
+	.hgrow3,
+	.hgrow4 {
+		margin-left: 0;
+	}
+}
+@media (max-height: 320px) {
+	.hg-button {
+		height: 30px !important;
+		font-size: 18px !important;
+	}
+}

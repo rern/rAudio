@@ -1,0 +1,400 @@
+*,
+*:before,
+*:after{
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+:focus,
+:active,
+input::-moz-focus-inner { /* dotted outline */
+	outline: 0;
+	border: 0;
+}
+.infobtn,
+.filebtn,
+#infoOverlay input[type=radio],
+#infoOverlay input[type=checkbox] {
+	background: -webkit-radial-gradient(50% -50%, 160% 200%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%); /* button highlight - last % for anti-alias edge*/
+	background:         radial-gradient(160% 100% at 50% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%); /* (Width% Heigth% at H-center_offset% V-center_offset%, hsla(0,0%,100%,1st-T) 1st-area%, hsla(0,0%,100%,2nd-T) 2nd-area%)) */
+	box-shadow: 2px 2px 3px 1px #000000;  /*  V-offfset, H-Offset, Blur width, Shadow width , Color */
+}
+#infoOverlay input[type=radio],
+#infoOverlay input[type=checkbox] {
+	box-shadow: 1px 1px 2px 1px #000000;
+}
+#infoOverlay input[type=radio]:focus,
+#infoOverlay input[type=checkbox]:focus {
+	outline: none;
+}
+.infobtn,
+.filebtn {
+	display: inline-block;
+	margin: 0 5px 10px;
+	min-width: 70px;
+	padding: 0 10px;
+	line-height: 34px;
+	border: none;
+	border-radius: 4px;
+	white-space: nowrap;
+	font-size: 14px;
+	text-align: center;
+	color: var( --cw ) !important;
+	background-color: var( --cg );
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none;   /* Safari */
+	-moz-user-select: none;      /* Firefox */
+	-ms-user-select: none;       /* Internet Explorer and Edge */
+	user-select: none;           /* Non-prefixed version, currently supported by Chrome and Opera */
+	cursor: pointer;
+}
+.infobtn-primary {
+	background-color: var( --cm );
+}
+.infobtn-default {
+	background-color: var( --cg );
+}
+.infobtn.disabled,
+.filebtn.disabled {
+	color: var( --cg60 );
+	background-color: var( --cg );
+	pointer-events: none;
+}
+.noclick {
+	pointer-events: none;
+}
+hr {
+	margin: 7px -10px;
+	border: none;
+    border-bottom: 1px solid var( --cg );}
+#infoOverlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 200%;
+	background: rgba(0, 0, 0, 0.85);
+	z-index: 106; /* #banner > #loader > # #keyboard > #infoOverlay */
+	text-align: center;
+	overflow: hidden;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	-webkit-overflow-scrolling: touch;
+}
+#infoOverlay .fa {
+	vertical-align: -2px;
+}
+#infoMessage .fa {
+	width: 25px;
+	vertical-align: 0;
+	font-size: 20px;
+}
+#infoButtons .fa {
+	font-size: 18px;
+	margin-right: 7px;
+}
+#infoOverlay a {
+	text-shadow: 1px 1px 2px #000000;
+	text-decoration: none;
+}
+#infoBox {
+	width: 400px;
+	max-width: 98%;
+	margin: 20px auto 200px; /* 200px for on-screen keyboard */
+	background: var( --cga );
+	border-radius: 10px;
+}
+#infoBox i {
+	text-shadow: 1px 1px 2px #000000;
+}
+#infoTopBg {
+	width: 100%;
+	height: 40px;
+	border-radius: 10px 10px 0 0;
+	border: 1px solid var( --cga );
+	border-bottom: none;
+	background: black;
+}
+#infoTop {
+	float: left;
+	width: calc( 100% - 60px );
+	color: var( --cw );
+	line-height: 40px;
+	padding: 0 0 0 15px;
+	text-align: left;
+}
+#infoTop a, white {
+	color: var( --cw );
+}
+#infoIcon {
+	float: left;
+	font-size: 28px;
+	line-height: 40px;
+	color: var( --cg60 );
+}
+#infoX {
+	float: right;
+	width: 40px;
+	line-height: 40px;
+	border-radius: 0 10px 0 0;
+	padding: 0;
+	font-size: 28px;
+	color: var( --cm );
+	cursor: pointer;
+}
+#infoTitle {
+	display: inline-block;
+	width: calc( 100% - 38px );
+	font-size: 18px;
+	font-weight: 300;
+	line-height: 40px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#infoContent {
+	padding: 25px 10px 10px 10px;
+	font-size: 16px;
+}
+#infoContent label {
+	display: inline-block;
+	margin: 0;
+	font-weight: normal;
+}
+.infomessage,
+#infoMessage {
+	display: inline-block;
+	width: fit-content;
+	max-height: 800px;
+	margin: 0 auto 5px;
+	padding: 0 15px;
+	word-wrap: break-word;
+	overflow: hidden;
+	color: var( --cg60 );
+}
+#infoFooter {
+	margin-bottom: 0;
+	color: var( --cg60 );
+}
+#infoMessage .colL,
+#infoMessage .colR {
+	display: inline-block;
+	margin-bottom: 5px;
+	width: fit-content !important;
+	text-align: right;
+}
+#infoMessage .colL {
+	padding-right: 10px;
+}
+.infotextlabel,
+#infotextlabel,
+#infoSelectLabel {
+	display: inline-block;
+	margin-right: 5px;
+	line-height: 40px;
+	text-align: right;
+}
+.infotextbox,
+.infotextsuffix,
+#infotextsuffix,
+#infotextbox {
+	display: inline-block;
+	width: min-content;
+	line-height: 35px;
+	text-align: left;
+}
+.infotextlabel,
+.infotextbox {
+	vertical-align: top;
+}
+.infotextsuffix,
+#infotextsuffix {
+	width: fit-content;
+	margin-left: 5px;
+	line-height: 40px;
+}
+.infotextsuffix gr,
+#infotextsuffix gr {
+	display: block;
+}
+#infoContent textarea {
+	min-height: 100px;
+	margin: 0 !important;
+	padding: 5px 10px;
+	border-radius: 4px;
+	font-size: 16px;
+	resize: none;
+	overflow: hidden;
+}
+.infolabel {
+	display: block;
+	text-align: right;
+	color: var( --cw );
+}
+.infolabel:hover {
+	color: var( --cw );
+}
+.infoinput {
+	display: block;
+	margin: 4px 0 !important;
+	width: 230px;
+	height: 36px !important;
+	padding: 10px;
+	color: var( --cw );
+	background-color: #000000;
+	border-radius: 5px;
+	border: 1px solid var( --cg );
+	font-size: 16px;
+	font-family: "Lato";
+}
+#infoPasswordBox {
+	margin-top: 0 !important;
+}
+.infoinput:focus {
+	outline: none;
+}
+#infoFilename {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: calc( 100% - 120px );
+	display: inline-block;
+}
+#infoText input[type=password] {
+	display: inline-block;
+}
+.eyeactive {
+	color: var( --cm );
+}
+.infohtml {
+	display: table;
+	margin: 5px auto 0;
+	height: 34px;
+	text-align: left;
+}
+.infotextbox .infohtml {
+	margin-left: 0;
+}
+#infoOverlay input[type=radio],
+#infoOverlay input[type=checkbox] {
+	-webkit-appearance: none;
+	width: 24px;
+	height: 24px;
+	margin: 3px 0;
+	vertical-align: -10px;
+	border: none;
+	border-radius: 3px;
+	background-color: var( --cg );
+}
+#infoOverlay input[type=radio] {
+	border-radius: 50%;
+}
+#infoOverlay input:checked {
+	background-color: var( --cm );
+}
+#infoOverlay input[type=checkbox]:checked:disabled {
+	background-color: var( --cmd );
+}
+#infoOverlay input[type=checkbox]:disabled {
+	background-color: var( --cgd );
+}
+#infoSelect button {
+	height: 40px;
+	margin-left: 5px;
+	padding-right: 25px;
+	font-size: 16px;
+}
+#infoFile {
+	display: block;
+}
+#infoButtons {
+	padding: 10px 0 20px 0;
+}
+#infoContent .selectric-wrapper {
+	margin: 2px 0;
+}
+#infoSelect .selectric-wrapper {
+	width: auto;
+	max-width: 100%;
+}
+#infoOverlay white,
+#infoOverlay code,
+#infoSelect .selectric-items ul {
+	color: var( --cw );
+}
+#infoContent .selectric {
+	border-radius: 3px;
+}
+#infoContent .selectric,
+#infoContent .selectric .label,
+#infoContent .selectric-items li {
+	height: 34px;
+	text-align: left;
+}
+#infoContent .selectric .label {
+	margin: 1px 0;
+	padding: 0 10px;
+	line-height: 34px;
+}
+#infoRadio i {
+	vertical-align: baseline !important;
+}
+#infoOverlay code {
+	display: inline-block;
+	padding: 3px;
+	line-height: 14px;
+	border-radius: 3px;
+	background: #000000;
+	font-family: Inconsolata;
+}
+px, px10, px20, px30, px40, px50, px60, px70, px80, px90, px100 {
+	display: inline-block;
+}
+px10 { width: 10px }
+px20 { width: 20px }
+px30 { width: 30px }
+px40 { width: 40px }
+px50 { width: 50px }
+px60 { width: 60px }
+px70 { width: 70px }
+px80 { width: 80px }
+px90 { width: 90px }
+px100 { width: 100px }
+/* iOS */
+@media not all and ( min-resolution:.001dpcm ) {
+	@supports (-webkit-appearance:none) and (stroke-color:transparent) {
+		#infoOverlay input[type=checkbox]:checked:disabled {
+			background-color: var( --cml );
+		}
+	}
+}
+@media( hover:hover ) {
+	/* :hover *********************************************************/
+	#infoX:hover {
+		color: var( --cml );
+	}
+	input[type=checkbox],
+	input[type=radio],
+	.infocheckbox label,
+	.inforadio label,
+	.fa-eye {
+		cursor: pointer;
+	}
+	.infobtn-primary:hover {
+		color: var( --cw );
+		background-color: var( --cml );
+	}
+	.infobtn-default:hover {
+		color: var( --cw );
+		background-color: var( --cgl )
+	}
+	/* :active *********************************************************/
+	#infoX:active {
+		color: var( --cma );
+	}
+	input[type=checkbox].active,
+	input[type=radio].active,
+	.infobtn.active {
+		border: 2px solid var( --cw ) !important;
+	}
+}

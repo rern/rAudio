@@ -1,0 +1,55 @@
+#banner {
+	position: fixed;
+	min-width: 230px;
+	max-width: 100%;
+	min-height: 47px;
+	bottom: 50px;
+	padding: 6px 130px 5px 35px;
+	line-height: 18px;
+	z-index: 112; /* #banner > #loader > # #keyboard > #infoOverlay */
+	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
+}
+#bannerTitle,
+#bannerMessage {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#bannerTitle {
+	font-size: 18px;
+	font-weight: 300;
+}
+#bannerTitle,
+#banner .li2,
+#banner .time {
+	color: var( --cw );
+}
+#bannerIcon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 30px;
+	height: 100%;
+	font-size: 20px;
+	line-height: 28px;
+	text-align: center;
+	background-color: var( --cg );
+}
+#bannerMessage {
+	font-size: 16px;
+}
+#bannerMessage,
+#banner .time,
+#banner .li2 {
+	color: var( --cga ) !important;
+}
+#banner .time {
+	margin-left: 10px;
+}
+#banner .li1,
+#banner .li2 {
+	display: block;
+}
+#banner .li2 {
+	font-size: 13px;
+}

@@ -1,0 +1,138 @@
+/* :hover *********************************************************/
+#lib-path a:hover {
+	color: var( --cm );
+}
+#lib-list li:hover,
+#pl-savedlist li:hover,
+#pl-list li:hover {
+	background-color: var( --cga );
+}
+#lib-list li.updn:hover,
+#pl-savedlist li.updn:hover,
+#pl-list li.updn:hover {
+	background-color: var( --cga );
+}
+#bar-top i.active:hover,
+#bar-bottom i.active:hover,
+#button-library:hover,
+#button-playlist:hover,
+#lib-list li.active:hover,
+#pl-savedlist li.active:hover,
+#pl-list li.active:hover,
+#playback-controls button.active:hover,
+#playback-row .btn.active:hover {
+	background-color: var( --cml ) !important;
+}
+.licover.active:hover {
+	background: linear-gradient( #000000 195px, var( --cml ) 0 ) !important;
+}
+.mode:hover {
+	background: var( --cga );
+}
+#bar-top i:hover,
+#bar-bottom i:hover,
+.menu a:hover,
+.submenu:hover,
+#button-settings:hover,
+#playback-controls button:hover,
+#playback-row .btn:hover {
+	background-color: var( --cgl ) !important;
+}
+.index a:hover,
+.fa-arrow-left:hover,
+#button-lib-search:hover,
+#lib-search-btn:hover,
+#lyrics i:hover,
+#pl-manage i:hover,
+#button-pl-search:hover,
+#pl-search-btn:hover {
+	background-color: var( --cg ) !important;
+}
+/* :active:hover *********************************************************/
+#colorok:active:hover,
+#lib-list li.active:active:hover,
+#pl-savedlist li.active:active:hover,
+#pl-list li.active:active:hover,
+#playback-controls button.active:active:hover,
+#playback-row .btn.active:active:hover {
+	background-color: var( --cma ) !important;
+}
+.fa-arrow-left:active:hover,
+.menu a:active:hover,
+.submenu:active:hover,
+#button-lib-search:active:hover,
+#button-settings:active:hover,
+#lib-list li:active:hover,
+#lib-search-btn:active:hover,
+#pl-manage i:active:hover,
+#button-pl-search:active:hover,
+#playback-controls button:active:hover,
+#playback-row .btn:active:hover {
+	background-color: var( --cga ) !important;
+}
+#lib-list li:active:hover,
+#pl-savedlist li:active:hover,
+#pl-list li:active:hover,
+#power.active,
+#screenoff.active,
+#power:hover,
+#screenoff:hover {
+	background-color: var( --cgd ) !important;
+}
+.licover.active:active:hover {
+	background: linear-gradient( #000000 189px, var( --cma ) 41px ) !important;
+}
+/* cursor *********************************************************/
+button,
+li:not( .licover ),
+.band,
+.btn,
+.biosimilar,
+.button-webradio-new,
+.close-root,
+.coverart div,
+.cover-save,
+.edit,
+.emptyadd i,
+.fa-arrow-left,
+.fa-search,
+.index a,
+.infolabel i,
+.lib-mode,
+.licoverimg,
+.liinfo,
+.map,
+.menu a,
+.mode,
+.rs-container,
+.submenu,
+#album:not( .albumradio ),
+#artist,
+#badge,
+#bar-bottom,
+#bar-top i,
+#button-coverart,
+#button-library,
+#button-playback,
+#button-playlist,
+#colorcancel,
+#colorok,
+#coloroption,
+#infoMessage img,
+#infoMessage .tagpath,
+#liboptions,
+#lib-path a,
+#lib-search-close,
+#lyrics i,
+#lyricsartist,
+#mode-webradio-new,
+#pl-manage i,
+#playlist-empty,
+#sampling i,
+#time-band,
+#volume-band,
+#volume-bar-dn,
+#volume-bar-up,
+#volume-text {
+	cursor: pointer;
+}

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+export XDG_CACHE_HOME="/tmp/.cache"
+export DISPLAY=:0
+
+if [[ -e /etc/localbrowser.conf ]]; then
+	. /etc/localbrowser.conf
+else
+	screenoff=0
+	cursor=false
+	zoom=1
+fi
+
+xset dpms $screenoff $screenoff $screenoff
+if (( $screenoff == 0 )); then
+	xset s off
+	xset -dpms
+fi
+
+if [[ $cursor == false ]] && ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet; then
+	cursor=no
+else 
+	cursor=yes
+fi
+matchbox-window-manager -use_cursor $cursor &
+
+zoom=$( cat /srv/http/data/system/zoom 2> /dev/null || echo 1 )
+chromium --app=http://localhost --kiosk --incognito --no-sandbox --force-device-scale-factor=$zoom

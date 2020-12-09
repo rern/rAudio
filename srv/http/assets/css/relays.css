@@ -1,0 +1,169 @@
+.fa-check:before { content: "\f51B" }
+.fa-chevron-down:before { content: "\f605" }
+.fa-gpiopins:before { content: "\f546" }
+.fa-info-circle:before { content: "\f560" }
+.fa-link:before { content: "\f52C" }
+.fa-power:before { content: "\f520" }
+.fa-relays:before { content: "\f522" }
+.fa-tag:before { content: "\f55B" }
+
+.selectric-on,
+.selectric-off {
+	width: 170px;
+	margin-bottom: 5px;
+}
+#on .selectric-items,
+#off .selectric-items {
+	min-width: 170px;
+}
+#gpio-num .selectric-items,
+.selectric-ond .selectric-items,
+.selectric-offd .selectric-items {
+	min-width: 85px !important;
+}
+.selectric-pin,
+.selectric-timer,
+.selectric-delay {
+	width: 85px;
+	margin-bottom: 5px;
+}
+.sec {
+	display: inline-block;
+	margin-left: 5px;
+	vertical-align: 5px;
+}
+span.timer {
+	display: block;
+	margin-top: 48px;
+	margin-left: 0;
+}
+span.timer i {
+	vertical-align: -2px;
+}
+#gpioimgtxt,
+#close-img {
+	cursor: pointer;
+}
+#close-img {
+	display: none;
+	position: absolute;
+	right: 15px;
+	top: 5px;
+	font-size: 28px;
+}
+#fliptxt {
+	display: none;
+	color: var( --cw );
+}
+#gpiopin,
+#gpiopin1 {
+	display: none;
+	margin-bottom: 10px;
+	width: 100%;
+	border-radius: 6px;
+	background: var( --cw );
+}
+.gpio-float-l {
+	float: left;
+	min-width: 200px;
+}
+.gpio-float-r {
+	float: left;
+}
+#gpio-name,
+#gpio-name input {
+	width: 120px;
+}
+#gpio .column {
+	width: 175px;
+}
+#gpio-num.column,
+.delay {
+	width: 90px;
+}
+#gpio .column {
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+.gpio-text {
+	display: block;
+	padding: 0 0 0 5px;
+	line-height: 40px;
+	color: var( --cw );
+}
+#gpio-name {
+	margin: 0 0 5px 0 !important;
+	width: 130px !important;
+}
+input {
+	margin-bottom: 5px !important;
+	height: 39px !important;
+	padding: 0 10px !important;
+	font-family: Lato;
+	font-size: 15px !important;
+	color: var( --cw );
+	background-color: #000000 !important;
+	border: 1px solid var( --cg ) !important;
+}
+input: focus {
+	outline: none;
+}
+#undo {
+	background-color: #de810e;
+}
+.btn,
+.btn:hover,
+.btn:visited,
+.btn:focus,
+.btn:active {	color: var( --cw );
+}
+.btn {
+	display: inline-block;
+	width: 83px;
+	height: 35px;
+	margin-top: 20px;
+	font-size: 14px;
+	line-height: 34px;
+	text-align: center;
+	color: var( --cw );
+	background: -webkit-radial-gradient(50% -50%, 160% 200%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%); /* button highlight - last % for anti-alias edge*/
+	background: radial-gradient(160% 100% at 50% 0% ,hsla(0,0%,100%,.3) 50%,hsla(0,0%,100%,0) 55%); /* (Width% Heigth% at H-center_offset% V-center_offset%, hsla(0,0%,100%,1st-T) 1st-area%, hsla(0,0%,100%,2nd-T) 2nd-area%)) */
+	box-shadow: 2px 2px 3px 1px #000000;
+	text-shadow: 1px 1px 2px #000000;
+	border-radius: 4px;
+	border: none;
+	user-select: none;
+	cursor: pointer;
+}
+.btn-primary {
+	background-color: var( --cm );
+}
+.btn-primary:hover {
+	background-color: var( --cml )
+}
+.btn i {
+	font-size: 14px !important;
+	line-height: 30px;
+}
+.btn:focus,
+.btn:active {
+	color: var( --cw );
+}
+.disabled {
+	color: var( --cg60 ) !important;
+	background-color: var( --cg ) !important;
+	pointer-events: none;
+}
+#gpioimgtxt {
+	color: var( --cml );
+}
+#relaysform i {
+	font-size: 20px;
+}
+.green {
+	color: #0f0;
+}
+.yellow {
+	color: yellow;
+}
