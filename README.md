@@ -39,7 +39,7 @@ Asia server
 - [rOS](https://github.com/rern/rOS)
 
 ### How-to
-- Windows: Download and decompress to *.img with 7-zip, WinRAR or WinZip and write the file to a micro SD card, 4GB or more, with [url=https://sourceforge.net/projects/win32diskimager/]Win32 Disk Imager[/url]
+- Windows: Download and decompress to *.img with 7-zip, WinRAR or WinZip and write the file to a micro SD card, 4GB or more, with [Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
 - Linux or Windows: Write from URL to a micro SD card directly with [Etcher](https://www.balena.io/etcher/)
 
 - Existing users:
