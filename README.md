@@ -6,23 +6,23 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Album mode with coverarts
 - File mode with thumbnail icons
 - Coverarts and bookmarks - add, replace and remove
-- Support WebRadio and UPnP coverarts - online fetched
-- Support `*.jpg`, `*.png` and animated `*.gif`
-- Support `*.cue` - virtually as individual tracks in all modes and user playlists
-- Support `*.wav` album artists and sort tracks
-- Support USB DAC plug ang play
-- Support Bluetooth audio, sender and receiver
-- Support GPIO 3.5" 320x420 LCD
-- Support Character LCD: 16x2, 20x4 and 40x4
+- WebRadio coverarts - online fetched
+- `*.jpg`, `*.png` and animated `*.gif` applicable
+- `*.wav` - album artists and sort tracks
+- `*.cue` - virtually as individual tracks in all modes and user playlists
+- Support 
+	- Bluetooth audio, sender and receiver
+	- Character LCD: 16x2, 20x4 and 40x4
+	- TFT 3.5" 320x420 LCD
+	- USB DAC plug ang play
 - Renderers / Clients and Streamers (with metadata and coverarts)
 	- AirPlay
+	- simple HTTP
+	- Snapcast
 	- Spotify Connect
 	- UPnP
-	- Snapcast
-	- simple HTTP
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
-
 
 ### Image files:
 Europe server:
