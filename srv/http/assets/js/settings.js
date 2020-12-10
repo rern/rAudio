@@ -179,7 +179,7 @@ var dirsystem = '/srv/http/data/system';
 var filereboot = '/srv/http/data/shm/reboot';
 var short = window.innerHeight < 570;
 
-document.title = 'R+R '+ ( page === 'mpd' ? 'MPD' : page.charAt( 0 ).toUpperCase() + page.slice( 1 ) );
+document.title = 'rAudio '+ ( page === 'mpd' ? 'MPD' : page.charAt( 0 ).toUpperCase() + page.slice( 1 ) );
 $( '#'+ page ).addClass( 'active' );
 
 $( '#close' ).click( function() {
