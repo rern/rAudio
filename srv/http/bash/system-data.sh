@@ -81,7 +81,7 @@ data+='
 	, "soundswappiness" : '$( sysctl vm.swappiness | awk '{print $NF}' )'
 	, "sources"         : '$( /srv/http/bash/sources-data.sh )'
 	, "version"         : "'$version'"
-	, "versionui"       : '$( cat /srv/http/data/addons/rr$version 2> /dev/null || echo 0 )
+	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )
 if ifconfig | grep -q ^eth0; then
 	data+='
 	, "soundmtu"        : '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )'
