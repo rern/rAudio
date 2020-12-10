@@ -21,6 +21,9 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Snapcast
 	- Spotify Connect
 	- UPnP
+	
+### Discussions
+[rAudio Discussions](https://github.com/rern/rAudio-1/discussions) - Comments, bug reports
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
