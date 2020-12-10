@@ -112,7 +112,7 @@ Asia server
 - Connect to RuneAudio with IP address instead of runeaudio.local
 	- Get IP address: Menu > Network > Network Interfaces list
 	- Setup static IP address
-- Full screen UI - Add to Home Screen
+- App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
 
 ### Static IP address
