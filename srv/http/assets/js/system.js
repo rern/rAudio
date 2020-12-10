@@ -206,7 +206,8 @@ $( '#setting-bluetooth' ).click( function() {
 		, ok       : function() {
 			btdiscoverable = $( '#infoCheckBox input' ).prop( 'checked' );
 			notify( 'Bluetooth Discoverable', btdiscoverable, 'bluetooth' );
-			bash( [ 'bluetoothset', btdiscoverable ] );
+			rebootText( true, 'on-board Bluetooth' );
+			bash( [ 'bluetoothset', btdiscoverable, G.reboot.join( '\n' ) ] );
 		}
 	} );
 } );
