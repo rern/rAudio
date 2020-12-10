@@ -52,7 +52,7 @@ ln -sf /dev/shm $dirdata
 # addons - new/restore
 if [[ -n $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
-	echo $revision > $diraddons/rr$version
+	echo $revision > $diraddons/r$version
 else
 	mv $dirtmp/addons $dirdata
 fi
