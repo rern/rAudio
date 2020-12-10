@@ -100,7 +100,8 @@ echo '[
 	"Genre",
 	"Date"
 ]' > $dirsystem/order
-mv $dirdata/shm/player-{*,mpd}
+rm -f $dirdata/shm/player-*
+touch $dirdata/shm/player-mpd
 # system
 echo 'bcm2835 Headphones' > $dirsystem/audio-aplayname
 echo 'On-board - Headphone' > $dirsystem/audio-output
