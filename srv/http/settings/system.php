@@ -284,7 +284,8 @@ foreach( $listui as $name => $link ) {
 ?>
 <br><br>
 <heading>About</heading>
-<i class="fa fa-plus-r fa-lg gr"></i>&ensp; <?=( file_get_contents( '/srv/http/data/system/version' ) )?>&emsp;by&emsp;<a href="https://github.com/rern/">r e r n</a>
+<i class="fa fa-plus-r fa-lg gr"></i>&ensp;r A u d i o&emsp;<?=( file_get_contents( '/srv/http/data/system/version' ) )?>
+<br>by&emsp;<a href="https://github.com/rern/">r e r n</a>
 <div>
 <heading class="sub">Back End<?=$help?></heading>
 <span class="help-block hide">
