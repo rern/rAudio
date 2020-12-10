@@ -28,10 +28,12 @@ refreshData = function() {
 				  icon    : 'mpd'
 				, title   : 'MPD Settings'
 				, message : '<i class="fa fa-warning"></i> No soundcards found.'
+				, nox     : 1
 				, ok      : function() {
 					location.href = '/';
 				}
 			} );
+			$( '#loader' ).addClass( 'hide' );
 			return
 		}
 		
