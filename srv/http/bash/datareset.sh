@@ -52,7 +52,7 @@ ln -sf /dev/shm $dirdata
 # addons - new/restore
 if [[ -n $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
-	echo $revision > $diraddons/rr$version
+	echo $revision > $diraddons/r$version
 else
 	mv $dirtmp/addons $dirdata
 fi
@@ -104,8 +104,8 @@ mv $dirdata/shm/player-{*,mpd}
 # system
 echo 'bcm2835 Headphones' > $dirsystem/audio-aplayname
 echo 'On-board - Headphone' > $dirsystem/audio-output
-echo R$version > $dirsystem/hostname
-hostnamectl set-hostname R$version
+echo rAudio > $dirsystem/hostname
+hostnamectl set-hostname rAudio
 sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC

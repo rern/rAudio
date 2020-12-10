@@ -86,7 +86,6 @@ databackup )
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
-	sed -i "s/\(--hostname \).*/\1${args[1]}/" /etc/systemd/system/wsdd.service
 	sed -i "s/^\(ssid=\).*/\1${args[1]}/" /etc/hostapd/hostapd.conf
 	sed -i '/^\tname =/ s/".*"/"'$hostname'"/' /etc/shairport-sync.conf
 	sed -i "s/^\(friendlyname = \).*/\1${args[1]}/" /etc/upmpdcli.conf

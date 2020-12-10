@@ -39,6 +39,7 @@ Asia server
 - [rOS](https://github.com/rern/rOS)
 
 ### How-to
+- Default root password: `ros`
 - Windows:
 	- Download and decompress to *.img with 7-zip, WinRAR or WinZip
 	- Write the file to a micro SD card, 4GB or more, with [Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
@@ -116,13 +117,13 @@ Asia server
 
 ### Static IP address
 Always setup at the router unless there is a good reason not to.
-	Set at each device:
-		- IP addresses have to be in the same range of the router.
-		- IP addresses must not be duplicate of existing ones.
-		- IP address must be reconfigured on every OS reinstallation.
-		- A log is needed to manually update all assigned IP address-device data.
-	Set at the router:
-		- The router only allows reserved IP addresses in the same range.
-		- Reserved IP addresses are verified not to duplicate.
-		- The device always get the same IP address on every OS reinstallation without reconfigure.
-		- The router always keep the update log of all IP address-device data.
+- Set at each device:
+	- IP addresses have to be in the same range of the router.
+	- IP addresses must not be duplicate of existing ones.
+	- IP address must be reconfigured on every OS reinstallation.
+	- A log is needed to manually update all assigned IP address-device data.
+- Set at the router:
+	- The router only allows reserved IP addresses in the same range.
+	- Reserved IP addresses are verified not to duplicate.
+	- The device always get the same IP address on every OS reinstallation without reconfigure.
+	- The router always keep the update log of all IP address-device data.
