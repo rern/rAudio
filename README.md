@@ -39,6 +39,7 @@ Asia server
 - [rOS](https://github.com/rern/rOS)
 
 ### How-to
+- Default root password: `ros`
 - Windows:
 	- Download and decompress to *.img with 7-zip, WinRAR or WinZip
 	- Write the file to a micro SD card, 4GB or more, with [Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
