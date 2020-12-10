@@ -34,9 +34,9 @@ Europe server:
 - RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz]()
 
 Asia server
-- RPi 4: [rAudio-1-RPi4.img.xz](https://rern.org/RuneAudio+R/images/rAudio-1-RPi4.img.xz)
-- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://rern.org/RuneAudio+R/images/rAudio-1-RPi2-3.img.xz)
-- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://rern.org/RuneAudio+R/images/rAudio-1-RPi0-1.img.xz)
+- RPi 4: [rAudio-1-RPi4.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi4.img.xz)
+- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi2-3.img.xz)
+- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi0-1.img.xz)
 	
 ### DIY Image file
 - [rOS](https://github.com/rern/rOS)
