@@ -14,6 +14,8 @@
 dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l | grep '^card' )
+[[ -z $aplay ]] && nocard=1 && exit
+
 cardL=$( echo "$aplay" | wc -l )
 
 wm5102=( 'WM5102 - Line' 'WM5102 - S/PDIF' 'WM5102 - Headphone' 'WM5102 - Speaker' )
