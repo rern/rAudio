@@ -14,7 +14,7 @@
 dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l | grep '^card' )
-[[ -z $aplay ]] && nocard=1 && exit
+[[ -z $aplay ]] && echo -1 && exit
 
 cardL=$( echo "$aplay" | wc -l )
 
