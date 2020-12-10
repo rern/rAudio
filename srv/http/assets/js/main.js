@@ -147,7 +147,8 @@ $( '#coverart' ).one( 'load', function() {
 	$( this ).attr( 'src', coverart );
 } );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#button-settings, #badge' ).click( function() {
+$( '#bar-top' ).on( 'click', '#button-settings, #badge', function() {
+//$( '#button-settings' ).click( function() {
 	var $settings = $( '#settings' );
 	if ( $settings.hasClass( 'hide' ) ) {
 		setTimeout( function() {
