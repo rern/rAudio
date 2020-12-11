@@ -84,7 +84,9 @@ Asia server
 	- Update Library database
 		- Automatically run on boot if database is empty with connected USB and NAS
 		- Force update - Settings > update Library (icon next to Sources)
-	- Unless already done, parse coverarts for Album and directory thumbnails - Library > Album > coverart icon (next to ALBUM heading)
+	- Parse coverarts for Album and directory thumbnails 
+		- Only if never run before or to force update
+		- Library > Album > coverart icon (next to ALBUM heading)
 
 ### Not working?
 - Power off and wait a few seconds then power on
