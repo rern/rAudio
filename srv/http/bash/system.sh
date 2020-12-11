@@ -93,7 +93,7 @@ hostname )
 	rm -f /root/.config/chromium/SingletonLock
 	systemctl daemon-reload
 	systemctl try-restart avahi-daemon hostapd mpd smb shairport-sync shairport-meta upmpdcli
-	systemctl -q is-active bluetooth && bluetoothctl system-alias $hostname
+	systemctl -q is-active bluetooth && bluetoothctl system-alias $hostname &> /dev/null
 	echo $hostname > $dirsystem/hostname
 	pushRefresh
 	;;

@@ -28,22 +28,23 @@ chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 # hostname
 hostname=$( cat $dirsystem/hostname )
-[[ $hostname != R$( cat $dirsystem/version ) ]] && $dirbash/system.sh hostname$'\n'$hostname
+[[ $hostname != rAudio ]] && $dirbash/system.sh hostname$'\n'$hostname
 # splash
-rotate=$( grep rotate /etc/localbrowser.conf | cut -d'"' -f2 )
+rotate=$( grep rotate /etc/localbrowser.conf 2> /dev/null | cut -d'"' -f2 )
+[[ -z $rotate ]] && rotate=NORMAL
 ln -sf /srv/http/assets/img/{$rotate,splash}.png
 # timezone
 [[ -e $dirsystem/timezone ]] && timedatectl set-timezone $( cat $dirsystem/timezone )
 
 # netctl
-netctl=$( ls -1 /etc/netctl/* 2> /dev/null | head -1 )
+netctl=$( ls -p /etc/netctl | grep -v / | head -1 )
 [[ -n $netctl ]] && cp "$netctl" /boot/wifi
 # fstab
 readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 if [[ -n $mountpoints ]]; then
 	for mountpoint in $mountpoints; do
 		mkdir -p "$mountpoint"
-	fi
+	done
 fi
 
 echo 'Restore database and settings' > /srv/http/data/shm/reboot
