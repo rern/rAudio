@@ -22,8 +22,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Spotify Connect
 	- UPnP
 	
-### Discussions
-[rAudio Discussions](https://github.com/rern/rAudio-1/discussions) - Comments, bug reports
+### Q&A
+[**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
@@ -39,7 +39,7 @@ Asia server
 - RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi0-1.img.xz)
 	
 ### DIY Image file
-- [rOS](https://github.com/rern/rOS)
+- [**rOS**](https://github.com/rern/rOS)
 
 ### How-to
 - Default root password: `ros`
