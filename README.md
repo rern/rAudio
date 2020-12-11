@@ -79,7 +79,7 @@ Asia server
 			- Create a blank file `lcd` in `BOOT`
 - After initial boot:
 	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
-	- Before setup anything, Settings > Addons > rAudio > Update (if available)
+	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
 	- Update Library database:
@@ -88,6 +88,8 @@ Asia server
 	- Parse coverarts for Album and directory thumbnails :
 		- Only if never run before or to force update
 		- Library > Album > coverart icon (next to ALBUM heading)
+	- User guide
+		- Settings > last icon next to Addons
 
 ### Not working?
 - Power off and wait a few seconds then power on
@@ -131,18 +133,16 @@ Asia server
 - Connect to rAudio with IP address instead of raudio.local
 	- Get IP address: Menu > Network > Network Interfaces list
 	- Setup static IP address
+- Static IP address - Always setup at the router unless there is a good reason not to.
+	- Set at each device:
+		- IP addresses have to be in the same range of the router.
+		- IP addresses must not be duplicate of existing ones.
+		- IP address must be reconfigured on every OS reinstallation.
+		- A log is needed to manually update all assigned IP address-device data.
+	- Set at the router:
+		- The router only allows reserved IP addresses in the same range.
+		- Reserved IP addresses are verified not to duplicate.
+		- The device always get the same IP address on every OS reinstallation without reconfigure.
+		- The router always keep the update log of all IP address-device data.
 - App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
-
-### Static IP address
-Always setup at the router unless there is a good reason not to.
-- Set at each device:
-	- IP addresses have to be in the same range of the router.
-	- IP addresses must not be duplicate of existing ones.
-	- IP address must be reconfigured on every OS reinstallation.
-	- A log is needed to manually update all assigned IP address-device data.
-- Set at the router:
-	- The router only allows reserved IP addresses in the same range.
-	- Reserved IP addresses are verified not to duplicate.
-	- The device always get the same IP address on every OS reinstallation without reconfigure.
-	- The router always keep the update log of all IP address-device data.
