@@ -1070,7 +1070,10 @@ function renderPlayback() {
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 	$( '#song' ).toggleClass( 'gr', G.status.state === 'pause' );
-	if ( !G.status.elapsed ) return
+	if ( !G.status.elapsed || G.status.elapsed > G.status.Time ) {
+		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+		return
+	}
 	
 	var elapsedhms = second2HMS( G.status.elapsed );
 	var position = Math.round( G.status.elapsed / time * 1000 );
