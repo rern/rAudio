@@ -79,7 +79,7 @@ Asia server
 			- Create a blank file `lcd` in `BOOT`
 - After initial boot:
 	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
-	- Before setup anything, Settings > Addons > rAudio > Update (if available)
+	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
 	- Update Library database:
@@ -88,6 +88,8 @@ Asia server
 	- Parse coverarts for Album and directory thumbnails :
 		- Only if never run before or to force update
 		- Library > Album > coverart icon (next to ALBUM heading)
+	- User guide
+		- Settings > last icon next to Addons
 
 ### Not working?
 - Power off and wait a few seconds then power on
