@@ -1,6 +1,7 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function infoMount( formdata, cifs ) {
+	var data = {};
 	info( {
 		  icon    : 'network'
 		, title   : 'Network Share'
@@ -37,13 +38,19 @@ function infoMount( formdata, cifs ) {
 					$( '.guest' ).removeClass( 'hide' );
 				}
 			} );
+			// verify
+			$( '#infoOk' ).addClass( 'disabled' );
+			$( '.infoinput' ).keyup( function() {
+				var $this = $( this );
+				if ( $this.prop( 'name' ) === 'directory' ) $this.val( $this.val().replace( /\/|\\/g, '' ) );
+				var form = document.getElementById( 'formmount' );
+				data = Object.fromEntries( new FormData( form ).entries() );
+				var valid = !data.name || !data.directory ? false : true;
+				if ( valid ) valid = valid && validateIP( data.ip );
+				$( '#infoOk' ).toggleClass( 'disabled', !valid );
+			} );
 		}
 		, ok      : function() {
-			var formmount = $( '#formmount' ).serializeArray();
-			var data = {};
-			$.map( formmount, function( val ) {
-				data[ val[ 'name' ] ] = val[ 'value' ];
-			});
 			var mountpoint = data.name;
 			var directory = data.directory.replace( /^\//, '' );
 			if ( data.protocol === 'cifs' ) {
