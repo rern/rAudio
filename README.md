@@ -69,14 +69,22 @@ Asia server
 		- Generate a complex profile - static IP, hidden SSID
 			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
 			- Save it in `BOOT`
-	- Pre-configure GPIO 3.5" LCD display
-		- Rename `lcd0` in `BOOT` to `lcd`
-
-- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
-- Before setup anything, Settings > Addons > RuneAudio+R e6 > Update (if available)
-- Restore settings and database: Settings > System > Backup/Restore Settings (if there is one)
-- Music Library database - USB drive automatically run if already plugged in otherwise Settings > update Library (icon next to MPD)
-- Coverarts in browse by Album and directory thumbnails - Library > Album > coverart icon (next to ALBUM heading)
+	- Pre-configure:
+		- Restore database and settings
+			- Copy `backup.gz` to `BOOT`
+		- Expand `root` partition:
+			- By default, `root` partition will be expaned on initial boot.
+			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
+		- GPIO 3.5" LCD display
+			- Create a blank file `lcd` in `BOOT`
+- After initial boot:
+	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
+	- Before setup anything, Settings > Addons > RuneAudio+R e6 > Update (if available)
+	- Restore settings and database: Settings > System > Backup/Restore Settings (if there is one)
+	- Update Library database
+		- Automatically run on boot if database is empty with connected USB and NAS
+		- Force update - Settings > update Library (icon next to Sources)
+	- Unless already done, parse coverarts for Album and directory thumbnails - Library > Album > coverart icon (next to ALBUM heading)
 
 ### Not working?
 - Power off and wait a few seconds then power on
