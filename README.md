@@ -11,16 +11,20 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - `*.wav` - album artists and sort tracks
 - `*.cue` - virtually as individual tracks in all modes and user playlists
 - Support 
-	- Bluetooth audio, sender and receiver
 	- Character LCD: 16x2, 20x4 and 40x4
 	- TFT 3.5" 320x420 LCD
+	- Relay module (GPIO)
 	- USB DAC plug ang play
-- Renderers / Clients and Streamers (with metadata and coverarts)
+- Renderers / Clients - with metadata and coverarts
 	- AirPlay
-	- simple HTTP
+	- Bluetooth audio
 	- Snapcast
 	- Spotify Connect
 	- UPnP
+- Streamers
+	- Bluetooth audio
+	- simple HTTP (no metadata)
+	- Snapcast
 	
 ### Q&A
 [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
