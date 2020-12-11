@@ -128,7 +128,7 @@ Asia server
 	- With wired LAN if possible - Disable Wi-Fi
 	- With WiFi if necessary
 	- With RPi accesspoint only if there's no router
-- Connect to RuneAudio with IP address instead of runeaudio.local
+- Connect to rAudio with IP address instead of raudio.local
 	- Get IP address: Menu > Network > Network Interfaces list
 	- Setup static IP address
 - App icon (Full screen UI) - Add to Home Screen
