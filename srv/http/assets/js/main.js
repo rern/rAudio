@@ -197,6 +197,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			bash( [ 'screenoff' ] );
 			break;
 		case 'displaycolor':
+			if ( G.status.player !== 'mpd' ) return
+			
 			G.color = 1;
 			if ( !G.library ) $( '#tab-library' ).click();
 			if ( G.mode !== 'webradio' ) {
