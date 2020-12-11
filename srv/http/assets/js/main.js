@@ -197,8 +197,6 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			bash( [ 'screenoff' ] );
 			break;
 		case 'displaycolor':
-			if ( G.status.player !== 'mpd' ) return
-			
 			G.color = 1;
 			if ( !G.library ) $( '#tab-library' ).click();
 			if ( G.mode !== 'webradio' ) {
@@ -1205,7 +1203,7 @@ $( '#lib-mode-list' ).contextmenu( function( e ) { // disable default image cont
 $( '.mode' ).click( function() {
 	G.mode = $( this ).data( 'mode' );
 	$( '#lib-search-close' ).click();
-	if ( !G.status.counts[ G.mode ] && G.status.updating_db ) {
+	if ( !G.color && !G.status.counts[ G.mode ] && G.status.updating_db ) {
 		infoUpdate();
 		return
 	}
