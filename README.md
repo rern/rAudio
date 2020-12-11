@@ -79,12 +79,13 @@ Asia server
 			- Create a blank file `lcd` in `BOOT`
 - After initial boot:
 	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
-	- Before setup anything, Settings > Addons > RuneAudio+R e6 > Update (if available)
-	- Restore settings and database: Settings > System > Backup/Restore Settings (if there is one)
-	- Update Library database
+	- Before setup anything, Settings > Addons > rAudio > Update (if available)
+	- Restore settings and database:
+		- If not pre-configured, Settings > System > Backup/Restore Settings
+	- Update Library database:
 		- Automatically run on boot if database is empty with connected USB and NAS
 		- Force update - Settings > update Library (icon next to Sources)
-	- Parse coverarts for Album and directory thumbnails 
+	- Parse coverarts for Album and directory thumbnails :
 		- Only if never run before or to force update
 		- Library > Album > coverart icon (next to ALBUM heading)
 
