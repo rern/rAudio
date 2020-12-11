@@ -57,6 +57,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - HiFiBerry Digi+
 - HiFiBerry Digi+ Pro
 - HiFiBox DAC
+- InnoMaker HiFi DAC
 - IQaudIO Amp
 - IQaudIO Amp (with auto mute)
 - IQaudIO Amp (with unmute)
@@ -102,3 +103,4 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Terra-Berry DAC 2
 - Wolfson Audio
 - X10 DAC
+
