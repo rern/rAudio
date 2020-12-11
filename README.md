@@ -39,7 +39,7 @@ Asia server
 - RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi0-1.img.xz)
 	
 ### DIY Image file
-- [**rOS**](https://github.com/rern/rOS)
+- [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
 - Default root password: `ros`
