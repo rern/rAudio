@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="600px" height="600px" viewBox="0 0 230 230">
 <defs><style>
-.box{fill:hsl(200,100%,40%);
+.box{fill:hsl(200,100%,35%);
 	opacity:0.2;isolation:isolate;}
 .text{fill:hsl(0,0%,90%);}
 </style></defs>
