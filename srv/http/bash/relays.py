@@ -12,7 +12,7 @@ ON = 1
 OFF = 0
 relaysfile = '/srv/http/data/shm/relaystimer'
 
-with open( '/srv/http/data/system/relaysset' ) as jsonfile:
+with open( '/etc/relays.conf' ) as jsonfile:
     gpio = json.load( jsonfile )
 
 name = gpio[ 'name' ]

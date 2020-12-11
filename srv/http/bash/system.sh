@@ -51,6 +51,7 @@ databackup )
 /etc/mpd.conf
 /etc/mpdscribble.conf
 /etc/netctl/*
+/etc/relays.conf
 /etc/samba/smb.conf
 /etc/soundprofile.conf
 /etc/spotifyd.conf

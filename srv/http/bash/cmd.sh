@@ -606,10 +606,10 @@ relays )
 	fi
 	;;
 relaysset )
-	echo ${args[1]} | jq . > $dirsystem/relaysset
+	echo ${args[1]} | jq . > /etc/relays.conf
 	;;
 relaystimerreset )
-	awk '/timer/ {print $NF}' $dirsystem/relaysset > $dirtmp/relaystimer
+	awk '/timer/ {print $NF}' /etc/relays.conf > $dirtmp/relaystimer
 	pushstream relays '{"state":"RESET"}'
 	;;
 screenoff )

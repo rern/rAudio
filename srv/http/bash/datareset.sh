@@ -113,35 +113,6 @@ timedatectl set-timezone UTC
 touch $dirsystem/onboard-wlan
 rm -f $dirsystem/{buffer,bufferoutput,crossfade,custom,relays,replaygain,soundprofile,soxr}
 
-# relays
-echo '{
-  "name": {
-    "11": "DAC",
-    "13": "PreAmp",
-    "15": "Amp",
-    "16": "Subwoofer"
-  },
-  "on": {
-    "on1": 11,
-    "ond1": 2,
-    "on2": 13,
-    "ond2": 2,
-    "on3": 15,
-    "ond3": 2,
-    "on4": 16
-  },
-  "off": {
-    "off1": 16,
-    "offd1": 2,
-    "off2": 15,
-    "offd2": 2,
-    "off3": 13,
-    "offd3": 2,
-    "off4": 11
-  },
-  "timer": 5
-}' > $dirsystem/relaysset
-
 # mpd
 sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d
 ' -e '/quality/,/}/ d

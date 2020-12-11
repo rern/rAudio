@@ -101,7 +101,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 <script src="/assets/js/banner.<?=$time?>.js"></script>
 <script src="/assets/js/relays.<?=$time?>.js"></script>
 <script>
-	var relaysset = <?=( file_get_contents( '/srv/http/data/system/relaysset' ) )?>;
+	var relaysset = <?=( file_get_contents( '/etc/relays.conf' ) )?>;
 </script>
 
 </body>
