@@ -36,9 +36,6 @@ ln -sf /srv/http/assets/img/{$rotate,splash}.png
 # timezone
 [[ -e $dirsystem/timezone ]] && timedatectl set-timezone $( cat $dirsystem/timezone )
 
-# netctl
-netctl=$( ls -p /etc/netctl | grep -v / | head -1 )
-[[ -n $netctl ]] && cp "$netctl" /boot/wifi
 # fstab
 readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 if [[ -n $mountpoints ]]; then

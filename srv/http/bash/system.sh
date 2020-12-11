@@ -36,6 +36,7 @@ bluetoothset )
 	pushRefresh
 	;;
 databackup )
+	netctl=${args[1]}
 	dirconfig=$dirdata/config
 	backupfile=$dirdata/tmp/backup.gz
 	rm -f $backupfile
@@ -64,6 +65,7 @@ databackup )
 		mkdir -p $dirconfig/$( dirname $file )
 		cp {,$dirconfig}$file 2> /dev/null
 	done
+	[[ -n $netctl ]] && cp "/etc/netctl/$netctl" $dirconfig/boot/wifi
 	
 	services='bluetooth hostapd localbrowser mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
