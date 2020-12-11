@@ -29,9 +29,9 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### Image files:
 Europe server:
-- RPi 4: [rAudio-1-RPi4.img.xz]()
-- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz]()
-- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz]()
+- RPi 4: [rAudio-1-RPi4.img.xz](https://cloud.s-t-franz.de/s/SCt8LZSHwKFmxHz)
+- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://cloud.s-t-franz.de/s/CxoqeZ3zjAjKsJd)
+- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://cloud.s-t-franz.de/s/6wcrD9QwNLLjwQW)
 
 Asia server
 - RPi 4: [rAudio-1-RPi4.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi4.img.xz)
