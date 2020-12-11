@@ -380,7 +380,7 @@ $( '#setting-hostapd' ).click( function() {
 		, textrequired : [ 0, 1 ]
 		, preshow       : function() {
 			// verify changes + values
-			if ( G.hostapd ) {
+			if ( G.hostapd || $( '#infoTextBox' ).val().length < 8 ) {
 				$( '#infoOk' ).addClass( 'disabled' );
 				$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
 					var pwd = $( '#infoTextBox' ).val();
