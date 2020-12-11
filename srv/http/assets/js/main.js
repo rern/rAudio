@@ -456,6 +456,7 @@ $( '#colorcancel' ).click( function() {
 	$( '.menu a' ).css( 'border-top', '' );
 	$( '#lib-list li' ).css( 'border-bottom', '' );
 	$( 'body' ).removeClass( 'disablescroll' );
+	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#colorpicker' ).click( function( e ) {
 	if ( e.target.id === 'colorpicker' ) $( '#colorcancel' ).click();
