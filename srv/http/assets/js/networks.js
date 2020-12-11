@@ -53,9 +53,11 @@ function editLAN( data ) {
 			if ( data.dhcp === 'dhcp' || !data.ip ) $( '#infoButton' ).addClass( 'hide' );
 			if ( data.ip ) {
 				$( '#infoOk' ).addClass( 'disabled' );
+				// verify
 				$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-					var changed = $( '#infoTextBox' ).val() !== data.ip || $( '#infoTextBox1' ).val() !== data.gateway;
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
+					var ip = $( '#infoTextBox' ).val();
+					var changed = ip !== data.ip || $( '#infoTextBox1' ).val() !== data.gateway;
+					$( '#infoOk' ).toggleClass( 'disabled', !changed || !validateIP( ip ) );
 				} );
 			}
 		}
@@ -102,6 +104,24 @@ function editWiFi( ssid, data ) {
 		, checkbox      : { 'Static IP': 1, 'Hidden SSID': 1, 'WEP': 1 }
 		, passwordlabel : 'Password'
 		, preshow       : function() {
+			function verify() {
+				var ssid1 = $( '#infoTextBox' ).val();
+				var pw1 = $( '#infoPasswordBox' ).val();
+				var changed = ssid1 !== ssid || pw1 !== data.Key;
+				changed = changed && pw1.length > 7;
+				if ( changed ) {
+					if ( $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ) {
+						var ip1 = $( '#infoTextBox1' ).val();
+						var gw1 = $( '#infoTextBox2' ).val();
+						if ( !validateIP( ip1 ) || !validateIP( gw1 ) ) {
+							changed = false; 
+						} else {
+							if ( data ) changed = changed && ( ip1 !== data.Address || gw1 !== data.Gateway );
+						}
+					}
+				}
+				$( '#infoOk' ).toggleClass( 'disabled', !changed );
+			}
 			if ( !ssid ) {
 				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
 			} else {
@@ -115,10 +135,12 @@ function editWiFi( ssid, data ) {
 				}
 			}
 			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoTextBox1, #infoTextBox2' ).keyup( function() {
-				var changed = $( '#infoTextBox1' ).val() !== data.Address || $( '#infoTextBox2' ).val() !== data.Gateway;
-				$( '#infoOk' ).toggleClass( 'disabled', !changed );
+			$( '#infoCheckBox' ).on( 'click', 'input:eq( 0 )', function() {
+				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
+				verify();
 			} );
+			// verify
+			$( '.infoinput' ).keyup( verify );
 		}
 		, ok            : function() {
 			var ssid = ssid || $( '#infoTextBox' ).val();
@@ -159,9 +181,6 @@ function editWiFi( ssid, data ) {
 				}
 			}
 		}
-	} );
-	$( '#infoCheckBox' ).on( 'click', 'input:eq( 0 )', function() {
-		$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
 	} );
 }
 function editWiFiSet( ssid, data ) {

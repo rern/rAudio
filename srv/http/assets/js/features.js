@@ -384,12 +384,16 @@ $( '#setting-hostapd' ).click( function() {
 				$( '#infoOk' ).addClass( 'disabled' );
 				$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
 					var pwd = $( '#infoTextBox' ).val();
-					var changed = pwd.length > 7 && ( pwd !== G.hostapdpwd || $( '#infoTextBox1' ).val() !== G.hostapdip );
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
+					var ip = $( '#infoTextBox1' ).val();
+					var changed = pwd.length > 7 && ( pwd !== G.hostapdpwd || ip !== G.hostapdip );
+					var validip = validateIP( ip );
+					$( '#infoOk' ).toggleClass( 'disabled', !changed || !validip );
 				} );
 			} else { // verify values
 				$( '#infoTextBox' ).keyup( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', $( '#infoTextBox' ).val().length < 8 );
+					var pwd = $( '#infoTextBox' ).val();
+					var ip = $( '#infoTextBox1' ).val();
+					$( '#infoOk' ).toggleClass( 'disabled', pwd < 8 || !validateIP( ip ) );
 				} );
 			}
 		}

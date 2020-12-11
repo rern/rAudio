@@ -98,6 +98,9 @@ function showContent() {
 		$( '.head, .container' ).removeClass( 'hide' );
 	}, 300 );
 }
+function validateIP( ip ) {  
+	return /^(?!.*\.$)((?!0\d)(1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test( ip )
+} 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
 var streams = [ 'refresh', 'reload', 'restore', ];
