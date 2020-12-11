@@ -40,7 +40,6 @@ data='
 	, "Time"       : '$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )'
 	, "state"      : "'$state'"
 	, "coverart"   : "'$coverart'"
-	, "counts"     : '$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )'
 	, "sampling"   : "Bluetooth"
 	, "volume"     : '$( mpc volume | cut -d' ' -f2 | tr -d % )'
 	, "volumemute" : '0
