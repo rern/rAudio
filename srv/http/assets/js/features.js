@@ -398,7 +398,7 @@ $( '#setting-hostapd' ).click( function() {
 				$( '#loader' ).removeClass( 'hide' );
 				location.href = '/settings.php?p=networks';
 			} else {
-				$( '#hostapd, #hostapdchk' ).prop( 'checked', 0 );
+				$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
 			}
 		}
 		, ok           : function() {
