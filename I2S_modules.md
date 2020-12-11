@@ -1,0 +1,104 @@
+### Supported I2S Modules
+```sh
+sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/system-i2s.json
+```
+
+- Adafruit MAX98357
+- Adafruit UDA1334A
+- Allo Boss DAC
+- Allo DigiOne
+- Allo DigiOne Signature
+- Allo Katana DAC
+- Allo Piano 2.0 DAC
+- Allo Piano 2.1 DAC
+- Allo Piano 2.1 DAC (with Kali Reclocker)
+- Allo Piano DAC
+- Aoide DAC II
+- Apple Pi DAC
+- Audioinjector Addons
+- Audioinjector Octo
+- Audioinjector Stereo
+- Audioinjector Ultra
+- Audioinjector WM8731
+- Audioinjector Zero
+- Audiophonics I-Sabre DAC ES9023
+- Audiophonics I-Sabre AMP DAC ES9023
+- Audiophonics I-Sabre DAC ES9028Q2M
+- Audiophonics I-Sabre DAC ES9038Q2M
+- AudioSense-Pi
+- BerryNOS
+- Digital Dreamtime Akkordion
+- Dion Audio Loco DAC-AMP
+- Dion Audio Loco V2 DAC-AMP
+- Fe-Pi Audio
+- Generic AKM AK4xxx (rpi-dac)
+- Generic AKM AK4xxx (hifiberry-dac)
+- Generic Burr-Brown PCM1794
+- Generic Burr-Brown PCM510x
+- Generic Burr-Brown PCM512x
+- Generic Cirrus Logic WM5102
+- Generic ESS ES90xx
+- Generic RPi-DAC compatible
+- HiFiBerry Amp
+- HiFiBerry Amp2
+- HiFiBerry DAC
+- HiFiBerry DAC+
+- HiFiBerry DAC+ Lite
+- HiFiBerry DAC+ Pro
+- HiFiBerry DAC+ Pro XLR
+- HiFiBerry DAC+ RTC
+- HiFiBerry DAC+ Zero
+- HiFiBerry DAC+ADC
+- HiFiBerry DAC+ADC Pro
+- HiFiBerry DAC+DSP
+- HiFiBerry DAC 2 HD
+- HiFiBerry Digi
+- HiFiBerry Digi Pro
+- HiFiBerry Digi+
+- HiFiBerry Digi+ Pro
+- HiFiBox DAC
+- IQaudIO Amp
+- IQaudIO Amp (with auto mute)
+- IQaudIO Amp (with unmute)
+- IQaudIO Codec
+- IQaudIO DAC
+- IQaudIO DAC Pro
+- IQaudIO DAC+
+- IQaudIO Digi WM8804
+- IQaudIO Pi-DAC PRO
+- IQaudIO Pi-DAC Zero
+- IQaudIO Pi-DAC+
+- IQaudIO Pi-Digi+
+- IQaudIO Pi-DigiAMP+
+- IQaudIO Pi-DigiAMP+ (with auto mute)
+- IQaudIO Pi-DigiAMP+ (with unmute)
+- JustBoom Amp HAT
+- JustBoom Amp Zero
+- JustBoom DAC
+- JustBoom DAC HAT
+- JustBoom DAC Zero
+- JustBoom Digi
+- Mamboberry HD DAC+
+- Mamboberry Precision DAC+
+- MERUS Audio Amp
+- NanoSound HiFi DAC Pro
+- PI 2 Design 502DAC
+- PI 2 Design 502DAC Pro
+- PI 2 Design 503HTA Hybrid Tube Amp
+- Picade HAT
+- PiFi DAC+
+- PiFi Digi+
+- Pimoroni pHAT DAC
+- pisound
+- RaspiDAC 3
+- RaspyPlay 4
+- Red Rocks Audio DigiDAC 1
+- RPi-DAC
+- Soekris dam 1021
+- ST400 Dac - Amp
+- SuperAudioBoard
+- SupTronics X400
+- SupTronics X4000K
+- Terra-Berry DAC 2
+- Wolfson Audio
+- X10 DAC
