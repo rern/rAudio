@@ -387,6 +387,7 @@ function getBio( artist ) {
 				, title   : 'Bio'
 				, message : 'No data available.'
 			} );
+			loader( 'hide' );
 			return
 		}
 		
