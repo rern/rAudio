@@ -178,8 +178,9 @@ $( '#infoOverlay' ).keydown( function( e ) {
 	}
 } );
 $( '#infoContent' ).on( 'click', '.fa-eye', function() {
-	$this = $( this );
-	$pwd = $( '#infoPasswordBox' );
+	var $this = $( this );
+	var i = $( '#infotextsuffix i' ).index( $this );
+	var $pwd = $( '#infoPasswordBox'+ ( i || '' ) );
 	if ( $pwd.prop( 'type' ) === 'text' ) {
 		$this.removeClass( 'eyeactive' );
 		$pwd.prop( 'type', 'password' );

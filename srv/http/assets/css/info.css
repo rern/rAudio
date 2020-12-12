@@ -234,7 +234,9 @@ hr {
 .infolabel:hover {
 	color: var( --cw );
 }
-.infoinput {
+#infoContent input[type=text],
+#infoContent input[type=number],
+#infoContent input[type=password] {
 	display: block;
 	margin: 4px 0 !important;
 	width: 230px;
@@ -258,9 +260,6 @@ hr {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: calc( 100% - 120px );
-	display: inline-block;
-}
-#infoText input[type=password] {
 	display: inline-block;
 }
 .eyeactive {
