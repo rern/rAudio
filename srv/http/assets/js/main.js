@@ -440,12 +440,12 @@ $( '#colorok' ).click( function() {
 		$( '#colorcancel' ).click();
 	} else {
 		bash( [ 'color', hsl ] );
-		banner( 'Color', 'Change ...', 'play-circle' );
+		banner( 'Color', 'Change ...', 'brush blink' );
 	}
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
-	banner( 'Color', 'Reset to default ...', 'play-circle' );
+	banner( 'Color', 'Reset to default ...', 'brush blink' );
 } );
 $( '#colorcancel' ).click( function() {
 	G.color = 0;
