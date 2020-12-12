@@ -580,7 +580,7 @@ function infoNoData() {
 	loader( 'hide' );
 	var keyword = $( '#lib-search-input' ).val();
 	var message = !keyword
-					? 'No data in this location.'
+					? ( G.librarylist ? 'No data in this location.' : 'No <wh>'+ G.mode +'s</wh> in database.' )
 						 +'<br>Update for changes then try again:'
 						 +'<br>Settings > MPD | <i class="fa fa-refresh-library wh"></i>'
 					: 'Nothing found for <wh>'+ keyword +'</wh>';
