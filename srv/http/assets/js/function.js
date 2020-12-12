@@ -417,7 +417,7 @@ function getBio( artist ) {
 				.removeClass( 'hide' )
 				.scrollTop( 0 );
 			$( '#biobanner' ).removeAttr( 'src' );
-			$( '#bioimg' ).empty();
+			$( '#bioimg' ).empty().hide();
 			loader( 'hide' );
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
@@ -428,7 +428,7 @@ function getBio( artist ) {
 					thumbs.forEach( function( el ) {
 						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' )  +'"></a>';
 					} );
-					$( '#bioimg' ).html( images );
+					$( '#bioimg' ).html( images ).show();
 				}
 			} );
 		} );
