@@ -310,7 +310,7 @@ function displayPlayback() {
 	$( '#time-bar' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
 	$( '#time, #volume, .timemap, .covermap, .volmap, .volumeband' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
-	if ( G.status.player === 'bluetooth' ) $( '#volume' ).removeClass( 'disabled' );
+	if ( G.status.player === 'bluetooth' ) $( '#volume, .volmap, .volumeband' ).removeClass( 'disabled' );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
