@@ -1525,7 +1525,7 @@ function switchPage( page ) {
 	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
 	G.page = page;
-	document.title = page;
+//	document.title = page;
 	// restore page scroll
 	if ( G.playback ) {
 		$timeRS.setValue( 0 );
