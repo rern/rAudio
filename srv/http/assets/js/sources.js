@@ -42,7 +42,8 @@ function infoMount( formdata, cifs ) {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '.infoinput' ).keyup( function() {
 				var $this = $( this );
-				if ( $this.prop( 'name' ) === 'directory' ) $this.val( $this.val().replace( /\/|\\/g, '' ) );
+				var cifs = $( 'input[name=protocol]:checked' ).val() === 'cifs';
+				if ( $this.prop( 'name' ) === 'directory' && cifs ) $this.val( $this.val().replace( /\/|\\/g, '' ) );
 				var form = document.getElementById( 'formmount' );
 				data = Object.fromEntries( new FormData( form ).entries() );
 				var valid = !data.name || !data.directory ? false : true;
