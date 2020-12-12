@@ -96,7 +96,7 @@
 </div>
 
 <div>
-<heading>Features<?=$help?></heading>
+<heading>Others<?=$help?></heading>
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" class="col-l double status">
 	<a>BitTorrent
