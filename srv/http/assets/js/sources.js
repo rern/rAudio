@@ -146,11 +146,11 @@ var htmlmount = heredoc( function() { /*
 				<input type="text" class="infoinput" name="directory" spellcheck="false">
 				<div class="guest">
 					<input type="text" class="infoinput" name="user" spellcheck="false">
-					<input type="password" class="infoinput" name="password">
+					<input type="password" id="infoPasswordBox" class="infoinput" name="password">
 				</div>
 				<input type="text" class="infoinput" name="options" spellcheck="false">
 			</div>
-			<div class="infotextsuffix">
+			<div id="infotextsuffix">
 				<i class="eye fa fa-eye fa-lg guest"></i>
 			</div>
 			<div id="infoCheckBox" class="infocontent infocheckbox infohtml">
