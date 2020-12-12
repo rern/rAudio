@@ -1,11 +1,16 @@
 <?php
+$logo = '
+<svg viewBox="0 0 180 180">
+	<rect width="180" height="180" rx="9"/>'
+	.exec( 'grep "<path" /srv/http/assets/img/icon.svg' )
+.'</svg>';
+
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
 	if ( !isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
 }
 $time = time();
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-include 'logosvg.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -41,7 +46,6 @@ include 'logosvg.php';
 $page = $_GET[ 'p' ];
 $sudo = '/usr/bin/sudo /usr/bin';
 $help = '<i class="help fa fa-question-circle"></i>';
-include 'assets/img/icon.php';
 ?>
 <div id="loader">
 	<?=$logo?>

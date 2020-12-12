@@ -1,5 +1,10 @@
 <?php
-include 'assets/img/icon.php';
+$logo = '
+<svg viewBox="0 0 180 180">
+	<rect width="180" height="180" rx="9"/>'
+	.exec( 'grep "<path" /srv/http/assets/img/icon.svg' )
+.'</svg>';
+
 if ( $login && !$_SESSION[ 'login' ] ) { ?>
 <div id="divlogin">
 	<?=$logo?><br>
