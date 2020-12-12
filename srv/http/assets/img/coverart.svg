@@ -2,7 +2,7 @@
 <defs><style>
 .box{fill:hsl(200,100%,35%);
 	opacity:0.2;isolation:isolate;}
-.text{fill:hsl(0,0%,90%);}
+.text{fill:hsl(200,3%,30%);}
 </style></defs>
 
 <polygon class="box" points="0 103.5 46 103.5 46 57.5 69 57.5 69 103.5 115 103.5 115 23 115 0 0 0 0 103.5"/>
