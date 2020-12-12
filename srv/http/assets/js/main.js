@@ -117,11 +117,12 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#loader' ).click( function() {
 	loader( 'hide' );
-} ).removeClass( 'splash' );
+} );
 $( '#coverart' ).one( 'load', function() {
 	$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	if ( G.status.playlistlength ) $( '#coverart' ).removeClass( 'hide' );
 	G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
+	$( '#loader' ).removeClass( 'splash' )
 } ).on( 'load', function() {
 	var covervu = $( '#coverart' ).attr( 'src' ).split( '/' ).pop().slice( 0, 2 ) === 'vu';
 	$( '#divcover, #coverart' ).toggleClass( 'vu', covervu );

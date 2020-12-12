@@ -347,26 +347,18 @@ i.map.disabled, .map.disabled i {
 }
 @keyframes blinkopaque {
 	50% {
-		color: var( --cg );
-		text-shadow: none;
-	}
-}
-@keyframes blinkopaqueactive {
-	50% {
-		color: var( --cm );
+		opacity: 0;
 		text-shadow: none;
 	}
 }
 .blink {
 	animation: blinkopaque 1.5s linear infinite;
 }
-.active.blink {
-	animation: blinkopaqueactive 1.5s linear infinite;
-}
 #logo {
 	position: absolute;
-	left: -2px;
-	width: 45px;
+	left: -4px;
+	width: 45px !important;
+	font-size: 45px;
 }
 #loader {
 	position: fixed;
