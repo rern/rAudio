@@ -254,20 +254,19 @@ s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
 s|\(.box{fill:hsl\).*|\1($hsl);}|
 s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 " $dirimg/icon.svg
-	sed "
-s|\(path{fill:hsl\).*|\1(0,0%,90%);}|
-" $dirimg/icon.svg > $dirtmp/icon.svg
-	convert -density 96 -background none $dirtmp/icon.svg $dirimg/icon.png
+	sed "s|\(path{fill:hsl\).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
+		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
 	[[ -z $rotate ]] && rotate=NORMAL
 	case $rotate in
 		NORMAL ) degree=0;;
-		CCW )     degree=-90;;
-		CW )    degree=90;;
+		CCW )    degree=-90;;
+		CW )     degree=90;;
 		UD )     degree=180;;
 	esac
 	convert \
-		-background none $dirtmp/icon.svg \
+		-density 64 \
+		-background none $dirimg/icon.svg \
 		-rotate $degree \
 		-gravity center \
 		-background '#000' \
