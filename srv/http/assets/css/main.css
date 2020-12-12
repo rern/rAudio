@@ -360,9 +360,9 @@ i.map.disabled, .map.disabled i {
 }
 #logo {
 	position: absolute;
-	left: -4px;
+	left: -3px;
 	width: 45px !important;
-	font-size: 45px;
+	font-size: 48px;
 }
 #loader {
 	position: fixed;
