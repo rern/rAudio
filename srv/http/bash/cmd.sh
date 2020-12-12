@@ -246,7 +246,10 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
  s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
 	dirimg=/srv/http/assets/img
-	sed -i "s|\(.box{fill:hsl\).*|\1($hsl);|" $dirimg/coverart.svg
+	sed -i "
+ s|\(.box{fill:hsl\).*|\1($hsl);|
+s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
+" $dirimg/coverart.svg
 	sed "s|\(.box{fill:hsl\).*|\1($hsl);}|" $dirimg/icon.svg > $dirtmp/icon.svg
 	convert -density 96 -background none $dirtmp/icon.svg $dirimg/icon.png
 	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
