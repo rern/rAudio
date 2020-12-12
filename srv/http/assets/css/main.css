@@ -366,9 +366,7 @@ i.map.disabled, .map.disabled i {
 #logo {
 	position: absolute;
 	left: -2px;
-	width: 45px !important;
-	font-size: 48px;
-	color: var( --cg70 ) !important;
+	width: 45px;
 }
 #loader {
 	position: fixed;
@@ -2319,11 +2317,16 @@ li.active .li2 bl {
 	text-shadow: 2px 2px 4px #000000;
 	box-shadow: 0 0 6px 5px #000000;
 }
+#divlogin {
+	padding-top: calc( 50vh - 135px );
+	text-align: center;
+}
+#divlogin svg {
+	width: 45px;
+}
 #pwd {
 	text-align: center;
-	width: 230px;
-	height: 40px;
-	margin-bottom: 10px;
+	margin: 10px;
 	padding: 10px;
 	font-family: "Lato";
 	font-size: 15px;

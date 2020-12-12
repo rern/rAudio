@@ -631,10 +631,8 @@ function infoUpdate( path ) {
 		}
 	} );
 }
-function loader( toggle, splash ) {
-	$( '#loader' )
-		.toggleClass( 'hide', toggle === 'hide' )
-		.toggleClass( 'splash', splash === 'splash' );
+function loader( toggle ) {
+	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
 function local( delay ) {
 	G.local = 1;

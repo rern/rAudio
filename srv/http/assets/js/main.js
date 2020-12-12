@@ -117,7 +117,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#loader' ).click( function() {
 	loader( 'hide' );
-} );
+} ).removeClass( 'splash' );
 $( '#coverart' ).one( 'load', function() {
 	$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	if ( G.status.playlistlength ) $( '#coverart' ).removeClass( 'hide' );

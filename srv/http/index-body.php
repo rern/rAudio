@@ -1,7 +1,7 @@
 <?php
 include 'assets/img/icon.php';
 if ( $login && !$_SESSION[ 'login' ] ) { ?>
-<div style="text-align: center">
+<div id="divlogin">
 	<?=$logo?><br>
 	<input type="password" id="pwd">
 	<a id="login" class="btn btn-primary">Login</a>
