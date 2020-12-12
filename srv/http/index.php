@@ -13,7 +13,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <!DOCTYPE html>
 <html>
 <head>
-	<title>rAudio</title>
+	<title>playback</title>
 	<meta name="apple-mobile-web-app-title" content="R+R">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
