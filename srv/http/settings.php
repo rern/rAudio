@@ -1,9 +1,5 @@
 <?php
-$logo = '
-<svg viewBox="0 0 180 180">
-	<rect width="180" height="180" rx="9"/>'
-	.exec( 'grep "<path" /srv/http/assets/img/icon.svg' )
-.'</svg>';
+$logo = '<svg viewBox="0 0 180 180">'.shell_exec( 'grep "<rect\|<path" /srv/http/assets/img/icon.svg' ).'</svg>';
 
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
