@@ -11,6 +11,16 @@ feature settings:
 */
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+function passwordWrong() {
+	info( {
+		  icon    : 'lock'
+		, title   : 'Password Login'
+		, nox     : 1
+		, message : 'Wrong existing password.'
+	} );
+	$( '#login' ).prop( 'checked', G.login );
+}
+
 refreshData = function() { // system page: use resetLocal() to aviod delay
 	bash( '/srv/http/bash/features-data.sh', function( list ) {
 		var list2G = list2JSON( list );
@@ -77,9 +87,36 @@ $( '.enable' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-'+ id ).click();
 	} else {
-		var nameicon = idname[ id ];
-		notify( nameicon[ 0 ], 'Disable ...', nameicon[ 1 ] );
-		bash( [ id +'disable' ] );
+		if ( id !== 'login' ) {
+			var nameicon = idname[ id ];
+			notify( nameicon[ 0 ], 'Disable ...', nameicon[ 1 ] );
+			bash( [ id +'disable' ] );
+		} else {
+			info( {
+				  icon          : 'lock'
+				, title         : 'Password Login'
+				, message       : 'Disable:'
+				, passwordlabel : 'Password'
+				, pwdrequired   : 1
+				, cancel        : function() {
+					$( '#login' ).prop( 'checked', G.login );
+				}
+				, ok            : function() {
+					var password = $( '#infoPasswordBox' ).val();
+					$.post( 'cmd.php', {
+						  cmd      : 'login'
+						, password : password
+					}, function( std ) {
+						if ( std ) {
+							notify( 'Password Login', 'Disable ...', 'key' );
+							bash( [ id +'disable' ] );
+						} else {
+							passwordWrong();
+						}
+					} );
+				}
+			} );
+		}
 	}
 } );
 $( '.enablenoset' ).click( function() {
@@ -327,20 +364,14 @@ $( '#setting-login' ).click( function() {
 		, ok            : function() {
 			var password = $( '#infoPasswordBox' ).val();
 			var pwdnew = $( '#infoPasswordBox1' ).length ? $( '#infoPasswordBox1' ).val() : password;
-			var type = G.login ? 'changed.' : 'set.';
-			notify( 'Password Login', G.login ? 'Change ...' : 'Set', 'key' );
+			var type = G.login ? 'changed.' : 'enabled.';
+			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'key' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : password
 				, pwdnew   : pwdnew
 			}, function( std ) {
-				info( {
-					  icon    : 'lock'
-					, title   : 'Password Login'
-					, nox     : 1
-					, message : ( std ? 'Password ' + type : 'Wrong existing password.' )
-				} );
-				$( '#login' ).prop( 'checked', G.login );
+				if ( !std ) passwordWrong();
 				bannerHide();
 			} );
 		}
