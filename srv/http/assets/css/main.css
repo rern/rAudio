@@ -363,7 +363,7 @@ i.map.disabled, .map.disabled i {
 	left: -3px;
 	width: 45px !important;
 	font-size: 48px;
-	color: var( --cg ) !important;
+	color: var( --cgl ) !important;
 }
 #loader {
 	position: fixed;
@@ -867,7 +867,9 @@ i.map.disabled, .map.disabled i {
 	fill: var( --cg60 );
 	background: #000000;
 }
-
+#coverart svg .text {
+	fill: red !important;
+}
 #coverart,
 .licover img {
 	border: 1px solid hsl(0,0%,15%);
