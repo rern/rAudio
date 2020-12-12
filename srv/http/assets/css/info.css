@@ -256,11 +256,12 @@ hr {
 	outline: none;
 }
 #infoFilename {
+	display: inline-block;
+	margin-bottom: 10px;
+	max-width: calc( 100% - 120px );
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	max-width: calc( 100% - 120px );
-	display: inline-block;
 }
 .eyeactive {
 	color: var( --cm );
