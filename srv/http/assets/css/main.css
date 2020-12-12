@@ -345,14 +345,18 @@ i.bookmark,
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
-@keyframes blinkopaque {
-	50% {
-		opacity: 0;
-		text-shadow: none;
-	}
-}
+@keyframes blinkopaque { 50% { opacity: 0; } }
+@keyframes blinkcg     { 50% { color: var( --cg ); text-shadow: none; } }
+@keyframes blinkcm     { 50% { color: var( --cm ); text-shadow: none; } }
 .blink {
 	animation: blinkopaque 1.5s linear infinite;
+}
+#tab-library.blink {
+	animation: blinkcg 1.5s linear infinite;
+}
+#tab-library.active.blink,
+#button-library.active.blink {
+	animation: blinkcm 1.5s linear infinite;
 }
 #logo {
 	position: absolute;
