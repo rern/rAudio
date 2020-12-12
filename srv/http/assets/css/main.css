@@ -363,6 +363,7 @@ i.map.disabled, .map.disabled i {
 	left: -3px;
 	width: 45px !important;
 	font-size: 48px;
+	color: var( --cg ) !important;
 }
 #loader {
 	position: fixed;
