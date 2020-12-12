@@ -251,8 +251,19 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
 	convert -density 96 -background none $dirtmp/icon.svg $dirimg/icon.png
 	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
 	[[ -z $rotate ]] && rotate=NORMAL
-	sed "s|\(.box{fill:hsl\).*|\1($hsl);}|" $dirimg/$rotate.svg > $dirtmp/splash.svg
-	convert -density 96 $dirtmp/splash.svg $dirimg/splash.png
+	case $rotate in
+		NORMAL ) degree=0;;
+		CCW )     degree=-90;;
+		CW )    degree=90;;
+		UD )     degree=180;;
+	esac
+	convert \
+		-background none $dirtmp/icon.svg \
+		-rotate $degree \
+		-gravity center \
+		-background '#000' \
+		-extent 1920x1080 \
+		$dirimg/splash.png
 	pushstream reload 1
 	;;
 count )
