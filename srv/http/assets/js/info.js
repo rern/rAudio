@@ -182,10 +182,10 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 	$pwd = $( '#infoPasswordBox' );
 	if ( $pwd.prop( 'type' ) === 'text' ) {
 		$this.removeClass( 'eyeactive' );
-		$( '#infoPasswordBox' ).prop( 'type', 'password' );
+		$pwd.prop( 'type', 'password' );
 	} else {
 		$this.addClass( 'eyeactive' );
-		$( '#infoPasswordBox' ).prop( 'type', 'text' );
+		$pwd.prop( 'type', 'text' );
 	}
 } );
 

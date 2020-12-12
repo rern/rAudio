@@ -3,13 +3,24 @@ include 'assets/img/icon.php';
 if ( $login && !$_SESSION[ 'login' ] ) { ?>
 <div id="divlogin">
 	<?=$logo?><br>
-	<input type="password" id="pwd">
+	<input type="password" id="pwd"><i class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
 <script src="assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="assets/js/info.<?=$time?>.js"></script>
 <script>
 $( '#pwd' ).focus();
+$( '#divlogin i' ).click( function() {
+	$this = $( this );
+	$pwd = $( '#pwd' );
+	if ( $pwd.prop( 'type' ) === 'text' ) {
+		$this.removeClass( 'eyeactive' );
+		$pwd.prop( 'type', 'password' );
+	} else {
+		$this.addClass( 'eyeactive' );
+		$pwd.prop( 'type', 'text' );
+	}
+} );
 $( '#login' ).click( function() {
 	$.post( 'cmd.php', { cmd: 'login', password: $( '#pwd' ).val() }, function( data ) {
 		if ( data != -1 ) {
