@@ -381,8 +381,11 @@ i.map.disabled, .map.disabled i {
 	width: 50px;
 	animation: blinkopaque 1.5s linear infinite;
 }
-svg rect {
+#loader rect {
 	fill: var( --cm );
+}
+#loader path {
+	fill: var( --cw );
 }
 .splash {
 	background: #000000 !important;
