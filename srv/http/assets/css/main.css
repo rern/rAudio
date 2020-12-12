@@ -386,7 +386,7 @@ i.map.disabled, .map.disabled i {
 	fill: var( --cm );
 }
 #loader path {
-	fill: var( --cw );
+	fill: var( --cg75 );
 }
 .splash {
 	background: #000000 !important;

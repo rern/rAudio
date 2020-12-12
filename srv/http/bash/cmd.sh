@@ -250,7 +250,13 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
  s|\(.box{fill:hsl\).*|\1($hsl);|
 s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
 " $dirimg/coverart.svg
-	sed "s|\(.box{fill:hsl\).*|\1($hsl);}|" $dirimg/icon.svg > $dirtmp/icon.svg
+	sed -i "
+s|\(.box{fill:hsl\).*|\1($hsl);}|
+s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
+" $dirimg/icon.svg
+	sed "
+s|\(path{fill:hsl\).*|\1(0,0%,90%);}|
+" $dirimg/icon.svg > $dirtmp/icon.svg
 	convert -density 96 -background none $dirtmp/icon.svg $dirimg/icon.png
 	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
 	[[ -z $rotate ]] && rotate=NORMAL
