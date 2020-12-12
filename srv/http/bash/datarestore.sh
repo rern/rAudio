@@ -28,6 +28,10 @@ chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 # hostname
 hostname=$( cat $dirsystem/hostname )
+if [[ $hostname == RuneAudio ]]; then
+	hostname=rAudio
+	echo rAudio > $dirsystem/hostname
+fi
 [[ $hostname != rAudio ]] && $dirbash/system.sh hostname$'\n'$hostname
 # splash
 rotate=$( grep rotate /etc/localbrowser.conf 2> /dev/null | cut -d'"' -f2 )
