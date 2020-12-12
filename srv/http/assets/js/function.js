@@ -417,7 +417,7 @@ function getBio( artist ) {
 				.removeClass( 'hide' )
 				.scrollTop( 0 );
 			$( '#biobanner' ).removeAttr( 'src' );
-			$( '#bioimg' ).empty().hide();
+			$( '#bioimg' ).hide();
 			loader( 'hide' );
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
