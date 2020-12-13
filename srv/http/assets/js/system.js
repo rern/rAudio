@@ -420,7 +420,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, boxwidth      : 173
 		, nofocus       : 1
 		, preshow       : function() {
-			var val = G.lcdcharval
+			var val = G.lcdcharval || '20 A00 0x27 PCF8574'
 			var settings = val.split( ' ' );
 			var cols = settings[ 0 ];
 			var charmap = settings[ 1 ];
