@@ -31,6 +31,7 @@ include 'logosvg.php';
 	<a href="/"><i id="close" class="fa fa-times"></i></a>
 </div>
 <div id="guide">
+	<p style="text-align: right;"><a href="https://github.com/rern/rAudio-1/discussions" target="_blank">Discussions <i class="fa fa-question-circle"></i></a></p>
 	<p><span id="count"></span><gr>Swipe: previous / next</gr></p>
 	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
 	<div id="playback" class="btn btn-default active"><i class="fa fa-play-circle"></i><span>Playback</span></div>
@@ -48,7 +49,7 @@ var nsettings = 46;
 var ntotal = 59;
 var n = 1;
 $.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
-$( '#count' ).text( n +'/'+ ntotal );
+$( '#count' ).text( n +' / '+ ntotal );
 
 $( '.btn' ).click( function() {
 	var page = {
@@ -76,7 +77,7 @@ $( 'body' ).swiperight( function( e ) {
 } );
 function renderPage( n ) {
 	$( 'img' ).attr( 'src', '/assets/img/guide/'+ n +'.<?=$time?>.jpg' );
-	$( '#count' ).text( n +'/'+ ntotal );
+	$( '#count' ).text( n +' / '+ ntotal );
 	$( '.btn' ).removeClass( 'active' );
 	if ( n >= 1 && n < nlibrary ) {
 		var id = 'playback';
