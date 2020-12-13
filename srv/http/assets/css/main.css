@@ -365,6 +365,7 @@ i.map.disabled, .map.disabled i {
 	width: 45px !important;
 	font-size: 48px;
 	color: var( --cg ) !important;
+	text-shadow: none !important;
 }
 #loader {
 	position: fixed;
@@ -487,7 +488,7 @@ i.map.disabled, .map.disabled i {
 	position: fixed;
 	width: 100%;
 	height: 40px;
-	background: linear-gradient( to left, var( --cg ) calc( 100% - 50px ), rgba( 0,0,0,0 ) 100% );
+	background: linear-gradient( to left, var( --cg ) calc( 100% - 40px ), rgba( 0,0,0,0 ) 100% );
 	z-index: 105;
 }
 #bar-bottom {
