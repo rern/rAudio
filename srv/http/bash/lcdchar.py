@@ -109,15 +109,12 @@ rn = '\r\n'
 
 if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
     if argv1 == 'rr':
-        file = open( '/srv/http/data/system/version' )
-        version = file.read().rstrip( '\n' )
-        file.close()
-        spaces = '       '
+        spaces = '     '
         splash = ''
         if rows == 4:
             spaces += '  '
             splash = rn
-        splash += spaces + irr + rn + spaces + version
+        splash += spaces + irr + rn + spaces +'rAudio'
         lcd.write_string( splash )
     else:
         lcd.auto_linebreaks = True
