@@ -16,6 +16,7 @@ if os.path.exists( conf ):
 else:
     cols = 20
     charmap = 'A00'
+    chip = 'PCF8574'
     address = '0x27'
 rows = cols == 16 and 2 or 4
 
