@@ -25,10 +25,10 @@ bluetoothdisable )
 bluetoothset )
 	if [[ ${args[1]} == true ]]; then
 		yesno=yes
-		touch $dirsystem/bluetoothdiscover
+		touch $dirsystem/btdiscoverable
 	else
 		yesno=no
-		rm $dirsystem/bluetoothdiscover
+		rm $dirsystem/btdiscoverable
 	fi
 	if ! grep -q 'dtparam=krnbt=on' $fileconfig; then
 		sed -i '$ a\dtparam=krnbt=on' $fileconfig
