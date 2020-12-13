@@ -595,7 +595,7 @@ power )
 	type=${args[1]}
 	mpc stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py rr
-	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.py off && sleep 2
+	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.py false && sleep 2
 	if [[ $type == off ]]; then
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
 	else
