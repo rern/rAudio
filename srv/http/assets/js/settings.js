@@ -191,7 +191,7 @@ $( '#close' ).click( function() {
 			G.reboot = lines;
 			if ( G.reboot.length ) {
 				info( {
-					  icon    : 'sliders'
+					  icon    : page
 					, title   : 'System Setting'
 					, message : 'Reboot required for:'
 							   +'<br><w>'+ G.reboot.replace( /\n/g, '<br>' ) +'</w>'
