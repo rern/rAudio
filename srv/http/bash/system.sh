@@ -168,6 +168,7 @@ lcdchardisable )
 		sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	fi
+	rm $dirsystem/lcdchar
 	pushRefresh
 	;;
 lcdcharset )
@@ -194,6 +195,7 @@ charmap=${val[1]}
 address=${val[2]}
 chip=${val[3]}
 " > /etc/lcdchar.conf
+	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
 onboardaudio )
