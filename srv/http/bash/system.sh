@@ -23,7 +23,13 @@ bluetoothdisable )
 	pushRefresh
 	;;
 bluetoothset )
-	[[ ${args[1]} == true ]] && yesno=yes || yesno=no
+	if [[ ${args[1]} == true ]]; then
+		yesno=yes
+		touch $dirsystem/bluetoothdiscover
+	else
+		yesno=no
+		rm $dirsystem/bluetoothdiscover
+	fi
 	if ! grep -q 'dtparam=krnbt=on' $fileconfig; then
 		sed -i '$ a\dtparam=krnbt=on' $fileconfig
 		echo "${args[2]}" > $filereboot
