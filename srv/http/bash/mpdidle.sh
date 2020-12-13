@@ -16,6 +16,10 @@ flagpl=$dirtmp/flagpl
 flagpladd=$dirtmp/flagpladd
 snapclientfile=$dirtmp/snapclientip
 
+# on reboot
+status=$( /srv/http/bash/status.sh )
+pushstream mpdplayer "$status"
+
 mpc idleloop | while read changed; do
 	[[ $changed == playlist && $( mpc current -f %file% | cut -c1-4 ) == http ]] && continue
 	
