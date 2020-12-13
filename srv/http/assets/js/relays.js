@@ -189,10 +189,9 @@ $( '#save' ).click( function() {
 		} );
 		return
 	}
-	
 	$.post(
 		'/cmd.php'
-		, { cmd : 'sh' , sh  : [ 'cmd.sh', 'relaysset', JSON.stringify( newvalues ) ] }
+		, { cmd: 'bash' , bash: "echo '"+ JSON.stringify( newvalues ) +"' | jq . > /etc/relays.conf" }
 		, function() {
 			relaysset = newvalues;
 			$( '.btn' ).addClass( 'disabled' );

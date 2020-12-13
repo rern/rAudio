@@ -617,17 +617,6 @@ randomfile )
 refreshbrowser )
 	pushstream reload 1
 	;;
-relays )
-	onoff=${args[1]}
-	if [[ $onoff == true ]]; then
-		$dirbash/relays.py on
-	else
-		$dirbash/relays.py off
-	fi
-	;;
-relaysset )
-	echo ${args[1]} | jq . > /etc/relays.conf
-	;;
 relaystimerreset )
 	awk '/timer/ {print $NF}' /etc/relays.conf > $dirtmp/relaystimer
 	pushstream relays '{"state":"RESET"}'

@@ -74,7 +74,7 @@ def pushstream( data ):
     )
     urlopen( req )
 
-if sys.argv[ 1 ] == 'on':
+if sys.argv[ 1 ] == 'true':
     pushstream( { 'state': True, 'order': onorder } )
 
     if on1 != 0:
@@ -103,7 +103,7 @@ if sys.argv[ 1 ] == 'on':
 
     subprocess.Popen( [ '/srv/http/bash/relaystimer.sh' ] )
 
-elif sys.argv[ 1 ] == 'off':
+elif sys.argv[ 1 ] == 'false':
     os.path.exists( relaysfile ) and os.remove( relaysfile )
 
     pushstream( { 'state': False, 'order': offorder } )
