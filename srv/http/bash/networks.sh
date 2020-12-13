@@ -33,9 +33,10 @@ btremove )
 	;;
 btset )
 	bluetoothctl system-alias $( cat $dirsystem/hostname )
-	yesno=$( cat $dirsystem/bluetoothset 2> /dev/null || echo yes )
-	bluetoothctl discoverable $yesno
-	bluetoothctl discoverable-timeout 0
+	if [[ -e $dirsystem/bluetoothdiscover ]]; then
+		bluetoothctl discoverable yes
+		bluetoothctl discoverable-timeout 0
+	fi
 	bluetoothctl pairable yes
 	;;
 connect )
