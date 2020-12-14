@@ -4,7 +4,7 @@
 	- `grep -q dtparam=audio=on /boot/config.txt`
 - on-board bluetooth
 	- `grep -q dtparam=krnbt=on /boot/config.txt`
-- on-board wi-fi
+- on-board wlan
 	- `lsmod | grep -q ^brcmfmac`
 	- **`F`** `[[ -e /srv/http/data/system/onboard-wlan ]]` - `startup.sh`
 - i2s audio
