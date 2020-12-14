@@ -503,7 +503,7 @@ $( '#setting-lcd' ).click( function() {
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
 } );
-$( '#hostname' ).on( 'mousedown touchdown', function() {
+$( '#hostname' ).click( function() {
 	info( {
 		  icon      : 'plus-r'
 		, title     : 'Player Name'
@@ -517,9 +517,8 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			} );
 		}
 		, ok        : function() {
-			$( '#hostname' ).val( hostname );
 			notify( 'Name', 'Change ...', 'plus-r' );
-			bash( [ 'hostname', hostname ] );
+			bash( [ 'hostname', $( '#infoTextBox' ).val() ] );
 		}
 	} );
 } );
