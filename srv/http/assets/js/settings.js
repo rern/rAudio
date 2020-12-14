@@ -128,8 +128,8 @@ pushstream.onmessage = function( data, id, channel ) {
 }
 function psReboot() {
 	setTimeout( function() {
-		$( '#loader' ).removeClass( 'hide' );
 		notify( 'Restore Settings', 'Reboot ...', 'reboot blink', -1 );
+		$( '#loader' ).removeClass( 'hide' );
 	}, 3000 );
 }
 function psRefresh( data ) {
