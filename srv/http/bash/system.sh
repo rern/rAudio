@@ -76,7 +76,7 @@ databackup )
 	
 	services='bluetooth hostapd localbrowser mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
-		systemctl -q is-active $service && enable+=" $service" || disable=" $service"
+		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
 	[[ -n $enable ]] && echo $enable > $dirsystem/enable
 	[[ -n $disable ]] && echo $disable > $dirsystem/disable
