@@ -98,8 +98,8 @@ databackup )
 datarestore )
 	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
-	rm -f $dirsystem/{onboard-wlan,relays,soundprofile,updating,listing,wav}
 	systemctl stop mpd
+	rm -f $dirsystem/{onboard-wlan,relays,soundprofile,updating,listing,wav}
 	bsdtar -xpf $backupfile -C /srv/http
 	
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )

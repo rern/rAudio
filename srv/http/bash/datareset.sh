@@ -6,7 +6,7 @@ dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
 
 systemctl stop mpd
-rm -f $dirsystem/{updating,listing,wav}
+rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
 # lcd
 sed -i 's/ console=ttyAMA0.*ProFont6x11//' /boot/cmdline.txt
@@ -111,7 +111,6 @@ sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 touch $dirsystem/onboard-wlan
-rm -f $dirsystem/{buffer,bufferoutput,crossfade,custom,relays,replaygain,soundprofile,soxr}
 
 # mpd
 sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d
@@ -125,6 +124,9 @@ usermod -a -G root http # add user http to group root to allow /dev/gpiomem acce
 
 # webradio default
 wget -qO - https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
+
+# services
+systemctl -q disable --now bluetooth hostapd mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli
 
 # set permissions and ownership
 chown -R http:http /srv/http
