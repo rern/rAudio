@@ -33,7 +33,7 @@ fi
 
 if [[ -e /boot/backup.gz ]]; then
 	mv /boot/backup.gz $dirdata/tmp
-	/srv/http/bash/datarestore.sh
+	/srv/http/bash/system.sh datarestore
 	reboot=1
 fi
 if [[ -e /boot/lcd ]]; then
