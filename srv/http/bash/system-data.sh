@@ -56,7 +56,7 @@ fi
 data+='
 	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 	, "audiooutput"     : "'$( cat $dirsystem/audio-output )'"
-	, "hostname"        : "'$( cat $dirsystem/hostname )'"
+	, "hostname"        : "'$( hostname )'"
 	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'

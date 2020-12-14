@@ -512,17 +512,14 @@ $( '#hostname' ).click( function() {
 		, preshow   : function() {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoTextBox' ).keyup( function() {
+				$( '#infoTextBox' ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 				$( '#infoOk' ).toggleClass( 'disabled', $( '#infoTextBox' ).val() === G.hostname );
 			} );
 		}
 		, ok        : function() {
-			var hostname = $( '#infoTextBox' ).val().replace( /[^a-zA-Z0-9-]+/g, '-' ).replace( /(^-*|-*$)/g, '' );
-			if ( hostname !== G.hostname ) {
-				G.hostname = hostname;
-				$( '#hostname' ).val( hostname );
-				notify( 'Name', 'Change ...', 'plus-r' );
-				bash( [ 'hostname', hostname ] );
-			}
+			$( '#hostname' ).val( hostname );
+			notify( 'Name', 'Change ...', 'plus-r' );
+			bash( [ 'hostname', hostname ] );
 		}
 	} );
 } );

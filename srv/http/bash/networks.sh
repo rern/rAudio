@@ -32,7 +32,7 @@ btremove )
 	pushRefresh
 	;;
 btset )
-	bluetoothctl system-alias $( cat $dirsystem/hostname )
+	bluetoothctl system-alias $( hostname )
 	if [[ -e $dirsystem/btdiscoverable ]]; then
 		bluetoothctl discoverable yes
 		bluetoothctl discoverable-timeout 0

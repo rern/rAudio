@@ -98,7 +98,11 @@ datarestore )
 	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
-	rm -f $dirsystem/{crossfade*,custom*,dop*,login*,onboard-wlan,relays,soundprofile,soxr*,startup,updating,listing,wav}
+	# remove all flags
+	rm -f $dirsystem/{autoplay,login*}                            # features
+	rm -f $dirsystem/{crossfade*,custom*,dop*,*,mixertype*,soxr*} # mpd
+	rm -f $dirsystem/{updating,listing,wav}                       # updating_db
+	rm -f $dirsystem/{color,onboard-wlan,relays,soundprofile}     # updating_db
 	bsdtar -xpf $backupfile -C /srv/http
 	
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
@@ -116,15 +120,8 @@ datarestore )
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
 	hostname=$( cat $dirsystem/hostname )
-	if [[ $hostname == RuneAudio ]]; then
-		hostname=rAudio
-		echo rAudio > $dirsystem/hostname
-	fi
-	[[ $hostname != rAudio ]] && $dirbash/system.sh hostname$'\n'$hostname
+	[[ $hostname != $( hostname ) ]] && $dirbash/system.sh hostname$'\n'$hostname
 	timedatectl set-timezone $( cat $dirsystem/timezone )
-	rotate=$( grep rotate /etc/localbrowser.conf 2> /dev/null | cut -d'"' -f2 )
-	[[ -z $rotate ]] && rotate=NORMAL
-	ln -sf /srv/http/assets/img/{$rotate,splash}.png
 	readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
