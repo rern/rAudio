@@ -281,11 +281,12 @@ $uihtml = '';
 foreach( $listui as $name => $link ) {
 	$uihtml.= '<a href="'.$link.'">'.$name.'</a><br>';
 }
+$version = file_get_contents( '/srv/http/data/system/version' );
 ?>
 <br><br>
 <heading>About</heading>
-<i class="fa fa-plus-r fa-lg gr"></i>&ensp;r A u d i o&emsp;<?=( file_get_contents( '/srv/http/data/system/version' ) )?>
-<br>by&emsp;<a href="https://github.com/rern/">r e r n</a>
+<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>">r A u d i o&emsp;<?=$version?></a>
+<br><gr>by</gr>&emsp;r e r n
 <div>
 <heading class="sub">Back End<?=$help?></heading>
 <span class="help-block hide">
