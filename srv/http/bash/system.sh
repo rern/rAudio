@@ -76,9 +76,11 @@ databackup )
 	
 	services='bluetooth hostapd localbrowser mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
-		systemctl -q is-active $service && enable+=" $service"
+		systemctl -q is-active $service && enable+=" $service" || disable=" $service"
 	done
 	[[ -n $enable ]] && echo $enable > $dirsystem/enable
+	[[ -n $disable ]] && echo $disable > $dirsystem/disable
+	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	
 	bsdtar \
 		--exclude './addons' \
@@ -108,6 +110,7 @@ datarestore )
 	
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
+	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/enable )
 	rm -rf $backupfile $dirconfig $dirsystem/enable
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
@@ -119,10 +122,10 @@ datarestore )
 		echo rAudio > $dirsystem/hostname
 	fi
 	[[ $hostname != rAudio ]] && $dirbash/system.sh hostname$'\n'$hostname
+	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rotate=$( grep rotate /etc/localbrowser.conf 2> /dev/null | cut -d'"' -f2 )
 	[[ -z $rotate ]] && rotate=NORMAL
 	ln -sf /srv/http/assets/img/{$rotate,splash}.png
-	[[ -e $dirsystem/timezone ]] && timedatectl set-timezone $( cat $dirsystem/timezone )
 	readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
@@ -312,7 +315,6 @@ statusonboard )
 timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
-	echo $timezone > $dirsystem/timezone
 	pushRefresh
 	;;
 	
