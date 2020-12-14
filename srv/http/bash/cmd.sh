@@ -593,7 +593,7 @@ plsimilar )
 	;;
 power )
 	poweroff=${args[1]}
-	mpc stop
+	mpc -q stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py rr
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.py false && sleep 2
 	if [[ -n $poweroff ]]; then
