@@ -18,7 +18,7 @@ $gid = exec( "$sudo/id -g mpd" );
 	<br>CIFS:
 	<pre>mount -t cifs "//<bll>IP</bll>/<bll>SHARE</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=$uid?>,gid=<?=$gid?>,iocharset=utf8</pre>
 	NFS:
-	<pre>mount -t nfs "<bll>IP</bll>:/<bll>SHARE</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
+	<pre>mount -t nfs "<bll>IP</bll>:/<bll>PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
 	(Append more options if required.)
 </span>
 </div>
