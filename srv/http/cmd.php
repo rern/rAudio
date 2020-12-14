@@ -92,7 +92,7 @@ case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirdata.'tmp/backup.gz' );
-	exec( $sudo.'/srv/http/bash/datarestore.sh' );
+	exec( $sudo.'/srv/http/bash/system.sh datarestore' );
 	break;
 case 'displayset':
 	$data = json_decode( $_POST[ 'displayset' ] );
