@@ -489,6 +489,7 @@ function info( O ) {
 	setTimeout( function() { // prevent click OK on consecutive info
 		$( '#infoOverlay' ).removeClass( 'noclick' );
 		var $input = $( '#infotextbox input[type=text]:eq( 0 )' );
+		if ( !$input.length ) $input = $( '#infotextbox input[type=password]:eq( 0 )' );
 		if ( !$input.length || 'nofocus' in O ) return
 		
 		var L = $input.val().length;
