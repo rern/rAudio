@@ -503,7 +503,7 @@ $( '#setting-lcd' ).click( function() {
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
 } );
-$( '#hostname' ).click( function() {
+$( '#hostname' ).on( 'mousedown touchdown', function() {
 	info( {
 		  icon      : 'plus-r'
 		, title     : 'Player Name'
