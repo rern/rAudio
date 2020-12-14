@@ -98,7 +98,6 @@ databackup )
 datarestore )
 	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
-	# clear default enabled features and updating flags
 	rm -f $dirsystem/{onboard-wlan,relays,soundprofile,updating,listing,wav}
 	systemctl stop mpd
 	bsdtar -xpf $backupfile -C /srv/http
