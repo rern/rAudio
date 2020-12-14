@@ -81,15 +81,13 @@ $( '.enable' ).click( function() {
 			notify( nameicon[ 0 ], 'Disable ...', nameicon[ 1 ] );
 			bash( [ id +'disable' ] );
 		} else {
+			$( '#login' ).prop( 'checked', G.login );
 			info( {
 				  icon          : 'lock'
 				, title         : 'Password Login'
 				, message       : 'Disable:'
 				, passwordlabel : 'Password'
 				, pwdrequired   : 1
-				, cancel        : function() {
-					$( '#login' ).prop( 'checked', G.login );
-				}
 				, ok            : function() {
 					var password = $( '#infoPasswordBox' ).val();
 					$.post( 'cmd.php', {
