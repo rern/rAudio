@@ -5,7 +5,8 @@
 - on-board bluetooth
 	- `grep -q dtparam=krnbt=on /boot/config.txt`
 - on-board wi-fi
-	- **`F`** `lsmod | grep -q ^brcmfmac`
+	- `lsmod | grep -q ^brcmfmac`
+	- **`F`** `[[ -e /srv/http/data/system/onboard-wlan ]]` - `startup.sh`
 - i2s audio
 	- `cat /srv/http/data/system/audio-{aplayname,output}`
 - lcdchar
@@ -16,14 +17,10 @@
 - relays
 	- **`F`** `[[ -e /srv/http/data/system/relays ]]`
 		- `/etc/relays.conf`
-- hostname
-	- `cat /srv/http/data/system/hostname`
-- timezone
-	- `timedatectl | awk '/zone:/ {print $3}'`
-- ntp
-	- `grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2`
-- regdom
-	- `cat /etc/conf.d/wireless-regdom | cut -d'"' -f2`
+- hostname - `cat /srv/http/data/system/hostname`
+- timezone - `timedatectl | awk '/zone:/ {print $3}'`
+- ntp - `grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2`
+- regdom - `cat /etc/conf.d/wireless-regdom | cut -d'"' -f2`
 - soundprofile
 	- **`F`** `[[ -e /srv/http/data/system/soundprofile ]]`
 		- `/etc/soundprofile.conf`
@@ -58,17 +55,17 @@
 - mixertype
 	- `/srv/http/bash/mpd-devices.sh`
 		- `outputdevice` > `mixertype`
-		- `/srv/http/data/system/mixertype-output`
+		- `/srv/http/data/system/mixertype-$output`
+- dop 
+	- `[[ -e /srv/http/data/system/dop-$output ]]`
 - crossfade
-	- **`F`** `[[ -e /srv/http/data/system/crossfade ]]`
 	- `mpc crossfade | cut -d' ' -f2`
+	- **`F`** `[[ -e /srv/http/data/system/crossfade ]]` - `datarestore`
 		- `/srv/http/data/system/crossfadeset`
 - normalization
-	- **`F`** `[[ -e /srv/http/data/system/normalization ]]`
 	- `grep -q 'volume_normalization.*yes' /etc/mpd.conf`
 		- `/srv/http/data/system/normalizationset`
 - replaygain
-	- **`F`** `[[ -e /srv/http/data/system/replaygain ]]`
 	- `grep -q '^replaygain.*off' /etc/mpd.conf`
 		- `/srv/http/data/system/replaygainset`
 - autoupdate
@@ -76,11 +73,9 @@
 - ffmpeg
 	- `grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes`
 - buffer
-	- **`F`** `[[ -e /srv/http/data/system/buffer ]]`
 	- `grep -q '^audio_buffer_size' /etc/mpd.conf`
 		- `/srv/http/data/system/bufferset`
 - bufferoutput
-	- **`F`** `[[ -e /srv/http/data/system/bufferoutput ]]`
 	- `grep -q '^max_output_buffer_size' /etc/mpd.conf`
 		- `/srv/http/data/system/bufferoutputset`
 - soxr

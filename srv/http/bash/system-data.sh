@@ -38,7 +38,7 @@ dirsystem=/srv/http/data/system
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
 [[ -z $snaplatency ]] && snaplatency=0
-i2c=$( grep -q 'dtparam=i2c_arm=on' /boot/config.txt && echo true || echo false )
+i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt && echo true || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
 [[ -z $lcdcharconf ]] && lcdcharconf='20 A00 0x27 PCF8574'
@@ -67,7 +67,7 @@ data+='
 	, "mpdstats"        : "'$( jq '.song, .album, .artist' /srv/http/data/mpd/counts 2> /dev/null )'"
 	, "netctl"          : "'$( ls -p /etc/netctl | grep -v / | tr '\n' ^ | head -c -1 )'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-	, "onboardaudio"    : '$( grep -q 'dtparam=audio=on' /boot/config.txt && echo true || echo false )'
+	, "onboardaudio"    : '$( grep -q dtparam=audio=on /boot/config.txt && echo true || echo false )'
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
@@ -102,6 +102,6 @@ if [[ -e /usr/bin/bluetoothctl  ]]; then
 	, "btdiscoverable"  : '$btdiscoverable
 fi
 [[ ${hwcode: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && data+='
-	, "onboardwlan"     : '$( lsmod | grep -q '^brcmfmac ' && echo true || echo false )
+	, "onboardwlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
 
 echo {$data}

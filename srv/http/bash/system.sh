@@ -80,7 +80,6 @@ databackup )
 	done
 	[[ -n $enable ]] && echo $enable > $dirsystem/enable
 	[[ -n $disable ]] && echo $disable > $dirsystem/disable
-	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	
 	bsdtar \
 		--exclude './addons' \
@@ -99,7 +98,7 @@ datarestore )
 	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
-	rm -f $dirsystem/{onboard-wlan,relays,soundprofile,updating,listing,wav}
+	rm -f $dirsystem/{login*,onboard-wlan,relays,soundprofile,startup,updating,listing,wav}
 	bsdtar -xpf $backupfile -C /srv/http
 	
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
@@ -115,6 +114,7 @@ datarestore )
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
 	hostname=$( cat $dirsystem/hostname )
 	if [[ $hostname == RuneAudio ]]; then
 		hostname=rAudio
@@ -314,6 +314,7 @@ statusonboard )
 timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
+	echo $timezone > $dirsystem/timezone
 	pushRefresh
 	;;
 	

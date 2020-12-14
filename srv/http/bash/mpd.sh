@@ -104,6 +104,7 @@ crossfadeset )
 	crossfade=${args[1]}
 	mpc crossfade $crossfade
 	echo $crossfade > $dirsystem/crossfadeset
+	touch $dirsystem/crossfade
 	pushRefresh
 	;;
 customdisable )
@@ -128,7 +129,7 @@ customset )
 		outputname=${args[3]}
 		[[ -n $global ]] && echo "$global" > $file-global || rm -f $file-global
 		[[ -n $output ]] && echo "$output" > "$file-output-$outputname" || rm -f "$file-output-$outputname"
-		[[ -n $global || -n $output ]] && touch $file ${file}set
+		[[ -n $global || -n $output ]] && touch $file
 	fi
 	sed -i '/ #custom$/ d' /etc/mpd.conf
 	if [[ -n $global ]]; then
