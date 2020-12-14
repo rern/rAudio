@@ -52,21 +52,21 @@ databackup )
 /boot/config.txt
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
-/etc/fstab
 /etc/hostapd/hostapd.conf
-/etc/lcdchar.conf
-/etc/localbrowser.conf
-/etc/mpd.conf
-/etc/mpdscribble.conf
 /etc/netctl/*
-/etc/relays.conf
 /etc/samba/smb.conf
-/etc/soundprofile.conf
-/etc/spotifyd.conf
 /etc/systemd/network/eth0.network
 /etc/systemd/timesyncd.conf
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
+/etc/fstab
+/etc/lcdchar.conf
+/etc/localbrowser.conf
+/etc/mpd.conf
+/etc/mpdscribble.conf
+/etc/relays.conf
+/etc/soundprofile.conf
+/etc/spotifyd.conf
 )
 	for file in ${files[@]}; do
 		mkdir -p $dirconfig/$( dirname $file )
@@ -98,12 +98,15 @@ datarestore )
 	rm -f $dirsystem/{localbrowser,onboard-audio,onboard-wlan,updating,listing,wav}
 	mv $dirdata/addons $dirdata/shm
 	systemctl stop mpd
+	
 	backupfile=$dirdata/tmp/backup.gz
 	bsdtar -xpf $backupfile -C /srv/http
+	
 	mv $dirdata/shm/addons $dirdata
-	uuid=$( cut -d' ' -f1 /boot/cmdline.txt )
-	cmdline=$( cut -d' ' -f2- $dirdata/config/cmdline.txt )
-	echo $uuid $cmdline > /boot/cmdline.txt
+	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
+	uuid2=${uuid1:0:-1}2
+	echo root=$uuid2 $( cut -d' ' -f2- $dirdata/config/cmdline.txt ) > $dirdata/config/cmdline.txt
+	sed -i "s/PARTUUID=.*1/$uuid1/; s/PARTUUID=.*2/$uuid2/" $dirdata/etc/fstab
 	cp -rf $dirdata/config/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	rm -rf $backupfile $dirdata/config $dirsystem/enable
