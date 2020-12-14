@@ -5,7 +5,7 @@
 - on-board bluetooth
 	- `grep -q dtparam=krnbt=on /boot/config.txt`
 - on-board wi-fi
-	- `**f**` `lsmod | grep -q ^brcmfmac`
+	- **`F`** `lsmod | grep -q ^brcmfmac`
 - i2s audio
 	- `cat /srv/http/data/system/audio-{aplayname,output}`
 - lcdchar
@@ -14,7 +14,7 @@
 - lcd
 	- `grep -q dtoverlay=tft35a /boot/config.txt`
 - relays
-	- `**f**` `[[ -e /srv/http/data/system/relays ]]`
+	- **`F`** `[[ -e /srv/http/data/system/relays ]]`
 		- `/etc/relays.conf`
 - hostname
 	- `cat /srv/http/data/system/hostname`
@@ -25,7 +25,7 @@
 - regdom
 	- `cat /etc/conf.d/wireless-regdom | cut -d'"' -f2`
 - soundprofile
-	- `**f**` `[[ -e /srv/http/data/system/soundprofile ]]`
+	- **`F`** `[[ -e /srv/http/data/system/soundprofile ]]`
 		- `/etc/soundprofile.conf`
 
 - shairport-sync
@@ -44,10 +44,10 @@
 	- `systemctl -q is-active smb`
 		- `/etc/mpdscribble.conf`
 - login
-	- `**f**` `[[ -e /srv/http/data/system/login ]]`
+	- **`F`** `[[ -e /srv/http/data/system/login ]]`
 		- `/srv/http/data/system/loginpw`
 - startup
-	- `**f**` `[[ -e /srv/http/data/system/startup ]]`
+	- **`F`** `[[ -e /srv/http/data/system/startup ]]`
 - hostapd
 	- `systemctl -q is-active smb`
 		- `/etc/hostapd/hostapd.conf`
@@ -60,15 +60,15 @@
 		- `outputdevice` > `mixertype`
 		- `/srv/http/data/system/mixertype-output`
 - crossfade
-	- `**f**` `[[ -e /srv/http/data/system/crossfade ]]`
+	- **`F`** `[[ -e /srv/http/data/system/crossfade ]]`
 	- `mpc crossfade | cut -d' ' -f2`
 		- `/srv/http/data/system/crossfadeset`
 - normalization
-	- `**f**` `[[ -e /srv/http/data/system/normalization ]]`
+	- **`F`** `[[ -e /srv/http/data/system/normalization ]]`
 	- `grep -q 'volume_normalization.*yes' /etc/mpd.conf`
 		- `/srv/http/data/system/normalizationset`
 - replaygain
-	- `**f**` `[[ -e /srv/http/data/system/replaygain ]]`
+	- **`F`** `[[ -e /srv/http/data/system/replaygain ]]`
 	- `grep -q '^replaygain.*off' /etc/mpd.conf`
 		- `/srv/http/data/system/replaygainset`
 - autoupdate
@@ -76,17 +76,17 @@
 - ffmpeg
 	- `grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes`
 - buffer
-	- `**f**` `[[ -e /srv/http/data/system/buffer ]]`
+	- **`F`** `[[ -e /srv/http/data/system/buffer ]]`
 	- `grep -q '^audio_buffer_size' /etc/mpd.conf`
 		- `/srv/http/data/system/bufferset`
 - bufferoutput
-	- `**f**` `[[ -e /srv/http/data/system/bufferoutput ]]`
+	- **`F`** `[[ -e /srv/http/data/system/bufferoutput ]]`
 	- `grep -q '^max_output_buffer_size' /etc/mpd.conf`
 		- `/srv/http/data/system/bufferoutputset`
 - soxr
-	- `**f**` `[[ -e /srv/http/data/system/soxr ]]`
+	- **`F`** `[[ -e /srv/http/data/system/soxr ]]`
 		- `/srv/http/data/system/soxrset`
 - custom
-	- `**f**` `[[ -e /srv/http/data/system/custom ]]`
+	- **`F`** `[[ -e /srv/http/data/system/custom ]]`
 		- `/srv/http/data/system/custom-{global,output}`
 	
