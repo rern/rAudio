@@ -1389,15 +1389,14 @@ function setButtonOptions() {
 		}
 	} );
 	if ( G.display.update ) {
-		$( '#button-addons' ).removeClass( 'hide' );
-		$( '#addons i' ).addClass( 'bl' );
+		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}
 	} else {
-		$( '#button-addons, #i-addons, #ti-addons' ).addClass( 'hide' );
-		$( '#addons i' ).removeClass( 'bl' );
+		$( '#button-settings, #addons i' ).removeClass( 'bl' );
+		$( '#i-addons, #ti-addons' ).addClass( 'hide' );
 	}
 	setButtonUpdating();
 	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );

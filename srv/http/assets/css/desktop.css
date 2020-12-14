@@ -29,7 +29,7 @@
 .mode:hover {
 	background: var( --cga );
 }
-#bar-top i:not(#button-addons):hover,
+#bar-top i:hover,
 #bar-bottom i:hover,
 .menu a:hover,
 .submenu:hover,

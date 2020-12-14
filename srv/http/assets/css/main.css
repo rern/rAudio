@@ -61,7 +61,6 @@
 .fa-folder-open:before { content: "\f541" }
 .fa-folder-refresh:before { content: "\f534" }
 .fa-gear:before { content: "\f509" }
-.fa-gear-dot:before { content: "\f50A" }
 .fa-genre:before { content: "\f55A" }
 .fa-guide:before { content: "\f579" }
 .fa-info-circle:before { content: "\f561" }
@@ -532,22 +531,7 @@ i.map.disabled, .map.disabled i {
 #button-settings {
 	position: absolute;
 	right: 20px;
-	height: 40px;
 	font-size: 30px;
-}
-#button-addons {
-	position: absolute;
-	color: var( --cm ) !important;
-	text-shadow: none !important;
-}
-#badge {
-	position: absolute;
-	width: 13px;
-	height: 13px;
-	top: 14px;
-	right: 33px;
-	border-radius: 50%;
-	background: var( --cm );
 }
 /* ---------------------- bar-bottom ----------------------*/
 #bar-bottom {

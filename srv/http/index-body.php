@@ -193,7 +193,7 @@ include '/srv/http/assets/img/coverart.php';
 <i id="button-playback" class="fa fa-redo transparent"></i>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
-	<div id="button-settings"><i id="button-addons" class="fa fa-gear-dot"></i><i class="fa fa-gear"></i></div>
+	<i id="button-settings" class="fa fa-gear"></i>
 	<div id="playback-controls">
 		<i id="previous" class="btn btn-default btn-cmd fa fa-previous"></i>
 		<i id="stop" class="btn btn-default btn-cmd fa fa-stop"></i>
