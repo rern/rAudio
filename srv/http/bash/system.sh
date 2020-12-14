@@ -111,8 +111,8 @@ datarestore )
 	sed -i "s/PARTUUID=.*1/$uuid1/; s/PARTUUID=.*2/$uuid2/" $dirconfig/etc/fstab
 	
 	cp -rf $dirconfig/* /
-	[[ -e $dirsystem/enable ]] && systemctl enable --now $( cat $dirsystem/enable )
-	[[ -e $dirsystem/disable ]] && systemctl disable --now $( cat $dirsystem/disable )
+	[[ -e $dirsystem/enable ]] && systemctl -q enable --now $( cat $dirsystem/enable )
+	[[ -e $dirsystem/disable ]] && systemctl -q disable --now $( cat $dirsystem/disable )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
