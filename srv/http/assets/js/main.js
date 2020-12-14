@@ -107,10 +107,6 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 		}
 	} );
-	if ( G.display.update ) {
-		$( '#button-settings' ).after( '<span id="badge"></span>' );
-		$( '#addons i' ).addClass( 'bl' );
-	}
 } );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

@@ -193,7 +193,7 @@ include '/srv/http/assets/img/coverart.php';
 <i id="button-playback" class="fa fa-redo transparent"></i>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
-	<i id="button-settings" class="fa fa-gear"></i>
+	<div id="button-settings"><i id="button-addons" class="fa fa-gear-dot"></i><i class="fa fa-gear"></i></div>
 	<div id="playback-controls">
 		<i id="previous" class="btn btn-default btn-cmd fa fa-previous"></i>
 		<i id="stop" class="btn btn-default btn-cmd fa fa-stop"></i>
@@ -250,7 +250,7 @@ include '/srv/http/assets/img/coverart.php';
 				<i id="i-mute" class="fa fa-mute hide"></i>
 				<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
 				<i id="i-update" class="fa fa-library blink hide"></i>
-				<i id="i-addons" class="fa fa-plus-r hide"></i>
+				<i id="i-addons" class="fa fa-jigsaw hide"></i>
 				<i id="i-relays" class="fa fa-relays hide"></i>
 			</span>
 		</div>
@@ -268,7 +268,7 @@ include '/srv/http/assets/img/coverart.php';
 				<i id="ti-mute" class="fa fa-mute hide"></i>
 				<i id="ti-btclient" class="fa fa-bluetooth-client hide"></i>
 				<i id="ti-update" class="fa fa-library blink hide"></i>
-				<i id="ti-addons" class="fa fa-plus-r hide"></i>
+				<i id="ti-addons" class="fa fa-jigsaw hide"></i>
 				<i id="ti-relays" class="fa fa-relays hide"></i>
 			</div>
 			<span id="elapsed" class="controls1"></span>

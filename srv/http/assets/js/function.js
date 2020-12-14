@@ -1388,14 +1388,16 @@ function setButtonOptions() {
 			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		}
 	} );
-	if ( !G.display.bar ) {
-		if ( displaytime ) {
-			$( '#i-addons' ).addClass( 'hide' );
-			$( '#ti-addons' ).toggleClass( 'hide', !$( '#badge' ).length );
-		} else {
-			$( '#ti-addons' ).addClass( 'hide' );
-			$( '#i-addons' ).toggleClass( 'hide', !$( '#badge' ).length );
+	if ( G.display.update ) {
+		$( '#button-addons' ).removeClass( 'hide' );
+		$( '#addons i' ).addClass( 'bl' );
+		if ( !G.display.bars ) {
+			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
+			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}
+	} else {
+		$( '#button-addons, #i-addons, #ti-addons' ).addClass( 'hide' );
+		$( '#addons i' ).removeClass( 'bl' );
 	}
 	setButtonUpdating();
 	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
