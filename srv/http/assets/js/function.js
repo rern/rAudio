@@ -474,12 +474,6 @@ function getPlaybackStatus() {
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( !status ) return
 		
-		if ( status == -1 ) {
-			G.status = { sampling: -1 }
-			renderPlaybackBlank();
-			return
-		}
-		
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -1134,7 +1128,7 @@ function renderPlayback() {
 	}
 }
 function renderPlaybackBlank() {
-	$( '#page-playback .emptyadd' ).toggleClass( 'hide', G.status.sampling === -1 || G.status.player !== 'mpd' );
+	$( '#page-playback .emptyadd' ).toggleClass( 'hide', G.status.player !== 'mpd' );
 	$( '#playback-controls' ).addClass( 'hide' );
 	$( '#divartist, #divsong, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #song, #album, #progress, #elapsed, #total' ).empty();
@@ -1163,11 +1157,6 @@ function renderPlaybackBlank() {
 				.on( 'click', '.fa-networks', function() {
 					location.href = 'settings.php?p=networks';
 				} );
-		}
-		if ( G.status.sampling === -1 ) { // MPD failed
-			displayTopBottom();
-			$( '#sampling' ).html( '<i class="fa fa-warning wh"></i>&emsp;MPD not running.' );
-			$( '#time-knob, #volume-knob, #bar-bottom' ).addClass( 'hide' );
 		}
 	} );
 }
