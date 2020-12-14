@@ -111,8 +111,8 @@ datarestore )
 	sed -i "s/PARTUUID=.*1/$uuid1/; s/PARTUUID=.*2/$uuid2/" $dirconfig/etc/fstab
 	
 	cp -rf $dirconfig/* /
-	[[ -e $dirsystem/enable ]] && systemctl -q enable --now $( cat $dirsystem/enable )
-	[[ -e $dirsystem/disable ]] && systemctl -q disable --now $( cat $dirsystem/disable )
+	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
+	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
@@ -128,9 +128,8 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	systemctl start mpd
-	echo 'Restore database and settings' > /srv/http/data/shm/reboot
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "all" }'
+	curl -s -X POST http://127.0.0.1/pub?id=reboot -d 1
+	shutdown -r now
 	;;
 hostname )
 	hostname=${args[1]}

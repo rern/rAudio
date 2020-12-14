@@ -103,7 +103,7 @@ function validateIP( ip ) {
 } 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
-var streams = [ 'refresh', 'reload', 'restore', ];
+var streams = [ 'reboot', 'refresh', 'reload' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -121,27 +121,19 @@ pushstream.onstatuschange = function( status ) {
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
+		case 'reboot':  psReboot();        break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
-		case 'restore': psRestore( data ); break;
 	}
+}
+function psReboot() {
+	notify( 'Restore Settings', 'Reboot ...', 'reboot blink', -1 );
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
-}
-function psRestore( data ) {
-	if ( data.restore === 'done' ) {
-		notify( 'Restore Settings', 'Done', 'sd' );
-		setTimeout( function() {
-			location.reload();
-		}, 2000 );
-	} else {
-		$( '#loader' ).removeClass( 'hide' );
-		notify( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
-	}
 }
 function onVisibilityChange( callback ) {
     var visible = 1;
