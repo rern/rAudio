@@ -1,4 +1,4 @@
-Settings Status
+Settings - status and value
 ---
 
 ### Features
