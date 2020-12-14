@@ -2,6 +2,10 @@
 $logo = '<svg viewBox="0 0 180 180">'.shell_exec( 'grep "<rect\|<path" /srv/http/assets/img/icon.svg' ).'</svg>';
 
 if ( $login && !$_SESSION[ 'login' ] ) { ?>
+<style>
+	#divlogin rect { fill: var( --cm ); }
+	#divlogin path { fill: var( --cg75 ); }
+</style>
 <div id="divlogin">
 	<?=$logo?><br>
 	<input type="password" id="pwd"><i class="fa fa-eye"></i>
