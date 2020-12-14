@@ -1,14 +1,3 @@
-/*
-feature settings:
-	- keep latest set values in config files
-	- mpd - runs all the time - keep values in extra files
-		- bufferset, bufferoutputset, replaygainset           (current - mpd.conf)
-		- crossfadeset                                        (current - mpc)
-		- custom-global, custom-output - flag for mpd-conf.sh (current - mpd.conf)
-		- soxrset - flag for mpd-conf.sh                      (current - mpd.conf)
-	- reinstate into enable dialog box
-	- for restore
-*/
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function passwordWrong() {
