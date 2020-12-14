@@ -1,14 +1,92 @@
-### Status
+### Settings Status
 
-- on-board audio     - `grep -q dtparam=audio=on /boot/config.txt`
-- on-board bluetooth - `grep -q dtparam=krnbt=on /boot/config.txt`
-- `f` on-board wi-fi - `lsmod | grep -q ^brcmfmac`
-- i2s audio          - `cat /srv/http/data/system/audio-{aplayname,output}`
-- lcdchar            - `grep -q dtparam=i2c_arm=on /boot/config.txt && ! grep -q dtoverlay=tft35a /boot/config.txt` - `/etc/lcdchar.conf`
-- lcd                - `grep -q dtoverlay=tft35a /boot/config.txt`
-- `f` relays         - `[[ -e /srv/http/data/system/relays ]]`
-- hostname           - `cat /srv/http/data/system/hostname`
-- `f`timezone       - `timedatectl | awk '/zone:/ {print $3}'`
-- ntp                - `grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2`
-- regdom             - `cat /etc/conf.d/wireless-regdom | cut -d'"' -f2`
-- `f` soundprofile   - `[[ -e $dirsystem/soundprofile ]]` - `/etc/soundprofile.conf`
+- on-board audio
+	- `grep -q dtparam=audio=on /boot/config.txt`
+- on-board bluetooth
+	- `grep -q dtparam=krnbt=on /boot/config.txt`
+- on-board wi-fi
+	- `**f**` `lsmod | grep -q ^brcmfmac`
+- i2s audio
+	- `cat /srv/http/data/system/audio-{aplayname,output}`
+- lcdchar
+	- `grep -q dtparam=i2c_arm=on /boot/config.txt && ! grep -q dtoverlay=tft35a /boot/config.txt`
+		- `/etc/lcdchar.conf`
+- lcd
+	- `grep -q dtoverlay=tft35a /boot/config.txt`
+- relays
+	- `**f**` `[[ -e /srv/http/data/system/relays ]]`
+		- `/etc/relays.conf`
+- hostname
+	- `cat /srv/http/data/system/hostname`
+- timezone
+	- `timedatectl | awk '/zone:/ {print $3}'`
+- ntp
+	- `grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2`
+- regdom
+	- `cat /etc/conf.d/wireless-regdom | cut -d'"' -f2`
+- soundprofile
+	- `**f**` `[[ -e /srv/http/data/system/soundprofile ]]`
+		- `/etc/soundprofile.conf`
+
+- shairport-sync
+	- `systemctl -q is-active shairport-sync`
+- snampclient
+	- `systemctl -q is-active snampclient`
+		- `/etc/default/snapclient`
+		- `/srv/http/data/system/snapclientpw`
+- localbrowser
+	- `systemctl -q is-active localbrowser`
+		- `/etc/localbrowser.conf`
+- smb
+	- `systemctl -q is-active smb`
+		- `/etc/samba/smb.conf`
+- mpdscribble
+	- `systemctl -q is-active smb`
+		- `/etc/mpdscribble.conf`
+- login
+	- `**f**` `[[ -e /srv/http/data/system/login ]]`
+		- `/srv/http/data/system/loginpw`
+- startup
+	- `**f**` `[[ -e /srv/http/data/system/startup ]]`
+- hostapd
+	- `systemctl -q is-active smb`
+		- `/etc/hostapd/hostapd.conf`
+
+- outputdevice
+	- `/srv/http/bash/mpd-devices.sh`
+		- `/srv/http/data/system/audio-{aplayname,output}`
+- mixertype
+	- `/srv/http/bash/mpd-devices.sh`
+		- `outputdevice` > `mixertype`
+		- `/srv/http/data/system/mixertype-output`
+- crossfade
+	- `**f**` `[[ -e /srv/http/data/system/crossfade ]]`
+	- `mpc crossfade | cut -d' ' -f2`
+		- `/srv/http/data/system/crossfadeset`
+- normalization
+	- `**f**` `[[ -e /srv/http/data/system/normalization ]]`
+	- `grep -q 'volume_normalization.*yes' /etc/mpd.conf`
+		- `/srv/http/data/system/normalizationset`
+- replaygain
+	- `**f**` `[[ -e /srv/http/data/system/replaygain ]]`
+	- `grep -q '^replaygain.*off' /etc/mpd.conf`
+		- `/srv/http/data/system/replaygainset`
+- autoupdate
+	- `grep -q '^auto_update.*yes' /etc/mpd.conf`
+- ffmpeg
+	- `grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes`
+- buffer
+	- `**f**` `[[ -e /srv/http/data/system/buffer ]]`
+	- `grep -q '^audio_buffer_size' /etc/mpd.conf`
+		- `/srv/http/data/system/bufferset`
+- bufferoutput
+	- `**f**` `[[ -e /srv/http/data/system/bufferoutput ]]`
+	- `grep -q '^max_output_buffer_size' /etc/mpd.conf`
+		- `/srv/http/data/system/bufferoutputset`
+- soxr
+	- `**f**` `[[ -e /srv/http/data/system/soxr ]]`
+		- `/srv/http/data/system/soxrset`
+- custom
+	- `**f**` `[[ -e /srv/http/data/system/custom ]]`
+		- `/srv/http/data/system/custom-{global,output}`
+	
