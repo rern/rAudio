@@ -127,7 +127,10 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psReboot() {
-	notify( 'Restore Settings', 'Reboot ...', 'reboot blink', -1 );
+	setTimeout( function() {
+		$( '#loader' ).removeClass( 'hide' );
+		notify( 'Restore Settings', 'Reboot ...', 'reboot blink', -1 );
+	}, 3000 );
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
