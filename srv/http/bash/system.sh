@@ -94,20 +94,18 @@ databackup )
 	rm -rf $dirdata/{config,enable}
 	;;
 datarestore )
+	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
 	# clear default enabled features and updating flags
 	rm -f $dirsystem/{localbrowser,onboard-audio,onboard-wlan,updating,listing,wav}
-	mv $dirdata/addons $dirdata/shm
 	systemctl stop mpd
-	
-	backupfile=$dirdata/tmp/backup.gz
 	bsdtar -xpf $backupfile -C /srv/http
 	
-	mv $dirdata/shm/addons $dirdata
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	echo root=$uuid2 $( cut -d' ' -f2- $dirconfig/boot/cmdline.txt ) > $dirconfig/boot/cmdline.txt
 	sed -i "s/PARTUUID=.*1/$uuid1/; s/PARTUUID=.*2/$uuid2/" $dirconfig/etc/fstab
+	
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	rm -rf $backupfile $dirconfig $dirsystem/enable
