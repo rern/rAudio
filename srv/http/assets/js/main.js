@@ -215,7 +215,7 @@ $( '#power' ).click( function() {
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : '#de810e'
 		, button      : function() {
-			bash( [ 'power', 'reboot' ] );
+			bash( [ 'power' ] );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : '#bb2828'
