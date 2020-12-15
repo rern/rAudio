@@ -196,7 +196,7 @@ $( '#setting-mixertype' ).click( function() { // hardware mixer
 	var card = $selectedoutput.data( 'card' );
 	var hwmixer = $selectedoutput.data( 'hwmixer' );
 	var select = $selectedoutput.data( 'mixermanual' ) ? { 'Auto select': 'auto' } : {};
-	bash( [ 'amixer', card, ( hwmixer === 'WM5102' ? true : false ) ], function( data ) {
+	bash( [ 'amixer', card ], function( data ) {
 		var devices = data.split( '\n' );
 		devices.forEach( function( val ) {
 			select[ val ] = val;

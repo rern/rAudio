@@ -48,7 +48,7 @@ for line in "${lines[@]}"; do
 	elif [[ $aplayname == wsp ]]; then
 		mixermanual=
 		mixercount=4
-		hwmixer=WM5102
+		hwmixer='HPOUT2 Digital'
 	else
 		mixermanual=
 		amixer=$( amixer -c $card scontents \

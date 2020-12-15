@@ -66,7 +66,7 @@ touch $dirdata/shm/player-mpd
 
 if grep -q rpi-cirrus-wm5102 /boot/config.txt; then
 	card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
-	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo Line )
+	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
 	/srv/http/bash/mpd-wm5102.sh $card $output
 fi
 

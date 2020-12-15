@@ -16,8 +16,8 @@ case ${args[0]} in
 
 amixer )
 	card=${args[1]}
-	wm5102=${args[2]}
-	if [[ $wm5102 == false ]]; then
+	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
+	if [[ $aplayname != snd_rpi_wsp ]]; then
 		amixer -c $card scontents \
 			| grep -A2 'Simple mixer control' \
 			| grep -v 'Capabilities' \
