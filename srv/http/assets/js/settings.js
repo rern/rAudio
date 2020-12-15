@@ -85,6 +85,9 @@ function list2JSON( list ) {
 		if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 		return true
 }
+function loader( toggle ) {
+	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
+}
 function resetLocal( ms ) {
 	setTimeout( function() {
 		$( '#bannerIcon i' ).removeClass( 'blink' );
@@ -94,7 +97,7 @@ function resetLocal( ms ) {
 }
 function showContent() {
 	setTimeout( function() {
-		$( '#loader' ).addClass( 'hide' );
+		loader( 'hide' );
 		$( '.head, .container' ).removeClass( 'hide' );
 	}, 300 );
 }
@@ -103,7 +106,7 @@ function validateIP( ip ) {
 } 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
-var streams = [ 'reboot', 'refresh', 'reload' ];
+var streams = [ 'notify', 'refresh', 'reload' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -111,26 +114,24 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		if ( !$.isEmptyObject( G ) ) {
-			$( '#loader' ).addClass( 'hide' );
+			loader( 'hide' );
 			refreshData();
 		}
 	} else {
-		$( '#loader' ).removeClass( 'hide' );
+		loader();
 		bannerHide();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
-		case 'reboot':  psReboot();        break;
+		case 'notify':  psNotify();        break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
 	}
 }
-function psReboot() {
-	setTimeout( function() {
-		notify( 'Restore Settings', 'Reboot ...', 'reboot blink', -1 );
-		$( '#loader' ).removeClass( 'hide' );
-	}, 3000 );
+function psNotify( data ) {
+	banner( data.title, data.text, data.icon, data.delay );
+	loader();
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
@@ -195,7 +196,7 @@ $( '#close' ).click( function() {
 						bash( 'rm -f '+ filereboot );
 					}
 					, ok      : function() {
-						bash( "/srv/http/bash/cmd.sh power$'\n'reboot" );
+						bash( '/srv/http/bash/cmd.sh power' );
 						notify( 'Power', 'Reboot ...', 'reboot blink', -1 );
 					}
 				} );
@@ -263,7 +264,7 @@ $( '#bar-bottom div' ).click( function() {
 		$( '#bar-bottom' ).removeClass( 'transparent' );
 	} else if ( this.id !== page ) {
 		$( '.container' ).hide();
-		$( '#loader' ).removeClass( 'hide' );
+		loader();
 		location.href = 'settings.php?p='+ this.id;
 	}
 } );

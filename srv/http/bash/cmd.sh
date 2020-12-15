@@ -592,11 +592,11 @@ plsimilar )
 	fi
 	;;
 power )
-	type=${args[1]}
+	poweroff=${args[1]}
 	mpc stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py rr
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.py false && sleep 2
-	if [[ $type == off ]]; then
+	if [[ -n $poweroff ]]; then
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
 	else
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'
@@ -606,7 +606,7 @@ power )
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3
 	fi
-	[[ $type == off ]] && shutdown -h now || shutdown -r now
+	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
 	;;
 pushstatus )
 	pushstreamStatus

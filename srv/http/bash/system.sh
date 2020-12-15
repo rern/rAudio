@@ -130,7 +130,6 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	curl -s -X POST http://127.0.0.1/pub?id=reboot -d 1
 	/srv/http/bash/cmd.sh power
 	;;
 hostname )
