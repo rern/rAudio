@@ -39,6 +39,9 @@ audiooutput )
 	card=${args[2]}
 	output=${args[3]}
 	mixer=${args[4]}
+	echo "\
+defaults.pcm.card $card
+defaults.ctl.card $card" > /etc/asound.conf
 	[[ $aplayname == wsp ]] && /srv/http/bash/mpd-wm5102.sh $card $( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo Line )
 	if [[ -n $aplayname ]]; then
 		echo $aplayname > $dirsystem/audio-aplayname

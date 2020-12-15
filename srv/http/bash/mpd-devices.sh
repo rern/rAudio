@@ -14,7 +14,6 @@ dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l | grep '^card' )
 [[ -z $aplay ]] && echo -1 && exit
-aplay+=$'\ncard 0: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 cardL=$( echo "$aplay" | wc -l )
 audioaplayname=$( cat $dirsystem/audio-aplayname )
