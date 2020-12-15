@@ -50,11 +50,11 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br>
 		<br>CPU Load: Average number of processes which are being executed and in waiting calculated over 1, 5 and 15 minutes. Each one should not be constantly over 0.75 x CPU cores.
 		<br>CPU temperature:
-		<div style="margin-left: 20px">
-			- 80-84°C: ARM cores throttled.
-			<br>- 85°C: ARM cores and GPU throttled.
-			<br>- RPi 3B+: 60°C soft limit (optimized throttling)
-		</div>
+		<p>
+			&bull; 80-84°C: ARM cores throttled.
+		<br>&bull; 85°C: ARM cores and GPU throttled.
+		<br>&bull; RPi 3B+: 60°C soft limit (optimized throttling)
+		</p>
 	</span>
 </div>
 </div>
@@ -84,8 +84,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" class="setting fa fa-gear"></i>
 	<span class="help-block hide">
-			- Should be disabled if not used.
-		<br>- Try reboot again if Bluetooth not working.
+			Should be disabled if not used.
+		<br>(Try reboot again if Bluetooth not working.)
 	</span>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
@@ -131,8 +131,10 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-lcdchar" class="setting fa fa-gear"></i>
 	<span class="help-block hide">
 			<a href="https://github.com/dbrgn/RPLCD">RPLCD</a> - Python library for Hitachi HD44780 controller.
-		<br> &bull; Support 16x2, 20x4 and 40x4 LCD modules.
-		<br> &bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
+		<p>
+			&bull; Support 16x2, 20x4 and 40x4 LCD modules.
+		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
+		</p>
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
 	</span>
 </div>
@@ -183,8 +185,10 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-regional" class="settingedit fa fa-gear"></i>
 	<span class="help-block hide">
 		Wi-Fi regulatory domain:
-		<p style="margin: 0 0 0 20px">00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-		<br>Active regulatory domian may be reassigned by connected router.</p>
+		<p>
+			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+		<br>&bull; Active regulatory domian may be reassigned by connected router.
+		</p>
 	</span>
 </div>
 <div data-status="soundprofile" class="col-l icon double status">
@@ -208,12 +212,13 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<div class="switchlabel" for="backup"></div>
 	<span class="help-block hide">
 			Backup all settings and MPD database:
-		<br>&bull; Settings
+		<p>&bull; Settings
 		<br>&bull; Library database
 		<br>&bull; Saved playlists
 		<br>&bull; Bookmarks
 		<br>&bull; Lyrics
 		<br>&bull; WebRadios
+		</p>
 	</span>
 </div>
 
@@ -305,7 +310,7 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 ?>
 <br><br>
 <heading>About</heading>
-<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions"  target="_blank">r A u d i o&emsp;<?=$version?></a>
+<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
 <br><gr>by</gr>&emsp;r e r n
 <div>
 <heading class="sub">Back End<?=$help?></heading>

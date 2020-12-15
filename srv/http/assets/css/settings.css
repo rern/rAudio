@@ -221,6 +221,9 @@ textarea {
 	line-height: 16px;
 	font-size: 16px !important;
 }
+.help-block p {
+	margin: 0 0 0 10px;
+}
 w, wh, .wh { color: var( --cw ) !important; }
 bl, .bl, .blue { color: var( --cm ) !important; }
 bll { color: var( --cml ) !important; }
@@ -304,6 +307,7 @@ heading i.fa-question-circle {
 #help {
 	color: var( --cg60 )
 }
+
 #close {
 	font-size: 2em !important;
 	color: var( --cm );
