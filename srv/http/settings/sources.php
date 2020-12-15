@@ -10,7 +10,7 @@ $gid = exec( "$sudo/id -g mpd" );
 	Available sources, local USB and NAS mounts, for Library.
 	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.
 	<br>
-	<br><i class="fa fa-plus-circle"></i>&ensp; Add network share commands used:
+	<br><i class="fa fa-plus-circle"></i>&ensp; Add network share commands:
 	<br> &emsp; <gr>(If mount failed, try in SSH terminal.)</gr>
 	<br>#1:
 	<pre>mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"</pre>

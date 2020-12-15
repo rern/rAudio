@@ -11,9 +11,11 @@
 	<span class="hwmixer"><span class="help-block hide"><i class="fa fa-gear"></i>&ensp;Manually select hardware mixer only if the current one is not working.</span></span>
 	<span class="help-block hide">
 			Set volume/mixer control for each device.
-		<br>&bull; Disable: best sound quality. <span id="hwmixertxt">(DAC hardware volume will be reset to 0dB.)
+		<p>
+			&bull; Disable: best sound quality. <span id="hwmixertxt">(DAC hardware volume will be reset to 0dB.)
 		<br>&bull; DAC hardware: good and convenient.</span>
 		<br>&bull; MPD software: depends on users preferences.
+		</p>
 	</span>
 </div>
 </div> <!-- ---------------------------------------------------------- -->
@@ -40,9 +42,11 @@
 	<div class="switchlabel" for="novolume"></div>
 	<span class="help-block hide">
 		Disable all software volume manipulations for bit-perfect stream from MPD to DAC.
-		<br>&bull; Disable Mixer Control.
+		<p>
+			&bull; Disable Mixer Control.
 		<br>&bull; Reset DAC hardware volume to 0dB to preserve full amplitude stream.
 		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
+		</p>
 	</span>
 </div>
 
@@ -97,7 +101,8 @@
 	<i id="setting-replaygain" class="setting fa fa-gear"></i>
 	<span class="help-block hide">
 			<code>replaygain "N"</code>
-		<br>Set gain control to setting in replaygain tag. Currently only FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2) are supported.
+		<br>Set gain control to setting in replaygain tag.
+		<br>Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
 	</span>
 </div>
 </div> <!-- ---------------------------------------------------------- -->
@@ -170,7 +175,8 @@
 			<code>quality "custom"</code>
 		<br>Default quality: very high
 		<br>SoX Resampler custom settings:
-		<br>&bull; Precision - Conversion precision (20 = HQ)
+		<p>
+			&bull; Precision - Conversion precision (20 = HQ)
 		<br>&bull; Phase Response (50 = Linear)
 		<br>&bull; Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
 		<br>&bull; Stopband Begin - Aliasing/imaging control
@@ -182,6 +188,7 @@
 		<br> &emsp; 8 - High precision - Increase irrational ratio accuracy
 		<br> &emsp; 16 - Double precision - even if Precision <= 20
 		<br> &emsp; 32 - Variable rate resampling
+		</p>
 	</span>
 </div>
 <div class="col-l">User's Custom Settings</div>
