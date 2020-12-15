@@ -118,7 +118,7 @@ datarestore )
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	$dirbash/cmd.sh color
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
 	hostname=$( cat $dirsystem/hostname )
 	[[ $hostname != $( hostname ) ]] && $dirbash/system.sh hostname$'\n'$hostname
