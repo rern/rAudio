@@ -33,7 +33,7 @@ refreshData = function() {
 					location.href = '/';
 				}
 			} );
-			$( '#loader' ).addClass( 'hide' );
+			loader( 'hide' );
 			return
 		}
 		

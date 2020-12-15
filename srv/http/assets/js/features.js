@@ -374,7 +374,7 @@ $( '#hostapdchk' ).click( function() {
 						 +'<br>Disconnect and continue?'
 			, cancel    : function() {
 				if ( set ) {
-					$( '#loader' ).removeClass( 'hide' );
+					loader();
 					location.href = '/settings.php?p=networks';
 				} else {
 					$( '#hostapd, #hostapdchk' ).prop( 'checked', 0 );
@@ -417,7 +417,7 @@ $( '#setting-hostapd' ).click( function() {
 		}
 		, cancel       : function() {
 			if ( set ) {
-				$( '#loader' ).removeClass( 'hide' );
+				loader();
 				location.href = '/settings.php?p=networks';
 			} else {
 				$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );

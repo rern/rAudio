@@ -21,7 +21,7 @@ function connect( data ) { // [ ssid, dhcp, wpa, password, hidden, ip, gw ]
 	var ssid = data [ 0 ];
 	var ip = data[ 5 ];
 	if ( ip ) {
-		$( '#loader' ).removeClass( 'hide' );
+		loader();
 		location.href = 'http://'+ ip +'/settings.php?p=network';
 		var text = ip.slice( -5 ) === 'local' ? 'Change URL to ' : 'Change IP to ';
 		notify( ssid, text + ip, 'wifi' );
@@ -65,7 +65,7 @@ function editLAN( data ) {
 		, buttonwidth  : 1
 		, button       : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
-			$( '#loader' ).removeClass( 'hide' );
+			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=network';
 			bash( [ 'editlan' ] );
 		}
@@ -204,7 +204,7 @@ function editWiFiSet( ssid, data ) {
 		$( '#infoOk' ).before( '<a id="infoButton" class="infobtn extrabtn infobtn-default"><i class="fa fa-undo"></i>DHCP</a>' );
 		$( '#infoButton' ).click( function() {
 			$( '#infoX' ).click();
-			$( '#loader' ).removeClass( 'hide' );
+			loader();
 			notify( ssid, 'DHCP ...', 'wifi' );
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=network';
 			bash( [ 'editwifidhcp', ssid ] );

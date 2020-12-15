@@ -197,7 +197,6 @@ $( '#close' ).click( function() {
 					}
 					, ok      : function() {
 						bash( '/srv/http/bash/cmd.sh power' );
-						notify( 'Power', 'Reboot ...', 'reboot blink', -1 );
 					}
 				} );
 			} else {

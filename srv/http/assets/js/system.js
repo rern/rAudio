@@ -647,14 +647,12 @@ $( '#restore' ).click( function() {
 								, message : 'File upload failed.'
 							} );
 							bannerHide();
-							$( '#loader' ).addClass( 'hide' );
+							loader( 'hide' );
 						}
 					}
 				} );
 			}
-			setTimeout( function() {
-				$( '#loader' ).removeClass( 'hide' );
-			}, 0 );
+			setTimeout( loader, 0 );
 		}
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
