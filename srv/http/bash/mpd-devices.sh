@@ -14,6 +14,7 @@ dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l | grep '^card' )
 [[ -z $aplay ]] && echo -1 && exit
+#aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 cardL=$( echo "$aplay" | wc -l )
 audioaplayname=$( cat $dirsystem/audio-aplayname )
@@ -31,7 +32,13 @@ for line in "${lines[@]}"; do
 		'bcm2835 HDMI 1' )     name='On-board - HDMI';;
 		'bcm2835 Headphones' ) name='On-board - Headphone';;
 		wsp )                  name='Cirrus Logic WM5102';;
-		* )                    (( $device == 0 )) && name=$aplayname || name="$aplayname $device";;
+		* )
+			if [[ $aplayname == $audioaplayname ]]; then
+				name=$( cat $dirsystem/audio-output )
+			else
+				name="$aplayname $device"
+			fi
+			;;
 	esac
 	# user selected
 	hwmixerfile=$dirsystem/hwmixer-$card
