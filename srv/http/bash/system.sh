@@ -123,6 +123,7 @@ datarestore )
 	hostname=$( cat $dirsystem/hostname )
 	[[ $hostname != $( hostname ) ]] && $dirbash/system.sh hostname$'\n'$hostname
 	timedatectl set-timezone $( cat $dirsystem/timezone )
+	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
@@ -130,7 +131,7 @@ datarestore )
 		done
 	fi
 	curl -s -X POST http://127.0.0.1/pub?id=reboot -d 1
-	shutdown -r now
+	/srv/http/bash/cmd.sh power
 	;;
 hostname )
 	hostname=${args[1]}
