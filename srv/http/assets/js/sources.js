@@ -69,11 +69,11 @@ function infoMount( formdata, cifs ) {
 				options += ( !data.user ) ? ',username=guest,password=' : ',username='+ data.user +',password='+ data.password;
 				options += ',uid='+ $( '#list' ).data( 'uid' ) +',gid='+ $( '#list' ).data( 'gid' ) +',iocharset=utf8';
 				options += data.options ? ','+ data.options : '';
-				var device = '//'+ data.ip +'/'+ directory;
+				var device = '//'+ data.ip +'/'+ data.directory;
 			} else {
 				var options = 'defaults,noauto,bg,soft,timeo=5';
 				options += data.options ? ','+ data.options : '';
-				var device = data.ip +':'+ directory;
+				var device = data.ip +':'+ data.directory;
 			}
 			var update = !G.autoupdate && data.update || false;
 			notify( 'Network Mount', 'Mount ...', 'network' );
