@@ -26,7 +26,7 @@ function infoMount( formdata, cifs ) {
 				$( '#infotextbox input:eq( 5 )' ).val( formdata.options );
 				$( '#infoCheckBox input' ).prop( 'checked', formdata.update );
 			}
-			if ( G.autoupdate ) $( '#infoCheckBox' ).addClass( 'hide' );
+			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
 			if ( cifs ) $( '#infoRadio' ).hide();
 			$( '.eye.guest' ).css( 'margin-top', '210px' );
 			var $dir = $( 'input[name=directory]' );
