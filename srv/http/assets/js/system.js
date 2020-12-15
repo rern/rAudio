@@ -39,68 +39,6 @@ function dataBackup( netctl ) {
 		}
 	} );
 }
-function dataRestore() {
-	var icon = 'sd';
-	info( {
-		  icon        : icon
-		, title       : 'Restore Settings'
-		, message     : 'Restore from:'
-		, radio       : {
-			  'Backup file <code>*.gz</code>' : 'restore'
-			, 'Reset to default'              : 'reset'
-		}
-		, checked     : 'restore'
-		, fileoklabel : 'Restore'
-		, filetype    : '.gz'
-		, filefilter  : 1
-		, preshow     : function() {
-			$( '#infoRadio input' ).click( function() {
-				if ( $( '#infoRadio input:checked' ).val() !== 'restore' ) {
-					$( '#infoFilename' ).empty()
-					$( '#infoFileBox' ).val( '' );
-					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
-					$( '#infoOk' ).removeClass( 'hide' );
-				} else {
-					$( '#infoOk' ).addClass( 'hide' );
-					$( '#infoFileLabel' ).removeClass( 'hide' );
-				}
-			} );
-		}
-		, ok          : function() {
-			notify( 'Restore Settings', 'Restore ...', 'sd' );
-			var checked = $( '#infoRadio input:checked' ).val();
-			if ( checked === 'reset' ) {
-				bash( '/srv/http/bash/datareset.sh', bannerHide );
-			} else {
-				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
-				var formData = new FormData();
-				formData.append( 'cmd', 'datarestore' );
-				formData.append( 'file', file );
-				$.ajax( {
-					  url         : 'cmd.php'
-					, type        : 'POST'
-					, data        : formData
-					, processData : false  // no - process the data
-					, contentType : false  // no - contentType
-					, success     : function( data ) {
-						if ( data == -1 ) {
-							info( {
-								  icon    : icon
-								, title   : 'Restore Settings'
-								, message : 'File upload failed.'
-							} );
-							bannerHide();
-							$( '#loader' ).addClass( 'hide' );
-						}
-					}
-				} );
-			}
-			setTimeout( function() {
-				$( '#loader' ).removeClass( 'hide' );
-			}, 0 );
-		}
-	} );
-}
 function rebootText( enable, device ) {
 	G.reboot = G.reboot.filter( function( el ) {
 		return el.indexOf( device ) === -1
@@ -629,25 +567,14 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 	} );
 } );
-$( '#backuprestore' ).click( function( e ) {
-	if ( $( e.target ).hasClass( 'help' ) ) return
-	
+$( '#backup' ).click( function() {
 	var icon = 'sd';
 	info( {
-		  icon        : icon
-		, title       : 'Backup/Restore Settings'
-		, message     :  '<span style="display: inline-block; text-align: left"">'
-						    +'&bull; Settings'
-						+'<br>&bull; Library database'
-						+'<br>&bull; Saved playlists'
-						+'<br>&bull; Bookmarks'
-						+'<br>&bull; Lyrics'
-						+'<br>&bull; WebRadios'
-						+'</span>'
-		, buttonwidth : 1
-		, buttonlabel : 'Backup'
-		, buttoncolor : '#0a8c68'
-		, button      : function() {
+		  icon    : icon
+		, title   : 'Backup Settings'
+		, message : 'Backup settings and Library database'
+		, oklabel : 'Backup'
+		, ok      : function() {
 			if ( G.netctl.indexOf( '^' ) === -1 ) {
 				dataBackup();
 			} else {
@@ -666,9 +593,71 @@ $( '#backuprestore' ).click( function( e ) {
 				} );
 			}
 		}
-		, oklabel     : 'Restore'
-		, ok          : dataRestore
 	} );
+	$( '#backup' ).prop( 'checked', 0 );
+} );
+$( '#restore' ).click( function() {
+	var icon = 'sd';
+	info( {
+		  icon        : icon
+		, title       : 'Restore Settings'
+		, message     : 'Restore from:'
+		, radio       : {
+			  'Backup file <code>*.gz</code>' : 'restore'
+			, 'Reset to default'              : 'reset'
+		}
+		, checked     : 'restore'
+		, fileoklabel : 'Restore'
+		, filetype    : '.gz'
+		, filefilter  : 1
+		, preshow     : function() {
+			$( '#infoRadio input' ).click( function() {
+				if ( $( '#infoRadio input:checked' ).val() !== 'restore' ) {
+					$( '#infoFilename' ).empty()
+					$( '#infoFileBox' ).val( '' );
+					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
+					$( '#infoOk' ).removeClass( 'hide' );
+				} else {
+					$( '#infoOk' ).addClass( 'hide' );
+					$( '#infoFileLabel' ).removeClass( 'hide' );
+				}
+			} );
+		}
+		, ok          : function() {
+			notify( 'Restore Settings', 'Restore ...', 'sd' );
+			var checked = $( '#infoRadio input:checked' ).val();
+			if ( checked === 'reset' ) {
+				bash( '/srv/http/bash/datareset.sh', bannerHide );
+			} else {
+				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
+				var formData = new FormData();
+				formData.append( 'cmd', 'datarestore' );
+				formData.append( 'file', file );
+				$.ajax( {
+					  url         : 'cmd.php'
+					, type        : 'POST'
+					, data        : formData
+					, processData : false  // no - process the data
+					, contentType : false  // no - contentType
+					, success     : function( data ) {
+						if ( data == -1 ) {
+							info( {
+								  icon    : icon
+								, title   : 'Restore Settings'
+								, message : 'File upload failed.'
+							} );
+							bannerHide();
+							$( '#loader' ).addClass( 'hide' );
+						}
+					}
+				} );
+			}
+			setTimeout( function() {
+				$( '#loader' ).removeClass( 'hide' );
+			}, 0 );
+		}
+	} );
+	$( '#restore' ).prop( 'checked', 0 );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

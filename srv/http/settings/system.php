@@ -201,6 +201,31 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
+<heading id="backuprestore">Backup/Restore Settings<?=$help?></heading>
+<div data-status="backup" class="col-l">Backup</div>
+<div class="col-r">
+	<input id="backup" type="checkbox">
+	<div class="switchlabel" for="backup"></div>
+	<span class="help-block hide">
+			Backup all settings and MPD database:
+		<br>&bull; Settings
+		<br>&bull; Library database
+		<br>&bull; Saved playlists
+		<br>&bull; Bookmarks
+		<br>&bull; Lyrics
+		<br>&bull; WebRadios
+	</span>
+</div>
+
+<div data-status="restore" class="col-l">Restore</div>
+<div class="col-r">
+	<input id="restore" type="checkbox">
+	<div class="switchlabel" for="restore"></div>
+	<span class="help-block hide">Restore all settings and MPD database from a backup file. The system will reboot after finished.</span>
+</div>
+</div>
+
+<div>
 <heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i><?=$help?></heading>
 <span class="help-block hide"><code>journalctl -b</code></span>
 <pre id="codejournalctl" class="hide"></pre>
@@ -210,11 +235,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading data-status="configtxt" class="status">/boot/config.txt<i class="fa fa-code"></i><?=$help?></heading>
 <span class="help-block hide"><code>cat /boot/config.txt</code></span>
 <pre id="codeconfigtxt" class="hide"></pre>
-</div>
-
-<div>
-<heading id="backuprestore">Backup/Restore Settings<i class="fa fa-gear"></i><?=$help?></heading>
-<span class="help-block hide">Backup or restore all settings and  MPD database.</span>
 </div>
 
 <?php
