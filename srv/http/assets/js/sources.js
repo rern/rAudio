@@ -29,13 +29,16 @@ function infoMount( formdata, cifs ) {
 			if ( G.autoupdate ) $( '#infoCheckBox' ).addClass( 'hide' );
 			if ( cifs ) $( '#infoRadio' ).hide();
 			$( '.eye.guest' ).css( 'margin-top', '210px' );
+			var $dir = $( 'input[name=directory]' );
 			$( 'input[name=protocol]' ).change( function() {
 				if ( $( this ).val() === 'nfs' ) {
 					$( '#sharename' ).text( 'Share path' );
 					$( '.guest' ).addClass( 'hide' );
+					$dir.val( '/'+ $dir.val() );
 				} else {
 					$( '#sharename' ).text( 'Share name' );
 					$( '.guest' ).removeClass( 'hide' );
+					$dir.val( $dir.val().replace( /\//g, '' ) );
 				}
 			} );
 			// verify
@@ -43,7 +46,15 @@ function infoMount( formdata, cifs ) {
 			$( '.infoinput' ).keyup( function() {
 				var $this = $( this );
 				var cifs = $( 'input[name=protocol]:checked' ).val() === 'cifs';
-				if ( $this.prop( 'name' ) === 'directory' && cifs ) $this.val( $this.val().replace( /\/|\\/g, '' ) );
+				var val;
+				if ( $this.prop( 'name' ) === 'directory' ) {
+					val = $this.val();
+					if ( cifs ) {
+						$this.val( val.replace( /\/|\\/g, '' ) );
+					} else {
+						if ( val[ 0 ] !== '/' ) $this.val( '/'+ val );
+					}
+				}
 				var form = document.getElementById( 'formmount' );
 				data = Object.fromEntries( new FormData( form ).entries() );
 				var valid = !data.name || !data.directory ? false : true;
@@ -53,7 +64,6 @@ function infoMount( formdata, cifs ) {
 		}
 		, ok      : function() {
 			var mountpoint = data.name;
-			var directory = data.directory.replace( /^\//, '' );
 			if ( data.protocol === 'cifs' ) {
 				var options = 'noauto';
 				options += ( !data.user ) ? ',username=guest,password=' : ',username='+ data.user +',password='+ data.password;
@@ -63,7 +73,7 @@ function infoMount( formdata, cifs ) {
 			} else {
 				var options = 'defaults,noauto,bg,soft,timeo=5';
 				options += data.options ? ','+ data.options : '';
-				var device = data.ip +':/'+ directory;
+				var device = data.ip +':'+ directory;
 			}
 			var update = !G.autoupdate && data.update || false;
 			notify( 'Network Mount', 'Mount ...', 'network' );
