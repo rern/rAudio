@@ -196,7 +196,7 @@ $( '#setting-mixertype' ).click( function() { // hardware mixer
 	var card = $selectedoutput.data( 'card' );
 	var hwmixer = $selectedoutput.data( 'hwmixer' );
 	var select = $selectedoutput.data( 'mixermanual' ) ? { 'Auto select': 'auto' } : {};
-	bash( [ 'amixer', card ], function( data ) {
+	bash( [ 'amixer', card, ( hwmixer === 'WM5102' ? true : false ) ], function( data ) {
 		var devices = data.split( '\n' );
 		devices.forEach( function( val ) {
 			select[ val ] = val;
@@ -217,12 +217,13 @@ $( '#setting-mixertype' ).click( function() { // hardware mixer
 				} );
 			}
 			, ok          : function() {
-				var name = $( '#audiooutput option:selected' ).text();
+				var aplayname = $( '#audiooutput option:selected' ).val();
+				var output = $( '#audiooutput option:selected' ).text();
 				var mixermanual = $( '#infoSelectBox' ).val();
 				var mixerauto = mixermanual === 'auto';
 				var mixer = mixerauto ? hwmixer : mixermanual;
 				notify( 'Hardware Mixer', 'Change ...', 'mpd' );
-				bash( [ 'mixerhw', name, mixer, mixermanual, card ] );
+				bash( [ 'mixerhw', aplayname, output, mixer, mixermanual ] );
 			}
 		} );
 	} );

@@ -2,7 +2,6 @@
 
 # get hardware devices data with 'aplay' and amixer
 # - aplay - get card index, sub-device index and aplayname
-# - if on-board or wm5102, get name and routeid from each var list
 # - mixer device
 #    - from file if manually set
 #    - from 'amixer'
@@ -15,10 +14,9 @@ dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l | grep '^card' )
 [[ -z $aplay ]] && echo -1 && exit
+aplay+=$'\ncard 0: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 cardL=$( echo "$aplay" | wc -l )
-
-wm5102=( 'WM5102 - Line' 'WM5102 - S/PDIF' 'WM5102 - Headphone' 'WM5102 - Speaker' )
 audioaplayname=$( cat $dirsystem/audio-aplayname )
 
 readarray -t lines <<<"$aplay"
@@ -30,10 +28,10 @@ for line in "${lines[@]}"; do
 		| awk -F'[][]' '{print $2}' )
 	# aplay -l: snd_rpi_xxx_yyy > xxx-yyy
 	[[ ${aplayname:0:7} == snd_rpi ]] && aplayname=$( echo $aplayname | sed 's/^snd_rpi_//; s/_/-/g' )
-	case "$aplayname" in
+	case $aplayname in
 		'bcm2835 HDMI 1' )     name='On-board - HDMI';;
 		'bcm2835 Headphones' ) name='On-board - Headphone';;
-		'snd_rpi_wsp' )        name=${wm5102[$device]};;
+		wsp )                  name='Cirrus Logic WM5102';;
 		* )                    (( $device == 0 )) && name=$aplayname || name="$aplayname $device";;
 	esac
 	# user selected
@@ -41,6 +39,10 @@ for line in "${lines[@]}"; do
 	if [[ -e $hwmixerfile ]]; then
 		hwmixer=$( cat $hwmixerfile )
 		mixermanual=$hwmixer
+	elif [[ $aplayname == wsp ]]; then
+		mixermanual=
+		mixercount=4
+		hwmixer=WM5102
 	else
 		mixermanual=
 		amixer=$( amixer -c $card scontents \

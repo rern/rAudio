@@ -15,21 +15,31 @@ restartMPD() {
 case ${args[0]} in
 
 amixer )
-	amixer -c ${args[1]} scontents \
-		| grep -A2 'Simple mixer control' \
-		| grep -v 'Capabilities' \
-		| tr -d '\n' \
-		| sed 's/--/\n/g' \
-		| grep 'Playback channels' \
-		| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
-		| awk '!a[$0]++'
+	card=${args[1]}
+	wm5102=${args[2]}
+	if [[ $wm5102 == false ]]; then
+		amixer -c $card scontents \
+			| grep -A2 'Simple mixer control' \
+			| grep -v 'Capabilities' \
+			| tr -d '\n' \
+			| sed 's/--/\n/g' \
+			| grep 'Playback channels' \
+			| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
+			| awk '!a[$0]++'
+	else
+		echo "\
+HPOUT1 Digital
+HPOUT2 Digital
+SPDIF Out
+Speaker Digital"
+	fi
 	;;
 audiooutput )
 	aplayname=${args[1]}
 	card=${args[2]}
 	output=${args[3]}
 	mixer=${args[4]}
-	[[ ${output:0:7} == WM5102 ]] && /srv/http/bash/mpd-wm5102.sh $card ${output/*-} &> /dev/null
+	[[ $aplayname == wsp ]] && /srv/http/bash/mpd-wm5102.sh $card $( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo Line )
 	if [[ -n $aplayname ]]; then
 		echo $aplayname > $dirsystem/audio-aplayname
 		echo $output > $dirsystem/audio-output
@@ -165,16 +175,17 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 mixerhw )
-	output=${args[1]}
-	mixer=${args[2]}
-	hwmixer=${args[3]}
-	aplayname=${args[4]}
+	aplayname=${args[1]}
+	output=${args[2]}
+	mixer=${args[3]}
+	mixermanual=${args[4]}
 	sed -i '/'$output'/,/}/ s/\(mixer_control \+"\).*/\1"'$mixer'"/' /etc/mpd.conf
 	sed -i '/mixer_control_name = / s/".*"/"'$mixer'"/' /etc/shairport-sync.conf
-	if [[ $hwmixer == auto ]]; then
-		rm -f "/srv/http/data/system/hwmixer-$aplayname"
+	if [[ $mixermanual == auto ]]; then
+		rm -f "/srv/http/data/system/hwmixer-$output"
 	else
-		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"
+		[[ $aplayname == wsp ]] && /srv/http/bash/mpd-wm5102.sh $card $mixermanual
+		echo $mixermanual > "/srv/http/data/system/hwmixer-$aplayname"
 	fi
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD

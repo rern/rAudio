@@ -2,13 +2,13 @@
 
 CARD=$1
 case "$2" in
-	Headphone ) output=headset_out;;
-	Line )      output=line_out;;
-	S/PDIF )    output=spdif_out;;
-	Speaker )   output=speakers_out;;
+	'HPOUT1 Digital' )  output=headset_out;;
+	'HPOUT2 Digital' )  output=line_out;;
+	'SPDIF Out' )       output=spdif_out;;
+	'Speaker Digital' ) output=speakers_out;;
 esac
 amixer_cset() {
-	amixer -c $CARD cset name="$1" $output
+	amixer -c $CARD cset name="$1" $2
 }
 # Switch everything off
 amixer_cset 'AIF Playback Switch'         off
@@ -58,7 +58,7 @@ elif [[ $output == spdif_out ]]; then
 	amixer_cset 'AIF2TX2 Input 1 Volume' 32
 	amixer_cset 'AIF Playback Switch'    on
 	amixer_cset 'TX Playback Switch'     on
-	amixer_cset 'SPDIF out Switch'       on
+	amixer_cset 'SPDIF Out Switch'       on
 elif [[ $output == headset_out ]]; then
 	amixer_cset 'HPOUT1L Input 1'        AIF1RX1
 	amixer_cset 'HPOUT1R Input 1'        AIF1RX2

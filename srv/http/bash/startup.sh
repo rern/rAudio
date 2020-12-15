@@ -64,6 +64,12 @@ touch $dirdata/shm/player-mpd
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/soundprofile.sh
 
+if grep -q rpi-cirrus-wm5102 /boot/config.txt; then
+	card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
+	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo Line )
+	/srv/http/bash/mpd-wm5102.sh $card $output
+fi
+
 /srv/http/bash/mpd-conf.sh # mpd start by this script
 
 sleep 10 # wait for network interfaces
