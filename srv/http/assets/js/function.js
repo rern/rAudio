@@ -277,8 +277,9 @@ function displayGet( callback ) {
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
-	$( '#infoicon i.wh:not( #i-'+ G.status.player +' )' ).addClass( 'hide' );
-	$( '#i-'+ G.status.player ).removeClass( 'hide' );
+	var player = G.status.webradio ? 'webradio' : G.status.player;
+	$( '#infoicon i.wh:not( #i-'+ player +' )' ).addClass( 'hide' );
+	$( '#i-'+ player ).removeClass( 'hide' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
