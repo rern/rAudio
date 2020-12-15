@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-firmware' /etc/pacman.conf
+sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-firmware raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf
 pacman -Sy cifs-utils
 
 installstart "$1"
