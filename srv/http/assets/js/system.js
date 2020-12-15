@@ -296,7 +296,7 @@ $( '#i2smodule' ).change( function() {
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
 		var audioaplayname = G.audioaplayname;
-		var notrpi0 = G.hardware.split( ' ' )[ 2 ] !== 'Zero';
+		var notrpi0 = G.rpimodel.split( ' ' )[ 2 ] !== 'Zero';
 		if ( notrpi0 ) {
 			G.audiooutput = 'On-board - Headphone';
 			G.audioaplayname = 'bcm2835 Headphones';
