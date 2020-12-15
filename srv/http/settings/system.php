@@ -305,7 +305,7 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 ?>
 <br><br>
 <heading>About</heading>
-<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>">r A u d i o&emsp;<?=$version?></a>
+<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>"  target="_blank">r A u d i o&emsp;<?=$version?></a>
 <br><gr>by</gr>&emsp;r e r n
 <div>
 <heading class="sub">Back End<?=$help?></heading>
