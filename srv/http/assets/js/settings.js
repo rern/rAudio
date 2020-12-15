@@ -124,7 +124,7 @@ pushstream.onstatuschange = function( status ) {
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
-		case 'notify':  psNotify();        break;
+		case 'notify':  psNotify( data );  break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
 	}
