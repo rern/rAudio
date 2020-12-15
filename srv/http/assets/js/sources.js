@@ -1,10 +1,10 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-function infoMount( formdata, cifs ) {
+function infoMount( formdata ) {
 	var data = {};
 	info( {
 		  icon    : 'network'
-		, title   : 'Network Share'
+		, title   : 'Add Network Share'
 		, content : htmlmount
 		, preshow : function() {
 			if ( $.isEmptyObject( formdata ) ) {
@@ -27,7 +27,7 @@ function infoMount( formdata, cifs ) {
 				$( '#infoCheckBox input' ).prop( 'checked', formdata.update );
 			}
 			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
-			if ( cifs ) $( '#infoRadio' ).hide();
+//			if ( 'listmount' in formdata ) $( 'input[type=radio]' ).prop( 'disabled', 1 );
 			$( '.eye.guest' ).css( 'margin-top', '210px' );
 			var $dir = $( 'input[name=directory]' );
 			$( 'input[name=protocol]' ).change( function() {
@@ -251,7 +251,8 @@ $( '#list' ).on( 'click', 'li', function() {
 			, name      : share
 			, ip        : ip
 			, directory : share
-		}, 'cifs' );
+			, listmount : 1
+		} );
 	}
 } );
 $( '#refreshshares' ).click( function() {
