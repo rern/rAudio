@@ -201,7 +201,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading id="backuprestore">Backup/Restore Settings<?=$help?></heading>
+<heading id="backuprestore">Settings and Data<?=$help?></heading>
 <div data-status="backup" class="col-l">Backup</div>
 <div class="col-r">
 	<input id="backup" type="checkbox">
