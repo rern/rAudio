@@ -13,7 +13,6 @@ for (( i=0; i < cardL; i++ )); do
 		, "dop"         : '${Adop[i]}'
 		, "format"      : "'${Aformat[i]}'"
 		, "mixers"      : '${Amixers[i]}'
-		, "mixermanual" : "'${Amixermanual[i]}'"
 		, "mixertype"   : "'${Amixertype[i]}'"
 		, "name"        : "'${Aname[i]}'"
 		, "hw"          : "'${Ahw[i]}'"

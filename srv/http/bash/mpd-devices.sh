@@ -32,16 +32,13 @@ for line in "${lines[@]}"; do
 	else
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
-	mixertype=hardware
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	if [[ -e $hwmixerfile ]]; then # manual
 		mixers=2
 		hwmixer=$( cat "$hwmixerfile" )
-		mixermanual=$hwmixer
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
 		hwmixer='HPOUT2 Digital'
-		mixermanual=
 	else
 		amixer=$( amixer -c $card scontents \
 			| grep -A2 'Simple mixer control' \
@@ -53,15 +50,17 @@ for line in "${lines[@]}"; do
 			| awk '!a[$0]++' )
 		mixers=$( echo "$amixer" | wc -l )
 		if (( $mixers == 0 )); then
-			hwmixer=
 			mixertype=software
-		elif (( $mixers == 1 )); then
-			hwmixer=$amixer
+			hwmixer=
 		else
-			hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
-			[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
+			mixertype=hardware
+			if (( $mixers == 1 )); then
+				hwmixer=$amixer
+			else
+				hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
+				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
+			fi
 		fi
-		mixermanual=
 	fi
 	
 	[[ -e "$dirsystem/dop-$name" ]] && dop=1 || dop=0
@@ -73,7 +72,6 @@ for line in "${lines[@]}"; do
 	Ahw+=( "$hw" )
 	Ahwmixer+=( "$hwmixer" )
 	Amixers+=( "$mixers" )
-	Amixermanual+=( "$mixermanual" )
 	Amixertype+=( "$mixertype" )
 	Aname+=( "$name" )
 done

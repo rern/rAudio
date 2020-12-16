@@ -61,7 +61,6 @@ for (( i=0; i < cardL; i++ )); do
 	dop=${Adop[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
-	mixermanual=${Amixermanual[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
 	aplayname=${Aaplayname[i]}
@@ -78,7 +77,7 @@ audio_output {
 	mixer_type     "'$mixertype'"'
 	
 	if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-		[[ -n $mixermanual ]] && mixercontrol=$mixermanual || mixercontrol=$hwmixer
+		mixercontrol=$hwmixer
 ########
 		mpdconf+='
 	mixer_control  "'$mixercontrol'"
@@ -182,26 +181,22 @@ else
 	aplayname=$audioaplayname
 fi
 
+card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
 if [[ -e /usr/bin/shairport-sync ]]; then
-	for i in "${!Aaplayname[@]}"; do # get current aplay card number
-		[[ ${Aaplayname[$i]} == $aplayname ]] && break
-	done
-	if [[ -n ${Amixermanual[i]} ]]; then
-		hwmixer="${Amixermanual[i]}"
-	elif [[ -n ${Ahwmixer[i]} ]]; then
-		hwmixer="${Ahwmixer[i]}"
+	hwmixer="${Ahwmixer[$card]}"
+	if [[ -n $hwmixer ]]; then
+		alsa='
+output_device = "hw:'$card'";
+mixer_control_name = "'$hwmixer'";
+}'
+	else
+		alsa='
+output_device = "hw:'$card'";
+}'
 	fi
-	alsa='alsa = {
-	output_device = "hw:'${Acard[i]}'";'
-	
-	[[ -n $hwmixer ]] && alsa+='
-	mixer_control_name = "'$hwmixer'";'
-	
-	alsa+='
-}
-	'
-	sed -i '/^alsa =/,$ d' /etc/shairport-sync.conf
-	echo "$alsa" >> /etc/shairport-sync.conf
+	sed -i -e '/^alsa =/,$ d
+' -e "$ a\$alsa
+" /etc/shairport-sync.conf
 
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
@@ -211,11 +206,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ -e $dirsystem/spotifydset ]]; then
 		device=$( cat $dirsystem/spotifydset )
 	else
-		if [[ -e $usbdacfile ]]; then
-			cardname=$( aplay -l | grep "^card.*$aplayname" | head -1 | cut -d' ' -f3 )
-		else
-			cardname=$( aplay -l | grep "^card ${Acard[i]}:" | head -1 | cut -d' ' -f3 )
-		fi
+		cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
 		device=$( aplay -L | grep "^default.*$cardname" )
 	fi
 	sed -i "s/^\(device = \).*/\1$device/" /etc/spotifyd.conf
