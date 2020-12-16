@@ -11,6 +11,8 @@
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/tmp
 
+(( $( aplay -l | grep ^card | wc -l ) < 2 )) && rm -f /etc/asound.conf # just in case of leftover
+
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
 pushstream() {
