@@ -188,8 +188,6 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'genre', 'date' ] as $m
 }
 
 $menu.= '</div>';
-
-include '/srv/http/assets/img/coverart.php';
 ?>
 <div id="loader" class="splash">
 	<?=$logo?>
