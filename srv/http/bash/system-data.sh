@@ -54,11 +54,10 @@ if [[ $i2c == true ]]; then
 fi
 
 . /srv/http/bash/mpd-devices.sh
-card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
 
 data+='
-	, "audioaplayname"  : "'${Aaplayname[$card]}'"
-	, "audiooutput"     : "'${Aname[$card]}'"
+	, "audioaplayname"  : "'$aplayname'"
+	, "audiooutput"     : "'$output'"
 	, "hostname"        : "'$( hostname )'"
 	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"

@@ -4,27 +4,9 @@ dirsystem=/srv/http/data/system
 
 . /srv/http/bash/mpd-devices.sh
 
-for (( i=0; i < cardL; i++ )); do
-	# json inside array needs "escaped double quotes"
-	devices+='{
-		  "aplayname"   : "'${Aaplayname[i]}'"
-		, "card"        : '${Acard[i]}'
-		, "device"      : '${Adevice[i]}'
-		, "dop"         : '${Adop[i]}'
-		, "format"      : "'${Aformat[i]}'"
-		, "mixers"      : '${Amixers[i]}'
-		, "mixertype"   : "'${Amixertype[i]}'"
-		, "name"        : "'${Aname[i]}'"
-		, "hw"          : "'${Ahw[i]}'"
-		, "hwmixer"     : "'${Ahwmixer[i]}'"
-	},'
-done
-devices=${devices:0:-1}
-card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
-
 data='
 	  "devices"         : ['$devices']
-	, "asoundcard"      : '$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )'
+	, "asoundcard"      : '$i'
 	, "audioaplayname"  : "'${Aaplayname[$card]}'"
 	, "audiooutput"     : "'${Aname[$card]}'"
 	, "autoupdate"      : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true || echo false )'

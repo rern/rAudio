@@ -16,7 +16,6 @@ aplay=$( aplay -l | grep '^card' )
 [[ -z $aplay ]] && echo -1 && exit
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
-cardL=$( echo "$aplay" | wc -l )
 audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )
 
 readarray -t lines <<<"$aplay"
@@ -65,6 +64,17 @@ for line in "${lines[@]}"; do
 	
 	[[ -e "$dirsystem/dop-$name" ]] && dop=1 || dop=0
 	
+	devices+=',{
+		  "aplayname"   : "'$aplayname'"
+		, "card"        : '$card'
+		, "device"      : '$device'
+		, "dop"         : '$dop'
+		, "mixers"      : '$mixers'
+		, "mixertype"   : "'$mixertype'"
+		, "name"        : "'$name'"
+		, "hw"          : "'$hw'"
+		, "hwmixer"     : "'$hwmixer'"
+	}'
 	Aaplayname+=( "$aplayname" )
 	Acard+=( "$card" )
 	Adevice+=( "$device" )
@@ -75,3 +85,8 @@ for line in "${lines[@]}"; do
 	Amixertype+=( "$mixertype" )
 	Aname+=( "$name" )
 done
+
+devices=${devices:1}
+i=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
+aplayname=${Aaplayname[i]}
+output=${Aname[i]}
