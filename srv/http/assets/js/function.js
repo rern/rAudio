@@ -473,6 +473,13 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 function getPlaybackStatus() {
 	local();
 	bash( '/srv/http/bash/status.sh', function( status ) {
+		if ( status == -1 ) {
+			$( '#sampling' ).text( 'MPD not running.' );
+			$( '#time-knob, #volume-knob' ).addClass( 'hide' );
+			renderPlaybackBlank();
+			return
+		}
+		
 		if ( !status ) return
 		
 		$.each( status, function( key, value ) {

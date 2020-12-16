@@ -106,7 +106,7 @@ spotify )
 	
 esac
 
-! systemctl -q is-active mpd && exit
+! systemctl -q is-active mpd && echo -1 && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^consume\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
