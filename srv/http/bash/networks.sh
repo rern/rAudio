@@ -31,13 +31,6 @@ btremove )
 	sleep 2
 	pushRefresh
 	;;
-btset )
-	if [[ -e $dirsystem/btdiscoverable ]]; then
-		bluetoothctl discoverable yes
-		bluetoothctl discoverable-timeout 0
-	fi
-	bluetoothctl pairable yes
-	;;
 connect )
 	wlan=${args[1]}
 	ssid=${args[2]}

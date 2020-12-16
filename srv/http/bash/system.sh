@@ -37,6 +37,12 @@ soundprofile() {
 
 case ${args[0]} in
 
+bluetooth )
+	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
+	bluetoothctl discoverable $yesno &
+	bluetoothctl discoverable-timeout 0 &
+	bluetoothctl pairable yes &
+	;;
 bluetoothdisable )
 	sed -i '/dtparam=krnbt=on/ d' $fileconfig
 	systemctl disable --now bluetooth
@@ -55,8 +61,7 @@ bluetoothset )
 		echo "${args[2]}" > $filereboot
 		systemctl enable bluetooth
 	else
-		systemctl enable --now bluetooth
-		bluetoothctl discoverable $yesno
+		bluetoothctl discoverable $yesno &
 	fi
 	sleep 3
 	pushRefresh
