@@ -62,7 +62,7 @@ touch $dirdata/shm/player-mpd
 
 [[ -e $dirsystem/onboard-wlan ]] && ifconfig wlan0 up || rmmod brcmfmac
 
-[[ -e $dirsystem/soundprofile ]] && /srv/http/bash/soundprofile.sh
+[[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
 if grep -q rpi-cirrus-wm5102 /boot/config.txt; then
 	card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
