@@ -145,5 +145,9 @@ Asia server
 		- Reserved IP addresses are verified not to duplicate.
 		- The device always get the same IP address on every OS reinstallation without reconfigure.
 		- The router always keep the update log of all IP address-device data.
+- Backup SD card which already setup
+	- On Linux: `bash <( wget -qO - https://github.com/rern/rOS/raw/main/imagecreate.sh )`
+		- Shrink ROOT partition to minimum
+		- Create and compress image file
 - App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
