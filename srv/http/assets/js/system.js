@@ -222,6 +222,9 @@ $( '#setting-bluetooth' ).click( function() {
 				} );
 			}
 		}
+		, cancel  : function() {
+			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
+		}
 		, ok       : function() {
 			btdiscoverable = $( '#infoCheckBox input' ).prop( 'checked' );
 			notify( 'Bluetooth Discoverable', btdiscoverable, 'bluetooth' );
