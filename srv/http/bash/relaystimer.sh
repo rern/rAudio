@@ -11,7 +11,7 @@ while sleep 60; do
 		[[ $i != $timer ]] && echo $timer > $relaysfile
 	else
 		i=$( cat $relaysfile )
-		(( $i == 1 )) && /srv/http/bash/relays.py off && exit
+		(( $i == 1 )) && /srv/http/bash/relays.py false && exit
 		
 		(( i-- ))
 		echo $i > $relaysfile
