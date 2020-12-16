@@ -475,7 +475,7 @@ function getPlaybackStatus() {
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( status == -1 ) {
 			$( '#sampling' ).text( 'MPD not running.' );
-			$( '#time-knob, #volume-knob' ).addClass( 'hide' );
+			$( '#time-knob, #volume-knob, #bar-bottom' ).addClass( 'hide' );
 			renderPlaybackBlank();
 			return
 		}
