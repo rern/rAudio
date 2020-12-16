@@ -46,13 +46,6 @@ audiooutput )
 defaults.pcm.card $card
 defaults.ctl.card $card" > /etc/asound.conf
 	fi
-	if [[ -n $aplayname ]]; then
-		echo $aplayname > $dirsystem/audio-aplayname
-		echo $output > $dirsystem/audio-output
-		mv /srv/http/data/shm/usbdac{,.backup} &> /dev/null
-	else
-		mv /srv/http/data/shm/usbdac{.backup,} &> /dev/null
-	fi
 	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		output=$( cat $dirsystem/hwmixer-rpi-cirrus-wm5102 2> /dev/null || echo HPOUT2 Digital )
 		/srv/http/bash/mpd-wm5102.sh $card $output

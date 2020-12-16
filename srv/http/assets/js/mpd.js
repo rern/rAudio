@@ -46,51 +46,27 @@ refreshData = function() {
 				+'value="'+ this.aplayname +'" '
 				+'data-card="'+ this.card +'" '
 				+'data-device="'+ this.device +'" '
-			if ( this.mixers > 0 ) {
-				htmldevices += 'data-hwmixer="'+ this.hwmixer +'" '
-							  +'data-mixers="'+ this.mixers +'" '
-			}
-			if ( this.mixertype ) {
-				htmldevices += 'data-mixertype="'+ this.mixertype +'" '
-			} else if ( this.mixers > 0 ) {
-				htmldevices += 'data-mixertype="hardware" '
-			} else {
-				htmldevices += 'data-mixertype="software" '
-			}
-			if ( this.mixermanual ) htmldevices += 'data-mixermanual="'+ this.mixermanual +'" ';
-			htmldevices += 'data-dop="'+ this.dop +'" '
-						  +'data-format="'+ this.format +'"'
-						  +'>'+ this.name +'</option>';
+				+'data-dop="'+ this.dop +'" '
+				+'data-hw="'+ this.hw +'" '
+				+'data-hwmixer="'+ this.hwmixer +'" '
+				+'data-mixers="'+ this.mixers +'" '
+				+'data-mixertype="'+ this.mixertype +'"'
+				+'>'+ this.name +'</option>';
 		} );
-		$( '#audiooutput' ).html( htmldevices );
-		if ( G.devices.length === 1 ) $( '#audiooutput' ).prop( 'disabled', 1 );
-		if ( G.usbdac ) {
-			$( '#audiooutput' ).val( G.usbdac );
-		} else {
-			$( '#audiooutput option' ).filter( function() {
-				var $this = $( this );
-				return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
-			} ).prop( 'selected', true );
-		}
-		var $selected = $( '#audiooutput option:selected' );
-		if ( $selected.data( 'hwmixer' ) ) {
-			var mixerhtml =  '<option value="none">Disable</option>'
-							+'<option value="hardware">DAC hardware</option>'
-							+'<option value="software">MPD software</option>';
-			$( '#hwmixertxt' ).show();
-		} else {
-			var mixerhtml =  '<option value="none">Disable</option>'
-							+'<option value="software">MPD software</option>';
-			$( '#hwmixertxt' ).hide();
-		}
+		$( '#audiooutput' )
+			.html( htmldevices )
+			.prop( 'disabled', G.devices.length === 1 );
+		var $selected = $( '#audiooutput option' ).eq( G.asoundcard );
+		$selected.prop( 'selected', 1 );
+		var mixerhtml = '<option value="none">Disable</option>'
+		if ( $selected.data( 'hwmixer' ) ) mixerhtml += '<option value="hardware">DAC hardware</option>'
+		mixerhtml +='<option value="software">MPD software</option>';
 		var mixertype = $selected.data( 'mixertype' );
-		$( '#mixertype' ).html( mixerhtml ).val( mixertype );
+		$( '#mixertype' )
+			.html( mixerhtml )
+			.val( mixertype );
 		$( '#audiooutput, #mixertype' ).selectric( 'refresh' );
-		if ( $selected.data( 'mixers' ) > 1 ) {
-			$( '.hwmixer' ).removeClass( 'hide' );
-		} else {
-			$( '.hwmixer' ).addClass( 'hide' );
-		}
+		$( '.hwmixer' ).toggleClass( 'hide', $selected.data( 'mixers' ) < 2 );
 		$( '#divmixer' ).toggleClass( 'hide', $selected.data( 'hwmixer' ) === '' );
 		if ( mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain ) {
 			G.novolume = true;
@@ -111,7 +87,6 @@ refreshData = function() {
 		$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
 		$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		$( '#setting-bufferoutput' ).toggleClass( 'hide', !G.bufferoutput );
-		var format = $selected.data( 'format' ) !== '';
 		$( '#custom' ).prop( 'checked', G.custom );
 		$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 		$( '#soxr' ).prop( 'checked', G.soxr );

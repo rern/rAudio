@@ -24,6 +24,7 @@ card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 ||
 
 data='
 	  "devices"         : ['$devices']
+	, "asoundcard"      : '$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )'
 	, "audioaplayname"  : "'${Aaplayname[$card]}'"
 	, "audiooutput"     : "'${Aname[$card]}'"
 	, "autoupdate"      : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true || echo false )'

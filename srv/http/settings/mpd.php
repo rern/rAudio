@@ -12,8 +12,8 @@
 	<span class="help-block hide">
 			Set volume/mixer control for each device.
 		<p>
-			&bull; Disable: best sound quality. <span id="hwmixertxt">(DAC hardware volume will be reset to 0dB.)
-		<br>&bull; DAC hardware: good and convenient.</span>
+			&bull; Disable: best sound quality. (DAC hardware volume will be reset to 0dB.)
+		<br>&bull; DAC hardware: good and convenient.
 		<br>&bull; MPD software: depends on users preferences.
 		</p>
 	</span>
