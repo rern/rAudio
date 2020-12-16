@@ -116,7 +116,6 @@ refreshData = function() {
 			+ sourcelist
 		);
 		$( '#status' ).html( renderStatus );
-		$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
 		$( '#onboardwlan' ).prop( 'checked', G.onboardwlan );
@@ -210,25 +209,6 @@ $( '#refresh' ).click( function( e ) {
 		banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
 	}
 } );
-$( '#onboardaudio' ).click( function() {
-	if ( $( this ).hasClass( 'disabled' ) ) {
-		$( this ).prop( 'checked', 1 );
-		return
-	}
-	
-	var checked = $( this ).prop( 'checked' );
-	if ( !checked && G.audioaplayname.slice( 0, 7 ) === 'bcm2835' ) {
-		info( {
-			  icon    : 'volume'
-			, title   : 'On-board Audio'
-			, message : 'On-board audio is currently in used.'
-		} );
-		$( '#onboardaudio' ).prop( 'checked', 1 );
-	} else {
-		rebootText( checked, 'on-board audio' );
-		bash( [ 'onboardaudio', checked, G.reboot.join( '\n' ) ] );
-	}
-} );
 $( '#setting-bluetooth' ).click( function() {
 	info( {
 		  icon     : 'bluetooth'
@@ -285,9 +265,6 @@ $( '#i2smodule' ).change( function() {
 	var audioaplayname = $( this ).val();
 	var audiooutput = $( this ).find( ':selected' ).text();
 	if ( audioaplayname !== 'none' ) {
-		G.audioaplayname = audioaplayname;
-		G.audiooutput = audiooutput;
-		G.onboardaudio = false;
 		$( '#onboardaudio' ).prop( 'checked', 0 );
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
@@ -295,16 +272,8 @@ $( '#i2smodule' ).change( function() {
 		rebootText( 1, 'Audio I&#178;S Module' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
-		var audioaplayname = G.audioaplayname;
-		var notrpi0 = G.rpimodel.split( ' ' )[ 2 ] !== 'Zero';
-		if ( notrpi0 ) {
-			G.audiooutput = 'On-board - Headphone';
-			G.audioaplayname = 'bcm2835 Headphones';
-		} else {
-			G.audiooutput = 'On-board - HDMI';
-			G.audioaplayname = 'bcm2835 HDMI 1';
-		}
-		G.onboardaudio = true;
+		audiooutput = 'onboard';
+		audioaplayname = 'onboard';
 		$( '#onboardaudio' ).prop( 'checked', 1 );
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
@@ -312,8 +281,7 @@ $( '#i2smodule' ).change( function() {
 		rebootText( 0, 'Audio I&#178;S Module' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', G.audioaplayname, G.audiooutput, G.reboot.join( '\n' ) ] );
-	$( '#output' ).text( G.audiooutput );
+	bash( [ 'i2smodule', audioaplayname, audiooutput, G.reboot.join( '\n' ) ] );
 } );
 var infolcdchar = heredoc( function() { /*
 	<div class="infotextlabel">

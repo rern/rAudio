@@ -17,7 +17,7 @@ aplay=$( aplay -l | grep '^card' )
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 cardL=$( echo "$aplay" | wc -l )
-audioaplayname=$( cat $dirsystem/audio-aplayname )
+audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )
 
 readarray -t lines <<<"$aplay"
 for line in "${lines[@]}"; do
@@ -25,32 +25,23 @@ for line in "${lines[@]}"; do
 	card=${hw:3:1}
 	device=${hw: -1}
 	aplayname=$( echo $line \
-		| awk -F'[][]' '{print $2}' )
-	# aplay -l: snd_rpi_xxx_yyy > xxx-yyy
-	aplayname=$( echo $aplayname | sed 's/^snd_rpi_//; s/_/-/g' )
-	case $aplayname in
-		'bcm2835 HDMI 1' )     name='On-board - HDMI';;
-		'bcm2835 Headphones' ) name='On-board - Headphone';;
-		wsp )                  name='Cirrus Logic WM5102';;
-		* )
-			if [[ $aplayname == $audioaplayname ]]; then
-				name=$( cat $dirsystem/audio-output )
-			else
-				name="$aplayname $device"
-			fi
-			;;
-	esac
-	# user selected
-	hwmixerfile=$dirsystem/hwmixer-$card
-	if [[ -e $hwmixerfile ]]; then
+					| awk -F'[][]' '{print $2}' \
+					| sed 's/^snd_rpi_//; s/_/-/g; s/wsp/rpi-cirrus-wm5102/' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
+	if [[ $aplayname == $audioaplayname ]]; then
+		name=$( cat $dirsystem/audio-output )
+	else
+		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
+	fi
+	hwmixerfile=$dirsystem/hwmixer-$aplayname
+	if [[ -e $hwmixerfile ]]; then # manual
+		mixers=2
 		hwmixer=$( cat $hwmixerfile )
 		mixermanual=$hwmixer
-	elif [[ $aplayname == wsp ]]; then
-		mixermanual=
-		mixercount=4
+	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+		mixers=4
 		hwmixer='HPOUT2 Digital'
-	else
 		mixermanual=
+	else
 		amixer=$( amixer -c $card scontents \
 			| grep -A2 'Simple mixer control' \
 			| grep -v 'Capabilities' \
@@ -59,18 +50,19 @@ for line in "${lines[@]}"; do
 			| grep 'Playback channels' \
 			| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
 			| awk '!a[$0]++' )
-		mixercount=$( echo "$amixer" | wc -l )
-		if (( $mixercount == 0 )); then
+		mixers=$( echo "$amixer" | wc -l )
+		if (( $mixers == 0 )); then
 			hwmixer=
-		elif (( $mixercount == 1 )); then
+		elif (( $mixers == 1 )); then
 			hwmixer=$amixer
 		else
 			hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
 			[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
 		fi
+		mixermanual=
 	fi
 	
-	mixertypefile="$dirsystem/mixertype-$name"
+	mixertypefile="$dirsystem/mixertype-$aplayname"
 	if [[ -e $mixertypefile ]]; then
 		mixertype=$( cat "$mixertypefile" )
 	elif [[ -n $hwmixer ]]; then
@@ -87,7 +79,7 @@ for line in "${lines[@]}"; do
 	Adop+=( "$dop" )
 	Ahw+=( "$hw" )
 	Ahwmixer+=( "$hwmixer" )
-	Amixercount+=( "$mixercount" )
+	Amixers+=( "$mixers" )
 	Amixermanual+=( "$mixermanual" )
 	Amixertype+=( "$mixertype" )
 	Aname+=( "$name" )

@@ -53,9 +53,12 @@ if [[ $i2c == true ]]; then
 									| sort -u )
 fi
 
+. /srv/http/bash/mpd-devices.sh
+card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
+
 data+='
-	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
-	, "audiooutput"     : "'$( cat $dirsystem/audio-output )'"
+	, "audioaplayname"  : "'${Aaplayname[$card]}'"
+	, "audiooutput"     : "'${Aname[$card]}'"
 	, "hostname"        : "'$( hostname )'"
 	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"
@@ -67,7 +70,6 @@ data+='
 	, "mpdstats"        : "'$( jq '.song, .album, .artist' /srv/http/data/mpd/counts 2> /dev/null )'"
 	, "netctl"          : "'$( ls -p /etc/netctl | grep -v / | tr '\n' ^ | head -c -1 )'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-	, "onboardaudio"    : '$( grep -q dtparam=audio=on /boot/config.txt && echo true || echo false )'
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'

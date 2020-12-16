@@ -46,13 +46,13 @@ refreshData = function() {
 				+'value="'+ this.aplayname +'" '
 				+'data-card="'+ this.card +'" '
 				+'data-device="'+ this.device +'" '
-			if ( this.mixercount ) {
+			if ( this.mixers > 0 ) {
 				htmldevices += 'data-hwmixer="'+ this.hwmixer +'" '
-							  +'data-mixercount="'+ this.mixercount +'" '
+							  +'data-mixers="'+ this.mixers +'" '
 			}
 			if ( this.mixertype ) {
 				htmldevices += 'data-mixertype="'+ this.mixertype +'" '
-			} else if ( this.mixercount ) {
+			} else if ( this.mixers > 0 ) {
 				htmldevices += 'data-mixertype="hardware" '
 			} else {
 				htmldevices += 'data-mixertype="software" '
@@ -86,7 +86,7 @@ refreshData = function() {
 		var mixertype = $selected.data( 'mixertype' );
 		$( '#mixertype' ).html( mixerhtml ).val( mixertype );
 		$( '#audiooutput, #mixertype' ).selectric( 'refresh' );
-		if ( $( '#mixertype' ).val() === 'hardware' && $selected.data( 'mixercount' ) > 1 ) {
+		if ( $( '#mixertype' ).val() === 'hardware' && $selected.data( 'mixers' ) > 1 ) {
 			$( '.hwmixer' ).removeClass( 'hide' );
 		} else {
 			$( '.hwmixer' ).addClass( 'hide' );

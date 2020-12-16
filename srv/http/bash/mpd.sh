@@ -39,16 +39,23 @@ audiooutput )
 	card=${args[2]}
 	output=${args[3]}
 	mixer=${args[4]}
-	echo "\
+	if [[ $card == 0 ]]; then
+		rm -f /etc/asound.conf
+	else
+		echo "\
 defaults.pcm.card $card
 defaults.ctl.card $card" > /etc/asound.conf
-	[[ $aplayname == wsp ]] && /srv/http/bash/mpd-wm5102.sh $card $( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo Line )
+	fi
 	if [[ -n $aplayname ]]; then
 		echo $aplayname > $dirsystem/audio-aplayname
 		echo $output > $dirsystem/audio-output
 		mv /srv/http/data/shm/usbdac{,.backup} &> /dev/null
 	else
 		mv /srv/http/data/shm/usbdac{.backup,} &> /dev/null
+	fi
+	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+		output=$( cat $dirsystem/hwmixer-rpi-cirrus-wm5102 2> /dev/null || echo HPOUT2 Digital )
+		/srv/http/bash/mpd-wm5102.sh $card $output
 	fi
 	sed -i -e '/output_device = / s/".*"/"hw:'$card'"/
 	' -e '/mixer_control_name = / s/".*"/"'$mixer'"/
@@ -187,7 +194,7 @@ mixerhw )
 	if [[ $mixermanual == auto ]]; then
 		rm -f "/srv/http/data/system/hwmixer-$output"
 	else
-		[[ $aplayname == wsp ]] && /srv/http/bash/mpd-wm5102.sh $card $mixermanual
+		[[ $aplayname == rpi-cirrus-wm5102 ]] && /srv/http/bash/mpd-wm5102.sh $card $mixermanual
 		echo $mixermanual > "/srv/http/data/system/hwmixer-$aplayname"
 	fi
 	systemctl try-restart shairport-sync shairport-meta

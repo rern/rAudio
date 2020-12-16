@@ -152,17 +152,19 @@ i2smodule )
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|dtoverlay=tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	sed -i '/dtparam=\|dtoverlay=\|^$/ d' $fileconfig
 	[[ -n $dtoverlay ]] && sed -i '$ r /dev/stdin' $fileconfig <<< "$dtoverlay"
-	if [[ ${aplayname:0:7} != bcm2835 ]]; then
+	if [[ $aplayname != onboard ]]; then
 		lines="\
 dtparam=audio=off
 dtparam=i2s=on
 dtoverlay=${args[1]}"
 		sed -i '$ r /dev/stdin' $fileconfig <<< "$lines"
+		echo $aplayname > $dirsystem/audio-aplayname
+		echo $output > $dirsystem/audio-output
+		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 	else
 		sed -i '$ a\dtparam=audio=on' $fileconfig
+		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	echo $aplayname > $dirsystem/audio-aplayname
-	echo $output > $dirsystem/audio-output
 	echo "$reboot" > $filereboot
 	pushRefresh
 	;;

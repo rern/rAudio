@@ -7,25 +7,26 @@ dirsystem=/srv/http/data/system
 for (( i=0; i < cardL; i++ )); do
 	# json inside array needs "escaped double quotes"
 	devices+='{
-		  "aplayname"    : "'${Aaplayname[i]}'"
-		, "card"         : '${Acard[i]}'
-		, "device"       : '${Adevice[i]}'
-		, "dop"          : '${Adop[i]}'
-		, "format"       : "'${Aformat[i]}'"
-		, "mixercount"   : '${Amixercount[i]}'
-		, "mixermanual"  : "'${Amixermanual[i]}'"
-		, "mixertype"    : "'${Amixertype[i]}'"
-		, "name"         : "'${Aname[i]}'"
-		, "hw"           : "'${Ahw[i]}'"
-		, "hwmixer"      : "'${Ahwmixer[i]}'"
+		  "aplayname"   : "'${Aaplayname[i]}'"
+		, "card"        : '${Acard[i]}'
+		, "device"      : '${Adevice[i]}'
+		, "dop"         : '${Adop[i]}'
+		, "format"      : "'${Aformat[i]}'"
+		, "mixers"      : '${Amixers[i]}'
+		, "mixermanual" : "'${Amixermanual[i]}'"
+		, "mixertype"   : "'${Amixertype[i]}'"
+		, "name"        : "'${Aname[i]}'"
+		, "hw"          : "'${Ahw[i]}'"
+		, "hwmixer"     : "'${Ahwmixer[i]}'"
 	},'
 done
 devices=${devices:0:-1}
+card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
 
 data='
 	  "devices"         : ['$devices']
-	, "audiooutput"     : "'$( cat $dirsystem/audio-output )'"
-	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname )'"
+	, "audioaplayname"  : "'${Aaplayname[$card]}'"
+	, "audiooutput"     : "'${Aname[$card]}'"
 	, "autoupdate"      : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true || echo false )'
 	, "buffer"          : '$( grep -q '^audio_buffer_size' /etc/mpd.conf && echo true || echo false )'
 	, "bufferval"       : '$( cat $dirsystem/bufferset 2> /dev/null || echo false )'

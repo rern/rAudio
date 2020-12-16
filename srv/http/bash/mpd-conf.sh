@@ -9,6 +9,7 @@
 # - dop           - if set
 
 dirsystem=/srv/http/data/system
+dirtmp=/srv/http/data/tmp
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
@@ -16,7 +17,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 
-if [[ $1 == bt || -e /srv/http/data/shm/btclient ]]; then
+if [[ $1 == bt || -e $dirtmp/btclient ]]; then
 	# for connected by sender - not paired yet and no trust
 	readarray -t macs <<< $( bluetoothctl devices | cut -d' ' -f2 )
 	for mac in "${macs[@]}"; do
@@ -145,7 +146,7 @@ pushstream mpdplayer "$( /srv/http/bash/status.sh )"
 pushstream refresh '{"page":"mpd"}'
 
 # udev rules - usb dac
-usbdacfile=/srv/http/data/shm/usbdac
+usbdacfile=$dirtmp/usbdac
 if [[ $# -gt 0 && $1 != bt ]]; then
 	if [[ $1 == remove ]]; then
 		name=$audiooutput
@@ -157,7 +158,8 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 			| grep -B1 'pvolume' \
 			| head -1 \
 			| cut -d"'" -f2 )
-		rm -f $usbdacfile /etc/asound.conf
+		rm -f $usbdacfile
+		mv -f /etc/asound.conf{.backup,} &> /dev/null
 	else
 		name=${Aname[@]: -1} # added usb dac = last one
 		card=${Acard[@]: -1}
@@ -166,6 +168,7 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 		[[ $mixertype == 'none' && -n $hwmixer ]] && amixer -c $card sset "$hwmixer" 0dB
 		echo $aplayname > $usbdacfile # flag - active usb
 		# set default card for bluetooth
+		mv -f /etc/asound.conf{,.backup} &> /dev/null
 		echo "\
 defaults.pcm.card $card
 defaults.ctl.card $card" > /etc/asound.conf

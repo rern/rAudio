@@ -60,17 +60,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading>On-board Devices<?=$help?></heading>
-<div data-status="aplay" class="col-l double status">
-	<a>Audio
-	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-volume fa-lg"></i>
-</div>
-<div class="col-r">
-	<input id="onboardaudio" type="checkbox">
-	<div class="switchlabel" for="onboardaudio"></div>
-	<span class="help-block hide">Should be disabled if use I²S audio output module.</span>
-</div>
-<pre id="codeaplay" class="hide"></pre>
+<heading>Wireless<?=$help?></heading>
 	<?php $code = exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" );
 		$hwcode = substr( $code, -3, 2 );
 		if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { # rpi with wireless
