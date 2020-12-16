@@ -42,6 +42,13 @@ function codeToggle( id, target ) {
 			var command = cmd[ id ] +' 2> /dev/null';
 			var systemctl = 0;
 		}
+		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
+			$el
+				.html( '(Enable: reboot required.)' )
+				.removeClass( 'hide' );
+			return
+		}
+		
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
