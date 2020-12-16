@@ -115,7 +115,7 @@ mpdStatus() {
 		| grep "$filter" )
 }
 mpdStatus currentsong
-[[ $? != 0 ]] && echo -1 && exit
+[[ $? != 0 ]] && exit
 
 # when playlist is empty, add song without play - currentsong = (blank)
 ! grep -q '^file' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
