@@ -32,10 +32,11 @@ for line in "${lines[@]}"; do
 	else
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
+	mixertype=hardware
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	if [[ -e $hwmixerfile ]]; then # manual
 		mixers=2
-		hwmixer=$( cat $hwmixerfile )
+		hwmixer=$( cat "$hwmixerfile" )
 		mixermanual=$hwmixer
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
@@ -53,6 +54,7 @@ for line in "${lines[@]}"; do
 		mixers=$( echo "$amixer" | wc -l )
 		if (( $mixers == 0 )); then
 			hwmixer=
+			mixertype=software
 		elif (( $mixers == 1 )); then
 			hwmixer=$amixer
 		else
@@ -60,15 +62,6 @@ for line in "${lines[@]}"; do
 			[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
 		fi
 		mixermanual=
-	fi
-	
-	mixertypefile="$dirsystem/mixertype-$aplayname"
-	if [[ -e $mixertypefile ]]; then
-		mixertype=$( cat "$mixertypefile" )
-	elif [[ -n $hwmixer ]]; then
-		mixertype=hardware
-	else
-		mixertype=software
 	fi
 	
 	[[ -e "$dirsystem/dop-$name" ]] && dop=1 || dop=0

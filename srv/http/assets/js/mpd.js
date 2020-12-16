@@ -86,7 +86,7 @@ refreshData = function() {
 		var mixertype = $selected.data( 'mixertype' );
 		$( '#mixertype' ).html( mixerhtml ).val( mixertype );
 		$( '#audiooutput, #mixertype' ).selectric( 'refresh' );
-		if ( $( '#mixertype' ).val() === 'hardware' && $selected.data( 'mixers' ) > 1 ) {
+		if ( $selected.data( 'mixers' ) > 1 ) {
 			$( '.hwmixer' ).removeClass( 'hide' );
 		} else {
 			$( '.hwmixer' ).addClass( 'hide' );
@@ -205,11 +205,11 @@ $( '#setting-mixertype' ).click( function() { // hardware mixer
 			  icon        : 'volume'
 			, title       : 'Hardware Mixer'
 			, message     : 'Manually select hardware mixer:'
-						   +'<br>(Only if current one not working)'
 			, selectlabel : 'Device'
 			, select      : select
 			, checked     : hwmixer
 			, boxwidth    : 280
+			, footer      : '<br>(Only if current one not working)'
 			, preshow     : function() {
 				$( '#infoOk' ).addClass( 'disabled' );
 				$( '#infoSelectBox' ).change( function() {
