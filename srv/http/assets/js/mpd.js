@@ -68,12 +68,7 @@ refreshData = function() {
 		$( '#audiooutput, #mixertype' ).selectric( 'refresh' );
 		$( '.hwmixer' ).toggleClass( 'hide', $selected.data( 'mixers' ) < 2 );
 		$( '#divmixer' ).toggleClass( 'hide', $selected.data( 'hwmixer' ) === '' );
-		if ( mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain ) {
-			G.novolume = true;
-		} else {
-			G.novolume = false;
-		}
-		$( '#novolume' ).prop( 'checked', G.novolume );
+		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'hide', $selected.val().slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', $selected.data( 'dop' ) );
 		$( '#crossfade' ).prop( 'checked', G.crossfade );
