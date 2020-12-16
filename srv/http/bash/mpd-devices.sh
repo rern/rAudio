@@ -87,6 +87,6 @@ for line in "${lines[@]}"; do
 done
 
 devices=${devices:1}
-i=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
+i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 aplayname=${Aaplayname[i]}
 output=${Aname[i]}

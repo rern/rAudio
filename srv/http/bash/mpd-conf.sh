@@ -11,8 +11,6 @@
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/tmp
 
-(( $( aplay -l | grep ^card | wc -l ) < 2 )) && rm -f /etc/asound.conf # just in case of leftover
-
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
 pushstream() {
@@ -171,9 +169,7 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 		echo $aplayname > $usbdacfile # flag - active usb
 		# set default card for bluetooth
 		mv -f /etc/asound.conf{,.backup} &> /dev/null
-		echo "\
-defaults.pcm.card $card
-defaults.ctl.card $card" > /etc/asound.conf
+		sed -i "s/.$/$card/" /etc/asound.conf
 	fi
 	
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
@@ -184,7 +180,7 @@ else
 	aplayname=$audioaplayname
 fi
 
-card=$( [[ -e /etc/asound.conf ]] && head -1 /etc/asound.conf | cut -d' ' -f2 || echo 0 )
+card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 if [[ -e /usr/bin/shairport-sync ]]; then
 	hwmixer="${Ahwmixer[$card]}"
 	if [[ -n $hwmixer ]]; then

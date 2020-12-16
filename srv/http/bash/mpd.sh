@@ -39,13 +39,7 @@ audiooutput )
 	card=${args[2]}
 	output=${args[3]}
 	mixer=${args[4]}
-	if [[ $card == 0 ]]; then
-		rm -f /etc/asound.conf
-	else
-		echo "\
-defaults.pcm.card $card
-defaults.ctl.card $card" > /etc/asound.conf
-	fi
+	sed -i "s/.$/$card/" /etc/asound.conf
 	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		output=$( cat $dirsystem/hwmixer-rpi-cirrus-wm5102 2> /dev/null || echo HPOUT2 Digital )
 		/srv/http/bash/mpd-wm5102.sh $card $output
