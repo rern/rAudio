@@ -52,7 +52,7 @@ Settings - status and value
 - relays **`F`** `[[ -e /srv/http/data/system/relays ]]`
 	- `/etc/relays.conf`
 - hostname
-	- `cat /srv/http/data/system/hostname`
+	- `hostname`
 - timezone
 	- `timedatectl | awk '/zone:/ {print $3}'`
 - ntp

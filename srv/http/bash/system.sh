@@ -88,8 +88,10 @@ databackup )
 /etc/mpd.conf
 /etc/mpdscribble.conf
 /etc/relays.conf
+/etc/shairport-sync.conf
 /etc/soundprofile.conf
 /etc/spotifyd.conf
+/etc/upmpdcli.conf
 /srv/http/assets/css/colors.css
 )
 	for file in ${files[@]}; do
@@ -98,6 +100,8 @@ databackup )
 			cp {,$dirconfig}$file
 		fi
 	done
+	hostname > $dirsystem/hostname
+	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	[[ -n $profile ]] && cp "/etc/netctl/$profile" $dirconfig/boot/wifi
 	mkdir -p $dirconfig/var/lib
 	cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
@@ -125,7 +129,6 @@ databackup )
 datarestore )
 	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
-	touch $dirtmp/restore
 	systemctl stop mpd
 	# remove all flags
 	rm -f $dirsystem/{autoplay,login*}                          # features
@@ -143,13 +146,12 @@ datarestore )
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
-	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable}
+	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,timezone}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
-	hostname=$( cat $dirsystem/hostname )
-	[[ $hostname != $( hostname ) ]] && $dirbash/system.sh hostname$'\n'$hostname
+	hostnamectl set-hostname $( cat $dirsystem/hostname )
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
@@ -168,10 +170,8 @@ hostname )
 	sed -i "s/^\(friendlyname = \).*/\1${args[1]}/" /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock
 	systemctl daemon-reload
-	systemctl try-restart avahi-daemon hostapd mpd smb shairport-sync shairport-meta upmpdcli
-	systemctl -q is-active bluetooth && bluetoothctl system-alias $hostname &> /dev/null
-	echo $hostname > $dirsystem/hostname
-	[[ ! -e $dirtmp/restore ]] && pushRefresh
+	systemctl try-restart avahi-daemon bluetooth hostapd mpd smb shairport-sync shairport-meta upmpdcli
+	pushRefresh
 	;;
 i2smodule )
 	aplayname=${args[1]}
@@ -345,7 +345,6 @@ statusonboard )
 timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
-	echo $timezone > $dirsystem/timezone
 	pushRefresh
 	;;
 	
