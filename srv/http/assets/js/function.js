@@ -1136,7 +1136,7 @@ function renderPlaybackBlank() {
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '.cover-save' ).remove();
-	bash( "ip r | awk '/default/ {print $9}'", function( ip ) {
+	bash( "ip r | awk '/default/ {print $9}' | head -c -1", function( ip ) {
 		if ( ip ) {
 			$( '#qrip' ).html( '<gr>http://</gr>'+ ip.replace( '\n', '<br><gr>http://</gr>' ) );
 			var qr = new QRCode( {
