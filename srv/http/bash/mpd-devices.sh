@@ -12,8 +12,12 @@
 #    - if nothing, set as software
 dirsystem=/srv/http/data/system
 
-aplay=$( aplay -l | grep '^card' )
-[[ -z $aplay ]] && echo -1 && exit
+aplay=$( aplay -l 2> /dev/null | grep '^card' )
+if [[ -z $aplay ]]; then
+	aplayname=
+	output='(No soundcard)'
+	return
+fi
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )
