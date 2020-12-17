@@ -201,7 +201,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="backup" type="checkbox">
 	<div class="switchlabel" for="backup"></div>
 	<span class="help-block hide">
-			Backup all settings and MPD database:
+			Backup all settings and Library database:
 		<p>&bull; Settings
 		<br>&bull; Library database
 		<br>&bull; Saved playlists
@@ -216,7 +216,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div class="col-r">
 	<input id="restore" type="checkbox">
 	<div class="switchlabel" for="restore"></div>
-	<span class="help-block hide">Restore all settings and MPD database from a backup file. The system will reboot after finished.</span>
+	<span class="help-block hide">Restore all settings and Library database from a backup file. The system will reboot after finished.</span>
 </div>
 </div>
 
