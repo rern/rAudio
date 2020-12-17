@@ -67,7 +67,7 @@ bluetoothset )
 	pushRefresh
 	;;
 databackup )
-	netctl=${args[1]}
+	profile=${args[1]}
 	dirconfig=$dirdata/config
 	backupfile=$dirdata/tmp/backup.gz
 	rm -f $backupfile
@@ -98,6 +98,7 @@ databackup )
 			cp {,$dirconfig}$file
 		fi
 	done
+	[[ -n $profile ]] && cp "/etc/netctl/$profile" $dirconfig/boot/wifi
 	mkdir -p $dirconfig/var/lib
 	cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
 	

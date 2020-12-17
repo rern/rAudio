@@ -539,30 +539,30 @@ $( '#setting-soundprofile' ).click( function() {
 	} );
 } );
 $( '#backup' ).click( function() {
-	var icon = 'sd';
-	info( {
-		  icon    : icon
-		, title   : 'Backup Settings'
-		, message : 'Backup settings and Library database'
-		, oklabel : 'Backup'
-		, ok      : function() {
-			if ( G.netctl.indexOf( '^' ) === -1 ) {
-				dataBackup();
-			} else {
-				var profile = {}
-				G.netctl.split( '^' ).forEach( function( el ) {
-					profile[ el ] = el;
-				} );
-				info( {
-					  icon    : icon
-					, title   : 'Wi-Fi Profile'
-					, message : 'Select Wi-Fi profile as default:'
-					, radio   : profile
-					, ok      : function() {
-						dataBackup( $( '#infoRadio input:checked' ).val() )
-					}
-				} );
+	bash( 'ls -p /etc/netctl | grep -v /', function( data ) {
+		if ( !data ) {
+			dataBackup();
+		} else {
+			var netctl = data.slice( 0, -1 ).split( '\n' );
+			if ( netctl.length === 1 ) {
+				dataBackup( netctl[ 0 ] );
+				return
 			}
+				
+			var radio = {}
+			netctl.forEach( function( el ) {
+				radio[ el ] = el;
+			} );
+			info( {
+				  icon    : 'sd'
+				, title   : 'Backup Settings'
+				, message : 'Select Wi-Fi profile:'
+				, radio   : radio 
+				, oklabel : 'Backup'
+				, ok      : function() {
+					dataBackup( $( '#infoRadio input:checked' ).val() )
+				}
+			} );
 		}
 	} );
 	$( '#backup' ).prop( 'checked', 0 );
