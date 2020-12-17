@@ -164,7 +164,7 @@ onVisibilityChange( function( visible ) {
 	if ( page === 'credits' ) return
 	
 	if ( visible ) {
-		if( $( '.codepade' ).hasClass( 'hide' ) ) refreshData();
+		refreshData();
 	} else {
 		if ( page === 'networks' ) {
 			clearInterval( intervalscan );
