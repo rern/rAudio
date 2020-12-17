@@ -60,7 +60,7 @@ fi
 
 touch $dirdata/shm/player-mpd
 
-[[ -e $dirsystem/onboard-wlan ]] && ifconfig wlan0 up || rmmod brcmfmac
+[[ -e $dirsystem/wlan ]] && ifconfig wlan0 up || rmmod brcmfmac
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 

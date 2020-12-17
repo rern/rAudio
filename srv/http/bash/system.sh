@@ -125,10 +125,10 @@ datarestore )
 	dirconfig=$dirdata/config
 	systemctl stop mpd
 	# remove all flags
-	rm -f $dirsystem/{autoplay,login*}                            # features
+	rm -f $dirsystem/{autoplay,login*}                          # features
 	rm -f $dirsystem/{crossfade*,custom*,dop*,mixertype*,soxr*} # mpd
-	rm -f $dirsystem/{updating,listing,wav}                       # updating_db
-	rm -f $dirsystem/{color,onboard-wlan,relays,soundprofile}     # system
+	rm -f $dirsystem/{updating,listing,wav}                     # updating_db
+	rm -f $dirsystem/{color,wlan,relays,soundprofile}           # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
 	
