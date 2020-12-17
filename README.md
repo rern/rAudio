@@ -60,7 +60,8 @@ Asia server
 	- Try with a spare one before moving forward.
 	- Always use backup.gz created by latest update to restore system.
 - Before power on:
-	- Wi-Fi pre-configure - 3 alternatives: (Only if no wired LAN available.)
+	- Wi-Fi pre-configure - 4 alternatives: (Only if no wired LAN available.)
+		- From `backup.gz`
 		- From existing
 			- Copy an existing profile file from `/etc/netctl`
 			- Rename it to `wifi` then copy it to `BOOT` before power on.
@@ -70,8 +71,8 @@ Asia server
 		- Generate a complex profile - static IP, hidden SSID
 			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
 			- Save it in `BOOT`
-	- Pre-configure:
-		- Restore database and settings
+	- System pre-configure:
+		- Restore database and settings (Wi-Fi connection included.)
 			- Copy `backup.gz` to `BOOT`
 		- Expand `root` partition:
 			- By default, `root` partition will be expaned on initial boot.
