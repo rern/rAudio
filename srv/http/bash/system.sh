@@ -77,7 +77,6 @@ databackup )
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
-/etc/netctl/*
 /etc/samba/smb.conf
 /etc/systemd/network/eth0.network
 /etc/systemd/timesyncd.conf
@@ -91,14 +90,16 @@ databackup )
 /etc/relays.conf
 /etc/soundprofile.conf
 /etc/spotifyd.conf
+/srv/http/assets/css/colors.css
 )
 	for file in ${files[@]}; do
-		mkdir -p $dirconfig/$( dirname $file )
-		cp {,$dirconfig}$file 2> /dev/null
+		if [[ -e $file ]]; then
+			mkdir -p $dirconfig/$( dirname $file )
+			cp {,$dirconfig}$file
+		fi
 	done
-	[[ -n $netctl ]] && cp "/etc/netctl/$netctl" $dirconfig/boot/wifi
 	mkdir -p $dirconfig/var/lib
-	cp -r /var/lib/bluetooth $dirconfig/var/lib
+	cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
 	
 	services='bluetooth hostapd localbrowser mpdscribble@mpd shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
@@ -156,7 +157,6 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	$dirbash/cmd.sh color
 	/srv/http/bash/cmd.sh power
 	;;
 hostname )

@@ -272,7 +272,7 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 		-background '#000' \
 		-extent 1920x1080 \
 		$dirimg/splash.png
-	[[ ! -e $dirtmp/restore ]] && pushstream reload 1
+	pushstream reload 1
 	;;
 count )
 	count
