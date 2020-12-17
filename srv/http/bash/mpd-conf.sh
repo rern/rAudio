@@ -17,7 +17,9 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 
-if [[ $1 == bt || -e $dirtmp/btclient ]]; then
+. /srv/http/bash/mpd-devices.sh
+
+if [[ -n $Acard && $1 == bt || -e $dirtmp/btclient ]]; then
 	# for connected by sender - not paired yet and no trust
 	readarray -t macs <<< $( bluetoothctl devices | cut -d' ' -f2 )
 	for mac in "${macs[@]}"; do
@@ -54,56 +56,56 @@ audioaplayname=$( cat $dirsystem/audio-aplayname )
 mpdfile=/etc/mpd.conf
 mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
 
-. /srv/http/bash/mpd-devices.sh
-
-cardL=${#Acard[@]}
-for (( i=0; i < cardL; i++ )); do
-	aplayname=${Aaplayname[i]}
-	card=${Acard[i]}
-	dop=${Adop[i]}
-	hw=${Ahw[i]}
-	hwmixer=${Ahwmixer[i]}
-	mixertype=${Amixertype[i]}
-	name=${Aname[i]}
-	
-########
-	mpdconf+='
-
-audio_output {
-	name           "'$name'"
-	device         "'$hw'"
-	type           "alsa"
-	auto_resample  "no"
-	auto_format    "no"
-	mixer_type     "'$mixertype'"'
-	
-	if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-		mixercontrol=$hwmixer
-########
-		mpdconf+='
-	mixer_control  "'$mixercontrol'"
-	mixer_device   "hw:'$card'"'
+if [[ -n $Acard ]]; then
+	cardL=${#Acard[@]}
+	for (( i=0; i < cardL; i++ )); do
+		aplayname=${Aaplayname[i]}
+		card=${Acard[i]}
+		dop=${Adop[i]}
+		hw=${Ahw[i]}
+		hwmixer=${Ahwmixer[i]}
+		mixertype=${Amixertype[i]}
+		name=${Aname[i]}
 		
-	fi
-	
-	if [[ $dop == 1 ]]; then
 ########
 		mpdconf+='
-	dop            "yes"'
-	
-	fi
-	mpdcustom=$dirsystem/custom
-	customfile="$mpdcustom-output-$name"
-	if [[ -e $mpdcustom && -e "$customfile" ]]; then
+
+	audio_output {
+		name           "'$name'"
+		device         "'$hw'"
+		type           "alsa"
+		auto_resample  "no"
+		auto_format    "no"
+		mixer_type     "'$mixertype'"'
+		
+		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
+			mixercontrol=$hwmixer
 ########
-		mpdconf+="
-$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
-	
-	fi
+			mpdconf+='
+		mixer_control  "'$mixercontrol'"
+		mixer_device   "hw:'$card'"'
+			
+		fi
+		
+		if [[ $dop == 1 ]]; then
 ########
-	mpdconf+='
-}'
-done
+			mpdconf+='
+		dop            "yes"'
+		
+		fi
+		mpdcustom=$dirsystem/custom
+		customfile="$mpdcustom-output-$name"
+		if [[ -e $mpdcustom && -e "$customfile" ]]; then
+########
+			mpdconf+="
+	$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
+		
+		fi
+########
+		mpdconf+='
+	}'
+	done
+fi
 
 if systemctl -q is-active snapserver; then
 	mpdconf+='
@@ -144,6 +146,8 @@ fi
 
 pushstream mpdplayer "$( /srv/http/bash/status.sh )"
 pushstream refresh '{"page":"mpd"}'
+
+[[ -z $Acard ]] && exit
 
 # udev rules - usb dac
 usbdacfile=$dirtmp/usbdac

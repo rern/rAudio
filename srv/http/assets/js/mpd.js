@@ -70,7 +70,7 @@ refreshData = function() {
 		$( '#divmixer' ).toggleClass( 'hide', $selected.data( 'hwmixer' ) === '' );
 		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'hide', $selected.val().slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', $selected.data( 'dop' ) );
+		$( '#dop' ).prop( 'checked', $selected.data( 'dop' ) == 1 );
 		$( '#crossfade' ).prop( 'checked', G.crossfade );
 		$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
 		$( '#normalization' ).prop( 'checked', G.normalization );
