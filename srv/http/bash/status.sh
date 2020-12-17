@@ -106,8 +106,6 @@ spotify )
 	
 esac
 
-! systemctl -q is-active mpd && echo -1 && exit
-
 filter='^Album\|^Artist\|^audio\|^bitrate\|^consume\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
 
@@ -117,6 +115,7 @@ mpdStatus() {
 		| grep "$filter" )
 }
 mpdStatus currentsong
+[[ $? != 0 ]] && echo -1 && exit
 
 # when playlist is empty, add song without play - currentsong = (blank)
 ! grep -q '^file' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
