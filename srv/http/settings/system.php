@@ -67,7 +67,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 			if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
 <div data-status="bluetoothctl" class="col-l double status">
 	<a>Bluetooth
-	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-bluetooth fa-lg"></i>
+	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" class="enable" type="checkbox">
@@ -83,7 +83,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 			  } ?>
 <div data-status="ifconfig" class="col-l double status">
 	<a>Wi-Fi
-	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-wifi fa-lg"></i>
+	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="onboardwlan" type="checkbox">
@@ -99,7 +99,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading>GPIO Devices<?=$help?></heading>
 <div class="col-l double status">
 	<a>Audio
-	<br><gr>I²S</gr></a><i class="fa fa-i2saudio fa-lg"></i>
+	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
 </div>
 <div class="col-r i2s">
 	<div id="divi2smodulesw">
@@ -113,7 +113,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-l double status">
 	<a>LCD - Character
-	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar fa-lg"></i>
+	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" class="enable" type="checkbox">
@@ -130,7 +130,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-l double status">
 	<a>LCD - TFT
-	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd fa-lg"></i>
+	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" class="enablenoset" type="checkbox">
@@ -143,7 +143,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-l double status">
 	<a>Relays
-	<br><gr>RPI.GPIO</gr></a><i class="fa fa-relays fa-lg"></i>
+	<br><gr>RPI.GPIO</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
 	<input id="relays" class="enablenoset" type="checkbox">
@@ -160,7 +160,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading>Environment<?=$help?></heading>
 <div class="col-l double">
 	<a>Name
-	<br><gr>hostname</gr></a><i class="fa fa-plus-r fa-lg"></i>
+	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
@@ -168,7 +168,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-l double">
 	<a>Timezone
-	<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe fa-lg"></i>
+	<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
 </div>
 <div class="col-r">
 	<?=$selecttimezone?>
@@ -183,7 +183,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div data-status="soundprofile" class="col-l icon double status">
 		<a>Sound Profile
-	<br><gr>kernel <i class="fa fa-code"></i></gr></a><i class="fa fa-soundprofile fa-lg"></i>
+	<br><gr>kernel <i class="fa fa-code"></i></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" class="enable" type="checkbox">
@@ -196,7 +196,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 
 <div>
 <heading id="backuprestore">Settings and Data<?=$help?></heading>
-<div data-status="backup" class="col-l">Backup</div>
+<div data-status="backup" class="col-l single">Backup<i class="fa fa-sd"></i></div>
 <div class="col-r">
 	<input id="backup" type="checkbox">
 	<div class="switchlabel" for="backup"></div>
@@ -212,7 +212,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 
-<div data-status="restore" class="col-l">Restore</div>
+<div data-status="restore" class="col-l single">Restore<i class="fa fa-sd-restore"></i></div>
 <div class="col-r">
 	<input id="restore" type="checkbox">
 	<div class="switchlabel" for="restore"></div>

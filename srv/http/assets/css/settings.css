@@ -81,6 +81,7 @@
 .fa-save:before { content: "\f542"}
 .fa-save-circle:before { content: "\f56B"}
 .fa-sd:before { content: "\f543" }
+.fa-sd-restore:before { content: "\f54E" }
 .fa-search:before { content: "\f56A" }
 .fa-sliders:before { content: "\f50B" }
 .fa-snapcast:before { content: "\f599" }
@@ -551,8 +552,6 @@ input:checked + .switchlabel.disabled:after {
 .col-r {
 	float: left;
 	position: relative;
-	vertical-align: middle;
-	line-height: 21px;
 }
 .col-l {
 	display: inline-block;
@@ -568,6 +567,8 @@ input:checked + .switchlabel.disabled:after {
 .col-l i {
 	width: 30px;
 	vertical-align: 5px;
+	font-size: 22px;
+	line-height: 18px;
 }
 .settings i,
 .col-l i.code,
@@ -576,10 +577,13 @@ input:checked + .switchlabel.disabled:after {
 	vertical-align: 0;
 	text-align: center
 }
+.col-l.single i {
+	vertical-align: -3px;
+}
 .col-l.icon {
 	padding-top: 2px;
 }
-.col-l i.code {
+.col-l i.fa-code {
 	font-size: 15px;
 }
 .settings i {

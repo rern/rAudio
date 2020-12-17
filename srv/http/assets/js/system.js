@@ -568,7 +568,7 @@ $( '#backup' ).click( function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).click( function() {
-	var icon = 'sd';
+	var icon = 'sd-restore';
 	info( {
 		  icon        : icon
 		, title       : 'Restore Settings'
