@@ -204,7 +204,7 @@ mixerget )
 	;;
 mixerset )
 	mixer=${args[1]}
-	output=${args[2]}
+	aplayname=${args[2]}
 	card=${args[3]}
 	control=${args[4]}
 	volumenone=0
@@ -213,9 +213,9 @@ mixerset )
 		volumenone=1
 	fi
 	if [[ $mixer == hardware ]]; then
-		rm -f "$dirsystem/mixertype-$output"
+		rm -f "$dirsystem/mixertype-$aplayname"
 	else
-		echo $mixer > "$dirsystem/mixertype-$output"
+		echo $mixer > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=volumenone -d '{ "pvolumenone": "'$volumenone'" }'

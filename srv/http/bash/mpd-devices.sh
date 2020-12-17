@@ -52,7 +52,7 @@ for line in "${lines[@]}"; do
 			mixertype=software
 			hwmixer=
 		else
-			mixertype=hardware
+			[[ -e $dirsystem/mixertype-$aplayname ]] && mixertype=$( cat "$dirsystem/mixertype-$aplayname" ) || mixertype=hardware
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
 			else
