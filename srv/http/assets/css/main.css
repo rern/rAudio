@@ -849,10 +849,10 @@ i.map.disabled, .map.disabled i {
 	width: 50vh;
 }
 #qrip {
-	position: absolute;
 	width: 100%;
-	bottom: 25px;
+	margin-top: -30px;
 	font-size: 16px;
+	line-height: 20px;
 }
 #qrwebui svg {
 	fill: var( --cg60 );

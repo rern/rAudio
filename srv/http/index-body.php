@@ -299,8 +299,8 @@ $menu.= '</div>';
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" class="cover">
-				<div id="qrip"></div>
 				<div id="qrwebui"></div>
+				<div id="qrip"></div>
 				<div id="covermap">
 					<i id="coverTL" class="map covermap r1 c1 ws hs fa fa-scale-dn"></i>
 					<i id="coverT" class="map covermap r1 c2 wl hs fa fa-guide"></i>
