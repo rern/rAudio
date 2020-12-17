@@ -10,7 +10,7 @@ function lines2line( lines ) {
 }
 function setMixerType( mixertype ) {
 	var $output = $( '#audiooutput option:selected' );
-	var name = $output.text();
+	var aplayname = $output.val();
 	if ( mixertype === 'none' ) {
 		var card = $output.data( 'card' );
 		var hwmixer = $output.data( 'hwmixer' );
@@ -19,7 +19,7 @@ function setMixerType( mixertype ) {
 		var hwmixer = '';
 	}
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
-	bash( [ 'mixerset', mixertype, name, card, hwmixer ] );
+	bash( [ 'mixerset', mixertype, aplayname, card, hwmixer ] );
 }
 refreshData = function() {
 	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
