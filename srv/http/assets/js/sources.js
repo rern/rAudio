@@ -27,7 +27,6 @@ function infoMount( formdata ) {
 				$( '#infoCheckBox input' ).prop( 'checked', formdata.update );
 			}
 			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
-//			if ( 'listmount' in formdata ) $( 'input[type=radio]' ).prop( 'disabled', 1 );
 			$( '.eye.guest' ).css( 'margin-top', '210px' );
 			var $dir = $( 'input[name=directory]' );
 			$( 'input[name=protocol]' ).change( function() {
@@ -50,6 +49,7 @@ function infoMount( formdata ) {
 				if ( $this.prop( 'name' ) === 'directory' ) {
 					val = $this.val();
 					if ( cifs ) {
+						if ( val.match( /\/|\\/g ) ) banner( 'Add Network Share', 'No / or \\ for CIFS Share name', 'network' );
 						$this.val( val.replace( /\/|\\/g, '' ) );
 					} else {
 						if ( val[ 0 ] !== '/' ) $this.val( '/'+ val );
