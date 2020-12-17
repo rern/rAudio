@@ -123,6 +123,7 @@ databackup )
 datarestore )
 	backupfile=$dirdata/tmp/backup.gz
 	dirconfig=$dirdata/config
+	touch $dirtmp/restore
 	systemctl stop mpd
 	# remove all flags
 	rm -f $dirsystem/{autoplay,login*}                          # features
@@ -144,7 +145,6 @@ datarestore )
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
-	$dirbash/cmd.sh color
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
 	hostname=$( cat $dirsystem/hostname )
 	[[ $hostname != $( hostname ) ]] && $dirbash/system.sh hostname$'\n'$hostname
@@ -156,6 +156,7 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
+	$dirbash/cmd.sh color
 	/srv/http/bash/cmd.sh power
 	;;
 hostname )
@@ -169,7 +170,7 @@ hostname )
 	systemctl try-restart avahi-daemon hostapd mpd smb shairport-sync shairport-meta upmpdcli
 	systemctl -q is-active bluetooth && bluetoothctl system-alias $hostname &> /dev/null
 	echo $hostname > $dirsystem/hostname
-	pushRefresh
+	[[ ! -e $dirtmp/restore ]] && pushRefresh
 	;;
 i2smodule )
 	aplayname=${args[1]}
