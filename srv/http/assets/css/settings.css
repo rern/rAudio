@@ -44,6 +44,7 @@
 .fa-features:before { content: "\f50B" }
 .fa-folder-cascade:before { content: "\f538" }
 .fa-gear:before { content: "\f509" }
+.fa-gear-restore:before { content: "\f53C" }
 .fa-gears:before { content: "\f50A" }
 .fa-globe:before { content: "\f56D" }
 .fa-gmusic:before { content: "\f592" }
@@ -51,8 +52,8 @@
 .fa-info-circle:before { content: "\f561" }
 .fa-lan:before { content: "\f552" }
 .fa-lastfm:before { content: "\f585" }
-.fa-lcd:before { content: "\f53C" }
-.fa-lcdchar:before { content: "\f53D" }
+.fa-lcd:before { content: "\f528" }
+.fa-lcdchar:before { content: "\f529" }
 .fa-left:before { content: "\f606" }
 .fa-library:before { content: "\f506" }
 .fa-list-ul:before { content: "\f508"; }
