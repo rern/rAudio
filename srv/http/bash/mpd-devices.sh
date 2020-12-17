@@ -16,8 +16,8 @@ aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ -z $aplay ]]; then
 	i=-1
 	aplayname=
-	output='(No soundcard)'
-	devices+='{ "aplayname": "", "name": "(No soundcard)" }'
+	output='( No sound device )'
+	devices+='{ "aplayname": "", "name": "( No sound device )" }'
 	return
 fi
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
