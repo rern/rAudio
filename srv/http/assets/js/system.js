@@ -1,11 +1,12 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function dataBackup( netctl ) {
-	notify( 'Backup', 'Process ...', 'sd blink' );
+	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
+	notify( backuptitle, 'Process ...', 'sd blink' );
 	bash( [ 'databackup', netctl ], function( data ) {
 		if ( data == 1 ) {
-			notify( 'Backup', 'Download ...', icon );
+			notify( backuptitle, 'Download ...', icon );
 			fetch( '/data/tmp/backup.gz' )
 				.then( response => response.blob() )
 				.then( blob => {
@@ -546,19 +547,14 @@ $( '#backup' ).click( function() {
 			dataBackup();
 		} else {
 			var netctl = data.slice( 0, -1 ).split( '\n' );
-			if ( netctl.length === 1 ) {
-				dataBackup( netctl[ 0 ] );
-				return
-			}
-				
-			var radio = {}
+			var radio = { 'None': '' }
 			netctl.forEach( function( el ) {
 				radio[ el ] = el;
 			} );
 			info( {
 				  icon    : 'sd'
 				, title   : 'Backup Settings'
-				, message : 'Select Wi-Fi profile:'
+				, message : 'Select Wi-Fi connection to backup:'
 				, radio   : radio 
 				, oklabel : 'Backup'
 				, ok      : function() {
