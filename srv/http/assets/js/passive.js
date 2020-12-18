@@ -136,24 +136,6 @@ function psCoverart( data ) {
 		case 'coverart':
 			G.status.coverart = src;
 			if ( G.playback ) $( '#coverart' ).attr( 'src', src );
-/*			if ( G.playback ) {
-				$( '#coverart' ).attr( 'src', src );
-			} else if ( G.library ) {
-				if ( !G.librarylist ) return
-				
-				if ( $( '.licover' ).length ) {
-					if ( $( '.licover .lipath' ).text() === decodeURIComponent( src ).slice( 9, -21 ) ) $( '.licoverimg img' ).attr( 'src', src );
-				} else {
-					var query = G.query[ G.query.length - 1 ];
-					list( query, function( data ) {
-						data.path = query.path;
-						data.modetitle = query.modetitle;
-						renderLibraryList( data );
-					}, 'json' );
-				}
-			} else {
-				$( '#tab-playlist' ).click();
-			}*/
 			break;
 		case 'bookmarks':
 			var $li = $( '.bookmark' ).filter( function() {

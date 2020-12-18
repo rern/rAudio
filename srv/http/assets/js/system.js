@@ -54,9 +54,9 @@ function renderStatus() {
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += '<br><i class="fa fa-warning blink red"></i>&ensp;Voltage under 4.7V currently.'
+			status += '<br><i class="fa fa-warning blink red"></i>&ensp;Voltage under 4.7V - currently detected.'
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
-			status += '<br><i class="fa fa-warning blink"></i>&ensp;Voltage under 4.7V occurred.';
+			status += '<br><i class="fa fa-warning blink"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
 	}
 	return status
@@ -117,6 +117,7 @@ refreshData = function() {
 			+ sourcelist
 		);
 		$( '#status' ).html( renderStatus );
+		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
 		$( '#onboardwlan' ).prop( 'checked', G.onboardwlan );

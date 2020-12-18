@@ -19,7 +19,7 @@ $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
 <div>
-<heading>System<?=$help?></heading>
+<heading>System</heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
 	<br>Hardware
@@ -48,13 +48,26 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span class="help-block hide">
 		<br><gr><i class="fa fa-refresh"></i>&emsp;Toggle refresh every 10 seconds.</gr>
 		<br>
-		<br>CPU Load: Average number of processes which are being executed and in waiting calculated over 1, 5 and 15 minutes. Each one should not be constantly over 0.75 x CPU cores.
+		<br>CPU Load:
+		<p>
+			&bull; Average number of processes which are being executed and in waiting.
+		<br>&bull; calculated over 1, 5 and 15 minutes.
+		<br>&bull; Each one should not be constantly over 0.75 x CPU cores.
+		</p>
 		<br>CPU temperature:
 		<p>
 			&bull; 80-84°C: ARM cores throttled.
 		<br>&bull; 85°C: ARM cores and GPU throttled.
 		<br>&bull; RPi 3B+: 60°C soft limit (optimized throttling)
 		</p>
+		<div id="throttled">
+			<br><i class="fa fa-warning"></i> Under-voltage warning: <code>vcgencmd get_throttled</code>
+			<p>
+				&bull; "occurred" - Events happenned.
+			<br>&bull; "currently detected" - Currently under minimum limit. System unstable is very likely.
+			<br>&bull; More info - <a href="https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md">vcgencmd</a>
+		</p>
+		</div>
 	</span>
 </div>
 </div>
@@ -302,6 +315,7 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <heading>About</heading>
 <i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
 <br><gr>by</gr>&emsp;r e r n
+<br>&nbsp;
 <div>
 <heading class="sub">Back End<?=$help?></heading>
 <span class="help-block hide">
