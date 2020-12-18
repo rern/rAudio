@@ -54,7 +54,7 @@ function renderStatus() {
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += '<br><i class="fa fa-warning blink red"></i>&ensp;Voltage under 4.7V'
+			status += '<br><i class="fa fa-warning blink red"></i>&ensp;Voltage under 4.7V currently.'
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
 			status += '<br><i class="fa fa-warning blink"></i>&ensp;Voltage under 4.7V occurred.';
 		}
@@ -68,7 +68,7 @@ refreshData = function() {
 		if ( !list2G ) return
 		
 		if ( G.ip ) {
-			var pad = '';
+			var pad = '<span>';
 			var ip = G.ip.split( ',' );
 			var iplist = '';
 			ip.forEach( function( el ) {
@@ -82,7 +82,8 @@ refreshData = function() {
 				}
 			} );
 		}
-		$( '#systemlabel' ).append( pad +'Sources' );
+		$( '#systemlabel span' ).remove();
+		$( '#systemlabel' ).append( pad +'Sources</span>' );
 		G.sources.pop(); // remove autoupdate
 		G.sources.pop(); // remove reboot
 		systemlabel += '<span class="settings" data-setting="sources">Sources<i class="fa fa-gear"></i></span>';
