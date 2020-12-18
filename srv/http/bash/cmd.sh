@@ -181,7 +181,7 @@ addonsclose )
 addonslist )
 	wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
-	echo
+	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
 	if [[ -n $bash ]]; then
 		eval "$bash"
