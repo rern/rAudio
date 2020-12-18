@@ -12,7 +12,8 @@ for line in "${lines[@]}"; do
 	(( ${#dash} == 5 )) && continue # filter out unnamed devices
 	mac=${line#*^}
 	connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
-	data+='{"name":"'${name//\"/\\\"}'","mac":"'$mac'","connected":'$connected'}\n'
+	paired=$( bluetoothctl info $mac | grep -q 'Paired: yes' && echo true || echo false )
+	data+='{"name":"'${name//\"/\\\"}'","mac":"'$mac'","connected":'$connected',"paired":'$paired'}\n'
 done
 if [[ -n $data ]]; then
 	data=$( echo -e "$data" | sort -f | awk NF | tr '\n' ',' )

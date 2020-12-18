@@ -1,10 +1,11 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function btRender( data ) {
+	var dot;
 	var html = '';
 	data.forEach( function( list ) {
 		html += '<li data-mac="'+ list.mac +'" data-connected="'+ list.connected +'"><i class="fa fa-bluetooth"></i>'
-				+ ( list.connected ? '<grn>&bull;&ensp;</grn>' : '' )
+				+ ( list.connected  ? '<grn>&bull;&ensp;</grn>' : ( list.paired ? '<gr>&bull;&ensp;</gr>' : '' ) )
 				+'<a class="liname wh">'+ list.name +'</a>';
 				+'</li>';
 	} );
