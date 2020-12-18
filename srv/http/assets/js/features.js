@@ -61,8 +61,9 @@ if ( $( '#aria2' ).length ) {
 }
 //---------------------------------------------------------------------------------------
 $( '.enable' ).click( function() {
+	var checked = $( this ).prop( 'checked' );
 	if ( $( this ).hasClass( 'disabled' ) ) {
-		$( this ).prop( 'checked', 0 );
+		$( this ).prop( 'checked', !checked );
 		return
 	}
 	
@@ -75,7 +76,7 @@ $( '.enable' ).click( function() {
 		, snapclient   : [ 'SnapClient Renderer',  'snapcast' ]
 	}
 	var id = this.id;
-	if ( $( this ).prop( 'checked' ) ) {
+	if ( checked ) {
 		$( '#setting-'+ id ).click();
 	} else {
 		if ( id !== 'login' ) {
