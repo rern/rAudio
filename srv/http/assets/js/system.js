@@ -229,10 +229,10 @@ $( '#setting-bluetooth' ).click( function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
 		, ok       : function() {
-			btdiscoverable = $( '#infoCheckBox input' ).prop( 'checked' );
-			notify( 'Bluetooth Discoverable', btdiscoverable, 'bluetooth' );
+			checked = $( '#infoCheckBox input' ).prop( 'checked' );
+			notify( ( G.bluetooth ? 'Bluetooth Discoverable' : 'Bluetooth' ), checked, 'bluetooth' );
 			rebootText( true, 'on-board Bluetooth' );
-			bash( [ 'bluetoothset', btdiscoverable, G.reboot.join( '\n' ) ] );
+			bash( [ 'bluetoothset', checked, G.reboot.join( '\n' ) ] );
 		}
 	} );
 } );
