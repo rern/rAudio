@@ -325,7 +325,8 @@ function psMpdUpdate( data ) {
 		$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 		banner( 'Library Update', 'Done', 'library' );
 		$( '#lib-mode-list' ).data( 'count', data.title )
-		$( '#li-count' ).html( data.song.toLocaleString() +' <i class="fa fa-music gr"></i>' );
+		$( '#li-count' ).remove();
+		$( '#lib-breadcrumbs' ).append( '<span id="li-count">'+ data.song.toLocaleString() +' <i class="fa fa-music gr"></i></span>' );
 		delete data.title;
 		$.each( data, function( key, val ) {
 			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );

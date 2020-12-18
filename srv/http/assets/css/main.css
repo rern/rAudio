@@ -2093,6 +2093,7 @@ li.active .iconthumb {
 	font-size: 24px;
 }
 #li-count {
+	margin-left: 20px;
 	font-weight: 300;
 }
 #li-count span {
