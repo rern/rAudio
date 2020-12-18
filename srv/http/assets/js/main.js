@@ -199,7 +199,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			if ( G.mode !== 'webradio' ) {
 				$( '#mode-webradio' ).click();
 			} else {
-				$( '#lib-list li:eq( 0 )' ).tap();
+				$( '#lib-list li .lib-icon:eq( 0 )' ).tap();
 				colorSet();
 			}
 			break;
