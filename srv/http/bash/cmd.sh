@@ -227,7 +227,12 @@ color )
 	elif [[ -n $cmd && $cmd != color ]]; then # omit call from addons-functions.sh / backup-restore.sh
 		echo $cmd > $file
 	fi
-	[[ -e $file ]] && hsl=( $( cat $file ) ) || hsl=( 200 100 35 )
+	if [[ -e $file ]]; then
+		hsl=( $( cat $file ) )
+	else
+		hsl=( $( grep colorreset.*background /srv/http/assets/css/main.css \
+					| sed 's/.*(\(.*\)).*/\1/; s/%//g; s/,/ /g' ) )
+	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
 	hsg="$h,3%,"
