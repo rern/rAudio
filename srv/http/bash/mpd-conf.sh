@@ -19,13 +19,7 @@ pushstream() {
 
 . /srv/http/bash/mpd-devices.sh
 
-if [[ -n $Acard && $1 == bt || -e $dirtmp/btclient ]]; then
-	# for connected by sender - not paired yet and no trust
-	readarray -t macs <<< $( bluetoothctl devices | cut -d' ' -f2 )
-	for mac in "${macs[@]}"; do
-		bluetoothctl trust $mac
-	done
-	
+if [[ $1 == bt ]]; then
 	lines=$( bluetoothctl paired-devices )
 	[[ -z $lines ]] && sleep 3 && lines=$( bluetoothctl paired-devices )
 	[[ -z $lines ]] && exit
