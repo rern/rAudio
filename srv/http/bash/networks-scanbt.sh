@@ -4,6 +4,7 @@ bluetoothctl --timeout=10 scan on &> /dev/null
 
 readarray -t lines <<< $( bluetoothctl devices | cut -d' ' -f2,3- )
 [[ -z $lines ]] && echo [] && exit
+
 for line in "${lines[@]}"; do
 	devices+="
 ${line#* }^${line/ *}"
