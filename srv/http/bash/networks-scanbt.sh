@@ -2,10 +2,13 @@
 
 bluetoothctl --timeout=10 scan on &> /dev/null
 
-lines=$( bluetoothctl devices | awk '{print $3"^" $2}' | sort -f )
+readarray -t lines <<< $( bluetoothctl devices | cut -d' ' -f2,3- )
 [[ -z $lines ]] && echo [] && exit
-
-readarray -t lines <<<"$lines"
+for line in "${lines[@]}"; do
+	devices+="
+${line#* }^${line/ *}"
+done
+readarray -t lines <<< "$( echo "$devices" | sort -f | grep . )"
 for line in "${lines[@]}"; do
 	name=${line/^*}
 	dash=${name//[^-]}
