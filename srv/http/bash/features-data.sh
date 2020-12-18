@@ -5,8 +5,7 @@ dirsystem=/srv/http/data/system
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
 
 data+='
-	  "asoundcard"      : '$( aplay -l 2> /dev/null | grep -q '^card' && echo true || echo false )'
-	, "autoplay"        : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
+	  "autoplay"        : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
 	, "lcd"             : '$lcd'
 	, "login"           : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'

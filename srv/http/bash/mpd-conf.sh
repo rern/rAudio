@@ -105,9 +105,20 @@ if [[ -n $Acard ]]; then
 		mpdconf+='
 	}'
 	done
+else
+########
+	mkfifo -m 666 /tmp/nosounddevice &> /dev/null
+	mpdconf+='
+
+audio_output {
+	type           "fifo"
+	name           "No sound devie"
+	path           "/tmp/nosounddevice"
+}'
 fi
 
 if systemctl -q is-active snapserver; then
+########
 	mpdconf+='
 
 audio_output {
@@ -119,7 +130,8 @@ audio_output {
 }'
 fi
 
-if [[ -e $dirsystem/streaming || -z $Acard ]]; then
+if [[ -e $dirsystem/streaming ]]; then
+########
 	mpdconf+='
 
 audio_output {
