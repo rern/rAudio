@@ -119,7 +119,7 @@ audio_output {
 }'
 fi
 
-if [[ -e $dirsystem/streaming ]]; then
+if [[ -e $dirsystem/streaming || -z $Acard ]]; then
 	mpdconf+='
 
 audio_output {
