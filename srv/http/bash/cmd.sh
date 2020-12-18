@@ -1,8 +1,9 @@
 #!/bin/bash
 
+diraddons=$dirdata/addons
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
-diraddons=$dirdata/addons
+dirimg=/srv/http/assets/img
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
@@ -131,6 +132,22 @@ randomfile() {
 		mpc add "$file"
 	fi
 }
+rotateSplash() {
+	case $1 in
+		NORMAL ) degree=0;;
+		CCW )    degree=-90;;
+		CW )     degree=90;;
+		UD )     degree=180;;
+	esac
+	convert \
+		-density 64 \
+		-background none $dirimg/icon.svg \
+		-rotate $degree \
+		-gravity center \
+		-background '#000' \
+		-extent 1920x1080 \
+		$dirimg/splash.png
+}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -227,12 +244,7 @@ color )
 	elif [[ -n $cmd && $cmd != color ]]; then # omit call from addons-functions.sh / backup-restore.sh
 		echo $cmd > $file
 	fi
-	if [[ -e $file ]]; then
-		hsl=( $( cat $file ) )
-	else
-		hsl=( $( grep colorreset.*background /srv/http/assets/css/main.css \
-					| sed 's/.*(\(.*\)).*/\1/; s/%//g; s/,/ /g' ) )
-	fi
+	[[ -e $file ]] && hsl=( $( cat $file ) ) || hsl=( $( grep colorreset.*background /srv/http/assets/css/main.css | sed 's/.*(\(.*\)).*/\1/; s/%//g; s/,/ /g' ) )
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
 	hsg="$h,3%,"
@@ -250,7 +262,6 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
  s|\(--cga: *hsl\).*;|\1(${hsg}20%);|
  s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
-	dirimg=/srv/http/assets/img
 	sed -i "
  s|\(.box{fill:hsl\).*|\1($hsl);|
 s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
@@ -263,21 +274,7 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
 	[[ -z $rotate ]] && rotate=NORMAL
-	case $rotate in
-		NORMAL ) degree=0;;
-		CCW )    degree=-90;;
-		CW )     degree=90;;
-		UD )     degree=180;;
-	esac
-	convert \
-		-density 64 \
-		-background none $dirimg/icon.svg \
-		-rotate $degree \
-		-gravity center \
-		-background '#000' \
-		-extent 1920x1080 \
-		$dirimg/splash.png
-	pushstream reload 1
+	rotateSplash $rotate
 	;;
 count )
 	count
@@ -625,6 +622,9 @@ refreshbrowser )
 relaystimerreset )
 	awk '/timer/ {print $NF}' /etc/relays.conf > $dirtmp/relaystimer
 	pushstream relays '{"state":"RESET"}'
+	;;
+rotateSplash )
+	rotateSplash ${args[1]}
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off

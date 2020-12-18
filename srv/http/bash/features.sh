@@ -80,7 +80,6 @@ localbrowserset )
 			sed -i "s/\(tft35a\).*/\1:rotate=$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
-			ln -sf /srv/http/assets/img/{NORMAL,splash}.png
 		else
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
@@ -94,8 +93,10 @@ localbrowserset )
 				sed -e "s/ROTATION_SETTING/$rotate/
 				" -e "s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 			fi
-			ln -sf /srv/http/assets/img/{$rotate,splash}.png
+			$dirbash/ply-image /srv/http/assets/img/splash.png &> /dev/null
+			systemctl restart localbrowser
 		fi
+		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 	fi
 	[[ $screenoff != $screenoffset ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 	if ! systemctl is-active localbrowser || [[ $cursor != $cursorset || $zoom != $zoomset ]]; then
