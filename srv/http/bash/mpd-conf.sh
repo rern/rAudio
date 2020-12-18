@@ -28,7 +28,6 @@ if [[ $1 == bt ]]; then
 	for device in "${paired[@]}"; do
 		mac=$( cut -d' ' -f2 <<< "$device" )
 		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) != 2 )) && continue
-		
 		btoutput+='
 
 audio_output {
@@ -60,44 +59,38 @@ if [[ -n $Acard ]]; then
 		hwmixer=${Ahwmixer[i]}
 		mixertype=${Amixertype[i]}
 		name=${Aname[i]}
-		
 ########
 		mpdconf+='
 
-	audio_output {
-		name           "'$name'"
-		device         "'$hw'"
-		type           "alsa"
-		auto_resample  "no"
-		auto_format    "no"
-		mixer_type     "'$mixertype'"'
-		
+audio_output {
+	name           "'$name'"
+	device         "'$hw'"
+	type           "alsa"
+	auto_resample  "no"
+	auto_format    "no"
+	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			mixercontrol=$hwmixer
 ########
 			mpdconf+='
-		mixer_control  "'$mixercontrol'"
-		mixer_device   "hw:'$card'"'
-			
+	mixer_control  "'$mixercontrol'"
+	mixer_device   "hw:'$card'"'
 		fi
-		
 		if [[ $dop == 1 ]]; then
 ########
 			mpdconf+='
-		dop            "yes"'
-		
+	dop            "yes"'
 		fi
 		mpdcustom=$dirsystem/custom
 		customfile="$mpdcustom-output-$name"
 		if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
 			mpdconf+="
-	$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
-		
+$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
 		fi
 ########
 		mpdconf+='
-	}'
+}'
 	done
 else
 ########
