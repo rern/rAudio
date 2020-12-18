@@ -22,7 +22,9 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
 		$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 //		$( '#setting-upnp' ).toggleClass( 'hide', !G.upnp );
-		$( '#streaming' ).prop( 'checked', G.streaming );
+		$( '#streaming' )
+			.prop( 'checked', G.streaming )
+			.next().addBack().toggleClass( 'disabled', !G.asoundcard );
 		$( '#snapserver' ).prop( 'checked', G.snapserver );
 		$( '#transmission' ).prop( 'checked', G.transmission );
 		$( '#localbrowser' ).prop( 'checked', G.localbrowser );
@@ -118,6 +120,11 @@ $( '.enablenoset' ).click( function() {
 	}
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
+	if ( $( this ).hasClass( 'disabled' ) ) {
+		$( this ).prop( 'checked', !checked );
+		return
+	}
+	
 	var nameicon = idname[ id ];
 	notify( nameicon[ 0 ], checked, nameicon[ 1 ] );
 	bash( [ id, checked ] );
