@@ -1,5 +1,5 @@
  /* default color: keep single line for cmd.sh color */
-#colorreset { background-color: hsl(200,100%,35%) !important;
+#colorreset { background-color: hsl(200,100%,35%) !important; }
 
 @font-face {
 	font-family: Lato;
