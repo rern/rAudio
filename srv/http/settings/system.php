@@ -18,8 +18,7 @@ foreach( $timezonelist as $key => $zone ) {
 $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
-<div>
-<heading>System</heading>
+<br>
 <div id="systemlabel" class="col-l text gr">
 		Version
 	<br>Hardware
@@ -30,7 +29,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br>Networks
 </div>
 <div id="systemvalue" class="col-r text"></div> 
-</div>
 
 <div>
 <heading id="refresh" class="status">Status<i class="fa fa-refresh"></i><?=$help?></heading>
