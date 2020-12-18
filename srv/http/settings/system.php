@@ -78,7 +78,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 			if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
 <div data-status="bluetoothctl" class="col-l double status">
 	<a>Bluetooth
-	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-bluetooth"></i>
+	<br><gr>onboard <i class="fa fa-code"></i></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" class="enable" type="checkbox">
@@ -94,7 +94,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 			  } ?>
 <div data-status="ifconfig" class="col-l double status">
 	<a>Wi-Fi
-	<br><gr><i class="fa fa-code"></i></gr></a><i class="fa fa-wifi"></i>
+	<br><gr>onboard <i class="fa fa-code"></i></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="onboardwlan" type="checkbox">
