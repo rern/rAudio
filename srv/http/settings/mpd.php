@@ -209,8 +209,7 @@
 <div>
 <heading data-status="mpd" class="status">Status<i class="fa fa-code"></i><i id="mpdrestart" class="fa fa-reboot"></i><?=$help?></heading>
 <span class="help-block hide">
-	<code>systemctl status mpd</code>
-	<br><i class="fa fa-reboot"></i>&ensp;Restart MPD
+	<code>systemctl status mpd</code> &emsp;<i class="fa fa-reboot"></i>Restart MPD
 </span>
 <pre id="codempd" class="hide"></pre>
 </div>
