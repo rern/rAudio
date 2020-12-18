@@ -71,7 +71,7 @@ Asia server
 		- Generate a complex profile - static IP, hidden SSID
 			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
 			- Save it in `BOOT`
-	- System pre-configure:
+	- System pre-configure: (Run once)
 		- Restore database and settings (Wi-Fi connection included.)
 			- Copy `backup.gz` to `BOOT`
 		- Expand `root` partition:
@@ -79,6 +79,8 @@ Asia server
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
 		- GPIO 3.5" LCD display
 			- Create a blank file `lcd` in `BOOT`
+		- Custom startup script
+			- Copy custom script named `startup` to `BOOT`
 - After initial boot:
 	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)

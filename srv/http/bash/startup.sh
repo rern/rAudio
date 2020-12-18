@@ -45,10 +45,8 @@ if [[ -e /boot/lcd ]]; then
 fi
 [[ -n $reboot ]] && shutdown -r now
 
-if [[ -e /boot/startup ]]; then
-	. /boot/startup
-	rm /boot/startup
-fi
+[[ -e /boot/startup ]] && . /boot/startup && rm /boot/startup
+
 if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
