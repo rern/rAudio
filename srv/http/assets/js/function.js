@@ -1138,9 +1138,14 @@ function renderPlaybackBlank() {
 	$( '.cover-save' ).remove();
 	bash( "ip r | awk '/default/ {print $9}' | head -c -1", function( ip ) {
 		if ( ip ) {
-			$( '#qrip' ).html( '<gr>http://</gr>'+ ip.replace( '\n', '<br><gr>http://</gr>' ) );
+			var ips = ip.split( '\n' );
+			var htmlip = '';
+			ips.forEach( function( each ) {
+				htmlip += '<br><gr>http://</gr>'+ each
+			} );
+			$( '#qrip' ).html( htmlip );
 			var qr = new QRCode( {
-				  msg : 'http://'+ ip
+				  msg : 'http://'+ ips[ 0 ]
 				, dim : 230
 				, pad : 10
 			} );
