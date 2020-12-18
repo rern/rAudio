@@ -206,10 +206,10 @@ addonsupdate )
 	;;
 bluetoothplayer )
 	val=${args[1]}
-	if [[ $val == 1 ]]; then
+	if [[ $val == 1 ]]; then # connected
 		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
 		pushstream refresh '{ "page": "networks" }'
-	elif [[ $val == 0 ]]; then
+	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
 		pushstream refresh '{ "page": "networks" }'
