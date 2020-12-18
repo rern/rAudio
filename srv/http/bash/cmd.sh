@@ -1,8 +1,8 @@
 #!/bin/bash
 
+dirdata=/srv/http/data
 diraddons=$dirdata/addons
 dirbash=/srv/http/bash
-dirdata=/srv/http/data
 dirimg=/srv/http/assets/img
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
@@ -181,7 +181,7 @@ addonsclose )
 addonslist )
 	wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
-	
+	echo
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
 	if [[ -n $bash ]]; then
 		eval "$bash"
