@@ -344,6 +344,7 @@ function nicsStatus() {
 		}
 		$( '#listlan' ).html( htmllan );
 		$( '#listwl' ).html( htmlwl );
+		$( '#headbt .fa-code' ).toggleClass( 'hide', !G.bluetooth );
 		$( '#listbt' ).html( htmlbt );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
