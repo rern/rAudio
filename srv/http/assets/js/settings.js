@@ -137,6 +137,8 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psNotify( data ) {
+	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
+
 	banner( data.title, data.text, data.icon, data.delay );
 	loader();
 }
