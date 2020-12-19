@@ -437,12 +437,69 @@ $( '.back' ).click( function() {
 	$( '#listwlscan, #listbtscan' ).empty();
 	nicsStatus();
 } );
+$( '#listbt' ).on( 'click', 'li', function( e ) {
+	var $this = $( this );
+	var connected = $this.data( 'connected' );
+	if ( $( e.target ).is( 'i' ) && connected ) {
+		status( 'bt', 'bluetoothctl info' );
+		return
+	}
+	
+	var name = $this.data( 'name' );
+	var mac = $this.data( 'mac' );
+	info( {
+		  icon    : 'bluetooth'
+		, title   : 'Bluetooth'
+		, message : name
+		, preshow : function() {
+			if ( !connected ) $( '#infoOk' ).addClass( 'hide' );
+		}
+		, buttonwidth : 1
+		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
+		, buttoncolor : '#bb2828'
+		, button      : function() {
+			notify( name, 'Forget ... ', 'bluetooth' );
+			bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
+		}
+		, oklabel : 'Disconnect'
+		, okcolor : '#de810e'
+		, ok      : function() {
+			notify( name, 'Disconnect ... ', 'bluetooth' );
+			bash( '/srv/http/bash/networks.sh btdisconnect' );
+		}
+	} );
+} );
+$( '#btscan' ).click( function() {
+	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+	$( '#divbluetooth' ).removeClass( 'hide' );
+	btScan();
+} );
+$( '#listbtscan' ).on( 'click', 'li', function() {
+	$this = $( this );
+	var mac = $this.data( 'mac' );
+	var name = '<wh>'+ $this.find( '.liname' ).text() +'</wh>';
+	if ( !$this.data( 'connected' ) ) {
+		notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
+		bash( [ 'btpair', mac ], function( data ) {
+			bannerHide();
+			if ( data != -1 ) {
+				$( '.back' ).click();
+			} else {
+				info( {
+					  icon      : 'bluetooth'
+					, title     : 'Bluetooth'
+					, message   : 'Pair '+ name +' failed'
+				} );
+			}
+		} );
+	}
+} );
 $( '#lanadd' ).click( function() {
 	editLAN( { dhcp: '', ip: '', gateway: '' } );
 } );
 $( '#listlan' ).on( 'click', 'li', function() {
 	var $this = $( this );
-	if ( !$this.find( 'grn' ).length ) return
+	if ( !$this.data( 'ip' ) ) return
 	
 	editLAN( {
 		  ip      : $this.data( 'ip' ) || ''
@@ -485,58 +542,6 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		}
 	} else {
 		infoConnect( $this );
-	}
-} );
-$( '#listbt' ).on( 'click', 'li', function() {
-	var $this = $( this );
-	var name = $this.data( 'name' );
-	var connected = $this.data( 'connected' );
-	var mac = $this.data( 'mac' );
-	info( {
-		  icon    : 'bluetooth'
-		, title   : 'Bluetooth'
-		, message : name
-		, preshow : function() {
-			if ( !connected ) $( '#infoOk' ).addClass( 'hide' );
-		}
-		, buttonwidth : 1
-		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
-		, buttoncolor : '#bb2828'
-		, button      : function() {
-			notify( name, 'Forget ... ', 'bluetooth' );
-			bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
-		}
-		, oklabel : 'Disconnect'
-		, okcolor : '#de810e'
-		, ok      : function() {
-			notify( name, 'Disconnect ... ', 'bluetooth' );
-			bash( '/srv/http/bash/networks.sh btdisconnect' );
-		}
-	} );
-} );
-$( '#btscan' ).click( function() {
-	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
-	$( '#divbluetooth' ).removeClass( 'hide' );
-	btScan();
-} );
-$( '#listbtscan' ).on( 'click', 'li', function( e ) {
-	$this = $( this );
-	var mac = $this.data( 'mac' );
-	var name = '<wh>'+ $this.find( '.liname' ).text() +'</wh>';
-	if ( !$this.data( 'connected' ) ) {
-		notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-		bash( [ 'btpair', mac ], function( data ) {
-			bannerHide();
-			if ( data != -1 ) {
-				$( '.back' ).click();
-			} else {
-				info( {
-					  icon      : 'bluetooth'
-					, title     : 'Bluetooth'
-					, message   : 'Pair '+ name +' failed'
-				} );
-			}
-		} );
 	}
 } );
 $( '#setting-accesspoint' ).click( function() {

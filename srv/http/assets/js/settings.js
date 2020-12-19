@@ -15,20 +15,24 @@ var cmd = {
 	  amixer       : '/srv/http/bash/mpd.sh mixerget'
 	, aplay        : 'aplay -l'
 	, bluetoothctl : 'systemctl -q is-active bluetooth && bluetoothctl show'
+	, bt           : 'bluetoothctl info'
 	, configtxt    : 'cat /boot/config.txt'
 	, crossfade    : 'mpc crossfade'
 	, fstab        : 'cat /etc/fstab'
 	, ifconfig     : 'ifconfig wlan0'
 	, journalctl   : '/srv/http/bash/system.sh statusbootlog'
+	, lan          : 'ifconfig eth0'
 	, mpdconf      : 'cat /etc/mpd.conf'
 	, mount        : 'mount | grep " / \\|MPD"'
-	, netctl       : '/srv/http/bash/system.sh statusnetctl'
+	, netctl       : '/srv/http/bash/networks.sh statusnetctl'
 	, soundprofile : '/srv/http/bash/system.sh soundprofileget'
+	, wlan         : 'ifconfig wlan0'
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
-	if ( $( target ).hasClass( 'help' ) || target.id === 'mpdrestart' ) return // question icon
+	if ( $( target ).hasClass( 'help' )
+		|| [ 'btscan', 'mpdrestart', 'wladd', 'wlscan' ].indexOf( target.id ) !== -1 ) return
 	
 	var $el = $( '#code'+ id );
 	if ( target === 'status' && $el.hasClass( 'hide' ) ) return

@@ -258,14 +258,11 @@ heading.noline {
 	border-bottom: none;
 }
 heading i {
-	width: 60px;
+	width: 50px;
 	text-align: center;
 }
 heading i.back {
 	width: 40px;
-}
-heading i:nth-child( 2 ) {
-	width: 30px;
 }
 heading i.fa-question-circle {
 	float: right;
