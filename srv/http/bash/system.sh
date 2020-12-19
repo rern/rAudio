@@ -38,6 +38,7 @@ soundprofile() {
 case ${args[0]} in
 
 bluetooth )
+	sleep 3
 	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
 	bluetoothctl discoverable $yesno &
 	bluetoothctl discoverable-timeout 0 &
