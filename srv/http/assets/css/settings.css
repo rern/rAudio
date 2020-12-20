@@ -317,6 +317,7 @@ heading i.fa-question-circle {
 	width: calc( 100vw - 40px );
 	max-height: 90vh;
 	white-space: pre-wrap;
+	z-index: 5;
 }
 #bar-bottom {
 	position: fixed;
