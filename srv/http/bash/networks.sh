@@ -85,8 +85,7 @@ disconnect )
 	netctl stop-all
 	killall wpa_supplicant
 	ifconfig $wlan up
-	[[ -n $ssid ]] && rm "/etc/netctl/$ssid"
-	netctl list | grep -q '^\*' || systemctl disable netctl-auto@$wlan
+	systemctl disable netctl-auto@$wlan
 	pushRefresh
 	;;
 editlan )
