@@ -143,9 +143,9 @@ statusnetctl )
 	readarray -t lists <<< "$lists"
 	for list in "${lists[@]}"; do
 		name=$( sed 's/^-*\** *//' <<< $list )
-		profiles+="<hr>$name<hr>$( cat /etc/netctl/$name | sed -e '/^#.*/ d' -e 's/Key=.*/Key="*********"/' )"
+		profiles+=$'\n'"<grn>$name</grn>"$'\n'"$( cat /etc/netctl/$name | sed -e '/^#.*/ d' -e 's/Key=.*/Key="*********"/' )"$'\n'
 	done
-	echo "$profiles"
+	echo "${profiles:1:-1}"
 	;;
 statuswifi )
 	value=$( grep '^Address\|^Gateway\|^IP\|^Key\|^Security' "/etc/netctl/${args[1]}" \

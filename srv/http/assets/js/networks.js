@@ -329,6 +329,10 @@ function nicsStatus() {
 				htmlwl += '</li>';
 			}
 		} );
+		var htmlprofile = '';
+		G.profile.forEach( function( val ) {
+			htmlprofile += '<li><i class="fa fa-wifi"></i>'+ val +'</li>';
+		} );
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
 		if ( G.bluetooth ) {
 			G.bluetooth.forEach( function( list ) {
@@ -337,14 +341,15 @@ function nicsStatus() {
 			} );
 			$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
 		}
-		$( '#listlan' ).html( htmllan );
-		$( '#listwl' ).html( htmlwl );
+		$( '#headbt' ).toggleClass( 'noline', htmlbt !== '' );
 		$( '#headbt .fa-code' ).toggleClass( 'hide', $( '#listbt grn' ).length === 0 );
 		$( '#listbt' ).html( htmlbt );
-		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
+		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
-		$( '#headbt' ).toggleClass( 'noline', htmlbt !== '' );
+		$( '#listlan' ).html( htmllan );
+		$( '#listwl' ).html( htmlwl );
+		$( '#listprofile' ).html( htmlprofile );
 		if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
 		
 		renderQR();

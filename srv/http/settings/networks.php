@@ -30,6 +30,12 @@
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>
+	<div>
+	<heading data-status="netctl" class="status noline">Saved Connections<i class="fa fa-code"></i></heading>
+	<span class="help-block hide"><code>cat /etc/netctl/SSID</code></span>
+	<ul id="listprofile" class="entries"></ul>
+	<pre id="codenetctl" class="hide"></pre>
+	</div>
 <?php } ?>
 	
 	<div>
@@ -53,12 +59,6 @@
 	</heading>
 	<ul id="listwlscan" class="entries"></ul>
 	<span class="help-block hide">Access points with less than -66dBm should not be used.</span>
-	</div>
-	
-	<div>
-	<heading data-status="netctl" class="status">Saved Profiles<i class="fa fa-code"></i><?=$help?></heading>
-	<span class="help-block hide"><code>cat /etc/netctl/SSID</code></span>
-	<pre id="codenetctl" class="hide"></pre>
 	</div>
 </div>
 
