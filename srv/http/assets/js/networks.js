@@ -520,6 +520,11 @@ $( '#wlscan' ).click( function() {
 $( '#listwl' ).on( 'click', 'li', function() {
 	if ( !( 'ssid' in G ) ) infoConnect( $( this ) );
 } );
+$( '#listprofile' ).on( 'click', 'li', function() {
+	var ssid = $( this ).text();
+	notify( ssid, 'Connect ...', 'wifi blink' );
+	connect( [ ssid ] );
+} );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	var connected = $this.data( 'connected' );
