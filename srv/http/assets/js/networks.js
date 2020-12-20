@@ -521,8 +521,23 @@ $( '#listwl' ).on( 'click', 'li', function() {
 } );
 $( '#listprofile' ).on( 'click', 'li', function() {
 	var ssid = $( this ).text();
-	notify( ssid, 'Connect ...', 'wifi blink' );
-	connect( [ ssid ] );
+	info( {
+		  icon        : 'wifi'
+		, title       : 'Saved Connection'
+		, message     : ssid
+		, buttonwidth : 1
+		, buttonlabel : '<i class="fa fa-minus-circle"></i> Forget'
+		, buttoncolor : '#bb2828'
+		, button      : function() {
+			notify( ssid, 'Forget ...', 'wifi' );
+			bash( [ 'disconnect', G.wlcurrent, ssid ] );
+		}
+		, oklabel     : 'Connect'
+		, ok          : function() {
+			notify( ssid, 'Connect ...', 'wifi blink' );
+			connect( [ ssid ] );
+		}
+	} );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );
