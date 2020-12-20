@@ -41,9 +41,9 @@ for line in "${lines[@]}"; do
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
 
-profile=$( netctl list | cut -c 3- | sed 's/.*/"&"/' )
+profile=$( netctl list | cut -c 3- )
 [[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" )
-profile=$( echo "$profile" | tr '\n' , | head -c -1 )
+profile=$( echo "$profile" | sed 's/.*/"&"/' | tr '\n' , | head -c -1 )
 [[ -n $profile ]] && profile=[$profile] || profile=false
 
 # bluetooth
