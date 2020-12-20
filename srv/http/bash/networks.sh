@@ -118,6 +118,7 @@ editwifidhcp )
 	pushRefresh
 	;;
 ifconfig )
+	ifconfig wlan0 up &> /dev/null # force up
 	lines=$( ifconfig \
 		| sed -n '/^eth\|^wlan/,/ether/ p' \
 		| grep -v inet6 \
