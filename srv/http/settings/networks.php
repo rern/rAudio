@@ -1,7 +1,7 @@
 <div id="divinterface">
 <?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
 	<div>
-	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<i class="fa fa-code"></i><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
+	<heading id="headbt" class="status noline" data-status="bt"><i class="fa fa-bluetooth"></i>Bluetooth<i class="fa fa-code"></i><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
 	<ul id="listbt" class="entries"></ul>
 	<span class="help-block hide">
 			&bull; As sender / source - Send signal to another device.
@@ -19,19 +19,19 @@
 <?php }
 	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
 	 <div>
-	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
+	<heading id="headlan" class="status noline" data-status="lan"><i class="fa fa-networks"></i>LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
 	</div>
 <?php }
 	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
 	<div>
-	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
+	<heading id="headwl" class="status noline" data-status="wlan"><i class="fa fa-wifi"></i>Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>
 	<div>
-	<heading data-status="netctl" class="status noline">Saved Connections<i class="fa fa-code"></i></heading>
+	<heading data-status="netctl" class="status noline">Saved Wi-Fi<i class="fa fa-code"></i></heading>
 	<span class="help-block hide"><code>cat /etc/netctl/SSID</code></span>
 	<ul id="listprofile" class="entries"></ul>
 	<pre id="codenetctl" class="hide"></pre>

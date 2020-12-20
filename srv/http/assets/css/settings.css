@@ -397,6 +397,7 @@ grw,
 	display: block;
 	margin: 0 0 10px 0;
 	padding: 0;
+	line-height: 42px;
 	list-style: none;
 }
 .entries i {

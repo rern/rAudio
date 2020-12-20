@@ -296,18 +296,24 @@ function nicsStatus() {
 			$( '#passphrase' ).text( G.hostapd.passphrase )
 			$( '#ipwebuiap' ).text( G.hostapd.hostapdip );
 		}
-		var html = '';
+		var htmlbt = '';
 		var htmllan = '';
 		var htmlwl = '';
-		var htmlbt = '';
+		var html = '';
+		if ( G.bluetooth ) {
+			G.bluetooth.forEach( function( list ) {
+				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'">&emsp;';
+				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
+			} );
+			$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
+		}
 		$.each( G.list, function( i, val ) {
 			html = '<li class="'+ val.interface +'"';
 			html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
-			if ( 'ssid' in val ) html += ' data-ssid="'+ val.ssid +'"';
-			html += '><i class="fa fa-';
-			html += val.interface === 'eth0' ? 'lan"></i>' : 'wifi"></i>';
+			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
+			html += '>&emsp;';
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return
 				
@@ -334,13 +340,6 @@ function nicsStatus() {
 			htmlprofile += '<li><i class="fa fa-wifi"></i>'+ val +'</li>';
 		} );
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
-		if ( G.bluetooth ) {
-			G.bluetooth.forEach( function( list ) {
-				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
-				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
-			} );
-			$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
-		}
 		$( '#headbt' ).toggleClass( 'noline', htmlbt !== '' );
 		$( '#headbt .fa-code' ).toggleClass( 'hide', $( '#listbt grn' ).length === 0 );
 		$( '#listbt' ).html( htmlbt );
