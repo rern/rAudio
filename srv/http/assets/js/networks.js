@@ -346,6 +346,7 @@ function nicsStatus() {
 				htmlprofile += '<li><i class="fa fa-wifi"></i>'+ val +'</li>';
 			} );
 			$( '#listprofile' ).html( htmlprofile );
+			$( '#divprofile' ).removeClass( 'hide' );
 		} else {
 			$( '#divprofile' ).addClass( 'hide' );
 		}
