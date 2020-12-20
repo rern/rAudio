@@ -68,7 +68,8 @@ Gateway=$gw
 	[[ -n $edit ]] && pushRefresh && exit
 	
 	ifconfig $wlan down
-	if netctl switch-to "$ssid"; then
+	netctl switch-to "$ssid"
+	if [[ $? == 0 ]]; then
 		systemctl enable netctl-auto@$wlan
 	else
 		echo -1
