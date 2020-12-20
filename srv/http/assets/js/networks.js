@@ -94,10 +94,10 @@ function editLAN( data ) {
 		}
 	} );
 }
-function editWiFi( ssid, data ) {
+function editWiFi( ssid, data, edit ) {
 	var data0 = data;
 	var icon = ssid ? 'edit-circle' : 'wifi';
-	var title = ssid ? 'Wi-Fi IP' : 'Add Wi-Fi';
+	var title = ssid ? ( !edit ? 'Wi-Fi IP' : 'Edit Saved Wi-Fi' ) : 'Add Wi-Fi';
 	info( {
 		  icon          : icon
 		, title         : title
@@ -129,15 +129,15 @@ function editWiFi( ssid, data ) {
 				if ( data ) {
 					editWiFiSet( ssid, data );
 				} else {
-					bash( [ 'statuswifi', ssid ], function( data ) {
+					bash( [ 'profile', ssid ], function( data ) {
 						data.Address = 'Address' in data ? data.Address.replace( '/24', '' ) : '';
-						editWiFiSet( ssid, data );
+						editWiFiSet( ssid, data, edit );
 					}, 'json' );
 				}
 			}
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoCheckBox' ).on( 'click', 'input:eq( 0 )', function() {
-				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
+				$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
 				verify();
 			} );
 			// verify
@@ -151,8 +151,8 @@ function editWiFi( ssid, data ) {
 			var dhcp = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ? 'static' : 'dhcp';
 			var hidden = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' ) ? 'hidden' : '';
 			var security = $( '#infoCheckBox input:eq( 2 )' ).prop( 'checked' ) ? 'wep' : 'wpa';
-			// [ wlan, ssid, dhcp, wpa, password, hidden, ip, gw ]
-			var data = [ ssid, dhcp ];
+			// [ wlan, ssid, wpa, password, hidden, ip, gw ]
+			var data = [ ssid ];
 			if ( password ) {
 				data.push( security, password, hidden );
 			} else {
@@ -184,24 +184,27 @@ function editWiFi( ssid, data ) {
 		}
 	} );
 }
-function editWiFiSet( ssid, data ) {
+function editWiFiSet( ssid, data, edit ) {
+	var static = data.IP === 'static';
 	$( '#infoMessage' ).html(
 		 '<i class="fa fa-wifi"></i>&ensp;<wh>'+ ssid +'</wh>'
-		+'<br>Current: <wh>'+ ( data.dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh><br>&nbsp;'
+		+'<br>Current: <wh>'+ ( static ? 'Static IP' : 'DHCP' ) +'</wh><br>&nbsp;'
 	).css( 'text-align', 'center' );
-	$( '#infoTextBox1' ).val( data.Address );
-	$( '#infoTextBox2' ).val( data.Gateway );
 	$( '#infoPasswordBox' ).val( data.Key );
-	$( '#infoCheckBox input:eq( 0 )' ).prop( 'checked', 1 );
+	$( '#infoCheckBox input:eq( 0 )' ).prop( 'checked', static );
 	$( '#infoCheckBox input:eq( 2 )' ).prop( 'checked', data.Security === 'wep' );
-	$( '#infoTextBox' ).val( ssid );
-	$( '#infotextlabel a:eq( 0 ), #infoTextBox, #infotextlabel a:eq( 3 ), #infoPasswordBox, #infotextbox .eye, #infoCheckBox' ).hide();
+	$( '#infoTextBox' )
+		.val( ssid )
+		.prop( 'disabled', edit );
+	if ( !edit ) $( '#infotextlabel a:eq( 0 ), #infoTextBox, #infotextlabel a:eq( 3 ), #infoPasswordBox, #infotextbox .eye, #infoCheckBox' ).hide();
 	if ( data.Address ) {
 		$( '#infoFooter' ).hide();
 	} else {
 		$( '#infoFooter' ).html( '<br>*Connect to get DHCP IPs' );
 	}
-	if ( data.dhcp === 'static' ) {
+	if ( static ) {
+		$( '#infoTextBox1' ).val( data.Address );
+		$( '#infoTextBox2' ).val( data.Gateway );
 		$( '#infoOk' ).before( '<a id="infoButton" class="infobtn extrabtn infobtn-default"><i class="fa fa-undo"></i>DHCP</a>' );
 		$( '#infoButton' ).click( function() {
 			$( '#infoX' ).click();
@@ -210,6 +213,8 @@ function editWiFiSet( ssid, data ) {
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=network';
 			bash( [ 'editwifidhcp', ssid ] );
 		} );
+	} else {
+		$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).hide();
 	}
 }
 function infoAccesspoint() {
@@ -526,12 +531,23 @@ $( '#listprofile' ).on( 'click', 'li', function() {
 		, title       : 'Saved Connection'
 		, message     : ssid
 		, buttonwidth : 1
-		, buttonlabel : '<i class="fa fa-minus-circle"></i> Forget'
-		, buttoncolor : '#bb2828'
-		, button      : function() {
-			notify( ssid, 'Forget ...', 'wifi' );
-			bash( [ 'disconnect', G.wlcurrent, ssid ] );
-		}
+		, buttonlabel : [
+			  '<i class="fa fa-minus-circle"></i> Forget'
+			, '<i class="fa fa-edit-circle"></i> IP'
+		]
+		, buttoncolor : [
+			  '#bb2828'
+			, ''
+		]
+		, button      : [
+			  function() {
+				notify( ssid, 'Forget ...', 'wifi' );
+				bash( [ 'disconnect', G.wlcurrent, ssid ] );
+			}
+			, function() {
+				editWiFi( ssid, '', 'edit' );
+			}
+		]
 		, oklabel     : 'Connect'
 		, ok          : function() {
 			notify( ssid, 'Connect ...', 'wifi blink' );

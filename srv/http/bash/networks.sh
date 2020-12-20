@@ -34,39 +34,38 @@ btremove )
 connect )
 	wlan=${args[1]}
 	ssid=${args[2]}
-	dhcp=${args[3]}
-	if [[ -n $dhcp ]]; then
-		wpa=${args[4]}
-		password=${args[5]}
-		hidden=${args[6]}
-		ip=${args[7]}
-		gw=${args[8]}
-		
-		profile="\
+	wpa=${args[3]}
+	password=${args[4]}
+	hidden=${args[5]}
+	ip=${args[6]}
+	gw=${args[7]}
+	edit=${args[8]}
+	[[ -n $ip ]] && dhcp=dpcp || dhcp=static
+	profile="\
 Interface=$wlan
 Connection=wireless
 ESSID=\"$ssid\"
 IP=$dhcp
 "
-		if [[ -n $password ]]; then
-			profile+="\
+	if [[ -n $password ]]; then
+		profile+="\
 Security=$wpa
 Key=\"$password\"
 "
-		else
-			profile+="\
+	else
+		profile+="\
 Security=none
 "
-		fi
-		[[ -n $hidden ]] && profile+="\
+	fi
+	[[ -n $hidden ]] && profile+="\
 Hidden=yes
 "
-		[[ $dhcp == static ]] && profile+="\
+	[[ $dhcp == static ]] && profile+="\
 Address=$ip/24
 Gateway=$gw
 "
-		echo "$profile" > "/etc/netctl/$ssid"
-	fi
+	echo "$profile" > "/etc/netctl/$ssid"
+	[[ -n $edit ]] && pushRefresh && exit
 	
 	ifconfig $wlan down
 	if netctl switch-to "$ssid"; then
@@ -136,6 +135,13 @@ ifconfig )
 ipused )
 	arp -n | grep -q ^${args[1]} && echo 1 || echo 0
 	;;
+profile )
+	value=$( cat "/etc/netctl/${args[1]}" \
+				| grep . \
+				| tr -d '"' \
+				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
+	echo {${value:0:-1}}
+	;;
 statusnetctl )
 	lists=$( netctl list )
 	[[ -z $lists ]] && echo '(none)' && exit
@@ -146,12 +152,6 @@ statusnetctl )
 		profiles+=$'\n'"<grn>$name</grn>"$'\n'"$( cat /etc/netctl/$name | sed -e '/^#.*/ d' -e 's/Key=.*/Key="*********"/' )"$'\n'
 	done
 	echo "${profiles:1:-1}"
-	;;
-statuswifi )
-	value=$( grep '^Address\|^Gateway\|^IP\|^Key\|^Security' "/etc/netctl/${args[1]}" \
-				| tr -d '"' \
-				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
-	echo {${value:0:-1}}
 	;;
 	
 esac
