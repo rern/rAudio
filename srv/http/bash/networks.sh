@@ -69,14 +69,8 @@ Gateway=$gw
 	
 	ifconfig $wlan down
 	netctl switch-to "$ssid"
-	if [[ $? == 0 ]]; then
-		systemctl enable netctl-auto@$wlan
-	else
-		ifconfig $wlan up
-		echo -1
-		[[ -n $password ]] && rm -f "/etc/netctl/$ssid"
-	fi
-	ifconfig $wlan up
+	systemctl enable netctl-auto@$wlan
+#	ifconfig $wlan up
 	pushRefresh
 	;;
 disconnect )
@@ -141,6 +135,26 @@ profile )
 				| tr -d '"' \
 				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
 	echo {${value:0:-1}}
+	;;
+profileconnect )
+	wlan=${args[1]}
+	ssid=${args[2]}
+	ifconfig $wlan down
+	netctl switch-to "$ssid"
+	systemctl enable netctl-auto@$wlan
+	pushRefresh
+	;;
+profileremove )
+	wlan=${args[1]}
+	ssid=${args[2]}
+	if netctl list | grep -q "^\* $ssid$"; then
+		netctl stop "$ssid"
+		killall wpa_supplicant
+		ifconfig $wlan up
+		systemctl disable netctl-auto@$wlan
+	fi
+	rm "/etc/netctl/$ssid"
+	pushRefresh
 	;;
 statusnetctl )
 	lists=$( netctl list )

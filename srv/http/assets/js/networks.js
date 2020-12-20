@@ -261,7 +261,7 @@ function infoConnect( $this ) {
 			  function() {
 				clearTimeout( intervalscan );
 				notify( ssid, 'Forget ...', 'wifi' );
-				bash( [ 'disconnect', G.wlcurrent, ssid ] );
+				bash( [ 'profileremove', G.wlcurrent, ssid ] );
 			}
 			, function() {
 				if ( ip ) {
@@ -286,7 +286,7 @@ function infoConnect( $this ) {
 			if ( connected ) {
 				bash( [ 'disconnect', G.wlcurrent ] );
 			} else {
-				connect( [ ssid ] );
+				connect( [ 'profileconnect', G.wlcurrent, ssid ] );
 			}
 		}
 	} );
@@ -406,7 +406,6 @@ function wlanScan() {
 				html += profile ? ' data-profile="'+ profile +'">' : '>';
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
 				html += '<span class="wf'+ signal +'"><i class="fa fa-wifi1"></i><i class="fa fa-wifi2"></i><i class="fa fa-wifi3"></i></span>'
-//				html += '<i class="fa fa-wifi-'+ ( val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 ) ) +'"></i>';
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
 				html += val.dbm < fair ? '<gr>'+ val.ssid +'</gr>' : val.ssid;
 				html += val.encrypt === 'on' ? ' <i class="fa fa-lock"></i>' : '';
@@ -547,7 +546,7 @@ $( '#listprofile' ).on( 'click', 'li', function() {
 		, button      : [
 			  function() {
 				notify( ssid, 'Forget ...', 'wifi' );
-				bash( [ 'disconnect', G.wlcurrent, ssid ] );
+				bash( [ 'profileremove', G.wlcurrent, ssid ] );
 			}
 			, function() {
 				editWiFi( ssid, '', 'edit' );
@@ -556,7 +555,7 @@ $( '#listprofile' ).on( 'click', 'li', function() {
 		, oklabel     : 'Connect'
 		, ok          : function() {
 			notify( ssid, 'Connect ...', 'wifi blink' );
-			connect( [ ssid ] );
+			bash( [ 'profileconnect', G.wlcurrent, ssid ] );
 		}
 	} );
 } );
