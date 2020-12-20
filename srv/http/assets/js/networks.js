@@ -330,7 +330,7 @@ function nicsStatus() {
 			}
 		} );
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
-		if ( 'bluetooth' in G && G.bluetooth ) {
+		if ( G.bluetooth ) {
 			G.bluetooth.forEach( function( list ) {
 				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
 				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';

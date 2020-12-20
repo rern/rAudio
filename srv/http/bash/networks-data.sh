@@ -43,13 +43,6 @@ done
 profile=$( netctl list | cut -c 3- )
 [[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" | sed 's/.*/"&"/' )
 
-data='
-	  "list"     : ['${list:1}']
-	, "hostapd"  : {'$ap'}
-	, "hostname" : "'$( hostname )'"
-	, "profile"  : ['$profile']
-	, "reboot"   : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
-	, "wlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
 # bluetooth
 if systemctl -q is-active bluetooth; then
 	readarray -t lines <<< $( bluetoothctl paired-devices | cut -d' ' -f2,3- )
@@ -65,11 +58,20 @@ if systemctl -q is-active bluetooth; then
 			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
 			btlist+=',{"name":"'${name//\"/\\\"}'","connected":'$connected',"mac":"'$mac'"}'
 		done
-		btlist=[${btlist:1}]
 	else
 		btlist=false
 	fi
-	data+=',"bluetooth":'$btlist
+else
+	btlist=false
 fi
+
+data='
+	  "bluetooth" : ['${btlist:1}']
+	, "list"      : ['${list:1}']
+	, "hostapd"   : {'$ap'}
+	, "hostname"  : "'$( hostname )'"
+	, "profile"   : ['$profile']
+	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
+	, "wlan"      : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
 
 echo {$data}
