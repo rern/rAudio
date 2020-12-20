@@ -458,11 +458,11 @@ function info( O ) {
 			}
 			if ( 'checkboxhr' in O ) $( '#infoCheckBox' ).after( '<hr>' );
 			if ( 'checked' in O ) {
-				var checked = typeof checked === 'object' ? O.checked : [ O.checked ];
+				if ( typeof O.checked !== 'object' ) O.checked = [ O.checked ];
 			} else {
-				var checked = '';
+				O.checked = '';
 			}
-			renderOption( $( '#infoCheckBox' ), html, checked );
+			renderOption( $( '#infoCheckBox' ), html, O.checked );
 		}
 		if ( 'select' in O ) {
 			$( '#infoSelectLabel' ).html( 'selectlabel' in O ? O.selectlabel : '' );
@@ -548,8 +548,7 @@ function renderOption( $el, htm, chk ) {
 		$el.removeClass( 'hide' );
 		if ( $el.prop( 'id' ) === 'infoCheckBox' ) { // by index
 			if ( chk ) {
-				var checked = typeof chk === 'object' ? chk : [ chk ];
-				checked.forEach( function( val ) {
+				chk.forEach( function( val ) {
 					$el.find( 'input' ).eq( val ).prop( 'checked', true );
 				} );
 			}
