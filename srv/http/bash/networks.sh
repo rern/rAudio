@@ -85,6 +85,7 @@ disconnect )
 	ifconfig $wlan up
 	if [[ -n $ssid ]]; then
 		systemctl disable netctl-auto@$wlan
+		rm "/etc/netctl/$ssid"
 	fi
 	pushRefresh
 	;;

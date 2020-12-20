@@ -40,8 +40,9 @@ for line in "${lines[@]}"; do
 	list+=',{"dhcp":"'$dhcp'","mac":"'$mac'","gateway":"'$gateway'","interface":"'$interface'","ip":"'$ip'","ssid":"'$ssid'"}'
 done
 
-profile=$( netctl list | cut -c 3- )
-[[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" | sed 's/.*/"&"/' )
+profile=$( netctl list | cut -c 3- | sed 's/.*/"&"/' )
+[[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" )
+profile=$( echo "$profile" | tr '\n' , | head -c -1 )
 
 # bluetooth
 if systemctl -q is-active bluetooth; then
