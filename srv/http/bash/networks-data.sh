@@ -45,9 +45,7 @@ for line in "${lines[@]}"; do
 		, "interface": "'$interface'"
 		, "ip"       : "'$ip'"
 		, "mac"      : "'$mac'"
-		, "password" : "'$password'"
 		, "ssid"     : "'$ssid'"
-		, "wpa"      : "'$wpa'"
 	}'
 done
 [[ -n $list ]] && list=[${list:1}] || list=false

@@ -144,6 +144,14 @@ profileconnect )
 	systemctl enable netctl-auto@$wlan
 	pushRefresh
 	;;
+profileget )
+	ssid=${args[1]}
+	readarray -t lines <<< $( cat "/etc/netctl/$ssid" | tr -d '"' )
+	for line in "${lines[@]}"; do
+		list+=',"'$( echo $line | cut -d= -f1 )'":"'$( echo $line | cut -d= -f2- )'"'
+	done
+	echo {${list:1}}
+	;;
 profileremove )
 	wlan=${args[1]}
 	ssid=${args[2]}

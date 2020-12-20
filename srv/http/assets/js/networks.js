@@ -265,14 +265,10 @@ function infoConnect( $this ) {
 			}
 			, function() {
 				if ( ip ) {
-					var data = {
-						  Address  : ip
-						, Gateway  : gw
-						, Security : wpa
-						, Key      : password
-						, IP       : dhcp
-					}
-					editWiFi( ssid, data );
+					bash( [ 'profileget', ssid ], function( data ) {
+						data.Address = data.Address.slice( 0, -3 );
+						editWiFi( ssid, data );
+					}, 'json' );
 				} else {
 					editWiFi( ssid, 0 );
 				}
@@ -318,8 +314,6 @@ function nicsStatus() {
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
 			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
-			html += 'password' in val ? ' data-password="'+ val.password +'"' : '';
-			html += 'wpa' in val ? ' data-wpa="'+ val.wpa +'"' : '';
 			html += '>&emsp;';
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return
