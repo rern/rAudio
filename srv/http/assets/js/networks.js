@@ -286,7 +286,7 @@ function infoConnect( $this ) {
 			if ( connected ) {
 				bash( [ 'disconnect', G.wlcurrent ] );
 			} else {
-				connect( [ 'profileconnect', G.wlcurrent, ssid ] );
+				bash( [ 'profileconnect', G.wlcurrent, ssid ] );
 			}
 		}
 	} );

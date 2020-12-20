@@ -1,5 +1,6 @@
 #!/bin/bash
 
+ifconfig wlan0 up &> /dev/null
 # accesspoint
 if systemctl -q is-active hostapd; then
 	ssid=$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf )
