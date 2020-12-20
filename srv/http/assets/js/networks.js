@@ -17,7 +17,7 @@ function btScan() {
 		intervalscan = setTimeout( btScan, 12000 );
 	}, 'json' );
 }
-function connect( data ) { // [ ssid, dhcp, wpa, password, hidden, ip, gw ]
+function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 	clearTimeout( intervalscan );
 	var ssid = data [ 0 ];
 	var ip = data[ 5 ];
@@ -340,10 +340,15 @@ function nicsStatus() {
 				htmlwl += '</li>';
 			}
 		} );
-		var htmlprofile = '';
-		G.profile.forEach( function( val ) {
-			htmlprofile += '<li><i class="fa fa-wifi"></i>'+ val +'</li>';
-		} );
+		if ( G.profile ) {
+			var htmlprofile = '';
+			G.profile.forEach( function( val ) {
+				htmlprofile += '<li><i class="fa fa-wifi"></i>'+ val +'</li>';
+			} );
+			$( '#listprofile' ).html( htmlprofile );
+		} else {
+			$( '#divprofile' ).addClass( 'hide' );
+		}
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
 		$( '#headbt' ).toggleClass( 'noline', htmlbt !== '' );
 		$( '#headbt .fa-code' ).toggleClass( 'hide', $( '#listbt grn' ).length === 0 );
@@ -353,7 +358,6 @@ function nicsStatus() {
 		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
 		$( '#listlan' ).html( htmllan );
 		$( '#listwl' ).html( htmlwl );
-		$( '#listprofile' ).html( htmlprofile );
 		if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
 		
 		renderQR();
@@ -570,7 +574,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				, passwordlabel : 'Password'
 				, oklabel       : 'Connect'
 				, ok            : function() {
-					connect( [ ssid, 'dhcp', wpa, $( '#infoPasswordBox' ).val() ] );
+					connect( [ ssid, wpa, $( '#infoPasswordBox' ).val() ] );
 				}
 			} );
 		} else {

@@ -40,7 +40,7 @@ connect )
 	ip=${args[6]}
 	gw=${args[7]}
 	edit=${args[8]}
-	[[ -n $ip ]] && dhcp=dpcp || dhcp=static
+	[[ -z $ip ]] && dhcp=dhcp || dhcp=static
 	profile="\
 Interface=$wlan
 Connection=wireless

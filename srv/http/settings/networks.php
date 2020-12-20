@@ -30,7 +30,7 @@
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>
-	<div>
+	<div id="divprofile">
 	<heading data-status="netctl" class="status noline">Saved Connections<i class="fa fa-code"></i></heading>
 	<span class="help-block hide"><code>cat /etc/netctl/SSID</code></span>
 	<ul id="listprofile" class="entries"></ul>
