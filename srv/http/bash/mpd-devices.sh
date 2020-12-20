@@ -24,7 +24,7 @@ fi
 
 audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )
 
-readarray -t lines <<<"$aplay"
+readarray -t lines <<< "$aplay"
 for line in "${lines[@]}"; do
 	hw=$( echo $line | sed 's/card \(.*\):.*device \(.*\):.*/hw:\1,\2/' )
 	card=${hw:3:1}

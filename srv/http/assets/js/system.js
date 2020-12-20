@@ -85,11 +85,9 @@ refreshData = function() {
 		}
 		$( '#systemlabel span' ).remove();
 		$( '#systemlabel' ).append( pad +'Sources</span>' );
-		G.sources.pop(); // remove autoupdate
-		G.sources.pop(); // remove reboot
 		systemlabel += '<span class="settings" data-setting="sources">Sources<i class="fa fa-gear"></i></span>';
 		var sourcelist = '';
-		$.each( G.sources, function( i, val ) {
+		$.each( G.sources.list, function( i, val ) {
 			sourcelist += '<i class="fa fa-'+ val.icon +' gr"></i>&ensp;'+ val.mountpoint.replace( '/mnt/MPD/USB/', '' );
 			sourcelist += ( val.size ? ' <gr>&bull;</gr> ' + val.size : '' ) +'<br>';
 			systemlabel += '<br>';

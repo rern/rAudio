@@ -11,8 +11,7 @@ if systemctl -q is-active hostapd; then
 	, "hostapdip"  : "'$hostapdip'"'
 fi
 
-lines=$( /srv/http/bash/networks.sh ifconfig )
-readarray -t lines <<<"$lines"
+readarray -t lines <<< $( /srv/http/bash/networks.sh ifconfig )
 for line in "${lines[@]}"; do
 	items=( $line )
 	interface=${items[0]}
@@ -32,13 +31,23 @@ for line in "${lines[@]}"; do
 	dhcp=$( [[ $ipr == *"dhcp src $ip "* ]] && echo dhcp || echo static )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -n1 | cut -d' ' -f3 )
-	[[ $inftype == wlan && -n $ip && $ip != $hostapdip ]] && ssid=$( iwgetid $interface -r ) || ssid=
-	data+='{"dhcp":"'$dhcp'","mac":"'$mac'","gateway":"'$gateway'","interface":"'$interface'","ip":"'$ip'","ssid":"'$ssid'"},'
+	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
+		ssid=$( iwgetid $interface -r )
+		connected=$ssid
+	else
+		ssid=
+	fi
+	list+=',{"dhcp":"'$dhcp'","mac":"'$mac'","gateway":"'$gateway'","interface":"'$interface'","ip":"'$ip'","ssid":"'$ssid'"}'
 done
 
-extra='
-	  "hostapd"  : {'$ap'}
+profile=$( netctl list | cut -c 3- )
+[[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" | sed 's/.*/"&"/' )
+
+data='
+	  "list"     : ['${list:1}']
+	, "hostapd"  : {'$ap'}
 	, "hostname" : "'$( hostname )'"
+	, "profile"  : ['$profile']
 	, "reboot"   : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "wlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
 # bluetooth
@@ -60,9 +69,7 @@ if systemctl -q is-active bluetooth; then
 	else
 		btlist=false
 	fi
-	extra+=',"bluetooth":'$btlist
+	data+=',"bluetooth":'$btlist
 fi
-		
-data+={${extra}}
 
-echo [${data}]
+echo {$data}

@@ -13,7 +13,7 @@ if [[ -n $dftarget ]]; then
 			/mnt/MPD/NAS ) icon=networks;;
 			/mnt/MPD/USB ) icon=usbdrive;;
 		esac
-		data+='{"icon":"'$icon'","mountpoint":"'${line//\"/\\\"}'","mounted":true,"source":"'${source//\"/\\\"}'","size":"'$size'"},'
+		list+=',{"icon":"'$icon'","mountpoint":"'${line//\"/\\\"}'","mounted":true,"source":"'${source//\"/\\\"}'","size":"'$size'"}'
 	done
 fi
 
@@ -24,7 +24,7 @@ if [[ -n $sources ]]; then
 		if ! df --output=source | grep -q $source; then
 			label=$( udevil info $source | awk '/^  label/ {print $NF}' )
 			mountpoint="/mnt/MPD/USB/$label"
-			data+='{"icon":"usbdrive","mountpoint":"'${mountpoint//\"/\\\"}'","mounted":false,"source":"'$source'"},'
+			list+=',{"icon":"usbdrive","mountpoint":"'${mountpoint//\"/\\\"}'","mounted":false,"source":"'$source'"}'
 		fi
 	done
 fi
@@ -36,11 +36,14 @@ if [[ -n $targets ]]; then
 		mountpoint=${target//\\040/ }  # \040 > space
 		if ! df --output=target | grep -q "$mountpoint"; then
 			source=$( grep "${mountpoint// /.040}" /etc/fstab | awk '{print $1}' | sed 's/\\040/ /g' )
-			data+='{"icon":"networks","mountpoint":"'${mountpoint//\"/\\\"}'","mounted":false,"source":"'${source//\"/\\\"}'"},'
+			list+=',{"icon":"networks","mountpoint":"'${mountpoint//\"/\\\"}'","mounted":false,"source":"'${source//\"/\\\"}'"}'
 		fi
 	done
 fi
 
-data+='"'$( cat /srv/http/data/shm/reboot 2> /dev/null )'",'
-data+=$( grep -q "auto_update.*yes" /etc/mpd.conf && echo true || echo false )
-echo [${data}]
+data='
+	  "list"       : ['${list:1}']
+	, "autoupdate" : '$( grep -q "auto_update.*yes" /etc/mpd.conf && echo true || echo false )'
+	, "reboot"     : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
+
+echo {$data}

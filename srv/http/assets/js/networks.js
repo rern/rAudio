@@ -291,21 +291,16 @@ function nicsStatus() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		var extra = G.pop();
-		if ( extra.hostapd ) {
-			G.hostapd = extra.hostapd;
+		if ( G.hostapd ) {
 			$( '#ssid' ).text( G.hostapd.ssid );
 			$( '#passphrase' ).text( G.hostapd.passphrase )
 			$( '#ipwebuiap' ).text( G.hostapd.hostapdip );
 		}
-		G.reboot = extra.reboot ? extra.reboot.split( '\n' ) : [];
-		if ( 'bluetooth' in extra ) G.bluetooth = extra.bluetooth;
-		G.hostname = extra.hostname;
 		var html = '';
 		var htmllan = '';
 		var htmlwl = '';
 		var htmlbt = '';
-		$.each( G, function( i, val ) {
+		$.each( G.list, function( i, val ) {
 			html = '<li class="'+ val.interface +'"';
 			html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
@@ -335,7 +330,7 @@ function nicsStatus() {
 			}
 		} );
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
-		if ( G.bluetooth ) {
+		if ( 'bluetooth' in G && G.bluetooth ) {
 			G.bluetooth.forEach( function( list ) {
 				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
 				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';

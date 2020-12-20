@@ -105,11 +105,8 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		G.autoupdate = G.pop();
-		reboot = G.pop();
-		G.reboot = reboot ? reboot.split( '\n' ) : [];
 		var html = '';
-		$.each( G, function( i, val ) {
+		$.each( G.list, function( i, val ) {
 			if ( val.mounted ) {
 				var dataunmounted = '';
 				var dot = '<grn>&ensp;&bull;&ensp;</grn>';
