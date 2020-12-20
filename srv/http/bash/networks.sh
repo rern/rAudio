@@ -70,7 +70,6 @@ Gateway=$gw
 	ifconfig $wlan down
 	netctl switch-to "$ssid"
 	systemctl enable netctl-auto@$wlan
-#	ifconfig $wlan up
 	pushRefresh
 	;;
 disconnect )

@@ -20,10 +20,10 @@ function btScan() {
 function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 	clearTimeout( intervalscan );
 	var ssid = data [ 0 ];
-	var ip = data[ 5 ];
+	var ip = data[ 4 ];
 	if ( ip ) {
 		loader();
-		location.href = 'http://'+ ip +'/settings.php?p=network';
+		location.href = 'http://'+ ip +'/settings.php?p=networks';
 		var text = ip.slice( -5 ) === 'local' ? 'Change URL to ' : 'Change IP to ';
 		notify( ssid, text + ip, 'wifi' );
 	} else {
@@ -162,7 +162,7 @@ function editWiFi( ssid, data, edit ) {
 				connect( data );
 			} else {
 				data.push( ip, gw );
-				if ( ip === data0.Address ) {
+				if ( data0 && ip === data0.Address ) {
 					connect( data );
 				} else {
 					bash( [ 'ipused', ip ], function( used ) {
