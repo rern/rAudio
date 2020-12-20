@@ -72,8 +72,9 @@ Gateway=$gw
 	if [[ $? == 0 ]]; then
 		systemctl enable netctl-auto@$wlan
 	else
+		ifconfig $wlan up
 		echo -1
-		rm -f "/etc/netctl/$ssid"
+		[[ -n $password ]] && rm -f "/etc/netctl/$ssid"
 	fi
 	ifconfig $wlan up
 	pushRefresh
@@ -84,10 +85,8 @@ disconnect )
 	netctl stop-all
 	killall wpa_supplicant
 	ifconfig $wlan up
-	if [[ -n $ssid ]]; then
-		systemctl disable netctl-auto@$wlan
-		rm "/etc/netctl/$ssid"
-	fi
+	[[ -n $ssid ]] && rm "/etc/netctl/$ssid"
+	netctl list | grep -q '^\*' || systemctl disable netctl-auto@$wlan
 	pushRefresh
 	;;
 editlan )

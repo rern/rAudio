@@ -43,7 +43,7 @@ done
 
 profile=$( netctl list | cut -c 3- )
 [[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" )
-profile=$( echo "$profile" | sed 's/.*/"&"/' | tr '\n' , | head -c -1 )
+profile=$( echo "$profile" | grep . | sed 's/.*/"&"/' | tr '\n' , | head -c -1 )
 [[ -n $profile ]] && profile=[$profile] || profile=false
 
 # bluetooth
