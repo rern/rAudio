@@ -127,7 +127,7 @@ function editWiFi( ssid, data, edit ) {
 				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
 			} else {
 				if ( data ) {
-					editWiFiSet( ssid, data );
+					editWiFiSet( ssid, data, 'edit' );
 				} else {
 					bash( [ 'profile', ssid ], function( data ) {
 						data.Address = 'Address' in data ? data.Address.replace( '/24', '' ) : '';
@@ -146,9 +146,9 @@ function editWiFi( ssid, data, edit ) {
 		, ok            : function() {
 			var ssid = ssid || $( '#infoTextBox' ).val();
 			var password = $( '#infoPasswordBox' ).val();
+			var dhcp = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ? 'static' : 'dhcp';
 			var ip = $( '#infoTextBox1' ).val();
 			var gw = $( '#infoTextBox2' ).val();
-			var dhcp = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ? 'static' : 'dhcp';
 			var hidden = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' ) ? 'hidden' : '';
 			var security = $( '#infoCheckBox input:eq( 2 )' ).prop( 'checked' ) ? 'wep' : 'wpa';
 			// [ wlan, ssid, wpa, password, hidden, ip, gw ]
@@ -229,7 +229,7 @@ function infoConnect( $this ) {
 	var ssid = $this.data( 'ssid' );
 	var ip = $this.data( 'ip' );
 	var gw = $this.data( 'gateway' );
-	var wpa = $this.data( 'wpa' ) || 'wep';
+	var wpa = $this.data( 'wpa' );
 	var dhcp = $this.data( 'dhcp' );
 	var encrypt = $this.data( 'encrypt' ) === 'on';
 	var password = $this.data( 'password' );
@@ -270,7 +270,7 @@ function infoConnect( $this ) {
 						, Gateway  : gw
 						, Security : wpa
 						, Key      : password
-						, dhcp     : dhcp
+						, IP       : dhcp
 					}
 					editWiFi( ssid, data );
 				} else {
@@ -318,6 +318,8 @@ function nicsStatus() {
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
 			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
+			html += 'password' in val ? ' data-password="'+ val.password +'"' : '';
+			html += 'wpa' in val ? ' data-wpa="'+ val.wpa +'"' : '';
 			html += '>&emsp;';
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return

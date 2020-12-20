@@ -34,10 +34,21 @@ for line in "${lines[@]}"; do
 	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
 		ssid=$( iwgetid $interface -r )
 		connected=$ssid
+		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
+		password=$( grep ^Key "/etc/netctl/$ssid" | cut -d= -f2- | tr -d '"' )
 	else
 		ssid=
 	fi
-	list+=',{"dhcp":"'$dhcp'","mac":"'$mac'","gateway":"'$gateway'","interface":"'$interface'","ip":"'$ip'","ssid":"'$ssid'"}'
+	list+=',{
+		  "dhcp"     : "'$dhcp'"
+		, "gateway"  : "'$gateway'"
+		, "interface": "'$interface'"
+		, "ip"       : "'$ip'"
+		, "mac"      : "'$mac'"
+		, "password" : "'$password'"
+		, "ssid"     : "'$ssid'"
+		, "wpa"      : "'$wpa'"
+	}'
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
 
