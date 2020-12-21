@@ -1,4 +1,4 @@
-<div> <!-- ---------------------------------------------------------- -->
+<div>
 <heading data-status="asound" class="status">Audio Output<i class="fa fa-code"></i><?=$help?></heading>
 <pre id="codeasound" class="hide"></pre>
 <div data-status="aplay" class="col-l double status">
@@ -27,11 +27,9 @@
 	</span>
 </div>
 <pre id="codeamixer" class="hide"></pre>
-</div> <!-- ---------------------------------------------------------- -->
+</div>
 
-<div style="clear: both;"></div>
-	
-<div> <!-- ---------------------------------------------------------- -->
+<div>
 <heading>Bit-Perfect<?=$help?></heading>
 <div class="col-l">No Volume</div>
 <div class="col-r">
@@ -58,9 +56,9 @@
 			<br>On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect</span>
 	</div>
 </div>
-</div> <!-- ---------------------------------------------------------- -->
+</div>
 
-<div> <!-- ---------------------------------------------------------- -->
+<div>
 <heading>Volume<?=$help?></heading>
 <div data-status="crossfade" class="col-l double status">
 	<a>Crossfade
@@ -102,9 +100,9 @@
 		<br>Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
 	</span>
 </div>
-</div> <!-- ---------------------------------------------------------- -->
+</div>
 
-<div> <!-- ---------------------------------------------------------- -->
+<div>
 <heading>Options<?=$help?></heading>
 <div class="col-l double">
 	<a>Auto Update
@@ -196,7 +194,7 @@
 	<span class="help-block hide">Insert settings into <code>/etc/mpd.conf</code>.</span>
 </div>
 
-</div> <!-- ---------------------------------------------------------- -->
+</div>
 
 <div>
 <heading data-status="mpdconf" class="status">Configuration<i class="fa fa-code"></i></heading>
@@ -207,5 +205,3 @@
 <span class="help-block hide"><i class="fa fa-reboot"></i>Restart MPD</span>
 <pre id="codempd" class="hide"></pre>
 </div>
-
-<div style="clear: both"></div>
