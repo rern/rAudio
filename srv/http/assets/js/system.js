@@ -193,8 +193,8 @@ $( '#refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	
 	var $this = $( this );
-	var active = $this.find( '.fa-refresh' ).hasClass( 'blink' );
-	$this.find( '.fa-refresh' ).toggleClass( 'blink', !active );
+	var active = $this.hasClass( 'blink' );
+	$this.toggleClass( 'blink', !active );
 	if ( active ) {
 		clearInterval( intervalcputime );
 		bannerHide();

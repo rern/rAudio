@@ -33,7 +33,7 @@ var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-syn
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
 	if ( $( target ).hasClass( 'help' )
-		|| [ 'btscan', 'mpdrestart', 'wladd', 'wlscan' ].indexOf( target.id ) !== -1 ) return
+		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( target.id ) !== -1 ) return
 	
 	var $el = $( '#code'+ id );
 	if ( target === 'status' && $el.hasClass( 'hide' ) ) return

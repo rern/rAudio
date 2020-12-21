@@ -18,7 +18,8 @@ foreach( $timezonelist as $key => $zone ) {
 $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
-<br>
+<heading data-status="journalctl" class="status">System<i class="fa fa-code"></i></heading>
+<pre id="codejournalctl" class="hide"></pre>
 <div id="systemlabel" class="col-l text gr">
 		Version
 	<br>Hardware
@@ -31,7 +32,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div id="systemvalue" class="col-r text"></div> 
 
 <div>
-<heading id="refresh" class="status">Status<i class="fa fa-refresh"></i><?=$help?></heading>
+<heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$help?></heading>
 <div id="statuslabel" class="col-l text gr">
 		CPU Load
 	<br>CPU Temperatue
@@ -68,11 +69,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		</div>
 	</span>
 </div>
-</div>
-
-<div>
-<heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i></heading>
-<pre id="codejournalctl" class="hide"></pre>
 </div>
 
 <div>
