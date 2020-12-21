@@ -24,8 +24,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 
 <div>
-<heading data-status="mount" class="status">Mounts<i class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>mount | grep ' / \|MPD'</code></span>
+<heading data-status="mount" class="status">Mounts<i class="fa fa-code"></i></heading>
 <pre id="codemount" class="hide"></pre>
 </div>
 
@@ -41,8 +40,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div> */ ?>
 
 <div>
-<heading data-status="fstab" class="status">File System Table<i class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>cat /etc/fstab</code></span>
+<heading data-status="fstab" class="status">File System Table<i class="fa fa-code"></i></heading>
 <pre id="codefstab" class="hide"></pre>
 </div>
 

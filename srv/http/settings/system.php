@@ -232,14 +232,12 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>journalctl -b</code></span>
+<heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i></heading>
 <pre id="codejournalctl" class="hide"></pre>
 </div>
 
 <div>
-<heading data-status="configtxt" class="status">/boot/config.txt<i class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>cat /boot/config.txt</code></span>
+<heading data-status="configtxt" class="status">/boot/config.txt<i class="fa fa-code"></i></heading>
 <pre id="codeconfigtxt" class="hide"></pre>
 </div>
 

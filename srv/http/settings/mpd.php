@@ -21,14 +21,12 @@
 </div> <!-- ---------------------------------------------------------- -->
 
 <div>
-<heading data-status="aplay" class="status">Devices<i class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>aplay -l</code></span>
+<heading data-status="aplay" class="status">Devices<i class="fa fa-code"></i></heading>
 <pre id="codeaplay" class="hide"></pre>
 </div>
 
 <div id="divamixer">
-<heading data-status="amixer" class="status">Hardware Mixers<i class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>amixer -c N</code></span>
+<heading data-status="amixer" class="status">Hardware Mixers<i class="fa fa-code"></i></heading>
 <pre id="codeamixer" class="hide"></pre>
 </div>
 
@@ -202,15 +200,12 @@
 </div> <!-- ---------------------------------------------------------- -->
 
 <div>
-<heading data-status="mpdconf" class="status">Configuration<i class="fa fa-code"></i><?=$help?></heading>
-<span class="help-block hide"><code>cat /etc/mpd.conf</code></span>
+<heading data-status="mpdconf" class="status">Configuration<i class="fa fa-code"></i></heading>
 <pre id="codempdconf" class="hide"></pre>
 </div>
 <div>
 <heading data-status="mpd" class="status">Status<i class="fa fa-code"></i><i id="mpdrestart" class="fa fa-reboot"></i><?=$help?></heading>
-<span class="help-block hide">
-	<code>systemctl status mpd</code> &emsp;<i class="fa fa-reboot"></i>Restart MPD
-</span>
+<span class="help-block hide"><i class="fa fa-reboot"></i>Restart MPD</span>
 <pre id="codempd" class="hide"></pre>
 </div>
 

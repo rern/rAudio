@@ -12,21 +12,21 @@ function bash( command, callback, json ) {
 	);
 }
 var cmd = {
-	  amixer       : '/srv/http/bash/mpd.sh mixerget'
-	, aplay        : 'aplay -l'
-	, bluetoothctl : 'systemctl -q is-active bluetooth && bluetoothctl show'
-	, bt           : 'bluetoothctl info'
-	, configtxt    : 'cat /boot/config.txt'
-	, crossfade    : 'mpc crossfade'
-	, fstab        : 'cat /etc/fstab'
-	, ifconfig     : 'ifconfig wlan0'
-	, journalctl   : '/srv/http/bash/system.sh statusbootlog'
-	, lan          : 'ifconfig eth0'
-	, mpdconf      : 'cat /etc/mpd.conf'
-	, mount        : 'mount | grep " / \\|MPD"'
-	, netctl       : '/srv/http/bash/networks.sh statusnetctl'
-	, soundprofile : '/srv/http/bash/system.sh soundprofileget'
-	, wlan         : 'ifconfig wlan0'
+	  amixer       : [ '/srv/http/bash/mpd.sh mixerget', 'amixer -c N' ]
+	, aplay        : [ 'aplay -l' ]
+	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
+	, bt           : [ 'bluetoothctl info' ]
+	, configtxt    : [ 'cat /boot/config.txt' ]
+	, crossfade    : [ 'mpc crossfade' ]
+	, fstab        : [ 'cat /etc/fstab' ]
+	, ifconfig     : [ 'ifconfig wlan0' ]
+	, journalctl   : [ '/srv/http/bash/system.sh statusbootlog', 'journalctl -b' ]
+	, lan          : [ 'ifconfig eth0' ]
+	, mpdconf      : [ 'cat /etc/mpd.conf' ]
+	, mount        : [ 'mount | grep " / \\|MPD"' ]
+	, netctl       : [ '/srv/http/bash/networks.sh statusnetctl', 'cat /etc/netctl/SSID' ]
+	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', 'sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br>ifconfig eth0' ]
+	, wlan         : [ 'ifconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 function codeToggle( id, target ) {
@@ -41,9 +41,11 @@ function codeToggle( id, target ) {
 		if ( services.indexOf( id ) !== -1 ) {
 			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = 'systemctl status '+ id;
+			var cmdtxt = command;
 			var systemctl = 1;
 		} else {
-			var command = cmd[ id ] +' 2> /dev/null';
+			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
+			var cmdtxt = cmd[ id ][ 1 ] || cmd[ id ][ 0 ];
 			var systemctl = 0;
 		}
 		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
@@ -61,7 +63,7 @@ function codeToggle( id, target ) {
 								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
 								.replace( /(failed)/, '<red>$1</red>' );
 				$el
-					.html( status )
+					.html( '# '+ cmdtxt +'<br><br>'+ status )
 					.removeClass( 'hide' );
 				if ( id === 'mpdconf' ) {
 					setTimeout( function() {
