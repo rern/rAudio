@@ -42,11 +42,10 @@ Settings - status and value
 	- `/srv/http/data/system/custom-{global,output}`
 
 ### System
-- on-board audio `grep -q dtparam=audio=on /boot/config.txt`
 - on-board bluetooth `grep -q dtparam=krnbt=on /boot/config.txt`
 - on-board wlan `lsmod | grep -q ^brcmfmac` and **`F`** `[[ -e /srv/http/data/system/onboard-wlan ]]` - `startup.sh`
 - i2s audio `cat /srv/http/data/system/audio-{aplayname,output}`
-- lcdchar `grep -q dtparam=i2c_arm=on /boot/config.txt && ! grep -q dtoverlay=tft35a /boot/config.txt`
+- lcdchar **`F`** `[[ -e /srv/http/data/system/lcdchar ]]`
 	- `/etc/lcdchar.conf`
 - lcd `grep -q dtoverlay=tft35a /boot/config.txt`
 - relays **`F`** `[[ -e /srv/http/data/system/relays ]]`

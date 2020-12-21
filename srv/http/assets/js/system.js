@@ -335,6 +335,7 @@ var infolcdchar = heredoc( function() { /*
 	</div>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
+	var lcdcharconf;
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
@@ -398,7 +399,7 @@ $( '#setting-lcdchar' ).click( function() {
 			// verify changes
 			if ( G.lcdchar ) $( '#infoOk' ).addClass( 'disabled' );
 			$( '#cols, #inf, #charmap, #address, #chip' ).change( function() {
-				var lcdcharconf = $( '#cols input:checked' ).val();
+				lcdcharconf = $( '#cols input:checked' ).val();
 				lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
 				if ( $( '#inf input:checked' ).val() === 'i2c' ) {
 					lcdcharconf += ' '+ $( '#address input:checked' ).val();
@@ -409,6 +410,10 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '.gpio input' ).slice( 0, 3 ).keyup( function() {
 				var $this = $( this );
 				$this.val( $this.val().replace( /[^0-9]/, '' ) );
+				lcdcharconf = $( '#cols input:checked' ).val();
+				lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
+				for ( i = 0; i < 4; i++ ) lcdcharconf += ' '+ $( '.gpio input' ).eq( i ).val();
+				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', lcdcharconf === G.lcdcharconf );
 			} );
 			$( '.gpio input:eq( 3 )' ).keyup( function() {
 				var $this = $( this );
@@ -428,19 +433,9 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			var lcdcharconf = $( '#cols input:checked' ).val();
-			lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
-			if ( $( '#inf input:checked' ).val() === 'i2c' ) {
-				lcdcharconf += ' '+ $( '#address input:checked' ).val();
-				lcdcharconf += ' '+ $( '#chip option:selected' ).val();
-				rebootText( 1, 'Character LCD' );
-				bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );
-			} else {
-				for ( i = 0; i < 4; i++ ) {
-					lcdcharconf += ' '+ $( '.gpio input' ).eq( i ).val();
-				}
-				bash( [ 'lcdchargpioset', lcdcharconf ] );
-			}
+			var cmd = $( '#inf input:checked' ).val() === 'i2c' ? 'lcdcharset' : 'lcdchargpioset';
+			rebootText( 1, 'Character LCD' );
+			bash( [ cmd, lcdcharconf, G.reboot.join( '\n' ) ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );

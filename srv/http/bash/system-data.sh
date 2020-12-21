@@ -61,7 +61,7 @@ data+='
 	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'
-	, "lcdchar"         : '$( [[ $i2c == true && $lcd == false ]] && echo true || echo false )'
+	, "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
 	, "mpd"             : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
