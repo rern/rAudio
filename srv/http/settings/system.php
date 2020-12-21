@@ -107,7 +107,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading>GPIO Devices<?=$help?></heading>
+<heading data-status="configtxt" class="status">GPIO Devices<i class="fa fa-code"></i><?=$help?></heading>
+<pre id="codeconfigtxt" class="hide"></pre>
 <div class="col-l double status">
 	<a>Audio
 	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
@@ -234,11 +235,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div>
 <heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i></heading>
 <pre id="codejournalctl" class="hide"></pre>
-</div>
-
-<div>
-<heading data-status="configtxt" class="status">/boot/config.txt<i class="fa fa-code"></i></heading>
-<pre id="codeconfigtxt" class="hide"></pre>
 </div>
 
 <?php
