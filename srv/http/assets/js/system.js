@@ -433,9 +433,16 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			var cmd = $( '#inf input:checked' ).val() === 'i2c' ? 'lcdcharset' : 'lcdchargpioset';
-			rebootText( 1, 'Character LCD' );
-			bash( [ cmd, lcdcharconf, G.reboot.join( '\n' ) ] );
+			if ( $( '#inf input:checked' ).val() === 'i2c' ) {
+				if ( !G.lcdchar ) {
+					rebootText( 1, 'Character LCD' );
+					bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );
+				} else {
+					bash( [ 'lcdcharset', lcdcharconf ] );
+				}
+			} else {
+				bash( [ 'lcdchargpioset', lcdcharconf ] );
+			}
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
