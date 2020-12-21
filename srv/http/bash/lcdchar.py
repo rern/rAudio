@@ -26,6 +26,7 @@ if address: # i2c
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, address=address, i2c_expander=chip, auto_linebreaks=False )
 else:
     from RPLCD.gpio import CharLCD
+    from RPi import GPIO
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, numbering_mode=GPIO.BOARD, pin_rs=15, pin_rw=18, pin_e=16, pins_data=[21, 22, 23, 24], auto_linebreaks=False )
 
 argv1 = sys.argv[ 1 ] # backlight on/off
