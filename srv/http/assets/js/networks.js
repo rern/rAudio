@@ -331,7 +331,9 @@ function nicsStatus() {
 		if ( G.profile ) {
 			var htmlprofile = '';
 			G.profile.forEach( function( val ) {
-				htmlprofile += '<li><i class="fa fa-wifi"></i>'+ val +'</li>';
+				var connected = val[ 0 ] === '*' ? '&ensp;<grn>&bull;</grn>' : '';
+				var ssid = val.replace( /^\** /, '' );
+				htmlprofile += '<li data-ssid="'+ ssid +'">'+ connected +'&ensp;'+ ssid +'</li>';
 			} );
 			$( '#listprofile' ).html( htmlprofile );
 			$( '#divprofile' ).removeClass( 'hide' );
@@ -520,11 +522,15 @@ $( '#listwl' ).on( 'click', 'li', function() {
 	if ( !( 'ssid' in G ) ) infoConnect( $( this ) );
 } );
 $( '#listprofile' ).on( 'click', 'li', function() {
-	var ssid = $( this ).text();
+	var $this = $( this );
+	var ssid = $this.data( 'ssid' );
 	info( {
 		  icon        : 'wifi'
 		, title       : 'Saved Connection'
 		, message     : ssid
+		, preshow     : function() {
+			if ( $this.find( 'grn' ).length ) $( '#infoOk' ).toggleClass( 'hide' );
+		}
 		, buttonwidth : 1
 		, buttonlabel : [
 			  '<i class="fa fa-minus-circle"></i> Forget'

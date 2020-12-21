@@ -239,7 +239,7 @@ grl,
 h1,
 heading {
 	display: inline-block;
-	margin: 20px 0 10px 0;
+	margin: 25px 0 10px 0;
 	padding-bottom: 5px;
 	width: 100%;
 	line-height: 35px;
@@ -248,7 +248,7 @@ heading {
 	border-bottom: 1px solid var( --cg );
 }
 heading.sub {
-	margin: 10px 0 5px 0;
+	margin: 5px 0 5px 0;
 	padding-bottom: 5px;
 	line-height: 24px;
 	font-size: 18px;

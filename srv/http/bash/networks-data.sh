@@ -33,7 +33,6 @@ for line in "${lines[@]}"; do
 	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
 	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
 		ssid=$( iwgetid $interface -r )
-#		connected=$ssid
 		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
 		password=$( grep ^Key "/etc/netctl/$ssid" | cut -d= -f2- | tr -d '"' )
 	else
@@ -50,10 +49,16 @@ for line in "${lines[@]}"; do
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
 
-profile=$( netctl list | cut -c 3- )
-#[[ -n $connected ]] && profile=$( echo "$profile" | grep -v "^$connected$" )
-profile=$( echo "$profile" | grep . | sed 's/.*/"&"/' | tr '\n' , | head -c -1 )
-[[ -n $profile ]] && profile=[$profile] || profile=false
+profile=$( netctl list )
+if [[ -n $profile ]]; then
+	profile=$( echo "$profile" \
+				| sed 's/.*/"&"/' \
+				| tr '\n' , \
+				| head -c -1 )
+	profile=[$profile]
+else
+	profile=false
+fi
 
 # bluetooth
 if systemctl -q is-active bluetooth; then
