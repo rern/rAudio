@@ -29,11 +29,11 @@
 	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
-	</div>
 	<div id="divprofile">
-	<heading data-status="netctl" class="status noline">Saved Connections<i class="fa fa-code"></i></heading>
+	<heading data-status="netctl" class="status noline sub">Saved Connections<i class="fa fa-code"></i></heading>
 	<ul id="listprofile" class="entries"></ul>
 	<pre id="codenetctl" class="hide"></pre>
+	</div>
 	</div>
 <?php } ?>
 	
