@@ -67,7 +67,7 @@ function editLAN( data ) {
 		, button       : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
 			loader();
-			location.href = 'http://'+ G.hostname +'.local/settings.php?p=network';
+			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
 		}
 		, ok           : function() {
@@ -108,10 +108,11 @@ function editWiFi( ssid, data, edit ) {
 			function verify() {
 				var ssid1 = $( '#infoTextBox' ).val();
 				var pw1 = $( '#infoPasswordBox' ).val();
-				var changed = ssid1 !== ssid || pw1 !== data.Key;
+				var static = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
+				var changed = ssid1 !== ssid || pw1 !== data.Key || static !== data.dhcp;
 				changed = changed && pw1.length > 7;
 				if ( changed ) {
-					if ( $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ) {
+					if ( static ) {
 						var ip1 = $( '#infoTextBox1' ).val();
 						var gw1 = $( '#infoTextBox2' ).val();
 						if ( !validateIP( ip1 ) || !validateIP( gw1 ) ) {
@@ -205,14 +206,6 @@ function editWiFiSet( ssid, data, edit ) {
 	if ( static ) {
 		$( '#infoTextBox1' ).val( data.Address );
 		$( '#infoTextBox2' ).val( data.Gateway );
-		$( '#infoOk' ).before( '<a id="infoButton" class="infobtn extrabtn infobtn-default"><i class="fa fa-undo"></i>DHCP</a>' );
-		$( '#infoButton' ).click( function() {
-			$( '#infoX' ).click();
-			loader();
-			notify( ssid, 'DHCP ...', 'wifi' );
-			location.href = 'http://'+ G.hostname +'.local/settings.php?p=network';
-			bash( [ 'editwifidhcp', ssid ] );
-		} );
 	} else {
 		$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).hide();
 	}
