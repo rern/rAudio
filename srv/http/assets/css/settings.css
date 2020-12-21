@@ -534,6 +534,10 @@ input:checked + .switchlabel.disabled:after {
 .cga {
 	background: var( --cga ) !important;
 }
+#boxqr .col-l {
+	padding-top: 0;
+	text-align: left;
+}
 .qr {
 	margin: 5px 0 10px;
 	width: 130px;

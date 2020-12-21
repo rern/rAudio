@@ -1,7 +1,7 @@
 <div id="divinterface">
 <?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
 	<div>
-	<heading id="headbt" class="status noline" data-status="bt"><i class="fa fa-bluetooth"></i>Bluetooth<i class="fa fa-code"></i><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
+	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<i class="fa fa-code"></i><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
 	<ul id="listbt" class="entries"></ul>
 	<span class="help-block hide">
 			&bull; As sender / source - Send signal to another device.
@@ -19,14 +19,14 @@
 <?php }
 	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
 	 <div>
-	<heading id="headlan" class="status noline" data-status="lan"><i class="fa fa-networks"></i>LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
+	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
 	</div>
 <?php }
 	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
 	<div>
-	<heading id="headwl" class="status noline" data-status="wlan"><i class="fa fa-wifi"></i>Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
+	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>
@@ -41,12 +41,9 @@
 	<div>
 	<heading>Web User Interface<?=$help?></heading>
 	<div id="divwebui" class="hide">
-		<div class="col-l">URL</div>
-		<div class="col-r">
-			<gr>http://</gr><span id="ipwebui"></span><br>
-			<div id="qrwebui" class="qr"></div>
-			<span class="help-block hide">Scan QR code or use IP address to connect with web user interface.</span>
-		</div>
+		<gr>http://</gr><span id="ipwebui"></span><br>
+		<div id="qrwebui" class="qr"></div>
+		<span class="help-block hide">Scan QR code or use IP address to connect with web user interface.</span>
 	</div>
 	</div>
 </div>
@@ -72,17 +69,16 @@
 
 	<?php if ( exec( 'systemctl -q is-active hostapd && echo 1 || echo 0' ) ) { ?>
 <div id="divaccesspoint">
-	<heading>RPi Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
+	<heading>rAudio Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
 	<div id="boxqr" class="hide">
-		<div class="col-l">Credential</div>
-		<div class="col-r">
+		<div class="col-l">
 			<gr>SSID:</gr> <span id="ssid"></span><br>
 			<gr>Password:</gr> <span id="passphrase"></span>
 			<div id="qraccesspoint" class="qr"></div>
 			<span class="help-block hide">Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.</span>
 		</div>
-		<div class="col-l">Web UI</div>
 		<div class="col-r">
+			<br>
 			<gr>http://</gr><span id="ipwebuiap"></span>
 			<div class="divqr">
 				<div id="qrwebuiap" class="qr"></div>
