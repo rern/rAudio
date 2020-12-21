@@ -244,7 +244,6 @@ lcdchardisable )
 	;;
 lcdchargpioset )
 	val=( ${args[1]} )
-	reboot=${args[2]}
 echo -n "\
 [var]
 cols=${val[0]}
@@ -256,7 +255,6 @@ pins_data=${val[5]}
 " > /etc/lcdchar.conf
 	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-	echo "$reboot" > $filereboot
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
