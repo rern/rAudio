@@ -307,10 +307,9 @@ soundprofiledisable )
 soundprofileget )
 	val+=$( sysctl kernel.sched_latency_ns )$'\n'
 	val+=$( sysctl vm.swappiness )$'\n'
-	if ifconfig | grep -q eth0; then
-		val+=$( ifconfig eth0 | awk '/mtu/ {print "mtu = "$NF}' )$'\n'
-		val+=$( ifconfig eth0 | awk '/txqueuelen/ {print "txqueuelen = "$4}' )$'\n'
-	fi
+	ifconfig | grep -q eth0 && val+=$( ifconfig eth0 \
+										| grep 'mtu\|txq' \
+										| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )
 	echo "${val:0:-1}"
 	;;
 soundprofileset )
