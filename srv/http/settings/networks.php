@@ -72,18 +72,18 @@
 	<heading>rAudio Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
 	<div id="boxqr" class="hide">
 		<div class="col-l">
-			<gr>SSID:</gr> <span id="ssid"></span><br>
-			<gr>Password:</gr> <span id="passphrase"></span>
-			<div id="qraccesspoint" class="qr"></div>
-			<span class="help-block hide">Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.</span>
-		</div>
-		<div class="col-r">
 			<br>
 			<gr>http://</gr><span id="ipwebuiap"></span>
 			<div class="divqr">
 				<div id="qrwebuiap" class="qr"></div>
 			</div>
 			<span class="help-block hide">Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.</span>
+		</div>
+		<div class="col-r">
+			<gr>SSID:</gr> <span id="ssid"></span><br>
+			<gr>Password:</gr> <span id="passphrase"></span>
+			<div id="qraccesspoint" class="qr"></div>
+			<span class="help-block hide">Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.</span>
 		</div>
 	</div>
 </div>
