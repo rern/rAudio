@@ -1063,7 +1063,7 @@ function renderPlayback() {
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 	$( '#song' ).toggleClass( 'gr', G.status.state === 'pause' );
-	if ( !G.status.elapsed || G.status.elapsed > G.status.Time ) {
+	if ( !( 'elapsed' in G.status ) || G.status.elapsed > G.status.Time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 		return
 	}
