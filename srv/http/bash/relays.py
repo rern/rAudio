@@ -34,8 +34,6 @@ on4  = on[ 'on4' ]
 onpins = [ on1, on2, on3, on4 ]
 onenable = [ n for n in onpins if n != 0 ]
 
-ond = ond1 + ond2 + ond3
-
 state = GPIO.input( onenable[ 0 ] )
 
 off   = gpio[ 'off' ]
