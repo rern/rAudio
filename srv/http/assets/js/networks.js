@@ -339,14 +339,17 @@ function nicsStatus() {
 			$( '#divprofile' ).addClass( 'hide' );
 		}
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
-		$( '#headbt' ).toggleClass( 'noline', htmlbt !== '' );
-		$( '#headbt .fa-code' ).toggleClass( 'hide', $( '#listbt grn' ).length === 0 );
 		$( '#listbt' ).html( htmlbt );
+		$( '#listlan' ).html( htmllan );
+		$( '#listwl' ).html( htmlwl );
+		var active = $( '#listbt grn' ).length > 0;
+		$( '#headbt' )
+			.toggleClass( 'noline', htmlbt !== '' )
+			.toggleClass( 'status', active );
+		$( '#headbt .fa-code' ).toggleClass( 'hide', !active );
 		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
-		$( '#listlan' ).html( htmllan );
-		$( '#listwl' ).html( htmlwl );
 		if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
 		
 		renderQR();

@@ -261,7 +261,7 @@ $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( '.container' ).on( 'click', '.status', function( e ) {
 	codeToggle( $( this ).data( 'status' ), e.target );
 } );
 // bar-bottom
