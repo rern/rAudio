@@ -162,7 +162,7 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 			| head -1 \
 			| cut -d"'" -f2 )
 		rm -f $usbdacfile
-		mv -f /etc/asound.conf{.backup,} &> /dev/null
+		sed -i "s/.$/$card/" /etc/asound.conf
 	else
 		name=${Aname[@]: -1} # added usb dac = last one
 		card=${Acard[@]: -1}
@@ -170,8 +170,6 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 		hwmixer=${Amixertype[@]: -1}
 		[[ $mixertype == 'none' && -n $hwmixer ]] && amixer -c $card sset "$hwmixer" 0dB
 		echo $aplayname > $usbdacfile # flag - active usb
-		# set default card for bluetooth
-		mv -f /etc/asound.conf{,.backup} &> /dev/null
 		sed -i "s/.$/$card/" /etc/asound.conf
 	fi
 	
@@ -187,19 +185,17 @@ card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 if [[ -e /usr/bin/shairport-sync ]]; then
 	hwmixer="${Ahwmixer[$card]}"
 	if [[ -n $hwmixer ]]; then
-		alsa='
-output_device = "hw:'$card'";
-mixer_control_name = "'$hwmixer'";
+		alsa='alsa = {
+	output_device = "hw:'$card'";
+	mixer_control_name = "'$hwmixer'";
 }'
 	else
-		alsa='
-output_device = "hw:'$card'";
+		alsa='alsa = {
+	output_device = "hw:'$card'";
 }'
 	fi
-	sed -i -e '/^alsa =/,$ d
-' -e "$ a\$alsa
-" /etc/shairport-sync.conf
-
+	sed -i '/^alsa =/,$ d' /etc/shairport-sync.conf
+	echo "$alsa" >> /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
 fi
