@@ -95,7 +95,7 @@ DNSSEC=no
 DHCP=yes
 "
 	else
-		arp -n | grep -q ^$ip && echo -1 && exit
+		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 		
 		eth0+="\
 Address=$ip/24
@@ -127,7 +127,7 @@ ifconfig )
 	echo "$lines"
 	;;
 ipused )
-	arp -n | grep -q ^${args[1]} && echo 1 || echo 0
+	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profile )
 	value=$( cat "/etc/netctl/${args[1]}" \
