@@ -2659,8 +2659,8 @@ li.active .li2 bl {
 /* 3.5" lcd */
 @media( max-width: 480px ) and ( max-height: 320px ) {
 	#page-playback {
-		--scale: 0.6;
-		padding: 80px 0 0 !important;
+		--scale: 0.65;
+		padding: 50px 0 0 !important;
 	}
 	#bar-top,
 	#bar-bottom {
@@ -2678,11 +2678,13 @@ li.active .li2 bl {
 	#playback-controls i {
 		font-size: 22px;
 	}
+	#infoicon,
 	#sampling,
 	#guide-lyrics { display: none; }
 	#coverart-block,
 	#divcover { max-width: 100vh; }
 	#coverart-block { margin-bottom : 0; }
+	#playback-row { margin-top: 35px; }
 }
 @media( max-height: 480px ) and ( max-width: 320px ) {
 	#page-playback {
