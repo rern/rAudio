@@ -259,7 +259,7 @@ function infoConnect( $this ) {
 			, function() {
 				if ( ip ) {
 					bash( [ 'profileget', ssid ], function( data ) {
-						data.Address = data.Address.slice( 0, -3 );
+						if ( 'Address' in data ) data.Address = data.Address.slice( 0, -3 );
 						editWiFi( ssid, data );
 					}, 'json' );
 				} else {
