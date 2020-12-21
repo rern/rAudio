@@ -2450,6 +2450,7 @@ li.active .li2 bl {
 	#settings {
 		position: absolute;
 	}
+	#sampling { display: none; }
 	#playback-row {
 		margin-top: 10px;
 	}
@@ -2460,6 +2461,7 @@ li.active .li2 bl {
 		min-width: 30%;
 		margin: 0 10px;
 	}
+	#coverart-block { margin-top: -20px; }
 	#play-group,
 	#vol-group {
 		display: none;
