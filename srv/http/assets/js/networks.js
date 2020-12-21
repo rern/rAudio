@@ -303,7 +303,7 @@ function nicsStatus() {
 		var html = '';
 		if ( G.bluetooth ) {
 			G.bluetooth.forEach( function( list ) {
-				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'">&emsp;';
+				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
 				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
 			} );
 			$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
@@ -314,11 +314,10 @@ function nicsStatus() {
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
 			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
-			html += '>&emsp;';
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return
 				
-				htmllan = html;
+				htmllan = html +'><i class="fa fa-networks"></i>';
 				htmllan += val.ip ? '<grn>&bull;</grn>&ensp;'+ val.ip : '';
 				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
 				htmllan += '</li>';
@@ -326,7 +325,7 @@ function nicsStatus() {
 				if ( !val.ip && !G.hostapd.hostapdip ) return
 				
 				G.wlcurrent = val.interface;
-				htmlwl = html;
+				htmlwl = html +'><i class="fa fa-wifi"></i>';
 				if ( G.hostapd.ssid ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>RPi access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
