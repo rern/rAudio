@@ -226,6 +226,8 @@ bluetoothplayerstop )
 	systemctl restart bluezdbus
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
+	status=$( /srv/http/bash/status.sh )
+	pushstream mpdplayer "$status"
 	;;
 bookmarkreset )
 	path=${args[1]}
