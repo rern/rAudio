@@ -444,7 +444,6 @@ $( '#setting-lcdchar' ).click( function() {
 				}
 			} else {
 				if ( lcdcharconf.split( ' ' ).length !== 6 ) lcdcharconf = '20 A00 15 18 16 21,22,23,24';
-				console.log( [ 'lcdchargpioset', lcdcharconf ] );
 				bash( [ 'lcdchargpioset', lcdcharconf ] );
 			}
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
