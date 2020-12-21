@@ -116,6 +116,7 @@ $( '.enablenoset' ).click( function() {
 		, streaming        : [ 'HTTP Streaming',                   'mpd' ]
 		, upmpdcli         : [ 'UPnP Renderer',                    'upnp' ]
 	}
+	var id = this.id;
 	var checked = $( this ).prop( 'checked' );
 	var nameicon = idname[ id ];
 	notify( nameicon[ 0 ], checked, nameicon[ 1 ] );
