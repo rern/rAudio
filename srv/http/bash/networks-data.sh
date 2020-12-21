@@ -51,10 +51,7 @@ done
 
 profile=$( netctl list )
 if [[ -n $profile ]]; then
-	profile=$( echo "$profile" \
-				| sed 's/.*/"&"/' \
-				| tr '\n' , \
-				| head -c -1 )
+	profile=$( echo "$profile" | sed 's/.*/"&"/' | tr '\n' , | head -c -1 )
 	profile=[$profile]
 else
 	profile=false
