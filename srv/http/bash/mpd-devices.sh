@@ -39,9 +39,11 @@ for line in "${lines[@]}"; do
 	fi
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	if [[ -e $hwmixerfile ]]; then # manual
+		mixertype=hardware
 		mixers=2
 		hwmixer=$( cat "$hwmixerfile" )
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 		mixers=4
 		hwmixer='HPOUT2 Digital'
 	else
@@ -58,7 +60,7 @@ for line in "${lines[@]}"; do
 			mixertype=software
 			hwmixer=
 		else
-			[[ -e $dirsystem/mixertype-$aplayname ]] && mixertype=$( cat "$dirsystem/mixertype-$aplayname" ) || mixertype=hardware
+			mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
 			else
