@@ -2546,6 +2546,7 @@ li.active .li2 bl {
 }
 @media( orientation: portrait ) and ( max-width: 614px ) {
 	#time-knob { display: none; }
+	#volume-knob { margin-top: 40px; }
 }
 @media( orientation: portrait ) and ( max-width: 540px ) {
 	#playback-row {
