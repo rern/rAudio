@@ -71,6 +71,11 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
+<heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i></heading>
+<pre id="codejournalctl" class="hide"></pre>
+</div>
+
+<div>
 <heading>Wireless<?=$help?></heading>
 	<?php $code = exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" );
 		$hwcode = substr( $code, -3, 2 );
@@ -231,12 +236,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span class="help-block hide">Restore all settings and Library database from a backup file. The system will reboot after finished.</span>
 </div>
 </div>
-
-<div>
-<heading data-status="journalctl" class="status">Boot Log<i id="journalctlicon" class="fa fa-code"></i></heading>
-<pre id="codejournalctl" class="hide"></pre>
-</div>
-
 <?php
 $listos = [
 	  'Avahi'                    => 'https://www.avahi.org/'
@@ -303,7 +302,7 @@ foreach( $listui as $name => $link ) {
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
 ?>
-<br><br>
+<br>
 <heading>About</heading>
 <i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
 <br><gr>by</gr>&emsp;r e r n
