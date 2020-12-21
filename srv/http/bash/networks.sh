@@ -171,7 +171,7 @@ statusnetctl )
 	readarray -t lists <<< "$lists"
 	for list in "${lists[@]}"; do
 		name=$( sed 's/^-*\** *//' <<< $list )
-		profiles+=$'\n'"<grn>$name</grn>"$'\n'"$( cat /etc/netctl/$name | sed -e '/^#.*/ d' -e 's/Key=.*/Key="*********"/' )"$'\n'
+		profiles+=$'\n'"$name<hr>$( cat /etc/netctl/$name | sed -e '/^#.*/ d' -e 's/Key=.*/Key="*********"/' )"$'\n'
 	done
 	echo "${profiles:1:-1}"
 	;;
