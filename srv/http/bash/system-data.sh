@@ -41,7 +41,6 @@ snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/
 i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt && echo true || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
-[[ -z $lcdcharconf ]] && lcdcharconf='20 A00 0x27 PCF8574'
 if [[ $i2c == true ]]; then
 	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
 	[[ -n $dev ]] && lcdcharaddr=$( i2cdetect -y $dev \

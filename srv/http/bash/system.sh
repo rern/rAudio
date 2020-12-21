@@ -269,6 +269,19 @@ chip=${val[3]}
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
+lcdchargpioset )
+	val=( ${args[1]} )
+echo -n "\
+[var]
+cols=${val[0]}
+charmap=${val[1]}
+pin_rs=${val[2]}
+pin_rw=${val[3]}
+pin_e=${val[4]}
+pins_data=${val[5]}
+" > /etc/lcdchar.conf
+	touch $dirsystem/lcdchar
+	pushRefresh	;;
 onboardaudio )
 	[[ ${args[1]} == true ]] && onoff=on || onoff=off
 	sed -i "s/\(dtparam=audio=\).*/\1$onoff/" $fileconfig

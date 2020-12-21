@@ -4,22 +4,28 @@ import sys
 if len( sys.argv ) == 1: quit()
 
 import os.path
-conf = '/etc/lcdchar.conf'
-if os.path.exists( conf ):
-    import configparser
-    config = configparser.ConfigParser()
-    config.read( conf )
-    cols = int( config.get( 'var', 'cols' ) )
-    charmap = config.get( 'var', 'charmap' )
-    address = int( config.get( 'var', 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
-    chip = config.get( 'var', 'chip' )
-else:
-    cols = 20
-    charmap = 'A00'
-    chip = 'PCF8574'
-    address = '0x27'
-rows = cols == 16 and 2 or 4
+import configparser
+config = configparser.ConfigParser()
+conffile = '/etc/lcdchar.conf'
+if not os.path.exists( conffile ): quit()
 
+config.read( conffile )
+section = 'var'
+cols = int( config.get( section, 'cols' ) )
+charmap = config.get( section, 'charmap' )
+if config.has_option( section, 'address' ):
+    address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
+    chip = config.get( section, 'chip' )
+else:
+    address = ''
+    pin_rs = int( config.get( section, 'pin_rs' ) )
+    pin_rw = int( config.get( section, 'pin_rw' ) )
+    pin_e = int( config.get( section, 'pin_e' ) )
+    data = config.get( section, 'pins_data' ).split( ',' )
+    data = map( int, data )
+    pins_data = list( data )
+    rows = cols == 16 and 2 or 4
+    
 if address: # i2c
     from RPLCD.i2c import CharLCD
     lcd = CharLCD( chip, address )
@@ -27,7 +33,7 @@ if address: # i2c
 else:
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
-    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, numbering_mode=GPIO.BOARD, pin_rs=15, pin_rw=18, pin_e=16, pins_data=[21, 22, 23, 24], auto_linebreaks=False )
+    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data, auto_linebreaks=False )
 
 argv1 = sys.argv[ 1 ] # backlight on/off
 if argv1 == 'on' or argv1 == 'off':
