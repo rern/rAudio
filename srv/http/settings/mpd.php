@@ -1,10 +1,18 @@
 <div> <!-- ---------------------------------------------------------- -->
-<heading>Audio Output<?=$help?></heading>
-<div class="col-l control-label">Device</div>
+<heading data-status="asound" class="status">Audio Output<i class="fa fa-code"></i><?=$help?></heading>
+<pre id="codeasound" class="hide"></pre>
+<div data-status="aplay" class="col-l double status">
+	<a>Device
+	<br><gr><i class="fa fa-code"></i></gr></a>
+</div>
 <div class="col-r">
 	<select id="audiooutput" data-style="btn-default btn-lg"></select>
 </div>
-<div class="col-l control-label">Mixer Control</div>
+<pre id="codeaplay" class="hide"></pre>
+<div data-status="amixer" class="col-l double status">
+	<a>Mixer Control
+	<br><gr><i class="fa fa-code"></i></gr></a>
+</div>
 <div class="col-r">
 	<select id="mixertype" data-style="btn-default btn-lg"></select>
 	<i id="setting-mixertype" class="settingedit fa fa-gear hwmixer"></i><br>
@@ -18,17 +26,8 @@
 		</p>
 	</span>
 </div>
-</div> <!-- ---------------------------------------------------------- -->
-
-<div>
-<heading data-status="aplay" class="status">Devices<i class="fa fa-code"></i></heading>
-<pre id="codeaplay" class="hide"></pre>
-</div>
-
-<div id="divamixer">
-<heading data-status="amixer" class="status">Hardware Mixers<i class="fa fa-code"></i></heading>
 <pre id="codeamixer" class="hide"></pre>
-</div>
+</div> <!-- ---------------------------------------------------------- -->
 
 <div style="clear: both;"></div>
 	

@@ -14,6 +14,7 @@ function bash( command, callback, json ) {
 var cmd = {
 	  amixer       : [ '/srv/http/bash/mpd.sh mixerget', 'amixer -c N' ]
 	, aplay        : [ 'aplay -l' ]
+	, asound       : [ 'cat /etc/asound.conf' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, bt           : [ 'bluetoothctl info' ]
 	, configtxt    : [ 'cat /boot/config.txt' ]
