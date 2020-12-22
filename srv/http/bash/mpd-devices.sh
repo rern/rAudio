@@ -31,7 +31,7 @@ for line in "${lines[@]}"; do
 	device=${hw: -1}
 	aplayname=$( echo $line \
 					| awk -F'[][]' '{print $2}' \
-					| sed 's/^snd_rpi_//' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
+					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
 	[[ $aplayname == wsp ]] && aplayname=rpi-cirrus-wm5102
 	if [[ $aplayname == $audioaplayname ]]; then
 		name=$( cat $dirsystem/audio-output )
@@ -39,20 +39,19 @@ for line in "${lines[@]}"; do
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
+	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 	if [[ -e $hwmixerfile ]]; then # manual
 		mixers=2
 		hwmixer=$( cat "$hwmixerfile" )
-		mixertype=hardware
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
 		hwmixer='HPOUT2 Digital'
-		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 	else
 		amixer=$( amixer -c $card scontents )
 		if [[ -z $amixer ]]; then
 			mixers=0
 			hwmixer=
-			mixertype=software
+			[[ $mixertype == hardware ]] && mixertype=software
 		else
 			amixer=$( echo "$amixer" \
 				| grep -A2 'Simple mixer control' \
@@ -70,7 +69,6 @@ for line in "${lines[@]}"; do
 				hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
 				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
 			fi
-			mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 		fi
 	fi
 	
