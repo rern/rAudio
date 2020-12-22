@@ -43,18 +43,6 @@ function infoMount( formdata ) {
 			// verify
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '.infoinput' ).keyup( function() {
-				var $this = $( this );
-				var cifs = $( 'input[name=protocol]:checked' ).val() === 'cifs';
-				var val;
-				if ( $this.prop( 'name' ) === 'directory' ) {
-					val = $this.val();
-					if ( cifs ) {
-						if ( val.match( /\/|\\/g ) ) banner( 'Add Network Share', 'No / or \\ for CIFS Share name', 'network' );
-						$this.val( val.replace( /\/|\\/g, '' ) );
-					} else {
-						if ( val[ 0 ] !== '/' ) $this.val( '/'+ val );
-					}
-				}
 				var form = document.getElementById( 'formmount' );
 				data = Object.fromEntries( new FormData( form ).entries() );
 				var valid = !data.name || !data.directory ? false : true;
