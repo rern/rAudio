@@ -129,13 +129,6 @@ ifconfig )
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
-profile )
-	value=$( cat "/etc/netctl/${args[1]}" \
-				| grep . \
-				| tr -d '"' \
-				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
-	echo {${value:0:-1}}
-	;;
 profileconnect )
 	wlan=${args[1]}
 	ssid=${args[2]}
@@ -145,12 +138,11 @@ profileconnect )
 	pushRefresh
 	;;
 profileget )
-	ssid=${args[1]}
-	readarray -t lines <<< $( cat "/etc/netctl/$ssid" | tr -d '"' )
-	for line in "${lines[@]}"; do
-		list+=',"'$( echo $line | cut -d= -f1 )'":"'$( echo $line | cut -d= -f2- )'"'
-	done
-	echo {${list:1}}
+	value=$( cat "/etc/netctl/${args[1]}" \
+				| grep . \
+				| tr -d '"' \
+				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
+	echo {${value:0:-1}}
 	;;
 profileremove )
 	wlan=${args[1]}

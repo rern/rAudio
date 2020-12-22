@@ -95,8 +95,8 @@ function editLAN( data ) {
 	} );
 }
 function editWiFi( ssid, data ) {
+	if ( data ) data.Hidden = 'Hidden' in data ? true : false;
 	var wifi = data;
-	if ( wifi && !( 'Hidden' in wifi ) ) wifi.Hidden = false;
 	var icon = ssid ? 'edit-circle' : 'wifi';
 	var title = ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection';
 	var Address, ESSID, Gateway, Hidden, IP, Key;
@@ -133,10 +133,10 @@ function editWiFi( ssid, data ) {
 				if ( wifi ) {
 					editWiFiSet( ssid, wifi );
 				} else {
-					bash( [ 'profile', ssid ], function( data ) {
+					bash( [ 'profileget', ssid ], function( data ) {
+						data.Address = 'Address' in data ? data.Address.replace( '/24', '' ) : '';
+						data.Hidden = 'Hidden' in data ? true : false;
 						wifi = data;
-						wifi.Address = 'Address' in wifi ? wifi.Address.replace( '/24', '' ) : '';
-						if ( !( 'Hidden' in wifi ) ) wifi.Hidden = false;
 						editWiFiSet( ssid, wifi );
 					}, 'json' );
 				}
@@ -202,7 +202,7 @@ function editWiFiSet( ssid, data ) {
 	$( '#infoCheckBox input:eq( 2 )' ).prop( 'checked', data.Security === 'wep' );
 	$( '#infoTextBox' )
 		.val( ssid )
-		.prop( 'disabled' );
+		.prop( 'disabled', 1 );
 	if ( data.Address ) {
 		$( '#infoFooter' ).hide();
 	} else {
@@ -265,6 +265,7 @@ function infoConnect( $this ) {
 				if ( ip ) {
 					bash( [ 'profileget', ssid ], function( data ) {
 						if ( 'Address' in data ) data.Address = data.Address.slice( 0, -3 );
+						data.Hidden = 'Hidden' in data ? true : false;
 						editWiFi( ssid, data );
 					}, 'json' );
 				} else {
