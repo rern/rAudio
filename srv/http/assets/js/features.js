@@ -219,6 +219,7 @@ var localbrowserinfo = heredoc( function() { /*
 	</div>
 */ } );
 $( '#setting-localbrowser' ).click( function() {
+	var data = {}
 	function verify() {
 		var localzoom = +$( '#infoTextBox1' ).val();
 		var changed = +$( '#infoTextBox' ).val() !== G.localscreenoff / 60
@@ -263,7 +264,7 @@ $( '#setting-localbrowser' ).click( function() {
 			var localrotate    = $( 'input[name=inforadio]:checked' ).val();
 			var localscreenoff = $( '#infoTextBox' ).val() * 60;
 			var localzoom = parseFloat( $( '#infoTextBox1' ).val() ) || 1;
-			bash( [ 'localbrowserset', localrotate, localscreenoff, localcursor, localzoom, G.localrotate, G.localscreenoff, G.localcursor, G.localzoom ] );
+			bash( [ 'localbrowserset', localrotate, localscreenoff, localcursor, localzoom ] );
 			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
 		}
 	} );
