@@ -330,11 +330,16 @@ function nicsStatus() {
 				htmlwl += '</li>';
 			}
 		} );
-		if ( G.profile ) {
+		if ( G.profiles ) {
 			var htmlprofile = '';
-			G.profile.forEach( function( val ) {
-				var connected = val[ 0 ] === '*' ? '&ensp;<grn>&bull;</grn>' : '';
-				var ssid = val.replace( /^\** /, '' );
+			G.profiles.forEach( function( val ) {
+				if ( val[ 0 ] === '*' ) {
+					var connected = '&ensp;<grn>&bull;</grn>';
+					var ssid = val.slice( 1 );
+				} else {
+					var connected = '';
+					var ssid = val;
+				}
 				htmlprofile += '<li data-ssid="'+ ssid +'">'+ connected +'&ensp;'+ ssid +'</li>';
 			} );
 			$( '#listprofile' ).html( htmlprofile );
