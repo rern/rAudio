@@ -32,19 +32,19 @@ btremove )
 	pushRefresh
 	;;
 connect )
-	wifi=${args[1]}
-	Interface=$( jq -r .Interface <<< $wifi )
-	ESSID=$( jq -r .ESSID <<< $wifi )
-	Key=$( jq -r .Key <<< $wifi )
+	data=${args[1]}
+	Interface=$( jq -r .Interface <<< $data )
+	ESSID=$( jq -r .ESSID <<< $data )
+	Key=$( jq -r .Key <<< $data )
 	profile="\
 Interface=$Interface
 Connection=wireless
 ESSID=\"$ESSID\"
-IP=$( jq -r .IP <<< $wifi )
+IP=$( jq -r .IP <<< $data )
 "
 	if [[ -n $Key ]]; then
 		profile+="\
-Security=$( jq -r .Security <<< $wifi )
+Security=$( jq -r .Security <<< $data )
 Key=\"$Key\"
 "
 	else
@@ -52,12 +52,12 @@ Key=\"$Key\"
 Security=none
 "
 	fi
-	[[ $( jq -r .Hidden <<< $wifi ) == true ]] && profile+="\
+	[[ $( jq -r .Hidden <<< $data ) == true ]] && profile+="\
 Hidden=yes
 "
-	[[ $( jq -r .IP <<< $wifi ) == static ]] && profile+="\
-Address=$( jq -r .Address <<< $wifi )/24
-Gateway=$( jq -r .Gateway <<< $wifi )
+	[[ $( jq -r .IP <<< $data ) == static ]] && profile+="\
+Address=$( jq -r .Address <<< $data )/24
+Gateway=$( jq -r .Gateway <<< $data )
 "
 	netctl list | grep ^..$ESSID$ || new=1
 	netctl is-active Home2GHz &> /dev/null && active=1

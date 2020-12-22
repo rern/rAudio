@@ -99,25 +99,25 @@ function editLAN( data ) {
 }
 function editWiFi( ssid, data ) {
 	if ( data ) data.Hidden = 'Hidden' in data ? true : false;
-	var wifi = data;
-	var icon = ssid ? 'edit-circle' : 'wifi';
-	var title = ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection';
-	var vals;
+	var existing = data;
+	var newval;
 	info( {
-		  icon          : icon
-		, title         : title
+		  icon          : ssid ? 'edit-circle' : 'wifi'
+		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, checkbox      : { 'Static IP': 1, 'Hidden SSID': 1, 'WEP': 1 }
 		, passwordlabel : 'Password'
 		, preshow       : function() {
 			function verify() {
 				var Key = $( '#infoPasswordBox' ).val();
-				if ( Key.length < 8 ) {
+				var Address = $( '#infoTextBox1' ).val();
+				var Gateway = $( '#infoTextBox2' ).val();
+				if ( Key.length < 8 || !validateIP( Address ) || !validateIP( Gateway ) ) {
 					$( '#infoOk' ).toggleClass( 'disabled', true );
 					return
 				}
 				
-				vals = {
+				newval = {
 					  Interface : G.wlcurrent
 					, ESSID     : $( '#infoTextBox' ).val()
 					, Key       : Key
@@ -125,16 +125,16 @@ function editWiFi( ssid, data ) {
 					, Hidden    : $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' )
 					, Security  : ( $( '#infoCheckBox input:eq( 2 )' ).prop( 'checked' ) ? 'wep' : 'wpa' )
 				}
-				if ( vals.IP === 'static' ) {
-					vals.Address = $( '#infoTextBox1' ).val();
-					vals.Gateway = $( '#infoTextBox2' ).val();
+				if ( newval.IP === 'static' ) {
+					newval.Address = $( '#infoTextBox1' ).val();
+					newval.Gateway = $( '#infoTextBox2' ).val();
 				}
 				var changed = false;
-				if ( !ssid || vals.length !== wifi.length ) {
+				if ( !ssid || newval.length !== existing.length ) {
 					changed = true;
 				} else {
-					for ( key in vals ) {
-						if ( vals[ key ] !== wifi[ key ] ) {
+					for ( key in newval ) {
+						if ( newval[ key ] !== existing[ key ] ) {
 							changed = true;
 							break;
 						}
@@ -146,14 +146,14 @@ function editWiFi( ssid, data ) {
 			if ( !ssid ) {
 				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
 			} else {
-				if ( wifi ) {
-					editWiFiSet( ssid, wifi );
+				if ( existing ) {
+					editWiFiSet( ssid, existing );
 				} else {
 					bash( [ 'profileget', ssid ], function( data ) {
 						data.Address = 'Address' in data ? data.Address.replace( '/24', '' ) : '';
 						data.Hidden = 'Hidden' in data ? true : false;
-						wifi = data;
-						editWiFiSet( ssid, wifi );
+						existing = data;
+						editWiFiSet( ssid, existing );
 					}, 'json' );
 				}
 			}
@@ -166,22 +166,21 @@ function editWiFi( ssid, data ) {
 			$( '#infoCheckBox' ).click( verify );
 		}
 		, ok            : function() {
-			vals.edit = ssid ? true : '';
-			if ( vals.IP === 'dhcp' ) {
-				connect( vals );
+			if ( newval.IP === 'dhcp' ) {
+				connect( newval );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ vals.Address +' &> /dev/null && echo -1', function( std ) {
+				bash( 'ping -c 1 -w 1 '+ newval.Address +' &> /dev/null && echo -1', function( std ) {
 					if ( std == -1 ) {
 						info( {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
-							, message : 'IP <wh>'+ vals.Address +'</wh> already in use.'
+							, message : 'IP <wh>'+ newval.Address +'</wh> already in use.'
 							, ok      : function() {
-								editWiFi( ssid, vals );
+								editWiFi( ssid, newval );
 							}
 						} );
 					} else {
-						connect( vals );
+						connect( newval );
 					}
 				} );
 			}
