@@ -316,10 +316,10 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	output=$( cat $dirtmp/usbdac 2> /dev/null )
-	[[ -z $output ]] && output=$( cat $dirsystem/audio-output )
+	output=$( cat $dirtmp/usbdac 2> /dev/null || cat $dirsystem/audio-output )
 	volume=$( sed -n "/$output/,/^}/ p" /etc/mpd.conf \
-		| awk -F '\"' '/mixer_type/ {print $2}' )
+				| grep -q 'mixer_type.*none' \
+				&& echo true || echo false )
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
@@ -328,7 +328,7 @@ displayget )
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 , "update"     : '$( cat $diraddons/update 2> /dev/null || echo false )'
-, "volumenone" : '$( [[ $volume == none ]] && echo true || echo false )'
+, "volumenone" : '$volume'
 }'
 echo "$data"
 	;;

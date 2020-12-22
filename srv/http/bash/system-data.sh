@@ -52,11 +52,9 @@ if [[ $i2c == true ]]; then
 									| sort -u )
 fi
 
-. /srv/http/bash/mpd-devices.sh
-
 data+='
-	, "audioaplayname"  : "'$aplayname'"
-	, "audiooutput"     : "'$output'"
+	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
+	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 	, "hostname"        : "'$( hostname )'"
 	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"
