@@ -7,8 +7,8 @@ dirsystem=/srv/http/data/system
 data='
 	  "devices"         : ['$devices']
 	, "asoundcard"      : '$i'
-	, "audioaplayname"  : "'${Aaplayname[$card]}'"
-	, "audiooutput"     : "'${Aname[$card]}'"
+	, "audioaplayname"  : "'${Aaplayname[$i]}'"
+	, "audiooutput"     : "'${Aname[$i]}'"
 	, "autoupdate"      : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true || echo false )'
 	, "buffer"          : '$( grep -q '^audio_buffer_size' /etc/mpd.conf && echo true || echo false )'
 	, "bufferval"       : '$( cat $dirsystem/bufferset 2> /dev/null || echo false )'
