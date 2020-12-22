@@ -40,34 +40,37 @@ for line in "${lines[@]}"; do
 	fi
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	if [[ -e $hwmixerfile ]]; then # manual
-		mixertype=hardware
 		mixers=2
 		hwmixer=$( cat "$hwmixerfile" )
+		mixertype=hardware
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
-		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 		mixers=4
 		hwmixer='HPOUT2 Digital'
+		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 	else
-		amixer=$( amixer -c $card scontents \
-			| grep -A2 'Simple mixer control' \
-			| grep -v 'Capabilities' \
-			| tr -d '\n' \
-			| sed 's/--/\n/g' \
-			| grep 'Playback channels' \
-			| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
-			| awk '!a[$0]++' )
-		mixers=$( echo "$amixer" | wc -l )
-		if (( $mixers == 0 )); then
-			mixertype=software
+		amixer=$( amixer -c $card scontents )
+		if [[ -z $amixer ]]; then
+			mixers=0
 			hwmixer=
+			mixertype=software
 		else
-			mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
+			amixer=$( echo "$amixer" \
+				| grep -A2 'Simple mixer control' \
+				| grep -v 'Capabilities' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep 'Playback channels' \
+				| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
+				| awk '!a[$0]++' \
+				| grep . )
+			mixers=$( echo "$amixer" | wc -l )
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
 			else
 				hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
 				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
 			fi
+			mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 		fi
 	fi
 	
