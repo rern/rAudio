@@ -49,12 +49,18 @@ for line in "${lines[@]}"; do
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
 
-profile=$( netctl list )
-if [[ -n $profile ]]; then
-	profile=$( echo "$profile" | sed 's/.*/"&"/' | tr '\n' , | head -c -1 )
-	profile=[$profile]
+profiles=$( netctl list )
+if [[ -n $profiles ]]; then
+	ssid=$( iwgetid -r )
+	profiles=$( echo "$profiles" \
+					| cut -c3- \
+					| sed "/^$ssid$/ s|^|\*|" \
+					| sed 's/.*/"&"/' \
+					| tr '\n' , \
+					| head -c -1 )
+	profiles=[$profiles]
 else
-	profile=false
+	profiles=false
 fi
 
 # bluetooth
@@ -85,7 +91,7 @@ data='
 	, "list"      : '$list'
 	, "hostapd"   : {'$ap'}
 	, "hostname"  : "'$( hostname )'"
-	, "profile"   : '$profile'
+	, "profiles"   : '$profiles'
 	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "wlan"      : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
 

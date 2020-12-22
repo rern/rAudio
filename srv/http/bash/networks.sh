@@ -32,44 +32,41 @@ btremove )
 	pushRefresh
 	;;
 connect )
-	wlan=${args[1]}
-	ssid=${args[2]}
-	wpa=${args[3]}
-	password=${args[4]}
-	hidden=${args[5]}
-	ip=${args[6]}
-	gw=${args[7]}
-	edit=${args[8]}
-	[[ -z $ip ]] && dhcp=dhcp || dhcp=static
+	data=${args[1]}
+	Interface=$( jq -r .Interface <<< $data )
+	ESSID=$( jq -r .ESSID <<< $data )
+	Key=$( jq -r .Key <<< $data )
 	profile="\
-Interface=$wlan
+Interface=$Interface
 Connection=wireless
-ESSID=\"$ssid\"
-IP=$dhcp
+ESSID=\"$ESSID\"
+IP=$( jq -r .IP <<< $data )
 "
-	if [[ -n $password ]]; then
+	if [[ -n $Key ]]; then
 		profile+="\
-Security=$wpa
-Key=\"$password\"
+Security=$( jq -r .Security <<< $data )
+Key=\"$Key\"
 "
 	else
 		profile+="\
 Security=none
 "
 	fi
-	[[ -n $hidden ]] && profile+="\
+	[[ $( jq -r .Hidden <<< $data ) == true ]] && profile+="\
 Hidden=yes
 "
-	[[ $dhcp == static ]] && profile+="\
-Address=$ip/24
-Gateway=$gw
+	[[ $( jq -r .IP <<< $data ) == static ]] && profile+="\
+Address=$( jq -r .Address <<< $data )/24
+Gateway=$( jq -r .Gateway <<< $data )
 "
-	echo "$profile" > "/etc/netctl/$ssid"
-	[[ -n $edit ]] && pushRefresh && exit
-	
-	ifconfig $wlan down
-	netctl switch-to "$ssid"
-	systemctl enable netctl-auto@$wlan
+	netctl list | grep ^..$ESSID$ || new=1
+	netctl is-active Home2GHz &> /dev/null && active=1
+	echo "$profile" > "/etc/netctl/$ESSID"
+	if [[ -n $new || -n $active ]]; then
+		ifconfig $Interface down
+		netctl switch-to "$ESSID"
+		systemctl enable netctl-auto@$Interface
+	fi
 	pushRefresh
 	;;
 disconnect )
@@ -95,7 +92,7 @@ DNSSEC=no
 DHCP=yes
 "
 	else
-		arp -n | grep -q ^$ip && echo -1 && exit
+		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 		
 		eth0+="\
 Address=$ip/24
@@ -127,14 +124,7 @@ ifconfig )
 	echo "$lines"
 	;;
 ipused )
-	arp -n | grep -q ^${args[1]} && echo 1 || echo 0
-	;;
-profile )
-	value=$( cat "/etc/netctl/${args[1]}" \
-				| grep . \
-				| tr -d '"' \
-				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
-	echo {${value:0:-1}}
+	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profileconnect )
 	wlan=${args[1]}
@@ -145,12 +135,11 @@ profileconnect )
 	pushRefresh
 	;;
 profileget )
-	ssid=${args[1]}
-	readarray -t lines <<< $( cat "/etc/netctl/$ssid" | tr -d '"' )
-	for line in "${lines[@]}"; do
-		list+=',"'$( echo $line | cut -d= -f1 )'":"'$( echo $line | cut -d= -f2- )'"'
-	done
-	echo {${list:1}}
+	value=$( cat "/etc/netctl/${args[1]}" \
+				| grep . \
+				| tr -d '"' \
+				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
+	echo {${value:0:-1}}
 	;;
 profileremove )
 	wlan=${args[1]}

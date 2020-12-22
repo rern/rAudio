@@ -249,6 +249,11 @@ hr {
 	font-size: 16px;
 	font-family: "Lato";
 }
+#infoContent input[type=text]:disabled {
+	border: none !important;
+	background: none !important;
+	opacity: 1;
+}
 #infoPasswordBox {
 	margin-top: 0 !important;
 }

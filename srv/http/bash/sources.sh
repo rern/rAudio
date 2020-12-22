@@ -12,12 +12,12 @@ pushRefresh() {
 case ${args[0]} in
 
 mount )
-	mountpoint=/mnt/MPD/NAS/${args[1]}
-	ip=${args[2]}
-	source=${args[3]}
-	cifsnfs=${args[4]}
-	options=${args[5]}
-	update=${args[6]}
+	data=${args[1]}
+	protocol=$( jq -r .protocol <<< $data )
+	ip=$( jq -r .ip <<< $data )
+	directory=$( jq -r .directory <<< $data )
+	mountpoint="/mnt/MPD/NAS/$( jq -r .mountpoint <<< $data )"
+	options=$( jq -r .options <<< $data )
 
 	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP not found.' && exit
 
@@ -27,8 +27,8 @@ mount )
 		mkdir "$mountpoint"
 	fi
 	chown mpd:audio "$mountpoint"
-	[[ -n $options ]] && optmount="-o $options"
-	mount -t $cifsnfs "$source" "$mountpoint" $optmount
+	[[ $protocol == cifs ]] && source="//$ip/$directory" || source="$ip:$directory"
+	mount -t $protocol "$source" "$mountpoint" -o $options
 	if ! mountpoint -q "$mountpoint"; then
 		echo 'Mount failed.'
 		rmdir "$mountpoint"
@@ -38,9 +38,9 @@ mount )
 	source=${source// /\\040} # escape spaces in fstab
 	name=$( basename "$mountpoint" )
 	mountpoint=${mountpoint// /\\040}
-	echo "$source  $mountpoint  $cifsnfs  $options  0  0" >> /etc/fstab && echo 0
+	echo "$source  $mountpoint  $protocol  $options  0  0" >> /etc/fstab && echo 0
 	/srv/http/bash/sources-update.sh "$mountpoint"
-	[[ $update == true ]] && mpc update NAS
+	[[ $( jq -r .update <<< $data ) == true ]] && mpc update NAS
 	pushRefresh
 	;;
 remount )

@@ -65,10 +65,11 @@ localbrowserset )
 	screenoff=${args[2]}
 	cursor=${args[3]}
 	zoom=${args[4]}
-	rotateset=${args[5]}
-	screenoffset=${args[6]}
-	cursorset=${args[7]}
-	zoomset=${args[8]}
+	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
+	rotateset=${conf[0]}
+	screenoffset=${conf[1]}
+	cursorset=${conf[2]}
+	zoomset=${conf[3]}
 	if [[ $rotate != $rotateset ]]; then
 		if grep -q tft35a /boot/config.txt; then
 			case $rotate in
