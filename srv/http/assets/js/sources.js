@@ -20,7 +20,7 @@ function infoMount( formdata ) {
 					$( 'input[name=protocol]:eq( 1 )' ).prop( 'checked', 1 );
 					$( '.guest' ).addClass( 'hide' );
 				}
-				$( '#infotextbox input:eq( 0 )' ).val( formdata.name );
+				$( '#infotextbox input:eq( 0 )' ).val( formdata.mountpoint );
 				$( '#infotextbox input:eq( 1 )' ).val( formdata.ip );
 				$( '#infotextbox input:eq( 2 )' ).val( formdata.directory );
 				$( '#infotextbox input:eq( 5 )' ).val( formdata.options );
@@ -45,40 +45,35 @@ function infoMount( formdata ) {
 			$( '.infoinput' ).keyup( function() {
 				var form = document.getElementById( 'formmount' );
 				data = Object.fromEntries( new FormData( form ).entries() );
-				var valid = !data.name || !data.directory ? false : true;
-				if ( valid ) valid = valid && validateIP( data.ip );
+				var valid = data.mountpoint && data.directory && validateIP( data.ip );
 				$( '#infoOk' ).toggleClass( 'disabled', !valid );
 			} );
 		}
 		, ok      : function() {
-			var mountpoint = data.name;
 			if ( data.protocol === 'cifs' ) {
 				var options = 'noauto';
 				options += ( !data.user ) ? ',username=guest,password=' : ',username='+ data.user +',password='+ data.password;
 				options += ',uid='+ $( '#list' ).data( 'uid' ) +',gid='+ $( '#list' ).data( 'gid' ) +',iocharset=utf8';
 				options += data.options ? ','+ data.options : '';
-				var device = '//'+ data.ip +'/'+ data.directory;
 			} else {
 				var options = 'defaults,noauto,bg,soft,timeo=5';
 				options += data.options ? ','+ data.options : '';
-				var device = data.ip +':'+ data.directory;
 			}
-			var update = !G.autoupdate && data.update || false;
+			data.options = options;
+			data.update = $( 'input[name=update]' ).prop( 'checked' );
 			notify( 'Network Mount', 'Mount ...', 'network' );
-			bash( [ 'mount', mountpoint, data.ip, device, data.protocol, options, update ], function( std ) {
+			bash( [ 'mount', JSON.stringify( data ) ], function( std ) {
 				if ( std !== 0 ) {
-					formdata = data;
 					info( {
 						  icon    : 'network'
 						, title   : 'Mount Share'
 						, message : std
 						, ok      : function() {
-							infoMount( formdata );
+							infoMount( data );
 						}
 					} );
 				} else {
 					refreshData();
-					formdata = {}
 				}
 				$( '#refreshing' ).addClass( 'hide' );
 			}, 'json' );
@@ -120,37 +115,35 @@ refreshData();
 //---------------------------------------------------------------------------------------
 var formdata = {}
 var htmlmount = heredoc( function() { /*
-	<form id="formmount">
-		<div id="infoText" class="infocontent">
-			<div class="infotextlabel">
-				Type<br>
-				Name<br>
-				IP<br>
-				<span id="sharename">Share name</span><br>
-				<span class="guest">
-					User<br>
-					Password<br>
-				</span>
-				Options
+	<form id="formmount" class="infocontent">
+		<div class="infotextlabel">
+			Type<br>
+			Name<br>
+			IP<br>
+			<span id="sharename">Share name</span><br>
+			<span class="guest">
+				User<br>
+				Password<br>
+			</span>
+			Options
+		</div>
+		<div class="infotextbox">
+			<label><input type="radio" name="protocol" value="cifs"> CIFS</label>&emsp;
+			<label><input type="radio" name="protocol" value="nfs"> NFS</label>&emsp;
+			<input type="text" class="infoinput" name="mountpoint" spellcheck="false">
+			<input type="text" class="infoinput" name="ip" spellcheck="false">
+			<input type="text" class="infoinput" name="directory" spellcheck="false">
+			<div class="guest">
+				<input type="text" class="infoinput" name="user" spellcheck="false">
+				<input type="password" id="infoPasswordBox" class="infoinput" name="password">
 			</div>
-			<div class="infotextbox">
-				<label><input type="radio" name="protocol" value="cifs"> CIFS</label>&emsp;
-				<label><input type="radio" name="protocol" value="nfs"> NFS</label>&emsp;
-				<input type="text" class="infoinput" name="name" spellcheck="false">
-				<input type="text" class="infoinput" name="ip" spellcheck="false">
-				<input type="text" class="infoinput" name="directory" spellcheck="false">
-				<div class="guest">
-					<input type="text" class="infoinput" name="user" spellcheck="false">
-					<input type="password" id="infoPasswordBox" class="infoinput" name="password">
-				</div>
-				<input type="text" class="infoinput" name="options" spellcheck="false">
-			</div>
-			<div id="infotextsuffix">
-				<i class="eye fa fa-eye fa-lg guest"></i>
-			</div>
-			<div id="infoCheckBox" class="infocontent infocheckbox infohtml">
-				<label><input type="checkbox" name="update" value="true" checked>&ensp;Update Library on mount</label>
-			</div>
+			<input type="text" class="infoinput" name="options" spellcheck="false">
+		</div>
+		<div id="infotextsuffix">
+			<i class="eye fa fa-eye fa-lg guest"></i>
+		</div>
+		<div id="infoCheckBox" class="infocontent infocheckbox infohtml">
+			<label><input type="checkbox" name="update" value="true" checked>&ensp;Update Library on mount</label>
 		</div>
 	</form>
 */ } );
