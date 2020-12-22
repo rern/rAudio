@@ -32,44 +32,41 @@ btremove )
 	pushRefresh
 	;;
 connect )
-	wlan=${args[1]}
-	ssid=${args[2]}
-	wpa=${args[3]}
-	password=${args[4]}
-	hidden=${args[5]}
-	ip=${args[6]}
-	gw=${args[7]}
-	edit=${args[8]}
-	[[ -z $ip ]] && dhcp=dhcp || dhcp=static
+	wifi=${args[1]}
+	Interface=$( jq -r .Interface <<< $wifi )
+	ESSID=$( jq -r .ESSID <<< $wifi )
+	Key=$( jq -r .Key <<< $wifi )
 	profile="\
-Interface=$wlan
+Interface=$Interface
 Connection=wireless
-ESSID=\"$ssid\"
-IP=$dhcp
+ESSID=\"$ESSID\"
+IP=$( jq -r .IP <<< $wifi )
 "
-	if [[ -n $password ]]; then
+	if [[ -n $Key ]]; then
 		profile+="\
-Security=$wpa
-Key=\"$password\"
+Security=$( jq -r .Security <<< $wifi )
+Key=\"$Key\"
 "
 	else
 		profile+="\
 Security=none
 "
 	fi
-	[[ -n $hidden ]] && profile+="\
+	[[ $( jq -r .Hidden <<< $wifi ) == true ]] && profile+="\
 Hidden=yes
 "
-	[[ $dhcp == static ]] && profile+="\
-Address=$ip/24
-Gateway=$gw
+	[[ $( jq -r .IP <<< $wifi ) == static ]] && profile+="\
+Address=$( jq -r .Address <<< $wifi )/24
+Gateway=$( jq -r .Gateway <<< $wifi )
 "
-	echo "$profile" > "/etc/netctl/$ssid"
-	[[ -n $edit ]] && pushRefresh && exit
-	
-	ifconfig $wlan down
-	netctl switch-to "$ssid"
-	systemctl enable netctl-auto@$wlan
+	netctl list | grep ^..$ESSID$ || new=1
+	netctl is-active Home2GHz &> /dev/null && active=1
+	echo "$profile" > "/etc/netctl/$ESSID"
+	if [[ -n $new || -n $active ]]; then
+		ifconfig $Interface down
+		netctl switch-to "$ESSID"
+		systemctl enable netctl-auto@$Interface
+	fi
 	pushRefresh
 	;;
 disconnect )
