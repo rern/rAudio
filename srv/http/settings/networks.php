@@ -2,6 +2,7 @@
 <?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
 	<div>
 	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<i class="fa fa-code"></i><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
+	<pre id="codebt" class="hide"></pre>
 	<ul id="listbt" class="entries"></ul>
 	<span class="help-block hide">
 			&bull; As sender / source - Send signal to another device.
@@ -14,27 +15,17 @@
 		<br>&emsp; - Connection from sender start renderer mode automatically.
 		<br>&emsp; - Turn off discoverable to hide from unpaired senders.
 	</span>
-	<pre id="codebt" class="hide"></pre>
 	</div>
 <?php }
 	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
-	 <div>
 	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
-	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
-	</div>
+	<ul id="listlan" class="entries"></ul>
 <?php }
 	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
-	<div>
 	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
-	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
-	<div id="divprofile">
-	<heading data-status="netctl" class="status noline sub">Saved Connections<i class="fa fa-code"></i></heading>
-	<ul id="listprofile" class="entries"></ul>
-	<pre id="codenetctl" class="hide"></pre>
-	</div>
-	</div>
+	<ul id="listwl" class="entries"></ul>
 <?php } ?>
 	
 	<div>

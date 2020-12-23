@@ -4,7 +4,7 @@ dirbash=/srv/http/bash
 dirdata=/srv/http/data
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
-filebootlog=$dirtmp/bootlog
+filebootlog=$dirdata/tmp/bootlog
 filereboot=$dirtmp/reboot
 fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
@@ -343,13 +343,6 @@ txqueuelen=${val[3]}
 		soundprofile
 	fi
 	pushRefresh
-	;;
-statusbootlog )
-	if [[ -e $filebootlog ]]; then
-		cat $filebootlog
-	else
-		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
-	fi
 	;;
 statusonboard )
 	ifconfig

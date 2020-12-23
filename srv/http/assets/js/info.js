@@ -97,6 +97,7 @@ var containerhtml = heredoc( function() { /*
 </div>
 */ } );
 infocontenthtml = heredoc( function() { /*
+			<i class="fa fa-arrow-left infoarrowleft hide"></i><i class="fa fa-arrow-right infoarrowright hide"></i>
 			<p id="infoMessage" class="infomessage hide"></p>
 			<div id="infoText" class="infocontent hide">
 				<div id="infotextlabel"></div>
@@ -191,14 +192,13 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoBox' ).css( {
 		  margin     : ''
 		, visibility : 'hidden'
 	} );
 	$( '#infoContent' ).html( infocontenthtml );
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '.infocontent, .infomessage, .infolabel, .infoinput, .infohtml, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
+	$( '.infocontent, .infoarrowleft, .infoarrowright, .infomessage, .infolabel, .infoinput, .infohtml, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
 	$( '.infomessage, .infoinput, #infoFooter' ).css( 'text-align', '' );
 	$( '#infoBox, .infolabel, #infotextbox, .infoinput, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '.selectric-items' ).css( 'min-width', '' );
@@ -306,6 +306,13 @@ function info( O ) {
 		// custom html content
 		$( '#infoContent' ).html( O.content );
 	} else {
+		// arrow
+		if ( 'arrowleft' in O ) $( '.infoarrowleft' )
+									.removeClass( 'hide' )
+									.click( O.arrowleft );
+		if ( 'arrowright' in O ) $( '.infoarrowright' )
+									.removeClass( 'hide' )
+									.click( O.arrowright );
 		// message
 		if ( 'message' in O && O.message ) $( '#infoMessage' ).html( O.message ).removeClass( 'hide' );
 		if ( 'msgalign' in O ) $( '#infoMessage' ).css( 'text-align', O.msgalign );

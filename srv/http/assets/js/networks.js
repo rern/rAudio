@@ -325,7 +325,7 @@ function nicsStatus() {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
 					G.wlconnected = val.interface;
-					htmlwl += '<grn>&bull;</grn>&ensp;'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;&bull;&ensp;</gr>'+ val.ssid;
+					htmlwl += '<grn>&bull;</grn>&ensp;'+ val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr>';
 				}
 				htmlwl += '</li>';
 			}
@@ -340,12 +340,8 @@ function nicsStatus() {
 					var connected = '';
 					var ssid = val;
 				}
-				htmlprofile += '<li data-ssid="'+ ssid +'">'+ connected +'&ensp;'+ ssid +'</li>';
+				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
 			} );
-			$( '#listprofile' ).html( htmlprofile );
-			$( '#divprofile' ).removeClass( 'hide' );
-		} else {
-			$( '#divprofile' ).addClass( 'hide' );
 		}
 		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
 		$( '#listbt' ).html( htmlbt );
@@ -363,7 +359,9 @@ function nicsStatus() {
 		
 		renderQR();
 		bannerHide();
-		codeToggle( 'netctl', 'status' );
+		[ 'bt', 'lan', 'wlan' ].forEach( function( id ) {
+			codeToggle( id, 'status' );
+		} );
 		showContent();
 	} );
 }
@@ -527,41 +525,6 @@ $( '#wlscan' ).click( function() {
 } );
 $( '#listwl' ).on( 'click', 'li', function() {
 	if ( !( 'ssid' in G ) ) infoConnect( $( this ) );
-} );
-$( '#listprofile' ).on( 'click', 'li', function() {
-	var $this = $( this );
-	var ssid = $this.data( 'ssid' );
-	info( {
-		  icon        : 'wifi'
-		, title       : 'Saved Connection'
-		, message     : ssid
-		, preshow     : function() {
-			if ( $this.find( 'grn' ).length ) $( '#infoOk' ).toggleClass( 'hide' );
-		}
-		, buttonwidth : 1
-		, buttonlabel : [
-			  '<i class="fa fa-minus-circle"></i> Forget'
-			, '<i class="fa fa-edit-circle"></i> Edit'
-		]
-		, buttoncolor : [
-			  '#bb2828'
-			, ''
-		]
-		, button      : [
-			  function() {
-				notify( ssid, 'Forget ...', 'wifi' );
-				bash( [ 'profileremove', G.wlcurrent, ssid ] );
-			}
-			, function() {
-				editWiFi( ssid );
-			}
-		]
-		, oklabel     : 'Connect'
-		, ok          : function() {
-			notify( ssid, 'Connect ...', 'wifi blink' );
-			bash( [ 'profileconnect', G.wlcurrent, ssid ] );
-		}
-	} );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );

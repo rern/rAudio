@@ -208,12 +208,12 @@ $menu.= '</div>';
 	<a id="features" class="settings"><i class="fa fa-sliders"></i>Features</a>
 	<a id="mpd" class="settings"><i class="fa fa-mpd"></i>MPD</a>
 	<a id="networks" class="settings"><i class="fa fa-networks"></i>Networks</a>
-	<a id="sources" class="settings sub"><i class="fa fa-folder-cascade"></i>Sources</a>
-		<i id="update" class="fa fa-refresh-library submenu"></i>
+	<a id="sources" class="settings"><i class="fa fa-folder-cascade"></i>Sources</a>
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
 	<a id="power"><i class="fa fa-power"></i>Power</a>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
-		<i id="displaylibrary2" class="fa fa-gear submenu"></i>
+		<i id="displaylibrary2" class="hide"></i>
+		<i id="update" class="fa fa-refresh-library submenu"></i>
 	<a id="displayplayback" class="sub"><i class="fa fa-play-circle"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></i>
 	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>

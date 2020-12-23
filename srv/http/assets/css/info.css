@@ -161,6 +161,22 @@ hr {
 	margin: 0;
 	font-weight: normal;
 }
+.infoarrowleft,
+.infoarrowright {
+	margin-top: -25px;
+	width: 40px;
+	height: 40px;
+	font-size: 24px;
+	color: var( --cm );
+}
+.infoarrowleft {
+	float: left;
+	margin-left: -10px;
+}
+.infoarrowright {
+	float: right;
+	margin-right: -10px;
+}
 .infomessage,
 #infoMessage {
 	display: inline-block;

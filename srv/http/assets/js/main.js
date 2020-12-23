@@ -25,7 +25,6 @@ var G = {
 	, savedlist     : 0
 	, savedplaylist : 0
 	, scale         : 1
-	, screenS       : window.innerHeight < 590 || window.innerWidth < 500
 	, scrollspeed   : 80 // pixel/s
 	, scrolltop     : {}
 	, similarpl     : -1
@@ -255,9 +254,9 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	var checklist = !options ? chklibrary : chklibrary2;
 	displayGet( function( data ) {
 		G.display = data;
-		info( {
+		var json = {
 			  icon     : 'library'
-			, title    : !options ? 'Library Display' : 'Library-Playlist Options'
+			, title    : !options ? 'Library Home Display' : 'Library/Playlist Options'
 			, message  : !options ? 'Show selected items:' : ''
 			, checkbox : displayCheckbox( checklist )
 			, preshow  : function() {
@@ -316,7 +315,13 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 					if ( G.savedlist ) $( '#button-pl-back' ).css( 'float', G.display.backonleft ? 'left' : '' );
 				}
 			}
-		} );
+		}
+		if ( !options ) {
+			json.arrowright = function() { $( '#displaylibrary2' ).click(); }
+		} else {
+			json.arrowleft = function() { $( '#displaylibrary' ).click(); }
+		}
+		info( json );
 	} );
 } );
 var chkplayback = {

@@ -105,7 +105,7 @@ function contextmenuLibrary( $li, $target ) {
 		G.list.name = $li.find( '.li1' ).text() || $li.find( '.liname' ).text();
 	}
 	G.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
-	if ( ( G.display.tapaddplay || G.display.tapreplaceplay )
+	if ( ( G.display.tapaddplay || G.display.tapreplaceplay && !G.color )
 		&& !$target.hasClass( 'lib-icon' )
 		&& !$li.hasClass( 'licover' )
 	) {
@@ -326,7 +326,10 @@ function displaySave( page ) {
 function displayTopBottom() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
-	if ( !G.display.bars || ( G.screenS && !G.display.barsalways ) ) {
+	var wH = window.innerHeight;
+	var wW = window.innerWidth;
+	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
+	if ( !G.display.bars && !G.display.barsalways || lcd ) {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );

@@ -36,6 +36,7 @@
 .fa-album:before { content: "\f555" }
 .fa-albumartist:before { content: "\f557" }
 .fa-arrow-left:before { content: "\f602" }
+.fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
 .fa-bars:before { content: "\f51C" }
 .fa-bio:before { content: "\f515" }
@@ -2660,23 +2661,13 @@ li.active .li2 bl {
 @media( max-width: 480px ) and ( max-height: 320px ) {
 	#page-playback {
 		--scale: 0.65;
-		padding: 50px 0 0 !important;
+		padding: 40px 0 0 !important;
 	}
-	#bar-top,
+	#info {
+		transform: scale( 1.25 );
+	}
 	#bar-bottom {
 		height: 30px;
-		font-size: 22px;
-	}
-	#bar-top i {
-		width: 30px;
-		height: 30px;
-		line-height: 30px;
-	}
-	#logo {
-		font-size: 36px
-	}
-	#playback-controls i {
-		font-size: 22px;
 	}
 	#infoicon,
 	#sampling,
@@ -2684,22 +2675,15 @@ li.active .li2 bl {
 	#coverart-block,
 	#divcover { max-width: 100vh; }
 	#coverart-block { margin-bottom : 0; }
-	#playback-row { margin-top: 35px; }
+	#playback-row { margin-top: 40px; }
 }
 @media( max-height: 480px ) and ( max-width: 320px ) {
 	#page-playback {
 		padding-top: 30px !important;
 		overflow: hidden;
 	}
-	#bar-top {
-		display: none;
-	}
 	#bar-bottom {
 		height: 30px;
-		font-size: 22px;
-	}
-	#playback-controls i {
-		font-size: 22px;
 	}
 	#sampling,
 	#time-knob,
