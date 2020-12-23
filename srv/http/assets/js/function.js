@@ -105,7 +105,7 @@ function contextmenuLibrary( $li, $target ) {
 		G.list.name = $li.find( '.li1' ).text() || $li.find( '.liname' ).text();
 	}
 	G.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
-	if ( ( G.display.tapaddplay || G.display.tapreplaceplay )
+	if ( ( G.display.tapaddplay || G.display.tapreplaceplay && !G.color )
 		&& !$target.hasClass( 'lib-icon' )
 		&& !$li.hasClass( 'licover' )
 	) {
