@@ -192,6 +192,7 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
+	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoBox' ).css( {
 		  margin     : ''
 		, visibility : 'hidden'
