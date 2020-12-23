@@ -256,7 +256,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 		G.display = data;
 		var json = {
 			  icon     : 'library'
-			, title    : !options ? 'Library Display' : 'Library-Playlist Options'
+			, title    : !options ? 'Library Home Display' : 'Library/Playlist Options'
 			, message  : !options ? 'Show selected items:' : ''
 			, checkbox : displayCheckbox( checklist )
 			, preshow  : function() {
