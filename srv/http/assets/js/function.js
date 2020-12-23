@@ -326,7 +326,10 @@ function displaySave( page ) {
 function displayTopBottom() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
-	if ( !G.display.bars || ( G.screenS && !G.display.barsalways ) ) {
+	var wH = window.innerHeight;
+	var wW = window.innerWidth;
+	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
+	if ( !G.display.bars || lcd || !G.display.barsalways ) {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );

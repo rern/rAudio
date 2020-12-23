@@ -25,7 +25,6 @@ var G = {
 	, savedlist     : 0
 	, savedplaylist : 0
 	, scale         : 1
-	, screenS       : window.innerHeight < 590 || window.innerWidth < 500
 	, scrollspeed   : 80 // pixel/s
 	, scrolltop     : {}
 	, similarpl     : -1
