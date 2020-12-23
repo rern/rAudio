@@ -18,23 +18,14 @@
 	</div>
 <?php }
 	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
-	 <div>
 	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
-	</div>
 <?php }
 	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
-	<div>
 	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
-	<div id="divprofile">
-	<heading data-status="netctl" class="status noline sub">Saved Connections<i class="fa fa-code"></i></heading>
-	<ul id="listprofile" class="entries"></ul>
-	<pre id="codenetctl" class="hide"></pre>
-	</div>
-	</div>
 <?php } ?>
 	
 	<div>

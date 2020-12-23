@@ -54,7 +54,7 @@ if [[ -n $profiles ]]; then
 	ssid=$( iwgetid -r )
 	profiles=$( echo "$profiles" \
 					| cut -c3- \
-					| sed "/^$ssid$/ s|^|\*|" \
+					| sed "/^$ssid$/ d" \
 					| sed 's/.*/"&"/' \
 					| tr '\n' , \
 					| head -c -1 )
