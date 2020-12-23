@@ -359,7 +359,9 @@ function nicsStatus() {
 		
 		renderQR();
 		bannerHide();
-		codeToggle( 'netctl', 'status' );
+		[ 'bt', 'lan', 'wlan' ].forEach( function( id ) {
+			codeToggle( id, 'status' );
+		} );
 		showContent();
 	} );
 }

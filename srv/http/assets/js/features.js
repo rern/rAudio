@@ -36,7 +36,7 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#autoplay' ).prop( 'checked', G.autoplay );
 		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
 		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
-		services.forEach( function( id ) {
+		[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		resetLocal();
