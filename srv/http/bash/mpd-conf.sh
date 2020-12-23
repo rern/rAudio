@@ -82,7 +82,7 @@ audio_output {
 	dop            "yes"'
 		fi
 		mpdcustom=$dirsystem/custom
-		customfile="$mpdcustom-output-$name"
+		customfile="$mpdcustom-output-$aplayname"
 		if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
 			mpdconf+="

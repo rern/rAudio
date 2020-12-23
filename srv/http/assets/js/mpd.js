@@ -208,7 +208,7 @@ $( '#novolume' ).click( function() {
 			, message : warning
 			, ok      : function() {
 				notify( 'No Volume', 'Enable ...', 'mpd' );
-				bash( [ 'novolume', $output.text(), $output.data( 'card' ), $output.data( 'hwmixer' ) ] );
+				bash( [ 'novolume', $output.val(), $output.data( 'card' ), $output.data( 'hwmixer' ) ] );
 			}
 		} );
 	} else {
@@ -226,7 +226,7 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'DSP over PCM', checked, 'mpd' );
-	bash( [ 'dop', checked, $( '#audiooutput option:selected' ).text() ] );
+	bash( [ 'dop', checked, $( '#audiooutput option:selected' ).val() ] );
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
@@ -482,7 +482,7 @@ var custominfo = heredoc( function() { /*
 */ } );
 $( '#setting-custom' ).click( function() {
 	var valglobal, valoutput;
-	var output = $( '#audiooutput option:selected' ).text();
+	var aplayname = $( '#audiooutput option:selected' ).val();
 	info( {
 		  icon     : 'mpd'
 		, title    : "User's Custom Settings"
@@ -492,7 +492,7 @@ $( '#setting-custom' ).click( function() {
 		, preshow  : function() {
 			bash( [ 'customgetglobal' ], function( data ) { // get directly to keep white spaces
 				valglobal = data || '';
-				bash( [ 'customgetoutput', output ], function( data ) {
+				bash( [ 'customgetoutput', aplayname ], function( data ) {
 					valoutput = data || '';
 					$( '#global' ).val( valglobal );
 					$( '#output' ).val( valoutput );
@@ -521,7 +521,7 @@ $( '#setting-custom' ).click( function() {
 		, ok       : function() {
 			var customglobal = lines2line( $( '#global' ).val() );
 			var customoutput = lines2line( $( '#output' ).val() );
-			bash( [ 'customset', customglobal, customoutput, output ] );
+			bash( [ 'customset', customglobal, customoutput, aplayname ] );
 			notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
