@@ -133,9 +133,9 @@ customset )
 	else
 		global=${args[1]}
 		output=${args[2]}
-		outputname=${args[3]}
+		aplayname=${args[3]}
 		[[ -n $global ]] && echo "$global" > $file-global || rm -f $file-global
-		[[ -n $output ]] && echo "$output" > "$file-output-$outputname" || rm -f "$file-output-$outputname"
+		[[ -n $output ]] && echo "$output" > "$file-output-$aplayname" || rm -f "$file-output-$aplayname"
 		[[ -n $global || -n $output ]] && touch $file
 	fi
 	sed -i '/ #custom$/ d' /etc/mpd.conf
@@ -147,11 +147,11 @@ customset )
 	;;
 dop )
 	dop=${args[1]}
-	output=${args[2]}
+	aplayname=${args[2]}
 	if [[ $dop == true ]]; then
-		touch "$dirsystem/dop-$output"
+		touch "$dirsystem/dop-$aplayname"
 	else
-		rm -f "$dirsystem/dop-$output"
+		rm -f "$dirsystem/dop-$aplayname"
 	fi
 	restartMPD
 	;;
