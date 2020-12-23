@@ -114,7 +114,9 @@ refreshData = function() {
 			+'<br>'
 			+ iplist
 			+ sourcelist
-		);
+		).promise().done( function() {
+			bash( "journalctl -b | sed -n '1,/Startup finished.*kernel/ p' > /srv/http/data/tmp/bootlog" );
+		} );
 		$( '#status' ).html( renderStatus );
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );

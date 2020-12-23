@@ -21,7 +21,7 @@ var cmd = {
 	, crossfade    : [ 'mpc crossfade' ]
 	, fstab        : [ 'cat /etc/fstab' ]
 	, ifconfig     : [ 'ifconfig wlan0' ]
-	, journalctl   : [ '/srv/http/bash/system.sh statusbootlog', 'journalctl -b' ]
+	, journalctl   : [ 'cat /srv/http/data/tmp/bootlog', 'journalctl -b' ]
 	, lan          : [ 'ifconfig eth0' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mount        : [ 'mount | grep " / \\|MPD"' ]
