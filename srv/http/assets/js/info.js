@@ -113,6 +113,7 @@ infocontenthtml = heredoc( function() { /*
 */ } );
 var infoscroll = 0;
 var splitcols = 0;
+G = {}
 
 $( 'body' ).prepend( containerhtml );
 
