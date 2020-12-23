@@ -25,7 +25,6 @@ var cmd = {
 	, lan          : [ 'ifconfig eth0' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mount        : [ 'mount | grep " / \\|MPD"' ]
-	, netctl       : [ '/srv/http/bash/networks.sh statusnetctl', 'cat /etc/netctl/SSID' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ 'ifconfig wlan0' ]
 }

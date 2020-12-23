@@ -153,16 +153,5 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
-statusnetctl )
-	lists=$( netctl list )
-	[[ -z $lists ]] && echo '(none)' && exit
-	
-	readarray -t lists <<< "$lists"
-	for list in "${lists[@]}"; do
-		name=$( sed 's/^-*\** *//' <<< $list )
-		profiles+=$'\n'"$name<hr>$( cat /etc/netctl/$name | sed -e '/^#.*/ d' -e 's/Key=.*/Key="*********"/' )"$'\n'
-	done
-	echo "${profiles:1:-1}"
-	;;
 	
 esac
