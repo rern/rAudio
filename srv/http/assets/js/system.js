@@ -534,7 +534,6 @@ $( '#setting-soundprofile' ).click( function() {
 	}
 	if ( textvalue.length > 2 ) {
 		var defaultval = '18000000 60 1500 1000';
-		var customval = G.soundprofileval !== defaultval ? G.soundprofileval : 0;
 		var radio = {
 			  _Default  : defaultval
 			, RuneAudio : lat[ 0 ] +' 0 1500 1000'
@@ -544,12 +543,12 @@ $( '#setting-soundprofile' ).click( function() {
 			, OrionV3   : lat[ 4 ] +' 0 1000 4000'
 			, _OrionV4  : lat[ 5 ] +' 60 1000 4000'
 			, Um3ggh1U  : lat[ 6 ] +' 0 1500 1000'
-			, _Custom   : customval
 		}
+		var radioval = Object.values( radio );
+		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
 	} else {
 		textlabel = textlabel.slice( 0, 2 );
 		var defaultval = '18000000 60';
-		var custom = G.soundprofileval !== defaultval ? G.soundprofileval : 0;
 		var radio = {
 			  _Default  : defaultval
 			, RuneAudio : lat[ 0 ] +' 0'
@@ -559,10 +558,10 @@ $( '#setting-soundprofile' ).click( function() {
 			, OrionV3   : lat[ 4 ] +' 0'
 			, _OrionV4  : lat[ 5 ] +' 60'
 			, Um3ggh1U  : lat[ 6 ] +' 0'
-			, _Custom   : customval
 		}
+		var radioval = Object.values( radio );
+		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
 	}
-	var values = Object.values( radio );
 	var iL = textlabel.length;
 	info( {
 		  icon      : 'sliders'
@@ -571,9 +570,9 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue : textvalue
 		, boxwidth  : 110
 		, radio     : radio
-		, checked   : G.soundprofileval || 0
+		, checked   : G.soundprofileval
 		, preshow   : function() {
-			$( '#infoRadio input' ).last().prop( 'disabled', customval === 0 );
+			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
 			// verify changes + interactive values
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoRadio' ).change( function() {
@@ -588,6 +587,7 @@ $( '#setting-soundprofile' ).click( function() {
 				for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
 				$( '#infoRadio input' ).val( [ textvalue.indexOf( soundprofileval ) !== -1 ? soundprofileval : G.soundprofileval ] );
 				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
+				$( '#infoRadio input' ).last().prop( 'checked', radioval.indexOf( soundprofileval ) === -1 );
 			} );
 		}
 		, cancel    : function() {
@@ -596,6 +596,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, ok        : function() {
 			var soundprofileval = $( '#infoTextBox' ).val();
 			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
+			var custom = radioval.indexOf( soundprofileval ) !== -1 ? false : true;
 			bash( [ 'soundprofileset', soundprofileval ] );
 			var action = !G.soundprofile ? 'Enabled ...' : ( soundprofileval !== defaultval ? 'Change ...' : 'Default ...' );
 			notify( 'Kernel Sound Profile', action, 'volume' );
