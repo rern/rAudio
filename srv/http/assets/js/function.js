@@ -328,8 +328,9 @@ function displayTopBottom() {
 	
 	var wH = window.innerHeight;
 	var wW = window.innerWidth;
+	var smallscreen = wH < 590 ||wW < 500;
 	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
-	if ( !G.display.bars && !G.display.barsalways || lcd ) {
+	if ( !G.display.bars || ( smallscreen && !G.display.barsalways ) || lcd ) {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
@@ -1367,7 +1368,7 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
 	
-	if ( G.display.buttons ) {
+	if ( G.display.buttons && $( '#time-knob' ).is( ':visible' ) ) {
 		$( '#random' ).toggleClass( 'active', G.status.random );
 		$( '#repeat' ).toggleClass( 'active', G.status.repeat );
 		$( '#single' ).toggleClass( 'active', G.status.single );
