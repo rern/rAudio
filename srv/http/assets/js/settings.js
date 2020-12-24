@@ -269,7 +269,7 @@ $( '.status' ).click( function( e ) {
 // bar-bottom
 if ( short ) {
 	$( '#bar-bottom' ).addClass( 'transparent' );
-	$( '.container' ).click( function() {
+	$( '.container, .codepage' ).click( function() {
 		$( '#bar-bottom' ).addClass( 'transparent' );
 	} );
 }
