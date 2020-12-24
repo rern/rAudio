@@ -93,7 +93,7 @@ else
 					| sed "s|$|${dir:9}|" )$'\n'
 			fi
 			if [[ -n $albumwav ]]; then
-				album_artist_file+=$albumwav
+				album_artist_file+=$'\n'$albumwav
 				echo "$albumwav" > $dirmpd/albumwav
 			fi
 		done
