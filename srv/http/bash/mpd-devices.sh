@@ -72,7 +72,7 @@ for line in "${lines[@]}"; do
 		fi
 	fi
 	
-	[[ -e "$dirsystem/dop-$name" ]] && dop=1 || dop=0
+	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
 	
 	devices+=',{
 		  "aplayname"   : "'$aplayname'"
