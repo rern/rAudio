@@ -29,7 +29,8 @@
 <?php } ?>
 	
 	<div>
-	<heading>Web User Interface<?=$help?></heading>
+	<heading class="status" data-status="avahi">Web User Interface<i class="fa fa-code"></i><?=$help?></heading>
+	<pre id="codeavahi" class="hide"></pre>
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>
 		<div id="qrwebui" class="qr"></div>
@@ -80,5 +81,3 @@
 	</span>
 </div>
 	<?php } ?>
-
-<div style="clear: both"></div>

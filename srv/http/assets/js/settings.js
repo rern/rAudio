@@ -13,6 +13,7 @@ function bash( command, callback, json ) {
 }
 var cmd = {
 	  amixer       : [ '/srv/http/bash/mpd.sh mixerget', 'amixer -c N' ]
+	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
 	, aplay        : [ 'aplay -l' ]
 	, asound       : [ 'cat /etc/asound.conf' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
@@ -269,7 +270,7 @@ $( '.status' ).click( function( e ) {
 // bar-bottom
 if ( short ) {
 	$( '#bar-bottom' ).addClass( 'transparent' );
-	$( '.container' ).click( function() {
+	$( '.container, .codepage' ).click( function() {
 		$( '#bar-bottom' ).addClass( 'transparent' );
 	} );
 }

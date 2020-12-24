@@ -38,9 +38,11 @@ for line in "${lines[@]}"; do
 	else
 		ssid=
 	fi
+	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 	list+=',{
 		  "dhcp"     : "'$dhcp'"
 		, "gateway"  : "'$gateway'"
+		, "hostname" : "'$hostname'"
 		, "interface": "'$interface'"
 		, "ip"       : "'$ip'"
 		, "mac"      : "'$mac'"

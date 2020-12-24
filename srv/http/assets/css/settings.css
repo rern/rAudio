@@ -314,8 +314,8 @@ heading i.fa-question-circle {
 .codepage {
 	position: absolute;
 	margin: 60px 20px;
-	width: calc( 100vw - 40px );
-	max-height: 90vh;
+	width: calc( 100% - 40px );
+	max-height: calc( 100% - 120px );
 	white-space: pre-wrap;
 	z-index: 5;
 }
@@ -534,6 +534,9 @@ input:checked + .switchlabel.disabled:after {
 .cga {
 	background: var( --cga ) !important;
 }
+#divwebui, #boxqr {
+	height: 180px;
+}
 #boxqr .col-l {
 	padding-top: 0;
 	text-align: left;
@@ -689,10 +692,15 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 512px) {
 	.container {
-		padding: 40px 10px 100px 15px;
+		padding: 40px 10px 100px 10px;
 	}
 	.head {
 		padding-right: 0 !important;
+	}
+	.codepage {
+		margin: 50px 10px;
+		width: calc( 100% - 20px );
+		max-height: calc( 100% - 60px );
 	}
 	.col-l {
 		width: 100%;

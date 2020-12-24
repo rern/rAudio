@@ -287,11 +287,6 @@ function nicsStatus() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		if ( G.hostapd ) {
-			$( '#ssid' ).text( G.hostapd.ssid );
-			$( '#passphrase' ).text( G.hostapd.passphrase )
-			$( '#ipwebuiap' ).text( G.hostapd.hostapdip );
-		}
 		var htmlbt = '';
 		var htmllan = '';
 		var htmlwl = '';
@@ -307,6 +302,7 @@ function nicsStatus() {
 			html = '<li class="'+ val.interface +'"';
 			html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
+			html += val.hostname ? ' data-hostname="'+ val.hostname +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
 			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
 			if ( val.interface === 'eth0' ) {
@@ -376,16 +372,23 @@ function renderQR() {
 	$( 'li' ).each( function() {
 		var ip = $( this ).data( 'ip' );
 		var gateway = $( this ).data( 'gateway' );
+		var hostname = $( this ).data( 'hostname' );
 		if ( ip && gateway ) {
-			$( '#ipwebui' ).text( ip );
 			$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
+			if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
+			$( '#ipwebui' ).html( ip );
 			$( '#divwebui' ).removeClass( 'hide' );
 			return false
 		}
 	} );
-	$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
-	$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
-	$( '#boxqr' ).removeClass( 'hide' );
+	if ( G.hostapd ) {
+		$( '#ipwebuiap' ).html( G.hostapd.hostapdip );
+		$( '#ssid' ).text( G.hostapd.ssid );
+		$( '#passphrase' ).text( G.hostapd.passphrase )
+		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
+		$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
+		$( '#boxqr' ).removeClass( 'hide' );
+	}
 }
 function wlanScan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh '+ G.wlcurrent, function( list ) {

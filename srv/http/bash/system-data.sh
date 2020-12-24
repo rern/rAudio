@@ -75,15 +75,21 @@ data+='
 	, "socram"          : "'$socram'"
 	, "socspeed"        : "'$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )'"
 	, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
-	, "soundlatency"    : '$( sysctl kernel.sched_latency_ns | awk '{print $NF}' )'
-	, "soundswappiness" : '$( sysctl vm.swappiness | awk '{print $NF}' )'
 	, "sources"         : '$( /srv/http/bash/sources-data.sh )'
 	, "version"         : "'$version'"
 	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )
-if ifconfig | grep -q ^eth0; then
+if [[ -e /etc/soundprofile.conf ]]; then
 	data+='
-	, "soundmtu"        : '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )'
-	, "soundtxqueuelen" : '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+	, "soundprofileval" : "'$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
+else
+	latency=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' )
+	swappiness=$( sysctl vm.swappiness | awk '{print $NF}' )
+	if ifconfig | grep -q ^eth0; then
+		mtu=$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
+		txqueuelen=$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+	fi
+	data+='
+	, "soundprofileval" : "'$latency $swappiness $mtu $txqueuelen'"'
 fi
 if [[ -e /usr/bin/bluetoothctl  ]]; then
 	bluetooth=$( grep -q dtparam=krnbt=on /boot/config.txt && echo true || echo false )
