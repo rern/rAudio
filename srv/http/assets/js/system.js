@@ -41,10 +41,13 @@ function dataBackup( netctl ) {
 	} );
 }
 function rebootText( enable, device ) {
-	G.reboot = G.reboot.filter( function( el ) {
-		return el.indexOf( device ) === -1
-	} );
-	G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
+	var exist = 0;
+	if ( G.reboot.length ) {
+		exist = G.reboot.some( function( line ) {
+			return line.indexOf( device ) !== -1
+		} );
+	}
+	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' )
