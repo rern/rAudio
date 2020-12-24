@@ -287,11 +287,6 @@ function nicsStatus() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		if ( G.hostapd ) {
-			$( '#ssid' ).text( G.hostapd.ssid );
-			$( '#passphrase' ).text( G.hostapd.passphrase )
-			$( '#ipwebuiap' ).text( G.hostapd.hostapdip );
-		}
 		var htmlbt = '';
 		var htmllan = '';
 		var htmlwl = '';
@@ -386,9 +381,14 @@ function renderQR() {
 			return false
 		}
 	} );
-	$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
-	$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
-	$( '#boxqr' ).removeClass( 'hide' );
+	if ( G.hostapd ) {
+		$( '#ipwebuiap' ).html( G.hostapd.hostapdip );
+		$( '#ssid' ).text( G.hostapd.ssid );
+		$( '#passphrase' ).text( G.hostapd.passphrase )
+		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
+		$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
+		$( '#boxqr' ).removeClass( 'hide' );
+	}
 }
 function wlanScan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh '+ G.wlcurrent, function( list ) {
