@@ -307,6 +307,7 @@ function nicsStatus() {
 			html = '<li class="'+ val.interface +'"';
 			html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
+			html += val.hostname ? ' data-hostname="'+ val.hostname +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
 			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
 			if ( val.interface === 'eth0' ) {
@@ -376,9 +377,11 @@ function renderQR() {
 	$( 'li' ).each( function() {
 		var ip = $( this ).data( 'ip' );
 		var gateway = $( this ).data( 'gateway' );
+		var hostname = $( this ).data( 'hostname' );
 		if ( ip && gateway ) {
-			$( '#ipwebui' ).text( ip );
 			$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
+			if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
+			$( '#ipwebui' ).html( ip );
 			$( '#divwebui' ).removeClass( 'hide' );
 			return false
 		}
