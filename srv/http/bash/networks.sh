@@ -18,6 +18,7 @@ avahi )
 		| sed 's/^.*hostname = /,/; s/^.*address = / : /' \
 		| tr -d '\n[]' \
 		| tr , '\n' \
+		| grep -v 127.0.0.1 \
 		| grep . \
 		| sort -u
 	;;
