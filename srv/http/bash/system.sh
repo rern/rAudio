@@ -313,6 +313,9 @@ relays )
 	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
 	pushRefresh
 	;;
+relayssave )
+	echo ${args[1]} | jq . > /etc/relays.conf
+	;;
 soundprofile )
 	soundprofile
 	;;
