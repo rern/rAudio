@@ -540,7 +540,7 @@ $( '#setting-soundprofile' ).click( function() {
 			, OrionV3   : lat[ 4 ] +' 0 1000 4000'
 			, _OrionV4  : lat[ 5 ] +' 60 1000 4000'
 			, Um3ggh1U  : lat[ 6 ] +' 0 1500 1000'
-			, _Custom   : 0
+			, _Custom   : G.soundprofileval || 0
 		}
 	} else {
 		textlabel = textlabel.slice( 0, 2 );
@@ -554,7 +554,7 @@ $( '#setting-soundprofile' ).click( function() {
 			, OrionV3   : lat[ 4 ] +' 0'
 			, _OrionV4  : lat[ 5 ] +' 60'
 			, Um3ggh1U  : lat[ 6 ] +' 0'
-			, _Custom   : 0
+			, _Custom   : G.soundprofileval || 0
 		}
 	}
 	var values = Object.values( radio );
@@ -566,9 +566,9 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue : textvalue
 		, boxwidth  : 110
 		, radio     : radio
-		, checked   : values.indexOf( textvalue ) !== -1 ? textvalue : 0
+		, checked   : G.soundprofileval || 0
 		, preshow   : function() {
-			$( '#infoRadio input' ).last().prop( 'disabled', 1 );
+			$( '#infoRadio input' ).last().prop( 'disabled', G.soundprofileval === '' );
 			// verify changes + interactive values
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoRadio' ).change( function() {
@@ -581,8 +581,7 @@ $( '#setting-soundprofile' ).click( function() {
 			$( '.infoinput' ).keyup( function() {
 				var soundprofileval = $( '#infoTextBox' ).val();
 				for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
-				var checkedval = values.indexOf( soundprofileval ) !== -1 ? soundprofileval : 0;
-				$( '#infoRadio input' ).val( [ checkedval ] );
+				$( '#infoRadio input' ).val( [ textvalue.indexOf( soundprofileval ) !== -1 ? soundprofileval : G.soundprofileval ] );
 				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
 			} );
 		}
