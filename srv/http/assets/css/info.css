@@ -313,10 +313,12 @@ hr {
 #infoOverlay input:checked {
 	background-color: var( --cm );
 }
-#infoOverlay input[type=checkbox]:checked:disabled {
+#infoOverlay input[type=checkbox]:checked:disabled,
+#infoOverlay input[type=radio]:checked:disabled {
 	background-color: var( --cmd );
 }
-#infoOverlay input[type=checkbox]:disabled {
+#infoOverlay input[type=checkbox]:disabled,
+#infoOverlay input[type=radio]:disabled {
 	background-color: var( --cgd );
 }
 #infoSelect button {
