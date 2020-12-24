@@ -13,14 +13,8 @@ pushRefresh() {
 case ${args[0]} in
 
 avahi )
-	lines=$( avahi-browse -art | grep 'hostname =\|address =' )
-	echo "$lines" \
-		| sed 's/^.*hostname = /,/; s/^.*address = / : /' \
-		| tr -d '\n[]' \
-		| tr , '\n' \
-		| grep -v 127.0.0.1 \
-		| grep . \
-		| sort -u
+	lines=$( timeout 1 avahi-browse -arp )
+	echo "$lines" | cut -d';' -f7,8 | grep . | grep -v 127.0.0.1 | sed 's/;/ : /' | sort -u
 	;;
 btdisconnect )
 	bluetoothctl disconnect ${args[1]}
