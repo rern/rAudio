@@ -357,7 +357,11 @@ function psNotify( data ) {
 			.addClass( 'fa-file-wave' );
 	}
 	if ( data.title === 'Power' ) {
-		data.text === 'Off ...' ? loader( 'show', 'splash' ) : loader( 'show' );
+		if ( data.text === 'Off ...' ) {
+			$( '#loader' ).css( 'background', '#000000' );
+			$( '#loader svg' ).css( 'animation', 'none' );
+		}
+		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader( 'show' );
 	}
