@@ -147,7 +147,6 @@ function psNotify( data ) {
 	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
 
 	banner( data.title, data.text, data.icon, data.delay );
-	loader();
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();

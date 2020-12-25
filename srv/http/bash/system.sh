@@ -167,6 +167,8 @@ getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
 		cat "$filebootlog"
 	else
+		curl -s -X POST http://127.0.0.1/pub?id=notify \
+			-d '{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;
