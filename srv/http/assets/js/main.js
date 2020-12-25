@@ -691,7 +691,7 @@ $( '#volup, #voldn' ).click( function() {
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
-	if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
+	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 	
 	if ( window.innerWidth < 614 ) {
 		if ( !$( '#volume-knob' ).is( ':hidden' ) ) return

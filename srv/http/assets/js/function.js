@@ -325,6 +325,19 @@ function displaySave( page ) {
 function displayTopBottom() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
+	if ( G.status.player === 'mpd' ) {
+		$( '#tab-library, #tab-playlist' ).removeClass( 'hide' );
+		$( '#tab-playback' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-play-circle' );
+		var page = G.playback ? 'playback' : ( G.library ? 'library' : 'playlist' );
+		$( '#tab-'+ page ).addClass( 'active' );
+	} else {
+		$( '#tab-playback' )
+			.removeAttr( 'class' )
+			.addClass( 'active renderer fa fa-'+ G.status.player );
+		$( '#tab-library, #tab-playlist' ).addClass( 'hide' );
+	}
 	var wH = window.innerHeight;
 	var wW = window.innerWidth;
 	var smallscreen = wH < 590 ||wW < 500;
@@ -347,19 +360,6 @@ function displayTopBottom() {
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
 		$( '.emptyadd' ).css( 'top', '' );
-		if ( G.status.player === 'mpd' ) {
-			$( '#tab-library, #tab-playlist' ).removeClass( 'hide' );
-			$( '#tab-playback' )
-				.removeAttr( 'class' )
-				.addClass( 'fa fa-play-circle' );
-			var page = G.playback ? 'playback' : ( G.library ? 'library' : 'playlist' );
-			$( '#tab-'+ page ).addClass( 'active' );
-		} else {
-			$( '#tab-playback' )
-				.removeAttr( 'class' )
-				.addClass( 'renderer fa fa-'+ G.status.player );
-			$( '#tab-library, #tab-playlist' ).addClass( 'hide' );
-		}
 	}
 	$( '.menu' ).addClass( 'hide' );
 }
