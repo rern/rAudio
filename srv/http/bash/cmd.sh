@@ -334,10 +334,8 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	. /srv/http/bash/mpd-devices.sh
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
-	output=${Aname[$card]}
-	volume=$( sed -n "/$output/,/^}/ p" /etc/mpd.conf \
+	volume=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
 				| grep -q 'mixer_type.*none' \
 				&& echo true || echo false )
 	data=$( sed '$ d' $dirsystem/display )
