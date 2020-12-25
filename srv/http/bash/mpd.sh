@@ -201,10 +201,7 @@ mixerset )
 	aplayname=${args[2]}
 	card=${args[3]}
 	control=${args[4]}
-	volumenone=0
-	if [[ $mixer == none ]]; then
-		volumenone=1
-	fi
+	[[ $mixer == none ]] && volumenone=1 || volumenone=0
 	if [[ $mixer == hardware ]]; then
 		rm -f "$dirsystem/mixertype-$aplayname"
 	else
