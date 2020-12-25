@@ -149,7 +149,6 @@ pushstream refresh '{"page":"mpd"}'
 [[ -z $Acard ]] && exit
 
 # udev rules - usb dac
-usbdacfile=$dirtmp/usbdac
 if [[ $# -gt 0 && $1 != bt ]]; then
 	if [[ $1 == remove ]]; then
 		name=$audiooutput
@@ -161,7 +160,6 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 			| grep -B1 'pvolume' \
 			| head -1 \
 			| cut -d"'" -f2 )
-		rm -f $usbdacfile
 		sed -i "s/.$/$card/" /etc/asound.conf
 	else
 		name=${Aname[@]: -1} # added usb dac = last one
@@ -169,7 +167,6 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 		mixertype=${Ahwmixer[@]: -1}
 		hwmixer=${Amixertype[@]: -1}
 		[[ $mixertype == 'none' && -n $hwmixer ]] && amixer -c $card sset "$hwmixer" 0dB
-		echo $aplayname > $usbdacfile # flag - active usb
 		sed -i "s/.$/$card/" /etc/asound.conf
 	fi
 	

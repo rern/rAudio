@@ -334,7 +334,9 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	output=$( cat $dirtmp/usbdac 2> /dev/null || cat $dirsystem/audio-output )
+	. /srv/http/bash/mpd-devices.sh
+	card=$( head -1 /etc/asound.conf | tail -c 2 )
+	output=${Aname[$card]}
 	volume=$( sed -n "/$output/,/^}/ p" /etc/mpd.conf \
 				| grep -q 'mixer_type.*none' \
 				&& echo true || echo false )
