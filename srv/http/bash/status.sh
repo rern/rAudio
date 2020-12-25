@@ -45,7 +45,7 @@ airplay )
 , "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"          : "play"
 , "Time"           : '$Time'
-, "volume"         : 100
+, "volume"         : '$( /srv/http/bash/cmd.sh volumeget )'
 , "volumemute"     : 0'
 # >>>>>>>>>>
 	echo {$status}
@@ -90,7 +90,7 @@ spotify )
 	status+='
 , "elapsed" : '$elapsed'
 , "state"   : "'$state'"
-, "volume"  : 100'
+, "volume"  : '$( /srv/http/bash/cmd.sh volumeget )
 # >>>>>>>>>>
 	echo {$status}
 	exit

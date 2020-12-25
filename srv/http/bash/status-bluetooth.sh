@@ -41,7 +41,7 @@ data='
 	, "state"      : "'$state'"
 	, "coverart"   : "'$coverart'"
 	, "sampling"   : "Bluetooth"
-	, "volume"     : 100
-	, "volumemute" : '0
+	, "volume"     : '$( /srv/http/bash/cmd.sh volumeget )'
+	, "volumemute" : 0'
 
 echo $data

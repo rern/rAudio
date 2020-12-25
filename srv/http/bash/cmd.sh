@@ -154,6 +154,10 @@ urldecode() { # for webradio url to filename
 }
 volume0dB(){
 	mpc volume | cut -d' ' -f2 | tr -d % > $dirtmp/mpdvolume
+	volumeGetControls
+	amixer -c $card sset "$control" 0dB
+}
+volumeGetControls() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
 	control=$( amixer -c $card scontents \
 				| grep -A1 ^Simple \
@@ -163,7 +167,6 @@ volume0dB(){
 				| grep pvolume \
 				| head -1 \
 				| cut -d"'" -f2 )
-	amixer -c $card sset "$control" 0dB
 }
 volumeSet() {
 	current=$1
@@ -693,6 +696,12 @@ volumeincrement )
 	;;
 volume0db )
 	volume0dB
+	;;
+volumeget )
+	volumeGetControls
+	amixer -c $card sget "$control" \
+		| awk -F'[%[]' '/%/ {print $2}' \
+		| head -1
 	;;
 volumereset )
 	mpc volume $( cat $dirtmp/mpdvolume )
