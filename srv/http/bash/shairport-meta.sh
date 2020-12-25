@@ -60,7 +60,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirtmp/airplay-start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
-			data=$( amixer -M -c ${cardcontrol[0]} sget "${cardcontrol[1]}" \
+			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
 			echo $data > $dirtmp/airplay-volume
