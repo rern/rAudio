@@ -54,14 +54,13 @@ for line in "${lines[@]}"; do
 			[[ $mixertype == hardware ]] && mixertype=software
 		else
 			amixer=$( echo "$amixer" \
-				| grep -A2 'Simple mixer control' \
-				| grep -v 'Capabilities' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep 'Playback channels' \
-				| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
-				| awk '!a[$0]++' \
-				| grep . )
+						| grep -A1 ^Simple \
+						| sed 's/^\s*Cap.*: /^/' \
+						| tr -d '\n' \
+						| sed 's/--/\n/g' \
+						| grep pvolume \
+						| head -1 \
+						| cut -d"'" -f2 )
 			mixers=$( echo "$amixer" | wc -l )
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
