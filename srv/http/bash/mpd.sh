@@ -203,7 +203,6 @@ mixerset )
 	control=${args[4]}
 	volumenone=0
 	if [[ $mixer == none ]]; then
-		[[ -n $control ]] && amixer -c $card sset $control 0dB
 		volumenone=1
 	fi
 	if [[ $mixer == hardware ]]; then
@@ -230,7 +229,6 @@ novolume )
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
 	mpc crossfade 0
-	amixer -c $card sset $hwmixer 0dB
 	echo none > "$dirsystem/mixertype-$name"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
