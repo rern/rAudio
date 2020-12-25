@@ -169,11 +169,7 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 		[[ $mixertype == 'none' && -n $hwmixer ]] && amixer -c $card sset "$hwmixer" 0dB
 		sed -i "s/.$/$card/" /etc/asound.conf
 	fi
-	
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
-	
-	[[ $( sed -n "/$name/,/^}/ p" /etc/mpd.conf | grep mixer_type | cut -d\" -f2 ) == 'none' ]] && volumenone=true || volumenone=false
-	pushstream display '{"volumenone":'$volumenone'}'
 else
 	aplayname=$audioaplayname
 fi
