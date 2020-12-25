@@ -63,7 +63,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'package', 'playlist', 'reload', 'seek', 'snapcast', 'spotify', 'volume', 'volumenone', 'webradio' ];
+	'notify', 'option', 'order', 'package', 'playlist', 'reload', 'seek', 'snapcast', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -95,7 +95,6 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'snapcast':   psSnapcast( data );   break;
 		case 'spotify':    psSpotify( data );    break;
 		case 'volume':     psVolume( data );     break;
-		case 'volumenone': psVolumeNone( data ); break;
 		case 'webradio':   psWebradio( data );   break;
 	}
 }
@@ -467,22 +466,6 @@ function psVolume( data ) {
 		}
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 	}, G.debouncems );
-}
-function psVolumeNone( data ) {
-	if ( data.volumenone ) {
-		var existing = G.display.volumenone;
-		G.display.volumenone = data.volumenone;
-		if ( data.volumenone !== existing && G.playback ) displayPlayback();
-	} else {
-		G.display.volumenone = false;
-		bash( "awk '/volume/ {print $NF}' /srv/http/data/mpd/mpdstate", function( data ) {
-			G.status.volume = data;
-			if ( G.playback ) {
-				$volumeRS.setValue( G.status.volume );
-				displayPlayback();
-			}
-		} );
-	}
 }
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )

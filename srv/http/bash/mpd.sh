@@ -201,14 +201,13 @@ mixerset )
 	aplayname=${args[2]}
 	card=${args[3]}
 	control=${args[4]}
-	[[ $mixer == none ]] && volumenone=1 || volumenone=0
 	if [[ $mixer == hardware ]]; then
 		rm -f "$dirsystem/mixertype-$aplayname"
 	else
 		echo $mixer > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=volumenone -d '{ "pvolumenone": "'$volumenone'" }'
+	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixer == none ]] && echo true || echo false )' }'
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
@@ -229,7 +228,7 @@ novolume )
 	echo none > "$dirsystem/mixertype-$name"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=volumenone -d '{ "pvolumenone": "1" }'
+	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
 replaygaindisable )
 	sed -i '/^replaygain/ s/".*"/"off"/' /etc/mpd.conf
