@@ -163,6 +163,13 @@ datarestore )
 	fi
 	/srv/http/bash/cmd.sh power
 	;;
+getjournalctl )
+	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
+		cat "$filebootlog"
+	else
+		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
+	fi
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
