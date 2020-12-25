@@ -342,7 +342,7 @@ function displayTopBottom() {
 	} else {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
-		$( '#bar-bottom' ).removeClass( 'transparent' );
+		$( '#bar-bottom' ).removeClass( 'hide transparent' );
 		$( '#page-playback' ).removeClass ( 'barshidden' );
 		$( '#page-playback, #infoicon, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
