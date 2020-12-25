@@ -36,13 +36,6 @@ airplay )
 		now=$( date +%s%3N )
 		elapsed=$(( ( now - start + 500 ) / 1000 ))
 	fi
-	volume=$( cat $path-volume 2> /dev/null )
-	if [[ -z $volume ]]; then
-		fileconf=/etc/shairport-sync.conf
-		card=$( grep output_device $fileconf | cut -d'"' -f2 | cut -d: -f2 )
-		mixer=$( grep mixer_control $fileconf | cut -d'"' -f2 )
-		volume=$( amixer -c $card sget "$mixer" | grep -m 1 % | sed 's/.*\[\(.*\)%.*/\1/' | tee $path-volume )
-	fi
 	[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 ########
 	status+='
@@ -52,7 +45,7 @@ airplay )
 , "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"          : "play"
 , "Time"           : '$Time'
-, "volume"         : '$volume'
+, "volume"         : 100
 , "volumemute"     : 0'
 # >>>>>>>>>>
 	echo {$status}
@@ -91,14 +84,13 @@ spotify )
 		fi
 	fi
 	elapsed=$(( ( elapsed + 500 ) / 1000 ))
-	volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 ########
 	status+=$( cat $file )
 ########
 	status+='
 , "elapsed" : '$elapsed'
 , "state"   : "'$state'"
-, "volume"  : '$volume
+, "volume"  : 100'
 # >>>>>>>>>>
 	echo {$status}
 	exit

@@ -1008,7 +1008,7 @@ $( '.btn-cmd' ).click( function() {
 					getPlaybackStatus();
 				} );
 			} else if ( G.status.player === 'spotify' ) {
-				bash( '/srv/http/bash/spotifyd.sh stop' );
+				bash( '/srv/http/bash/cmd.sh spotifydstop' );
 			} else if ( G.status.player === 'upnp' ) {
 				bash( '/srv/http/bash/upnp-stop.sh' );
 			}

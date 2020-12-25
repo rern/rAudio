@@ -152,6 +152,19 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
+volume0dB(){
+	mpc volume | cut -d' ' -f2 | tr -d % > $dirtmp/mpdvolume
+	card=$( head -1 /etc/asound.conf | tail -c 2 )
+	control=$( amixer -c $card scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep pvolume \
+				| head -1 \
+				| cut -d"'" -f2 )
+	amixer -c $card sset "$control" 0dB
+}
 volumeSet() {
 	current=$1
 	target=$2
@@ -218,6 +231,7 @@ bluetoothplayer )
 		rm -f $dirtmp/{player-*,btclient}
 		echo $val > $dirtmp/player-bluetooth
 		sleep 1
+		volume0dB
 		status=$( /srv/http/bash/status.sh )
 		pushstream mpdplayer "$status"
 	fi
@@ -226,6 +240,7 @@ bluetoothplayerstop )
 	systemctl restart bluezdbus
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
+	mpc volume $( cat $dirtmp/mpdvolume )
 	status=$( /srv/http/bash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
@@ -631,6 +646,13 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
+spotifydstop )
+	systemctl restart spotifyd
+	rm -f /srv/http/data/shm/spotify-start
+	mv /srv/http/data/shm/player-{*,mpd}
+	/srv/http/bash/cmd.sh volumereset
+	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
+	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}
@@ -668,6 +690,12 @@ volumeincrement )
 	target=${args[1]}
 	mpc volume $target
 	pushstreamVolume set $target
+	;;
+volume0db )
+	volume0dB
+	;;
+volumereset )
+	mpc volume $( cat $dirtmp/mpdvolume )
 	;;
 webradioadd )
 	name=${args[1]}

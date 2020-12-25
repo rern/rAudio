@@ -14,20 +14,13 @@ client_secret=6b7f533b66cb4a338716344de966dde1
 
 timestamp=$(( $( date +%s%3N ) - 1000 ))
 file=/srv/http/data/shm/spotify
-if (( $# > 0 )); then
-	systemctl restart spotifyd
-	rm -f $file-start
-	mv $playerfile-{*,mpd}
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
-	exit
-fi
-	
 if [[ ! -e $file-start ]]; then
 	mpc stop
-	mv $playerfile-{*,spotify}
+	mv /srv/http/data/shm/player-{*,spotify}
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
 	(( $elapsed > 0 )) && echo pause > $file-state
+	/srv/http/bash/cmd.sh volume0db
 fi
 
 if [[ $PLAYER_EVENT != stop ]]; then

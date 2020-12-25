@@ -41,7 +41,7 @@ data='
 	, "state"      : "'$state'"
 	, "coverart"   : "'$coverart'"
 	, "sampling"   : "Bluetooth"
-	, "volume"     : '$( mpc volume | cut -d' ' -f2 | tr -d % )'
+	, "volume"     : 100
 	, "volumemute" : '0
 
 echo $data
