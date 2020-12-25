@@ -138,7 +138,6 @@ $( '#audiooutput' ).change( function() {
 	var card = $selected.data( 'card' );
 	var hwmixer = $selected.data( 'hwmixer' );
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
-	aplayname = output !== G.usbdac ? aplayname : '';
 	bash( [ 'audiooutput', aplayname, card, output, hwmixer ] );
 } );
 $( '#mixertype' ).change( function() {
