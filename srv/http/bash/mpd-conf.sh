@@ -9,7 +9,6 @@
 # - dop           - if set
 
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/tmp
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
