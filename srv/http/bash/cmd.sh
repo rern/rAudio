@@ -699,9 +699,11 @@ volume0db )
 	;;
 volumeget )
 	volumeGetControls
-	amixer -c $card sget "$control" \
+	volume=$( amixer -M -c $card sget "$control" \
 		| awk -F'[%[]' '/%/ {print $2}' \
-		| head -1
+		| head -1 )
+	[[ -z $volume ]] && volume=100
+	echo $volume
 	;;
 volumereset )
 	mpc volume $( cat $dirtmp/mpdvolume )
