@@ -150,34 +150,29 @@ pushstream refresh '{"page":"mpd"}'
 # udev rules - usb dac
 if [[ $# -gt 0 && $1 != bt ]]; then
 	if [[ $1 == remove ]]; then
-		name=$audiooutput
 		card=$( aplay -l \
 			| grep "$audioaplayname" \
 			| head -1 \
 			| cut -c6 )
-		hwmixer=$( amixer -c $card scontents \
-			| grep -B1 'pvolume' \
-			| head -1 \
-			| cut -d"'" -f2 )
-		sed -i "s/.$/$card/" /etc/asound.conf
 	else
-		name=${Aname[@]: -1} # added usb dac = last one
 		card=${Acard[@]: -1}
-		mixertype=${Ahwmixer[@]: -1}
-		hwmixer=${Amixertype[@]: -1}
-		[[ $mixertype == 'none' && -n $hwmixer ]] && amixer -c $card sset "$hwmixer" 0dB
-		sed -i "s/.$/$card/" /etc/asound.conf
 	fi
+	sed -i "s/.$/$card/" /etc/asound.conf
+	name=${Aname[$card]}
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 else
-	aplayname=$audioaplayname
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 fi
 
-card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-[[ ${Amixertype[$card]} == none ]] && amixer -c $card sset "${Amixertype[$card]}" 0dB
-
+hwmixer="${Ahwmixer[$card]}"
+if [[ -n $hwmixer ]]; then
+	if [[ ${Amixertype[$card]} == none ]]; then
+		amixer sset "$hwmixer" 0dB
+	else
+		amixer -M sset "$hwmixer" $( mpc volume | awk '{print $NF}' )
+	fi
+fi
 if [[ -e /usr/bin/shairport-sync ]]; then
-	hwmixer="${Ahwmixer[$card]}"
 	if [[ -n $hwmixer ]]; then
 		alsa='alsa = {
 	output_device = "hw:'$card'";
