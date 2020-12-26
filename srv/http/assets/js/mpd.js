@@ -161,7 +161,15 @@ $( '#setting-hwmixer' ).click( function() {
 				$( '#infoRange input' ).on( 'input', function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
-					bash( [ 'amixerset', control, $( this ).val() ] );
+					bash( 'amixer -M sset "'+ control +'" '+ $( this ).val() +'%' );
+				} );
+				$( '#infoRange a' ).click( function() {
+					var min = $( this ).hasClass( 'min' );
+					var $input = $( '#infoRange input' );
+					var val = +$input.val() + ( min ? -1 : 1 );
+					$( '#infoRange .value' ).text( val );
+					$input.val( val );
+					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
 				} );
 			}
 			, nobutton   : 1

@@ -34,9 +34,6 @@ Simple mixer control 'SPDIF Out',0\
 "
 	fi
 	;;
-amixerset )
-	amixer -M sset "${args[1]}" ${args[2]}%
-	;;
 audiooutput )
 	aplayname=${args[1]}
 	card=${args[2]}

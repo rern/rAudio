@@ -63,6 +63,7 @@
 	padding: 0 10px;
 	text-align: right;
 	color: var( --cg60 );
+	cursor: pointer;
 }
 #infoRange .max {
 	text-align: left;
