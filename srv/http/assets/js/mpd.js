@@ -65,7 +65,8 @@ refreshData = function() {
 		} );
 		$( '#hwmixer' )
 			.html( htmlhwmixer )
-			.val( G.device.hwmixer );
+			.val( G.device.hwmixer )
+			.prop( 'disabled', G.device.mixers === 1 );
 		if ( !$selected.data( 'hwmixer' ) ) $( '#mixertype option:eq( 1 )' ).hide();
 		var mixertype = $selected.data( 'mixertype' );
 		$( '#mixertype' ).val( mixertype );
