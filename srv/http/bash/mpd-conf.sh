@@ -174,7 +174,7 @@ else
 fi
 
 card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-[[ ${Amixertype[$card]} == none ]] && amixer -c $card sset "${Amixertype[$card]" 0dB
+[[ ${Amixertype[$card]} == none ]] && amixer -c $card sset "${Amixertype[$card]}" 0dB
 
 if [[ -e /usr/bin/shairport-sync ]]; then
 	hwmixer="${Ahwmixer[$card]}"
