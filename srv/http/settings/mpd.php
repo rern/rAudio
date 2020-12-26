@@ -9,24 +9,38 @@
 	<select id="audiooutput" data-style="btn-default btn-lg"></select>
 </div>
 <pre id="codeaplay" class="hide"></pre>
-<div data-status="amixer" class="col-l double status">
-	<a>Mixer Control
-	<br><gr><i class="fa fa-code"></i></gr></a>
+<div id="divhwmixer">
+	<div data-status="amixer" class="col-l double status">
+		<a>Mixer Device
+		<br><gr><i class="fa fa-code"></i></gr></a>
+	</div>
+	<div class="col-r">
+		<select id="hwmixer" data-style="btn-default btn-lg">
+			<option value="none">(not available)</option>
+		</select>
+		<i id="setting-hwmixer" class="settingedit fa fa-gear"></i><br>
+		<span class="help-block hide">
+			Manually set only if the current one is not working.
+		</span>
+	</div>
 </div>
+<pre id="codeamixer" class="hide"></pre>
+<div class="col-l">Volume Control</div>
 <div class="col-r">
-	<select id="mixertype" data-style="btn-default btn-lg"></select>
-	<i id="setting-mixertype" class="settingedit fa fa-gear hwmixer"></i><br>
-	<span class="hwmixer"><span class="help-block hide"><i class="fa fa-gear"></i>&ensp;Manually select hardware mixer only if the current one is not working.</span></span>
+	<select id="mixertype" data-style="btn-default btn-lg">
+		<option value="none">Disable - 0dB</option>
+		<option value="hardware">Mixer device</option>
+		<option value="software">MPD software</option>
+	</select>
 	<span class="help-block hide">
-			Set volume/mixer control for each device.
+			Volume control for each device.
 		<p>
 			&bull; Disable: best sound quality. (DAC hardware volume will be reset to 0dB.)
-		<br>&bull; DAC hardware: good and convenient.
+		<br>&bull; Mixer device: good and convenient.
 		<br>&bull; MPD software: depends on users preferences.
 		</p>
 	</span>
 </div>
-<pre id="codeamixer" class="hide"></pre>
 </div>
 
 <div>

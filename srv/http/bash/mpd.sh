@@ -15,24 +15,27 @@ restartMPD() {
 case ${args[0]} in
 
 amixer )
-	card=${args[1]}
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
 		amixer -c $card scontents \
-			| grep -A2 'Simple mixer control' \
-			| grep -v 'Capabilities' \
+			| grep -A1 ^Simple \
+			| sed 's/^\s*Cap.*: /^/' \
 			| tr -d '\n' \
 			| sed 's/--/\n/g' \
-			| grep 'Playback channels' \
-			| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
-			| awk '!a[$0]++'
+			| grep pvolume \
+			| cut -d^ -f1
 	else
 		echo "\
-HPOUT1 Digital
-HPOUT2 Digital
-SPDIF Out
-Speaker Digital"
+Simple mixer control 'Speaker Digital',0
+Simple mixer control 'HPOUT1 Digital',0
+Simple mixer control 'HPOUT2 Digital',0
+Simple mixer control 'SPDIF Out',0\
+"
 	fi
+	;;
+amixerset )
+	amixer -M sset "${args[1]}" ${args[2]}%
 	;;
 audiooutput )
 	aplayname=${args[1]}
@@ -186,15 +189,6 @@ mixerhw )
 	fi
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
-	;;
-mixerget )
-	readarray -t cards <<< "$( aplay -l | grep ^card )"
-	for card in "${cards[@]}"; do
-		mixer+=$'\n'"$card"
-		mixer+='<hr>'
-		mixer+=$( amixer -c ${card:5:1} )$'\n'
-	done
-	echo "${mixer:1}"
 	;;
 mixerset )
 	mixer=${args[1]}

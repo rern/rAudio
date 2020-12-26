@@ -12,9 +12,9 @@ function bash( command, callback, json ) {
 	);
 }
 var cmd = {
-	  amixer       : [ '/srv/http/bash/mpd.sh mixerget', 'amixer -c N' ]
+	  amixer       : [ '/srv/http/bash/mpd.sh amixer', 'amixer scontrols' ]
 	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
-	, aplay        : [ 'aplay -l' ]
+	, aplay        : [ 'aplay -l | grep ^card' ]
 	, asound       : [ 'cat /etc/asound.conf' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, bt           : [ 'bluetoothctl info' ]

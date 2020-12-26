@@ -40,28 +40,33 @@ for line in "${lines[@]}"; do
 	fi
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
+	scontents=$( amixer -c $card scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep pvolume )
+	amixer=$( echo "$scontents" | cut -d"'" -f2 )
+	mixers=$( echo "$amixer" | wc -l )
+	readarray -t controls <<< $( echo "$scontents" \
+									| sed 's/Simple.*control \(.*\)\^.*/\1/' \
+									| sed "s/'\|0$//g; s/,/ /" )
+	mixerdevices=
+	for control in "${controls[@]}"; do
+		mixerdevices+=',"'$control'"'
+	done
+	mixerdevices=${mixerdevices:1}
 	if [[ -e $hwmixerfile ]]; then # manual
-		mixers=2
 		hwmixer=$( cat "$hwmixerfile" )
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
 		hwmixer='HPOUT2 Digital'
+		mixerdevices='"HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"'
 	else
-		amixer=$( amixer -c $card scontents )
-		if [[ -z $amixer ]]; then
-			mixers=0
+		if [[ $mixers == 0 ]]; then
 			hwmixer=
 			[[ $mixertype == hardware ]] && mixertype=software
 		else
-			amixer=$( echo "$amixer" \
-						| grep -A1 ^Simple \
-						| sed 's/^\s*Cap.*: /^/' \
-						| tr -d '\n' \
-						| sed 's/--/\n/g' \
-						| grep pvolume \
-						| head -1 \
-						| cut -d"'" -f2 )
-			mixers=$( echo "$amixer" | wc -l )
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
 			else
@@ -78,11 +83,12 @@ for line in "${lines[@]}"; do
 		, "card"        : '$card'
 		, "device"      : '$device'
 		, "dop"         : '$dop'
-		, "mixers"      : '$mixers'
-		, "mixertype"   : "'$mixertype'"
-		, "name"        : "'$name'"
 		, "hw"          : "'$hw'"
 		, "hwmixer"     : "'$hwmixer'"
+		, "mixers"      : '$mixers'
+		, "mixerdevices" : ['$mixerdevices']
+		, "mixertype"   : "'$mixertype'"
+		, "name"        : "'$name'"
 	}'
 	Aaplayname+=( "$aplayname" )
 	Acard+=( "$card" )
