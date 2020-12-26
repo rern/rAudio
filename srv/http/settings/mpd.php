@@ -28,7 +28,7 @@
 <div class="col-l">Volume Control</div>
 <div class="col-r">
 	<select id="mixertype" data-style="btn-default btn-lg">
-		<option value="none">Disable - 0dB</option>
+		<option value="none">None - 100% (0dB)</option>
 		<option value="hardware">Mixer device</option>
 		<option value="software">MPD software</option>
 	</select>
