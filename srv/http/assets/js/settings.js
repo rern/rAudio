@@ -182,6 +182,7 @@ onVisibilityChange( function( visible ) {
 	
 	if ( visible ) {
 		refreshData();
+		if ( !$( '.codepage' ).hasClass( 'hide' ) ) $( '.page-icon' ).click();
 	} else {
 		if ( page === 'networks' ) {
 			clearInterval( intervalscan );
