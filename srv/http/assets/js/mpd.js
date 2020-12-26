@@ -21,6 +21,14 @@ function setMixerType( mixertype ) {
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixerset', mixertype, aplayname, card, hwmixer ] );
 }
+refreshVolume() {
+	if ( !$( '#infoRange' ).hasClass( 'hide' ) ) {
+		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
+			$( '#infoRange .value' ).text( level );
+			$( '#infoRange input' ).val( +level );
+		} );
+	}
+}
 refreshData = function() {
 	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
 		if ( list == -1 ) {
@@ -93,6 +101,7 @@ refreshData = function() {
 		[ 'aplay', 'amixer', 'crossfade', 'mpd', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
+		refreshVolume();
 		resetLocal();
 		showContent();
 	} );

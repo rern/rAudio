@@ -153,12 +153,7 @@ function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
 }
 function psVolume() {
-	if ( page === 'mpd' && !$( '#infoRange' ).hasClass( 'hide' ) ) {
-		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
-			$( '#infoRange .value' ).text( level );
-			$( '#infoRange input' ).val( +level );
-		} );
-	}
+	if ( page === 'mpd' ) refreshVolume();
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
