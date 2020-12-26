@@ -156,7 +156,7 @@ function psVolume() {
 	if ( page === 'mpd' && !$( '#infoRange' ).hasClass( 'hide' ) ) {
 		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
 			$( '#infoRange .value' ).text( level );
-			$( '#infoRange input' ).val( level );
+			$( '#infoRange input' ).val( +level );
 		} );
 	}
 }
