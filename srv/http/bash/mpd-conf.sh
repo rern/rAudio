@@ -166,7 +166,7 @@ fi
 
 hwmixer="${Ahwmixer[$card]}"
 if [[ -n $hwmixer ]]; then
-	if [[ ${Amixertype[$card]} == none ]]; then
+	if [[ ${Amixertype[$card]} != hardware ]]; then
 		amixer sset "$hwmixer" 0dB
 	else
 		amixer -M sset "$hwmixer" $( mpc volume | awk '{print $NF}' )
