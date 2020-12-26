@@ -50,7 +50,7 @@ for line in "${lines[@]}"; do
 	mixers=$( echo "$amixer" | wc -l )
 	readarray -t controls <<< $( echo "$scontents" \
 									| sed 's/Simple.*control \(.*\)\^.*/\1/' \
-									| sed "s/'\|0$//g; s/,/ /" )
+									| tr -d "'" )
 	mixerdevices=
 	for control in "${controls[@]}"; do
 		mixerdevices+=',"'$control'"'
