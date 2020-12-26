@@ -52,7 +52,7 @@ for line in "${lines[@]}"; do
 									| sed "s/'//g" )
 	mixerdevices=
 	for control in "${controls[@]}"; do
-		mixerdevices+=',"'$control'"'
+		mixerdevices+=',"'${control/,0}'"' # remove ,0 from 1st device
 	done
 	mixerdevices=${mixerdevices:1}
 	
@@ -73,7 +73,7 @@ for line in "${lines[@]}"; do
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
 			else
-				hwmixer=${controls[0]}
+				hwmixer=${controls[0]/,0}
 				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
 			fi
 		fi

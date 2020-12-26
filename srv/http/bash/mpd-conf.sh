@@ -55,7 +55,7 @@ if [[ -n $Acard ]]; then
 		card=${Acard[i]}
 		dop=${Adop[i]}
 		hw=${Ahw[i]}
-		hwmixer=${Ahwmixer[i]/,0} # remove ,0 from 1st device
+		hwmixer=${Ahwmixer[i]}
 		mixertype=${Amixertype[i]}
 		name=${Aname[i]}
 ########
