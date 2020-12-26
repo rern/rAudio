@@ -49,7 +49,7 @@ for line in "${lines[@]}"; do
 	mixers=$( echo "$amixer" | wc -l )
 	readarray -t controls <<< $( echo "$scontents" \
 									| sed 's/Simple.*control \(.*\)\^.*/\1/' \
-									| sed "s/'\|,0$//g" )
+									| sed "s/'//g" )
 	mixerdevices=
 	for control in "${controls[@]}"; do
 		mixerdevices+=',"'$control'"'
@@ -73,12 +73,11 @@ for line in "${lines[@]}"; do
 			if (( $mixers == 1 )); then
 				hwmixer=$amixer
 			else
-				hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
+				hwmixer=${controls[0]}
 				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
 			fi
 		fi
 	fi
-	
 	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
 	
 	devices+=',{
