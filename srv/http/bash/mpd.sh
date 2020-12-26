@@ -171,12 +171,28 @@ filetype )
 	done
 	echo "${list:0:-4}"
 	;;
-mixerhw )
+hwmixer )
 	aplayname=${args[1]}
-	mixer=${args[2]}
-	sed -i '/mixer_control_name = / s/".*"/"'$mixer'"/' /etc/shairport-sync.conf
-	[[ $aplayname == rpi-cirrus-wm5102 ]] && /srv/http/bash/mpd-wm5102.sh $card $mixer
-	echo $mixer > "/srv/http/data/system/hwmixer-$aplayname"
+	hwmixer=${args[2]}
+	if [[ $hwmixer == auto ]]; then
+		hwmixer=$( amixer scontents \
+						| grep -A1 ^Simple \
+						| sed 's/^\s*Cap.*: /^/' \
+						| tr -d '\n' \
+						| sed 's/--/\n/g' \
+						| grep pvolume \
+						| sed 's/Simple.*control \(.*\)\^.*/\1/' \
+						| sed "s/'\|,0$//g" \
+						| head -1 )
+		rm -f "/srv/http/data/system/hwmixer-$aplayname"
+	else
+		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"
+	fi
+	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
+	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+		/srv/http/bash/mpd-wm5102.sh $card $hwmixer
+	fi
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
 	;;

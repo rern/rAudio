@@ -38,7 +38,6 @@ for line in "${lines[@]}"; do
 	else
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
-	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 	scontents=$( amixer -c $card scontents \
 				| grep -A1 ^Simple \
@@ -56,7 +55,11 @@ for line in "${lines[@]}"; do
 		mixerdevices+=',"'$control'"'
 	done
 	mixerdevices=${mixerdevices:1}
+	
+	mixermanual=false
+	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	if [[ -e $hwmixerfile ]]; then # manual
+		mixermanual=true
 		hwmixer=$( cat "$hwmixerfile" )
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
@@ -79,16 +82,17 @@ for line in "${lines[@]}"; do
 	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
 	
 	devices+=',{
-		  "aplayname"   : "'$aplayname'"
-		, "card"        : '$card'
-		, "device"      : '$device'
-		, "dop"         : '$dop'
-		, "hw"          : "'$hw'"
-		, "hwmixer"     : "'$hwmixer'"
-		, "mixers"      : '$mixers'
+		  "aplayname"    : "'$aplayname'"
+		, "card"         : '$card'
+		, "device"       : '$device'
+		, "dop"          : '$dop'
+		, "hw"           : "'$hw'"
+		, "hwmixer"      : "'$hwmixer'"
+		, "mixers"       : '$mixers'
 		, "mixerdevices" : ['$mixerdevices']
-		, "mixertype"   : "'$mixertype'"
-		, "name"        : "'$name'"
+		, "mixermanual"  : '$mixermanual'
+		, "mixertype"    : "'$mixertype'"
+		, "name"         : "'$name'"
 	}'
 	Aaplayname+=( "$aplayname" )
 	Acard+=( "$card" )
