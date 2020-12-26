@@ -109,6 +109,10 @@ infocontenthtml = heredoc( function() { /*
 			<div id="infoSelect" class="infocontent">
 				<a id="infoSelectLabel" class="infolabel"></a><select class="infohtml" id="infoSelectBox"></select>
 			</div>
+			<div id="infoRange" class="infocontent inforange infohtml">
+				<div class="value"></div>
+				<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
+			</div>
 			<p id="infoFooter" class="infomessage hide"></p>
 */ } );
 var infoscroll = 0;
@@ -492,6 +496,11 @@ function info( O ) {
 			}
 			renderOption( $( '#infoSelectBox' ), html, 'checked' in O ? O.checked : '' );
 			$( '#infoSelect, #infoSelectLabel, #infoSelectBox' ).removeClass( 'hide' );
+		}
+		if ( 'rangevalue' in O ) {
+			$( '#infoRange .value' ).text( O.rangevalue );
+			$( '#infoRange input' ).val( +O.rangevalue );
+			$( '#infoRange' ).removeClass( 'hide' );
 		}
 	}
 

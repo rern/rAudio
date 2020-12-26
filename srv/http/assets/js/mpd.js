@@ -152,14 +152,19 @@ $( '#hwmixer' ).change( function() {
 $( '#setting-hwmixer' ).click( function() {
 	bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
 		info( {
-			  icon    : 'volume'
-			, title   : 'Mixer Device Volume'
-			, message : G.devices[ G.asoundcard ].hwmixer
-						+'<br>'+ level
-			, ok      : function() {
-				var val = 60;
-				bash( [ 'amixerset', G.devices[ G.asoundcard ].hwmixer, val ] );
+			  icon       : 'volume'
+			, title      : 'Mixer Device Volume'
+			, message    : G.devices[ G.asoundcard ].hwmixer
+			, rangevalue : level
+			, preshow    : function() {
+				var control = G.devices[ G.asoundcard ].hwmixer;
+				$( '#infoRange input' ).on( 'input', function() {
+					var val = $( this ).val();
+					$( '#infoRange .value' ).text( val );
+					bash( [ 'amixerset', control, $( this ).val() ] );
+				} );
 			}
+			, nobutton   : 1
 		} );
 	} );
 } );
