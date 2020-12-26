@@ -450,6 +450,7 @@ function psVolume( data ) {
 		$( '#vol-group .btn, .volmap' ).toggleClass( 'disabled', data.disable );
 		return
 	}
+	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var type = data.type;

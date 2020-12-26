@@ -142,12 +142,9 @@ $( '#audiooutput' ).change( function() {
 } );
 $( '#hwmixer' ).change( function() {
 	var aplayname = $( '#audiooutput option:selected' ).val();
-	var output = $( '#audiooutput option:selected' ).text();
-	var mixermanual = $( '#infoSelectBox' ).val();
-	var mixerauto = mixermanual === 'auto';
-	var mixer = mixerauto ? hwmixer : mixermanual;
+	var mixer = $( '#hwmixer' ).val();
 	notify( 'Hardware Mixer', 'Change ...', 'mpd' );
-	bash( [ 'mixerhw', aplayname, output, mixer, mixermanual ] );
+	bash( [ 'mixerhw', aplayname, mixer ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
 	bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {

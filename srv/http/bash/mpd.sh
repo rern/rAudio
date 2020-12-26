@@ -173,17 +173,10 @@ filetype )
 	;;
 mixerhw )
 	aplayname=${args[1]}
-	output=${args[2]}
-	mixer=${args[3]}
-	mixermanual=${args[4]}
-	sed -i '/'$output'/,/}/ s/\(mixer_control \+"\).*/\1"'$mixer'"/' /etc/mpd.conf
+	mixer=${args[2]}
 	sed -i '/mixer_control_name = / s/".*"/"'$mixer'"/' /etc/shairport-sync.conf
-	if [[ $mixermanual == auto ]]; then
-		rm -f "/srv/http/data/system/hwmixer-$output"
-	else
-		[[ $aplayname == rpi-cirrus-wm5102 ]] && /srv/http/bash/mpd-wm5102.sh $card $mixermanual
-		echo $mixermanual > "/srv/http/data/system/hwmixer-$aplayname"
-	fi
+	[[ $aplayname == rpi-cirrus-wm5102 ]] && /srv/http/bash/mpd-wm5102.sh $card $mixer
+	echo $mixer > "/srv/http/data/system/hwmixer-$aplayname"
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
 	;;

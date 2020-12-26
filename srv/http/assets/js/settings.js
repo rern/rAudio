@@ -120,7 +120,7 @@ function validateIP( ip ) {
 } 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
-var streams = [ 'notify', 'refresh', 'reload' ];
+var streams = [ 'notify', 'refresh', 'reload', 'volume' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -141,6 +141,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':  psNotify( data );  break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
+		case 'volume':  psVolume();        break;
 	}
 }
 function psNotify( data ) {
@@ -150,6 +151,14 @@ function psNotify( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
+}
+function psVolume() {
+	if ( page === 'mpd' && !$( '#infoRange' ).hasClass( 'hide' ) ) {
+		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
+			$( '#infoRange .value' ).text( level );
+			$( '#infoRange input' ).val( level );
+		} );
+	}
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
