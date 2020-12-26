@@ -62,7 +62,9 @@ refreshData = function() {
 		G.devices[ G.asoundcard ].mixerdevices.forEach( function( mixer ) {
 			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>'
 		} );
-		$( '#hwmixer' ).html( htmlhwmixer );
+		$( '#hwmixer' )
+			.html( htmlhwmixer )
+			.val( G.devices[ G.asoundcard ].hwmixer );
 		if ( !$selected.data( 'hwmixer' ) ) $( '#mixertype option:eq( 1 )' ).hide();
 		var mixertype = $selected.data( 'mixertype' );
 		$( '#mixertype' ).val( mixertype );
