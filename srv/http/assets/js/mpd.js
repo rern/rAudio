@@ -21,7 +21,7 @@ function setMixerType( mixertype ) {
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixerset', mixertype, aplayname, card, hwmixer ] );
 }
-refreshVolume() {
+function refreshVolume() {
 	if ( !$( '#infoRange' ).hasClass( 'hide' ) ) {
 		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
 			$( '#infoRange .value' ).text( level );
