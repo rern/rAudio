@@ -166,10 +166,10 @@ fi
 
 hwmixer="${Ahwmixer[$card]}"
 if [[ -n $hwmixer ]]; then
-	if [[ ${Amixertype[$card]} != hardware ]]; then
-		amixer sset "$hwmixer" 0dB
-	else
+	if [[ ${Amixertype[$card]} == hardware ]]; then
 		amixer -M sset "$hwmixer" $( mpc volume | awk '{print $NF}' )
+	else
+		amixer sset "$hwmixer" 0dB
 	fi
 fi
 if [[ -e /usr/bin/shairport-sync ]]; then
