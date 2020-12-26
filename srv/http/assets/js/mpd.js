@@ -156,7 +156,7 @@ $( '#setting-hwmixer' ).click( function() {
 		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
-			, message    : G.device.hwmixer
+			, message    : control
 			, rangevalue : level
 			, preshow    : function() {
 				$( '#infoRange input' ).on( 'input', function() {
