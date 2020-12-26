@@ -414,6 +414,8 @@ hr {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
+	font-size: 18px;
+	font-weight: 300;
 	line-height: 40px;
 	text-align: center;
 	background: #000000;
@@ -431,6 +433,9 @@ hr {
 }
 #infoRange .max {
 	text-align: left;
+}
+#infoRange {
+	user-select: none;
 }
 #infoOverlay code {
 	display: inline-block;
