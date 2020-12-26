@@ -151,7 +151,8 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var control = G.device.hwmixer;
-	bash( "amixer -M sget '"+ control +"' | awk -F'[%[]' '/%/ {print $2}'", function( level ) {
+	if ( control.slice( -1 ) !== 0 ) control += ',0';
+	bash( "amixer -M sget '"+ control +"' | awk -F'[%[]' '/%/ {print $2}' | head -1", function( level ) {
 		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
