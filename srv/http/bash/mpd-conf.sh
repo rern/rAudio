@@ -158,6 +158,7 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 	else
 		head -1 /etc/asound.conf | cut -d' ' -f2 > $cardfile
 		card=${Acard[@]: -1}
+		systemctl restart mpd # fix: Failed to read mixer
 	fi
 	sed -i "s/.$/$card/" /etc/asound.conf
 	name=${Aname[$card]}
