@@ -118,10 +118,14 @@ function resetLocal( ms ) {
 	setTimeout( bannerHide, ms || 2000 );
 }
 function showContent() {
-	setTimeout( function() {
-		loader( 'hide' );
-		$( '.head, .container' ).removeClass( 'hide' );
-	}, 300 );
+	if ( $( '.codepage' ).hasClass( 'hide' ) ) {
+		setTimeout( function() {
+			loader( 'hide' );
+			$( '.head, .container' ).removeClass( 'hide' );
+		}, 300 );
+	} else {
+		$( '.codepage' ).html( 'Data:<hr>'+ JSON.stringify( G, null, 2 ) );
+	}
 }
 function validateIP( ip ) {  
 	return /^(?!.*\.$)((?!0\d)(1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test( ip )
@@ -185,7 +189,6 @@ onVisibilityChange( function( visible ) {
 	
 	if ( visible ) {
 		refreshData();
-		if ( !$( '.codepage' ).hasClass( 'hide' ) ) $( '.page-icon' ).click();
 	} else {
 		if ( page === 'networks' ) {
 			clearInterval( intervalscan );
