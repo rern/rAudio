@@ -359,7 +359,7 @@ displayget )
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
+, "snapclient" : '$( systemctl -q is-active snapclient && echo true || echo false )'
 , "update"     : '$( cat $diraddons/update 2> /dev/null || echo false )'
 , "volumenone" : '$volume'
 }'
