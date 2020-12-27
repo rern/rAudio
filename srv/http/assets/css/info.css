@@ -366,7 +366,8 @@ hr {
 	height: 47px;
 	-webkit-appearance: none;
 	margin: 10px 0;
-	width: 280px;
+	width: 300px;
+	max-width: 70%;
 	background: var( --cga );
 	cursor: pointer;
 }
@@ -410,7 +411,7 @@ hr {
 	border-radius: 0px;
 }
 #infoRange .value {
-	margin-top: -15px;
+	margin-top: -10px;
 	font-size: 18px;
 	font-weight: 300;
 	text-align: center;
@@ -430,6 +431,7 @@ hr {
 	text-align: left;
 }
 #infoRange {
+	text-align: center;
 	user-select: none;
 }
 #infoOverlay code {
