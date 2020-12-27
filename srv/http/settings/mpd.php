@@ -35,7 +35,9 @@
 		<p>
 			&bull; <code>None - 100% (0dB)</code> Best sound quality. (Use amplifier volume)
 		<br>&bull; <code>Mixer device</code> Good and convenient. (Device hardware volume)
-		<br>&bull; <code>MPD software</code> Software manipulated volume.
+		<br>&emsp;&emsp; - Control directly with <code>amixer</code>
+		<br>&emsp;&emsp;- <code>+</code> / <code>-</code> @1dB increment (may not equal 1%)
+		<br>&bull; <code>MPD software</code> Software volume.
 		</p>
 	</span>
 </div>
