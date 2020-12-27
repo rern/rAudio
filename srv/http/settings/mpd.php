@@ -15,9 +15,7 @@
 		<br><gr><i class="fa fa-code"></i></gr></a>
 	</div>
 	<div class="col-r">
-		<select id="hwmixer" data-style="btn-default btn-lg">
-			<option value="none">(not available)</option>
-		</select>
+		<select id="hwmixer" data-style="btn-default btn-lg"></select>
 		<i id="setting-hwmixer" class="settingedit fa fa-gear"></i><br>
 		<span class="help-block hide">
 			Manually set only if the current one is not working.
@@ -35,9 +33,9 @@
 	<span class="help-block hide">
 			Volume control for each device.
 		<p>
-			&bull; Disable: best sound quality. (DAC hardware volume will be reset to 0dB.)
-		<br>&bull; Mixer device: good and convenient.
-		<br>&bull; MPD software: depends on users preferences.
+			&bull; <code>None - 100% (0dB)</code> Best sound quality. (Use amplifier volume)
+		<br>&bull; <code>Mixer device</code> Good and convenient. (Device hardware volume)
+		<br>&bull; <code>MPD software</code> Software manipulated volume.
 		</p>
 	</span>
 </div>
@@ -50,10 +48,10 @@
 	<input id="novolume" type="checkbox">
 	<div class="switchlabel" for="novolume"></div>
 	<span class="help-block hide">
-		Disable all software volume manipulations for bit-perfect stream from MPD to DAC.
+		Disable all manipulations for bit-perfect stream from MPD to DAC.
 		<p>
-			&bull; Disable Mixer Control.
-		<br>&bull; Reset DAC hardware volume to 0dB to preserve full amplitude stream.
+			&bull; Volume Control <code>None - 100% (0dB)</code> - Hide Volume in Playback.
+		<br>&bull; Mixer device set to 100% (0dB) - No amplitude manipulations.
 		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
 		</p>
 	</span>

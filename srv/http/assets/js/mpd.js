@@ -59,10 +59,14 @@ refreshData = function() {
 			.prop( 'disabled', G.devices.length === 1 );
 		var $selected = $( '#audiooutput option' ).eq( G.asoundcard );
 		$selected.prop( 'selected', 1 );
-		var htmlhwmixer = G.device.mixermanual ? '<option value="auto">Auto</option>' : '';
-		G.device.mixerdevices.forEach( function( mixer ) {
-			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>'
-		} );
+		if ( G.device.mixers ) {
+			var htmlhwmixer = G.device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			G.device.mixerdevices.forEach( function( mixer ) {
+				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+			} );
+		} else {
+			var htmlhwmixer = '<option>(not available)</option>';
+		}
 		$( '#hwmixer' )
 			.html( htmlhwmixer )
 			.val( G.device.hwmixer )
