@@ -15,6 +15,15 @@ dirsystem=/srv/http/data/system
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
+restartMPD() {
+	systemctl restart mpd
+	pushstream mpdplayer "$( /srv/http/bash/status.sh )"
+	pushstream refresh '{"page":"mpd"}'
+	if [[ -e $dirsystem/updating ]]; then
+		path=$( cat $dirsystem/updating )
+		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
+	fi
+}
 
 . /srv/http/bash/mpd-devices.sh
 
@@ -136,21 +145,14 @@ fi
 
 echo "$mpdconf" > $mpdfile
 
-[[ $mixertype == hardware ]] && amixer -qM sset "$hwmixer" 0
-systemctl restart mpd  # "restart" while not running = start + stop + start
-
-if [[ -e $dirsystem/updating ]]; then
-	path=$( cat $dirsystem/updating )
-	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
+if [[ -z $Acard ]]; then
+	restartMPD
+	exit
 fi
-
-pushstream mpdplayer "$( /srv/http/bash/status.sh )"
-pushstream refresh '{"page":"mpd"}'
-
-[[ -z $Acard ]] && exit
 
 # udev rules - usb dac
 if [[ $# -gt 0 && $1 != bt ]]; then
+	mpc | grep -q '\[playing' && mpc -q stop # fix: mpd Failed to read mixer
 	cardfile=$dirtmp/asoundcard
 	if [[ $1 == remove ]]; then
 		card=$( cat $cardfile )
@@ -158,7 +160,6 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 	else
 		head -1 /etc/asound.conf | cut -d' ' -f2 > $cardfile
 		card=${Acard[@]: -1}
-		systemctl restart mpd # fix: Failed to read mixer
 	fi
 	sed -i "s/.$/$card/" /etc/asound.conf
 	name=${Aname[$card]}
@@ -175,6 +176,9 @@ if [[ -n $hwmixer ]]; then
 		amixer sset "$hwmixer" 0dB
 	fi
 fi
+
+restartMPD
+
 if [[ -e /usr/bin/shairport-sync ]]; then
 	if [[ -n $hwmixer ]]; then
 		alsa='alsa = {

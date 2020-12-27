@@ -705,6 +705,14 @@ volume )
 		fi
 	fi
 	;;
+volumeupdown )
+	updn=${args[1]}
+	hwmixer=${args[2]}
+	amixer -qM sset "$hwmixer" $updn
+	amixer -M sget "$hwmixer" \
+		| awk -F'[%[]' '/%/ {print $2}' \
+		| head -1
+	;;
 volume0db )
 	volume0dB
 	;;

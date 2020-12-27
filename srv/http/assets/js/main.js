@@ -680,13 +680,19 @@ $( '#volup, #voldn' ).click( function() {
 	var thisid = this.id;
 	var vol = G.status.volume;
 	if ( ( vol === 0 && ( thisid === 'voldn' ) ) || ( vol === 100 && ( thisid === 'volup' ) ) ) return
-
-	thisid === 'volup' ? vol++ : vol--;
-	$volumeRS.setValue( vol );
+	
+	if ( thisid === 'volup' ) {
+		vol++;
+		var updn = '1%+';
+	} else {
+		vol--;
+		var updn = '1%-';
+	}
 	G.local = 1;
-	bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
+	bash( [ 'volumeupdown', updn, G.status.hwmixer ], function( val ) {
 		G.local = 0;
-		G.status.volume = vol;
+		G.status.volume = val;
+		$volumeRS.setValue( val );
 	} );
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
