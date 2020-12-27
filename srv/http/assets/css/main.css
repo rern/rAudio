@@ -422,7 +422,7 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	font-size: 16px;
 	color: var( --cg75 );
-	border-top: 1px solid var( --cga ) !important;
+	border-top: 1px solid var( --cga );
 }
 .menu i {
 	width: 40px;
@@ -439,6 +439,10 @@ i.map.disabled, .map.disabled i {
 .submenu {
 	float: right;
 	border-top: 1px solid var( --cga );
+}
+.menu a:first-of-type,
+.submenu:first-of-type {
+	border-top: none;
 }
 #settings {
 	position: fixed;
@@ -462,9 +466,6 @@ i.map.disabled, .map.disabled i {
 }
 #settings i.on {
 	color: var( --cml ) !important;
-}
-#settings img.on {
-	border: solid 2px #0f0;
 }
 .menu a.active,
 .submenu.active {

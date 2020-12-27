@@ -515,19 +515,14 @@ input:checked + .switchlabel.disabled:after {
 .setting,
 .settingedit,
 .code {
-	position: absolute;
-	left: 95px;
+	left: 85px;
 	line-height: 40px;
-	width: 40px;
+	width: 40px !important;
 	text-align: center;
 	font-size: 26px;
 }
-.settingedit {
-	position: static;
-	margin-left: 10px;
-}
-.code {
-	position: static;
+.setting {
+	position: absolute;
 }
 .cg {
 	background: var( --cg );
