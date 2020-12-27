@@ -47,6 +47,7 @@ audiooutput=$( cat $dirsystem/audio-output )
 audioaplayname=$( cat $dirsystem/audio-aplayname )
 mpdfile=/etc/mpd.conf
 mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
+volume=$( mpc volume | sed 's/[^0-9]*//g' )%
 
 if [[ -n $Acard ]]; then
 	cardL=${#Acard[@]}
@@ -164,14 +165,6 @@ else
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 fi
 
-hwmixer="${Ahwmixer[$card]}"
-if [[ -n $hwmixer ]]; then
-	if [[ ${Amixertype[$card]} == hardware ]]; then
-		amixer -M sset "$hwmixer" $( mpc volume | awk '{print $NF}' )
-	else
-		amixer sset "$hwmixer" 0dB
-	fi
-fi
 if [[ -e /usr/bin/shairport-sync ]]; then
 	if [[ -n $hwmixer ]]; then
 		alsa='alsa = {
