@@ -39,22 +39,13 @@ for line in "${lines[@]}"; do
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	scontents=$( amixer -c $card scontents \
-				| grep -A1 ^Simple \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep pvolume )
-	amixer=$( echo "$scontents" | cut -d"'" -f2 )
-	mixers=$( echo "$amixer" | wc -l )
-	readarray -t controls <<< $( echo "$scontents" \
-									| sed 's/Simple.*control \(.*\)\^.*/\1/' \
-									| sed "s/'//g" )
+	readarray -t controls <<< $( /srv/http/bash/mpd.sh controls )
 	mixerdevices=
 	for control in "${controls[@]}"; do
-		mixerdevices+=',"'${control/,0}'"' # remove ,0 from 1st device
+		mixerdevices+=',"'$control'"'
 	done
-	mixerdevices=${mixerdevices:1}
+	mixerdevices=[${mixerdevices:1}]
+	mixers=${#controls[@]}
 	
 	mixermanual=false
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
@@ -64,18 +55,13 @@ for line in "${lines[@]}"; do
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
 		hwmixer='HPOUT2 Digital'
-		mixerdevices='"HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"'
+		mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 	else
 		if [[ $mixers == 0 ]]; then
 			hwmixer=
 			[[ $mixertype == hardware ]] && mixertype=software
 		else
-			if (( $mixers == 1 )); then
-				hwmixer=$amixer
-			else
-				hwmixer=${controls[0]/,0}
-				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
-			fi
+			hwmixer=${controls[0]}
 		fi
 	fi
 	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
@@ -88,7 +74,7 @@ for line in "${lines[@]}"; do
 		, "hw"           : "'$hw'"
 		, "hwmixer"      : "'$hwmixer'"
 		, "mixers"       : '$mixers'
-		, "mixerdevices" : ['$mixerdevices']
+		, "mixerdevices" : '$mixerdevices'
 		, "mixermanual"  : '$mixermanual'
 		, "mixertype"    : "'$mixertype'"
 		, "name"         : "'$name'"

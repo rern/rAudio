@@ -149,12 +149,12 @@ pushstream refresh '{"page":"mpd"}'
 
 # udev rules - usb dac
 if [[ $# -gt 0 && $1 != bt ]]; then
+	cardfile=$dirtmp/asoundcard
 	if [[ $1 == remove ]]; then
-		card=$( aplay -l \
-			| grep "$audioaplayname" \
-			| head -1 \
-			| cut -c6 )
+		card=$( cat $cardfile )
+		rm $cardfile
 	else
+		head -1 /etc/asound.conf | cut -d' ' -f2 > $cardfile
 		card=${Acard[@]: -1}
 	fi
 	sed -i "s/.$/$card/" /etc/asound.conf

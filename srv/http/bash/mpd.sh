@@ -11,6 +11,14 @@ pushRefresh() {
 restartMPD() {
 	/srv/http/bash/mpd-conf.sh
 }
+scontrols() {
+	amixer scontents \
+		| grep -A1 ^Simple \
+		| sed 's/^\s*Cap.*: /^/' \
+		| tr -d '\n' \
+		| sed 's/--/\n/g' \
+		| grep pvolume
+}
 
 case ${args[0]} in
 
@@ -18,20 +26,13 @@ amixer )
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
-		amixer -c $card scontents \
-			| grep -A1 ^Simple \
-			| sed 's/^\s*Cap.*: /^/' \
-			| tr -d '\n' \
-			| sed 's/--/\n/g' \
-			| grep pvolume \
-			| cut -d^ -f1
+		scontrols | cut -d^ -f1
 	else
 		echo "\
-Simple mixer control 'Speaker Digital',0
 Simple mixer control 'HPOUT1 Digital',0
 Simple mixer control 'HPOUT2 Digital',0
-Simple mixer control 'SPDIF Out',0\
-"
+Simple mixer control 'SPDIF Out',0
+Simple mixer control 'Speaker Digital',0"
 	fi
 	;;
 audiooutput )
@@ -79,6 +80,11 @@ bufferoutputset )
 	sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
 	echo $buffer > $dirsystem/bufferoutputset
 	restartMPD
+	;;
+controls )
+	scontrols \
+		| cut -d"'" -f2 \
+		| sort -u
 	;;
 count )
 	albumartist=$( mpc list albumartist | awk NF | wc -l )
@@ -175,15 +181,7 @@ hwmixer )
 	aplayname=${args[1]}
 	hwmixer=${args[2]}
 	if [[ $hwmixer == auto ]]; then
-		hwmixer=$( amixer scontents \
-						| grep -A1 ^Simple \
-						| sed 's/^\s*Cap.*: /^/' \
-						| tr -d '\n' \
-						| sed 's/--/\n/g' \
-						| grep pvolume \
-						| sed 's/Simple.*control \(.*\)\^.*/\1/' \
-						| sed "s/'\|,0$//g" \
-						| head -1 )
+		hwmixer=$( controls | head -1 )
 		rm -f "/srv/http/data/system/hwmixer-$aplayname"
 	else
 		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"

@@ -155,7 +155,7 @@ $( '#audiooutput' ).change( function() {
 } );
 $( '#hwmixer' ).change( function() {
 	var aplayname = $( '#audiooutput option:selected' ).val();
-	var hwmixer = $( '#hwmixer' ).val().replace( ',0', '' );
+	var hwmixer = $( '#hwmixer' ).val();
 	notify( 'Hardware Mixer', 'Change ...', 'mpd' );
 	bash( [ 'hwmixer', aplayname, hwmixer ] );
 } );
