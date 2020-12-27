@@ -45,10 +45,7 @@ fi
 
 ########
 status='
-	  "player"   : "spotify"
-	, "state"    : "'$( cat $file-state )'"
-	, "volume"   : '$( mpc volume | cut -d: -f2 | tr -d ' %' )'
-	, "webradio" : false'
+  "state"    : "'$( cat $file-state )'"'
 
 trackidfile=$file-trackid
 if [[ $( cat $trackidfile 2> /dev/null ) == $TRACK_ID ]]; then
@@ -60,7 +57,8 @@ if [[ $( cat $trackidfile 2> /dev/null ) == $TRACK_ID ]]; then
 	echo $elapsed > $file-elapsed
 ########
 	status+=$( cat $file )
-	status+=', "elapsed" : '$(( ( elapsed + 500 ) / 1000 ))
+	status+='
+, "elapsed" : '$(( ( elapsed + 500 ) / 1000 ))
 else
 	echo $TRACK_ID > $trackidfile
 	
@@ -91,7 +89,8 @@ else
 	echo $metadata > $file
 ########
 	status+=$metadata
-	status+=', "elapsed" : '$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
+	status+='
+, "elapsed" : '$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
