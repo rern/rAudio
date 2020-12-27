@@ -81,11 +81,6 @@ bufferoutputset )
 	echo $buffer > $dirsystem/bufferoutputset
 	restartMPD
 	;;
-controls )
-	scontrols \
-		| cut -d"'" -f2 \
-		| sort -u
-	;;
 count )
 	albumartist=$( mpc list albumartist | awk NF | wc -l )
 	composer=$( mpc list composer | awk NF | wc -l )
@@ -181,7 +176,10 @@ hwmixer )
 	aplayname=${args[1]}
 	hwmixer=${args[2]}
 	if [[ $hwmixer == auto ]]; then
-		hwmixer=$( controls | head -1 )
+		hwmixer=$( scontrols \
+					| cut -d"'" -f2 \
+					| sort -u \
+					| head -1 )
 		rm -f "/srv/http/data/system/hwmixer-$aplayname"
 	else
 		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"
