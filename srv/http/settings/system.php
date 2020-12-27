@@ -236,7 +236,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 $listos = [
 	  'Avahi'                    => 'https://www.avahi.org/'
 	, 'BlueZ'                    => 'http://www.bluez.org'
-	, 'BlueZ-Alsa'               => 'https://github.com/Arkq/bluez-alsa'
+	, 'bluez-alsa'               => 'https://github.com/Arkq/bluez-alsa'
 	, 'Chromium'                 => 'https://www.chromium.org/'
 	, 'Cronie'                   => 'https://github.com/cronie-crond/cronie'
 	, 'Dnsmasq'                  => 'http://www.thekelleys.org.uk/dnsmasq/doc.html'
@@ -245,11 +245,16 @@ $listos = [
 	, 'Gifsicle'                 => 'https://www.lcdf.org/gifsicle/'
 	, 'hfsprogs'                 => 'https://aur.archlinux.org/packages/hfsprogs'
 	, 'hostapd'                  => 'https://w1.fi/hostapd'
+	, 'I2C Tools'                => 'https://i2c.wiki.kernel.org/index.php/I2C_Tools'
 	, 'ifplugd'                  => 'http://0pointer.de/lennart/projects/ifplugd'
 	, 'ImageMagick'              => 'https://imagemagick.org'
+	, 'Inetutils'                => 'https://www.gnu.org/software/inetutils/'
 	, 'jq'                       => 'https://stedolan.github.io/jq'
 	, 'Kid3 - Audio Tagger'      => 'https://kid3.sourceforge.io'
+	, 'Matchbox'                 => 'https://www.yoctoproject.org/software-item/matchbox/'
+	, 'mpc'                      => 'https://www.musicpd.org/clients/mpc/'
 	, 'MPD'                      => 'http://www.musicpd.org'
+	, 'mpdscribble'              => 'https://github.com/MusicPlayerDaemon/mpdscribble'
 	, 'nfs-utils'                => 'http://nfs.sourceforge.net'
 	, 'NGINX'                    => 'http://nginx.org'
 	, 'NGINX Push Stream Module' => 'https://github.com/wandenberg/nginx-push-stream-module'
@@ -259,7 +264,10 @@ $listos = [
 	, 'PHP'                      => 'http://php.net'
 	, 'ply-image'                => 'https://chromium.googlesource.com/chromiumos/third_party/ply-image/+/refs/heads/master/README.chromium'
 	, 'Python'                   => 'https://www.python.org'
+	, 'python-dbus'              => 'https://www.freedesktop.org/wiki/Software/DBusBindings/'
+	, 'PyGObject'                => 'https://wiki.gnome.org/Projects/PyGObject'
 	, 'raspi-rotate'             => 'https://github.com/colinleroy/raspi-rotate'
+	, 'Requests'                 => 'https://github.com/psf/requests'
 	, 'RPi.GPIO'                 => 'https://sourceforge.net/projects/raspberry-gpio-python/'
 	, 'RPLCD'                    => 'https://github.com/dbrgn/RPLCD'
 	, 'Samba'                    => 'http://www.samba.org'
@@ -267,9 +275,11 @@ $listos = [
 	, 'smbus2'                   => 'https://github.com/kplindegaard/smbus2'
 	, 'Snapcast'                 => 'https://github.com/badaix/snapcast'
 	, 'Spotifyd'                 => 'https://github.com/Spotifyd/spotifyd'
+	, 'Sshpass'                  => 'https://sourceforge.net/projects/sshpass/'
 	, 'Sudo'                     => 'https://www.sudo.ws/sudo'
 	, 'udevil'                   => 'http://ignorantguru.github.io/udevil'
 	, 'upmpdcli'                 => 'http://www.lesbonscomptes.com/upmpdcli'
+	, 'UPower'                   => 'https://upower.freedesktop.org/'
 	, 'Wget'                     => 'https://www.gnu.org/software/wget/wget.html'
 	, 'Web Service Discovery'    => 'https://github.com/christgau/wsdd'
 	, 'X'                        => 'https://xorg.freedesktop.org'
@@ -306,7 +316,7 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <div>
 <heading class="sub">Back End<?=$help?></heading>
 <span class="help-block hide">
-	<a href="https://www.archlinuxarm.org" style="font-size: 20px;">ArchLinuxArm</a> + default pakages<br>
+	<a href="https://www.archlinuxarm.org" style="font-size: 20px;">ArchLinuxArm</a> + default packages<br>
 	<?=$oshtml?>
 </span>
 </div>
