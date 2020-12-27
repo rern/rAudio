@@ -136,6 +136,7 @@ fi
 
 echo "$mpdconf" > $mpdfile
 
+[[ $mixertype == hardware ]] && amixer -qM sset "$hwmixer" 0
 systemctl restart mpd  # "restart" while not running = start + stop + start
 
 if [[ -e $dirsystem/updating ]]; then
