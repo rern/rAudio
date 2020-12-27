@@ -243,6 +243,7 @@ $listos = [
 	, 'dosfstools'               => 'https://github.com/dosfstools/dosfstools'
 	, 'FFmpeg'                   => 'http://ffmpeg.org'
 	, 'Gifsicle'                 => 'https://www.lcdf.org/gifsicle/'
+	, 'GitHub'                   => 'https://github.com/'
 	, 'hfsprogs'                 => 'https://aur.archlinux.org/packages/hfsprogs'
 	, 'hostapd'                  => 'https://w1.fi/hostapd'
 	, 'I2C Tools'                => 'https://i2c.wiki.kernel.org/index.php/I2C_Tools'
