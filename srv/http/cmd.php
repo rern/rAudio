@@ -1,5 +1,5 @@
 <?php
-$sudo = '/usr/bin/sudo '; 
+$sudo = '/usr/bin/sudo ';
 $sudobin = $sudo.'/usr/bin/';
 $dirdata = '/srv/http/data/';
 $dirbookmarks = $dirdata.'bookmarks/';
