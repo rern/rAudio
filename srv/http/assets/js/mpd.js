@@ -40,7 +40,7 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		G.device = G.devices[ G.asoundcard ];
+		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			htmldevices += '<option '
@@ -59,9 +59,9 @@ refreshData = function() {
 			.prop( 'disabled', G.devices.length === 1 );
 		var $selected = $( '#audiooutput option' ).eq( G.asoundcard );
 		$selected.prop( 'selected', 1 );
-		if ( G.device.mixers ) {
-			var htmlhwmixer = G.device.mixermanual ? '<option value="auto">Auto</option>' : '';
-			G.device.mixerdevices.forEach( function( mixer ) {
+		if ( device.mixers ) {
+			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			device.mixerdevices.forEach( function( mixer ) {
 				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
 			} );
 		} else {
@@ -69,13 +69,13 @@ refreshData = function() {
 		}
 		$( '#hwmixer' )
 			.html( htmlhwmixer )
-			.val( G.device.hwmixer )
-			.prop( 'disabled', G.device.mixers === 1 );
+			.val( device.hwmixer )
+			.prop( 'disabled', device.mixers === 1 );
 		if ( !$selected.data( 'hwmixer' ) ) $( '#mixertype option:eq( 1 )' ).hide();
 		var mixertype = $selected.data( 'mixertype' );
 		$( '#mixertype' ).val( mixertype );
 		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
-		$( '#divhwmixer' ).toggleClass( 'hide', G.device.mixers === 0 );
+		$( '#divhwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'hide', $selected.val().slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', $selected.data( 'dop' ) == 1 );
@@ -104,6 +104,7 @@ refreshData = function() {
 }
 refreshData();
 //---------------------------------------------------------------------------------------
+var device;
 $( '.enable' ).click( function() {
 	var idname = {
 		  buffer       : 'Custom Audio Buffer'
@@ -156,7 +157,7 @@ $( '#hwmixer' ).change( function() {
 	bash( [ 'hwmixer', aplayname, hwmixer ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
-	var control = G.device.hwmixer;
+	var control = device.hwmixer;
 	bash( "amixer -M sget '"+ control +"' | awk -F'[%[]' '/%/ {print $2}' | head -1", function( level ) {
 		info( {
 			  icon       : 'volume'
