@@ -363,12 +363,12 @@ hr {
 	vertical-align: baseline !important;
 }
 #infoRange input {
-	height: 47px;
-	-webkit-appearance: none;
-	margin: 10px 0;
+	height: 40px;
 	width: 300px;
+	margin: 0;
 	max-width: 70%;
 	background: var( --cga );
+	-webkit-appearance: none;
 	cursor: pointer;
 }
 #infoRange input::-webkit-slider-thumb {
@@ -412,6 +412,7 @@ hr {
 }
 #infoRange .value {
 	margin-top: -10px;
+	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
 	text-align: center;
@@ -421,8 +422,8 @@ hr {
 	position: relative;
 	display: inline-block;
 	width: 40px;
-	top: -19px;
 	padding: 0 10px;
+	vertical-align: 16px;
 	text-align: right;
 	color: var( --cg60 );
 	cursor: pointer;
