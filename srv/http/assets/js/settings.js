@@ -102,6 +102,14 @@ function list2JSON( list ) {
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
+function refreshVolume() {
+	if ( !$( '#infoRange' ).hasClass( 'hide' ) ) {
+		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
+			$( '#infoRange .value' ).text( level );
+			$( '#infoRange input' ).val( +level );
+		} );
+	}
+}
 function resetLocal( ms ) {
 	setTimeout( function() {
 		$( '#bannerIcon i' ).removeClass( 'blink' );
