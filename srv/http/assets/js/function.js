@@ -1588,7 +1588,7 @@ function volumeSet( pageX ) {
 		if ( !G.drag ) $( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		G.local = 1;
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol ], function() {
+		bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
 			G.local = 0;
 			G.status.volume = vol;
 			$( '.volumeband' ).removeClass( 'disabled' );

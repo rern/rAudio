@@ -171,17 +171,32 @@ volumeGetControls() {
 volumeSet() {
 	current=$1
 	target=$2
+	hwmixer=$3
 	diff=$(( $target - $current ))
 	if (( -10 < $diff && $diff < 10 )); then
-		mpc volume $target
+		if [[ -n $hwmixer ]]; then
+			amixer -qM sset "$hwmixer" $target%
+		else
+			mpc volume $target
+		fi
 	else # increment
 		pushstream volume '{"disable":true}'
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			mpc volume $i
+			if [[ -n $hwmixer ]]; then
+				amixer -qM sset "$hwmixer" $i%
+			 else
+				mpc volume $i
+			fi
 			sleep 0.2
 		done
-		(( $i != $target )) && mpc volume $target
+		if (( $i != $target )); then
+			if [[ -n $hwmixer ]]; then
+				amixer -qM sset "$hwmixer" $target%
+			else
+				mpc volume $target
+			fi
+		fi
 		pushstream volume '{"disable":false}'
 	fi
 }
@@ -334,7 +349,7 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	card=$( head -1 /etc/asound.conf | tail -c 2 )
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	volume=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
 				| grep -q 'mixer_type.*none' \
 				&& echo true || echo false )
@@ -671,34 +686,32 @@ thumbjpg )
 volume )
 	current=${args[1]}
 	target=${args[2]}
+	hwmixer=${args[3]}
 	filevolumemute=$dirsystem/volumemute
-	if [[ -n $target ]]; then # set
+	if [[ $target > 0 ]]; then # set
 		pushstreamVolume set $target
-		volumeSet $current $target
+		volumeSet $current $target "$hwmixer"
 		rm -f $filevolumemute
 	else
 		if (( $current > 0 )); then # mute
 			pushstreamVolume mute $current true
-			volumeSet $current 0 false
+			volumeSet $current 0 "$hwmixer"
 			echo $current > $filevolumemute
 		else # unmute
 			target=$( cat $filevolumemute )
 			pushstreamVolume unmute $target true
-			volumeSet 0 $target
+			volumeSet 0 $target "$hwmixer"
 			rm -f $filevolumemute
 		fi
 	fi
-	;;
-volumeincrement )
-	target=${args[1]}
-	mpc volume $target
-	pushstreamVolume set $target
 	;;
 volume0db )
 	volume0dB
 	;;
 volumeget )
 	volumeGetControls
+	[[ -z $control ]] && echo 100 && exit
+	
 	volume=$( amixer -M -c $card sget "$control" \
 		| awk -F'[%[]' '/%/ {print $2}' \
 		| head -1 )

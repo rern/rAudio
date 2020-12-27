@@ -9,16 +9,19 @@ relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
 player=$( ls /srv/http/data/shm/player-* 2> /dev/null | cut -d- -f2  )
+volume=$( /srv/http/bash/cmd.sh volumeget )
 [[ -z $player ]] && player=mpd
 
 ########
-status+='
-  "player"   : "'$player'"
-, "webradio" : false
-, "btclient" : '$btclient'
-, "relays"   : '$relays'
-, "relayson" : '$relayson'
-, "lcd"      : '$lcd
+status='
+  "player"     : "'$player'"
+, "webradio"   : false
+, "btclient"   : '$btclient'
+, "relays"     : '$relays'
+, "relayson"   : '$relayson'
+, "lcd"        : '$lcd'
+, "volume"     : '$volume'
+, "volumemute" : 0'
 
 case $player in
 
@@ -44,9 +47,7 @@ airplay )
 , "playlistlength" : 1
 , "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"          : "play"
-, "Time"           : '$Time'
-, "volume"         : '$( /srv/http/bash/cmd.sh volumeget )'
-, "volumemute"     : 0'
+, "Time"           : '$Time
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -89,8 +90,7 @@ spotify )
 ########
 	status+='
 , "elapsed" : '$elapsed'
-, "state"   : "'$state'"
-, "volume"  : '$( /srv/http/bash/cmd.sh volumeget )
+, "state"   : "'$state'"'
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -99,7 +99,22 @@ spotify )
 esac
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^consume\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
+filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
+card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+mpdconf=$( sed -n "/^\s*device.*hw:$card/,/mixer_control/ p" /etc/mpd.conf )
+hwmixer=$( grep -q 'mixer_type.*hardware' <<< "$mpdconf" && echo 1 )
+if [[ -z $hwmixer ]]; then
+########
+	status=$( grep -v '"volume"' <<< "$status" )
+# >>>>>>>>>>
+	filter+='\|^volume'
+else
+	hwmixer=$( grep mixer_control <<< "$mpdconf" | cut -d'"' -f2 )
+fi
+########
+status+='
+, "hwmixer" : "'$hwmixer'"'
+# >>>>>>>>>>
 
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \

@@ -660,8 +660,7 @@ $( '#volume' ).roundSlider( {
 		G.debounce = setTimeout( function() {
 			G.local = 1;
 			$( '#volume' ).addClass( 'disabled' );
-			//setTimeout( function() { G.local = 0 }, 300 );
-			bash( [ 'volume', G.status.volume, e.value ], function() {
+			bash( [ 'volume', G.status.volume, e.value, G.status.hwmixer ], function() {
 				G.local = 0;
 				G.status.volume = e.value;
 				$( '#volume' ).removeClass( 'disabled' );
@@ -675,18 +674,19 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volmute' ).click( function() {
-	bash( [ 'volume', G.status.volume ] );
+	bash( [ 'volume', G.status.volume, 0, G.status.hwmixer ] );
 } );
 $( '#volup, #voldn' ).click( function() {
 	var thisid = this.id;
 	var vol = G.status.volume;
 	if ( ( vol === 0 && ( thisid === 'voldn' ) ) || ( vol === 100 && ( thisid === 'volup' ) ) ) return
 
-	G.status.volume = ( thisid === 'volup' ) ? vol + 1 : vol - 1;
-	$volumeRS.setValue( G.status.volume );
+	thisid === 'volup' ? vol++ : vol--;
+	$volumeRS.setValue( vol );
 	G.local = 1;
-	bash( [ 'volumeincrement', G.status.volume ], function() {
+	bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
 		G.local = 0;
+		G.status.volume = vol;
 	} );
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
