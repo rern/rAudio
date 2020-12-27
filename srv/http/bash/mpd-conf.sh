@@ -56,7 +56,6 @@ audiooutput=$( cat $dirsystem/audio-output )
 audioaplayname=$( cat $dirsystem/audio-aplayname )
 mpdfile=/etc/mpd.conf
 mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
-volume=$( mpc volume | cut -d: -f2 )
 
 if [[ -n $Acard ]]; then
 	cardL=${#Acard[@]}
@@ -171,7 +170,7 @@ fi
 hwmixer="${Ahwmixer[$card]}"
 if [[ -n $hwmixer ]]; then
 	if [[ ${Amixertype[$card]} == hardware ]]; then
-		amixer -qM sset "$hwmixer" $volume
+		amixer -qM sset "$hwmixer" $( mpc volume | cut -d: -f2 )
 	else
 		amixer sset "$hwmixer" 0dB
 	fi
