@@ -163,7 +163,7 @@ $( '#setting-hwmixer' ).click( function() {
 				$( '#infoRange input' ).on( 'input', function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
-					bash( 'amixer -M sset "'+ control +'" '+ $( this ).val() +'%' );
+					bash( [ 'volumeamixer', control, val ] );
 				} );
 				$( '#infoRange a' ).click( function() {
 					var min = $( this ).hasClass( 'min' );
@@ -171,7 +171,7 @@ $( '#setting-hwmixer' ).click( function() {
 					var val = +$input.val() + ( min ? -1 : 1 );
 					$( '#infoRange .value' ).text( val );
 					$input.val( val );
-					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+					bash( [ 'volumeamixer', control, val ] );
 				} );
 			}
 			, nobutton   : 1
