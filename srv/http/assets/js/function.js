@@ -954,7 +954,7 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	var displaytime = G.display.time && window.innerWidth > 613;
+	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
 	// song and album before update for song/album change detection
 	var previousartist = $( '#artist' ).text();
 	var prevtitle = $( '#song' ).text();
@@ -1361,7 +1361,7 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var displaytime = G.display.time && window.innerWidth > 613;
+	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
 	var prefix = displaytime ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
