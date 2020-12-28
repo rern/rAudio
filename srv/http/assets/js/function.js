@@ -1581,11 +1581,9 @@ function volumeSet( pageX ) {
 	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
-		console.log('drag '+ vol)
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ vol +'%' );
 	} else {
-		console.log('click '+ vol)
 		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
