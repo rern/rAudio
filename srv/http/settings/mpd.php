@@ -16,9 +16,9 @@
 	</div>
 	<div class="col-r">
 		<select id="hwmixer" data-style="btn-default btn-lg"></select>
-		<i id="setting-hwmixer" class="settingedit fa fa-gear"></i><br>
+		<i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
 		<span class="help-block hide">
-			Manually set only if the current one is not working.
+			<i class="fa fa-volume"></i> <code>amixer</code> / <code>alsamixer</code>&ensp;volume control
 		</span>
 	</div>
 </div>
