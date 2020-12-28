@@ -33,7 +33,7 @@ airplay )
 		status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
 	done
 	start=$( cat $path-start 2> /dev/null )
-	Time=$( cat $path-Time 2> /dev/null )
+	Time=$( cat $path-Time 2> /dev/null || echo false )
 	if [[ -n $start && -n $Time ]]; then
 		now=$( date +%s%3N )
 		elapsed=$(( ( now - start + 500 ) / 1000 ))
