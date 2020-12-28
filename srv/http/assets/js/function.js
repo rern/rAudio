@@ -473,7 +473,7 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 	};
 	reader.readAsArrayBuffer( file.slice( 0, 64 * 1024 ) );
 }
-function getPlaybackStatus() {
+function getPlaybackStatus( render ) {
 	local();
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( !status ) return
@@ -491,7 +491,7 @@ function getPlaybackStatus() {
 				displayPlayback();
 				setButtonControl();
 			}, 'json' );
-		} else if ( G.playback ) {
+		} else if ( G.playback || render ) { // 'render' - add to blank playlist
 			G.plreplace = 0;
 			renderPlayback();
 			displayPlayback();
