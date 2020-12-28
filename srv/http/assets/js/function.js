@@ -962,9 +962,16 @@ function renderPlayback() {
 	// volume
 	if ( !G.display.volumenone ) {
 		if ( G.display.volume ) {
-			$volumeRS.setValue( G.status.volume );
-			$volumehandle.rsRotate( - $volumeRS._handle1.angle );
-			G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
+			if ( G.status.volume !== -1 ) {
+				$volumeRS.setValue( G.status.volume );
+				$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+				G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
+			} else  {
+				$volumetooltip.text( 'x' );
+				$volumehandle.addClass( 'bgr60' );
+				$( '#volume-knob' ).addClass( 'disabled' );
+				$( '#mpd' ).addClass( 'disabled' );
+			}
 		}
 		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	}
