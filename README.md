@@ -28,6 +28,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- simple HTTP (no metadata)
 	- Snapcast
 	
+### Default root password: `ros`
+
 ### Q&A
 [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
@@ -48,7 +50,6 @@ Asia server
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
-- Default root password: `ros`
 - Windows:
 	- Download and decompress to *.img with 7-zip, WinRAR or WinZip
 	- Write the file to a micro SD card, 4GB or more, with [Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
