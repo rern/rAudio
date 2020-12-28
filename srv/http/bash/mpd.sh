@@ -264,11 +264,5 @@ soxrset )
 	touch $dirsystem/soxr
 	restartMPD
 	;;
-volumeamixer )
-	control=${args[1]}
-	val=${args[2]}
-	amixer -M sset "$control" $val%
-	curl -s -X POST http://127.0.0.1/pub?id=volume -d '{ "val": '$val' }'
-	;;
 
 esac

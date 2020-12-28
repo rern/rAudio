@@ -1,5 +1,13 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+function cmdsh( command, callback, json ) {
+	$.post( 
+		  'cmd.php'
+		, { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
+		, callback || null
+		, json || null
+	);
+}
 function lines2line( lines ) {
 	var val = '';
 	var lines = lines.split( '\n' ).filter( e => e );
@@ -165,18 +173,21 @@ $( '#setting-hwmixer' ).click( function() {
 			, message    : control
 			, rangevalue : level
 			, preshow    : function() {
-				$( '#infoRange input' ).on( 'input', function() {
+				$( '#infoRange input' ).on( 'input', function() { // drag
+					var current = $( '#infoRange .value' ).text();
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
-					bash( [ 'volumeamixer', control, val ] );
+					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+				} ).on( 'touchend mouseup', function() {
+					cmdsh( [ 'volumepushstream', control ] );
+				} ).click( function() {
+					var current = $( '#infoRange .value' ).text();
+					var val = $( this ).val();
+					cmdsh( [ 'volume', current, val, control ] );
 				} );
 				$( '#infoRange a' ).click( function() {
-					var min = $( this ).hasClass( 'min' );
-					var $input = $( '#infoRange input' );
-					var val = +$input.val() + ( min ? -1 : 1 );
-					$( '#infoRange .value' ).text( val );
-					$input.val( val );
-					bash( [ 'volumeamixer', control, val ] );
+					var val = $( this ).hasClass( 'min' ) ? '1%-' : '1%+';
+					cmdsh( [ 'volumeupdown', val, control ] );
 				} );
 			}
 			, nobutton   : 1

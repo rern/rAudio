@@ -654,23 +654,22 @@ $( '#volume' ).roundSlider( {
 			.rsRotate( - this._handle1.angle );                     // initial rotate
 		$( '.rs-transition' ).css( 'transition-property', 'none' ); // disable animation on load
 	}
-	, update          : function( e ) {
-		$( e.handle.element ).rsRotate( - e.handle.angle );
-		clearTimeout( G.debounce );
-		G.debounce = setTimeout( function() {
-			G.local = 1;
-			$( '#volume' ).addClass( 'disabled' );
-			bash( [ 'volume', G.status.volume, e.value, G.status.hwmixer ], function() {
-				G.local = 0;
-				G.status.volume = e.value;
-				$( '#volume' ).removeClass( 'disabled' );
-			} );
-		}, 50 );
-	}
-	, start           : function( e ) { // on 'start drag'
+	, start           : function( e ) { // touchstart mousedown
 		// restore handle color immediately on start drag
 		if ( e.value === 0 ) volColorUnmute(); // value before 'start drag'
 		$( '.map' ).removeClass( 'mapshow' );
+	}
+	, drag            : function( e ) {
+		G.drag = 1;
+		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ e.value +'%' );
+	}
+	, stop            : function() { // touchend mouseup
+		bash( [ 'volumepushstream', G.status.hwmixer ] );
+	}
+	, change          : function( e ) { // mouseup
+		$( e.handle.element ).rsRotate( - e.handle.angle );
+		if ( !G.drag ) bash( [ 'volume', G.status.volume, e.value, G.status.hwmixer ] );
+		G.drag = 0;
 	}
 } );
 $( '#volmute' ).click( function() {
@@ -1014,7 +1013,7 @@ $( '.btn-cmd' ).click( function() {
 					getPlaybackStatus();
 				} );
 			} else if ( G.status.player === 'spotify' ) {
-				bash( '/srv/http/bash/cmd.sh spotifydstop' );
+				bash( '/srv/http/bash/spotifyd.sh stop' );
 			} else if ( G.status.player === 'upnp' ) {
 				bash( '/srv/http/bash/upnp-stop.sh' );
 			}

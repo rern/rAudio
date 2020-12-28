@@ -119,6 +119,12 @@ pushstreamStatus() {
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
+pushstreamVolumeSet() {
+	volume=$( amixer -M sget "$1" \
+		| awk -F'[%[]' '/%/ {print $2}' \
+		| head -1 )
+	pushstream volume '{"val":'$volume'}'
+}
 randomfile() {
 	dir=$( cat $dirmpd/album | shuf -n 1 | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
@@ -664,13 +670,6 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
-spotifydstop )
-	systemctl restart spotifyd
-	rm -f /srv/http/data/shm/spotify-start
-	mv /srv/http/data/shm/player-{*,mpd}
-	/srv/http/bash/cmd.sh volumereset
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
-	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}
@@ -705,14 +704,6 @@ volume )
 		fi
 	fi
 	;;
-volumeupdown )
-	updn=${args[1]}
-	hwmixer=${args[2]}
-	amixer -qM sset "$hwmixer" $updn
-	amixer -M sget "$hwmixer" \
-		| awk -F'[%[]' '/%/ {print $2}' \
-		| head -1
-	;;
 volume0db )
 	volume0dB
 	;;
@@ -726,8 +717,17 @@ volumeget )
 	[[ -z $volume ]] && volume=100
 	echo $volume
 	;;
+volumepushstream )
+	pushstreamVolumeSet "${args[1]}"
+	;;
 volumereset )
 	mpc volume $( cat $dirtmp/mpdvolume )
+	;;
+volumeupdown )
+	updn=${args[1]}
+	hwmixer=${args[2]}
+	amixer -qM sset "$hwmixer" $updn
+	pushstreamVolumeSet "$hwmixer"
 	;;
 webradioadd )
 	name=${args[1]}

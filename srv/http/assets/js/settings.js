@@ -102,8 +102,13 @@ function list2JSON( list ) {
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
-function refreshVolume() {
-	if ( !$( '#infoRange' ).hasClass( 'hide' ) ) {
+function refreshVolume( val ) {
+	if ( !$( '#infoRange' ).length || $( '#infoRange' ).hasClass( 'hide' ) ) return
+	
+	if ( val ) {
+		$( '#infoRange .value' ).text( val );
+		$( '#infoRange input' ).val( +val );
+	} else {
 		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
 			$( '#infoRange .value' ).text( level );
 			$( '#infoRange input' ).val( +level );
@@ -153,7 +158,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':  psNotify( data );  break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
-		case 'volume':  psVolume();        break;
+		case 'volume':  psVolume( data );  break;
 	}
 }
 function psNotify( data ) {
@@ -164,8 +169,8 @@ function psNotify( data ) {
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
 }
-function psVolume() {
-	if ( page === 'mpd' ) refreshVolume();
+function psVolume( data ) {
+	if ( page === 'mpd' ) refreshVolume( data.val );
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
@@ -208,6 +213,8 @@ var timer;
 var dirsystem = '/srv/http/data/system';
 var filereboot = '/srv/http/data/shm/reboot';
 var short = window.innerHeight < 570;
+var local = 0;
+var debounce;
 
 document.title = page;
 $( '#'+ page ).addClass( 'active' );

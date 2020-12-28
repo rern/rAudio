@@ -97,9 +97,9 @@ var containerhtml = heredoc( function() { /*
 </div>
 */ } );
 infocontenthtml = heredoc( function() { /*
-			<i class="fa fa-arrow-left infoarrowleft hide"></i><i class="fa fa-arrow-right infoarrowright hide"></i>
-			<p id="infoMessage" class="infomessage hide"></p>
-			<div id="infoText" class="infocontent hide">
+			<i class="fa fa-arrow-left infoarrowleft"></i><i class="fa fa-arrow-right infoarrowright"></i>
+			<p id="infoMessage" class="infomessage"></p>
+			<div id="infoText" class="infocontent">
 				<div id="infotextlabel"></div>
 				<div id="infotextbox"></div>
 				<div id="infotextsuffix"></div>
@@ -113,7 +113,7 @@ infocontenthtml = heredoc( function() { /*
 				<div class="value"></div>
 				<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
 			</div>
-			<p id="infoFooter" class="infomessage hide"></p>
+			<p id="infoFooter" class="infomessage"></p>
 */ } );
 var infoscroll = 0;
 var splitcols = 0;
