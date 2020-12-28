@@ -604,7 +604,9 @@ i.map.disabled, .map.disabled i {
 .emptyadd {
 	position: absolute;
 	top: 130px;
-	width: 100%;
+	left: 0;
+	right: 0;
+	margin: auto;
 	text-align: center;
 	font-size: 24px;
 	z-index: 102;
