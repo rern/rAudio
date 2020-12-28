@@ -707,7 +707,10 @@ volume0db )
 	;;
 volumeget )
 	volumeGetControls
-	[[ -z $control ]] && echo 100 && exit
+	if [[ -z $control ]]; then
+		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo 0
+		exit
+	fi
 	
 	volume=$( amixer -M -c $card sget "$control" \
 		| awk -F'[%[]' '/%/ {print $2}' \
