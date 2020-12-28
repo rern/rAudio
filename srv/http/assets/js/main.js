@@ -662,6 +662,7 @@ $( '#volume' ).roundSlider( {
 	, drag            : function( e ) {
 		G.drag = 1;
 		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ e.value +'%' );
+		$( e.handle.element ).rsRotate( - e.handle.angle );
 	}
 	, stop            : function() { // touchend mouseup
 		bash( [ 'volumepushstream', G.status.hwmixer ] );
