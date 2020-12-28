@@ -50,8 +50,8 @@
 	<span class="help-block hide">
 		Disable all manipulations for bit-perfect stream from MPD to DAC.
 		<p>
-			&bull; Volume Control <code>None - 100% (0dB)</code> - Hide Volume in Playback.
-		<br>&bull; Mixer device set to 100% (0dB) - No amplitude manipulations.
+			&bull; Mixer device volume set to 100% (0dB) - No amplitude manipulations.
+		<br>&bull; Volume Control <code>None</code> - Hide Volume in Playback.
 		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
 		</p>
 	</span>
