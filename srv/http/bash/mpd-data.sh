@@ -2,6 +2,8 @@
 
 dirsystem=/srv/http/data/system
 
+! aplay -l 2> /dev/null | grep -q '^card' && echo -1 && exit
+
 . /srv/http/bash/mpd-devices.sh
 
 data='
