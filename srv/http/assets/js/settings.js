@@ -122,10 +122,8 @@ function refreshVolume( val ) {
 			$( '#infoRange input' ).val( level );
 		} );
 	}
-	
-	var mixertype = $( '#mixertype' ).val();
 	var novolume = val === 100 
-					&& ( mixertype === 'none' || mixertype === 'hardware' )
+					&& $( '#mixertype' ).val() === 'none'
 					&& !G.crossfade 
 					&& !G.normalization 
 					&& !G.replaygain;
