@@ -11,6 +11,14 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
+function cmdsh( command, callback, json ) {
+	$.post( 
+		  'cmd.php'
+		, { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
+		, callback || null
+		, json || null
+	);
+}
 var cmd = {
 	  amixer       : [ '/srv/http/bash/mpd.sh amixer', 'amixer scontrols' ]
 	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
@@ -105,8 +113,24 @@ function loader( toggle ) {
 function refreshVolume( val ) {
 	if ( !$( '#infoRange' ).length || $( '#infoRange' ).hasClass( 'hide' ) ) return
 	
-	$( '#infoRange .value' ).text( val );
-	$( '#infoRange input' ).val( val );
+	if ( val ) {
+		$( '#infoRange .value' ).text( val );
+		$( '#infoRange input' ).val( val );
+	} else {
+		cmdsh( [ 'volumeget' ], function( level ) {
+			$( '#infoRange .value' ).text( level );
+			$( '#infoRange input' ).val( level );
+		} );
+	}
+	
+	$( '#novolume' ).prop(
+		  'checked'
+		, val === 100 
+			&& $( '#mixertype' ).val() === 'none' 
+			&& !G.crossfade 
+			&& !G.normalization 
+			&& !G.replaygain
+	);
 }
 function resetLocal( ms ) {
 	setTimeout( function() {

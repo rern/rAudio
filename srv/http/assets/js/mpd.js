@@ -1,13 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-function cmdsh( command, callback, json ) {
-	$.post( 
-		  'cmd.php'
-		, { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
-		, callback || null
-		, json || null
-	);
-}
 function lines2line( lines ) {
 	var val = '';
 	var lines = lines.split( '\n' ).filter( e => e );
@@ -166,13 +158,21 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var control = device.hwmixer;
-	bash( "amixer -M sget '"+ control +"' | awk -F'[%[]' '/%/ {print $2}' | head -1", function( level ) {
+	cmdsh( [ 'volumeget' ], function( level ) {
 		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
 			, message    : control
 			, rangevalue : level
 			, preshow    : function() {
+				if ( device.mixertype === 'none' ) {
+					$( '#infoRange input' ).prop( 'disabled', 1 );
+					$( '#infoFooter' )
+						.html( '<br>Volume Control: None - 100% (0dB)' )
+						.removeClass( 'hide' );
+					return
+				}
+				
 				$( '#infoRange input' ).on( 'input', function() { // drag
 					var current = $( '#infoRange .value' ).text();
 					var val = $( this ).val();

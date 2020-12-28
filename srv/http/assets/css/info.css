@@ -367,24 +367,23 @@ hr {
 	width: 300px;
 	margin: 0;
 	max-width: 70%;
-	background: var( --cga );
+	background: transparent;
 	-webkit-appearance: none;
 	cursor: pointer;
 }
 #infoRange input::-webkit-slider-thumb {
-	box-shadow: 0px 2px 5px #000000;
 	height: 40px;
 	width: 40px;
+	margin-top: -20px;
 	border: none;
 	border-radius: 4px;
 	background: -webkit-radial-gradient( 100% -50%, 300% 190%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background-color: var( --cm );
 	-webkit-appearance: none;
-	margin-top: -20px;
+	box-shadow: -2px 2px 5px #000000;
 }
 #infoRange input::-moz-range-thumb {
-	box-shadow: 0px 2px 5px #000000;
 	height: 40px;
 	width: 40px;
 	border: none;
@@ -392,6 +391,13 @@ hr {
 	background: -webkit-radial-gradient( 100% -50%, 300% 190%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background-color: var( --cm );
+	box-shadow: -2px 2px 5px #000000;
+}
+#infoRange input:disabled::-webkit-slider-thumb {
+	background-color: var( --cmd );
+}
+#infoRange input:disabled::-moz-range-thumb {
+	background-color: var( --cmd );
 }
 #infoRange input::-webkit-slider-runnable-track {
 	width: 100%;
