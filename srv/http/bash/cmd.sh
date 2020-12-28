@@ -708,7 +708,7 @@ volume0db )
 volumeget )
 	volumeGetControls
 	if [[ -z $control ]]; then
-		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo 0
+		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo -1
 		exit
 	fi
 	
