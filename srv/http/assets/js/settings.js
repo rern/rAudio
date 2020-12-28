@@ -122,13 +122,6 @@ function refreshVolume( val ) {
 			$( '#infoRange input' ).val( level );
 		} );
 	}
-	var novolume = val === 100 
-					&& $( '#mixertype' ).val() === 'none'
-					&& !G.crossfade 
-					&& !G.normalization 
-					&& !G.replaygain;
-	$( '#novolume' ).prop( 'checked', novolume );
-	
 }
 function resetLocal( ms ) {
 	setTimeout( function() {
