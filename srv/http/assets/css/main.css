@@ -456,6 +456,12 @@ i.map.disabled, .map.disabled i {
 	box-shadow: -4px 4px 10px #000000;
 	z-index: 104;
 }
+#relays {
+	border-top: none !important;
+}
+#settings .submenu:first-of-type {
+	border-top: 1px solid var( --cga );
+}
 #power, #screenoff {
 	background: var( --cga );
 }
