@@ -163,6 +163,15 @@ datarestore )
 	fi
 	/srv/http/bash/cmd.sh power
 	;;
+getjournalctl )
+	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
+		cat "$filebootlog"
+	else
+		curl -s -X POST http://127.0.0.1/pub?id=notify \
+			-d '{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
+		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
+	fi
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
@@ -312,6 +321,9 @@ regional )
 relays )
 	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
 	pushRefresh
+	;;
+relayssave )
+	echo ${args[1]} | jq . > /etc/relays.conf
 	;;
 soundprofile )
 	soundprofile

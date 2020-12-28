@@ -246,6 +246,7 @@ heading {
 	font-size: 24px;
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
+	user-select: none;
 }
 heading.sub {
 	margin: 5px 0 5px 0;
@@ -498,6 +499,7 @@ input:checked + .switchlabel:after {
 input:checked + .switchlabel:after {
 	left: 50%;
 	background-color: var( --cm );
+	box-shadow: -2px 2px 4px #000000;
 }
 .switchlabel:active:after {
 	width: 40px;
@@ -514,19 +516,14 @@ input:checked + .switchlabel.disabled:after {
 .setting,
 .settingedit,
 .code {
-	position: absolute;
-	left: 95px;
+	left: 85px;
 	line-height: 40px;
-	width: 40px;
+	width: 40px !important;
 	text-align: center;
 	font-size: 26px;
 }
-.settingedit {
-	position: static;
-	margin-left: 10px;
-}
-.code {
-	position: static;
+.setting {
+	position: absolute;
 }
 .cg {
 	background: var( --cg );
@@ -566,6 +563,7 @@ input:checked + .switchlabel.disabled:after {
 	text-align: right;
 	padding-right: 15px;
 	padding-top: 10px;
+	user-select: none;
 }
 .col-l.text {
 	padding-top: 0;

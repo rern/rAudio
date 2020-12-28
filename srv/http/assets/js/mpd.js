@@ -40,6 +40,7 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
+		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			htmldevices += '<option '
@@ -58,16 +59,23 @@ refreshData = function() {
 			.prop( 'disabled', G.devices.length === 1 );
 		var $selected = $( '#audiooutput option' ).eq( G.asoundcard );
 		$selected.prop( 'selected', 1 );
-		var mixerhtml = '<option value="none">Disable</option>'
-		if ( $selected.data( 'hwmixer' ) ) mixerhtml += '<option value="hardware">DAC hardware</option>'
-		mixerhtml +='<option value="software">MPD software</option>';
+		if ( device.mixers ) {
+			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			device.mixerdevices.forEach( function( mixer ) {
+				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+			} );
+		} else {
+			var htmlhwmixer = '<option>(not available)</option>';
+		}
+		$( '#hwmixer' )
+			.html( htmlhwmixer )
+			.val( device.hwmixer )
+			.prop( 'disabled', device.mixers === 1 );
+		if ( !$selected.data( 'hwmixer' ) ) $( '#mixertype option:eq( 1 )' ).hide();
 		var mixertype = $selected.data( 'mixertype' );
-		$( '#mixertype' )
-			.html( mixerhtml )
-			.val( mixertype );
-		$( '#audiooutput, #mixertype' ).selectric( 'refresh' );
-		$( '.hwmixer' ).toggleClass( 'hide', $selected.data( 'mixers' ) < 2 );
-		$( '#divmixer' ).toggleClass( 'hide', $selected.data( 'hwmixer' ) === '' );
+		$( '#mixertype' ).val( mixertype );
+		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
+		$( '#divhwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'hide', $selected.val().slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', $selected.data( 'dop' ) == 1 );
@@ -89,12 +97,14 @@ refreshData = function() {
 		[ 'aplay', 'amixer', 'crossfade', 'mpd', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
+		refreshVolume();
 		resetLocal();
 		showContent();
 	} );
 }
 refreshData();
 //---------------------------------------------------------------------------------------
+var device;
 $( '.enable' ).click( function() {
 	var idname = {
 		  buffer       : 'Custom Audio Buffer'
@@ -124,7 +134,7 @@ $( '.enablenoset' ).click( function() {
 	bash( [ id, checked ] );
 } );
 
-$( '#audiooutput, #mixertype' ).selectric();
+$( '#audiooutput, #hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
@@ -138,15 +148,58 @@ $( '#audiooutput' ).change( function() {
 	var card = $selected.data( 'card' );
 	var hwmixer = $selected.data( 'hwmixer' );
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
-	aplayname = output !== G.usbdac ? aplayname : '';
 	bash( [ 'audiooutput', aplayname, card, output, hwmixer ] );
+} );
+$( '#hwmixer' ).change( function() {
+	var aplayname = $( '#audiooutput option:selected' ).val();
+	var hwmixer = $( '#hwmixer' ).val();
+	notify( 'Hardware Mixer', 'Change ...', 'mpd' );
+	bash( [ 'hwmixer', aplayname, hwmixer ] );
+} );
+$( '#setting-hwmixer' ).click( function() {
+	var control = device.hwmixer;
+	cmdsh( [ 'volumeget' ], function( level ) {
+		info( {
+			  icon       : 'volume'
+			, title      : 'Mixer Device Volume'
+			, message    : control
+			, rangevalue : level
+			, preshow    : function() {
+				if ( device.mixertype === 'none' ) {
+					$( '#infoRange input' ).prop( 'disabled', 1 );
+					$( '#infoFooter' )
+						.html( '<br>Volume Control: None - 100% (0dB)' )
+						.removeClass( 'hide' );
+					return
+				}
+				
+				$( '#infoRange input' ).on( 'input', function() { // drag
+					var current = $( '#infoRange .value' ).text();
+					var val = $( this ).val();
+					$( '#infoRange .value' ).text( val );
+					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+				} ).on( 'touchend mouseup', function() {
+					cmdsh( [ 'volumepushstream', control ] );
+				} ).click( function() {
+					var current = $( '#infoRange .value' ).text();
+					var val = $( this ).val();
+					cmdsh( [ 'volume', current, val, control ] );
+				} );
+				$( '#infoRange a' ).click( function() {
+					var val = $( this ).hasClass( 'min' ) ? '1%-' : '1%+';
+					cmdsh( [ 'volumeupdown', val, control ] );
+				} );
+			}
+			, nobutton   : 1
+		} );
+	} );
 } );
 $( '#mixertype' ).change( function() {
 	var mixertype = $( this ).val();
 	if ( mixertype === 'none' ) {
 		info( {
 			  icon    : 'volume'
-			, title   : 'Volume Level'
+			, title   : 'Volume Control'
 			, message : warning
 			, cancel  : function() {
 				$( '#mixertype' )
@@ -160,43 +213,6 @@ $( '#mixertype' ).change( function() {
 	} else {
 		setMixerType( mixertype );
 	}
-} );
-$( '#setting-mixertype' ).click( function() { // hardware mixer
-	var $selectedoutput = $( '#audiooutput option:selected' );
-	var card = $selectedoutput.data( 'card' );
-	var hwmixer = $selectedoutput.data( 'hwmixer' );
-	var select = $selectedoutput.data( 'mixermanual' ) ? { 'Auto select': 'auto' } : {};
-	bash( [ 'amixer', card ], function( data ) {
-		var devices = data.split( '\n' );
-		devices.forEach( function( val ) {
-			select[ val ] = val;
-		} );
-		info( {
-			  icon        : 'volume'
-			, title       : 'Hardware Mixer'
-			, message     : 'Manually select hardware mixer:'
-			, selectlabel : 'Device'
-			, select      : select
-			, checked     : hwmixer
-			, boxwidth    : 280
-			, footer      : '<br>(Only if current one not working)'
-			, preshow     : function() {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoSelectBox' ).change( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val() === hwmixer );
-				} );
-			}
-			, ok          : function() {
-				var aplayname = $( '#audiooutput option:selected' ).val();
-				var output = $( '#audiooutput option:selected' ).text();
-				var mixermanual = $( '#infoSelectBox' ).val();
-				var mixerauto = mixermanual === 'auto';
-				var mixer = mixerauto ? hwmixer : mixermanual;
-				notify( 'Hardware Mixer', 'Change ...', 'mpd' );
-				bash( [ 'mixerhw', aplayname, output, mixer, mixermanual ] );
-			}
-		} );
-	} );
 } );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );

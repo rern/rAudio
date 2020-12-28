@@ -41,10 +41,13 @@ function dataBackup( netctl ) {
 	} );
 }
 function rebootText( enable, device ) {
-	G.reboot = G.reboot.filter( function( el ) {
-		return el.indexOf( device ) === -1
-	} );
-	G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
+	var exist = 0;
+	if ( G.reboot.length ) {
+		exist = G.reboot.some( function( line ) {
+			return line.indexOf( device ) !== -1
+		} );
+	}
+	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' )
@@ -114,9 +117,7 @@ refreshData = function() {
 			+'<br>'
 			+ iplist
 			+ sourcelist
-		).promise().done( function() {
-			bash( "test -e /srv/http/data/tmp/bootlog || journalctl -b | sed -n '1,/Startup finished.*kernel/ p' > /srv/http/data/tmp/bootlog" );
-		} );
+		);
 		$( '#status' ).html( renderStatus );
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
@@ -540,8 +541,9 @@ $( '#setting-soundprofile' ).click( function() {
 			, OrionV3   : lat[ 4 ] +' 0 1000 4000'
 			, _OrionV4  : lat[ 5 ] +' 60 1000 4000'
 			, Um3ggh1U  : lat[ 6 ] +' 0 1500 1000'
-			, _Custom   : G.soundprofileval || 0
 		}
+		var radioval = Object.values( radio );
+		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
 	} else {
 		textlabel = textlabel.slice( 0, 2 );
 		var defaultval = '18000000 60';
@@ -554,10 +556,10 @@ $( '#setting-soundprofile' ).click( function() {
 			, OrionV3   : lat[ 4 ] +' 0'
 			, _OrionV4  : lat[ 5 ] +' 60'
 			, Um3ggh1U  : lat[ 6 ] +' 0'
-			, _Custom   : G.soundprofileval || 0
 		}
+		var radioval = Object.values( radio );
+		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
 	}
-	var values = Object.values( radio );
 	var iL = textlabel.length;
 	info( {
 		  icon      : 'sliders'
@@ -566,9 +568,9 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue : textvalue
 		, boxwidth  : 110
 		, radio     : radio
-		, checked   : G.soundprofileval || 0
+		, checked   : G.soundprofileval
 		, preshow   : function() {
-			$( '#infoRadio input' ).last().prop( 'disabled', G.soundprofileval === '' );
+			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
 			// verify changes + interactive values
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoRadio' ).change( function() {
@@ -583,6 +585,7 @@ $( '#setting-soundprofile' ).click( function() {
 				for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
 				$( '#infoRadio input' ).val( [ textvalue.indexOf( soundprofileval ) !== -1 ? soundprofileval : G.soundprofileval ] );
 				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
+				$( '#infoRadio input' ).last().prop( 'checked', radioval.indexOf( soundprofileval ) === -1 );
 			} );
 		}
 		, cancel    : function() {
@@ -591,6 +594,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, ok        : function() {
 			var soundprofileval = $( '#infoTextBox' ).val();
 			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
+			var custom = radioval.indexOf( soundprofileval ) !== -1 ? false : true;
 			bash( [ 'soundprofileset', soundprofileval ] );
 			var action = !G.soundprofile ? 'Enabled ...' : ( soundprofileval !== defaultval ? 'Change ...' : 'Default ...' );
 			notify( 'Kernel Sound Profile', action, 'volume' );

@@ -119,6 +119,12 @@ pushstreamStatus() {
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
+pushstreamVolumeSet() {
+	volume=$( amixer -M sget "$1" \
+		| awk -F'[%[]' '/%/ {print $2}' \
+		| head -1 )
+	pushstream volume '{"val":'$volume'}'
+}
 randomfile() {
 	dir=$( cat $dirmpd/album | shuf -n 1 | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
@@ -152,21 +158,50 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
+volume0dB(){
+	mpc volume | cut -d' ' -f2 | tr -d % > $dirtmp/mpdvolume
+	volumeGetControls
+	amixer -c $card sset "$control" 0dB
+}
+volumeGetControls() {
+	card=$( head -1 /etc/asound.conf | tail -c 2 )
+	control=$( amixer -c $card scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep pvolume \
+				| head -1 \
+				| cut -d"'" -f2 )
+}
 volumeSet() {
 	current=$1
 	target=$2
+	hwmixer=$3
 	diff=$(( $target - $current ))
 	if (( -10 < $diff && $diff < 10 )); then
-		mpc volume $target
+		if [[ -n $hwmixer ]]; then
+			amixer -qM sset "$hwmixer" $target%
+		else
+			mpc volume $target
+		fi
 	else # increment
-		pushstream volume '{"disable":true}'
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			mpc volume $i
+			if [[ -n $hwmixer ]]; then
+				amixer -qM sset "$hwmixer" $i%
+			 else
+				mpc volume $i
+			fi
 			sleep 0.2
 		done
-		(( $i != $target )) && mpc volume $target
-		pushstream volume '{"disable":false}'
+		if (( $i != $target )); then
+			if [[ -n $hwmixer ]]; then
+				amixer -qM sset "$hwmixer" $target%
+			else
+				mpc volume $target
+			fi
+		fi
 	fi
 }
 
@@ -218,6 +253,7 @@ bluetoothplayer )
 		rm -f $dirtmp/{player-*,btclient}
 		echo $val > $dirtmp/player-bluetooth
 		sleep 1
+		volume0dB
 		status=$( /srv/http/bash/status.sh )
 		pushstream mpdplayer "$status"
 	fi
@@ -226,6 +262,7 @@ bluetoothplayerstop )
 	systemctl restart bluezdbus
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
+	mpc volume $( cat $dirtmp/mpdvolume )
 	status=$( /srv/http/bash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
@@ -316,8 +353,8 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	output=$( cat $dirtmp/usbdac 2> /dev/null || cat $dirsystem/audio-output )
-	volume=$( sed -n "/$output/,/^}/ p" /etc/mpd.conf \
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+	volume=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
 				| grep -q 'mixer_type.*none' \
 				&& echo true || echo false )
 	data=$( sed '$ d' $dirsystem/display )
@@ -326,7 +363,7 @@ displayget )
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
+, "snapclient" : '$( systemctl -q is-active snapclient && echo true || echo false )'
 , "update"     : '$( cat $diraddons/update 2> /dev/null || echo false )'
 , "volumenone" : '$volume'
 }'
@@ -646,28 +683,49 @@ thumbjpg )
 volume )
 	current=${args[1]}
 	target=${args[2]}
+	hwmixer=${args[3]}
 	filevolumemute=$dirsystem/volumemute
-	if [[ -n $target ]]; then # set
+	if [[ $target > 0 ]]; then # set
 		pushstreamVolume set $target
-		volumeSet $current $target
+		volumeSet $current $target "$hwmixer"
 		rm -f $filevolumemute
 	else
 		if (( $current > 0 )); then # mute
 			pushstreamVolume mute $current true
-			volumeSet $current 0 false
+			volumeSet $current 0 "$hwmixer"
 			echo $current > $filevolumemute
 		else # unmute
 			target=$( cat $filevolumemute )
 			pushstreamVolume unmute $target true
-			volumeSet 0 $target
+			volumeSet 0 $target "$hwmixer"
 			rm -f $filevolumemute
 		fi
 	fi
 	;;
-volumeincrement )
-	target=${args[1]}
-	mpc volume $target
-	pushstreamVolume set $target
+volume0db )
+	volume0dB
+	;;
+volumeget )
+	volumeGetControls
+	[[ -z $control ]] && echo 100 && exit
+	
+	volume=$( amixer -M -c $card sget "$control" \
+		| awk -F'[%[]' '/%/ {print $2}' \
+		| head -1 )
+	[[ -z $volume ]] && volume=100
+	echo $volume
+	;;
+volumepushstream )
+	pushstreamVolumeSet "${args[1]}"
+	;;
+volumereset )
+	mpc volume $( cat $dirtmp/mpdvolume )
+	;;
+volumeupdown )
+	updn=${args[1]}
+	hwmixer=${args[2]}
+	amixer -qM sset "$hwmixer" $updn
+	pushstreamVolumeSet "$hwmixer"
 	;;
 webradioadd )
 	name=${args[1]}

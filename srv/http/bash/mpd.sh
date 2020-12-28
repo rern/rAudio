@@ -11,27 +11,28 @@ pushRefresh() {
 restartMPD() {
 	/srv/http/bash/mpd-conf.sh
 }
+scontrols() {
+	amixer scontents \
+		| grep -A1 ^Simple \
+		| sed 's/^\s*Cap.*: /^/' \
+		| tr -d '\n' \
+		| sed 's/--/\n/g' \
+		| grep pvolume
+}
 
 case ${args[0]} in
 
 amixer )
-	card=${args[1]}
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
-		amixer -c $card scontents \
-			| grep -A2 'Simple mixer control' \
-			| grep -v 'Capabilities' \
-			| tr -d '\n' \
-			| sed 's/--/\n/g' \
-			| grep 'Playback channels' \
-			| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
-			| awk '!a[$0]++'
+		scontrols | cut -d^ -f1
 	else
 		echo "\
-HPOUT1 Digital
-HPOUT2 Digital
-SPDIF Out
-Speaker Digital"
+Simple mixer control 'HPOUT1 Digital',0
+Simple mixer control 'HPOUT2 Digital',0
+Simple mixer control 'SPDIF Out',0
+Simple mixer control 'Speaker Digital',0"
 	fi
 	;;
 audiooutput )
@@ -171,48 +172,38 @@ filetype )
 	done
 	echo "${list:0:-4}"
 	;;
-mixerhw )
+hwmixer )
 	aplayname=${args[1]}
-	output=${args[2]}
-	mixer=${args[3]}
-	mixermanual=${args[4]}
-	sed -i '/'$output'/,/}/ s/\(mixer_control \+"\).*/\1"'$mixer'"/' /etc/mpd.conf
-	sed -i '/mixer_control_name = / s/".*"/"'$mixer'"/' /etc/shairport-sync.conf
-	if [[ $mixermanual == auto ]]; then
-		rm -f "/srv/http/data/system/hwmixer-$output"
+	hwmixer=${args[2]}
+	if [[ $hwmixer == auto ]]; then
+		hwmixer=$( scontrols \
+					| cut -d"'" -f2 \
+					| sort -u \
+					| head -1 )
+		rm -f "/srv/http/data/system/hwmixer-$aplayname"
 	else
-		[[ $aplayname == rpi-cirrus-wm5102 ]] && /srv/http/bash/mpd-wm5102.sh $card $mixermanual
-		echo $mixermanual > "/srv/http/data/system/hwmixer-$aplayname"
+		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"
+	fi
+	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
+	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+		/srv/http/bash/mpd-wm5102.sh $card $hwmixer
 	fi
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
-	;;
-mixerget )
-	readarray -t cards <<< "$( aplay -l | grep ^card )"
-	for card in "${cards[@]}"; do
-		mixer+=$'\n'"$card"
-		mixer+='<hr>'
-		mixer+=$( amixer -c ${card:5:1} )$'\n'
-	done
-	echo "${mixer:1}"
 	;;
 mixerset )
 	mixer=${args[1]}
 	aplayname=${args[2]}
 	card=${args[3]}
 	control=${args[4]}
-	volumenone=0
-	if [[ $mixer == none ]]; then
-		[[ -n $control ]] && amixer -c $card sset $control 0dB
-		volumenone=1
-	fi
 	if [[ $mixer == hardware ]]; then
 		rm -f "$dirsystem/mixertype-$aplayname"
 	else
 		echo $mixer > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=volumenone -d '{ "pvolumenone": "'$volumenone'" }'
+	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixer == none ]] && echo true || echo false )' }'
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
@@ -230,11 +221,10 @@ novolume )
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
 	mpc crossfade 0
-	amixer -c $card sset $hwmixer 0dB
 	echo none > "$dirsystem/mixertype-$name"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=volumenone -d '{ "pvolumenone": "1" }'
+	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
 replaygaindisable )
 	sed -i '/^replaygain/ s/".*"/"off"/' /etc/mpd.conf

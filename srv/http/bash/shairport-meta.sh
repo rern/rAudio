@@ -5,6 +5,16 @@ for pid in $( pgrep shairport-sync ); do
 	renice -n -19 -p $pid &> /dev/null
 done
 
+card=$( head -1 /etc/asound.conf | tail -c 2 )
+control=$( amixer -c $card scontents \
+			| grep -A1 ^Simple \
+			| sed 's/^\s*Cap.*: /^/' \
+			| tr -d '\n' \
+			| sed 's/--/\n/g' \
+			| grep pvolume \
+			| head -1 \
+			| cut -d"'" -f2 )
+
 dirtmp=/srv/http/data/shm
 
 cat /tmp/shairport-sync-metadata | while read line; do
@@ -49,12 +59,15 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirtmp/airplay-start
-		elif [[ $code == volume ]]; then # format: airplay/current/limitH/limitL
-			airplayvolume=${data/,*} # -30:0% - 0:100%
-			data=$(( ( 30 + $airplayvolume + 1500 ) / 30 * 100 ))
+		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
+			data=$( amixer -M -c $card sget "$control" \
+						| awk -F'[%[]' '/%/ {print $2}' \
+						| head -1 )
 			echo $data > $dirtmp/airplay-volume
+			curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"volume":'$data'}'
+		else
+			echo $data > $dirtmp/airplay-$code
 		fi
-		echo $data > $dirtmp/airplay-$code
 		
 		[[ ' start Time volume ' =~ " $code " ]] && payload='"'$code'":'$data || payload='"'$code'":"'${data//\"/\\\"}'"'
 		

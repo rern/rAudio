@@ -40,8 +40,6 @@ data='
 	, "Time"       : '$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )'
 	, "state"      : "'$state'"
 	, "coverart"   : "'$coverart'"
-	, "sampling"   : "Bluetooth"
-	, "volume"     : '$( mpc volume | cut -d' ' -f2 | tr -d % )'
-	, "volumemute" : '0
+	, "sampling"   : "Bluetooth"'
 
 echo $data

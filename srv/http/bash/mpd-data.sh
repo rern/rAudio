@@ -24,6 +24,5 @@ data='
 	, "replaygainval"   : "'$( cat $dirsystem/replaygainset 2> /dev/null )'"
 	, "soxr"            : '$( grep -q "quality.*custom" /etc/mpd.conf && echo true || echo false )'
 	, "soxrval"         : "'$( grep -v 'quality\|}' $dirsystem/soxrset 2> /dev/null | cut -d'"' -f2 )'"
-	, "usbdac"          : "'$( cat /srv/http/data/shm/usbdac 2> /dev/null )'"
 '
 echo {$data}

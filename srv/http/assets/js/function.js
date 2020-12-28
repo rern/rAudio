@@ -311,7 +311,6 @@ function displayPlayback() {
 	$( '#time-bar' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
 	$( '#time, #volume, .timemap, .covermap, .volmap, .volumeband' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
-	if ( G.status.player === 'bluetooth' ) $( '#volume, .volmap, .volumeband' ).removeClass( 'disabled' );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
@@ -326,10 +325,24 @@ function displaySave( page ) {
 function displayTopBottom() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
+	if ( G.status.player === 'mpd' ) {
+		$( '#tab-library, #tab-playlist' ).removeClass( 'hide' );
+		$( '#tab-playback' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-play-circle' );
+		var page = G.playback ? 'playback' : ( G.library ? 'library' : 'playlist' );
+		$( '#tab-'+ page ).addClass( 'active' );
+	} else {
+		$( '#tab-playback' )
+			.removeAttr( 'class' )
+			.addClass( 'active renderer fa fa-'+ G.status.player );
+		$( '#tab-library, #tab-playlist' ).addClass( 'hide' );
+	}
 	var wH = window.innerHeight;
 	var wW = window.innerWidth;
+	var smallscreen = wH < 590 ||wW < 500;
 	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
-	if ( !G.display.bars && !G.display.barsalways || lcd ) {
+	if ( !G.display.bars || ( smallscreen && !G.display.barsalways ) || lcd ) {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
@@ -341,25 +354,12 @@ function displayTopBottom() {
 	} else {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
-		$( '#bar-bottom' ).removeClass( 'transparent' );
+		$( '#bar-bottom' ).removeClass( 'hide transparent' );
 		$( '#page-playback' ).removeClass ( 'barshidden' );
 		$( '#page-playback, #infoicon, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
 		$( '.emptyadd' ).css( 'top', '' );
-		if ( G.status.player === 'mpd' ) {
-			$( '#tab-library, #tab-playlist' ).removeClass( 'hide' );
-			$( '#tab-playback' )
-				.removeAttr( 'class' )
-				.addClass( 'fa fa-play-circle' );
-			var page = G.playback ? 'playback' : ( G.library ? 'library' : 'playlist' );
-			$( '#tab-'+ page ).addClass( 'active' );
-		} else {
-			$( '#tab-playback' )
-				.removeAttr( 'class' )
-				.addClass( 'renderer fa fa-'+ G.status.player );
-			$( '#tab-library, #tab-playlist' ).addClass( 'hide' );
-		}
 	}
 	$( '.menu' ).addClass( 'hide' );
 }
@@ -1367,7 +1367,7 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
 	
-	if ( G.display.buttons ) {
+	if ( G.display.buttons && $( '#time-knob' ).is( ':visible' ) ) {
 		$( '#random' ).toggleClass( 'active', G.status.random );
 		$( '#repeat' ).toggleClass( 'active', G.status.repeat );
 		$( '#single' ).toggleClass( 'active', G.status.single );
@@ -1580,18 +1580,16 @@ function volumeSet( pageX ) {
 	var bandW = $volumeband.width();
 	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 	var vol = Math.round( posX / bandW * 100 );
-	if ( G.drag ) $( '#volume-bar' ).css( 'width', vol +'%' );
-	$( '#volume-text' ).text( vol );
-	clearTimeout( G.debounce );
-	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
-	G.debounce = setTimeout( function() {
-		if ( !G.drag ) $( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
-		G.local = 1;
+	if ( G.drag ) {
+		$( '#volume-bar' ).css( 'width', vol +'%' );
+		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ vol +'%' );
+	} else {
+		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol ], function() {
-			G.local = 0;
-			G.status.volume = vol;
+		bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
-	}, G.drag ? 50 : 300 );
+	}
+	$( '#volume-text' ).text( vol );
+	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }

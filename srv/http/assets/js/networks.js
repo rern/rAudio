@@ -450,11 +450,6 @@ $( '.back' ).click( function() {
 $( '#listbt' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	var connected = $this.data( 'connected' );
-	if ( $( e.target ).is( 'i' ) && connected ) {
-		status( 'bt', 'bluetoothctl info' );
-		return
-	}
-	
 	var name = $this.data( 'name' );
 	var mac = $this.data( 'mac' );
 	info( {

@@ -11,10 +11,18 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
+function cmdsh( command, callback, json ) {
+	$.post( 
+		  'cmd.php'
+		, { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
+		, callback || null
+		, json || null
+	);
+}
 var cmd = {
-	  amixer       : [ '/srv/http/bash/mpd.sh mixerget', 'amixer -c N' ]
+	  amixer       : [ '/srv/http/bash/mpd.sh amixer', 'amixer scontrols' ]
 	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
-	, aplay        : [ 'aplay -l' ]
+	, aplay        : [ 'aplay -l | grep ^card' ]
 	, asound       : [ 'cat /etc/asound.conf' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, bt           : [ 'bluetoothctl info' ]
@@ -22,7 +30,7 @@ var cmd = {
 	, crossfade    : [ 'mpc crossfade' ]
 	, fstab        : [ 'cat /etc/fstab' ]
 	, ifconfig     : [ 'ifconfig wlan0' ]
-	, journalctl   : [ 'cat /srv/http/data/tmp/bootlog', 'journalctl -b' ]
+	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ 'ifconfig eth0' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mount        : [ 'mount | grep " / \\|MPD"' ]
@@ -102,6 +110,19 @@ function list2JSON( list ) {
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
+function refreshVolume( val ) {
+	if ( !$( '#infoRange' ).length || $( '#infoRange' ).hasClass( 'hide' ) ) return
+	
+	if ( val ) {
+		$( '#infoRange .value' ).text( val );
+		$( '#infoRange input' ).val( val );
+	} else {
+		cmdsh( [ 'volumeget' ], function( level ) {
+			$( '#infoRange .value' ).text( level );
+			$( '#infoRange input' ).val( level );
+		} );
+	}
+}
 function resetLocal( ms ) {
 	setTimeout( function() {
 		$( '#bannerIcon i' ).removeClass( 'blink' );
@@ -110,17 +131,21 @@ function resetLocal( ms ) {
 	setTimeout( bannerHide, ms || 2000 );
 }
 function showContent() {
-	setTimeout( function() {
-		loader( 'hide' );
-		$( '.head, .container' ).removeClass( 'hide' );
-	}, 300 );
+	if ( $( '.codepage' ).hasClass( 'hide' ) ) {
+		setTimeout( function() {
+			loader( 'hide' );
+			$( '.head, .container' ).removeClass( 'hide' );
+		}, 300 );
+	} else {
+		$( '.codepage' ).html( 'Data:<hr>'+ JSON.stringify( G, null, 2 ) );
+	}
 }
 function validateIP( ip ) {  
 	return /^(?!.*\.$)((?!0\d)(1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test( ip )
 } 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
-var streams = [ 'notify', 'refresh', 'reload' ];
+var streams = [ 'notify', 'refresh', 'reload', 'volume' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -141,16 +166,19 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':  psNotify( data );  break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
+		case 'volume':  psVolume( data );  break;
 	}
 }
 function psNotify( data ) {
 	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
 
 	banner( data.title, data.text, data.icon, data.delay );
-	loader();
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
+}
+function psVolume( data ) {
+	if ( page === 'mpd' ) refreshVolume( data.val );
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
@@ -193,6 +221,8 @@ var timer;
 var dirsystem = '/srv/http/data/system';
 var filereboot = '/srv/http/data/shm/reboot';
 var short = window.innerHeight < 570;
+var local = 0;
+var debounce;
 
 document.title = page;
 $( '#'+ page ).addClass( 'active' );

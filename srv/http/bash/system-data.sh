@@ -82,14 +82,14 @@ if [[ -e /etc/soundprofile.conf ]]; then
 	data+='
 	, "soundprofileval" : "'$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
 else
-	latency=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' )
-	swappiness=$( sysctl vm.swappiness | awk '{print $NF}' )
+	val=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
+	val+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
 	if ifconfig | grep -q ^eth0; then
-		mtu=$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-		txqueuelen=$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+		val+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
+		val+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
 	fi
 	data+='
-	, "soundprofileval" : "'$latency $swappiness $mtu $txqueuelen'"'
+	, "soundprofileval" : "'$val'"'
 fi
 if [[ -e /usr/bin/bluetoothctl  ]]; then
 	bluetooth=$( grep -q dtparam=krnbt=on /boot/config.txt && echo true || echo false )

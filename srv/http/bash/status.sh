@@ -2,23 +2,25 @@
 
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
-playerfile=$dirtmp/player
 
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
-player=$( ls /srv/http/data/shm/player-* 2> /dev/null | cut -d- -f2  )
-[[ -z $player ]] && player=mpd
+player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
+volume=$( /srv/http/bash/cmd.sh volumeget )
+[[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
 ########
-status+='
-  "player"   : "'$player'"
-, "webradio" : false
-, "btclient" : '$btclient'
-, "relays"   : '$relays'
-, "relayson" : '$relayson'
-, "lcd"      : '$lcd
+status='
+  "player"     : "'$player'"
+, "webradio"   : false
+, "btclient"   : '$btclient'
+, "relays"     : '$relays'
+, "relayson"   : '$relayson'
+, "lcd"        : '$lcd'
+, "volume"     : '$volume'
+, "volumemute" : 0'
 
 case $player in
 
@@ -36,13 +38,6 @@ airplay )
 		now=$( date +%s%3N )
 		elapsed=$(( ( now - start + 500 ) / 1000 ))
 	fi
-	volume=$( cat $path-volume 2> /dev/null )
-	if [[ -z $volume ]]; then
-		fileconf=/etc/shairport-sync.conf
-		card=$( grep output_device $fileconf | cut -d'"' -f2 | cut -d: -f2 )
-		mixer=$( grep mixer_control $fileconf | cut -d'"' -f2 )
-		volume=$( amixer -c $card sget "$mixer" | grep -m 1 % | sed 's/.*\[\(.*\)%.*/\1/' | tee $path-volume )
-	fi
 	[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 ########
 	status+='
@@ -51,9 +46,7 @@ airplay )
 , "playlistlength" : 1
 , "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"          : "play"
-, "Time"           : '$Time'
-, "volume"         : '$volume'
-, "volumemute"     : 0'
+, "Time"           : '$Time
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -91,14 +84,12 @@ spotify )
 		fi
 	fi
 	elapsed=$(( ( elapsed + 500 ) / 1000 ))
-	volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 ########
 	status+=$( cat $file )
 ########
 	status+='
 , "elapsed" : '$elapsed'
-, "state"   : "'$state'"
-, "volume"  : '$volume
+, "state"   : "'$state'"'
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -107,7 +98,12 @@ spotify )
 esac
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^consume\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
+filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
+card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+hwmixer=$( sed -n "/^\s*device.*hw:$card/,/mixer_control/ p" /etc/mpd.conf \
+			| grep mixer_control \
+			| cut -d'"' -f2 )
+[[ -z $hwmixer ]] && filter+='\|^volume'
 
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
@@ -170,6 +166,7 @@ volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 status+='
 , "elapsed"        : '$elapsed'
 , "file"           : "'$file'"
+, "hwmixer"        : "'$hwmixer'"
 , "playlistlength" : '$playlistlength'
 , "song"           : '$song'
 , "state"          : "'$state'"

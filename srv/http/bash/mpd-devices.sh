@@ -38,52 +38,53 @@ for line in "${lines[@]}"; do
 	else
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
-	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
+	readarray -t controls <<< $( amixer -c $card scontents \
+									| grep -A1 ^Simple \
+									| sed 's/^\s*Cap.*: /^/' \
+									| tr -d '\n' \
+									| sed 's/--/\n/g' \
+									| grep pvolume \
+									| cut -d"'" -f2 \
+									| sort -u )
+	mixerdevices=
+	for control in "${controls[@]}"; do
+		mixerdevices+=',"'$control'"'
+	done
+	mixerdevices=[${mixerdevices:1}]
+	mixers=${#controls[@]}
+	
+	mixermanual=false
+	hwmixerfile=$dirsystem/hwmixer-$aplayname
 	if [[ -e $hwmixerfile ]]; then # manual
-		mixers=2
+		mixermanual=true
 		hwmixer=$( cat "$hwmixerfile" )
 	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 		mixers=4
 		hwmixer='HPOUT2 Digital'
+		mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 	else
-		amixer=$( amixer -c $card scontents )
-		if [[ -z $amixer ]]; then
-			mixers=0
+		if [[ $mixers == 0 ]]; then
 			hwmixer=
 			[[ $mixertype == hardware ]] && mixertype=software
 		else
-			amixer=$( echo "$amixer" \
-				| grep -A2 'Simple mixer control' \
-				| grep -v 'Capabilities' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep 'Playback channels' \
-				| sed "s/.*'\(.*\)',\(.\) .*/\1 \2/; s/ 0$//" \
-				| awk '!a[$0]++' \
-				| grep . )
-			mixers=$( echo "$amixer" | wc -l )
-			if (( $mixers == 1 )); then
-				hwmixer=$amixer
-			else
-				hwmixer=$( echo "$amixer" | grep 'Digital\|Master' | head -1 )
-				[[ -z $hwmixer ]] && hwmixer=$( echo "$amixer" | head -1 )
-			fi
+			hwmixer=${controls[0]}
 		fi
 	fi
-	
 	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
 	
 	devices+=',{
-		  "aplayname"   : "'$aplayname'"
-		, "card"        : '$card'
-		, "device"      : '$device'
-		, "dop"         : '$dop'
-		, "mixers"      : '$mixers'
-		, "mixertype"   : "'$mixertype'"
-		, "name"        : "'$name'"
-		, "hw"          : "'$hw'"
-		, "hwmixer"     : "'$hwmixer'"
+		  "aplayname"    : "'$aplayname'"
+		, "card"         : '$card'
+		, "device"       : '$device'
+		, "dop"          : '$dop'
+		, "hw"           : "'$hw'"
+		, "hwmixer"      : "'$hwmixer'"
+		, "mixers"       : '$mixers'
+		, "mixerdevices" : '$mixerdevices'
+		, "mixermanual"  : '$mixermanual'
+		, "mixertype"    : "'$mixertype'"
+		, "name"         : "'$name'"
 	}'
 	Aaplayname+=( "$aplayname" )
 	Acard+=( "$card" )

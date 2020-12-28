@@ -9,24 +9,36 @@
 	<select id="audiooutput" data-style="btn-default btn-lg"></select>
 </div>
 <pre id="codeaplay" class="hide"></pre>
-<div data-status="amixer" class="col-l double status">
-	<a>Mixer Control
-	<br><gr><i class="fa fa-code"></i></gr></a>
+<div id="divhwmixer">
+	<div data-status="amixer" class="col-l double status">
+		<a>Mixer Device
+		<br><gr><i class="fa fa-code"></i></gr></a>
+	</div>
+	<div class="col-r">
+		<select id="hwmixer" data-style="btn-default btn-lg"></select>
+		<i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
+		<span class="help-block hide">
+			<i class="fa fa-volume"></i> <code>amixer</code> / <code>alsamixer</code>&ensp;volume control
+		</span>
+	</div>
 </div>
+<pre id="codeamixer" class="hide"></pre>
+<div class="col-l">Volume Control</div>
 <div class="col-r">
-	<select id="mixertype" data-style="btn-default btn-lg"></select>
-	<i id="setting-mixertype" class="settingedit fa fa-gear hwmixer"></i><br>
-	<span class="hwmixer"><span class="help-block hide"><i class="fa fa-gear"></i>&ensp;Manually select hardware mixer only if the current one is not working.</span></span>
+	<select id="mixertype" data-style="btn-default btn-lg">
+		<option value="none">None - 100% (0dB)</option>
+		<option value="hardware">Mixer device</option>
+		<option value="software">MPD software</option>
+	</select>
 	<span class="help-block hide">
-			Set volume/mixer control for each device.
+			Volume control for each device.
 		<p>
-			&bull; Disable: best sound quality. (DAC hardware volume will be reset to 0dB.)
-		<br>&bull; DAC hardware: good and convenient.
-		<br>&bull; MPD software: depends on users preferences.
+			&bull; <code>None - 100% (0dB)</code> Best sound quality. (Use amplifier volume)
+		<br>&bull; <code>Mixer device</code> Good and convenient. (Device hardware volume)
+		<br>&bull; <code>MPD software</code> Software volume.
 		</p>
 	</span>
 </div>
-<pre id="codeamixer" class="hide"></pre>
 </div>
 
 <div>
@@ -36,10 +48,10 @@
 	<input id="novolume" type="checkbox">
 	<div class="switchlabel" for="novolume"></div>
 	<span class="help-block hide">
-		Disable all software volume manipulations for bit-perfect stream from MPD to DAC.
+		Disable all manipulations for bit-perfect stream from MPD to DAC.
 		<p>
-			&bull; Disable Mixer Control.
-		<br>&bull; Reset DAC hardware volume to 0dB to preserve full amplitude stream.
+			&bull; Mixer device volume set to 100% (0dB) - No amplitude manipulations.
+		<br>&bull; Volume Control <code>None</code> - Hide Volume in Playback.
 		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
 		</p>
 	</span>

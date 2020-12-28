@@ -12,5 +12,6 @@ urlnet=$( mpc playlist -f %file% | head -1 | sed 's|.*//\(.*\):.*|\1|' | cut -d.
 gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
 if [[ $gatewaynet == $urlnet ]]; then
 	mv $playerfile-{*,upnp}
+	/srv/http/bash/cmd.sh volume0db
 	systemctl try-restart shairport-sync snapclient spotifyd &> /dev/null
 fi
