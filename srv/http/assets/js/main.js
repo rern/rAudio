@@ -1749,6 +1749,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : '#bb2828'
 			, ok          : function() {
 				bash( [ 'plremove' ] );
+				renderPlaybackBlank();
 			}
 		} );
 	} else {
@@ -1772,6 +1773,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : '#bb2828'
 			, ok          : function() {
 				bash( [ 'plremove' ] );
+				renderPlaybackBlank();
 			}
 			, buttonwidth : 1
 		} );
