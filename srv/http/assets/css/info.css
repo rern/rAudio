@@ -381,7 +381,7 @@ hr {
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background-color: var( --cm );
 	-webkit-appearance: none;
-	box-shadow: -2px 2px 5px #000000;
+	box-shadow: -2px 2px 4px #000000;
 }
 #infoRange input::-moz-range-thumb {
 	height: 40px;
@@ -391,7 +391,7 @@ hr {
 	background: -webkit-radial-gradient( 100% -50%, 300% 190%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background-color: var( --cm );
-	box-shadow: -2px 2px 5px #000000;
+	box-shadow: -2px 2px 4px #000000;
 }
 #infoRange input:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );

@@ -499,6 +499,7 @@ input:checked + .switchlabel:after {
 input:checked + .switchlabel:after {
 	left: 50%;
 	background-color: var( --cm );
+	box-shadow: -2px 2px 4px #000000;
 }
 .switchlabel:active:after {
 	width: 40px;
