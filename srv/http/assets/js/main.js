@@ -20,6 +20,7 @@ var G = {
 	, pladd         : {}
 	, playback      : 1
 	, playlist      : 0
+	, pageX         : ''
 	, query         : []
 	, rotate        : 0
 	, savedlist     : 0
@@ -827,8 +828,16 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
 	mpcSeekBar( pageX, 'set' );
 } );
-G.posX;
-$( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
+$( '#volume-band' ).on( 'click', function( e ) {
+	if ( G.status.volumenone ) return
+	
+	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
+		$( '#volume-text' ).text( G.status.volume );
+		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
+		volumebarTimeout();
+	}
+} ).on( 'touchstart mousedown', function( e ) {
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	if ( !G.status.volumenone ) {
@@ -841,31 +850,22 @@ $( '#volume-band' ).on( 'touchstart mousedown', function( e ) {
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	G.posX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	G.pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
 	G.drag = 1;
 	clearTimeout( G.volumebar );
 } ).on( 'touchmove mousemove', function( e ) {
 	e.preventDefault();
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
-	
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
-	if ( G.drag ) volumeSet( pageX );
+	if ( G.drag ) {
+		var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+		volumeSet( pageX );
+	}
 } ).on( 'touchend mouseup', function( e ) {
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
-	
-	volumebarTimeout();
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
-	if ( pageX === G.posX ) G.drag = 0;
-	volumeSet( pageX );
-	G.drag = 0;
-} ).on( 'click', function( e ) {
-	if ( G.status.volumenone ) return
-	
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-		$( '#volume-text' ).text( G.status.volume );
-		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
+	if ( G.drag ) {
 		volumebarTimeout();
+		var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
+		if ( pageX === G.pageX ) G.drag = 0;
+		volumeSet( pageX );
+		G.drag = 0;
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
