@@ -1164,6 +1164,7 @@ function renderPlaybackBlank() {
 			$( '#coverart' )
 				.attr( 'src', coverdefault )
 				.addClass( 'hide' );
+			$( '#sampling' ).empty();
 		} else {
 			$( '#coverart' ).attr( 'src', coverdefault );
 			$( '#page-playback .emptyadd' ).empty();
