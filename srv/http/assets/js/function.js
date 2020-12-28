@@ -1580,18 +1580,18 @@ function volumeSet( pageX ) {
 	var bandW = $volumeband.width();
 	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 	var vol = Math.round( posX / bandW * 100 );
-	if ( G.drag ) $( '#volume-bar' ).css( 'width', vol +'%' );
-	$( '#volume-text' ).text( vol );
-	clearTimeout( G.debounce );
-	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
-	G.debounce = setTimeout( function() {
-		if ( !G.drag ) $( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
-		G.local = 1;
+	if ( G.drag ) {
+		console.log('drag '+ vol)
+		$( '#volume-bar' ).css( 'width', vol +'%' );
+		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ vol +'%' );
+	} else {
+		console.log('click '+ vol)
+		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
-			G.local = 0;
-			G.status.volume = vol;
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
-	}, G.drag ? 50 : 300 );
+	}
+	$( '#volume-text' ).text( vol );
+	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
