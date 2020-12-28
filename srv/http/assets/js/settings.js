@@ -105,15 +105,8 @@ function loader( toggle ) {
 function refreshVolume( val ) {
 	if ( !$( '#infoRange' ).length || $( '#infoRange' ).hasClass( 'hide' ) ) return
 	
-	if ( val ) {
-		$( '#infoRange .value' ).text( val );
-		$( '#infoRange input' ).val( +val );
-	} else {
-		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
-			$( '#infoRange .value' ).text( level );
-			$( '#infoRange input' ).val( +level );
-		} );
-	}
+	$( '#infoRange .value' ).text( val );
+	$( '#infoRange input' ).val( val );
 }
 function resetLocal( ms ) {
 	setTimeout( function() {

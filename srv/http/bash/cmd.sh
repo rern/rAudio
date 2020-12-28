@@ -186,7 +186,6 @@ volumeSet() {
 			mpc volume $target
 		fi
 	else # increment
-		pushstream volume '{"disable":true}'
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
 			if [[ -n $hwmixer ]]; then
@@ -203,7 +202,6 @@ volumeSet() {
 				mpc volume $target
 			fi
 		fi
-		pushstream volume '{"disable":false}'
 	fi
 }
 
