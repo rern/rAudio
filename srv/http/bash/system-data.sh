@@ -52,9 +52,17 @@ if [[ $i2c == true ]]; then
 									| sort -u )
 fi
 
-data+='
+if ! aplay -l 2> /dev/null | grep -q '^card'; then
+	data+='
+	, "audioaplayname"  : ""
+	, "audiooutput"     : "( not available )"'
+else
+	data+='
 	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
-	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
+	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"'
+fi
+
+data+='
 	, "hostname"        : "'$( hostname )'"
 	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"

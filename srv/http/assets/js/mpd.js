@@ -24,16 +24,18 @@ function setMixerType( mixertype ) {
 refreshData = function() {
 	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
 		if ( list == -1 ) {
-			info( {
-				  icon    : 'mpd'
-				, title   : 'MPD Settings'
-				, message : '<i class="fa fa-warning"></i> No soundcards found.'
-				, nox     : 1
-				, ok      : function() {
-					location.href = '/';
-				}
-			} );
-			loader( 'hide' );
+			var htmlnosoundcard = heredoc( function() { /*
+	<heading>Audio Output</heading>
+	<div class="col-l">Device</div>
+	<div class="col-r">
+		<select id="audiooutput" data-style="btn-default btn-lg" disabled>
+			<option>( not available )</option>
+		</select>
+	</div>
+			*/ } );
+			$( '.container' ).html( htmlnosoundcard );
+			$( '#audiooutput' ).selectric();
+			showContent();
 			return
 		}
 		
@@ -56,7 +58,7 @@ refreshData = function() {
 		} );
 		$( '#audiooutput' )
 			.html( htmldevices )
-			.prop( 'disabled', G.devices.length === 1 );
+			.prop( 'disabled', G.devices.length < 2 );
 		var $selected = $( '#audiooutput option' ).eq( G.asoundcard );
 		$selected.prop( 'selected', 1 );
 		if ( device.mixers ) {
@@ -65,12 +67,12 @@ refreshData = function() {
 				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
 			} );
 		} else {
-			var htmlhwmixer = '<option>(not available)</option>';
+			var htmlhwmixer = '<option>( not available )</option>';
 		}
 		$( '#hwmixer' )
 			.html( htmlhwmixer )
 			.val( device.hwmixer )
-			.prop( 'disabled', device.mixers === 1 );
+			.prop( 'disabled', device.mixers < 2 );
 		if ( !$selected.data( 'hwmixer' ) ) $( '#mixertype option:eq( 1 )' ).hide();
 		var mixertype = $selected.data( 'mixertype' );
 		$( '#mixertype' ).val( mixertype );
