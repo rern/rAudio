@@ -314,6 +314,7 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
 	[[ -z $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
+	pushstream reload 1
 	;;
 count )
 	count
