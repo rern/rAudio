@@ -163,7 +163,8 @@ hr {
 }
 #infoTitle {
 	display: inline-block;
-	width: calc( 100% - 50px );
+	width: calc( 100% - 45px );
+	margin-left: 10px;
 	font-size: 18px;
 	font-weight: 300;
 	line-height: 40px;
