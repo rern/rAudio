@@ -145,7 +145,7 @@ mpdscribbleset )
 	pushRefresh
 	;;
 smbdisable )
-	systemctl stop smb
+	systemctl disable --now smb
 	pushRefresh
 	;;
 smbset )
@@ -156,7 +156,7 @@ smbset )
 	featureSet smb
 	;;
 snapclientdisable )
-	systemctl stop snapclient
+	systemctl disable --now snapclient
 	pushRefresh
 	;;
 snapclientset )
