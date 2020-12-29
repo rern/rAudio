@@ -334,8 +334,8 @@ heading i.fa-question-circle {
 }
 #bar-bottom div {
 	display: inline-block;
-	width: calc( 90vw / 5 );
-	max-width: 142px;
+	width: calc( 100vw / 5 );
+	max-width: 130px;
 	height: 40px;
 	cursor: pointer;
 }
