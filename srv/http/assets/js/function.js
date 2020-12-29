@@ -868,7 +868,6 @@ function renderLibraryList( data ) {
 	
 	G.librarylist = 1;
 	loader( 'show' );
-	$( '#button-coverart' ).addClass( 'hidden' );
 	$( '#lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
@@ -880,7 +879,6 @@ function renderLibraryList( data ) {
 	} else if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
-		if ( G.mode === 'album' ) htmlpath += '&ensp;<i id="button-coverart" class="fa fa-coverart-refresh hidden"></i>';
 		if ( G.mode === 'webradio' ) htmlpath += '<i class="button-webradio-new fa fa-plus-circle"></i>';
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else { // dir breadcrumbs
@@ -898,7 +896,11 @@ function renderLibraryList( data ) {
 	if ( htmlpath ) $( '#lib-breadcrumbs' ).html( htmlpath );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
-		if ( $( '#lib-list .coverart' ).length ) $( '#button-coverart' ).removeClass( 'hidden' );
+		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+			var src = $( '#lib-list .coverart:eq( 0 ) img' ).data( 'src' ).replace( /svg$/, 'png' );
+			var button = '<i class="fa fa-refresh"></i><img src="'+ src +'">';
+			$( '#lib-breadcrumbs' ).append( '<span id="albumrefresh">'+ button +'</span>' );
+		}
 		$( '#liimg' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
 		} ).on( 'error', function() {

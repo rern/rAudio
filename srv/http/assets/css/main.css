@@ -863,7 +863,7 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 }
 #coverart svg .text {
-	fill: red !important;
+	fill: var( --cw ) !important;
 }
 #coverart,
 .licover img {
@@ -1741,6 +1741,21 @@ i.map.disabled, .map.disabled i {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+#albumrefresh {
+	margin-left: 15px;
+}
+#albumrefresh i {
+	position: absolute;
+	font-size: 26px !important;
+}
+#albumrefresh img {
+	width: 30px;
+	margin-left: 5px;
+	vertical-align: -6px;
+}
+#albumrefresh .svg {
+	filter: invert( 1 );
 }
 #mode-title,
 .pl-title {
