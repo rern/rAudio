@@ -11,7 +11,7 @@ function addReplace( cmd, command, title ) {
 	var playlistlength = G.status.playlistlength;
 	bash( command, function() {
 		G.liadd = 0;
-		if ( !playlistlength ) getPlaybackStatus( 'render' );
+		if ( !playlistlength || cmd === 'replaceplay' ) getPlaybackStatus( 'render' );
 		if ( G.display.playbackswitch && ( cmd === 'addplay' || cmd === 'replaceplay' ) ) {
 			$( '#tab-playback' ).click();
 		} else {
