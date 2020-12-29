@@ -1742,18 +1742,18 @@ i.map.disabled, .map.disabled i {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-#albumrefresh {
+#button-coverart {
 	margin-left: 15px;
 }
-#albumrefresh .fa-refresh {
+.albumrefresh {
 	position: absolute;
-	font-size: 26px;
+	font-size: 26px !important;
 }
-#albumrefresh .fa-coverart {
+.albumcoverart {
 	font-size: 30px;
 	color: var( --cm );
 }
-#albumrefresh img {
+.albumimg {
 	width: 30px;
 	margin-left: 5px;
 	vertical-align: -6px;

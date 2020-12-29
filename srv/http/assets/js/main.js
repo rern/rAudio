@@ -1105,6 +1105,9 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 						+'<br><px30/>&bull; '+ update +' thumbnails'
 						+'<br><px30/>&bull; '+ update +' directory icons'
 		, msgalign : 'left'
+		, preshow  : function() {
+			$( '#infoIcon' ).replaceWith( '<span>'+ $( '#button-coverart' ).html() +'</span>' );
+		}
 		, ok       : function() {
 			thumbUpdate( '' );
 		}

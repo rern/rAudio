@@ -898,10 +898,10 @@ function renderLibraryList( data ) {
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			var src = $( '#lib-list .coverart:eq( 0 ) img' ).data( 'src' );
-			$( '#lib-breadcrumbs' ).append( '<span id="albumrefresh"><i class="fa fa-refresh"></i><img src="'+ src +'"></span>' );
+			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><i class="fa fa-refresh albumrefresh"></i><img src="'+ src +'" class="albumimg"></span>' );
 			var defaultcover = 0;
-			$( '#albumrefresh img' ).on( 'error', function() {
-				if ( !defaultcover ) $( this ).replaceWith( '<i class="fa fa-coverart"></i>' );
+			$( '#button-coverart img' ).on( 'error', function() {
+				if ( !defaultcover ) $( this ).replaceWith( '<i class="fa fa-coverart albumcoverart"></i>' );
 				defaultcover = 1;
 			} );
 		}

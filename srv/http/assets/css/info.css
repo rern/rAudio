@@ -117,17 +117,24 @@ hr {
 }
 #infoTop {
 	float: left;
-	width: calc( 100% - 60px );
+	width: calc( 100% - 40px );
 	color: var( --cw );
 	line-height: 40px;
-	padding: 0 0 0 15px;
+	padding: 0 0 0 5px;
 	text-align: left;
 }
-#infoTop a, white {
+#infoTop a, white,
+#infoTop .albumrefresh {
 	color: var( --cw );
 }
-#infoIcon {
+#infoTop .albumimg {
+	vertical-align: 6px;
+}
+#infoTop i {
 	float: left;
+	width: 30px;
+	margin-left: 5px;
+	text-align: center;
 	font-size: 28px;
 	line-height: 40px;
 	color: var( --cg60 );
@@ -144,7 +151,7 @@ hr {
 }
 #infoTitle {
 	display: inline-block;
-	width: calc( 100% - 38px );
+	width: calc( 100% - 50px );
 	font-size: 18px;
 	font-weight: 300;
 	line-height: 40px;
