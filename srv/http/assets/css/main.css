@@ -423,12 +423,12 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	font-size: 16px;
 	color: var( --cg75 );
-	border-top: 1px solid var( --cga );
+	border-bottom: 1px solid var( --cga );
 }
 .menu i {
 	width: 40px;
 	line-height: 40px;
-	vertical-align: -5%;
+	vertical-align: -3px;
 	text-align: center;
 	font-size: 22px;
 	color: var( --cw );
@@ -439,11 +439,11 @@ i.map.disabled, .map.disabled i {
 }
 .submenu {
 	float: right;
-	border-top: 1px solid var( --cga );
+	border-bottom: 1px solid var( --cga );
 }
-.menu a:first-of-type,
-.submenu:first-of-type {
-	border-top: none;
+.menu a:last-of-type,
+#guide {
+	border-bottom: none;
 }
 #settings {
 	position: fixed;
@@ -455,12 +455,6 @@ i.map.disabled, .map.disabled i {
 	padding: 0;
 	box-shadow: -4px 4px 10px #000000;
 	z-index: 104;
-}
-#relays {
-	border-top: none !important;
-}
-#settings .submenu:first-of-type {
-	border-top: 1px solid var( --cga );
 }
 #power, #screenoff {
 	background: var( --cga );
