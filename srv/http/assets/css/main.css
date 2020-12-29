@@ -442,7 +442,7 @@ i.map.disabled, .map.disabled i {
 	border-bottom: 1px solid var( --cga );
 }
 .menu a:last-of-type,
-#guide {
+.menu i:last-child {
 	border-bottom: none;
 }
 #settings {
