@@ -480,6 +480,7 @@ function getPlaybackStatus( render ) {
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( !status ) return
 		
+		if ( status.player !== 'mpd' ) switchPage( 'playback' );
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
