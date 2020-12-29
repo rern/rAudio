@@ -901,7 +901,7 @@ function renderLibraryList( data ) {
 			$( '#lib-breadcrumbs' ).append( '<span id="albumrefresh"><i class="fa fa-refresh"></i><img src="'+ src +'"></span>' );
 			var defaultcover = 0;
 			$( '#albumrefresh img' ).on( 'error', function() {
-				if ( !defaultcover ) $( this ).attr( 'src', '/assets/img/coverart.png' );
+				if ( !defaultcover ) $( this ).replaceWith( '<i class="fa fa-coverart"></i>' );
 				defaultcover = 1;
 			} );
 		}
