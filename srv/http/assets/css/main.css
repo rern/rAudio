@@ -1748,12 +1748,7 @@ i.map.disabled, .map.disabled i {
 .albumrefresh {
 	position: absolute;
 	font-size: 26px !important;
-/*	text-shadow:
-		-1px -1px 10px var( --cg ),
-		 1px -1px 10px var( --cg ),
-		-1px  1px 10px var( --cg ),
-		 1px  1px 10px var( --cg )
-		!important;*/
+	text-shadow: 0 0 4px #000000 !important;
 }
 .albumcoverart {
 	font-size: 30px !important;
