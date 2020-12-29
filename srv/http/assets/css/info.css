@@ -123,13 +123,6 @@ hr {
 	padding: 0 0 0 5px;
 	text-align: left;
 }
-#infoTop a, white,
-#infoTop .albumrefresh {
-	color: var( --cw );
-}
-#infoTop .albumimg {
-	vertical-align: 6px;
-}
 #infoTop i {
 	float: left;
 	width: 30px;
@@ -138,6 +131,20 @@ hr {
 	font-size: 28px;
 	line-height: 40px;
 	color: var( --cg60 );
+}
+#infoTop a, white {
+	color: var( --cw );
+}
+#infoTop .albumrefresh {
+	line-height: 32px;
+	color: var( --cw );
+}
+#infoTop .imgicon {
+	float: left;
+	margin-top: 4px;
+}
+#infoTop .imgicon img {
+	width: 30px;
 }
 #infoX {
 	float: right;

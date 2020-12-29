@@ -1106,7 +1106,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 						+'<br><px30/>&bull; '+ update +' directory icons'
 		, msgalign : 'left'
 		, preshow  : function() {
-			$( '#infoIcon' ).replaceWith( '<span>'+ $( '#button-coverart' ).html() +'</span>' );
+			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );
 		}
 		, ok       : function() {
 			thumbUpdate( '' );
