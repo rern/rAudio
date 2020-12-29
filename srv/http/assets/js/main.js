@@ -1936,12 +1936,17 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
-	G.status.playlistlength--;
-	if ( G.status.playlistlength ) {
-		var pos = $( this ).parent().index() + 1;
-		bash( [ 'plremove', pos ] );
+	if ( G.status.playlistlength > 1 ) {
+		var $li = $( this ).parent();
+		var active = $li.hasClass( 'active' );
+		var pos = $li.index() + 1;
+		bash( [ 'plremove', pos ], function() {
+			if ( active ) getPlaybackStatus( 'render' );
+		} );
+		G.status.playlistlength--;
 	} else {
 		bash( [ 'plremove' ] );
+		renderPlaybackBlank();
 	}
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
