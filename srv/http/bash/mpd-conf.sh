@@ -169,10 +169,16 @@ fi
 
 hwmixer="${Ahwmixer[$card]}"
 if [[ -n $hwmixer ]]; then
-	if [[ ${Amixertype[$card]} == hardware ]]; then
+	mixertype=${Amixertype[$card]}
+	if [[ $mixertype == hardware ]]; then
 		amixer -qM sset "$hwmixer" $( mpc volume | cut -d: -f2 )
+	elif [[ $mixertype == software ]]; then
+		mpc | grep -q '^\[playing' && playing=1
+		[[ -n $playing ]] && mpc -q stop
+		amixer -q sset "$hwmixer" 0dB
+		[[ -n $playing ]] && mpc -q play
 	else
-		amixer sset "$hwmixer" 0dB
+		amixer -q sset "$hwmixer" 0dB
 	fi
 fi
 
