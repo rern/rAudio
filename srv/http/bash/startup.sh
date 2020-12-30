@@ -62,7 +62,7 @@ fi
 
 touch $dirdata/shm/player-mpd
 
-[[ -e $dirsystem/wlan ]] && ifconfig wlan0 up || rmmod brcmfmac
+systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
