@@ -49,6 +49,7 @@ refreshData = function() {
 		} else {
 			var nosound = true;
 		}
+		$( '.nosound input' ).prop( 'disabled', nosound );
 		$( '.nosound .switchlabel' ).toggleClass( 'disabled', nosound );
 		$( '#divmixer, .setting' ).toggleClass( 'hide', nosound );
 		
