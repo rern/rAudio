@@ -824,19 +824,19 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( G.guide ) $( '#coverT' ).click();
 	G.drag = 1;
 	clearIntervalAll();
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	mpcSeekBar( pageX );
 } ).on( 'touchmove mousemove', function( e ) {
 	e.preventDefault();
 	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	if ( G.drag ) mpcSeekBar( pageX );
 } ).on( 'click touchend mouseup', function( e ) {
 	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
 	G.drag = 0;
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
+	var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 	mpcSeekBar( pageX, 'set' );
 } );
 $( '#volume-band' ).on( 'click', function( e ) {
@@ -861,19 +861,19 @@ $( '#volume-band' ).on( 'click', function( e ) {
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	G.pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	G.pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	G.drag = 1;
 	clearTimeout( G.volumebar );
 } ).on( 'touchmove mousemove', function( e ) {
 	e.preventDefault();
 	if ( G.drag ) {
-		var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+		var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 		volumeSet( pageX );
 	}
 } ).on( 'touchend mouseup', function( e ) {
 	if ( G.drag ) {
 		volumebarTimeout();
-		var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
+		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
 		G.drag = 0;
