@@ -103,8 +103,6 @@ function psAirplay( data ) {
 		G.status[ key ] = value;
 	} );
 	renderPlayback();
-	setButtonControl();
-	displayTopBottom();
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -211,71 +209,12 @@ function psDisplay( data ) {
 	}
 	displayTopBottom();
 }
-function psRelays( response ) { // on receive broadcast
-	clearInterval( G.relaystimer );
-	if ( 'on' in response ) {
-		$( '#device'+ response.on ).removeClass( 'gr' );
-	} else if ( 'off' in response ) {
-		$( '#device'+ response.off ).addClass( 'gr' );
-	} else if ( 'done' in response ) {
-		G.status.relayson = response.done;
-		setButtonOptions();
-		$( '#infoX' ).click();
-	}
-	if ( !( 'state' in response ) ) return
-		
-	var state = response.state;
-	G.status.relayson = state;
-	if ( state === 'RESET' ) {
-		$( '#infoX' ).click();
-	} else if ( state === 'IDLE' ) {
-		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
-		
-		var delay = response.delay;
-		info( {
-			  icon        : 'relays'
-			, title       : 'GPIO Relays Idle'
-			, message     : 'Power Off Countdown:<br><br>'
-						   + stopwatch +'&ensp;<white>'+ delay +'</white>'
-			, oklabel     : 'Reset'
-			, ok          : function() {
-				bash( [ 'relaystimerreset' ] );
-			}
-		} );
-		G.relaystimer = setInterval( function() {
-			if ( delay === 1 ) {
-				G.status.relayson = false;
-				setButtonOptions();
-				$( '#infoX' ).click();
-				clearInterval( G.relaystimer );
-			}
-			$( '#infoMessage white' ).text( delay-- );
-		}, 1000 );
-	} else {
-		var devices = ''
-		$.each( response.order, function( i, val ) {
-			if ( i === 0 ) {
-				var color = state ? '' : 'class="gr"';
-			} else {
-				var color = state ? 'class="gr"' : '';
-			}
-			devices += '<br><a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
-		} );
-		info( {
-			  icon      : 'relays'
-			, title     : 'GPIO Relays'
-			, message   : stopwatch +' <wh>Power '+ ( state ? 'ON' : 'OFF' ) +'</wh>'
-			, msghr     : 1
-			, footer    : devices.slice( 4 ) // remove 1st <br>
-			, nobutton  : 1
-		} );
-	}
-}
 function psMpdPlayer( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	setButtonControl();
+	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
 	if ( G.playlist ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
@@ -393,6 +332,66 @@ function psPlaylist( data ) {
 	} else {
 		var name = $( '#pl-path .lipath' ).text();
 		if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
+	}
+}
+function psRelays( response ) { // on receive broadcast
+	clearInterval( G.relaystimer );
+	if ( 'on' in response ) {
+		$( '#device'+ response.on ).removeClass( 'gr' );
+	} else if ( 'off' in response ) {
+		$( '#device'+ response.off ).addClass( 'gr' );
+	} else if ( 'done' in response ) {
+		G.status.relayson = response.done;
+		setButtonOptions();
+		$( '#infoX' ).click();
+	}
+	if ( !( 'state' in response ) ) return
+		
+	var state = response.state;
+	G.status.relayson = state;
+	if ( state === 'RESET' ) {
+		$( '#infoX' ).click();
+	} else if ( state === 'IDLE' ) {
+		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+		
+		var delay = response.delay;
+		info( {
+			  icon        : 'relays'
+			, title       : 'GPIO Relays Idle'
+			, message     : 'Power Off Countdown:<br><br>'
+						   + stopwatch +'&ensp;<white>'+ delay +'</white>'
+			, oklabel     : 'Reset'
+			, ok          : function() {
+				bash( [ 'relaystimerreset' ] );
+			}
+		} );
+		G.relaystimer = setInterval( function() {
+			if ( delay === 1 ) {
+				G.status.relayson = false;
+				setButtonOptions();
+				$( '#infoX' ).click();
+				clearInterval( G.relaystimer );
+			}
+			$( '#infoMessage white' ).text( delay-- );
+		}, 1000 );
+	} else {
+		var devices = ''
+		$.each( response.order, function( i, val ) {
+			if ( i === 0 ) {
+				var color = state ? '' : 'class="gr"';
+			} else {
+				var color = state ? 'class="gr"' : '';
+			}
+			devices += '<br><a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
+		} );
+		info( {
+			  icon      : 'relays'
+			, title     : 'GPIO Relays'
+			, message   : stopwatch +' <wh>Power '+ ( state ? 'ON' : 'OFF' ) +'</wh>'
+			, msghr     : 1
+			, footer    : devices.slice( 4 ) // remove 1st <br>
+			, nobutton  : 1
+		} );
 	}
 }
 function psReload( data ) {

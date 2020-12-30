@@ -117,20 +117,39 @@ hr {
 }
 #infoTop {
 	float: left;
-	width: calc( 100% - 60px );
+	width: calc( 100% - 40px );
 	color: var( --cw );
 	line-height: 40px;
-	padding: 0 0 0 15px;
+	padding: 0 0 0 5px;
 	text-align: left;
+}
+#infoTop i {
+	float: left;
+	width: 30px;
+	margin-left: 5px;
+	text-align: center;
+	font-size: 28px;
+	line-height: 40px;
+	color: var( --cg60 );
 }
 #infoTop a, white {
 	color: var( --cw );
 }
-#infoIcon {
+#infoTop .albumrefresh {
+	color: var( --cw );
+	z-index: 1;
+}
+#infoTop .imgicon {
 	float: left;
-	font-size: 28px;
-	line-height: 40px;
-	color: var( --cg60 );
+	margin-top: 4px;
+	width: 35px;
+}
+#infoTop .imgicon i {
+	position: absolute;
+	line-height: 32px;
+}
+#infoTop .imgicon img {
+	width: 30px;
 }
 #infoX {
 	float: right;
@@ -144,7 +163,8 @@ hr {
 }
 #infoTitle {
 	display: inline-block;
-	width: calc( 100% - 38px );
+	width: calc( 100% - 45px );
+	margin-left: 10px;
 	font-size: 18px;
 	font-weight: 300;
 	line-height: 40px;

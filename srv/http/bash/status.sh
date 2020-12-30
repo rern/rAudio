@@ -98,12 +98,7 @@ spotify )
 esac
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^consume\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
-card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-hwmixer=$( sed -n "/^\s*device.*hw:$card/,/mixer_control/ p" /etc/mpd.conf \
-			| grep mixer_control \
-			| cut -d'"' -f2 )
-[[ -z $hwmixer ]] && filter+='\|^volume'
+filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
 
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
@@ -166,7 +161,6 @@ volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 status+='
 , "elapsed"        : '$elapsed'
 , "file"           : "'$file'"
-, "hwmixer"        : "'$hwmixer'"
 , "playlistlength" : '$playlistlength'
 , "song"           : '$song'
 , "state"          : "'$state'"

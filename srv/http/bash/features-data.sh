@@ -50,7 +50,7 @@ if [[ -e $xinitrc ]]; then
 	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
 	[[ -z $conf ]] && conf=( NORMAL 0 false 1 )
 	data+='
-	, "localbrowser"    : '$( systemctl -q is-enabled localbrowser && echo true || echo false )'
+	, "localbrowser"    : '$( systemctl -q is-active localbrowser && echo true || echo false )'
 	, "localcursor"     : '${conf[2]}'
 	, "localrotate"     : "'${conf[0]}'"
 	, "localscreenoff"  : '${conf[1]}'

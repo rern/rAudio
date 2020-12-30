@@ -423,15 +423,15 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	font-size: 16px;
 	color: var( --cg75 );
-	border-top: 1px solid var( --cga );
+	border-top: 1px solid var( --cga ) !important;
 }
 .menu i {
 	width: 40px;
 	line-height: 40px;
-	vertical-align: -5%;
+	vertical-align: -3px;
 	text-align: center;
 	font-size: 22px;
-	color: var( --cw );
+	color: var( --cw ) !important;
 	text-shadow: 1px 1px 2px #000000;
 }
 .menu i.gr {
@@ -440,10 +440,6 @@ i.map.disabled, .map.disabled i {
 .submenu {
 	float: right;
 	border-top: 1px solid var( --cga );
-}
-.menu a:first-of-type,
-.submenu:first-of-type {
-	border-top: none;
 }
 #settings {
 	position: fixed;
@@ -455,12 +451,6 @@ i.map.disabled, .map.disabled i {
 	padding: 0;
 	box-shadow: -4px 4px 10px #000000;
 	z-index: 104;
-}
-#relays {
-	border-top: none !important;
-}
-#settings .submenu:first-of-type {
-	border-top: 1px solid var( --cga );
 }
 #power, #screenoff {
 	background: var( --cga );
@@ -604,7 +594,9 @@ i.map.disabled, .map.disabled i {
 .emptyadd {
 	position: absolute;
 	top: 130px;
-	width: 100%;
+	left: 0;
+	right: 0;
+	margin: auto;
 	text-align: center;
 	font-size: 24px;
 	z-index: 102;
@@ -871,7 +863,7 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 }
 #coverart svg .text {
-	fill: red !important;
+	fill: var( --cw ) !important;
 }
 #coverart,
 .licover img {
@@ -1749,6 +1741,23 @@ i.map.disabled, .map.disabled i {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+#button-coverart {
+	margin-left: 15px;
+}
+.albumrefresh {
+	position: absolute;
+	font-size: 26px !important;
+	text-shadow: 0 0 4px #000000 !important;
+}
+.albumcoverart {
+	font-size: 30px !important;
+	color: var( --cm )  !important;
+}
+.albumimg {
+	width: 30px;
+	margin-left: 5px;
+	vertical-align: -6px;
 }
 #mode-title,
 .pl-title {

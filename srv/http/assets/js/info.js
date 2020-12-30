@@ -77,7 +77,7 @@ var containerhtml = heredoc( function() { /*
 	<div id="infoBox">
 		<div id="infoTopBg">
 			<div id="infoTop">
-				<i id="infoIcon"></i>&emsp;<a id="infoTitle"></a>
+				<i id="infoIcon"></i><a id="infoTitle"></a>
 			</div>
 			<i id="infoX" class="fa fa-times hide"></i>
 			<div style="clear: both"></div>
@@ -203,6 +203,7 @@ function infoReset() {
 		  margin     : ''
 		, visibility : 'hidden'
 	} );
+	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
 	$( '#infoContent' ).html( infocontenthtml );
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '.infocontent, .infoarrowleft, .infoarrowright, .infomessage, .infolabel, .infoinput, .infohtml, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );

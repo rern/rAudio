@@ -660,17 +660,17 @@ $( '#volume' ).roundSlider( {
 	}
 	, drag            : function( e ) {
 		G.drag = 1;
-		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ e.value +'%' );
+		bash( 'mpc volume '+ e.value );
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 	}
 	, stop            : function() { // touchend mouseup
-		bash( [ 'volumepushstream', G.status.hwmixer ] );
+		bash( [ 'volumepushstream' ] );
 	}
 	, change          : function( e ) { // click
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 		if ( !G.drag ) {
 			$( '#volume' ).addClass( 'disabled' );
-			bash( [ 'volume', G.status.volume, e.value, G.status.hwmixer ], function() {
+			bash( [ 'volume', G.status.volume, e.value ], function() {
 				$( '#volume' ).removeClass( 'disabled' );
 			} );
 		}
@@ -678,14 +678,25 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volmute' ).click( function() {
-	bash( [ 'volume', G.status.volume, 0, G.status.hwmixer ] );
+	bash( [ 'volume', G.status.volume, 0 ] );
 } );
-$( '#volup, #voldn' ).click( function() {
+$( '#volup, #voldn' ).tap( function() {
+	bash( [ 'volumeupdown', this.id === 'voldn' ? '-1' : '+1' ] );
+} ).taphold( function() {
 	var voldn = this.id === 'voldn';
-	var vol = G.status.volume;
-	if ( ( vol === 0 && voldn ) || ( vol === 100 && voldn ) ) return
+	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && volup ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '1%-' : '1%+', G.status.hwmixer ] );
+	G.intVolume = setInterval( function() {
+		voldn ? G.status.volume-- : G.status.volume++;
+		if ( G.status.volume === 0 || G.status.volume === 100 ) return
+		
+		$volumeRS.setValue( G.status.volume );
+		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		bash( 'mpc volume '+ G.status.volume );
+	}, 100 );
+} ).on( 'mouseup touchend', function() {
+	clearInterval( G.intVolume );
+	bash( [ 'volumepushstream' ] );
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
@@ -813,19 +824,19 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 	if ( G.guide ) $( '#coverT' ).click();
 	G.drag = 1;
 	clearIntervalAll();
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	mpcSeekBar( pageX );
 } ).on( 'touchmove mousemove', function( e ) {
 	e.preventDefault();
 	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	if ( G.drag ) mpcSeekBar( pageX );
 } ).on( 'click touchend mouseup', function( e ) {
 	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
 	G.drag = 0;
-	var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
+	var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 	mpcSeekBar( pageX, 'set' );
 } );
 $( '#volume-band' ).on( 'click', function( e ) {
@@ -850,22 +861,23 @@ $( '#volume-band' ).on( 'click', function( e ) {
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	G.pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+	G.pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	G.drag = 1;
 	clearTimeout( G.volumebar );
 } ).on( 'touchmove mousemove', function( e ) {
 	e.preventDefault();
 	if ( G.drag ) {
-		var pageX = 'pageX' in e ? e.pageX : e.originalEvent.touches[ 0 ].pageX;
+		var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 		volumeSet( pageX );
 	}
 } ).on( 'touchend mouseup', function( e ) {
 	if ( G.drag ) {
 		volumebarTimeout();
-		var pageX = 'pageX' in e ? e.pageX : e.originalEvent.changedTouches[ 0 ].pageX;
+		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
 		G.drag = 0;
+		bash( [ 'volumepushstream' ] );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -1105,6 +1117,9 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 						+'<br><px30/>&bull; '+ update +' thumbnails'
 						+'<br><px30/>&bull; '+ update +' directory icons'
 		, msgalign : 'left'
+		, preshow  : function() {
+			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );
+		}
 		, ok       : function() {
 			thumbUpdate( '' );
 		}
@@ -1749,6 +1764,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : '#bb2828'
 			, ok          : function() {
 				bash( [ 'plremove' ] );
+				renderPlaybackBlank();
 			}
 		} );
 	} else {
@@ -1772,6 +1788,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : '#bb2828'
 			, ok          : function() {
 				bash( [ 'plremove' ] );
+				renderPlaybackBlank();
 			}
 			, buttonwidth : 1
 		} );
@@ -1931,12 +1948,17 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
-	G.status.playlistlength--;
-	if ( G.status.playlistlength ) {
-		var pos = $( this ).parent().index() + 1;
-		bash( [ 'plremove', pos ] );
+	if ( G.status.playlistlength > 1 ) {
+		var $li = $( this ).parent();
+		var active = $li.hasClass( 'active' );
+		var pos = $li.index() + 1;
+		bash( [ 'plremove', pos ], function() {
+			if ( active ) getPlaybackStatus( 'render' );
+		} );
+		G.status.playlistlength--;
 	} else {
 		bash( [ 'plremove' ] );
+		renderPlaybackBlank();
 	}
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {

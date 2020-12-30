@@ -325,6 +325,7 @@ heading i.fa-question-circle {
 	bottom: 0;
 	width: 100%;
 	height: 40px;
+	padding: 0 55px;
 	font-size: 28px;
 	line-height: 30px;
 	text-align: center;
@@ -334,8 +335,8 @@ heading i.fa-question-circle {
 }
 #bar-bottom div {
 	display: inline-block;
-	width: calc( 90vw / 5 );
-	max-width: 142px;
+	width: calc( 100% / 5 );
+	max-width: 132px;
 	height: 40px;
 	cursor: pointer;
 }
@@ -681,6 +682,9 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media ( max-width: 580px ) {
+	#bar-bottom div {
+		width: calc( 100% / 5 );
+	}
 	#bar-bottom a {
 		display: none;
 	}
