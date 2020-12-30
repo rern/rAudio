@@ -11,14 +11,6 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
-function cmdsh( command, callback, json ) {
-	$.post( 
-		  'cmd.php'
-		, { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
-		, callback || null
-		, json || null
-	);
-}
 var cmd = {
 	  amixer       : [ '/srv/http/bash/mpd.sh amixer', 'amixer scontrols' ]
 	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
@@ -110,19 +102,6 @@ function list2JSON( list ) {
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
-function refreshVolume( val ) {
-	if ( !$( '#infoRange' ).length || $( '#infoRange' ).hasClass( 'hide' ) ) return
-	
-	if ( val ) {
-		$( '#infoRange .value' ).text( val );
-		$( '#infoRange input' ).val( val );
-	} else {
-		cmdsh( [ 'volumeget' ], function( level ) {
-			$( '#infoRange .value' ).text( level );
-			$( '#infoRange input' ).val( level );
-		} );
-	}
-}
 function resetLocal( ms ) {
 	setTimeout( function() {
 		$( '#bannerIcon i' ).removeClass( 'blink' );
@@ -166,7 +145,6 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':  psNotify( data );  break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
-		case 'volume':  psVolume( data );  break;
 	}
 }
 function psNotify( data ) {
@@ -176,9 +154,6 @@ function psNotify( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
-}
-function psVolume( data ) {
-	if ( page === 'mpd' ) refreshVolume( data.val );
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();

@@ -120,9 +120,7 @@ pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
 pushstreamVolumeSet() {
-	volume=$( amixer -M sget "$1" \
-		| awk -F'[%[]' '/%/ {print $2}' \
-		| head -1 )
+	volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 	pushstream volume '{"val":'$volume'}'
 }
 randomfile() {
@@ -177,31 +175,16 @@ volumeGetControls() {
 volumeSet() {
 	current=$1
 	target=$2
-	hwmixer=$3
 	diff=$(( $target - $current ))
 	if (( -10 < $diff && $diff < 10 )); then
-		if [[ -n $hwmixer ]]; then
-			amixer -qM sset "$hwmixer" $target%
-		else
-			mpc volume $target
-		fi
+		mpc volume $target
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			if [[ -n $hwmixer ]]; then
-				amixer -qM sset "$hwmixer" $i%
-			 else
-				mpc volume $i
-			fi
+			mpc volume $i
 			sleep 0.2
 		done
-		if (( $i != $target )); then
-			if [[ -n $hwmixer ]]; then
-				amixer -qM sset "$hwmixer" $target%
-			else
-				mpc volume $target
-			fi
-		fi
+		(( $i != $target )) && mpc volume $target
 	fi
 }
 
@@ -688,17 +671,17 @@ volume )
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then # set
 		pushstreamVolume set $target
-		volumeSet $current $target "$hwmixer"
+		volumeSet $current $target
 		rm -f $filevolumemute
 	else
 		if (( $current > 0 )); then # mute
 			pushstreamVolume mute $current true
-			volumeSet $current 0 "$hwmixer"
+			volumeSet $current 0
 			echo $current > $filevolumemute
 		else # unmute
 			target=$( cat $filevolumemute )
 			pushstreamVolume unmute $target true
-			volumeSet 0 $target "$hwmixer"
+			volumeSet 0 $target
 			rm -f $filevolumemute
 		fi
 	fi
@@ -720,16 +703,14 @@ volumeget )
 	echo $volume
 	;;
 volumepushstream )
-	pushstreamVolumeSet "${args[1]}"
+	pushstreamVolumeSet
 	;;
 volumereset )
 	mpc volume $( cat $dirtmp/mpdvolume )
 	;;
 volumeupdown )
-	updn=${args[1]}
-	hwmixer=${args[2]}
-	amixer -qM sset "$hwmixer" $updn
-	pushstreamVolumeSet "$hwmixer"
+	mpc volume ${args[1]}
+	pushstreamVolumeSet
 	;;
 webradioadd )
 	name=${args[1]}

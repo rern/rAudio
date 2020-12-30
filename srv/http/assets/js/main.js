@@ -660,17 +660,17 @@ $( '#volume' ).roundSlider( {
 	}
 	, drag            : function( e ) {
 		G.drag = 1;
-		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ e.value +'%' );
+		bash( 'mpc volume '+ e.value );
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 	}
 	, stop            : function() { // touchend mouseup
-		bash( [ 'volumepushstream', G.status.hwmixer ] );
+		bash( [ 'volumepushstream' ] );
 	}
 	, change          : function( e ) { // click
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 		if ( !G.drag ) {
 			$( '#volume' ).addClass( 'disabled' );
-			bash( [ 'volume', G.status.volume, e.value, G.status.hwmixer ], function() {
+			bash( [ 'volume', G.status.volume, e.value ], function() {
 				$( '#volume' ).removeClass( 'disabled' );
 			} );
 		}
@@ -678,14 +678,14 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volmute' ).click( function() {
-	bash( [ 'volume', G.status.volume, 0, G.status.hwmixer ] );
+	bash( [ 'volume', G.status.volume, 0 ] );
 } );
 $( '#volup, #voldn' ).click( function() {
 	var voldn = this.id === 'voldn';
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && voldn ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '1%-' : '1%+', G.status.hwmixer ] );
+	bash( [ 'volumeupdown', voldn ? '-1' : '+1' ] );
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
@@ -866,6 +866,7 @@ $( '#volume-band' ).on( 'click', function( e ) {
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
 		G.drag = 0;
+		bash( [ 'volumepushstream' ] );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {

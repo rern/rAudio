@@ -32,14 +32,14 @@ for line in "${lines[@]}"; do
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	readarray -t controls <<< $( amixer -c $card scontents \
-									| grep -A1 ^Simple \
-									| sed 's/^\s*Cap.*: /^/' \
-									| tr -d '\n' \
-									| sed 's/--/\n/g' \
-									| grep pvolume \
-									| cut -d"'" -f2 \
-									| sort -u )
+	amixer=$( amixer -c $card scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep pvolume \
+				| cut -d"'" -f2 )
+	readarray -t controls <<< $( echo "$amixer" | sort -u )
 	mixerdevices=
 	for control in "${controls[@]}"; do
 		mixerdevices+=',"'$control'"'
@@ -58,10 +58,11 @@ for line in "${lines[@]}"; do
 		mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 	else
 		if [[ $mixers == 0 ]]; then
-			hwmixer=
+			hwmixer='( not available )'
 			[[ $mixertype == hardware ]] && mixertype=software
 		else
-			hwmixer=${controls[0]}
+			hwmixer=$( grep Digital <<< "$amixer" | head -1 )
+			[[ -z $hwmixer ]] && hwmixer=${controls[0]}
 		fi
 	fi
 	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0

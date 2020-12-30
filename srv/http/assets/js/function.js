@@ -1599,11 +1599,11 @@ function volumeSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( 'amixer -M sset "'+ G.status.hwmixer +'" '+ vol +'%' );
+		bash( 'mpc volume '+ vol );
 	} else {
 		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.hwmixer ], function() {
+		bash( [ 'volume', G.status.volume, vol ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}
