@@ -9,73 +9,53 @@ function lines2line( lines ) {
 	return val.substring( 1 );
 }
 function setMixerType( mixertype ) {
-	var $output = $( '#audiooutput option:selected' );
-	var aplayname = $output.val();
 	if ( mixertype === 'none' ) {
-		var card = $output.data( 'card' );
-		var hwmixer = $output.data( 'hwmixer' );
+		var card = device.card;
+		var hwmixer = device.hwmixer;
 	} else {
 		var card = '';
 		var hwmixer = '';
 	}
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
-	bash( [ 'mixerset', mixertype, aplayname, card, hwmixer ] );
+	bash( [ 'mixerset', mixertype, device.aplayname, card, hwmixer ] );
 }
 refreshData = function() {
 	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
-		if ( list == -1 ) {
-			var htmlnosoundcard = heredoc( function() { /*
-<heading>Audio Output</heading>
-<div class="col-l">Device</div>
-<div class="col-r">
-	<select id="audiooutput" data-style="btn-default btn-lg" disabled>
-		<option>( not available )</option>
-	</select>
-</div>
-*/ } );
-			$( '.container' ).html( htmlnosoundcard );
-			$( '#audiooutput' ).selectric();
-			showContent();
-			return
-		}
-		
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
 		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {
-			htmldevices += '<option '
-				+'value="'+ this.aplayname +'" '
-				+'data-card="'+ this.card +'" '
-				+'data-device="'+ this.device +'" '
-				+'data-dop="'+ this.dop +'" '
-				+'data-hw="'+ this.hw +'" '
-				+'data-hwmixer="'+ this.hwmixer +'" '
-				+'data-mixers="'+ this.mixers +'" '
-				+'data-mixertype="'+ this.mixertype +'"'
-				+'>'+ this.name +'</option>';
+			htmldevices += '<option data-card="'+ this.card +'">'+ this.name +'</option>';
 		} );
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.prop( 'disabled', G.devices.length < 2 );
-		var $selected = $( '#audiooutput option' ).eq( G.asoundcard );
-		$selected.prop( 'selected', 1 );
-		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-		device.mixerdevices.forEach( function( mixer ) {
-			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-		} );
-		$( '#hwmixer' )
-			.html( htmlhwmixer )
-			.val( device.hwmixer )
-			.prop( 'disabled', device.mixers < 2 );
-		if ( !$selected.data( 'hwmixer' ) ) $( '#mixertype option:eq( 1 )' ).hide();
-		var mixertype = $selected.data( 'mixertype' );
-		$( '#mixertype' ).val( mixertype );
+		$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
+		if ( device.card !== -1 ) {
+			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			device.mixerdevices.forEach( function( mixer ) {
+				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+			} );
+			$( '#hwmixer' )
+				.html( htmlhwmixer )
+				.val( device.hwmixer )
+				.prop( 'disabled', device.mixers < 2 );
+			if ( !device.hwmixer ) $( '#mixertype option:eq( 1 )' ).hide();
+			var mixertype = device.mixertype;
+			$( '#mixertype' ).val( mixertype );
+			var nosound = false;
+		} else {
+			var nosound = true;
+		}
+		$( '.nosound .switchlabel' ).toggleClass( 'disabled', nosound );
+		$( '#divmixer, .setting' ).toggleClass( 'hide', nosound );
+		
 		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
 		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
-		$( '#divdop' ).toggleClass( 'hide', $selected.val().slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', $selected.data( 'dop' ) == 1 );
+		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
+		$( '#dop' ).prop( 'checked', device.dop == 1 );
 		$( '#crossfade' ).prop( 'checked', G.crossfade );
 		$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
 		$( '#normalization' ).prop( 'checked', G.normalization );
@@ -138,19 +118,15 @@ var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volu
 			 +'<br><br>Signal level will be set to full amplitude to 0dB'
 			 +'<br>Too high volume can damage speakers and ears';
 $( '#audiooutput' ).change( function() {
-	var $selected = $( this ).find( ':selected' );
-	var output = $selected.text();
-	var aplayname = $selected.val();
-	var card = $selected.data( 'card' );
-	var hwmixer = $selected.data( 'hwmixer' );
+	var card = $( this ).find( 'option:selected' ).data( 'card' );
+	var dev = device[ card ];
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
-	bash( [ 'audiooutput', aplayname, card, output, hwmixer ] );
+	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
 } );
 $( '#hwmixer' ).change( function() {
-	var aplayname = $( '#audiooutput option:selected' ).val();
-	var hwmixer = $( '#hwmixer' ).val();
+	var hwmixer = $( this ).val();
 	notify( 'Hardware Mixer', 'Change ...', 'mpd' );
-	bash( [ 'hwmixer', aplayname, hwmixer ] );
+	bash( [ 'hwmixer', device.aplayname, hwmixer ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var control = device.hwmixer;
@@ -188,7 +164,7 @@ $( '#mixertype' ).change( function() {
 			, message : warning
 			, cancel  : function() {
 				$( '#mixertype' )
-					.val( $( '#audiooutput option:selected' ).data( 'mixertype' ) )
+					.val( device.mixertype )
 					.selectric( 'refresh' );
 			}
 			, ok      : function() {
@@ -202,14 +178,13 @@ $( '#mixertype' ).change( function() {
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
-		var $output = $( '#audiooutput option:selected' );
 		info( {
 			  icon    : 'volume'
 			, title   : 'No Volume'
 			, message : warning
 			, ok      : function() {
 				notify( 'No Volume', 'Enable ...', 'mpd' );
-				bash( [ 'novolume', $output.val(), $output.data( 'card' ), $output.data( 'hwmixer' ) ] );
+				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
 			}
 		} );
 	} else {
@@ -227,7 +202,7 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'DSP over PCM', checked, 'mpd' );
-	bash( [ 'dop', checked, $( '#audiooutput option:selected' ).val() ] );
+	bash( [ 'dop', checked, device.aplayname ] );
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
@@ -483,7 +458,7 @@ var custominfo = heredoc( function() { /*
 */ } );
 $( '#setting-custom' ).click( function() {
 	var valglobal, valoutput;
-	var aplayname = $( '#audiooutput option:selected' ).val();
+	var aplayname = device.aplayname;
 	info( {
 		  icon     : 'mpd'
 		, title    : "User's Custom Settings"

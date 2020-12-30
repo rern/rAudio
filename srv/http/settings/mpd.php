@@ -9,6 +9,7 @@
 	<select id="audiooutput" data-style="btn-default btn-lg"></select>
 </div>
 <pre id="codeaplay" class="hide"></pre>
+<div id="divmixer">
 <div id="divhwmixer">
 	<div data-status="amixer" class="col-l double status">
 		<a>Mixer Device
@@ -40,8 +41,9 @@
 	</span>
 </div>
 </div>
+</div>
 
-<div>
+<div class="nosound">
 <heading>Bit-Perfect<?=$help?></heading>
 <div class="col-l">No Volume</div>
 <div class="col-r">
@@ -57,7 +59,7 @@
 	</span>
 </div>
 
-<div id="divdop">
+<div class="nosound">
 	<div class="col-l dop">DSD over PCM</div>
 	<div class="col-r dop">
 		<input id="dop" type="checkbox">
