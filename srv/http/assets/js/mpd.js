@@ -33,23 +33,28 @@ refreshData = function() {
 			.html( htmldevices )
 			.prop( 'disabled', G.devices.length < 2 );
 		$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
-		if ( device.card !== -1 ) {
-			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-			device.mixerdevices.forEach( function( mixer ) {
-				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-			} );
-			$( '#hwmixer' )
-				.html( htmlhwmixer )
-				.val( device.hwmixer )
-				.prop( 'disabled', device.mixers < 2 );
-			if ( !device.hwmixer ) $( '#mixertype option:eq( 1 )' ).hide();
-			var mixertype = device.mixertype;
-			$( '#mixertype' ).val( mixertype );
-			$( '#divbitperfect, #divmixer' ).removeClass( 'hide' );
+		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+		device.mixerdevices.forEach( function( mixer ) {
+			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+		} );
+		$( '#hwmixer' )
+			.html( htmlhwmixer )
+			.val( device.hwmixer )
+			.prop( 'disabled', device.mixers < 2 );
+		var mixertype = device.mixertype;
+		if ( mixertype ) {
+			var htmlmixertype = '<option value="none">None - 100% (0dB)</option>';
+			if ( device.hwmixer ) htmlmixertype += '<option value="hardware">Mixer device</option>';
+			htmlmixertype += '<option value="software">MPD software</option>';
 		} else {
-			$( '#divbitperfect, #divmixer' ).addClass( 'hide' );
+			var htmlmixertype = '<option>( not available )</option>';
 		}
+		$( '#mixertype' )
+			.html( htmlmixertype )
+			.val( mixertype )
+			.prop( 'disabled', !mixertype );
 		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', !device.hwmixer );
 		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', device.dop == 1 );

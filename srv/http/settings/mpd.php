@@ -9,7 +9,7 @@
 	<select id="audiooutput" data-style="btn-default btn-lg"></select>
 </div>
 <pre id="codeaplay" class="hide"></pre>
-<div id="divmixer">
+<div>
 <div id="divhwmixer">
 	<div data-status="amixer" class="col-l double status">
 		<a>Mixer Device
@@ -26,11 +26,7 @@
 <pre id="codeamixer" class="hide"></pre>
 <div class="col-l">Volume Control</div>
 <div class="col-r">
-	<select id="mixertype" data-style="btn-default btn-lg">
-		<option value="none">None - 100% (0dB)</option>
-		<option value="hardware">Mixer device</option>
-		<option value="software">MPD software</option>
-	</select>
+	<select id="mixertype" data-style="btn-default btn-lg"></select>
 	<span class="help-block hide">
 			Volume control for each device.
 		<p>
@@ -43,7 +39,7 @@
 </div>
 </div>
 
-<div id="divbitperfect">
+<div>
 <heading>Bit-Perfect<?=$help?></heading>
 <div class="col-l">No Volume</div>
 <div class="col-r">

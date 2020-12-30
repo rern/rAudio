@@ -2,11 +2,13 @@
 
 dirsystem=/srv/http/data/system
 
-if ! aplay -l 2> /dev/null | grep -q '^card'; then
+if aplay -l 2> /dev/null | grep -q '^card'; then
 	devices='{
   "aplayname"    : ""
-, "card"         : -1
-, "mixerdevices" : []
+, "hwmixer"      : false
+, "mixers"       : 0
+, "mixerdevices" : [ "( not available )" ]
+, "mixertype"    : false
 , "name"         : "( not available )"
 }'
 	i=0
