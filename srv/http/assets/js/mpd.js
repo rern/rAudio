@@ -169,8 +169,7 @@ $( '#setting-hwmixer' ).click( function() {
 					return
 				}
 				
-				$( '#infoRange input' ).on( 'click input', function() { // drag
-					var current = $( '#infoRange .value' ).text();
+				$( '#infoRange input' ).on( 'click input', function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
 					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
