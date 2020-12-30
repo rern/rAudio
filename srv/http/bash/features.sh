@@ -11,6 +11,10 @@ readarray -t args <<< "$1"
 pushRefresh() {
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "features" }'
 }
+featureDisable() {
+	systemctl disable --now $1
+	pushRefresh
+}
 featureSet() {
 	systemctl restart $1
 	systemctl enable $1
@@ -54,11 +58,10 @@ hostapdset )
 	featureSet hostapd
 	;;
 localbrowserdisable )
-	systemctl disable --now localbrowser
+	featureDisable localbrowser
 	systemctl enable --now getty@tty1
 	sed -i 's/tty3/tty1/' /boot/cmdline.txt
 	$dirbash/ply-image /srv/http/assets/img/splash.png
-	pushRefresh
 	;;
 localbrowserset )
 	rotate=${args[1]}
@@ -104,7 +107,6 @@ localbrowserset )
 		systemctl restart localbrowser
 		systemctl enable localbrowser
 	fi
-	systemctl disable --now getty@tty1
 	sed -i 's/tty1/tty3/' /boot/cmdline.txt
 	echo -n "\
 rotate=$rotate
@@ -112,7 +114,7 @@ screenoff=$screenoff
 cursor=$cursor
 zoom=$zoom
 " > /etc/localbrowser.conf
-	pushRefresh
+	featureDisable getty@tty1
 	;;
 logindisable )
 	rm -f $dirsystem/login*
@@ -127,8 +129,7 @@ loginset )
 	pushRefresh
 	;;
 mpdscribbledisable )
-	systemctl disable --now mpdscribble@mpd
-	pushRefresh
+	featureDisable mpdscribble@mpd
 	;;
 mpdscribbleset )
 	user=${args[1]}
@@ -145,8 +146,7 @@ mpdscribbleset )
 	pushRefresh
 	;;
 smbdisable )
-	systemctl disable --now smb
-	pushRefresh
+	featureDisable smb
 	;;
 smbset )
 	smbconf=/etc/samba/smb.conf
@@ -156,8 +156,7 @@ smbset )
 	featureSet smb
 	;;
 snapclientdisable )
-	systemctl disable --now snapclient
-	pushRefresh
+	featureDisable snapclient
 	;;
 snapclientset )
 	latency=${args[1]}

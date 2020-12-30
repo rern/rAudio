@@ -680,12 +680,23 @@ $( '#volume' ).roundSlider( {
 $( '#volmute' ).click( function() {
 	bash( [ 'volume', G.status.volume, 0 ] );
 } );
-$( '#volup, #voldn' ).click( function() {
+$( '#volup, #voldn' ).tap( function() {
+	bash( [ 'volumeupdown', this.id === 'voldn' ? '-1' : '+1' ] );
+} ).taphold( function() {
 	var voldn = this.id === 'voldn';
-	var vol = G.status.volume;
-	if ( ( vol === 0 && voldn ) || ( vol === 100 && voldn ) ) return
+	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && volup ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '-1' : '+1' ] );
+	G.intVolume = setInterval( function() {
+		voldn ? G.status.volume-- : G.status.volume++;
+		if ( G.status.volume === 0 || G.status.volume === 100 ) return
+		
+		$volumeRS.setValue( G.status.volume );
+		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		bash( 'mpc volume '+ G.status.volume );
+	}, 100 );
+} ).on( 'mouseup touchend', function() {
+	clearInterval( G.intVolume );
+	bash( [ 'volumepushstream' ] );
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
