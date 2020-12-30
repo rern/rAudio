@@ -43,7 +43,7 @@
 </div>
 </div>
 
-<div class="nosound">
+<div id="divbitperfect">
 <heading>Bit-Perfect<?=$help?></heading>
 <div class="col-l">No Volume</div>
 <div class="col-r">
@@ -59,7 +59,7 @@
 	</span>
 </div>
 
-<div class="nosound">
+<div>
 	<div class="col-l dop">DSD over PCM</div>
 	<div class="col-r dop">
 		<input id="dop" type="checkbox">

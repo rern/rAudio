@@ -45,14 +45,10 @@ refreshData = function() {
 			if ( !device.hwmixer ) $( '#mixertype option:eq( 1 )' ).hide();
 			var mixertype = device.mixertype;
 			$( '#mixertype' ).val( mixertype );
-			var nosound = false;
+			$( '#divbitperfect, #divmixer' ).removeClass( 'hide' );
 		} else {
-			var nosound = true;
+			$( '#divbitperfect, #divmixer' ).addClass( 'hide' );
 		}
-		$( '.nosound input' ).prop( 'disabled', nosound );
-		$( '.nosound .switchlabel' ).toggleClass( 'disabled', nosound );
-		$( '#divmixer, .setting' ).toggleClass( 'hide', nosound );
-		
 		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
 		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
