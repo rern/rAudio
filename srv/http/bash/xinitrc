@@ -26,7 +26,6 @@ else
 fi
 matchbox-window-manager -use_cursor $cursor &
 
-zoom=$( cat /srv/http/data/system/zoom 2> /dev/null || echo 1 )
 chromium --app=http://localhost --kiosk --incognito --no-sandbox --force-device-scale-factor=$zoom
 #midori -e Fullscreen -a http://localhost
 #firefox -kiosk http://localhost
