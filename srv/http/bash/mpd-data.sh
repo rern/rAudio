@@ -2,7 +2,7 @@
 
 dirsystem=/srv/http/data/system
 
-if aplay -l 2> /dev/null | grep -q '^card'; then
+if ! aplay -l 2> /dev/null | grep -q '^card'; then
 	devices='{
   "aplayname"    : ""
 , "hwmixer"      : false
