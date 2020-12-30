@@ -1102,6 +1102,12 @@ function renderPlayback() {
 	}
 	
 	// play ////////////////////
+	if ( !G.status.elapsed ) {
+		$( '#time' ).roundSlider( 'setValue', 0 );
+		$( '#time-bar' ).css( 'width', 0 );
+		return
+	}
+	
 	if ( displaytime ) {
 		if ( G.status.player === 'mpd' && G.status.elapsed ) $( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
 		G.intElapsed = setInterval( function() {
