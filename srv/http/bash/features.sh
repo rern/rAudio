@@ -170,9 +170,9 @@ snapserver )
 		systemctl enable --now snapserver
 	else
 		systemctl disable --now snapserver
+		$dirbash/snapcast.sh serverstop
 	fi
 	$dirbash/mpd-conf.sh
-	$dirbash/snapcast.sh serverstop
 	pushRefresh
 	;;
 streaming )

@@ -25,8 +25,6 @@ restartMPD() {
 	fi
 }
 
-. /srv/http/bash/mpd-devices.sh
-
 if [[ $1 == bt ]]; then
 	lines=$( bluetoothctl paired-devices )
 	[[ -z $lines ]] && sleep 3 && lines=$( bluetoothctl paired-devices )
@@ -57,7 +55,9 @@ audioaplayname=$( cat $dirsystem/audio-aplayname )
 mpdfile=/etc/mpd.conf
 mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
 
-if [[ -n $Acard ]]; then
+. /srv/http/bash/mpd-devices.sh
+
+if [[ $i != -1 ]]; then
 	cardL=${#Acard[@]}
 	for (( i=0; i < cardL; i++ )); do
 		aplayname=${Aaplayname[i]}
@@ -102,13 +102,12 @@ $( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
 	done
 else
 ########
-	mkfifo -m 666 /tmp/nosounddevice &> /dev/null
 	mpdconf+='
 
 audio_output {
 	type           "fifo"
 	name           "No sound devie"
-	path           "/tmp/nosounddevice"
+	path           "/tmp/snapfifo"
 }'
 fi
 

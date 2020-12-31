@@ -130,7 +130,6 @@ refreshData = function() {
 		} ).prop( 'selected', true );
 		$( '#i2smodule' ).selectric( 'refresh' );
 		var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
-		$( '#onboardaudio' ).next().addBack().toggleClass( 'disabled', !i2senabled );
 		$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
 		$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
 		$( '#lcdchar' ).prop( 'checked', G.lcdchar );
@@ -269,26 +268,22 @@ $( '#i2smodulesw' ).click( function() {
 	}, 200 );
 } );
 $( '#i2smodule' ).change( function() {
-	var audioaplayname = $( this ).val();
-	var audiooutput = $( this ).find( ':selected' ).text();
-	if ( audioaplayname !== 'none' ) {
-		$( '#onboardaudio' ).prop( 'checked', 0 );
+	var aplayname = $( this ).val();
+	var output = $( this ).find( ':selected' ).text();
+	if ( aplayname !== 'none' ) {
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#onboardaudio' ).next().addBack().removeClass( 'disabled' );
 		rebootText( 1, 'Audio I&#178;S Module' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
-		audiooutput = 'onboard';
-		audioaplayname = 'onboard';
-		$( '#onboardaudio' ).prop( 'checked', 1 );
+		aplayname = 'onboard';
+		output = '';
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
-		$( '#onboardaudio' ).next().addBack().addClass( 'disabled' );
 		rebootText( 0, 'Audio I&#178;S Module' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', audioaplayname, audiooutput, G.reboot.join( '\n' ) ] );
+	bash( [ 'i2smodule', aplayname, output, G.reboot.join( '\n' ) ] );
 } );
 var infolcdchar = heredoc( function() { /*
 	<div class="infotextlabel">
@@ -410,20 +405,21 @@ $( '#setting-lcdchar' ).click( function() {
 				}
 				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', lcdcharconf === G.lcdcharconf );
 			} );
-			$( '.gpio input' ).slice( 0, 3 ).keyup( function() {
+			$( '.gpio input' ).keyup( function() {
+				var i = $( this ).index();
 				var $this = $( this );
 				var val = $this.val();
-				$this.val( val.replace( /[^0-9]/, '' ) );
+				if ( i < 3 ) {
+					$this.val( val.replace( /[^0-9]/, '' ) );
+					var count = true
+				} else {
+					$this.val( val.replace( /[^0-9,]/, '' ) );
+					var count = val.split( ',' ).length === 4;
+				}
 				lcdcharconf = $( '#cols input:checked' ).val();
 				lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
 				for ( i = 0; i < 4; i++ ) lcdcharconf += ' '+ $( '.gpio input' ).eq( i ).val();
-				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', !val || lcdcharconf === G.lcdcharconf );
-			} );
-			$( '.gpio input:eq( 3 )' ).keyup( function() {
-				var $this = $( this );
-				var val = $this.val();
-				$this.val( val.replace( /[^0-9,]/, '' ) );
-				$( '#infoOk' ).toggleClass( 'disabled', !val || val.split( ',' ).length !== 4 );
+				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', !val || lcdcharconf === G.lcdcharconf || !count );
 			} );
 		}
 		, cancel        : function() {
@@ -438,7 +434,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			if ( $( '#inf input:checked' ).val() === 'i2c' ) {
-				if ( lcdcharconf.split( ' ' ).length !== 4 ) lcdcharconf = '20 A00 0x27 PCF8574';
+				if ( !lcdcharconf || lcdcharconf.split( ' ' ).length !== 4 ) lcdcharconf = '20 A00 0x27 PCF8574';
 				if ( !G.lcdchar ) {
 					rebootText( 1, 'Character LCD' );
 					bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );

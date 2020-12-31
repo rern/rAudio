@@ -88,7 +88,7 @@ pladdPlay() {
 		touch $flag
 		mpc play $pos
 	fi
-	pushstreamStatus
+	pushstreamStatus lcdchar
 }
 pladdPosition() {
 	touch $flagpladd
@@ -110,10 +110,12 @@ pushstreamStatus() {
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	rm -f $flag
-	if [[ -e /srv/http/data/system/lcdchar ]]; then
+	if [[ $1 == lcdchar && -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
-		readarray -t data <<< "$( echo "$status" | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' | sed 's/^$/false/' )"
-		/srv/http/bash/lcdchar.py "${data[@]}" &
+		readarray -t data <<< $( echo $status \
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+									| sed 's/^$\|null/false/' )
+		$dirbash/lcdchar.py "${data[@]}" &
 	fi
 }
 pushstreamVolume() {
@@ -337,10 +339,14 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	volume=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
-				| grep -q 'mixer_type.*none' \
-				&& echo true || echo false )
+	if [[ -e $dirtmp/nosound ]]; then
+		volumenone=true
+	else
+		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+		volumenone=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
+					| grep -q 'mixer_type.*none' \
+					&& echo true || echo false )
+	fi
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
@@ -349,7 +355,7 @@ displayget )
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "snapclient" : '$( systemctl -q is-active snapclient && echo true || echo false )'
 , "update"     : '$( cat $diraddons/update 2> /dev/null || echo false )'
-, "volumenone" : '$volume'
+, "volumenone" : '$volumenone'
 }'
 echo "$data"
 	;;
@@ -430,7 +436,7 @@ mpcplayback )
 		sleep 0.6
 		touch $dirtmp/webradio
 	fi
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	# fix webradio fast stop - start
 	if [[ -n $webradio && $command == play && -z $( echo "$status" | jq -r .Title ) ]]; then
 		sleep 3
@@ -515,7 +521,7 @@ plcrop )
 	fi
 	touch $flagpladd
 	systemctl -q is-active libraryrandom && randomfile
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	pushstreamPlaylist
 	;;
 plfindadd )
@@ -578,7 +584,7 @@ plremove )
 	touch $flagpladd
 	[[ -n $pos ]] && mpc del $pos || mpc clear
 	pushstreamPlaylist
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	;;
 plrename )
 	touch $flagpladd
@@ -634,7 +640,8 @@ power )
 	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
 	;;
 pushstatus )
-	pushstreamStatus
+	lcdchar=${args[1]}
+	pushstreamStatus $lcdchar
 	;;
 randomfile )
 	randomfile

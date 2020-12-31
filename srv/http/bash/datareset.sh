@@ -112,7 +112,6 @@ sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 echo UTC > $dirsystem/timezone
-touch $dirsystem/wlan
 
 # mpd
 sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d

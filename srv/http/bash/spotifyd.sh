@@ -5,7 +5,7 @@ if [[ $1 == stop ]]; then
 	rm -f /srv/http/data/shm/spotify-start
 	mv /srv/http/data/shm/player-{*,mpd}
 	/srv/http/bash/cmd.sh volumereset
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
+	/srv/http/bash/cmd.sh pushstatus$'\n'lcdchar
 	exit
 fi
 

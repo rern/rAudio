@@ -1,7 +1,7 @@
 <div id="divinterface">
 <?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
 	<div>
-	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<i class="fa fa-code"></i><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
+	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
 	<pre id="codebt" class="hide"></pre>
 	<ul id="listbt" class="entries"></ul>
 	<span class="help-block hide">
@@ -18,18 +18,18 @@
 	</div>
 <?php }
 	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
-	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><i class="fa fa-code"></i></heading>
+	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><?=$code?></heading>
 	<pre id="codelan" class="hide"></pre>
 	<ul id="listlan" class="entries"></ul>
 <?php }
 	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
-	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<i class="fa fa-code"></i><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
+	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$code?><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<pre id="codewlan" class="hide"></pre>
 	<ul id="listwl" class="entries"></ul>
 <?php } ?>
 	
 	<div>
-	<heading class="status" data-status="avahi">Web User Interface<i class="fa fa-code"></i><?=$help?></heading>
+	<heading class="status" data-status="avahi">Web User Interface<?=$code?><?=$help?></heading>
 	<pre id="codeavahi" class="hide"></pre>
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>

@@ -24,7 +24,8 @@ else:
     data = config.get( section, 'pins_data' ).split( ',' )
     data = map( int, data )
     pins_data = list( data )
-    rows = cols == 16 and 2 or 4
+    
+rows = cols == 16 and 2 or 4
     
 if address: # i2c
     from RPLCD.i2c import CharLCD
@@ -114,14 +115,15 @@ irr = '\x03\x04'
 idots = ' \x05  \x05  \x05'
 rn = '\r\n'
 
+spaces = '     '
+splash = ''
+if rows == 4:
+    spaces += '  '
+    splash = rn
+splash += spaces + irr + rn + spaces +'rAudio'
+
 if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
     if argv1 == 'rr':
-        spaces = '     '
-        splash = ''
-        if rows == 4:
-            spaces += '  '
-            splash = rn
-        splash += spaces + irr + rn + spaces +'rAudio'
         lcd.write_string( splash )
     else:
         lcd.auto_linebreaks = True
@@ -145,13 +147,19 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'elapsed', 'total', 'state' ] # assign variables
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed' ] # assign variables
 for i in range( 1, 7 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
+if artist == 'false' and title == 'false' and album == 'false':
+    lcd.write_string( splash )
+    quit()
+
+if artist == 'false': artist = idots
 if title == 'false': title = rows == 2 and artist or idots
-    
+if album == 'false': album = idots
+
 if total != 'false':
     total = round( float( total ) )
     totalhhmmss = second2hhmmss( total )
@@ -175,7 +183,6 @@ progress = istate + progress
 progl = len( progress )
 if progl <= cols - 3: progress += ' ' * ( cols - progl - 2 ) + irr
 
-if artist == 'false': artist = idots
 lines = rows == 2 and title or artist + rn + title + rn + album
 # remove accents
 if charmap == 'A00':

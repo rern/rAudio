@@ -844,6 +844,7 @@ $( '#volume-band' ).on( 'click', function( e ) {
 	
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		$( '#volume-text' ).text( G.status.volume );
+		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 		volumebarTimeout();
@@ -877,7 +878,6 @@ $( '#volume-band' ).on( 'click', function( e ) {
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
 		G.drag = 0;
-		bash( [ 'volumepushstream' ] );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {

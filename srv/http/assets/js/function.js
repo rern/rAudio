@@ -962,26 +962,16 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
 	// song and album before update for song/album change detection
 	var previousartist = $( '#artist' ).text();
 	var prevtitle = $( '#song' ).text();
 	var previousalbum = $( '#album' ).text();
 	// volume
-	if ( !G.display.volumenone ) {
-		if ( G.display.volume ) {
-			if ( G.status.volume !== -1 ) {
-				$volumeRS.setValue( G.status.volume );
-				$volumehandle.rsRotate( - $volumeRS._handle1.angle );
-				G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
-				$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
-			} else  {
-				$volumetooltip.text( 'x' );
-				$volumehandle.addClass( 'bgr60' );
-				$( '#volume-knob' ).addClass( 'disabled' );
-				$( '#volume-bar' ).css( 'width', 0 );
-			}
-		}
+	if ( !G.display.volumenone && G.display.volume ) {
+		$volumeRS.setValue( G.status.volume );
+		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
+		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	}
 	// empty queue
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) {
@@ -1008,6 +998,7 @@ function renderPlayback() {
 	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
+	var displaytime = G.display.time && window.innerWidth > 614;
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
 		G.coversave = 0;

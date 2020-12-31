@@ -3,7 +3,7 @@ $uid = exec( "$sudo/id -u mpd" );
 $gid = exec( "$sudo/id -g mpd" );
 ?>
 <div>
-<heading data-status="mount" class="noline status">Devices<i class="fa fa-code"></i><i id="addnas" class="fa fa-plus-circle"></i>&emsp;<i id="refreshing" class="fa fa-networks blink hide"></i><?=$help?></heading>
+<heading data-status="mount" class="noline status">Devices<?=$code?><i id="addnas" class="fa fa-plus-circle"></i>&emsp;<i id="refreshing" class="fa fa-networks blink hide"></i><?=$help?></heading>
 <pre id="codemount" class="hide"></pre>
 <ul id="list" class="entries" data-uid="<?=$uid?>" data-gid="<?=$gid?>"></ul>
 <p class="brhalf"></p>
@@ -36,7 +36,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div> */ ?>
 
 <div>
-<heading data-status="fstab" class="status">File System Table<i class="fa fa-code"></i></heading>
+<heading data-status="fstab" class="status">File System Table<?=$code?></heading>
 <pre id="codefstab" class="hide"></pre>
 </div>
 

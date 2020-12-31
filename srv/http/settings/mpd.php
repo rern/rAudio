@@ -1,18 +1,19 @@
-<div>
-<heading data-status="asound" class="status">Audio Output<i class="fa fa-code"></i><?=$help?></heading>
+<div class="soundcard">
+<heading data-status="asound" class="status">Audio Output<?=$code?><?=$help?></heading>
 <pre id="codeasound" class="hide"></pre>
-<div data-status="aplay" class="col-l double status">
+<div data-status="aplay" <?=$classstatus?>>
 	<a>Device
-	<br><gr><i class="fa fa-code"></i></gr></a>
+	<br><gr><?=$code?></gr></a>
 </div>
 <div class="col-r">
 	<select id="audiooutput" data-style="btn-default btn-lg"></select>
 </div>
 <pre id="codeaplay" class="hide"></pre>
+<div>
 <div id="divhwmixer">
-	<div data-status="amixer" class="col-l double status">
+	<div data-status="amixer" <?=$classstatus?>>
 		<a>Mixer Device
-		<br><gr><i class="fa fa-code"></i></gr></a>
+		<br><gr><?=$code?></gr></a>
 	</div>
 	<div class="col-r">
 		<select id="hwmixer" data-style="btn-default btn-lg"></select>
@@ -25,11 +26,7 @@
 <pre id="codeamixer" class="hide"></pre>
 <div class="col-l">Volume Control</div>
 <div class="col-r">
-	<select id="mixertype" data-style="btn-default btn-lg">
-		<option value="none">None - 100% (0dB)</option>
-		<option value="hardware">Mixer device</option>
-		<option value="software">MPD software</option>
-	</select>
+	<select id="mixertype" data-style="btn-default btn-lg"></select>
 	<span class="help-block hide">
 			Volume control for each device.
 		<p>
@@ -40,8 +37,9 @@
 	</span>
 </div>
 </div>
+</div>
 
-<div>
+<div class="soundcard">
 <heading>Bit-Perfect<?=$help?></heading>
 <div class="col-l">No Volume</div>
 <div class="col-r">
@@ -57,7 +55,7 @@
 	</span>
 </div>
 
-<div id="divdop">
+<div>
 	<div class="col-l dop">DSD over PCM</div>
 	<div class="col-r dop">
 		<input id="dop" type="checkbox">
@@ -72,14 +70,14 @@
 
 <div>
 <heading>Volume<?=$help?></heading>
-<div data-status="crossfade" class="col-l double status">
+<div data-status="crossfade" <?=$classstatus?>>
 	<a>Crossfade
-	<br><gr>mpc<i class="fa fa-code"></i></gr></a>
+	<br><gr>mpc<?=$code?></gr></a>
 </div>
 <div class="col-r">
 	<input id="crossfade" class="enable" type="checkbox">
 	<div class="switchlabel" for="crossfade"></div>
-	<i id="setting-crossfade" class="setting fa fa-gear"></i>
+	<i id="setting-crossfade" <?=$classsetting?>></i>
 	<span class="help-block hide">
 			<code>mpc crossfade N</code>
 		<br>Fade-out to fade-in between songs.
@@ -105,7 +103,7 @@
 <div class="col-r">
 	<input id="replaygain" class="enable" type="checkbox">
 	<div class="switchlabel" for="replaygain"></div>
-	<i id="setting-replaygain" class="setting fa fa-gear"></i>
+	<i id="setting-replaygain" <?=$classsetting?>></i>
 	<span class="help-block hide">
 			<code>replaygain "N"</code>
 		<br>Set gain control to setting in replaygain tag.
@@ -149,7 +147,7 @@
 <div class="col-r">
 	<input id="buffer" class="enable" type="checkbox">
 	<div class="switchlabel" for="buffer"></div>
-	<i id="setting-buffer" class="setting fa fa-gear"></i>
+	<i id="setting-buffer" <?=$classsetting?>></i>
 	<span class="help-block hide">
 			<code>audio_buffer_size "kB"</code>
 		<br>Default buffer size: 4096 kB (24 seconds of CD-quality audio)
@@ -163,7 +161,7 @@
 <div class="col-r">
 	<input id="bufferoutput" class="enable" type="checkbox">
 	<div class="switchlabel" for="bufferoutput"></div>
-	<i id="setting-bufferoutput" class="setting fa fa-gear"></i>
+	<i id="setting-bufferoutput" <?=$classsetting?>></i>
 	<span class="help-block hide">
 		<code>max_output_buffer_size "kB"</code>
 		<br>Default buffer size: 8192 kB
@@ -177,7 +175,7 @@
 <div class="col-r">
 	<input id="soxr" class="enable" type="checkbox">
 	<div class="switchlabel" for="soxr"></div>
-	<i id="setting-soxr" class="setting fa fa-gear"></i>
+	<i id="setting-soxr" <?=$classsetting?>></i>
 	<span class="help-block hide">
 			<code>quality "custom"</code>
 		<br>Default quality: very high
@@ -202,18 +200,18 @@
 <div class="col-r">
 	<input id="custom" class="enable" type="checkbox">
 	<div class="switchlabel" for="custom"></div>
-	<i id="setting-custom" class="setting fa fa-gear"></i>
+	<i id="setting-custom" <?=$classsetting?>></i>
 	<span class="help-block hide">Insert settings into <code>/etc/mpd.conf</code>.</span>
 </div>
 
 </div>
 
 <div>
-<heading data-status="mpdconf" class="status">Configuration<i class="fa fa-code"></i></heading>
+<heading data-status="mpdconf" class="status">Configuration<?=$code?></heading>
 <pre id="codempdconf" class="hide"></pre>
 </div>
 <div>
-<heading data-status="mpd" class="status">Status<i class="fa fa-code"></i><i id="mpdrestart" class="fa fa-reboot"></i><?=$help?></heading>
+<heading data-status="mpd" class="status">Status<?=$code?><i id="mpdrestart" class="fa fa-reboot"></i><?=$help?></heading>
 <span class="help-block hide"><i class="fa fa-reboot"></i>Restart MPD</span>
 <pre id="codempd" class="hide"></pre>
 </div>

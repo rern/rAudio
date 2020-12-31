@@ -254,7 +254,7 @@ hr {
 	display: block;
 }
 #infoContent textarea {
-	min-height: 100px;
+	height: 100px;
 	margin: 0 !important;
 	padding: 5px 10px;
 	border-radius: 4px;
