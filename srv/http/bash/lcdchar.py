@@ -24,7 +24,8 @@ else:
     data = config.get( section, 'pins_data' ).split( ',' )
     data = map( int, data )
     pins_data = list( data )
-    rows = cols == 16 and 2 or 4
+    
+rows = cols == 16 and 2 or 4
     
 if address: # i2c
     from RPLCD.i2c import CharLCD
