@@ -94,6 +94,7 @@ for line in "${lines[@]}"; do
 	Ahw+=( "$hw" )
 	Ahwmixer+=( "$hwmixer" )
 	Amixers+=( "$mixers" )
+	Amixermanual+=( "$mixermanual" )
 	Amixertype+=( "$mixertype" )
 	Aname+=( "$name" )
 done
