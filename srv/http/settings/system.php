@@ -16,7 +16,7 @@ foreach( $timezonelist as $key => $zone ) {
 $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
-<heading data-status="journalctl" class="status">System<i class="fa fa-code"></i></heading>
+<heading data-status="journalctl" class="status">System<?=$code?></heading>
 <pre id="codejournalctl" class="hide"></pre>
 <div id="systemlabel" class="col-l text gr">
 		Version
@@ -75,14 +75,14 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		$hwcode = substr( $code, -3, 2 );
 		if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { # rpi with wireless
 			if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
-<div data-status="bluetoothctl" class="col-l double status">
+<div data-status="bluetoothctl" <?=$classstatus?>>
 	<a>Bluetooth
-	<br><gr>onboard <i class="fa fa-code"></i></gr></a><i class="fa fa-bluetooth"></i>
+	<br><gr>onboard <?=$code?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" class="enable" type="checkbox">
 	<div class="switchlabel" for="bluetooth"></div>
-	<i id="setting-bluetooth" class="setting fa fa-gear"></i>
+	<i id="setting-bluetooth" <?=$classsetting?>></i>
 	<span class="help-block hide">
 			Should be disabled if not used.
 		<br>(Try reboot again if Bluetooth not working.)
@@ -91,9 +91,9 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <pre id="codebluetoothctl" class="hide"></pre>
 		<?php $bluetooth = ', Bluetooth';
 			  } ?>
-<div data-status="ifconfig" class="col-l double status">
+<div data-status="ifconfig" <?=$classstatus?>>
 	<a>Wi-Fi
-	<br><gr>onboard <i class="fa fa-code"></i></gr></a><i class="fa fa-wifi"></i>
+	<br><gr>onboard <?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="onboardwlan" type="checkbox">
@@ -106,9 +106,9 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading data-status="configtxt" class="status">GPIO Devices<i class="fa fa-code"></i><?=$help?></heading>
+<heading data-status="configtxt" class="status">GPIO Devices<?=$code?><?=$help?></heading>
 <pre id="codeconfigtxt" class="hide"></pre>
-<div class="col-l double status">
+<div <?=$classstatus?>>
 	<a>Audio
 	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
 </div>
@@ -122,14 +122,14 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</div>
 	<span class="help-block hide">I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
-<div class="col-l double status">
+<div <?=$classstatus?>>
 	<a>LCD - Character
 	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" class="enable" type="checkbox">
 	<div class="switchlabel" for="lcdchar"></div>
-	<i id="setting-lcdchar" class="setting fa fa-gear"></i>
+	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span class="help-block hide">
 			<a href="https://github.com/dbrgn/RPLCD">RPLCD</a> - Python library for Hitachi HD44780 controller.
 		<p>
@@ -139,27 +139,27 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
 	</span>
 </div>
-<div class="col-l double status">
+<div <?=$classstatus?>>
 	<a>LCD - TFT
 	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" class="enablenoset" type="checkbox">
 	<div class="switchlabel" for="lcd"></div>
-	<i id="setting-lcd" class="setting fa fa-gear"></i>
+	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span class="help-block hide">
 		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
-<div class="col-l double status">
+<div <?=$classstatus?>>
 	<a>Relays
 	<br><gr>RPI.GPIO</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
 	<input id="relays" class="enablenoset" type="checkbox">
 	<div class="switchlabel" for="relays"></div>
-	<i id="setting-relays" class="setting fa fa-gear"></i>
+	<i id="setting-relays" <?=$classsetting?>></i>
 	<span class="help-block hide">
 		<a href="https://sourceforge.net/projects/raspberry-gpio-python/">RPi.GPIO</a> - Python module to control GPIO.
 		<br><a href="https://github.com/rern/R_GPIO">+R - GPIO</a> - Control GPIO-connected relay module for power on / off equipments.
@@ -194,12 +194,12 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div data-status="soundprofile" class="col-l icon double status">
 		<a>Sound Profile
-	<br><gr>kernel <i class="fa fa-code"></i></gr></a><i class="fa fa-soundprofile"></i>
+	<br><gr>kernel <?=$code?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" class="enable" type="checkbox">
 	<div class="switchlabel" for="soundprofile"></div>
-	<i id="setting-soundprofile" class="setting fa fa-gear"></i>
+	<i id="setting-soundprofile" <?=$classsetting?>></i>
 	<span class="help-block hide">Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
 </div>
 <pre id="codesoundprofile" class="hide"></pre>
