@@ -44,7 +44,7 @@ mpc idleloop | while read changed; do
 						if [[ -e /srv/http/data/system/lcdchar ]]; then
 							killall lcdchar.py &> /dev/null
 							readarray -t data <<< "$( echo "$status" | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
-							/srv/http/bash/lcdchar.py "${data[@]}" &
+							/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
 						fi
 					else
 						sed -i '/^$/d' $snapclientfile # remove blank lines
