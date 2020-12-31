@@ -405,20 +405,21 @@ $( '#setting-lcdchar' ).click( function() {
 				}
 				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', lcdcharconf === G.lcdcharconf );
 			} );
-			$( '.gpio input' ).slice( 0, 3 ).keyup( function() {
+			$( '.gpio input' ).keyup( function() {
+				var i = $( this ).index();
 				var $this = $( this );
 				var val = $this.val();
-				$this.val( val.replace( /[^0-9]/, '' ) );
+				if ( i < 3 ) {
+					$this.val( val.replace( /[^0-9]/, '' ) );
+					var count = true
+				} else {
+					$this.val( val.replace( /[^0-9,]/, '' ) );
+					var count = val.split( ',' ).length === 4;
+				}
 				lcdcharconf = $( '#cols input:checked' ).val();
 				lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
 				for ( i = 0; i < 4; i++ ) lcdcharconf += ' '+ $( '.gpio input' ).eq( i ).val();
-				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', !val || lcdcharconf === G.lcdcharconf );
-			} );
-			$( '.gpio input:eq( 3 )' ).keyup( function() {
-				var $this = $( this );
-				var val = $this.val();
-				$this.val( val.replace( /[^0-9,]/, '' ) );
-				$( '#infoOk' ).toggleClass( 'disabled', !val || val.split( ',' ).length !== 4 );
+				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', !val || lcdcharconf === G.lcdcharconf || !count );
 			} );
 		}
 		, cancel        : function() {

@@ -163,6 +163,8 @@ $( '#infoOverlay' ).keydown( function( e ) {
 				$next.addClass( 'active' );
 			}
 		} else if ( [ 'ArrowLeft', 'ArrowRight' ].indexOf( key ) !== -1 ) {
+			if ( $( '.infoinput:focus' ).length ) return
+			
 			var $btn = $( '.infobtn:not( .hide )' );
 			if ( $btn.length === 1 ) return
 			
@@ -182,6 +184,9 @@ $( '#infoOverlay' ).keydown( function( e ) {
 			}
 		}
 	}
+} );
+$( '#infoContent' ).click( function() {
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
 $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 	var $this = $( this );
