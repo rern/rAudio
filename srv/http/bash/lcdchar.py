@@ -145,7 +145,7 @@ def second2hhmmss( sec ):
     sst = str( ss )
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
-    
+
 field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed' ] # assign variables
 for i in range( 1, 7 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
@@ -155,9 +155,6 @@ if artist == 'false': artist = idots
 if title == 'false': title = rows == 2 and artist or idots
 if album == 'false': album = idots
 
-elapsed = elapsed != 'false' and round( float( elapsed ) )
-elapsedhhmmss = elapsed and second2hhmmss( elapsed )
-
 if total != 'false':
     total = round( float( total ) )
     totalhhmmss = second2hhmmss( total )
@@ -165,6 +162,9 @@ else:
     total = ''
     totalhhmmss = ''
     
+elapsed = elapsed != 'false' and round( float( elapsed ) )
+elapsedhhmmss = elapsed and second2hhmmss( elapsed )
+
 if state == 'stop':
     progress = totalhhmmss
 else:

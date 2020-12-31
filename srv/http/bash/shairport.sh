@@ -16,4 +16,4 @@ else
 	sleep 2
 fi
 
-$dirbash/cmd.sh pushstatus$'\n'lcdchar
+/srv/http/bash/cmd.sh pushstatus$'\n'lcdchar

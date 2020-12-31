@@ -10,6 +10,8 @@ pushstream() {
 	curl -s -X POST http://$ip/pub?id=$1 -d "$2"
 }
 
+dirbash=/srv/http/bash
+dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 flag=$dirtmp/flag
 flagpl=$dirtmp/flagpl
@@ -28,32 +30,24 @@ mpc idleloop | while read changed; do
 				if [[ -z $current || $current != $currentprev ]]; then
 					killall status-coverartonline.sh &> /dev/null # kill if still running
 					if [[ ! -e $dirtmp/player-snapclient ]]; then
-						status=$( /srv/http/bash/status.sh )
-						pushstream mpdplayer "$status"
-						if [[ -e /srv/http/data/system/librandom ]]; then
+						$dirbash/cmd.sh pushstatus$'\n'lcdchar
+						if [[ -e $dirsystem/librandom ]]; then
 							counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
 							pos=${counts/\/*}
 							total=${counts/*\/}
 							left=$(( total - pos ))
 							if (( $left < 2 )); then
-								/srv/http/bash/cmd.sh randomfile
-								(( $left == 0 )) && /srv/http/bash/cmd.sh randomfile
+								$dirbash/cmd.sh randomfile
+								(( $left == 0 )) && $dirbash/cmd.sh randomfile
 								touch $flagpl
 							fi
-						fi
-						if [[ -e /srv/http/data/system/lcdchar ]]; then
-							killall lcdchar.py &> /dev/null
-							readarray -t data <<< $( echo $status \
-														| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
-														| sed 's/^$/false/' )
-							/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
 						fi
 					else
 						sed -i '/^$/d' $snapclientfile # remove blank lines
 						if [[ -s $snapclientfile ]]; then
 							mapfile -t clientip < $snapclientfile
 							for ip in "${clientip[@]}"; do
-								status=$( /srv/http/bash/status.sh )
+								status=$( $dirbash/status.sh )
 								pushstream mpdplayer "$status" $ip
 							done
 						else
@@ -78,8 +72,8 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		update )
-			if [[ -e /srv/http/data/system/updating ]] && ! mpc | grep -q '^Updating'; then
-				/srv/http/bash/cmd-list.sh
+			if [[ -e $dirsystem/updating ]] && ! mpc | grep -q '^Updating'; then
+				$dirbash/cmd-list.sh
 			fi
 			;;
 	esac

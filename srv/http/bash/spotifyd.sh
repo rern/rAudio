@@ -1,14 +1,11 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirtmp=/srv/http/data/shm
-
 if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
-	rm -f $dirtmp/spotify-start
-	mv $dirtmp/player-{*,mpd}
-	$dirbash/cmd.sh volumereset
-	$dirbash/cmd.sh pushstatus$'\n'lcdchar
+	rm -f /srv/http/data/shm/spotify-start
+	mv /srv/http/data/shm/player-{*,mpd}
+	/srv/http/bash/cmd.sh volumereset
+	/srv/http/bash/cmd.sh pushstatus$'\n'lcdchar
 	exit
 fi
 
@@ -25,14 +22,14 @@ client_secret=6b7f533b66cb4a338716344de966dde1
 # $VOLUME
 
 timestamp=$(( $( date +%s%3N ) - 1000 ))
-file=$dirtmp/spotify
+file=/srv/http/data/shm/spotify
 if [[ ! -e $file-start ]]; then
 	mpc stop
-	mv $dirtmp/player-{*,spotify}
+	mv /srv/http/data/shm/player-{*,spotify}
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
 	(( $elapsed > 0 )) && echo pause > $file-state
-	$dirbash/cmd.sh volume0db
+	/srv/http/bash/cmd.sh volume0db
 fi
 
 if [[ $PLAYER_EVENT != stop ]]; then

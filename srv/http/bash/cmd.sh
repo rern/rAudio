@@ -110,12 +110,12 @@ pushstreamStatus() {
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	rm -f $flag
-	if [[ $1 == lcdchar && -e /srv/http/data/system/lcdchar ]]; then
+	if [[ $1 == lcdchar && -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
 									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
 									| sed 's/^$/false/' )
-		$dirbash/lcdchar.py "${data[@]}" &> /dev/null &
+		$dirbash/lcdchar.py "${data[@]}" &
 	fi
 }
 pushstreamVolume() {

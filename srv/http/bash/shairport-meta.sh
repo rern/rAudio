@@ -54,8 +54,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			data=$(( ( end - start + 22050 ) / 44100 ))
 			
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
-			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 ))
-			[[ -z $elapsed ]] && elapsed=0
+			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
 			curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))

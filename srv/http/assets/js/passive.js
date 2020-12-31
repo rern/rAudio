@@ -106,7 +106,7 @@ function psAirplay( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		bash( [ 'pushstatus', 'lcdchar' ] );
-	}, 1000 );
+	}, 2000 );
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
