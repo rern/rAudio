@@ -14,4 +14,6 @@ installstart "$1"
 
 getinstallzip
 
+systemctl restart mpd
+
 installfinish
