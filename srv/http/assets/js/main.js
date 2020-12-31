@@ -878,7 +878,6 @@ $( '#volume-band' ).on( 'click', function( e ) {
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
 		G.drag = 0;
-		bash( [ 'volumepushstream' ] );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
