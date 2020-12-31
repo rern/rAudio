@@ -5,7 +5,12 @@ if [[ $1 == stop ]]; then
 	rm -f /srv/http/data/shm/spotify-start
 	mv /srv/http/data/shm/player-{*,mpd}
 	/srv/http/bash/cmd.sh volumereset
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
+	status=$( /srv/http/bash/status.sh )
+	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
+	if [[ -n $lcdchar ]]; then
+		readarray -t data <<< "$( echo $status | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
+	fi
 	exit
 fi
 
@@ -104,4 +109,7 @@ fi
 
 curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
 
-[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh statuslcdchar
+if [[ -e /srv/http/data/system/lcdchar ]]; then
+	readarray -t data <<< "$( echo "{$status}" | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+	/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
+fi

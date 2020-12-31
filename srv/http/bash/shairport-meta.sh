@@ -54,7 +54,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			data=$(( ( end - start + 22050 ) / 44100 ))
 			
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
-			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
+			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 ))
+			[[ -z $elapsed ]] && elapsed=0
 			curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
@@ -73,7 +74,18 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		
 		curl -s -X POST http://127.0.0.1/pub?id=airplay -d "{$payload}"
 		
-		[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh statuslcdchar
+		if [[ -e /srv/http/data/system/lcdchar ]]; then
+			flag=$dirtmp/lcdchar
+			if [[ ! -e $flag ]]; then
+				touch $flag
+				(
+					sleep 1
+					readarray -t data <<< "$( /srv/http/bash/status.sh | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+					/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
+					rm -f $flag
+				) &
+			fi
+		fi
 	fi
 	code= # reset code= and start over
 done

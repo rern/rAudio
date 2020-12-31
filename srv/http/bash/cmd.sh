@@ -656,18 +656,6 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
-statuslcdchar )
-	flag=$dirtmp/lcdchar
-	if [[ ! -e $flag ]]; then
-		touch $flag
-		(
-			sleep 1
-			readarray -t data <<< "$( /srv/http/bash/status.sh | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
-			/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
-			rm -f $flag
-		) &
-	fi
-	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}

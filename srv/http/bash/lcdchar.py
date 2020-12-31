@@ -149,10 +149,16 @@ def second2hhmmss( sec ):
 field = [ '', 'artist', 'title', 'album', 'elapsed', 'total', 'state' ] # assign variables
 for i in range( 1, 7 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
+    val = val.replace( 'null', 'false' )
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
+if artist == 'false': artist = idots
 if title == 'false': title = rows == 2 and artist or idots
-    
+if album == 'false': album = idots
+
+elapsed = elapsed != 'false' and round( float( elapsed ) )
+elapsedhhmmss = elapsed and second2hhmmss( elapsed )
+
 if total != 'false':
     total = round( float( total ) )
     totalhhmmss = second2hhmmss( total )
@@ -160,9 +166,6 @@ else:
     total = ''
     totalhhmmss = ''
     
-elapsed = elapsed != 'false' and round( float( elapsed ) )
-elapsedhhmmss = elapsed and second2hhmmss( elapsed )
-
 if state == 'stop':
     progress = totalhhmmss
 else:
@@ -176,7 +179,6 @@ progress = istate + progress
 progl = len( progress )
 if progl <= cols - 3: progress += ' ' * ( cols - progl - 2 ) + irr
 
-if artist == 'false': artist = idots
 lines = rows == 2 and title or artist + rn + title + rn + album
 # remove accents
 if charmap == 'A00':
