@@ -110,12 +110,12 @@ pushstreamStatus() {
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	rm -f $flag
-	if [[ -e /srv/http/data/system/lcdchar ]]; then
+	if [[ $1 == lcdchar && -e /srv/http/data/system/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
 									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
 									| sed 's/^$/false/' )
-		/srv/http/bash/lcdchar.py "${data[@]}" &
+		$dirbash/lcdchar.py "${data[@]}" &> /dev/null &
 	fi
 }
 pushstreamVolume() {
@@ -640,7 +640,8 @@ power )
 	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
 	;;
 pushstatus )
-	pushstreamStatus
+	lcdchar=${args[1]}
+	pushstreamStatus $lcdchar
 	;;
 randomfile )
 	randomfile
@@ -657,12 +658,6 @@ rotateSplash )
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
-	;;
-statuslcdchar )
-	readarray -t data <<< $( $dirbash/status.sh \
-								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
-								| sed 's/^$/false/' )
-	/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
 	;;
 thumbgif )
 	type=${args[1]}

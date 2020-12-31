@@ -1,18 +1,14 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
+dirtmp=/srv/http/data/shm
+
 if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
-	rm -f /srv/http/data/shm/spotify-start
-	mv /srv/http/data/shm/player-{*,mpd}
-	/srv/http/bash/cmd.sh volumereset
-	status=$( /srv/http/bash/status.sh )
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-	if [[ -n /srv/http/data/system/lcdchar ]]; then
-		readarray -t data <<< $( echo $status \
-									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
-									| sed 's/^$/false/' )
-		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
-	fi
+	rm -f $dirtmp/spotify-start
+	mv $dirtmp/player-{*,mpd}
+	$dirbash/cmd.sh volumereset
+	$dirbash/cmd.sh pushstatus$'\n'lcdchar
 	exit
 fi
 
@@ -29,14 +25,14 @@ client_secret=6b7f533b66cb4a338716344de966dde1
 # $VOLUME
 
 timestamp=$(( $( date +%s%3N ) - 1000 ))
-file=/srv/http/data/shm/spotify
+file=$dirtmp/spotify
 if [[ ! -e $file-start ]]; then
 	mpc stop
-	mv /srv/http/data/shm/player-{*,spotify}
+	mv $dirtmp/player-{*,spotify}
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
 	(( $elapsed > 0 )) && echo pause > $file-state
-	/srv/http/bash/cmd.sh volume0db
+	$dirbash/cmd.sh volume0db
 fi
 
 if [[ $PLAYER_EVENT != stop ]]; then

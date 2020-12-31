@@ -105,7 +105,7 @@ function psAirplay( data ) {
 	renderPlayback();
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		bash( [ 'statuslcdchar' ] );
+		bash( [ 'pushstatus', 'lcdchar' ] );
 	}, 1000 );
 }
 function psBookmark( data ) {
@@ -442,7 +442,7 @@ function psSpotify( data ) {
 		renderPlayback();
 		setButtonControl();
 		displayTopBottom();
-		bash( [ 'statuslcdchar' ] );
+		bash( [ 'pushstatus', 'lcdchar' ] );
 	} else {
 		$( '#tab-playback' ).click();
 	}
