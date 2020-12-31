@@ -436,7 +436,7 @@ mpcplayback )
 		sleep 0.6
 		touch $dirtmp/webradio
 	fi
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	# fix webradio fast stop - start
 	if [[ -n $webradio && $command == play && -z $( echo "$status" | jq -r .Title ) ]]; then
 		sleep 3
