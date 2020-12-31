@@ -115,14 +115,15 @@ irr = '\x03\x04'
 idots = ' \x05  \x05  \x05'
 rn = '\r\n'
 
+spaces = '     '
+splash = ''
+if rows == 4:
+    spaces += '  '
+    splash = rn
+splash += spaces + irr + rn + spaces +'rAudio'
+
 if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
     if argv1 == 'rr':
-        spaces = '     '
-        splash = ''
-        if rows == 4:
-            spaces += '  '
-            splash = rn
-        splash += spaces + irr + rn + spaces +'rAudio'
         lcd.write_string( splash )
     else:
         lcd.auto_linebreaks = True
@@ -151,6 +152,10 @@ for i in range( 1, 7 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
+if artist == 'false' and title == 'false' and album == 'false':
+    lcd.write_string( splash )
+    quit()
+
 if artist == 'false': artist = idots
 if title == 'false': title = rows == 2 and artist or idots
 if album == 'false': album = idots
