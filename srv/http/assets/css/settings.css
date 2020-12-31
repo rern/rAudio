@@ -492,7 +492,7 @@ input:checked + .switchlabel:after {
 	left: 0;
 	width: 40px;
 	height: 40px;
-	background-color: var( --cga );
+	background-color: var( --cg );
 	box-shadow: 0px 2px 5px #000000;
 	border-radius: 4px;
 	transition: 0.3s;
