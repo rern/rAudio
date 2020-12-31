@@ -5,8 +5,6 @@ foreach( $i2slist as $name => $sysname ) {
 	$selecti2s.= '<option value="'.$sysname.'">'.$name.'</option>';
 }
 $selecti2s.= '</select>';
-$timezone = exec( "timedatectl • awk '/zone:/ {print $3}'" );
-date_default_timezone_set( $timezone );
 $timezonelist = timezone_identifiers_list();
 $selecttimezone = '<select id="timezone">';
 foreach( $timezonelist as $key => $zone ) {
