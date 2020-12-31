@@ -88,7 +88,7 @@ pladdPlay() {
 		touch $flag
 		mpc play $pos
 	fi
-	pushstreamStatus
+	pushstreamStatus lcdchar
 }
 pladdPosition() {
 	touch $flagpladd
@@ -114,7 +114,7 @@ pushstreamStatus() {
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
 									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
-									| sed 's/^$/false/' )
+									| sed 's/^$\|null/false/' )
 		$dirbash/lcdchar.py "${data[@]}" &
 	fi
 }
@@ -521,7 +521,7 @@ plcrop )
 	fi
 	touch $flagpladd
 	systemctl -q is-active libraryrandom && randomfile
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	pushstreamPlaylist
 	;;
 plfindadd )
@@ -584,7 +584,7 @@ plremove )
 	touch $flagpladd
 	[[ -n $pos ]] && mpc del $pos || mpc clear
 	pushstreamPlaylist
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	;;
 plrename )
 	touch $flagpladd
