@@ -844,6 +844,7 @@ $( '#volume-band' ).on( 'click', function( e ) {
 	
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		$( '#volume-text' ).text( G.status.volume );
+		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 		volumebarTimeout();
