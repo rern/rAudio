@@ -130,7 +130,6 @@ refreshData = function() {
 		} ).prop( 'selected', true );
 		$( '#i2smodule' ).selectric( 'refresh' );
 		var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
-		$( '#onboardaudio' ).next().addBack().toggleClass( 'disabled', !i2senabled );
 		$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
 		$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
 		$( '#lcdchar' ).prop( 'checked', G.lcdchar );
@@ -269,26 +268,22 @@ $( '#i2smodulesw' ).click( function() {
 	}, 200 );
 } );
 $( '#i2smodule' ).change( function() {
-	var audioaplayname = $( this ).val();
-	var audiooutput = $( this ).find( ':selected' ).text();
-	if ( audioaplayname !== 'none' ) {
-		$( '#onboardaudio' ).prop( 'checked', 0 );
+	var aplayname = $( this ).val();
+	var output = $( this ).find( ':selected' ).text();
+	if ( aplayname !== 'none' ) {
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#onboardaudio' ).next().addBack().removeClass( 'disabled' );
 		rebootText( 1, 'Audio I&#178;S Module' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
-		audiooutput = 'onboard';
-		audioaplayname = 'onboard';
-		$( '#onboardaudio' ).prop( 'checked', 1 );
+		aplayname = 'onboard';
+		output = '';
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
-		$( '#onboardaudio' ).next().addBack().addClass( 'disabled' );
 		rebootText( 0, 'Audio I&#178;S Module' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', audioaplayname, audiooutput, G.reboot.join( '\n' ) ] );
+	bash( [ 'i2smodule', aplayname, output, G.reboot.join( '\n' ) ] );
 } );
 var infolcdchar = heredoc( function() { /*
 	<div class="infotextlabel">
