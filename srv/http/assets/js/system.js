@@ -434,7 +434,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			if ( $( '#inf input:checked' ).val() === 'i2c' ) {
-				if ( lcdcharconf.split( ' ' ).length !== 4 ) lcdcharconf = '20 A00 0x27 PCF8574';
+				if ( !lcdcharconf || lcdcharconf.split( ' ' ).length !== 4 ) lcdcharconf = '20 A00 0x27 PCF8574';
 				if ( !G.lcdchar ) {
 					rebootText( 1, 'Character LCD' );
 					bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );
