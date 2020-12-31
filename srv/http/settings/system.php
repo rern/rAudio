@@ -71,8 +71,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 
 <div>
 <heading>Wireless<?=$help?></heading>
-	<?php $code = exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" );
-		$hwcode = substr( $code, -3, 2 );
+	<?php $hwcode = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 		if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { # rpi with wireless
 			if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
 <div data-status="bluetoothctl" <?=$classstatus?>>
