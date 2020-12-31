@@ -2,19 +2,7 @@
 
 dirsystem=/srv/http/data/system
 
-if ! aplay -l 2> /dev/null | grep -q '^card'; then
-	devices='{
-  "aplayname"    : ""
-, "hwmixer"      : false
-, "mixers"       : 0
-, "mixerdevices" : [ "( not available )" ]
-, "mixertype"    : false
-, "name"         : "( not available )"
-}'
-	i=0
-else
-	. /srv/http/bash/mpd-devices.sh
-fi
+. /srv/http/bash/mpd-devices.sh
 
 data='
 	  "devices"         : ['$devices']

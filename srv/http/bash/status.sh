@@ -8,7 +8,7 @@ relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
-volume=$( /srv/http/bash/cmd.sh volumeget )
+volume=$( [[ -e $dirtmp/nosound ]] && echo false || /srv/http/bash/cmd.sh volumeget )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
 ########

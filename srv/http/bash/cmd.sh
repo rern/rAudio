@@ -337,10 +337,14 @@ coversave )
 	jpgThumbnail coverart "$source" "$coverfile"
 	;;
 displayget )
-	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	volume=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
-				| grep -q 'mixer_type.*none' \
-				&& echo true || echo false )
+	if [[ -e $dirtmp/nosound ]]; then
+		volumenone=true
+	else
+		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+		volumenone=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
+					| grep -q 'mixer_type.*none' \
+					&& echo true || echo false )
+	fi
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
@@ -349,7 +353,7 @@ displayget )
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "snapclient" : '$( systemctl -q is-active snapclient && echo true || echo false )'
 , "update"     : '$( cat $diraddons/update 2> /dev/null || echo false )'
-, "volumenone" : '$volume'
+, "volumenone" : '$volumenone'
 }'
 echo "$data"
 	;;

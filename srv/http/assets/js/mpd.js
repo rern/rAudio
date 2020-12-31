@@ -24,40 +24,39 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		device = G.devices[ G.asoundcard ];
-		var htmldevices = '';
-		$.each( G.devices, function() {
-			htmldevices += '<option data-card="'+ this.card +'">'+ this.name +'</option>';
-		} );
-		$( '#audiooutput' )
-			.html( htmldevices )
-			.prop( 'disabled', G.devices.length < 2 );
-		$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
-		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-		device.mixerdevices.forEach( function( mixer ) {
-			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-		} );
-		$( '#hwmixer' )
-			.html( htmlhwmixer )
-			.val( device.hwmixer )
-			.prop( 'disabled', device.mixers < 2 );
-		var mixertype = device.mixertype;
-		if ( mixertype ) {
+		if ( G.asoundcard == -1 ) {
+			$( '.soundcard' ).addClass( 'hide' );
+		} else {
+			$( '.soundcard' ).removeClass( 'hide' );
+			device = G.devices[ G.asoundcard ];
+			var htmldevices = '';
+			$.each( G.devices, function() {
+				htmldevices += '<option data-card="'+ this.card +'">'+ this.name +'</option>';
+			} );
+			$( '#audiooutput' )
+				.html( htmldevices )
+				.prop( 'disabled', G.devices.length < 2 );
+			$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
+			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			device.mixerdevices.forEach( function( mixer ) {
+				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+			} );
+			$( '#hwmixer' )
+				.html( htmlhwmixer )
+				.val( device.hwmixer )
+				.prop( 'disabled', device.mixers < 2 );
 			var htmlmixertype = '<option value="none">None - 100% (0dB)</option>';
 			if ( device.hwmixer ) htmlmixertype += '<option value="hardware">Mixer device</option>';
 			htmlmixertype += '<option value="software">MPD software</option>';
-		} else {
-			var htmlmixertype = '<option>( not available )</option>';
+			$( '#mixertype' )
+				.html( htmlmixertype )
+				.val( device.mixertype );
+			$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
+			$( '#setting-hwmixer' ).toggleClass( 'hide', !device.hwmixer );
+			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
+			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
+			$( '#dop' ).prop( 'checked', device.dop == 1 );
 		}
-		$( '#mixertype' )
-			.html( htmlmixertype )
-			.val( mixertype )
-			.prop( 'disabled', !mixertype );
-		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', !device.hwmixer );
-		$( '#novolume' ).prop( 'checked', mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
-		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', device.dop == 1 );
 		$( '#crossfade' ).prop( 'checked', G.crossfade );
 		$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
 		$( '#normalization' ).prop( 'checked', G.normalization );

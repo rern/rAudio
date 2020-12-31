@@ -52,7 +52,7 @@ if [[ $i2c == true ]]; then
 									| sort -u )
 fi
 
-if ! aplay -l 2> /dev/null | grep -q '^card'; then
+if [[ -e /srv/http/data/shm/nosound ]]; then
 	data+='
 	, "audioaplayname"  : ""
 	, "audiooutput"     : "( not available )"'
