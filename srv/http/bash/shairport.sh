@@ -2,7 +2,9 @@
 
 statusLcdChar() {
 	if [[ -n /srv/http/data/system/lcdchar ]]; then
-		readarray -t data <<< "$( echo $1 | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+		readarray -t data <<< $( echo $1 \
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+									| sed 's/^$/false/' )
 		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
 	fi
 }

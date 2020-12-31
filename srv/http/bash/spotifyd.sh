@@ -8,7 +8,9 @@ if [[ $1 == stop ]]; then
 	status=$( /srv/http/bash/status.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
 	if [[ -n /srv/http/data/system/lcdchar ]]; then
-		readarray -t data <<< "$( echo $status | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+		readarray -t data <<< $( echo $status \
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+									| sed 's/^$/false/' )
 		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
 	fi
 	exit

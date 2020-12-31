@@ -112,7 +112,9 @@ pushstreamStatus() {
 	rm -f $flag
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
-		readarray -t data <<< "$( echo "$status" | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' | sed 's/^$/false/' )"
+		readarray -t data <<< $( echo $status \
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+									| sed 's/^$/false/' )
 		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi
 }
@@ -657,7 +659,9 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 statuslcdchar )
-	readarray -t data <<< "$( /srv/http/bash/status.sh | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+	readarray -t data <<< $( $dirbash/status.sh \
+								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+								| sed 's/^$/false/' )
 	/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
 	;;
 thumbgif )
