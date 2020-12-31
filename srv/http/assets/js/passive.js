@@ -103,6 +103,10 @@ function psAirplay( data ) {
 		G.status[ key ] = value;
 	} );
 	renderPlayback();
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		bash( [ 'statuslcdchar' ] );
+	}, 1000 );
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -438,6 +442,7 @@ function psSpotify( data ) {
 		renderPlayback();
 		setButtonControl();
 		displayTopBottom();
+		bash( [ 'statuslcdchar' ] );
 	} else {
 		$( '#tab-playback' ).click();
 	}

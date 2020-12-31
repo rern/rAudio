@@ -73,19 +73,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		[[ ' start Time volume ' =~ " $code " ]] && payload='"'$code'":'$data || payload='"'$code'":"'${data//\"/\\\"}'"'
 		
 		curl -s -X POST http://127.0.0.1/pub?id=airplay -d "{$payload}"
-		
-		if [[ -e /srv/http/data/system/lcdchar ]]; then
-			flag=$dirtmp/lcdchar
-			if [[ ! -e $flag ]]; then
-				touch $flag
-				(
-					sleep 1
-					readarray -t data <<< "$( /srv/http/bash/status.sh | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
-					/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
-					rm -f $flag
-				) &
-			fi
-		fi
 	fi
 	code= # reset code= and start over
 done

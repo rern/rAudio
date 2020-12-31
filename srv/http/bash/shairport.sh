@@ -1,18 +1,21 @@
 #!/bin/bash
 
-playerfile=/srv/http/data/shm/player
+statusLcdChar() {
+	if [[ -n /srv/http/data/system/lcdchar ]]; then
+		readarray -t data <<< "$( echo $1 | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
+	fi
+}
 
-[[ -e /srv/http/data/system/lcdchar ]] && lcdchar=1
+playerfile=/srv/http/data/shm/player
 
 if (( $# > 0 )); then # stop
 	mv $playerfile-{*,mpd}
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
 	status=$( /srv/http/bash/status.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-	if [[ -n $lcdchar ]]; then
-		readarray -t data <<< "$( echo $status | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
-		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
-	fi
+	statusLcdChar "$status"
+	
 	systemctl stop shairport-meta
 	systemctl restart shairport-sync
 else
@@ -24,8 +27,6 @@ else
 	sleep 2
 	status=$( /srv/http/bash/status.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-	if [[ -n $lcdchar ]]; then
-		readarray -t data <<< "$( echo $status | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
-		/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
-	fi
+	statusLcdChar "$status"
 fi
+

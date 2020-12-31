@@ -656,6 +656,10 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
+statuslcdchar )
+	readarray -t data <<< "$( /srv/http/bash/status.sh | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+	/srv/http/bash/lcdchar.py "${data[@]}" &> /dev/null &
+	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}

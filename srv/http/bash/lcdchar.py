@@ -149,12 +149,12 @@ def second2hhmmss( sec ):
 field = [ '', 'artist', 'title', 'album', 'elapsed', 'total', 'state' ] # assign variables
 for i in range( 1, 7 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
-    val = val.replace( 'null', 'false' )
+    val = val.replace( 'null', '' )
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
-if artist == 'false': artist = idots
-if title == 'false': title = rows == 2 and artist or idots
-if album == 'false': album = idots
+if artist == 'false' or artist == '': artist = idots
+if title == 'false' or title == '': title = rows == 2 and artist or idots
+if album == 'false' or album == '': album = idots
 
 elapsed = elapsed != 'false' and round( float( elapsed ) )
 elapsedhhmmss = elapsed and second2hhmmss( elapsed )
