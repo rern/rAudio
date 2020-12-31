@@ -962,7 +962,6 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
 	// song and album before update for song/album change detection
 	var previousartist = $( '#artist' ).text();
 	var prevtitle = $( '#song' ).text();
@@ -999,6 +998,7 @@ function renderPlayback() {
 	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
+	var displaytime = G.display.time && window.innerWidth > 614;
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
 		G.coversave = 0;
