@@ -103,3 +103,9 @@ else
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
+
+if [[ -e /srv/http/data/system/lcdchar ]]; then
+	killall lcdchar.py &> /dev/null
+	readarray -t data <<< "$( /srv/http/bash/status.sh | jq -r '.Artist, .Title, .Album, .elapsed, .Time, .state' )"
+	/srv/http/bash/lcdchar.py "${data[@]}" &
+fi
