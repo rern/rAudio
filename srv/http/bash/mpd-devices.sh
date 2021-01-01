@@ -43,20 +43,26 @@ for line in "${lines[@]}"; do
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep pvolume \
-				| cut -d"'" -f2 )
-	if [[ -n $amixer ]]; then
-		readarray -t controls <<< $( echo "$amixer" | sort -u )
+				| sed 's/--/\n/g' )
+	controls=$( echo "$amixer" \
+					| grep pvolume \
+					| cut -d"'" -f2 )
+	if [[ -z $controls ]]; then
+		controls=$( echo "$amixer" \
+						| grep pvolume \
+						| cut -d"'" -f2 )
+	fi
+	if [[ -z $controls ]]; then
+		mixerdevices=['"( not available )"']
+		mixers=0
+	else
+		readarray -t controls <<< $( echo "$controls" | sort -u )
 		mixerdevices=
 		for control in "${controls[@]}"; do
 			mixerdevices+=',"'$control'"'
 		done
 		mixerdevices=[${mixerdevices:1}]
 		mixers=${#controls[@]}
-	else
-		mixerdevices=['"( not available )"']
-		mixers=0
 	fi
 	
 	mixermanual=false
