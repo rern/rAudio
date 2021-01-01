@@ -49,7 +49,7 @@ for line in "${lines[@]}"; do
 					| cut -d"'" -f2 )
 	if [[ -z $controls ]]; then
 		controls=$( echo "$amixer" \
-						| grep pvolume \
+						| grep volume \
 						| cut -d"'" -f2 )
 	fi
 	if [[ -z $controls ]]; then
