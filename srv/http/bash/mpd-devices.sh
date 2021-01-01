@@ -46,13 +46,18 @@ for line in "${lines[@]}"; do
 				| sed 's/--/\n/g' \
 				| grep pvolume \
 				| cut -d"'" -f2 )
-	readarray -t controls <<< $( echo "$amixer" | sort -u )
-	mixerdevices=
-	for control in "${controls[@]}"; do
-		mixerdevices+=',"'$control'"'
-	done
-	mixerdevices=[${mixerdevices:1}]
-	mixers=${#controls[@]}
+	if [[ -n $amixer ]]; then
+		readarray -t controls <<< $( echo "$amixer" | sort -u )
+		mixerdevices=
+		for control in "${controls[@]}"; do
+			mixerdevices+=',"'$control'"'
+		done
+		mixerdevices=[${mixerdevices:1}]
+		mixers=${#controls[@]}
+	else
+		mixerdevices=['"( not available )"']
+		mixers=0
+	fi
 	
 	mixermanual=false
 	hwmixerfile=$dirsystem/hwmixer-$aplayname

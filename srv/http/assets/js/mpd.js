@@ -46,13 +46,13 @@ refreshData = function() {
 				.val( device.hwmixer )
 				.prop( 'disabled', device.mixers < 2 );
 			var htmlmixertype = '<option value="none">None - 100% (0dB)</option>';
-			if ( device.hwmixer ) htmlmixertype += '<option value="hardware">Mixer device</option>';
+			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
 			htmlmixertype += '<option value="software">MPD software</option>';
 			$( '#mixertype' )
 				.html( htmlmixertype )
 				.val( device.mixertype );
 			$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
-			$( '#setting-hwmixer' ).toggleClass( 'hide', !device.hwmixer );
+			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
