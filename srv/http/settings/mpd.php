@@ -1,5 +1,5 @@
 <div class="soundcard">
-<heading data-status="asound" class="status">Audio Output<?=$code?><?=$help?></heading>
+<heading data-status="asound" class="status">Output<?=$code?><?=$help?></heading>
 <pre id="codeasound" class="hide"></pre>
 <div data-status="aplay" <?=$classstatus?>>
 	<a>Device
