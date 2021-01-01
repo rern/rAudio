@@ -818,7 +818,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	if ( G.status.player !== 'mpd' || G.status.webradio ) return
+	if ( G.status.player !== 'mpd' || G.status.webradio || G.display.time ) return
 	
 	$( '#time-bar' ).removeClass( 'hide' );
 	if ( G.guide ) $( '#coverT' ).click();
@@ -833,7 +833,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	if ( G.drag ) mpcSeekBar( pageX );
 } ).on( 'click touchend mouseup', function( e ) {
-	if ( G.status.player !== 'mpd' || G.status.webradio ) return
+	if ( G.status.player !== 'mpd' || G.status.webradio || G.display.time ) return
 	
 	G.drag = 0;
 	var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
