@@ -30,7 +30,6 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
-.fa-2x { font-size: 28px }
 .fa-addons:before { content: "\f581" }
 .fa-airplay:before { content: "\f590" }
 .fa-album:before { content: "\f555" }
@@ -2324,6 +2323,7 @@ li.active .li2 bl {
 	margin-left: 200px;
 	width: 36px;
 	height: 36px;
+	font-size: 28px;
 	line-height: 36px;
 	border-radius: 50%;
 	text-shadow: 2px 2px 4px #000000;
