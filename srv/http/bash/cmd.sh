@@ -582,7 +582,16 @@ plorder )
 plremove )
 	pos=${args[1]}
 	touch $flagpladd
-	[[ -n $pos ]] && mpc del $pos || mpc clear
+	if [[ -n $pos ]]; then
+		if [[ -e $dirsystem/lcdchar && ${args[2]} == play ]]; then
+			touch $flag; mpc stop; sleep 1; mpc del $pos; rm $flag; mpc play
+		else
+			mpc del $pos
+		fi
+	else
+		[[ -e $dirsystem/lcdchar ]] && ( touch $flag; mpc stop; rm $flag )
+		mpc clear
+	fi
 	pushstreamPlaylist
 	pushstreamStatus lcdchar
 	;;

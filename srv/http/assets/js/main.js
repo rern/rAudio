@@ -10,7 +10,7 @@ var G = {
 	, display       : {}
 	, guide         : 0
 	, list          : {}
-	, liadd         : 0
+	, addplay       : 0
 	, library       : 0
 	, local         : 0
 	, localhost     : [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1
@@ -818,7 +818,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	if ( G.status.player !== 'mpd' || G.status.webradio || G.display.time ) return
+	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
 	$( '#time-bar' ).removeClass( 'hide' );
 	if ( G.guide ) $( '#coverT' ).click();
@@ -833,7 +833,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function( e ) {
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	if ( G.drag ) mpcSeekBar( pageX );
 } ).on( 'click touchend mouseup', function( e ) {
-	if ( G.status.player !== 'mpd' || G.status.webradio || G.display.time ) return
+	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
 	G.drag = 0;
 	var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
@@ -1815,12 +1815,12 @@ var sortableplaylist = new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
+	, onStart       : function() {
+		$( '#pl-list li.active' ).addClass( 'sortactive' );
+	}
 	, onUpdate      : function ( e ) {
-		if ( $( e.from ).hasClass( 'active' ) ) {
-			$( e.to ).removeClass( 'active' );
-			$( e.item ).addClass( 'active' )
-			G.status.song = $( e.item ).index();
-		}
+		G.status.song = $( '#pl-list li.sortactive' ).index();
+		$( '#pl-list li.sortactive' ).removeClass( 'sortactive' );
 		G.sortable = 1;
 		setTimeout( function() { G.sortable = 0 }, 500 );
 		bash( [ 'plorder', ( e.oldIndex + 1 ), ( e.newIndex + 1 ) ], function() {
@@ -1949,16 +1949,9 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 } );
 $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 	if ( G.status.playlistlength > 1 ) {
-		var $li = $( this ).parent();
-		var active = $li.hasClass( 'active' );
-		var pos = $li.index() + 1;
-		bash( [ 'plremove', pos ], function() {
-			if ( active ) getPlaybackStatus( 'render' );
-		} );
-		G.status.playlistlength--;
+		bash( [ 'plremove', $( this ).parent().index() + 1, G.status.state ] );
 	} else {
 		bash( [ 'plremove' ] );
-		renderPlaybackBlank();
 	}
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {

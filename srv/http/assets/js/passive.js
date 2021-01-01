@@ -214,11 +214,14 @@ function psDisplay( data ) {
 	displayTopBottom();
 }
 function psMpdPlayer( data ) {
+	var playlistlength = G.status.playlistlength;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	setButtonControl();
-	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
+	renderPlayback();
+	if ( G.status.player !== 'mpd' || G.addplay ) switchPage( 'playback' );
+	G.addplay = 0;
 	if ( G.playlist ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
@@ -327,6 +330,7 @@ function psPackage( data ) {
 			.find( 'img' ).toggleClass( 'on', data.start );
 }
 function psPlaylist( data ) {
+	console.log(data)
 	if ( data == -1 ) {
 		renderPlaylist( -1 );
 	} else if ( 'html' in data ) {

@@ -7,17 +7,7 @@ function infoReplace( callback ) {
 	} );
 }
 function addReplace( cmd, command, title ) {
-	G.liadd = 1;
-	var playlistlength = G.status.playlistlength;
-	bash( command, function() {
-		G.liadd = 0;
-		if ( !playlistlength || cmd === 'replaceplay' ) getPlaybackStatus( 'render' );
-		if ( G.display.playbackswitch && ( cmd === 'addplay' || cmd === 'replaceplay' ) ) {
-			$( '#tab-playback' ).click();
-		} else {
-			setButtonControl();
-		}
-	} );
+	bash( command );
 	if ( G.list.li.hasClass( 'licover' ) ) {
 		var msg = G.list.li.find( '.lialbum' ).text()
 				+'<a class="li2">'+ G.list.li.find( '.liartist' ).text() +'</a>';
@@ -699,6 +689,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	cmd = cmd.replace( /albumartist|album|artist|composer|genre|date/, '' );
 	if ( cmd in contextCommand ) {
 		var command = contextCommand[ cmd ];
+		if ( G.display.playbackswitch && ( cmd === 'addplay' || cmd === 'replaceplay' ) ) G.addplay = 1;
 		if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
 			var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
 			addReplace( cmd, command, msg );
