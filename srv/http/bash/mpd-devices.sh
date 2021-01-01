@@ -71,7 +71,6 @@ for line in "${lines[@]}"; do
 	else
 		if [[ $mixers == 0 ]]; then
 			hwmixer='( not available )'
-			[[ $mixertype == hardware ]] && mixertype=software
 		else
 			hwmixer=$( grep Digital <<< "$amixer" | head -1 )
 			[[ -z $hwmixer ]] && hwmixer=${controls[0]}
