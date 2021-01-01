@@ -70,7 +70,7 @@ for line in "${lines[@]}"; do
 		mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 	else
 		if [[ $mixers == 0 ]]; then
-			mixertype=none
+			[[ $mixertype == hardware ]] && mixertype=none
 			hwmixer='( not available )'
 		else
 			hwmixer=$( grep Digital <<< "$amixer" | head -1 )
