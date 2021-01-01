@@ -42,7 +42,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 
 <div class="col-l"></div>
 <div class="col-r">
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<br><gr><i class="fa fa-refresh"></i>&emsp;Toggle refresh every 10 seconds.</gr>
 		<br>
 		<br>CPU Load:
@@ -82,7 +82,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="bluetooth" class="enable" type="checkbox">
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 			Should be disabled if not used.
 		<br>(Try reboot again if Bluetooth not working.)
 	</span>
@@ -97,7 +97,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div class="col-r">
 	<input id="onboardwlan" type="checkbox">
 	<div class="switchlabel" for="onboardwlan"></div>
-	<span class="help-block hide">Should be disabled if not used.</span>
+	<span <?=$classhelp?>>Should be disabled if not used.</span>
 </div>
 <pre id="codeifconfig" class="hide"></pre>
 	<?php } ?>
@@ -119,7 +119,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<div id="divi2smodule">
 		<?=$selecti2s?>
 	</div>
-	<span class="help-block hide">I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
+	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
 <div <?=$classstatus?>>
 	<a>LCD - Character
@@ -129,7 +129,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="lcdchar" class="enable" type="checkbox">
 	<div class="switchlabel" for="lcdchar"></div>
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 			<a href="https://github.com/dbrgn/RPLCD">RPLCD</a> - Python library for Hitachi HD44780 controller.
 		<p>
 			&bull; Support 16x2, 20x4 and 40x4 LCD modules.
@@ -146,7 +146,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="lcd" class="enablenoset" type="checkbox">
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
@@ -159,7 +159,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="relays" class="enablenoset" type="checkbox">
 	<div class="switchlabel" for="relays"></div>
 	<i id="setting-relays" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://sourceforge.net/projects/raspberry-gpio-python/">RPi.GPIO</a> - Python module to control GPIO.
 		<br><a href="https://github.com/rern/R_GPIO">+R - GPIO</a> - Control GPIO-connected relay module for power on / off equipments.
 	</span>
@@ -174,7 +174,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
-	<span class="help-block hide">Name for Renderers, Streamers, RPi access point<?=$bluetooth?> and system hostname.</span>
+	<span <?=$classhelp?>>Name for Renderers, Streamers, RPi access point<?=$bluetooth?> and system hostname.</span>
 </div>
 <div class="col-l double">
 	<a>Timezone
@@ -183,7 +183,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div class="col-r">
 	<?=$selecttimezone?>
 	<i id="setting-regional" class="settingedit fa fa-gear"></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		Wi-Fi regulatory domain:
 		<p>
 			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
@@ -199,7 +199,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="soundprofile" class="enable" type="checkbox">
 	<div class="switchlabel" for="soundprofile"></div>
 	<i id="setting-soundprofile" <?=$classsetting?>></i>
-	<span class="help-block hide">Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
+	<span <?=$classhelp?>>Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
 </div>
 <pre id="codesoundprofile" class="hide"></pre>
 </div>
@@ -210,7 +210,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div class="col-r">
 	<input id="backup" type="checkbox">
 	<div class="switchlabel" for="backup"></div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 			Backup all settings and Library database:
 		<p>&bull; Settings
 		<br>&bull; Library database
@@ -226,7 +226,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div class="col-r">
 	<input id="restore" type="checkbox">
 	<div class="switchlabel" for="restore"></div>
-	<span class="help-block hide">Restore all settings and Library database from a backup file. The system will reboot after finished.</span>
+	<span <?=$classhelp?>>Restore all settings and Library database from a backup file. The system will reboot after finished.</span>
 </div>
 </div>
 <?php
@@ -313,20 +313,20 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <br>&nbsp;
 <div>
 <heading class="sub">Back End<?=$help?></heading>
-<span class="help-block hide">
+<span <?=$classhelp?>>
 	<a href="https://www.archlinuxarm.org" style="font-size: 20px;">ArchLinuxArm</a> + default packages<br>
 	<?=$oshtml?>
 </span>
 </div>
 <div>
 <heading class="sub">Front End<?=$help?></heading>
-<span class="help-block hide">
+<span <?=$classhelp?>>
 	<?=$uihtml?>
 </span>
 </div>
 <div>
 <heading class="sub">Data<?=$help?></heading>
-<span class="help-block hide">
+<span <?=$classhelp?>>
 	<a href="https://www.last.fm">last.fm</a><gr> - Coverarts and artist biographies</gr><br>
 	<a href="https://webservice.fanart.tv">fanart.tv</a><gr> - Coverarts and artist images</gr><br>
 	<a href="https://radioparadise.com">Radio Paradise</a><gr> - Coverarts of their own and default stations</gr>
