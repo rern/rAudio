@@ -1093,7 +1093,7 @@ function renderPlayback() {
 	}
 	
 	// play ////////////////////
-	if ( !G.status.elapsed ) {
+	if ( G.status.elapsed === false ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		return
