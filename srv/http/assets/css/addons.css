@@ -26,7 +26,6 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
-.fa-2x { font-size: 28px }
 .fa-addons:before { content: "\f581" }
 .fa-arrow-down:before { content: "\f601" }
 .fa-arrow-up:before { content: "\f600" }

@@ -214,11 +214,14 @@ function psDisplay( data ) {
 	displayTopBottom();
 }
 function psMpdPlayer( data ) {
+	var playlistlength = G.status.playlistlength;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	setButtonControl();
-	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
+	renderPlayback();
+	if ( G.status.player !== 'mpd' || G.addplay ) switchPage( 'playback' );
+	G.addplay = 0;
 	if ( G.playlist ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {

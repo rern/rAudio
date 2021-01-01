@@ -310,7 +310,7 @@ function displayPlayback() {
 	}
 	$( '#time-bar' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
-	$( '#time, #volume, .timemap, .covermap, .volmap, .volumeband' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
+	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 	$( '.volumeband' )
 		.toggleClass( 'hide', G.display.volume )
 		.toggleClass( 'disabled', G.status.volume == -1 );
@@ -1093,7 +1093,7 @@ function renderPlayback() {
 	}
 	
 	// play ////////////////////
-	if ( !G.status.elapsed ) {
+	if ( G.status.elapsed === false ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		return

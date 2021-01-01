@@ -4,7 +4,7 @@
 	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
 	<pre id="codebt" class="hide"></pre>
 	<ul id="listbt" class="entries"></ul>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 			&bull; As sender / source - Send signal to another device.
 		<br>&ensp; - Pairing - Turn on discovery mode on receiver device.
 		<br>&ensp; - Search the device on RPi and connect.
@@ -34,7 +34,7 @@
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>
 		<div id="qrwebui" class="qr"></div>
-		<span class="help-block hide">Scan QR code or use IP address to connect with web user interface.</span>
+		<span <?=$classhelp?>>Scan QR code or use IP address to connect with web user interface.</span>
 	</div>
 	</div>
 </div>
@@ -46,7 +46,7 @@
 		<?=$help?><i class="fa fa-arrow-left back"></i>
 	</heading>
 	<ul id="listwlscan" class="entries"></ul>
-	<span class="help-block hide">Access points with less than -66dBm should not be used.</span>
+	<span <?=$classhelp?>>Access points with less than -66dBm should not be used.</span>
 	</div>
 </div>
 
@@ -75,7 +75,7 @@
 			<div id="qraccesspoint" class="qr"></div>
 		</div>
 	</div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 			&bull; Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</span>

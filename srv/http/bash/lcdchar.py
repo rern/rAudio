@@ -190,9 +190,10 @@ if charmap == 'A00':
     lines = ''.join( c for c in unicodedata.normalize( 'NFD', lines ) if unicodedata.category( c ) != 'Mn' )
 
 lcd.write_string( lines + rn + progress[ :cols ] )
-lcd.close()
     
-if state == 'stop' or state == 'pause': quit()
+if state == 'stop' or state == 'pause':
+    lcd.close()
+    quit()
 
 # play
 import subprocess

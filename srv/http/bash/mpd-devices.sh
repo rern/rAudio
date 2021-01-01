@@ -43,16 +43,27 @@ for line in "${lines[@]}"; do
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep pvolume \
-				| cut -d"'" -f2 )
-	readarray -t controls <<< $( echo "$amixer" | sort -u )
-	mixerdevices=
-	for control in "${controls[@]}"; do
-		mixerdevices+=',"'$control'"'
-	done
-	mixerdevices=[${mixerdevices:1}]
-	mixers=${#controls[@]}
+				| sed 's/--/\n/g' )
+	controls=$( echo "$amixer" \
+					| grep pvolume \
+					| cut -d"'" -f2 )
+	if [[ -z $controls ]]; then
+		controls=$( echo "$amixer" \
+						| grep volume \
+						| cut -d"'" -f2 )
+	fi
+	if [[ -z $controls ]]; then
+		mixerdevices=['"( not available )"']
+		mixers=0
+	else
+		readarray -t controls <<< $( echo "$controls" | sort -u )
+		mixerdevices=
+		for control in "${controls[@]}"; do
+			mixerdevices+=',"'$control'"'
+		done
+		mixerdevices=[${mixerdevices:1}]
+		mixers=${#controls[@]}
+	fi
 	
 	mixermanual=false
 	hwmixerfile=$dirsystem/hwmixer-$aplayname
@@ -65,8 +76,8 @@ for line in "${lines[@]}"; do
 		mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
 	else
 		if [[ $mixers == 0 ]]; then
+			[[ $mixertype == hardware ]] && mixertype=none
 			hwmixer='( not available )'
-			[[ $mixertype == hardware ]] && mixertype=software
 		else
 			hwmixer=$( grep Digital <<< "$amixer" | head -1 )
 			[[ -z $hwmixer ]] && hwmixer=${controls[0]}

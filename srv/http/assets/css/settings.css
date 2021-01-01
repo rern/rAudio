@@ -24,9 +24,7 @@
 	font-family: enhance;
 	font-style: normal;
 }
-.fa-s { font-size: 18px; line-height: 18px; }
 .fa-lg { font-size: 22px; line-height: 18px; }
-.fa-2x { font-size: 28px; line-height: 24px; }
 .fa-addons:before { content: "\f581" }
 .fa-airplay:before { content: "\f590" }
 .fa-album:before { content: "\f555" }

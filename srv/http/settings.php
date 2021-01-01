@@ -8,6 +8,10 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 $time = time();
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $code = '<i class="fa fa-code"></i>';
+$help = '<i class="help fa fa-question-circle"></i>';
+$chkenable = 'class="enable" type="checkbox"';
+$chknoset = 'class="enablenoset" type="checkbox"';
+$classhelp = 'class="help-block hide"';
 $classstatus = 'class="col-l double status"';
 $classsetting = 'class="setting fa fa-gear"';
 ?>
@@ -44,7 +48,6 @@ $classsetting = 'class="setting fa fa-gear"';
 <?php
 $page = $_GET[ 'p' ];
 $sudo = '/usr/bin/sudo /usr/bin';
-$help = '<i class="help fa fa-question-circle"></i>';
 ?>
 <div id="loader">
 	<?=$logo?>

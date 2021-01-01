@@ -7,7 +7,7 @@ $gid = exec( "$sudo/id -g mpd" );
 <pre id="codemount" class="hide"></pre>
 <ul id="list" class="entries" data-uid="<?=$uid?>" data-gid="<?=$gid?>"></ul>
 <p class="brhalf"></p>
-<span class="help-block hide">
+<span <?=$classhelp?>>
 	Available sources, local USB and NAS mounts, for Library.
 	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.
 	<br>
@@ -30,7 +30,7 @@ $gid = exec( "$sudo/id -g mpd" );
 	<li><i class="fa fa-search"></i><gr>Scan</gr></li>
 </ul>
 <p class="brhalf"></p>
-<span class="help-block hide">
+<span <?=$classhelp?>>
 	Available Windows and CIFS shares in WORKGROUP. Scan and select a share to mount as Library source files.
 </span>
 </div> */ ?>

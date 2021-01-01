@@ -6,12 +6,12 @@
 	<?php if ( file_exists( '/usr/bin/shairport-sync' ) ) { ?>
 <div data-status="shairport-sync" <?=$classstatus?>>
 	<a>AirPlay
-	<br><gr>shairport-sync<?=$code?></gr></a><i class="fa fa-airplay fa-lg"></i>
+	<br><gr>shairport-sync<?=$code?></gr></a><i class="fa fa-airplay"></i>
 </div>
 <div class="col-r">
-	<input id="shairport-sync" class="enablenoset" type="checkbox">
+	<input id="shairport-sync" <?=$chknoset?>>
 	<div class="switchlabel" for="shairport-sync"></div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 	</span>
 </div>
@@ -20,13 +20,13 @@
 		  if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
 <div data-status="snapclient" <?=$classstatus?>>
 	<a>SnapClient
-	<br><gr>snapclient<?=$code?></gr></a><i class="fa fa-snapcast fa-lg"></i>
+	<br><gr>snapclient<?=$code?></gr></a><i class="fa fa-snapcast"></i>
 </div>
 <div class="col-r">
-	<input id="snapclient" class="enable" type="checkbox">
+	<input id="snapclient" <?=$chkenable?>>
 	<div class="switchlabel" for="snapclient"></div>
 	<i id="setting-snapclient" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapClient - Connect: Menu >&ensp;<i class="fa fa-folder-cascade"></i>&ensp;Sources |&ensp;<i class="fa fa-snapcast"></i>
 		<br>(Note: Not available while Snapcast server enabled.)
@@ -37,12 +37,12 @@
 		  if ( file_exists( '/usr/bin/spotifyd' ) ) { ?>
 <div data-status="spotifyd" <?=$classstatus?>>
 	<a>Spotify
-	<br><gr>spotifyd<?=$code?></gr></a><i class="fa fa-spotify fa-lg"></i>
+	<br><gr>spotifyd<?=$code?></gr></a><i class="fa fa-spotify"></i>
 </div>
 <div class="col-r">
-	<input id="spotifyd" class="enablenoset" type="checkbox">
+	<input id="spotifyd" <?=$chknoset?>>
 	<div class="switchlabel" for="spotifyd"></div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.(For Premium account only)
 	</span>
 </div>
@@ -51,13 +51,13 @@
 		  if ( file_exists( '/usr/bin/upmpdcli' ) ) { ?>
 <div data-status="upmpdcli" <?=$classstatus?>>
 	<a>UPnP
-	<br><gr>upmpdcli<?=$code?></gr></a><i class="fa fa-upnp fa-lg"></i>
+	<br><gr>upmpdcli<?=$code?></gr></a><i class="fa fa-upnp"></i>
 </div>
 <div class="col-r">
-	<input id="upmpdcli" class="enablenoset" type="checkbox">
+	<input id="upmpdcli" <?=$chknoset?>>
 	<div class="switchlabel" for="upmpdcli"></div>
 	<!--<i id="setting-upnp" <?=$classsetting?>></i>-->
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 	</span>
 </div>
@@ -69,22 +69,22 @@
 <heading>Streamers<?=$help?></heading>
 <div class="col-l double">
 	<a>For browsers
-	<br><gr>MPD http</gr></a><i class="fa fa-webradio fa-lg"></i>
+	<br><gr>MPD http</gr></a><i class="fa fa-webradio"></i>
 </div>
 <div class="col-r">
-	<input id="streaming" class="enablenoset" type="checkbox">
+	<input id="streaming" <?=$chknoset?>>
 	<div class="switchlabel" for="streaming"></div>
-	<span class="help-block hide">Asynchronous streaming for browsers via <code id="ip"></code> (Latency - several seconds)</span>
+	<span <?=$classhelp?>>Asynchronous streaming for browsers via <code id="ip"></code> (Latency - several seconds)</span>
 </div>
 	<?php if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
 <div data-status="snapserver" <?=$classstatus?>>
 	<a>SnapServer
-	<br><gr>snapserver<?=$code?></gr></a><i class="fa fa-snapcast fa-lg"></i>
+	<br><gr>snapserver<?=$code?></gr></a><i class="fa fa-snapcast"></i>
 </div>
 <div class="col-r">
-	<input id="snapserver" class="enablenoset" type="checkbox">
+	<input id="snapserver" <?=$chknoset?>>
 	<div class="switchlabel" for="snapserver"></div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 		<br>(Note: Enable Snapcast will disable SnapClient.)
@@ -99,12 +99,12 @@
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" <?=$classstatus?>>
 	<a>BitTorrent
-	<br><gr>transmission<?=$code?></gr></a><i class="fa fa-transmission fa-lg"></i>
+	<br><gr>transmission<?=$code?></gr></a><i class="fa fa-transmission"></i>
 </div>
 <div class="col-r">
-	<input id="transmission" class="enable" type="checkbox">
+	<input id="transmission" <?=$chkenable?>>
 	<div class="switchlabel" for="transmission"></div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://transmissionbt.com/">Transmission</a> - BitTorrent client
 		<br>URL: <span id="urltran"></span>
 	</span>
@@ -114,13 +114,13 @@
 		  if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div data-status="localbrowser" <?=$classstatus?>>
 	<a>Browser on RPi
-	<br><gr>localbrowser<?=$code?></gr></a><i class="fa fa-chromium fa-lg"></i>
+	<br><gr>localbrowser<?=$code?></gr></a><i class="fa fa-chromium"></i>
 </div>
 <div class="col-r">
-	<input id="localbrowser" class="enable" type="checkbox">
+	<input id="localbrowser" <?=$chkenable?>>
 	<div class="switchlabel" for="localbrowser"></div>
 	<i id="setting-localbrowser" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen. (Overscan change needs reboot.)
 	</span>
 </div>
@@ -129,12 +129,12 @@
 		  if ( file_exists( '/usr/bin/aria2' ) ) { ?>
 <div data-status="aria2" <?=$classstatus?>>
 	<a>Downloader
-	<br><gr>aria2<?=$code?></gr></a><i class="fa fa-download fa-lg"></i>
+	<br><gr>aria2<?=$code?></gr></a><i class="fa fa-download"></i>
 </div>
 <div class="col-r">
-	<input id="aria2" class="enable" type="checkbox">
+	<input id="aria2" <?=$chkenable?>>
 	<div class="switchlabel" for="aria2"></div>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://aria2.github.io/">Aria2</a> - Multi-protocol & multi-source command-line download utility.
 		<br>URL: <span id="urlaria"></span>
 	</span>
@@ -144,13 +144,13 @@
 		  if ( file_exists( '/usr/bin/smbd' ) ) { ?>
 <div data-status="smb" <?=$classstatus?>>
 	<a>File Sharing
-	<br><gr>smb<?=$code?></gr></a><i class="fa fa-networks fa-lg"></i>
+	<br><gr>smb<?=$code?></gr></a><i class="fa fa-networks"></i>
 </div>
 <div class="col-r">
-	<input id="smb" class="enable" type="checkbox">
+	<input id="smb" <?=$chkenable?>>
 	<div class="switchlabel" for="smb"></div>
 	<i id="setting-smb" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://www.samba.org">Samba</a> - Share files on networks.
 		<br>Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
 	</span>
@@ -159,46 +159,46 @@
 	<?php } ?>
 <div data-status="mpdscribble" <?=$classstatus?>>
 	<a>Last.fm Scrobbler
-	<br><gr>mpdscribble<?=$code?></gr></a><i class="fa fa-lastfm fa-lg"></i>
+	<br><gr>mpdscribble<?=$code?></gr></a><i class="fa fa-lastfm"></i>
 </div>
 <div class="col-r">
-	<input id="mpdscribble" class="enable" type="checkbox">
+	<input id="mpdscribble" <?=$chkenable?>>
 	<div class="switchlabel" for="mpdscribble"></div>
 	<i id="setting-mpdscribble" <?=$classsetting?>></i>
-	<span class="help-block hide">
+	<span <?=$classhelp?>>
 		<a href="https://github.com/MusicPlayerDaemon/mpdscribble">mpdscribble</a> - Automatically send listened music data to Last.fm for tracking.
 	</span>
 </div>
 <pre id="codempdscribble" class="hide"></pre>
 <div class="col-l double">
 	<a>Password Login
-	<br><gr>PHP Blowfish</gr></a><i class="fa fa-lock-circle fa-lg"></i>
+	<br><gr>PHP Blowfish</gr></a><i class="fa fa-lock-circle"></i>
 </div>
 <div class="col-r">
-	<input id="login" class="enable" type="checkbox">
+	<input id="login" <?=$chkenable?>>
 	<div class="switchlabel" for="password"></div>
 	<i id="setting-login" <?=$classsetting?>></i>
-	<span class="help-block hide">Force browser interface login with set password.</span>
+	<span <?=$classhelp?>>Force browser interface login with set password.</span>
 </div>
 <div class="col-l double">
 	<a>Play on Startup
-	<br><gr>System</gr></a><i class="fa fa-refresh-play fa-lg"></i>
+	<br><gr>System</gr></a><i class="fa fa-refresh-play"></i>
 </div>
 <div class="col-r">
-	<input id="autoplay" class="enablenoset" type="checkbox">
+	<input id="autoplay" <?=$chknoset?>>
 	<div class="switchlabel" for="autoplay"></div>
-	<span class="help-block hide">Start playing automatically after boot.</span>
+	<span <?=$classhelp?>>Start playing automatically after boot.</span>
 </div>
 <div data-status="hostapd" <?=$classstatus?>>
 	<a>RPi Access Point
-	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-wifi fa-lg"></i>
+	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="hostapd" class="enable hidden" type="checkbox">
 	<input id="hostapdchk" type="checkbox">
 	<div class="switchlabel" for="hostapd"></div>
 	<i id="setting-hostapd" <?=$classsetting?>></i>
-	<span class="help-block hide">Connect with RPi Wi-Fi directly when no routers available.
+	<span <?=$classhelp?>>Connect with RPi Wi-Fi directly when no routers available.
 		<br>RPi access point should be used only when necessary.</span>
 </div>
 <pre id="codehostapd" class="hide"></pre>
