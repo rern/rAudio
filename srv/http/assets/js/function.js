@@ -310,7 +310,7 @@ function displayPlayback() {
 	}
 	$( '#time-bar' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
-	$( '#time, #volume, .timemap, .covermap, .volmap, .volumeband' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
+	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 	$( '.volumeband' )
 		.toggleClass( 'hide', G.display.volume )
 		.toggleClass( 'disabled', G.status.volume == -1 );
@@ -475,7 +475,7 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 	};
 	reader.readAsArrayBuffer( file.slice( 0, 64 * 1024 ) );
 }
-function getPlaybackStatus() {
+function getPlaybackStatus( render ) {
 	local();
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( !status ) return
@@ -493,7 +493,7 @@ function getPlaybackStatus() {
 				displayPlayback();
 				setButtonControl();
 			}, 'json' );
-		} else if ( G.playback ) { // 'render' - add to blank playlist
+		} else if ( G.playback || render ) { // 'render' - add to blank playlist
 			G.plreplace = 0;
 			renderPlayback();
 			displayPlayback();
