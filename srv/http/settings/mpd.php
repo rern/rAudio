@@ -6,7 +6,7 @@
 	<br><gr><?=$code?></gr></a>
 </div>
 <div class="col-r">
-	<select id="audiooutput" data-style="btn-default btn-lg"></select>
+	<select id="audiooutput" data-style="btn-default"></select>
 </div>
 <pre id="codeaplay" class="hide"></pre>
 <div>
@@ -16,7 +16,7 @@
 		<br><gr><?=$code?></gr></a>
 	</div>
 	<div class="col-r">
-		<select id="hwmixer" data-style="btn-default btn-lg"></select>
+		<select id="hwmixer" data-style="btn-default"></select>
 		<i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
 		<span class="help-block hide">
 			<i class="fa fa-volume"></i> <code>amixer</code> / <code>alsamixer</code>&ensp;volume control
@@ -26,7 +26,7 @@
 <pre id="codeamixer" class="hide"></pre>
 <div class="col-l">Volume Control</div>
 <div class="col-r">
-	<select id="mixertype" data-style="btn-default btn-lg"></select>
+	<select id="mixertype" data-style="btn-default"></select>
 	<span class="help-block hide">
 			Volume control for each device.
 		<p>
