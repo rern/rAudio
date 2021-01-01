@@ -79,7 +79,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><gr>onboard <?=$code?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
-	<input id="bluetooth" class="enable" type="checkbox">
+	<input id="bluetooth" <?=$chkenable?>>
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -126,7 +126,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
-	<input id="lcdchar" class="enable" type="checkbox">
+	<input id="lcdchar" <?=$chkenable?>>
 	<div class="switchlabel" for="lcdchar"></div>
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -143,7 +143,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
-	<input id="lcd" class="enablenoset" type="checkbox">
+	<input id="lcd" <?=$chknoset?>>
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -156,7 +156,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><gr>RPI.GPIO</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
-	<input id="relays" class="enablenoset" type="checkbox">
+	<input id="relays" <?=$chknoset?>>
 	<div class="switchlabel" for="relays"></div>
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -196,7 +196,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><gr>kernel <?=$code?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
-	<input id="soundprofile" class="enable" type="checkbox">
+	<input id="soundprofile" <?=$chkenable?>>
 	<div class="switchlabel" for="soundprofile"></div>
 	<i id="setting-soundprofile" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>

@@ -75,7 +75,7 @@
 	<br><gr>mpc<?=$code?></gr></a>
 </div>
 <div class="col-r">
-	<input id="crossfade" class="enable" type="checkbox">
+	<input id="crossfade" <?=$chkenable?>>
 	<div class="switchlabel" for="crossfade"></div>
 	<i id="setting-crossfade" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -89,7 +89,7 @@
 	<br><gr>option</gr></a>
 </div>
 <div class="col-r">
-	<input id="normalization" class="enablenoset" type="checkbox">
+	<input id="normalization" <?=$chknoset?>>
 	<div class="switchlabel" for="normalization"></div>
 	<span <?=$classhelp?>>
 			<code>volume_normalization "yes"</code>
@@ -101,7 +101,7 @@
 	<br><gr>option</gr></a>
 </div>
 <div class="col-r">
-	<input id="replaygain" class="enable" type="checkbox">
+	<input id="replaygain" <?=$chkenable?>>
 	<div class="switchlabel" for="replaygain"></div>
 	<i id="setting-replaygain" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -119,7 +119,7 @@
 	<br><gr>Library</gr></a>
 </div>
 <div class="col-r">
-	<input id="autoupdate"  class="enablenoset" type="checkbox">
+	<input id="autoupdate"  <?=$chknoset?>>
 	<div class="switchlabel" for="autoupdate"></div>
 	<span <?=$classhelp?>>
 			<code>auto_update "yes"</code>
@@ -131,7 +131,7 @@
 	<br><gr>decoder</gr></a>
 </div>
 <div class="col-r">
-	<input id="ffmpeg"  class="enablenoset" type="checkbox">
+	<input id="ffmpeg"  <?=$chknoset?>>
 	<div class="switchlabel" for="ffmpeg"></div>
 	<span <?=$classhelp?>>
 			<code>enable "yes"</code>
@@ -145,7 +145,7 @@
 	<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
-	<input id="buffer" class="enable" type="checkbox">
+	<input id="buffer" <?=$chkenable?>>
 	<div class="switchlabel" for="buffer"></div>
 	<i id="setting-buffer" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -159,7 +159,7 @@
 	<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
-	<input id="bufferoutput" class="enable" type="checkbox">
+	<input id="bufferoutput" <?=$chkenable?>>
 	<div class="switchlabel" for="bufferoutput"></div>
 	<i id="setting-bufferoutput" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -173,7 +173,7 @@
 	<br><gr>SoXR custom settings</gr></a>
 </div>
 <div class="col-r">
-	<input id="soxr" class="enable" type="checkbox">
+	<input id="soxr" <?=$chkenable?>>
 	<div class="switchlabel" for="soxr"></div>
 	<i id="setting-soxr" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -198,7 +198,7 @@
 </div>
 <div class="col-l">User's Custom Settings</div>
 <div class="col-r">
-	<input id="custom" class="enable" type="checkbox">
+	<input id="custom" <?=$chkenable?>>
 	<div class="switchlabel" for="custom"></div>
 	<i id="setting-custom" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>Insert settings into <code>/etc/mpd.conf</code>.</span>

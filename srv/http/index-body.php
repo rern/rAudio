@@ -400,7 +400,7 @@ $menu.= '</div>';
 
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
-	<i id="colorcancel" class="fa fa-times fa-2x"></i>
+	<i id="colorcancel" class="fa fa-times"></i>
 	<canvas id="canvascolor"></canvas><br>
 <?php if ( file_exists( $dirsystem.'color' ) ) { ?>
 	<a id="colorreset" class="btn">Default</a>&ensp;
