@@ -1109,13 +1109,17 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
-	var update = !$( '.coverart .loaded' ).length ? 'Update' : 'Create';
+	if ( $( '.coverart .loaded' ).length ) {
+		var message = 'Update thumbnails and directory icons?'
+	} else {
+		var message = 'With existing album coverarts:'
+					+'<br><px30/>&bull; Create thumbnails'
+					+'<br><px30/>&bull; Create directory icons'
+	}
 	info( {
 		  icon     : 'coverart'
 		, title    : 'Album Thumbnails'
-		, message  : 'With existing album coverarts:'
-						+'<br><px30/>&bull; '+ update +' thumbnails'
-						+'<br><px30/>&bull; '+ update +' directory icons'
+		, message  : message
 		, msgalign : 'left'
 		, preshow  : function() {
 			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );
