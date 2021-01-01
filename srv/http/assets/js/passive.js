@@ -330,7 +330,6 @@ function psPackage( data ) {
 			.find( 'img' ).toggleClass( 'on', data.start );
 }
 function psPlaylist( data ) {
-	console.log(data)
 	if ( data == -1 ) {
 		renderPlaylist( -1 );
 	} else if ( 'html' in data ) {
