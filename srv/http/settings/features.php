@@ -191,7 +191,7 @@
 </div>
 <div data-status="hostapd" <?=$classstatus?>>
 	<a>RPi Access Point
-	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-accesspoint"></i>
+	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="hostapd" class="enable hidden" type="checkbox">
