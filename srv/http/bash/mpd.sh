@@ -41,10 +41,6 @@ audiooutput )
 	output=${args[3]}
 	mixer=${args[4]}
 	sed -i "s/.$/$card/" /etc/asound.conf
-	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
-		output=$( cat $dirsystem/hwmixer-rpi-cirrus-wm5102 2> /dev/null || echo HPOUT2 Digital )
-		/srv/http/bash/mpd-wm5102.sh $card $output
-	fi
 	sed -i -e '/output_device = / s/".*"/"hw:'$card'"/
 	' -e '/mixer_control_name = / s/".*"/"'$mixer'"/
 	' /etc/shairport-sync.conf
@@ -185,10 +181,6 @@ hwmixer )
 		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"
 	fi
 	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
-	if [[ $aplayname == rpi-cirrus-wm5102 ]]; then
-		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-		/srv/http/bash/mpd-wm5102.sh $card $hwmixer
-	fi
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
 	;;
