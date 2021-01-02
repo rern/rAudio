@@ -67,6 +67,15 @@ bluetoothset )
 	! grep -q 'dtparam=krnbt=on' $fileconfig && sed -i '$ a\dtparam=krnbt=on' $fileconfig
 	pushRefresh
 	;;
+btdiscoverable )
+	if [[ ${args[1]} == true ]]; then
+		bluetoothctl discoverable yes &
+		touch $dirsystem/btdiscoverable
+	else
+		bluetoothctl discoverable no &
+		rm $dirsystem/btdiscoverable
+	fi
+	;;
 databackup )
 	profile=${args[1]}
 	dirconfig=$dirdata/config

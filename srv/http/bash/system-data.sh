@@ -85,7 +85,8 @@ data+='
 	, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
 	, "sources"         : '$( /srv/http/bash/sources-data.sh )'
 	, "version"         : "'$version'"
-	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )
+	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
+	, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )
 if [[ -e /etc/soundprofile.conf ]]; then
 	data+='
 	, "soundprofileval" : "'$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
@@ -104,7 +105,10 @@ if [[ -e /usr/bin/bluetoothctl  ]]; then
 	, "bluetooth"       : '$( systemctl -q is-active bluetooth && echo true || echo false )'
 	, "btdiscoverable"  : '$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 fi
-[[ ${hwcode: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && data+='
+if [[ ${hwcode: -3:2} =~ ^(08|0c|0d|0e|11)$ ]]; then
+	data+='
+	, "onboardbt"       : '$( grep -q 'dtparam=krnbt=on' /boot/config.txt && echo true || echo false )'
 	, "onboardwlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
+fi
 
 echo {$data}

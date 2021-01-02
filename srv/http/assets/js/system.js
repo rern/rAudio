@@ -122,7 +122,19 @@ refreshData = function() {
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		$( '#onboardwlan' ).prop( 'checked', G.onboardwlan );
+		if ( G.bluetooth && !G.onboardbt ) {
+			$( '#btlabel' ).text( 'USB' );
+			$( '#bluetooth' )
+				.prop( 'disabled', true )
+				.next().addClass( 'disabled' );
+		}
+		$( '#onboardwlan' ).prop( 'checked', G.wlan );
+		if ( G.wlan && !G.onboardwlan ) {
+			$( '#wllabel' ).text( 'USB' );
+			$( '#onboardwlan' )
+				.prop( 'disabled', true )
+				.next().addClass( 'disabled' );
+		}
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
@@ -215,7 +227,7 @@ $( '#refresh' ).click( function( e ) {
 $( '#setting-bluetooth' ).click( function() {
 	info( {
 		  icon     : 'bluetooth'
-		, title    : 'On-board Bluetooth'
+		, title    : 'Bluetooth'
 		, checkbox : { Discoverable: 1 }
 		, checked  : ( !G.bluetooth || G.btdiscoverable ? 0 : 1 )
 		, preshow  : function() {
@@ -231,8 +243,12 @@ $( '#setting-bluetooth' ).click( function() {
 		, ok       : function() {
 			checked = $( '#infoCheckBox input' ).prop( 'checked' );
 			notify( ( G.bluetooth ? 'Bluetooth Discoverable' : 'Bluetooth' ), checked, 'bluetooth' );
-			rebootText( true, 'on-board Bluetooth' );
-			bash( [ 'bluetoothset', checked, G.reboot.join( '\n' ) ] );
+			if ( G.bluetooth && G.onboardbt ) {
+				rebootText( true, 'on-board Bluetooth' );
+				bash( [ 'bluetoothset', checked, G.reboot.join( '\n' ) ] );
+			} else {
+				bash( [ 'btdiscoverable', checked ] );
+			}
 		}
 	} );
 } );

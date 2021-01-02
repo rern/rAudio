@@ -70,34 +70,28 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading>Wireless<?=$help?></heading>
-	<?php $hwcode = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-		if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { # rpi with wireless
-			if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
+<heading>Wireless</heading>
+	<?php if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
 <div data-status="bluetoothctl" <?=$classstatus?>>
 	<a>Bluetooth
-	<br><gr>onboard <?=$code?></gr></a><i class="fa fa-bluetooth"></i>
+	<br><gr id="btlabel">onboard</gr> <gr><?=$code?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>
-			Should be disabled if not used.
-		<br>(Try reboot again if Bluetooth not working.)
-	</span>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
-		<?php $bluetooth = ', Bluetooth';
-			  } ?>
+	<?php }
+		  $hwcode = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
+		  if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { ?>
 <div data-status="ifconfig" <?=$classstatus?>>
 	<a>Wi-Fi
-	<br><gr>onboard <?=$code?></gr></a><i class="fa fa-wifi"></i>
+	<br><gr id="wllabel">onboard</gr> <g><?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="onboardwlan" type="checkbox">
 	<div class="switchlabel" for="onboardwlan"></div>
-	<span <?=$classhelp?>>Should be disabled if not used.</span>
 </div>
 <pre id="codeifconfig" class="hide"></pre>
 	<?php } ?>
@@ -174,7 +168,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
-	<span <?=$classhelp?>>Name for Renderers, Streamers, RPi access point<?=$bluetooth?> and system hostname.</span>
+	<span <?=$classhelp?>>Name for Renderers, Streamers, RPi access point, Bluetooth and system hostname.</span>
 </div>
 <div class="col-l double">
 	<a>Timezone
