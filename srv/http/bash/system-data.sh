@@ -100,15 +100,9 @@ else
 	, "soundprofileval" : "'$val'"'
 fi
 if [[ -e /usr/bin/bluetoothctl  ]]; then
-	bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
-	if [[ $bluetoothon == true ]]; then
-		btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
-	else
-		btdiscoverable=false
-	fi
 	data+='
-	, "bluetooth"       : '$bluetooth'
-	, "btdiscoverable"  : '$btdiscoverable
+	, "bluetooth"       : '$( systemctl -q is-active bluetooth && echo true || echo false )'
+	, "btdiscoverable"  : '$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 fi
 [[ ${hwcode: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && data+='
 	, "onboardwlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
