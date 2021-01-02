@@ -66,19 +66,12 @@ systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
-if grep -q rpi-cirrus-wm5102 /boot/config.txt; then
-	card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
-	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
-	/srv/http/bash/mpd-wm5102.sh $card $output
-fi
-
 /srv/http/bash/mpd-conf.sh # mpd start by this script
 
 sleep 10 # wait for network interfaces
 
 notifyFailed() {
-	echo "$1<br><br><gr>Try reboot again.</gr>" >> $dirdata/shm/reboot
-	curl -s -X POST http://127.0.0.1/pub?id=reload -d 1
+	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'$1'", "icon":"nas", "delay":-1}'
 }
 
 readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' )

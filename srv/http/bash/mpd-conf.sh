@@ -166,6 +166,12 @@ else
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 fi
 
+wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
+if [[ -n $wm5102card ]]; then
+	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
+	/srv/http/bash/mpd-wm5102.sh $wm5102card $output
+fi
+
 hwmixer="${Ahwmixer[$card]}"
 if [[ -n $hwmixer ]]; then
 	mixertype=${Amixertype[$card]}
