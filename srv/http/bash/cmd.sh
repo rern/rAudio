@@ -467,7 +467,7 @@ mpcprevnext )
 	else
 		[[ $( mpc current -f %file% | cut -c1-4 ) == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 	fi
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	;;
 mpcseek )
 	touch $flag
@@ -481,8 +481,7 @@ mpcseek )
 	else
 		mpc seek $seek
 	fi
-	pushstream seek '{"elapsed":'$seek',"state":"'$state'"}'
-	rm -f $flag
+	pushstreamStatus lcdchar
 	;;
 mpcupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/wav
@@ -582,14 +581,10 @@ plorder )
 plremove )
 	pos=${args[1]}
 	touch $flagpladd
+	touch $flag
 	if [[ -n $pos ]]; then
-		if [[ -e $dirsystem/lcdchar && ${args[2]} == play ]]; then
-			touch $flag; mpc stop; sleep 1; mpc del $pos; rm $flag; mpc play
-		else
-			mpc del $pos
-		fi
+		mpc del $pos
 	else
-		[[ -e $dirsystem/lcdchar ]] && ( touch $flag; mpc stop; rm $flag )
 		mpc clear
 	fi
 	pushstreamPlaylist
