@@ -45,7 +45,7 @@ for line in "${lines[@]}"; do
 				| tr -d '\n' \
 				| sed 's/--/\n/g' )
 	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch' \
+					| grep pvolume \
 					| cut -d"'" -f2 )
 	if [[ -z $controls ]]; then
 		controls=$( echo "$amixer" \
@@ -79,7 +79,8 @@ for line in "${lines[@]}"; do
 			[[ $mixertype == hardware ]] && mixertype=none
 			hwmixer='( not available )'
 		else
-			hwmixer=${controls[0]}
+			hwmixer=$( grep Digital <<< "$amixer" | head -1 )
+			[[ -z $hwmixer ]] && hwmixer=${controls[0]}
 		fi
 	fi
 	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
