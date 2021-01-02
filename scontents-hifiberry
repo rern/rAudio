@@ -1,0 +1,77 @@
+```
+Simple mixer control 'DSP Program',0
+  Capabilities: enum
+  Items: 'FIR interpolation with de-emphasis' 'Low latency IIR with de-emphasis' 'High attenuation with de-emphasis' 'Fixed process flow' 'Ringing-less low latency FIR'
+  Item0: 'FIR interpolation with de-emphasis'
+Simple mixer control 'Analogue',0
+  Capabilities: pvolume penum
+  Playback channels: Front Left - Front Right
+  Limits: Playback 0 - 1
+  Mono:
+  Front Left: Playback 1 [100%] [0.00dB]
+  Front Right: Playback 1 [100%] [0.00dB]
+Simple mixer control 'Analogue Playback Boost',0
+  Capabilities: volume penum
+  Playback channels: Front Left - Front Right
+  Capture channels: Front Left - Front Right
+  Limits: 0 - 1
+  Front Left: 0 [0%] [0.00dB]
+  Front Right: 0 [0%] [0.00dB]
+Simple mixer control 'Auto Mute',0
+  Capabilities: pswitch penum
+  Playback channels: Front Left - Front Right
+  Mono:
+  Front Left: Playback [on]
+  Front Right: Playback [on]
+Simple mixer control 'Auto Mute Mono',0
+  Capabilities: pswitch pswitch-joined penum
+  Playback channels: Mono
+  Mono: Playback [on]
+Simple mixer control 'Auto Mute Time Left',0
+  Capabilities: enum
+  Items: '21ms' '106ms' '213ms' '533ms' '1.07s' '2.13s' '5.33s' '10.66s'
+  Item0: '21ms'
+Simple mixer control 'Auto Mute Time Right',0
+  Capabilities: enum
+  Items: '21ms' '106ms' '213ms' '533ms' '1.07s' '2.13s' '5.33s' '10.66s'
+  Item0: '21ms'
+Simple mixer control 'Clock Missing Period',0
+  Capabilities: enum
+  Items: '1s' '2s' '3s' '4s' '5s' '6s' '7s' '8s'
+  Item0: '1s'
+Simple mixer control 'Deemphasis',0
+  Capabilities: pswitch pswitch-joined penum
+  Playback channels: Mono
+  Mono: Playback [on]
+Simple mixer control 'Digital',0
+  Capabilities: pvolume pswitch penum
+  Playback channels: Front Left - Front Right
+  Limits: Playback 0 - 255
+  Mono:
+  Front Left: Playback 205 [80%] [-1.00dB] [on]
+  Front Right: Playback 205 [80%] [-1.00dB] [on]
+Simple mixer control 'Volume Ramp Down Emergency Rate',0
+  Capabilities: enum
+  Items: '1 sample/update' '2 samples/update' '4 samples/update' 'Immediate'
+  Item0: '1 sample/update'
+Simple mixer control 'Volume Ramp Down Emergency Step',0
+  Capabilities: enum
+  Items: '4dB/step' '2dB/step' '1dB/step' '0.5dB/step'
+  Item0: '4dB/step'
+Simple mixer control 'Volume Ramp Down Rate',0
+  Capabilities: enum
+  Items: '1 sample/update' '2 samples/update' '4 samples/update' 'Immediate'
+  Item0: '1 sample/update'
+Simple mixer control 'Volume Ramp Down Step',0
+  Capabilities: enum
+  Items: '4dB/step' '2dB/step' '1dB/step' '0.5dB/step'
+  Item0: '1dB/step'
+Simple mixer control 'Volume Ramp Up Rate',0
+  Capabilities: enum
+  Items: '1 sample/update' '2 samples/update' '4 samples/update' 'Immediate'
+  Item0: '1 sample/update'
+Simple mixer control 'Volume Ramp Up Step',0
+  Capabilities: enum
+  Items: '4dB/step' '2dB/step' '1dB/step' '0.5dB/step'
+  Item0: '1dB/step'
+```
