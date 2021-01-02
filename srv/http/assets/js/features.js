@@ -2,7 +2,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function passwordWrong() {
 	info( {
-		  icon    : 'lock'
+		  icon    : 'lock-circle'
 		, title   : 'Password Login'
 		, nox     : 1
 		, message : 'Wrong existing password.'
@@ -66,9 +66,9 @@ $( '.enable' ).click( function() {
 	var idname = {
 		  hostapd      : [ 'RPi Access Point',     'wifi' ]
 		, localbrowser : [ 'Browser on RPi',       'chromium' ]
-		, login        : [ 'Password Login',       'key' ]
+		, login        : [ 'Password Login',       'lock-circle' ]
 		, mpdscribble  : [ 'Last.fm Scrobbler',    'lastfm' ]
-		, smb          : [ 'Samba - File Sharing', 'network' ]
+		, smb          : [ 'Samba - File Sharing', 'networks' ]
 		, snapclient   : [ 'SnapClient Renderer',  'snapcast' ]
 	}
 	var id = this.id;
@@ -82,7 +82,7 @@ $( '.enable' ).click( function() {
 		} else {
 			$( '#login' ).prop( 'checked', G.login );
 			info( {
-				  icon          : 'lock'
+				  icon          : 'lock-circle'
 				, title         : 'Password Login'
 				, message       : 'Disable:'
 				, passwordlabel : 'Password'
@@ -94,7 +94,7 @@ $( '.enable' ).click( function() {
 						, password : password
 					}, function( std ) {
 						if ( std ) {
-							notify( 'Password Login', 'Disable ...', 'key' );
+							notify( 'Password Login', 'Disable ...', 'lock-circle' );
 							bash( [ id +'disable' ] );
 						} else {
 							passwordWrong();
@@ -340,7 +340,7 @@ $( '#setting-mpdscribble' ).click( function() {
 } );
 $( '#setting-login' ).click( function() {
 	info( {
-		  icon          : 'lock'
+		  icon          : 'lock-circle'
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
@@ -352,7 +352,7 @@ $( '#setting-login' ).click( function() {
 			var password = $( '#infoPasswordBox' ).val();
 			var pwdnew = $( '#infoPasswordBox1' ).length ? $( '#infoPasswordBox1' ).val() : password;
 			var type = G.login ? 'changed.' : 'enabled.';
-			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'key' );
+			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock-circle' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : password
