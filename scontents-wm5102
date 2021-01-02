@@ -1,4 +1,3 @@
-```
 Simple mixer control 'Speaker Digital',0
   Capabilities: volume pswitch
   Playback channels: Front Left - Front Right
@@ -1507,5 +1506,4 @@ Simple mixer control 'Tx Source',0
   Capabilities: enum
   Items: 'S/PDIF RX' 'AIF'
   Item0: 'AIF'
- 
-```
+
