@@ -210,6 +210,11 @@ dtoverlay=${args[1]}"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 	else
 		sed -i '$ a\dtparam=audio=on' $fileconfig
+		code=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+		hwcode=${code: -3:2}
+		[[ $hwcode == 09 || $hwcode == 0c ]] && output='HDMI 1' || output=Headphone
+		echo "bcm2835 $output" > $dirsystem/audio-aplayname
+		echo "On-board - $output" > $dirsystem/audio-output
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
 	echo "$reboot" > $filereboot
