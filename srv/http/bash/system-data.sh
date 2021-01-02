@@ -105,7 +105,7 @@ if [[ -e /usr/bin/bluetoothctl  ]]; then
 	data+='
 	, "bluetooth"       : '$bluetooth
 	[[ $bluetooth == true ]] && data+='
-	, "btdiscoverable"  : '$btdiscoverable
+	, "btdiscoverable"  : '$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 fi
 if [[ ${hwcode: -3:2} =~ ^(08|0c|0d|0e|11)$ ]]; then
 	data+='
