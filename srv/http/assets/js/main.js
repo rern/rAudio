@@ -1953,7 +1953,7 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 } );
 $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 	if ( G.status.playlistlength > 1 ) {
-		bash( [ 'plremove', $( this ).parent().index() + 1, G.status.state ] );
+		bash( [ 'plremove', $( this ).parent().index() + 1 ] );
 	} else {
 		bash( [ 'plremove' ] );
 	}
