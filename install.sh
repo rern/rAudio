@@ -14,6 +14,6 @@ installstart "$1"
 
 getinstallzip
 
-systemctl restart mpd
+/srv/http/bash/mpd-conf.sh
 
 installfinish
