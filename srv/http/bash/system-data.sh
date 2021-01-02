@@ -13,14 +13,14 @@ data='
 # for interval refresh
 (( $# > 0 )) && echo {$data} && exit
 
-hwcode=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
-case ${hwcode: -4:1} in
+revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
+case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
 	1 ) soc=BCM2836;;
-	2 ) [[ ${hwcode: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
+	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
 	3 ) soc=BCM2711;;
 esac
-case ${hwcode: -6:1} in
+case ${revision: -6:1} in
 	9 ) socram+='512KB';;
 	a ) socram+='1GB';;
 	b ) socram+='2GB';;
@@ -107,7 +107,7 @@ if [[ -e /usr/bin/bluetoothctl  ]]; then
 	[[ $bluetooth == true ]] && data+='
 	, "btdiscoverable"  : '$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 fi
-if [[ ${hwcode: -3:2} =~ ^(08|0c|0d|0e|11)$ ]]; then
+if [[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]]; then
 	data+='
 	, "onboardbt"       : '$( grep -q 'dtparam=krnbt=on' /boot/config.txt && echo true || echo false )'
 	, "onboardwlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )

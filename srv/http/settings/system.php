@@ -83,7 +83,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
 	<?php }
-		  $hwcode = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
+		  $hwcode = exec( '/srv/http/bash/system.sh hwrevision' );
 		  if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { ?>
 <div data-status="ifconfig" <?=$classstatus?>>
 	<a>Wi-Fi
