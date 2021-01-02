@@ -64,7 +64,7 @@ touch $dirdata/shm/player-mpd
 
 systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac
 
-rfkill list | grep -q Bluetooth && systemctl start bluetooth
+rfkill | grep -q bluetooth && systemctl start bluetooth
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
