@@ -53,8 +53,7 @@
 .fa-dice:before { content: "\f569" }
 .fa-edit:before { content: "\f565" }
 .fa-edit-circle:before { content: "\f566" }
-.fa-eye:before { content: "\f575" }
-.fa-facebook:before { content: "\f597" }
+.fa-eye:before { content: "\f576" }
 .fa-file-music:before { content: "\f57A" }
 .fa-file-playlist:before { content: "\f57B" }
 .fa-file-wave:before { content: "\f57C" }
@@ -120,28 +119,26 @@
 .fa-shuffle:before { content: "\f51D" }
 .fa-single:before { content: "\f513" }
 .fa-sliders:before { content: "\f50B" }
-.fa-snapcast:before { content: "\f599" }
-.fa-snapclient:before { content: "\f599" }
+.fa-snapcast:before { content: "\f592" }
+.fa-snapclient:before { content: "\f592" }
 .fa-source:before { content: "\f52A" }
-.fa-spotify:before { content: "\f594" }
+.fa-spotify:before { content: "\f593" }
 .fa-star:before { content: "\f550" }
 .fa-stop:before { content: "\f502" }
 .fa-stopwatch:before { content: "\f547" }
 .fa-stopwatch-o:before { content: "\f548" }
 .fa-stopwatch-i:before { content: "\f549" }
-.fa-swipe:before { content: "\f54A" }
 .fa-tag:before { content: "\f55B" }
 .fa-times:before { content: "\f51A" }
 .fa-title:before { content: "\f54C" }
 .fa-track:before { content: "\f50D" }
-.fa-twitter:before { content: "\f598" }
 .fa-undo:before { content: "\f523" }
 .fa-upnp:before { content: "\f591" }
 .fa-usb:before { content: "\f553" }
 .fa-usbdrive:before { content: "\f553" }
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
-.fa-webradio:before { content: "\f554" }
+.fa-webradio:before { content: "\f55C" }
 .stopwatch {
 	margin-right: 5px;
 	vertical-align: -4px;

@@ -25,6 +25,7 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px; line-height: 18px; }
+.fa-accesspoint:before { content: "\f554" }
 .fa-addons:before { content: "\f581" }
 .fa-airplay:before { content: "\f590" }
 .fa-album:before { content: "\f555" }
@@ -38,13 +39,13 @@
 .fa-edit:before { content: "\f565" }
 .fa-edit-circle:before { content: "\f566" }
 .fa-external-link:before { content: "\f52C" }
-.fa-eye:before { content: "\f575" }
+.fa-eye:before { content: "\f576" }
 .fa-features:before { content: "\f50B" }
 .fa-folder-cascade:before { content: "\f538" }
 .fa-gear:before { content: "\f509" }
 .fa-gear-restore:before { content: "\f53C" }
 .fa-gears:before { content: "\f50A" }
-.fa-globe:before { content: "\f56D" }
+.fa-globe:before { content: "\f575" }
 .fa-gmusic:before { content: "\f592" }
 .fa-i2saudio:before { content: "\f571" }
 .fa-info-circle:before { content: "\f561" }
@@ -78,18 +79,17 @@
 .fa-reload:before { content: "\f525" }
 .fa-right:before { content: "\f607" }
 .fa-save:before { content: "\f542"}
-.fa-save-circle:before { content: "\f56B"}
+.fa-save-circle:before { content: "\f546"}
 .fa-sd:before { content: "\f543" }
-.fa-sd-restore:before { content: "\f54E" }
+.fa-sd-restore:before { content: "\f54A" }
 .fa-search:before { content: "\f56A" }
 .fa-sliders:before { content: "\f50B" }
-.fa-snapcast:before { content: "\f599" }
+.fa-snapcast:before { content: "\f592" }
 .fa-soundprofile:before { content: "\f570" }
 .fa-source:before { content: "\f52A" }
 .fa-sources:before { content: "\f538" }
-.fa-spotify:before { content: "\f594" }
+.fa-spotify:before { content: "\f593" }
 .fa-stopwatch:before { content: "\f547" }
-.fa-swipe:before { content: "\f54A" }
 .fa-system:before { content: "\f581" }
 .fa-times:before { content: "\f51A" }
 .fa-transmission:before { content: "\f586" }
@@ -98,7 +98,7 @@
 .fa-usbdrive:before { content: "\f553" }
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
-.fa-webradio:before { content: "\f554" }
+.fa-webradio:before { content: "\f55C" }
 .fa-wifi:before { content: "\f58B" }
 .fa-wifi1:before { content: "\f588" }
 .fa-wifi2:before { content: "\f589" }
