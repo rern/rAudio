@@ -12,6 +12,21 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 # convert each line to each args
 readarray -t args <<< "$1"
 
+hwRevision() {
+	revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
+	echo ${revision: -3:2}
+}
+hwRpi() {
+	hwcode=$( hwRevision )
+	case $hwcode in
+		09 | 0c )         rpi=0;;
+		00 | 01 |02 |03 ) rpi=1;;
+		04 )              rpi=2;;
+		08 | 0d | 0e )    rpi=3;;
+		11 )              rpi=4;;
+	esac
+	echo $rpi
+}
 pushRefresh() {
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "system" }'
 }
@@ -192,6 +207,12 @@ hostname )
 	systemctl try-restart avahi-daemon bluetooth hostapd mpd smb shairport-sync shairport-meta upmpdcli
 	pushRefresh
 	;;
+hwrevision )
+	hwRevision
+	;;
+hwrpi )
+	hwRpi
+	;;
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
@@ -210,9 +231,8 @@ dtoverlay=${args[1]}"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 	else
 		sed -i '$ a\dtparam=audio=on' $fileconfig
-		code=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-		hwcode=${code: -3:2}
-		[[ $hwcode == 09 || $hwcode == 0c ]] && output='HDMI 1' || output=Headphone
+		rpi=$( hwRpi )
+		[[ $rpi == 0 ]] && output='HDMI 1' || output=Headphone
 		echo "bcm2835 $output" > $dirsystem/audio-aplayname
 		echo "On-board - $output" > $dirsystem/audio-output
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
