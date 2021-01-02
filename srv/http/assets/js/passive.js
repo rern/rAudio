@@ -64,7 +64,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'package', 'playlist', 'reload', 'seek', 'snapcast', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'package', 'playlist', 'reload', 'snapcast', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -92,7 +92,6 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'playlist':   psPlaylist( data );   break;
 		case 'reload':     psReload( data );     break;
 		case 'restore':    psRestore( data );    break;
-		case 'seek':       psSeek( data );       break;
 		case 'snapcast':   psSnapcast( data );   break;
 		case 'spotify':    psSpotify( data );    break;
 		case 'volume':     psVolume( data );     break;
@@ -415,12 +414,6 @@ function psRestore( data ) {
 		loader( 'show' );
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
-}
-function psSeek( data ) {
-	local();
-	G.status.elapsed = data.elapsed;
-	if ( data.state ) G.status.state = 'pause';
-	renderPlayback();
 }
 function psSnapcast( data ) {
 	if ( data !== -1 ) {

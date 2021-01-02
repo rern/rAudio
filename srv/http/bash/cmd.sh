@@ -467,7 +467,7 @@ mpcprevnext )
 	else
 		[[ $( mpc current -f %file% | cut -c1-4 ) == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 	fi
-	pushstreamStatus
+	pushstreamStatus lcdchar
 	;;
 mpcseek )
 	touch $flag
@@ -481,8 +481,7 @@ mpcseek )
 	else
 		mpc seek $seek
 	fi
-	pushstream seek '{"elapsed":'$seek',"state":"'$state'"}'
-	rm -f $flag
+	pushstreamStatus lcdchar
 	;;
 mpcupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/wav
