@@ -489,15 +489,15 @@ function getPlaybackStatus( render ) {
 					G.status[ key ] = value;
 				} );
 				G.status.sampling = '16 bit 48 kHz 1.54 Mbit/s &bull; Snapcast';
-				renderPlayback();
 				displayPlayback();
 				setButtonControl();
+				renderPlayback();
 			}, 'json' );
 		} else if ( G.playback || render ) { // 'render' - add to blank playlist
 			G.plreplace = 0;
-			renderPlayback();
 			displayPlayback();
 			setButtonControl();
+			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
 			if ( counts ) {
@@ -1002,6 +1002,9 @@ function renderPlayback() {
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
 		G.coversave = 0;
+		$( '#time' ).roundSlider( 'setValue', 0 );
+		$( '#time-bar' ).css( 'width', 0 );
+		$( '#progress, #elapsed, #total' ).empty();
 		$( '.cover-save' ).remove();
 		if ( !G.status.Title || G.status.Title !== prevtitle ) {
 			if ( G.status.coverart ) {
@@ -1011,35 +1014,26 @@ function renderPlayback() {
 			}
 			$( '#coverart' ).attr( 'src', coverart );
 		}
-		$( '#time' ).roundSlider( 'setValue', 0 );
-		if ( G.status.state === 'play' ) {
+		if ( G.status.state !== 'play' ) {
+			$( '#song' ).html( '·&ensp;·&ensp;·' );
+		} else {
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			if ( displaytime ) {
-				if ( G.display.radioelapsed || G.localhost ) {
+			if ( G.display.radioelapsed || G.localhost ) {
+				if ( displaytime ) {
 					G.intElapsed = setInterval( function() {
 						G.status.elapsed++;
 						elapsedhms = second2HMS( G.status.elapsed );
 						$( '#total' ).text( elapsedhms ).addClass( 'gr' );
 					}, 1000 );
 				} else {
-					$( '#total' ).empty();
-				}
-			} else {
-				$( '#total' ).empty();
-				if ( G.display.radioelapsed ) {
 					G.intElapsed = setInterval( function() {
 						G.status.elapsed++;
 						elapsedhms = second2HMS( G.status.elapsed );
 					$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w>' );
 					}, 1000 );
-				} else {
-					$( '#progress' ).empty();
 				}
 			}
-		} else {
-			$( '#song' ).html( '·&ensp;·&ensp;·' );
-			$( '#progress, #elapsed, #total' ).empty();
 		}
 		return
 	}
@@ -1064,8 +1058,8 @@ function renderPlayback() {
 				.addClass( 'gr' );
 			$( '#total' ).empty();
 		} else {
-			$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
 			$( '#time-bar' ).css( 'width', 0 );
+			$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
 		}
 		return
 	}
@@ -1086,8 +1080,8 @@ function renderPlayback() {
 			$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
 		} else {
-			$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / <w>'+ timehms +'</w>' );
 			$( '#time-bar' ).css( 'width', position / 10 +'%' );
+			$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / <w>'+ timehms +'</w>' );
 		}
 		return
 	}
