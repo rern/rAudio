@@ -998,7 +998,7 @@ function renderPlayback() {
 	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
-	var displaytime = G.display.time && window.innerWidth > 614;
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
 		G.coversave = 0;
