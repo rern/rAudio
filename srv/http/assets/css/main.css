@@ -691,7 +691,6 @@ i.map.disabled, .map.disabled i {
 	padding: 0;
 	min-width: 100%;
 	max-width: 1200px;
-	min-height: 230px;
 }
 #playback-row.top0 {
 	margin-top: 0 !important;
