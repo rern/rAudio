@@ -897,8 +897,8 @@ function renderLibraryList( data ) {
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
-			var src = $( '#lib-list .coverart:eq( 0 ) img' ).data( 'src' );
-			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><i class="fa fa-refresh albumrefresh"></i><img src="'+ src +'" class="albumimg"></span>' );
+			var src = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )').data( 'src' );
+			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><i class="fa fa-search albumrefresh"></i><img src="'+ src +'" class="albumimg"></span>' );
 			var defaultcover = 0;
 			$( '#button-coverart img' ).on( 'error', function() {
 				if ( !defaultcover ) $( this ).replaceWith( '<i class="fa fa-coverart albumcoverart"></i>' );
