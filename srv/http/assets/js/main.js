@@ -406,9 +406,9 @@ $( '#displayplayback' ).click( function() {
 				G.bars = G.display.bars;
 				displayTopBottom();
 				if ( G.playback ) {
-					renderPlayback();
 					displayPlayback();
 					setButtonControl();
+					renderPlayback();
 					$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
 				} else if ( G.library ) {
 					$( '.list p' ).toggleClass( 'bars-on', G.bars );
@@ -750,9 +750,9 @@ $( '#coverTL, #timeTL' ).tap( function() {
 	if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
-	renderPlayback();
 	setButtonControl();
 	displayPlayback();
+	renderPlayback();
 	if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 } );
 $( '#coverT, #timeT' ).tap( function() {
@@ -1109,13 +1109,17 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
-	var update = !$( '.coverart .loaded' ).length ? 'Update' : 'Create';
+	if ( $( '.coverart .loaded' ).length ) {
+		var message = 'Update thumbnails and directory icons?'
+	} else {
+		var message = 'With existing album coverarts:'
+					+'<br><px30/>&bull; Create thumbnails'
+					+'<br><px30/>&bull; Create directory icons'
+	}
 	info( {
 		  icon     : 'coverart'
 		, title    : 'Album Thumbnails'
-		, message  : 'With existing album coverarts:'
-						+'<br><px30/>&bull; '+ update +' thumbnails'
-						+'<br><px30/>&bull; '+ update +' directory icons'
+		, message  : message
 		, msgalign : 'left'
 		, preshow  : function() {
 			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );

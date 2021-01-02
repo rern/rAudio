@@ -30,13 +30,14 @@ window.addEventListener( 'orientationchange', function() {
 				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
 					if ( HMS ) {
 						G.status.elapsed = HMS2Second( HMS );
+						displayPlayback();
 						renderPlayback();
 					}
 				} );
 			} else {
+				displayPlayback();
 				renderPlayback();
 			}
-			displayPlayback();
 		} else if ( G.library ) {
 			if ( G.librarylist || G.savedlist ) {
 				if ( $( '.licover' ).length ) {
@@ -190,8 +191,8 @@ function psDisplay( data ) {
 	} );
 	if ( G.playback ) {
 		setButtonControl();
-		renderPlayback();
 		displayPlayback();
+		renderPlayback();
 	} else if ( G.library ) {
 		if ( !G.librarylist ) {
 			renderLibrary();
@@ -245,8 +246,8 @@ function psMpdPlayer( data ) {
 			}
 		}
 		bannerHide();
-		renderPlayback();
 		displayPlayback();
+		renderPlayback();
 	}
 }
 function psMpdUpdate( data ) {
