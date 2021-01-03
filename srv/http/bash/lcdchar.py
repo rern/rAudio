@@ -206,13 +206,13 @@ import time
 
 row = rows - 1
 starttime = time.time()
-elapsed += round( starttime - int( timestamp ) )
+elapsed += round( starttime - int( timestamp ) / 1000 )
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
-    time.sleep( sl )
     progress = iplay + second2hhmmss( elapsed ) + totalhhmmss
     if len( progress ) > ( cols - 3 ): progress += '  '
     lcd.cursor_pos = ( row, 0 )
     lcd.write_string( progress[ :cols ] )
     elapsed += 1
+    time.sleep( sl )

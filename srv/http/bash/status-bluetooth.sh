@@ -18,7 +18,7 @@ Album=$( grep ^Album <<< "$data" | cut -d^ -f2 )
 Position=$( grep ^Position <<< "$data" | cut -d^ -f2 )
 Duration=$( grep ^Duration <<< "$data" | cut -d^ -f2 )
 Status=$( grep ^Status <<< "$data" | cut -d^ -f2 )
-date=$( date +%s )
+now=$( date +%s%3N )
 case $Status in
 	paused )  state=pause;;
 	playing ) state=play;;
@@ -42,6 +42,6 @@ data='
 	, "sampling"   : "Bluetooth"
 	, "state"      : "'$state'"
 	, "Time"       : '$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )'
-	, "timestamp"  : '$date
+	, "timestamp"  : '$now
 
 echo $data
