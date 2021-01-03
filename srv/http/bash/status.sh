@@ -46,7 +46,8 @@ airplay )
 , "playlistlength" : 1
 , "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"          : "play"
-, "Time"           : '$Time
+, "Time"           : '$Time'
+, "timestamp"      : '${now:0:-3}
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -86,10 +87,10 @@ spotify )
 	elapsed=$(( ( elapsed + 500 ) / 1000 ))
 ########
 	status+=$( cat $file )
-########
 	status+='
-, "elapsed" : '$elapsed'
-, "state"   : "'$state'"'
+, "elapsed"   : '$elapsed'
+, "state"     : "'$state'"
+, "timestamp" : '${now:0:-3}
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -108,6 +109,7 @@ mpdStatus() {
 mpdStatus currentsong
 [[ $? != 0 ]] && exit
 
+date=$( date +%s )
 # when playlist is empty, add song without play - currentsong = (blank)
 ! grep -q '^file' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
 # webradio track changed events - one missed state data
@@ -231,10 +233,11 @@ else
 	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
-, "Album"  : "'$Album'"
-, "Artist" : "'$Artist'"
-, "Time"   : '$Time'
-, "Title"  : "'$Title'"'
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "Time"      : '$Time'
+, "timestamp" : '$date'
+, "Title"     : "'$Title'"'
 	systemctl stop radiowatchdog
 fi
 
@@ -319,7 +322,6 @@ fi
 # coverart
 if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
 	rm -f $dirtmp/webradio
-	date=$( date +%s )
 	filenoext=/data/webradiosimg/$urlname
 	pathnoext=/srv/http$filenoext
 	if [[ -e $pathnoext.gif ]]; then

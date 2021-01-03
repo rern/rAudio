@@ -146,8 +146,8 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed' ] # assign variables
-for i in range( 1, 7 ):
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp' ] # assign variables
+for i in range( 1, 8 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
@@ -163,14 +163,12 @@ if total != 'false':
     total = round( float( total ) )
     totalhhmmss = second2hhmmss( total )
 else:
-    total = ''
     totalhhmmss = ''
     
 if elapsed != 'false':
     elapsed = round( float( elapsed ) )
     elapsedhhmmss = second2hhmmss( elapsed )
 else:
-    elapsed = ''
     elapsedhhmmss = ''
 
 if state == 'stop':
@@ -202,14 +200,13 @@ if state == 'stop' or state == 'pause':
     quit()
 
 # play
-import subprocess
+if elapsed == 'false': quit()
+
 import time
 
-prog = subprocess.getoutput( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1" )
-elapsed = 0
-for each in prog.split( ':' ): elapsed = elapsed * 60 + int( each )
 row = rows - 1
 starttime = time.time()
+elapsed += round( starttime - int( timestamp ) )
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )

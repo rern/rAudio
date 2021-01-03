@@ -113,7 +113,7 @@ pushstreamStatus() {
 	if [[ $1 == lcdchar && -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
-									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
 									| sed 's/^$\|null/false/' )
 		$dirbash/lcdchar.py "${data[@]}" &
 	fi
