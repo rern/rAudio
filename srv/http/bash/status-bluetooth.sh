@@ -12,13 +12,13 @@ data=$( dbus-send \
 			| sed 's/^\s*string "\|^\s*variant\s*string "\|^\s*variant\s*uint32 //; s/"$//' \
 			| tr '\n' ^ \
 			| sed 's/\^--\^/\n/g; s/\^$//' )
+now=$( date +%s%3N )
 Artist=$( grep ^Artist <<< "$data" | cut -d^ -f2 )
 Title=$( grep ^Title <<< "$data" | cut -d^ -f2 )
 Album=$( grep ^Album <<< "$data" | cut -d^ -f2 )
 Position=$( grep ^Position <<< "$data" | cut -d^ -f2 )
 Duration=$( grep ^Duration <<< "$data" | cut -d^ -f2 )
 Status=$( grep ^Status <<< "$data" | cut -d^ -f2 )
-now=$( date +%s%3N )
 case $Status in
 	paused )  state=pause;;
 	playing ) state=play;;
