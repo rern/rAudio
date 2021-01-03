@@ -1,3 +1,19 @@
+<heading data-status="mpd" class="status">Status<?=$code?></heading>
+<pre id="codempd" class="hide"></pre>
+<div>
+<div class="col-l text gr">
+	Version
+	<br>Database
+	<br>Configuration
+</div>
+<div class="col-r text">
+	<div id="statusvalue"></div>
+	<span data-status="mpdconf" class="status"><?=$code?></span>
+</div>
+<div style="clear:both"></div>
+<pre id="codempdconf" class="hide"></pre>
+</div>
+
 <div class="soundcard">
 <heading data-status="asound" class="status">Output<?=$code?><?=$help?></heading>
 <pre id="codeasound" class="hide"></pre>
@@ -203,15 +219,6 @@
 	<i id="setting-custom" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>Insert settings into <code>/etc/mpd.conf</code>.</span>
 </div>
-
 </div>
 
-<div>
-<heading data-status="mpdconf" class="status">Configuration<?=$code?></heading>
-<pre id="codempdconf" class="hide"></pre>
-</div>
-<div>
-<heading data-status="mpd" class="status">Status<?=$code?><i id="mpdrestart" class="fa fa-reboot"></i><?=$help?></heading>
-<span <?=$classhelp?>><i class="fa fa-reboot"></i>Restart MPD</span>
-<pre id="codempd" class="hide"></pre>
-</div>
+<div style="clear:both"></div>

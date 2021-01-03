@@ -27,13 +27,6 @@ case ${revision: -6:1} in
 	c ) socram+='4GB';;
 esac
 
-lines=$( /srv/http/bash/networks.sh ifconfig )
-readarray -t lines <<<"$lines"
-for line in "${lines[@]}"; do
-    items=( $line )
-    iplist+=",${items[0]} ${items[1]} ${items[2]}"
-done
-
 dirsystem=/srv/http/data/system
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
@@ -64,14 +57,11 @@ fi
 
 data+='
 	, "hostname"        : "'$( hostname )'"
-	, "ip"              : "'${iplist:1}'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'
 	, "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
-	, "mpd"             : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"
-	, "mpdstats"        : "'$( jq '.song, .album, .artist' /srv/http/data/mpd/counts 2> /dev/null )'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
@@ -83,7 +73,6 @@ data+='
 	, "socram"          : "'$socram'"
 	, "socspeed"        : "'$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )'"
 	, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
-	, "sources"         : '$( /srv/http/bash/sources-data.sh )'
 	, "version"         : "'$version'"
 	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 	, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )

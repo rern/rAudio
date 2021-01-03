@@ -24,8 +24,8 @@ var cmd = {
 	, ifconfig     : [ 'ifconfig wlan0' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ 'ifconfig eth0' ]
-	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mount        : [ 'mount | grep " / \\|MPD"' ]
+	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ 'ifconfig wlan0' ]
 }

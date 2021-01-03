@@ -24,6 +24,14 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
+		var htmlstatus = G.mpd +'<br>';
+		if ( G.mpdstats ) {
+		var counts = G.mpdstats.split( ' ' );
+		htmlstatus += '<span><i class="fa fa-music gr"></i>&nbsp;'+ Number( counts[ 0 ] ).toLocaleString()
+					  +'&ensp;<i class="fa fa-album gr"></i>&ensp;'+ Number( counts[ 1 ] ).toLocaleString()
+					  +'&ensp;<i class="fa fa-artist gr"></i> '+ Number( counts[ 2 ] ).toLocaleString() +'</span>';
+		}
+		$( '#statusvalue' ).html( htmlstatus );
 		if ( G.asoundcard == -1 ) {
 			$( '.soundcard' ).addClass( 'hide' );
 		} else {
@@ -111,6 +119,12 @@ $( '.enablenoset' ).click( function() {
 	bash( [ id, checked ] );
 } );
 
+/*$( '#mpdconf' ).click( function() {
+	bash( 'cat /etc/mpd.conf', function( data ) {
+		$( '#codempdconf' )
+			.text( data )
+	} );
+} );*/
 $( '#audiooutput, #hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
