@@ -3,7 +3,7 @@
 data='
 	  "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
 	, "cputemp"         : '$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )'
-	, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4,7 )'"
+	, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4,7 | tr -d s )'"
 	, "throttled"       : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 	, "time"            : "'$( date +'%T %F' )'"
 	, "timezone"        : "'$( timedatectl | awk '/zone:/ {print $3}' )'"

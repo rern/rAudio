@@ -68,7 +68,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading>Wireless</heading>
+<heading data-status="rfkill" class="status">Wireless<?=$code?></heading>
+<pre id="coderfkill" class="hide"></pre>
 	<?php if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
 <div data-status="bluetoothctl" <?=$classstatus?>>
 	<a>Bluetooth

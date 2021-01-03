@@ -55,7 +55,7 @@ function renderStatus() {
 		+'<br>'+ ( G.cputemp < 80 ? G.cputemp +' °C' : '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>' )
 		+'<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
 		+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
-		+'<br><gr class="wide">kernel:</gr> '+ startup[ 0 ] +' + <gr class="wide">userspace:</gr> '+ startup[ 1 ];
+		+'<br><gr>kernel:</gr> '+ Math.round( startup[ 0 ] ) +'s + <gr>userspace:</gr> '+ Math.round( startup[ 1 ] ) +'s';
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
@@ -119,7 +119,7 @@ refreshData = function() {
 		$( '#timezone' )
 			.val( G.timezone )
 			.selectric( 'refresh' );
-		[ 'bluetoothctl', 'ifconfig', 'configtxt', 'journalctl', 'soundprofile' ].forEach( function( id ) {
+		[ 'bluetoothctl', 'ifconfig', 'configtxt', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
