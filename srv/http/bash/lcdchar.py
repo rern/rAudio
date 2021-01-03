@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import sys
-if len( sys.argv ) == 1: quit()
-
 import os.path
 import configparser
 config = configparser.ConfigParser()
@@ -26,7 +24,7 @@ else:
     pins_data = list( data )
     
 rows = cols == 16 and 2 or 4
-    
+
 if address: # i2c
     from RPLCD.i2c import CharLCD
     lcd = CharLCD( chip, address )
@@ -35,12 +33,7 @@ else:
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data, auto_linebreaks=False )
-
-argv1 = sys.argv[ 1 ] # backlight on/off
-if argv1 == 'on' or argv1 == 'off':
-    lcd.backlight_enabled = argv1 == 'on' and True or False
-    quit()
-
+    
 pause = (
     0b00000,
     0b11011,
@@ -122,14 +115,20 @@ if rows == 4:
     splash = rn
 splash += spaces + irr + rn + spaces +'rAudio'
 
+if len( sys.argv ) == 1:
+    lcd.write_string( splash )
+    lcd.close()
+    quit()
+
 if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
-    if argv1 == 'rr':
-        lcd.write_string( splash )
+    argv1 = sys.argv[ 1 ]
+    if argv1 == 'off': # backlight off
+        lcd.backlight_enabled = False
     else:
         lcd.auto_linebreaks = True
         lcd.clear()
         lcd.write_string( argv1.replace( '^', rn ) )
-    lcd.close()
+        lcd.close()
     quit()
 
 lcd.clear()
@@ -167,15 +166,22 @@ else:
     total = ''
     totalhhmmss = ''
     
-elapsed = elapsed != 'false' and round( float( elapsed ) )
-elapsedhhmmss = elapsed and second2hhmmss( elapsed )
+if elapsed != 'false':
+    elapsed = round( float( elapsed ) )
+    elapsedhhmmss = second2hhmmss( elapsed )
+else:
+    elapsed = ''
+    elapsedhhmmss = ''
 
 if state == 'stop':
     progress = totalhhmmss
 else:
-    slash = cols == 20 and ' / ' or '/'
-    totalhhmmss = total and slash + totalhhmmss
-    progress = elapsedhhmmss + totalhhmmss
+    if totalhhmmss != '':
+        slash = cols == 20 and ' / ' or '/'
+        totalhhmmss = slash + totalhhmmss
+        progress = elapsedhhmmss + totalhhmmss
+    else:
+        progress = ''
 
 istate = state == 'stop' and  istop or ( state == 'pause' and ipause or iplay )
 progress = istate + progress

@@ -444,7 +444,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonlabel   : [ 'Splash', 'Off' ]
 		, buttoncolor   : [ '#448822',       '#de810e' ]
 		, button        : !G.lcdchar ? '' : [ 
-			  function() { bash( '/srv/http/bash/lcdchar.py rr' ) }
+			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
 		]
 		, buttonnoreset : 1

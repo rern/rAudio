@@ -58,7 +58,7 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 
-[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdchar.py rr
+[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdchar.py
 
 touch $dirdata/shm/player-mpd
 # onboard + usb wifi >> disable onboard
