@@ -50,8 +50,6 @@ audio_output {
 fi
 pushstream refresh '{"page":"network"}'
 
-audiooutput=$( cat $dirsystem/audio-output )
-audioaplayname=$( cat $dirsystem/audio-aplayname )
 mpdfile=/etc/mpd.conf
 mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
 
