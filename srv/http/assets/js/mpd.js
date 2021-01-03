@@ -516,17 +516,5 @@ $( '#setting-custom' ).click( function() {
 		}
 	} );
 } );
-$( '#mpdrestart' ).click( function() {
-	$this = $( this );
-	info( {
-		  icon    : 'mpd'
-		, title   : 'MPD'
-		, message : 'Restart MPD?'
-		, ok      : function() {
-			notify( 'MPD', 'Restart ...', 'mpd' );
-			bash( [ 'restart' ] );
-		}
-	} );
-} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
