@@ -148,7 +148,6 @@ fi
 
 # udev rules - usb dac
 if [[ $# -gt 0 && $1 != bt ]]; then
-	mpc | grep -q '\[playing' && mpc -q stop # fix: mpd Failed to read mixer
 	cardfile=$dirtmp/asoundcard
 	if [[ $1 == remove ]]; then
 		card=$( cat $cardfile )

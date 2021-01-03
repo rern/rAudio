@@ -96,9 +96,6 @@ echo '[
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
 # system
-[[ $rpi == 0 ]] && output='HDMI 1' || output=Headphone
-echo "bcm2835 $output" > $dirsystem/audio-aplayname
-echo "On-board - $output" > $dirsystem/audio-output
 echo rAudio > $dirsystem/hostname
 hostnamectl set-hostname rAudio
 sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
