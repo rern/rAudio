@@ -2,7 +2,7 @@
 <defs><style>
 .cls-1{fill:none;}
 .box{fill:hsl(200,100%,35%);
-	opacity:0.2;isolation:isolate;}
+	opacity:0.4;isolation:isolate;}
 .text{fill:hsl(200,3%,40%);}
 </style></defs>
 <path class="cls-1" d="M48.24,131.1c0,.16-.08.3-.12.44s-.1.27-.15.39l-2.8,6.94h6.15l-2.8-7A8.56,8.56,0,0,1,48.24,131.1Z"/>
