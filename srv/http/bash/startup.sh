@@ -61,11 +61,11 @@ fi
 [[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdchar.py rr
 
 touch $dirdata/shm/player-mpd
-
+# onboard + usb wifi >> disable onboard
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
-
+# no enabled profile >> disable onboard
 systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac &> /dev/null
-
+# onboard / usb bluetooth
 rfkill | grep -q bluetooth && systemctl start bluetooth
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
