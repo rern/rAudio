@@ -21,7 +21,7 @@ dirdata=/srv/http/data
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
-# 1st boot only --------------------------------------------------------------
+# pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then
 	rm /boot/expand
 	if (( $( sfdisk -F /dev/mmcblk0 | head -n1 | awk '{print $6}' ) != 0 )); then
@@ -62,7 +62,9 @@ fi
 
 touch $dirdata/shm/player-mpd
 
-systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac
+(( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
+
+systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac &> /dev/null
 
 rfkill | grep -q bluetooth && systemctl start bluetooth
 
