@@ -70,10 +70,9 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div>
 <heading data-status="rfkill" class="status">Wireless<?=$code?></heading>
 <pre id="coderfkill" class="hide"></pre>
-	<?php if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
 <div data-status="bluetoothctl" <?=$classstatus?>>
 	<a>Bluetooth
-	<br><gr id="btlabel">onboard</gr> <gr><?=$code?></gr></a><i class="fa fa-bluetooth"></i>
+	<br><gr><?=$code?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
@@ -81,20 +80,15 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
-	<?php }
-		  $hwcode = exec( '/srv/http/bash/system.sh hwrevision' );
-		  if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { ?>
 <div data-status="ifconfig" <?=$classstatus?>>
 	<a>Wi-Fi
-	<br><gr id="wllabel">onboard</gr> <g><?=$code?></gr></a><i class="fa fa-wifi"></i>
+	<br><gr><?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
-	<input id="onboardwlan" type="checkbox">
+	<input id="wlan" type="checkbox">
 	<div class="switchlabel" for="onboardwlan"></div>
 </div>
 <pre id="codeifconfig" class="hide"></pre>
-	<?php } ?>
-
 </div>
 
 <div>

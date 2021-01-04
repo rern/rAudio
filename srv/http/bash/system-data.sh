@@ -13,6 +13,8 @@ data='
 # for interval refresh
 (( $# > 0 )) && echo {$data} && exit
 
+dirsystem=/srv/http/data/system
+
 revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
 case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
@@ -27,7 +29,6 @@ case ${revision: -6:1} in
 	c ) socram+='4GB';;
 esac
 
-dirsystem=/srv/http/data/system
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
 [[ -z $snaplatency ]] && snaplatency=0
@@ -54,8 +55,16 @@ else
 	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"'
 fi
+bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
+if [[ $bluetooth == true ]]; then
+	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+else
+	btdiscoverable=false
+fi
 
 data+='
+	, "bluetooth"       : '$bluetooth'
+	, "btdiscoverable"  : '$btdiscoverable'
 	, "hostname"        : "'$( hostname )'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'
@@ -88,13 +97,6 @@ else
 	fi
 	data+='
 	, "soundprofileval" : "'$val'"'
-fi
-if [[ -e /usr/bin/bluetoothctl  ]]; then
-	bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
-	data+='
-	, "bluetooth"       : '$bluetooth
-	[[ $bluetooth == true ]] && data+='
-	, "btdiscoverable"  : '$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 fi
 if [[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]]; then
 	data+='

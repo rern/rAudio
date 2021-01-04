@@ -87,19 +87,7 @@ refreshData = function() {
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		if ( G.bluetooth && !G.onboardbt ) {
-			$( '#btlabel' ).text( 'USB' );
-			$( '#bluetooth' )
-				.prop( 'disabled', true )
-				.next().addClass( 'disabled' );
-		}
-		$( '#onboardwlan' ).prop( 'checked', G.wlan );
-		if ( G.wlan && !G.onboardwlan ) {
-			$( '#wllabel' ).text( 'USB' );
-			$( '#onboardwlan' )
-				.prop( 'disabled', true )
-				.next().addClass( 'disabled' );
-		}
+		$( '#wlan' ).prop( 'checked', G.wlan );
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
@@ -208,32 +196,27 @@ $( '#setting-bluetooth' ).click( function() {
 		, ok       : function() {
 			checked = $( '#infoCheckBox input' ).prop( 'checked' );
 			notify( ( G.bluetooth ? 'Bluetooth Discoverable' : 'Bluetooth' ), checked, 'bluetooth' );
-			if ( G.bluetooth && G.onboardbt ) {
-				rebootText( true, 'on-board Bluetooth' );
-				bash( [ 'bluetoothset', checked, G.reboot.join( '\n' ) ] );
-			} else {
-				bash( [ 'btdiscoverable', checked ] );
-			}
+			bash( [ 'bluetoothset', checked ] );
 		}
 	} );
 } );
-$( '#onboardwlan' ).click( function() {
+$( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( !$( '#system .fa-wifi' ).length ) {
-		notify( 'On-board Wi-Fi', checked, 'wifi' );
-		bash( [ 'onboardwlan', checked ] );
+		notify( 'Wi-Fi', checked, 'wifi' );
+		bash( [ 'wlan', checked, G.onboardwlan ] );
 	} else {
 		info( {
 			  icon    : 'wifi'
-			, title   : 'On-board Wi-Fi'
+			, title   : 'Wi-Fi'
 			, message : 'This will disconnect Wi-Fi from router.'
 						+'<br>Continue?'
 			, cancel  : function() {
-				$( '#onboardwlan' ).prop( 'checked', 1 );
+				$( '#wlan' ).prop( 'checked', 1 );
 			}
 			, ok      : function() {
-				notify( 'On-board Wi-Fi', false, 'wifi' );
-				bash( [ 'onboardwlan', false ] );
+				notify( 'Wi-Fi', false, 'wifi' );
+				bash( [ 'wlan', false, G.onboardwlan ] );
 			}
 		} );
 	}

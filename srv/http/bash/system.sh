@@ -60,8 +60,7 @@ bluetooth )
 	bluetoothctl pairable yes &
 	;;
 bluetoothdisable )
-	systemctl stop bluetooth
-	sed -i '/dtparam=krnbt=on/ d' $fileconfig
+	systemctl disable --now bluetooth
 	pushRefresh
 	;;
 bluetoothset )
@@ -72,24 +71,12 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
-	if rfkill list | grep -q Bluetooth; then
-		systemctl start bluetooth
-		bluetoothctl discoverable $yesno &
+	if ! systemctl -q is-active bluetooth; then
+		systemctl enable --now bluetooth
 		sleep 3
-	else
-		echo "${args[2]}" > $filereboot
 	fi
-	! grep -q 'dtparam=krnbt=on' $fileconfig && sed -i '$ a\dtparam=krnbt=on' $fileconfig
+	bluetoothctl discoverable $yesno &
 	pushRefresh
-	;;
-btdiscoverable )
-	if [[ ${args[1]} == true ]]; then
-		bluetoothctl discoverable yes &
-		touch $dirsystem/btdiscoverable
-	else
-		bluetoothctl discoverable no &
-		rm $dirsystem/btdiscoverable
-	fi
 	;;
 databackup )
 	profile=${args[1]}
@@ -213,6 +200,9 @@ hwrevision )
 hwrpi )
 	hwRpi
 	;;
+hwwireless )
+	[[ $( hwRevision ) =~ ^(08|0c|0d|0e|11)$ ]] && echo 1
+	;;
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
@@ -334,16 +324,6 @@ onboardaudio )
 	echo "${args[2]}" > $filereboot
 	pushRefresh
 	;;
-onboardwlan )
-	if [[ ${args[1]} == true ]]; then
-		modprobe brcmfmac
-		systemctl enable --now netctl-auto@wlan0
-	else
-		systemctl disable --now netctl-auto@wlan0
-		rmmod brcmfmac
-	fi
-	pushRefresh
-	;;
 regional )
 	ntp=${args[1]}
 	regom=${args[2]}
@@ -400,6 +380,18 @@ statusonboard )
 timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
+	pushRefresh
+	;;
+wlan )
+	enable=${args[1]}
+	onboard=${args[2]}
+	if [[ $enable == true ]]; then
+		[[ $onboard == true ]] && modprobe brcmfmac
+		systemctl enable --now netctl-auto@wlan0
+	else
+		systemctl disable --now netctl-auto@wlan0
+		[[ $onboard == true ]] && rmmod brcmfmac
+	fi
 	pushRefresh
 	;;
 	

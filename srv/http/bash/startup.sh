@@ -22,13 +22,14 @@ dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
 # pre-configure --------------------------------------------------------------
-if [[ -e /boot/expand ]]; then
+if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
 	if (( $( sfdisk -F /dev/mmcblk0 | head -n1 | awk '{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk /dev/mmcblk0 &>/dev/null
 		partprobe /dev/mmcblk0
 		resize2fs /dev/mmcblk0p2
 	fi
+	[[ -z $( /srv/http/bash/system.sh hwwireless ) ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -65,8 +66,6 @@ touch $dirdata/shm/player-mpd
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
 # no enabled profile >> disable onboard
 systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac &> /dev/null
-# onboard / usb bluetooth
-rfkill | grep -q bluetooth && systemctl start bluetooth
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 

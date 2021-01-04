@@ -115,19 +115,19 @@ if rows == 4:
     splash = rn
 splash += spaces + irr + rn + spaces +'rAudio'
 
-if len( sys.argv ) == 1: # no argument = splash
+if len( sys.argv ) == 1:
     lcd.write_string( splash )
     lcd.close()
     quit()
 
-if len( sys.argv ) == 2: # 1 argument
+if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
     argv1 = sys.argv[ 1 ]
-    if argv1 == 'off':   # backlight off
+    if argv1 == 'off': # backlight off
         lcd.backlight_enabled = False
-    else:                # string
+    else:
         lcd.auto_linebreaks = True
         lcd.clear()
-        lcd.write_string( argv1.replace( '\n', rn ) )
+        lcd.write_string( argv1.replace( '^', rn ) )
         lcd.close()
     quit()
 
