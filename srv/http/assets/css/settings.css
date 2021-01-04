@@ -167,6 +167,10 @@ body {
 	background-color: #000;
 	overscroll-behavior: none; /* disable android pull-down refresh */
 }
+head,
+#bar-bottom {
+	box-shadow: 0 0 10px 4px #000000;
+}
 .hide{ display: none !important; }
 a,
 a:hover {
