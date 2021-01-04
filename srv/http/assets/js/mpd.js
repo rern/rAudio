@@ -24,13 +24,9 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		var htmlstatus = G.mpd +'<br>';
-		if ( G.mpdstats ) {
-		var counts = G.mpdstats.split( ' ' );
-		htmlstatus += '<span><i class="fa fa-music gr"></i>&nbsp;'+ Number( counts[ 0 ] ).toLocaleString()
-					  +'&ensp;<i class="fa fa-album gr"></i>&ensp;'+ Number( counts[ 1 ] ).toLocaleString()
-					  +'&ensp;<i class="fa fa-artist gr"></i> '+ Number( counts[ 2 ] ).toLocaleString() +'</span>';
-		}
+		var htmlstatus =  G.version +'<br>'
+						+ G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
+						+ G.counts.webradio.toLocaleString() +'&nbsp;<i class="fa fa-webradio gr"></i>';
 		if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 		$( '#statusvalue' ).html( htmlstatus );
 		if ( G.asoundcard == -1 ) {
