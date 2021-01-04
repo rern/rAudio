@@ -629,9 +629,9 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.py false && sleep 2
 	if [[ -n $poweroff ]]; then
+		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
 	else
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'

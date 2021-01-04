@@ -115,24 +115,22 @@ if rows == 4:
     splash = rn
 splash += spaces + irr + rn + spaces +'rAudio'
 
-if len( sys.argv ) == 1:
+if len( sys.argv ) == 1: # no argument = splash
     lcd.write_string( splash )
     lcd.close()
     quit()
 
-if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
+if len( sys.argv ) == 2: # 1 argument
     argv1 = sys.argv[ 1 ]
-    if argv1 == 'off': # backlight off
+    if argv1 == 'off':   # backlight off
         lcd.backlight_enabled = False
-    else:
+    else:                # string
         lcd.auto_linebreaks = True
         lcd.clear()
-        lcd.write_string( argv1.replace( '^', rn ) )
+        lcd.write_string( argv1.replace( '\n', rn ) )
         lcd.close()
     quit()
-
-lcd.clear()
-
+    
 import math
 
 def second2hhmmss( sec ):
@@ -216,3 +214,4 @@ while True:
     lcd.write_string( progress[ :cols ] )
     elapsed += 1
     time.sleep( sl )
+    
