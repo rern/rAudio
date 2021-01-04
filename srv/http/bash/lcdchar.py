@@ -126,7 +126,6 @@ if len( sys.argv ) == 2: # 1 argument
         lcd.backlight_enabled = False
     else:                # string
         lcd.auto_linebreaks = True
-        lcd.clear()
         lcd.write_string( argv1.replace( '\n', rn ) )
         lcd.close()
     quit()
