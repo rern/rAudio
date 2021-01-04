@@ -66,6 +66,7 @@ data+='
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
+	, "onboardwlan"     : '$( [[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && echo true || echo false )'
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
@@ -91,11 +92,6 @@ else
 	fi
 	data+='
 	, "soundprofileval" : "'$val'"'
-fi
-if [[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]]; then
-	data+='
-	, "onboardbt"       : '$( grep -q 'dtparam=krnbt=on' /boot/config.txt && echo true || echo false )'
-	, "onboardwlan"     : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
 fi
 
 echo {$data}
