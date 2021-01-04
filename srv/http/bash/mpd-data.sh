@@ -4,8 +4,11 @@ dirsystem=/srv/http/data/system
 
 . /srv/http/bash/mpd-devices.sh
 
+active=$( mpc &> /dev/null && echo true || echo false )
+
 data='
-	  "devices"         : ['$devices']
+	  "active"          : '$active'
+	, "devices"         : ['$devices']
 	, "asoundcard"      : '$i'
 	, "audioaplayname"  : "'${Aaplayname[$i]}'"
 	, "audiooutput"     : "'${Aname[$i]}'"
@@ -14,7 +17,7 @@ data='
 	, "bufferval"       : '$( cat $dirsystem/bufferset 2> /dev/null || echo false )'
 	, "bufferoutput"    : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true || echo false )'
 	, "bufferoutputval" : '$( cat $dirsystem/bufferoutputset 2> /dev/null || echo false )'
-	, "crossfade"       : '$( [[ $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true || echo false )'
+	, "crossfade"       : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true || echo false )'
 	, "crossfadeval"    : '$( cat $dirsystem/crossfadeset 2> /dev/null || echo false )'
 	, "custom"          : '$( grep -q '#custom$' /etc/mpd.conf && echo true || echo false )'
 	, "ffmpeg"          : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true || echo false )'

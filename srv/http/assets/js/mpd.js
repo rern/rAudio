@@ -31,6 +31,7 @@ refreshData = function() {
 					  +'&ensp;<i class="fa fa-album gr"></i>&ensp;'+ Number( counts[ 1 ] ).toLocaleString()
 					  +'&ensp;<i class="fa fa-artist gr"></i> '+ Number( counts[ 2 ] ).toLocaleString() +'</span>';
 		}
+		if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 		$( '#statusvalue' ).html( htmlstatus );
 		if ( G.asoundcard == -1 ) {
 			$( '.soundcard' ).addClass( 'hide' );
