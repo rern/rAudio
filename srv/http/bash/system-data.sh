@@ -46,15 +46,9 @@ if [[ $i2c == true ]]; then
 									| sort -u )
 fi
 
-if [[ -e /srv/http/data/shm/nosound ]]; then
-	data+='
-	, "audioaplayname"  : ""
-	, "audiooutput"     : "( not available )"'
-else
-	data+='
+data+='
 	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"'
-fi
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 if [[ $bluetooth == true ]]; then
 	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
