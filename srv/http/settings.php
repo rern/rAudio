@@ -7,7 +7,7 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 }
 $time = time();
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-$code = '<i class="fa fa-code"></i>';
+$code = '<i class="fa fa-status"></i>';
 $help = '<i class="help fa fa-question-circle"></i>';
 $chkenable = 'class="enable" type="checkbox"';
 $chknoset = 'class="enablenoset" type="checkbox"';
