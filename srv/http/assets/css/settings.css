@@ -553,7 +553,7 @@ input:checked + .switchlabel.disabled:after {
 .container {
 	max-width: 768px;
 	min-height: 100vh;
-	padding: 40px 55px 100px 55px;
+	padding: 30px 55px 100px 55px;
 }
 .col-l,
 .col-r {
