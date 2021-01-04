@@ -36,7 +36,7 @@ if [[ -n $1 ]]; then # from create-ros.sh
 	version=$1
 	revision=$2
 else
-	mv $diraddons $dirtmp
+	mv $diraddons /tmp
 	rm -rf $dirdata
 fi
 # data directories
@@ -47,7 +47,7 @@ if [[ -n $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
 	echo $revision > $diraddons/r$version
 else
-	mv $dirtmp/addons $dirdata
+	mv /tmp/addons $dirdata
 fi
 # display
 echo '{
