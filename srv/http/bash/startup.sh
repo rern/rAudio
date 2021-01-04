@@ -117,6 +117,6 @@ elif [[ -e $dirsystem/updating ]]; then
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
 	/srv/http/bash/cmd-list.sh &> dev/null &
-elif [[ -e $dirsystem/autoplay ]]; then
-	mpc play
 fi
+
+[[ -e $dirsystem/autoplay ]] && mpc play
