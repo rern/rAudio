@@ -77,7 +77,7 @@ refreshData = function() {
 		$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 		$( '#soxr' ).prop( 'checked', G.soxr );
 		$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-		[ 'aplay', 'amixer', 'crossfade', 'mpd', 'mpdconf' ].forEach( function( id ) {
+		[ 'aplay', 'amixer', 'crossfade', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		resetLocal();

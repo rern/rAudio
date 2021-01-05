@@ -353,7 +353,7 @@ function nicsStatus() {
 		
 		renderQR();
 		bannerHide();
-		[ 'bt', 'lan', 'wlan' ].forEach( function( id ) {
+		[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		showContent();
