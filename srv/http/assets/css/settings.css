@@ -263,6 +263,7 @@ heading.noline {
 }
 heading i {
 	width: 50px;
+	font-size: 22px;
 	text-align: center;
 	color: var( --cg60 );
 }
@@ -273,7 +274,6 @@ heading i.fa-question-circle {
 	float: right;
 	width: 25px;
 	font-size: 20px;
-	color: var( --cg60 );
 }
 @keyframes blinkopaque {
 	50% { opacity: 0; }
@@ -605,6 +605,9 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-l.double {
 	padding-top: 5px;
+}
+.col-l.double gr {
+	font-weight: 300;
 }
 .col-l.double a {
 	display: inline-block;
