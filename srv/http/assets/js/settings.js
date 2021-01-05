@@ -28,7 +28,7 @@ var cmd = {
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
-	, wlan         : [ 'iwconfig wlan0' ]
+	, wlan         : [ '{ ifconfig wlan0; iwconfig wlan0; }' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 function codeToggle( id, target ) {
