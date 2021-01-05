@@ -118,8 +118,7 @@ function editWiFi( ssid, data ) {
 				}
 				
 				newval = {
-					  Interface : G.wlcurrent
-					, ESSID     : $( '#infoTextBox' ).val()
+					  ESSID     : $( '#infoTextBox' ).val()
 					, Key       : Key
 					, IP        : ( $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ? 'static' : 'dhcp' )
 					, Hidden    : $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' )
@@ -255,7 +254,7 @@ function infoConnect( $this ) {
 			  function() {
 				clearTimeout( intervalscan );
 				notify( ssid, 'Forget ...', 'wifi' );
-				bash( [ 'profileremove', G.wlcurrent, ssid ] );
+				bash( [ 'profileremove', ssid ] );
 			}
 			, function() {
 				if ( ip ) {
@@ -275,9 +274,9 @@ function infoConnect( $this ) {
 			clearTimeout( intervalscan );
 			notify( ssid, connected ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
 			if ( connected ) {
-				bash( [ 'disconnect', G.wlcurrent ] );
+				bash( [ 'disconnect' ] );
 			} else {
-				bash( [ 'profileconnect', G.wlcurrent, ssid ] );
+				bash( [ 'profileconnect', ssid ] );
 			}
 		}
 	} );
@@ -315,7 +314,6 @@ function nicsStatus() {
 			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
 				if ( !val.ip && !G.hostapd.hostapdip ) return
 				
-				G.wlcurrent = val.interface;
 				htmlwl = html +'><i class="fa fa-wifi"></i>';
 				if ( G.hostapd.ssid ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
@@ -339,7 +337,6 @@ function nicsStatus() {
 				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
 			} );
 		}
-		if ( !G.wlcurrent ) G.wlcurrent = 'wlan0';
 		$( '#listbt' ).html( htmlbt );
 		$( '#listlan' ).html( htmllan );
 		$( '#listwl' ).html( htmlwl );
@@ -347,7 +344,8 @@ function nicsStatus() {
 		$( '#headbt' )
 			.toggleClass( 'noline', htmlbt !== '' )
 			.toggleClass( 'status', active );
-		$( '#headbt .fa-code' ).toggleClass( 'hide', !active );
+		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
+		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
 		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
@@ -391,7 +389,7 @@ function renderQR() {
 	}
 }
 function wlanScan() {
-	bash( '/srv/http/bash/networks-scanwlan.sh '+ G.wlcurrent, function( list ) {
+	bash( '/srv/http/bash/networks-scanwlan.sh', function( list ) {
 		var good = -60;
 		var fair = -67;
 		var html = '';
@@ -440,7 +438,6 @@ refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;
 $( '.back' ).click( function() {
-	G.wlcurrent = '';
 	clearTimeout( intervalscan );
 	$( '#divinterface, #divwebui, #divaccesspoint' ).removeClass( 'hide' );
 	$( '#divwifi, #divbluetooth' ).addClass( 'hide' );
@@ -532,8 +529,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	var wpa = $this.data( 'wpa' ) || 'wep';
 	var encrypt = $this.data( 'encrypt' ) === 'on';
 	var vals = {
-		  Interface : G.wlcurrent
-		, ESSID     : ssid
+		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
 	if ( !profile ) {

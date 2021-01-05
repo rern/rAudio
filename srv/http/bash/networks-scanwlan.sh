@@ -1,8 +1,6 @@
 #!/bin/bash
 
-[[ -n $1 ]] && wlan=$1 || wlan=wlan0
-
-ifconfig $wlan up
+ifconfig wlan0 up
 
 listProfile() {
 	netctllist=$( netctl list | grep -v eth | sed 's/^\s*\**\s*//' )
@@ -21,13 +19,13 @@ if [[ -n $netctllist ]]; then
 	readarray -t netctllist_ar <<<"$netctllist"
 	# pre-scan saved profile to force display hidden ssid
 	for name in "${netctllist_ar[@]}"; do
-		grep -q '^Hidden=yes' "/etc/netctl/$name" && iwlist $wlan scan essid "$name" &> /dev/null
+		grep -q '^Hidden=yes' "/etc/netctl/$name" && iwlist wlan0 scan essid "$name" &> /dev/null
 	done
 fi
 
-connectedssid=$( iwgetid $wlan -r )
+connectedssid=$( iwgetid wlan0 -r )
 
-iwlistscan=$( iwlist $wlan scan \
+iwlistscan=$( iwlist wlan0 scan \
 				| grep '^\s*Qu\|^\s*En\|^\s*ES\|WPA \|WPA2' \
 				| sed 's/^\s*//; s/Quality.*level\| dBm *\|En.*:\|ES.*://g; s/IE: .*\(WPA.*\) .* .*/\1/' \
 				| sed 's/^"\|"$//g' \
@@ -57,9 +55,9 @@ for line in "${lines[@]}"; do
 		password=
 	fi
 	if [[ $ssid == $connectedssid ]]; then
-		ip=$( ifconfig $wlan | awk '/inet / {print $2}' )
+		ip=$( ifconfig wlan0 | awk '/inet / {print $2}' )
 		[[ -n $ip ]] && connected=1
-		gateway=$( ip r | grep "^default.*$wlan" | awk '{print $3}' )
+		gateway=$( ip r | grep "^default.*wlan0" | awk '{print $3}' )
 		[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -n1 | cut -d' ' -f3 )
 	else
 		connected=

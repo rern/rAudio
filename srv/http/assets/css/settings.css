@@ -89,6 +89,7 @@
 .fa-source:before { content: "\f52A" }
 .fa-sources:before { content: "\f538" }
 .fa-spotify:before { content: "\f593" }
+.fa-status:before { content: "\f50A" }
 .fa-stopwatch:before { content: "\f547" }
 .fa-system:before { content: "\f581" }
 .fa-times:before { content: "\f51A" }
@@ -166,6 +167,10 @@ body {
 	color: var( --cw );
 	background-color: #000;
 	overscroll-behavior: none; /* disable android pull-down refresh */
+}
+head,
+#bar-bottom {
+	box-shadow: 0 0 10px 4px #000000;
 }
 .hide{ display: none !important; }
 a,
@@ -258,7 +263,9 @@ heading.noline {
 }
 heading i {
 	width: 50px;
+	font-size: 22px;
 	text-align: center;
+	color: var( --cg60 );
 }
 heading i.back {
 	width: 40px;
@@ -267,7 +274,6 @@ heading i.fa-question-circle {
 	float: right;
 	width: 25px;
 	font-size: 20px;
-	color: var( --cg60 );
 }
 @keyframes blinkopaque {
 	50% { opacity: 0; }
@@ -549,7 +555,7 @@ input:checked + .switchlabel.disabled:after {
 .container {
 	max-width: 768px;
 	min-height: 100vh;
-	padding: 40px 55px 100px 55px;
+	padding: 30px 55px 100px 55px;
 }
 .col-l,
 .col-r {
@@ -575,8 +581,8 @@ input:checked + .switchlabel.disabled:after {
 	line-height: 18px;
 }
 .settings i,
-.col-l i.code,
-.col-l a i.fa-code {
+.col-l i.status,
+.col-l a i.fa-status {
 	width: 20px;
 	vertical-align: 0;
 	text-align: center
@@ -587,7 +593,7 @@ input:checked + .switchlabel.disabled:after {
 .col-l.icon {
 	padding-top: 2px;
 }
-.col-l i.fa-code {
+.col-l i.fa-status {
 	font-size: 15px;
 }
 .settings i {
@@ -599,6 +605,9 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-l.double {
 	padding-top: 5px;
+}
+.col-l.double gr {
+	font-weight: 300;
 }
 .col-l.double a {
 	display: inline-block;
@@ -733,7 +742,7 @@ input:checked + .switchlabel.disabled:after {
 		margin: 0 0 0 5px;
 		vertical-align: baseline;
 	}
-	.col-l i.fa-code {
+	.col-l i.fa-status {
 		float: none;
 		line-height: 16px;
 	}

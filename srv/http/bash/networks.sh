@@ -37,11 +37,10 @@ btremove )
 	;;
 connect )
 	data=${args[1]}
-	Interface=$( jq -r .Interface <<< $data )
 	ESSID=$( jq -r .ESSID <<< $data )
 	Key=$( jq -r .Key <<< $data )
 	profile="\
-Interface=$Interface
+Interface=wlan0
 Connection=wireless
 ESSID=\"$ESSID\"
 IP=$( jq -r .IP <<< $data )
@@ -67,19 +66,17 @@ Gateway=$( jq -r .Gateway <<< $data )
 	netctl is-active Home2GHz &> /dev/null && active=1
 	echo "$profile" > "/etc/netctl/$ESSID"
 	if [[ -n $new || -n $active ]]; then
-		ifconfig $Interface down
+		ifconfig wlan0 down
 		netctl switch-to "$ESSID"
-		systemctl enable netctl-auto@$Interface
+		systemctl enable netctl-auto@wlan0
 	fi
 	pushRefresh
 	;;
 disconnect )
-	wlan=${args[1]}
-	ssid=${args[2]}
 	netctl stop-all
 	killall wpa_supplicant
-	ifconfig $wlan up
-	systemctl disable netctl-auto@$wlan
+	ifconfig wlan0 up
+	systemctl disable netctl-auto@wlan0
 	pushRefresh
 	;;
 editlan )
@@ -131,11 +128,10 @@ ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profileconnect )
-	wlan=${args[1]}
-	ssid=${args[2]}
-	ifconfig $wlan down
+	ssid=${args[1]}
+	ifconfig wlan0 down
 	netctl switch-to "$ssid"
-	systemctl enable netctl-auto@$wlan
+	systemctl enable netctl-auto@wlan0
 	pushRefresh
 	;;
 profileget )
@@ -146,13 +142,12 @@ profileget )
 	echo {${value:0:-1}}
 	;;
 profileremove )
-	wlan=${args[1]}
-	ssid=${args[2]}
+	ssid=${args[1]}
 	if netctl list | grep -q "^\* $ssid$"; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
-		ifconfig $wlan up
-		systemctl disable netctl-auto@$wlan
+		ifconfig wlan0 up
+		systemctl disable netctl-auto@wlan0
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh

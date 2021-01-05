@@ -24,6 +24,11 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
+		var htmlstatus =  G.version +'<br>'
+						+ G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
+						+ G.counts.webradio.toLocaleString() +'&nbsp;<i class="fa fa-webradio gr"></i>';
+		if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
+		$( '#statusvalue' ).html( htmlstatus );
 		if ( G.asoundcard == -1 ) {
 			$( '.soundcard' ).addClass( 'hide' );
 		} else {
@@ -111,6 +116,12 @@ $( '.enablenoset' ).click( function() {
 	bash( [ id, checked ] );
 } );
 
+/*$( '#mpdconf' ).click( function() {
+	bash( 'cat /etc/mpd.conf', function( data ) {
+		$( '#codempdconf' )
+			.text( data )
+	} );
+} );*/
 $( '#audiooutput, #hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
@@ -499,18 +510,6 @@ $( '#setting-custom' ).click( function() {
 			var customoutput = lines2line( $( '#output' ).val() );
 			bash( [ 'customset', customglobal, customoutput, aplayname ] );
 			notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
-		}
-	} );
-} );
-$( '#mpdrestart' ).click( function() {
-	$this = $( this );
-	info( {
-		  icon    : 'mpd'
-		, title   : 'MPD'
-		, message : 'Restart MPD?'
-		, ok      : function() {
-			notify( 'MPD', 'Restart ...', 'mpd' );
-			bash( [ 'restart' ] );
 		}
 	} );
 } );

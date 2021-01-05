@@ -17,17 +17,16 @@ $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
 <heading data-status="journalctl" class="status">System<?=$code?></heading>
-<pre id="codejournalctl" class="hide"></pre>
 <div id="systemlabel" class="col-l text gr">
 		Version
 	<br>Hardware
 	<br>SoC
-	<br>Output Device
-	<br>Kernel
-	<br>MPD
-	<br>Networks
+	<br>CPU
+	<br>OS Kernel
 </div>
 <div id="systemvalue" class="col-r text"></div> 
+<div style="clear:both"></div>
+<pre id="codejournalctl" class="hide"></pre>
 
 <div>
 <heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$help?></heading>
@@ -70,11 +69,11 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading>Wireless</heading>
-	<?php if ( file_exists( '/usr/bin/bluetoothctl' ) ) { ?>
+<heading data-status="rfkill" class="status">Wireless<?=$code?></heading>
+<pre id="coderfkill" class="hide"></pre>
 <div data-status="bluetoothctl" <?=$classstatus?>>
 	<a>Bluetooth
-	<br><gr id="btlabel">onboard</gr> <gr><?=$code?></gr></a><i class="fa fa-bluetooth"></i>
+	<br><gr><?=$code?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
@@ -82,20 +81,15 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
-	<?php }
-		  $hwcode = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-		  if ( in_array( $hwcode, [ '0c', '08', '0e', '0d', '11' ] ) ) { ?>
-<div data-status="ifconfig" <?=$classstatus?>>
+<div data-status="iwconfig" <?=$classstatus?>>
 	<a>Wi-Fi
-	<br><gr id="wllabel">onboard</gr> <g><?=$code?></gr></a><i class="fa fa-wifi"></i>
+	<br><gr><?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
-	<input id="onboardwlan" type="checkbox">
+	<input id="wlan" type="checkbox">
 	<div class="switchlabel" for="onboardwlan"></div>
 </div>
-<pre id="codeifconfig" class="hide"></pre>
-	<?php } ?>
-
+<pre id="codeiwconfig" class="hide"></pre>
 </div>
 
 <div>
