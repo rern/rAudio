@@ -2,8 +2,8 @@
 <?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
 	<div>
 	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
-	<pre id="codebt" class="hide"></pre>
 	<ul id="listbt" class="entries"></ul>
+	<pre id="codebt" class="hide"></pre>
 	<span <?=$classhelp?>>
 			&bull; As sender / source - Send signal to another device.
 		<br>&ensp; - Pairing - Turn on discovery mode on receiver device.
@@ -19,23 +19,23 @@
 <?php }
 	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
 	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><?=$code?></heading>
-	<pre id="codelan" class="hide"></pre>
 	<ul id="listlan" class="entries"></ul>
+	<pre id="codelan" class="hide"></pre>
 <?php }
 	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
 	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$code?><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
-	<pre id="codewlan" class="hide"></pre>
 	<ul id="listwl" class="entries"></ul>
+	<pre id="codewlan" class="hide"></pre>
 <?php } ?>
 	
 	<div>
 	<heading class="status" data-status="avahi">Web User Interface<?=$code?><?=$help?></heading>
-	<pre id="codeavahi" class="hide"></pre>
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>
 		<div id="qrwebui" class="qr"></div>
 		<span <?=$classhelp?>>Scan QR code or use IP address to connect with web user interface.</span>
 	</div>
+	<pre id="codeavahi" class="hide"></pre>
 	</div>
 </div>
 

@@ -22,10 +22,12 @@ var cmd = {
 	, crossfade    : [ 'mpc crossfade' ]
 	, fstab        : [ 'cat /etc/fstab' ]
 	, ifconfig     : [ 'ifconfig wlan0' ]
+	, iwconfig     : [ 'iwconfig wlan0' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ 'ifconfig eth0' ]
+	, mount        : [ 'mount | grep ^/dev' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
-	, mount        : [ 'mount | grep " / \\|MPD"' ]
+	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ 'ifconfig wlan0' ]
 }
@@ -270,7 +272,7 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
 $( '.status' ).click( function( e ) {
-	if ( !$( this ).find( '.fa-code.hide' ).length ) codeToggle( $( this ).data( 'status' ), e.target );
+	codeToggle( $( this ).data( 'status' ), e.target );
 } );
 // bar-bottom
 if ( short ) {

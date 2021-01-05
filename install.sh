@@ -16,4 +16,8 @@ getinstallzip
 
 /srv/http/bash/mpd-conf.sh
 
+if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system.sh hwwireless ) ]]; then
+	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
+fi
+
 installfinish

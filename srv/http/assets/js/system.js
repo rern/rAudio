@@ -50,17 +50,18 @@ function rebootText( enable, device ) {
 	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
+	var startup = G.startup.split( ' ' );
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' )
 		+'<br>'+ ( G.cputemp < 80 ? G.cputemp +' °C' : '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>' )
 		+'<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
 		+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
-		+'<br>'+ G.startup.replace( ' ', ' <gr class="wide">(kernel)</gr> + ' ) +' <gr class="wide">(userspace)</gr>';
+		+'<br><gr>kernel:</gr> '+ Math.round( startup[ 0 ] ) +'s + <gr>userspace:</gr> '+ Math.round( startup[ 1 ] ) +'s';
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
 			status += '<br><i class="fa fa-warning blink red"></i>&ensp;Voltage under 4.7V - currently detected.'
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
-			status += '<br><i class="fa fa-warning blink"></i>&ensp;Voltage under 4.7V - occurred.';
+			status += '<br><i class="fa fa-warning"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
 	}
 	return status
@@ -71,70 +72,22 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		if ( G.ip ) {
-			var pad = '<span>';
-			var ip = G.ip.split( ',' );
-			var iplist = '';
-			ip.forEach( function( el ) {
-				var val = el.split( ' ' ); // [ interface, mac, ip ]
-				if ( val[ 2 ] ) {
-					iplist += '<i class="fa fa-'+ ( val[ 0 ] === 'eth0' ? 'lan' : 'wifi' ) +' gr"></i>&ensp;';
-					iplist += val[ 1 ] +'<span class="wide">&emsp;<gr>'+ val[ 2 ] +'</gr></span><br>';
-					systemlabel += '<br>';
-					if ( !G.streamingip ) G.streamingip = val[ 1 ];
-					pad += '<br>';
-				}
-			} );
-		}
-		$( '#systemlabel span' ).remove();
-		$( '#systemlabel' ).append( pad +'Sources</span>' );
-		systemlabel += '<span class="settings" data-setting="sources">Sources<i class="fa fa-gear"></i></span>';
-		var sourcelist = '';
-		$.each( G.sources.list, function( i, val ) {
-			sourcelist += '<i class="fa fa-'+ val.icon +' gr"></i>&ensp;'+ val.mountpoint.replace( '/mnt/MPD/USB/', '' );
-			sourcelist += ( val.size ? ' <gr>&bull;</gr> ' + val.size : '' ) +'<br>';
-			systemlabel += '<br>';
-		} );
-		var mpdstats = '';
-		if ( G.mpdstats ) {
-		var counts = G.mpdstats.split( ' ' );
-		var mpdstats = '<span class="wide">&emsp;<i class="fa fa-music gr"></i>&nbsp;'+ Number( counts[ 0 ] ).toLocaleString()
-					  +'&ensp;<i class="fa fa-album gr"></i>&ensp;'+ Number( counts[ 1 ] ).toLocaleString()
-					  +'&ensp;<i class="fa fa-artist gr"></i> '+ Number( counts[ 2 ] ).toLocaleString() +'</span>';
-		}
-		var soc = '<span class="wide">'+ G.soc +' <gr>&bull;</gr> </span>';
-		soc += G.rpi01 ? '' : '4 ';
-		soc += G.soccpu +' <gr>@</gr> ';
-		soc += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
-		soc += ' <gr>&bull;</gr> '+ G.socram;
+		var cpu = G.rpi01 ? '' : '4 ';
+		cpu += G.soccpu +' <gr>@</gr> ';
+		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
+		cpu += ' <gr>&bull;</gr> '+ G.socram;
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr><br>'
 			+ G.rpimodel.replace( /(Rev.*)$/, '<gr>$1</gr>' ) +'<br>'
-			+ soc +'<br>'
-			+ '<span id="output">'+ G.audiooutput +'</span><br>'
-			+ G.kernel +'<br>'
-			+ G.mpd + mpdstats
-			+'<br>'
-			+ iplist
-			+ sourcelist
+			+ G.soc +'<br>'
+			+ cpu +'<br>'
+			+ G.kernel
 		);
 		$( '#status' ).html( renderStatus );
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		if ( G.bluetooth && !G.onboardbt ) {
-			$( '#btlabel' ).text( 'USB' );
-			$( '#bluetooth' )
-				.prop( 'disabled', true )
-				.next().addClass( 'disabled' );
-		}
-		$( '#onboardwlan' ).prop( 'checked', G.wlan );
-		if ( G.wlan && !G.onboardwlan ) {
-			$( '#wllabel' ).text( 'USB' );
-			$( '#onboardwlan' )
-				.prop( 'disabled', true )
-				.next().addClass( 'disabled' );
-		}
+		$( '#wlan' ).prop( 'checked', G.wlan );
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
@@ -154,7 +107,7 @@ refreshData = function() {
 		$( '#timezone' )
 			.val( G.timezone )
 			.selectric( 'refresh' );
-		[ 'bluetoothctl', 'ifconfig', 'configtxt', 'journalctl', 'soundprofile' ].forEach( function( id ) {
+		[ 'bluetoothctl', 'ifconfig', 'configtxt', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
@@ -243,32 +196,27 @@ $( '#setting-bluetooth' ).click( function() {
 		, ok       : function() {
 			checked = $( '#infoCheckBox input' ).prop( 'checked' );
 			notify( ( G.bluetooth ? 'Bluetooth Discoverable' : 'Bluetooth' ), checked, 'bluetooth' );
-			if ( G.bluetooth && G.onboardbt ) {
-				rebootText( true, 'on-board Bluetooth' );
-				bash( [ 'bluetoothset', checked, G.reboot.join( '\n' ) ] );
-			} else {
-				bash( [ 'btdiscoverable', checked ] );
-			}
+			bash( [ 'bluetoothset', checked ] );
 		}
 	} );
 } );
-$( '#onboardwlan' ).click( function() {
+$( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( !$( '#system .fa-wifi' ).length ) {
-		notify( 'On-board Wi-Fi', checked, 'wifi' );
-		bash( [ 'onboardwlan', checked ] );
+		notify( 'Wi-Fi', checked, 'wifi' );
+		bash( [ 'wlan', checked, G.onboardwlan ] );
 	} else {
 		info( {
 			  icon    : 'wifi'
-			, title   : 'On-board Wi-Fi'
+			, title   : 'Wi-Fi'
 			, message : 'This will disconnect Wi-Fi from router.'
 						+'<br>Continue?'
 			, cancel  : function() {
-				$( '#onboardwlan' ).prop( 'checked', 1 );
+				$( '#wlan' ).prop( 'checked', 1 );
 			}
 			, ok      : function() {
-				notify( 'On-board Wi-Fi', false, 'wifi' );
-				bash( [ 'onboardwlan', false ] );
+				notify( 'Wi-Fi', false, 'wifi' );
+				bash( [ 'wlan', false, G.onboardwlan ] );
 			}
 		} );
 	}
@@ -444,7 +392,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonlabel   : [ 'Splash', 'Off' ]
 		, buttoncolor   : [ '#448822',       '#de810e' ]
 		, button        : !G.lcdchar ? '' : [ 
-			  function() { bash( '/srv/http/bash/lcdchar.py rr' ) }
+			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
 		]
 		, buttonnoreset : 1

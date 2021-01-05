@@ -14,14 +14,7 @@ sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf
 sed -i 's/fb1/fb0/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf 2> /dev/null
 
 # config.txt
-code=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-hwcode=${code: -3:2}
 if (( $# == 0 )); then
-	case $hwcode in
-		09 | 0c )         rpi=0;;
-		00 | 01 |02 |03 ) rpi=1;;
-		11 )              rpi=4;;
-	esac
 	config="\
 over_voltage=2
 hdmi_drive=2
@@ -32,7 +25,7 @@ max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on
-"
+"	rpi=$( /srv/http/bash/system.sh hwrpi )
 	[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
 	[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
 	
@@ -43,7 +36,7 @@ if [[ -n $1 ]]; then # from create-ros.sh
 	version=$1
 	revision=$2
 else
-	mv $diraddons $dirtmp
+	mv $diraddons /tmp
 	rm -rf $dirdata
 fi
 # data directories
@@ -54,7 +47,7 @@ if [[ -n $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
 	echo $revision > $diraddons/r$version
 else
-	mv $dirtmp/addons $dirdata
+	mv /tmp/addons $dirdata
 fi
 # display
 echo '{
@@ -103,9 +96,6 @@ echo '[
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
 # system
-[[ $rpi == 0 ]] && output='HDMI 1' || output=Headphone
-echo "bcm2835 $output" > $dirsystem/audio-aplayname
-echo "On-board - $output" > $dirsystem/audio-output
 echo rAudio > $dirsystem/hostname
 hostnamectl set-hostname rAudio
 sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf

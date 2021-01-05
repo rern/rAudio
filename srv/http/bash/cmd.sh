@@ -113,7 +113,7 @@ pushstreamStatus() {
 	if [[ $1 == lcdchar && -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
-									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed' \
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
 									| sed 's/^$\|null/false/' )
 		$dirbash/lcdchar.py "${data[@]}" &
 	fi
@@ -629,9 +629,9 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py rr
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.py false && sleep 2
 	if [[ -n $poweroff ]]; then
+		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
 	else
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'

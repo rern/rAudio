@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 import sys
-if len( sys.argv ) == 1: quit()
-
 import os.path
 import configparser
 config = configparser.ConfigParser()
@@ -26,7 +24,7 @@ else:
     pins_data = list( data )
     
 rows = cols == 16 and 2 or 4
-    
+
 if address: # i2c
     from RPLCD.i2c import CharLCD
     lcd = CharLCD( chip, address )
@@ -35,12 +33,7 @@ else:
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data, auto_linebreaks=False )
-
-argv1 = sys.argv[ 1 ] # backlight on/off
-if argv1 == 'on' or argv1 == 'off':
-    lcd.backlight_enabled = argv1 == 'on' and True or False
-    quit()
-
+    
 pause = (
     0b00000,
     0b11011,
@@ -122,18 +115,21 @@ if rows == 4:
     splash = rn
 splash += spaces + irr + rn + spaces +'rAudio'
 
-if len( sys.argv ) == 2: # rr - splash or single argument string (^ = linebreak)
-    if argv1 == 'rr':
-        lcd.write_string( splash )
-    else:
-        lcd.auto_linebreaks = True
-        lcd.clear()
-        lcd.write_string( argv1.replace( '^', rn ) )
+if len( sys.argv ) == 1: # no argument = splash
+    lcd.write_string( splash )
     lcd.close()
     quit()
 
-lcd.clear()
-
+if len( sys.argv ) == 2: # 1 argument
+    argv1 = sys.argv[ 1 ]
+    if argv1 == 'off':   # backlight off
+        lcd.backlight_enabled = False
+    else:                # string
+        lcd.auto_linebreaks = True
+        lcd.write_string( argv1.replace( '\n', rn ) )
+        lcd.close()
+    quit()
+    
 import math
 
 def second2hhmmss( sec ):
@@ -147,8 +143,8 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed' ] # assign variables
-for i in range( 1, 7 ):
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp' ] # assign variables
+for i in range( 1, 8 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
@@ -164,18 +160,23 @@ if total != 'false':
     total = round( float( total ) )
     totalhhmmss = second2hhmmss( total )
 else:
-    total = ''
     totalhhmmss = ''
     
-elapsed = elapsed != 'false' and round( float( elapsed ) )
-elapsedhhmmss = elapsed and second2hhmmss( elapsed )
+if elapsed != 'false':
+    elapsed = round( float( elapsed ) )
+    elapsedhhmmss = second2hhmmss( elapsed )
+else:
+    elapsedhhmmss = ''
 
 if state == 'stop':
     progress = totalhhmmss
 else:
-    slash = cols == 20 and ' / ' or '/'
-    totalhhmmss = total and slash + totalhhmmss
-    progress = elapsedhhmmss + totalhhmmss
+    if totalhhmmss != '':
+        slash = cols == 20 and ' / ' or '/'
+        totalhhmmss = slash + totalhhmmss
+        progress = elapsedhhmmss + totalhhmmss
+    else:
+        progress = ''
 
 istate = state == 'stop' and  istop or ( state == 'pause' and ipause or iplay )
 progress = istate + progress
@@ -196,20 +197,20 @@ if state == 'stop' or state == 'pause':
     quit()
 
 # play
-import subprocess
+if elapsed == 'false': quit()
+
 import time
 
-prog = subprocess.getoutput( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1" )
-elapsed = 0
-for each in prog.split( ':' ): elapsed = elapsed * 60 + int( each )
 row = rows - 1
 starttime = time.time()
+elapsed += round( starttime - int( timestamp ) / 1000 )
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
-    time.sleep( sl )
     progress = iplay + second2hhmmss( elapsed ) + totalhhmmss
     if len( progress ) > ( cols - 3 ): progress += '  '
     lcd.cursor_pos = ( row, 0 )
     lcd.write_string( progress[ :cols ] )
     elapsed += 1
+    time.sleep( sl )
+    

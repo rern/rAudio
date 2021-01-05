@@ -50,8 +50,6 @@ audio_output {
 fi
 pushstream refresh '{"page":"network"}'
 
-audiooutput=$( cat $dirsystem/audio-output )
-audioaplayname=$( cat $dirsystem/audio-aplayname )
 mpdfile=/etc/mpd.conf
 mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
 
@@ -150,7 +148,6 @@ fi
 
 # udev rules - usb dac
 if [[ $# -gt 0 && $1 != bt ]]; then
-	mpc | grep -q '\[playing' && mpc -q stop # fix: mpd Failed to read mixer
 	cardfile=$dirtmp/asoundcard
 	if [[ $1 == remove ]]; then
 		card=$( cat $cardfile )

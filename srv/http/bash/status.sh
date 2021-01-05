@@ -46,7 +46,8 @@ airplay )
 , "playlistlength" : 1
 , "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"          : "play"
-, "Time"           : '$Time
+, "Time"           : '$Time'
+, "timestamp"      : '$now
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -86,10 +87,10 @@ spotify )
 	elapsed=$(( ( elapsed + 500 ) / 1000 ))
 ########
 	status+=$( cat $file )
-########
 	status+='
-, "elapsed" : '$elapsed'
-, "state"   : "'$state'"'
+, "elapsed"   : '$elapsed'
+, "state"     : "'$state'"
+, "timestamp" : '$now
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -231,10 +232,11 @@ else
 	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
-, "Album"  : "'$Album'"
-, "Artist" : "'$Artist'"
-, "Time"   : '$Time'
-, "Title"  : "'$Title'"'
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "Time"      : '$Time'
+, "timestamp" : '$( date +%s%3N )'
+, "Title"     : "'$Title'"'
 	systemctl stop radiowatchdog
 fi
 
@@ -318,8 +320,8 @@ fi
 
 # coverart
 if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
-	rm -f $dirtmp/webradio
 	date=$( date +%s )
+	rm -f $dirtmp/webradio
 	filenoext=/data/webradiosimg/$urlname
 	pathnoext=/srv/http$filenoext
 	if [[ -e $pathnoext.gif ]]; then
