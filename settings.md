@@ -15,15 +15,15 @@ Settings - status and value
 - login **`F`** `[[ -e /srv/http/data/system/login ]]`
 	- `/srv/http/data/system/loginpw`
 - autoplay **`F`** `[[ -e /srv/http/data/system/startup ]]`
-- hostapd `systemctl -q is-active smb`
+- hostapd `systemctl -q is-active hostapd`
 	- `/etc/hostapd/hostapd.conf`
 
 ### MPD
-- outputdevice `/srv/http/data/system/audio-{aplayname,output}`
+- outputdevice `cat /srv/http/data/system/audio-{aplayname,output}`
 	- `/srv/http/bash/mpd-devices.sh`
-- mixertype `outputdevice` > `mixertype` or `/srv/http/data/system/mixertype-$output`
+- mixertype `devices[N].mixertype`
 	- `/srv/http/bash/mpd-devices.sh`
-- dop **`F`** `[[ -e /srv/http/data/system/dop-$output ]]`
+- dop `devices[N].dop`
 - crossfade `mpc crossfade | cut -d' ' -f2` and **`F`** `[[ -e /srv/http/data/system/crossfade ]]` - `datarestore`
 	- `/srv/http/data/system/crossfadeset`
 - normalization `grep -q 'volume_normalization.*yes' /etc/mpd.conf`
@@ -43,7 +43,7 @@ Settings - status and value
 
 ### System
 - on-board bluetooth `grep -q dtparam=krnbt=on /boot/config.txt`
-- on-board wlan `lsmod | grep -q ^brcmfmac` and **`F`** `[[ -e /srv/http/data/system/onboard-wlan ]]` - `startup.sh`
+- on-board wlan `lsmod | grep -q ^brcmfmac`
 - i2s audio `cat /srv/http/data/system/audio-{aplayname,output}`
 - lcdchar **`F`** `[[ -e /srv/http/data/system/lcdchar ]]`
 	- `/etc/lcdchar.conf`

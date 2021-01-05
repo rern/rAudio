@@ -14,7 +14,7 @@ installstart "$1"
 
 getinstallzip
 
-systemctl restart mpd
+/srv/http/bash/mpd-conf.sh
 
 if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system.sh hwwireless ) ]]; then
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt

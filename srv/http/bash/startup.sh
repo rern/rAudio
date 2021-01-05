@@ -61,6 +61,7 @@ fi
 [[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdchar.py
 
 touch $dirdata/shm/player-mpd
+
 # onboard + usb wifi >> disable onboard
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
 # no enabled profile >> disable onboard
