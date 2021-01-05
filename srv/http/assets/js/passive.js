@@ -32,11 +32,13 @@ window.addEventListener( 'orientationchange', function() {
 						G.status.elapsed = HMS2Second( HMS );
 						displayPlayback();
 						renderPlayback();
+						setButtonControl()
 					}
 				} );
 			} else {
 				displayPlayback();
 				renderPlayback();
+				setButtonControl()
 			}
 		} else if ( G.library ) {
 			if ( G.librarylist || G.savedlist ) {
