@@ -344,7 +344,8 @@ function nicsStatus() {
 		$( '#headbt' )
 			.toggleClass( 'noline', htmlbt !== '' )
 			.toggleClass( 'status', active );
-		$( '#headbt .fa-code' ).toggleClass( 'hide', !active );
+		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
+		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
 		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
