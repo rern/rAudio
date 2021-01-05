@@ -80,7 +80,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
-<div data-status="ifconfig" <?=$classstatus?>>
+<div data-status="iwconfig" <?=$classstatus?>>
 	<a>Wi-Fi
 	<br><gr><?=$code?></gr></a><i class="fa fa-wifi"></i>
 </div>
@@ -88,7 +88,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="wlan" type="checkbox">
 	<div class="switchlabel" for="onboardwlan"></div>
 </div>
-<pre id="codeifconfig" class="hide"></pre>
+<pre id="codeiwconfig" class="hide"></pre>
 </div>
 
 <div>

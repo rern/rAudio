@@ -22,6 +22,7 @@ var cmd = {
 	, crossfade    : [ 'mpc crossfade' ]
 	, fstab        : [ 'cat /etc/fstab' ]
 	, ifconfig     : [ 'ifconfig wlan0' ]
+	, iwconfig     : [ 'iwconfig wlan0' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ 'ifconfig eth0' ]
 	, mount        : [ 'mount | grep ^/dev' ]
