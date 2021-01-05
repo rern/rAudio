@@ -23,12 +23,12 @@ var cmd = {
 	, fstab        : [ 'cat /etc/fstab' ]
 	, iw           : [ 'iw list' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
-	, lan          : [ 'ifconfig eth0' ]
+	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'mount | grep ^/dev' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
-	, wlan         : [ '{ ifconfig wlan0; iwconfig wlan0; }' ]
+	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0; }", "{ ifconfig wlan0; iwconfig wlan0; }" ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 function codeToggle( id, target ) {
