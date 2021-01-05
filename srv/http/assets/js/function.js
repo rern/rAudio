@@ -1368,8 +1368,7 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
-	var prefix = displaytime ? 'ti' : 'i';
+	var prefix = G.display.time ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
@@ -1385,7 +1384,7 @@ function setButtonOptions() {
 	}
 	[ 'consume', 'librandom' ].forEach( function( option ) {
 		$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
-		if ( displaytime ) {
+		if ( G.display.time ) {
 			$( '#i-'+ option ).addClass( 'hide' );
 			$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		} else {
