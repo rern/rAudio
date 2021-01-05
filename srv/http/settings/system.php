@@ -17,7 +17,6 @@ $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
 <heading data-status="journalctl" class="status">System<?=$code?></heading>
-<pre id="codejournalctl" class="hide"></pre>
 <div id="systemlabel" class="col-l text gr">
 		Version
 	<br>Hardware
@@ -26,6 +25,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br>OS Kernel
 </div>
 <div id="systemvalue" class="col-r text"></div> 
+<div style="clear:both"></div>
+<pre id="codejournalctl" class="hide"></pre>
 
 <div>
 <heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$help?></heading>
