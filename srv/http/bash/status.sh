@@ -4,23 +4,41 @@ dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
+consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
+counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
+lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
+librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
+player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
+playlistlength=$( mpc playlist | wc -l )
+playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
-lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
-player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
-volume=$( [[ -e $dirtmp/nosound ]] && echo false || /srv/http/bash/cmd.sh volumeget )
+if [[ -e $dirtmp/nosound ]]; then
+	volume=false
+else
+	volumeget=$( /srv/http/bash/cmd.sh volumeget$'\n'control )
+	volume=$( echo $volumeget | cut -d' ' -f1 )
+	control=$( echo $volumeget | cut -d' ' -f2- )
+fi
+#volume=$( [[ -e $dirtmp/nosound ]] && echo false || /srv/http/bash/cmd.sh volumeget )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
 ########
 status='
-  "player"     : "'$player'"
-, "webradio"   : false
-, "btclient"   : '$btclient'
-, "relays"     : '$relays'
-, "relayson"   : '$relayson'
-, "lcd"        : '$lcd'
-, "volume"     : '$volume'
-, "volumemute" : 0'
+  "player"         : "'$player'"
+, "btclient"       : '$btclient'
+, "consume"        : '$consume'
+, "control"        : "'$control'"
+, "counts"         : '$counts'
+, "lcd"            : '$lcd'
+, "librandom"      : '$librandom'
+, "playlistlength" : '$playlistlength'
+, "playlists"      : '$playlists'
+, "relays"         : '$relays'
+, "relayson"       : '$relayson'
+, "volume"         : '$volume'
+, "volumemute"     : 0
+, "webradio"       : false'
 
 case $player in
 
@@ -34,8 +52,8 @@ airplay )
 	done
 	start=$( cat $path-start 2> /dev/null )
 	Time=$( cat $path-Time 2> /dev/null || echo false )
+	now=$( date +%s%3N )
 	if [[ -n $start && -n $Time ]]; then
-		now=$( date +%s%3N )
 		elapsed=$(( ( now - start + 500 ) / 1000 ))
 	fi
 	[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
@@ -74,9 +92,9 @@ spotify )
 	file=$dirtmp/spotify
 	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
 	state=$( cat $file-state )
+	now=$( date +%s%3N )
 	if [[ $state == play ]]; then
 		start=$( cat $file-start )
-		now=$( date +%s%3N )
 		elapsed=$(( now - start + elapsed ))
 		time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $file )
 		if (( $elapsed > $(( time * 1000 )) )); then
@@ -98,7 +116,7 @@ spotify )
 	
 esac
 
-filter='^Album\|^Artist\|^audio\|^bitrate\|^consume\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
+filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
 
 mpdStatus() {
@@ -127,14 +145,14 @@ for line in "${lines[@]}"; do
 		bitrate )
 			bitrate=$(( val * 1000 ));;
 		# true/false
-		consume | random | repeat | single )
+		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
 ########
 			status+='
 , "'$key'" : '$tf
 			;;
 		# number
-		duration | elapsed | playlistlength | song | Time | volume )
+		duration | elapsed | song | Time | volume )
 			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
 		# string - escaped name
 		Album | AlbumArtist | Artist | Name | Title )
@@ -149,27 +167,20 @@ for line in "${lines[@]}"; do
 done
 
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
-[[ -e $dirsystem/librandom ]] && librandom=true || librandom=false
-[[ -z $playlistlength ]] && playlistlength=0
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
 [[ -e $dirsystem/updating ]] && updating_db=true || updating_db=false
 [[ -z $volume ]] && volume=false
-counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
-playlists=$( ls /srv/http/data/playlists | wc -l )
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
+, "control"        : ""
 , "elapsed"        : '$elapsed'
 , "file"           : "'$file'"
-, "playlistlength" : '$playlistlength'
 , "song"           : '$song'
 , "state"          : "'$state'"
 , "updating_db"    : '$updating_db'
 , "volume"         : '$volume'
-, "counts"         : '$counts'
-, "librandom"      : '$librandom'
-, "playlists"      : '$playlists'
 , "volumemute"     : '$volumemute
 
 if (( $playlistlength  == 0 )); then

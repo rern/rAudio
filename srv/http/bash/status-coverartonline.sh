@@ -51,11 +51,12 @@ else
 	param="track=$arg1"
 	method='method=track.getInfo'
 fi
+apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -s -m 5 -G \
 	--data-urlencode "artist=$artist" \
 	--data-urlencode "$param" \
 	--data-urlencode "$method" \
-	--data-urlencode "api_key=ba8ad00468a50732a3860832eaed0882" \
+	--data-urlencode "api_key=$apikey" \
 	--data-urlencode "autocorrect=1" \
 	--data-urlencode "format=json" \
 	http://ws.audioscrobbler.com/2.0/ )
