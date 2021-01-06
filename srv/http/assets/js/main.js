@@ -1960,10 +1960,8 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 		$contextlist.eq( 1 ).add( $contextlist.eq( 2 ) ).addClass( 'hide' );
 	}
 	$contextlist.eq( 3 ).toggleClass( 'hide', $thisli.hasClass( 'active' ) );
-	$contextlist.eq( 0 )
-		.add( $contextlist.eq( 3 ) )
-		.add( $menu.find( '.submenu' ) )
-		.toggleClass( 'disabled', G.status.player !== 'mpd' );
+	$contextlist.slice( 0, 4 ).toggleClass( 'hide', G.status.player !== 'mpd' );
+	$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 	$contextlist.eq( 6 ).toggleClass( 'hide', radio );
 	$contextlist.eq( 7 ).toggleClass( 'hide', radio );
 	$( '#menu-plaction .submenu' ).toggleClass( 'hide', radio );

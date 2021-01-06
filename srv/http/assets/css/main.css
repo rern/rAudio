@@ -338,14 +338,14 @@ i.bookmark,
 .infocontent .fa-webradio {
 	color: var( --cg60 );
 }
-.disable,
-.menu a.disabled,
-.menu a.disabled i,
-.menu i.disabled {
-	color: var( --cg60 ) !important;
+.disable {
+	color: var( --cg60 );
 }
 .disabled {
 	pointer-events: none;
+}
+.submenu.disabled {
+	color: var( --cgl ) !important;
 }
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
