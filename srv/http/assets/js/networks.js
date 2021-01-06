@@ -313,8 +313,8 @@ function nicsStatus() {
 				htmllan += '</li>';
 			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
 				if ( !val.ip && !G.hostapd.hostapdip ) return
-				
-				htmlwl = html +'><i class="fa fa-wifi"></i>';
+				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
+				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
 				if ( G.hostapd.ssid ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
@@ -390,8 +390,6 @@ function renderQR() {
 }
 function wlanScan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh', function( list ) {
-		var good = -60;
-		var fair = -67;
 		var html = '';
 		if ( list.length ) {
 			$.each( list, function( i, val ) {
@@ -404,7 +402,7 @@ function wlanScan() {
 				html += val.password ? ' data-password="'+ val.password +'"' : '';
 				html += profile ? ' data-profile="'+ profile +'">' : '>';
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
-				html += '<span class="wf'+ signal +'"><i class="fa fa-wifi1"></i><i class="fa fa-wifi2"></i><i class="fa fa-wifi3"></i></span>'
+				html += '<span class="wf'+ signal +'">'+ wifiicon +'</span>'
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
 				html += val.dbm < fair ? '<gr>'+ val.ssid +'</gr>' : val.ssid;
 				html += val.encrypt === 'on' ? ' <i class="fa fa-lock"></i>' : '';
@@ -437,6 +435,9 @@ refreshData = function() {
 refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;
+var wifiicon = '<i class="fa fa-wifi1"></i><i class="fa fa-wifi2"></i><i class="fa fa-wifi3"></i>';
+var good = -60;
+var fair = -67;
 $( '.back' ).click( function() {
 	clearTimeout( intervalscan );
 	$( '#divinterface, #divwebui, #divaccesspoint' ).removeClass( 'hide' );

@@ -105,9 +105,13 @@
 .fa-wifi2:before { content: "\f589" }
 .fa-wifi3:before { content: "\f58A" }
 .fa-wifi1,
+.fa-wifi2,
+.fa-wifi3 {
+	vertical-align: 0 !important;
+}
+.fa-wifi1,
 .fa-wifi2 {
 	position: absolute;
-	width: 40px;
 }
 .wf1 .fa-wifi2,
 .wf1 .fa-wifi3 {

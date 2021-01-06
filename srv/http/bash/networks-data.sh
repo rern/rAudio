@@ -32,11 +32,13 @@ for line in "${lines[@]}"; do
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
 	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
-		ssid=$( iwgetid $interface -r )
+		ssid=$( iwgetid wlan0 -r )
 		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
 		password=$( grep ^Key "/etc/netctl/$ssid" | cut -d= -f2- | tr -d '"' )
+		dbm=$( iwconfig wlan0 | grep Signal | sed 's/.*level=\(.*\) dBm/\1/' )
 	else
 		ssid=
+		dbm=0
 	fi
 	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 	list+=',{
@@ -47,6 +49,7 @@ for line in "${lines[@]}"; do
 		, "ip"       : "'$ip'"
 		, "mac"      : "'$mac'"
 		, "ssid"     : "'$ssid'"
+		, "dbm"      : '$dbm'
 	}'
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
