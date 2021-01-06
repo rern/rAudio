@@ -104,6 +104,7 @@ function psAirplay( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
+	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -220,11 +221,9 @@ function psMpdPlayer( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
+	if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	renderPlayback();
-	if ( G.status.player !== 'mpd' ) displayBottom();
-	//if ( G.addplay ) switchPage( 'playback' );
-	//G.addplay = 0;
 	if ( G.playlist ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
@@ -247,10 +246,10 @@ function psMpdPlayer( data ) {
 				}
 			}
 		}
-		bannerHide();
 		displayPlayback();
 		renderPlayback();
 	}
+	bannerHide();
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
@@ -430,6 +429,10 @@ function psSnapcast( data ) {
 	}
 }
 function psSpotify( data ) {
+	if ( G.status.player !== 'spotify' ) {
+		G.status.player = 'spotify';
+		displayBottom();
+	}
 	if ( !G.playback ) return
 	
 	if ( 'pause' in data ) {
@@ -440,9 +443,9 @@ function psSpotify( data ) {
 			G.status[ key ] = value;
 		} );
 	}
+	if ( !$( '#tab-playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	renderPlayback();
 	setButtonControl();
-	displayBars();
 	bash( [ 'pushstatus', 'lcdchar' ] );
 }
 function psVolume( data ) {

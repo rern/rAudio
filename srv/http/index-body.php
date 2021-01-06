@@ -437,7 +437,7 @@ $menu.= '</div>';
 	<div id="lyricsfade"></div>
 </div>
 <div id="bar-bottom"> <!-- keep single line to suppress spaces -->
-	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-play-circle"></i><i id="tab-playlist" class="fa fa-list-ul"></i>
+	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-mpd"></i><i id="tab-playlist" class="fa fa-list-ul"></i>
 </div>
 
 <?php if ( $localhost ) { ?>
