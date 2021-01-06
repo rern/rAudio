@@ -132,6 +132,7 @@ $htmlcommon = menucommon( 'add', 'replace' );
 $html = menuli( 'play',       'play',         'Play' );
 $html.= menuli( 'pause',      'pause',        'Pause' );
 $html.= menuli( 'stop',       'stop',         'Stop' );
+$html.= menuli( 'current',    'check',        'Current' );
 $html.= menuli( 'savedpladd', 'save-plus',    'Add to a playlist' );
 $html.= menuli( 'remove',     'minus-circle', 'Remove' );
 $html.= menuli( 'similar',    'lastfm',       'Add similar' );
