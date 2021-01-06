@@ -111,5 +111,10 @@ done
 
 devices=${devices:1}
 i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+card=$(( ${#devices[@]} - 1 ))
+if (( $i > $card )); then
+	i=$card
+	sed -i "s/.$/$i/" /etc/asound.conf
+fi
 aplayname=${Aaplayname[i]}
 output=${Aname[i]}
