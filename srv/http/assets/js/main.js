@@ -1,6 +1,6 @@
 var G = {
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
-	, apikeylastfm  : 'ba8ad00468a50732a3860832eaed0882'
+	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
 	, countsong     : $( '#lib-mode-list' ).data( 'count' )
 	, coversave     : 0
@@ -51,6 +51,8 @@ if ( G.localhost ) {
 	var vu = '/assets/img/vu.'+ hash +'.gif';
 	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 }
+var orange = '#de810e';
+var red = '#bb2828';
 var canvas = document.getElementById( 'iconrainbow' );
 var ctx = canvas.getContext( '2d' );
 var cw = canvas.width / 2;
@@ -87,7 +89,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 	$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
 	$.event.special.tap.tapholdThreshold = 1000;
 	$( '.page' ).on( 'swipeleft swiperight', function( e ) {
-		if ( G.bars || G.status.player !== 'mpd' || G.swipepl || G.drag ) return
+		if ( G.bars || G.swipepl || G.drag ) return
 		
 		G.swipe = 1;
 		setTimeout( function() { G.swipe = 0 }, 1000 );
@@ -171,7 +173,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				bannerHide();
 				if ( data != -1 ) {
 					getPlaybackStatus();
-					displayTopBottom();
+					displayBars();
 				} else {
 					info( {
 						  icon    : 'snapcast'
@@ -213,12 +215,12 @@ $( '#power' ).click( function() {
 		  icon        : 'power'
 		, title       : 'Power'
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : '#de810e'
+		, buttoncolor : red
 		, button      : function() {
 			bash( [ 'power' ] );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : '#bb2828'
+		, okcolor     : orange
 		, ok          : function() {
 			bash( [ 'power', 'off' ] );
 		}
@@ -404,7 +406,7 @@ $( '#displayplayback' ).click( function() {
 			, ok       : function () {
 				displaySave( 'playback' );
 				G.bars = G.display.bars;
-				displayTopBottom();
+				displayBars();
 				if ( G.playback ) {
 					displayPlayback();
 					setButtonControl();
@@ -515,7 +517,7 @@ $( '#tab-playback' ).click( function() {
 			, title   : nameplayer[ G.status.player ]
 			, message : 'Stop?'
 			, oklabel : 'Stop'
-			, okcolor : '#de810e'
+			, okcolor : red
 			, ok      : function() {
 				$( '#stop' ).click();
 			}
@@ -536,7 +538,9 @@ $( '#tab-playlist' ).click( function() {
 		}
 	} else {
 		switchPage( 'playlist' );
-		if ( !G.savedlist && !G.savedplaylist ) G.status.playlistlength ? getPlaylist() : renderPlaylist( -1 );
+		if ( !G.savedlist && !G.savedplaylist ) {
+			G.status.playlistlength ? getPlaylist() : renderPlaylist( -1 );
+		}
 		if ( G.color ) $( '#colorcancel' ).click();
 	}
 } );
@@ -660,7 +664,11 @@ $( '#volume' ).roundSlider( {
 	}
 	, drag            : function( e ) {
 		G.drag = 1;
-		bash( 'mpc volume '+ e.value );
+		if ( G.status.control ) {
+			bash( 'amixer -M sset "'+ G.status.control +'" '+ e.value +'%' );
+		} else {
+			bash( 'mpc volume '+ e.value );
+		}
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 	}
 	, stop            : function() { // touchend mouseup
@@ -669,19 +677,22 @@ $( '#volume' ).roundSlider( {
 	, change          : function( e ) { // click
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 		if ( !G.drag ) {
-			$( '#volume' ).addClass( 'disabled' );
-			bash( [ 'volume', G.status.volume, e.value ], function() {
-				$( '#volume' ).removeClass( 'disabled' );
+			$( '#volume-knob' ).addClass( 'disabled' );
+			bash( [ 'volume', G.status.volume, e.value, G.status.control ], function() {
+				$( '#volume-knob' ).removeClass( 'disabled' );
 			} );
 		}
 		G.drag = 0;
 	}
 } );
 $( '#volmute' ).click( function() {
-	bash( [ 'volume', G.status.volume, 0 ] );
+	$( '#volume-knob' ).addClass( 'disabled' );
+	bash( [ 'volume', G.status.volume, 0, G.status.control ], function() {
+		$( '#volume-knob' ).removeClass( 'disabled' );
+	} );
 } );
-$( '#volup, #voldn' ).tap( function() {
-	bash( [ 'volumeupdown', this.id === 'voldn' ? '-1' : '+1' ] );
+$( '#volup, #voldn' ).click( function() {
+	bash( [ 'volumeupdown', ( this.id === 'voldn' ? '-' : '+' ), G.status.control ] );
 } ).taphold( function() {
 	var voldn = this.id === 'voldn';
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && volup ) ) return
@@ -692,7 +703,11 @@ $( '#volup, #voldn' ).tap( function() {
 		
 		$volumeRS.setValue( G.status.volume );
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
-		bash( 'mpc volume '+ G.status.volume );
+		if ( G.status.control ) {
+			bash( 'amixer -M sset "'+ G.status.control +'" '+ G.status.volume +'%' );
+		} else {
+			bash( 'mpc volume '+ G.status.volume );
+		}
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
 	clearInterval( G.intVolume );
@@ -1084,7 +1099,7 @@ $( '#biocontent' ).on( 'click', '.biosimilar', function() {
 } );
 $( '#bio' ).on( 'click', '.closebio', function() {
 	$( '#bio' ).addClass( 'hide' );
-	displayTopBottom();
+	displayBars();
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
@@ -1441,7 +1456,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, title   : 'Remove Bookmark'
 			, message : icon
 			, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
-			, okcolor : '#bb2828'
+			, okcolor : orange
 			, ok      : function() {
 				G.bookmarkedit = 1;
 				$.post( cmdphp, {
@@ -1765,7 +1780,7 @@ $( '#button-pl-clear' ).click( function() {
 			  icon        : 'list-ul'
 			, title       : 'Clear Playlist'
 			, oklabel     : '<i class="fa fa-minus-circle"></i>Clear'
-			, okcolor     : '#bb2828'
+			, okcolor     : orange
 			, ok          : function() {
 				bash( [ 'plremove' ] );
 				renderPlaybackBlank();
@@ -1776,7 +1791,7 @@ $( '#button-pl-clear' ).click( function() {
 			  icon        : 'list-ul'
 			, title       : 'Remove From Playlist'
 			, buttonlabel : [ '<i class="fa fa-list-ul"></i>Select', '<i class="fa fa-crop"></i>Crop' ]
-			, buttoncolor : [ '#de810e' ]
+			, buttoncolor : [ red ]
 			, button      : [
 				  function() {
 					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
@@ -1789,7 +1804,7 @@ $( '#button-pl-clear' ).click( function() {
 				}
 			]
 			, oklabel     : '<i class="fa fa-minus-circle"></i>All'
-			, okcolor     : '#bb2828'
+			, okcolor     : orange
 			, ok          : function() {
 				bash( [ 'plremove' ] );
 				renderPlaybackBlank();
@@ -1878,6 +1893,11 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	
 	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $plremove ) return
 	
+	if ( G.status.player !== 'mpd' ) {
+		$( this ).find( '.pl-icon' ).click();
+		return
+	}
+	
 	var $this = $( this );
 	var listnumber = $this.index() + 1;
 	$( '#menu-plaction' ).addClass( 'hide' );
@@ -1916,7 +1936,7 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	G.list.li = $thisli;
 	G.list.path = $thisli.find( '.lipath' ).text();
 	G.list.artist = $thisli.find( '.artist' ).text();
-	G.list.name = $thisli.find( '.liname' ).text();
+	G.list.name = $thisli.find( '.name' ).text();
 	G.list.index = $thisli.index();
 	var menutop = ( $thisli.position().top + 48 ) +'px';
 	var $menu = $( '#menu-plaction' );
@@ -1939,8 +1959,9 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	} else {
 		$contextlist.eq( 1 ).add( $contextlist.eq( 2 ) ).addClass( 'hide' );
 	}
-	$contextlist.eq( 5 ).toggleClass( 'hide', radio );
+	$contextlist.eq( 3 ).toggleClass( 'hide', $thisli.hasClass( 'active' ) || G.status.player !== 'mpd' );
 	$contextlist.eq( 6 ).toggleClass( 'hide', radio );
+	$contextlist.eq( 7 ).toggleClass( 'hide', radio );
 	$( '#menu-plaction .submenu' ).toggleClass( 'hide', radio );
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();

@@ -20,6 +20,22 @@ function addReplace( cmd, command, title ) {
 	}
 	banner( title, msg, 'list-ul' );
 }
+function addReplaceSet( addreplaceplay, cmd, command ) {
+	if ( G.display.playbackswitch && addreplaceplay ) G.addplay = 1;
+	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
+		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
+		addReplace( cmd, command, msg );
+	} else {
+		var msg = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
+		if ( G.display.plclear && G.status.playlistlength ) {
+			infoReplace( function() {
+				addReplace( cmd, command, msg );
+			} );
+		} else {
+			addReplace( cmd, command, msg );
+		}
+	}
+}
 function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from server
@@ -106,6 +122,17 @@ function bookmarkThumb( path, coverart ) {
 		}
 	} );
 }
+function infoRenderer() {
+	info ( {
+		  icon    : G.status.player
+		, title   : nameplayer[ G.status.player ]
+		, message : 'The renderer is active.<br>'
+					+'<br>No&emsp;<i class="fa fa-play wh"></i> Play'
+					+'<br>No&emsp;<i class="fa fa-play-plus wh"></i> Add+Play'
+					+'<br>No&emsp;<i class="fa fa-play-replace wh"></i> Replace+Play.'
+		, msgalign : 'left'
+	} );
+}
 function playlistAdd( name, oldname ) {
 	if ( oldname ) {
 		bash( [ 'plrename', oldname, name ] );
@@ -139,7 +166,7 @@ function playlistDelete() {
 		, message : 'Delete?'
 				   +'<br><w>'+ G.list.name +'</w>'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
-		, okcolor : '#bb2828'
+		, okcolor : orange
 		, ok      : function() {
 			G.status.playlists--;
 			if ( G.status.playlists ) {
@@ -385,7 +412,7 @@ function webRadioCoverart() {
 	) {
 		infojson.buttonlabel = '<i class="fa fa-webradio"></i>Default';
 		infojson.buttonwidth = 1;
-		infojson.buttoncolor = '#de810e';
+		infojson.buttoncolor = red;
 		infojson.button      = function() {
 			bash( [ 'coverartradioreset', imagefile ] );
 		}
@@ -409,7 +436,7 @@ function webRadioDelete() {
 				   +'<br><w>'+ name +'</w>'
 				   +'<br>'+ url
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
-		, okcolor : '#bb2828'
+		, okcolor : orange
 		, ok      : function() {
 			G.list.li.remove();
 			if ( !$( '#lib-list li' ).length ) $( '#button-library' ).click();
@@ -505,6 +532,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].indexOf( cmd ) !== -1 ) {
 		if ( cmd === 'play' ) {
+			if ( G.status.player !== 'mpd' ) {
+				infoRenderer();
+				return
+			}
+			
 			$( '#pl-list li' ).eq( G.list.li.index() ).click();
 		} else {
 			$( '#'+ cmd ).click();
@@ -513,6 +545,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	
 	switch ( cmd ) {
+		case 'current':
+			bash( [ 'plcurrent', G.list.index + 1 ] );
+			break;
 		case 'exclude':
 			info ( {
 				  icon    : 'folder-forbid'
@@ -558,6 +593,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			G.list.li.remove();
 			break;
 		case 'similar':
+			var addplay = $this.hasClass( 'submenu' ) ? 1 : 0;
+			if ( addplay && G.status.player !== 'mpd' ) {
+				infoRenderer();
+				return
+			}
+					
 			banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
 			var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
 					+'&artist='+ encodeURI( G.list.artist )
@@ -572,7 +613,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				} else {
 					var val = data.similartracks.track;
 					var iL = val.length;
-					var addplay = $this.hasClass( 'submenu' ) ? 1 : 0;
 					var similar = addplay ? 'addplay\n0\n' : '';
 					for ( i = 0; i < iL; i++ ) {
 						similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
@@ -689,19 +729,27 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	cmd = cmd.replace( /albumartist|album|artist|composer|genre|date/, '' );
 	if ( cmd in contextCommand ) {
 		var command = contextCommand[ cmd ];
-		if ( G.display.playbackswitch && ( cmd === 'addplay' || cmd === 'replaceplay' ) ) G.addplay = 1;
-		if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
-			var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
-			addReplace( cmd, command, msg );
+		var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
+		if ( addreplaceplay && G.status.player !== 'mpd' ) {
+			infoRenderer();
+			return
+		}
+		
+		if ( G.status.player !== 'mpd' && addreplaceplay ) {
+			var renderer = nameplayer[ G.status.player ];
+			info( {
+				  icon    : G.status.player
+				, title   : renderer
+				, message : 'Stop '+ renderer +' ?'
+				, oklabel : 'Stop'
+				, okcolor : orange
+				, ok      : function() {
+					$( '#stop' ).click();
+					addReplaceSet( addreplaceplay, cmd, command );
+				}
+			} );
 		} else {
-			var msg = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
-			if ( G.display.plclear && G.status.playlistlength ) {
-				infoReplace( function() {
-					addReplace( cmd, command, msg );
-				} );
-			} else {
-				addReplace( cmd, command, msg );
-			}
+			addReplaceSet( addreplaceplay, cmd, command );
 		}
 	}
 } );

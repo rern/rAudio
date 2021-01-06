@@ -424,7 +424,7 @@ $( '#setting-soxr' ).click( function() {
 		}
 		, boxwidth      : 70
 		, buttonlabel   : '<i class="fa fa-undo"></i>Default'
-		, buttoncolor   : '#de810e'
+		, buttoncolor   : red
 		, button        : function() {
 			for ( i = 1; i < 5; i++ ) {
 				$( '#infoTextBox'+ i ).val( defaultval[ i ] );

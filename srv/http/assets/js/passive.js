@@ -213,7 +213,7 @@ function psDisplay( data ) {
 			$( '#mode-album' ).click();
 		}
 	}
-	displayTopBottom();
+	displayBars();
 }
 function psMpdPlayer( data ) {
 	var playlistlength = G.status.playlistlength;
@@ -222,8 +222,9 @@ function psMpdPlayer( data ) {
 	} );
 	setButtonControl();
 	renderPlayback();
-	if ( G.status.player !== 'mpd' || G.addplay ) switchPage( 'playback' );
-	G.addplay = 0;
+	if ( G.status.player !== 'mpd' ) displayBottom();
+	//if ( G.addplay ) switchPage( 'playback' );
+	//G.addplay = 0;
 	if ( G.playlist ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
@@ -429,30 +430,23 @@ function psSnapcast( data ) {
 	}
 }
 function psSpotify( data ) {
-	if ( G.playback ) {
-		if ( 'pause' in data ) {
-			G.status.state = 'pause'
-			G.status.elapsed = data.pause;
-		} else {
-			$.each( data, function( key, value ) {
-				G.status[ key ] = value;
-			} );
-		}
-		renderPlayback();
-		setButtonControl();
-		displayTopBottom();
-		bash( [ 'pushstatus', 'lcdchar' ] );
+	if ( !G.playback ) return
+	
+	if ( 'pause' in data ) {
+		G.status.state = 'pause'
+		G.status.elapsed = data.pause;
 	} else {
-		$( '#tab-playback' ).click();
+		$.each( data, function( key, value ) {
+			G.status[ key ] = value;
+		} );
 	}
+	renderPlayback();
+	setButtonControl();
+	displayBars();
+	bash( [ 'pushstatus', 'lcdchar' ] );
 }
 function psVolume( data ) {
 	if ( G.local ) return
-	
-	if ( 'disable' in data ) {
-		$( '#vol-group .btn, .volmap' ).toggleClass( 'disabled', data.disable );
-		return
-	}
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {

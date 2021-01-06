@@ -199,6 +199,8 @@ var filereboot = '/srv/http/data/shm/reboot';
 var short = window.innerHeight < 570;
 var local = 0;
 var debounce;
+var orange = '#de810e';
+var red = '#bb2828';
 
 document.title = page;
 $( '#'+ page ).addClass( 'active' );
