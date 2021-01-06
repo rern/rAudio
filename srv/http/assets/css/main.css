@@ -88,6 +88,7 @@
 .fa-pause:before { content: "\f504" }
 .fa-play:before { content: "\f503" }
 .fa-play-circle:before { content: "\f507" }
+#tab-playback.fa-mpd:before { content: "\f507" }
 .fa-play-plus:before { content: "\f532" }
 .fa-play-replace:before { content: "\f533" }
 .fa-plus:before { content: "\f519" }
