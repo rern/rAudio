@@ -1,11 +1,3 @@
-function infoReplace( callback ) {
-	info( {
-		  icon    : 'list-ul'
-		, title   : 'Playlist Replace'
-		, message : 'Replace current playlist?'
-		, ok      : callback
-	} );
-}
 function addReplace( cmd, command, title ) {
 	bash( command );
 	if ( G.list.li.hasClass( 'licover' ) ) {
@@ -122,15 +114,12 @@ function bookmarkThumb( path, coverart ) {
 		}
 	} );
 }
-function infoRenderer() {
-	info ( {
-		  icon    : G.status.player
-		, title   : nameplayer[ G.status.player ]
-		, message : 'The renderer is active.<br>'
-					+'<br>No&emsp;<i class="fa fa-play wh"></i> Play'
-					+'<br>No&emsp;<i class="fa fa-play-plus wh"></i> Add+Play'
-					+'<br>No&emsp;<i class="fa fa-play-replace wh"></i> Replace+Play.'
-		, msgalign : 'left'
+function infoReplace( callback ) {
+	info( {
+		  icon    : 'list-ul'
+		, title   : 'Playlist Replace'
+		, message : 'Replace current playlist?'
+		, ok      : callback
 	} );
 }
 function playlistAdd( name, oldname ) {
@@ -532,11 +521,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].indexOf( cmd ) !== -1 ) {
 		if ( cmd === 'play' ) {
-			if ( G.status.player !== 'mpd' ) {
-				infoRenderer();
-				return
-			}
-			
 			$( '#pl-list li' ).eq( G.list.li.index() ).click();
 		} else {
 			$( '#'+ cmd ).click();
@@ -593,12 +577,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			G.list.li.remove();
 			break;
 		case 'similar':
-			var addplay = $this.hasClass( 'submenu' ) ? 1 : 0;
-			if ( addplay && G.status.player !== 'mpd' ) {
-				infoRenderer();
-				return
-			}
-					
 			banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
 			var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
 					+'&artist='+ encodeURI( G.list.artist )
@@ -608,6 +586,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					+'&autocorrect=1';
 			$.post( url, function( data ) {
 				var title = 'Playlist - Add Similar';
+				var addplay = $this.hasClass( 'submenu' ) ? 1 : 0;
 				if ( 'error' in data || !data.similartracks.track.length ) {
 					banner( title, 'Track not found.', 'lastfm' );
 				} else {
@@ -730,11 +709,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	if ( cmd in contextCommand ) {
 		var command = contextCommand[ cmd ];
 		var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
-		if ( addreplaceplay && G.status.player !== 'mpd' ) {
-			infoRenderer();
-			return
-		}
-		
 		if ( G.status.player !== 'mpd' && addreplaceplay ) {
 			var renderer = nameplayer[ G.status.player ];
 			info( {

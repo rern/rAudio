@@ -338,8 +338,11 @@ i.bookmark,
 .infocontent .fa-webradio {
 	color: var( --cg60 );
 }
-.disable {
-	color: var( --cg60 );
+.disable,
+.menu a.disabled,
+.menu a.disabled i,
+.menu i.disabled {
+	color: var( --cg60 ) !important;
 }
 .disabled {
 	pointer-events: none;
