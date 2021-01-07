@@ -105,9 +105,11 @@ function contextmenuLibrary( $li, $target ) {
 		G.list.name = $li.find( '.li1' ).text() || $li.find( '.liname' ).text();
 	}
 	G.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
-	if ( ( G.display.tapaddplay || G.display.tapreplaceplay && !G.color )
+	if ( ( G.display.tapaddplay || G.display.tapreplaceplay )
+		&& !G.color
 		&& !$target.hasClass( 'lib-icon' )
-		&& !$li.hasClass( 'licover' )
+		&& !G.list.licover
+		&& G.status.player === 'mpd'
 	) {
 		var i = G.display.tapaddplay ? 0 : 1;
 		$menu.find( '.submenu:eq( '+ i +' )' ).click();
@@ -763,7 +765,7 @@ function playlistFilter() {
 	}
 }
 function playlistProgress() {
-	clearInterval( G.intElapsedPl );
+	clearIntervalAll();
 	var $this = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed = $this.find( '.elapsed' );
 	var $name = $this.find( '.name' );

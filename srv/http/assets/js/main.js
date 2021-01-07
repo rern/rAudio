@@ -1948,21 +1948,15 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			} else {
 				$( '#pause' ).click();
 				$this.find( '.elapsed i' ).removeClass( 'fa-play' ).addClass( 'fa-pause' );
-				G.status.elapsed++;
 			}
 		} else {
 			$( '#play' ).click();
-			playlistProgress();
 		}
 	} else {
 		bash( [ 'mpcplayback', 'play', listnumber ] );
-		G.status.state = 'play';
-		G.status.elapsed = 0;
-		clearInterval( G.intElapsedPl );
 		$( '#pl-list li.active .elapsed' ).empty();
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
-		if ( $this.find( '.fa-webradio' ).length ) G.status.Title = '';
 	}
 } );
 $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
@@ -1998,12 +1992,12 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	}
 	$contextlist.eq( 3 ).toggleClass( 'hide', $thisli.hasClass( 'active' ) );
 	$contextlist.slice( 0, 4 ).toggleClass( 'hide', G.status.player !== 'mpd' );
-	$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 	$contextlist.eq( 6 ).toggleClass( 'hide', radio );
 	$contextlist.eq( 7 ).toggleClass( 'hide', radio );
 	$( '#menu-plaction .submenu' ).toggleClass( 'hide', radio );
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
+	$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 	$menu
 		.removeClass( 'hide' )
 		.css( 'top', menutop );
@@ -2051,7 +2045,11 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', !G.status.playlistlength );
 				$( '.minus-circle' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
-				if ( G.savedplaylist && !plicon && G.display.tapaddplay ) {
+				if ( ( G.display.tapaddplay || G.display.tapreplaceplay )
+					&& G.savedplaylist 
+					&& !plicon
+					&& G.status.player === 'mpd'
+				) {
 					$menu.find( 'a:eq( 0 ) .submenu' ).click();
 					return
 				}
@@ -2060,6 +2058,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				$( '.similar' ).toggleClass( 'hide', G.list.path.slice( 0, 4 ) === 'http' );
 			}
 			$this.addClass( 'active' );
+			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 			$menu
 				.removeClass( 'hide' )
 				.css( 'top', ( $this.position().top + 48 ) +'px' );
