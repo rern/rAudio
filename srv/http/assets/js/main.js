@@ -536,6 +536,7 @@ $( '#tab-playlist' ).click( function() {
 			G.savedplaylist = 0;
 			getPlaylist();
 		}
+		$( '.menu' ).addClass( 'hide' );
 	} else {
 		switchPage( 'playlist' );
 		if ( !G.savedlist && !G.savedplaylist ) {
