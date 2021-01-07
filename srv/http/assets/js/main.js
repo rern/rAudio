@@ -1981,23 +1981,26 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	}
 	
 	var state = G.status.state;
+	var play = state === 'play';
+	var active = $thisli.hasClass( 'active' );
+	var mpd = G.status.player === 'mpd';
 	$thisli.addClass( 'updn' );
 	$contextlist.removeClass( 'hide' );
-	if ( $thisli.hasClass( 'active' ) ) {
-		$contextlist.eq( 0 ).toggleClass( 'hide', state === 'play' );
-		$contextlist.eq( 1 ).toggleClass( 'hide', state !== 'play' || $( e.target ).hasClass( 'fa-webradio' ) );
+	if ( active ) {
+		$contextlist.eq( 0 ).toggleClass( 'hide', play );
+		$contextlist.eq( 1 ).toggleClass( 'hide', !play || $( e.target ).hasClass( 'fa-webradio' ) );
 		$contextlist.eq( 2 ).toggleClass( 'hide', state === 'stop' );
 	} else {
 		$contextlist.eq( 1 ).add( $contextlist.eq( 2 ) ).addClass( 'hide' );
 	}
-	$contextlist.eq( 3 ).toggleClass( 'hide', $thisli.hasClass( 'active' ) );
-	$contextlist.slice( 0, 4 ).toggleClass( 'hide', G.status.player !== 'mpd' );
+	$contextlist.slice( 0, 4 ).toggleClass( 'hide', !mpd );
+	$contextlist.eq( 3 ).toggleClass( 'hide', active || play );
 	$contextlist.eq( 6 ).toggleClass( 'hide', radio );
 	$contextlist.eq( 7 ).toggleClass( 'hide', radio );
 	$( '#menu-plaction .submenu' ).toggleClass( 'hide', radio );
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
-	$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
+	$menu.find( '.submenu' ).toggleClass( 'disabled', !mpd );
 	$menu
 		.removeClass( 'hide' )
 		.css( 'top', menutop );
