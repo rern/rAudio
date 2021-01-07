@@ -2432,9 +2432,7 @@ li.active .li2 bl {
 		padding-top: 50px;
 		line-height: calc( 100vh / 17 );
 	}
-	#infoicon.barsalways {
-		display: none;
-	}
+	#sampling { display: none; }
 }
 @media( max-height: 540px ) {
 	#playback-row {
@@ -2470,7 +2468,6 @@ li.active .li2 bl {
 	#settings {
 		position: absolute;
 	}
-	#sampling { display: none; }
 	#playback-row {
 		margin-top: 10px;
 	}

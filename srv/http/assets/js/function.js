@@ -259,7 +259,7 @@ function displayBars() {
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
 		$( '#page-playback' ).addClass ( 'barshidden' );
-		$( '#page-playback, #infoicon' ).removeClass( 'barsalways' );
+		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', 0 );
 		$( '.emptyadd' ).css( 'top', '90px' );
@@ -268,7 +268,7 @@ function displayBars() {
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
 		$( '#page-playback' ).removeClass ( 'barshidden' );
-		$( '#page-playback, #infoicon, .emptyadd' ).addClass( 'barsalways' );
+		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
 		$( '.emptyadd' ).css( 'top', '' );
