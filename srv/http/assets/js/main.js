@@ -692,26 +692,34 @@ $( '#volmute' ).click( function() {
 	} );
 } );
 $( '#volup, #voldn' ).click( function() {
-	bash( [ 'volumeupdown', ( this.id === 'voldn' ? '-' : '+' ), G.status.control ] );
-} ).taphold( function() {
 	var voldn = this.id === 'voldn';
-	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && volup ) ) return
+	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
+	
+	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
+} ).taphold( function() {
+	G.volhold = 1;
+	var voldn = this.id === 'voldn';
+	var vol = G.status.volume;
+	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
 	G.intVolume = setInterval( function() {
-		voldn ? G.status.volume-- : G.status.volume++;
-		if ( G.status.volume === 0 || G.status.volume === 100 ) return
+		if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 		
-		$volumeRS.setValue( G.status.volume );
+		voldn ? vol-- : vol++;
+		$volumeRS.setValue( vol );
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		if ( G.status.control ) {
-			bash( 'amixer -M sset "'+ G.status.control +'" '+ G.status.volume +'%' );
+			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
 		} else {
-			bash( 'mpc volume '+ G.status.volume );
+			bash( 'mpc volume '+ vol );
 		}
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
-	clearInterval( G.intVolume );
-	bash( [ 'volumepushstream' ] );
+	if ( G.volhold ) {
+		G.volhold = 0;
+		clearInterval( G.intVolume );
+		bash( [ 'volumepushstream' ] );
+	}
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
@@ -888,33 +896,62 @@ $( '#volume-band' ).on( 'click', function( e ) {
 	}
 } ).on( 'touchend mouseup', function( e ) {
 	if ( G.drag ) {
+		G.drag = 0;
+		bash( [ 'volumepushstream' ] );
 		volumebarTimeout();
 		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
-		G.drag = 0;
 	}
 } );
-$( '#volume-band-dn, #volume-band-up' ).click( function() {
+$( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
+	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+} ).click( function() {
 	if ( G.status.volumenone ) return
 	
+	volumebarTimeout();
 	if ( G.guide ) {
 		$( '.controls' ).addClass( 'hide' );
 		$( '.band' ).addClass( 'transparent' );
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	clearTimeout( G.volumebar );
-	volumebarTimeout();
-	var updn = this.id.slice( -2 );
+	var voldn = this.id === 'volume-band-dn';
 	var vol = G.status.volume;
-	if ( ( vol === 0 && ( updn === 'dn' ) ) || ( vol === 100 && ( updn === 'up' ) ) ) return
+	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
-	barW = updn === 'up' ? vol + 1 : vol - 1;
-	$( '#volume-text' ).text( barW );
-	$( '#volume-bar' ).css( 'width', barW +'%' );
-	$( '#vol'+ updn ).click();
+	$( '#vol'+ ( voldn ? 'dn' : 'up' ) ).click();
+	voldn ? vol-- : vol++;
+	$( '#volume-text' ).text( vol );
+	$( '#volume-bar' ).css( 'width', vol +'%' );
+} ).taphold( function() {
+	G.hold = 1;
+	clearTimeout( G.volumebar );
+	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+	var voldn = this.id === 'volume-band-dn';
+	var vol = G.status.volume;
+	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
+	
+	G.intVolume = setInterval( function() {
+		if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
+		
+		voldn ? vol-- : vol++;
+		G.status.volume = vol;
+		$( '#volume-text' ).text( vol );
+		$( '#volume-bar' ).css( 'width', vol +'%' );
+		if ( G.status.control ) {
+			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
+		} else {
+			bash( 'mpc volume '+ vol );
+		}
+	}, 100 );
+} ).on( 'mouseup touchend', function() {
+	if ( G.hold ) {
+		G.hold = 0;
+		bash( [ 'volumepushstream' ] );
+		clearTimeout( G.intVolume );
+		volumebarTimeout();
+	}
 } );
 $( '#volume-text' ).tap( function() {
 	$( '#volmute' ).click();

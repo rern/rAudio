@@ -467,6 +467,8 @@ function psVolume( data ) {
 			volColorUnmute();
 		}
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		$( '#volume-text' ).text( val );
+		$( '#volume-bar' ).css( 'width', val +'%' );
 	}, G.debouncems );
 }
 function psWebradio( data ) {

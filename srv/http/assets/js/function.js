@@ -967,6 +967,7 @@ function renderPlayback() {
 		$volumeRS.setValue( G.status.volume );
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
+		$( '#volume-text' ).text( G.status.volume );
 		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	}
 	// empty queue
