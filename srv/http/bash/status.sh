@@ -246,8 +246,6 @@ else
 , "Title"     : "'$Title'"'
 fi
 
-#[[ $ext == Radio ]] && systemctl start radiowatchdog || systemctl stop radiowatchdog
-
 samplingLine() {
 	bitdepth=$1
 	samplerate=$2
