@@ -105,12 +105,11 @@ function contextmenuLibrary( $li, $target ) {
 		G.list.name = $li.find( '.li1' ).text() || $li.find( '.liname' ).text();
 	}
 	G.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
-	var mpd = G.status.player === 'mpd';
 	if ( ( G.display.tapaddplay || G.display.tapreplaceplay )
 		&& !G.color
 		&& !$target.hasClass( 'lib-icon' )
 		&& !G.list.licover
-		&& mpd
+		&& G.status.player === 'mpd'
 	) {
 		var i = G.display.tapaddplay ? 0 : 1;
 		$menu.find( '.submenu:eq( '+ i +' )' ).click();
@@ -122,7 +121,6 @@ function contextmenuLibrary( $li, $target ) {
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '.tag' ).addClass( 'hide' );
 	if ( $( '.licover' ).length ) $( '.tag' ).removeClass( 'hide' );
-	$menu.find( '.submenu' ).toggleClass( 'disabled', !mpd );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';
@@ -482,6 +480,7 @@ function getPlaybackStatus( render ) {
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
+		displayBottom();
 		if ( G.status.player === 'snapclient' ) {
 			bash( 'sshpass -p '+ status.snapserverpw +' ssh -q root@'+ status.snapserverip +' /srv/http/bash/status.sh', function( status ) {
 				$.each( status, function( key, value ) {

@@ -393,21 +393,20 @@ function wlanScan() {
 		var html = '';
 		if ( list.length ) {
 			$.each( list, function( i, val ) {
-				var profile = val.profile;
 				html += '<li data-db="'+ val.dbm +'" data-ssid="'+ val.ssid +'" data-encrypt="'+ val.encrypt +'" data-wpa="'+ val.wpa +'"';
 				html += val.connected  ? ' data-connected="1"' : '';
 				html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 				html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
 				html += ' data-dhcp="'+ val.dhcp +'"';
 				html += val.password ? ' data-password="'+ val.password +'"' : '';
-				html += profile ? ' data-profile="'+ profile +'">' : '>';
+				html += val.profile ? ' data-profile="'+ val.profile +'">' : '>';
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
 				html += '<span class="wf'+ signal +'">'+ wifiicon +'</span>'
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
 				html += val.dbm < fair ? '<gr>'+ val.ssid +'</gr>' : val.ssid;
 				html += val.encrypt === 'on' ? ' <i class="fa fa-lock"></i>' : '';
 				html += '<gr>'+ val.dbm +' dBm</gr>';
-				html += profile && !val.connected ? '&ensp;<i class="fa fa-save-circle wh"></i>' : '';
+				html += val.profile && !val.connected ? '&ensp;<i class="fa fa-save-circle wh"></i>' : '';
 			} );
 		} else {
 			html += '<li><i class="fa fa-lock"></i><gr>(no accesspoints found)</gr></li>';

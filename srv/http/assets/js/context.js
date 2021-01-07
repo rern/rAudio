@@ -12,22 +12,6 @@ function addReplace( cmd, command, title ) {
 	}
 	banner( title, msg, 'list-ul' );
 }
-function addReplaceSet( addreplaceplay, cmd, command ) {
-	if ( G.display.playbackswitch && addreplaceplay ) G.addplay = 1;
-	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
-		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
-		addReplace( cmd, command, msg );
-	} else {
-		var msg = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
-		if ( G.display.plclear && G.status.playlistlength ) {
-			infoReplace( function() {
-				addReplace( cmd, command, msg );
-			} );
-		} else {
-			addReplace( cmd, command, msg );
-		}
-	}
-}
 function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from server
@@ -521,7 +505,14 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].indexOf( cmd ) !== -1 ) {
 		if ( cmd === 'play' ) {
-			$( '#pl-list li' ).eq( G.list.li.index() ).click();
+			if ( G.status.player === 'mpd' ) {
+				$( '#pl-list li' ).eq( G.list.li.index() ).click();
+			} else {
+				$( '#stop' ).click();
+				setTimeout( function() {
+					$( '#pl-list li' ).eq( G.list.li.index() ).click();
+				}, 2000 );
+			}
 		} else {
 			$( '#'+ cmd ).click();
 		}
@@ -706,24 +697,21 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
 	cmd = cmd.replace( /albumartist|album|artist|composer|genre|date/, '' );
-	if ( cmd in contextCommand ) {
-		var command = contextCommand[ cmd ];
-		var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
-		if ( G.status.player !== 'mpd' && addreplaceplay ) {
-			var renderer = nameplayer[ G.status.player ];
-			info( {
-				  icon    : G.status.player
-				, title   : renderer
-				, message : 'Stop '+ renderer +' ?'
-				, oklabel : 'Stop'
-				, okcolor : orange
-				, ok      : function() {
-					$( '#stop' ).click();
-					addReplaceSet( addreplaceplay, cmd, command );
-				}
+	var command = contextCommand[ cmd ];
+	var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
+	if ( G.status.player !== 'mpd' && addreplaceplay ) $( '#stop' ).click();
+	if ( G.display.playbackswitch && addreplaceplay ) G.addplay = 1;
+	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
+		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
+		addReplace( cmd, command, msg );
+	} else {
+		var msg = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
+		if ( G.display.plclear && G.status.playlistlength ) {
+			infoReplace( function() {
+				addReplace( cmd, command, msg );
 			} );
 		} else {
-			addReplaceSet( addreplaceplay, cmd, command );
+			addReplace( cmd, command, msg );
 		}
 	}
 } );

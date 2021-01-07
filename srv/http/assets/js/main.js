@@ -1994,14 +1994,12 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	} else {
 		$contextlist.eq( 1 ).add( $contextlist.eq( 2 ) ).addClass( 'hide' );
 	}
-	$contextlist.slice( 0, 4 ).toggleClass( 'hide', !mpd );
 	$contextlist.eq( 3 ).toggleClass( 'hide', active || play );
 	$contextlist.eq( 6 ).toggleClass( 'hide', radio );
 	$contextlist.eq( 7 ).toggleClass( 'hide', radio );
 	$( '#menu-plaction .submenu' ).toggleClass( 'hide', radio );
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
-	$menu.find( '.submenu' ).toggleClass( 'disabled', !mpd );
 	$menu
 		.removeClass( 'hide' )
 		.css( 'top', menutop );
