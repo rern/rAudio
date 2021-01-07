@@ -20,7 +20,6 @@ else
 	volume=$( echo $volumeget | cut -d' ' -f1 )
 	control=$( echo $volumeget | cut -d' ' -f2- )
 fi
-#volume=$( [[ -e $dirtmp/nosound ]] && echo false || /srv/http/bash/cmd.sh volumeget )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
 ########
@@ -68,14 +67,12 @@ airplay )
 , "timestamp"      : '$now
 # >>>>>>>>>>
 	echo {$status}
-	exit
 	;;
 bluetooth )
 ########
 	status+=$( /srv/http/bash/status-bluetooth.sh )
 # >>>>>>>>>>
 	echo {$status}
-	exit
 	;;
 snapclient )
 	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=rune
@@ -86,7 +83,6 @@ snapclient )
 , "snapserverpw" : "'$snapserverpw'"'
 # >>>>>>>>>>
 	echo {$status}
-	exit
 	;;
 spotify )
 	file=$dirtmp/spotify
@@ -111,10 +107,11 @@ spotify )
 , "timestamp" : '$now
 # >>>>>>>>>>
 	echo {$status}
-	exit
 	;;
 	
 esac
+
+[[ $player != mpd ]] && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
@@ -230,7 +227,6 @@ if [[ ${file:0:4} == http ]]; then
 , "Time"     : false
 , "Title"    : "'$titlename'"
 , "webradio" : 'true
-		systemctl start radiowatchdog
 	fi
 else
 	ext=${file/*.}
@@ -248,8 +244,9 @@ else
 , "Time"      : '$Time'
 , "timestamp" : '$( date +%s%3N )'
 , "Title"     : "'$Title'"'
-	systemctl stop radiowatchdog
 fi
+
+#[[ $ext == Radio ]] && systemctl start radiowatchdog || systemctl stop radiowatchdog
 
 samplingLine() {
 	bitdepth=$1
