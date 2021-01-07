@@ -50,7 +50,7 @@ refreshData = function() {
 				.html( htmlhwmixer )
 				.val( device.hwmixer )
 				.prop( 'disabled', device.mixers < 2 );
-			var htmlmixertype = '<option value="none">None - 100% (0dB)</option>';
+			var htmlmixertype = '<option value="none">None / 0dB</option>';
 			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
 			htmlmixertype += '<option value="software">MPD software</option>';
 			$( '#mixertype' )
