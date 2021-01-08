@@ -36,6 +36,7 @@ for line in "${lines[@]}"; do
 		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
 		password=$( grep ^Key "/etc/netctl/$ssid" | cut -d= -f2- | tr -d '"' )
 		dbm=$( iwconfig wlan0 | grep Signal | sed 's/.*level=\(.*\) dBm/\1/' )
+		[[ -z $dbm ]] && dbm=0
 	else
 		ssid=
 		dbm=0
