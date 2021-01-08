@@ -386,11 +386,12 @@ $( '#setting-lcdchar' ).click( function() {
 				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', !val || lcdcharconf === G.lcdcharconf || !count );
 			} );
 		}
+		, buttonwidth   : 1
 		, cancel        : function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
-		, buttonlabel   : [ 'Splash', 'Off' ]
-		, buttoncolor   : [ '#448822', orange ]
+		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Splash', '<i class="fa fa-power"></i>Off' ]
+		, buttoncolor   : [ '#448822', red ]
 		, button        : !G.lcdchar ? '' : [ 
 			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
