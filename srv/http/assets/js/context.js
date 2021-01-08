@@ -1,5 +1,8 @@
 function addReplace( cmd, command, title ) {
-	bash( command );
+	bash( command, function() {
+		if ( G.addplay ) $( '#tab-playback' ).click();
+		G.addplay = 0;
+	} );
 	if ( G.list.li.hasClass( 'licover' ) ) {
 		var msg = G.list.li.find( '.lialbum' ).text()
 				+'<a class="li2">'+ G.list.li.find( '.liartist' ).text() +'</a>';
