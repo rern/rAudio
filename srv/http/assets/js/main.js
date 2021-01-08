@@ -576,8 +576,8 @@ $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
 	$( '#pl-list li' ).removeClass( 'updn' );
-	$( '#pl-list .pl-remove' ).remove();
 	$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( $( '#pl-list .pl-remove' ).length ) getPlaybackStatus();
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).click( function() {
@@ -1795,8 +1795,7 @@ $( '#button-pl-clear' ).click( function() {
 	if ( !G.status.playlistlength ) return
 	
 	if ( $( '#pl-list .pl-remove' ).length ) {
-		$( '#pl-list .pl-remove' ).remove();
-		$( '#pl-list .name' ).css( 'max-width', '' );
+		getPlaybackStatus();
 		return
 	}
 	
@@ -1909,14 +1908,12 @@ $( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );
-	$plremove = $target.hasClass( 'pl-remove' );
-	if ( !$plremove && $( '.pl-remove' ).length ) {
-		$( '.pl-remove' ).remove();
-		$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( $( '#pl-list .pl-remove' ).length ) {
+		if ( !$target.hasClass( 'pl-remove' ) ) getPlaybackStatus();
 		return
 	}
 	
-	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $plremove ) return
+	if ( G.swipe || $target.hasClass( 'pl-icon' ) ) return
 	
 	if ( G.status.player !== 'mpd' ) {
 		$( this ).find( '.pl-icon' ).click();
@@ -1996,7 +1993,9 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 } );
 $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 	if ( G.status.playlistlength > 1 ) {
-		bash( [ 'plremove', $( this ).parent().index() + 1 ] );
+		var $li = $( this ).parent();
+		bash( [ 'plremove', $li.index() + 1 ] );
+		$li.remove();
 	} else {
 		bash( [ 'plremove' ] );
 	}
