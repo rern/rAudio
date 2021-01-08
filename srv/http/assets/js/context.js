@@ -519,7 +519,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	switch ( cmd ) {
 		case 'current':
 			bash( [ 'plcurrent', G.list.index + 1 ] );
-			break;
+			return
 		case 'exclude':
 			info ( {
 				  icon    : 'folder-forbid'
@@ -533,15 +533,15 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					var dir = G.list.path.split( '/' ).pop();
 				}
 			} );
-			break;
+			return
 		case 'remove':
 			G.contextmenu = 1;
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
 			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
-			break;
+			return
 		case 'replace':
 			G.plreplace = 1;
-			break;
+			return
 		case 'savedpladd':
 			info( {
 				  icon    : 'list-ul'
@@ -554,7 +554,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					$( '#button-pl-open' ).click();
 				}
 			} );
-			break;
+			return
 		case 'savedplremove':
 			var plname = $( '#pl-path .lipath' ).text();
 			list( {
@@ -563,7 +563,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, remove : G.list.li.index()
 			} );
 			G.list.li.remove();
-			break;
+			return
 		case 'similar':
 			banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
 			var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
@@ -593,11 +593,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					} );
 				}
 			}, 'json' );
-			break;
+			return
 		case 'tag':
 			tagEditor();
 			return
-			break;
 		case 'thumb':
 			info( {
 				  icon     : 'coverart'
@@ -608,13 +607,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					thumbUpdate( G.list.path );
 				}
 			} );
-			break;
+			return
 		case 'update':
 			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
 			infoUpdate( G.list.path );
+			return
 	}
-	if ( [ 'savedpladd', 'savedplremove', 'similar', 'tag', 'remove', 'update' ].indexOf( cmd ) !== -1 ) return
-	
 	// functions with dialogue box ////////////////////////////////////////////
 	var contextFunction = {
 		  bookmark   : bookmarkNew
