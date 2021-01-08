@@ -477,6 +477,7 @@ function getPlaybackStatus( render ) {
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( !status ) return
 		
+		G.display.update = status.updateaddons;
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
