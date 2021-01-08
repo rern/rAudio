@@ -1392,7 +1392,7 @@ function setButtonOptions() {
 			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		}
 	} );
-	if ( G.display.update ) {
+	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );

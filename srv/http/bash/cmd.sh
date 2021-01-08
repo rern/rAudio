@@ -381,7 +381,6 @@ displayget )
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "snapclient" : '$( systemctl -q is-active snapclient && echo true || echo false )'
-, "update"     : '$( cat $diraddons/update 2> /dev/null || echo false )'
 , "volumenone" : '$volumenone'
 }'
 echo "$data"
