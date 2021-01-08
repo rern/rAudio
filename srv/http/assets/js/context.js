@@ -1,7 +1,7 @@
 function addReplace( cmd, command, title ) {
 	bash( command, function() {
-		if ( G.addplay ) $( '#tab-playback' ).click();
-		G.addplay = 0;
+		if ( G.playbackswitch ) $( '#tab-playback' ).click();
+		G.playbackswitch = 0;
 	} );
 	if ( G.list.li.hasClass( 'licover' ) ) {
 		var msg = G.list.li.find( '.lialbum' ).text()
@@ -701,7 +701,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		$( '#stop' ).click();
 		G.status.player = 'mpd';
 	}
-	if ( G.display.playbackswitch && addreplaceplay ) G.addplay = 1;
+	if ( G.display.playbackswitch && addreplaceplay ) G.playbackswitch = 1;
 	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
 		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
 		addReplace( cmd, command, msg );
