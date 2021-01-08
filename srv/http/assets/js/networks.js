@@ -380,7 +380,7 @@ function renderQR() {
 		}
 	} );
 	if ( G.hostapd ) {
-		$( '#ipwebuiap' ).html( G.hostapd.hostapdip );
+		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.hostapdip );
 		$( '#ssid' ).text( G.hostapd.ssid );
 		$( '#passphrase' ).text( G.hostapd.passphrase )
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );

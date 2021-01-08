@@ -1,7 +1,7 @@
-<div>
 <script>
-	var set = <?=( $_GET[ 'set' ] ?? 'false' )?>;
+	var set = '<?=( $_GET[ 'set' ] ?? '' )?>';
 </script>
+<div>
 <heading>Renderers<?=$help?></heading>
 	<?php if ( file_exists( '/usr/bin/shairport-sync' ) ) { ?>
 <div data-status="shairport-sync" <?=$classstatus?>>
