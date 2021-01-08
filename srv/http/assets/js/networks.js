@@ -247,7 +247,7 @@ function infoConnect( $this ) {
 			, '<i class="fa fa-edit-circle"></i> Edit'
 		]
 		, buttoncolor : [
-			  orange
+			  red
 			, ''
 		]
 		, button      : [
@@ -269,7 +269,7 @@ function infoConnect( $this ) {
 			}
 		]
 		, oklabel : connected ? 'Disconnect' : 'Connect'
-		, okcolor : connected ? red : ''
+		, okcolor : connected ? orange : ''
 		, ok      : function() {
 			clearTimeout( intervalscan );
 			notify( ssid, connected ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
@@ -312,10 +312,10 @@ function nicsStatus() {
 				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
 				htmllan += '</li>';
 			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
-				if ( !val.ip && !G.hostapd.hostapdip ) return
+				if ( !val.ip && !G.hostapd ) return
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
 				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
-				if ( G.hostapd.ssid ) {
+				if ( G.hostapd ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
 					G.wlconnected = val.interface;
@@ -376,16 +376,18 @@ function renderQR() {
 			if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
 			$( '#ipwebui' ).html( ip );
 			$( '#divwebui' ).removeClass( 'hide' );
-			return false
 		}
 	} );
 	if ( G.hostapd ) {
-		$( '#ipwebuiap' ).html( G.hostapd.hostapdip );
+		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.hostapdip );
 		$( '#ssid' ).text( G.hostapd.ssid );
 		$( '#passphrase' ).text( G.hostapd.passphrase )
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
 		$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
 		$( '#boxqr' ).removeClass( 'hide' );
+	} else {
+		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();
+		$( '#boxqr' ).addClass( 'hide' );
 	}
 }
 function wlanScan() {
@@ -458,13 +460,13 @@ $( '#listbt' ).on( 'click', 'li', function( e ) {
 		}
 		, buttonwidth : 1
 		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
-		, buttoncolor : orange
+		, buttoncolor : red
 		, button      : function() {
 			notify( name, 'Forget ... ', 'bluetooth' );
 			bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
 		}
 		, oklabel : 'Disconnect'
-		, okcolor : red
+		, okcolor : orange
 		, ok      : function() {
 			notify( name, 'Disconnect ... ', 'bluetooth' );
 			bash( '/srv/http/bash/networks.sh btdisconnect' );

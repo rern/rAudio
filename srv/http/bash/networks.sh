@@ -6,8 +6,11 @@ dirsystem=/srv/http/data/system
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	sleep 1
+	sleep 2
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
+}
+pushRefreshFeatures() {
+	systemctl -q is-active hostapd && curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "features" }'
 }
 
 case ${args[0]} in
@@ -71,6 +74,7 @@ Gateway=$( jq -r .Gateway <<< $data )
 		systemctl enable netctl-auto@wlan0
 	fi
 	pushRefresh
+	pushRefreshFeatures
 	;;
 disconnect )
 	netctl stop-all
@@ -129,10 +133,16 @@ ipused )
 	;;
 profileconnect )
 	ssid=${args[1]}
+	if systemctl -q is-active hostapd; then
+		systemctl disable --now hostapd
+		ifconfig wlan0 0.0.0.0
+		sleep 2
+	fi
 	ifconfig wlan0 down
 	netctl switch-to "$ssid"
 	systemctl enable netctl-auto@wlan0
 	pushRefresh
+	pushRefreshFeatures
 	;;
 profileget )
 	value=$( cat "/etc/netctl/${args[1]}" \

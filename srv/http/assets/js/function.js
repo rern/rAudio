@@ -178,7 +178,7 @@ function coverartChange() {
 		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
 	) {
 		jsoninfo.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
-		jsoninfo.buttoncolor = orange;
+		jsoninfo.buttoncolor = red;
 		jsoninfo.buttonwidth = 1;
 		jsoninfo.button      = function() {
 			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
@@ -1392,6 +1392,11 @@ function setButtonOptions() {
 			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		}
 	} );
+	setButtonUpdateAddons();
+	setButtonUpdating();
+	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+}
+function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
@@ -1402,8 +1407,6 @@ function setButtonOptions() {
 		$( '#button-settings, #addons i' ).removeClass( 'bl' );
 		$( '#i-addons, #ti-addons' ).addClass( 'hide' );
 	}
-	setButtonUpdating();
-	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function setButtonUpdating() {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );

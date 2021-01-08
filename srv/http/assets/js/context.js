@@ -142,7 +142,7 @@ function playlistDelete() {
 		, message : 'Delete?'
 				   +'<br><w>'+ G.list.name +'</w>'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
-		, okcolor : orange
+		, okcolor : red
 		, ok      : function() {
 			G.status.playlists--;
 			if ( G.status.playlists ) {
@@ -388,7 +388,7 @@ function webRadioCoverart() {
 	) {
 		infojson.buttonlabel = '<i class="fa fa-webradio"></i>Default';
 		infojson.buttonwidth = 1;
-		infojson.buttoncolor = red;
+		infojson.buttoncolor = orange;
 		infojson.button      = function() {
 			bash( [ 'coverartradioreset', imagefile ] );
 		}
@@ -412,7 +412,7 @@ function webRadioDelete() {
 				   +'<br><w>'+ name +'</w>'
 				   +'<br>'+ url
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
-		, okcolor : orange
+		, okcolor : red
 		, ok      : function() {
 			G.list.li.remove();
 			if ( !$( '#lib-list li' ).length ) $( '#button-library' ).click();

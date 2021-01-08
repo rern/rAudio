@@ -107,8 +107,20 @@ if [[ -n $wlanip ]] && systemctl -q is-enabled hostapd; then
 	systemctl start dnsmasq hostapd
 fi
 
-/srv/http/bash/cmd.sh addonsupdate
-
+wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
+if [[ $? == 0 ]]; then
+	diraddons=$dirdata/addons
+	installed=$( ls "$diraddons" | grep -v addons-list )
+	count=0
+	for addon in $installed; do
+		verinstalled=$( cat $diraddons/$addon )
+		if (( ${#verinstalled} > 1 )); then
+			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+			[[ $verinstalled != $verlist ]] && (( count++ ))
+		fi
+	done
+	(( $count )) && touch $diraddons/update || rm -f $diraddons/update
+fi
 # after all sources connected
 if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
 	/srv/http/bash/cmd.sh mpcupdate$'\n'true

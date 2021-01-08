@@ -215,12 +215,12 @@ $( '#power' ).click( function() {
 		  icon        : 'power'
 		, title       : 'Power'
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : red
+		, buttoncolor : orange
 		, button      : function() {
 			bash( [ 'power' ] );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : orange
+		, okcolor     : red
 		, ok          : function() {
 			bash( [ 'power', 'off' ] );
 		}
@@ -511,22 +511,9 @@ $( '#button-library, #button-playback, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#tab-playback' ).click( function() {
-	if ( $( this ).hasClass( 'renderer' ) ) {
-		info( {
-			  icon    : G.status.player
-			, title   : nameplayer[ G.status.player ]
-			, message : 'Stop?'
-			, oklabel : 'Stop'
-			, okcolor : red
-			, ok      : function() {
-				$( '#stop' ).click();
-			}
-		} );
-	} else {
-		getPlaybackStatus();
-		switchPage( 'playback' );
-		if ( G.color ) $( '#colorcancel' ).click();
-	}
+	getPlaybackStatus();
+	switchPage( 'playback' );
+	if ( G.color ) $( '#colorcancel' ).click();
 } )
 $( '#tab-playlist' ).click( function() {
 	G.pladd = {};
@@ -1494,7 +1481,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, title   : 'Remove Bookmark'
 			, message : icon
 			, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
-			, okcolor : orange
+			, okcolor : red
 			, ok      : function() {
 				G.bookmarkedit = 1;
 				$.post( cmdphp, {
@@ -1818,7 +1805,7 @@ $( '#button-pl-clear' ).click( function() {
 			  icon        : 'list-ul'
 			, title       : 'Clear Playlist'
 			, oklabel     : '<i class="fa fa-minus-circle"></i>Clear'
-			, okcolor     : orange
+			, okcolor     : red
 			, ok          : function() {
 				bash( [ 'plremove' ] );
 				renderPlaybackBlank();
@@ -1829,7 +1816,7 @@ $( '#button-pl-clear' ).click( function() {
 			  icon        : 'list-ul'
 			, title       : 'Remove From Playlist'
 			, buttonlabel : [ '<i class="fa fa-list-ul"></i>Select', '<i class="fa fa-crop"></i>Crop' ]
-			, buttoncolor : [ red ]
+			, buttoncolor : [ orange ]
 			, button      : [
 				  function() {
 					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
@@ -1842,7 +1829,7 @@ $( '#button-pl-clear' ).click( function() {
 				}
 			]
 			, oklabel     : '<i class="fa fa-minus-circle"></i>All'
-			, okcolor     : orange
+			, okcolor     : red
 			, ok          : function() {
 				bash( [ 'plremove' ] );
 				renderPlaybackBlank();

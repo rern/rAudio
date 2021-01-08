@@ -163,7 +163,7 @@ $( '#list' ).on( 'click', 'li', function() {
 			, title   : ( nas ? 'Network Share' : 'USB Drive' )
 			, message : 'Unmount:<br><wh>'+ mountpoint +'</wh>'
 			, oklabel : 'Unmount'
-			, okcolor : red
+			, okcolor : orange
 			, ok      : function() {
 				notify( 'Network Mount', 'Unmount ...', 'network' );
 				bash( [ 'unmount', mountpoint ], function() {
@@ -180,7 +180,7 @@ $( '#list' ).on( 'click', 'li', function() {
 			, message     : 'Remove / Remount:<br><wh>'+ mountpoint +'</wh>'
 			, buttonwidth : 1
 			, buttonlabel : 'Remove'
-			, buttoncolor : orange
+			, buttoncolor : red
 			, button      : function() {
 				notify( 'Network Mount', 'Remove ...', 'network' );
 				bash( [ 'remove', mountpoint ], function() {

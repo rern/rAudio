@@ -191,7 +191,7 @@ onVisibilityChange( function( visible ) {
 G = {}
 var intervalcputime;
 var intervalscan;
-var page = location.href.split( '=' ).pop();
+var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var reboot = '';
 var timer;
 var dirsystem = '/srv/http/data/system';

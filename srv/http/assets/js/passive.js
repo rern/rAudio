@@ -66,7 +66,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'package', 'playlist', 'reload', 'snapcast', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'reload', 'snapcast', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -90,7 +90,6 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':     psNotify( data );     break;
 		case 'option':     psOption( data );     break;
 		case 'order':      psOrder( data );      break;
-		case 'package':    psPackage( data );    break;
 		case 'playlist':   psPlaylist( data );   break;
 		case 'reload':     psReload( data );     break;
 		case 'restore':    psRestore( data );    break;
@@ -186,6 +185,12 @@ function psCoverart( data ) {
 }
 function psDisplay( data ) {
 	if ( G.local ) return
+	
+	if ( 'updateaddons' in data ) {
+		G.status.updateaddons = data.updateaddons ? true : false;
+		setButtonUpdateAddons();
+		return
+	}
 	
 	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
@@ -323,13 +328,6 @@ function psOrder( data ) {
 	
 	G.display.order = data;
 	orderLibrary();
-}
-function psPackage( data ) {
-	if ( G.local ) return
-	
-	$( '#'+ data.pkg )
-			.data( { active: data.start, enabled: data.enable } )
-			.find( 'img' ).toggleClass( 'on', data.start );
 }
 function psPlaylist( data ) {
 	if ( data == -1 ) {
