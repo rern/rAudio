@@ -136,6 +136,7 @@ profileconnect )
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
 		ifconfig wlan0 0.0.0.0
+		sleep 2
 	fi
 	ifconfig wlan0 down
 	netctl switch-to "$ssid"
