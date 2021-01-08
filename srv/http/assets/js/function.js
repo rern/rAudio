@@ -477,7 +477,6 @@ function getPlaybackStatus( render ) {
 	bash( '/srv/http/bash/status.sh', function( status ) {
 		if ( !status ) return
 		
-		G.display.update = status.updateaddons;
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -1393,7 +1392,7 @@ function setButtonOptions() {
 			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		}
 	} );
-	if ( G.display.update ) {
+	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
