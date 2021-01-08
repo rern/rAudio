@@ -1384,7 +1384,7 @@ function setButtonOptions() {
 	}
 	[ 'consume', 'librandom' ].forEach( function( option ) {
 		$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
-		if ( displaytime ) {
+		if ( G.display.time ) {
 			$( '#i-'+ option ).addClass( 'hide' );
 			$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		} else {
