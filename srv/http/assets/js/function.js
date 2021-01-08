@@ -1392,6 +1392,11 @@ function setButtonOptions() {
 			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		}
 	} );
+	setButtonUpdateAddons();
+	setButtonUpdating();
+	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+}
+function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
@@ -1402,8 +1407,6 @@ function setButtonOptions() {
 		$( '#button-settings, #addons i' ).removeClass( 'bl' );
 		$( '#i-addons, #ti-addons' ).addClass( 'hide' );
 	}
-	setButtonUpdating();
-	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function setButtonUpdating() {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );

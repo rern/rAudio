@@ -166,8 +166,6 @@ installstart() { # $1-'u'=update
 installfinish() {
 	jq -r .$alias.version $addonsjson > $diraddons/$alias
 	
-	/srv/http/bash/cmd.sh addonsupdate$'\n'update
-	
 	timestop
 	title -l '=' "$bar Done."
 	

@@ -141,6 +141,7 @@ if ( $updatecount ) {
 } else {
 	@unlink( "$diraddons/update" );
 }
+exec( 'curl -s -X POST http://127.0.0.1/pub?id=display -d \'{"updateaddons":'.$updatecount.'}\'' );
 
 // ------------------------------------------------------------------------------------
 echo '
