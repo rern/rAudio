@@ -247,7 +247,7 @@ function infoConnect( $this ) {
 			, '<i class="fa fa-edit-circle"></i> Edit'
 		]
 		, buttoncolor : [
-			  orange
+			  red
 			, ''
 		]
 		, button      : [
@@ -269,7 +269,7 @@ function infoConnect( $this ) {
 			}
 		]
 		, oklabel : connected ? 'Disconnect' : 'Connect'
-		, okcolor : connected ? red : ''
+		, okcolor : connected ? orange : ''
 		, ok      : function() {
 			clearTimeout( intervalscan );
 			notify( ssid, connected ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
@@ -458,13 +458,13 @@ $( '#listbt' ).on( 'click', 'li', function( e ) {
 		}
 		, buttonwidth : 1
 		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
-		, buttoncolor : orange
+		, buttoncolor : red
 		, button      : function() {
 			notify( name, 'Forget ... ', 'bluetooth' );
 			bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
 		}
 		, oklabel : 'Disconnect'
-		, okcolor : red
+		, okcolor : orange
 		, ok      : function() {
 			notify( name, 'Disconnect ... ', 'bluetooth' );
 			bash( '/srv/http/bash/networks.sh btdisconnect' );

@@ -178,7 +178,7 @@ function coverartChange() {
 		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
 	) {
 		jsoninfo.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
-		jsoninfo.buttoncolor = orange;
+		jsoninfo.buttoncolor = red;
 		jsoninfo.buttonwidth = 1;
 		jsoninfo.button      = function() {
 			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );

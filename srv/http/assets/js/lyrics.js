@@ -147,7 +147,7 @@ $( '#lyricsdelete' ).click( function() {
 		, title   : 'Lyrics'
 		, message : 'Delete this lyrics?'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
-		, okcolor : orange
+		, okcolor : red
 		, ok      : function() {
 			var artist = $( '#lyricsartist' ).text();
 			var title = $( '#lyricstitle' ).text();

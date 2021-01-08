@@ -390,7 +390,7 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
 		, buttonlabel   : [ 'Splash', 'Off' ]
-		, buttoncolor   : [ '#448822', red ]
+		, buttoncolor   : [ '#448822', orange ]
 		, button        : !G.lcdchar ? '' : [ 
 			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
