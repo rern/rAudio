@@ -519,6 +519,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	switch ( cmd ) {
 		case 'current':
 			bash( [ 'plcurrent', G.list.index + 1 ] );
+			return
 			break;
 		case 'exclude':
 			info ( {
