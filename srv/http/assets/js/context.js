@@ -505,14 +505,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].indexOf( cmd ) !== -1 ) {
 		if ( cmd === 'play' ) {
-			if ( G.status.player === 'mpd' ) {
-				$( '#pl-list li' ).eq( G.list.li.index() ).click();
-			} else {
+			if ( G.status.player !== 'mpd' ) {
 				$( '#stop' ).click();
-				setTimeout( function() {
-					$( '#pl-list li' ).eq( G.list.li.index() ).click();
-				}, 2000 );
+				G.status.player = 'mpd';
 			}
+			$( '#pl-list li' ).eq( G.list.li.index() ).click();
 		} else {
 			$( '#'+ cmd ).click();
 		}
@@ -699,7 +696,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	cmd = cmd.replace( /albumartist|album|artist|composer|genre|date/, '' );
 	var command = contextCommand[ cmd ];
 	var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
-	if ( G.status.player !== 'mpd' && addreplaceplay ) $( '#stop' ).click();
+	if ( G.status.player !== 'mpd' && addreplaceplay ) {
+		$( '#stop' ).click();
+		G.status.player = 'mpd';
+	}
 	if ( G.display.playbackswitch && addreplaceplay ) G.addplay = 1;
 	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
 		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
