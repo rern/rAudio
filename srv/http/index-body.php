@@ -132,6 +132,7 @@ $htmlcommon = menucommon( 'add', 'replace' );
 $html = menuli( 'play',       'play',         'Play' );
 $html.= menuli( 'pause',      'pause',        'Pause' );
 $html.= menuli( 'stop',       'stop',         'Stop' );
+$html.= menuli( 'current',    'check',        'Current' );
 $html.= menuli( 'savedpladd', 'save-plus',    'Add to a playlist' );
 $html.= menuli( 'remove',     'minus-circle', 'Remove' );
 $html.= menuli( 'similar',    'lastfm',       'Add similar' );
@@ -436,7 +437,7 @@ $menu.= '</div>';
 	<div id="lyricsfade"></div>
 </div>
 <div id="bar-bottom"> <!-- keep single line to suppress spaces -->
-	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-play-circle"></i><i id="tab-playlist" class="fa fa-list-ul"></i>
+	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-mpd"></i><i id="tab-playlist" class="fa fa-list-ul"></i>
 </div>
 
 <?php if ( $localhost ) { ?>

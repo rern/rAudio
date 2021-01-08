@@ -21,9 +21,12 @@ Settings - status and value
 ### MPD
 - outputdevice `cat /srv/http/data/system/audio-{aplayname,output}`
 	- `/srv/http/bash/mpd-devices.sh`
-- mixertype `devices[N].mixertype`
+- mixerdevice `devices[N].mixertype` or **`F`** `[[ -e /srv/http/data/system/mixerdevice-$aplayname ]]`
 	- `/srv/http/bash/mpd-devices.sh`
-- dop `devices[N].dop`
+- mixertype `devices[N].mixertype` or **`F`** `[[ -e /srv/http/data/system/mixertype-$aplayname ]]`
+	- `/srv/http/bash/mpd-devices.sh`
+- dop **`F`** `[[ -e /srv/http/data/system/dop-$aplayname ]]`
+	- `devices[N].dop`
 - crossfade `mpc crossfade | cut -d' ' -f2` and **`F`** `[[ -e /srv/http/data/system/crossfade ]]` - `datarestore`
 	- `/srv/http/data/system/crossfadeset`
 - normalization `grep -q 'volume_normalization.*yes' /etc/mpd.conf`
@@ -42,8 +45,8 @@ Settings - status and value
 	- `/srv/http/data/system/custom-{global,output}`
 
 ### System
-- on-board bluetooth `grep -q dtparam=krnbt=on /boot/config.txt`
-- on-board wlan `lsmod | grep -q ^brcmfmac`
+- bluetooth `rfkill | bluetooth`
+- wlan `rfkill wlan`
 - i2s audio `cat /srv/http/data/system/audio-{aplayname,output}`
 - lcdchar **`F`** `[[ -e /srv/http/data/system/lcdchar ]]`
 	- `/etc/lcdchar.conf`

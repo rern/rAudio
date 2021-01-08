@@ -250,7 +250,7 @@ $( '#setting-localbrowser' ).click( function() {
 			}
 		}
 		, buttonlabel : '<i class="fa fa-refresh"></i>Refresh'
-		, buttoncolor : '#de810e'
+		, buttoncolor : red
 		, button      : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}

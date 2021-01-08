@@ -247,7 +247,7 @@ function infoConnect( $this ) {
 			, '<i class="fa fa-edit-circle"></i> Edit'
 		]
 		, buttoncolor : [
-			  '#bb2828'
+			  orange
 			, ''
 		]
 		, button      : [
@@ -269,7 +269,7 @@ function infoConnect( $this ) {
 			}
 		]
 		, oklabel : connected ? 'Disconnect' : 'Connect'
-		, okcolor : connected ? '#de810e' : ''
+		, okcolor : connected ? red : ''
 		, ok      : function() {
 			clearTimeout( intervalscan );
 			notify( ssid, connected ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
@@ -313,8 +313,8 @@ function nicsStatus() {
 				htmllan += '</li>';
 			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
 				if ( !val.ip && !G.hostapd.hostapdip ) return
-				
-				htmlwl = html +'><i class="fa fa-wifi"></i>';
+				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
+				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
 				if ( G.hostapd.ssid ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
@@ -353,7 +353,7 @@ function nicsStatus() {
 		
 		renderQR();
 		bannerHide();
-		[ 'bt', 'lan', 'wlan' ].forEach( function( id ) {
+		[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		showContent();
@@ -390,26 +390,23 @@ function renderQR() {
 }
 function wlanScan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh', function( list ) {
-		var good = -60;
-		var fair = -67;
 		var html = '';
 		if ( list.length ) {
 			$.each( list, function( i, val ) {
-				var profile = val.profile;
 				html += '<li data-db="'+ val.dbm +'" data-ssid="'+ val.ssid +'" data-encrypt="'+ val.encrypt +'" data-wpa="'+ val.wpa +'"';
 				html += val.connected  ? ' data-connected="1"' : '';
 				html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 				html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
 				html += ' data-dhcp="'+ val.dhcp +'"';
 				html += val.password ? ' data-password="'+ val.password +'"' : '';
-				html += profile ? ' data-profile="'+ profile +'">' : '>';
+				html += val.profile ? ' data-profile="'+ val.profile +'">' : '>';
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
-				html += '<span class="wf'+ signal +'"><i class="fa fa-wifi1"></i><i class="fa fa-wifi2"></i><i class="fa fa-wifi3"></i></span>'
+				html += '<span class="wf'+ signal +'">'+ wifiicon +'</span>'
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
 				html += val.dbm < fair ? '<gr>'+ val.ssid +'</gr>' : val.ssid;
 				html += val.encrypt === 'on' ? ' <i class="fa fa-lock"></i>' : '';
 				html += '<gr>'+ val.dbm +' dBm</gr>';
-				html += profile && !val.connected ? '&ensp;<i class="fa fa-save-circle wh"></i>' : '';
+				html += val.profile && !val.connected ? '&ensp;<i class="fa fa-save-circle wh"></i>' : '';
 			} );
 		} else {
 			html += '<li><i class="fa fa-lock"></i><gr>(no accesspoints found)</gr></li>';
@@ -437,6 +434,9 @@ refreshData = function() {
 refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;
+var wifiicon = '<i class="fa fa-wifi1"></i><i class="fa fa-wifi2"></i><i class="fa fa-wifi3"></i>';
+var good = -60;
+var fair = -67;
 $( '.back' ).click( function() {
 	clearTimeout( intervalscan );
 	$( '#divinterface, #divwebui, #divaccesspoint' ).removeClass( 'hide' );
@@ -458,13 +458,13 @@ $( '#listbt' ).on( 'click', 'li', function( e ) {
 		}
 		, buttonwidth : 1
 		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
-		, buttoncolor : '#bb2828'
+		, buttoncolor : orange
 		, button      : function() {
 			notify( name, 'Forget ... ', 'bluetooth' );
 			bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
 		}
 		, oklabel : 'Disconnect'
-		, okcolor : '#de810e'
+		, okcolor : red
 		, ok      : function() {
 			notify( name, 'Disconnect ... ', 'bluetooth' );
 			bash( '/srv/http/bash/networks.sh btdisconnect' );

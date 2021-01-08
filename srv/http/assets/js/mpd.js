@@ -50,7 +50,7 @@ refreshData = function() {
 				.html( htmlhwmixer )
 				.val( device.hwmixer )
 				.prop( 'disabled', device.mixers < 2 );
-			var htmlmixertype = '<option value="none">None - 100% (0dB)</option>';
+			var htmlmixertype = '<option value="none">None / 0dB</option>';
 			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
 			htmlmixertype += '<option value="software">MPD software</option>';
 			$( '#mixertype' )
@@ -77,7 +77,7 @@ refreshData = function() {
 		$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 		$( '#soxr' ).prop( 'checked', G.soxr );
 		$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-		[ 'aplay', 'amixer', 'crossfade', 'mpd', 'mpdconf' ].forEach( function( id ) {
+		[ 'aplay', 'amixer', 'crossfade', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		resetLocal();
@@ -424,7 +424,7 @@ $( '#setting-soxr' ).click( function() {
 		}
 		, boxwidth      : 70
 		, buttonlabel   : '<i class="fa fa-undo"></i>Default'
-		, buttoncolor   : '#de810e'
+		, buttoncolor   : red
 		, button        : function() {
 			for ( i = 1; i < 5; i++ ) {
 				$( '#infoTextBox'+ i ).val( defaultval[ i ] );

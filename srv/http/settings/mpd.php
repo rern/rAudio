@@ -41,7 +41,7 @@
 	<span <?=$classhelp?>>
 			Volume control for each device.
 		<p>
-			&bull; <code>None - 100% (0dB)</code> Best sound quality. (Use amplifier volume)
+			&bull; <code>None / 0dB</code> Best sound quality. (Use amplifier volume)
 		<br>&bull; <code>Mixer device</code> Good and convenient. (Device hardware volume)
 		<br>&bull; <code>MPD software</code> Software volume.
 		</p>
@@ -59,7 +59,7 @@
 	<span <?=$classhelp?>>
 		Disable all manipulations for bit-perfect stream from MPD to DAC.
 		<p>
-			&bull; Mixer device volume set to 100% (0dB) - No amplitude manipulations.
+			&bull; Mixer device volume set to 0dB - No amplitude manipulations.
 		<br>&bull; Volume Control <code>None</code> - Hide Volume in Playback.
 		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
 		</p>

@@ -27,7 +27,12 @@ case 'sh': // multiple commands / scripts: no pre-escaped characters - js > php 
 	break;
 case 'bash': // single / one-line command - return string
 	$cmd = $_POST[ 'bash' ];
-	echo shell_exec( $cmd[ 0 ] === '/' ? $sudo.$cmd : $sudobin.$cmd );
+	if ( $cmd[ 0 ] === '/' ) {
+		$cmd = $sudo.$cmd;
+	} else if ( $cmd[ 0 ] !== '{' ) {
+		$cmd = $sudobin.$cmd;
+	}
+	echo shell_exec( $cmd );
 	break;
 case 'exec': // single / one-line command - return array of lines to js
 	$cmd = $_POST[ 'exec' ];

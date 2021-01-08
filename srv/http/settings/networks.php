@@ -1,9 +1,9 @@
 <div id="divinterface">
 <?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
 	<div>
-	<heading id="headbt" class="status noline" data-status="bt">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
+	<heading id="headbt" class="status noline" data-status="bluetooth">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
 	<ul id="listbt" class="entries"></ul>
-	<pre id="codebt" class="hide"></pre>
+	<pre id="codebluetooth" class="hide"></pre>
 	<span <?=$classhelp?>>
 			&bull; As sender / source - Send signal to another device.
 		<br>&ensp; - Pairing - Turn on discovery mode on receiver device.

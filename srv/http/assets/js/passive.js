@@ -32,11 +32,13 @@ window.addEventListener( 'orientationchange', function() {
 						G.status.elapsed = HMS2Second( HMS );
 						displayPlayback();
 						renderPlayback();
+						setButtonControl()
 					}
 				} );
 			} else {
 				displayPlayback();
 				renderPlayback();
+				setButtonControl()
 			}
 		} else if ( G.library ) {
 			if ( G.librarylist || G.savedlist ) {
@@ -102,6 +104,7 @@ function psAirplay( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
+	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -211,17 +214,16 @@ function psDisplay( data ) {
 			$( '#mode-album' ).click();
 		}
 	}
-	displayTopBottom();
+	displayBars();
 }
 function psMpdPlayer( data ) {
 	var playlistlength = G.status.playlistlength;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
+	if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	renderPlayback();
-	if ( G.status.player !== 'mpd' || G.addplay ) switchPage( 'playback' );
-	G.addplay = 0;
 	if ( G.playlist ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
@@ -244,10 +246,10 @@ function psMpdPlayer( data ) {
 				}
 			}
 		}
-		bannerHide();
 		displayPlayback();
 		renderPlayback();
 	}
+	bannerHide();
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
@@ -427,30 +429,27 @@ function psSnapcast( data ) {
 	}
 }
 function psSpotify( data ) {
-	if ( G.playback ) {
-		if ( 'pause' in data ) {
-			G.status.state = 'pause'
-			G.status.elapsed = data.pause;
-		} else {
-			$.each( data, function( key, value ) {
-				G.status[ key ] = value;
-			} );
-		}
-		renderPlayback();
-		setButtonControl();
-		displayTopBottom();
-		bash( [ 'pushstatus', 'lcdchar' ] );
-	} else {
-		$( '#tab-playback' ).click();
+	if ( G.status.player !== 'spotify' ) {
+		G.status.player = 'spotify';
+		displayBottom();
 	}
+	if ( !G.playback ) return
+	
+	if ( 'pause' in data ) {
+		G.status.state = 'pause'
+		G.status.elapsed = data.pause;
+	} else {
+		$.each( data, function( key, value ) {
+			G.status[ key ] = value;
+		} );
+	}
+	if ( !$( '#tab-playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
+	renderPlayback();
+	setButtonControl();
+	bash( [ 'pushstatus', 'lcdchar' ] );
 }
 function psVolume( data ) {
 	if ( G.local ) return
-	
-	if ( 'disable' in data ) {
-		$( '#vol-group .btn, .volmap' ).toggleClass( 'disabled', data.disable );
-		return
-	}
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -468,6 +467,8 @@ function psVolume( data ) {
 			volColorUnmute();
 		}
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		$( '#volume-text' ).text( val );
+		$( '#volume-bar' ).css( 'width', val +'%' );
 	}, G.debouncems );
 }
 function psWebradio( data ) {

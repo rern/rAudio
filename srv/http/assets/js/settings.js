@@ -16,20 +16,19 @@ var cmd = {
 	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
 	, aplay        : [ 'aplay -l | grep ^card' ]
 	, asound       : [ 'cat /etc/asound.conf' ]
+	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
-	, bt           : [ 'bluetoothctl info' ]
 	, configtxt    : [ 'cat /boot/config.txt' ]
 	, crossfade    : [ 'mpc crossfade' ]
 	, fstab        : [ 'cat /etc/fstab' ]
-	, ifconfig     : [ 'ifconfig wlan0' ]
-	, iwconfig     : [ 'iwconfig wlan0' ]
+	, iw           : [ 'iw list' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
-	, lan          : [ 'ifconfig eth0' ]
+	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'mount | grep ^/dev' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
-	, wlan         : [ 'ifconfig wlan0' ]
+	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 function codeToggle( id, target ) {
@@ -200,6 +199,8 @@ var filereboot = '/srv/http/data/shm/reboot';
 var short = window.innerHeight < 570;
 var local = 0;
 var debounce;
+var orange = '#de810e';
+var red = '#bb2828';
 
 document.title = page;
 $( '#'+ page ).addClass( 'active' );

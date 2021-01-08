@@ -107,7 +107,7 @@ refreshData = function() {
 		$( '#timezone' )
 			.val( G.timezone )
 			.selectric( 'refresh' );
-		[ 'bluetoothctl', 'ifconfig', 'configtxt', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+		[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
@@ -390,7 +390,7 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
 		, buttonlabel   : [ 'Splash', 'Off' ]
-		, buttoncolor   : [ '#448822',       '#de810e' ]
+		, buttoncolor   : [ '#448822', red ]
 		, button        : !G.lcdchar ? '' : [ 
 			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }

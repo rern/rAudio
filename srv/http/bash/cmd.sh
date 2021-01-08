@@ -122,7 +122,11 @@ pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
 pushstreamVolumeSet() {
-	volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+	if [[ -e $dirtmp/player-mpd ]]; then
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+	else
+		volume=$( volumeGet )
+	fi
 	pushstream volume '{"val":'$volume'}'
 }
 randomfile() {
@@ -163,6 +167,20 @@ volume0dB(){
 	volumeGetControls
 	amixer -c $card sset "$control" 0dB
 }
+volumeGet() {
+	volumeGetControls
+	if [[ -z $control ]]; then
+		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo -1
+		exit
+	fi
+	
+	volume=$( amixer -M -c $card sget "$control" \
+		| awk -F'[%[]' '/%/ {print $2}' \
+		| head -1 )
+	[[ -z $volume ]] && volume=100
+	[[ -n $1 ]] && volume+=" $control"
+	echo $volume
+}
 volumeGetControls() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
 	control=$( amixer -c $card scontents \
@@ -177,16 +195,25 @@ volumeGetControls() {
 volumeSet() {
 	current=$1
 	target=$2
+	control=$3
+	if [[ -z $control ]]; then
+		[[ -z $current ]] && mpc volume $target && exit
+	else
+		[[ -z $current ]] && amixer -M sset "$control" $target% && exit
+	fi
 	diff=$(( $target - $current ))
 	if (( -10 < $diff && $diff < 10 )); then
-		mpc volume $target
+		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			mpc volume $i
+		echo "amixer sset \"$control\" $i%" >> /root/v
+			[[ -z $control ]] && mpc volume $i || amixer -M sset "$control" $i%
 			sleep 0.2
 		done
-		(( $i != $target )) && mpc volume $target
+		(( $i != $target )) && exit
+		
+		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
 	fi
 }
 
@@ -523,6 +550,11 @@ plcrop )
 	pushstreamStatus lcdchar
 	pushstreamPlaylist
 	;;
+plcurrent )
+	mpc play ${args[1]}
+	mpc stop
+	pushstreamStatus lcdchar
+	;;
 plfindadd )
 	if [[ ${args[1]} != multi ]]; then
 		type=${args[1]}
@@ -678,40 +710,30 @@ thumbjpg )
 volume )
 	current=${args[1]}
 	target=${args[2]}
-	hwmixer=${args[3]}
+	control=${args[3]}
 	filevolumemute=$dirsystem/volumemute
-	if [[ $target > 0 ]]; then # set
-		pushstreamVolume set $target
-		volumeSet $current $target
+	if [[ $target > 0 ]]; then      # set
+		type=set
 		rm -f $filevolumemute
 	else
 		if (( $current > 0 )); then # mute
-			pushstreamVolume mute $current true
-			volumeSet $current 0
+			type=mute
+			target=0
 			echo $current > $filevolumemute
-		else # unmute
+		else                        # unmute
+			type=unmute
 			target=$( cat $filevolumemute )
-			pushstreamVolume unmute $target true
-			volumeSet 0 $target
 			rm -f $filevolumemute
 		fi
 	fi
+	pushstreamVolume $type $target
+	volumeSet "$current" $target "$control" # $current may be blank
 	;;
 volume0db )
 	volume0dB
 	;;
 volumeget )
-	volumeGetControls
-	if [[ -z $control ]]; then
-		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo -1
-		exit
-	fi
-	
-	volume=$( amixer -M -c $card sget "$control" \
-		| awk -F'[%[]' '/%/ {print $2}' \
-		| head -1 )
-	[[ -z $volume ]] && volume=100
-	echo $volume
+	volumeGet ${args[1]}
 	;;
 volumepushstream )
 	pushstreamVolumeSet
@@ -720,7 +742,9 @@ volumereset )
 	mpc volume $( cat $dirtmp/mpdvolume )
 	;;
 volumeupdown )
-	mpc volume ${args[1]}
+	updn=${args[1]}
+	control=${args[2]}
+	[[ -z $control ]] && mpc volume ${updn}1 || amixer -M sset "$control" 1%$updn
 	pushstreamVolumeSet
 	;;
 webradioadd )

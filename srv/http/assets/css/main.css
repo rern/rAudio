@@ -88,6 +88,7 @@
 .fa-pause:before { content: "\f504" }
 .fa-play:before { content: "\f503" }
 .fa-play-circle:before { content: "\f507" }
+#tab-playback.fa-mpd:before { content: "\f507" }
 .fa-play-plus:before { content: "\f532" }
 .fa-play-replace:before { content: "\f533" }
 .fa-plus:before { content: "\f519" }
@@ -342,6 +343,9 @@ i.bookmark,
 }
 .disabled {
 	pointer-events: none;
+}
+.submenu.disabled {
+	color: var( --cgl ) !important;
 }
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
@@ -2428,9 +2432,7 @@ li.active .li2 bl {
 		padding-top: 50px;
 		line-height: calc( 100vh / 17 );
 	}
-	#infoicon.barsalways {
-		display: none;
-	}
+	#sampling { display: none; }
 }
 @media( max-height: 540px ) {
 	#playback-row {
@@ -2466,7 +2468,6 @@ li.active .li2 bl {
 	#settings {
 		position: absolute;
 	}
-	#sampling { display: none; }
 	#playback-row {
 		margin-top: 10px;
 	}
