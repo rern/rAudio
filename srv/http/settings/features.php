@@ -190,7 +190,7 @@
 	<span <?=$classhelp?>>Start playing automatically after boot.</span>
 </div>
 <div data-status="hostapd" <?=$classstatus?>>
-	<a>RPi Access Point
+	<a>Access Point
 	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-accesspoint"></i>
 </div>
 <div class="col-r">
@@ -198,8 +198,8 @@
 	<input id="hostapdchk" type="checkbox">
 	<div class="switchlabel" for="hostapd"></div>
 	<i id="setting-hostapd" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Connect with RPi Wi-Fi directly when no routers available.
-		<br>RPi access point should be used only when necessary.</span>
+	<span <?=$classhelp?>>Connect with rAudio Wi-Fi directly when no routers available.
+		<br>Access point should be used only when necessary.</span>
 </div>
 <pre id="codehostapd" class="hide"></pre>
 

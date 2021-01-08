@@ -312,10 +312,10 @@ function nicsStatus() {
 				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
 				htmllan += '</li>';
 			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
-				if ( !val.ip && !G.hostapd.hostapdip ) return
+				if ( !val.ip && !G.hostapd ) return
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
 				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
-				if ( G.hostapd.ssid ) {
+				if ( G.hostapd ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
 					G.wlconnected = val.interface;
@@ -376,7 +376,6 @@ function renderQR() {
 			if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
 			$( '#ipwebui' ).html( ip );
 			$( '#divwebui' ).removeClass( 'hide' );
-			return false
 		}
 	} );
 	if ( G.hostapd ) {
@@ -386,6 +385,9 @@ function renderQR() {
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
 		$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
 		$( '#boxqr' ).removeClass( 'hide' );
+	} else {
+		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();
+		$( '#boxqr' ).addClass( 'hide' );
 	}
 }
 function wlanScan() {

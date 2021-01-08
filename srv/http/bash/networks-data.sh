@@ -95,7 +95,7 @@ fi
 data='
 	  "bluetooth" : '$btlist'
 	, "list"      : '$list'
-	, "hostapd"   : {'$ap'}
+	, "hostapd"   : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
 	, "hostname"  : "'$( hostname )'"
 	, "profiles"   : '$profiles'
 	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"

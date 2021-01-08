@@ -11,6 +11,9 @@ readarray -t args <<< "$1"
 pushRefresh() {
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "features" }'
 }
+pushRefreshNetworks() {
+	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
+}
 featureDisable() {
 	systemctl disable --now $1
 	pushRefresh
@@ -41,6 +44,7 @@ hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0
 	pushRefresh
+	pushRefreshNetworks
 	;;
 hostapdset )
 	iprange=${args[1]}
@@ -56,6 +60,7 @@ hostapdset )
 	netctl stop-all
 	ifconfig wlan0 ${args[2]}
 	featureSet hostapd
+	pushRefreshNetworks
 	;;
 localbrowserdisable )
 	featureDisable localbrowser

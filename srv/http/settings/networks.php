@@ -60,7 +60,7 @@
 
 	<?php if ( exec( 'systemctl -q is-active hostapd && echo 1 || echo 0' ) ) { ?>
 <div id="divaccesspoint">
-	<heading>rAudio Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
+	<heading>Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
 	<div id="boxqr" class="hide">
 		<div class="col-l">
 			<span id="ipwebuiap"></span>
