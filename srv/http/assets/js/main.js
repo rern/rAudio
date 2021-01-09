@@ -2008,15 +2008,19 @@ $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 		var count = +$count.text().replace( /,|\./g, '' ) - 1;
 		if ( count ) {
 			$count.text( count.toLocaleString() );
-			if ( file ) {
-				$( '#pl-time' )
-					.data( 'time', total )
-					.text( second2HMS( total ) );
-			}
+			if ( file ) $( '#pl-time' )
+							.data( 'time', total )
+							.text( second2HMS( total ) );
 		} else {
-			
+			if ( file ) {
+				$( '#pl-time' ).data( 'time', 0 ).empty();
+				$count.next().addBack().remove()
+			} else {
+				$count.prev().addBack().remove();
+			}
 		}
 		bash( [ 'plremove', $li.index() + 1 ] );
+		if ( $li.hasClass( 'active' ) ) $li.next().addClass( 'active' );
 		$li.remove();
 	} else {
 		bash( [ 'plremove' ] );
