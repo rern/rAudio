@@ -21,7 +21,7 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system
 fi
 
 if [[ $( /srv/http/bash/system.sh hwrevision ) == 11 ]]; then
-	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201129-1 ]]; then
+	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
 		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-20201208-1-any.pkg.tar.xz
 		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-x-20201208-1-any.pkg.tar.xz
 		pacman -U --noconfirm raspberrypi-bootloader*
