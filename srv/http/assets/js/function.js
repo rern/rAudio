@@ -508,7 +508,7 @@ function getPlaybackStatus( render ) {
 				} );
 			}
 		} else {
-			if ( !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
+			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
 	}, 'json' );
@@ -1200,7 +1200,6 @@ renderPlaylist = function( data ) {
 	$( '#button-pl-crop, #button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
-	var plremove = $( '#pl-list .pl-remove' ).length;
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		if ( $( '#pl-list img.lazy' ).length ) G.lazyload.update();
 		$( '.list p' ).toggleClass( 'bars-on', G.bars );
@@ -1210,9 +1209,8 @@ renderPlaylist = function( data ) {
 			.empty();
 		$( '#pl-list li .name' ).removeClass( 'hide' );
 		$( '#pl-list li .song' ).css( 'max-width', '' );
-		loader( 'hide' );
 		setPlaylistScroll();
-		if ( plremove ) $( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
+		loader( 'hide' );
 		$( '#pl-list .lazy' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
@@ -1445,7 +1443,7 @@ function setNameWidth() {
 }
 function setPlaylistScroll() {
 	if ( !G.playlist
-		|| G.status.player !== 'mpd'
+		|| G.plremove
 		|| G.status.player !== 'mpd'
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| !G.status.playlistlength
@@ -1453,11 +1451,11 @@ function setPlaylistScroll() {
 	
 	playlistProgress();
 	setNameWidth();
-//	displayBars();
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
 	$( '#menu-plaction' ).addClass( 'hide' );
+	
 	if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
 		$( 'html, body' ).scrollTop( 0 );
 	} else {

@@ -260,9 +260,9 @@ function htmlPlaylist( $lists, $plname = '' ) {
 		}
 	}
 	$counthtml = $plname ? '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'<gr> · </gr></span>' : '';
-	$countradiohtml = $countradio ? '<i class="fa fa-webradio"></i><whl>'.$countradio.'</whl>' : '';
+	$countradiohtml = $countradio ? '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>' : '';
 	if ( $countsong ) {
-		$counthtml.= '<whl>'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
+		$counthtml.= '<whl id="pl-trackcount">'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
 					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>'.$countradiohtml;
 		if ( !$countradio ) str_replace( 'grl', 'whl', $counthtml );
 	} else if ( $countradio ) {

@@ -576,8 +576,11 @@ $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
 	$( '#pl-list li' ).removeClass( 'updn' );
-	$( '#pl-list .pl-remove' ).remove();
 	$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( G.plremove ) {
+		G.plremove = 0;
+		getPlaybackStatus();
+	}
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).click( function() {
@@ -1794,9 +1797,9 @@ $( '#button-pl-shuffle' ).click( function() {
 $( '#button-pl-clear' ).click( function() {
 	if ( !G.status.playlistlength ) return
 	
-	if ( $( '#pl-list .pl-remove' ).length ) {
-		$( '#pl-list .pl-remove' ).remove();
-		$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( G.plremove ) {
+		G.plremove = 0;
+		getPlaybackStatus();
 		return
 	}
 	
@@ -1819,6 +1822,7 @@ $( '#button-pl-clear' ).click( function() {
 			, buttoncolor : [ orange ]
 			, button      : [
 				  function() {
+					G.plremove = 1;
 					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
@@ -1909,14 +1913,15 @@ $( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );
-	$plremove = $target.hasClass( 'pl-remove' );
-	if ( !$plremove && $( '.pl-remove' ).length ) {
-		$( '.pl-remove' ).remove();
-		$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( G.plremove ) {
+		if ( !$target.hasClass( 'pl-remove' ) ) {
+			G.plremove = 0;
+			getPlaybackStatus();
+		}
 		return
 	}
 	
-	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $plremove ) return
+	if ( G.swipe || $target.hasClass( 'pl-icon' ) ) return
 	
 	if ( G.status.player !== 'mpd' ) {
 		$( this ).find( '.pl-icon' ).click();
@@ -1996,7 +2001,19 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 } );
 $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 	if ( G.status.playlistlength > 1 ) {
-		bash( [ 'plremove', $( this ).parent().index() + 1 ] );
+		var $li = $( this ).parent();
+		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
+		var file = $li.hasClass( 'file' );
+		var $count = file ? $( '#pl-trackcount' ) : $( '#pl-radiocount' );
+		var count = +$count.text().replace( /,|\./g, '' ) - 1;
+		$count.text( count.toLocaleString() );
+		if ( file ) {
+			$( '#pl-time' )
+				.data( 'time', total )
+				.text( second2HMS( total ) );
+		}
+		bash( [ 'plremove', $li.index() + 1 ] );
+		$li.remove();
 	} else {
 		bash( [ 'plremove' ] );
 	}

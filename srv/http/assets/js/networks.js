@@ -316,7 +316,7 @@ function nicsStatus() {
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
 				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
 				if ( G.hostapd ) {
-					htmlwl += '<grn>&bull;</grn>&ensp;<gr>rAudio access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
+					htmlwl += '<grn>&bull;</grn>&ensp;<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
 					G.wlconnected = val.interface;
 					htmlwl += '<grn>&bull;</grn>&ensp;'+ val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr>';

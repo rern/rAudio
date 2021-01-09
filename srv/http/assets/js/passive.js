@@ -333,7 +333,7 @@ function psPlaylist( data ) {
 	if ( data == -1 ) {
 		renderPlaylist( -1 );
 	} else if ( 'html' in data ) {
-		renderPlaylist( data );
+		if ( !G.plremove ) renderPlaylist( data );
 	} else if ( data.playlist === 'save' ) {
 		if ( G.savedlist ) $( '#button-pl-open' ).click();
 	} else {
