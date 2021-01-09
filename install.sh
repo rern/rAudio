@@ -27,7 +27,7 @@ if [[ $( /srv/http/bash/system.sh hwrevision ) == 11 ]]; then
 		pacman -U --noconfirm raspberrypi-bootloader*
 		rm raspberrypi-bootloader*
 		sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf
-		echo -e "$info Reboot required."
+		title "$info Reboot required."
 	fi
 fi
 
