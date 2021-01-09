@@ -368,6 +368,7 @@ $menu.= '</div>';
 <div id="page-playlist" class="page hide">
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<div class="content-top">
+		<span id="pl-path"></span>
 		<i id="button-playlist" class="fa fa-list-ul active"></i>
 		<i id="button-pl-back" class="fa fa-arrow-left hide"></i>
 		<i id="button-pl-search" class="fa fa-search pllength"></i>
@@ -388,8 +389,6 @@ $menu.= '</div>';
 			<i id="button-pl-shuffle" class="fa fa-shuffle pllength"></i>
 			<i id="button-pl-clear" class="fa fa-minus-circle pllength"></i>
 		</div>
-		<span id="pl-count" class="playlist hide"></span>
-		<span id="pl-path" class="hide"></span>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list hide"></ul>
