@@ -605,6 +605,7 @@ plremove )
 	else
 		mpc clear
 	fi
+	pushstreamPlaylist
 	;;
 plrename )
 	touch $flagpladd
