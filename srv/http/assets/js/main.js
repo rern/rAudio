@@ -2005,7 +2005,8 @@ $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
 		var file = $li.hasClass( 'file' );
 		var $count = file ? $( '#pl-trackcount' ) : $( '#pl-radiocount' );
-		$count.text( Number( $count.text().replace( ',', '' ) ) - 1 );
+		var count = +$count.text().replace( /,|\./g, '' ) - 1;
+		$count.text( count.toLocaleString() );
 		if ( file ) {
 			$( '#pl-time' )
 				.data( 'time', total )
