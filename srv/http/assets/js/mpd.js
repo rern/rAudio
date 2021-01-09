@@ -9,15 +9,9 @@ function lines2line( lines ) {
 	return val.substring( 1 );
 }
 function setMixerType( mixertype ) {
-	if ( mixertype === 'none' ) {
-		var card = device.card;
-		var hwmixer = device.hwmixer;
-	} else {
-		var card = '';
-		var hwmixer = '';
-	}
+	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
-	bash( [ 'mixerset', mixertype, device.aplayname, card, hwmixer ] );
+	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
 }
 refreshData = function() {
 	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
