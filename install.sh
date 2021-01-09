@@ -20,4 +20,10 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
 
+if [[ $( /srv/http/bash/system.sh hwrevision ) == 11 ]]; then
+	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201129-1 ]]; then
+		pacman -Sy --noconfirm raspberrypi-bootloader raspberrypi-bootloader-x
+	fi
+fi
+
 installfinish
