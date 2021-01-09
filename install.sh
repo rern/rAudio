@@ -22,7 +22,11 @@ fi
 
 if [[ $( /srv/http/bash/system.sh hwrevision ) == 11 ]]; then
 	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201129-1 ]]; then
-		pacman -Sy --noconfirm raspberrypi-bootloader raspberrypi-bootloader-x
+		wget -q https://github.com/rern/rern.github.io/raw/master/armv7h/raspberrypi-bootloader-20201129-1-any.pkg.tar.xz
+		wget -q https://github.com/rern/rern.github.io/raw/master/armv7h/raspberrypi-bootloader-x-20201129-1-any.pkg.tar.xz
+		pacman -U --noconfirm raspberrypi-bootloader*
+		rm raspberrypi-bootloader*
+		sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf
 	fi
 fi
 
