@@ -146,6 +146,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':  psNotify( data );  break;
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
+		case 'volume':  psVolume( data );  break;
 	}
 }
 function psNotify( data ) {
@@ -158,6 +159,16 @@ function psRefresh( data ) {
 }
 function psReload() {
 	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
+}
+function psVolume( data ) {
+	if ( G.local || !$( '#infoRange .value' ).text() ) return
+	
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		var val = data.val;
+		$( '#infoRange .value' ).text( val );
+		$( '#infoRange input' ).val( val );
+	}, 300 );
 }
 function onVisibilityChange( callback ) {
     var visible = 1;

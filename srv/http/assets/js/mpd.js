@@ -109,13 +109,6 @@ $( '.enablenoset' ).click( function() {
 	notify( idname[ id ], checked, 'mpd' );
 	bash( [ id, checked ] );
 } );
-
-/*$( '#mpdconf' ).click( function() {
-	bash( 'cat /etc/mpd.conf', function( data ) {
-		$( '#codempdconf' )
-			.text( data )
-	} );
-} );*/
 $( '#audiooutput, #hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
@@ -145,7 +138,7 @@ $( '#setting-hwmixer' ).click( function() {
 				if ( device.mixertype === 'none' ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 					$( '#infoFooter' )
-						.html( '<br>Volume Control: None - 100% (0dB)' )
+						.html( '<br>Volume Control: None / 0dB' )
 						.removeClass( 'hide' );
 					return
 				}
@@ -154,6 +147,8 @@ $( '#setting-hwmixer' ).click( function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
 					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+				} ).on( 'mouseup touchend', function() {
+					$.post( 'cmd.php', { cmd: 'sh', sh: [ 'cmd.sh', 'volumepushstream' ] } );
 				} );
 			}
 			, nobutton   : 1
