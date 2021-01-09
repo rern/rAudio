@@ -184,18 +184,27 @@ hwmixer )
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
 	;;
-mixerset )
-	mixer=${args[1]}
+mixertype )
+	mixertype=${args[1]}
 	aplayname=${args[2]}
-	card=${args[3]}
-	control=${args[4]}
-	if [[ $mixer == hardware ]]; then
+	hwmixer=${args[3]}
+	if [[ -n $hwmixer ]]; then # set 0dB
+		mpc stop
+		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		if [[ $mixertype == hardware ]];then
+			amixer -M sset "$hwmixer" $vol%
+		else
+			amixer sset "$hwmixer" 0dB
+			[[ $mixertype == software ]] && mpc volume $vol
+		fi
+	fi
+	if [[ $mixertype == hardware ]]; then
 		rm -f "$dirsystem/mixertype-$aplayname"
 	else
-		echo $mixer > "$dirsystem/mixertype-$aplayname"
+		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixer == none ]] && echo true || echo false )' }'
+	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then

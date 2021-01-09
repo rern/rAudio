@@ -169,24 +169,10 @@ if [[ -n $wm5102card ]]; then
 	/srv/http/bash/mpd-wm5102.sh $wm5102card $output
 fi
 
-hwmixer="${Ahwmixer[$card]}"
-if [[ -n $hwmixer ]]; then
-	mixertype=${Amixertype[$card]}
-	if [[ $mixertype == hardware ]]; then
-		amixer -qM sset "$hwmixer" $( mpc volume | cut -d: -f2 )
-	elif [[ $mixertype == software ]]; then
-		mpc | grep -q '^\[playing' && playing=1
-		[[ -n $playing ]] && mpc -q stop
-		amixer -q sset "$hwmixer" 0dB
-		[[ -n $playing ]] && mpc -q play
-	else
-		amixer -q sset "$hwmixer" 0dB
-	fi
-fi
-
 restartMPD
 
 if [[ -e /usr/bin/shairport-sync ]]; then
+	hwmixer="${Ahwmixer[$card]}"
 	if [[ -n $hwmixer ]]; then
 		alsa='alsa = {
 	output_device = "hw:'$card'";
