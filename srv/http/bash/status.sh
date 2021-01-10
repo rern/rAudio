@@ -233,7 +233,6 @@ if [[ ${file:0:4} == http ]]; then
 else
 	ext=${file/*.}
 	ext=${ext^^}
-	position="$(( song + 1 ))/$playlistlength &bull; "
 	# missing id3tags
 	[[ -z $Album ]] && Album=
 	[[ -z $Artist ]] && Artist=$AlbumArtist
@@ -313,9 +312,10 @@ else
 		fi
 	fi
 fi
+sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 ########
 status+='
-, "sampling" : "'$position$sampling'"'
+, "sampling" : "'$sampling'"'
 
 if grep -q '"cover": false,' /srv/http/data/system/display; then
 ########

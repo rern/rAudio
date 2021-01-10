@@ -1529,7 +1529,7 @@ function switchPage( page ) {
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 	$( '#pl-search-close, #pl-search-close' ).addClass( 'hide' );
-	G.library = G.playback = G.playlist = 0;
+	G.library = G.playback = G.playlist = G.plremove = 0;
 	G[ page ] = 1;
 	G.page = page;
 	displayBottom();
