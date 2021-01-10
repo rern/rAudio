@@ -195,7 +195,6 @@ mixertype )
 			amixer -M sset "$hwmixer" $vol%
 		else
 			amixer sset "$hwmixer" 0dB
-			[[ $mixertype == software ]] && mpc volume $vol
 		fi
 	fi
 	if [[ $mixertype == hardware ]]; then
@@ -204,6 +203,7 @@ mixertype )
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
+	[[ $mixertype == software ]] && mpc volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 normalization )
@@ -264,6 +264,12 @@ soxrset )
 " /etc/mpd.conf
 	touch $dirsystem/soxr
 	restartMPD
+	;;
+volumeget )
+	/srv/http/bash/cmd.sh volumeget
+	;;
+volumepushstream )
+	/srv/http/bash/cmd.sh volumepushstream
 	;;
 
 esac

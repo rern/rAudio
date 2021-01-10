@@ -74,6 +74,12 @@ refreshData = function() {
 		[ 'aplay', 'amixer', 'crossfade', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
+		if ( $( '#infoRange .value' ).text() ) {
+			bash( [ 'volumeget' ], function( level ) {
+				$( '#infoRange .value' ).text( level );
+				$( '#infoRange input' ).val( level );
+			} );
+		}
 		resetLocal();
 		showContent();
 	} );
@@ -128,7 +134,7 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var control = device.hwmixer;
-	$.post( 'cmd.php', { cmd: 'sh', sh: [ 'cmd.sh', 'volumeget' ] }, function( level ) {
+	bash( [ 'volumeget' ], function( level ) {
 		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
@@ -148,7 +154,7 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoRange .value' ).text( val );
 					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
 				} ).on( 'mouseup touchend', function() {
-					$.post( 'cmd.php', { cmd: 'sh', sh: [ 'cmd.sh', 'volumepushstream' ] } );
+					if ( device.mixertype !== 'software' ) bash( [ 'volumepushstream' ] );
 				} );
 			}
 			, nobutton   : 1
