@@ -146,17 +146,23 @@ if [[ -z $Acard ]]; then
 	exit
 fi
 
-# udev rules - usb dac
+# usbdac.rules
 if [[ $# -gt 0 && $1 != bt ]]; then
+	mpc -q stop
 	cardfile=$dirtmp/asoundcard
 	if [[ $1 == remove ]]; then
 		card=$( cat $cardfile )
+		sed -i "s/.$/$card/" /etc/asound.conf
 		rm $cardfile
-	else
+	else # last one of $card $mixertype $hwmixer
 		head -1 /etc/asound.conf | cut -d' ' -f2 > $cardfile
-		card=${Acard[@]: -1}
+		sed -i "s/.$/$card/" /etc/asound.conf
+		# fix: Failed to read mixer
+		if [[ $mixertype == hardware ]]; then
+			vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+			amixer -M sset "$hwmixer" $vol%
+		fi
 	fi
-	sed -i "s/.$/$card/" /etc/asound.conf
 	name=${Aname[$card]}
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 else
