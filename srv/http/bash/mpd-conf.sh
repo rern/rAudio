@@ -149,9 +149,9 @@ fi
 # usbdac.rules
 if [[ $# -gt 0 && $1 != bt ]]; then
 	mpc -q stop
-	cardfile=$dirtmp/asoundcard
+	cardfile=/srv/http/data/shm/asoundcard
 	if [[ $1 == remove ]]; then
-		card=$( cat $cardfile )
+		card=$( cat $cardfile 2> /dev/null || echo 0 )
 		sed -i "s/.$/$card/" /etc/asound.conf
 		rm $cardfile
 	else # last one of $card $mixertype $hwmixer
