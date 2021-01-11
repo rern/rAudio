@@ -52,13 +52,16 @@ data+='
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 if [[ $bluetooth == true ]]; then
 	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+	btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
 else
 	btdiscoverable=false
+	btformat=false
 fi
 
 data+='
 	, "bluetooth"       : '$bluetooth'
 	, "btdiscoverable"  : '$btdiscoverable'
+	, "btformat"        : '$btformat'
 	, "hostname"        : "'$( hostname )'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'

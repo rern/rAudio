@@ -34,15 +34,18 @@ if [[ $1 == bt ]]; then
 	for device in "${paired[@]}"; do
 		mac=$( cut -d' ' -f2 <<< "$device" )
 		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) != 2 )) && continue
-		btoutput+='
+		btoutput='
 
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
 	device         "bluealsa:DEV='$mac',PROFILE=a2dp"
 	type           "alsa"
-	mixer_type     "software"
-	format         "44100:16:2"
+	mixer_type     "software"'
+		[[ -e /srv/http/data/system/btformat ]] && btoutput+='
+	format         "44100:16:2"'
+		btoutput+='
 }'
+		
 	done
 	if [[ -z $btoutput ]]; then
 		pushstream refresh '{"page":"network"}' # bluetooth status
@@ -138,7 +141,7 @@ audio_output {
 }'
 fi
 
-[[ -n $btoutput ]] && mpdconf+=$btoutput
+mpdconf+=$btoutput
 
 echo "$mpdconf" > $mpdfile
 

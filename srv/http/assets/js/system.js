@@ -178,15 +178,20 @@ $( '#refresh' ).click( function( e ) {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
+	var btdiscoversble, btformat;
 	info( {
 		  icon     : 'bluetooth'
 		, title    : 'Bluetooth'
-		, checkbox : { Discoverable: 1 }
-		, checked  : ( !G.bluetooth || G.btdiscoverable ? 0 : 1 )
+		, checkbox : { 'Discoverable <gr>by senders</gr>': 1, 'Sampling: 16bit 44.1kHz <gr>to receivers</gr>': 2 }
+		, checked  : [ G.btdiscoverable ? 0 : 2, G.btformat ? 1 : 2 ]
 		, preshow  : function() {
 			if ( G.bluetooth ) {
+				$( '#infoOk' ).addClass( 'disabled' )
 				$( '#infoCheckBox' ).change( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', $( '#infoCheckBox input' ).prop( 'checked' ) === G.btdiscoverable );
+					btdiscoversble = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
+					btformat = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' );
+					var changed = btdiscoversble !== G.btdiscoverable || btformat !== G.btformat;
+					$( '#infoOk' ).toggleClass( 'disabled', !changed );
 				} );
 			}
 		}
@@ -194,9 +199,8 @@ $( '#setting-bluetooth' ).click( function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
 		, ok       : function() {
-			checked = $( '#infoCheckBox input' ).prop( 'checked' );
-			notify( ( G.bluetooth ? 'Bluetooth Discoverable' : 'Bluetooth' ), checked, 'bluetooth' );
-			bash( [ 'bluetoothset', checked ] );
+			notify( 'Bluetooth', ( G.bluetooth ? 'Change ...' : checked ), 'bluetooth' );
+			bash( [ 'bluetoothset', btdiscoversble, btformat ] );
 		}
 	} );
 } );
