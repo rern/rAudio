@@ -9,15 +9,9 @@ function lines2line( lines ) {
 	return val.substring( 1 );
 }
 function setMixerType( mixertype ) {
-	if ( mixertype === 'none' ) {
-		var card = device.card;
-		var hwmixer = device.hwmixer;
-	} else {
-		var card = '';
-		var hwmixer = '';
-	}
+	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
-	bash( [ 'mixerset', mixertype, device.aplayname, card, hwmixer ] );
+	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
 }
 refreshData = function() {
 	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
@@ -80,6 +74,12 @@ refreshData = function() {
 		[ 'aplay', 'amixer', 'crossfade', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
+		if ( $( '#infoRange .value' ).text() ) {
+			bash( [ 'volumeget' ], function( level ) {
+				$( '#infoRange .value' ).text( level );
+				$( '#infoRange input' ).val( level );
+			} );
+		}
 		resetLocal();
 		showContent();
 	} );
@@ -115,13 +115,6 @@ $( '.enablenoset' ).click( function() {
 	notify( idname[ id ], checked, 'mpd' );
 	bash( [ id, checked ] );
 } );
-
-/*$( '#mpdconf' ).click( function() {
-	bash( 'cat /etc/mpd.conf', function( data ) {
-		$( '#codempdconf' )
-			.text( data )
-	} );
-} );*/
 $( '#audiooutput, #hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
@@ -141,7 +134,7 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var control = device.hwmixer;
-	$.post( 'cmd.php', { cmd: 'sh', sh: [ 'cmd.sh', 'volumeget' ] }, function( level ) {
+	bash( [ 'volumeget' ], function( level ) {
 		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
@@ -151,7 +144,7 @@ $( '#setting-hwmixer' ).click( function() {
 				if ( device.mixertype === 'none' ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 					$( '#infoFooter' )
-						.html( '<br>Volume Control: None - 100% (0dB)' )
+						.html( '<br>Volume Control: None / 0dB' )
 						.removeClass( 'hide' );
 					return
 				}
@@ -160,6 +153,8 @@ $( '#setting-hwmixer' ).click( function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
 					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+				} ).on( 'mouseup touchend', function() {
+					if ( device.mixertype !== 'software' ) bash( [ 'volumepushstream' ] );
 				} );
 			}
 			, nobutton   : 1

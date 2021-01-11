@@ -580,7 +580,7 @@ function infoNoData() {
 	var message = !keyword
 					? ( G.librarylist ? 'No data in this location.' : 'No <wh>'+ G.mode +'s</wh> in database.' )
 						 +'<br>Update for changes then try again:'
-						 +'<br>Settings > MPD | <i class="fa fa-refresh-library wh"></i>'
+						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
 					: 'Nothing found for <wh>'+ keyword +'</wh>';
 	info( {
 		  icon      : 'library'
@@ -1179,12 +1179,12 @@ renderPlaylist = function( data ) {
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
 	$( '#pl-search-input' ).val( '' );
-	$( '#pl-path, #button-pl-back, #pl-savedlist, #pl-index, #pl-search' ).addClass( 'hide' );
+	$( '#button-pl-back, #pl-savedlist, #pl-index, #pl-search' ).addClass( 'hide' );
 	$( '#lib-path>span, #button-pl-search' ).removeClass( 'hide' );
 	$( '#button-pl-open' ).toggleClass( 'disable', G.status.playlists === 0 );
 	if ( data == -1 ) {
 		$( '#playback-controls' ).addClass( 'hide' );
-		$( '#pl-count' ).html( '<span class="title">PLAYLIST</span>' );
+		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disable' );
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
@@ -1195,7 +1195,7 @@ renderPlaylist = function( data ) {
 	
 	$( '.playlist' ).removeClass( 'hide' );
 	$( '.emptyadd' ).addClass( 'hide' );
-	$( '#pl-count' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
+	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
 	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disable' );
 	$( '#button-pl-crop, #button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
@@ -1226,7 +1226,7 @@ function renderPlaylistList() {
 		$( '#menu-plaction' ).addClass( 'hide' );
 		
 		$( '#pl-path' ).html( data.counthtml );
-		$( '#pl-path, #button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
+		$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
@@ -1244,12 +1244,10 @@ function renderPlaylistList() {
 }
 function renderSavedPlaylist( name ) {
 	$( '.menu' ).addClass( 'hide' );
-	$( '#pl-count' ).empty();
 	list( { cmd: 'get', name: name }, function( data ) {
 		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-		$( '#pl-path, #button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
-		$( '#pl-path bl' ).removeClass( 'title' );
+		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
 			$( '.list p' ).toggleClass( 'bars-on', G.bars );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
@@ -1531,7 +1529,7 @@ function switchPage( page ) {
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
 	$( '#pl-search-close, #pl-search-close' ).addClass( 'hide' );
-	G.library = G.playback = G.playlist = 0;
+	G.library = G.playback = G.playlist = G.plremove = 0;
 	G[ page ] = 1;
 	G.page = page;
 	displayBottom();

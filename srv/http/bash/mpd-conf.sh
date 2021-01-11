@@ -34,14 +34,18 @@ if [[ $1 == bt ]]; then
 	for device in "${paired[@]}"; do
 		mac=$( cut -d' ' -f2 <<< "$device" )
 		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) != 2 )) && continue
-		btoutput+='
+		btoutput='
 
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
 	device         "bluealsa:DEV='$mac',PROFILE=a2dp"
 	type           "alsa"
-	mixer_type     "software"
+	mixer_type     "software"'
+		[[ -e /srv/http/data/system/btformat ]] && btoutput+='
+	format         "44100:16:2"'
+		btoutput+='
 }'
+		
 	done
 	if [[ -z $btoutput ]]; then
 		pushstream refresh '{"page":"network"}' # bluetooth status
@@ -137,7 +141,7 @@ audio_output {
 }'
 fi
 
-[[ -n $btoutput ]] && mpdconf+=$btoutput
+mpdconf+=$btoutput
 
 echo "$mpdconf" > $mpdfile
 
@@ -146,17 +150,23 @@ if [[ -z $Acard ]]; then
 	exit
 fi
 
-# udev rules - usb dac
+# usbdac.rules
 if [[ $# -gt 0 && $1 != bt ]]; then
-	cardfile=$dirtmp/asoundcard
+	mpc -q stop
+	cardfile=/srv/http/data/shm/asoundcard
 	if [[ $1 == remove ]]; then
-		card=$( cat $cardfile )
+		card=$( cat $cardfile 2> /dev/null || echo 0 )
+		sed -i "s/.$/$card/" /etc/asound.conf
 		rm $cardfile
-	else
+	else # last one of $card $mixertype $hwmixer
 		head -1 /etc/asound.conf | cut -d' ' -f2 > $cardfile
-		card=${Acard[@]: -1}
+		sed -i "s/.$/$card/" /etc/asound.conf
+		# fix: Failed to read mixer
+		if [[ $mixertype == hardware ]]; then
+			vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+			amixer -M sset "$hwmixer" $vol%
+		fi
 	fi
-	sed -i "s/.$/$card/" /etc/asound.conf
 	name=${Aname[$card]}
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 else
@@ -169,24 +179,10 @@ if [[ -n $wm5102card ]]; then
 	/srv/http/bash/mpd-wm5102.sh $wm5102card $output
 fi
 
-hwmixer="${Ahwmixer[$card]}"
-if [[ -n $hwmixer ]]; then
-	mixertype=${Amixertype[$card]}
-	if [[ $mixertype == hardware ]]; then
-		amixer -qM sset "$hwmixer" $( mpc volume | cut -d: -f2 )
-	elif [[ $mixertype == software ]]; then
-		mpc | grep -q '^\[playing' && playing=1
-		[[ -n $playing ]] && mpc -q stop
-		amixer -q sset "$hwmixer" 0dB
-		[[ -n $playing ]] && mpc -q play
-	else
-		amixer -q sset "$hwmixer" 0dB
-	fi
-fi
-
 restartMPD
 
 if [[ -e /usr/bin/shairport-sync ]]; then
+	hwmixer="${Ahwmixer[$card]}"
 	if [[ -n $hwmixer ]]; then
 		alsa='alsa = {
 	output_device = "hw:'$card'";

@@ -1846,7 +1846,7 @@ $( '#pl-search-input' ).keyup( playlistFilter );
 $( '#pl-search-close, #pl-search-btn' ).click( function() {
 	$( '#pl-search-close' ).empty();
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).addClass( 'hide' );
-	$( '#pl-count, #pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
+	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {
 		return $( this ).html().replace( /<bl>|<\/bl>/g, '' );
@@ -1856,7 +1856,7 @@ $( '#button-pl-search' ).click( function() {
 	if ( !G.status.playlistlength ) return
 	
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
-	$( '#pl-count, #pl-manage, #button-pl-search' ).addClass( 'hide' );
+	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
 	$( '#pl-search-input' ).focus();
 } );
 var sortableplaylist = new Sortable( document.getElementById( 'pl-list' ), {
@@ -2006,13 +2006,21 @@ $( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
 		var file = $li.hasClass( 'file' );
 		var $count = file ? $( '#pl-trackcount' ) : $( '#pl-radiocount' );
 		var count = +$count.text().replace( /,|\./g, '' ) - 1;
-		$count.text( count.toLocaleString() );
-		if ( file ) {
-			$( '#pl-time' )
-				.data( 'time', total )
-				.text( second2HMS( total ) );
+		if ( count ) {
+			$count.text( count.toLocaleString() );
+			if ( file ) $( '#pl-time' )
+							.data( 'time', total )
+							.text( second2HMS( total ) );
+		} else {
+			if ( file ) {
+				$( '#pl-time' ).data( 'time', 0 ).empty();
+				$count.next().addBack().remove()
+			} else {
+				$count.prev().addBack().remove();
+			}
 		}
 		bash( [ 'plremove', $li.index() + 1 ] );
+		if ( $li.hasClass( 'active' ) ) $li.next().addClass( 'active' );
 		$li.remove();
 	} else {
 		bash( [ 'plremove' ] );

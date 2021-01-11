@@ -51,6 +51,7 @@ data+='
 	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"'
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 if [[ $bluetooth == true ]]; then
+	# 'bluetoothctl show' needs active bluetooth
 	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 else
 	btdiscoverable=false
@@ -59,6 +60,7 @@ fi
 data+='
 	, "bluetooth"       : '$bluetooth'
 	, "btdiscoverable"  : '$btdiscoverable'
+	, "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'

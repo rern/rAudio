@@ -64,7 +64,9 @@ bluetoothdisable )
 	pushRefresh
 	;;
 bluetoothset )
-	if [[ ${args[1]} == true ]]; then
+	btdiscoverable=${args[1]}
+	btformat=${args[2]}
+	if [[ $btdiscoverable == true ]]; then
 		yesno=yes
 		touch $dirsystem/btdiscoverable
 	else
@@ -76,6 +78,7 @@ bluetoothset )
 		sleep 3
 	fi
 	bluetoothctl discoverable $yesno &
+	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 	pushRefresh
 	;;
 databackup )
