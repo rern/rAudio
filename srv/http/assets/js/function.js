@@ -1006,12 +1006,16 @@ function renderPlayback() {
 		$( '#progress, #elapsed, #total' ).empty();
 		$( '.cover-save' ).remove();
 		if ( !G.status.Title || G.status.Title !== prevtitle ) {
-			if ( G.status.coverart ) {
-				var coverart = G.status.coverart;
+			var coverart = G.status.coverart || G.status.coverartradio;
+			if ( coverart ) {
+				$( '#coverart' ).attr( 'src', coverart );
+				$( '#vu' ).addClass( 'hide' );
 			} else {
-				var coverart = G.status.coverartradio || ( G.status.state === 'stop' ? vustop : vu );
+				$( '#coverart' ).addClass( 'hide' );
+				$( '#vu' ).removeClass( 'hide' );
+				G.status.state === 'stop' ? vuStop() : vu();
+				loader( 'hide' );
 			}
-			$( '#coverart' ).attr( 'src', coverart );
 		}
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
@@ -1600,4 +1604,24 @@ function volumeSet( pageX ) {
 	}
 	$( '#volume-text' ).text( vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+}
+function vu() {
+	var range = 12; // -/+
+	var deg = 0;
+	var inc;
+	clearInterval( G.vuInt );
+	G.vuInt = setInterval( function() {
+		inc = Math.random() * range * 2;
+		deg += inc;
+		if ( deg < -range ) {
+			deg = -range + inc;
+		} else if ( deg > range ) {
+			deg = range - inc;
+		}
+		$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
+	}, 500 );
+}
+function vuStop() {
+	clearInterval( G.vuInt );
+	$( '#vuneedle' ).css( 'transform', 'rotate( -27.7deg )' );
 }

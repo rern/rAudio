@@ -867,15 +867,17 @@ i.map.disabled, .map.disabled i {
 	fill: var( --cw ) !important;
 }
 #coverart,
+#vu,
 .licover img {
 	border: 1px solid hsl(0,0%,15%);
 }
-.vu {
-	border-radius: 18px;
+#vuneedle {
+	transform: rotate( -27.7deg);
+	transform-origin: bottom;
+	transition-duration: 750ms;
 }
-.vu {
-	width: 230px !important;
-	height: 230px !important;
+#infoMessage svg {
+	width: 100px;
 }
 .cover-save {
 	position: absolute;

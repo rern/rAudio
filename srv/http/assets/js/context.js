@@ -383,7 +383,7 @@ function webRadioCoverart() {
 			imageReplace( imagefile, 'webradio' );
 		}
 	}
-	if ( ( G.playback && !$( '#coverart' ).hasClass( 'vu' ) )
+	if ( ( G.playback && $( '#vu' ).hasClass( 'hide' ) )
 		|| ( G.library && !G.list.li.find( '.lib-icon' ).hasClass( 'fa' ) )
 	) {
 		infojson.buttonlabel = '<i class="fa fa-webradio"></i>Default';
@@ -393,9 +393,10 @@ function webRadioCoverart() {
 			bash( [ 'coverartradioreset', imagefile ] );
 		}
 	}
-	var coverart = G.playback ? G.status.coverartradio || vu : G.list.li.find( '.lib-icon' ).attr( 'src' ) || vu;
-	var borderradius = coverart === vu ? 'style="border-radius: 10px"' : '';
-	infojson.message = '<img class="imgold" src="'+ coverart +'" '+ borderradius +'>';
+	var coverart = G.playback
+					? G.status.coverartradio || '/assets/img/vu.png'
+					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || '/assets/img/vu.png';
+	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
 	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
 	info( infojson );
 }

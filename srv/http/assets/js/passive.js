@@ -172,9 +172,9 @@ function psCoverart( data ) {
 				$( '.edit' ).remove();
 				var stop = G.status.state === 'stop';
 				if ( stop || !G.status.coverart ) {
-					$( '#coverart' )
-						.attr( 'src', stop ? vustop : vu )
-						.css( { 'border-radius': '18px', opacity: '' } );
+					vuStop();
+				} else {
+					vu();
 				}
 			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
@@ -238,14 +238,9 @@ function psMpdPlayer( data ) {
 				data.coverart = '';
 			} else {
 				if ( !data.coverart && G.status.coverart ) {
-					if ( data.webradio ) {
-						var coverart = data.coverartradio || ( data.state === 'stop' ? vustop : vu );
-					} else {
-						var coverart = coverdefault;
-					}
 					G.timeoutCover = setTimeout( function() {
 						G.status.coverart = '';
-						$( '#coverart' ).attr( 'src', coverart );
+						if ( coverart ) $( '#coverart' ).attr( 'src', coverart );
 					}, data.Title ? 3000 : 0 );
 					delete data.coverart;
 				}
