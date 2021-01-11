@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+[[ -z $i ]] && echo "\
+defaults.pcm.card 0
+defaults.ctl.card 0" > /etc/asound.conf
+
 if [[ -e /usr/lib/chromium && ! -e /usr/lib/libicudata.so.67 ]]; then
 	echo -e "$bar Get missing libraries for Chromium ..."
 	wget -qO - https://github.com/rern/rern.github.io/raw/master/archives/chromiumlib.tar.xz \
