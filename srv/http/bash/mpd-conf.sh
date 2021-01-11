@@ -41,6 +41,7 @@ audio_output {
 	device         "bluealsa:DEV='$mac',PROFILE=a2dp"
 	type           "alsa"
 	mixer_type     "software"
+	format         "44100:16:2"
 }'
 	done
 	if [[ -z $btoutput ]]; then
