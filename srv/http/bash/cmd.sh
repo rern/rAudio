@@ -207,7 +207,6 @@ volumeSet() {
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-		echo "amixer sset \"$control\" $i%" >> /root/v
 			[[ -z $control ]] && mpc volume $i || amixer -M sset "$control" $i%
 			sleep 0.2
 		done
