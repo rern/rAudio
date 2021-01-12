@@ -300,7 +300,7 @@ $menu.= '</div>';
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" class="cover hide">
-				<div id="vu">
+				<div id="vu" class="hide">
 					<svg viewBox="0 0 230 230">
 					<defs><style>.cls-1{fill:#fff;}.cls-14,.cls-17,.cls-2,.cls-7{stroke:#000;}.cls-13,.cls-2,.cls-4{stroke-width:0.5px;}.cls-19,.cls-3,.cls-4,.cls-5,.cls-6{fill:none;}.cls-13,.cls-18,.cls-3,.cls-4,.cls-5,.cls-6{stroke:red;}.cls-19,.cls-3,.cls-4,.cls-5{stroke-miterlimit:10;}.cls-3{stroke-width:4px;}.cls-6{stroke-width:1px;}.cls-10,.cls-11,.cls-12,.cls-15,.cls-16,.cls-20,.cls-8,.cls-9{isolation:isolate;}.cls-12,.cls-8{font-size:12px;}.cls-10,.cls-11,.cls-12,.cls-15,.cls-16,.cls-8,.cls-9{font-family:Arial, Arial;}.cls-9{font-size:12px;}.cls-10{font-size:12px;}.cls-11{font-size:12px;}.cls-11,.cls-12{fill:red;}.cls-14,.cls-17{stroke-linecap:round;}.cls-14{stroke-width:3px;}.cls-15{font-size:9px;}.cls-16{font-size:9px;}.cls-17{stroke-width:2px;}.cls-19{stroke:#231f20;}.cls-21{fill:#555555;stroke:#000;;stroke-width:0.2px;}.cls-22{fill:#333333;stroke:#000;stroke-width:0.2px;}.cls23{fill:none;stroke:#000;stroke-width:0.2;stroke-miterlimit:10;}
 					</style></defs>

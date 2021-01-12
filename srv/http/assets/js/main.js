@@ -115,9 +115,7 @@ $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
 $( '#coverart' ).one( 'load', function() {
-	$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
-	if ( G.status.playlistlength ) $( '#coverart' ).removeClass( 'hide' );
-	$( '#loader' ).removeClass( 'splash' )
+	$( '#loader' ).removeClass( 'splash' );
 } ).on( 'load', function() {
 	if ( 'coverart' in G.status 
 		&& G.status.coverart.split( '-' )[ 0 ] === '/data/shm/online'
