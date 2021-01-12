@@ -1044,6 +1044,7 @@ function renderPlayback() {
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
 		G.coversave = 0;
+		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' ).attr( 'src', G.status.coverart || coverdefault );
 	}
 	// time

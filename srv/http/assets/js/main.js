@@ -32,6 +32,7 @@ var G = {
 	, status        : {}
 
 }
+var cmdphp = 'cmd.php';
 var data = {}
 var picaOption = { // pica.js
 	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
@@ -40,7 +41,6 @@ var picaOption = { // pica.js
 //	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
 //	, alpha            : true // Default = false (black crop background)
 };
-var cmdphp = 'cmd.php';
 var hash = Math.ceil( Date.now() / 1000 );
 var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
 var vustop = '/assets/img/vustop.'+ hash +'.gif';
@@ -108,6 +108,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 		}
 	} );
 } );
+G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -117,7 +118,6 @@ $( '#loader' ).click( function() {
 $( '#coverart' ).one( 'load', function() {
 	$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	if ( G.status.playlistlength ) $( '#coverart' ).removeClass( 'hide' );
-	G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 	$( '#loader' ).removeClass( 'splash' )
 } ).on( 'load', function() {
 	if ( 'coverart' in G.status 

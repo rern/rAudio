@@ -174,12 +174,9 @@ function psCoverart( data ) {
 			}
 			if ( G.playback ) {
 				$( '.edit' ).remove();
-				var stop = G.status.state === 'stop';
-				if ( stop || !G.status.coverart ) {
-					vuStop();
-				} else {
-					vu();
-				}
+				$( '#coverart' ).addClass( 'hide' );
+				$( '#vu' ).removeClass( 'hide' );
+				G.status.state === 'stop'|| !G.status.coverart ? vuStop() : vu();
 			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
 			}
