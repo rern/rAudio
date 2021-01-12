@@ -114,9 +114,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
-$( '#coverart' ).one( 'load', function() {
-	$( '#loader' ).removeClass( 'splash' );
-} ).on( 'load', function() {
+$( '#coverart' ).on( 'load', function() {
 	if ( 'coverart' in G.status 
 		&& G.status.coverart.split( '-' )[ 0 ] === '/data/shm/online'
 		&& !G.status.webradio
