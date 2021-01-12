@@ -448,6 +448,10 @@ function psVolume( data ) {
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		$( '#volume-text' ).text( val );
 		$( '#volume-bar' ).css( 'width', val +'%' );
+		if ( $( '#infoRange .value' ).text() ) {
+			$( '#infoRange .value' ).text( val );
+			$( '#infoRange input' ).val( val );
+		}
 	}, G.debouncems );
 }
 function psWebradio( data ) {
