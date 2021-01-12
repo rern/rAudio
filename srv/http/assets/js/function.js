@@ -800,7 +800,7 @@ function playlistProgress() {
 		G.intElapsedPl = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === time ) {
-				clearInterval( G.intElapsedPl );
+				clearIntervalAll();
 				$elapsed.empty();
 				G.status.elapsed = 0;
 				if ( G.status.state === 'play' ) {
