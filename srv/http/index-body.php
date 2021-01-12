@@ -304,7 +304,7 @@ $menu.= '</div>';
 					<svg viewBox="0 0 230 230">
 					<rect class="cls-1" width="230" height="125"/>
 
-					<path class="cls-3" d="M147.19,53.55a168.5,168.5,0,0,1,50.93,18.7" transform="translate(0 0)"/><line class="cls-4" x1="154.41" y1="57.16" x2="156.09" y2="50.37"/><line class="cls-5" x1="162.44" y1="59.31" x2="165.13" y2="50.2"/><line class="cls-5" x1="179.48" y1="65.36" x2="183" y2="56.53"/><line class="cls-6" x1="197.04" y1="73.93" x2="201.7" y2="65.65"/>
+					<path class="cls-3" d="M147.19,53.55a168.5,168.5,0,0,1,50.93,18.7" transform="translate(0 0)"/><line class="cls-4" x1="154.41" y1="57.16" x2="156.09" y2="50.37"/><line class="cls-5" x1="162.44" y1="59.31" x2="165.13" y2="50.2"/><line class="cls-5" x1="179.48" y1="65.36" x2="183" y2="56.53"/><line class="cls-5" x1="197.04" y1="73.93" x2="201.7" y2="65.65"/>
 					
 					<line class="cls-2" x1="139.63" y1="54.3" x2="140.66" y2="47.37"/><line class="cls-7" x1="32.97" y1="73.93" x2="28.32" y2="65.64"/><line class="cls-2" x1="98.71" y1="53.19" x2="98.04" y2="46.31"/><line class="cls-2" x1="81.98" y1="55.75" x2="80.6" y2="48.89"/><line class="cls-7" x1="58.68" y1="62.2" x2="55.49" y2="53.25"/><line class="cls-7" x1="74.94" y1="57.32" x2="72.67" y2="48.09"/><line class="cls-7" x1="89.81" y1="54.38" x2="88.38" y2="44.99"/><line class="cls-7" x1="108.81" y1="52.66" x2="108.46" y2="43.12"/><line class="cls-7" x1="120.11" y1="52.58" x2="120.4" y2="43.08"/><line class="cls-7" x1="132.7" y1="53.42" x2="133.71" y2="43.98"/><line class="cls-7" x1="146.81" y1="55.52" x2="148.62" y2="46.19"/><path class="cls-13" d="M156.06,50.5" transform="translate(0 0)"/><path class="cls-13" d="M154.39,57.27" transform="translate(0 0)"/>
 					
