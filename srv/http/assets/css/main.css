@@ -2686,7 +2686,8 @@ li.active .li2 bl {
 		transform: scale( 1.25 );
 	}
 	#bar-bottom {
-		height: 30px;
+		height: 30px !important;
+		font-size: 21px;
 	}
 	#infoicon,
 	#sampling,
@@ -2703,6 +2704,7 @@ li.active .li2 bl {
 	}
 	#bar-bottom {
 		height: 30px;
+		font-size: 21px;
 	}
 	#sampling,
 	#time-knob,
