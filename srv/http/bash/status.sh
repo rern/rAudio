@@ -357,8 +357,6 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 				/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
 			fi
 		fi
-	else
-		rm -f $dirtmp/online-*
 	fi
 else
 	args="\
