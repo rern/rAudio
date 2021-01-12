@@ -1634,5 +1634,5 @@ function vu() {
 }
 function vuStop() {
 	clearInterval( G.vuInt );
-	$( '#vuneedle' ).css( 'transform', 'rotate( -27.7deg )' );
+	$( '#vuneedle' ).css( 'transform', '' );
 }

@@ -892,8 +892,8 @@ i.map.disabled, .map.disabled i {
 .cls-1,.cls-14 { stroke-linecap: round; }
 
 #vuneedle {
-	transform: rotate( -27.7deg);
-	transform-origin: 115px 230px;
+	transform: rotate( -29.4deg);
+	transform-origin: 115px 220px;
 	transition-duration: 750ms;
 }
 #infoMessage svg {
