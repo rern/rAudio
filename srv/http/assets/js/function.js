@@ -631,8 +631,11 @@ function infoUpdate( path ) {
 }
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
-	$( '#loader' ).removeClass( 'splash' );
-	$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
+	if ( !G.load ) {
+		G.load = 1;
+		$( '#loader' ).removeClass( 'splash' );
+		$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
+	}
 }
 function local( delay ) {
 	G.local = 1;
