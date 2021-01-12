@@ -28,7 +28,7 @@ rows = cols == 16 and 2 or 4
 if address: # i2c
     from RPLCD.i2c import CharLCD
     lcd = CharLCD( chip, address )
-    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, address=address, i2c_expander=chip, auto_linebreaks=False )
+    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, address=address, i2c_expander=chip, auto_linebreaks=False, backlight_enabled=True )
 else:
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
@@ -191,10 +191,15 @@ if charmap == 'A00':
     lines = ''.join( c for c in unicodedata.normalize( 'NFD', lines ) if unicodedata.category( c ) != 'Mn' )
 
 lcd.write_string( lines + rn + progress[ :cols ] )
+
+if state == 'stop':
+    lcd.backlight_enabled = False
     
 if state == 'stop' or state == 'pause':
     lcd.close()
     quit()
+
+lcd.backlight_enabled = False
 
 # play
 if elapsed == 'false': quit()
