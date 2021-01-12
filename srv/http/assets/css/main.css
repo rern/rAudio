@@ -893,7 +893,7 @@ i.map.disabled, .map.disabled i {
 
 #vuneedle {
 	transform: rotate( -27.7deg);
-	transform-origin: bottom;
+	transform-origin: 115px 230px;
 	transition-duration: 750ms;
 }
 #infoMessage svg {
