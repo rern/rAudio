@@ -889,12 +889,29 @@ i.map.disabled, .map.disabled i {
 .cls-2,.cls-4,.cls-13 { stroke-width: 0.5px; }
 .cls-21,.cls-22,.cls-23 { stroke-width: 0.2px; }
 .cls-14,.cls-17 { stroke-linecap: round; }
-
 #vuneedle {
 	transform: rotate( -29.4deg);
 	transform-origin: 115px 220px;
 	transition-duration: 750ms;
 }
+#vu:before { /* glossy overlay */
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 230px;
+	height: 230px;
+	content: '';
+	background: -webkit-radial-gradient(
+		70% -50%, 200% 190%,
+		hsla(0,0%,100%,0.15) 50%,
+		hsla(0,0%,100%,0) 50% );
+	background: radial-gradient(
+		160% 90% at 75% 0%,
+		hsla(0,0%,100%,.15) 50%,
+		hsla(0,0%,100%,0) 50% );
+	z-index: 6;
+}
+
 #infoMessage svg {
 	width: 100px;
 }
