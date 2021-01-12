@@ -715,21 +715,23 @@ $( '#coverTL, #timeTL' ).tap( function() {
 	if ( window.innerWidth < 614 ) {
 		if ( !$( '#volume-knob' ).is( ':hidden' ) ) return
 		
-		var top = $( '#page-playback' ).css( 'margin-top' );
-		if ( top === '0px' ) {
-			setTimeout( function() {
-				$( '#volume-band' ).click();
-				$( '#page-playback' ).css( {
-						'margin-top' : -$( '#coverart' ).offset().top
-						, height     : '110%'
-					} );
-				$( '.volumeband, #volume-bar' ).removeClass( 'hide' );
-				$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-			}, 300 );
-		} else {
-			$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
-			$( '.volumeband' ).addClass( 'transparent' );
-		}
+		var control = G.status.control;
+		info( {
+			  icon       : 'volume'
+			, title      : 'Mixer Device Volume'
+			, message    : control
+			, rangevalue : G.status.volume
+			, preshow    : function() {
+				$( '#infoRange input' ).on( 'click input', function() {
+					var val = $( this ).val();
+					$( '#infoRange .value' ).text( val );
+					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+				} ).on( 'mouseup touchend', function() {
+					bash( [ 'volumepushstream' ] );
+				} );
+			}
+			, nobutton   : 1
+		} );
 		return
 	}
 	

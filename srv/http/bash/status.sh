@@ -173,7 +173,6 @@ done
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
-, "control"        : ""
 , "elapsed"        : '$elapsed'
 , "file"           : "'$file'"
 , "song"           : '$song'

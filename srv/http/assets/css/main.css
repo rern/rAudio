@@ -2662,8 +2662,9 @@ li.active .li2 bl {
 	}
 	#infoOverlay {
 		transform: scale( 0.9 );
-		width: 110%;
-		left: -5%;
+		transform-origin: top;
+		width: calc( 100% / 0.9 );
+		left: calc( -100% / 18 );
 	}
 	n { display: none; }
 }
