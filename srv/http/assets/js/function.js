@@ -58,9 +58,9 @@ function bookmarkThumbReplace( $this, newimg ) {
 	}
 }
 function clearIntervalAll() {
-	clearInterval( G.intKnob );
-	clearInterval( G.intElapsed );
-	clearInterval( G.intElapsedPl );
+	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intVu ].forEach( function( el ) {
+		clearInterval( el );
+	} );
 }
 function colorSet() {
 	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
@@ -1019,7 +1019,7 @@ function renderPlayback() {
 			} else {
 				$( '#coverart' ).addClass( 'hide' );
 				$( '#vu' ).removeClass( 'hide' );
-				G.status.state === 'stop' ? vuStop() : vu();
+				G.status.state !== 'stop' ? vuStop() : vu();
 				loader( 'hide' );
 			}
 		}
@@ -1620,8 +1620,7 @@ function vu() {
 	var range = 12; // -/+
 	var deg = 0;
 	var inc;
-	clearInterval( G.vuInt );
-	G.vuInt = setInterval( function() {
+	G.intVu = setInterval( function() {
 		inc = Math.random() * range * 2;
 		deg += inc;
 		if ( deg < -range ) {
@@ -1633,6 +1632,6 @@ function vu() {
 	}, 500 );
 }
 function vuStop() {
-	clearInterval( G.vuInt );
+	clearIntervalAll();
 	$( '#vuneedle' ).css( 'transform', '' );
 }
