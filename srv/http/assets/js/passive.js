@@ -139,10 +139,10 @@ function psCoverart( data ) {
 		case 'coverart':
 			G.status.coverart = src;
 			if ( G.playback ) {
+				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
 					.attr( 'src', src )
 					.removeClass( 'hide' );
-				$( '#vu' ).addClass( 'hide' );
 			}
 			break;
 		case 'bookmarks':
@@ -160,11 +160,11 @@ function psCoverart( data ) {
 				$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
 			}
 			if ( G.playback ) {
+				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
 					.attr( 'src', src )
 					.css( 'opacity', '' )
 					.removeClass( 'hide' );
-				$( '#vu' ).addClass( 'hide' );
 			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
 			}

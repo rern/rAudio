@@ -184,9 +184,9 @@ function coverartChange() {
 			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
 				$( '.edit' ).remove();
-				$( '#coverart, .licoverimg img' ).css( 'opacity', '' );
+				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
-					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? vustop : coverdefault ) );
+					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? '/assets/img/vu.png' : coverdefault ) );
 				} else {
 					$( '.licoverimg img' ).attr( 'src', url || coverdefault );
 				}
@@ -570,7 +570,7 @@ function imageReplace( imagefile, type, callback ) {
 		, success     : function() {
 			if ( callback ) callback( ext );
 			$( '.edit' ).remove();
-			$( '#coverart, .licoverimg img' ).css( 'opacity', '' );
+			$( '#coverart, #liimg' ).css( 'opacity', '' );
 		}
 	} );
 }
@@ -853,7 +853,7 @@ function renderLibrary() {
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
 	$( '.edit' ).remove();
-	$( '#coverart' ).css( 'opacity', '' );
+	$( '#liimg' ).css( 'opacity', '' );
 	orderLibrary();
 //	displayBars();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
@@ -981,7 +981,6 @@ function renderPlayback() {
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
-	$( '#coverart' ).removeClass( 'hide' );
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '#artist, #song, #album' ).css( 'width', '' );
 	$( '#artist' ).html( G.status.Artist );
@@ -1008,8 +1007,10 @@ function renderPlayback() {
 		if ( !G.status.Title || G.status.Title !== prevtitle ) {
 			var coverart = G.status.coverart || G.status.coverartradio;
 			if ( coverart ) {
-				$( '#coverart' ).attr( 'src', coverart );
 				$( '#vu' ).addClass( 'hide' );
+				$( '#coverart' )
+					.attr( 'src', coverart )
+					.removeClass( 'hide' );
 			} else {
 				$( '#coverart' ).addClass( 'hide' );
 				$( '#vu' ).removeClass( 'hide' );
@@ -1045,7 +1046,9 @@ function renderPlayback() {
 	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
 		G.coversave = 0;
 		$( '#vu' ).addClass( 'hide' );
-		$( '#coverart' ).attr( 'src', G.status.coverart || coverdefault );
+		$( '#coverart' )
+			.attr( 'src', G.status.coverart || coverdefault )
+			.removeClass( 'hide' );
 	}
 	// time
 	time = 'Time' in G.status ? G.status.Time : '';
@@ -1143,7 +1146,7 @@ function renderPlayback() {
 }
 function renderPlaybackBlank() {
 	$( '#page-playback .emptyadd' ).toggleClass( 'hide', G.status.player !== 'mpd' );
-	$( '#playback-controls, #infoicon i' ).addClass( 'hide' );
+	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
 	$( '#divartist, #divsong, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #song, #album, #progress, #elapsed, #total' ).empty();
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
@@ -1169,7 +1172,9 @@ function renderPlaybackBlank() {
 				.addClass( 'hide' );
 			$( '#sampling' ).empty();
 		} else {
-			$( '#coverart' ).attr( 'src', coverdefault );
+			$( '#coverart' )
+				.attr( 'src', coverdefault )
+				.removeClass( 'hide' );
 			$( '#page-playback .emptyadd' ).empty();
 			$( '#sampling' )
 				.css( 'display', 'block' )
