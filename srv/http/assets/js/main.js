@@ -508,7 +508,7 @@ $( '#button-library, #button-playback, #button-playlist' ).taphold( function() {
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
-		if ( window.innerWidth > 613 || !$( '#volume-knob' ).is( ':hidden' ) ) return
+		if ( G.display.volumenone || window.innerWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
 		
 		var control = G.status.control;
 		info( {
