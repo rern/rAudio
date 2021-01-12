@@ -507,9 +507,31 @@ $( '#button-library, #button-playback, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#tab-playback' ).click( function() {
-	getPlaybackStatus();
-	switchPage( 'playback' );
-	if ( G.color ) $( '#colorcancel' ).click();
+	if ( G.playback ) {
+		if ( window.innerWidth > 613 || !$( '#volume-knob' ).is( ':hidden' ) ) return
+		
+		var control = G.status.control;
+		info( {
+			  icon       : 'volume'
+			, title      : 'Mixer Device Volume'
+			, message    : control
+			, rangevalue : G.status.volume
+			, preshow    : function() {
+				$( '#infoRange input' ).on( 'click input', function() {
+					var val = $( this ).val();
+					$( '#infoRange .value' ).text( val );
+					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+				} ).on( 'mouseup touchend', function() {
+					bash( [ 'volumepushstream' ] );
+				} );
+			}
+			, nobutton   : 1
+		} );
+	} else {
+		getPlaybackStatus();
+		switchPage( 'playback' );
+		if ( G.color ) $( '#colorcancel' ).click();
+	}
 } )
 $( '#tab-playlist' ).click( function() {
 	G.pladd = {};
@@ -713,25 +735,7 @@ $( '#coverTL, #timeTL' ).tap( function() {
 	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 	
 	if ( window.innerWidth < 614 ) {
-		if ( !$( '#volume-knob' ).is( ':hidden' ) ) return
-		
-		var control = G.status.control;
-		info( {
-			  icon       : 'volume'
-			, title      : 'Mixer Device Volume'
-			, message    : control
-			, rangevalue : G.status.volume
-			, preshow    : function() {
-				$( '#infoRange input' ).on( 'click input', function() {
-					var val = $( this ).val();
-					$( '#infoRange .value' ).text( val );
-					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
-				} ).on( 'mouseup touchend', function() {
-					bash( [ 'volumepushstream' ] );
-				} );
-			}
-			, nobutton   : 1
-		} );
+		$( '#tab-playback' ).click();
 		return
 	}
 	
