@@ -139,7 +139,9 @@ function psCoverart( data ) {
 		case 'coverart':
 			G.status.coverart = src;
 			if ( G.playback ) {
-				$( '#coverart' ).attr( 'src', src );
+				$( '#coverart' )
+					.attr( 'src', src )
+					.removeClass( 'hide' );
 				$( '#vu' ).addClass( 'hide' );
 			}
 			break;
@@ -160,7 +162,8 @@ function psCoverart( data ) {
 			if ( G.playback ) {
 				$( '#coverart' )
 					.attr( 'src', src )
-					.css( 'opacity', '' );
+					.css( 'opacity', '' )
+					.removeClass( 'hide' );
 				$( '#vu' ).addClass( 'hide' );
 			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
