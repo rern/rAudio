@@ -458,9 +458,6 @@ i.map.disabled, .map.disabled i {
 #power.sub {
 	border-right: 1px solid #000000
 }
-#screenoff {
-	line-height: 41px;
-}
 #settings i.on {
 	color: var( --cml ) !important;
 }
