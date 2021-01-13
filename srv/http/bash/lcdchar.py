@@ -143,7 +143,7 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp' ] # assign variables
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'backlight' ] # assign variables
 for i in range( 1, 8 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
@@ -194,6 +194,9 @@ lcd.write_string( lines + rn + progress[ :cols ] )
     
 if state == 'stop' or state == 'pause':
     lcd.close()
+    if backlight == True:
+        import subprocess
+        subprocess.Popen( [ 'sleep 60; /srv/http/bash/lcdchar.py off' ] )
     quit()
 
 # play
