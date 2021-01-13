@@ -1019,7 +1019,7 @@ function renderPlayback() {
 			} else {
 				$( '#coverart' ).addClass( 'hide' );
 				$( '#vu' ).removeClass( 'hide' );
-				G.status.state === 'stop' ? vuStop() : vu();
+				G.status.state === 'stop' || G.localhost ? vuStop() : vu();
 				loader( 'hide' );
 			}
 		}
