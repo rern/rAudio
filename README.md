@@ -11,6 +11,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - `*.jpg`, `*.png` and animated `*.gif` applicable
 - `*.wav` - album artists and sort tracks
 - `*.cue` - virtually as individual tracks in all modes and user playlists
+- Live display update across multiple clients
+- Wi-Fi connection can be pre-configured for headless mode.
 - Supported devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
 	- Character LCD: 16x2, 20x4 and 40x4
