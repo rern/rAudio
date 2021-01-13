@@ -210,7 +210,7 @@ volumeSet() {
 			[[ -z $control ]] && mpc volume $i || amixer -M sset "$control" $i%
 			sleep 0.2
 		done
-		(( $i != $target )) && exit
+		(( $i == $target )) && exit
 		
 		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
 	fi
