@@ -711,8 +711,9 @@ volume )
 			rm -f $filevolumemute
 		fi
 	fi
-	pushstreamVolume $type $target
 	volumeSet "$current" $target "$control" # $current may be blank
+	volumeGet
+	pushstreamVolume $type $target
 	;;
 volume0db )
 	volume0dB
