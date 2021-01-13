@@ -708,20 +708,21 @@ volume )
 	if [[ $target > 0 ]]; then      # set
 		type=set
 		rm -f $filevolumemute
+		pushstreamVolume set $target
 	else
 		if (( $current > 0 )); then # mute
 			type=mute
 			target=0
 			echo $current > $filevolumemute
+			pushstreamVolume mute $current
 		else                        # unmute
 			type=unmute
 			target=$( cat $filevolumemute )
 			rm -f $filevolumemute
+			pushstreamVolume unmute $target
 		fi
 	fi
 	volumeSet "$current" $target "$control" # $current may be blank
-	volumeGet
-	pushstreamVolume $type $target
 	;;
 volume0db )
 	volume0dB
