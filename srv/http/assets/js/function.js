@@ -1010,18 +1010,7 @@ function renderPlayback() {
 		$( '#progress, #elapsed, #total' ).empty();
 		$( '.cover-save' ).remove();
 		if ( !G.status.Title || G.status.Title !== prevtitle ) {
-			var coverart = G.status.coverart || G.status.coverartradio;
-			if ( coverart ) {
-				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
-					.attr( 'src', coverart )
-					.removeClass( 'hide' );
-			} else {
-				$( '#coverart' ).addClass( 'hide' );
-				$( '#vu' ).removeClass( 'hide' );
-				G.status.state === 'stop' || G.localhost ? vuStop() : vu();
-				loader( 'hide' );
-			}
+			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		}
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
@@ -1050,10 +1039,7 @@ function renderPlayback() {
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
 		G.coversave = 0;
-		$( '#vu' ).addClass( 'hide' );
-		$( '#coverart' )
-			.attr( 'src', G.status.coverart || coverdefault )
-			.removeClass( 'hide' );
+		renderPlaybackCoverart( G.status.coverart );
 	}
 	// time
 	time = 'Time' in G.status ? G.status.Time : '';
@@ -1189,6 +1175,18 @@ function renderPlaybackBlank() {
 				} );
 		}
 	} );
+}
+function renderPlaybackCoverart( coverart ) {
+	if ( coverart ) {
+		$( '#vu' ).addClass( 'hide' );
+		$( '#coverart' )
+			.attr( 'src', coverart )
+			.removeClass( 'hide' );
+	} else {
+		$( '#coverart' ).addClass( 'hide' );
+		$( '#vu' ).removeClass( 'hide' );
+		loader( 'hide' );
+	}
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
@@ -1620,6 +1618,7 @@ function vu() {
 	var range = 12; // -/+
 	var deg = 0;
 	var inc;
+	vuActive( Math.random() * range * 2 );
 	G.intVu = setInterval( function() {
 		inc = Math.random() * range * 2;
 		deg += inc;
@@ -1628,8 +1627,11 @@ function vu() {
 		} else if ( deg > range ) {
 			deg = range - inc;
 		}
-		$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
+		vuActive( deg );
 	}, 500 );
+}
+function vuActive( deg ) {
+	$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
 }
 function vuStop() {
 	clearIntervalAll();
