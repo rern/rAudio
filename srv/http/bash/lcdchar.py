@@ -1,16 +1,20 @@
 #!/usr/bin/python
 
 import sys
-import os.path
+import os
 import configparser
 config = configparser.ConfigParser()
 conffile = '/etc/lcdchar.conf'
+timerfile = '/srv/http/data/shm/lcdchartimer'
 if not os.path.exists( conffile ): quit()
+
+os.system( 'killall lcdchartimer.sh' )
 
 config.read( conffile )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
+backlight = bool( config.get( section, 'backlight' ) )
 if config.has_option( section, 'address' ):
     address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
     chip = config.get( section, 'chip' )
@@ -143,7 +147,7 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'backlight' ] # assign variables
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp' ] # assign variables
 for i in range( 1, 8 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
@@ -196,7 +200,7 @@ if state == 'stop' or state == 'pause':
     lcd.close()
     if backlight == True:
         import subprocess
-        subprocess.Popen( [ 'sleep 60; /srv/http/bash/lcdchar.py off' ] )
+        subprocess.Popen( [ '/srv/http/bash/lcdchartimer.sh' ] )
     quit()
 
 # play
