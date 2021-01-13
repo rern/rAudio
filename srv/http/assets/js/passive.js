@@ -237,6 +237,9 @@ function psMpdPlayer( data ) {
 	} else if ( G.playback ) {
 		displayPlayback();
 		renderPlayback();
+		if ( !$( '#vu' ).hasClass( 'hide' ) ) {
+			G.status.state === 'play' ? vu() : vuStop();
+		}
 	}
 	bannerHide();
 }
