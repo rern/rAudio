@@ -177,6 +177,7 @@ status+='
 , "file"           : "'$file'"
 , "song"           : '$song'
 , "state"          : "'$state'"
+, "timestamp"      : '$( date +%s%3N )'
 , "updating_db"    : '$updating_db'
 , "volume"         : '$volume'
 , "volumemute"     : '$volumemute
@@ -242,7 +243,6 @@ else
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
 , "Time"      : '$Time'
-, "timestamp" : '$( date +%s%3N )'
 , "Title"     : "'$Title'"'
 fi
 
