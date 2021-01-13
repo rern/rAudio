@@ -505,18 +505,16 @@ $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
 		if ( G.display.volumenone || window.innerWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
 		
-		var control = G.status.control;
 		info( {
 			  icon       : 'volume'
-			, title      : 'Mixer Device Volume'
-			, message    : control
+			, title      : 'Volume'
 			, rangevalue : G.status.volume
 			, preshow    : function() {
-				$( '#infoOverlay' ).css( 'height', 'calc( 100% / 0.9 )' );
+				$( '#infoOverlay' ).addClass( 'noscroll' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
-					bash( 'amixer -M sset "'+ control +'" '+ val +'%' );
+					bash( 'amixer -M sset "'+ G.status.control +'" '+ val +'%' );
 				} ).on( 'mouseup touchend', function() {
 					bash( [ 'volumepushstream' ] );
 				} );
