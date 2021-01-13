@@ -512,7 +512,7 @@ $( '#tab-playback' ).click( function() {
 			, message    : control
 			, rangevalue : G.status.volume
 			, preshow    : function() {
-				$( '#infoOverlay' ).css( 'height', '100%' );
+				$( '#infoOverlay' ).css( 'height', 'calc( 100% / 0.9 )' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
