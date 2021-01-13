@@ -121,14 +121,6 @@ pushstreamStatus() {
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
-pushstreamVolumeSet() {
-	if [[ -e $dirtmp/player-mpd ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
-	else
-		volume=$( volumeGet )
-	fi
-	pushstream volume '{"val":'$volume'}'
-}
 randomfile() {
 	dir=$( cat $dirmpd/album | shuf -n 1 | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
@@ -163,12 +155,18 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volume0dB(){
-	mpc volume | cut -d' ' -f2 | tr -d % > $dirtmp/mpdvolume
-	volumeGetControls
+	volumeGet
+	echo $volume > $dirtmp/mpdvolume
 	amixer -c $card sset "$control" 0dB
 }
 volumeGet() {
 	volumeGetControls
+	if [[ $mixertype == software ]]; then
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		echo $volume
+		exit
+	fi
+	
 	if [[ -z $control ]]; then
 		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo -1
 		exit
@@ -191,6 +189,15 @@ volumeGetControls() {
 				| grep pvolume \
 				| head -1 \
 				| cut -d"'" -f2 )
+	aplayname=$( aplay -l \
+					| grep "^card $card" \
+					| awk -F'[][]' '{print $2}' \
+					| sed 's/^snd_rpi_//; s/_/-/g' )
+	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+}
+volumeReset() {
+	volumeGet
+	volumeSet $volume $( cat $dirtmp/mpdvolume ) $control
 }
 volumeSet() {
 	current=$1
@@ -201,6 +208,7 @@ volumeSet() {
 	else
 		[[ -z $current ]] && amixer -M sset "$control" $target% && exit
 	fi
+	
 	diff=$(( $target - $current ))
 	if (( -10 < $diff && $diff < 10 )); then
 		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
@@ -260,7 +268,7 @@ bluetoothplayerstop )
 	systemctl restart bluezdbus
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
-	mpc volume $( cat $dirtmp/mpdvolume )
+	volumeReset
 	status=$( /srv/http/bash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
@@ -722,16 +730,18 @@ volumeget )
 	volumeGet ${args[1]}
 	;;
 volumepushstream )
-	pushstreamVolumeSet
+	volumeGet
+	pushstream volume '{"val":'$volume'}'
 	;;
 volumereset )
-	mpc volume $( cat $dirtmp/mpdvolume )
+	volumeReset
 	;;
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
 	[[ -z $control ]] && mpc volume ${updn}1 || amixer -M sset "$control" 1%$updn
-	pushstreamVolumeSet
+	volumeGet
+	pushstream volume '{"val":'$volume'}'
 	;;
 webradioadd )
 	name=${args[1]}

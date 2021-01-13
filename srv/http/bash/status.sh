@@ -21,6 +21,7 @@ else
 	volume=$( echo $volumeget | cut -d' ' -f1 )
 	control=$( echo $volumeget | cut -d' ' -f2- )
 fi
+
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
 ########
@@ -116,7 +117,7 @@ esac
 [[ $player != mpd ]] && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db\|^volume'
+filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
 
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
@@ -151,7 +152,7 @@ for line in "${lines[@]}"; do
 , "'$key'" : '$tf
 			;;
 		# number
-		duration | elapsed | song | Time | volume )
+		duration | elapsed | song | Time )
 			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
 		# string - escaped name
 		Album | AlbumArtist | Artist | Name | Title )
@@ -169,7 +170,6 @@ done
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
 [[ -e $dirsystem/updating ]] && updating_db=true || updating_db=false
-[[ -z $volume ]] && volume=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
@@ -179,7 +179,6 @@ status+='
 , "state"          : "'$state'"
 , "timestamp"      : '$( date +%s%3N )'
 , "updating_db"    : '$updating_db'
-, "volume"         : '$volume'
 , "volumemute"     : '$volumemute
 
 if (( $playlistlength  == 0 )); then
