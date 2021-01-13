@@ -458,9 +458,6 @@ i.map.disabled, .map.disabled i {
 #power.sub {
 	border-right: 1px solid #000000
 }
-#screenoff {
-	line-height: 41px;
-}
 #settings i.on {
 	color: var( --cml ) !important;
 }
@@ -867,15 +864,53 @@ i.map.disabled, .map.disabled i {
 	fill: var( --cw ) !important;
 }
 #coverart,
+#vu,
 .licover img {
 	border: 1px solid hsl(0,0%,15%);
 }
-.vu {
-	border-radius: 18px;
+/* vu */
+.cls-8,.cls-9,.cls-10,.cls-11,.cls-12,.cls-15,.cls-16 { font-family: Arial; }
+.cls-8,.cls-9,.cls-10,.cls-11,.cls-12 { font-size:12px; }
+.cls-15,.cls-16 { font-size: 9px; }
+.cls-3,.cls-4,.cls-19,.cls-21,.cls-22,.cls-23 { fill: none; }
+.cls-1 { fill: #ffffff; }
+.cls-11,.cls-12 { fill: #ff0000; }
+.cls-21 { fill: #555555; }
+.cls-22 { fill: #333333; }
+.cls-2,.cls-7,.cls-14,.cls-17,.cls-19,.cls-21,.cls-22,.cls-23 { stroke: #000000; }
+.cls-3,.cls-4,.cls-5,.cls-6,.cls-13 { stroke: #ff0000; }
+.cls-3 { stroke-width: 4px; }
+.cls-14 { stroke-width: 3px; }
+.cls-17 { stroke-width: 2px; }
+.cls-5,.cls-7 { stroke-width: 1.3px; }
+.cls-2,.cls-4,.cls-13 { stroke-width: 0.5px; }
+.cls-21,.cls-22,.cls-23 { stroke-width: 0.2px; }
+.cls-14,.cls-17 { stroke-linecap: round; }
+#vuneedle {
+	transform: rotate( -29.4deg);
+	transform-origin: 115px 220px;
+	transition-duration: 750ms;
 }
-.vu {
-	width: 230px !important;
-	height: 230px !important;
+#vu:before { /* glossy overlay */
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 230px;
+	height: 230px;
+	content: '';
+	background: -webkit-radial-gradient(
+		70% -50%, 200% 190%,
+		hsla(0,0%,100%,0.15) 50%,
+		hsla(0,0%,100%,0) 50% );
+	background: radial-gradient(
+		160% 90% at 75% 0%,
+		hsla(0,0%,100%,.15) 50%,
+		hsla(0,0%,100%,0) 50% );
+	z-index: 6;
+}
+
+#infoMessage svg {
+	width: 100px;
 }
 .cover-save {
 	position: absolute;
@@ -2660,8 +2695,12 @@ li.active .li2 bl {
 	}
 	#infoOverlay {
 		transform: scale( 0.9 );
-		width: 110%;
-		left: -5%;
+		transform-origin: top;
+		width: calc( 100% / 0.9 );
+		left: calc( -100% / 18 );
+	}
+	#infoOverlay.noscroll {
+		height: calc( 100% / 0.9 );
 	}
 	n { display: none; }
 }
@@ -2683,7 +2722,8 @@ li.active .li2 bl {
 		transform: scale( 1.25 );
 	}
 	#bar-bottom {
-		height: 30px;
+		height: 30px !important;
+		font-size: 21px;
 	}
 	#infoicon,
 	#sampling,
@@ -2700,6 +2740,7 @@ li.active .li2 bl {
 	}
 	#bar-bottom {
 		height: 30px;
+		font-size: 21px;
 	}
 	#sampling,
 	#time-knob,

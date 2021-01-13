@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/lcdchar.conf
+if [[ -e $file ]]; then
+	! grep -q backlight $file && echo backlight=False >> $file
+fi
+
 i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 [[ -z $i ]] && echo "\
 defaults.pcm.card 0

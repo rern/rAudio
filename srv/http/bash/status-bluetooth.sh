@@ -12,7 +12,6 @@ data=$( dbus-send \
 			| sed 's/^\s*string "\|^\s*variant\s*string "\|^\s*variant\s*uint32 //; s/"$//' \
 			| tr '\n' ^ \
 			| sed 's/\^--\^/\n/g; s/\^$//' )
-now=$( date +%s%3N )
 Artist=$( grep ^Artist <<< "$data" | cut -d^ -f2 )
 Title=$( grep ^Title <<< "$data" | cut -d^ -f2 )
 Album=$( grep ^Album <<< "$data" | cut -d^ -f2 )
@@ -28,7 +27,7 @@ esac
 name=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 onlinefile=$( ls /srv/http/data/shm/online-$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
-	coverart=/data/shm/online-$name.$date.${onlinefile/*.}
+	coverart=/data/shm/online-$name.$( date +%s ).${onlinefile/*.}
 else
 	/srv/http/bash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
@@ -42,6 +41,6 @@ data='
 	, "sampling"   : "Bluetooth"
 	, "state"      : "'$state'"
 	, "Time"       : '$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )'
-	, "timestamp"  : '$now
+	, "timestamp"  : '$( date +%s%3N )
 
 echo $data

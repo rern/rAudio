@@ -123,7 +123,7 @@ var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volu
 			 +'<br>Too high volume can damage speakers and ears';
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).find( 'option:selected' ).data( 'card' );
-	var dev = device[ card ];
+	var dev = G.devices[ card ];
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
 	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
 } );

@@ -1,16 +1,20 @@
 #!/usr/bin/python
 
 import sys
-import os.path
+import os
 import configparser
 config = configparser.ConfigParser()
 conffile = '/etc/lcdchar.conf'
+timerfile = '/srv/http/data/shm/lcdchartimer'
 if not os.path.exists( conffile ): quit()
+
+os.system( 'killall lcdchartimer.sh' )
 
 config.read( conffile )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
+backlight = bool( config.get( section, 'backlight' ) )
 if config.has_option( section, 'address' ):
     address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
     chip = config.get( section, 'chip' )
@@ -194,6 +198,9 @@ lcd.write_string( lines + rn + progress[ :cols ] )
     
 if state == 'stop' or state == 'pause':
     lcd.close()
+    if backlight == True:
+        import subprocess
+        subprocess.Popen( [ '/srv/http/bash/lcdchartimer.sh' ] )
     quit()
 
 # play

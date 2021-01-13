@@ -32,6 +32,7 @@ var G = {
 	, status        : {}
 
 }
+var cmdphp = 'cmd.php';
 var data = {}
 var picaOption = { // pica.js
 	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
@@ -40,15 +41,11 @@ var picaOption = { // pica.js
 //	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
 //	, alpha            : true // Default = false (black crop background)
 };
-var cmdphp = 'cmd.php';
 var hash = Math.ceil( Date.now() / 1000 );
 var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
-var vustop = '/assets/img/vustop.'+ hash +'.gif';
 if ( G.localhost ) {
-	var vu = '/assets/img/vustop.'+ hash +'.gif';
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {
-	var vu = '/assets/img/vu.'+ hash +'.gif';
 	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 }
 var orange = '#de810e';
@@ -110,20 +107,14 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 		}
 	} );
 } );
+G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
-$( '#coverart' ).one( 'load', function() {
-	$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
-	if ( G.status.playlistlength ) $( '#coverart' ).removeClass( 'hide' );
-	G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
-	$( '#loader' ).removeClass( 'splash' )
-} ).on( 'load', function() {
-	var covervu = $( '#coverart' ).attr( 'src' ).split( '/' ).pop().slice( 0, 2 ) === 'vu';
-	$( '#divcover, #coverart' ).toggleClass( 'vu', covervu );
+$( '#coverart' ).on( 'load', function() {
 	if ( 'coverart' in G.status 
 		&& G.status.coverart.split( '-' )[ 0 ] === '/data/shm/online'
 		&& !G.status.webradio
@@ -141,7 +132,7 @@ $( '#coverart' ).one( 'load', function() {
 	if ( !G.status.webradio ) {
 		var coverart = coverdefault;
 	} else {
-		var coverart = G.status.coverartradio || ( G.status.state === 'play' ? vu : vustop );
+		vuStop();
 	}
 	$( this ).attr( 'src', coverart );
 } );
@@ -511,9 +502,30 @@ $( '#button-library, #button-playback, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#tab-playback' ).click( function() {
-	getPlaybackStatus();
-	switchPage( 'playback' );
-	if ( G.color ) $( '#colorcancel' ).click();
+	if ( G.playback ) {
+		if ( G.display.volumenone || window.innerWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
+		
+		info( {
+			  icon       : 'volume'
+			, title      : 'Volume'
+			, rangevalue : G.status.volume
+			, preshow    : function() {
+				$( '#infoOverlay' ).addClass( 'noscroll' );
+				$( '#infoRange input' ).on( 'click input', function() {
+					var val = $( this ).val();
+					$( '#infoRange .value' ).text( val );
+					bash( 'amixer -M sset "'+ G.status.control +'" '+ val +'%' );
+				} ).on( 'mouseup touchend', function() {
+					bash( [ 'volumepushstream' ] );
+				} );
+			}
+			, nobutton   : 1
+		} );
+	} else {
+		getPlaybackStatus();
+		switchPage( 'playback' );
+		if ( G.color ) $( '#colorcancel' ).click();
+	}
 } )
 $( '#tab-playlist' ).click( function() {
 	G.pladd = {};
@@ -717,23 +729,7 @@ $( '#coverTL, #timeTL' ).tap( function() {
 	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 	
 	if ( window.innerWidth < 614 ) {
-		if ( !$( '#volume-knob' ).is( ':hidden' ) ) return
-		
-		var top = $( '#page-playback' ).css( 'margin-top' );
-		if ( top === '0px' ) {
-			setTimeout( function() {
-				$( '#volume-band' ).click();
-				$( '#page-playback' ).css( {
-						'margin-top' : -$( '#coverart' ).offset().top
-						, height     : '110%'
-					} );
-				$( '.volumeband, #volume-bar' ).removeClass( 'hide' );
-				$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-			}, 300 );
-		} else {
-			$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
-			$( '.volumeband' ).addClass( 'transparent' );
-		}
+		$( '#tab-playback' ).click();
 		return
 	}
 	
@@ -1087,7 +1083,7 @@ $( '.btn-cmd' ).click( function() {
 			} else {
 				$( '#song' ).html( '·&ensp;·&ensp;·' );
 				$( '#elapsed, #progress' ).empty();
-				if ( $( '#coverart' ).hasClass( 'vu' ) ) $( '#coverart' ).attr( 'src', vustop );
+				vuStop();
 			}
 		} else if ( cmd === 'pause' ) {
 			if ( G.status.state === 'stop' ) return
