@@ -202,7 +202,7 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	if ( !G.arrow ) $( '#infoOverlay' ).addClass( 'hide' );
+	if ( !G.arrow ) $( '#infoOverlay' ).addClass( 'hide' ).css( 'height', '' );
 	G.arrow = 0;
 	$( '#infoBox' ).css( {
 		  margin     : ''
