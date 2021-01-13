@@ -2699,6 +2699,9 @@ li.active .li2 bl {
 		width: calc( 100% / 0.9 );
 		left: calc( -100% / 18 );
 	}
+	#infoOverlay.noscroll {
+		height: calc( 100% / 0.9 );
+	}
 	n { display: none; }
 }
 @media( orientation: portrait ) and ( max-width: 280px ) {
