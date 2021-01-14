@@ -1126,7 +1126,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
-	if ( $( '.coverart .loaded' ).length ) {
+	if ( $( this ).find( 'img' ).length ) {
 		var message = 'Update thumbnails and directory icons?'
 	} else {
 		var message = 'With existing album coverarts:'
