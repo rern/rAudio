@@ -458,7 +458,7 @@ function psVolume( data ) {
 				$( '#volume-text' )
 					.text( G.status.volume )
 					.toggleClass( 'mute', G.status.volumemute > 0 );
-				$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+				$( '#volume-bar' ).animate( { width: G.status.volume +'%' }, 600 );
 			}
 		}
 	}, G.debouncems );

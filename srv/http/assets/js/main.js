@@ -927,7 +927,6 @@ $( '#volume-text' ).tap( function() {
 } );
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
-	$( '#volume-bar' ).width( G.status.volumemute +'%' );
 } );
 $( '#divcover' ).on( 'click', '.edit, .cover-save', function( e ) {
 	var $this = $( e.target );
