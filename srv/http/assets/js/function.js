@@ -902,13 +902,16 @@ function renderLibraryList( data ) {
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
-			var src = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )').data( 'src' );
-			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><i class="fa fa-search albumrefresh"></i><img src="'+ src +'" class="albumimg"></span>' );
-			var defaultcover = 0;
-			$( '#button-coverart img' ).on( 'error', function() {
-				if ( !defaultcover ) $( this ).replaceWith( '<i class="fa fa-coverart albumcoverart"></i>' );
+			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
+			var html = '<span id="button-coverart"><i class="fa ';
+			if ( $img0.length ) {
+				html += 'fa-refresh albumrefresh"></i><img src="'+ $img0.data( 'src' ) +'" class="albumimg"></span>';
+				var defaultcover = 0;
+			} else {
+				html += 'fa-search albumrefresh"></i><i class="fa fa-coverart albumcoverart"></i>';
 				defaultcover = 1;
-			} );
+			}
+			$( '#lib-breadcrumbs' ).append( html );
 		}
 		$( '#liimg' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
