@@ -455,9 +455,7 @@ function psVolume( data ) {
 				$( '#infoRange .value' ).text( G.status.volume );
 				$( '#infoRange input' ).val( G.status.volume );
 			} else {
-				$( '#volume-text' )
-					.text( G.status.volume )
-					.toggleClass( 'mute', G.status.volumemute > 0 );
+				$( '#volume-text' ).html( G.status.volumemute === 0 ? G.status.volume : '<i class="fa fa-mute"></i>' );
 				$( '#volume-bar' ).animate( { width: G.status.volume +'%' }, 600 );
 			}
 		}

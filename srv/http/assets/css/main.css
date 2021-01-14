@@ -814,9 +814,6 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 	z-index: 102;
 }
-#volume-text.mute {
-	background: var( --cm );
-}
 #time-band,
 #volume-band {
 	width: 100%;

@@ -972,17 +972,10 @@ function renderPlayback() {
 	var prevtitle = $( '#song' ).text();
 	var previousalbum = $( '#album' ).text();
 	// volume
-	if ( !G.display.volumenone ) {
-		if ( G.display.volume ) {
-			$volumeRS.setValue( G.status.volume );
-			$volumehandle.rsRotate( - $volumeRS._handle1.angle );
-			G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
-		} else {
-			$( '#volume-text' )
-				.text( G.status.volume )
-				.toggleClass( 'mute', G.status.volumemute > 0 );
-			$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
-		}
+	if ( !G.display.volumenone &&  G.display.volume ) {
+		$volumeRS.setValue( G.status.volume );
+		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	}
 	// empty queue
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) {
