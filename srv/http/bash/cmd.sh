@@ -176,8 +176,6 @@ volumeGet() {
 		| awk -F'[%[]' '/%/ {print $2}' \
 		| head -1 )
 	[[ -z $volume ]] && volume=100
-	[[ -n $1 ]] && volume+=" $control"
-	echo $volume
 }
 volumeGetControls() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
@@ -729,8 +727,13 @@ volume )
 volume0db )
 	volume0dB
 	;;
+volumeconrolget )
+	volumeGet
+	echo $volume $control
+	;;
 volumeget )
-	volumeGet ${args[1]}
+	volumeGet
+	echo $volume
 	;;
 volumepushstream )
 	volumeGet
