@@ -237,9 +237,7 @@ function psMpdPlayer( data ) {
 	} else if ( G.playback ) {
 		displayPlayback();
 		renderPlayback();
-		if ( !$( '#vu' ).hasClass( 'hide' ) ) {
-			G.status.state === 'play' ? vu() : vuStop();
-		}
+		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
 	bannerHide();
 }
@@ -440,23 +438,28 @@ function psVolume( data ) {
 	G.debounce = setTimeout( function() {
 		var type = data.type;
 		var val = data.val;
-		if ( type === 'mute' ) {
+		var mute = type === 'mute';
+		if ( mute ) {
 			G.status.volume = 0;
 			G.status.volumemute = val;
-			$volumeRS.setValue( 0 );
-			volColorMute( val );
 		} else {
 			G.status.volume = val;
 			G.status.volumemute = 0;
-			$volumeRS.setValue( val );
-			volColorUnmute();
 		}
-		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
-		$( '#volume-text' ).text( val );
-		$( '#volume-bar' ).css( 'width', val +'%' );
-		if ( $( '#infoRange .value' ).text() ) {
-			$( '#infoRange .value' ).text( val );
-			$( '#infoRange input' ).val( val );
+		if ( !$( '#volume-knob' ).hasClass( 'hide' ) ) {
+			$volumeRS.setValue( G.status.volume );
+			mute ? volColorMute( val ) : volColorUnmute();
+			$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+		} else {
+			if ( $( '#infoRange .value' ).text() ) {
+				$( '#infoRange .value' ).text( G.status.volume );
+				$( '#infoRange input' ).val( G.status.volume );
+			} else {
+				$( '#volume-text' )
+					.text( G.status.volume )
+					.toggleClass( 'mute', G.status.volumemute > 0 );
+				$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+			}
 		}
 	}, G.debouncems );
 }

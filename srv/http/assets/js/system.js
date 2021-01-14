@@ -302,7 +302,7 @@ var infolcdchar = heredoc( function() { /*
 			<input type="text" id="pin_e" class="infoinput infocontent infohtml">
 			<input type="text" id="pins_data" class="infoinput infocontent infohtml">
 		</div>
-		<label><input id="backlightoff" type="checkbox"> Backlight off <gr>(stop >1m)</gr></label>
+		<label><input id="backlightoff" type="checkbox"> Backlight off <gr>(stop 1 m.)</gr></label>
 	</div>
 */ } );
 $( '#setting-lcdchar' ).click( function() {

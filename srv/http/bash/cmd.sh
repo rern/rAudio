@@ -189,11 +189,13 @@ volumeGetControls() {
 				| grep pvolume \
 				| head -1 \
 				| cut -d"'" -f2 )
-	aplayname=$( aplay -l \
-					| grep "^card $card" \
-					| awk -F'[][]' '{print $2}' \
-					| sed 's/^snd_rpi_//; s/_/-/g' )
-	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+	if compgen -G "/srv/http/data/system/mixertype-*" > /dev/null; then
+		aplayname=$( aplay -l \
+						| grep "^card $card" \
+						| awk -F'[][]' '{print $2}' \
+						| sed 's/^snd_rpi_//; s/_/-/g' )
+		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+	fi
 }
 volumeReset() {
 	volumeGet

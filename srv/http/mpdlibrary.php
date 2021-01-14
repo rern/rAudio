@@ -396,6 +396,8 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '' ) { // track list 
 		$file0 = dirname( $file0 );
 		$musicfile = exec( 'mpc ls "'.dirname( $file0 ).'" | grep -v ".cue$" | head -1' );
 		$ext = pathinfo( $musicfile, PATHINFO_EXTENSION );
+	} else {
+		$cue = false;
 	}
 	$i = 0;
 	$html = '';

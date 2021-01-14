@@ -298,9 +298,11 @@ $( '#setting-smb' ).click( function() {
 	} );
 } );
 $( '#setting-mpdscribble' ).click( function() {
-	var data = G.mpdscribbleval ? G.mpdscribbleval.split( '\n' ) : [ '', '' ];
-	var user = data[ 0 ];
-	var pwd = data[ 1 ];
+	if ( G.mpdscribbleval ) {
+		var data = G.mpdscribbleval.split( '^' );
+		var user = data[ 0 ];
+		var pwd = data[ 1 ];
+	}
 	info( {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobbler'

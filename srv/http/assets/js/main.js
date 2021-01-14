@@ -503,7 +503,7 @@ $( '#button-library, #button-playback, #button-playlist' ).taphold( function() {
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
-		if ( G.display.volumenone || window.innerWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
+		if ( G.display.volumenone || window.innerWidth > 613 || !$( '#volume-knob' ).hasClass( 'hide' ) ) return
 		
 		info( {
 			  icon       : 'volume'
@@ -767,12 +767,12 @@ $( '#coverTL, #timeTL' ).tap( function() {
 } );
 $( '#coverT, #timeT' ).tap( function() {
 	clearTimeout( G.volumebar );
-	G.guide = !$( this ).hasClass( 'mapshow' );
-	if ( $( this ).hasClass( 'mapshow' ) ) {
+	if ( G.guide ) {
 		hideGuide();
 		return
 	}
 	
+	G.guide = 1;
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '.covermap, .guide' ).addClass( 'mapshow' );
 	$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
@@ -821,71 +821,57 @@ $( '.covermap' ).taphold( function( e ) {
 		.css( 'opacity', 0.33 )
 		.after( '<i class="edit licover-cover fa fa-coverart"></i>' );
 } );
-$( '#time-band' ).on( 'touchstart mousedown', function( e ) {
-	if ( G.guide ) {
-		$( '.controls, #volume-bar' ).addClass( 'hide' );
-		$( '.band' ).addClass( 'transparent' );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
-		$( '.map' ).removeClass( 'mapshow' );
-	}
+$( '#time-band' ).on( 'touchstart mousedown', function() {
+	hideGuide();
 	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
-	$( '#time-bar' ).removeClass( 'hide' );
-	if ( G.guide ) $( '#coverT' ).click();
-	G.drag = 1;
+	G.down = 1;
 	clearIntervalAll();
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( !G.down || G.status.player !== 'mpd' || G.status.webradio ) return
+	
+	G.drag = 1;
+	e.preventDefault();
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	mpcSeekBar( pageX );
-} ).on( 'touchmove mousemove', function( e ) {
-	e.preventDefault();
+} ).on( 'touchend mouseup', function( e ) {
 	if ( G.status.player !== 'mpd' || G.status.webradio ) return
 	
-	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	if ( G.drag ) mpcSeekBar( pageX );
-} ).on( 'click touchend mouseup', function( e ) {
-	if ( G.status.player !== 'mpd' || G.status.webradio ) return
-	
+	G.down = 0;
 	G.drag = 0;
 	var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
-	mpcSeekBar( pageX, 'set' );
+	mpcSeekBar( pageX );
 } );
-$( '#volume-band' ).on( 'click', function( e ) {
+$( '#volume-band' ).on( 'touchstart mousedown', function() {
+	hideGuide();
+	if ( $( '#volume-bar' ).hasClass( 'hide' ) || G.status.volumenone ) return
+	
+	G.down = 1;
+	clearTimeout( G.volumebar );
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( !G.down || G.status.volumenone ) return
+	
+	G.drag = 1;
+	e.preventDefault();
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	volumeSet( pageX );
+} ).on( 'touchend mouseup', function( e ) {
 	if ( G.status.volumenone ) return
+	
+	volumebarTimeout();
+	G.down = 0;
+	if ( G.drag ) {
+		G.drag = 0;
+		bash( [ 'volumepushstream' ] );
+		return
+	}
 	
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		$( '#volume-text' ).text( G.status.volume );
 		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-		volumebarTimeout();
-	}
-} ).on( 'touchstart mousedown', function( e ) {
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
-	
-	if ( !G.status.volumenone ) {
-		$( '#volume-text' ).text( G.status.volume );
-		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	}
-	if ( G.guide ) {
-		$( '.controls' ).addClass( 'hide' );
-		$( '.band' ).addClass( 'transparent' );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
-		$( '.map' ).removeClass( 'mapshow' );
-	}
-	G.pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	G.drag = 1;
-	clearTimeout( G.volumebar );
-} ).on( 'touchmove mousemove', function( e ) {
-	e.preventDefault();
-	if ( G.drag ) {
-		var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		volumeSet( pageX );
-	}
-} ).on( 'touchend mouseup', function( e ) {
-	if ( G.drag ) {
-		G.drag = 0;
-		bash( [ 'volumepushstream' ] );
-		volumebarTimeout();
+	} else {
 		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
 		volumeSet( pageX );
@@ -894,15 +880,11 @@ $( '#volume-band' ).on( 'click', function( e ) {
 $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 } ).click( function() {
+	hideGuide();
 	if ( G.status.volumenone ) return
 	
+	clearTimeout( G.volumebar );
 	volumebarTimeout();
-	if ( G.guide ) {
-		$( '.controls' ).addClass( 'hide' );
-		$( '.band' ).addClass( 'transparent' );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
-		$( '.map' ).removeClass( 'mapshow' );
-	}
 	var voldn = this.id === 'volume-band-dn';
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
@@ -942,9 +924,6 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 } );
 $( '#volume-text' ).tap( function() {
 	$( '#volmute' ).click();
-	var val = G.status.volumemute || 0;
-	$( '#volume-bar' ).width( val +'%' );
-	$( '#volume-text' ).text( val );
 } );
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
