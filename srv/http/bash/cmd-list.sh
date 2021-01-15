@@ -39,37 +39,20 @@ album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 
 
 if (( $? != 0 )); then # very large database
 	buffer=8192
-	
-	albums=$( mpc list album )
-	if (( $? == 0 )); then
+	for (( i=1; i < 11; i++ )); do
+		(( i++ ))
+		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
+		sed -i '1 i\max_output_buffer_size "'$(( i * $buffer ))'"' /etc/mpd.conf
+		systemctl restart mpd
+		albums=$( mpc list album )
+		(( $? == 0 )) && break
+	done
+	if [[ -n $albums ]]; then
 		listAlbums "$albums"
-	else
-		for (( i=1; i < 10; i++ )); do
-			(( i++ ))
-			sed -i '/^max_output_buffer/ d'/etc/mpd.conf
-			sed -i '1 i\max_output_buffer_size "'$(( i * $buffer ))'"' /etc/mpd.conf
-			systemctl restart mpd
-			albums=$( mpc list album )
-			(( $? == 0 )) && break
-		done
-	fi
-	if [[ -n $album ]]; then
-		listAlbums "$albums"
-		if (( $? != 0 )); then
-			for (( j=$i; j < 10; j++ )); do
-				(( j++ ))
-				sed -i '/^max_output_buffer/ d'/etc/mpd.conf
-				sed -i '1 i\max_output_buffer_size "'$(( j * $buffer ))'"' /etc/mpd.conf
-				systemctl restart mpd
-				listAlbums "$albums"
-				(( $? == 0 )) && break
-			done
-		else
-			echo $buffer > $dirsystem/bufferoutputset
-		fi
+		echo $buffer > $dirsystem/bufferoutputset
 	else
 		toolarge=1
-		sed -i '/^max_output_buffer/ d'/etc/mpd.conf
+		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
 	fi
 fi
 ##### wav list #############################################
