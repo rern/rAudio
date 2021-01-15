@@ -165,7 +165,7 @@ function psVolume( data ) {
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		var val = data.val;
+		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 	}, 300 );

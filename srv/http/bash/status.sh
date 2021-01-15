@@ -17,9 +17,9 @@ updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 else
-	volumeget=$( /srv/http/bash/cmd.sh volumeget$'\n'control )
-	volume=$( echo $volumeget | cut -d' ' -f1 )
-	control=$( echo $volumeget | cut -d' ' -f2- )
+	volumeconrol=$( /srv/http/bash/cmd.sh volumeconrolget )
+	volume=$( echo $volumeconrol | cut -d' ' -f1 )
+	control=$( echo $volumeconrol | cut -d' ' -f2- )
 fi
 
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd

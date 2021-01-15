@@ -19,41 +19,40 @@ notify() {
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$1"
 }
 
-listalbum() {
+listAlbums() {
 	albums=$1
 	readarray -t albums <<< "$albums"
 	for album in "${albums[@]}"; do
 		album_artist_file+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' find album "$album" \
-			| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
-			| sort -u )$'\n'
+								| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
+								| sort -u )$'\n'
 	done
 }
 ##### normal list #############################################
 album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall \
-	| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
-	| sort -u )$'\n'
+						| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
+						| sort -u )$'\n'
+#	-F'/[^/]*$' - truncate %file% to path without filename
+#	NF          - not empty lines
+#	!/^\^/      - not lines with no album name
+#	!a[$0]++    - not duplicate lines
+
 if (( $? != 0 )); then # very large database
-	albums=$( mpc list album )
-	if (( $? == 0 )); then
-		listalbum "$albums"
-	else
-		buffer=8192
-		for (( i=1; i < 9; i++ )); do
-			(( i++ ))
-			sed -i '/^max_output_buffer/ d'/etc/mpd.conf
-			sed -i '1 i\max_output_buffer_size "'$(( i * $buffer ))'"' /etc/mpd.conf
-			systemctl restart mpd
-			albums=$( mpc list album )
-			(( $? == 0 )) && break
-		done
-	fi
-	if [[ -n $album ]]; then
-		listalbum "$albums"
+	buffer=8192
+	for (( i=1; i < 11; i++ )); do
+		(( i++ ))
+		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
+		sed -i '1 i\max_output_buffer_size "'$(( i * $buffer ))'"' /etc/mpd.conf
+		systemctl restart mpd
+		albums=$( mpc list album )
+		(( $? == 0 )) && break
+	done
+	if [[ -n $albums ]]; then
+		listAlbums "$albums"
 		echo $buffer > $dirsystem/bufferoutputset
-		touch $dirsystem/bufferoutput
 	else
 		toolarge=1
-		sed -i '/^max_output_buffer/ d'/etc/mpd.conf
+		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
 	fi
 fi
 ##### wav list #############################################

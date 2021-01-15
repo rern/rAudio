@@ -176,8 +176,6 @@ volumeGet() {
 		| awk -F'[%[]' '/%/ {print $2}' \
 		| head -1 )
 	[[ -z $volume ]] && volume=100
-	[[ -n $1 ]] && volume+=" $control"
-	echo $volume
 }
 volumeGetControls() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
@@ -186,14 +184,16 @@ volumeGetControls() {
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
 				| sed 's/--/\n/g' \
-				| grep pvolume \
+				| grep 'volume.*pswitch' \
 				| head -1 \
 				| cut -d"'" -f2 )
-	aplayname=$( aplay -l \
-					| grep "^card $card" \
-					| awk -F'[][]' '{print $2}' \
-					| sed 's/^snd_rpi_//; s/_/-/g' )
-	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+	if compgen -G "/srv/http/data/system/mixertype-*" > /dev/null; then
+		aplayname=$( aplay -l \
+						| grep "^card $card" \
+						| awk -F'[][]' '{print $2}' \
+						| sed 's/^snd_rpi_//; s/_/-/g' )
+		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+	fi
 }
 volumeReset() {
 	volumeGet
@@ -727,8 +727,13 @@ volume )
 volume0db )
 	volume0dB
 	;;
+volumeconrolget )
+	volumeGet
+	echo $volume $control
+	;;
 volumeget )
-	volumeGet ${args[1]}
+	volumeGet
+	echo $volume
 	;;
 volumepushstream )
 	volumeGet

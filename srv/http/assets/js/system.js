@@ -55,7 +55,8 @@ function renderStatus() {
 		+'<br>'+ ( G.cputemp < 80 ? G.cputemp +' °C' : '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>' )
 		+'<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
 		+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
-		+'<br><gr>kernel:</gr> '+ Math.round( startup[ 0 ] ) +'s + <gr>userspace:</gr> '+ Math.round( startup[ 1 ] ) +'s';
+		+'<br><gr>kernel:</gr> '+ Math.round( startup[ 0 ] ) +'s + <gr>userspace:</gr> '
+		+ ( startup[ 1 ] ? Math.round( startup[ 1 ] ) +'s' : 'Running ...' );
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
@@ -302,7 +303,7 @@ var infolcdchar = heredoc( function() { /*
 			<input type="text" id="pin_e" class="infoinput infocontent infohtml">
 			<input type="text" id="pins_data" class="infoinput infocontent infohtml">
 		</div>
-		<label><input id="backlightoff" type="checkbox"> Backlight off <gr>(stop >1m)</gr></label>
+		<label><input id="backlightoff" type="checkbox"> Backlight off <gr>(stop 1 m.)</gr></label>
 	</div>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
