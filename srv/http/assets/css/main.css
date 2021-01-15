@@ -1824,7 +1824,6 @@ i.map.disabled, .map.disabled i {
 #button-playback {
 	position: absolute;
 	width: 40px;
-	top: 0;
 	line-height: 40px;
 	font-size: 26px;
 	text-align: center;

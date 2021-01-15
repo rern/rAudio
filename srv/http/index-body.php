@@ -193,6 +193,7 @@ $menu.= '</div>';
 <div id="loader" class="splash">
 	<?=$logo?>
 </div>
+<i id="button-playback" class="fa fa-redo transparent"></i>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
@@ -221,7 +222,6 @@ $menu.= '</div>';
 </div>
 
 <div id="page-playback" class="page">
-	<i id="button-playback" class="fa fa-redo transparent"></i>
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<i id="guide-bio" class="map guide fa fa-bio"></i>
 	<i id="guide-lyrics" class="map guide fa fa-lyrics"></i>
