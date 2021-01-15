@@ -209,12 +209,6 @@ if [[ ${file:0:4} == http ]]; then
 		radiofile=/srv/http/data/webradios/$urlname
 		radiodata=$( cat $radiofile )
 		stationname=$( sed -n 1p <<< "$radiodata" )
-		if [[ $state == stop ]]; then
-			titlename=
-			albumname=$file
-		else
-			[[ $Name != $stationname ]] && albumname=$Name || albumname=$file
-		fi
 		if [[ $state == play ]]; then
 			albumname=$stationname
 			readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
@@ -222,6 +216,8 @@ if [[ ${file:0:4} == http ]]; then
 			titlename=${radioname[1]}
 		else
 			artistname=$stationname
+			titlename=
+			albumname=$file
 		fi
 ########
 		status=$( sed '/^, "webradio".*/ d' <<< "$status" )
