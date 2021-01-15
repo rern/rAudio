@@ -38,11 +38,12 @@ album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 
 #	!a[$0]++    - not duplicate lines
 
 if (( $? != 0 )); then # very large database
-	buffer=8192
+	eachkb=8192
+	existing=$( grep max_output_buffer /etc/mpd.conf | cut -d'"' -f2 )
 	for (( i=1; i < 11; i++ )); do
-		(( i++ ))
+		buffer=$(( $existing + ( i * $eachkb ) ))
 		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
-		sed -i '1 i\max_output_buffer_size "'$(( i * $buffer ))'"' /etc/mpd.conf
+		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
 		systemctl restart mpd
 		albums=$( mpc list album )
 		(( $? == 0 )) && break
