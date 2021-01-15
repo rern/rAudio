@@ -16,7 +16,7 @@ if [[ $cue == false ]]; then
 	if [[ $album == false ]]; then
 		keys+=( title track )
 		for i in 0 1 2 3 4 5 6 7; do
-			val=${args[$i]}
+			val=${args[$i]//\"/\\\"}
 			[[ -z $val ]] && continue
 			
 			[[ $val == -1 ]] && val=
@@ -25,7 +25,7 @@ if [[ $cue == false ]]; then
 		dir=$( dirname "$file" )
 	else
 		for i in 0 1 2 3 4 5; do
-			val=${args[$i]}
+			val=${args[$i]//\"/\\\"}
 			[[ -z $val ]] && continue
 			
 			[[ $val == -1 ]] && val=
