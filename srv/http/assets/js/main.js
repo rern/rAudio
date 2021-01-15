@@ -495,10 +495,10 @@ $( '#tab-library, #button-library' ).click( function() {
 		switchPage( 'library' );
 	}
 } );
-$( '#button-playback' ).click( function() {
+$( '#logo, #button-playback' ).click( function() {
 	window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
-$( '#button-library, #button-playback, #button-playlist' ).taphold( function() {
+$( '#logo, #button-library, #button-playback, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#tab-playback' ).click( function() {
