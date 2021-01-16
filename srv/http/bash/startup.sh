@@ -74,7 +74,7 @@ systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac
 sleep 10 # wait for network interfaces
 
 notifyFailed() {
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'$1'", "icon":"nas", "delay":-1}'
+	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 }
 
 readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' )
@@ -101,11 +101,33 @@ if [[ -n "$mountpoints" ]]; then
 		mount "$mountpoint"
 	done
 fi
-
-if [[ -n $wlanip ]] && systemctl -q is-enabled hostapd; then
-	ifconfig wlan0 $( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	systemctl start dnsmasq hostapd
+# after all sources connected
+if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
+	/srv/http/bash/cmd.sh mpcupdate$'\n'true
+elif [[ -e $dirsystem/updating ]]; then
+	path=$( cat $dirsystem/updating )
+	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
+elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
+	/srv/http/bash/cmd-list.sh &> dev/null &
 fi
+
+[[ -e $dirsystem/autoplay ]] && mpc play
+
+ifconfig | grep -q 'inet.*broadcast' && online=1
+if [[ -z $online ]]; then
+	rfkill | grep -q wlan || modprobe brcmfmac &> /dev/null
+	rfkill | grep -q wlan || exit
+	
+	ifconfig wlan0 up
+	[[ $? == 0 ]] && accesspoint=1
+fi
+
+if [[ -n $accesspoint ]] || ( [[ -n $wlanip ]] && systemctl -q is-enabled hostapd ); then
+	ifconfig wlan0 $( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
+	systemctl start hostapd
+fi
+
+: >/dev/tcp/8.8.8.8/53 || exit # if no internet
 
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 if [[ $? == 0 ]]; then
@@ -121,14 +143,3 @@ if [[ $? == 0 ]]; then
 	done
 	(( $count )) && touch $diraddons/update || rm -f $diraddons/update
 fi
-# after all sources connected
-if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
-	/srv/http/bash/cmd.sh mpcupdate$'\n'true
-elif [[ -e $dirsystem/updating ]]; then
-	path=$( cat $dirsystem/updating )
-	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
-elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
-	/srv/http/bash/cmd-list.sh &> dev/null &
-fi
-
-[[ -e $dirsystem/autoplay ]] && mpc play
