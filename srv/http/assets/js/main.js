@@ -1019,6 +1019,7 @@ $( '.btn-cmd' ).click( function() {
 				}
 			}
 			if ( G.status.webradio ) $( '#song, #elapsed' ).html( blinkdot );
+			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			if ( G.status.player === 'airplay' ) {
