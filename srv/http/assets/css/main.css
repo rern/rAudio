@@ -906,7 +906,7 @@ i.map.disabled, .map.disabled i {
 		hsla(0,0%,100%,0.15) 50%,
 		hsla(0,0%,100%,0) 50% );
 	background: radial-gradient(
-		160% 90% at 75% 0%,
+		160% 55% at 75% 0%,
 		hsla(0,0%,100%,.15) 50%,
 		hsla(0,0%,100%,0) 50% );
 	z-index: 6;
