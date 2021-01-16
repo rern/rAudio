@@ -209,6 +209,10 @@ ul {
 .btn {
 	color: var( --cw );
 	outline: none !important;
+									  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+									  /* x   y   w    h */
 }
 .btn-default {
 	background-color: var( --cg );
@@ -901,14 +905,10 @@ i.map.disabled, .map.disabled i {
 	width: 230px;
 	height: 230px;
 	content: '';
-	background: -webkit-radial-gradient(
-		70% -50%, 200% 190%,
-		hsla(0,0%,100%,0.15) 50%,
-		hsla(0,0%,100%,0) 50% );
-	background: radial-gradient(
-		160% 55% at 75% 0%,
-		hsla(0,0%,100%,.15) 50%,
-		hsla(0,0%,100%,0) 50% );
+									  /* w    h      x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 160% 55% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+	background: -webkit-radial-gradient( 75% 0%, 160% 55%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+									  /* x   y   w    h */
 	z-index: 6;
 }
 
@@ -1175,14 +1175,10 @@ i.map.disabled, .map.disabled i {
 /* glossy highlight */
 #repeat, 
 #voldn {
-	background: -webkit-radial-gradient(
-		100% -50%, 300% 190%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 53% ); /* button highlight - last % for anti-alias edge*/
-	background: radial-gradient(
-		225% 90% at 100% 0%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% ); /* (Width% Heigth% at H-center_offset% V-center_offset%, hsla(0,0%,100%,1st-T) 1st-area%, hsla(0,0%,100%,2nd-T) 2nd-area%)) */
+									  /* w    h      x    y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+									  /* x    y   w    h */
 	background-color: var( --cg );
 }
 #random,
@@ -1203,16 +1199,11 @@ i.map.disabled, .map.disabled i {
 	border-left: 1px solid var( --cga );
 }
 #single,
-#bio-open,
 #volup {
-	background: -webkit-radial-gradient(
-		0% -50%, 400% 190%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 53% ); 
-	background: radial-gradient(
-		300% 90% at 0% 0%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% );
+									  /* w    h      x  y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+									  /* x  y   w    h */
 	background-color: var( --cg );
 	border-left: 1px solid var( --cga );
 }
@@ -1285,14 +1276,10 @@ i.map.disabled, .map.disabled i {
 	position: absolute;
 	content: '';
 	border-radius: 50%;
-	background: -webkit-radial-gradient(
-		70% -50%, 160% 200%,
-		hsla(0,0%,100%,0.15) 50%,
-		hsla(0,0%,100%,0) 50% );
-	background: radial-gradient(
-		160% 100% at 75% 0%,
-		hsla(0,0%,100%,.15) 50%,
-		hsla(0,0%,100%,0) 50% );
+									  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+	background: -webkit-radial-gradient( 75% 0%, 160% 100%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+									  /* x   y   w    h */
 	z-index: 6;
 }
 #time .rs-outer:after {
@@ -2351,13 +2338,6 @@ li.active .li2 bl {
 	width: 70px;
 	height: 36px;
 	line-height: 36px;
-	background: -webkit-radial-gradient(
-		50% -50%, 160% 200%, hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% );
-	background: radial-gradient(
-		160% 100% at 50% 0%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% );
 }
 #colorcancel {
 	position: absolute;
@@ -2398,11 +2378,8 @@ li.active .li2 bl {
 	margin: 0 auto;
 	width: 60px;
 	line-height: 34px;
-	background: -webkit-radial-gradient(50% -50%, 160% 200%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%);
-	background: radial-gradient(160% 100% at 50% 0% ,hsla(0,0%,100%,.3) 50%,hsla(0,0%,100%,0) 55%);
 	background-color: var( --cm );
 }
-/* "!important" - fix ipad landscape */
 @media(min-width: 2038px) { .coverart { width: 200px } }
 @media(max-width: 2038px) { .lib-mode, .coverart { width: calc( 100% / 10 ) } }
 @media(max-width: 1838px) { .lib-mode, .coverart { width: calc( 100% / 9 ) } }

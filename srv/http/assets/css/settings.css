@@ -485,14 +485,10 @@ input[type=image] {
 .btn-primary,
 .switchlabel:after,
 input:checked + .switchlabel:after {
-	background: -webkit-radial-gradient(
-		100% -50%, 300% 190%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% );
-	background: radial-gradient(
-		225% 90% at 100% 0%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% );
+									  /* w    h      x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+									  /* x    y   w    h */
 }
 .switchlabel:after {
 	content: '';
