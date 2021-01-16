@@ -177,6 +177,11 @@ hr {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+#infoArrow {
+	position: absolute;
+	width: 400px;
+	max-width: 98%;
+}
 #infoContent {
 	padding: 25px 10px 10px 10px;
 	font-size: 16px;
@@ -188,7 +193,6 @@ hr {
 }
 .infoarrowleft,
 .infoarrowright {
-	margin-top: -25px;
 	width: 40px;
 	height: 40px;
 	font-size: 24px;
@@ -196,11 +200,9 @@ hr {
 }
 .infoarrowleft {
 	float: left;
-	margin-left: -10px;
 }
 .infoarrowright {
 	float: right;
-	margin-right: -10px;
 }
 .infomessage,
 #infoMessage {
