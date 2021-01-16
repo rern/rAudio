@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if grep -q 'default_options_exfat.*umask=0077' /etc/udevil/udevil.conf; then
+	sed -i -e '/default_options_exfat.*umask=0077/ d
+' -e '/^default_options_vfat/ a\
+default_options_exfat     = nosuid, noexec, nodev, noatime, fmask=0000, dmask=0000, utf8
+' -e '/allowed_options_vfat/ a\
+allowed_options_exfat     = nosuid, noexec, nodev, noatime, fmask=0000, dmask=0000, utf8
+' /etc/udevil/udevil.conf
+fi
+
 file=/etc/lcdchar.conf
 if [[ -e $file ]]; then
 	! grep -q backlight $file && echo backlight=False >> $file
