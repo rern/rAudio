@@ -113,6 +113,17 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
+if ! ifconfig | grep -q 'inet.*broadcast'; then
+	rfkill | grep -q wlan || modprobe brcmfmac &> /dev/null
+	sleep 1
+	rfkill | grep -q wlan || exit
+	
+	/srv/http/bash/features.sh 'hostapdset
+192.168.5.2,192.168.5.254,24h
+192.168.5.1
+raudioap'
+fi
+
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 [[ $? != 0 ]] exit
 

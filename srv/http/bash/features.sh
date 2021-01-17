@@ -50,7 +50,7 @@ hostapdset )
 	iprange=${args[1]}
 	router=${args[2]}
 	password=${args[3]}
-	ifconfig wlan0 || /srv/http/bash/system.sh wlan$'\n'true
+	ifconfig wlan0 &> /dev/null || /srv/http/bash/system.sh wlan$'\n'true
 	sed -i -e "s/^\(dhcp-range=\).*/\1$iprange/
 " -e "s/^\(.*option:router,\).*/\1$router/
 " -e "s/^\(.*option:dns-server,\).*/\1$router/
