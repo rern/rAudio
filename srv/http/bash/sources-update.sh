@@ -11,10 +11,9 @@ if [[ ${mountpoint:0:4} != /mnt ]]; then # fix: devmon - no hfsplus label
 fi
 
 path=${mountpoint:9} # /mnt/MPD/USB/... > USB/...
-if (( $( mpc stats | awk '/Songs/ {print $NF}' ) == 0 )); then
-	/srv/http/bash/cmd.sh mpcupdate$'\n'true$'\n'rescan
-else
-	/srv/http/bash/cmd.sh mpcupdate$'\n'false$'\n'"$path"
-fi
+echo $path > $dirsystem/updating
+mpc update "$path"
 
+sleep 1
+curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d 1
 curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "sources" }'
