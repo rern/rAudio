@@ -127,6 +127,9 @@ Asia server
 - Some music files missing from library
 	- Settings > MPD > question mark icon -scroll- FFmpeg Decoder
 	- Enable if filetypes list contains ones of the missing files.
+- No albums found after update very large Library
+	- Settings > MPD > Output Buffer - Increase by 8192 at a time
+	- Update Library
 - CUE sheet
 	- `*.cue` filenames must be identical to each coresponding music file.
 	- Can be directly edited by Tag Editor.
