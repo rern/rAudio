@@ -70,5 +70,13 @@ unmount )
 	fi
 	pushRefresh
 	;;
+update )
+	# for /etc/conf.d/devmon - devmon@http.service
+	touch $dirsystem/updating
+	mpc update
+	sleep 1
+	pushRefresh
+	curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d 1
+	;;
 	
 esac

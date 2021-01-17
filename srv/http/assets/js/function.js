@@ -624,7 +624,7 @@ function infoUpdate( path ) {
 			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
 			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-				bash( [ 'mpcupdate', wav, path ] );
+				bash( [ 'mpcupdate', wav ] );
 			} else {
 				bash( [ 'mpcupdate', wav, 'rescan' ] );
 			}

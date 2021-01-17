@@ -504,16 +504,17 @@ mpcseek )
 	pushstreamStatus lcdchar
 	;;
 mpcupdate )
-	[[ ${args[1]} == true ]] && touch $dirsystem/wav
+	wav=${args[1]}
 	path=${args[2]}
-	pushstream mpdupdate 1
-	if [[ $path != rescan ]]; then
-		echo $path > $dirsystem/updating
-		mpc update "$path"
-	else
+	[[ $wav == true ]] && touch $dirsystem/wav
+	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating
 		mpc rescan
+	else
+		touch $dirsystem/updating
+		mpc update
 	fi
+	pushstream mpdupdate 1
 	;;
 nicespotify )
 	for pid in $( pgrep spotifyd ); do
