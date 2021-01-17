@@ -113,19 +113,17 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
-: >/dev/tcp/8.8.8.8/53 || exit # if no internet
-
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-if [[ $? == 0 ]]; then
-	diraddons=$dirdata/addons
-	installed=$( ls "$diraddons" | grep -v addons-list )
-	count=0
-	for addon in $installed; do
-		verinstalled=$( cat $diraddons/$addon )
-		if (( ${#verinstalled} > 1 )); then
-			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-			[[ $verinstalled != $verlist ]] && (( count++ ))
-		fi
-	done
-	(( $count )) && touch $diraddons/update || rm -f $diraddons/update
-fi
+[[ $? != 0 ]] exit
+
+diraddons=$dirdata/addons
+installed=$( ls "$diraddons" | grep -v addons-list )
+count=0
+for addon in $installed; do
+	verinstalled=$( cat $diraddons/$addon )
+	if (( ${#verinstalled} > 1 )); then
+		verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+		[[ $verinstalled != $verlist ]] && (( count++ ))
+	fi
+done
+(( $count )) && touch $diraddons/update || rm -f $diraddons/update
