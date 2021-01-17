@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# for startup.sh, source.sh and /etc/conf.d/devmon (devmon@http.service)
+# for /etc/conf.d/devmon - devmon@http.service
 
 mountpoint=$1
 if [[ ${mountpoint:0:4} != /mnt ]]; then # fix: devmon - no hfsplus label
