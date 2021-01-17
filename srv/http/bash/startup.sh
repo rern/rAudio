@@ -113,20 +113,6 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
-ifconfig | grep -q 'inet.*broadcast' && online=1
-if [[ -z $online ]]; then
-	rfkill | grep -q wlan || modprobe brcmfmac &> /dev/null
-	rfkill | grep -q wlan || exit
-	
-	ifconfig wlan0 up
-	[[ $? == 0 ]] && accesspoint=1
-fi
-
-if [[ -n $accesspoint ]] || ( [[ -n $wlanip ]] && systemctl -q is-enabled hostapd ); then
-	ifconfig wlan0 $( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	systemctl start hostapd
-fi
-
 : >/dev/tcp/8.8.8.8/53 || exit # if no internet
 
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
