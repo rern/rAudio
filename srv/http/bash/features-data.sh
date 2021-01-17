@@ -14,7 +14,8 @@ data+='
 	, "snapclient"      : '$( systemctl -q is-active snapclient && echo true || echo false )'
 	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )'
 	, "snappassword"    : "'$( cat $dirsystem/snapclientpw 2> /dev/null )'"
-	, "streaming"       : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
+	, "streaming"       : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )'
+	, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
 	data+='

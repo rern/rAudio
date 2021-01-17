@@ -58,7 +58,7 @@ hostapdset )
 ' -e "s/\(wpa_passphrase=\).*/\1$password/
 " /etc/hostapd/hostapd.conf
 	netctl stop-all
-	ifconfig wlan0 ${args[2]}
+	ifconfig wlan0 $router
 	featureSet hostapd
 	pushRefreshNetworks
 	;;
