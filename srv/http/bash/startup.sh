@@ -118,6 +118,7 @@ if ! ifconfig | grep -q 'inet.*broadcast'; then
 192.168.5.2,192.168.5.254,24h
 192.168.5.1
 raudioap'
+	exit
 fi
 
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
