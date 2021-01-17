@@ -34,8 +34,6 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#setting-login' ).toggleClass( 'hide', !G.login );
 		$( '#autoplay' ).prop( 'checked', G.autoplay );
 		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
-		$( '#hostapd, #hostapdchk' ).toggleClass( 'disabled', !G.wlan );
-		$( '#hostapdchk' ).next().toggleClass( 'disabled', !G.wlan );
 		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 		[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
@@ -369,8 +367,6 @@ $( '#setting-login' ).click( function() {
 	} );
 } );
 $( '#hostapdchk' ).click( function() {
-	if ( $( this ).hasClass( 'disabled' ) ) $( this ).prop( 'checked', 0 );
-	
 	var checked = $( this ).prop( 'checked' );
 	if ( !G.hostapd && G.wlanconnect && checked ) {
 		info( {

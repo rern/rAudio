@@ -88,7 +88,7 @@ refreshData = function() {
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		$( '#wlan' ).prop( 'checked', G.wlan );
+		$( '#wlan' ).prop( 'checked', G.wlan )
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
@@ -211,21 +211,24 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 $( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	if ( !$( '#system .fa-wifi' ).length ) {
+	if ( !$( '#system .fa-wifi' ).length && !G.hostapd ) {
 		notify( 'Wi-Fi', checked, 'wifi' );
-		bash( [ 'wlan', checked, G.onboardwlan ] );
+		bash( [ 'wlan', checked ] );
 	} else {
+		var message = !G.hostapd
+						? 'This will disconnect Wi-Fi from router.'
+						: 'This will disable <wh>Access Point</wh>.';
 		info( {
 			  icon    : 'wifi'
 			, title   : 'Wi-Fi'
-			, message : 'This will disconnect Wi-Fi from router.'
+			, message : message
 						+'<br>Continue?'
 			, cancel  : function() {
 				$( '#wlan' ).prop( 'checked', 1 );
 			}
 			, ok      : function() {
 				notify( 'Wi-Fi', false, 'wifi' );
-				bash( [ 'wlan', false, G.onboardwlan ] );
+				bash( [ 'wlan', false ] );
 			}
 		} );
 	}
