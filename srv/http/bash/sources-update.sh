@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # for startup.sh, source.sh and /etc/conf.d/devmon (devmon@http.service)
-curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "sources" }'
 
 mountpoint=$1
 if [[ ${mountpoint:0:4} != /mnt ]]; then # fix: devmon - no hfsplus label
@@ -18,3 +17,4 @@ else
 	/srv/http/bash/cmd.sh mpcupdate$'\n'false$'\n'"$path"
 fi
 
+curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "sources" }'
