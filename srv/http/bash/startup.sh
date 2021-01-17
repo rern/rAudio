@@ -114,10 +114,7 @@ fi
 [[ -e $dirsystem/autoplay ]] && mpc play
 
 if ! ifconfig | grep -q 'inet.*broadcast'; then
-	/srv/http/bash/features.sh 'hostapdset
-192.168.5.2,192.168.5.254,24h
-192.168.5.1
-raudioap'
+	systemctl -q is-enabled hostapd || /srv/http/bash/features.sh hostapdset
 	exit
 fi
 

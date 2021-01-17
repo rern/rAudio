@@ -47,17 +47,21 @@ hostapddisable )
 	pushRefreshNetworks
 	;;
 hostapdset )
-	iprange=${args[1]}
-	router=${args[2]}
-	password=${args[3]}
-	ifconfig wlan0 &> /dev/null || /srv/http/bash/system.sh wlan$'\n'true
-	sed -i -e "s/^\(dhcp-range=\).*/\1$iprange/
+	if [[ ${#args[@]} > 1 ]]; then
+		iprange=${args[1]}
+		router=${args[2]}
+		password=${args[3]}
+		sed -i -e "s/^\(dhcp-range=\).*/\1$iprange/
 " -e "s/^\(.*option:router,\).*/\1$router/
 " -e "s/^\(.*option:dns-server,\).*/\1$router/
 " /etc/dnsmasq.conf
-	sed -i -e '/wpa\|rsn_pairwise/ s/^#\+//
+		sed -i -e '/^#*wpa\|^#*rsn/ s/^#*//
 ' -e "s/\(wpa_passphrase=\).*/\1$password/
 " /etc/hostapd/hostapd.conf
+	else
+		sed -i -e '/^wpa\|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
+	fi
+	ifconfig wlan0 &> /dev/null || /srv/http/bash/system.sh wlan$'\n'true
 	netctl stop-all
 	ifconfig wlan0 $router
 	featureSet hostapd
