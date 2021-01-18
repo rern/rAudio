@@ -492,7 +492,6 @@ function getPlaybackStatus( render ) {
 				renderPlayback();
 			}, 'json' );
 		} else if ( G.playback || render ) { // 'render' - add to blank playlist
-			G.plreplace = 0;
 			displayPlayback();
 			setButtonControl();
 			renderPlayback();

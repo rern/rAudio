@@ -543,9 +543,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
 			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
 			return
-		case 'replace':
-			G.plreplace = 1;
-			return
 		case 'savedpladd':
 			info( {
 				  icon    : 'list-ul'
@@ -686,7 +683,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				}
 			}
 	}
-	
 	if ( !mpccmd ) mpccmd = [];
 	var sleep = webradio ? 1 : 0.2;
 	var contextCommand = {
