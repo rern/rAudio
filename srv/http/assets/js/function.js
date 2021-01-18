@@ -1610,11 +1610,15 @@ function volumeSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( 'mpc volume '+ vol );
+		if ( G.status.control ) {
+			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
+		} else {
+			bash( 'mpc volume '+ vol );
+		}
 	} else {
 		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol ], function() {
+		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}
