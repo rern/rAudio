@@ -115,6 +115,7 @@ fi
 
 if ! ifconfig | grep -q 'inet.*broadcast'; then
 	systemctl -q is-enabled hostapd || /srv/http/bash/features.sh hostapdset
+	systemctl -q disable hostapd 
 	exit
 fi
 
