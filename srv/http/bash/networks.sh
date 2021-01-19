@@ -73,6 +73,7 @@ Gateway=$( jq -r .Gateway <<< $data )
 		netctl switch-to "$ESSID"
 		systemctl enable netctl-auto@wlan0
 	fi
+	sleep 1
 	pushRefresh
 	pushRefreshFeatures
 	;;
