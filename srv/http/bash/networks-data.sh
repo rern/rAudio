@@ -41,7 +41,7 @@ for line in "${lines[@]}"; do
 		ssid=
 		dbm=0
 	fi
-	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
+	[[ -n $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 	list+=',{
 		  "dhcp"     : "'$dhcp'"
 		, "gateway"  : "'$gateway'"
@@ -52,6 +52,14 @@ for line in "${lines[@]}"; do
 		, "ssid"     : "'$ssid'"
 		, "dbm"      : '$dbm'
 	}'
+	dhcp=
+	gateway=
+	hostname=
+	interface=
+	ip=
+	mac=
+	ssid=
+	dbm=
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
 

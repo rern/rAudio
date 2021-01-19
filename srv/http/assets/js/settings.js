@@ -177,7 +177,8 @@ function psWifi( data ) {
 	info( {
 		  icon    : 'wifi'
 		, title   : 'Wi-Fi'
-		, message : 'Reboot to connect <wh>'+ data.ssid +'</wh>'
+		, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
+					+'(http://<wh>raudio.local</wh>)'
 		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 		, okcolor : orange
 		, ok      : function() {
