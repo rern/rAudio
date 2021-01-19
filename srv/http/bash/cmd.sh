@@ -168,14 +168,13 @@ volumeGet() {
 	fi
 	
 	if [[ -z $control ]]; then
-		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo -1
-		exit
+		aplay -l 2> /dev/null | grep -q '^card' && volume=100 || volume=-1
+	else
+		volume=$( amixer -M -c $card sget "$control" \
+			| awk -F'[%[]' '/%/ {print $2}' \
+			| head -1 )
+		[[ -z $volume ]] && volume=100
 	fi
-	
-	volume=$( amixer -M -c $card sget "$control" \
-		| awk -F'[%[]' '/%/ {print $2}' \
-		| head -1 )
-	[[ -z $volume ]] && volume=100
 }
 volumeGetControls() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
