@@ -18,8 +18,8 @@ if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 else
 	volumeconrol=$( /srv/http/bash/cmd.sh volumeconrolget )
-	volume=$( echo $volumeconrol | cut -d' ' -f1 )
-	control=$( echo $volumeconrol | cut -d' ' -f2- )
+	volume=$( echo $volumeconrol | cut -d^ -f1 )
+	control=$( echo $volumeconrol | cut -d^ -f2- )
 fi
 
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd

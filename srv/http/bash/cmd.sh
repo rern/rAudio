@@ -160,23 +160,6 @@ volume0dB(){
 	amixer -c $card sset "$control" 0dB
 }
 volumeGet() {
-	volumeGetControls
-	if [[ $mixertype == software ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
-		echo $volume
-		exit
-	fi
-	
-	if [[ -z $control ]]; then
-		aplay -l 2> /dev/null | grep -q '^card' && volume=100 || volume=-1
-	else
-		volume=$( amixer -M -c $card sget "$control" \
-			| awk -F'[%[]' '/%/ {print $2}' \
-			| head -1 )
-		[[ -z $volume ]] && volume=100
-	fi
-}
-volumeGetControls() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
 	control=$( amixer -c $card scontents \
 				| grep -A1 ^Simple \
@@ -192,6 +175,20 @@ volumeGetControls() {
 						| awk -F'[][]' '{print $2}' \
 						| sed 's/^snd_rpi_//; s/_/-/g' )
 		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+	fi
+	if [[ $mixertype == software ]]; then
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		echo $volume
+		exit
+	fi
+	
+	if [[ -z $control ]]; then
+		aplay -l 2> /dev/null | grep -q '^card' && volume=100 || volume=-1
+	else
+		volume=$( amixer -M -c $card sget "$control" \
+			| awk -F'[%[]' '/%/ {print $2}' \
+			| head -1 )
+		[[ -z $volume ]] && volume=100
 	fi
 }
 volumeReset() {
@@ -729,7 +726,7 @@ volume0db )
 	;;
 volumeconrolget )
 	volumeGet
-	echo $volume $control
+	echo $volume^$control
 	;;
 volumeget )
 	volumeGet
