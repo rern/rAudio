@@ -1152,7 +1152,7 @@ function renderPlaybackBlank() {
 			var ips = ip.split( '\n' );
 			var htmlip = '';
 			ips.forEach( function( each ) {
-				htmlip += '<br><gr>http://</gr>'+ each
+				if ( each ) htmlip += '<br><gr>http://</gr>'+ each
 			} );
 			$( '#qrip' ).html( htmlip );
 			var qr = new QRCode( {
