@@ -1147,7 +1147,7 @@ function renderPlaybackBlank() {
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '.cover-save' ).remove();
-	bash( "ip r | awk '/default/ {print $9}' | head -c -1", function( ip ) {
+	bash( "ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}'", function( ip ) {
 		if ( ip ) {
 			var ips = ip.split( '\n' );
 			var htmlip = '';
