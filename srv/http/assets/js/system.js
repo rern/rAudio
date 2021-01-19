@@ -50,13 +50,11 @@ function rebootText( enable, device ) {
 	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
-	var startup = G.startup.split( ' ' );
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' )
 		+'<br>'+ ( G.cputemp < 80 ? G.cputemp +' °C' : '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>' )
 		+'<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
 		+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
-		+'<br><gr>kernel:</gr> '+ Math.round( startup[ 0 ] ) +'s + <gr>userspace:</gr> '
-		+ ( startup[ 1 ] ? Math.round( startup[ 1 ] ) +'s' : 'Running ...' );
+		+'<br>'+ G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' );
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
@@ -88,7 +86,7 @@ refreshData = function() {
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		$( '#wlan' ).prop( 'checked', G.wlan );
+		$( '#wlan' ).prop( 'checked', G.wlan )
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
@@ -211,21 +209,24 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 $( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	if ( !$( '#system .fa-wifi' ).length ) {
+	if ( !$( '#system .fa-wifi' ).length && !G.hostapd ) {
 		notify( 'Wi-Fi', checked, 'wifi' );
-		bash( [ 'wlan', checked, G.onboardwlan ] );
+		bash( [ 'wlan', checked ] );
 	} else {
+		var message = !G.hostapd
+						? 'This will disconnect Wi-Fi from router.'
+						: 'This will disable <wh>Access Point</wh>.';
 		info( {
 			  icon    : 'wifi'
 			, title   : 'Wi-Fi'
-			, message : 'This will disconnect Wi-Fi from router.'
+			, message : message
 						+'<br>Continue?'
 			, cancel  : function() {
 				$( '#wlan' ).prop( 'checked', 1 );
 			}
 			, ok      : function() {
 				notify( 'Wi-Fi', false, 'wifi' );
-				bash( [ 'wlan', false, G.onboardwlan ] );
+				bash( [ 'wlan', false ] );
 			}
 		} );
 	}

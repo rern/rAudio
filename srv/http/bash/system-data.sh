@@ -3,7 +3,7 @@
 data='
 	  "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
 	, "cputemp"         : '$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )'
-	, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4,7 | tr -d s )'"
+	, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
 	, "throttled"       : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 	, "time"            : "'$( date +'%T %F' )'"
 	, "timezone"        : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
@@ -61,6 +61,7 @@ data+='
 	, "bluetooth"       : '$bluetooth'
 	, "btdiscoverable"  : '$btdiscoverable'
 	, "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
+	, "hostapd"         : '$( systemctl -q is-active hostapd && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
 	, "kernel"          : "'$( uname -r )'"
 	, "lcd"             : '$lcd'
@@ -68,7 +69,6 @@ data+='
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-	, "onboardwlan"     : '$( [[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && echo true || echo false )'
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
