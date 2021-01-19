@@ -160,7 +160,7 @@ volume0dB(){
 	amixer -c $card sset "$control" 0dB
 }
 volumeControls() {
-	amixer=$( amixer -c $card scontents \
+	amixer=$( amixer -c $1 scontents \
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
@@ -173,12 +173,11 @@ volumeControls() {
 						| grep volume \
 						| cut -d"'" -f2  )
 	fi
-	[[ -n $controls ]] && readarray -t controls <<< $( echo "$controls" | sort -u )
 }
 volumeGet() {
 	card=$( head -1 /etc/asound.conf | tail -c 2 )
 	volumeControls $card
-	[[ -n $controls ]] && control=${controls[0]}
+	[[ -n $controls ]] && control=$( echo "$controls" | sort -u | head -1 )
 	if compgen -G "/srv/http/data/system/mixertype-*" > /dev/null; then
 		aplayname=$( aplay -l \
 						| grep "^card $card" \
@@ -733,6 +732,10 @@ volume )
 	;;
 volume0db )
 	volume0dB
+	;;
+volumecontrols )
+	volumeControls ${args[1]}
+	echo "$controls"
 	;;
 volumeconrolget )
 	volumeGet
