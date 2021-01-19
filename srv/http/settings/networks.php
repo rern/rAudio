@@ -1,6 +1,5 @@
 <div id="divinterface">
-<?php if ( exec( 'systemctl -q is-active bluetooth && echo 1 || echo 0' ) ) { ?>
-	<div>
+	<div id="divbt">
 	<heading id="headbt" class="status noline" data-status="bluetooth">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="hide"></pre>
@@ -16,17 +15,16 @@
 		<br>&emsp; - Turn off discoverable to hide from unpaired senders.
 	</span>
 	</div>
-<?php }
-	  if ( exec ( 'ifconfig | grep ^eth' ) ) { ?>
+	<div id="divlan">
 	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><?=$code?></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
-<?php }
-	  if ( exec( 'ifconfig | grep ^wlan' ) ) { ?>
+	</div>
+	<div id="divwl">
 	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$code?><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
-<?php } ?>
+	</div>
 	
 	<div>
 	<heading class="status" data-status="avahi">Web User Interface<?=$code?><?=$help?></heading>
@@ -58,7 +56,6 @@
 	<ul id="listbtscan" class="entries"></ul>
 </div>
 
-	<?php if ( exec( 'systemctl -q is-active hostapd && echo 1 || echo 0' ) ) { ?>
 <div id="divaccesspoint">
 	<heading>Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
 	<div id="boxqr" class="hide">
@@ -79,4 +76,3 @@
 		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</span>
 </div>
-	<?php } ?>

@@ -102,11 +102,13 @@ fi
 
 data='
 	  "bluetooth" : '$btlist'
+	, "infbt"     : '$( rfkill | grep -q bluetooth && echo true || echo false )'
+	, "inflan"    : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
+	, "infwl"     : '$( rfkill | grep -q wlan && echo true || echo false )'
 	, "list"      : '$list'
 	, "hostapd"   : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
 	, "hostname"  : "'$( hostname )'"
-	, "profiles"   : '$profiles'
-	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
-	, "wlan"      : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
+	, "profiles"  : '$profiles'
+	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
 
 echo {$data}

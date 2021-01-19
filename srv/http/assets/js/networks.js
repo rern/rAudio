@@ -337,18 +337,34 @@ function nicsStatus() {
 				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
 			} );
 		}
-		$( '#listbt' ).html( htmlbt );
-		$( '#listlan' ).html( htmllan );
-		$( '#listwl' ).html( htmlwl );
-		var active = $( '#listbt grn' ).length > 0;
-		$( '#headbt' )
-			.toggleClass( 'noline', htmlbt !== '' )
-			.toggleClass( 'status', active );
-		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
-		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
-		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
-		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
-		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+		if ( G.infbt ) {
+			$( '#listbt' ).html( htmlbt );
+			var active = $( '#listbt grn' ).length > 0;
+			$( '#headbt' )
+				.toggleClass( 'noline', htmlbt !== '' )
+				.toggleClass( 'status', active );
+			$( '#headbt' ).data( 'status', active ? 'bt' : '' );
+			$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
+			$( '#divbt' ).removeClass( 'hide' );
+		} else {
+			$( '#divbt' ).addClass( 'hide' );
+		}
+		if ( G.inflan ) {
+			$( '#listlan' ).html( htmllan );
+			$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
+			$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
+			$( '#divlan' ).removeClass( 'hide' );
+		} else {
+			$( '#divlan' ).addClass( 'hide' );
+		}
+		if ( G.infwl ) {
+			$( '#listwl' ).html( htmlwl );
+			$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+			$( '#divwl' ).removeClass( 'hide' );
+		} else {
+			$( '#divwl' ).addClass( 'hide' );
+		}
+		$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
 		if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
 		
 		renderQR();
