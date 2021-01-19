@@ -307,7 +307,7 @@ function nicsStatus() {
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return
 				
-				htmllan = html +'><i class="fa fa-networks"></i>';
+				htmllan = html +'><i class="fa fa-lan"></i>';
 				htmllan += val.ip ? '<grn>&bull;</grn>&ensp;'+ val.ip : '';
 				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
 				htmllan += '</li>';
