@@ -256,15 +256,11 @@ function psMpdUpdate( data ) {
 		}
 	} else {
 		G.status.updating_db = false;
-		$( '#tab-library, #button-library, #i-update, #ti-update' )
-			.removeClass( 'fa-file-wave' )
-			.addClass( 'fa-library' );
-		$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
-		banner( 'Library Update', 'Done', 'library' );
 		$( '#lib-mode-list' ).data( 'count', data.title )
 		$( '#li-count' ).remove();
 		$( '#lib-breadcrumbs' ).append( '<span id="li-count">'+ data.song.toLocaleString() +' <i class="fa fa-music gr"></i></span>' );
 		delete data.title;
+		G.status.counts = data;
 		$.each( data, function( key, val ) {
 			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
 		} );
@@ -285,6 +281,13 @@ function psMpdUpdate( data ) {
 		} else if ( G.playlist && !G.savedlist ) {
 			$( '#tab-playlist' ).click();
 		}
+		setTimeout( function() {
+			$( '#tab-library, #button-library, #i-update, #ti-update' )
+				.removeClass( 'fa-file-wave' )
+				.addClass( 'fa-library' );
+			$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+			banner( 'Library Update', 'Done', 'library' );
+		}, 2000 );
 	}
 }
 function psNotify( data ) {
