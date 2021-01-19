@@ -65,6 +65,12 @@ Hidden=yes
 Address=$( jq -r .Address <<< $data )/24
 Gateway=$( jq -r .Gateway <<< $data )
 "
+	if systemctl -q is-active; then
+		echo "$profile" > /boot/wifi
+		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
+		exit
+	fi
+	
 	netctl list | grep ^..$ESSID$ || new=1
 	netctl is-active Home2GHz &> /dev/null && active=1
 	echo "$profile" > "/etc/netctl/$ESSID"
@@ -162,6 +168,9 @@ profileremove )
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
+	;;
+reboot )
+	/srv/http/bash/cmd.sh power
 	;;
 	
 esac
