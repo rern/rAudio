@@ -35,7 +35,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br>CPU Temperatue
 	<br>Time
 	<br>Up Time
-	<br>Startup
+	<br>Boot Duration
 </div>
 <div id="status" class="col-r text"></div>
 
