@@ -65,7 +65,7 @@ touch $dirdata/shm/player-mpd
 # onboard + usb wifi >> disable onboard
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
 # no enabled profile >> disable onboard
-systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac &> /dev/null
+[[ -z $( netctl list ) ]] && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
@@ -118,6 +118,8 @@ if ! ifconfig | grep -q 'inet.*broadcast'; then
 	systemctl -q disable hostapd 
 	exit
 fi
+
+rfkill | grep -q wlan && iw wlan0 set power_save off
 
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 [[ $? != 0 ]] exit
