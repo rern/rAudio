@@ -441,8 +441,8 @@ var good = -60;
 var fair = -67;
 $( '.back' ).click( function() {
 	clearTimeout( intervalscan );
-	$( '#divinterface, #divwebui, #divaccesspoint' ).removeClass( 'hide' );
-	$( '#divwifi, #divbluetooth' ).addClass( 'hide' );
+	$( '#divinterface, #divaccesspoint' ).removeClass( 'hide' );
+	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	nicsStatus();
 } );
