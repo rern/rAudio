@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-if ! grep -q remove /etc/conf.d/devmon; then
+if ! grep -q usbremove /etc/conf.d/devmon; then
 	wget -q https://github.com/rern/rOS/raw/main/etc/conf.d/devmon -O /etc/conf.d/devmon
 fi
 if grep -q 'default_options_exfat.*umask=0077' /etc/udevil/udevil.conf; then
