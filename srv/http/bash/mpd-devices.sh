@@ -12,6 +12,23 @@
 #    - if nothing, set as software
 dirsystem=/srv/http/data/system
 
+volumeControls() {
+	amixer=$( amixer -c $card scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' )
+	controls=$( echo "$amixer" \
+					| grep 'volume.*pswitch' \
+					| cut -d"'" -f2 )
+	if [[ -z $controls ]]; then
+		controls=$( echo "$amixer" \
+						| grep volume \
+						| cut -d"'" -f2  )
+	fi
+	[[ -n $controls ]] && readarray -t controls <<< $( echo "$controls" | sort -u )
+}
+
 aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ -z $aplay ]]; then
 	i=-1
@@ -39,19 +56,7 @@ for line in "${lines[@]}"; do
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	amixer=$( amixer -c $card scontents \
-				| grep -A1 ^Simple \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' )
-	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch' \
-					| cut -d"'" -f2 )
-	if [[ -z $controls ]]; then
-		controls=$( echo "$amixer" \
-						| grep volume \
-						| cut -d"'" -f2 )
-	fi
+	volumeControls $card
 	if [[ -z $controls ]]; then
 		mixerdevices=['"( not available )"']
 		mixers=0
