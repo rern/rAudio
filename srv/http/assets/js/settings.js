@@ -104,6 +104,8 @@ function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
 function resetLocal( ms ) {
+	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
+	
 	setTimeout( function() {
 		$( '#bannerIcon i' ).removeClass( 'blink' );
 		$( '#bannerMessage' ).text( 'Done' );

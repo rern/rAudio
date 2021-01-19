@@ -5,8 +5,20 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
+
 pushRefresh() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "sources" }'
+	pushstream refresh '{ "page": "sources" }'
+}
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
+update() {
+	# for /etc/conf.d/devmon - devmon@http.service
+	touch $dirsystem/updating
+	mpc update
+	sleep 1
+	pushRefresh
+	pushstream mpdupdate 1
 }
 
 case ${args[0]} in
@@ -70,13 +82,15 @@ unmount )
 	fi
 	pushRefresh
 	;;
-update )
+usbconnect )
 	# for /etc/conf.d/devmon - devmon@http.service
-	touch $dirsystem/updating
-	mpc update
-	sleep 1
-	pushRefresh
-	curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d 1
+	pushstream notify '{"title":"USB Drive","text":"Connected.","icon":"usbdrive"}'
+	update
+	;;
+usbremove )
+	# for /etc/conf.d/devmon - devmon@http.service
+	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
+	update
 	;;
 	
 esac
