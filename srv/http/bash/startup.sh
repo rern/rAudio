@@ -53,6 +53,7 @@ if [[ -e /boot/wifi ]]; then
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
 	chown http:http "$dirsystem/netctl-$ssid" "/etc/netctl/$ssid"
+	systemctl disable netctl-auto@wlan0
 	netctl start "$ssid"
 	systemctl enable netctl-auto@wlan0
 fi
