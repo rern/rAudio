@@ -383,17 +383,15 @@ function qr( msg ) {
 	} );
 }
 function renderQR() {
-	$( 'li' ).each( function() {
-		var ip = $( this ).data( 'ip' );
-		var gateway = $( this ).data( 'gateway' );
-		var hostname = $( this ).data( 'hostname' );
-		if ( ip && gateway ) {
-			$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
-			if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
-			$( '#ipwebui' ).html( ip );
-			$( '#divwebui' ).removeClass( 'hide' );
-		}
-	} );
+	var $el = $( '#listlan li' ).length ? $( '#listlan li' ) : $( '#listwl li' );
+	var ip = $el.data( 'ip' );
+	if ( ip ) {
+		var hostname = $el.data( 'hostname' );
+		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
+		if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
+		$( '#ipwebui' ).html( ip );
+		$( '#divwebui' ).removeClass( 'hide' );
+	}
 	if ( G.hostapd ) {
 		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.hostapdip );
 		$( '#ssid' ).text( G.hostapd.ssid );

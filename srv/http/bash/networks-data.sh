@@ -29,8 +29,12 @@ for line in "${lines[@]}"; do
 	fi
 	ipr=$( ip r | grep "^default.*$interface" )
 	dhcp=$( [[ $ipr == *"dhcp src $ip "* ]] && echo dhcp || echo static )
-	gateway=$( cut -d' ' -f3 <<< $ipr )
-	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	if [[ $ip != $hostapdip ]]; then
+		gateway=$( cut -d' ' -f3 <<< $ipr )
+		[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	else
+		gateway=$ip
+	fi
 	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
 		ssid=$( iwgetid wlan0 -r )
 		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
