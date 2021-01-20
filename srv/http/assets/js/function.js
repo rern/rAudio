@@ -186,7 +186,7 @@ function coverartChange() {
 				$( '.edit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
-					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? '/assets/img/vu.png' : coverdefault ) );
+					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? covervu : coverdefault ) );
 				} else {
 					$( '.licoverimg img' ).attr( 'src', url || coverdefault );
 				}

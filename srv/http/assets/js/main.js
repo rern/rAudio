@@ -43,6 +43,7 @@ var picaOption = { // pica.js
 };
 var hash = Math.ceil( Date.now() / 1000 );
 var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
+var covervu = '/assets/img/vu.png';
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {

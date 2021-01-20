@@ -394,15 +394,15 @@ function webRadioCoverart() {
 		}
 	}
 	var coverart = G.playback
-					? G.status.coverartradio || '/assets/img/vu.png'
-					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || '/assets/img/vu.png';
+					? G.status.coverartradio || covervu
+					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || covervu;
 	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
 	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
 	info( infojson );
 }
 function webRadioDelete() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || '/assets/img/vu.png';
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
@@ -423,14 +423,14 @@ function webRadioDelete() {
 }
 function webRadioEdit() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' );
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
 		, width        : 500
-		, message      : ( img ? '<img src="'+ img +'">' : '<i class="fa fa-webradio bookmark"></i>' )
+		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
 		, textvalue    : [ name, url ]
 		, textrequired : [ 0, 1 ]
