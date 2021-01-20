@@ -182,7 +182,7 @@ function psWifi( data ) {
 		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 		, okcolor : orange
 		, ok      : function() {
-			bash( [ 'reboot' ] );
+			bash( '/srv/http/bash/cmd.sh power' );
 		}
 	} );
 }

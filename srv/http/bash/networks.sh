@@ -67,6 +67,7 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd; then
 		echo "$profile" > /boot/wifi
+		systemctl disable hostapd
 		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
 		exit
 	fi
@@ -168,9 +169,6 @@ profileremove )
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
-	;;
-reboot )
-	/srv/http/bash/cmd.sh power
 	;;
 	
 esac
