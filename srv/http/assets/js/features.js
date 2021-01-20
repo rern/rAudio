@@ -28,13 +28,13 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#aria2' ).prop( 'checked', G.aria2 );
 		$( '#smb' ).prop( 'checked', G.smb );
 		$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
+		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
+		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 		$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
 		$( '#login' ).prop( 'checked', G.login );
 		$( '#setting-login' ).toggleClass( 'hide', !G.login );
 		$( '#autoplay' ).prop( 'checked', G.autoplay );
-		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
-		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 		[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
@@ -297,75 +297,6 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-mpdscribble' ).click( function() {
-	if ( G.mpdscribbleval ) {
-		var data = G.mpdscribbleval.split( '^' );
-		var user = data[ 0 ];
-		var pwd = data[ 1 ];
-	}
-	info( {
-		  icon          : 'lastfm'
-		, title         : 'Last.fm Scrobbler'
-		, textlabel     : 'User'
-		, textvalue     : user
-		, passwordlabel : 'Password'
-		, preshow       : function() {
-			$( '#infoPasswordBox' ).val( pwd );
-			// verify changes
-			if ( G.mpdscribble ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoTextBox, #infoPasswordBox' ).keyup( function() {
-					var changed = $( '#infoTextBox' ).val() !== user || $( '#infoPasswordBox' ).val() !== pwd;
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				} );
-			}
-		}
-		, cancel        : function() {
-			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
-		}
-		, ok            : function() {
-			var user = $( '#infoTextBox' ).val().replace( /(["&()\\])/g, '\$1' );
-			var password = $( '#infoPasswordBox' ).val().replace( /(["&()\\])/g, '\$1' );
-			bash( [ 'mpdscribbleset', user, password ], function( std ) {
-				if ( std == -1 ) {
-					info( {
-						  icon    : 'lastfm'
-						, title   : 'Last.fm Scrobbler'
-						, message : 'Last.fm Login failed.'
-					} );
-					$( '#mpdscribble' ).prop( 'checked', 0 );
-				}
-			} );
-			notify( 'Scrobbler', G.mpdscribble ? 'Change ...' : 'Enable ...', 'lastfm' );
-		}
-	} );
-} );
-$( '#setting-login' ).click( function() {
-	info( {
-		  icon          : 'lock-circle'
-		, title         : 'Password Login'
-		, message       : ( G.login ? 'Change password:' : 'New setup:' )
-		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, pwdrequired   : 1
-		, cancel        : function() {
-			$( '#login' ).prop( 'checked', G.login );
-		}
-		, ok            : function() {
-			var password = $( '#infoPasswordBox' ).val();
-			var pwdnew = $( '#infoPasswordBox1' ).length ? $( '#infoPasswordBox1' ).val() : password;
-			var type = G.login ? 'changed.' : 'enabled.';
-			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock-circle' );
-			$.post( 'cmd.php', {
-				  cmd      : 'login'
-				, password : password
-				, pwdnew   : pwdnew
-			}, function( std ) {
-				if ( !std ) passwordWrong();
-				bannerHide();
-			} );
-		}
-	} );
-} );
 $( '#hostapdchk' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( !G.hostapd && G.wlanconnect && checked ) {
@@ -434,6 +365,75 @@ $( '#setting-hostapd' ).click( function() {
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapdset', iprange, ip, pwd ] );
 			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+		}
+	} );
+} );
+$( '#setting-mpdscribble' ).click( function() {
+	if ( G.mpdscribbleval ) {
+		var data = G.mpdscribbleval.split( '^' );
+		var user = data[ 0 ];
+		var pwd = data[ 1 ];
+	}
+	info( {
+		  icon          : 'lastfm'
+		, title         : 'Last.fm Scrobbler'
+		, textlabel     : 'User'
+		, textvalue     : user
+		, passwordlabel : 'Password'
+		, preshow       : function() {
+			$( '#infoPasswordBox' ).val( pwd );
+			// verify changes
+			if ( G.mpdscribble ) {
+				$( '#infoOk' ).addClass( 'disabled' );
+				$( '#infoTextBox, #infoPasswordBox' ).keyup( function() {
+					var changed = $( '#infoTextBox' ).val() !== user || $( '#infoPasswordBox' ).val() !== pwd;
+					$( '#infoOk' ).toggleClass( 'disabled', !changed );
+				} );
+			}
+		}
+		, cancel        : function() {
+			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
+		}
+		, ok            : function() {
+			var user = $( '#infoTextBox' ).val().replace( /(["&()\\])/g, '\$1' );
+			var password = $( '#infoPasswordBox' ).val().replace( /(["&()\\])/g, '\$1' );
+			bash( [ 'mpdscribbleset', user, password ], function( std ) {
+				if ( std == -1 ) {
+					info( {
+						  icon    : 'lastfm'
+						, title   : 'Last.fm Scrobbler'
+						, message : 'Last.fm Login failed.'
+					} );
+					$( '#mpdscribble' ).prop( 'checked', 0 );
+				}
+			} );
+			notify( 'Scrobbler', G.mpdscribble ? 'Change ...' : 'Enable ...', 'lastfm' );
+		}
+	} );
+} );
+$( '#setting-login' ).click( function() {
+	info( {
+		  icon          : 'lock-circle'
+		, title         : 'Password Login'
+		, message       : ( G.login ? 'Change password:' : 'New setup:' )
+		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
+		, pwdrequired   : 1
+		, cancel        : function() {
+			$( '#login' ).prop( 'checked', G.login );
+		}
+		, ok            : function() {
+			var password = $( '#infoPasswordBox' ).val();
+			var pwdnew = $( '#infoPasswordBox1' ).length ? $( '#infoPasswordBox1' ).val() : password;
+			var type = G.login ? 'changed.' : 'enabled.';
+			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock-circle' );
+			$.post( 'cmd.php', {
+				  cmd      : 'login'
+				, password : password
+				, pwdnew   : pwdnew
+			}, function( std ) {
+				if ( !std ) passwordWrong();
+				bannerHide();
+			} );
 		}
 	} );
 } );
