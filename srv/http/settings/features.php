@@ -96,6 +96,19 @@
 
 <div>
 <heading>Others<?=$help?></heading>
+<div data-status="hostapd" <?=$classstatus?>>
+	<a>Access Point
+	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-accesspoint"></i>
+</div>
+<div class="col-r">
+	<input id="hostapd" class="enable hidden" type="checkbox">
+	<input id="hostapdchk" type="checkbox">
+	<div class="switchlabel" for="hostapd"></div>
+	<i id="setting-hostapd" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>Connect with rAudio hotspot directly when no routers available.
+		<br>This should be used only when necessary.</span>
+</div>
+<pre id="codehostapd" class="hide"></pre>
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" <?=$classstatus?>>
 	<a>BitTorrent
@@ -157,19 +170,6 @@
 </div>
 <pre id="codesmb" class="hide"></pre>
 	<?php } ?>
-<div data-status="hostapd" <?=$classstatus?>>
-	<a>Hotspot
-	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-accesspoint"></i>
-</div>
-<div class="col-r">
-	<input id="hostapd" class="enable hidden" type="checkbox">
-	<input id="hostapdchk" type="checkbox">
-	<div class="switchlabel" for="hostapd"></div>
-	<i id="setting-hostapd" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Connect with rAudio hotspot directly when no routers available.
-		<br>This should be used only when necessary.</span>
-</div>
-<pre id="codehostapd" class="hide"></pre>
 <div data-status="mpdscribble" <?=$classstatus?>>
 	<a>Last.fm Scrobbler
 	<br><gr>mpdscribble<?=$code?></gr></a><i class="fa fa-lastfm"></i>
