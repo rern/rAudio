@@ -74,6 +74,14 @@ Asia server
 		- Generate a complex profile - static IP, hidden SSID
 			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
 			- Save it in `BOOT`
+	- Wi-Fi access point mode
+		- If no wired network and no pre-configured Wi-Fi connections, Wi-Fi access point will be enabled on boot.
+		- On client devices, select `rAudio` from Wi-Fi network list to connect.
+		- On browser, open web user interface with URL `raudio.local`
+		- Settings > Networks > Wi-Fi - search
+		- Select access point to connect
+		- Reboot
+		- Browser refreshes when ready. (Manually refresh if it's too long.)
 	- System pre-configure: (Run once)
 		- Restore database and settings (Wi-Fi connection included.)
 			- Copy `backup.gz` to `BOOT`
