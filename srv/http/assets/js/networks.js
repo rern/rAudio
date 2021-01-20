@@ -391,6 +391,8 @@ function renderQR() {
 		if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
 		$( '#ipwebui' ).html( ip );
 		$( '#divwebui' ).removeClass( 'hide' );
+	} else {
+		$( '#divwebui' ).addClass( 'hide' );
 	}
 	if ( G.hostapd ) {
 		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.hostapdip );
