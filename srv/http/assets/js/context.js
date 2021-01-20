@@ -476,7 +476,7 @@ function webRadioNew( name, url ) {
 		, textlabel    : [ 'Name', 'URL' ]
 		, textvalue    : [ ( name || '' ), ( url || '' ) ]
 		, textrequired : [ 0, 1 ]
-		, footer       : '( *.m3u or *.pls is applicable)'
+		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
 			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
