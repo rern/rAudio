@@ -402,14 +402,14 @@ function webRadioCoverart() {
 }
 function webRadioDelete() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' );
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || '/assets/img/vu.png';
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Delete WebRadio'
 		, width   : 500
-		, message : ( img ? '<br><img src="'+ img +'">' : '<br><i class="fa fa-webradio bookmark"></i>' )
+		, message : '<br><img src="'+ img +'">'
 				   +'<br><w>'+ name +'</w>'
 				   +'<br>'+ url
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
