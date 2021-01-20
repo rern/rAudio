@@ -65,7 +65,7 @@ Hidden=yes
 Address=$( jq -r .Address <<< $data )/24
 Gateway=$( jq -r .Gateway <<< $data )
 "
-	if systemctl -q is-active hostapd; then
+	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
 		echo "$profile" > /boot/wifi
 		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
 		exit

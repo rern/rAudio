@@ -385,7 +385,7 @@ function qr( msg ) {
 function renderQR() {
 	var $el = $( '#listlan li' ).length ? $( '#listlan li' ) : $( '#listwl li' );
 	var ip = $el.data( 'ip' );
-	if ( ip ) {
+	if ( ip && ip !== G.hostapd.hostapdip ) {
 		var hostname = $el.data( 'hostname' );
 		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
 		if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
