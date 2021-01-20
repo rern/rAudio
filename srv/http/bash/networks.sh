@@ -42,19 +42,6 @@ connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )
 	Key=$( jq -r .Key <<< $data )
-	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
-		echo '
-Interface=wlan0
-Connection=wireless
-IP=dhcp
-Security=wpa
-ESSID="'$ESSID'"
-Key="'$Key'"
-' > /boot/wifi
-		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
-		exit
-	fi
-	
 	profile="\
 Interface=wlan0
 Connection=wireless
@@ -78,6 +65,13 @@ Hidden=yes
 Address=$( jq -r .Address <<< $data )/24
 Gateway=$( jq -r .Gateway <<< $data )
 "
+	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
+		echo "$profile" > /boot/wifi
+		systemctl disable netctl-auto@wlan0
+		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
+		exit
+	fi
+	
 	netctl list | grep ^..$ESSID$ || new=1
 	netctl is-active Home2GHz &> /dev/null && active=1
 	echo "$profile" > "/etc/netctl/$ESSID"
