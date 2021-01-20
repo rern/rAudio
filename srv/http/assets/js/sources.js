@@ -165,7 +165,7 @@ $( '#list' ).on( 'click', 'li', function() {
 			, oklabel : 'Unmount'
 			, okcolor : orange
 			, ok      : function() {
-				notify( 'Network Mount', 'Unmount ...', 'network' );
+				nas ? notify( 'Network Mount', 'Unmount ...', 'network' ) : notify( 'USB Drive', 'Unmount ...', 'usbdrive' );
 				bash( [ 'unmount', mountpoint ], function() {
 					refreshData();
 					$( '#refreshing' ).addClass( 'hide' );

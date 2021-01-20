@@ -159,8 +159,32 @@ volume0dB(){
 	echo $volume > $dirtmp/mpdvolume
 	amixer -c $card sset "$control" 0dB
 }
+volumeControls() {
+	amixer=$( amixer -c $1 scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' )
+	controls=$( echo "$amixer" \
+					| grep 'volume.*pswitch' \
+					| cut -d"'" -f2 )
+	if [[ -z $controls ]]; then
+		controls=$( echo "$amixer" \
+						| grep volume \
+						| cut -d"'" -f2  )
+	fi
+}
 volumeGet() {
-	volumeGetControls
+	card=$( head -1 /etc/asound.conf | tail -c 2 )
+	volumeControls $card
+	[[ -n $controls ]] && control=$( echo "$controls" | sort -u | head -1 )
+	if compgen -G "/srv/http/data/system/mixertype-*" > /dev/null; then
+		aplayname=$( aplay -l \
+						| grep "^card $card" \
+						| awk -F'[][]' '{print $2}' \
+						| sed 's/^snd_rpi_//; s/_/-/g' )
+		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+	fi
 	if [[ $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		echo $volume
@@ -168,31 +192,12 @@ volumeGet() {
 	fi
 	
 	if [[ -z $control ]]; then
-		aplay -l 2> /dev/null | grep -q '^card' && echo 100 || echo -1
-		exit
-	fi
-	
-	volume=$( amixer -M -c $card sget "$control" \
-		| awk -F'[%[]' '/%/ {print $2}' \
-		| head -1 )
-	[[ -z $volume ]] && volume=100
-}
-volumeGetControls() {
-	card=$( head -1 /etc/asound.conf | tail -c 2 )
-	control=$( amixer -c $card scontents \
-				| grep -A1 ^Simple \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' \
-				| grep 'volume.*pswitch' \
-				| head -1 \
-				| cut -d"'" -f2 )
-	if compgen -G "/srv/http/data/system/mixertype-*" > /dev/null; then
-		aplayname=$( aplay -l \
-						| grep "^card $card" \
-						| awk -F'[][]' '{print $2}' \
-						| sed 's/^snd_rpi_//; s/_/-/g' )
-		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
+		aplay -l 2> /dev/null | grep -q '^card' && volume=100 || volume=-1
+	else
+		volume=$( amixer -M -c $card sget "$control" \
+			| awk -F'[%[]' '/%/ {print $2}' \
+			| head -1 )
+		[[ -z $volume ]] && volume=100
 	fi
 }
 volumeReset() {
@@ -504,16 +509,17 @@ mpcseek )
 	pushstreamStatus lcdchar
 	;;
 mpcupdate )
-	[[ ${args[1]} == true ]] && touch $dirsystem/wav
+	wav=${args[1]}
 	path=${args[2]}
-	pushstream mpdupdate 1
-	if [[ $path != rescan ]]; then
-		echo $path > $dirsystem/updating
-		mpc update "$path"
-	else
+	[[ $wav == true ]] && touch $dirsystem/wav
+	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating
 		mpc rescan
+	else
+		touch $dirsystem/updating
+		mpc update
 	fi
+	pushstream mpdupdate 1
 	;;
 nicespotify )
 	for pid in $( pgrep spotifyd ); do
@@ -727,9 +733,13 @@ volume )
 volume0db )
 	volume0dB
 	;;
+volumecontrols )
+	volumeControls ${args[1]}
+	echo "$controls"
+	;;
 volumeconrolget )
 	volumeGet
-	echo $volume $control
+	echo $volume^$control
 	;;
 volumeget )
 	volumeGet

@@ -39,19 +39,7 @@ for line in "${lines[@]}"; do
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	amixer=$( amixer -c $card scontents \
-				| grep -A1 ^Simple \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' )
-	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch' \
-					| cut -d"'" -f2 )
-	if [[ -z $controls ]]; then
-		controls=$( echo "$amixer" \
-						| grep volume \
-						| cut -d"'" -f2 )
-	fi
+	controls=$( /srv/http/bash/cmd.sh volumecontrols$'\n'$card )
 	if [[ -z $controls ]]; then
 		mixerdevices=['"( not available )"']
 		mixers=0

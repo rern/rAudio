@@ -251,7 +251,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 		var json = {
 			  icon     : 'library'
 			, title    : !options ? 'Library Home Display' : 'Library/Playlist Options'
-			, message  : !options ? 'Show selected items:' : ''
+			, message  : !options ? '1/2 - Show selected items:' : ''
 			, checkbox : displayCheckbox( checklist )
 			, preshow  : function() {
 				if ( options ) {
@@ -1019,6 +1019,7 @@ $( '.btn-cmd' ).click( function() {
 				}
 			}
 			if ( G.status.webradio ) $( '#song, #elapsed' ).html( blinkdot );
+			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			if ( G.status.player === 'airplay' ) {

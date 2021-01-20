@@ -492,7 +492,6 @@ function getPlaybackStatus( render ) {
 				renderPlayback();
 			}, 'json' );
 		} else if ( G.playback || render ) { // 'render' - add to blank playlist
-			G.plreplace = 0;
 			displayPlayback();
 			setButtonControl();
 			renderPlayback();
@@ -624,7 +623,7 @@ function infoUpdate( path ) {
 			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
 			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-				bash( [ 'mpcupdate', wav, path ] );
+				bash( [ 'mpcupdate', wav ] );
 			} else {
 				bash( [ 'mpcupdate', wav, 'rescan' ] );
 			}
@@ -1148,12 +1147,12 @@ function renderPlaybackBlank() {
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '.cover-save' ).remove();
-	bash( "ip r | awk '/default/ {print $9}' | head -c -1", function( ip ) {
+	bash( "ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}'", function( ip ) {
 		if ( ip ) {
 			var ips = ip.split( '\n' );
 			var htmlip = '';
 			ips.forEach( function( each ) {
-				htmlip += '<br><gr>http://</gr>'+ each
+				if ( each ) htmlip += '<br><gr>http://</gr>'+ each
 			} );
 			$( '#qrip' ).html( htmlip );
 			var qr = new QRCode( {
@@ -1610,11 +1609,15 @@ function volumeSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( 'mpc volume '+ vol );
+		if ( G.status.control ) {
+			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
+		} else {
+			bash( 'mpc volume '+ vol );
+		}
 	} else {
 		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol ], function() {
+		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}

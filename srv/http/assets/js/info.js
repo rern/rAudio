@@ -80,7 +80,9 @@ var containerhtml = heredoc( function() { /*
 				<i id="infoIcon"></i><a id="infoTitle"></a>
 			</div>
 			<i id="infoX" class="fa fa-times hide"></i>
-			<div style="clear: both"></div>
+		</div>
+		<div id="infoArrow">
+			<i class="fa fa-arrow-left infoarrowleft"></i><i class="fa fa-arrow-right infoarrowright"></i>
 		</div>
 		<div id="infoContent">
 		</div>
@@ -97,7 +99,6 @@ var containerhtml = heredoc( function() { /*
 </div>
 */ } );
 infocontenthtml = heredoc( function() { /*
-			<i class="fa fa-arrow-left infoarrowleft"></i><i class="fa fa-arrow-right infoarrowright"></i>
 			<p id="infoMessage" class="infomessage"></p>
 			<div id="infoText" class="infocontent">
 				<div id="infotextlabel"></div>
@@ -215,7 +216,7 @@ function infoReset() {
 	$( '.infomessage, .infoinput, #infoFooter' ).css( 'text-align', '' );
 	$( '#infoBox, .infolabel, #infotextbox, .infoinput, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '.selectric-items' ).css( 'min-width', '' );
-	$( '#infoMessage, .infolabel' ).off( 'click' );
+	$( '#infoMessage, .infolabel, .infoarrowleft, .infoarrowright' ).off( 'click' );
 	$( '.filebtn, .infobtn' ).removeClass( 'active' ).css( 'background', '' ).off( 'click' );
 	$( '#infoIcon' ).removeAttr( 'class' ).empty();
 	$( '#infoFileBox' ).val( '' ).removeAttr( 'accept' );

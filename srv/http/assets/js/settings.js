@@ -104,6 +104,8 @@ function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
 function resetLocal( ms ) {
+	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
+	
 	setTimeout( function() {
 		$( '#bannerIcon i' ).removeClass( 'blink' );
 		$( '#bannerMessage' ).text( 'Done' );
@@ -125,7 +127,7 @@ function validateIP( ip ) {
 } 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
-var streams = [ 'notify', 'refresh', 'reload', 'volume' ];
+var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -147,6 +149,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'refresh': psRefresh( data ); break;
 		case 'reload':  psReload();        break;
 		case 'volume':  psVolume( data );  break;
+		case 'wifi':    psWifi( data );    break;
 	}
 }
 function psNotify( data ) {
@@ -169,6 +172,18 @@ function psVolume( data ) {
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 	}, 300 );
+}
+function psWifi( data ) {
+	info( {
+		  icon    : 'wifi'
+		, title   : 'Wi-Fi'
+		, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
+		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+		, okcolor : orange
+		, ok      : function() {
+			bash( '/srv/http/bash/cmd.sh power' );
+		}
+	} );
 }
 function onVisibilityChange( callback ) {
     var visible = 1;

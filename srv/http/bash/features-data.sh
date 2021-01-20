@@ -20,7 +20,7 @@ if [[ -e /usr/bin/hostapd ]]; then
 	data+='
 	, "hostapd"         : '$( systemctl -q is-active hostapd && echo true || echo false )'
 	, "hostapdip"       : "'$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )'"
-	, "hostapdpwd"      : "'$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
+	, "hostapdpwd"      : "'$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 	, "ssid"            : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 	, "wlanconnect"     : '$( ifconfig wlan0 | grep -q inet && echo true || echo false )
 fi

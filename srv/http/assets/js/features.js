@@ -22,6 +22,8 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 		$( '#streaming' ).prop( 'checked', G.streaming );
 		$( '#snapserver' ).prop( 'checked', G.snapserver );
+		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
+		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 		$( '#transmission' ).prop( 'checked', G.transmission );
 		$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
@@ -33,8 +35,6 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#login' ).prop( 'checked', G.login );
 		$( '#setting-login' ).toggleClass( 'hide', !G.login );
 		$( '#autoplay' ).prop( 'checked', G.autoplay );
-		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
-		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 		[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
@@ -187,6 +187,77 @@ $( '#setting-spotifyd' ).click( function() {
 				notify( 'Spotify Renderer', 'Change ...', 'spotify' );
 			}
 		} );
+	} );
+} );
+$( '#hostapdchk' ).click( function() {
+	var checked = $( this ).prop( 'checked' );
+	if ( !G.hostapd && G.wlanconnect && checked ) {
+		info( {
+			  icon      : 'network'
+			, title     : 'RPi Access Point'
+			, message   : '<wh>Wi-Fi is currently connected.</wh>'
+						 +'<br>Disconnect and continue?'
+			, cancel    : function() {
+				if ( set ) {
+					loader();
+					location.href = '/settings.php?p=networks';
+				} else {
+					$( '#hostapd, #hostapdchk' ).prop( 'checked', 0 );
+				}
+			}
+			, ok        : function() {
+				$( '#hostapd' ).click();
+			}
+		} );
+	} else {
+		$( '#hostapd' ).click();
+	}
+} );
+$( '#setting-hostapd' ).click( function() {
+	info( {
+		  icon         : 'network'
+		, title        : 'RPi Access Point Settings'
+		, message      : 'Password - 8 characters or more'
+		, textlabel    : [ 'Password', 'IP' ]
+		, textvalue    : [ G.hostapdpwd, G.hostapdip ]
+		, textrequired : [ 0, 1 ]
+		, preshow       : function() {
+			// verify changes + values
+			if ( G.hostapd || $( '#infoTextBox' ).val().length < 8 ) {
+				$( '#infoOk' ).addClass( 'disabled' );
+				$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
+					var pwd = $( '#infoTextBox' ).val();
+					var ip = $( '#infoTextBox1' ).val();
+					var changed = pwd.length > 7 && ( pwd !== G.hostapdpwd || ip !== G.hostapdip );
+					var validip = validateIP( ip );
+					$( '#infoOk' ).toggleClass( 'disabled', !changed || !validip );
+				} );
+			} else { // verify values
+				$( '#infoTextBox' ).keyup( function() {
+					var pwd = $( '#infoTextBox' ).val();
+					var ip = $( '#infoTextBox1' ).val();
+					$( '#infoOk' ).toggleClass( 'disabled', pwd < 8 || !validateIP( ip ) );
+				} );
+			}
+		}
+		, cancel       : function() {
+			if ( set ) {
+				loader();
+				location.href = '/settings.php?p=networks';
+			} else {
+				$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
+			}
+		}
+		, ok           : function() {
+			var pwd = $( '#infoTextBox' ).val();
+			var ip = $( '#infoTextBox1' ).val();
+			var ips = ip.split( '.' );
+			var ip3 = ips.pop();
+			var ip012 = ips.join( '.' );
+			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
+			bash( [ 'hostapdset', iprange, ip, pwd ] );
+			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+		}
 	} );
 } );
 var localbrowserinfo = heredoc( function() { /*
@@ -363,77 +434,6 @@ $( '#setting-login' ).click( function() {
 				if ( !std ) passwordWrong();
 				bannerHide();
 			} );
-		}
-	} );
-} );
-$( '#hostapdchk' ).click( function() {
-	var checked = $( this ).prop( 'checked' );
-	if ( !G.hostapd && G.wlanconnect && checked ) {
-		info( {
-			  icon      : 'network'
-			, title     : 'RPi Access Point'
-			, message   : '<wh>Wi-Fi is currently connected.</wh>'
-						 +'<br>Disconnect and continue?'
-			, cancel    : function() {
-				if ( set ) {
-					loader();
-					location.href = '/settings.php?p=networks';
-				} else {
-					$( '#hostapd, #hostapdchk' ).prop( 'checked', 0 );
-				}
-			}
-			, ok        : function() {
-				$( '#hostapd' ).click();
-			}
-		} );
-	} else {
-		$( '#hostapd' ).click();
-	}
-} );
-$( '#setting-hostapd' ).click( function() {
-	info( {
-		  icon         : 'network'
-		, title        : 'RPi Access Point Settings'
-		, message      : 'Password - 8 characters or more'
-		, textlabel    : [ 'Password', 'IP' ]
-		, textvalue    : [ G.hostapdpwd, G.hostapdip ]
-		, textrequired : [ 0, 1 ]
-		, preshow       : function() {
-			// verify changes + values
-			if ( G.hostapd || $( '#infoTextBox' ).val().length < 8 ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-					var pwd = $( '#infoTextBox' ).val();
-					var ip = $( '#infoTextBox1' ).val();
-					var changed = pwd.length > 7 && ( pwd !== G.hostapdpwd || ip !== G.hostapdip );
-					var validip = validateIP( ip );
-					$( '#infoOk' ).toggleClass( 'disabled', !changed || !validip );
-				} );
-			} else { // verify values
-				$( '#infoTextBox' ).keyup( function() {
-					var pwd = $( '#infoTextBox' ).val();
-					var ip = $( '#infoTextBox1' ).val();
-					$( '#infoOk' ).toggleClass( 'disabled', pwd < 8 || !validateIP( ip ) );
-				} );
-			}
-		}
-		, cancel       : function() {
-			if ( set ) {
-				loader();
-				location.href = '/settings.php?p=networks';
-			} else {
-				$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
-			}
-		}
-		, ok           : function() {
-			var pwd = $( '#infoTextBox' ).val();
-			var ip = $( '#infoTextBox1' ).val();
-			var ips = ip.split( '.' );
-			var ip3 = ips.pop();
-			var ip012 = ips.join( '.' );
-			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
-			bash( [ 'hostapdset', iprange, ip, pwd ] );
-			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
 		}
 	} );
 } );

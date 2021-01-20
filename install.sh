@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if ! grep -q usbremove /etc/conf.d/devmon; then
+	wget -q https://github.com/rern/rOS/raw/main/etc/conf.d/devmon -O /etc/conf.d/devmon
+fi
+if grep -q 'default_options_exfat.*umask=0077' /etc/udevil/udevil.conf; then
+	wget -q https://github.com/rern/rOS/raw/main/etc/udevil/udevil.conf -O /etc/udevil/udevil.conf
+fi
+
 file=/etc/lcdchar.conf
 if [[ -e $file ]]; then
 	! grep -q backlight $file && echo backlight=False >> $file
@@ -13,12 +20,6 @@ i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 [[ -z $i ]] && echo "\
 defaults.pcm.card 0
 defaults.ctl.card 0" > /etc/asound.conf
-
-if [[ -e /usr/lib/chromium && ! -e /usr/lib/libicudata.so.67 ]]; then
-	echo -e "$bar Get missing libraries for Chromium ..."
-	wget -qO - https://github.com/rern/rern.github.io/raw/master/archives/chromiumlib.tar.xz \
-		| bsdtar xvf - -C /usr/lib
-fi
 
 installstart "$1"
 

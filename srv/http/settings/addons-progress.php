@@ -189,8 +189,7 @@ while ( !feof( $popencmd ) ) {                          // each line
 	if ( connection_status() !== 0 || connection_aborted() === 1 ) {
 		$sudo = '/usr/bin/sudo /usr/bin';
 		exec( "$sudo/killall $( basename $installfile ) wget pacman &" );
-		exec( "$sudo/rm /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$alias.sh &" );
-		exec( "$sudo/rm /srv/http/data/addons/$alias &" );
+		exec( "$sudo/rm /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$alias.sh /srv/http/data/addons/$alias &" );
 		pclose( $popencmd );
 		exit;
 	}

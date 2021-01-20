@@ -53,6 +53,7 @@ if [[ -e /boot/wifi ]]; then
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
 	chown http:http "$dirsystem/netctl-$ssid" "/etc/netctl/$ssid"
+	systemctl disable netctl-auto@wlan0
 	netctl start "$ssid"
 	systemctl enable netctl-auto@wlan0
 fi
@@ -65,7 +66,7 @@ touch $dirdata/shm/player-mpd
 # onboard + usb wifi >> disable onboard
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
 # no enabled profile >> disable onboard
-systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac &> /dev/null
+! systemctl -q is-enabled netctl-auto@wlan0 && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
 
 [[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
@@ -74,7 +75,7 @@ systemctl -q is-enabled netctl-auto@wlan0 && ifconfig wlan0 up || rmmod brcmfmac
 sleep 10 # wait for network interfaces
 
 notifyFailed() {
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'$1'", "icon":"nas", "delay":-1}'
+	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 }
 
 readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' )
@@ -101,26 +102,6 @@ if [[ -n "$mountpoints" ]]; then
 		mount "$mountpoint"
 	done
 fi
-
-if [[ -n $wlanip ]] && systemctl -q is-enabled hostapd; then
-	ifconfig wlan0 $( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	systemctl start dnsmasq hostapd
-fi
-
-wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-if [[ $? == 0 ]]; then
-	diraddons=$dirdata/addons
-	installed=$( ls "$diraddons" | grep -v addons-list )
-	count=0
-	for addon in $installed; do
-		verinstalled=$( cat $diraddons/$addon )
-		if (( ${#verinstalled} > 1 )); then
-			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-			[[ $verinstalled != $verlist ]] && (( count++ ))
-		fi
-	done
-	(( $count )) && touch $diraddons/update || rm -f $diraddons/update
-fi
 # after all sources connected
 if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
 	/srv/http/bash/cmd.sh mpcupdate$'\n'true
@@ -132,3 +113,26 @@ elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
 fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
+
+if ! ifconfig | grep -q 'inet.*broadcast'; then
+	systemctl -q is-enabled hostapd || /srv/http/bash/features.sh hostapdset
+	systemctl -q disable hostapd 
+	exit
+fi
+
+rfkill | grep -q wlan && iw wlan0 set power_save off
+
+wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
+[[ $? != 0 ]] exit
+
+diraddons=$dirdata/addons
+installed=$( ls "$diraddons" | grep -v addons-list )
+count=0
+for addon in $installed; do
+	verinstalled=$( cat $diraddons/$addon )
+	if (( ${#verinstalled} > 1 )); then
+		verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+		[[ $verinstalled != $verlist ]] && (( count++ ))
+	fi
+done
+(( $count )) && touch $diraddons/update || rm -f $diraddons/update

@@ -15,9 +15,11 @@ input::-moz-focus-inner { /* dotted outline */
 .filebtn,
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
-	background: -webkit-radial-gradient(50% -50%, 160% 200%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%); /* button highlight - last % for anti-alias edge*/
-	background:         radial-gradient(160% 100% at 50% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55%); /* (Width% Heigth% at H-center_offset% V-center_offset%, hsla(0,0%,100%,1st-T) 1st-area%, hsla(0,0%,100%,2nd-T) 2nd-area%)) */
-	box-shadow: 2px 2px 3px 1px #000000;  /*  V-offfset, H-Offset, Blur width, Shadow width , Color */
+									  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+									  /* x   y   w    h */
+	box-shadow: 2px 2px 3px 1px #000000;  /* x, y, blurw, shadoww, color */
 }
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
@@ -175,6 +177,11 @@ hr {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+#infoArrow {
+	position: absolute;
+	width: 400px;
+	max-width: 98%;
+}
 #infoContent {
 	padding: 25px 10px 10px 10px;
 	font-size: 16px;
@@ -186,7 +193,6 @@ hr {
 }
 .infoarrowleft,
 .infoarrowright {
-	margin-top: -25px;
 	width: 40px;
 	height: 40px;
 	font-size: 24px;
@@ -194,11 +200,9 @@ hr {
 }
 .infoarrowleft {
 	float: left;
-	margin-left: -10px;
 }
 .infoarrowright {
 	float: right;
-	margin-right: -10px;
 }
 .infomessage,
 #infoMessage {
@@ -400,8 +404,8 @@ hr {
 	margin-top: -20px;
 	border: none;
 	border-radius: 4px;
-	background: -webkit-radial-gradient( 100% -50%, 300% 190%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background-color: var( --cm );
 	-webkit-appearance: none;
 	box-shadow: -2px 2px 4px #000000;
@@ -411,8 +415,8 @@ hr {
 	width: 40px;
 	border: none;
 	border-radius: 4px;
-	background: -webkit-radial-gradient( 100% -50%, 300% 190%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background-color: var( --cm );
 	box-shadow: -2px 2px 4px #000000;
 }

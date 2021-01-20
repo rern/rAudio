@@ -29,8 +29,12 @@ for line in "${lines[@]}"; do
 	fi
 	ipr=$( ip r | grep "^default.*$interface" )
 	dhcp=$( [[ $ipr == *"dhcp src $ip "* ]] && echo dhcp || echo static )
-	gateway=$( cut -d' ' -f3 <<< $ipr )
-	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	if [[ $ip != $hostapdip ]]; then
+		gateway=$( cut -d' ' -f3 <<< $ipr )
+		[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	else
+		gateway=$ip
+	fi
 	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
 		ssid=$( iwgetid wlan0 -r )
 		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
@@ -41,7 +45,7 @@ for line in "${lines[@]}"; do
 		ssid=
 		dbm=0
 	fi
-	hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
+	[[ -n $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 	list+=',{
 		  "dhcp"     : "'$dhcp'"
 		, "gateway"  : "'$gateway'"
@@ -52,6 +56,14 @@ for line in "${lines[@]}"; do
 		, "ssid"     : "'$ssid'"
 		, "dbm"      : '$dbm'
 	}'
+	dhcp=
+	gateway=
+	hostname=
+	interface=
+	ip=
+	mac=
+	ssid=
+	dbm=
 done
 [[ -n $list ]] && list=[${list:1}] || list=false
 
@@ -94,11 +106,13 @@ fi
 
 data='
 	  "bluetooth" : '$btlist'
+	, "infbt"     : '$( rfkill | grep -q bluetooth && echo true || echo false )'
+	, "inflan"    : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
+	, "infwl"     : '$( rfkill | grep -q wlan && echo true || echo false )'
 	, "list"      : '$list'
 	, "hostapd"   : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
 	, "hostname"  : "'$( hostname )'"
-	, "profiles"   : '$profiles'
-	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
-	, "wlan"      : '$( lsmod | grep -q ^brcmfmac && echo true || echo false )
+	, "profiles"  : '$profiles'
+	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
 
 echo {$data}

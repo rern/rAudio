@@ -265,11 +265,5 @@ soxrset )
 	touch $dirsystem/soxr
 	restartMPD
 	;;
-volumeget )
-	/srv/http/bash/cmd.sh volumeget
-	;;
-volumepushstream )
-	/srv/http/bash/cmd.sh volumepushstream
-	;;
 
 esac

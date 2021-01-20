@@ -307,7 +307,7 @@ function nicsStatus() {
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return
 				
-				htmllan = html +'><i class="fa fa-networks"></i>';
+				htmllan = html +'><i class="fa fa-lan"></i>';
 				htmllan += val.ip ? '<grn>&bull;</grn>&ensp;'+ val.ip : '';
 				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
 				htmllan += '</li>';
@@ -337,18 +337,34 @@ function nicsStatus() {
 				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
 			} );
 		}
-		$( '#listbt' ).html( htmlbt );
-		$( '#listlan' ).html( htmllan );
-		$( '#listwl' ).html( htmlwl );
-		var active = $( '#listbt grn' ).length > 0;
-		$( '#headbt' )
-			.toggleClass( 'noline', htmlbt !== '' )
-			.toggleClass( 'status', active );
-		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
-		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
-		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
-		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
-		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+		if ( G.infbt ) {
+			$( '#listbt' ).html( htmlbt );
+			var active = $( '#listbt grn' ).length > 0;
+			$( '#headbt' )
+				.toggleClass( 'noline', htmlbt !== '' )
+				.toggleClass( 'status', active );
+			$( '#headbt' ).data( 'status', active ? 'bt' : '' );
+			$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
+			$( '#divbt' ).removeClass( 'hide' );
+		} else {
+			$( '#divbt' ).addClass( 'hide' );
+		}
+		if ( G.inflan ) {
+			$( '#listlan' ).html( htmllan );
+			$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
+			$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
+			$( '#divlan' ).removeClass( 'hide' );
+		} else {
+			$( '#divlan' ).addClass( 'hide' );
+		}
+		if ( G.infwl ) {
+			$( '#listwl' ).html( htmlwl );
+			$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+			$( '#divwl' ).removeClass( 'hide' );
+		} else {
+			$( '#divwl' ).addClass( 'hide' );
+		}
+		$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
 		if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
 		
 		renderQR();
@@ -367,17 +383,17 @@ function qr( msg ) {
 	} );
 }
 function renderQR() {
-	$( 'li' ).each( function() {
-		var ip = $( this ).data( 'ip' );
-		var gateway = $( this ).data( 'gateway' );
-		var hostname = $( this ).data( 'hostname' );
-		if ( ip && gateway ) {
-			$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
-			if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
-			$( '#ipwebui' ).html( ip );
-			$( '#divwebui' ).removeClass( 'hide' );
-		}
-	} );
+	var $el = $( '#listlan li' ).length ? $( '#listlan li' ) : $( '#listwl li' );
+	var ip = $el.data( 'ip' );
+	if ( ip && ip !== G.hostapd.hostapdip ) {
+		var hostname = $el.data( 'hostname' );
+		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
+		if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
+		$( '#ipwebui' ).html( ip );
+		$( '#divwebui' ).removeClass( 'hide' );
+	} else {
+		$( '#divwebui' ).addClass( 'hide' );
+	}
 	if ( G.hostapd ) {
 		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.hostapdip );
 		$( '#ssid' ).text( G.hostapd.ssid );
@@ -441,8 +457,8 @@ var good = -60;
 var fair = -67;
 $( '.back' ).click( function() {
 	clearTimeout( intervalscan );
-	$( '#divinterface, #divwebui, #divaccesspoint' ).removeClass( 'hide' );
-	$( '#divwifi, #divbluetooth' ).addClass( 'hide' );
+	$( '#divinterface, #divaccesspoint' ).removeClass( 'hide' );
+	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	nicsStatus();
 } );
