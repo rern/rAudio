@@ -113,7 +113,7 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
-if [[ -z $ssid ]] && ! ifconfig | grep -q 'inet.*broadcast'; then
+if ! ifconfig | grep -q 'inet.*broadcast'; then
 	systemctl -q is-enabled hostapd || /srv/http/bash/features.sh hostapdset
 	systemctl -q disable hostapd 
 	exit
