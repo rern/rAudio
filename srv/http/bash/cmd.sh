@@ -737,9 +737,9 @@ volumecontrols )
 	volumeControls ${args[1]}
 	echo "$controls"
 	;;
-volumeconrolget )
+volumecontrolget )
 	volumeGet
-	echo $volume^$control
+	echo $control^$volume # $control first tot keep last space charater if any
 	;;
 volumeget )
 	volumeGet
