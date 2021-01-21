@@ -104,7 +104,8 @@ if [[ -n "$mountpoints" ]]; then
 fi
 # after all sources connected
 if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
-	/srv/http/bash/cmd.sh mpcupdate$'\n'true
+	echo rescan > $dirsystem/updating
+	mpc rescan
 elif [[ -e $dirsystem/updating ]]; then
 	path=$( cat $dirsystem/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"

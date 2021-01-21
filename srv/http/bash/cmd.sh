@@ -516,8 +516,8 @@ mpcupdate )
 		echo rescan > $dirsystem/updating
 		mpc rescan
 	else
-		touch $dirsystem/updating
-		mpc update
+		echo $path > $dirsystem/updating
+		mpc update "$path"
 	fi
 	pushstream mpdupdate 1
 	;;
