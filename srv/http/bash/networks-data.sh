@@ -39,7 +39,7 @@ for line in "${lines[@]}"; do
 		ssid=$( iwgetid wlan0 -r )
 		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
 		password=$( grep ^Key "/etc/netctl/$ssid" | cut -d= -f2- | tr -d '"' )
-		dbm=$( iwconfig wlan0 | grep Signal | sed 's/.*level=\(.*\) dBm/\1/' )
+		dbm=$( cat /proc/net/wireless | awk '/wlan0/ {print $4}' | tr -d . )
 		[[ -z $dbm ]] && dbm=0
 	else
 		ssid=
