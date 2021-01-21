@@ -324,9 +324,9 @@ heading i.fa-question-circle {
 .codepage {
 	position: absolute;
 	width: 100%;
-	max-height: calc( 100% - 120px );
-	margin: 60px 0;
-	padding: 10px;
+	height: 100%;
+	max-height: 100%;
+	padding: 50px 10px;
 	overflow-x: hidden;
 	white-space: pre-wrap;
 	z-index: 5;
@@ -708,11 +708,6 @@ input:checked + .switchlabel.disabled:after {
 	}
 	.head {
 		padding-right: 0 !important;
-	}
-	.codepage {
-		margin: 50px 10px;
-		width: calc( 100% - 20px );
-		max-height: calc( 100% - 60px );
 	}
 	.col-l {
 		width: 100%;

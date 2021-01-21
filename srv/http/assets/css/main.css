@@ -379,18 +379,14 @@ i.map.disabled, .map.disabled i {
 #codepage {
 	position: absolute;
 	width: 100%;
-	max-height: calc( 100% - 120px );
-	margin: 60px 0;
+	height: 100%;
+	margin: 0;
 	padding: 10px;
 	background: var( --cgd );
 	font-family: Inconsolata;
 	white-space: pre-wrap;
 	overflow-x: hidden;
-	z-index: 20;
-}
-#codepage.nobars {
-	margin: 40px 20px;
-	max-height: calc( 100% - 60px );
+	z-index: 106;
 }
 #loader {
 	position: fixed;
@@ -1833,7 +1829,7 @@ i.map.disabled, .map.disabled i {
 	font-size: 26px;
 	text-align: center;
 	background: var( --cgd );
-	z-index: 106;
+	z-index: 107;
 }
 #pl-path .fa-arrow-left {
 	width: 40px !important;
@@ -2480,11 +2476,6 @@ li.active .li2 bl {
 	#pl-count .title { display: none; }
 }
 @media( max-width: 512px ) {
-	#codepage {
-		margin: 50px 10px;
-		width: calc( 100% - 20px );
-		max-height: calc( 100% - 60px );
-	}
 	#pl-count,
 	#pl-path { display: none; }
 }
