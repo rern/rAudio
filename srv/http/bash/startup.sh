@@ -126,14 +126,4 @@ rfkill | grep -q wlan && iw wlan0 set power_save off
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 [[ $? != 0 ]] exit
 
-diraddons=$dirdata/addons
-installed=$( ls "$diraddons" | grep -v addons-list )
-count=0
-for addon in $installed; do
-	verinstalled=$( cat $diraddons/$addon )
-	if (( ${#verinstalled} > 1 )); then
-		verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-		[[ $verinstalled != $verlist ]] && (( count++ ))
-	fi
-done
-(( $count )) && touch $diraddons/update || rm -f $diraddons/update
+/srv/http/bash/cmd.sh addonsupdates

@@ -250,6 +250,17 @@ addonslist )
 	url=$( jq -r .push.url $diraddons/addons-list.json )
 	[[ -n $url ]] && wget $url -qO - | sh
 	;;
+addonsupdates )
+	installed=$( ls "$diraddons" | grep -v addons-list )
+	for addon in $installed; do
+		verinstalled=$( cat $diraddons/$addon )
+		if (( ${#verinstalled} > 1 )); then
+			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+			[[ $verinstalled != $verlist ]] && count=1 && break
+		fi
+	done
+	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
+	;;
 bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
