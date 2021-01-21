@@ -43,6 +43,7 @@ var picaOption = { // pica.js
 };
 var hash = Math.ceil( Date.now() / 1000 );
 var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
+var covervu = '/assets/img/vu.png';
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {
@@ -496,7 +497,16 @@ $( '#tab-library, #button-library' ).click( function() {
 	}
 } );
 $( '#logo, #button-playback' ).click( function() {
-	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+	if( $( '#codepage' ).hasClass( 'hide' ) ) {
+		$( '#codepage' )
+			.html( JSON.stringify( G.status, null, 2 ) )
+			.toggleClass( 'nobars', !G.bars )
+			.removeClass( 'hide' );
+	} else {
+		$( '#codepage' )
+			.addClass( 'hide' )
+			.css( 'max-height', '' );
+	}
 } );
 $( '#logo, #button-library, #button-playback, #button-playlist' ).taphold( function() {
 	location.reload();

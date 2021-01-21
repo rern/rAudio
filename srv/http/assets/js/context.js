@@ -394,22 +394,22 @@ function webRadioCoverart() {
 		}
 	}
 	var coverart = G.playback
-					? G.status.coverartradio || '/assets/img/vu.png'
-					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || '/assets/img/vu.png';
+					? G.status.coverartradio || covervu
+					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || covervu;
 	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
 	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
 	info( infojson );
 }
 function webRadioDelete() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' );
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Delete WebRadio'
 		, width   : 500
-		, message : ( img ? '<br><img src="'+ img +'">' : '<br><i class="fa fa-webradio bookmark"></i>' )
+		, message : '<br><img src="'+ img +'">'
 				   +'<br><w>'+ name +'</w>'
 				   +'<br>'+ url
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
@@ -423,14 +423,14 @@ function webRadioDelete() {
 }
 function webRadioEdit() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' );
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
 		, width        : 500
-		, message      : ( img ? '<img src="'+ img +'">' : '<i class="fa fa-webradio bookmark"></i>' )
+		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
 		, textvalue    : [ name, url ]
 		, textrequired : [ 0, 1 ]
@@ -476,7 +476,7 @@ function webRadioNew( name, url ) {
 		, textlabel    : [ 'Name', 'URL' ]
 		, textvalue    : [ ( name || '' ), ( url || '' ) ]
 		, textrequired : [ 0, 1 ]
-		, footer       : '( *.m3u or *.pls is applicable)'
+		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
 			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space

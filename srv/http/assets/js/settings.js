@@ -119,7 +119,7 @@ function showContent() {
 			$( '.head, .container' ).removeClass( 'hide' );
 		}, 300 );
 	} else {
-		$( '.codepage' ).html( 'Data:<hr>'+ JSON.stringify( G, null, 2 ) );
+		$( '.codepage' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
 function validateIP( ip ) {  
@@ -265,7 +265,7 @@ $( '.page-icon' ).click( function() {
 	if( $( '.codepage' ).hasClass( 'hide' ) ) {
 		$( '.container' ).addClass( 'hide' );
 		$( '.codepage' )
-			.html( 'Data:<hr>'+ JSON.stringify( G, null, 2 ) )
+			.html( JSON.stringify( G, null, 2 ) )
 			.removeClass( 'hide' );
 	} else {
 		$( '.container' ).removeClass( 'hide' );

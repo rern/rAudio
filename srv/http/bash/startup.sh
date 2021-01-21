@@ -46,8 +46,6 @@ if [[ -e /boot/lcd ]]; then
 fi
 [[ -n $reboot ]] && shutdown -r now
 
-[[ -e /boot/startup ]] && . /boot/startup && rm /boot/startup
-
 if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
@@ -104,7 +102,8 @@ if [[ -n "$mountpoints" ]]; then
 fi
 # after all sources connected
 if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
-	/srv/http/bash/cmd.sh mpcupdate$'\n'true
+	echo rescan > $dirsystem/updating
+	mpc rescan
 elif [[ -e $dirsystem/updating ]]; then
 	path=$( cat $dirsystem/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
@@ -125,14 +124,6 @@ rfkill | grep -q wlan && iw wlan0 set power_save off
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 [[ $? != 0 ]] exit
 
-diraddons=$dirdata/addons
-installed=$( ls "$diraddons" | grep -v addons-list )
-count=0
-for addon in $installed; do
-	verinstalled=$( cat $diraddons/$addon )
-	if (( ${#verinstalled} > 1 )); then
-		verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-		[[ $verinstalled != $verlist ]] && (( count++ ))
-	fi
-done
-(( $count )) && touch $diraddons/update || rm -f $diraddons/update
+/srv/http/bash/cmd.sh addonsupdates
+
+[[ -e /boot/startup.sh ]] && /boot/startup.sh

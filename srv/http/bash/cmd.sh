@@ -250,6 +250,17 @@ addonslist )
 	url=$( jq -r .push.url $diraddons/addons-list.json )
 	[[ -n $url ]] && wget $url -qO - | sh
 	;;
+addonsupdates )
+	installed=$( ls "$diraddons" | grep -v addons-list )
+	for addon in $installed; do
+		verinstalled=$( cat $diraddons/$addon )
+		if (( ${#verinstalled} > 1 )); then
+			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+			[[ $verinstalled != $verlist ]] && count=1 && break
+		fi
+	done
+	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
+	;;
 bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
@@ -516,8 +527,8 @@ mpcupdate )
 		echo rescan > $dirsystem/updating
 		mpc rescan
 	else
-		touch $dirsystem/updating
-		mpc update
+		echo $path > $dirsystem/updating
+		mpc update "$path"
 	fi
 	pushstream mpdupdate 1
 	;;
@@ -672,6 +683,7 @@ power )
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3
 	fi
+	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
 	;;
 pushstatus )
@@ -737,9 +749,9 @@ volumecontrols )
 	volumeControls ${args[1]}
 	echo "$controls"
 	;;
-volumeconrolget )
+volumecontrolget )
 	volumeGet
-	echo $volume^$control
+	echo $control^$volume # $control first tot keep last space charater if any
 	;;
 volumeget )
 	volumeGet

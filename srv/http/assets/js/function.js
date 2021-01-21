@@ -186,7 +186,7 @@ function coverartChange() {
 				$( '.edit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
-					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? '/assets/img/vu.png' : coverdefault ) );
+					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? covervu : coverdefault ) );
 				} else {
 					$( '.licoverimg img' ).attr( 'src', url || coverdefault );
 				}
@@ -623,7 +623,7 @@ function infoUpdate( path ) {
 			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
 			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-				bash( [ 'mpcupdate', wav ] );
+				bash( [ 'mpcupdate', wav, path ] );
 			} else {
 				bash( [ 'mpcupdate', wav, 'rescan' ] );
 			}

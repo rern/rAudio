@@ -39,7 +39,7 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 // ------------------------------------------------------------------------------------
 $list = '';
 $blocks = '';
-$updatecount = 0;
+$updates = 0;
 $arrayalias = array_keys( $addons );
 foreach( $arrayalias as $alias ) {
 	$addon = $addons[ $alias ];
@@ -74,7 +74,7 @@ foreach( $arrayalias as $alias ) {
 			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
 			$btnin = '<a class="btn btn-default disabled"'.$taphold.'>'.$icon.$buttonlabel.'</a>';
 		} else {
-			$updatecount++;
+			$updates = 1;
 			$update = 1;
 			$installed = ' class="installed update"';
 			$check = '<grn class="blink">&bull;</grn> ';
@@ -136,12 +136,11 @@ foreach( $arrayalias as $alias ) {
 	$blocks .= '
 		</div>';
 }
-if ( $updatecount ) {
-	file_put_contents( "$diraddons/update", $updatecount );
+if ( $updates ) {
+	touch( "$diraddons/update" );
 } else {
 	@unlink( "$diraddons/update" );
 }
-exec( 'curl -s -X POST http://127.0.0.1/pub?id=display -d \'{"updateaddons":'.$updatecount.'}\'' );
 
 // ------------------------------------------------------------------------------------
 echo '
