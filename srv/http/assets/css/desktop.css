@@ -29,12 +29,11 @@
 .mode:hover {
 	background: var( --cga );
 }
-#bar-top i:hover,
-#bar-bottom i:hover,
 .menu a:hover,
 .submenu:hover,
+#bar-bottom i:hover,
 #button-settings:hover,
-#playback-controls button:hover,
+#playback-controls i:hover,
 #playback-row .btn:hover {
 	background-color: var( --cgl ) !important;
 }
