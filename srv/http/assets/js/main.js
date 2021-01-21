@@ -497,7 +497,16 @@ $( '#tab-library, #button-library' ).click( function() {
 	}
 } );
 $( '#logo, #button-playback' ).click( function() {
-	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+	if( $( '#codepage' ).hasClass( 'hide' ) ) {
+		$( '#codepage' )
+			.html( 'Data:<hr>'+ JSON.stringify( G.status, null, 2 ) )
+			.toggleClass( 'nobars', !G.bars )
+			.removeClass( 'hide' );
+	} else {
+		$( '#codepage' )
+			.addClass( 'hide' )
+			.css( 'max-height', '' );
+	}
 } );
 $( '#logo, #button-library, #button-playback, #button-playlist' ).taphold( function() {
 	location.reload();

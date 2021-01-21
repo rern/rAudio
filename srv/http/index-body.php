@@ -191,6 +191,7 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'genre', 'date' ] as $m
 
 $menu.= '</div>';
 ?>
+<pre id="codepage" class="hide"></pre>
 <div id="loader" class="splash">
 	<?=$logo?>
 </div>
