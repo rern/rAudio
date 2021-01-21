@@ -499,7 +499,7 @@ $( '#tab-library, #button-library' ).click( function() {
 $( '#logo, #button-playback' ).click( function() {
 	if( $( '#codepage' ).hasClass( 'hide' ) ) {
 		$( '#codepage' )
-			.html( 'Data:<hr>'+ JSON.stringify( G.status, null, 2 ) )
+			.html( JSON.stringify( G.status, null, 2 ) )
 			.toggleClass( 'nobars', !G.bars )
 			.removeClass( 'hide' );
 	} else {
