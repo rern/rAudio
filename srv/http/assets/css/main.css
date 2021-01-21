@@ -382,6 +382,7 @@ i.map.disabled, .map.disabled i {
 	width: calc( 100% - 40px );
 	max-height: calc( 100% - 120px );
 	background: var( --cgd );
+	font-family: Inconsolata;
 	white-space: pre-wrap;
 	overflow-x: hidden;
 	z-index: 16;
