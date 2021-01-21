@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+crontab -l | grep -q addonsupdates || ( crontab -l &> /dev/null; echo '00 01 * * * /srv/http/bash/cmd.sh addonsupdates &' ) | crontab -
+
 if ! grep -q usbremove /etc/conf.d/devmon; then
 	wget -q https://github.com/rern/rOS/raw/main/etc/conf.d/devmon -O /etc/conf.d/devmon
 fi
