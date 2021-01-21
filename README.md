@@ -105,6 +105,9 @@ Asia server
 		- Library > Album > coverart icon (next to ALBUM heading)
 	- User guide
 		- Settings > last icon next to Addons
+- User's startup / shutdown scripts
+	- `/boot/startup.sh` - Run after everyting started.
+	- `/boot/shutdown.sh` - Run last right before `shutdown` command.
 
 ### Not working?
 - Power off and wait a few seconds then power on
