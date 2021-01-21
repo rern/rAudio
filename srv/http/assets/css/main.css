@@ -384,8 +384,7 @@ i.map.disabled, .map.disabled i {
 	background: var( --cgd );
 	white-space: pre-wrap;
 	overflow-x: hidden;
-	overflow-y: auto;
-	z-index: 105;
+	z-index: 16;
 }
 #codepage.nobars {
 	margin: 40px 20px;
