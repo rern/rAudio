@@ -385,7 +385,7 @@ i.map.disabled, .map.disabled i {
 	font-family: Inconsolata;
 	white-space: pre-wrap;
 	overflow-x: hidden;
-	z-index: 16;
+	z-index: 20;
 }
 #codepage.nobars {
 	margin: 40px 20px;
@@ -1017,7 +1017,7 @@ i.map.disabled, .map.disabled i {
 	align-items: center;
 	justify-content: center;
 	font-size: 24px;
-	z-index: 101;
+	z-index: 16;
 	opacity: 0;
 }
 .map.mapshow {
