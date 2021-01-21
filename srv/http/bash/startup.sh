@@ -46,8 +46,6 @@ if [[ -e /boot/lcd ]]; then
 fi
 [[ -n $reboot ]] && shutdown -r now
 
-[[ -e /boot/startup ]] && . /boot/startup && rm /boot/startup
-
 if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
@@ -127,3 +125,5 @@ wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diradd
 [[ $? != 0 ]] exit
 
 /srv/http/bash/cmd.sh addonsupdates
+
+[[ -e /boot/startup.sh ]] && /boot/startup.sh

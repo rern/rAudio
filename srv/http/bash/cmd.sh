@@ -683,6 +683,7 @@ power )
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3
 	fi
+	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
 	;;
 pushstatus )
