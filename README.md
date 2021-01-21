@@ -74,6 +74,14 @@ Asia server
 		- Generate a complex profile - static IP, hidden SSID
 			- With [Pre-configure Wi-Fi connection](https://rern.github.io/WiFi_profile/index.html)
 			- Save it in `BOOT`
+	- Wi-Fi access point mode
+		- If no wired network and no pre-configured Wi-Fi connections, Wi-Fi access point will be enabled on boot.
+		- On client devices, select `rAudio` from Wi-Fi network list to connect.
+		- On browser, open web user interface with URL `raudio.local`
+		- Settings > Networks > Wi-Fi - search
+		- Select access point to connect
+		- Reboot
+		- Browser refreshes when ready. (Manually refresh if it's too long.)
 	- System pre-configure: (Run once)
 		- Restore database and settings (Wi-Fi connection included.)
 			- Copy `backup.gz` to `BOOT`
@@ -97,7 +105,7 @@ Asia server
 		- Library > Album > coverart icon (next to ALBUM heading)
 	- User guide
 		- Settings > last icon next to Addons
-- User's startup and shutdown scripts
+- User's startup / shutdown scripts
 	- `/boot/startup.sh` - Run after everyting started.
 	- `/boot/shutdown.sh` - Run last right before `shutdown` command.
 
@@ -130,6 +138,9 @@ Asia server
 - Some music files missing from library
 	- Settings > MPD > question mark icon -scroll- FFmpeg Decoder
 	- Enable if filetypes list contains ones of the missing files.
+- No albums found after update very large Library
+	- Settings > MPD > Output Buffer - Increase by 8192 at a time
+	- Update Library
 - CUE sheet
 	- `*.cue` filenames must be identical to each coresponding music file.
 	- Can be directly edited by Tag Editor.
