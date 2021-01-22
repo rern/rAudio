@@ -66,9 +66,8 @@ case 'find':
 		$lists = explode( "\n", $lists ); // NO: exec( $cmd, $lists ) > 502 (Bad Gateway) error
 	}
 	if ( count( $f ) > 2 ) {
-		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u", $dir );
-		$dir = count( $dir ) === 1 ? $dir[ 0 ] : dirname( $dir[ 0 ] ); // albums with subdirectories
-		$array = htmlTracks( $lists, $f, '', '', $dir );
+		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u", $dirs );
+		$array = htmlTracks( $lists, $f, '', '', $dirs );
 	} else { // modes - album, artist, albumartist, composer, genre: 2 fields format
 		$array = htmlFind( $mode, $lists, $f );
 	}
@@ -365,7 +364,7 @@ function htmlList( $mode, $lists ) { // non-file 'list' command
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
 	return [ 'html' => $html, 'index' => $indexbar ];
 }
-function htmlTracks( $lists, $f, $filemode = '', $string = '', $dir = '' ) { // track list - no sort ($string: cuefile or search)
+function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
@@ -438,7 +437,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dir = '' ) { // 
 			$icon = 'artist';
 		}
 		$album = $each0->album;
-		if ( !$dir ) $dir = dirname( $file0 );
+		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$sh = [ ( $cue ? $dir : $file0 ), $artist, $album, 'licover' ];
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "';
 		$script.= escape( implode( "\n", $sh ) ).'"';
