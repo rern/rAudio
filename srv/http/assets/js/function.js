@@ -119,8 +119,7 @@ function contextmenuLibrary( $li, $target ) {
 	
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '.tag' ).addClass( 'hide' );
-	if ( $( '.licover' ).length ) $( '.tag' ).removeClass( 'hide' );
+	$( '.tag' ).toggleClass( 'hide', $( '.licover' ).length === 0 );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';
