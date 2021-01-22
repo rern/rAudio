@@ -386,7 +386,7 @@ i.map.disabled, .map.disabled i {
 	font-family: Inconsolata;
 	white-space: pre-wrap;
 	overflow-x: hidden;
-	z-index: 106;
+	z-index: 111;
 }
 #loader {
 	position: fixed;
@@ -1829,7 +1829,7 @@ i.map.disabled, .map.disabled i {
 	font-size: 26px;
 	text-align: center;
 	background: var( --cgd );
-	z-index: 107;
+	z-index: 112;
 }
 #pl-path .fa-arrow-left {
 	width: 40px !important;
