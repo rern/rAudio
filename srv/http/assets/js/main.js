@@ -513,7 +513,7 @@ $( '#logo, #button-library, #button-playback, #button-playlist' ).taphold( funct
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
-		if ( G.display.volumenone || window.innerWidth > 613 || !$( '#volume-knob' ).hasClass( 'hide' ) ) return
+		if ( G.display.volumenone || window.innerWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
 		
 		info( {
 			  icon       : 'volume'
@@ -1080,7 +1080,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#song' ).addClass( 'gr' );
-			if ( G.display.time && !$( '#time-knob' ).hasClass( 'hide' ) ) {
+			if ( G.display.time && $( '#time-knob' ).is( ':visible' ) ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
 			} else {
