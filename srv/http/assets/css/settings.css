@@ -327,6 +327,7 @@ heading i.fa-question-circle {
 	height: 100%;
 	max-height: 100%;
 	padding: 50px 10px;
+	background: #000;
 	overflow-x: hidden;
 	white-space: pre-wrap;
 	z-index: 5;

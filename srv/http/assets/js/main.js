@@ -497,6 +497,8 @@ $( '#tab-library, #button-library' ).click( function() {
 	}
 } );
 $( '#logo, #button-playback' ).click( function() {
+	if ( !G.playback ) return
+	
 	if( $( '#codepage' ).hasClass( 'hide' ) ) {
 		$( '#codepage' )
 			.html( JSON.stringify( G.status, null, 2 ) )
