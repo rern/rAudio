@@ -29,7 +29,7 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapClient - Connect: Menu >&ensp;<i class="fa fa-folder-cascade"></i>&ensp;Sources |&ensp;<i class="fa fa-snapcast"></i>
-		<br>(Note: Not available while Snapcast server enabled.)
+		<br>(Note: Not available while SnapServer enabled.)
 	</span>
 </div>
 <pre id="codesnapclient" class="hide"></pre>
@@ -87,7 +87,7 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
-		<br>(Note: Enable Snapcast will disable SnapClient.)
+		<br>(Note: Not available while SnapClient enabled.)
 	</span>
 </div>
 <pre id="codesnapserver" class="hide"></pre>
