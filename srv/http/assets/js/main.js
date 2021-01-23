@@ -63,10 +63,13 @@ for( i = 0; i < 360; i += 0.25 ) {
 	ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
 	ctx.stroke();
 }
-var stopwatch = '<span class="stopwatch">'
-				+'<i class="fa fa-stopwatch-i"></i>'
-				+'<i class="fa fa-stopwatch-o"></i>'
-				+'</span>';
+var stopwatch = '<svg id="stopwatch" viewBox="0 0 42 49">'
+		+'<circle cx="21" cy="28" r="20"/>'
+		+'<rect x="17" width="8" height="8"/>'
+		+'<rect x="3" y="11.17" width="4" height="4" transform="translate(-7.85 7.39) rotate(-45)"/>'
+		+'<rect x="35" y="11.17" width="4" height="4" transform="translate(1.52 30.02) rotate(-45)"/>'
+		+'<polygon points="22 31 20 31 21 10 21 10 22 31"/>'
+		+'</svg>'
 var pagenext = {
 	  playback : [ 'library',  'playlist' ]
 	, playlist : [ 'playback', 'library' ]

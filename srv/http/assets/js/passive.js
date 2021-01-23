@@ -351,12 +351,11 @@ function psRelays( response ) { // on receive broadcast
 		
 		var delay = response.delay;
 		info( {
-			  icon        : 'relays'
-			, title       : 'GPIO Relays Idle'
-			, message     : 'Power Off Countdown:<br><br>'
-						   + stopwatch +'&ensp;<white>'+ delay +'</white>'
-			, oklabel     : 'Reset'
-			, ok          : function() {
+			  icon    : 'relays'
+			, title   : 'GPIO Relays Off'
+			, message : stopwatch +'<br><white>'+ delay +'</white>'
+			, oklabel : 'Reset'
+			, ok      : function() {
 				bash( [ 'relaystimerreset' ] );
 			}
 		} );
@@ -376,16 +375,16 @@ function psRelays( response ) { // on receive broadcast
 				var color = state ? '' : 'class="gr"';
 			} else {
 				var color = state ? 'class="gr"' : '';
+				devices += '<br>';
 			}
-			devices += '<br><a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
+			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
 		} );
 		info( {
-			  icon      : 'relays'
-			, title     : 'GPIO Relays'
-			, message   : stopwatch +' <wh>Power '+ ( state ? 'ON' : 'OFF' ) +'</wh>'
-			, msghr     : 1
-			, footer    : devices.slice( 4 ) // remove 1st <br>
-			, nobutton  : 1
+			  icon     : 'relays'
+			, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
+			, message  : stopwatch
+			, footer   : devices
+			, nobutton : 1
 		} );
 	}
 }

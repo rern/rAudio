@@ -217,6 +217,7 @@ hr {
 	color: var( --cg60 );
 }
 #infoFooter {
+	display: block;
 	margin-bottom: 0;
 	color: var( --cg60 );
 }

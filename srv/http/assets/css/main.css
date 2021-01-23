@@ -127,9 +127,6 @@
 .fa-spotify:before { content: "\f593" }
 .fa-star:before { content: "\f550" }
 .fa-stop:before { content: "\f502" }
-.fa-stopwatch:before { content: "\f547" }
-.fa-stopwatch-o:before { content: "\f548" }
-.fa-stopwatch-i:before { content: "\f549" }
 .fa-tag:before { content: "\f55B" }
 .fa-times:before { content: "\f51A" }
 .fa-title:before { content: "\f54C" }
@@ -141,39 +138,6 @@
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
 .fa-webradio:before { content: "\f55C" }
-.stopwatch {
-	margin-right: 5px;
-	vertical-align: -4px;
-}
-.fa-stopwatch-i,
-.fa-stopwatch-o {
-	font-size: 30px !important;
-}
-.fa-stopwatch-o {
-	position: absolute;
-	margin: -1px 0 0 -25.7px;
-}
-.fa-stopwatch-i {
-	display: inline-block;
-	-webkit-animation: fa-spin 60s infinite linear;
-	animation: fa-spin 60s infinite linear
-}
-@-webkit-keyframes fa-spin {
-	0% { -webkit-transform: rotate(0deg);
-		transform: rotate(0deg)
-	}
-	100% { -webkit-transform: rotate(359deg);
-		transform: rotate(359deg)
-	}
-}
-@keyframes fa-spin {
-	0% {  -webkit-transform: rotate(0deg);
-		transform: rotate(0deg)
-	}
-	100% { -webkit-transform: rotate(359deg);
-		transform: rotate(359deg)
-	}
-}
 *,
 *:before,
 *:after {
@@ -925,10 +889,28 @@ i.map.disabled, .map.disabled i {
 									  /* x   y   w    h */
 	z-index: 6;
 }
-
-#infoMessage svg {
-	width: 100px;
+#stopwatch {
+	width: 40px;
+	margin-bottom: 10px;
 }
+#stopwatch circle {
+	fill: none;
+	stroke: var( --cg60 );
+	stroke-width: 2px;
+}
+#stopwatch rect,
+#stopwatch polygon {
+	fill: var( --cg60 );
+}
+#stopwatch polygon {
+	transform-origin: 21px 28px;
+	animation: spin 60s infinite linear;
+}
+@keyframes spin {
+	0% { transform: rotate(0deg) }
+	100% { transform: rotate(360deg) }
+}
+
 .cover-save {
 	position: absolute;
 	bottom: 0;
