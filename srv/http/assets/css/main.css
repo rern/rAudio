@@ -374,7 +374,6 @@ i.map.disabled, .map.disabled i {
 	width: 45px !important;
 	font-size: 48px;
 	color: var( --cg ) !important;
-	text-shadow: none !important;
 }
 #data {
 	position: absolute;
@@ -531,7 +530,7 @@ i.map.disabled, .map.disabled i {
 #button-library i,
 #button-playlist i {
 	color: var( --cw );
-	text-shadow: 1px 1px 2px #000000;
+	text-shadow: -1px 1px 2px #000000;
 }
 #playback-controls {
 	text-align: center
