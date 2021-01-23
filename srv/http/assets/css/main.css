@@ -529,6 +529,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom i,
 #button-library i,
 #button-playlist i,
+#page-playback .btn-group i,
 .content-top i,
 .mode i {
 	text-shadow: -1px 0 2px #000000;
@@ -1163,7 +1164,6 @@ i.map.disabled, .map.disabled i {
 	width: 40px;
 	font-size:24px;
 	line-height: 40px;
-	text-shadow: 1px 1px 2px #000000;
 }
 #page-playback .btn-group {
 	position: relative;
