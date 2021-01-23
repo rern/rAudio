@@ -50,6 +50,8 @@ $classsetting = 'class="setting fa fa-gear"';
 $page = $_GET[ 'p' ];
 $sudo = '/usr/bin/sudo /usr/bin';
 ?>
+<i id="button-data"></i>
+<pre id="data" class="hide"></pre>
 <div id="loader">
 	<?=$logo?>
 </div>
@@ -57,7 +59,6 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<i class="page-icon fa fa-<?=$page?>"></i><span class='title'><?=( strtoupper( $page ) )?></span>
 	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-question-circle"></i>
 </div>
-<pre class="codepage hide"></pre>
 <div class="container hide">
 <?php
 include "settings/$page.php";

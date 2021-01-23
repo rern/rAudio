@@ -496,21 +496,27 @@ $( '#tab-library, #button-library' ).click( function() {
 		switchPage( 'library' );
 	}
 } );
-$( '#logo, #button-playback' ).click( function() {
+$( '#logo, #button-data' ).click( function() {
 	if ( !G.playback ) return
 	
-	if( $( '#codepage' ).hasClass( 'hide' ) ) {
-		$( '#codepage' )
+	if( $( '#data' ).hasClass( 'hide' ) ) {
+		$( '#data' )
 			.html( JSON.stringify( G.status, null, 2 ) )
 			.toggleClass( 'nobars', !G.bars )
 			.removeClass( 'hide' );
+		$( '#button-data' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-times bl' );
 	} else {
-		$( '#codepage' )
+		$( '#data' )
 			.addClass( 'hide' )
 			.css( 'max-height', '' );
+		$( '#button-data' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-redo transparent' );
 	}
 } );
-$( '#logo, #button-library, #button-playback, #button-playlist' ).taphold( function() {
+$( '#logo, #button-library, #button-data, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#tab-playback' ).click( function() {
@@ -794,7 +800,7 @@ $( '#coverT, #timeT' ).tap( function() {
 	$( '#volume-text' ).addClass( 'hide' );
 	$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 	$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
-	$( '#button-playback' ).addClass( 'translucent' );
+	$( '#button-data' ).addClass( 'translucent' );
 	if ( !G.bars ) $( '#bar-bottom' ).addClass( 'translucent' );
 	if ( window.innerWidth < 614 && !G.display.volume ) {
 		$( '#coverTL' )

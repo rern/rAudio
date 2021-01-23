@@ -376,12 +376,12 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg ) !important;
 	text-shadow: none !important;
 }
-#codepage {
+#data {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	padding: 10px;
+	padding: 40px 10px 10px;
 	background: #000;
 	font-family: Inconsolata;
 	white-space: pre-wrap;
@@ -1821,14 +1821,12 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 }
-#button-playback {
+#button-data {
 	position: absolute;
 	width: 40px;
 	top: 0;
-	line-height: 40px;
-	font-size: 26px;
+	font-size: 30px;
 	text-align: center;
-	background: var( --cgd );
 	z-index: 112;
 }
 #pl-path .fa-arrow-left {

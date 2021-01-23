@@ -530,7 +530,7 @@ function hideGuide() {
 		G.guide = 0;
 		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !G.bars );
 		$( '.map' ).removeClass( 'mapshow' );
-		$( '#button-playback, #bar-bottom' ).removeClass( 'translucent' );
+		$( '#button-data, #bar-bottom' ).removeClass( 'translucent' );
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
