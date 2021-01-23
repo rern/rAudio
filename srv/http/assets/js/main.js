@@ -64,7 +64,7 @@ for( i = 0; i < 360; i += 0.25 ) {
 	ctx.stroke();
 }
 var stopwatch = '<svg id="stopwatch" viewBox="0 0 87.36 117.36">'
-				+'<image width="87" height="117" xlink:href="/assets/img/stopwatch.png"/>'
+				+'<image width="87"xlink:href="/assets/img/stopwatch.png"/>'
 				+'<polygon points="44.62 82.57 42.62 82.57 43.42 41.66 43.82 41.66 44.62 82.57"/>'
 				+'</svg>';
 var pagenext = {
