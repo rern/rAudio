@@ -528,9 +528,10 @@ i.map.disabled, .map.disabled i {
 #bar-top i,
 #bar-bottom i,
 #button-library i,
-#button-playlist i {
-	color: var( --cw );
-	text-shadow: -1px 1px 2px #000000;
+#button-playlist i,
+.content-top i,
+.mode i {
+	text-shadow: -1px 0 2px #000000;
 }
 #playback-controls {
 	text-align: center
@@ -1259,7 +1260,7 @@ i.map.disabled, .map.disabled i {
 #volume .rs-handle {
 	border: 1px solid var( --cga );
 	background: var( --cm );
-	box-shadow: inset var( --cga ) 0 5px 5px;
+	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
 .rs-outer {
 	position: relative; /* overlay */
@@ -1722,10 +1723,6 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	font-size: 24px;
 	text-align: center;
-}
-.content-top i,
-.mode i {
-	text-shadow: 2px 2px 4px #000000;
 }
 #button-lib-search,
 #button-pl-search {
