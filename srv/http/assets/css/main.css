@@ -890,19 +890,11 @@ i.map.disabled, .map.disabled i {
 	z-index: 6;
 }
 #stopwatch {
-	width: 50px;
-}
-#stopwatch circle {
-	fill: none;
-	stroke: var( --cg60 );
-	stroke-width: 2px;
-}
-#stopwatch rect,
-#stopwatch polygon {
-	fill: var( --cg60 );
+	width: 80px;
 }
 #stopwatch polygon {
-	transform-origin: 21px 28px;
+	fill: #de3434;
+	transform-origin: 43.6px 76.2px;
 	animation: spin 60s infinite linear;
 }
 @keyframes spin {
