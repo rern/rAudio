@@ -360,6 +360,7 @@ function psRelays( response ) { // on receive broadcast
 				bash( [ 'relaystimerreset' ] );
 			}
 		} );
+		delay--
 		G.relaystimer = setInterval( function() {
 			if ( delay === 1 ) {
 				G.status.relayson = false;
@@ -367,7 +368,7 @@ function psRelays( response ) { // on receive broadcast
 				$( '#infoX' ).click();
 				clearInterval( G.relaystimer );
 			}
-			$( '#infoMessage white' ).text( delay-- );
+			$( '#infoFooter white' ).text( delay-- );
 		}, 1000 );
 	} else {
 		var devices = ''
