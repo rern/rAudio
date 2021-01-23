@@ -890,8 +890,7 @@ i.map.disabled, .map.disabled i {
 	z-index: 6;
 }
 #stopwatch {
-	width: 40px;
-	margin-bottom: 10px;
+	width: 50px;
 }
 #stopwatch circle {
 	fill: none;

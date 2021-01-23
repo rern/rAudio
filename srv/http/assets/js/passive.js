@@ -353,7 +353,8 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon    : 'relays'
 			, title   : 'GPIO Relays Off'
-			, message : stopwatch +'<br><white>'+ delay +'</white>'
+			, message : stopwatch
+			, footer  : '<white>'+ delay +'</white>'
 			, oklabel : 'Reset'
 			, ok      : function() {
 				bash( [ 'relaystimerreset' ] );
