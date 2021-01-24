@@ -26,7 +26,6 @@
 	.st15{fill:none;stroke:#C80000;stroke-width:0.5131;stroke-miterlimit:10;}
 	.st16{fill:#C80000;}
 	.st17{fill:none;stroke:#C80000;stroke-width:1.0864;stroke-miterlimit:10;}
-	.st18{opacity:0.2;fill:url(#overlay_1_);enable-background:new    ;}
 	.st17 {
 		transform-origin: 40px 55px;
 		animation: spin 60s infinite linear;
@@ -424,6 +423,4 @@
 	<stop  offset="0.6818" style="stop-color:#FFFFFF"/>
 	<stop  offset="1" style="stop-color:#B3B3B3"/>
 </radialGradient>
-<path id="overlay" sodipodi:cx="365" sodipodi:cy="577.36218" sodipodi:rx="335" sodipodi:ry="335" sodipodi:type="arc" class="st18" d="
-	M74.5,55c0,19.1-15.4,34.5-34.5,34.5S5.5,74.1,5.5,55l0,0c0-19.1,15.4-34.5,34.5-34.5S74.5,35.9,74.5,55L74.5,55z"/>
 </svg>
