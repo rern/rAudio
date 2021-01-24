@@ -36,10 +36,8 @@
 	}
 </style>
 <g id="knob-l">
-	
 		<path id="path6072" sodipodi:cx="365" sodipodi:cy="92.362183" sodipodi:rx="50" sodipodi:ry="12" sodipodi:type="arc" class="st0" d="
 		M1.7,25.1c0.4,0.4,1.9-0.6,3.4-2.2s2.4-3.2,2-3.5C6.8,19,5.2,20,3.7,21.6S1.3,24.8,1.7,25.1z"/>
-	
 		<linearGradient id="path6078_1_" gradientUnits="userSpaceOnUse" x1="10.4117" y1="63.2523" x2="4.706" y2="57.6846" gradientTransform="matrix(0.9949 0 0 -1.0051 -1.2869 84.6353)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="0.1177" style="stop-color:#FFFFFF"/>
@@ -52,7 +50,6 @@
 		c-0.4-0.4-1.9,0.6-3.4,2.2c-1.5,1.6-2.4,3.2-2,3.5l-3.7-3.5C1.5,24.9,2.4,23.4,3.9,21.8L3.9,21.8z"/>
 	<path id="path6074" inkscape:connector-curvature="0" class="st2" d="M5.6,28.9C6,29.2,7.5,28.2,9,26.6c1.5-1.6,2.4-3.2,2-3.5
 		c-0.4-0.4-1.9,0.6-3.4,2.2C6.2,26.9,5.2,28.5,5.6,28.9z"/>
-	
 		<linearGradient id="path6076_1_" gradientUnits="userSpaceOnUse" x1="13.1493" y1="58.2547" x2="8.6604" y2="53.6512" gradientTransform="matrix(0.9969 0 0 -1.0031 -0.7657 83.7088)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="0.1177" style="stop-color:#FFFFFF"/>
@@ -65,10 +62,8 @@
 		c1.2-1.3,2.4-2.1,2.6-1.9l3.5,3.3c0.2,0.2-0.5,1.4-1.8,2.7s-2.4,2.1-2.6,1.9l-3.5-3.3C5.9,28.1,6.7,26.8,7.9,25.6L7.9,25.6z"/>
 </g>
 <g id="knob-m">
-	
 		<path id="path6044" sodipodi:cx="365" sodipodi:cy="92.362183" sodipodi:rx="50" sodipodi:ry="12" sodipodi:type="arc" class="st0" d="
 		M45.5,1.6c0,0.7-2.5,1.3-5.5,1.3s-5.5-0.6-5.5-1.3S37,0.3,40,0.3S45.5,0.9,45.5,1.6z"/>
-	
 		<linearGradient id="path6034_1_" gradientUnits="userSpaceOnUse" x1="-1.3468" y1="23.5424" x2="8.2688" y2="23.5424" gradientTransform="matrix(1.1396 0 0 -0.8775 36.0558 25.5223)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="0.1257" style="stop-color:#FFFFFF"/>
@@ -79,7 +74,6 @@
 	</linearGradient>
 	<path id="path6034" inkscape:connector-curvature="0" class="st4" d="M40,0.6c-3,0-5.5,0.6-5.5,1.3v7.1c0-0.7,2.5-1.3,5.5-1.3
 		s5.5,0.6,5.5,1.3V2C45.5,1.2,43,0.6,40,0.6z"/>
-	
 		<linearGradient id="path6932_1_" gradientUnits="userSpaceOnUse" x1="-1.3468" y1="23.5424" x2="-0.8658" y2="23.5424" gradientTransform="matrix(1.1396 0 0 -0.8775 36.0558 25.5223)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="1" style="stop-color:#FFFFFF"/>
@@ -88,7 +82,6 @@
 		s5.5,0.6,5.5,1.3V2C45.5,1.2,43,0.6,40,0.6z"/>
 	<path id="path6032" inkscape:connector-curvature="0" class="st2" d="M45.5,9.1c0,0.7-2.5,1.3-5.5,1.3s-5.5-0.6-5.5-1.3
 		c0-0.7,2.5-1.3,5.5-1.3S45.5,8.4,45.5,9.1z"/>
-	
 		<linearGradient id="path6005_1_" gradientUnits="userSpaceOnUse" x1="26.2303" y1="56.9662" x2="34.7174" y2="56.9662" gradientTransform="matrix(1.0329 0 0 -0.9682 8.5236 67.5222)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="0.1257" style="stop-color:#FFFFFF"/>
@@ -101,10 +94,8 @@
 		v6.6c0,0.5,2,0.8,4.4,0.8c2.4,0,4.4-0.4,4.4-0.8V9.1C44.4,8.6,42.4,8.3,40,8.3z"/>
 </g>
 <g id="knob-r">
-	
 		<path id="path6056" sodipodi:cx="365" sodipodi:cy="92.362183" sodipodi:rx="50" sodipodi:ry="12" sodipodi:type="arc" class="st0" d="
 		M78.3,25.1c-0.4,0.4-1.9-0.6-3.4-2.2s-2.4-3.2-2-3.5c0.4-0.4,1.9,0.6,3.4,2.2S78.7,24.8,78.3,25.1z"/>
-	
 		<linearGradient id="path6062_1_" gradientUnits="userSpaceOnUse" x1="72.6663" y1="63.3989" x2="78.2692" y2="57.6044" gradientTransform="matrix(0.9949 0 0 -1.0051 -1.2869 84.6353)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="0.1257" style="stop-color:#FFFFFF"/>
@@ -117,7 +108,6 @@
 		c0.4-0.4,1.9,0.6,3.4,2.2c1.5,1.6,2.4,3.2,2,3.5l3.7-3.5C78.5,24.9,77.6,23.4,76.1,21.8L76.1,21.8z"/>
 	<path id="path6058" inkscape:connector-curvature="0" class="st2" d="M74.4,28.9c-0.4,0.4-1.9-0.6-3.4-2.2c-1.5-1.6-2.4-3.2-2-3.5
 		c0.4-0.4,1.9,0.6,3.4,2.2C73.8,26.9,74.7,28.5,74.4,28.9L74.4,28.9z"/>
-	
 		<linearGradient id="path6060_1_" gradientUnits="userSpaceOnUse" x1="68.6258" y1="58.1725" x2="73.1262" y2="53.705" gradientTransform="matrix(0.9969 0 0 -1.0031 -0.7657 83.7088)">
 		<stop  offset="0" style="stop-color:#000000"/>
 		<stop  offset="0.1257" style="stop-color:#FFFFFF"/>
@@ -130,7 +120,6 @@
 		c-1.2-1.3-2.4-2.1-2.6-1.9L66,26.9c-0.2,0.2,0.5,1.4,1.8,2.7c1.2,1.3,2.4,2.1,2.6,1.9l3.5-3.3C74.1,28.1,73.3,26.8,72.1,25.6z"/>
 </g>
 <g id="body">
-	
 		<radialGradient id="body-outer_1_" cx="39.9658" cy="27.2727" r="39.9997" gradientTransform="matrix(1 0 0 -1 3.369137e-02 82.2727)" gradientUnits="userSpaceOnUse">
 		<stop  offset="0" style="stop-color:#808080"/>
 		<stop  offset="0.9167" style="stop-color:#959595"/>
@@ -138,205 +127,143 @@
 		<stop  offset="0.989" style="stop-color:#1A1A1A"/>
 		<stop  offset="1" style="stop-color:#979797"/>
 	</radialGradient>
-	
 		<path id="body-outer" sodipodi:cx="365" sodipodi:cy="577.36218" sodipodi:rx="365.03424" sodipodi:ry="365.03424" sodipodi:type="arc" class="st9" d="
 		M80,55c0,22.1-17.9,40-40,40S0,77.1,0,55c0-22.1,17.9-40,40-40S80,32.9,80,55z"/>
-	
 		<radialGradient id="body-inner_1_" cx="159.5485" cy="30.2847" r="36.5" gradientTransform="matrix(0.7071 -0.7071 -0.7164 -0.7164 -50.5764 190.0603)" gradientUnits="userSpaceOnUse">
 		<stop  offset="0" style="stop-color:#999999"/>
 		<stop  offset="0.9583" style="stop-color:#999999"/>
 		<stop  offset="0.9792" style="stop-color:#666666"/>
 		<stop  offset="1" style="stop-color:#4D4D4D"/>
 	</radialGradient>
-	
 		<path id="body-inner" sodipodi:cx="365" sodipodi:cy="577.36218" sodipodi:rx="335" sodipodi:ry="335" sodipodi:type="arc" class="st10" d="
 		M76.5,55c0,20.2-16.3,36.5-36.5,36.5S3.5,75.2,3.5,55S19.8,18.5,40,18.5S76.5,34.8,76.5,55z"/>
-	
 		<radialGradient id="dial_1_" cx="35.7114" cy="36.2486" r="36.6904" gradientTransform="matrix(0.9403 0 0 -0.9403 6.4206 89.0845)" gradientUnits="userSpaceOnUse">
 		<stop  offset="0" style="stop-color:#FFFFFF"/>
 		<stop  offset="0.5" style="stop-color:#FFFFFF"/>
 		<stop  offset="1" style="stop-color:#DAD8C3"/>
 	</radialGradient>
-	
 		<path id="dial" sodipodi:cx="365" sodipodi:cy="577.36218" sodipodi:rx="335" sodipodi:ry="335" sodipodi:type="arc" class="st11" d="
 		M74.5,55c0,19.1-15.4,34.5-34.5,34.5S5.5,74.1,5.5,55S20.9,20.5,40,20.5S74.5,35.9,74.5,55z"/>
 </g>
 <g id="tick-sec">
 	<rect id="rect6952" x="39.9" y="20.7" inkscape:transform-center-y="-289" width="0.3" height="5.3">
 	</rect>
-	
 		<rect id="rect6954" x="24" y="24.9" inkscape:transform-center-x="144.5" inkscape:transform-center-y="-250.28134" transform="matrix(0.866 -0.5 0.5 0.866 -10.5496 15.7771)" width="0.3" height="5.3">
 	</rect>
-	
 		<rect id="rect6956" x="12.4" y="36.5" inkscape:transform-center-x="250.28134" inkscape:transform-center-y="-144.5" transform="matrix(0.5 -0.866 0.866 0.5 -27.6311 30.4738)" width="0.3" height="5.3">
 	</rect>
 	<rect id="rect6958" x="5.7" y="54.9" inkscape:transform-center-x="289" width="5.3" height="0.3">
 	</rect>
-	
 		<rect id="rect6960" x="9.9" y="70.7" inkscape:transform-center-x="250.28134" inkscape:transform-center-y="144.49999" transform="matrix(0.866 -0.5 0.5 0.866 -33.7326 15.7772)" width="5.3" height="0.3">
 	</rect>
-	
 		<rect id="rect6962" x="21.5" y="82.3" inkscape:transform-center-x="144.50003" inkscape:transform-center-y="250.28132" transform="matrix(0.5 -0.866 0.866 0.5 -59.3002 62.1411)" width="5.3" height="0.3">
 	</rect>
-	
 		<rect id="rect6964" x="39.9" y="84" inkscape:transform-center-x="3.4120691e-05" inkscape:transform-center-y="289" width="0.3" height="5.3">
 	</rect>
-	
 		<rect id="rect6966" x="55.7" y="79.8" inkscape:transform-center-x="-144.49997" inkscape:transform-center-y="250.28135" transform="matrix(0.866 -0.5 0.5 0.866 -33.7327 38.9601)" width="0.3" height="5.3">
 	</rect>
-	
 		<rect id="rect6968" x="67.3" y="68.2" inkscape:transform-center-x="-250.2813" inkscape:transform-center-y="144.50001" transform="matrix(0.5 -0.866 0.866 0.5 -27.6316 93.8097)" width="0.3" height="5.3">
 	</rect>
 	<rect id="rect6970" x="69" y="54.9" inkscape:transform-center-x="-288.99994" width="5.3" height="0.3">
 	</rect>
-	
 		<rect id="rect6972" x="64.8" y="39" inkscape:transform-center-x="-250.28129" inkscape:transform-center-y="-144.49997" transform="matrix(0.866 -0.5 0.5 0.866 -10.5502 38.9586)" width="5.3" height="0.3">
 	</rect>
-	
 		<rect id="rect6974" x="53.2" y="27.4" inkscape:transform-center-x="-144.49995" inkscape:transform-center-y="-250.2813" transform="matrix(0.5 -0.866 0.866 0.5 4.037 62.1411)" width="5.3" height="0.3">
 	</rect>
-	
 		<rect id="rect6978" x="36.4" y="20.9" inkscape:transform-center-x="31.463057" inkscape:transform-center-y="-299.35108" transform="matrix(0.9945 -0.1045 0.1045 0.9945 -2.12 3.9424)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6980" x="33" y="21.4" inkscape:transform-center-x="62.581409" inkscape:transform-center-y="-294.42243" transform="matrix(0.9781 -0.2079 0.2079 0.9781 -4.0031 7.3874)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6982" x="29.7" y="22.3" inkscape:transform-center-x="93.014104" inkscape:transform-center-y="-286.26803" transform="matrix(0.9511 -0.309 0.309 0.9511 -5.8437 10.3677)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6984" x="26.5" y="23.6" inkscape:transform-center-x="122.42773" inkscape:transform-center-y="-274.97721" transform="matrix(0.9135 -0.4067 0.4067 0.9135 -7.8166 12.9629)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6986" x="20.5" y="27" inkscape:transform-center-x="176.92336" inkscape:transform-center-y="-243.51414" transform="matrix(0.809 -0.5878 0.5878 0.809 -12.7071 17.5239)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6988" x="17.8" y="29.2" inkscape:transform-center-x="201.40831" inkscape:transform-center-y="-223.68661" transform="matrix(0.7431 -0.6691 0.6691 0.7431 -15.7954 19.8289)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6990" x="15.4" y="31.6" inkscape:transform-center-x="223.6866" inkscape:transform-center-y="-201.40834" transform="matrix(0.6691 -0.7431 0.7431 0.6691 -19.3469 22.4055)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6992" x="13.2" y="34.3" inkscape:transform-center-x="243.51413" inkscape:transform-center-y="-176.92338" transform="matrix(0.5878 -0.809 0.809 0.5878 -23.3222 25.4533)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6994" x="9.8" y="40.3" inkscape:transform-center-x="274.97722" inkscape:transform-center-y="-122.42774" transform="matrix(0.4067 -0.9136 0.9136 0.4067 -32.1348 33.6871)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6996" x="8.5" y="43.5" inkscape:transform-center-x="286.26804" inkscape:transform-center-y="-93.014125" transform="matrix(0.309 -0.9511 0.9511 0.309 -36.65 39.1711)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect6998" x="7.6" y="46.8" inkscape:transform-center-x="294.42245" inkscape:transform-center-y="-62.581426" transform="matrix(0.2079 -0.9782 0.9782 0.2079 -40.9617 45.7026)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7000" x="7.1" y="50.2" inkscape:transform-center-x="299.35112" inkscape:transform-center-y="-31.46307" transform="matrix(0.1045 -0.9945 0.9945 0.1045 -44.8269 53.3198)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7002" x="5.9" y="58.3" inkscape:transform-center-x="299.35111" inkscape:transform-center-y="31.463086" transform="matrix(0.9945 -0.1045 0.1045 0.9945 -6.07 1.0725)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7004" x="6.4" y="61.7" inkscape:transform-center-x="294.42244" inkscape:transform-center-y="62.581462" transform="matrix(0.9781 -0.2079 0.2079 0.9781 -12.6918 2.9604)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7006" x="7.3" y="65.1" inkscape:transform-center-x="286.26802" inkscape:transform-center-y="93.014179" transform="matrix(0.9511 -0.309 0.309 0.9511 -19.7234 5.8579)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7008" x="8.6" y="68.3" inkscape:transform-center-x="274.97718" inkscape:transform-center-y="122.42778" transform="matrix(0.9135 -0.4067 0.4067 0.9135 -26.9743 9.9287)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7014" x="12" y="74.3" inkscape:transform-center-x="243.51407" inkscape:transform-center-y="176.92344" transform="matrix(0.809 -0.5878 0.5878 0.809 -41.1807 22.0338)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7016" x="14.2" y="77" inkscape:transform-center-x="223.68655" inkscape:transform-center-y="201.40836" transform="matrix(0.7431 -0.6691 0.6691 0.7431 -47.5918 30.1603)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7018" x="16.6" y="79.4" inkscape:transform-center-x="201.40827" inkscape:transform-center-y="223.68663" transform="matrix(0.6691 -0.7431 0.7431 0.6691 -53.1561 39.632)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7020" x="19.3" y="81.6" inkscape:transform-center-x="176.92329" inkscape:transform-center-y="243.51416" transform="matrix(0.5878 -0.809 0.809 0.5878 -57.5869 50.3481)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7022" x="25.3" y="85" inkscape:transform-center-x="122.42762" inkscape:transform-center-y="274.97724" transform="matrix(0.4067 -0.9135 0.9135 0.4067 -62.0009 74.7921)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7024" x="28.5" y="86.3" inkscape:transform-center-x="93.013993" inkscape:transform-center-y="286.26805" transform="matrix(0.309 -0.9511 0.9511 0.309 -61.5454 88.0283)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7026" x="31.8" y="87.2" inkscape:transform-center-x="62.581304" inkscape:transform-center-y="294.42245" transform="matrix(0.2079 -0.9781 0.9781 0.2079 -59.105 101.5378)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7028" x="35.2" y="87.7" inkscape:transform-center-x="31.462955" inkscape:transform-center-y="299.3511" transform="matrix(0.1045 -0.9945 0.9945 0.1045 -54.5911 114.9774)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7030" x="43.3" y="86.5" inkscape:transform-center-x="-31.463183" inkscape:transform-center-y="299.3511" transform="matrix(0.9945 -0.1045 0.1045 0.9945 -8.9399 5.0225)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7032" x="46.7" y="85.9" inkscape:transform-center-x="-62.58154" inkscape:transform-center-y="294.42245" transform="matrix(0.9781 -0.2079 0.2079 0.9781 -17.119 11.6491)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7034" x="50.1" y="85.1" inkscape:transform-center-x="-93.014245" inkscape:transform-center-y="286.26804" transform="matrix(0.9511 -0.309 0.309 0.9511 -24.2332 19.7376)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7036" x="53.3" y="83.8" inkscape:transform-center-x="-122.42785" inkscape:transform-center-y="274.97719" transform="matrix(0.9135 -0.4067 0.4067 0.9135 -30.0085 29.0863)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7038" x="59.3" y="80.4" inkscape:transform-center-x="-176.9235" inkscape:transform-center-y="243.51413" transform="matrix(0.809 -0.5878 0.5878 0.809 -36.6711 50.5074)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7040" x="62" y="78.2" inkscape:transform-center-x="-201.40843" inkscape:transform-center-y="223.68658" transform="matrix(0.7431 -0.6691 0.6691 0.7431 -37.2603 61.9567)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7042" x="64.4" y="75.8" inkscape:transform-center-x="-223.68669" inkscape:transform-center-y="201.40828" transform="matrix(0.6691 -0.7431 0.7431 0.6691 -35.9297 73.4412)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7044" x="66.6" y="73.1" inkscape:transform-center-x="-243.51423" inkscape:transform-center-y="176.92334" transform="matrix(0.5878 -0.809 0.809 0.5878 -32.6922 84.6128)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7046" x="70" y="67.1" inkscape:transform-center-x="-274.97733" inkscape:transform-center-y="122.42771" transform="matrix(0.4067 -0.9135 0.9135 0.4067 -20.8945 104.6576)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7048" x="71.3" y="63.9" inkscape:transform-center-x="-286.26816" inkscape:transform-center-y="93.014078" transform="matrix(0.309 -0.9511 0.9511 0.309 -12.6867 112.9231)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7050" x="72.2" y="60.5" inkscape:transform-center-x="-294.42256" inkscape:transform-center-y="62.581366" transform="matrix(0.2079 -0.9781 0.9781 0.2079 -3.2682 119.6803)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7052" x="72.7" y="57.1" inkscape:transform-center-x="-299.35121" inkscape:transform-center-y="31.462971" transform="matrix(0.1045 -0.9945 0.9945 0.1045 7.0611 124.7415)" width="0.2" height="2.6">
 	</rect>
-	
 		<rect id="rect7054" x="71.5" y="51.4" inkscape:transform-center-x="-299.35122" inkscape:transform-center-y="-31.463178" transform="matrix(0.9945 -0.1045 0.1045 0.9945 -4.9905 7.8938)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7056" x="70.9" y="48" inkscape:transform-center-x="-294.42253" inkscape:transform-center-y="-62.581517" transform="matrix(0.9782 -0.2079 0.2079 0.9782 -8.43 16.0746)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7058" x="70.1" y="44.7" inkscape:transform-center-x="-286.2681" inkscape:transform-center-y="-93.014199" transform="matrix(0.9511 -0.309 0.309 0.9511 -10.3535 24.2458)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7060" x="68.8" y="41.5" inkscape:transform-center-x="-274.97725" inkscape:transform-center-y="-122.42783" transform="matrix(0.9136 -0.4067 0.4067 0.9136 -10.8513 32.1189)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7062" x="65.4" y="35.5" inkscape:transform-center-x="-243.51419" inkscape:transform-center-y="-176.92345" transform="matrix(0.809 -0.5878 0.5878 0.809 -8.1971 45.9978)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7064" x="63.2" y="32.8" inkscape:transform-center-x="-223.68665" inkscape:transform-center-y="-201.40843" transform="matrix(0.7431 -0.6691 0.6691 0.7431 -5.464 51.6253)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7066" x="60.8" y="30.4" inkscape:transform-center-x="-201.40835" inkscape:transform-center-y="-223.68672" transform="matrix(0.6691 -0.7431 0.7431 0.6691 -2.1205 56.2147)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7068" x="58.1" y="28.2" inkscape:transform-center-x="-176.92341" inkscape:transform-center-y="-243.51423" transform="matrix(0.5878 -0.809 0.809 0.5878 1.5722 59.7179)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7070" x="52.1" y="24.8" inkscape:transform-center-x="-122.4278" inkscape:transform-center-y="-274.97729" transform="matrix(0.4067 -0.9135 0.9135 0.4067 8.9713 63.5512)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7072" x="48.9" y="23.5" inkscape:transform-center-x="-93.01418" inkscape:transform-center-y="-286.26813" transform="matrix(0.309 -0.9511 0.9511 0.309 12.2081 64.0643)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7074" x="45.5" y="22.6" inkscape:transform-center-x="-62.58146" inkscape:transform-center-y="-294.42255" transform="matrix(0.2079 -0.9781 0.9781 0.2079 14.8743 63.8434)" width="2.6" height="0.2">
 	</rect>
-	
 		<rect id="rect7076" x="42.1" y="22.1" inkscape:transform-center-x="-31.46309" inkscape:transform-center-y="-299.35121" transform="matrix(0.1045 -0.9945 0.9945 0.1045 16.8297 63.0869)" width="2.6" height="0.2">
 	</rect>
 </g>
