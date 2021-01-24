@@ -353,7 +353,7 @@ function psRelays( response ) { // on receive broadcast
 		var delay = response.delay;
 		info( {
 			  icon    : 'relays'
-			, title   : 'GPIO Relays Off'
+			, title   : 'GPIO Relays Countdown'
 			, message : stopwatch
 			, footer  : '<white>'+ delay +'</white>'
 			, oklabel : 'Reset'
