@@ -1441,7 +1441,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, filetype    : 'image/*'
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark', function( ext ) {
-					bookmarkThumbReplace( $this, imagefile +'.'+ + Math.ceil( Date.now() / 1000 ) + ext );
+					bookmarkThumbReplace( $this, imagefile +'.'+ hash + ext );
 				} );
 			}
 		}

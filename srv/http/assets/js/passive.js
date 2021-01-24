@@ -330,6 +330,7 @@ function psPlaylist( data ) {
 	}
 }
 function psRelays( response ) { // on receive broadcast
+	var stopwatch = '<img src="/assets/img/stopwatch.'+ hash +'.svg">';
 	clearInterval( G.relaystimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
@@ -353,7 +354,7 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon    : 'relays'
 			, title   : 'GPIO Relays Off'
-			, message : '<img src="/assets/img/stopwatch.svg">'
+			, message : stopwatch
 			, footer  : '<white>'+ delay +'</white>'
 			, oklabel : 'Reset'
 			, ok      : function() {
@@ -384,7 +385,7 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon     : 'relays'
 			, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-			, message  : '<img src="/assets/img/stopwatch.svg">'
+			, message  : stopwatch
 			, footer   : devices
 			, nobutton : 1
 		} );
