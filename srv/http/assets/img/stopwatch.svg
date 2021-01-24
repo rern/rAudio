@@ -3,14 +3,14 @@
 	<filter id="swshadow"><feDropShadow dx="-1" dy="1" stdDeviation="1"/></filter>
 	<style>
 	.st-1{fill:#ccc;}
-	.st-2{fill:url(#linear-gradient);}
+	.st-2{fill:url(#linear-gradient-2);}
 	.st-3{fill:#666;}
 	.st-4{fill:url(#linear-gradient-2);}
 	.st-5{fill:url(#linear-gradient-3);}
 	.st-6{opacity:0.3;fill:url(#linear-gradient-4);}
 	.st-13,.st-14,.st-6{isolation:isolate;}
 	.st-7{fill:url(#linear-gradient-5);}
-	.st-8{fill:url(#linear-gradient-6);}
+	.st-8{fill:url(#linear-gradient-7);}
 	.st-9{fill:url(#linear-gradient-7);}
 	.st-10{stroke:#313435;fill:url(#radial-gradient);filter:url(#swshadow);}
 	.st-11{fill:url(#radial-gradient-2);}.st-12{fill:url(#radial-gradient-3);}
