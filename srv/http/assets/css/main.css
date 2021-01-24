@@ -892,15 +892,6 @@ i.map.disabled, .map.disabled i {
 #stopwatch {
 	width: 80px;
 }
-#stopwatch polygon {
-	fill: #de3434;
-	transform-origin: 43.6px 76.2px;
-	animation: spin 60s infinite linear;
-}
-@keyframes spin {
-	0% { transform: rotate(0deg) }
-	100% { transform: rotate(360deg) }
-}
 
 .cover-save {
 	position: absolute;

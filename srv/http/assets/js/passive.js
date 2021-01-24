@@ -353,13 +353,14 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon    : 'relays'
 			, title   : 'GPIO Relays Off'
-			, message : stopwatch
+			, message : '<img src="/assets/img/stopwatch.svg">'
 			, footer  : '<white>'+ delay +'</white>'
 			, oklabel : 'Reset'
 			, ok      : function() {
 				bash( [ 'relaystimerreset' ] );
 			}
 		} );
+		delay--
 		G.relaystimer = setInterval( function() {
 			if ( delay === 1 ) {
 				G.status.relayson = false;
@@ -367,7 +368,7 @@ function psRelays( response ) { // on receive broadcast
 				$( '#infoX' ).click();
 				clearInterval( G.relaystimer );
 			}
-			$( '#infoMessage white' ).text( delay-- );
+			$( '#infoFooter white' ).text( delay-- );
 		}, 1000 );
 	} else {
 		var devices = ''
@@ -383,7 +384,7 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon     : 'relays'
 			, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-			, message  : stopwatch
+			, message  : '<img src="/assets/img/stopwatch.svg">'
 			, footer   : devices
 			, nobutton : 1
 		} );
