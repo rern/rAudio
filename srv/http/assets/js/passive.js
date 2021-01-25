@@ -74,6 +74,7 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		getPlaybackStatus();
+		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		setTimeout( function() {
 			if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 		}, 1000 );
