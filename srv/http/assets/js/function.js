@@ -58,7 +58,7 @@ function bookmarkThumbReplace( $this, newimg ) {
 	}
 }
 function clearIntervalAll() {
-	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intVu ].forEach( function( el ) {
+	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
 }
@@ -119,8 +119,7 @@ function contextmenuLibrary( $li, $target ) {
 	
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '.tag' ).addClass( 'hide' );
-	if ( $( '.licover' ).length ) $( '.tag' ).removeClass( 'hide' );
+	$( '.tag' ).toggleClass( 'hide', $( '.licover' ).length === 0 );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';
@@ -346,7 +345,7 @@ function displayPlayback() {
 		$( '#time' ).roundSlider( G.status.webradio || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 		$( '#progress' ).empty();
 	}
-	$( '#time-bar, #time-band' ).toggleClass( 'hide', !$( '#time-knob' ).hasClass( 'hide' ) );
+	$( '#time-bar, #time-band' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 	$( '.volumeband' )
@@ -531,7 +530,7 @@ function hideGuide() {
 		G.guide = 0;
 		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !G.bars );
 		$( '.map' ).removeClass( 'mapshow' );
-		$( '#button-playback, #bar-bottom' ).removeClass( 'translucent' );
+		$( '#button-data, #bar-bottom' ).removeClass( 'translucent' );
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
@@ -1003,7 +1002,7 @@ function renderPlayback() {
 	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
-	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
 		G.coversave = 0;
@@ -1381,7 +1380,7 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	var prefix = displaytime ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
@@ -1414,7 +1413,7 @@ function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
-			var prefix = $( '#time-knob' ).hasClass( 'hide' ) ? 'i' : 'ti';
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}

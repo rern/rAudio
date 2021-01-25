@@ -91,7 +91,6 @@
 .fa-sources:before { content: "\f538" }
 .fa-spotify:before { content: "\f593" }
 .fa-status:before { content: "\f50A" }
-.fa-stopwatch:before { content: "\f547" }
 .fa-system:before { content: "\f581" }
 .fa-times:before { content: "\f51A" }
 .fa-transmission:before { content: "\f586" }
@@ -127,6 +126,17 @@
 }
 .message .fa-wifi:before { font-size: 20px }
 
+#button-data {
+	position: fixed;
+	top: 0;
+	width: 40px;
+	height: 40px;
+	margin: 0;
+	font-size: 30px;
+	text-align: center;
+	color: var( --cm );
+	z-index: 112;
+}
 #loader {
 	position: fixed;
 	width: 100%;
@@ -321,15 +331,16 @@ heading i.fa-question-circle {
 	font-size: 2em !important;
 	color: var( --cm );
 }
-.codepage {
+#data {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
-	padding: 50px 10px;
+	padding: 40px 10px 10px;
+	background: #000;
 	overflow-x: hidden;
 	white-space: pre-wrap;
-	z-index: 5;
+	z-index: 111;
 }
 #bar-bottom {
 	position: fixed;
@@ -797,6 +808,7 @@ input:checked + .switchlabel.disabled:after {
 	.settingedit,
 	.status,
 	.switchlabel,
+	#button-data,
 	#close,
 	#filetype,
 	#help {

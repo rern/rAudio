@@ -127,9 +127,6 @@
 .fa-spotify:before { content: "\f593" }
 .fa-star:before { content: "\f550" }
 .fa-stop:before { content: "\f502" }
-.fa-stopwatch:before { content: "\f547" }
-.fa-stopwatch-o:before { content: "\f548" }
-.fa-stopwatch-i:before { content: "\f549" }
 .fa-tag:before { content: "\f55B" }
 .fa-times:before { content: "\f51A" }
 .fa-title:before { content: "\f54C" }
@@ -141,39 +138,6 @@
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
 .fa-webradio:before { content: "\f55C" }
-.stopwatch {
-	margin-right: 5px;
-	vertical-align: -4px;
-}
-.fa-stopwatch-i,
-.fa-stopwatch-o {
-	font-size: 30px !important;
-}
-.fa-stopwatch-o {
-	position: absolute;
-	margin: -1px 0 0 -25.7px;
-}
-.fa-stopwatch-i {
-	display: inline-block;
-	-webkit-animation: fa-spin 60s infinite linear;
-	animation: fa-spin 60s infinite linear
-}
-@-webkit-keyframes fa-spin {
-	0% { -webkit-transform: rotate(0deg);
-		transform: rotate(0deg)
-	}
-	100% { -webkit-transform: rotate(359deg);
-		transform: rotate(359deg)
-	}
-}
-@keyframes fa-spin {
-	0% {  -webkit-transform: rotate(0deg);
-		transform: rotate(0deg)
-	}
-	100% { -webkit-transform: rotate(359deg);
-		transform: rotate(359deg)
-	}
-}
 *,
 *:before,
 *:after {
@@ -374,19 +338,18 @@ i.map.disabled, .map.disabled i {
 	width: 45px !important;
 	font-size: 48px;
 	color: var( --cg ) !important;
-	text-shadow: none !important;
 }
-#codepage {
+#data {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	padding: 10px;
-	background: var( --cgd );
+	padding: 40px 10px 10px;
+	background: #000;
 	font-family: Inconsolata;
 	white-space: pre-wrap;
 	overflow-x: hidden;
-	z-index: 106;
+	z-index: 111;
 }
 #loader {
 	position: fixed;
@@ -529,9 +492,11 @@ i.map.disabled, .map.disabled i {
 #bar-top i,
 #bar-bottom i,
 #button-library i,
-#button-playlist i {
-	color: var( --cw );
-	text-shadow: 1px 1px 2px #000000;
+#button-playlist i,
+#page-playback .btn-group i,
+.content-top i,
+.mode i {
+	text-shadow: -1px 0 2px #000000;
 }
 #playback-controls {
 	text-align: center
@@ -925,9 +890,6 @@ i.map.disabled, .map.disabled i {
 	z-index: 6;
 }
 
-#infoMessage svg {
-	width: 100px;
-}
 .cover-save {
 	position: absolute;
 	bottom: 0;
@@ -1163,7 +1125,6 @@ i.map.disabled, .map.disabled i {
 	width: 40px;
 	font-size:24px;
 	line-height: 40px;
-	text-shadow: 1px 1px 2px #000000;
 }
 #page-playback .btn-group {
 	position: relative;
@@ -1260,7 +1221,7 @@ i.map.disabled, .map.disabled i {
 #volume .rs-handle {
 	border: 1px solid var( --cga );
 	background: var( --cm );
-	box-shadow: inset var( --cga ) 0 5px 5px;
+	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
 .rs-outer {
 	position: relative; /* overlay */
@@ -1724,10 +1685,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px;
 	text-align: center;
 }
-.content-top i,
-.mode i {
-	text-shadow: 2px 2px 4px #000000;
-}
 #button-lib-search,
 #button-pl-search {
 	float: right;
@@ -1821,15 +1778,13 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 }
-#button-playback {
+#button-data {
 	position: absolute;
 	width: 40px;
 	top: 0;
-	line-height: 40px;
-	font-size: 26px;
+	font-size: 30px;
 	text-align: center;
-	background: var( --cgd );
-	z-index: 107;
+	z-index: 112;
 }
 #pl-path .fa-arrow-left {
 	width: 40px !important;

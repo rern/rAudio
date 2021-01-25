@@ -68,7 +68,7 @@ mpc idleloop | while read changed; do
 						rm -f $flagpl
 						pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 					fi
-				) &
+				) &> /dev/null &
 			fi
 			;;
 		update )

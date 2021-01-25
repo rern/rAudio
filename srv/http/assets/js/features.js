@@ -17,11 +17,17 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		
 		$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
 		$( '#spotifyd' ).prop( 'checked', G.spotifyd );
-		$( '#snapclient' ).prop( 'checked', G.snapclient );
+		$( '#snapclient' )
+			.prop( 'checked', G.snapclient )
+			.prop( 'disabled', G.snapserver )
+			.next().toggleClass( 'disabled', G.snapserver );
 		$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
 		$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 		$( '#streaming' ).prop( 'checked', G.streaming );
-		$( '#snapserver' ).prop( 'checked', G.snapserver );
+		$( '#snapserver' )
+			.prop( 'checked', G.snapserver )
+			.prop( 'disabled', G.snapclient )
+			.next().toggleClass( 'disabled', G.snapclient );
 		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
 		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 		$( '#transmission' ).prop( 'checked', G.transmission );

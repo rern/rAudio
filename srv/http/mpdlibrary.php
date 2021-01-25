@@ -48,18 +48,25 @@ switch( $_POST[ 'query' ] ) {
 case 'find':
 	$format = str_replace( '%artist%', '[%artist%|%albumartist%]', $format );
 	if ( is_array( $mode ) ) {
-		$file = exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null | head -1' );
-		if ( substr( $file, -14, 4 ) !== '.cue' ) {
-			exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
-				, $lists );
-			if ( !count( $lists ) ) { // find with albumartist
-				exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
-				, $lists );
-			}
-		} else { // $file = '/path/to/file.cue/track0001'
-			$format = '%'.implode( '%^^%', $f ).'%';
-			exec( 'mpc -f "'.$format.'" playlist "'.dirname( $file ).'"'
+		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u", $dirs );
+		if ( count( $dirs ) > 1 ) {
+			$array = directoryList( $dirs );
+			break;
+			
+		} else {
+			$file = $dirs[ 0 ];
+			if ( substr( $file, -14, 4 ) !== '.cue' ) {
+				exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
 					, $lists );
+				if ( !count( $lists ) ) { // find with albumartist
+					exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
+					, $lists );
+				}
+			} else { // $file = '/path/to/file.cue/track0001'
+				$format = '%'.implode( '%^^%', $f ).'%';
+				exec( 'mpc -f "'.$format.'" playlist "'.dirname( $file ).'"'
+						, $lists );
+			}
 		}
 	} else {
 		$lists = shell_exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'" );
@@ -94,46 +101,7 @@ case 'ls':
 		$count = count( $lists );
 		if ( !$count ) exit( '-1' );
 		
-		foreach( $lists as $list ) {
-			$dir = str_replace( $string.'/', '', $list );
-			$each = ( object )[];
-			$each->path = $list;
-			$each->dir  = $dir;
-			$each->sort = stripSort( $dir );
-			$array[] = $each;
-		}
-		usort( $array, function( $a, $b ) {
-			return strnatcasecmp( $a->sort, $b->sort );
-		} );
-		$nas200 = $count > 200 && substr( $string, 0, 3 ) === 'NAS';
-		$time = time();
-		$html = '';
-		foreach( $array as $each ) {
-			$path = $each->path;
-			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-			$indexes[] = $index;
-			$pathnoext = '/mnt/MPD/'.$path.'/thumb';
-			if ( $nas200 || file_exists( $pathnoext.'.jpg' ) ) {
-				$ext = '.jpg';
-			} else if ( file_exists( $pathnoext.'.gif' ) ) {
-				$ext = '.gif';
-			} else {
-				$ext = '';
-			}
-			if ( $ext ) {
-				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
-				$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
-			} else {
-				$icon = '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>';
-			}
-			$html.=  '<li data-mode="file" data-index="'.$index.'">'
-					.$icon
-					.'<a class="lipath">'.$path.'</a>'
-					.'<span class="single">'.$each->dir.'</span>'
-					.'</li>';
-		}
-		$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-		$array = [ 'html' => $html, 'index' => $indexbar ];
+		$array = directoryList( $lists );
 	} else {
 		$f = $formatall; // set format for directory with files only - track list
 		$format = '%'.implode( '%^^%', $f ).'%';
@@ -215,6 +183,7 @@ case 'webradio':
 	$dirwebradios = '/srv/http/data/webradios';
 	$lists = array_slice( scandir( $dirwebradios ), 2 );
 	if ( !count( $lists ) ) exit( '-1' );
+	
 	foreach( $lists as $list ) {
 		$each = ( object )[];
 		$name = exec( "sed -n 1p '$dirwebradios/$list'" );
@@ -363,7 +332,7 @@ function htmlList( $mode, $lists ) { // non-file 'list' command
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
 	return [ 'html' => $html, 'index' => $indexbar ];
 }
-function htmlTracks( $lists, $f, $filemode = '', $string = '' ) { // track list - no sort ($string: cuefile or search)
+function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
@@ -436,7 +405,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '' ) { // track list 
 			$icon = 'artist';
 		}
 		$album = $each0->album;
-		$dir = dirname( $file0 );
+		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$sh = [ ( $cue ? $dir : $file0 ), $artist, $album, 'licover' ];
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "';
 		$script.= escape( implode( "\n", $sh ) ).'"';
@@ -478,6 +447,48 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '' ) { // track list 
 	}
 		
 	return [ 'html' => $coverhtml.$html ];
+}
+function directoryList( $lists ) {
+	foreach( $lists as $list ) {
+		$dir = basename( $list );
+		$each = ( object )[];
+		$each->path = $list;
+		$each->dir  = $dir;
+		$each->sort = stripSort( $dir );
+		$array[] = $each;
+	}
+	usort( $array, function( $a, $b ) {
+		return strnatcasecmp( $a->sort, $b->sort );
+	} );
+	$nas200 = $count > 200 && substr( $string, 0, 3 ) === 'NAS';
+	$time = time();
+	$html = '';
+	foreach( $array as $each ) {
+		$path = $each->path;
+		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+		$indexes[] = $index;
+		$pathnoext = '/mnt/MPD/'.$path.'/thumb';
+		if ( $nas200 || file_exists( $pathnoext.'.jpg' ) ) {
+			$ext = '.jpg';
+		} else if ( file_exists( $pathnoext.'.gif' ) ) {
+			$ext = '.gif';
+		} else {
+			$ext = '';
+		}
+		if ( $ext ) {
+			$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
+			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
+		} else {
+			$icon = '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>';
+		}
+		$html.=  '<li data-mode="file" data-index="'.$index.'">'
+				.$icon
+				.'<a class="lipath">'.$path.'</a>'
+				.'<span class="single">'.$each->dir.'</span>'
+				.'</li>';
+	}
+	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	return [ 'html' => $html, 'index' => $indexbar ];
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

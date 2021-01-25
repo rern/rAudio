@@ -74,7 +74,6 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		getPlaybackStatus();
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		setTimeout( function() {
 			if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 		}, 1000 );
@@ -335,7 +334,7 @@ function psPlaylist( data ) {
 }
 function psRelays( response ) { // on receive broadcast
 	var stopwatch = '<img src="/assets/img/stopwatch.'+ hash +'.svg">';
-	clearInterval( G.intRelaysTimer );
+	clearInterval( G.relaystimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
 	} else if ( 'off' in response ) {
@@ -356,28 +355,22 @@ function psRelays( response ) { // on receive broadcast
 		
 		var delay = response.delay;
 		info( {
-			  icon        : 'relays'
-			, title       : 'GPIO Relays Countdown'
-			, message     : stopwatch
-			, footer      : '<white>'+ delay +'</white>'
-			, buttonwidth : 1
-			, buttonlabel : '<i class="fa fa-relays"></i>Off'
-			, buttoncolor : red
-			, button      : function() {
-				bash( '/srv/http/bash/relays.py false' );
-			}
-			, oklabel     : '<i class="fa fa-refresh"></i>Reset'
-			, ok          : function() {
+			  icon    : 'relays'
+			, title   : 'GPIO Relays Countdown'
+			, message : stopwatch
+			, footer  : '<white>'+ delay +'</white>'
+			, oklabel : 'Reset'
+			, ok      : function() {
 				bash( [ 'relaystimerreset' ] );
 			}
 		} );
 		delay--
-		G.intRelaysTimer = setInterval( function() {
+		G.relaystimer = setInterval( function() {
 			if ( delay === 1 ) {
 				G.status.relayson = false;
 				setButtonOptions();
 				$( '#infoX' ).click();
-				clearInterval( G.intRelaysTimer );
+				clearInterval( G.relaystimer );
 			}
 			$( '#infoFooter white' ).text( delay-- );
 		}, 1000 );

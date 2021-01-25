@@ -313,6 +313,10 @@ function nicsStatus() {
 				htmllan += '</li>';
 			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
 				if ( !val.ip && !G.hostapd ) return
+				if ( val.dbm > 0 ) { // percent
+					good = 66;
+					fair = 56;
+				}
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
 				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
 				if ( G.hostapd ) {

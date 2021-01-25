@@ -92,7 +92,7 @@ function list2JSON( list ) {
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			$( '.container' ).addClass( 'hide' );
-			$( '.codepage' ).html( errors ).removeClass( 'hide' );
+			$( '#data' ).html( errors ).removeClass( 'hide' );
 			$( '#loader' ).addClass( 'hide' );
 			$( '.head' ).removeClass( 'hide' );
 			return false
@@ -113,13 +113,13 @@ function resetLocal( ms ) {
 	setTimeout( bannerHide, ms || 2000 );
 }
 function showContent() {
-	if ( $( '.codepage' ).hasClass( 'hide' ) ) {
+	if ( $( '#data' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {
 			loader( 'hide' );
 			$( '.head, .container' ).removeClass( 'hide' );
 		}, 300 );
 	} else {
-		$( '.codepage' ).html( JSON.stringify( G, null, 2 ) );
+		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
 function validateIP( ip ) {  
@@ -259,17 +259,19 @@ $( '#close' ).click( function() {
 		location.href = '/';
 	}
 } );
-$( '.page-icon' ).click( function() {
+$( '#button-data' ).click( function() {
 	if ( !G ) return
 	
-	if( $( '.codepage' ).hasClass( 'hide' ) ) {
+	if( $( '#data' ).hasClass( 'hide' ) ) {
 		$( '.container' ).addClass( 'hide' );
-		$( '.codepage' )
+		$( '#data' )
 			.html( JSON.stringify( G, null, 2 ) )
 			.removeClass( 'hide' );
+		$( '#button-data' ).addClass( 'fa fa-times' );
 	} else {
 		$( '.container' ).removeClass( 'hide' );
-		$( '.codepage' ).addClass( 'hide' );
+		$( '#data' ).addClass( 'hide' );
+		$( '#button-data' ).removeClass( 'fa fa-times' );
 	}
 } ).on( 'mousedown touchdown', function() {
 	timer = setTimeout( function() {
@@ -304,7 +306,7 @@ $( '.status' ).click( function( e ) {
 // bar-bottom
 if ( short ) {
 	$( '#bar-bottom' ).addClass( 'transparent' );
-	$( '.container, .codepage' ).click( function() {
+	$( '.container, #data' ).click( function() {
 		$( '#bar-bottom' ).addClass( 'transparent' );
 	} );
 }
