@@ -304,7 +304,7 @@ $menu.= '</div>';
 				<img id="coverart" class="cover hide">
 				<div id="vu" class="hide">
 					<svg viewBox="0 0 230 230">
-					<filter id="vushadow"><feDropShadow dx="-3" dy="3" stdDeviation="4"/></filter>
+					<filter id="vushadow"><feDropShadow dx="-3" dy="3" stdDeviation="6"/></filter>
 					<rect class="cls-1" width="230" height="125"/>
 
 					<path class="cls-3" d="M147.19,53.55a168.5,168.5,0,0,1,50.93,18.7" transform="translate(0 0)"/><line class="cls-4" x1="154.41" y1="57.16" x2="156.09" y2="50.37"/><line class="cls-5" x1="162.44" y1="59.31" x2="165.13" y2="50.2"/><line class="cls-5" x1="179.48" y1="65.36" x2="183" y2="56.53"/><line class="cls-5" x1="197.04" y1="73.93" x2="201.7" y2="65.65"/>
