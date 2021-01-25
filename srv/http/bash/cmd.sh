@@ -696,6 +696,16 @@ randomfile )
 refreshbrowser )
 	pushstream reload 1
 	;;
+relayscountdown )
+	relaysfile=$dirtmp/relaystimer
+	if [[ -e $relaysfile ]] && (( $( cat $relaysfile ) < 2 )); then
+		killall relaystimer.sh &> /dev/null
+		echo 1 > $relaysfile
+		$dirbash/relaystimer.sh &> /dev/null &
+		curl -s -X POST http://127.0.0.1/pub?id=relays \
+			-d '{ "state": "IDLE", "delay": 60 }'
+	fi
+	;;
 relaystimerreset )
 	awk '/timer/ {print $NF}' /etc/relays.conf > $dirtmp/relaystimer
 	pushstream relays '{"state":"RESET"}'

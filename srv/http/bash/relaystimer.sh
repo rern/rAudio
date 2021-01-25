@@ -1,12 +1,11 @@
 #!/bin/bash
 
 relaysfile=/srv/http/data/shm/relaystimer
+[[ ! -e $relaysfile ]] && exit
+
 timer=$( cat $relaysfile )
 i=$timer
-
 while sleep 60; do
-	[[ ! -e $relaysfile ]] && exit
-	
 	if grep -q RUNNING /proc/asound/card*/pcm*/sub*/status; then # state: RUNNING
 		[[ $i != $timer ]] && echo $timer > $relaysfile
 	else
