@@ -74,6 +74,9 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		getPlaybackStatus();
+		setTimeout( function() {
+			if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
+		}, 1000 );
 	} else if ( status === 0 ) { // disconnect
 		bannerHide();
 	}
@@ -331,7 +334,7 @@ function psPlaylist( data ) {
 }
 function psRelays( response ) { // on receive broadcast
 	var stopwatch = '<img src="/assets/img/stopwatch.'+ hash +'.svg">';
-	clearInterval( G.relaystimer );
+	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
 	} else if ( 'off' in response ) {
@@ -348,7 +351,7 @@ function psRelays( response ) { // on receive broadcast
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
 	} else if ( state === 'IDLE' ) {
-		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+//		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 		
 		var delay = response.delay;
 		info( {
@@ -362,12 +365,12 @@ function psRelays( response ) { // on receive broadcast
 			}
 		} );
 		delay--
-		G.relaystimer = setInterval( function() {
+		G.intRelaysTimer = setInterval( function() {
 			if ( delay === 1 ) {
 				G.status.relayson = false;
 				setButtonOptions();
 				$( '#infoX' ).click();
-				clearInterval( G.relaystimer );
+				clearInterval( G.intRelaysTimer );
 			}
 			$( '#infoFooter white' ).text( delay-- );
 		}, 1000 );

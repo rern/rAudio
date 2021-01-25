@@ -58,7 +58,7 @@ function bookmarkThumbReplace( $this, newimg ) {
 	}
 }
 function clearIntervalAll() {
-	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intVu ].forEach( function( el ) {
+	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
 }
