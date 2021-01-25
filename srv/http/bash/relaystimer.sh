@@ -1,8 +1,6 @@
 #!/bin/bash
 
 relaysfile=/srv/http/data/shm/relaystimer
-[[ ! -e $relaysfile ]] && exit
-
 timer=$( cat $relaysfile )
 i=$timer
 while sleep 60; do
