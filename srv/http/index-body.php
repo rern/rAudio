@@ -304,7 +304,7 @@ $menu.= '</div>';
 				<img id="coverart" class="cover hide">
 				<div id="vu" class="hide">
 					<svg viewBox="0 0 230 230">
-					<filter id="vushadow"><feDropShadow dx="-3" dy="3" stdDeviation="6"/></filter>
+					<filter id="vushadow"><feDropShadow dx="-3" dy="3" stdDeviation="4"/></filter>
 					<rect class="cls-1" width="230" height="125"/>
 
 					<path class="cls-3" d="M147.19,53.55a168.5,168.5,0,0,1,50.93,18.7" transform="translate(0 0)"/><line class="cls-4" x1="154.41" y1="57.16" x2="156.09" y2="50.37"/><line class="cls-5" x1="162.44" y1="59.31" x2="165.13" y2="50.2"/><line class="cls-5" x1="179.48" y1="65.36" x2="183" y2="56.53"/><line class="cls-5" x1="197.04" y1="73.93" x2="201.7" y2="65.65"/>
@@ -327,7 +327,7 @@ $menu.= '</div>';
 					<rect x="10" y="10" class="cls-20" width="210" height="105"/>
 					<polygon class="cls-21" points="220.06 115.02 10 115.02 10 9.99 14.03 14 14.03 111 216.03 111 220.06 115.02"/><polygon class="cls-22" points="220.06 115.02 216.03 111 216.03 14 14.03 14 10 9.99 220.06 9.99 220.06 115.02"/>
 					
-					<line class="cls-20" x1="216" y1="14" x2="220" y2="10"/><line class="cls-20" x1="10" y1="115" x2="14" y2="111"/>
+					<line class="cls-24" x1="216" y1="14" x2="220" y2="10"/><line class="cls-24" x1="10" y1="115" x2="14" y2="111"/>
 					
 					<path d="M0,0V230H230V0ZM220,115H10V10H220Z"/>
 					</svg>
