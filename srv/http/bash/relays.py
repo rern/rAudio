@@ -101,7 +101,7 @@ if sys.argv[ 1 ] == 'true':
         file.write( str( timer ) )
     os.chmod( relaysfile, 0o777 )
 
-    subprocess.Popen( [ '/srv/http/bash/relaystimer.sh' ] )
+    subprocess.Popen( [ '/srv/http/bash/relaystimer.sh &> /dev/null &' ] )
 
 elif sys.argv[ 1 ] == 'false':
     os.path.exists( relaysfile ) and os.remove( relaysfile )
