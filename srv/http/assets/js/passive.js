@@ -355,12 +355,16 @@ function psRelays( response ) { // on receive broadcast
 		
 		var delay = response.delay;
 		info( {
-			  icon    : 'relays'
-			, title   : 'GPIO Relays Countdown'
-			, message : stopwatch
-			, footer  : '<white>'+ delay +'</white>'
-			, oklabel : 'Reset'
-			, ok      : function() {
+			  icon        : 'relays'
+			, title       : 'GPIO Relays Countdown'
+			, message     : stopwatch
+			, footer      : '<white>'+ delay +'</white>'
+			, buttonlabel : 'Off'
+			, button      : function() {
+				bash( '/srv/http/bash/relays.py false' );
+			}
+			, oklabel     : 'Reset'
+			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
 			}
 		} );
