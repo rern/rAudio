@@ -889,9 +889,6 @@ i.map.disabled, .map.disabled i {
 									  /* x   y   w    h */
 	z-index: 6;
 }
-#stopwatch {
-	width: 80px;
-}
 
 .cover-save {
 	position: absolute;
