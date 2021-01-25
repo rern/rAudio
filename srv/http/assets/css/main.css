@@ -862,13 +862,14 @@ i.map.disabled, .map.disabled i {
 .cls-3,.cls-4,.cls-5,.cls-6,.cls-13 { stroke: #ff0000; }
 .cls-2,.cls-7,.cls-14,.cls-17,.cls-18,.cls-19,.cls-20,.cls-21,.cls-22 { stroke: #000000; }
 .cls-18 { opacity: 0.3; }
+.cls-20 { fill: none; stroke-width: 5px; filter:url(#vushadow); }
 .cls-3 { stroke-width: 4px; }
 .cls-14 { stroke-width: 3px; }
 .cls-17 { stroke-width: 2px; }
 .cls-5,.cls-7 { stroke-width: 1.3px; }
 .cls-18,.cls-19 { stroke-width: 1px; }
 .cls-2,.cls-4,.cls-13 { stroke-width: 0.5px; }
-.cls-20,.cls-21,.cls-22 { stroke-width: 0.2px; }
+.cls-21,.cls-22 { stroke-width: 0.2px; }
 .cls-14,.cls-17 { stroke-linecap: round; }
 .cls-23 { fill:var(--cg70); }
 #vuneedle {
