@@ -8,9 +8,10 @@ dirtmp=$dirdata/shm
 systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
+uname -a | grep -q aarch64 && aarch64=1
 # lcd
-sed -i 's/ console=ttyAMA0.*ProFont6x11//' /boot/cmdline.txt
-sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf
+sed -i 's/ console=ttyAMA0.*ProFont6x11//' /boot/cmdline.txt 2> /dev/null
+sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf 2> /dev/null
 sed -i 's/fb1/fb0/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf 2> /dev/null
 
 if [[ -n $1 ]]; then # from create-ros.sh
@@ -19,7 +20,8 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
-	config="\
+	if [[ -z $aarch64 ]]; then
+		config="\
 over_voltage=2
 hdmi_drive=2
 force_turbo=1
@@ -30,11 +32,12 @@ disable_splash=1
 disable_overscan=1
 dtparam=audio=on
 "
-	rpi=$( /srv/http/bash/system.sh hwrpi )
-	[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
-	[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
-	
-	echo -n "$config" > /boot/config.txt
+		rpi=$( /srv/http/bash/system.sh hwrpi )
+		[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
+		[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
+		
+		echo -n "$config" > /boot/config.txt
+	fi
 fi
 # data directories
 mkdir -p $dirdata/{addons,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
