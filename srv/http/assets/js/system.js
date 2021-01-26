@@ -74,7 +74,7 @@ refreshData = function() {
 		var cpu = G.rpi01 ? '' : '4 ';
 		cpu += G.soccpu +' <gr>@</gr> ';
 		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
-		cpu += ' <gr>&bull;</gr> '+ G.socram;
+		if ( G.socram ) cpu += ' <gr>&bull;</gr> '+ G.socram;
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr><br>'
 			+ G.rpimodel.replace( /(Rev.*)$/, '<gr>$1</gr>' ) +'<br>'
