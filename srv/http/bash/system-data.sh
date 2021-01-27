@@ -15,14 +15,7 @@ data='
 
 dirsystem=/srv/http/data/system
 
-if uname -a | grep -q aarch64; then
-	rpi=$( cat /proc/device-tree/model | cut -d' ' -f3 )
-	if [[ $rpi == 4 ]]; then
-		soc=BCM2711
-	elif [[ $rpi == 3 ]]; then
-		soc=BCM2837
-	fi
-else
+if [[ -e /boot/cmdline.txt ]]; then # not aarch64
 	revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
 	case ${revision: -4:1} in
 		0 ) soc=BCM2835;;
@@ -36,6 +29,13 @@ else
 		b ) socram+='2GB';;
 		c ) socram+='4GB';;
 	esac
+else # aarch64
+	rpi=$( cat /proc/device-tree/model | cut -d' ' -f3 )
+	if [[ $rpi == 4 ]]; then
+		soc=BCM2711
+	elif [[ $rpi == 3 ]]; then
+		soc=BCM2837
+	fi
 fi
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
