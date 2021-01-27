@@ -19,7 +19,8 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
-	config="\
+	if [[ -e /boot/cmdline.txt ]]; then
+		config="\
 over_voltage=2
 hdmi_drive=2
 force_turbo=1
@@ -30,14 +31,14 @@ disable_splash=1
 disable_overscan=1
 dtparam=audio=on
 "
-	rpi=$( /srv/http/bash/system.sh hwrpi )
-	[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
-	[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
-	
-	echo -n "$config" > /boot/config.txt
-	if [[ -e /boot/cmdline.txt ]]; then
+		rpi=$( /srv/http/bash/system.sh hwrpi )
+		[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
+		[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
+		
+		echo -n "$config" > /boot/config.txt
 		grep -q fbcon=map /boot/cmdline.txt && sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	elif grep -q fbcon=map /boot/boot.txt; then
+		echo max_usb_current=1 > /boot/config.txt
 		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/boot.txt
 		mkimage -A arm -O linux -T script -C none -n "U-Boot boot script" -d /boot/boot.txt /boot/boot.scr
 	fi
