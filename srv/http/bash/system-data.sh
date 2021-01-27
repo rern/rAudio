@@ -24,18 +24,16 @@ if [[ -e /boot/cmdline.txt ]]; then # not aarch64
 		3 ) soc=BCM2711;;
 	esac
 	case ${revision: -6:1} in
-		9 ) socram+='512KB';;
-		a ) socram+='1GB';;
-		b ) socram+='2GB';;
-		c ) socram+='4GB';;
+		9 ) socram='512KB';;
+		a ) socram='1GB';;
+		b ) socram='2GB';;
+		c ) socram='4GB';;
 	esac
 else # aarch64
 	rpi=$( cat /proc/device-tree/model | cut -d' ' -f3 )
-	if [[ $rpi == 4 ]]; then
-		soc=BCM2711
-	elif [[ $rpi == 3 ]]; then
-		soc=BCM2837
-	fi
+	[[ $rpi == 4 ]] && soc=BCM2711 || soc=BCM2837
+	mem=$( free -h | grep Mem | awk '{print $2}' | sed 's/[^0-9.]//'g )
+	socram=$( awk 'BEGIN { printf "%.0fGB", '$mem' }' )
 fi
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
