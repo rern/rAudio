@@ -256,6 +256,7 @@ blb {
 }
 gr, grl,
 .gr { color: var( --cg60 ) !important; }
+red, .red { color: #f00; }
 whl, grl,
 .whl, .grl,
 .albumradio,

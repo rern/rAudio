@@ -473,9 +473,20 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 }
 function getPlaybackStatus( render ) {
 	local();
-	bash( '/srv/http/bash/status.sh', function( status ) {
-		if ( !status ) return
+	bash( '/srv/http/bash/status.sh', function( list ) {
+		try {
+			var status = JSON.parse( list );
+		} catch( e ) {
+			var msg = e.message.split( ' ' );
+			var pos = msg.pop();
+			var errors = '<red>Error:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+						+'<hr>'
+						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+			$( '#data' ).html( errors ).removeClass( 'hide' );
+			return false
+		}
 		
+		$( '#data' ).empty().addClass( 'hide' );
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -509,7 +520,7 @@ function getPlaybackStatus( render ) {
 			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
-	}, 'json' );
+	} );
 }
 function getPlaylist() {
 	list( { cmd: 'current' }, renderPlaylist, 'json' );

@@ -91,12 +91,10 @@ function list2JSON( list ) {
 			var errors = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			$( '.container' ).addClass( 'hide' );
 			$( '#data' ).html( errors ).removeClass( 'hide' );
-			$( '#loader' ).addClass( 'hide' );
-			$( '.head' ).removeClass( 'hide' );
 			return false
 		}
+		$( '#data' ).empty().addClass( 'hide' );
 		if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 		return true
 }
