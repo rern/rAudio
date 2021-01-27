@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+[[ -e /srv/http/bash/ply-image ]] && mv /srv/http/bash/ply-image /usr/bin
+
 crontab -l | grep -q addonsupdates || ( crontab -l &> /dev/null; echo '00 01 * * * /srv/http/bash/cmd.sh addonsupdates &' ) | crontab -
 
 if ! grep -q usbremove /etc/conf.d/devmon; then

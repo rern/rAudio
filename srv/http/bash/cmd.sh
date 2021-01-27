@@ -678,13 +678,7 @@ power )
 	else
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'
 	fi
-	if [[ -e $dirbash/ply-image ]]; then
-		if [[ -e /boot/cmdline.txt ]]; then
-			$dirbash/ply-image /srv/http/assets/img/splash.png &> /dev/null
-		else
-			$dirbash/ply-image64 /srv/http/assets/img/splash.png &> /dev/null
-		fi
-	fi
+	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3

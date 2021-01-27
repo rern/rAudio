@@ -72,11 +72,7 @@ localbrowserdisable )
 	featureDisable localbrowser
 	systemctl enable --now getty@tty1
 	sed -i 's/tty3/tty1/' /boot/cmdline.txt
-	if [[ -e /boot/cmdline.txt ]]; then
-		$dirbash/ply-image /srv/http/assets/img/splash.png
-	else
-		$dirbash/ply-image64 /srv/http/assets/img/splash.png
-	fi
+	ply-image /srv/http/assets/img/splash.png
 	;;
 localbrowserset )
 	rotate=${args[1]}
@@ -112,11 +108,7 @@ localbrowserset )
 				sed -e "s/ROTATION_SETTING/$rotate/
 				" -e "s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 			fi
-			if [[ -e /boot/cmdline.txt ]]; then
-				$dirbash/ply-image /srv/http/assets/img/splash.png
-			else
-				$dirbash/ply-image64 /srv/http/assets/img/splash.png
-			fi
+			ply-image /srv/http/assets/img/splash.png
 			systemctl restart localbrowser
 		fi
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
