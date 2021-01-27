@@ -8,7 +8,6 @@ dirtmp=$dirdata/shm
 systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
-uname -a | grep -q aarch64 && aarch64=1
 # lcd
 sed -i 's/ console=ttyAMA0.*ProFont6x11//' /boot/cmdline.txt 2> /dev/null
 sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf 2> /dev/null
