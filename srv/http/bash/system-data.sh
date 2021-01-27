@@ -15,18 +15,13 @@ data='
 
 dirsystem=/srv/http/data/system
 
-if [[ -e /boot/cmdline.txt ]]; then # not aarch64
-	revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
-	case ${revision: -4:1} in
-		0 ) soc=BCM2835;;
-		1 ) soc=BCM2836;;
-		2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
-		3 ) soc=BCM2711;;
-	esac
-else # aarch64
-	rpi=$( cat /proc/device-tree/model | cut -d' ' -f3 )
-	[[ $rpi == 4 ]] && soc=BCM2711 || soc=BCM2837
-fi
+revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
+case ${revision: -4:1} in
+	0 ) soc=BCM2835;;
+	1 ) soc=BCM2836;;
+	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
+	3 ) soc=BCM2711;;
+esac
 socram=$( free -h | grep Mem | awk '{print $2}' )B
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )

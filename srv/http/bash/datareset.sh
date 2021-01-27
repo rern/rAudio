@@ -9,7 +9,6 @@ systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
 # lcd
-sed -i 's/ console=ttyAMA0.*ProFont6x11//' /boot/cmdline.txt 2> /dev/null
 sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf 2> /dev/null
 sed -i 's/fb1/fb0/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf 2> /dev/null
 
@@ -19,29 +18,24 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
-	if [[ -e /boot/cmdline.txt ]]; then
-		config="\
-over_voltage=2
-hdmi_drive=2
+	config="\
 force_turbo=1
+hdmi_drive=2
+over_voltage=2
 gpu_mem=32
 initramfs initramfs-linux.img followkernel
 max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on
+dtparam=krnbt=on
 "
-		rpi=$( /srv/http/bash/system.sh hwrpi )
-		[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
-		[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
-		
-		echo -n "$config" > /boot/config.txt
-		grep -q fbcon=map /boot/cmdline.txt && sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	elif grep -q fbcon=map /boot/boot.txt; then
-		echo max_usb_current=1 > /boot/config.txt
-		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/boot.txt
-		mkimage -A arm -O linux -T script -C none -n "U-Boot boot script" -d /boot/boot.txt /boot/boot.scr
-	fi
+	rpi=$( /srv/http/bash/system.sh hwrpi )
+	[[ $rpi != 0 ]] && config=$( sed '/force_turbo\|hdmi_drive\|over_voltage/ d' <<<"$config" )
+	echo -n "$config" > /boot/config.txt
+	[[ $rpi > 1 ]] && isolcpus=' isolcpus=3'
+	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes$isolcpus console=tty1"
+	echo $cmdline > $BOOT/cmdline.txt
 fi
 # data directories
 mkdir -p $dirdata/{addons,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
