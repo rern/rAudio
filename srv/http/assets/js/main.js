@@ -1052,7 +1052,7 @@ $( '.btn-cmd' ).click( function() {
 				bash( '/srv/http/bash/upnp-stop.sh' );
 			}
 			if ( G.status.player !== 'mpd' ) {
-				banner( nameplayer[ G.status.player ], 'Stop ...', G.status.player +' blink' );
+				banner( nameplayer[ G.status.player ], 'Stop ...', G.status.player +' blink', -1 );
 				return
 			}
 			
