@@ -117,8 +117,6 @@ fi
 rfkill | grep -q wlan && iw wlan0 set power_save off
 
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-[[ $? != 0 ]] exit
-
-$dirbash/cmd.sh addonsupdates
+[[ $? == 0 ]] && $dirbash/cmd.sh addonsupdates
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
