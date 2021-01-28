@@ -48,9 +48,10 @@ foreach( $arrayalias as $alias ) {
 	$versioninstalled = file_exists( "$diraddons/$alias" ) ? trim( file_get_contents( "$diraddons/$alias" ) ) : 1;
 	$update = 0;
 	// hide by conditions
-	$addonhide = $addon[ 'hide' ];
-	$addonhide = $addonhide === 1 || $addonhide === true || exec( $addonhide );
-	if ( $addonhide ) continue;
+	if ( isset( $addon[ 'hide' ] ) ) {
+		$addonhide = $addon[ 'hide' ];
+		if ( $addonhide === 1 || exec( $addonhide ) ) continue;
+	}
 	
 	$buttonlabel = $addon[ 'buttonlabel' ] ?? '<i class="fa fa-plus-circle"></i>Install';
 	if ( $nouninstall || ( $versioninstalled && file_exists( "/usr/local/bin/uninstall_$alias.sh" ) ) ) {
