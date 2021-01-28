@@ -27,6 +27,8 @@ dirsystem=$dirdata/system
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
+	[[ ${partition:0:8} != /dev/mmc ]] && exit
+	
 	dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
