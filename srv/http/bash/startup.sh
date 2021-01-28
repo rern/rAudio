@@ -17,8 +17,8 @@
 # check addons updates
 # continue mpd update if pending
 
+dirbash=/srv/http/bash
 dirdata=/srv/http/data
-dirbash=$dirdata/bash
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
