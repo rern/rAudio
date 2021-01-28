@@ -53,12 +53,6 @@ if [[ $( /srv/http/bash/system.sh hwrpi ) == 4 ]]; then
 		sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf
 		title "$info Reboot required."
 	fi
-else
-	if uname -a | grep -q aarch64 && grep -q bootloader /etc/pacman.conf; then
-		sed -i '/raspberrypi-bootloader/ d' /etc/pacman.conf
-		pacman -Sy raspberrypi-bootloader raspberrypi-bootloader-x
-		title "$info Reboot required."
-	fi
 fi
 
 installfinish
