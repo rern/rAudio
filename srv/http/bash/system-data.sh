@@ -57,7 +57,7 @@ data+='
 	, "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
 	, "hostapd"         : '$( systemctl -q is-active hostapd && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
-	, "kernel"          : "'$( uname -r )'"
+	, "kernel"          : "'$( uname -rm )'"
 	, "lcd"             : '$lcd'
 	, "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
