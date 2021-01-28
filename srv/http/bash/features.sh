@@ -71,7 +71,7 @@ hostapdset )
 localbrowserdisable )
 	featureDisable localbrowser
 	systemctl enable --now getty@tty1
-	sed -i 's/tty3/tty1/' /boot/cmdline.txt
+	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	ply-image /srv/http/assets/img/splash.png
 	;;
 localbrowserset )
@@ -118,7 +118,7 @@ localbrowserset )
 		systemctl restart localbrowser
 		systemctl enable localbrowser
 	fi
-	sed -i 's/tty1/tty3/' /boot/cmdline.txt
+	sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	echo -n "\
 rotate=$rotate
 screenoff=$screenoff
