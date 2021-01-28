@@ -20,6 +20,9 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
+	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
+	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
+dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes isolcpus=3 console=tty1"
 	config="\
 force_turbo=1
 hdmi_drive=2
@@ -30,15 +33,14 @@ max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on
-dtparam=krnbt=on
-"
-	rpi=$( /srv/http/bash/system.sh hwrpi )
-	[[ $rpi != 0 ]] && config=$( sed '/force_turbo\|hdmi_drive\|over_voltage/ d' <<<"$config" )
-	echo -n "$config" > /boot/config.txt
-	partuuidROOT=$( blkid | awk '/LABEL="ROOT"/ {print $NF}' | tr -d '"' )
-	[[ $rpi > 1 ]] && isolcpus=' isolcpus=3'
-	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes$isolcpus console=tty1"
-	echo $cmdline > $BOOT/cmdline.txt
+dtparam=krnbt=on"
+	if [[ $( /srv/http/bash/system.sh hwrpi ) == 0 ]]; then # RPi Zero
+		cmdline=${cmdline/ isolcpus=3}
+	else
+		config=$( sed '/force_turbo\|hdmi_drive\|over_voltage/ d' <<<"$config" )
+	fi
+	echo $cmdline > /boot/cmdline.txt
+	echo "$config" > /boot/config.txt
 fi
 # data directories
 mkdir -p $dirdata/{addons,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
