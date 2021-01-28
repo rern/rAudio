@@ -250,17 +250,6 @@ addonslist )
 	url=$( jq -r .push.url $diraddons/addons-list.json )
 	[[ -n $url ]] && wget $url -qO - | sh
 	;;
-addonsupdates )
-	installed=$( ls "$diraddons" | grep -v addons-list )
-	for addon in $installed; do
-		verinstalled=$( cat $diraddons/$addon )
-		if (( ${#verinstalled} > 1 )); then
-			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-			[[ $verinstalled != $verlist ]] && count=1 && break
-		fi
-	done
-	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
-	;;
 bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
@@ -537,14 +526,6 @@ nicespotify )
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
-	;;
-partexpand )
-	dev=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
-		partprobe $dev
-		resize2fs ${dev}p2
-	fi
 	;;
 pladd )
 	item=${args[1]}
