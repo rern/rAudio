@@ -18,26 +18,29 @@
 # continue mpd update if pending
 
 dirdata=/srv/http/data
-dirbash=$dirdata/bash
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
-	$dirbash/cmd.sh partexpand
-	[[ -z $( $dirbash/system.sh hwwireless ) ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	if (( $( sfdisk -F /dev/mmcblk0 | head -n1 | awk '{print $6}' ) != 0 )); then
+		echo -e "d\n\nn\n\n\n\n\nw" | fdisk /dev/mmcblk0 &>/dev/null
+		partprobe /dev/mmcblk0
+		resize2fs /dev/mmcblk0p2
+	fi
+	[[ -z $( /srv/http/bash/system.sh hwwireless ) ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
 	mv /boot/backup.gz $dirdata/tmp
-	$dirbash/system.sh datarestore
+	/srv/http/bash/system.sh datarestore
 	reboot=1
 fi
 if [[ -e /boot/lcd ]]; then
 	rm /boot/lcd
 	if [[ ! -e $dirsystem/lcd ]]; then
-		$dirbash/system.sh lcd$'\n'true
+		/srv/http/bash/system.sh lcd$'\n'true
 		reboot=1
 	fi
 fi
@@ -47,12 +50,14 @@ if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
+	chown http:http "$dirsystem/netctl-$ssid" "/etc/netctl/$ssid"
+	systemctl disable netctl-auto@wlan0
 	netctl start "$ssid"
 	systemctl enable netctl-auto@wlan0
 fi
 # ----------------------------------------------------------------------------
 
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
+[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdchar.py
 
 touch $dirdata/shm/player-mpd
 
@@ -61,9 +66,9 @@ touch $dirdata/shm/player-mpd
 # no enabled profile >> disable onboard
 ! systemctl -q is-enabled netctl-auto@wlan0 && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
 
-[[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
+[[ -e $dirsystem/soundprofile ]] && /srv/http/bash/system soundprofile
 
-$dirbash/mpd-conf.sh # mpd start by this script
+/srv/http/bash/mpd-conf.sh # mpd start by this script
 
 sleep 10 # wait for network interfaces
 
@@ -103,13 +108,13 @@ elif [[ -e $dirsystem/updating ]]; then
 	path=$( cat $dirsystem/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
+	/srv/http/bash/cmd-list.sh &> dev/null &
 fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
 if ! ifconfig | grep -q 'inet.*broadcast'; then
-	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+	systemctl -q is-enabled hostapd || /srv/http/bash/features.sh hostapdset
 	systemctl -q disable hostapd 
 	exit
 fi
@@ -119,6 +124,6 @@ rfkill | grep -q wlan && iw wlan0 set power_save off
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 [[ $? != 0 ]] exit
 
-$dirbash/cmd.sh addonsupdates
+/srv/http/bash/cmd.sh addonsupdates
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
