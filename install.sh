@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+rm -f /addons-list.json
+
 if [[ -e /srv/http/bash/ply-image ]]; then
 	mv /srv/http/bash/ply-image /usr/bin
 	sed -i 's|srv/http/bash|usr/bin|' /etc/systemd/system/bootsplash.service
