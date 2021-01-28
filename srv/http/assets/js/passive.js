@@ -242,8 +242,8 @@ function psMpdPlayer( data ) {
 		displayPlayback();
 		renderPlayback();
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
-		bannerHide();
 	}
+	setTimeout( bannerHide, 3000 );
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
