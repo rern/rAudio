@@ -6,6 +6,8 @@ alias=r1
 
 rm -f /addons-list.json
 
+sed -i 's/"//g' /etc/spotifyd.conf
+
 if [[ -e /srv/http/bash/ply-image ]]; then
 	mv /srv/http/bash/ply-image /usr/bin
 	sed -i 's|srv/http/bash|usr/bin|' /etc/systemd/system/bootsplash.service
