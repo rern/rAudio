@@ -136,7 +136,7 @@ audio_output {
 	encoder        "flac"
 	port           "8000"
 	quality        "5.0"
-	format         "44100:16:1"
+	format         "44100:16:2"
 	always_on      "yes"
 }'
 fi
