@@ -19,10 +19,10 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading data-status="journalctl" class="status">System<?=$code?></heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
+	<br>OS Kernel
 	<br>Hardware
 	<br>SoC
 	<br>CPU
-	<br>OS Kernel
 </div>
 <div id="systemvalue" class="col-r text"></div> 
 <div style="clear:both"></div>

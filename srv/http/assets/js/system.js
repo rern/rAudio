@@ -76,10 +76,10 @@ refreshData = function() {
 		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
-			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<gr>$1</gr>' )
-			+'<br>'+ G.soc + ( G.socram ? ' <gr>&bull;</gr> '+ G.socram : '' )
-			+'<br>'+ cpu
 			+'<br>'+ G.kernel
+			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<gr>$1</gr>' )
+			+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
+			+'<br>'+ cpu
 		);
 		$( '#status' ).html( renderStatus );
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
