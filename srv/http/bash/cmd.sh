@@ -395,6 +395,14 @@ displayget )
 }'
 echo "$data"
 	;;
+partexpand )
+	dev=$(  mount | awk '/ on \/ / {printf $1}' | head -c -2 )
+	if (( $( sfdisk -F $dev | head -n1 | awk '{print $6}' ) != 0 )); then
+		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
+		partprobe $dev
+		resize2fs ${dev}p2
+	fi
+	;;
 ignoredir )
 	touch $dirsystem/updating
 	path=${args[1]}
@@ -678,7 +686,7 @@ power )
 	else
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'
 	fi
-	$dirbash/ply-image /srv/http/assets/img/splash.png &> /dev/null
+	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3

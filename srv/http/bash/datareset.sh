@@ -9,9 +9,10 @@ systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
 # lcd
-sed -i 's/ console=ttyAMA0.*ProFont6x11//' /boot/cmdline.txt
-sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf
-sed -i 's/fb1/fb0/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf 2> /dev/null
+file=/etc/modules-load.d/raspberrypi.conf
+[[ -e $file ]] && sed -i '/i2c-bcm2708\|i2c-dev/ d' $file
+file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
+[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
 if [[ -n $1 ]]; then # from create-ros.sh
 	version=$1
@@ -19,22 +20,27 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
+	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
+	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
+dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes isolcpus=3 console=tty1"
 	config="\
-over_voltage=2
-hdmi_drive=2
 force_turbo=1
+hdmi_drive=2
+over_voltage=2
 gpu_mem=32
 initramfs initramfs-linux.img followkernel
 max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on
-"
-	rpi=$( /srv/http/bash/system.sh hwrpi )
-	[[ $rpi != 0 ]] && config=$( sed '/over_voltage\|hdmi_drive/ d' <<<"$config" )
-	[[ $rpi == 4 ]] && config=$( sed '/force_turbo/ d' <<<"$config" )
-	
-	echo -n "$config" > /boot/config.txt
+dtparam=krnbt=on"
+	if [[ $( /srv/http/bash/system.sh hwrpi ) == 0 ]]; then # RPi Zero
+		cmdline=${cmdline/ isolcpus=3}
+	else
+		config=$( sed '/force_turbo\|hdmi_drive\|over_voltage/ d' <<<"$config" )
+	fi
+	echo $cmdline > /boot/cmdline.txt
+	echo "$config" > /boot/config.txt
 fi
 # data directories
 mkdir -p $dirdata/{addons,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}

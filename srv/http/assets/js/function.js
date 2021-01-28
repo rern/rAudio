@@ -257,6 +257,7 @@ function displayBars() {
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
 		$( '#page-playback' ).addClass ( 'barshidden' );
+		$( '#button-data' ).addClass( 'nobars' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', 0 );
@@ -266,6 +267,7 @@ function displayBars() {
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
 		$( '#page-playback' ).removeClass ( 'barshidden' );
+		$( '#button-data' ).removeClass( 'nobars' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
@@ -473,9 +475,20 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 }
 function getPlaybackStatus( render ) {
 	local();
-	bash( '/srv/http/bash/status.sh', function( status ) {
-		if ( !status ) return
+	bash( '/srv/http/bash/status.sh', function( list ) {
+		try {
+			var status = JSON.parse( list );
+		} catch( e ) {
+			var msg = e.message.split( ' ' );
+			var pos = msg.pop();
+			var errors = '<red>Error:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+						+'<hr>'
+						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+			$( '#data' ).html( errors ).removeClass( 'hide' );
+			return false
+		}
 		
+		$( '#data' ).empty().addClass( 'hide' );
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -509,7 +522,7 @@ function getPlaybackStatus( render ) {
 			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
-	}, 'json' );
+	} );
 }
 function getPlaylist() {
 	list( { cmd: 'current' }, renderPlaylist, 'json' );

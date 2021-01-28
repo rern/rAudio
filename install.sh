@@ -4,6 +4,17 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+rm -f /addons-list.json
+
+sed -i 's/"//g' /etc/spotifyd.conf
+systemctl -q is-enabled spotifyd && systemctl restart spotifyd
+
+if [[ -e /srv/http/bash/ply-image ]]; then
+	mv /srv/http/bash/ply-image /usr/bin
+	sed -i 's|srv/http/bash|usr/bin|' /etc/systemd/system/bootsplash.service
+	systemctl daemon-reload
+fi
+
 crontab -l | grep -q addonsupdates || ( crontab -l &> /dev/null; echo '00 01 * * * /srv/http/bash/cmd.sh addonsupdates &' ) | crontab -
 
 if ! grep -q usbremove /etc/conf.d/devmon; then
@@ -33,13 +44,19 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
 
-if [[ $( /srv/http/bash/system.sh hwrevision ) == 11 ]]; then
+if [[ $( /srv/http/bash/system.sh hwrpi ) == 4 ]]; then
 	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
 		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-20201208-1-any.pkg.tar.xz
 		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-x-20201208-1-any.pkg.tar.xz
 		pacman -U --noconfirm raspberrypi-bootloader*
 		rm raspberrypi-bootloader*
 		sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf
+		title "$info Reboot required."
+	fi
+else
+	if uname -a | grep -q aarch64 && grep -q bootloader /etc/pacman.conf; then
+		sed -i '/raspberrypi-bootloader/ d' /etc/pacman.conf
+		pacman -Sy raspberrypi-bootloader raspberrypi-bootloader-x
 		title "$info Reboot required."
 	fi
 fi

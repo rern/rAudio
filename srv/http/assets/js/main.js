@@ -492,28 +492,29 @@ $( '#tab-library, #button-library' ).click( function() {
 		switchPage( 'library' );
 	}
 } );
-$( '#logo, #button-data' ).click( function() {
-	if ( !G.playback ) return
-	
+$( '#logo, #button-library, #button-data, #button-playlist' ).taphold( function() {
+	location.reload();
+} );
+$( '#logo' ).click( function() {
+	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+} );
+$( '#button-data' ).click( function() {
 	if( $( '#data' ).hasClass( 'hide' ) ) {
 		$( '#data' )
 			.html( JSON.stringify( G.status, null, 2 ) )
 			.toggleClass( 'nobars', !G.bars )
 			.removeClass( 'hide' );
-		$( '#button-data' )
+		$( this )
 			.removeAttr( 'class' )
-			.addClass( 'fa fa-times bl' );
+			.addClass( 'fa fa-times bl nobars' );
 	} else {
 		$( '#data' )
 			.addClass( 'hide' )
 			.css( 'max-height', '' );
-		$( '#button-data' )
+		$( this )
 			.removeAttr( 'class' )
 			.addClass( 'fa fa-redo transparent' );
 	}
-} );
-$( '#logo, #button-library, #button-data, #button-playlist' ).taphold( function() {
-	location.reload();
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {

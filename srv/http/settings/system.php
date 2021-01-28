@@ -19,10 +19,10 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading data-status="journalctl" class="status">System<?=$code?></heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
+	<br>OS Kernel
 	<br>Hardware
 	<br>SoC
 	<br>CPU
-	<br>OS Kernel
 </div>
 <div id="systemvalue" class="col-r text"></div> 
 <div style="clear:both"></div>
@@ -248,7 +248,7 @@ $listos = [
 	, 'NTFS-3G'                  => 'https://www.tuxera.com/community/open-source-ntfs-3g'
 	, 'Parted'                   => 'https://www.gnu.org/software/parted/parted.html'
 	, 'PHP'                      => 'http://php.net'
-	, 'ply-image'                => 'https://chromium.googlesource.com/chromiumos/third_party/ply-image/+/refs/heads/master/README.chromium'
+	, 'Plymouth-lite'            => 'https://github.com/T4d3o/Plymouth-lite'
 	, 'Python'                   => 'https://www.python.org'
 	, 'python-dbus'              => 'https://www.freedesktop.org/wiki/Software/DBusBindings/'
 	, 'PyGObject'                => 'https://wiki.gnome.org/Projects/PyGObject'

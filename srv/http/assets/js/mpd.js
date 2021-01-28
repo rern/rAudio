@@ -19,8 +19,12 @@ refreshData = function() {
 		if ( !list2G ) return
 		
 		var htmlstatus =  G.version +'<br>'
-						+ G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
+		if ( G.counts ) {
+			htmlstatus += G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
 						+ G.counts.webradio.toLocaleString() +'&nbsp;<i class="fa fa-webradio gr"></i>';
+		} else {
+			htmlstatus += '<gr>Updating ...</gr>';
+		}
 		if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 		$( '#statusvalue' ).html( htmlstatus );
 		if ( G.asoundcard == -1 ) {

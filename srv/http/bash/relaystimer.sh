@@ -14,7 +14,7 @@ while sleep 60; do
 		echo $i > $relaysfile
 		if (( $i < 6 && $i > 1 )); then
 			curl -s -X POST http://127.0.0.1/pub?id=notify \
-				-d '{ "title": "GPIO Relays Idle", "text": "'$i' minutes to OFF", "icon": "stopwatch" }'
+				-d '{ "title": "GPIO Relays Idle", "text": "'$i' minutes to OFF", "icon": "relays" }'
 		elif (( $i == 1 )); then
 			curl -s -X POST http://127.0.0.1/pub?id=relays \
 				-d '{ "state": "IDLE", "delay": 60 }'

@@ -22,13 +22,7 @@ case ${revision: -4:1} in
 	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
 	3 ) soc=BCM2711;;
 esac
-case ${revision: -6:1} in
-	9 ) socram+='512KB';;
-	a ) socram+='1GB';;
-	b ) socram+='2GB';;
-	c ) socram+='4GB';;
-esac
-
+socram=$( free -h | grep Mem | awk '{print $2}' )B
 version=$( cat $dirsystem/version )
 snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
 [[ -z $snaplatency ]] && snaplatency=0
@@ -63,7 +57,7 @@ data+='
 	, "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
 	, "hostapd"         : '$( systemctl -q is-active hostapd && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
-	, "kernel"          : "'$( uname -r )'"
+	, "kernel"          : "'$( uname -rm )'"
 	, "lcd"             : '$lcd'
 	, "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
