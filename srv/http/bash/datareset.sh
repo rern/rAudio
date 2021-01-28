@@ -9,8 +9,10 @@ systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
 # lcd
-sed -i '/i2c-bcm2708\|i2c-dev/ d' /etc/modules-load.d/raspberrypi.conf 2> /dev/null
-sed -i 's/fb1/fb0/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf 2> /dev/null
+file=/etc/modules-load.d/raspberrypi.conf
+[[ -e $file ]] && sed -i '/i2c-bcm2708\|i2c-dev/ d' $file
+file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
+[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
 if [[ -n $1 ]]; then # from create-ros.sh
 	version=$1
@@ -33,6 +35,7 @@ dtparam=krnbt=on
 	rpi=$( /srv/http/bash/system.sh hwrpi )
 	[[ $rpi != 0 ]] && config=$( sed '/force_turbo\|hdmi_drive\|over_voltage/ d' <<<"$config" )
 	echo -n "$config" > /boot/config.txt
+	partuuidROOT=$( blkid | awk '/LABEL="ROOT"/ {print $NF}' | tr -d '"' )
 	[[ $rpi > 1 ]] && isolcpus=' isolcpus=3'
 	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes$isolcpus console=tty1"
 	echo $cmdline > $BOOT/cmdline.txt
