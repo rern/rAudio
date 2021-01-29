@@ -32,11 +32,7 @@ for line in "${lines[@]}"; do
 	aplayname=$( echo $line \
 					| awk -F'[][]' '{print $2}' \
 					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
-	if [[ $aplayname == 'bcm2835 ALSA' ]]; then
-		[[ $device == 0 ]] && aplayname=Headphones || aplayname=HDMI
-	elif [[ $aplayname == wsp ]]; then
-		aplayname=rpi-cirrus-wm5102
-	fi
+	[[ $aplayname == wsp ]] && aplayname=rpi-cirrus-wm5102
 	if [[ $aplayname == $audioaplayname ]]; then
 		name=$( cat $dirsystem/audio-output )
 	else

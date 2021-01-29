@@ -19,13 +19,23 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
+diraddons=$dirdata/addons
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
-	$dirbash/cmd.sh partexpand
+	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
+	[[ ${partition:0:8} != /dev/mmc ]] && exit
+	
+	dev=${partition:0:-2}
+	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
+		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
+		partprobe $dev
+		resize2fs $partition
+	fi
+	# no on-board wireless - remove bluetooth
 	[[ -z $( $dirbash/system.sh hwwireless ) ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
@@ -117,6 +127,16 @@ fi
 rfkill | grep -q wlan && iw wlan0 set power_save off
 
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-[[ $? == 0 ]] && $dirbash/cmd.sh addonsupdates
+if [[ $? == 0 ]]; then
+	installed=$( ls "$diraddons" | grep -v addons-list )
+	for addon in $installed; do
+		verinstalled=$( cat $diraddons/$addon )
+		if (( ${#verinstalled} > 1 )); then
+			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+			[[ $verinstalled != $verlist ]] && count=1 && break
+		fi
+	done
+	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
+fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh

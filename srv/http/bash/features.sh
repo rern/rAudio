@@ -71,8 +71,8 @@ hostapdset )
 localbrowserdisable )
 	featureDisable localbrowser
 	systemctl enable --now getty@tty1
+	systemctl disable bootsplash
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
-	ply-image /srv/http/assets/img/splash.png
 	;;
 localbrowserset )
 	rotate=${args[1]}
@@ -114,10 +114,6 @@ localbrowserset )
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 	fi
 	[[ $screenoff != $screenoffset ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
-	if ! systemctl is-active localbrowser || [[ $cursor != $cursorset || $zoom != $zoomset ]]; then
-		systemctl restart localbrowser
-		systemctl enable localbrowser
-	fi
 	sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	echo -n "\
 rotate=$rotate
@@ -125,7 +121,11 @@ screenoff=$screenoff
 cursor=$cursor
 zoom=$zoom
 " > /etc/localbrowser.conf
-	featureDisable getty@tty1
+	systemctl disable --now getty@tty1
+	systemctl enable bootsplash
+	if ! systemctl is-active localbrowser || [[ $cursor != $cursorset || $zoom != $zoomset ]]; then
+		featureSet localbrowser
+	fi
 	;;
 logindisable )
 	rm -f $dirsystem/login*
