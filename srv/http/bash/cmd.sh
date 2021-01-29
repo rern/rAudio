@@ -539,7 +539,7 @@ nicespotify )
 	done
 	;;
 partexpand )
-	dev=$( mount | awk '/ on \/ / {printf $1}' )
+	dev=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
