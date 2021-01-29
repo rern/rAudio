@@ -11,7 +11,7 @@ systemctl -q is-enabled spotifyd && systemctl restart spotifyd
 
 if [[ -e /srv/http/bash/ply-image ]]; then
 	mv /srv/http/bash/ply-image /usr/bin
-	sed -i 's|srv/http/bash|usr/bin|' /etc/systemd/system/bootsplash.service
+	sed -i 's|srv/http/bash|usr/bin|' /etc/systemd/system/bootsplash.service &> /dev/null
 	systemctl daemon-reload
 fi
 
