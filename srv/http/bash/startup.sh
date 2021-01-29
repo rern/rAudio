@@ -26,6 +26,7 @@ dirsystem=$dirdata/system
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
 	$dirbash/cmd.sh partexpand
+	# no on-board wireless - remove bluetooth
 	[[ -z $( $dirbash/system.sh hwwireless ) ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
