@@ -373,16 +373,17 @@ function psRelays( response ) { // on receive broadcast
 		} );
 		delay--
 		G.intRelaysTimer = setInterval( function() {
-			if ( delay === 1 ) {
+			if ( delay ) {
+				$( '#infoFooter white' ).text( delay-- );
+			} else {
 				G.status.relayson = false;
-				setButtonOptions();
-				$( '#infoX' ).click();
 				clearInterval( G.intRelaysTimer );
+				$( '#relays' ).removeClass( 'on' );
+				$( '#i-relays, #ti-relays' ).addClass( 'hide' );
 			}
-			$( '#infoFooter white' ).text( delay-- );
 		}, 1000 );
 	} else {
-		var devices = ''
+		var devices = '';
 		$.each( response.order, function( i, val ) {
 			if ( i === 0 ) {
 				var color = state ? '' : 'class="gr"';
@@ -392,13 +393,19 @@ function psRelays( response ) { // on receive broadcast
 			}
 			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
 		} );
-		info( {
-			  icon     : 'relays'
-			, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-			, message  : stopwatch
-			, footer   : devices
-			, nobutton : 1
-		} );
+		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
+			info( {
+				  icon     : 'relays'
+				, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
+				, message  : stopwatch
+				, footer   : devices
+				, nobutton : 1
+			} );
+		} else {
+			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
+			$( '.infobtn' ).addClass( 'hide' );
+			$( '#infoFooter white' ).html( devices );
+		}
 	}
 }
 function psReload( data ) {
