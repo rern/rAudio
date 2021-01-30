@@ -34,7 +34,7 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	revision=$( cat /proc/cpuinfo | awk '/Revision/ {print substr($NF,5,2)}' )
+	revision=$( awk '/Revision/ {print substr($NF,5,2)}' /proc/cpuinfo )
 	[[ -e /boot/kernel8.img || $revision =~ ^(08|0c|0d|0e|11)$ ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
@@ -80,7 +80,7 @@ notifyFailed() {
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 }
 
-readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' )
+readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 if [[ -n "$mountpoints" ]]; then
 	lanip=$( ifconfig eth0 | awk '/inet / {print $2}' )
 	[[ -z $lanip ]] && wlanip=$( ifconfig wlan0 | awk '/inet / {print $2}' )
