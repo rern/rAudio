@@ -479,7 +479,7 @@ function directoryList( $lists ) {
 			$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
 			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
 		} else {
-			$icon = '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>';
+			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';
 		}
 		$html.=  '<li data-mode="file" data-index="'.$index.'">'
 				.$icon
