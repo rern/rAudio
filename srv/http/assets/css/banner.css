@@ -35,6 +35,9 @@
 	text-align: center;
 	background-color: var( --cg );
 }
+#bannerIcon i {
+	width: 30px;
+}
 #bannerMessage {
 	font-size: 16px;
 }

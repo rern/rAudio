@@ -606,15 +606,15 @@ function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
 		info( {
 			  icon     : 'refresh-library'
-			, title    : 'Update Library Database'
-			, message  : 'Updating in progress ...'
+			, title    : 'Library Database'
+			, message  : 'Update in progress ...'
 		} );
 		return
 	}
 	
 	info( {
 		  icon     : 'refresh-library'
-		, title    : 'Update Library Database'
+		, title    : 'Library Database'
 		, radio    : { 'Only changed files' : 1, 'Rebuild entire database': 2 }
 		, checkbox : { 'Include changed <code>*.wav</code> album artists': 1 }
 		, radiohr  : 1
