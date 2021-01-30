@@ -46,8 +46,8 @@ fi
 
 if [[ $( awk '/Revision/ {print substr($NF,5,2)}' /proc/cpuinfo ) == 11 ]]; then
 	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
-		for pkg in raspberrypi-bootloader raspberrypi-bootloader-x; do
-			wget -q https://github.com/rern/rern.github.io/raw/master/archives/${pkg}-20201208-1-any.pkg.tar.xz
+		for pkg in bootloader bootloader-x; do
+			wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-${pkg}-20201208-1-any.pkg.tar.xz
 		done
 		pacman -U --noconfirm raspberrypi-bootloader*
 		rm raspberrypi-bootloader*
