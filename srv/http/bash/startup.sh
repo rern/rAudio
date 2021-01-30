@@ -27,16 +27,15 @@ dirsystem=$dirdata/system
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	[[ ${partition:0:8} != /dev/mmc ]] && exit
-	
 	dev=${partition:0:-2}
-	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
+	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	[[ -z $( $dirbash/system.sh hwwireless ) ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	revision=$( cat /proc/cpuinfo | awk '/Revision/ {print substr($NF,5,2)}' )
+	[[ -e /boot/kernel8.img || $revision =~ ^(08|0c|0d|0e|11)$ ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
