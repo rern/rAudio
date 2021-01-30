@@ -44,7 +44,7 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
 
-if [[ $( /srv/http/bash/system.sh hwrpi ) == 4 ]]; then
+if [[ $( awk '/Revision/ {print substr($NF,5,2)}' /proc/cpuinfo ) == 11 ]]; then
 	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
 		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-20201208-1-any.pkg.tar.xz
 		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-x-20201208-1-any.pkg.tar.xz

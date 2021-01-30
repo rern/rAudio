@@ -35,7 +35,7 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
-revision=$( cat /proc/cpuinfo | awk '/Revision/ {print $NF}' )
+revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
 	1 ) soc=BCM2836;;
