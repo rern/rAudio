@@ -72,7 +72,7 @@ foreach( $modes as $mode ) {
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
-				'.( $counts ? '<grl>'.number_format( $counts->$modeLC ).'</grl>' : '<grl></grl>' ).'
+				'.( $counts && $counts->$modeLC ? '<grl>'.number_format( $counts->$modeLC ).'</grl>' : '<grl></grl>' ).'
 				<a class="label">'.$mode.'</a>
 			</div>
 		</div>
