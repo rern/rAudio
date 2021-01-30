@@ -15,17 +15,13 @@ data='
 
 dirsystem=/srv/http/data/system
 
-revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
-case ${revision: -4:1} in
-	0 ) soc=BCM2835;;
-	1 ) soc=BCM2836;;
-	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
-	3 ) soc=BCM2711;;
-esac
-socram=$( free -h | grep Mem | awk '{print $2}' )B
-version=$( cat $dirsystem/version )
-snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
-[[ -z $snaplatency ]] && snaplatency=0
+bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
+if [[ $bluetooth == true ]]; then
+	# 'bluetoothctl show' needs active bluetooth
+	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+else
+	btdiscoverable=false
+fi
 i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt && echo true || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
@@ -39,19 +35,29 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
+revision=$( cat /proc/cpuinfo | awk '/Revision/ {print $NF}' )
+case ${revision: -4:1} in
+	0 ) soc=BCM2835;;
+	1 ) soc=BCM2836;;
+	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
+	3 ) soc=BCM2711;;
+esac
+if [[ -e /etc/soundprofile.conf ]]; then
+	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
+else
+	val=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
+	val+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
+	if ifconfig | grep -q ^eth0; then
+		val+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
+		val+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+	fi
+	soundprofileval=$val
+fi
+version=$( cat $dirsystem/version )
 
 data+='
 	, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
-	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"'
-bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
-if [[ $bluetooth == true ]]; then
-	# 'bluetoothctl show' needs active bluetooth
-	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
-else
-	btdiscoverable=false
-fi
-
-data+='
+	, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 	, "bluetooth"       : '$bluetooth'
 	, "btdiscoverable"  : '$btdiscoverable'
 	, "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
@@ -70,24 +76,12 @@ data+='
 	, "rpimodel"        : "'$( cat /proc/device-tree/model | tr -d '\0' )'"
 	, "soc"             : "'$soc'"
 	, "soccpu"          : "'$( lscpu | awk '/Model name/ {print $NF}' )'"
-	, "socram"          : "'$socram'"
+	, "socram"          : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 	, "socspeed"        : "'$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )'"
 	, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
 	, "version"         : "'$version'"
 	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
-	, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )
-if [[ -e /etc/soundprofile.conf ]]; then
-	data+='
-	, "soundprofileval" : "'$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
-else
-	val=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
-	val+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
-	if ifconfig | grep -q ^eth0; then
-		val+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-		val+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
-	fi
-	data+='
-	, "soundprofileval" : "'$val'"'
-fi
+	, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )'
+	, "soundprofileval" : "'$soundprofileval'"'
 
 echo {$data}

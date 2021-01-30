@@ -12,7 +12,7 @@ data+='
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "snapserver"      : '$( systemctl -q is-active snapserver && echo true || echo false )'
 	, "snapclient"      : '$( systemctl -q is-active snapclient && echo true || echo false )'
-	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )'
+	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )'
 	, "snappassword"    : "'$( cat $dirsystem/snapclientpw 2> /dev/null )'"
 	, "streaming"       : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
 # hostapd
@@ -32,15 +32,6 @@ fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
 	, "upmpdcli"        : '$( systemctl -q is-active upmpdcli && echo true || echo false )
 # features
-[[ -e /usr/bin/smbd ]] && data+='
-	, "smb"             : '$( systemctl -q is-active smb && echo true || echo false )'
-	, "smbwritesd"      : '$( grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )'
-	, "smbwriteusb"     : '$( grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )
-[[ -e /usr/bin/aria2 ]] && data+='
-	, "aria2"           : '$( systemctl -q is-active aria2 && echo true || echo false )
-[[ -e /usr/bin/transmission-cli ]] && data+='
-	, "transmission"    : '$( systemctl -q is-active transmission && echo true || echo false )
-	
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
 	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
@@ -52,5 +43,13 @@ if [[ -e $xinitrc ]]; then
 	, "localscreenoff"  : '${conf[1]}'
 	, "localzoom"       : '${conf[3]}
 fi
-
+[[ -e /usr/bin/smbd ]] && data+='
+	, "smb"             : '$( systemctl -q is-active smb && echo true || echo false )'
+	, "smbwritesd"      : '$( grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )'
+	, "smbwriteusb"     : '$( grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )
+[[ -e /usr/bin/aria2 ]] && data+='
+	, "aria2"           : '$( systemctl -q is-active aria2 && echo true || echo false )
+[[ -e /usr/bin/transmission-cli ]] && data+='
+	, "transmission"    : '$( systemctl -q is-active transmission && echo true || echo false )
+	
 echo {$data}

@@ -490,6 +490,7 @@ $( '#tab-library, #button-library' ).click( function() {
 		}
 	} else {
 		switchPage( 'library' );
+		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
 $( '#logo, #button-library, #button-data, #button-playlist' ).taphold( function() {
