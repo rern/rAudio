@@ -850,9 +850,6 @@ function renderLibrary() {
 	}
 	
 	$( '#page-library .content-top, #lib-list' ).addClass( 'hide' );
-	var breadcrumbhtml = '<span class="title">LIBRARY</span>';
-	if ( $( '#lib-mode-list' ).data( 'count' ) ) breadcrumbhtml += '<span id="li-count">'+ $( '#lib-mode-list' ).data( 'count' ).toLocaleString() +' <i class="fa fa-music gr"></i></span>';
-	$( '#lib-breadcrumbs' ).html( breadcrumbhtml );
 	$( '#page-library .content-top, #lib-mode-list' ).removeClass( 'hide' );
 	$( '.mode:not( .mode-bookmark )' ).each( function() {
 		var name = this.id.replace( 'mode-', '' );

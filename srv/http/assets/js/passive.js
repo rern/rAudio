@@ -261,8 +261,7 @@ function psMpdUpdate( data ) {
 	} else {
 		G.status.updating_db = false;
 		$( '#lib-mode-list' ).data( 'count', data.title )
-		$( '#li-count' ).remove();
-		$( '#lib-breadcrumbs' ).append( '<span id="li-count">'+ data.song.toLocaleString() +' <i class="fa fa-music gr"></i></span>' );
+		$( '#li-count' ).html( data.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
 		delete data.title;
 		G.status.counts = data;
 		$.each( data, function( key, val ) {
