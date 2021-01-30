@@ -20,26 +20,30 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
+	revision=$( cat /proc/cpuinfo | awk '/Revision/ {print substr($NF,5,2)}' )
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
 	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
-dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes isolcpus=3 console=tty1"
+dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes"
+	[[ $revision =~ ^(04|08|0d|0e|11)$ ]] && cmdline+=' isolcpus=3'
+	if systemctl is-enabled localbrowser &> /dev/null; then
+		config+=' console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
+	else
+		config+=' console=tty1'
+	fi
+	echo $cmdline > /boot/cmdline.txt
 	config="\
-force_turbo=1
-hdmi_drive=2
-over_voltage=2
 gpu_mem=32
 initramfs initramfs-linux.img followkernel
 max_usb_current=1
 disable_splash=1
 disable_overscan=1
-dtparam=audio=on
+dtparam=audio=on"
+	[[ $revision =~ ^(09|0c)$ ]] && config+="
+force_turbo=1
+hdmi_drive=2
+over_voltage=2"
+	[[ -e /boot/kernel8.img || $revision =~ ^(08|0c|0d|0e|11)$ ]] && config+="
 dtparam=krnbt=on"
-	if [[ $( /srv/http/bash/system.sh hwrpi ) == 0 ]]; then # RPi Zero
-		cmdline=${cmdline/ isolcpus=3}
-	else
-		config=$( sed '/force_turbo\|hdmi_drive\|over_voltage/ d' <<<"$config" )
-	fi
-	echo $cmdline > /boot/cmdline.txt
 	echo "$config" > /boot/config.txt
 fi
 # data directories

@@ -12,21 +12,6 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 # convert each line to each args
 readarray -t args <<< "$1"
 
-hwRevision() {
-	revision=$( awk '/Revision/ {print $NF}' <<< "$( cat /proc/cpuinfo )" )
-	echo ${revision: -3:2}
-}
-hwRpi() {
-	hwcode=$( hwRevision )
-	case $hwcode in
-		09 | 0c )         rpi=0;;
-		00 | 01 |02 |03 ) rpi=1;;
-		04 )              rpi=2;;
-		08 | 0d | 0e )    rpi=3;;
-		11 )              rpi=4;;
-	esac
-	echo $rpi
-}
 pushRefresh() {
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "system" }'
 }
@@ -196,15 +181,6 @@ hostname )
 	systemctl daemon-reload
 	systemctl try-restart avahi-daemon bluetooth hostapd mpd smb shairport-sync shairport-meta spotifyd upmpdcli
 	pushRefresh
-	;;
-hwrevision )
-	hwRevision
-	;;
-hwrpi )
-	hwRpi
-	;;
-hwwireless )
-	[[ $( hwRevision ) =~ ^(08|0c|0d|0e|11)$ ]] && echo 1
 	;;
 i2smodule )
 	aplayname=${args[1]}
