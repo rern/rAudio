@@ -1,7 +1,7 @@
 rAudio 1
 ---
 Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
-- A release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
+- A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
 - Based on Arch Linux Arm
 - Metadata Tag Editor - `*.cue` support
 - Album mode with coverarts
