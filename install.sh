@@ -6,7 +6,7 @@ alias=r1
 
 rm -f /addons-list.json
 
-sed -i 's/"//g' /etc/spotifyd.conf
+sed -i 's/"//g' /etc/spotifyd.conf &> /dev/null
 systemctl -q is-enabled spotifyd && systemctl restart spotifyd
 
 if [[ -e /srv/http/bash/ply-image ]]; then
