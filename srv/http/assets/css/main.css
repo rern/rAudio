@@ -495,8 +495,7 @@ i.map.disabled, .map.disabled i {
 #button-library i,
 #button-playlist i,
 #page-playback .btn-group i,
-.content-top i,
-.mode i {
+.content-top i {
 	text-shadow: -1px 0 2px #000000;
 }
 #playback-controls {

@@ -35,16 +35,13 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
-revision=$( cat /proc/cpuinfo | awk '/Revision/ {print $NF}' )
-snaplatency=$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' )
-[[ -z $snaplatency ]] && snaplatency=0
+revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
 	1 ) soc=BCM2836;;
 	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
 	3 ) soc=BCM2711;;
 esac
-socram=$( free -h | grep Mem | awk '{print $2}' )B
 if [[ -e /etc/soundprofile.conf ]]; then
 	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
 else
@@ -79,7 +76,7 @@ data+='
 	, "rpimodel"        : "'$( cat /proc/device-tree/model | tr -d '\0' )'"
 	, "soc"             : "'$soc'"
 	, "soccpu"          : "'$( lscpu | awk '/Model name/ {print $NF}' )'"
-	, "socram"          : "'$socram'"
+	, "socram"          : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 	, "socspeed"        : "'$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )'"
 	, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
 	, "version"         : "'$version'"

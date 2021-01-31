@@ -154,7 +154,7 @@ datarestore )
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
-	readarray -t mountpoints <<< $( awk '/\/mnt\/MPD\/NAS/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
 			mkdir -p "$mountpoint"

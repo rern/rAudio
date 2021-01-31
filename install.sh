@@ -6,7 +6,7 @@ alias=r1
 
 rm -f /addons-list.json
 
-sed -i 's/"//g' /etc/spotifyd.conf
+sed -i 's/"//g' /etc/spotifyd.conf &> /dev/null
 systemctl -q is-enabled spotifyd && systemctl restart spotifyd
 
 if [[ -e /srv/http/bash/ply-image ]]; then
@@ -44,10 +44,11 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
 
-if [[ $( /srv/http/bash/system.sh hwrpi ) == 4 ]]; then
+if [[ $( awk '/Revision/ {print substr($NF,5,2)}' /proc/cpuinfo ) == 11 ]]; then
 	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
-		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-20201208-1-any.pkg.tar.xz
-		wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-bootloader-x-20201208-1-any.pkg.tar.xz
+		for pkg in bootloader bootloader-x; do
+			wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-${pkg}-20201208-1-any.pkg.tar.xz
+		done
 		pacman -U --noconfirm raspberrypi-bootloader*
 		rm raspberrypi-bootloader*
 		sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf

@@ -54,8 +54,14 @@ $dirdata = '/srv/http/data/';
 $dirsystem = '/srv/http/data/system/';
 $color = file_exists( $dirsystem.'color' );
 // counts
-$counts = file_get_contents( $dirdata.'mpd/counts' );
-$counts = json_decode( $counts );
+$filecounts = $dirdata.'mpd/counts';
+if ( file_exists( $filecounts ) ) {
+	$counts = json_decode( file_get_contents( $filecounts ) );
+	$countsong = number_format( $counts->song ).'<i class="fa fa-music gr"></i>';
+} else {
+	$counts = '';
+	$countsong = '';
+}
 // library home blocks
 $modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Genre', 'Date' ];
 $modehtml = '';
@@ -66,7 +72,7 @@ foreach( $modes as $mode ) {
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
-				'.( $counts->$modeLC ? '<grl>'.number_format( $counts->$modeLC ).'</grl>' : '<grl></grl>' ).'
+				'.( $counts && $counts->$modeLC ? '<grl>'.number_format( $counts->$modeLC ).'</grl>' : '<grl></grl>' ).'
 				<a class="label">'.$mode.'</a>
 			</div>
 		</div>
@@ -388,10 +394,13 @@ $menu.= '</div>';
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
 			<div id="lib-breadcrumbs"></div>
+			<div id="lib-breadcrumbs">
+				<span class="title">LIBRARY</span><span id="li-count"><?=$countsong?></span>
+			</div>
 			<span class="lipath"></span>
 		</div>
 	</div>
-	<div id="lib-mode-list" class="list" data-count="<?=$counts->song?>"><?=$modehtml?></div>
+	<div id="lib-mode-list"><?=$modehtml?></div>
 	<ul id="lib-list" class="list"></ul>
 	<div id="lib-index" class="index index0"></div>
 	<div id="lib-index1" class="index index1"></div>

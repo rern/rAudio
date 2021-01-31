@@ -2,7 +2,6 @@ var G = {
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
-	, countsong     : $( '#lib-mode-list' ).data( 'count' )
 	, coversave     : 0
 	, librarylist   : 0
 	, debounce      : ''

@@ -18,6 +18,7 @@
 </div>
 <div class="col-r">
 	<select id="audiooutput"></select>
+	<span <?=$classhelp?>>HDMI device available only when connected before boot.</span>
 </div>
 <pre id="codeaplay" class="hide"></pre>
 <div>

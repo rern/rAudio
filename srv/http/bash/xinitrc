@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#! /opt/vc/bin/tvservice -s | grep -q HDMI && exit
+! /opt/vc/bin/tvservice -l | grep -q HDMI && ! grep dtoverlay=tft35a /boot/config.txt && exit
 
 export XDG_CACHE_HOME="/tmp/.cache"
 export DISPLAY=:0

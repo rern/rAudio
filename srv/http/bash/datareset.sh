@@ -20,10 +20,11 @@ if [[ -n $1 ]]; then # from create-ros.sh
 else                 # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
-	revision=$( cat /proc/cpuinfo | awk '/Revision/ {print substr($NF,5,2)}' )
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
 	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
 dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes"
+	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	revision=${revision: -3:2}
 	[[ $revision =~ ^(04|08|0d|0e|11)$ ]] && cmdline+=' isolcpus=3'
 	if systemctl is-enabled localbrowser &> /dev/null; then
 		config+=' console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
