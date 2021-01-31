@@ -135,7 +135,7 @@
 	<i id="setting-localbrowser" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
-		<br>- HDMI display must be connected before boot.
+		<br>- HDMI/LCD display must be connected before boot.
 		<br>- Overscan change needs reboot.
 	</span>
 </div>
