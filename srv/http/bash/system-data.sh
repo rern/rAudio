@@ -43,7 +43,7 @@ case ${revision: -4:1} in
 	3 ) soc=BCM2711;;
 esac
 if [[ -e /etc/soundprofile.conf ]]; then
-	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )'"'
+	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
 else
 	val=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
 	val+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
