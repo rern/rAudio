@@ -476,6 +476,8 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 function getPlaybackStatus( render ) {
 	local();
 	bash( '/srv/http/bash/status.sh', function( list ) {
+		if ( !list ) return
+		
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
