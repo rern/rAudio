@@ -13,8 +13,12 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 update() { # for /etc/conf.d/devmon - devmon@http.service
-	echo USB > $dirsystem/updating
-	mpc update USB
+	if [[ -e $dirsystem/updating ]]; then
+		/srv/http/data/shm/updatingusb
+	else
+		echo USB > $dirsystem/updating
+		mpc update USB
+	fi
 	sleep 1
 	pushRefresh
 	pushstream mpdupdate 1
