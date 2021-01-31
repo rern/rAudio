@@ -11,8 +11,8 @@
 	.st6{fill:url(#path6005_1_);}
 	.st7{fill:url(#path6062_1_);}
 	.st8{fill:url(#path6060_1_);}
-	.st10{fill:none;stroke:#636769;}
-	.st11{fill:#FFFFFF;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
+	.st10{fill:#FFFFFF;stroke:#636769;}
+	.st11{fill:none;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
 	.st12{fill:none;stroke:#636769;stroke-width:0.9887;}
 	.st13{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st14{fill:none;stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
@@ -93,9 +93,8 @@
 </linearGradient>
 <path id="path6060" class="st8" d="M74.1,25.7c-1.2-1.3-2.4-2.1-2.6-1.9L68,27c-0.2,0.2,0.5,1.4,1.8,2.7s2.4,2.1,2.6,1.9l3.5-3.3
 	C76.1,28.2,75.3,26.9,74.1,25.7z"/>
-<path id="body-inner_1_" class="st10" d="M81,55c0,21.5-17.5,39-39,39S3,76.5,3,55s17.5-39,39-39S80.9,33.4,81,55L81,55z"/>
-<path id="body-outer" class="st11" d="M78.9,55c0,20.4-16.5,36.9-36.9,36.9S5.1,75.4,5.1,55S21.6,18.1,42,18.1S78.9,34.6,78.9,55z"
-	/>
+<path id="body-outer" class="st10" d="M81,55c0,21.5-17.5,39-39,39S3,76.5,3,55s17.5-39,39-39S80.9,33.4,81,55L81,55z"/>
+<path id="body" class="st11" d="M78.9,55c0,20.4-16.5,36.9-36.9,36.9S5.1,75.4,5.1,55S21.6,18.1,42,18.1S78.9,34.6,78.9,55z"/>
 <path id="body-inner" class="st12" d="M77,55c0,19.4-15.7,35-35,35S7,74.4,7,55s15.6-35,35-35C61.3,19.9,77,35.6,77,55
 	C77,54.9,77,55,77,55z"/>
 <line class="st13" x1="71" y1="55" x2="76" y2="55"/>
@@ -202,5 +201,4 @@
 <line id="arm" class="st22" x1="42" y1="24.2" x2="42" y2="60.2"/>
 <circle id="center" class="st21" cx="42" cy="55" r="2"/>
 <path id="center-dot" d="M43,55c0,0.6-0.4,1-1,1s-1-0.4-1-1s0.4-1,1-1C42.5,54,43,54.4,43,55L43,55z"/>
-<path class="st23" d="M15.9,25.1c12.9,13.6,31.2,22,51.4,22c4.6,0,9-0.4,13.3-1.3C76.5,28.3,60.7,15.3,42,15.3C32,15.3,22.9,19,15.9,25.1z"/>
 </svg>
