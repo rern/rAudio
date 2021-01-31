@@ -11,9 +11,9 @@
 	.st6{fill:url(#path6005_1_);}
 	.st7{fill:url(#path6062_1_);}
 	.st8{fill:url(#path6060_1_);}
-	.st10{fill:#FFFFFF;stroke:#636769;}
+	.st10{fill:#FFFFFF;stroke:#636769;stroke-width:1;}
 	.st11{fill:none;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
-	.st12{fill:none;stroke:#636769;stroke-width:0.9887;}
+	.st12{fill:none;stroke:#969a9c;stroke-width:1;}
 	.st13{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st14{fill:none;stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
 	.st15{font-family:'Arial';}
@@ -93,10 +93,11 @@
 </linearGradient>
 <path id="path6060" class="st8" d="M74.1,25.7c-1.2-1.3-2.4-2.1-2.6-1.9L68,27c-0.2,0.2,0.5,1.4,1.8,2.7s2.4,2.1,2.6,1.9l3.5-3.3
 	C76.1,28.2,75.3,26.9,74.1,25.7z"/>
-<path id="body-outer" class="st10" d="M81,55c0,21.5-17.5,39-39,39S3,76.5,3,55s17.5-39,39-39S80.9,33.4,81,55L81,55z"/>
-<path id="body" class="st11" d="M78.9,55c0,20.4-16.5,36.9-36.9,36.9S5.1,75.4,5.1,55S21.6,18.1,42,18.1S78.9,34.6,78.9,55z"/>
+<path id="body-outer" class="st10" d="M81.5,55c0,21.8-17.7,39.5-39.5,39.5S2.5,76.8,2.5,55S20.2,15.5,42,15.5S81.4,33.1,81.5,55
+	L81.5,55z"/>
 <path id="body-inner" class="st12" d="M77,55c0,19.4-15.7,35-35,35S7,74.4,7,55s15.6-35,35-35C61.3,19.9,77,35.6,77,55
 	C77,54.9,77,55,77,55z"/>
+<path id="body" class="st11" d="M79.5,55c0,20.7-16.8,37.5-37.5,37.5S4.5,75.7,4.5,55S21.3,17.5,42,17.5S79.5,34.3,79.5,55z"/>
 <line class="st13" x1="71" y1="55" x2="76" y2="55"/>
 <line class="st13" x1="8" y1="55" x2="13" y2="55"/>
 <line class="st13" x1="67.1" y1="40.5" x2="71.4" y2="38"/>
