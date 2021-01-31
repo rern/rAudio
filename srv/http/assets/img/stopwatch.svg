@@ -13,7 +13,7 @@
 	.st8{fill:url(#path6060_1_);}
 	.st10{fill:#FFFFFF;stroke:#636769;stroke-width:1;}
 	.st11{fill:none;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
-	.st12{fill:none;stroke:#969a9c;stroke-width:1;}
+	.st12{fill:none;stroke:#969a9c;stroke-width:1;filter:url(#swshadow);}
 	.st13{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st14{fill:none;stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
 	.st15{font-family:'Arial';}
