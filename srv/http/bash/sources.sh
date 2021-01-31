@@ -14,7 +14,11 @@ pushstream() {
 }
 update() { # for /etc/conf.d/devmon - devmon@http.service
 	echo USB $dirsystem/updating
-	mpc update USB
+	if mpc | grep -q '^Updating'; then
+		touch $dirsystem/updatingusb
+	else
+		mpc update USB
+	fi
 	sleep 1
 	pushRefresh
 	pushstream mpdupdate 1
