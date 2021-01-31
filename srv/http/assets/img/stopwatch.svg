@@ -12,7 +12,7 @@
 	.st7{fill:url(#path6062_1_);}
 	.st8{fill:url(#path6060_1_);}
 	.st10{fill:none;stroke:#636769;}
-	.st11{fill:none;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
+	.st11{fill:#FFFFFF;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
 	.st12{fill:none;stroke:#636769;stroke-width:0.9887;}
 	.st13{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st14{fill:none;stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
