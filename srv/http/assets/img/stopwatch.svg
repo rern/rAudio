@@ -11,7 +11,6 @@
 	.st6{fill:url(#path6005_1_);}
 	.st7{fill:url(#path6062_1_);}
 	.st8{fill:url(#path6060_1_);}
-	.st9{fill:url(#dial_1_);}
 	.st10{fill:none;stroke:#636769;}
 	.st11{fill:none;stroke:#000000;stroke-width:4;filter:url(#swshadow);}
 	.st12{fill:none;stroke:#636769;stroke-width:0.9887;}
@@ -25,6 +24,7 @@
 	.st20{fill:none;stroke:#C80000;stroke-width:0.5;}
 	.st21{fill:#C80000;}
 	.st22{fill:none;stroke:#C80000;transform-origin:42px 55px;animation:spin 60s infinite linear;}
+	.st23{fill:#FFFFFF;fill-opacity:0.5;}
 	@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 </style>
 <path id="path6072" class="st0" d="M3.7,25.2c0.4,0.4,1.9-0.6,3.4-2.2s2.4-3.2,2-3.5s-1.9,0.6-3.4,2.2S3.3,24.9,3.7,25.2z"/>
@@ -50,7 +50,7 @@
 <path id="path6076" class="st3" d="M9.9,25.7c1.2-1.3,2.4-2.1,2.6-1.9l3.5,3.3c0.2,0.2-0.5,1.4-1.8,2.7s-2.4,2.1-2.6,1.9l-3.5-3.3
 	C7.9,28.2,8.7,26.9,9.9,25.7z"/>
 <path id="path6044" class="st0" d="M47.5,1.7C47.5,2.4,45,3,42,3s-5.5-0.6-5.5-1.3S39,0.4,42,0.4S47.5,1,47.5,1.7z"/>
-<linearGradient id="path6034_1_" gradientUnits="userSpaceOnUse" x1="-125.272" y1="-1659.8215" x2="-115.662" y2="-1659.8215" gradientTransform="matrix(1.14 0 0 -0.88 179.3101 -1455.743)">
+<linearGradient id="path6034_1_" gradientUnits="userSpaceOnUse" x1="-146.9387" y1="2552.4387" x2="-156.5487" y2="2552.4387" gradientTransform="matrix(1.14 0 0 0.88 215.0101 -2241.2461)">
 	<stop  offset="0" style="stop-color:#000000"/>
 	<stop  offset="0.13" style="stop-color:#FFFFFF"/>
 	<stop  offset="0.41" style="stop-color:#666666"/>
@@ -60,19 +60,13 @@
 </linearGradient>
 <path id="path6034" class="st4" d="M42,0.7c-3,0-5.5,0.6-5.5,1.3v7.1c0-0.7,2.5-1.3,5.5-1.3s5.5,0.6,5.5,1.3v-7
 	C47.5,1.3,45,0.7,42,0.7z"/>
-<linearGradient id="path6932_1_" gradientUnits="userSpaceOnUse" x1="-125.272" y1="-1659.8215" x2="-124.792" y2="-1659.8215" gradientTransform="matrix(1.14 0 0 -0.88 179.3101 -1455.743)">
-	<stop  offset="0" style="stop-color:#000000"/>
-	<stop  offset="1" style="stop-color:#FFFFFF"/>
-</linearGradient>
-<path id="path6932" class="st5" d="M42,0.7c-3,0-5.5,0.6-5.5,1.3v7.1c0-0.7,2.5-1.3,5.5-1.3s5.5,0.6,5.5,1.3v-7
-	C47.5,1.3,45,0.7,42,0.7z"/>
 <path id="path6032" class="st2" d="M47.5,9.2c0,0.7-2.5,1.3-5.5,1.3s-5.5-0.6-5.5-1.3S39,7.9,42,7.9S47.5,8.5,47.5,9.2z"/>
-<linearGradient id="path6005_1_" gradientUnits="userSpaceOnUse" x1="-2.3589" y1="-1470.4854" x2="6.1311" y2="-1470.4854" gradientTransform="matrix(1.03 0 0 -0.97 39.995 -1413.8708)">
+<linearGradient id="path6005_1_" gradientUnits="userSpaceOnUse" x1="-1.1751" y1="2323.8804" x2="-9.6651" y2="2323.8804" gradientTransform="matrix(1.03 0 0 0.97 47.645 -2241.6641)">
 	<stop  offset="0" style="stop-color:#000000"/>
 	<stop  offset="0.13" style="stop-color:#FFFFFF"/>
 	<stop  offset="0.41" style="stop-color:#666666"/>
 	<stop  offset="0.65" style="stop-color:#CCCCCC"/>
-	<stop  offset="0.82" style="stop-color:#333333"/>
+	<stop  offset="0.82" style="stop-color:#666666"/>
 	<stop  offset="1" style="stop-color:#000000"/>
 </linearGradient>
 <path id="path6005" class="st6" d="M42,8.4c-2.4,0-4.4,0.4-4.4,0.8v6.6c0,0.5,2,0.8,4.4,0.8s4.4-0.4,4.4-0.8V9.2
@@ -99,12 +93,6 @@
 </linearGradient>
 <path id="path6060" class="st8" d="M74.1,25.7c-1.2-1.3-2.4-2.1-2.6-1.9L68,27c-0.2,0.2,0.5,1.4,1.8,2.7s2.4,2.1,2.6,1.9l3.5-3.3
 	C76.1,28.2,75.3,26.9,74.1,25.7z"/>
-<radialGradient id="dial_1_" cx="103.1277" cy="-1540.5502" r="37.2481" gradientTransform="matrix(0.94 0 0 -0.94 -54.94 -1393.3649)" gradientUnits="userSpaceOnUse">
-	<stop  offset="0" style="stop-color:#FFFFFF"/>
-	<stop  offset="0.5" style="stop-color:#FFFFFF"/>
-	<stop  offset="1" style="stop-color:#DAD8C3"/>
-</radialGradient>
-<path id="dial" class="st9" d="M77,55c0,19.4-15.7,35-35,35S7,74.4,7,55s15.6-35,35-35C61.3,20,77,35.6,77,55L77,55z"/>
 <path id="body-inner_1_" class="st10" d="M81,55c0,21.5-17.5,39-39,39S3,76.5,3,55s17.5-39,39-39S80.9,33.4,81,55L81,55z"/>
 <path id="body-outer" class="st11" d="M78.9,55c0,20.4-16.5,36.9-36.9,36.9S5.1,75.4,5.1,55S21.6,18.1,42,18.1S78.9,34.6,78.9,55z"
 	/>
@@ -214,4 +202,5 @@
 <line id="arm" class="st22" x1="42" y1="24.2" x2="42" y2="60.2"/>
 <circle id="center" class="st21" cx="42" cy="55" r="2"/>
 <path id="center-dot" d="M43,55c0,0.6-0.4,1-1,1s-1-0.4-1-1s0.4-1,1-1C42.5,54,43,54.4,43,55L43,55z"/>
+<path class="st23" d="M15.9,25.1c12.9,13.6,31.2,22,51.4,22c4.6,0,9-0.4,13.3-1.3C76.5,28.3,60.7,15.3,42,15.3C32,15.3,22.9,19,15.9,25.1z"/>
 </svg>
