@@ -72,9 +72,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		update )
-			if [[ -e $dirsystem/updating ]] && ! mpc | grep -q '^Updating'; then
-				$dirbash/cmd-list.sh
-			fi
+			mpc | grep -q '^Updating' || $dirbash/cmd-list.sh
 			;;
 	esac
 done
