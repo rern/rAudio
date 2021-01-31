@@ -72,8 +72,9 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		update )
-			if ! mpc | grep -q '^Updating'; then
-				[[ -e $dirsystem/updatingusb ]] && mpc update USB || $dirbash/cmd-list.sh
+			sleep 1
+			if [[ -e $dirsystem/updating ]] && ! mpc | grep -q '^Updating'; then
+				$dirbash/cmd-list.sh
 			fi
 			;;
 	esac
