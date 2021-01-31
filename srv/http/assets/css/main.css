@@ -1646,6 +1646,9 @@ i.map.disabled, .map.disabled i {
 	height: 100px;
 	margin-bottom: 10px;
 }
+#infoMessage .stopwatch {
+	margin-bottom: 0;
+}
 .imgname {
 	clear: both;
 	margin: 0;

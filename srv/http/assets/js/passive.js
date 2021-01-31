@@ -333,7 +333,7 @@ function psPlaylist( data ) {
 	}
 }
 function psRelays( response ) { // on receive broadcast
-	var stopwatch = '<img src="/assets/img/stopwatch.'+ hash +'.svg">';
+	var stopwatch = '<img class="stopwatch" src="/assets/img/stopwatch.'+ hash +'.svg">';
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
