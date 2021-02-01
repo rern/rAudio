@@ -63,9 +63,10 @@ function codeToggle( id, target ) {
 		setTimeout( function() {
 			bash( command, function( status ) {
 				if ( systemctl ) var status = status
-								.replace( /(active \(running\))/, '<grn>$1</grn>' )
-								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-								.replace( /(failed)/, '<red>$1</red>' );
+												.replace( /(.*)\n/, '<grn>$1</grn>\n' )
+												.replace( /(active \(running\))/, '<grn>$1</grn>' )
+												.replace( /(inactive \(dead\))/, '<red>$1</red>' )
+												.replace( /(failed)/, '<red>$1</red>' );
 				$el
 					.html( '# '+ cmdtxt +'<br><br>'+ status )
 					.removeClass( 'hide' );
