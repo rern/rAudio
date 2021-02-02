@@ -72,7 +72,7 @@ def pushstream( data ):
     )
     urlopen( req )
 
-os.system( 'killall relaystimer.sh &> dev.null &' )
+os.system( 'killall relaystimer.sh &> /dev/null &' )
 
 if sys.argv[ 1 ] == 'true':
     pushstream( { 'state': True, 'order': onorder } )
