@@ -119,10 +119,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 			<a href="https://github.com/dbrgn/RPLCD">RPLCD</a> - Python library for Hitachi HD44780 controller.
-		<p>
-			&bull; Support 16x2, 20x4 and 40x4 LCD modules.
+		<br>&bull; Support 16x2, 20x4 and 40x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
-		</p>
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
 	</span>
 </div>
@@ -137,6 +135,18 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>
 		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
+	</span>
+</div>
+<div class="col-l single">Power Button<i class="fa fa-power"></i></div>
+<div class="col-r">
+	<input id="powerbutton" class="enablenoset" type="checkbox">
+	<div class="switchlabel" for="powerbutton"></div>
+	<span <?=$classhelp?>>
+		Power button
+		<br>&bull; Push button connects between J8 pin #5 and #6 (or any ground pins).
+		<br>&bull; Push while on: Soft shutdown to low power state
+		<br>&bull; Push while in low power state: Power up
+		<br>&bull; Disconnect power to terminate low power state.
 	</span>
 </div>
 <div <?=$classstatus?>>

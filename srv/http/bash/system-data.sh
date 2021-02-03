@@ -69,6 +69,7 @@ data+='
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
+	, "powerbutton"     : '$( grep -q gpio-poweroff /boot/config.txt && echo true || echo false )'
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'

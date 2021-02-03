@@ -97,6 +97,7 @@ function list2JSON( list ) {
 			$( '#data' ).html( errors ).removeClass( 'hide' );
 			return false
 		}
+		$( '#button-data' ).removeAttr( 'class' );
 		$( '#data' ).empty().addClass( 'hide' );
 		if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 		return true

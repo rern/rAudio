@@ -99,6 +99,7 @@ refreshData = function() {
 		$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 		$( '#lcd' ).prop( 'checked', G.lcd );
 		$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
+		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		$( '#relays' ).prop( 'checked', G.relays );
 		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 		$( '#hostname' ).val( G.hostname );
@@ -132,8 +133,9 @@ $( '.enable' ).click( function() {
 } );
 $( '.enablenoset' ).click( function() {
 	var idname = {
-		  lcd    : 'TFT LCD'
-		, relays : 'GPIO Relay'
+		  lcd         : 'TFT LCD'
+		, powerbutton : 'Power Button'
+		, relays      : 'GPIO Relay'
 	}
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
