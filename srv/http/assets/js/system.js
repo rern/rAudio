@@ -140,7 +140,7 @@ $( '.enablenoset' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
 	notify( idname[ id ], checked, id );
-	if ( id !== 'relays' ) rebootText( checked, id );
+	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
 	bash( [ id, checked, G.reboot.join( '\n' ) ] );
 } );
 
