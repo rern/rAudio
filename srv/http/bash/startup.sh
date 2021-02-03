@@ -125,6 +125,10 @@ fi
 
 rfkill | grep -q wlan && iw wlan0 set power_save off
 
+if /opt/vc/bin/tvservice -l | grep -q HDMI || grep dtoverlay=tft35a /boot/config.txt; then
+	[[ ! -e $dirsystem/nolocalbrowser ]] && systemctl start localbrowser
+fi
+
 wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
 if [[ $? == 0 ]]; then
 	installed=$( ls "$diraddons" | grep -v addons-list )

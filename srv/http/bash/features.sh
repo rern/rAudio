@@ -69,7 +69,7 @@ hostapdset )
 	pushRefreshNetworks
 	;;
 localbrowserdisable )
-	featureDisable localbrowser
+	touch $dirsystem/nolocalbrowser
 	systemctl enable --now getty@tty1
 	systemctl disable bootsplash
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
@@ -109,7 +109,6 @@ localbrowserset )
 				" -e "s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 			fi
 			ply-image /srv/http/assets/img/splash.png
-			systemctl restart localbrowser
 		fi
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 	fi
@@ -123,9 +122,8 @@ zoom=$zoom
 " > /etc/localbrowser.conf
 	systemctl disable --now getty@tty1
 	systemctl enable bootsplash
-	if ! systemctl is-active localbrowser || [[ $cursor != $cursorset || $zoom != $zoomset ]]; then
-		featureSet localbrowser
-	fi
+	rm -f $dirsystem/nolocalbrowser
+	systemctl restart localbrowser
 	;;
 logindisable )
 	rm -f $dirsystem/login*
