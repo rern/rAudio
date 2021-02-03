@@ -1,7 +1,5 @@
 #!/bin/bash
 
-/opt/vc/bin/tvservice -l | grep -q 'HDMI\|LCD' || exit
-
 export XDG_CACHE_HOME="/tmp/.cache"
 export DISPLAY=:0
 
