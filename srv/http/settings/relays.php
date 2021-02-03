@@ -90,7 +90,6 @@ for ( $i = 1; $i < 5; $i++ ) {
 <div style="position: relative">
 	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
 	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
-	<a id="close-img"><i class="fa fa-times"></i></a>
 </div>
 
 </div>

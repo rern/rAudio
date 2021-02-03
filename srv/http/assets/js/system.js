@@ -260,6 +260,22 @@ $( '#i2smodule' ).change( function() {
 	}
 	bash( [ 'i2smodule', aplayname, output, G.reboot.join( '\n' ) ] );
 } );
+$( '#gpioimgtxt' ).click( function() {
+	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
+		$( '#gpiopin' ).slideToggle();
+		$( '#fliptxt, #close-img' ).toggle();
+		$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' )
+	} else {
+		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
+		$( '#fliptxt' ).hide();
+		$( this ).find( 'i' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-chevron-down' );
+	}
+} );
+$( '#gpiopin, #gpiopin1' ).click( function() {
+	$( '#gpiopin, #gpiopin1' ).toggle();
+} );
 var infolcdchar = heredoc( function() { /*
 	<div class="infotextlabel">
 		<a class="infolabel">Size</a>

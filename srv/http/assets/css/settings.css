@@ -33,6 +33,9 @@
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
 .fa-bluetooth:before { content: "\f58C" }
+.fa-check:before { content: "\f51B" }
+.fa-chevron-down:before { content: "\f605" }
+.fa-chevron-up:before { content: "\f604" }
 .fa-chromium:before { content: "\f584" }
 .fa-code:before { content: "\f50C" }
 .fa-download:before { content: "\f587" }
@@ -645,6 +648,18 @@ input:checked + .switchlabel.disabled:after {
 	width: 20px;
 	text-align: center;
 }
+#fliptxt {
+	display: none;
+	color: var( --cw );
+}
+#gpiopin,
+#gpiopin1 {
+	display: none;
+	margin-bottom: 10px;
+	width: 100%;
+	border-radius: 6px;
+	background: var( --cw );
+}
 #guide {
 	position: absolute;
 	width: 100%;
@@ -811,6 +826,7 @@ input:checked + .switchlabel.disabled:after {
 	#button-data,
 	#close,
 	#filetype,
+	#gpioimgtxt,
 	#help {
 		cursor: pointer;
 	}
