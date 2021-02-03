@@ -125,7 +125,7 @@ fi
 
 rfkill | grep -q wlan && iw wlan0 set power_save off
 
-if /opt/vc/bin/tvservice -l | grep -q HDMI || grep dtoverlay=tft35a /boot/config.txt; then
+if /opt/vc/bin/tvservice -l | grep -q 'HDMI\|LCD' || grep dtoverlay=tft35a /boot/config.txt; then
 	[[ ! -e $dirsystem/nolocalbrowser ]] && systemctl start localbrowser
 fi
 
