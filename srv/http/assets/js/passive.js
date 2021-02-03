@@ -363,7 +363,7 @@ function psRelays( response ) { // on receive broadcast
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
-				bash( '/srv/http/bash/relays.py false' );
+				bash( '/srv/http/bash/relays.sh false' );
 			}
 			, oklabel     : '<i class="fa fa-refresh"></i>Reset'
 			, ok          : function() {
