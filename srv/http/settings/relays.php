@@ -85,12 +85,9 @@ for ( $i = 1; $i < 5; $i++ ) {
 
 <heading>Pin reference</heading>
 <span class="help-block hide">Click to show RPi GPIO pin reference.</span><br>
-<span>GPIO connector: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a></span><br><br>
-	
-<div style="position: relative">
-	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
-	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
-</div>
+<span>GPIO connector: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a></span>
+<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
+<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
 
 </div>
 
