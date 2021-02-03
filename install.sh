@@ -42,11 +42,13 @@ getinstallzip
 
 /srv/http/bash/mpd-conf.sh
 
-if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ -n $( /srv/http/bash/system.sh hwwireless ) ]]; then
+revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+revision=${revision: -3:2}
+if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ $revision =~ ^(08|0c|0d|0e|11)$ ]]; then
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
 
-if [[ $( awk '/Revision/ {print substr($NF,5,2)}' /proc/cpuinfo ) == 11 ]]; then
+if [[ $revision == 11 ]]; then
 	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
 		for pkg in bootloader bootloader-x; do
 			wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-${pkg}-20201208-1-any.pkg.tar.xz
