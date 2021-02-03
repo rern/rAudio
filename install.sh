@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+pacman -Q wiringpi &> /dev/null || pacman -Sy --noconfirm wiringpi
+
 rm -f /addons-list.json
 
 sed -i 's/"//g' /etc/spotifyd.conf &> /dev/null
