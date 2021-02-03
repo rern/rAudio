@@ -186,7 +186,7 @@ i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
 	reboot=${args[3]}
-	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=gpio-poweroff\|dtoverlay=sdtweak,poll_once\|dtoverlay=tft35a\|hdmi_force_hotplug=1' $fileconfig )
+	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=gpio-shutdown\|dtoverlay=sdtweak,poll_once\|dtoverlay=tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	sed -i '/dtparam=\|dtoverlay=\|^$/ d' $fileconfig
 	[[ -n $dtoverlay ]] && sed -i '$ r /dev/stdin' $fileconfig <<< "$dtoverlay"
 	if [[ $aplayname != onboard ]]; then
@@ -311,7 +311,7 @@ powerbutton )
 		echo dtoverlay=gpio-poweroff >> /boot/config.txt
 		echo "$reboot" > $filereboot
 	else
-		sed -i '/dtoverlay=gpio-poweroff/ d' /boot/config.txt
+		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
 	fi
 	pushRefresh
 	;;
