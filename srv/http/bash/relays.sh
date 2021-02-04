@@ -37,6 +37,7 @@ if [[ $1 == true ]]; then
 		pin=${on[$i]}
 		(( $pin == 0 )) && break
 		
+		gpio -1 mode $pin out
 		gpio -1 write $pin 1
 		(( $i > 0 )) && pushstream '{"on": '$(( i + 1 ))'}'
 		sleep ${ond[$i]}
