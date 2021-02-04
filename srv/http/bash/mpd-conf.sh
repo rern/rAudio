@@ -145,11 +145,6 @@ mpdconf+=$btoutput
 
 echo "$mpdconf" > $mpdfile
 
-if [[ -z $Acard ]]; then
-	restartMPD
-	exit
-fi
-
 # usbdac.rules
 if [[ $# -gt 0 && $1 != bt ]]; then
 	mpc -q stop
@@ -167,10 +162,16 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 			amixer -M sset "$hwmixer" $vol%
 		fi
 	fi
-	name=${Aname[$card]}
+	[[ -z $Acard ]] && name=${Aname[$card]} || name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
+	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
 else
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+fi
+
+if [[ -z $Acard ]]; then
+	restartMPD
+	exit
 fi
 
 wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
