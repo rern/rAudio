@@ -304,6 +304,17 @@ onboardaudio )
 	echo "${args[2]}" > $filereboot
 	pushRefresh
 	;;
+powerbutton )
+	enable=${args[1]}
+	reboot=${args[2]}
+	if [[ $enable == true ]]; then
+		echo dtoverlay=gpio-poweroff >> /boot/config.txt
+		echo "$reboot" > $filereboot
+	else
+		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
+	fi
+	pushRefresh
+	;;
 regional )
 	ntp=${args[1]}
 	regom=${args[2]}

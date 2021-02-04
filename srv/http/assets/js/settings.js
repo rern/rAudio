@@ -30,7 +30,8 @@ var cmd = {
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var packages = [ 'hostapd', 'chromium',     'mpd', 'mpdscribble', 'shairport-sync', 'samba', 'snapcast',   'snapcast',   'spotifyd', 'upmpdcli' ];
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
 	if ( $( target ).hasClass( 'help' )
@@ -40,9 +41,10 @@ function codeToggle( id, target ) {
 	if ( target === 'status' && $el.hasClass( 'hide' ) ) return
 	
 	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
-		if ( services.indexOf( id ) !== -1 ) {
+		var i = services.indexOf( id );
+		if ( i !== -1 ) {
 			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = 'systemctl status '+ id;
+			var command = 'pacman -Q '+ packages[ i ] +'; systemctl status '+ id;
 			var cmdtxt = command;
 			var systemctl = 1;
 		} else {
@@ -61,9 +63,10 @@ function codeToggle( id, target ) {
 		setTimeout( function() {
 			bash( command, function( status ) {
 				if ( systemctl ) var status = status
-								.replace( /(active \(running\))/, '<grn>$1</grn>' )
-								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-								.replace( /(failed)/, '<red>$1</red>' );
+												.replace( /(.*)\n/, '<grn>$1</grn>\n' )
+												.replace( /(active \(running\))/, '<grn>$1</grn>' )
+												.replace( /(inactive \(dead\))/, '<red>$1</red>' )
+												.replace( /(failed)/, '<red>$1</red>' );
 				$el
 					.html( '# '+ cmdtxt +'<br><br>'+ status )
 					.removeClass( 'hide' );
@@ -94,6 +97,7 @@ function list2JSON( list ) {
 			$( '#data' ).html( errors ).removeClass( 'hide' );
 			return false
 		}
+		$( '#button-data' ).removeAttr( 'class' );
 		$( '#data' ).empty().addClass( 'hide' );
 		if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 		return true

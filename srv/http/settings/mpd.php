@@ -1,4 +1,4 @@
-<heading data-status="mpdconf" class="status">Status<?=$code?></heading>
+<heading data-status="mpd" class="status">Status<?=$code?></heading>
 <div class="col-l text gr">
 	Version
 	<br>Database
@@ -7,7 +7,7 @@
 	<div id="statusvalue"></div>
 </div>
 <div style="clear:both"></div>
-<pre id="codempdconf" class="hide"></pre>
+<pre id="codempd" class="hide"></pre>
 
 <div class="soundcard">
 <heading data-status="asound" class="status">Output<?=$code?><?=$help?></heading>
@@ -125,7 +125,8 @@
 </div>
 
 <div>
-<heading>Options<?=$help?></heading>
+<heading data-status="mpdconf" class="status">Options<?=$code?><?=$help?></heading>
+<pre id="codempdconf" class="hide"></pre>
 <div class="col-l double">
 	<a>Auto Update
 	<br><gr>Library</gr></a>

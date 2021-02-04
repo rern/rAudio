@@ -15,12 +15,12 @@ pushRefreshNetworks() {
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
 }
 featureDisable() {
-	systemctl disable --now $1
+	systemctl disable --now $@
 	pushRefresh
 }
 featureSet() {
-	systemctl restart $1
-	systemctl enable $1
+	systemctl restart $@
+	systemctl enable $@
 	pushRefresh
 }
 
@@ -69,9 +69,9 @@ hostapdset )
 	pushRefreshNetworks
 	;;
 localbrowserdisable )
-	featureDisable localbrowser
+	ply-image /srv/http/assets/img/splash.png
+	featureDisable bootsplash localbrowser
 	systemctl enable --now getty@tty1
-	systemctl disable bootsplash
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	;;
 localbrowserset )
@@ -84,6 +84,7 @@ localbrowserset )
 	screenoffset=${conf[1]}
 	cursorset=${conf[2]}
 	zoomset=${conf[3]}
+	ply-image /srv/http/assets/img/splash.png
 	if [[ $rotate != $rotateset ]]; then
 		if grep -q tft35a /boot/config.txt; then
 			case $rotate in
@@ -108,8 +109,6 @@ localbrowserset )
 				sed -e "s/ROTATION_SETTING/$rotate/
 				" -e "s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 			fi
-			ply-image /srv/http/assets/img/splash.png
-			systemctl restart localbrowser
 		fi
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 	fi
@@ -122,10 +121,7 @@ cursor=$cursor
 zoom=$zoom
 " > /etc/localbrowser.conf
 	systemctl disable --now getty@tty1
-	systemctl enable bootsplash
-	if ! systemctl is-active localbrowser || [[ $cursor != $cursorset || $zoom != $zoomset ]]; then
-		featureSet localbrowser
-	fi
+	featureSet bootsplash localbrowser
 	;;
 logindisable )
 	rm -f $dirsystem/login*

@@ -108,8 +108,8 @@ else
 
 audio_output {
 	type           "fifo"
-	name           "No sound devie"
-	path           "/tmp/snapfifo"
+	name           "No sound device"
+	path           "/tmp/nosoundfifo"
 }'
 fi
 

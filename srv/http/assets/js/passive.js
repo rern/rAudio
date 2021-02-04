@@ -333,7 +333,7 @@ function psPlaylist( data ) {
 	}
 }
 function psRelays( response ) { // on receive broadcast
-	var stopwatch = '<img src="/assets/img/stopwatch.'+ hash +'.svg">';
+	var stopwatch = '<img class="stopwatch" src="/assets/img/stopwatch.'+ hash +'.svg">';
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
@@ -363,7 +363,7 @@ function psRelays( response ) { // on receive broadcast
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
-				bash( '/srv/http/bash/relays.py false' );
+				bash( '/srv/http/bash/relays.sh false' );
 			}
 			, oklabel     : '<i class="fa fa-refresh"></i>Reset'
 			, ok          : function() {

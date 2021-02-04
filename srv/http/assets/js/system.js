@@ -99,6 +99,7 @@ refreshData = function() {
 		$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 		$( '#lcd' ).prop( 'checked', G.lcd );
 		$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
+		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		$( '#relays' ).prop( 'checked', G.relays );
 		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 		$( '#hostname' ).val( G.hostname );
@@ -132,13 +133,14 @@ $( '.enable' ).click( function() {
 } );
 $( '.enablenoset' ).click( function() {
 	var idname = {
-		  lcd    : 'TFT LCD'
-		, relays : 'GPIO Relay'
+		  lcd         : 'TFT LCD'
+		, powerbutton : 'Power Button'
+		, relays      : 'GPIO Relay'
 	}
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
 	notify( idname[ id ], checked, id );
-	if ( id !== 'relays' ) rebootText( checked, id );
+	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
 	bash( [ id, checked, G.reboot.join( '\n' ) ] );
 } );
 
@@ -257,6 +259,22 @@ $( '#i2smodule' ).change( function() {
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
 	bash( [ 'i2smodule', aplayname, output, G.reboot.join( '\n' ) ] );
+} );
+$( '#gpioimgtxt' ).click( function() {
+	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
+		$( '#gpiopin' ).slideToggle();
+		$( '#fliptxt, #close-img' ).toggle();
+		$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' )
+	} else {
+		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
+		$( '#fliptxt' ).hide();
+		$( this ).find( 'i' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-chevron-down' );
+	}
+} );
+$( '#gpiopin, #gpiopin1' ).click( function() {
+	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
 	<div class="infotextlabel">

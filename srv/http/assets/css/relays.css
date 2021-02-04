@@ -1,5 +1,6 @@
 .fa-check:before { content: "\f51B" }
 .fa-chevron-down:before { content: "\f605" }
+.fa-chevron-up:before { content: "\f604" }
 .fa-gpiopins:before { content: "\f572" }
 .fa-info-circle:before { content: "\f560" }
 .fa-link:before { content: "\f52C" }
@@ -41,16 +42,8 @@ span.timer {
 span.timer i {
 	vertical-align: -2px;
 }
-#gpioimgtxt,
-#close-img {
+#gpioimgtxt {
 	cursor: pointer;
-}
-#close-img {
-	display: none;
-	position: absolute;
-	right: 15px;
-	top: 5px;
-	font-size: 28px;
 }
 #fliptxt {
 	display: none;
@@ -59,7 +52,7 @@ span.timer i {
 #gpiopin,
 #gpiopin1 {
 	display: none;
-	margin-bottom: 10px;
+	margin: 10px 0;
 	width: 100%;
 	border-radius: 6px;
 	background: var( --cw );

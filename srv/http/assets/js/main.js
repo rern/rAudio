@@ -153,7 +153,7 @@ $( '.settings' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'relays':
-			bash( '/srv/http/bash/relays.py '+ !G.status.relayson );
+			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
 		case 'snapclient':
 			bash( '/srv/http/bash/snapcast.sh '+ ( G.status.player === 'snapclient' ? 'stop' : 'start' ), function( data ) {
