@@ -94,12 +94,12 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 
 <div>
 <heading data-status="configtxt" class="status">GPIO Devices<?=$code?><?=$help?></heading>
+<pre id="codeconfigtxt" class="hide"></pre>
 <div <?=$classhelp?>>
 	GPIO pin reference: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a>
 	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
 	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
 </div>
-<pre id="codeconfigtxt" class="hide"></pre>
 <div <?=$classstatus?>>
 	<a>Audio
 	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
