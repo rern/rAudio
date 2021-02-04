@@ -162,7 +162,7 @@ if [[ $# -gt 0 && $1 != bt ]]; then
 			amixer -M sset "$hwmixer" $vol%
 		fi
 	fi
-	[[ -z $Acard ]] && name=${Aname[$card]} || name='(No sound device)'
+	[[ -n $Aname ]] && name=${Aname[$card]} || name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
 else
