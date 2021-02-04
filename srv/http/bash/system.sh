@@ -191,7 +191,6 @@ i2smodule )
 	[[ -n $dtoverlay ]] && sed -i '$ r /dev/stdin' $fileconfig <<< "$dtoverlay"
 	if [[ $aplayname != onboard ]]; then
 		lines="\
-dtparam=audio=off
 dtparam=i2s=on
 dtoverlay=${args[1]}"
 		sed -i '$ r /dev/stdin' $fileconfig <<< "$lines"
@@ -199,6 +198,7 @@ dtoverlay=${args[1]}"
 		echo $output > $dirsystem/audio-output
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 	else
+		sed -i '$ a\dtparam=audio=on' $fileconfig
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 		revision=${revision: -3:2}
 		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphone
