@@ -93,6 +93,30 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
+<heading>Audio<?=$help?></heading>
+<div class="col-l single">On-board<i class="fa fa-volume"></i></div>
+<div class="col-r">
+	<input id="onboardaudio" class="enablenoset" type="checkbox">
+	<div class="switchlabel" for="onboardaudio"></div>
+	<span <?=$classhelp?>>
+		Enable only when needed.
+		<br>RPi 4: Enabling may cause audio dropouts on other audio devices.
+	</span>
+</div>
+<div data-status="soundprofile" class="col-l icon double status">
+		<a>Sound Profile
+	<br><gr>kernel <?=$code?></gr></a><i class="fa fa-soundprofile"></i>
+</div>
+<div class="col-r">
+	<input id="soundprofile" <?=$chkenable?>>
+	<div class="switchlabel" for="soundprofile"></div>
+	<i id="setting-soundprofile" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
+</div>
+<pre id="codesoundprofile" class="hide"></pre>
+</div>
+
+<div>
 <heading data-status="configtxt" class="status">GPIO Devices<?=$code?><?=$help?></heading>
 <pre id="codeconfigtxt" class="hide"></pre>
 <div <?=$classhelp?>>
@@ -194,17 +218,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		</p>
 	</span>
 </div>
-<div data-status="soundprofile" class="col-l icon double status">
-		<a>Sound Profile
-	<br><gr>kernel <?=$code?></gr></a><i class="fa fa-soundprofile"></i>
-</div>
-<div class="col-r">
-	<input id="soundprofile" <?=$chkenable?>>
-	<div class="switchlabel" for="soundprofile"></div>
-	<i id="setting-soundprofile" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
-</div>
-<pre id="codesoundprofile" class="hide"></pre>
 </div>
 
 <div>

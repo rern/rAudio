@@ -294,6 +294,8 @@ function psMpdUpdate( data ) {
 	}
 }
 function psNotify( data ) {
+//	if ( $( '#infoTitle' ).text() === 'Power' ) return
+	
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( data.icon === 'file-wave' ) {
 		$( '#tab-library, #button-library, #i-update, #ti-update' )
@@ -304,7 +306,7 @@ function psNotify( data ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
-		loader( 'show' );
+		loader();
 	}
 }
 function psOption( data ) {

@@ -299,9 +299,12 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	pushRefresh
 	;;
 onboardaudio )
-	[[ ${args[1]} == true ]] && onoff=on || onoff=off
-	sed -i "s/\(dtparam=audio=\).*/\1$onoff/" $fileconfig
-	echo "${args[2]}" > $filereboot
+	if [[ ${args[1]} == true ]]; then
+		echo dtparam=audio=on >> $fileconfig
+		echo "${args[2]}" > $filereboot
+	else
+		sed -i '/dtparam=audio=on/ d' $fileconfig
+	fi
 	pushRefresh
 	;;
 powerbutton )

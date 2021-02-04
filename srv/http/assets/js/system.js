@@ -102,6 +102,9 @@ refreshData = function() {
 		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		$( '#relays' ).prop( 'checked', G.relays );
 		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
+		$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
+		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
 		$( '#hostname' ).val( G.hostname );
 		$( '#timezone' )
 			.val( G.timezone )
@@ -109,8 +112,6 @@ refreshData = function() {
 		[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
-		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
 		resetLocal();
 		showContent();
 	} );
@@ -133,9 +134,10 @@ $( '.enable' ).click( function() {
 } );
 $( '.enablenoset' ).click( function() {
 	var idname = {
-		  lcd         : 'TFT LCD'
-		, powerbutton : 'Power Button'
-		, relays      : 'GPIO Relay'
+		  lcd          : 'TFT LCD'
+		, onboardaudio : 'On-board Audio'
+		, powerbutton  : 'Power Button'
+		, relays       : 'GPIO Relay'
 	}
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
@@ -231,6 +233,90 @@ $( '#wlan' ).click( function() {
 			}
 		} );
 	}
+} );
+$( '#setting-soundprofile' ).click( function() {
+	var textlabel = [
+		  'kernel.sched_latency_ns <gr>(ns)</gr>'
+		, 'vm.swappiness'
+		, 'eth0 mtu <gr>(byte)</gr>'
+		, 'eth0 txqueuelen'
+	];
+	var textvalue = G.soundprofileval.split( ' ' );
+	if ( G.rpi01 ) {
+		var lat = [ 1500000, 850000, 500000, 120000, 500000, 145655, 6000000, 1500000 ];
+	} else {
+		var lat = [ 4500000, 3500075, 1000000, 2000000, 3700000, 145655, 6000000, 1500000 ];
+	}
+	if ( textvalue.length > 2 ) {
+		var defaultval = '18000000 60 1500 1000';
+		var radio = {
+			  _Default  : defaultval
+			, RuneAudio : lat[ 0 ] +' 0 1500 1000'
+			, _ACX      : lat[ 1 ] +' 0 1500 4000'
+			, Orion     : lat[ 2 ] +' 20 1000 4000'
+			, _OrionV2  : lat[ 3 ] +' 0 1000 4000'
+			, OrionV3   : lat[ 4 ] +' 0 1000 4000'
+			, _OrionV4  : lat[ 5 ] +' 60 1000 4000'
+			, Um3ggh1U  : lat[ 6 ] +' 0 1500 1000'
+		}
+		var radioval = Object.values( radio );
+		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
+	} else {
+		textlabel = textlabel.slice( 0, 2 );
+		var defaultval = '18000000 60';
+		var radio = {
+			  _Default  : defaultval
+			, RuneAudio : lat[ 0 ] +' 0'
+			, _ACX      : lat[ 1 ] +' 0'
+			, Orion     : lat[ 2 ] +' 20'
+			, _OrionV2  : lat[ 3 ] +' 0 '
+			, OrionV3   : lat[ 4 ] +' 0'
+			, _OrionV4  : lat[ 5 ] +' 60'
+			, Um3ggh1U  : lat[ 6 ] +' 0'
+		}
+		var radioval = Object.values( radio );
+		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
+	}
+	var iL = textlabel.length;
+	info( {
+		  icon      : 'sliders'
+		, title     : 'Kernel Sound Profile'
+		, textlabel : textlabel
+		, textvalue : textvalue
+		, boxwidth  : 110
+		, radio     : radio
+		, checked   : G.soundprofileval
+		, preshow   : function() {
+			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
+			// verify changes + interactive values
+			$( '#infoOk' ).addClass( 'disabled' );
+			$( '#infoRadio' ).change( function() {
+				var soundprofileval = $( '#infoRadio input:checked' ).val();
+				var val = soundprofileval.split( ' ' );
+				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
+				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
+				
+			} );
+			$( '.infoinput' ).keyup( function() {
+				var soundprofileval = $( '#infoTextBox' ).val();
+				for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
+				$( '#infoRadio input' ).val( [ textvalue.indexOf( soundprofileval ) !== -1 ? soundprofileval : G.soundprofileval ] );
+				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
+				$( '#infoRadio input' ).last().prop( 'checked', radioval.indexOf( soundprofileval ) === -1 );
+			} );
+		}
+		, cancel    : function() {
+			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+		}
+		, ok        : function() {
+			var soundprofileval = $( '#infoTextBox' ).val();
+			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
+			var custom = radioval.indexOf( soundprofileval ) !== -1 ? false : true;
+			bash( [ 'soundprofileset', soundprofileval ] );
+			var action = !G.soundprofile ? 'Enabled ...' : ( soundprofileval !== defaultval ? 'Change ...' : 'Default ...' );
+			notify( 'Kernel Sound Profile', action, 'volume' );
+		}
+	} );
 } );
 $( '#i2smodulesw' ).click( function() {
 	// delay to show switch sliding
@@ -504,90 +590,6 @@ $( '#setting-regional' ).click( function() {
 			G.regdom = regdom;
 			notify( 'Regional Settings', 'Change ...', 'globe' );
 			bash( [ 'regional', ntp, regdom ] );
-		}
-	} );
-} );
-$( '#setting-soundprofile' ).click( function() {
-	var textlabel = [
-		  'kernel.sched_latency_ns <gr>(ns)</gr>'
-		, 'vm.swappiness'
-		, 'eth0 mtu <gr>(byte)</gr>'
-		, 'eth0 txqueuelen'
-	];
-	var textvalue = G.soundprofileval.split( ' ' );
-	if ( G.rpi01 ) {
-		var lat = [ 1500000, 850000, 500000, 120000, 500000, 145655, 6000000, 1500000 ];
-	} else {
-		var lat = [ 4500000, 3500075, 1000000, 2000000, 3700000, 145655, 6000000, 1500000 ];
-	}
-	if ( textvalue.length > 2 ) {
-		var defaultval = '18000000 60 1500 1000';
-		var radio = {
-			  _Default  : defaultval
-			, RuneAudio : lat[ 0 ] +' 0 1500 1000'
-			, _ACX      : lat[ 1 ] +' 0 1500 4000'
-			, Orion     : lat[ 2 ] +' 20 1000 4000'
-			, _OrionV2  : lat[ 3 ] +' 0 1000 4000'
-			, OrionV3   : lat[ 4 ] +' 0 1000 4000'
-			, _OrionV4  : lat[ 5 ] +' 60 1000 4000'
-			, Um3ggh1U  : lat[ 6 ] +' 0 1500 1000'
-		}
-		var radioval = Object.values( radio );
-		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
-	} else {
-		textlabel = textlabel.slice( 0, 2 );
-		var defaultval = '18000000 60';
-		var radio = {
-			  _Default  : defaultval
-			, RuneAudio : lat[ 0 ] +' 0'
-			, _ACX      : lat[ 1 ] +' 0'
-			, Orion     : lat[ 2 ] +' 20'
-			, _OrionV2  : lat[ 3 ] +' 0 '
-			, OrionV3   : lat[ 4 ] +' 0'
-			, _OrionV4  : lat[ 5 ] +' 60'
-			, Um3ggh1U  : lat[ 6 ] +' 0'
-		}
-		var radioval = Object.values( radio );
-		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
-	}
-	var iL = textlabel.length;
-	info( {
-		  icon      : 'sliders'
-		, title     : 'Kernel Sound Profile'
-		, textlabel : textlabel
-		, textvalue : textvalue
-		, boxwidth  : 110
-		, radio     : radio
-		, checked   : G.soundprofileval
-		, preshow   : function() {
-			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
-			// verify changes + interactive values
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoRadio' ).change( function() {
-				var soundprofileval = $( '#infoRadio input:checked' ).val();
-				var val = soundprofileval.split( ' ' );
-				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
-				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
-				
-			} );
-			$( '.infoinput' ).keyup( function() {
-				var soundprofileval = $( '#infoTextBox' ).val();
-				for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
-				$( '#infoRadio input' ).val( [ textvalue.indexOf( soundprofileval ) !== -1 ? soundprofileval : G.soundprofileval ] );
-				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
-				$( '#infoRadio input' ).last().prop( 'checked', radioval.indexOf( soundprofileval ) === -1 );
-			} );
-		}
-		, cancel    : function() {
-			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-		}
-		, ok        : function() {
-			var soundprofileval = $( '#infoTextBox' ).val();
-			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
-			var custom = radioval.indexOf( soundprofileval ) !== -1 ? false : true;
-			bash( [ 'soundprofileset', soundprofileval ] );
-			var action = !G.soundprofile ? 'Enabled ...' : ( soundprofileval !== defaultval ? 'Change ...' : 'Default ...' );
-			notify( 'Kernel Sound Profile', action, 'volume' );
 		}
 	} );
 } );
