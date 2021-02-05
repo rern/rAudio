@@ -1449,7 +1449,6 @@ function setPlaylistScroll() {
 		|| !G.status.playlistlength
 		|| G.sortable ) return // skip if empty or Sortable
 	
-	playlistProgress();
 	var wW = window.innerWidth;
 	$.each( $( '#pl-list .name' ), function() {
 		var $name = $( this );
@@ -1468,23 +1467,26 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
+	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
+	G.titleW = $title[ 0 ].scrollWidth;
+	console.log(G.titleW)
 	$( '#menu-plaction' ).addClass( 'hide' );
-	
 	if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
 		$( 'html, body' ).scrollTop( 0 );
 	} else {
 		var scrollpos = $liactive.offset().top - ( G.bars ? 80 : 40 ) - ( 49 * 3 );
 		$( 'html, body' ).scrollTop( scrollpos );
 	}
+	playlistProgress();
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
-	var $liactive = $( '#pl-list li.active' ); 
+	var $liactive = $( '#pl-list li.active' );
 	var $duration = $liactive.find( '.duration' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
 	var iWdW = 40 + 10 + $duration.width() + 10;
 	var plwW = $( 'body' ).width();
-	if ( iWdW + $title.width() < plwW ) {
+	if ( iWdW + G.titleW < plwW ) {
 		$title.css(  'max-width', '' );
 		$duration.removeClass( 'duration-right' );
 	} else {
