@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+relaysfile=/srv/http/data/system/relays
+[[ -e $relaysfile && ! -s $relaysfile ]] && /srv/http/bash/system.sh relays$'\n'true
+
 pacman -Q wiringpi &> /dev/null || pacman -Sy --noconfirm wiringpi
 
 rm -f /addons-list.json
