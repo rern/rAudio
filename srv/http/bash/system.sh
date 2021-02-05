@@ -339,7 +339,7 @@ powerbutton )
 	enable=${args[1]}
 	reboot=${args[2]}
 	if [[ $enable == true ]]; then
-		echo dtoverlay=gpio-poweroff >> /boot/config.txt
+		echo dtoverlay=gpio-shutdown >> /boot/config.txt
 		echo "$reboot" > $filereboot
 	else
 		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
