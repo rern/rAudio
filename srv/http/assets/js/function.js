@@ -529,17 +529,6 @@ function getPlaybackStatus( render ) {
 function getPlaylist() {
 	list( { cmd: 'current' }, renderPlaylist, 'json' );
 }
-function getTitleWidth() {
-	var $liactive = $( '#pl-list li.active' ); 
-	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
-	plwW = $( window ).width();
-	$title.css( {
-		  'max-width' : 'none'
-		, visibility  : 'hidden'
-	} );
-	pltW = $title.width();
-	$title.removeAttr( 'style' );
-}
 function hideGuide() {
 	if ( G.guide ) {
 		G.guide = 0;
@@ -796,7 +785,6 @@ function playlistProgress() {
 	if ( G.status.state === 'pause' ) {
 		elapsedtxt = second2HMS( G.status.elapsed );
 		$elapsed.html( '<i class="fa fa-pause"></i>'+ elapsedtxt + slash );
-		getTitleWidth();
 		setTitleWidth();
 	} else if ( G.status.state === 'play' ) {
 		$this.find( '.li1 .radioname' ).addClass( 'hide' );
@@ -808,10 +796,8 @@ function playlistProgress() {
 		} else {
 			$name.removeClass( 'hide' );
 			$song.empty();
+			$( '.elapsed, .song' ).empty();
 		}
-		getTitleWidth();
-		if ( !G.status.Title ) return
-		
 		var time = $this.find( '.time' ).data( 'time' );
 		G.intElapsedPl = setInterval( function() {
 			G.status.elapsed++;
@@ -835,6 +821,7 @@ function playlistProgress() {
 			.empty()
 			.css( 'max-width', '' );
 		$elapsed.empty();
+		setTitleWidth();
 	}
 }
 function renderLibrary() {
@@ -1233,10 +1220,10 @@ renderPlaylist = function( data ) {
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		if ( $( '#pl-list img.lazy' ).length ) G.lazyload.update();
 		$( '.list p' ).toggleClass( 'bars-on', G.bars );
-		$( '#pl-list li' )
-			.removeClass( 'active activeplay' )
-			.find( '.elapsed, .song' )
-			.empty();
+//		$( '#pl-list li' )
+//			.removeClass( 'active activeplay' )
+//			.find( '.elapsed, .song' )
+//			.empty();
 		$( '#pl-list li .name' ).removeClass( 'hide' );
 		$( '#pl-list li .song' ).css( 'max-width', '' );
 		setPlaylistScroll();
@@ -1454,22 +1441,6 @@ function setButtonUpdating() {
 		$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 	}
 }
-function setNameWidth() {
-	var wW = window.innerWidth;
-	$.each( $( '#pl-list .name' ), function() {
-		var $name = $( this );
-		var $dur =  $name.next();
-		// pl-icon + margin + duration + margin
-		var iWdW = 40 + 10 + $dur.width();
-		if ( iWdW + $name.width() < wW ) {
-			$dur.removeClass( 'duration-right' );
-			$name.css( 'max-width', '' );
-		} else {
-			$dur.addClass( 'duration-right' );
-			$name.css( 'max-width', wW - iWdW +'px' );
-		}
-	} );
-}
 function setPlaylistScroll() {
 	if ( !G.playlist
 		|| G.plremove
@@ -1479,7 +1450,21 @@ function setPlaylistScroll() {
 		|| G.sortable ) return // skip if empty or Sortable
 	
 	playlistProgress();
-	setNameWidth();
+	var wW = window.innerWidth;
+	$.each( $( '#pl-list .name' ), function() {
+		var $name = $( this );
+		var $dur =  $name.next();
+		// pl-icon + margin + duration + margin
+		var iWdW = 40 + 30 + $dur.width();
+		if ( iWdW + $name.width() < wW ) {
+			$dur.removeClass( 'duration-right' );
+			$name.css( 'max-width', '' );
+		} else {
+			$dur.addClass( 'duration-right' );
+			$name.css( 'max-width', wW - iWdW +'px' );
+		}
+	} );
+	if ( G.status.state !== 'stop' ) setTitleWidth();
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
@@ -1498,7 +1483,8 @@ function setTitleWidth() {
 	var $duration = $liactive.find( '.duration' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
 	var iWdW = 40 + 10 + $duration.width() + 10;
-	if ( iWdW + pltW < plwW ) {
+	var plwW = $( 'body' ).width();
+	if ( iWdW + $title.width() < plwW ) {
 		$title.css(  'max-width', '' );
 		$duration.removeClass( 'duration-right' );
 	} else {

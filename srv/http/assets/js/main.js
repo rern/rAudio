@@ -16,10 +16,10 @@ var G = {
 	, mode          : ''
 	, modescrolltop : 0
 	, page          : 'playback'
+	, pageX         : ''
 	, pladd         : {}
 	, playback      : 1
 	, playlist      : 0
-	, pageX         : ''
 	, query         : []
 	, rotate        : 0
 	, savedlist     : 0
