@@ -33,8 +33,8 @@ refreshData = function() {
 			$( '.soundcard' ).removeClass( 'hide' );
 			device = G.devices[ G.devices.length - 1 ];
 			$( '#audiooutput' )
-				.html( '<option data-card="'+ device.card +'">'+ device.name +'</option>' )
-				.prop( 'disabled', 1 );
+				.val( device.name )
+				.prop( 'readonly', 1 );
 			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			device.mixerdevices.forEach( function( mixer ) {
 				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
@@ -49,7 +49,7 @@ refreshData = function() {
 			$( '#mixertype' )
 				.html( htmlmixertype )
 				.val( device.mixertype );
-			$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
+			$( '#hwmixer, #mixertype' ).selectric( 'refresh' );
 			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
@@ -114,7 +114,7 @@ $( '.enablenoset' ).click( function() {
 	notify( idname[ id ], checked, 'mpd' );
 	bash( [ id, checked ] );
 } );
-$( '#audiooutput, #hwmixer, #mixertype' ).selectric();
+$( '#hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'

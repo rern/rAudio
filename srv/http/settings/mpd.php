@@ -14,7 +14,7 @@
 <pre id="codeasound" class="hide"></pre>
 <div class="col-l">Device</div>
 <div class="col-r">
-	<select id="audiooutput"></select>
+	<input id="audiooutput" type="text">
 	<span <?=$classhelp?>>HDMI device available only when connected before boot.</span>
 </div>
 <div>
