@@ -1612,6 +1612,16 @@ function volumebarTimeout() {
 		$( '.volumeband' ).addClass( 'transparent' );
 	}, 3000 );
 }
+function volumeDrag( vol ) {
+	if ( G.status.control ) {
+		bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
+	} else {
+		bash( 'mpc volume '+ vol );
+	}
+}
+function volumePushstream() {
+	bash( [ 'volumepushstream' ] );
+}
 function volumeSet( pageX ) {
 	var $volumeband = $( '#volume-band' );
 	var posX = pageX - $volumeband.offset().left;
@@ -1620,11 +1630,7 @@ function volumeSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		if ( G.status.control ) {
-			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
-		} else {
-			bash( 'mpc volume '+ vol );
-		}
+		volumeDrag( vol );
 	} else {
 		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
 		$( '.volumeband' ).addClass( 'disabled' );
