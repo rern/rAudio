@@ -298,15 +298,6 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
-onboardaudio )
-	if [[ ${args[1]} == true ]]; then
-		sed -i '$ a\dtparam=audio=on' $fileconfig
-		echo "${args[2]}" > $filereboot
-	else
-		sed -i '/dtparam=audio=on/ d' $fileconfig
-	fi
-	pushRefresh
-	;;
 powerbutton )
 	enable=${args[1]}
 	reboot=${args[2]}
