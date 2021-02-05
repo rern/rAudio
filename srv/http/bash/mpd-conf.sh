@@ -60,17 +60,15 @@ mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
 . /srv/http/bash/mpd-devices.sh
 
 if [[ $i != -1 ]]; then
-	cardL=${#Acard[@]}
-	for (( i=0; i < cardL; i++ )); do
-		aplayname=${Aaplayname[i]}
-		card=${Acard[i]}
-		dop=${Adop[i]}
-		hw=${Ahw[i]}
-		hwmixer=${Ahwmixer[i]}
-		mixertype=${Amixertype[i]}
-		name=${Aname[i]}
+	aplayname=${Aaplayname[-1]}
+	card=${Acard[-1]}
+	dop=${Adop[-1]}
+	hw=${Ahw[-1]}
+	hwmixer=${Ahwmixer[-1]}
+	mixertype=${Amixertype[-1]}
+	name=${Aname[-1]}
 ########
-		mpdconf+='
+	mpdconf+='
 
 audio_output {
 	name           "'$name'"
@@ -79,37 +77,37 @@ audio_output {
 	auto_resample  "no"
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
-		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-			mixercontrol=$hwmixer
-########
-			mpdconf+='
-	mixer_control  "'$mixercontrol'"
-	mixer_device   "hw:'$card'"'
-		fi
-		if [[ $dop == 1 ]]; then
-########
-			mpdconf+='
-	dop            "yes"'
-		fi
-		mpdcustom=$dirsystem/custom
-		customfile="$mpdcustom-output-$aplayname"
-		if [[ -e $mpdcustom && -e "$customfile" ]]; then
-########
-			mpdconf+="
-$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
-		fi
+	if [[ $mixertype == hardware ]]; then # mixer_device must be card index
+		mixercontrol=$hwmixer
 ########
 		mpdconf+='
+	mixer_control  "'$mixercontrol'"
+	mixer_device   "hw:'$card'"'
+	fi
+	if [[ $dop == 1 ]]; then
+########
+		mpdconf+='
+	dop            "yes"'
+	fi
+	mpdcustom=$dirsystem/custom
+	customfile="$mpdcustom-output-$aplayname"
+	if [[ -e $mpdcustom && -e "$customfile" ]]; then
+########
+		mpdconf+="
+$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
+	fi
+########
+	mpdconf+='
 }'
-	done
 else
 ########
+	name='(No sound device)'
 	mpdconf+='
 
 audio_output {
 	type           "fifo"
-	name           "No sound device"
-	path           "/tmp/nosoundfifo"
+	name           "'$name'"
+	path           "/tmp/mpdfifo"
 }'
 fi
 
@@ -146,28 +144,17 @@ mpdconf+=$btoutput
 echo "$mpdconf" > $mpdfile
 
 # usbdac.rules
-if [[ $# -gt 0 && $1 != bt ]]; then
+if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
-	cardfile=/srv/http/data/shm/asoundcard
-	if [[ $1 == remove ]]; then
-		card=$( cat $cardfile 2> /dev/null || echo 0 )
-		sed -i "s/.$/$card/" /etc/asound.conf
-		rm $cardfile
-	else # last one of $card $mixertype $hwmixer
-		head -1 /etc/asound.conf | cut -d' ' -f2 > $cardfile
-		sed -i "s/.$/$card/" /etc/asound.conf
-		# fix: Failed to read mixer
-		if [[ $mixertype == hardware ]]; then
-			vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
-			amixer -M sset "$hwmixer" $vol%
-		fi
+	if [[ $1 == add && $mixertype == hardware ]]; then # fix: Failed to read mixer
+		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		amixer -M sset "$hwmixer" $vol%
 	fi
-	[[ -n $Aname ]] && name=${Aname[$card]} || name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
-else
-	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 fi
+
+sed -i "s/.$/$card/" /etc/asound.conf
 
 if [[ -z $Acard ]]; then
 	restartMPD

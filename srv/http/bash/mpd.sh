@@ -35,18 +35,6 @@ Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0"
 	fi
 	;;
-audiooutput )
-	aplayname=${args[1]}
-	card=${args[2]}
-	output=${args[3]}
-	mixer=${args[4]}
-	sed -i "s/.$/$card/" /etc/asound.conf
-	sed -i -e '/output_device = / s/".*"/"hw:'$card'"/
-	' -e '/mixer_control_name = / s/".*"/"'$mixer'"/
-	' /etc/shairport-sync.conf
-	systemctl try-restart shairport-sync shairport-meta
-	pushRefresh
-	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '1 i\auto_update            "yes"' /etc/mpd.conf
@@ -141,6 +129,12 @@ customset )
 		sed -i "/^user/ a$global" /etc/mpd.conf
 	fi
 	restartMPD
+	;;
+devices )
+	devices=$'# cat /etc/asound.conf\n'$( cat /etc/asound.conf )
+	devices+=$'\n\n# aplay -l | grep ^card\n'$( aplay -l | grep ^card )
+	devices+=$'\n\n# amixer scontrols\n'$( /srv/http/bash/mpd.sh amixer )
+	echo "$devices"
 	;;
 dop )
 	dop=${args[1]}

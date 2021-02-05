@@ -31,15 +31,10 @@ refreshData = function() {
 			$( '.soundcard' ).addClass( 'hide' );
 		} else {
 			$( '.soundcard' ).removeClass( 'hide' );
-			device = G.devices[ G.asoundcard ];
-			var htmldevices = '';
-			$.each( G.devices, function() {
-				htmldevices += '<option data-card="'+ this.card +'">'+ this.name +'</option>';
-			} );
+			device = G.devices[ G.devices.length - 1 ];
 			$( '#audiooutput' )
-				.html( htmldevices )
-				.prop( 'disabled', G.devices.length < 2 );
-			$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
+				.html( '<option data-card="'+ device.card +'">'+ device.name +'</option>' )
+				.prop( 'disabled', 1 );
 			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			device.mixerdevices.forEach( function( mixer ) {
 				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
@@ -75,7 +70,7 @@ refreshData = function() {
 		$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 		$( '#soxr' ).prop( 'checked', G.soxr );
 		$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-		[ 'aplay', 'amixer', 'crossfade', 'mpdconf' ].forEach( function( id ) {
+		[ 'crossfade', 'mpdconf' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		if ( $( '#infoRange .value' ).text() ) {
@@ -125,12 +120,6 @@ var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
 			 +'<br><br>Signal level will be set to full amplitude to 0dB'
 			 +'<br>Too high volume can damage speakers and ears';
-$( '#audiooutput' ).change( function() {
-	var card = $( this ).find( 'option:selected' ).data( 'card' );
-	var dev = G.devices[ card ];
-	notify( 'Audio Output Device', 'Change ...', 'mpd' );
-	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
-} );
 $( '#hwmixer' ).change( function() {
 	var hwmixer = $( this ).val();
 	notify( 'Hardware Mixer', 'Change ...', 'mpd' );
