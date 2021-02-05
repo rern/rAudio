@@ -48,16 +48,6 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ $revision =~ ^(08|0c|0d|0e|
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
 
-if [[ $revision == 11 ]]; then
-	if [[ $( pacman -Q raspberrypi-bootloader | cut -d' ' -f2 ) > 20201208-1 ]]; then
-		for pkg in bootloader bootloader-x; do
-			wget -q https://github.com/rern/rern.github.io/raw/master/archives/raspberrypi-${pkg}-20201208-1-any.pkg.tar.xz
-		done
-		pacman -U --noconfirm raspberrypi-bootloader*
-		rm raspberrypi-bootloader*
-		sed -i '/^#IgnorePkg/ a\IgnorePkg   = raspberrypi-bootloader raspberrypi-bootloader-x' /etc/pacman.conf
-		title "$info Reboot required."
-	fi
-fi
+sed -i '/IgnorePkg   = raspberrypi-bootloader/ d' /etc/pacman.conf
 
 installfinish

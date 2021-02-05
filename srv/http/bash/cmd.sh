@@ -227,6 +227,7 @@ volumeSet() {
 		
 		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
 	fi
+	[[ -n $control ]] && alsactl store
 }
 
 case ${args[0]} in
@@ -767,6 +768,7 @@ volumeget )
 volumepushstream )
 	volumeGet
 	pushstream volume '{"val":'$volume'}'
+	[[ -n $control ]] && alsactl store
 	;;
 volumereset )
 	volumeReset

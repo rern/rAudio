@@ -304,7 +304,7 @@ function psNotify( data ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
-		loader( 'show' );
+		loader();
 	}
 }
 function psOption( data ) {

@@ -12,10 +12,8 @@ function bash( command, callback, json ) {
 	);
 }
 var cmd = {
-	  amixer       : [ '/srv/http/bash/mpd.sh amixer', 'amixer scontrols' ]
-	, avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
-	, aplay        : [ 'aplay -l | grep ^card' ]
-	, asound       : [ 'cat /etc/asound.conf' ]
+	  avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
+	, asound       : [ '/srv/http/bash/mpd.sh devices', -1 ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ 'cat /boot/config.txt' ]
@@ -45,11 +43,11 @@ function codeToggle( id, target ) {
 		if ( i !== -1 ) {
 			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = 'pacman -Q '+ packages[ i ] +'; systemctl status '+ id;
-			var cmdtxt = command;
+			var cmdtxt = '# '+ command +'<br><br>';
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-			var cmdtxt = cmd[ id ][ 1 ] || cmd[ id ][ 0 ];
+			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '# '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'<br><br>' : '';
 			var systemctl = 0;
 		}
 		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
@@ -68,7 +66,7 @@ function codeToggle( id, target ) {
 												.replace( /(inactive \(dead\))/, '<red>$1</red>' )
 												.replace( /(failed)/, '<red>$1</red>' );
 				$el
-					.html( '# '+ cmdtxt +'<br><br>'+ status )
+					.html( cmdtxt + status )
 					.removeClass( 'hide' );
 				if ( id === 'mpdconf' ) {
 					setTimeout( function() {

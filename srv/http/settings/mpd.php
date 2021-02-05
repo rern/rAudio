@@ -12,21 +12,14 @@
 <div class="soundcard">
 <heading data-status="asound" class="status">Output<?=$code?><?=$help?></heading>
 <pre id="codeasound" class="hide"></pre>
-<div data-status="aplay" <?=$classstatus?>>
-	<a>Device
-	<br><gr><?=$code?></gr></a>
-</div>
+<div class="col-l">Device</div>
 <div class="col-r">
-	<select id="audiooutput"></select>
+	<input id="audiooutput" type="text">
 	<span <?=$classhelp?>>HDMI device available only when connected before boot.</span>
 </div>
-<pre id="codeaplay" class="hide"></pre>
 <div>
 <div id="divhwmixer">
-	<div data-status="amixer" <?=$classstatus?>>
-		<a>Mixer Device
-		<br><gr><?=$code?></gr></a>
-	</div>
+	<div class="col-l">Mixer Device</div>
 	<div class="col-r">
 		<select id="hwmixer"></select>
 		<i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
@@ -35,7 +28,6 @@
 		</span>
 	</div>
 </div>
-<pre id="codeamixer" class="hide"></pre>
 <div class="col-l">Volume Control</div>
 <div class="col-r">
 	<select id="mixertype"></select>

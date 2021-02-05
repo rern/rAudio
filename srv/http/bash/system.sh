@@ -191,7 +191,6 @@ i2smodule )
 	[[ -n $dtoverlay ]] && sed -i '$ r /dev/stdin' $fileconfig <<< "$dtoverlay"
 	if [[ $aplayname != onboard ]]; then
 		lines="\
-dtparam=audio=off
 dtparam=i2s=on
 dtoverlay=${args[1]}"
 		sed -i '$ r /dev/stdin' $fileconfig <<< "$lines"
@@ -200,8 +199,9 @@ dtoverlay=${args[1]}"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 	else
 		sed -i '$ a\dtparam=audio=on' $fileconfig
-		rpi=$( hwRpi )
-		[[ $rpi == 0 ]] && output='HDMI 1' || output=Headphone
+		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+		revision=${revision: -3:2}
+		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
 		echo "bcm2835 $output" > $dirsystem/audio-aplayname
 		echo "On-board - $output" > $dirsystem/audio-output
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
@@ -296,12 +296,6 @@ chip=${val[3]}
 backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 " > /etc/lcdchar.conf
 	touch $dirsystem/lcdchar
-	pushRefresh
-	;;
-onboardaudio )
-	[[ ${args[1]} == true ]] && onoff=on || onoff=off
-	sed -i "s/\(dtparam=audio=\).*/\1$onoff/" $fileconfig
-	echo "${args[2]}" > $filereboot
 	pushRefresh
 	;;
 powerbutton )

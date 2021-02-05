@@ -527,11 +527,11 @@ $( '#tab-playback' ).click( function() {
 			, preshow    : function() {
 				$( '#infoOverlay' ).addClass( 'noscroll' );
 				$( '#infoRange input' ).on( 'click input', function() {
-					var val = $( this ).val();
-					$( '#infoRange .value' ).text( val );
-					bash( 'amixer -M sset "'+ G.status.control +'" '+ val +'%' );
+					var vol = $( this ).val();
+					$( '#infoRange .value' ).text( vol );
+					volumeDrag( vol );
 				} ).on( 'mouseup touchend', function() {
-					bash( [ 'volumepushstream' ] );
+					volumePushstream();
 				} );
 			}
 			, nobutton   : 1
@@ -682,15 +682,11 @@ $( '#volume' ).roundSlider( {
 	}
 	, drag            : function( e ) {
 		G.drag = 1;
-		if ( G.status.control ) {
-			bash( 'amixer -M sset "'+ G.status.control +'" '+ e.value +'%' );
-		} else {
-			bash( 'mpc volume '+ e.value );
-		}
+		volumeDrag( e.value );
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 	}
 	, stop            : function() { // touchend mouseup
-		bash( [ 'volumepushstream' ] );
+		volumePushstream();
 	}
 	, change          : function( e ) { // click
 		$( e.handle.element ).rsRotate( - e.handle.angle );
@@ -726,17 +722,13 @@ $( '#volup, #voldn' ).click( function() {
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
 		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
-		if ( G.status.control ) {
-			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
-		} else {
-			bash( 'mpc volume '+ vol );
-		}
+		volumeDrag( vol );
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
 	if ( G.volhold ) {
 		G.volhold = 0;
 		clearInterval( G.intVolume );
-		bash( [ 'volumepushstream' ] );
+		volumePushstream();
 	}
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
@@ -877,7 +869,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	G.down = 0;
 	if ( G.drag ) {
 		G.drag = 0;
-		bash( [ 'volumepushstream' ] );
+		volumePushstream();
 		return
 	}
 	
@@ -923,16 +915,12 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 		G.status.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		if ( G.status.control ) {
-			bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
-		} else {
-			bash( 'mpc volume '+ vol );
-		}
+		volumeDrag( vol );
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
 	if ( G.hold ) {
 		G.hold = 0;
-		bash( [ 'volumepushstream' ] );
+		volumePushstream();
 		clearTimeout( G.intVolume );
 		volumebarTimeout();
 	}
