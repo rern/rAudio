@@ -126,8 +126,11 @@ function setColorNone() {
 	} ).addClass( 'gr' );
 }
 
-renderOptions( relaysset );
-
+var relaysset;
+$.post( '/cmd.php', { cmd: 'bash', bash : 'cat /etc/relays.conf' }, function( data ) {
+	relaysset = data;
+	renderOptions( relaysset );
+}, 'json' );
 $( '.close-root' ).click( function() {
 	location.href = '/';
 } );

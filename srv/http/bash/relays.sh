@@ -1,38 +1,17 @@
 #!/bin/bash
 
-conf=$( cat /etc/relays.conf )
+. /srv/http/data/system/relays
 
-data() {
-	grep "$1" <<< "$conf" | awk '{print $NF}' | tr -d ,
-}
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"
 }
 
-on=( $( data '"on."' ) )
-ond=( $( data '"ond."' ) )
-off=( $( data '"off."' ) )
-offd=( $( data '"offd."' ) )
-timer=$( grep '"timer"' <<< "$conf" | awk '{print $NF}' )
 relaysfile='/srv/http/data/shm/relaystimer'
 
-name=$( grep -A4 '"name"' <<< "$conf" | tail -4 )
-readarray -t pins <<< $( echo "$name" | cut -d'"' -f2 )
-readarray -t names <<< $( echo "$name" | cut -d'"' -f4 )
-declare -A pinname
-for i in 0 1 2 3; do
-	pinname+=( [${pins[$i]}]=${names[$i]} )
-done
-for i in 0 1 2 3; do
-	oni=${on[$i]}
-	offi=${off[$i]}
-	[[ $oni != 0 ]] && onorder+=,'"'${pinname[$oni]}'"'
-	[[ $offi != 0 ]] && offorder+=,'"'${pinname[$offi]}'"'
-done
-
 killall relaystimer.sh &> /dev/null &
+
 if [[ $1 == true ]]; then
-	pushstream '{"state": true, "order": ['${onorder:1}']}'
+	pushstream '{"state": true, "order": '"$onorder"'}'
 	for i in 0 1 2 3; do
 		pin=${on[$i]}
 		(( $pin == 0 )) && break
@@ -51,7 +30,7 @@ if [[ $1 == true ]]; then
 	fi
 else
 	rm -f $relaysfile
-	pushstream '{"state": false, "order": ['${offorder:1}']}'
+	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
 		(( $pin == 0 )) && break

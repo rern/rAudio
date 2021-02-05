@@ -808,9 +808,10 @@ function playlistProgress() {
 		} else {
 			$name.removeClass( 'hide' );
 			$song.empty();
-			$( '.elapsed' ).empty();
 		}
 		getTitleWidth();
+		if ( !G.status.Title ) return
+		
 		var time = $this.find( '.time' ).data( 'time' );
 		G.intElapsedPl = setInterval( function() {
 			G.status.elapsed++;

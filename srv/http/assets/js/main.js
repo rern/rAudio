@@ -1924,6 +1924,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			$( '#play' ).click();
 		}
 	} else {
+		clearIntervalAll();
+		$( '.elapsed' ).empty();
 		bash( [ 'mpcplayback', 'play', listnumber ] );
 		$( '#pl-list li.active .elapsed' ).empty();
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
