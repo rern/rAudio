@@ -1453,8 +1453,8 @@ function setPlaylistScroll() {
 		var $name = $( this );
 		var $dur =  $name.next();
 		// pl-icon + margin + duration + margin
-		var iWdW = 40 + 30 + $dur.width();
-		if ( iWdW + $name.width() < wW ) {
+		var iWdW = 40 + 20 + $dur.width();
+		if ( iWdW + $name[ 0 ].scrollWidth < wW ) {
 			$dur.removeClass( 'duration-right' );
 			$name.css( 'max-width', '' );
 		} else {
@@ -1483,12 +1483,12 @@ function setTitleWidth() {
 	var $duration = $liactive.find( '.duration' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
 	var iWdW = 40 + 10 + $duration.width() + 10;
-	var plwW = $( 'body' ).width();
-	if ( iWdW + G.titleW < plwW ) {
+	var wW = window.innerWidth;
+	if ( iWdW + G.titleW < wW ) {
 		$title.css(  'max-width', '' );
 		$duration.removeClass( 'duration-right' );
 	} else {
-		$title.css( 'max-width', plwW - iWdW +'px' );
+		$title.css( 'max-width', wW - iWdW +'px' );
 		$duration.addClass( 'duration-right' );
 	}
 	$( '.duration-right' ).css( 'right', '' );
