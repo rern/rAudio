@@ -201,7 +201,7 @@ dtoverlay=${args[1]}"
 		sed -i '$ a\dtparam=audio=on' $fileconfig
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 		revision=${revision: -3:2}
-		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphone
+		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
 		echo "bcm2835 $output" > $dirsystem/audio-aplayname
 		echo "On-board - $output" > $dirsystem/audio-output
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
