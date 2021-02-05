@@ -1469,7 +1469,6 @@ function setPlaylistScroll() {
 	$liactive.addClass( 'active' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
 	G.titleW = $title[ 0 ].scrollWidth;
-	console.log(G.titleW)
 	$( '#menu-plaction' ).addClass( 'hide' );
 	if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
 		$( 'html, body' ).scrollTop( 0 );
