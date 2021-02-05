@@ -43,7 +43,7 @@ function codeToggle( id, target ) {
 		if ( i !== -1 ) {
 			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = 'pacman -Q '+ packages[ i ] +'; systemctl status '+ id;
-			var cmdtxt = command;
+			var cmdtxt = '# '+ command +'<br><br>';
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
