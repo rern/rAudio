@@ -146,10 +146,7 @@ echo "$mpdconf" > $mpdfile
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
-	if [[ $1 == add && $mixertype == hardware ]]; then # fix: Failed to read mixer
-		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
-		amixer -M sset "$hwmixer" $vol%
-	fi
+	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
 fi
