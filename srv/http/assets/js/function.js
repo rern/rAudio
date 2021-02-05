@@ -809,12 +809,11 @@ function playlistProgress() {
 					$( '#pl-list li .elapsed' ).empty();
 					setPlaylistScroll();
 				}
-				return
+			} else {
+				elapsedtxt = second2HMS( G.status.elapsed );
+				$elapsed.html( '<i class="fa fa-play"></i>'+ elapsedtxt + slash );
+				setTitleWidth();
 			}
-			
-			elapsedtxt = second2HMS( G.status.elapsed );
-			$elapsed.html( '<i class="fa fa-play"></i>'+ elapsedtxt + slash );
-			setTitleWidth();
 		}, 1000 );
 	} else { // stop
 		$song
