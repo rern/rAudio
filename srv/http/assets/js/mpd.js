@@ -31,10 +31,15 @@ refreshData = function() {
 			$( '.soundcard' ).addClass( 'hide' );
 		} else {
 			$( '.soundcard' ).removeClass( 'hide' );
-			device = G.devices[ G.devices.length - 1 ];
+			device = G.devices[ G.asoundcard ];
+			var htmldevices = '';
+			$.each( G.devices, function() {
+				htmldevices += '<option data-card="'+ this.card +'">'+ this.name +'</option>';
+			} );
 			$( '#audiooutput' )
-				.val( device.name )
-				.prop( 'readonly', 1 );
+				.html( htmldevices )
+				.prop( 'disabled', G.devices.length < 2 );
+			$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
 			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			device.mixerdevices.forEach( function( mixer ) {
 				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
@@ -49,7 +54,7 @@ refreshData = function() {
 			$( '#mixertype' )
 				.html( htmlmixertype )
 				.val( device.mixertype );
-			$( '#hwmixer, #mixertype' ).selectric( 'refresh' );
+			$( '#audiooutput, #hwmixer, #mixertype' ).selectric();
 			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
@@ -114,12 +119,17 @@ $( '.enablenoset' ).click( function() {
 	notify( idname[ id ], checked, 'mpd' );
 	bash( [ id, checked ] );
 } );
-$( '#hwmixer, #mixertype' ).selectric();
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
 			 +'<br><br>Signal level will be set to full amplitude to 0dB'
 			 +'<br>Too high volume can damage speakers and ears';
+$( '#audiooutput' ).change( function() {
+	var card = $( this ).find( 'option:selected' ).data( 'card' );
+	var dev = G.devices[ card ];
+	notify( 'Audio Output Device', 'Change ...', 'mpd' );
+	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
+} );
 $( '#hwmixer' ).change( function() {
 	var hwmixer = $( this ).val();
 	notify( 'Hardware Mixer', 'Change ...', 'mpd' );

@@ -2,7 +2,7 @@
 $time = time();
 $pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 $optionpin = '';
-foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';;
+foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
 $htmlpin = '';
 $htmlname = '';
 for ( $i = 1; $i < 5; $i++ ) {
