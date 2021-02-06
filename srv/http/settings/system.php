@@ -157,6 +157,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br> &emsp; - OFF: Connect between selectable pin <code id="swpin"></code> and ground.
 		<br>&bull; LED (optional)
 		<br> &emsp; - Connect between selectable pin <code id="ledpin"></code> and ground.
+		<br> &emsp; - <i class="fa fa-warning"></i> Caution: LED needs a current limiting resister.
 	</span>
 </div>
 <div class="col-l double">
