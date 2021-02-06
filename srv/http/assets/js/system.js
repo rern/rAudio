@@ -101,6 +101,9 @@ refreshData = function() {
 		$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
+		var powerbuttonconf = G.powerbuttonconf.split( ' ' );
+		$( '#swpin' ).text( powerbuttonconf[ 0 ] );
+		$( '#ledpin' ).text( powerbuttonconf[ 1 ] );
 		$( '#relays' ).prop( 'checked', G.relays );
 		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 		$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
@@ -466,17 +469,18 @@ $( '#setting-powerbutton' ).click( function() {
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
 var infopowerbutton = heredoc( function() { /*
-	Board (J8) pin numbers:<br>
+	Set pins:<br>
 	<div class="infotextlabel">
-		<a class="infolabel">On pin</a>
-		<a class="infolabel">Off pin</a>
-		<a class="infolabel">LED pin</a>
+		<a class="infolabel">On</a>
+		<a class="infolabel">Off</a>
+		<a class="infolabel">LED</a>
 	</div>
 	<div class="infotextbox lcdradio">
 		<input class="infoinput" type="text" value="5" readonly>
 		<select id="swpin"></select>
 		<select id="ledpin"></select>
 	</div>
+	<br><br><gr>(Pin number: J8 / board lauout)</gr>
 */ } );
 	info( {
 		  icon     : 'power'
