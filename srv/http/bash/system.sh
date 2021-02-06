@@ -345,7 +345,8 @@ powerbuttonset )
 	echo "\
 sw=${args[1]}
 led=${args[2]}" > /etc/powerbutton.conf
-	systemctl enable --now powerbutton
+	systemctl restart powerbutton
+	systemctl enable powerbutton
 	pushRefresh
 	;;
 regional )

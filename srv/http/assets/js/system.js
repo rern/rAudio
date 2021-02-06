@@ -102,8 +102,8 @@ refreshData = function() {
 		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 		var powerbuttonconf = G.powerbuttonconf.split( ' ' );
-		$( '#swpin' ).text( powerbuttonconf[ 0 ] );
-		$( '#ledpin' ).text( powerbuttonconf[ 1 ] );
+		$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
+		$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
 		$( '#relays' ).prop( 'checked', G.relays );
 		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 		$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
