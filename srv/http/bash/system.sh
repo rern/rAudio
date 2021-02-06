@@ -335,15 +335,16 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
-powerbutton )
-	enable=${args[1]}
-	reboot=${args[2]}
-	if [[ $enable == true ]]; then
-		echo dtoverlay=gpio-shutdown >> /boot/config.txt
-		echo "$reboot" > $filereboot
-	else
-		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
-	fi
+powerbuttondisable )
+	systemctl disable --now powerbutton
+	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	pushRefresh
+	;;
+powerbuttonset )
+	echo "\
+sw=${args[1]}
+led=${args[2]}" > /etc/powerbutton.conf
+	systemctl enable --now powerbutton
 	pushRefresh
 	;;
 regional )

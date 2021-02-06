@@ -100,7 +100,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
 	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
 </div>
-<div <?=$classstatus?>>
+<div class="col-l double">
 	<a>Audio
 	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
 </div>
@@ -114,7 +114,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</div>
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
-<div <?=$classstatus?>>
+<div class="col-l double">
 	<a>LCD - Character
 	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
@@ -129,7 +129,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
 	</span>
 </div>
-<div <?=$classstatus?>>
+<div class="col-l double">
 	<a>LCD - TFT
 	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
@@ -142,21 +142,25 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
-<div class="col-l single">Power Button<i class="fa fa-power"></i></div>
+<div class="col-l double">
+	<a>Power Button
+	<br><gr>WiringPi</gr></a><i class="fa fa-power"></i>
+</div>
 <div class="col-r">
-	<input id="powerbutton" class="enablenoset" type="checkbox">
+	<input id="powerbutton" class="enable" type="checkbox">
 	<div class="switchlabel" for="powerbutton"></div>
+	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Power button
-		<br>&bull; Push button connects between J8 pin #5 and #6 (or any ground pins).
-		<br>&bull; Push while on: Soft shutdown to low power state
-		<br>&bull; Push while in low power state: Power up
-		<br>&bull; Disconnect power to terminate low power state.
+		Power button (J8 pin numbers)
+		<br>&bull; Push button 2 contacts(4 pins)
+		<br> &emsp; - #1 - ON:Connects between pin <code>5</code> and ground.
+		<br> &emsp; - #2 - OFF:Connects between selected pin and ground.
+		<br>&bull; LED is optional.
 	</span>
 </div>
-<div <?=$classstatus?>>
+<div class="col-l double">
 	<a>Relays
-	<br><gr>RPI.GPIO</gr></a><i class="fa fa-relays"></i>
+	<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
 	<input id="relays" <?=$chknoset?>>
