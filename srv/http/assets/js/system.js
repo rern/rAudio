@@ -113,7 +113,7 @@ refreshData = function() {
 		$( '#timezone' )
 			.val( G.timezone )
 			.selectric( 'refresh' );
-		[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+		[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
 		} );
 		resetLocal();

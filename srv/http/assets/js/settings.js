@@ -24,12 +24,19 @@ var cmd = {
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'mount | grep ^/dev' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
+	, powerbutton  : [ 'systemctl status powerbutton' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
-var packages = [ 'hostapd', 'chromium',     'mpd', 'mpdscribble', 'shairport-sync', 'samba', 'snapcast',   'snapcast',   'spotifyd', 'upmpdcli' ];
+var pkg = {
+	  localbrowser    : 'chromium'
+	, smb             : 'samba'
+	, snapclient      : 'snapcast'
+	, snapserver      : 'snapcast'
+}
+
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
 	if ( $( target ).hasClass( 'help' )
@@ -42,7 +49,8 @@ function codeToggle( id, target ) {
 		var i = services.indexOf( id );
 		if ( i !== -1 ) {
 			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = 'pacman -Q '+ packages[ i ] +'; systemctl status '+ id;
+			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
+			var command = 'pacman -Q '+ pkgname +'; systemctl status '+ id;
 			var cmdtxt = '# '+ command +'<br><br>';
 			var systemctl = 1;
 		} else {
@@ -60,11 +68,12 @@ function codeToggle( id, target ) {
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
-				if ( systemctl ) var status = status
-												.replace( /(.*)\n/, '<grn>$1</grn>\n' )
-												.replace( /(active \(running\))/, '<grn>$1</grn>' )
-												.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-												.replace( /(failed)/, '<red>$1</red>' );
+				var status = status
+								.replace( /(active \(running\))/, '<grn>$1</grn>' )
+								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
+				if ( systemctl ) status = status
+									.replace( /(.*)\n/, '<grn>$1</grn>\n' )
+									.replace( /(failed)/, '<red>$1</red>' );
 				$el
 					.html( cmdtxt + status )
 					.removeClass( 'hide' );

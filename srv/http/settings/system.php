@@ -142,9 +142,9 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
-<div class="col-l double">
+<div data-status="powerbutton" <?=$classstatus?>>
 	<a>Power Button
-	<br><gr>WiringPi</gr></a><i class="fa fa-power"></i>
+	<br><gr>WiringPi <?=$code?></gr></a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" class="enable" type="checkbox">
@@ -162,6 +162,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br> &emsp; - <i class="fa fa-warning"></i> Caution: 100-200 &#8486 resister needed for LED current limiting.
 	</span>
 </div>
+<pre id="codepowerbutton" class="hide"></pre>
 <div class="col-l double">
 	<a>Relays
 	<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
