@@ -136,7 +136,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		Power button (J8 pin numbers)
-		<br>&bull; Momentary switch - DPDT (2 contacts)
+		<br>&bull; Momentary switch - DPST / DPDT (2 contacts)
 		<br> &emsp; - ON: Connect between fixed pin <code>5</code> and ground.
 		<br> &emsp; - OFF: Connect between selectable pin <code id="helpswpin"></code> and ground.
 		<br>&bull; LED (optional)
