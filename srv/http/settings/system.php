@@ -100,10 +100,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
 	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
 </div>
-<div class="col-l double">
-	<a>Audio
-	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
-</div>
+<div class="col-l single">Audio - I²S<i class="fa fa-i2saudio"></i></div>
 <div class="col-r i2s">
 	<div id="divi2smodulesw">
 		<input id="i2smodulesw" type="checkbox">
@@ -115,7 +112,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
 <div class="col-l double">
-	<a>LCD - Character
+	<a>Character LCD
 	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
@@ -127,19 +124,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br>&bull; Support 16x2, 20x4 and 40x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
-	</span>
-</div>
-<div class="col-l double">
-	<a>LCD - TFT
-	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd"></i>
-</div>
-<div class="col-r">
-	<input id="lcd" <?=$chknoset?>>
-	<div class="switchlabel" for="lcd"></div>
-	<i id="setting-lcd" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>
-		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
-	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
@@ -164,7 +148,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
 <div class="col-l double">
-	<a>Relays
+	<a>Relay Module
 	<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
@@ -175,6 +159,19 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<a href="https://sourceforge.net/projects/raspberry-gpio-python/">RPi.GPIO</a> - Python module to control GPIO.
 		<br><a href="https://github.com/rern/R_GPIO">+R - GPIO</a> - Control GPIO-connected relay module for power on / off equipments.
 		<br>This can be enabled and run as a test without a connected relay module.
+	</span>
+</div>
+<div class="col-l double">
+	<a>TFT 3.5" LCD
+	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+</div>
+<div class="col-r">
+	<input id="lcd" <?=$chknoset?>>
+	<div class="switchlabel" for="lcd"></div>
+	<i id="setting-lcd" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
+	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
 </div>

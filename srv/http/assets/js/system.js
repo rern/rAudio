@@ -449,19 +449,6 @@ $( '#setting-lcdchar' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-lcd' ).click( function() {
-	info( {
-		  icon    : 'lcd'
-		, title   : 'TFT LCD'
-		, message : 'Calibrate touchscreen?'
-						+'<br>(Get stylus ready.)'
-		, oklabel : 'Start'
-		, ok      : function() {
-			notify( 'Calibrate Touchscreen', 'Start ...', 'lcd' );
-			bash( [ 'lcdcalibrate' ] );
-		}
-	} );
-} );
 $( '#setting-powerbutton' ).click( function() {
 	var pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 	pins = pins.filter( function( i ) {
@@ -516,6 +503,19 @@ var infopowerbutton = heredoc( function() { /*
 } );
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
+} );
+$( '#setting-lcd' ).click( function() {
+	info( {
+		  icon    : 'lcd'
+		, title   : 'TFT LCD'
+		, message : 'Calibrate touchscreen?'
+						+'<br>(Get stylus ready.)'
+		, oklabel : 'Start'
+		, ok      : function() {
+			notify( 'Calibrate Touchscreen', 'Start ...', 'lcd' );
+			bash( [ 'lcdcalibrate' ] );
+		}
+	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
 	info( {
