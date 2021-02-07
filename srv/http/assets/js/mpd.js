@@ -34,7 +34,7 @@ refreshData = function() {
 			device = G.devices[ G.asoundcard ];
 			var htmldevices = '';
 			$.each( G.devices, function() {
-				htmldevices += '<option data-card="'+ this.card +'">'+ this.name +'</option>';
+				htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 			} );
 			$( '#audiooutput' )
 				.html( htmldevices )
@@ -125,7 +125,7 @@ var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volu
 			 +'<br><br>Signal level will be set to full amplitude to 0dB'
 			 +'<br>Too high volume can damage speakers and ears';
 $( '#audiooutput' ).change( function() {
-	var card = $( this ).find( 'option:selected' ).data( 'card' );
+	var card = $( this ).val();
 	var dev = G.devices[ card ];
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
 	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
