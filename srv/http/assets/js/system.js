@@ -485,6 +485,7 @@ var infopowerbutton = heredoc( function() { /*
 	</div>
 	<br><br><gr>(Pin number: J8 / board lauout)</gr>
 */ } );
+	var swset, ledset;
 	info( {
 		  icon     : 'power'
 		, title    : 'Power Button'
@@ -500,7 +501,9 @@ var infopowerbutton = heredoc( function() { /*
 			// verify changes
 			if ( G.powerbutton ) $( '#infoOk' ).addClass( 'disabled' );
 			$( '#swpin, #ledpin' ).change( function() {
-				$( '#infoOk' ).toggleClass( 'disabled', $( '#swpin' ).val() === swpin && $( '#ledpin' ).val() === ledpin );
+				swset = $( '#swpin' ).val();
+				ledset = $( '#ledpin' ).val();
+				$( '#infoOk' ).toggleClass( 'disabled', ( swset === swpin && ledset === ledpin ) || swset === ledset );
 			} );
 		}
 		, cancel        : function() {
