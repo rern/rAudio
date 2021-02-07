@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if systemctl -q is-active powerbutton; then # avoid wfi false rising/falling
+	powerbutton=1
+	systemctl stop powerbutton
+fi
+	
 . /srv/http/data/system/relays
 
 pushstream() {
@@ -42,3 +47,5 @@ else
 	sleep 1
 	pushstream '{"done": false}'
 fi
+
+[[ -n $powerbutton ]] &&  systemctl start powerbutton
