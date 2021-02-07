@@ -1422,7 +1422,6 @@ function setButtonUpdateAddons( updateaddons ) {
 	}
 }
 function setButtonUpdating() {
-	if ( G.localhost ) $( '#i-update, #ti-update' ).removeClass( 'blink fa-library' ).addClass( 'fa-refresh-library' );
 	if ( G.status.updating_db ) {
 		if ( G.bars ) {
 			if ( !G.localhost ) {

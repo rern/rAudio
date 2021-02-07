@@ -196,6 +196,7 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'genre', 'date' ] as $m
 }
 
 $menu.= '</div>';
+$blink = $localhost ? '' : 'blink';
 ?>
 <pre id="data" class="hide"></pre>
 <div id="loader" class="splash">
@@ -260,7 +261,7 @@ $menu.= '</div>';
 				<i id="i-librandom" class="fa fa-dice hide"></i>
 				<i id="i-mute" class="fa fa-mute hide"></i>
 				<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="i-update" class="fa fa-library blink hide"></i>
+				<i id="i-update" class="fa fa-library <?=$blink?> hide"></i>
 				<i id="i-addons" class="fa fa-jigsaw hide"></i>
 				<i id="i-relays" class="fa fa-relays hide"></i>
 			</span>
@@ -278,7 +279,7 @@ $menu.= '</div>';
 				<i id="ti-librandom" class="fa fa-dice hide"></i>
 				<i id="ti-mute" class="fa fa-mute hide"></i>
 				<i id="ti-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="ti-update" class="fa fa-library blink hide"></i>
+				<i id="ti-update" class="fa fa-library <?=$blink?> hide"></i>
 				<i id="ti-addons" class="fa fa-jigsaw hide"></i>
 				<i id="ti-relays" class="fa fa-relays hide"></i>
 			</div>
