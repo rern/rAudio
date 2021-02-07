@@ -1,6 +1,13 @@
 <?php
 $time = time();
 $pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
+$powerbutton = @file( '/etc/powerbutton.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+if ( $powerbutton ) {
+	foreach( $powerbutton as $p ) {
+		$powerpins[] = explode( '=', $p )[ 1 ];
+	}
+	$pins = array_diff( $pins, $powerpins );
+}
 $optionpin = '';
 foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
 $htmlpin = '';
