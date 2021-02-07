@@ -10,10 +10,6 @@ data+='
 	, "mpdscribble"     : '$( systemctl -q is-active mpdscribble@mpd && echo true || echo false )'
 	, "mpdscribbleval"  : "'$( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- | tr '\n' ^ )'"
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
-	, "snapserver"      : '$( systemctl -q is-active snapserver && echo true || echo false )'
-	, "snapclient"      : '$( systemctl -q is-active snapclient && echo true || echo false )'
-	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )'
-	, "snappassword"    : "'$( cat $dirsystem/snapclientpw 2> /dev/null )'"
 	, "streaming"       : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
@@ -27,6 +23,11 @@ fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
 	, "shairport-sync"  : '$( systemctl -q is-active shairport-sync && echo true || echo false )
+[[ -e /usr/bin/snapserver ]] && data+='
+	, "snapserver"      : '$( systemctl -q is-active snapserver && echo true || echo false )'
+	, "snapclient"      : '$( systemctl -q is-active snapclient && echo true || echo false )'
+	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )'
+	, "snappassword"    : "'$( cat $dirsystem/snapclientpw 2> /dev/null )'"'
 [[ -e /usr/bin/spotifyd ]] && data+='
 	, "spotifyd"        : '$( systemctl -q is-active spotifyd && echo true || echo false )
 [[ -e /usr/bin/upmpdcli ]] && data+='

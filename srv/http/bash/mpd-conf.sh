@@ -60,13 +60,14 @@ mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
 . /srv/http/bash/mpd-devices.sh
 
 if [[ $i != -1 ]]; then
-	aplayname=${Aaplayname[-1]}
-	card=${Acard[-1]}
-	dop=${Adop[-1]}
-	hw=${Ahw[-1]}
-	hwmixer=${Ahwmixer[-1]}
-	mixertype=${Amixertype[-1]}
-	name=${Aname[-1]}
+	[[ $1 == add ]] && i=-1
+	aplayname=${Aaplayname[$i]}
+	card=${Acard[$i]}
+	dop=${Adop[$i]}
+	hw=${Ahw[$i]}
+	hwmixer=${Ahwmixer[$i]}
+	mixertype=${Amixertype[$i]}
+	name=${Aname[$i]}
 ########
 	mpdconf+='
 

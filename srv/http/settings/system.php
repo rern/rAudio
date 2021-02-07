@@ -100,10 +100,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
 	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
 </div>
-<div <?=$classstatus?>>
-	<a>Audio
-	<br><gr>I²S</gr></a><i class="fa fa-i2saudio"></i>
-</div>
+<div class="col-l single">Audio - I²S<i class="fa fa-i2saudio"></i></div>
 <div class="col-r i2s">
 	<div id="divi2smodulesw">
 		<input id="i2smodulesw" type="checkbox">
@@ -114,8 +111,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</div>
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
-<div <?=$classstatus?>>
-	<a>LCD - Character
+<div class="col-l double">
+	<a>Character LCD
 	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
@@ -129,34 +126,30 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
 	</span>
 </div>
-<div <?=$classstatus?>>
-	<a>LCD - TFT
-	<br><gr>3.5" 420x320</gr></a><i class="fa fa-lcd"></i>
+<div data-status="powerbutton" <?=$classstatus?>>
+	<a>Power Button
+	<br><gr>WiringPi <?=$code?></gr></a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
-	<input id="lcd" <?=$chknoset?>>
-	<div class="switchlabel" for="lcd"></div>
-	<i id="setting-lcd" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>
-		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
-	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
-	</span>
-</div>
-<div class="col-l single">Power Button<i class="fa fa-power"></i></div>
-<div class="col-r">
-	<input id="powerbutton" class="enablenoset" type="checkbox">
+	<input id="powerbutton" class="enable" type="checkbox">
 	<div class="switchlabel" for="powerbutton"></div>
+	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Power button
-		<br>&bull; Push button connects between J8 pin #5 and #6 (or any ground pins).
-		<br>&bull; Push while on: Soft shutdown to low power state
-		<br>&bull; Push while in low power state: Power up
-		<br>&bull; Disconnect power to terminate low power state.
+		Power button (J8 pin numbers)
+		<br>&bull; Momentary switch - DPDT (2 contacts)
+		<br> &emsp; - ON: Connect between fixed pin <code>5</code> and ground.
+		<br> &emsp; - OFF: Connect between selectable pin <code id="helpswpin"></code> and ground.
+		<br>&bull; LED (optional)
+		<br> &emsp; - Connect between selectable pin <code id="helpledpin"></code> and ground.
+		<br> &emsp; - On when boot finished.
+		<br> &emsp; - 12V integrated LED push button can be used.
+		<br> &emsp; - <i class="fa fa-warning"></i> Caution: 100-200 &#8486 resister needed for LED current limiting.
 	</span>
 </div>
-<div <?=$classstatus?>>
-	<a>Relays
-	<br><gr>RPI.GPIO</gr></a><i class="fa fa-relays"></i>
+<pre id="codepowerbutton" class="hide"></pre>
+<div class="col-l double">
+	<a>Relay Module
+	<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
 	<input id="relays" <?=$chknoset?>>
@@ -165,6 +158,20 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>
 		<a href="https://sourceforge.net/projects/raspberry-gpio-python/">RPi.GPIO</a> - Python module to control GPIO.
 		<br><a href="https://github.com/rern/R_GPIO">+R - GPIO</a> - Control GPIO-connected relay module for power on / off equipments.
+		<br>This can be enabled and run as a test without a connected relay module.
+	</span>
+</div>
+<div class="col-l double">
+	<a>TFT 3.5" LCD
+	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+</div>
+<div class="col-r">
+	<input id="lcd" <?=$chknoset?>>
+	<div class="switchlabel" for="lcd"></div>
+	<i id="setting-lcd" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
+	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
 </div>
@@ -281,8 +288,9 @@ $listos = [
 	, 'udevil'                   => 'http://ignorantguru.github.io/udevil'
 	, 'upmpdcli'                 => 'http://www.lesbonscomptes.com/upmpdcli'
 	, 'UPower'                   => 'https://upower.freedesktop.org/'
-	, 'Wget'                     => 'https://www.gnu.org/software/wget/wget.html'
 	, 'Web Service Discovery'    => 'https://github.com/christgau/wsdd'
+	, 'Wget'                     => 'https://www.gnu.org/software/wget/wget.html'
+	, 'WiringPi'                 => 'http://wiringpi.com'
 	, 'X'                        => 'https://xorg.freedesktop.org'
 ];
 $oshtml = '';

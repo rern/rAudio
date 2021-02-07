@@ -35,6 +35,10 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
+powerbuttonconf=$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )
+[[ -z $powerbuttonconf ]] && powerbuttonconf='40 33'
+relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
+relayspins=[${relayspins:0:-1}]
 revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
@@ -69,10 +73,12 @@ data+='
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-	, "powerbutton"     : '$( grep -q gpio-shutdown /boot/config.txt && echo true || echo false )'
+	, "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
+	, "powerbuttonconf" : "'$powerbuttonconf'"
 	, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
+	, "relayspins"      : '$relayspins'
 	, "rpi01"           : '$( [[ $soc == BCM2835 ]] && echo true || echo false )'
 	, "rpimodel"        : "'$( cat /proc/device-tree/model | tr -d '\0' )'"
 	, "soc"             : "'$soc'"

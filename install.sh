@@ -4,6 +4,19 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/systemd/system/powerbutton.service
+[[ ! -e $file ]] && echo -n "\
+[Unit]
+Description=Shutdown button
+After=startup.service
+
+[Service]
+ExecStart=/srv/http/bash/powerbutton.sh
+
+[Install]
+WantedBy=getty.target
+" > $file
+
 relaysfile=/srv/http/data/system/relays
 [[ -e $relaysfile && ! -s $relaysfile ]] && /srv/http/bash/system.sh relays$'\n'true
 

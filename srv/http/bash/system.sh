@@ -42,7 +42,7 @@ relaysOrder() {
 	done
 
 	declare -p pinname > $dirsystem/relays
-	echo "\
+	echo -n "\
 onorder='[ ${onorder:1} ]'
 on=( $( data '"on."' ) )
 ond=( $( data '"ond."' ) )
@@ -124,6 +124,7 @@ databackup )
 /etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
+/etc/powerbutton.conf
 /etc/relays.conf
 /etc/shairport-sync.conf
 /etc/soundprofile.conf
@@ -143,7 +144,7 @@ databackup )
 	mkdir -p $dirconfig/var/lib
 	cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
 	
-	services='bluetooth hostapd localbrowser mpdscribble@mpd shairport-sync smb snapclient snapserver spotifyd upmpdcli'
+	services='bluetooth hostapd localbrowser mpdscribble@mpd powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
@@ -183,13 +184,13 @@ datarestore )
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
+	hostnamectl set-hostname $( cat $dirsystem/hostname )
+	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,timezone}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
-	hostnamectl set-hostname $( cat $dirsystem/hostname )
-	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then
@@ -335,15 +336,17 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
-powerbutton )
-	enable=${args[1]}
-	reboot=${args[2]}
-	if [[ $enable == true ]]; then
-		echo dtoverlay=gpio-poweroff >> /boot/config.txt
-		echo "$reboot" > $filereboot
-	else
-		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
-	fi
+powerbuttondisable )
+	systemctl disable --now powerbutton
+	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	pushRefresh
+	;;
+powerbuttonset )
+	echo "\
+sw=${args[1]}
+led=${args[2]}" > /etc/powerbutton.conf
+	systemctl restart powerbutton
+	systemctl enable powerbutton
 	pushRefresh
 	;;
 regional )

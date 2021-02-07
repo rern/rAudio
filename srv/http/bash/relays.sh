@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if systemctl -q is-active powerbutton; then # prevent powerbutton wfi false rising/falling
+	powerbutton=1
+	systemctl stop powerbutton
+fi
+	
 . /srv/http/data/system/relays
 
 pushstream() {
@@ -19,7 +24,7 @@ if [[ $1 == true ]]; then
 		gpio -1 mode $pin out
 		gpio -1 write $pin 1
 		(( $i > 0 )) && pushstream '{"on": '$(( i + 1 ))'}'
-		sleep ${ond[$i]}
+		sleep ${ond[$i]} &> /dev/null
 	done
 	sleep 1
 	pushstream '{"done": true}'
@@ -37,8 +42,10 @@ else
 		
 		gpio -1 write $pin 0
 		(( $i > 0 )) && pushstream '{"off": '$(( i + 1 ))'}'
-		sleep ${offd[$i]}
+		sleep ${offd[$i]} &> /dev/null
 	done
 	sleep 1
 	pushstream '{"done": false}'
 fi
+
+[[ -n $powerbutton ]] &&  systemctl start powerbutton

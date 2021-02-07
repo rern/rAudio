@@ -2157,6 +2157,9 @@ li.active .li1 bl {
 #pl-list .li1 a {
 	display: inline-block;
 	vertical-align: middle;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .duration-right {
 	position: absolute;
