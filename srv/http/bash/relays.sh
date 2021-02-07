@@ -19,7 +19,7 @@ if [[ $1 == true ]]; then
 		gpio -1 mode $pin out
 		gpio -1 write $pin 1
 		(( $i > 0 )) && pushstream '{"on": '$(( i + 1 ))'}'
-		(( $i < 3 )) && sleep ${ond[$i]}
+		sleep ${ond[$i]} &> /dev/null
 	done
 	sleep 1
 	pushstream '{"done": true}'
@@ -37,7 +37,7 @@ else
 		
 		gpio -1 write $pin 0
 		(( $i > 0 )) && pushstream '{"off": '$(( i + 1 ))'}'
-		(( $i < 3 )) && sleep ${offd[$i]}
+		sleep ${offd[$i]} &> /dev/null
 	done
 	sleep 1
 	pushstream '{"done": false}'
