@@ -4,6 +4,18 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/systemd/system/powerbutton.service
+[[ ! -e $file ]] && echo "\
+[Unit]
+Description=Shutdown button
+After=startup.service
+
+[Service]
+ExecStart=/srv/http/bash/powerbutton.sh
+
+[Install]
+WantedBy=getty.target" > $file
+
 pacman -Q wiringpi &> /dev/null || pacman -Sy --noconfirm wiringpi
 
 rm -f /addons-list.json
