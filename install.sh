@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 file=/etc/systemd/system/powerbutton.service
-[[ ! -e $file ]] && echo "\
+[[ ! -e $file ]] && echo -n "\
 [Unit]
 Description=Shutdown button
 After=startup.service
@@ -14,7 +14,10 @@ After=startup.service
 ExecStart=/srv/http/bash/powerbutton.sh
 
 [Install]
-WantedBy=getty.target" > $file
+WantedBy=getty.target
+" > $file
+
+[[ ! -e /srv/http/data/system/relays || ! -s /srv/http/data/system/relays ]] && /srv/http/bash/system.sh relays$'\n'true
 
 pacman -Q wiringpi &> /dev/null || pacman -Sy --noconfirm wiringpi
 

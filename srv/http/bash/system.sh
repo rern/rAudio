@@ -42,7 +42,7 @@ relaysOrder() {
 	done
 
 	declare -p pinname > $dirsystem/relays
-	echo "\
+	echo -n "\
 onorder='[ ${onorder:1} ]'
 on=( $( data '"on."' ) )
 ond=( $( data '"ond."' ) )

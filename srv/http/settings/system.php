@@ -159,7 +159,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br> &emsp; - Connect between selectable pin <code id="helpledpin"></code> and ground.
 		<br> &emsp; - On when boot finished.
 		<br> &emsp; - 12V integrated LED push button can be used.
-		<br> &emsp; - <i class="fa fa-warning"></i> Caution: LED needs a current limiting resister.
+		<br> &emsp; - <i class="fa fa-warning"></i> Caution: 100-200 &#8486 resister needed for LED current limiting.
 	</span>
 </div>
 <div class="col-l double">
