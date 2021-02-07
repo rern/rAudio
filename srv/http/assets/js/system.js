@@ -464,6 +464,9 @@ $( '#setting-lcd' ).click( function() {
 } );
 $( '#setting-powerbutton' ).click( function() {
 	var pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
+	pins = pins.filter( function( i ) {
+		return G.relayspins.indexOf( i ) === -1;
+	} );
 	var optionpin = '';
 	pins.forEach( function( p ) { 
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
