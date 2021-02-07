@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if systemctl -q is-active powerbutton; then # avoid wfi false rising/falling
+if systemctl -q is-active powerbutton; then # prevent powerbutton wfi false rising/falling
 	powerbutton=1
 	systemctl stop powerbutton
 fi
