@@ -17,7 +17,7 @@ ExecStart=/srv/http/bash/powerbutton.sh
 WantedBy=getty.target
 " > $file
 
-[[ ! -e /srv/http/data/system/relays || ! -s /srv/http/data/system/relays ]] && /srv/http/bash/system.sh relays$'\n'true
+[[ -e /srv/http/data/system/relays && ! -s /srv/http/data/system/relays ]] && /srv/http/bash/system.sh relays$'\n'true
 
 pacman -Q wiringpi &> /dev/null || pacman -Sy --noconfirm wiringpi
 
