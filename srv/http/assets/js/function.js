@@ -1422,22 +1422,25 @@ function setButtonUpdateAddons( updateaddons ) {
 	}
 }
 function setButtonUpdating() {
-	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
-	$( '#i-update, #ti-update' ).addClass( 'hide' );
+	if ( G.localhost ) $( '#i-update, #ti-update' ).removeClass( 'blink fa-library' ).addClass( 'fa-refresh-library' );
 	if ( G.status.updating_db ) {
 		if ( G.bars ) {
-			if ( !G.localhost ) $( '#tab-library, #button-library' ).addClass( 'blink' );
+			if ( !G.localhost ) {
+				$( '#tab-library, #button-library' ).addClass( 'blink' );
+			} else {
+				$( '#tab-library, #button-library' )
+					.removeClass( 'fa-library' )
+					.addClass( 'fa-refresh-library' );
+			}
 		} else {
-			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' );
-		}
-		if ( G.status.updating_db === 2 ) {
-			$elupdate.removeClass( 'fa-library' ).addClass( 'fa-file-wave' );
-		} else if ( G.status.updating_db === 3 ) {
-			$elupdate.removeClass( 'fa-library fa-file-wave' ).addClass( 'fa-file-playlist' );
+			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' )
 		}
 	} else {
-		$elupdate.removeClass( 'fa-file-playlist fa-file-wave' ).addClass( 'fa-library' );
 		$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+		$( '#i-update, #ti-update' ).addClass( 'hide' );
+		if ( G.localhost ) $( '#tab-library, #button-library' )
+							.removeClass( 'fa-refresh-library' )
+							.addClass( 'fa-library' );
 	}
 }
 function setPlaylistScroll() {
