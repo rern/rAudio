@@ -135,15 +135,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<div class="switchlabel" for="powerbutton"></div>
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Power button (J8 pin numbers)
-		<br>&bull; Momentary switch - DPDT (2 contacts)
-		<br> &emsp; - ON: Connect between fixed pin <code>5</code> and ground.
-		<br> &emsp; - OFF: Connect between selectable pin <code id="helpswpin"></code> and ground.
-		<br>&bull; LED (optional)
-		<br> &emsp; - Connect between selectable pin <code id="helpledpin"></code> and ground.
-		<br> &emsp; - On when boot finished.
-		<br> &emsp; - 12V integrated LED push button can be used.
-		<br> &emsp; - <i class="fa fa-warning"></i> Caution: 100-200 &#8486 resister needed for LED current limiting.
+		Power button for on/off rAudio.
+		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/181#discussion-3100261">Wiring</a>
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
