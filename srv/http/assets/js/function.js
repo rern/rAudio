@@ -490,10 +490,14 @@ function getPlaybackStatus( render ) {
 			return false
 		}
 		
-		$( '#data' ).empty().addClass( 'hide' );
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
+		if ( !$( '#data' ).hasClass( 'hide' ) ) {
+			$( '#data' ).html( JSON.stringify( G.status, null, 2 ) )
+			return
+		}
+		
 		displayBottom();
 		if ( G.status.player === 'snapclient' ) {
 			bash( 'sshpass -p '+ status.snapserverpw +' ssh -q root@'+ status.snapserverip +' /srv/http/bash/status.sh', function( status ) {
