@@ -1,7 +1,10 @@
 #!/bin/bash
 
-if systemctl -q is-active powerbutton; then # prevent powerbutton wfi false rising/falling
-	powerbutton=1
+# prevent powerbutton wfi false rising/falling
+systemctl -q is-active powerbutton && powerbuttonactive=1
+[[ $1 == powerbutton ]] && powerbutton=1
+if [[ -n $powerbuttonactive && -z $powerbutton ]]; then
+	powerbuttonstart=1
 	systemctl stop powerbutton
 fi
 	
@@ -48,4 +51,4 @@ else
 	pushstream '{"done": false}'
 fi
 
-[[ -n $powerbutton ]] &&  systemctl start powerbutton
+[[ -n $powerbuttonstart ]] &&  systemctl start powerbutton

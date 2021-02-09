@@ -160,11 +160,15 @@ volume0dB(){
 	amixer -c $card sset "$control" 0dB
 }
 volumeControls() {
+	! aplay -l 2> /dev/null | grep -q '^card' && return
+	
 	amixer=$( amixer -c $1 scontents \
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
 				| sed 's/--/\n/g' )
+	[[ -z $amixer ]] && control= && return
+	
 	controls=$( echo "$amixer" \
 					| grep 'volume.*pswitch' \
 					| cut -d"'" -f2 )
@@ -175,29 +179,28 @@ volumeControls() {
 	fi
 }
 volumeGet() {
-	card=$( head -1 /etc/asound.conf | tail -c 2 )
-	volumeControls $card
-	[[ -n $controls ]] && control=$( echo "$controls" | sort -u | head -1 )
-	if compgen -G "/srv/http/data/system/mixertype-*" > /dev/null; then
-		aplayname=$( aplay -l \
-						| grep "^card $card" \
-						| awk -F'[][]' '{print $2}' \
-						| sed 's/^snd_rpi_//; s/_/-/g' )
-		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null )
-	fi
-	if [[ $mixertype == software ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
-		echo $volume
-		exit
+	if ! aplay -l 2> /dev/null | grep -q '^card'; then
+		volume=-1
+		return
 	fi
 	
-	if [[ -z $control ]]; then
-		aplay -l 2> /dev/null | grep -q '^card' && volume=100 || volume=-1
+	mixertype=$( sed -n '/^\s*device.*"hw:/,/mixer_type/ p' /etc/mpd.conf \
+					| tail -1 \
+					| cut -d'"' -f2 )
+	if [[ $mixertype == software ]]; then
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 	else
-		volume=$( amixer -M -c $card sget "$control" \
-			| awk -F'[%[]' '/%/ {print $2}' \
-			| head -1 )
-		[[ -z $volume ]] && volume=100
+		card=$( head -1 /etc/asound.conf | tail -c 2 )
+		volumeControls $card
+		if [[ -z $controls ]]; then
+			volume=100
+		else
+			control=$( echo "$controls" | sort -u | head -1 )
+			volume=$( amixer -M sget "$control" \
+				| awk -F'[%[]' '/%/ {print $2}' \
+				| head -1 )
+			[[ -z $volume ]] && volume=100
+		fi
 	fi
 }
 volumeReset() {
@@ -669,7 +672,7 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
-	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh false && sleep 2
+	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
 	if [[ -n $poweroff ]]; then
 		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
@@ -759,7 +762,7 @@ volumecontrols )
 	;;
 volumecontrolget )
 	volumeGet
-	echo $control^$volume # $control first tot keep last space charater if any
+	echo $control^$volume # place $control first to keep trailing space if any
 	;;
 volumeget )
 	volumeGet

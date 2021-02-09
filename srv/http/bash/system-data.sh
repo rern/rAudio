@@ -37,8 +37,12 @@ if [[ $i2c == true ]]; then
 fi
 powerbuttonconf=$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )
 [[ -z $powerbuttonconf ]] && powerbuttonconf='40 33'
-relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
-relayspins=[${relayspins:0:-1}]
+if [[ -e /etc/relays.conf ]]; then
+	relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
+	relayspins=[${relayspins:0:-1}]
+else
+	relayspins=false
+fi
 revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
