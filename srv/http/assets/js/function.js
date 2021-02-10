@@ -481,9 +481,13 @@ function getPlaybackStatus( render ) {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			var msg = e.message.split( ' ' );
-			var pos = msg.pop();
-			var errors = '<red>Error:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+			var msg = e.message;
+			if ( msg.indexOf( 'position' ) !== -1 ) {
+				var pos = msg.replace( /.* position /, '' );
+			} else {
+				var pos = msg.replace( /.* column (.*) of .*/, '$1' );
+			}
+			var errors = '<red>Error:</red> '+ msg.replace( pos, '<red>'+ pos +'</red>' )
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			$( '#data' ).html( errors ).removeClass( 'hide' );
