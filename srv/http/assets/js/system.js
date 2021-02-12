@@ -472,7 +472,7 @@ var infopowerbutton = heredoc( function() { /*
 		<select id="swpin"></select>
 		<select id="ledpin"></select>
 	</div>
-	<br><br><gr>(Pin number: J8 / board lauout)</gr>
+	<br><br><gr>(Pin number: J8 / board layout)</gr>
 */ } );
 	info( {
 		  icon     : 'power'
