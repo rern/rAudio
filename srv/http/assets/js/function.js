@@ -425,6 +425,8 @@ function getBio( artist ) {
 			loader( 'hide' );
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
+				if ( 'error message' in data ) return
+				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biobanner' ).attr( 'src', data.musicbanner[ 0 ].url ).show();
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var thumbs = data.artistthumb;
