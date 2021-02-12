@@ -835,10 +835,10 @@ function renderLibrary() {
 	G.query = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#button-coverart' ).addClass( 'hidden' );
-	$( '#lib-breadcrumbs, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
+	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
 	$( '#button-lib-back' ).toggleClass( 'back-left', G.display.backonleft );
-	$( '#lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
+	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
 	if ( G.librarylist ) {
@@ -878,7 +878,7 @@ function renderLibraryList( data ) {
 	
 	G.librarylist = 1;
 	loader( 'show' );
-	$( '#lib-mode-list, .menu' ).addClass( 'hide' );
+	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
 	if ( 'count' in data ) {
@@ -903,7 +903,9 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<blb>/</blb><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	if ( htmlpath ) $( '#lib-breadcrumbs' ).html( htmlpath );
+	$( '#lib-breadcrumbs' )
+		.html( htmlpath )
+		.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {

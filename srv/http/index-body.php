@@ -55,13 +55,7 @@ $dirsystem = '/srv/http/data/system/';
 $color = file_exists( $dirsystem.'color' );
 // counts
 $filecounts = $dirdata.'mpd/counts';
-if ( file_exists( $filecounts ) ) {
-	$counts = json_decode( file_get_contents( $filecounts ) );
-	$countsong = number_format( $counts->song ).'<i class="fa fa-music gr"></i>';
-} else {
-	$counts = '';
-	$countsong = '';
-}
+$counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
 $modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Genre', 'Date' ];
 $modehtml = '';
@@ -394,9 +388,8 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
-			<div id="lib-breadcrumbs"></div>
+			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><?=( number_format( $counts->song ) )?></span><i class="fa fa-music gr"></i></div>
 			<div id="lib-breadcrumbs">
-				<span class="title">LIBRARY</span><span id="li-count"><?=$countsong?></span>
 			</div>
 			<span class="lipath"></span>
 		</div>
