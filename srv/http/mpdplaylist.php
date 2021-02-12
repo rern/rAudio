@@ -54,12 +54,11 @@ case 'list':
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
-	$each = ( object )[];
 	foreach( $lists as $list ) {
+		$each = ( object )[];
 		$each->name = $list;
 		$each->sort = stripSort( $list );
 		$array[] = $each;
-		unset( $each );
 	}
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
@@ -103,7 +102,8 @@ case 'load': // load saved playlist to current
 	
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
 	
-	$lines = file_get_contents( '/srv/http/data/playlists/'.$_POST[ 'name' ] );
+	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
+	$lines = file_get_contents( '/srv/http/data/playlists/'.$name );
 	$lines = json_decode( $lines );
 	$list = $range = $fileprev = '';
 	$track0prev = $trackprev = $i = $j = 0;
@@ -156,11 +156,12 @@ case 'load': // load saved playlist to current
 	if ( $range ) exec( ltrim( $range, ';' ) );
 	
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
-	echo exec( 'mpc playlist | wc -l' );
+	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
 	break;
 case 'save':
 	$path = '/srv/http/data/playlists/';
-	$file = $path.$_POST[ 'name' ];
+	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
+	$file = $path.$name;
 	if ( file_exists( $file ) ) exit( '-1' );
 	
 	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );

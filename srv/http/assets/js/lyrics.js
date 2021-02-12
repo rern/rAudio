@@ -10,16 +10,17 @@ $( '#lyricsartist' ).click( function() {
 	getBio( $( this ).text() );
 } );
 $( '#song, #guide-lyrics' ).tap( function() {
-	if ( !G.status.Title || G.localhost ) return;
-	
 	var artist = G.status.Artist;
 	var title = G.status.Title;
-	var file = G.status.file;
+	if ( !artist || !title ) return;
+	
 	if ( artist === lyricsArtist && title === lyricsTitle && lyrics ) {
 		lyricsShow();
 		return
 	}
-/*	if ( G.status.player === 'mpd' && file.slice( 0, 4 ) === 'http' ) {
+	
+/*	var file = G.status.file;
+	if ( G.status.player === 'mpd' && file.slice( 0, 4 ) === 'http' ) {
 		if ( title.indexOf( ': ' ) !== -1 ) {
 			var artist_title = title.split( ': ' );
 		} else {
