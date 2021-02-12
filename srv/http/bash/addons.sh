@@ -98,7 +98,8 @@ timestop() { # timelapse: any argument
 	echo Duration$stringlapse $( formatTime $dif )
 }
 wgetnc() {
-	wget -q --no-check-certificate $@
+	[[ -t 1 ]] && progress='--show-progress'
+	wget -q --no-check-certificate $progress $@
 }
 getinstallzip() {
 	installurl=$( jq -r .$alias.installurl $addonsjson )
@@ -149,8 +150,10 @@ installstart() { # $1-'u'=update
 	
 	if [[ -e /usr/local/bin/uninstall_$alias.sh ]]; then
 	  title -l '=' "$info $title already installed."
-	  title -nt "Please try update instead."
-	  echo 1 > $diraddons/$alias
+	  if [[ ! -t 1 ]]; then
+		  title -nt "Please try update instead."
+		  echo 1 > $diraddons/$alias
+	  fi
 	  exit
 	fi
 	
