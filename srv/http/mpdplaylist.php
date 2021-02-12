@@ -102,7 +102,7 @@ case 'load': // load saved playlist to current
 	
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
 	
-	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
+	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
 	$lines = file_get_contents( '/srv/http/data/playlists/'.$name );
 	$lines = json_decode( $lines );
 	$list = $range = $fileprev = '';
@@ -156,7 +156,7 @@ case 'load': // load saved playlist to current
 	if ( $range ) exec( ltrim( $range, ';' ) );
 	
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
-	echo exec( 'mpc playlist | wc -l' );
+	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
 	break;
 case 'save':
 	$path = '/srv/http/data/playlists/';
