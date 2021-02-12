@@ -165,7 +165,7 @@ installstart() { # $1-'u'=update
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
-	[[ -n $version ]] && echo $version > $diraddons/$alias
+	[[ $version != null ]] && echo $version > $diraddons/$alias
 	
 	timestop
 	title -l '=' "$bar Done."
