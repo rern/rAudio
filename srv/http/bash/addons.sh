@@ -161,8 +161,7 @@ installstart() { # $1-'u'=update
 	mpc | grep -q ^Updating && updating=1
 }
 installfinish() {
-	version=$( jq -r .$alias.version $addonsjson )
-	[[ -n $version ]] && echo $version > $diraddons/$alias
+	jq -r .$alias.version $addonsjson > $diraddons/$alias
 	
 	timestop
 	title -l '=' "$bar Done."
