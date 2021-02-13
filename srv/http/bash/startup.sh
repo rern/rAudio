@@ -57,6 +57,7 @@ if [[ -e /boot/wifi ]]; then
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
 	netctl enable "$ssid"
+	netctl start "$ssid"
 fi
 # ----------------------------------------------------------------------------
 
