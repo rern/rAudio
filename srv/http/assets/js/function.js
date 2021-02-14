@@ -1378,7 +1378,7 @@ function second2HMS( second ) {
 }
 function setButtonControl() {
 	if ( G.bars ) {
-		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 );
+		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && G.status.player === 'mpd' );
 		$( '#previous, #next' ).toggleClass( 'hide', G.status.playlistlength < 2 || G.status.player !== 'mpd' );
 		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 		$( '#pause' ).toggleClass( 'hide', G.status.webradio || G.status.player === 'airplay' );
