@@ -242,7 +242,7 @@ dtparam=audio=on"
 		output="On-board - $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	sed -i '/dtparam=\|dtoverlay=\|^$/ d' $fileconfig
+	sed -i '/dtparam=\|dtoverlay=\|gpio=25=op,dh\|^$/ d' $fileconfig
 	echo "$dtoverlay" >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
