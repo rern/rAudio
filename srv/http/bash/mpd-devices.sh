@@ -101,8 +101,16 @@ devices=${devices:1}
 aplayname=${Aaplayname[i]}
 output=${Aname[i]}
 i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-card=$(( ${#Acard[@]} - 1 ))
-if (( $i > $card )); then
-	i=$card
-	sed -i "s/.$/$i/" /etc/asound.conf
+if [[ -n $i ]]; then
+	card=$(( ${#Acard[@]} - 1 ))
+	if (( $i > $card )); then
+		i=$card
+		sed -i "s/.$/$i/" /etc/asound.conf
+	fi
+else
+	i=0
+	echo -n "\
+defaults.pcm.card 0
+defaults.ctl.card 0
+" > /etc/asound.conf
 fi
