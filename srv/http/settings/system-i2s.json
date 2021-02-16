@@ -87,7 +87,7 @@
     "PiFi DAC+": "hifiberry-dacplus",
     "PiFi Digi+": "hifiberry-digi",
     "Pimoroni pHAT DAC": "hifiberry-dac",
-    "Pimoroni Audio DAC SHIM": "dtoverlay=hifiberry-dac",
+    "Pimoroni Audio DAC SHIM": "hifiberry-dac",
     "pisound": "pisound",
     "RaspiDAC 3": "raspidac3",
     "RaspyPlay 4": "hifiberry-dacplus",
