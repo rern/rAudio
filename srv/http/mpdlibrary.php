@@ -69,8 +69,7 @@ case 'find':
 			}
 		}
 	} else {
-		$lists = shell_exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'" );
-		$lists = explode( "\n", $lists ); // NO: exec( $cmd, $lists ) > 502 (Bad Gateway) error
+		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'", $lists );
 	}
 	if ( count( $f ) > 2 ) {
 		$array = htmlTracks( $lists, $f );
