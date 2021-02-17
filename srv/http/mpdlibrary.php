@@ -266,9 +266,14 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 	$html = '';
 	foreach( $array as $each ) {
 		$key0 = $f[ 0 ];
-		$key1 = $f[ 1 ];
 		$val0 = $each->$key0;
-		$val1 = $each->$key1;
+		if ( count( $f ) > 1 ) {
+			$key1 = $f[ 1 ];
+			$val1 = $each->$key1;
+		} else {
+			$key1 = '';
+			$val1 = '';
+		}
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		if ( !$val0 && !$val1 ) continue;
@@ -414,7 +419,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$coverart = '/assets/img/cover.'.time().'.svg';
 			$nocover = ' nocover';
 		}
-		$coverhtml.= '<li data-mode="file" class="licover">'
+		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
@@ -459,7 +464,7 @@ function directoryList( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$nas200 = $count > 200 && substr( $string, 0, 3 ) === 'NAS';
+	$nas200 = count( $lists ) > 200 && substr( $string, 0, 3 ) === 'NAS';
 	$time = time();
 	$html = '';
 	foreach( $array as $each ) {
