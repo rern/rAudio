@@ -271,13 +271,13 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 		$val1 = $each->$key1;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		if ( !$val0 && !$val1 ) continue;
+		
 		if ( in_array( $mode, [ 'artist', 'albumartist' ] ) ) { // display as artist - album
 			$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
 		} else {
 			$name = $fL > 1 ? $val1.'<gr> • </gr>'.$val0 : $val0;
 		}
-		if ( $name === '<gr> • </gr>' || !$name ) continue;
-		
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
 			$datamode = 'file';
