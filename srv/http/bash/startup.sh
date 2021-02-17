@@ -137,4 +137,6 @@ if [[ $? == 0 ]]; then
 	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
 fi
 
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
+if [[ -e /boot/startup.sh ]]; then
+	/boot/startup.sh
+fi
