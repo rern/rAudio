@@ -75,7 +75,7 @@ touch $dirdata/shm/player-mpd
 $dirbash/mpd-conf.sh # mpd start by this script
 
 readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
-if [[ -n "$mountpoints" ]]; then
+if [[ -n $mountpoints ]]; then
 	notifyFailed() {
 		curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 	}
