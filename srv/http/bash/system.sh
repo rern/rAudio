@@ -225,25 +225,27 @@ i2smodule )
 	output=${args[2]}
 	reboot=${args[3]}
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|dtoverlay=tft35a\|hdmi_force_hotplug=1' $fileconfig )
-	sed -i '/dtparam=\|dtoverlay=\|^$/ d' $fileconfig
-	[[ -n $dtoverlay ]] && sed -i '$ r /dev/stdin' $fileconfig <<< "$dtoverlay"
 	if [[ $aplayname != onboard ]]; then
-		lines="\
+		dtoverlay+="
 dtparam=i2s=on
-dtoverlay=${args[1]}"
-		sed -i '$ r /dev/stdin' $fileconfig <<< "$lines"
-		echo $aplayname > $dirsystem/audio-aplayname
-		echo $output > $dirsystem/audio-output
+dtoverlay=$aplayname"
+		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
+gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 	else
-		sed -i '$ a\dtparam=audio=on' $fileconfig
+		dtoverlay+="
+dtparam=audio=on"
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 		revision=${revision: -3:2}
 		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
-		echo "bcm2835 $output" > $dirsystem/audio-aplayname
-		echo "On-board - $output" > $dirsystem/audio-output
+		aplayname="bcm2835 $output"
+		output="On-board - $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
+	sed -i '/dtparam=\|dtoverlay=\|gpio=25=op,dh\|^$/ d' $fileconfig
+	echo "$dtoverlay" >> $fileconfig
+	echo $aplayname > $dirsystem/audio-aplayname
+	echo $output > $dirsystem/audio-output
 	echo "$reboot" > $filereboot
 	pushRefresh
 	;;
