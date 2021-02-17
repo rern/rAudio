@@ -277,7 +277,7 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 		} else {
 			$name = $fL > 1 ? $val1.'<gr> • </gr>'.$val0 : $val0;
 		}
-		if ( $name === '<gr> • </gr>' || !name ) continue;
+		if ( $name === '<gr> • </gr>' || !$name ) continue;
 		
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
