@@ -24,7 +24,7 @@ function indexbar( $indexes ) {
 			$char1 = '<wh>'.$char1.'</wh>';
 			$indexed1 = 1;
 		}
-		if ( $index || $index1 ) {
+		if ( $indexed || $indexed1 ) {
 			$indexbar1.= '<a class="indexed">'.$char.$char1.'</a>';
 		} else {
 			$indexbar1.= '<a>'.$char.$char1.'</a>';
