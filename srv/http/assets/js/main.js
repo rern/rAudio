@@ -1030,10 +1030,7 @@ $( '.btn-cmd' ).click( function() {
 			} else if ( G.status.player === 'bluetooth' ) {
 				bash( [ 'bluetoothplayerstop' ] );
 			} else if ( G.status.player === 'snapclient' ) {
-				clearIntervalAll();
-				bash( '/srv/http/bash/snapcast.sh stop', function() {
-					getPlaybackStatus();
-				} );
+				bash( '/srv/http/bash/snapcast.sh stop' );
 			} else if ( G.status.player === 'spotify' ) {
 				bash( '/srv/http/bash/spotifyd.sh stop' );
 			} else if ( G.status.player === 'upnp' ) {

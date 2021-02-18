@@ -23,6 +23,7 @@ elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client
 	echo stop
 	systemctl stop snapclient
 	mv $dirtmp/player-{*,mpd}
+	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
 	serverip=$( cat $snapserverfile )
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 	rm $snapserverfile
