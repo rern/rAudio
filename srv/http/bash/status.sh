@@ -13,7 +13,6 @@ playlistlength=$( mpc playlist | wc -l )
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
-snapclient=$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
@@ -42,7 +41,6 @@ else
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
-, "snapclient"     : '$relayson'
 , "updateaddons"   : '$updateaddons'
 , "volume"         : '$volume'
 , "volumemute"     : 0
