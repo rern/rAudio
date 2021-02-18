@@ -43,7 +43,7 @@ mpc idleloop | while read changed; do
 					fi
 					if [[ -e $snapclientfile ]]; then
 						status=$( $dirbash/status.sh snapserverstatus )
-						mapfile -t clientip < $snapclientfile
+						readarray -t clientip <<< $snapclientfile
 						for ip in "${clientip[@]}"; do
 							[[ -n $ip ]] && pushstream mpdplayer "$status" $ip
 						done
