@@ -505,17 +505,7 @@ function getPlaybackStatus( render ) {
 		}
 		
 		displayBottom();
-		if ( G.status.player === 'snapclient' ) {
-			bash( 'sshpass -p '+ status.snapserverpw +' ssh -q root@'+ status.snapserverip +' /srv/http/bash/status.sh', function( status ) {
-				$.each( status, function( key, value ) {
-					G.status[ key ] = value;
-				} );
-				G.status.sampling = '16 bit 48 kHz 1.54 Mbit/s &bull; Snapcast';
-				displayPlayback();
-				setButtonControl();
-				renderPlayback();
-			}, 'json' );
-		} else if ( G.playback || render ) { // 'render' - add to blank playlist
+		if ( G.playback || render ) { // 'render' - add to blank playlist
 			displayPlayback();
 			setButtonControl();
 			renderPlayback();
@@ -1192,9 +1182,10 @@ function renderPlaybackBlank() {
 }
 function renderPlaybackCoverart( coverart ) {
 	if ( coverart ) {
+		var snapserver = G.status.player === 'snapclient' ? G.status.snapserverurl : '';
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
-			.attr( 'src', coverart )
+			.attr( 'src', snapserver + coverart )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );

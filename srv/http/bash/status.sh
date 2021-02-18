@@ -13,6 +13,7 @@ playlistlength=$( mpc playlist | wc -l )
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
+snapclient=$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
@@ -24,8 +25,12 @@ fi
 
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
+if [[ $1 == snapserverstatus ]]; then
 ########
-status='
+	status=
+else
+########
+	status='
   "player"         : "'$player'"
 , "btclient"       : '$btclient'
 , "consume"        : '$consume'
@@ -37,10 +42,12 @@ status='
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
+, "snapclient"     : '$relayson'
 , "updateaddons"   : '$updateaddons'
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
+fi
 
 case $player in
 
@@ -78,12 +85,13 @@ bluetooth )
 	echo {$status}
 	;;
 snapclient )
-	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=rune
-	snapserverip=$( cat $dirtmp/snapserverip )
+	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
+	snapserverip=$( journalctl -u snapclient | grep 'Connected to' | head -1 | awk '{print $NF}' )
+	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip /srv/http/bash/status.sh snapserverstatus )
 ########
 	status+='
-, "snapserverip" : "'$snapserverip'"
-, "snapserverpw" : "'$snapserverpw'"'
+, "snapserverurl"  : "http://'$snapserverip'/"'
+	status+=${snapserverstatus:1:-1}
 # >>>>>>>>>>
 	echo {$status}
 	;;
@@ -125,7 +133,6 @@ mpdStatus() {
 		| grep "$filter" )
 }
 mpdStatus currentsong
-[[ $? != 0 ]] && exit
 
 # when playlist is empty, add song without play - currentsong = (blank)
 ! grep -q '^file' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'

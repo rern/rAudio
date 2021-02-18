@@ -163,14 +163,14 @@ smbset )
 	featureSet smb
 	;;
 snapclientdisable )
-	featureDisable snapclient
+	rm $dirsystem/snapclient
 	;;
 snapclientset )
 	latency=${args[1]}
 	password=${args[2]}
 	sed -i '/OPTS=/ s/".*"/"--latency='$latency'"/' /etc/default/snapclient
 	[[ -n $password ]] && echo $pwd > $dirsystem/snapclientpw
-	featureSet snapclient
+	touch $dirsystem/snapclient
 	;;
 snapserver )
 	if [[ ${args[1]} == true ]]; then

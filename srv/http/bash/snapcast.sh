@@ -5,12 +5,12 @@ snapserverfile=$dirtmp/snapserverip
 snapclientfile=$dirtmp/snapclientip
 
 if [[ $1 == start ]]; then # client start - save server ip
-	mpc stop
+	mpc -q stop
 	systemctl start snapclient
 	sleep 2
-	serverip=$( systemctl status snapclient | awk '/Connected to/ {print $NF}' )
+	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )
 	if [[ -n $serverip ]]; then
-		mv $dirdata/shm/player-{*,snapclient}
+		mv $dirtmp/player-{*,snapclient}
 		echo $serverip > $snapserverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		curl -s -X POST http://$serverip/pub?id=snapcast -d '{ "add": "'$clientip'" }'
@@ -22,7 +22,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client ip
 	echo stop
 	systemctl stop snapclient
-	mv $dirdata/shm/player-{*,mpd}
+	mv $dirtmp/player-{*,mpd}
 	serverip=$( cat $snapserverfile )
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 	rm $snapserverfile
