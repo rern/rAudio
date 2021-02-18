@@ -42,7 +42,7 @@ elif [[ $1 == serverstop ]]; then # force clients stop
 	if [[ -e $snapclientfile ]]; then
 		sed -i '/^$/d' $snapclientfile # remove blank lines
 		if [[ -s $snapclientfile ]]; then
-			readarray -t clientip <<< $snapclientfile
+			readarray -t clientip < $snapclientfile
 			for ip in "${clientip[@]}"; do
 				pushstream $ip -1
 			done
