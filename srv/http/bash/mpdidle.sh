@@ -29,30 +29,24 @@ mpc idleloop | while read changed; do
 				current=$( mpc current )
 				if [[ -z $current || $current != $currentprev ]]; then
 					killall status-coverartonline.sh &> /dev/null # kill if still running
-					if [[ ! -e $dirtmp/player-snapclient ]]; then
-						$dirbash/cmd.sh pushstatus$'\n'lcdchar
-						if [[ -e $dirsystem/librandom ]]; then
-							counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
-							pos=${counts/\/*}
-							total=${counts/*\/}
-							left=$(( total - pos ))
-							if (( $left < 2 )); then
-								$dirbash/cmd.sh randomfile
-								(( $left == 0 )) && $dirbash/cmd.sh randomfile
-								touch $flagpl
-							fi
+					$dirbash/cmd.sh pushstatus$'\n'lcdchar        # status
+					if [[ -e $dirsystem/librandom ]]; then
+						counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
+						pos=${counts/\/*}
+						total=${counts/*\/}
+						left=$(( total - pos ))
+						if (( $left < 2 )); then
+							$dirbash/cmd.sh randomfile
+							(( $left == 0 )) && $dirbash/cmd.sh randomfile
+							touch $flagpl
 						fi
-					else
-						sed -i '/^$/d' $snapclientfile # remove blank lines
-						if [[ -s $snapclientfile ]]; then
-							mapfile -t clientip < $snapclientfile
-							for ip in "${clientip[@]}"; do
-								status=$( $dirbash/status.sh snapserverstatus )
-								pushstream mpdplayer "$status" $ip
-							done
-						else
-							rm $snapclientfile
-						fi
+					fi
+					if [[ -e $snapclientfile ]]; then
+						status=$( $dirbash/status.sh snapserverstatus )
+						mapfile -t clientip < $snapclientfile
+						for ip in "${clientip[@]}"; do
+							[[ -n $ip ]] && pushstream mpdplayer "$status" $ip
+						done
 					fi
 					[[ -e $flagpl ]] && pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 				fi
