@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+sed -i '/^IgnorePkg.*linux-firmware/ d' /etc/pacman.conf
+
 file=/etc/systemd/system/powerbutton.service
 [[ ! -e $file ]] && echo -n "\
 [Unit]
