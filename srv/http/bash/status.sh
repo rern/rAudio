@@ -78,7 +78,7 @@ bluetooth )
 	echo {$status}
 	;;
 snapclient )
-	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=rune
+	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 	snapserverip=$( cat $dirtmp/snapserverip )
 ########
 	status+='
