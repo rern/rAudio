@@ -37,6 +37,7 @@ elif [[ $1 == add ]]; then # connected from client - save client ip
 elif [[ $1 == remove ]]; then # disconnected from client - remove client ip
 	clientip=$2
 	sed -i "/$clientip/ d" $snapclientfile
+	[[ -s $snapclientfile ]] || rm $snapclientfile
 elif [[ $1 == serverstop ]]; then # force clients stop
 	snapclientfile=$dirtmp/snapclientip
 	if [[ -e $snapclientfile ]]; then

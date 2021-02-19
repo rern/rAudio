@@ -28,6 +28,7 @@ var G = {
 	, scrollspeed   : 80 // pixel/s
 	, scrolltop     : {}
 	, similarpl     : -1
+	, snapclient    : 0
 	, status        : {}
 
 }
