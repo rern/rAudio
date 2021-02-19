@@ -17,7 +17,7 @@ onVisibilityChange( function( visible ) {
 		pushstream.connect();
 	} else {
 		clearIntervalAll();
-		if ( !G.snapclient ) pushstream.disconnect();
+		pushstream.disconnect();
 	}
 } );
 window.addEventListener( 'orientationchange', function() {

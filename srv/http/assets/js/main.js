@@ -28,7 +28,6 @@ var G = {
 	, scrollspeed   : 80 // pixel/s
 	, scrolltop     : {}
 	, similarpl     : -1
-	, snapclient    : 0
 	, status        : {}
 
 }
@@ -166,8 +165,6 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 						, title   : 'Snapcast'
 						, message : 'Snapcast server not available'
 					} );
-				} else {
-					G.snapclient = startstop === 'start' ? 1 : 0;
 				}
 			} );
 			banner( 'Snapcast - Sync Streaming Client', ( G.status.player === 'snapclient' ? 'Stop ...' : 'Start ...' ), 'snapcast blink', -1 );
