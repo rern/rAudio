@@ -43,7 +43,7 @@ elif [[ $1 == serverstop ]]; then # force clients stop
 		done
 		rm -f $snapclientfile
 	fi
-else
+else # sshpass from snapclient
 	snapclientip=$1
 	snapserverip=$2
 	snapclientfile=$dirtmp/snapclientip
