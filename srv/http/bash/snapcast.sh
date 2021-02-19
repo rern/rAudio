@@ -18,8 +18,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 		mv $dirtmp/player-{*,snapclient}
 		echo $serverip > $snapserverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-		snapclientpw=$( cat $snapclientpwfile )
-		sshpass -p "$snapserverpw" ssh -q root@$serverip /srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'add
+		snapserverpw=$( cat $snapclientpwfile 2> /dev/null || echo ros )
+		sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'add"
 		systemctl try-restart shairport-sync spotifyd upmpdcli &> /dev/null
 	else
 		systemctl stop snapclient
@@ -31,8 +31,8 @@ elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
 	serverip=$( cat $snapserverfile )
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-	snapclientpw=$( cat $snapclientpwfile )
-	sshpass -p "$snapserverpw" ssh -q root@$serverip /srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'remove
+	snapserverpw=$( cat $snapclientpwfile 2> /dev/null || echo ros )
+	sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'remove"
 	rm $snapserverfile
 elif [[ $1 == serverstop ]]; then # force clients stop
 	snapclientfile=$dirtmp/snapclientip
