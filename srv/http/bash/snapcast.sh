@@ -19,7 +19,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		echo $serverip > $snapserverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		snapserverpw=$( cat $snapclientpwfile 2> /dev/null || echo ros )
-		sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'add"
+		sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'$serverip"
 		systemctl try-restart shairport-sync spotifyd upmpdcli &> /dev/null
 	else
 		systemctl stop snapclient
@@ -32,7 +32,7 @@ elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client
 	serverip=$( cat $snapserverfile )
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 	snapserverpw=$( cat $snapclientpwfile 2> /dev/null || echo ros )
-	sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'remove"
+	sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/cmd.sh snapclientip$'\n'$clientip"
 	rm $snapserverfile
 elif [[ $1 == serverstop ]]; then # force clients stop
 	snapclientfile=$dirtmp/snapclientip

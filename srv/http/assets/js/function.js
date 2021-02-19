@@ -1182,10 +1182,9 @@ function renderPlaybackBlank() {
 }
 function renderPlaybackCoverart( coverart ) {
 	if ( coverart ) {
-		var snapserver = G.status.player === 'snapclient' ? G.status.snapserverurl : '';
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
-			.attr( 'src', snapserver + coverart )
+			.attr( 'src', coverart )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );

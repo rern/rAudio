@@ -84,11 +84,10 @@ bluetooth )
 	;;
 snapclient )
 	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
-	snapserverip=$( journalctl -u snapclient | grep 'Connected to' | head -1 | awk '{print $NF}' )
-	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip /srv/http/bash/status.sh snapserverstatus )
+	snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
+	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip /srv/http/bash/status.sh snapserverstatus \
+							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 ########
-	status+='
-, "snapserverurl"  : "http://'$snapserverip'/"'
 	status+=${snapserverstatus:1:-1}
 # >>>>>>>>>>
 	echo {$status}
