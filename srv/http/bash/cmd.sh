@@ -728,11 +728,12 @@ snapclientip )
 	snapclientip=${args[1]}
 	snapserverip=${args[2]}
 	snapclientfile=$dirtmp/snapclientip
+	sed -i "/$snapclientip/ d" $snapclientfile &> /dev/null
 	if [[ -n $snapserverip ]]; then
+		echo $snapclientip >> $snapclientfile
 		status=$( /srv/http/bash/status.sh | sed 's/"player" :.*"single" : false , /"player" : "snapclient" , /; s|"coverart" : "|&http://'$snapserverip'/|' )
 		curl -s -X POST http://$snapclientip/pub?id=mpdplayer -d "$status"
 	else
-		sed -i "/$snapclientip/ d" $snapclientfile
 		[[ -s $snapclientfile ]] || rm $snapclientfile
 	fi
 	;;
