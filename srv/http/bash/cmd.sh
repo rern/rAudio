@@ -724,18 +724,6 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
-snapclientip )
-	snapclientip=${args[1]}
-	snapserverip=${args[2]}
-	snapclientfile=$dirtmp/snapclientip
-	sed -i "/$snapclientip/ d" $snapclientfile &> /dev/null
-	[[ -s $snapclientfile ]] || rm $snapclientfile
-	if [[ -n $snapserverip ]]; then
-		echo $snapclientip >> $snapclientfile
-		status=$( /srv/http/bash/status.sh | sed 's/"player" :.*"single" : false , /"player" : "snapclient" , /; s|"coverart" : "|&http://'$snapserverip'/|' )
-		curl -s -X POST http://$snapclientip/pub?id=mpdplayer -d "$status"
-	fi
-	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}
