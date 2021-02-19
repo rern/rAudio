@@ -34,6 +34,8 @@ elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client
 elif [[ $1 == add ]]; then # connected from client - save client ip
 	clientip=$2
 	! grep -q $clientip $snapclientfile 2> /dev/null && echo $clientip >> $snapclientfile
+	status=$( /srv/http/bash/status.sh | sed 's/"player" :.*"single" : false , //' )
+	curl -s -X POST http://$clientip/pub?id=mpdplayer -d "$status"
 elif [[ $1 == remove ]]; then # disconnected from client - remove client ip
 	clientip=$2
 	sed -i "/$clientip/ d" $snapclientfile

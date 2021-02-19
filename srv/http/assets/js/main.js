@@ -159,10 +159,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'snapclient':
 			bash( '/srv/http/bash/snapcast.sh '+ ( G.status.player === 'snapclient' ? 'stop' : 'start' ), function( data ) {
 				bannerHide();
-				if ( data != -1 ) {
-					getPlaybackStatus();
-					displayBars();
-				} else {
+				if ( data == -1 ) {
 					info( {
 						  icon    : 'snapcast'
 						, title   : 'Snapcast'

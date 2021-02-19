@@ -119,7 +119,6 @@ pushstreamStatus() {
 	fi
 	if [[ -e $dirtmp/snapclientip ]]; then
 		status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
-		echo $status
 		readarray -t clientip < $dirtmp/snapclientip
 		for ip in "${clientip[@]}"; do
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
