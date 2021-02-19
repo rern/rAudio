@@ -18,10 +18,7 @@
 <pre id="codeshairport-sync" class="hide"></pre>
 	<?php }
 		  if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
-<div data-status="snapclient" <?=$classstatus?>>
-	<a>SnapClient
-	<br><gr>snapclient<?=$code?></gr></a><i class="fa fa-snapcast"></i>
-</div>
+<div class="col-l single">SnapClient<i class="fa fa-snapcast"></i></div>
 <div class="col-r">
 	<input id="snapclient" <?=$chkenable?>>
 	<div class="switchlabel" for="snapclient"></div>
@@ -32,7 +29,6 @@
 		<br>(Note: Not available while SnapServer enabled.)
 	</span>
 </div>
-<pre id="codesnapclient" class="hide"></pre>
 	<?php }
 		  if ( file_exists( '/usr/bin/spotifyd' ) ) { ?>
 <div data-status="spotifyd" <?=$classstatus?>>
