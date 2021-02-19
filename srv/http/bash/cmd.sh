@@ -117,6 +117,14 @@ pushstreamStatus() {
 									| sed 's/^$\|null/false/' )
 		$dirbash/lcdchar.py "${data[@]}" &
 	fi
+	if [[ -e $dirtmp/snapclientip ]]; then
+		status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
+		echo $status
+		readarray -t clientip < $dirtmp/snapclientip
+		for ip in "${clientip[@]}"; do
+			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+		done
+	fi
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'

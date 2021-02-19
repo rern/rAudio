@@ -6,8 +6,7 @@ for pid in $( pgrep mpd ); do
 done
 
 pushstream() {
-	[[ -z $3 ]] && ip=127.0.0.1 || ip=$3
-	curl -s -X POST http://$ip/pub?id=$1 -d "$2"
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 
 dirbash=/srv/http/bash
@@ -16,7 +15,6 @@ dirtmp=/srv/http/data/shm
 flag=$dirtmp/flag
 flagpl=$dirtmp/flagpl
 flagpladd=$dirtmp/flagpladd
-snapclientfile=$dirtmp/snapclientip
 
 mpc idleloop | while read changed; do
 	[[ $changed == playlist && $( mpc current -f %file% | cut -c1-4 ) == http ]] && continue
@@ -41,11 +39,11 @@ mpc idleloop | while read changed; do
 							touch $flagpl
 						fi
 					fi
-					if [[ -e $snapclientfile ]]; then
-						status=$( $dirbash/status.sh snapserverstatus )
-						readarray -t clientip < $snapclientfile
+					if [[ -e $dirtmp/snapclientip ]]; then
+						status=$( $dirbash/status.sh snapserverstatus | sed 's/,.*"single" : false , //' )
+						readarray -t clientip < $dirtmp/snapclientip
 						for ip in "${clientip[@]}"; do
-							[[ -n $ip ]] && pushstream mpdplayer "$status" $ip
+							[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 						done
 					fi
 					[[ -e $flagpl ]] && pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
