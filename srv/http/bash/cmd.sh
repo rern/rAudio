@@ -117,6 +117,14 @@ pushstreamStatus() {
 									| sed 's/^$\|null/false/' )
 		$dirbash/lcdchar.py "${data[@]}" &
 	fi
+	if [[ -e $dirtmp/snapclientip ]]; then
+		status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
+		echo $status
+		readarray -t clientip < $dirtmp/snapclientip
+		for ip in "${clientip[@]}"; do
+			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+		done
+	fi
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -383,7 +391,7 @@ displayget )
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "snapclient" : '$( systemctl -q is-active snapclient && echo true || echo false )'
+, "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 , "volumenone" : '$volumenone'
 }'
 echo "$data"
@@ -703,8 +711,7 @@ relayscountdown )
 		killall relaystimer.sh &> /dev/null
 		echo 1 > $relaysfile
 		$dirbash/relaystimer.sh &> /dev/null &
-		curl -s -X POST http://127.0.0.1/pub?id=relays \
-			-d '{ "state": "IDLE", "delay": 60 }'
+		curl -s -X POST http://127.0.0.1/pub?id=relays -d '{ "state": "IDLE", "delay": 60 }'
 	fi
 	;;
 relaystimerreset )

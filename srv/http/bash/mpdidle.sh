@@ -6,8 +6,7 @@ for pid in $( pgrep mpd ); do
 done
 
 pushstream() {
-	[[ -z $3 ]] && ip=127.0.0.1 || ip=$3
-	curl -s -X POST http://$ip/pub?id=$1 -d "$2"
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 
 dirbash=/srv/http/bash
@@ -16,7 +15,6 @@ dirtmp=/srv/http/data/shm
 flag=$dirtmp/flag
 flagpl=$dirtmp/flagpl
 flagpladd=$dirtmp/flagpladd
-snapclientfile=$dirtmp/snapclientip
 
 mpc idleloop | while read changed; do
 	[[ $changed == playlist && $( mpc current -f %file% | cut -c1-4 ) == http ]] && continue
@@ -29,30 +27,24 @@ mpc idleloop | while read changed; do
 				current=$( mpc current )
 				if [[ -z $current || $current != $currentprev ]]; then
 					killall status-coverartonline.sh &> /dev/null # kill if still running
-					if [[ ! -e $dirtmp/player-snapclient ]]; then
-						$dirbash/cmd.sh pushstatus$'\n'lcdchar
-						if [[ -e $dirsystem/librandom ]]; then
-							counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
-							pos=${counts/\/*}
-							total=${counts/*\/}
-							left=$(( total - pos ))
-							if (( $left < 2 )); then
-								$dirbash/cmd.sh randomfile
-								(( $left == 0 )) && $dirbash/cmd.sh randomfile
-								touch $flagpl
-							fi
+					$dirbash/cmd.sh pushstatus$'\n'lcdchar        # status
+					if [[ -e $dirsystem/librandom ]]; then
+						counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
+						pos=${counts/\/*}
+						total=${counts/*\/}
+						left=$(( total - pos ))
+						if (( $left < 2 )); then
+							$dirbash/cmd.sh randomfile
+							(( $left == 0 )) && $dirbash/cmd.sh randomfile
+							touch $flagpl
 						fi
-					else
-						sed -i '/^$/d' $snapclientfile # remove blank lines
-						if [[ -s $snapclientfile ]]; then
-							mapfile -t clientip < $snapclientfile
-							for ip in "${clientip[@]}"; do
-								status=$( $dirbash/status.sh )
-								pushstream mpdplayer "$status" $ip
-							done
-						else
-							rm $snapclientfile
-						fi
+					fi
+					if [[ -e $dirtmp/snapclientip ]]; then
+						status=$( $dirbash/status.sh snapserverstatus | sed 's/,.*"single" : false , //' )
+						readarray -t clientip < $dirtmp/snapclientip
+						for ip in "${clientip[@]}"; do
+							[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+						done
 					fi
 					[[ -e $flagpl ]] && pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 				fi

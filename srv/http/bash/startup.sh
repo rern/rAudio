@@ -74,14 +74,12 @@ touch $dirdata/shm/player-mpd
 
 $dirbash/mpd-conf.sh # mpd start by this script
 
-sleep 10 # wait for network interfaces
-
-notifyFailed() {
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
-}
-
 readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
-if [[ -n "$mountpoints" ]]; then
+if [[ -n $mountpoints ]]; then
+	notifyFailed() {
+		curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
+	}
+	sleep 10 # wait for network interfaces
 	lanip=$( ifconfig eth0 | awk '/inet / {print $2}' )
 	[[ -z $lanip ]] && wlanip=$( ifconfig wlan0 | awk '/inet / {print $2}' )
 	if [[ -z $lanip && -z wlanip ]]; then # wait for connection
@@ -104,6 +102,7 @@ if [[ -n "$mountpoints" ]]; then
 		mount "$mountpoint"
 	done
 fi
+
 # after all sources connected
 if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
 	echo rescan > $dirsystem/updating
@@ -138,4 +137,6 @@ if [[ $? == 0 ]]; then
 	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
 fi
 
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
+if [[ -e /boot/startup.sh ]]; then
+	/boot/startup.sh
+fi

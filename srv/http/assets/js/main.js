@@ -156,12 +156,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
 		case 'snapclient':
-			bash( '/srv/http/bash/snapcast.sh '+ ( G.status.player === 'snapclient' ? 'stop' : 'start' ), function( data ) {
+			var startstop = G.status.player === 'snapclient' ? 'stop' : 'start';
+			bash( '/srv/http/bash/snapcast.sh '+ startstop, function( data ) {
 				bannerHide();
-				if ( data != -1 ) {
-					getPlaybackStatus();
-					displayBars();
-				} else {
+				if ( data == -1 ) {
 					info( {
 						  icon    : 'snapcast'
 						, title   : 'Snapcast'
@@ -1030,10 +1028,7 @@ $( '.btn-cmd' ).click( function() {
 			} else if ( G.status.player === 'bluetooth' ) {
 				bash( [ 'bluetoothplayerstop' ] );
 			} else if ( G.status.player === 'snapclient' ) {
-				clearIntervalAll();
-				bash( '/srv/http/bash/snapcast.sh stop', function() {
-					getPlaybackStatus();
-				} );
+				bash( '/srv/http/bash/snapcast.sh stop' );
 			} else if ( G.status.player === 'spotify' ) {
 				bash( '/srv/http/bash/spotifyd.sh stop' );
 			} else if ( G.status.player === 'upnp' ) {

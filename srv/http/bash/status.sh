@@ -24,8 +24,12 @@ fi
 
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
+if [[ $1 == snapserverstatus ]]; then
 ########
-status='
+	status=
+else
+########
+	status='
   "player"         : "'$player'"
 , "btclient"       : '$btclient'
 , "consume"        : '$consume'
@@ -41,6 +45,7 @@ status='
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
+fi
 
 case $player in
 
@@ -78,12 +83,12 @@ bluetooth )
 	echo {$status}
 	;;
 snapclient )
-	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=rune
-	snapserverip=$( cat $dirtmp/snapserverip )
+	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
+	snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
+	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip /srv/http/bash/status.sh snapserverstatus \
+							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 ########
-	status+='
-, "snapserverip" : "'$snapserverip'"
-, "snapserverpw" : "'$snapserverpw'"'
+	status+=${snapserverstatus:1:-1}
 # >>>>>>>>>>
 	echo {$status}
 	;;
@@ -125,7 +130,6 @@ mpdStatus() {
 		| grep "$filter" )
 }
 mpdStatus currentsong
-[[ $? != 0 ]] && exit
 
 # when playlist is empty, add song without play - currentsong = (blank)
 ! grep -q '^file' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
