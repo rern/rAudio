@@ -424,7 +424,6 @@ function psRestore( data ) {
 function psSnapcast( data ) {
 	if ( data == -1 ) return
 	
-	G.snapclient = 1;
 	var cmd = '/srv/http/bash/snapcast.sh ';
 	cmd += 'add' in data ? ' add '+ data.add : ' remove '+ data.remove;
 	bash( cmd );

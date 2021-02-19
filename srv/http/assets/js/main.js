@@ -157,7 +157,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
 		case 'snapclient':
-			bash( '/srv/http/bash/snapcast.sh '+ ( G.status.player === 'snapclient' ? 'stop' : 'start' ), function( data ) {
+			var startstop = G.status.player === 'snapclient' ? 'stop' : 'start';
+			bash( '/srv/http/bash/snapcast.sh '+ startstop, function( data ) {
 				bannerHide();
 				if ( data == -1 ) {
 					info( {
@@ -165,6 +166,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 						, title   : 'Snapcast'
 						, message : 'Snapcast server not available'
 					} );
+				} else {
+					G.snapclient = startstop === 'start' ? 1 : 0;
 				}
 			} );
 			banner( 'Snapcast - Sync Streaming Client', ( G.status.player === 'snapclient' ? 'Stop ...' : 'Start ...' ), 'snapcast blink', -1 );
