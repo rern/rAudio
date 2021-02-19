@@ -178,7 +178,7 @@ datarestore )
 	
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
-	sed -i "s/root=.* rw/root=$uuid rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
+	sed -i "s/root=.* rw/root=$uuid1 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
 	sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig/etc/fstab
 	
 	cp -rf $dirconfig/* /
