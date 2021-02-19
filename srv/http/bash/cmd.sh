@@ -119,6 +119,7 @@ pushstreamStatus() {
 	fi
 	if [[ -e $dirtmp/snapclientip ]]; then
 		status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
+		echo $status
 		readarray -t clientip < $dirtmp/snapclientip
 		for ip in "${clientip[@]}"; do
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
@@ -710,8 +711,7 @@ relayscountdown )
 		killall relaystimer.sh &> /dev/null
 		echo 1 > $relaysfile
 		$dirbash/relaystimer.sh &> /dev/null &
-		curl -s -X POST http://127.0.0.1/pub?id=relays \
-			-d '{ "state": "IDLE", "delay": 60 }'
+		curl -s -X POST http://127.0.0.1/pub?id=relays -d '{ "state": "IDLE", "delay": 60 }'
 	fi
 	;;
 relaystimerreset )
@@ -723,6 +723,19 @@ rotateSplash )
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
+	;;
+snapclientip )
+	snapclientip=${args[1]}
+	cmd=${args[2]}
+	snapclientfile=$dirtmp/snapclientip
+	if [[ $cmd == add ]]; then
+		echo $snapclientip >> $snapclientfile
+		status=$( /srv/http/bash/status.sh | sed 's/"player" :.*"single" : false , /"player" : "snapclient" , /' )
+		curl -s -X POST http://$snapclientip/pub?id=mpdplayer -d "$status"
+	else
+		sed -i "/$snapclientip/ d" $snapclientfile
+		[[ -s $snapclientfile ]] || rm $snapclientfile
+	fi
 	;;
 thumbgif )
 	type=${args[1]}

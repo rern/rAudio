@@ -3,6 +3,7 @@
 dirtmp=/srv/http/data/shm
 snapserverfile=$dirtmp/snapserverip
 snapclientfile=$dirtmp/snapclientip
+snapclientpwfile=/srv/http/data/system/snapclientpw
 
 pushstream() {
 	curl -s -X POST http://$1/pub?id=snapcast -d "$2"
@@ -17,7 +18,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 		mv $dirtmp/player-{*,snapclient}
 		echo $serverip > $snapserverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-		pushstream $serverip '{ "add": "'$clientip'" }'
+		snapclientpw=$( cat $snapclientpwfile )
+		sshpass -p "$snapserverpw" ssh -q root@$serverip /srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'add
 		systemctl try-restart shairport-sync spotifyd upmpdcli &> /dev/null
 	else
 		systemctl stop snapclient
@@ -29,17 +31,9 @@ elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
 	serverip=$( cat $snapserverfile )
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+	snapclientpw=$( cat $snapclientpwfile )
+	sshpass -p "$snapserverpw" ssh -q root@$serverip /srv/http/bash/cmd.sh snapclientip$'\n'$clientip$'\n'remove
 	rm $snapserverfile
-	pushstream $serverip '{ "remove": "'$clientip'" }'
-elif [[ $1 == add ]]; then # connected from client - save client ip
-	clientip=$2
-	! grep -q $clientip $snapclientfile 2> /dev/null && echo $clientip >> $snapclientfile
-	status=$( /srv/http/bash/status.sh | sed 's/"player" :.*"single" : false , /"player" : "snapclient" , /' )
-	curl -s -X POST http://$clientip/pub?id=mpdplayer -d "$status"
-elif [[ $1 == remove ]]; then # disconnected from client - remove client ip
-	clientip=$2
-	sed -i "/$clientip/ d" $snapclientfile
-	[[ -s $snapclientfile ]] || rm $snapclientfile
 elif [[ $1 == serverstop ]]; then # force clients stop
 	snapclientfile=$dirtmp/snapclientip
 	if [[ -e $snapclientfile ]]; then

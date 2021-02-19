@@ -66,7 +66,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'snapcast', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -97,7 +97,6 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'playlist':   psPlaylist( data );   break;
 		case 'reload':     psReload( data );     break;
 		case 'restore':    psRestore( data );    break;
-		case 'snapcast':   psSnapcast( data );   break;
 		case 'spotify':    psSpotify( data );    break;
 		case 'volume':     psVolume( data );     break;
 		case 'webradio':   psWebradio( data );   break;
@@ -420,13 +419,6 @@ function psRestore( data ) {
 		loader( 'show' );
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
-}
-function psSnapcast( data ) {
-	if ( data == -1 ) return
-	
-	var cmd = '/srv/http/bash/snapcast.sh ';
-	cmd += 'add' in data ? ' add '+ data.add : ' remove '+ data.remove;
-	bash( cmd );
 }
 function psSpotify( data ) {
 	if ( G.status.player !== 'spotify' ) {
