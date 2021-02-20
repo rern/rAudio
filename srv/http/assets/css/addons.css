@@ -179,6 +179,9 @@ heading {
 .detailtext i {
 	color: var( --cg60 );
 }
+.detailtext a {
+	color: var( --cml );
+}
 .boxed-group {
 	margin: 10px 0;
 	padding: 10px 20px;
