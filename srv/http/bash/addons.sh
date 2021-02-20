@@ -129,11 +129,6 @@ getuninstall() {
 	installurl=${installurl/raw\/main/raw\/$branch}
 	uninstallurl=${installurl/install.sh/uninstall_$alias.sh}
 	wgetnc $uninstallurl -P /usr/local/bin
-	if [[ $? != 0 ]]; then
-		title -l '=' "$warn Uninstall file download failed."
-		title -nt "Please try install again."
-		exit
-	fi
 	chmod +x /usr/local/bin/uninstall_$alias.sh
 }
 installstart() { # $1-'u'=update
