@@ -578,12 +578,15 @@ function checkRequired() {
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {
 		$el.removeClass( 'hide' );
-		if ( $el.prop( 'id' ) === 'infoCheckBox' ) { // by index
+		var id = $el.prop( 'id' );
+		if ( id === 'infoCheckBox' ) { // by index
 			if ( chk ) {
 				chk.forEach( function( val ) {
 					$el.find( 'input' ).eq( val ).prop( 'checked', true );
 				} );
 			}
+		} else if ( id === 'infoRadio' ) { // by index
+			$el.find( 'input' ).eq( chk || 0 ).prop( 'checked', true );
 		} else {                                    // by value
 			var opt = $el.prop( 'id' ) === 'infoSelectBox' ? 'option' : 'input';
 			if ( chk === '' ) { // undefined
