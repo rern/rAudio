@@ -456,19 +456,7 @@ $( '#colorpicker' ).click( function( e ) {
 $( '#addons' ).click( function () {
 	banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
 	bash( [ 'addonslist' ], function( std ) {
-		if ( std == -1 ) {
-			info( {
-				  icon    : 'jigsaw'
-				, title   : 'Addons'
-				, message : 'Download from Addons server failed.'
-						   +'<br>Please try again later.'
-				, ok      : function() {
-					loader( 'hide' );
-				}
-			} );
-		} else {
-			location.href = '/settings/addons.php';
-		}
+		addonsdl( std )
 	} );
 	loader( 'show' );
 } ).taphold( function() {
@@ -479,8 +467,8 @@ $( '#addons' ).click( function () {
 		, textvalue : 'UPDATE'
 		, ok        : function() {
 			banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
-			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function() {
-				location.href = '/settings/addons.php';
+			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function( std ) {
+				addonsdl( std )
 			} );
 		}
 	} );

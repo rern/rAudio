@@ -20,30 +20,19 @@ function list( args, callback, json ) {
 	);
 }
 //----------------------------------------------------------------------
-function addonsdl( exit ) {
-	switch( exit ) {
-		case 1:
-			info( {
-				  icon    : 'info-circle'
-				, message : 'Download from Addons server failed.'
-						   +'<br>Please try again later.'
-				, ok      : function() {
-					loader( 'hide' );
-				}
-			} );
-			break;
-		case 2:
-			info( {
-				  icon    : 'info-circle'
-				, message : 'Addons Menu cannot be updated.'
-						   +'<br>Root partition has <wh>less than 1 MB free space</wh>.'
-				, ok      : function() {
-					location.href = '/settings/addons.php';
-				}
-			} );
-			break;
-		default:
-			location.href = '/settings/addons.php';
+function addonsdl( std ) {
+	if ( std == -1 ) {
+		info( {
+			  icon    : 'jigsaw'
+			, title   : 'Addons'
+			, message : 'Download from Addons server failed.'
+					   +'<br>Please try again later.'
+			, ok      : function() {
+				loader( 'hide' );
+			}
+		} );
+	} else {
+		location.href = '/settings/addons.php';
 	}
 }
 function bookmarkThumbReplace( $this, newimg ) {
