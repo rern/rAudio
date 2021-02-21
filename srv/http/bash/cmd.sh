@@ -179,10 +179,12 @@ volumeControls() {
 	
 	controls=$( echo "$amixer" \
 					| grep 'volume.*pswitch' \
+					| grep -v Mic \
 					| cut -d"'" -f2 )
 	if [[ -z $controls ]]; then
 		controls=$( echo "$amixer" \
 						| grep volume \
+						| grep -v Mic \
 						| cut -d"'" -f2  )
 	fi
 }
