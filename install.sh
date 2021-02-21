@@ -4,11 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-if ! grep -q 'IgnorePkg   = linux-firmware' /etc/pacman.conf; then
-	sed -i '/^#IgnorePkg/ a\
-IgnorePkg   = linux-firmware
-' /etc/pacman.conf
-fi
+sed -i '/IgnorePkg   = linux-firmware/ d' /etc/pacman.conf
 
 file=/etc/systemd/system/powerbutton.service
 [[ ! -e $file ]] && echo -n "\
