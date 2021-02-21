@@ -53,9 +53,9 @@ Asia server
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
-- Download an image file
-- Write to micro SD card with [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-	- `CHOOSE OS` > `Use custom` > select the image file
+- Download an image file.
+- Write to micro SD card with [Raspberry Pi Imager](https://www.raspberrypi.org/software/).
+	- `CHOOSE OS` > scroll down - `Use custom` > select the image file
 	- `CHOOSE SD CARD` > select SD card
 	- `WRITE`
 	- Verify is optional.
