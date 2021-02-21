@@ -458,7 +458,8 @@ $( '#addons' ).click( function () {
 	bash( [ 'addonslist' ], function( std ) {
 		if ( std == -1 ) {
 			info( {
-				  icon    : 'info-circle'
+				  icon    : 'jigsaw'
+				, title   : 'Addons'
 				, message : 'Download from Addons server failed.'
 						   +'<br>Please try again later.'
 				, ok      : function() {
@@ -470,6 +471,19 @@ $( '#addons' ).click( function () {
 		}
 	} );
 	loader( 'show' );
+} ).taphold( function() {
+	info( {
+		  icon      : 'jigsaw'
+		, title     : 'Addons'
+		, textlabel : 'Tree #/Branch'
+		, textvalue : 'UPDATE'
+		, ok        : function() {
+			banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
+			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function() {
+				location.href = '/settings/addons.php';
+			} );
+		}
+	} );
 } );
 $( '#tab-library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
