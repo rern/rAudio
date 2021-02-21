@@ -39,12 +39,16 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
 ### Image files:
-Europe server:
+- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi4.img.xz)
+- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi2-3.img.xz)
+- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi0-1.img.xz)
+
+Europe mirrors:
 - RPi 4: [rAudio-1-RPi4.img.xz](https://cloud.s-t-franz.de/s/yP5jMwC6YkHmiiJ)
 - RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://cloud.s-t-franz.de/s/CxoqeZ3zjAjKsJd)
 - RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://cloud.s-t-franz.de/s/6wcrD9QwNLLjwQW)
 
-Asia server
+Asia mirrors:
 - RPi 4: [rAudio-1-RPi4.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi4.img.xz)
 - RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi2-3.img.xz)
 - RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://rern.org/rAudio-1/rAudio-1-RPi0-1.img.xz)
