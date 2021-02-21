@@ -119,7 +119,7 @@ getinstallzip() {
 	rm -r $tmpdir
 	chown -R http:http /srv/http
 	chown -R mpd:audio /srv/http/data/mpd
-	chmod 755 /srv/http/* /srv/http/bash/* /srv/http/settings/*
+	chmod 755 /srv/http/* /srv/http/bash/* /srv/http/settings/* /usr/local/bin/*
 	chmod 777 /srv/http/data/tmp
 	
 	[[ -e /srv/http/data/system/color ]] && /srv/http/bash/cmd.sh color
@@ -129,7 +129,7 @@ getuninstall() {
 	installurl=${installurl/raw\/main/raw\/$branch}
 	uninstallurl=${installurl/install.sh/uninstall_$alias.sh}
 	wgetnc $uninstallurl -P /usr/local/bin
-	chmod +x /usr/local/bin/uninstall_$alias.sh
+	chmod 755 /usr/local/bin/uninstall_$alias.sh
 }
 installstart() { # $1-'u'=update
 	rm $0
