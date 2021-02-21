@@ -269,7 +269,7 @@ function getoptions() {
 				, selectlabel : ojson.label
 				, select      : ojson.list
 				, checked     : ojson.checked
-				, boxwidth    : ojson.width
+				, boxwidth    : ojson.width || 80
 				, preshow     : function() {
 					$( '#infoSelectBox').selectric();
 				}
