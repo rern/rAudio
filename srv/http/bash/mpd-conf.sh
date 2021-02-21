@@ -154,9 +154,13 @@ if [[ $1 == add || $1 == remove ]]; then
 	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
 fi
 
-sed -i "s/.$/$card/" /etc/asound.conf
-
-if [[ -z $Acard ]]; then
+if [[ -n $Acard ]]; then
+	sed -i "s/.$/$card/" /etc/asound.conf
+else
+	echo -n "\
+defaults.pcm.card 0
+defaults.ctl.card 0
+" > /etc/asound.conf
 	restartMPD
 	exit
 fi
