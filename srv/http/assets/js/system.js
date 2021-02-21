@@ -461,14 +461,14 @@ $( '#setting-powerbutton' ).click( function() {
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
 var infopowerbutton = heredoc( function() { /*
-	GPIO pins:<br>
+	Set pins:<br>
 	<div class="infotextlabel">
-		<a class="infolabel">On</a>
+		<a class="infolabel">On <gr>(fixed)</gr></a>
 		<a class="infolabel">Off</a>
 		<a class="infolabel">LED</a>
 	</div>
 	<div class="infotextbox lcdradio">
-		<select id="onpin"><option value="5">5</option></select>
+		<select id="onpin" disabled><option value="5">5</option></select>
 		<select id="swpin"></select>
 		<select id="ledpin"></select>
 	</div>
@@ -486,7 +486,6 @@ var infopowerbutton = heredoc( function() { /*
 			$( '#swpin, #ledpin' ).html( optionpin );
 			$( '#swpin' ).val( swpin );
 			$( '#ledpin' ).val( ledpin );
-			$( '#onpin' ).prop( 'disabled', 1 );
 			// verify changes
 			if ( G.powerbutton ) $( '#infoOk' ).addClass( 'disabled' );
 			$( '#swpin, #ledpin' ).change( function() {
