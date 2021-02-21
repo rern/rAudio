@@ -461,7 +461,7 @@ $( '#setting-powerbutton' ).click( function() {
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
 var infopowerbutton = heredoc( function() { /*
-	Set pins:<br>
+	GPIO pins <gr>(J8 numbering)</gr>:<br>
 	<div class="infotextlabel">
 		<a class="infolabel">On <gr>(fixed)</gr></a>
 		<a class="infolabel">Off</a>
@@ -472,7 +472,6 @@ var infopowerbutton = heredoc( function() { /*
 		<select id="swpin"></select>
 		<select id="ledpin"></select>
 	</div>
-	<br><br><gr>(Pin number: J8 / board layout)</gr>
 */ } );
 	info( {
 		  icon     : 'power'
