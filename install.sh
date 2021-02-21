@@ -70,4 +70,4 @@ sed -i '/IgnorePkg   = raspberrypi-bootloader/ d' /etc/pacman.conf
 
 installfinish
 
-systemctl -q try-restart localbrowser
+systemctl -q is-enabled localbrowser && systemctl restart localbrowser
