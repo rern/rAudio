@@ -250,7 +250,8 @@ addonsclose )
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
 	;;
 addonslist )
-	wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
+	[[ -z ${args[1]} ]] && branch=main || branch=${args[1]}
+	wget https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary

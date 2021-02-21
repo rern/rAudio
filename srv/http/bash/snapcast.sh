@@ -19,7 +19,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		echo $serverip > $snapserverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		snapserverpw=$( cat $snapclientpwfile 2> /dev/null || echo ros )
-		sshpass -p "$snapserverpw" ssh -q root@$serverip "/srv/http/bash/snapcast.sh $clientip $serverip"
+		sshpass -p "$snapserverpw" ssh -qo StrictHostKeyChecking=no root@$serverip "/srv/http/bash/snapcast.sh $clientip $serverip"
 		systemctl try-restart shairport-sync spotifyd upmpdcli &> /dev/null
 	else
 		systemctl stop snapclient

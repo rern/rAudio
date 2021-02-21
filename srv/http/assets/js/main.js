@@ -456,20 +456,22 @@ $( '#colorpicker' ).click( function( e ) {
 $( '#addons' ).click( function () {
 	banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
 	bash( [ 'addonslist' ], function( std ) {
-		if ( std == -1 ) {
-			info( {
-				  icon    : 'info-circle'
-				, message : 'Download from Addons server failed.'
-						   +'<br>Please try again later.'
-				, ok      : function() {
-					loader( 'hide' );
-				}
-			} );
-		} else {
-			location.href = '/settings/addons.php';
-		}
+		addonsdl( std )
 	} );
 	loader( 'show' );
+} ).taphold( function() {
+	info( {
+		  icon      : 'jigsaw'
+		, title     : 'Addons'
+		, textlabel : 'Tree #/Branch'
+		, textvalue : 'UPDATE'
+		, ok        : function() {
+			banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
+			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function( std ) {
+				addonsdl( std )
+			} );
+		}
+	} );
 } );
 $( '#tab-library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );

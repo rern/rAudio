@@ -100,15 +100,17 @@ $( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
 ########
 	mpdconf+='
 }'
-else
+fi
+if [[ $i == -1 || -e /usr/bin/mpd_oled ]]; then
 ########
-	name='(No sound device)'
+	[[ -e /usr/bin/mpd_oled ]] && name=mpd_oled_FIFO || name='(No sound device)'
 	mpdconf+='
 
 audio_output {
-	type           "fifo"
 	name           "'$name'"
-	path           "/tmp/mpdfifo"
+	type           "fifo"
+	path           "/tmp/mpd_oled_fifo"
+	format         "44100:16:2"
 }'
 fi
 
@@ -117,8 +119,8 @@ if systemctl -q is-active snapserver; then
 	mpdconf+='
 
 audio_output {
-	type           "fifo"
 	name           "Snapcast"
+	type           "fifo"
 	path           "/tmp/snapfifo"
 	format         "48000:16:2"
 	mixer_type     "software"
