@@ -100,14 +100,22 @@ $( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
 ########
 	mpdconf+='
 }'
-fi
-if [[ $i == -1 || -e /usr/bin/mpd_oled ]]; then
+elif ! systemctl -q is-active snapserver; then
 ########
-	[[ -e /usr/bin/mpd_oled ]] && name=mpd_oled_FIFO || name='(No sound device)'
+		mpdconf+='
+
+audio_output {
+	name           "(No sound device)"
+	type           "fifo"
+	path           "/tmp/mpd_fifo"
+}'
+fi
+if [[ -e /usr/bin/mpd_oled ]]; then
+########
 	mpdconf+='
 
 audio_output {
-	name           "'$name'"
+	name           "mpd_oled_FIFO"
 	type           "fifo"
 	path           "/tmp/mpd_oled_fifo"
 	format         "44100:16:2"
@@ -150,6 +158,7 @@ echo "$mpdconf" > $mpdfile
 if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
+	[[ -z $name ]] && name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
 fi
