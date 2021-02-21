@@ -100,7 +100,7 @@ $( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
 ########
 	mpdconf+='
 }'
-elif ! systemctl -q is-active snapserver; then
+elif ! systemctl -q is-active snapserver && [[ ! -e /usr/bin/mpd_oled ]]; then
 ########
 		mpdconf+='
 
