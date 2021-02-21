@@ -184,6 +184,7 @@ volumeControls() {
 	if [[ -z $controls ]]; then
 		controls=$( echo "$amixer" \
 						| grep volume \
+						| grep -v Mic \
 						| cut -d"'" -f2  )
 	fi
 }
