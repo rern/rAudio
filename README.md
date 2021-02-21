@@ -53,12 +53,12 @@ Asia server
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
-- Windows:
-	- Download and decompress to *.img with 7-zip, WinRAR or WinZip
-	- Write the file to a micro SD card, 4GB or more, with [Win32 Disk Imager](https://sourceforge.net/projects/win32diskimager/)
-- Linux or Windows:
-	- Write from URL to a micro SD card with [Etcher](https://www.balena.io/etcher/)
-
+- Download an image file.
+- Write to micro SD card with [Raspberry Pi Imager](https://www.raspberrypi.org/software/).
+	- `CHOOSE OS` > scroll down - `Use custom` > select the image file
+	- `CHOOSE SD CARD` > select SD card
+	- `WRITE`
+	- Verify is optional.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
