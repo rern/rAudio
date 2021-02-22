@@ -4,8 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+sed -i -e \"/id === 'infoRadio'/ {N;d}\" -e \"s/chk === ''/\\!chk/\" /srv/http/assets/js/info.js
 sed -i '/^-.*pam_systemd_home/ s/^/#/' /etc/pam.d/system-auth
-
 sed -i '/IgnorePkg   = linux-firmware/ d' /etc/pacman.conf
 
 file=/etc/systemd/system/powerbutton.service
