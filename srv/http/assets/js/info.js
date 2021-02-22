@@ -585,11 +585,9 @@ function renderOption( $el, htm, chk ) {
 					$el.find( 'input' ).eq( val ).prop( 'checked', true );
 				} );
 			}
-		} else if ( id === 'infoRadio' ) { // by index
-			$el.find( 'input' ).eq( chk || 0 ).prop( 'checked', true );
-		} else {                                    // by value
+		} else {                      // radio/select - by value
 			var opt = $el.prop( 'id' ) === 'infoSelectBox' ? 'option' : 'input';
-			if ( chk === '' ) { // undefined
+			if ( !chk ) { // undefined
 				$el.find( opt ).eq( 0 ).prop( 'checked', true );
 			} else {
 				$el.find( opt +'[value="'+ chk +'"]' ).prop( opt === 'option' ? 'selected' : 'checked', true );
