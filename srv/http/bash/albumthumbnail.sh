@@ -23,7 +23,7 @@ for (( i=1; i < $cL; i++ )); do
 	printf -v pad${color[$i]} '%s' "$( tcolor . $i $i )"
 done
 
-readarray -t lines < "$mpdpathlist"
+readarray -t lines <<< "$mpdpathlist"
 
 count=${#lines[@]}
 i=0

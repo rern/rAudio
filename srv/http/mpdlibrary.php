@@ -109,7 +109,8 @@ case 'ls':
 			, $plfiles );
 		if ( count( $plfiles ) ) {
 			asort( $plfiles );
-			$ext = end( explode( '.', $plfiles[ 0 ] ) );
+			$path = explode( '.', $plfiles[ 0 ] );
+			$ext = end( $path );
 			$lists = [];
 			foreach( $plfiles as $file ) {
 				exec( 'mpc -f "'.$format.'" playlist "'.$file.'"'
@@ -401,10 +402,9 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	if ( !$hidecover ) {
 		// fix - mpd cannot read albumartist from *.wav
 		if ( $ext === 'wav' ) $albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
-		if ( $each0->albumartist || $albumartist ) {
-			$artist = $each0->albumartist ?: $albumartist;
-			$icon = 'albumartist';
-		} else {
+		$artist = $each0->albumartist ?: ( $albumartist ?? '' );
+		$icon = 'albumartist';
+		if ( !$artist ) {
 			$artist = $each0->artist;
 			$icon = 'artist';
 		}
