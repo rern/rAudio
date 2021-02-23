@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+! grep -q no-xshm /srv/http/bash/xinitrc && systemctl -q is-enabled localbrowser && restartlb=1
+
 sed -i '/^-.*pam_systemd_home/ s/^/#/' /etc/pam.d/system-auth
 sed -i '/IgnorePkg   = linux-firmware/ d' /etc/pacman.conf
 
@@ -71,4 +73,4 @@ sed -i '/IgnorePkg   = raspberrypi-bootloader/ d' /etc/pacman.conf
 
 installfinish
 
-systemctl -q is-enabled localbrowser && systemctl restart localbrowser
+[[ -n $restartlb ]] && systemctl restart localbrowser
