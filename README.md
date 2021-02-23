@@ -57,9 +57,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
-- Download an image file.
-- Write to micro SD card with [Raspberry Pi Imager](https://www.raspberrypi.org/software/).
-	- `CHOOSE OS` > scroll down - `Use custom` > select the image file
+- Write an image file to a micro SD card (8GB or more):
+	- Install [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+	- Download an image file.
+	- Right click the image file > Open with > Raspberry Pi Imager
 	- `CHOOSE SD CARD` > select SD card
 	- `WRITE`
 	- Verify is optional.
