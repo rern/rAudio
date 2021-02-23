@@ -1,6 +1,9 @@
 rAudio 1
 ---
 Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
+
+![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
+
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
 - Based on Arch Linux Arm
 - Metadata Tag Editor - `*.cue` support
@@ -36,8 +39,6 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 ### Q&A
 [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
-![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
-
 ### Image files:
 - GitHub server:
 	- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi4.img.xz)
@@ -57,9 +58,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 
 ### How-to
-- Download an image file.
-- Write to micro SD card with [Raspberry Pi Imager](https://www.raspberrypi.org/software/).
-	- `CHOOSE OS` > scroll down - `Use custom` > select the image file
+- Write an image file to a micro SD card (8GB or more):
+	- Install [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+	- Download an image file.
+	- Right click the image file > Open with > Raspberry Pi Imager
 	- `CHOOSE SD CARD` > select SD card
 	- `WRITE`
 	- Verify is optional.
