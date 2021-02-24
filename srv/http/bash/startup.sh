@@ -117,9 +117,12 @@ fi
 [[ -e $dirsystem/autoplay ]] && mpc play
 
 if ! ifconfig | grep -q 'inet.*broadcast'; then
-	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-	systemctl -q disable hostapd 
-	exit
+	sleep 10
+	if ! ifconfig | grep -q 'inet.*broadcast'; then
+		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+		systemctl -q disable hostapd 
+		exit
+	fi
 fi
 
 rfkill | grep -q wlan && iw wlan0 set power_save off
