@@ -23,6 +23,10 @@ diraddons=$dirdata/addons
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
+pushNotify() {
+	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
+}
+
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
@@ -74,32 +78,27 @@ touch $dirdata/shm/player-mpd
 
 $dirbash/mpd-conf.sh # mpd start by this script
 
-readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
-if [[ -n $mountpoints ]]; then
-	notifyFailed() {
-		curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
-	}
-	sleep 10 # wait for network interfaces
-	lanip=$( ifconfig eth0 | awk '/inet / {print $2}' )
-	[[ -z $lanip ]] && wlanip=$( ifconfig wlan0 | awk '/inet / {print $2}' )
-	if [[ -z $lanip && -z wlanip ]]; then # wait for connection
-		for (( i=0; i <= 20; i++ )); do
-			wlanip=$( ifconfig | grep -A1 ^wlan0 | awk '/inet/ {print $2}' )
-			[[ -n $wlanip ]] && break
-			
-			sleep 1
-			(( i == 20 )) && notifyFailed 'Network not connected.'
-		done
+for i in {1..10}; do
+	if ifconfig | grep -q 'inet.*broadcast'; then
+		connected=1 && break
+	else
+		sleep 1
 	fi
+done
+
+fstabnas=$( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
+if [[ -n $fstabnas && -n $connected ]]; then
+	readarray -t mountpoints <<< "$fstabnas"
 	for mountpoint in "${mountpoints[@]}"; do # ping target before mount
 		ip=$( grep "$mountpoint" /etc/fstab | cut -d' ' -f1 | sed 's|^//||; s|:*/.*$||' )
-		for (( i=0; i <= 20; i++ )); do
-			ping -4 -c 1 -w 1 $ip &> /dev/null && break
-			
-			sleep 1
-			(( i == 20 )) && notifyFailed "NAS @$ip cannot be reached."
+		for i in {1..10}; do
+			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+				mount "$mountpoint" && break
+			else
+				(( i == 10 )) && pushNotify "NAS @$ip cannot be reached."
+				sleep 1
+			fi
 		done
-		mount "$mountpoint"
 	done
 fi
 
@@ -116,13 +115,11 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
-if ! ifconfig | grep -q 'inet.*broadcast'; then
-	sleep 10
-	if ! ifconfig | grep -q 'inet.*broadcast'; then
-		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-		systemctl -q disable hostapd 
-		exit
-	fi
+if [[ -z $connected ]]; then
+	pushNotify 'Network not connected.<br>Enable access point ...'
+	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+	systemctl -q disable hostapd 
+	exit
 fi
 
 rfkill | grep -q wlan && iw wlan0 set power_save off
