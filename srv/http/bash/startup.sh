@@ -32,6 +32,7 @@ if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	dev=${partition:0:-2}
+	[[ $dev == /dev/sd ]] && dev=${partition:0:-1}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
