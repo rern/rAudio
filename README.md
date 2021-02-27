@@ -33,6 +33,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Bluetooth audio
 	- simple HTTP (no metadata)
 	- Snapcast
+- Support boot from USB drive without SD card
 	
 ### Default root password: `ros`
 
@@ -72,6 +73,11 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- `CHOOSE SD CARD` > select SD card
 	- `WRITE`
 	- Verify is optional.
+	- Boot from USB drive without SD card
+		- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
+		- Setup [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md)
+		- `CHOOSE SD CARD` > select USB drive
+		- Should be used only when USB drive is faster than SD card.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.

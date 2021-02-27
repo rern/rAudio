@@ -37,6 +37,7 @@ if [[ $1 == true ]]; then
 		/srv/http/bash/relaystimer.sh &> /dev/null &
 	fi
 else
+	mpc -q stop
 	rm -f $relaysfile
 	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
