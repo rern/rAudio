@@ -59,7 +59,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### How-to
 - Write an image file to a micro SD card (8GB or more):
-	- Install [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+	- Install 
+		- Windows, MacOS, Ubuntu: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
 		- Arch Linux:
 		```sh
 		wget https://github.com/rern/rern.github.io/raw/master/x86_64/rpi-imager-1.5-2-x86_64.pkg.tar.zst
