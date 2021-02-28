@@ -7,7 +7,9 @@ alias=r1
 [[ -e /usr/bin/chromium ]] && ! grep -q no-xshm /srv/http/bash/xinitrc && systemctl -q is-enabled localbrowser && restartlb=1
 
 sed -i '/^-.*pam_systemd_home/ s/^/#/' /etc/pam.d/system-auth
-sed -i '/IgnorePkg   = linux-firmware/ d' /etc/pacman.conf
+sed -i -e '/linux-firmware\|raspberrypi-bootloader/ d
+' -e 's/RR/+R/
+' /etc/pacman.conf
 
 file=/etc/systemd/system/powerbutton.service
 [[ ! -e $file ]] && echo -n "\
@@ -68,8 +70,6 @@ revision=${revision: -3:2}
 if ! grep -q dtparam=krnbt=on /boot/config.txt && [[ $revision =~ ^(08|0c|0d|0e|11)$ ]]; then
 	sed -i '$ a\dtparam=krnbt=on' /boot/config.txt
 fi
-
-sed -i '/IgnorePkg   = raspberrypi-bootloader/ d' /etc/pacman.conf
 
 installfinish
 
