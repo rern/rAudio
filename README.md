@@ -69,7 +69,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		```
 		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file.
-	- Right click the image file > Open with > Raspberry Pi Imager
+	- `CHOOSE OS` > Use custom (OR right click the image file > Open with > Raspberry Pi Imager)
 	- `CHOOSE SD CARD` > select SD card
 	- `WRITE`
 	- Verify is optional.
