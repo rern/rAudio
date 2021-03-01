@@ -207,6 +207,10 @@ if [[ -e /usr/bin/spotifyd ]]; then
 		cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
 		device=$( aplay -L | grep "^default.*$cardname" )
 	fi
-	sed -i 's/^\(device = \).*/\1'$device'/' /etc/spotifyd.conf
+	if [[ $( pacman -Q spotifyd ) == 'spotifyd 0.2.24-3' ]]; then
+		sed -i 's/^\(device = \).*/\1'$device'/' /etc/spotifyd.conf
+	else
+		sed -i 's/^\(device = \).*/\1"'$device'"/' /etc/spotifyd.conf
+	fi
 	systemctl try-restart spotifyd
 fi
