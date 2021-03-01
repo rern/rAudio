@@ -150,8 +150,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a href="https://sourceforge.net/projects/raspberry-gpio-python/">RPi.GPIO</a> - Python module to control GPIO.
-		- Control GPIO-connected relay module for power on / off equipments.
-		- This can be enabled and run as a test without a connected relay module.
+		<br>&bull; Control GPIO-connected relay module for power on / off equipments.
+		<br>&bull; This can be enabled and run as a test without a connected relay module.
 	</span>
 </div>
 <div class="col-l double">
