@@ -201,12 +201,8 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -e $dirsystem/spotifydset ]]; then
-		device=$( cat $dirsystem/spotifydset )
-	else
-		cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
-		device=$( aplay -L | grep "^default.*$cardname" )
-	fi
+	cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
+	device=$( aplay -L | grep "^default.*$cardname" )
 	if [[ $( pacman -Q spotifyd ) == 'spotifyd 0.2.24-3' ]]; then
 		sed -i 's/^\(device = \).*/\1'$device'/' /etc/spotifyd.conf
 	else
