@@ -79,7 +79,7 @@ touch $dirdata/shm/player-mpd
 
 $dirbash/mpd-conf.sh # mpd start by this script
 
-for i in {1..10}; do
+for i in {1..30}; do
 	if ifconfig | grep -q 'inet.*broadcast'; then
 		connected=1 && break
 	else
@@ -92,7 +92,7 @@ if [[ -n $fstabnas && -n $connected ]]; then
 	readarray -t mountpoints <<< "$fstabnas"
 	for mountpoint in "${mountpoints[@]}"; do # ping target before mount
 		ip=$( grep "$mountpoint" /etc/fstab | cut -d' ' -f1 | sed 's|^//||; s|:*/.*$||' )
-		for i in {1..10}; do
+		for i in {1..30}; do
 			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 				mount "$mountpoint" && break
 			else
