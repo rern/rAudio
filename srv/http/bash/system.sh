@@ -126,9 +126,7 @@ databackup )
 /etc/mpdscribble.conf
 /etc/powerbutton.conf
 /etc/relays.conf
-/etc/shairport-sync.conf
 /etc/soundprofile.conf
-/etc/spotifyd.conf
 /etc/upmpdcli.conf
 /srv/http/assets/css/colors.css
 )
@@ -172,7 +170,7 @@ datarestore )
 	rm -f $dirsystem/{autoplay,login*}                          # features
 	rm -f $dirsystem/{crossfade*,custom*,dop*,mixertype*,soxr*} # mpd
 	rm -f $dirsystem/{updating,listing,wav}                     # updating_db
-	rm -f $dirsystem/{color,relays,soundprofile}           # system
+	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
 	
@@ -181,6 +179,7 @@ datarestore )
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
 	sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig/etc/fstab
 	
+	rm -f $dirconfig/etc/{shairport-sync,spotifyd}.conf # temp: for ealier version
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
