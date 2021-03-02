@@ -31,9 +31,6 @@ pacman -Q wiringpi &> /dev/null || pacman -Sy --noconfirm wiringpi
 
 rm -f /addons-list.json
 
-sed -i 's/"//g' /etc/spotifyd.conf &> /dev/null
-systemctl -q is-enabled spotifyd && systemctl restart spotifyd
-
 if [[ -e /srv/http/bash/ply-image ]]; then
 	mv /srv/http/bash/ply-image /usr/bin
 	sed -i 's|srv/http/bash|usr/bin|' /etc/systemd/system/bootsplash.service &> /dev/null
