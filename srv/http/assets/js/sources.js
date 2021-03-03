@@ -104,9 +104,7 @@ refreshData = function() {
 		} );
 		$( '#list' ).html( html );
 		$( '#refreshing' ).addClass( 'hide' );
-		[ 'fstab', 'mount' ].forEach( function( id ) {
-			codeToggle( id, 'status' );
-		} );
+		codeToggle( 'mount', 'status' );
 		resetLocal();
 		showContent();
 	} );
