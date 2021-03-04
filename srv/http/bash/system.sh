@@ -108,6 +108,7 @@ databackup )
 	dirconfig=$dirdata/config
 	backupfile=$dirdata/tmp/backup.gz
 	rm -f $backupfile
+	alsactl store
 	files=(
 /boot/cmdline.txt
 /boot/config.txt
@@ -129,6 +130,7 @@ databackup )
 /etc/soundprofile.conf
 /etc/upmpdcli.conf
 /srv/http/assets/css/colors.css
+/var/lib/alsa/asound.state
 )
 	for file in ${files[@]}; do
 		if [[ -e $file ]]; then
