@@ -122,7 +122,7 @@ sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 
 # webradio default
-wget -qO - https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
+curl -L https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
 
 # services
 systemctl -q disable --now bluetooth hostapd mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli
