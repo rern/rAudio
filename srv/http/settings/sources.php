@@ -2,9 +2,7 @@
 $uid = exec( "$sudo/id -u mpd" );
 $gid = exec( "$sudo/id -g mpd" );
 ?>
-<div>
 <heading data-status="mount" class="noline status">Devices<?=$code?><i id="addnas" class="fa fa-plus-circle"></i>&emsp;<i id="refreshing" class="fa fa-networks blink hide"></i><?=$help?></heading>
-<pre id="codemount" class="hide"></pre>
 <ul id="list" class="entries" data-uid="<?=$uid?>" data-gid="<?=$gid?>"></ul>
 <p class="brhalf"></p>
 <span <?=$classhelp?>>
@@ -22,22 +20,4 @@ $gid = exec( "$sudo/id -g mpd" );
 	<pre>mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
 	(Append more options if required.)
 </span>
-</div>
-
-<?php /*<div>
-<heading class="noline">Network Shares<i id="refreshshares" class="fa fa-refresh hide"></i></heading>
-<ul id="listshare" class="entries">
-	<li><i class="fa fa-search"></i><gr>Scan</gr></li>
-</ul>
-<p class="brhalf"></p>
-<span <?=$classhelp?>>
-	Available Windows and CIFS shares in WORKGROUP. Scan and select a share to mount as Library source files.
-</span>
-</div> */ ?>
-
-<div>
-<heading data-status="fstab" class="status">File System Table<?=$code?></heading>
-<pre id="codefstab" class="hide"></pre>
-</div>
-
-<div style="clear: both"></div>
+<pre id="codemount" class="hide"></pre>

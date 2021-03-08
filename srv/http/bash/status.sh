@@ -214,10 +214,16 @@ if [[ ${file:0:4} == http ]]; then
 		radiodata=$( cat $radiofile )
 		stationname=$( sed -n 1p <<< "$radiodata" )
 		if [[ $state == play ]]; then
-			albumname=$stationname
-			readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
-			artistname=${radioname[0]}
-			titlename=${radioname[1]}
+			if [[ -n $Title ]]; then
+				albumname=$stationname
+				readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
+				artistname=${radioname[0]}
+				titlename=${radioname[1]}
+			else
+				albumname=$urlname
+				artistname=$stationname
+				titlename=
+			fi
 		else
 			artistname=$stationname
 			titlename=
