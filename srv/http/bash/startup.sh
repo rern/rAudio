@@ -79,13 +79,22 @@ touch $dirdata/shm/player-mpd
 
 $dirbash/mpd-conf.sh # mpd start by this script
 
-for i in {1..30}; do
-	if ifconfig | grep -q 'inet.*broadcast'; then
-		connected=1 && break
-	else
-		sleep 1
+# reconnect if wi-fi failed
+if ifconfig | grep -q 'inet.*broadcast'; then
+	connected=1
+else
+	profile=$( ls -p /etc/netctl | grep -v / | head -1 )
+	if [[ -n $profile ]]; then
+		netctl start "$profile"
+		for i in {1..10}; do
+			if ifconfig | grep -q 'inet.*broadcast'; then
+				connected=1 && break
+			else
+				sleep 1
+			fi
+		done
 	fi
-done
+fi
 
 fstabnas=$( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 if [[ -n $fstabnas && -n $connected ]]; then
