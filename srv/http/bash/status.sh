@@ -348,27 +348,23 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 ########
 	status+='
 , "coverartradio" : "'$coverartradio'"'
-	if [[ $state == play ]]; then
-		if [[ -n $Title ]]; then
-			# $Title          Artist Name - Title Name or Artist Name: Title Name (extra tag)
-			# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
-			# / - \|: /\n/    split artist - title
-			# args:           "Artist Name"$'\n'"Title Name"$'\ntitle'
-			data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" )
-			name=$( echo $data | tr -d ' "`?/#&'"'" )
-			onlinefile=$( ls $dirtmp/online-$name.* 2> /dev/null )
-			if [[ -e $onlinefile ]]; then
-				coverart=/data/shm/online-$name.$date.${onlinefile/*.}
+	if [[ $state == play && -n $Title ]]; then
+		# $Title          Artist Name - Title Name or Artist Name: Title Name (extra tag)
+		# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
+		# / - \|: /\n/    split artist - title
+		# args:           "Artist Name"$'\n'"Title Name"$'\ntitle'
+		data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" )
+		name=$( echo $data | tr -d ' "`?/#&'"'" )
+		onlinefile=$( ls $dirtmp/online-$name.* 2> /dev/null )
+		if [[ -e $onlinefile ]]; then
+			coverart=/data/shm/online-$name.$date.${onlinefile/*.}
+		else
+			killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+			if [[ $file0 =~ radioparadise.com ]]; then
+				/srv/http/bash/status-coverartonline.sh "$data"$'\n'$file0 &> /dev/null &
 			else
-				killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-				if [[ $file0 =~ radioparadise.com ]]; then
-					/srv/http/bash/status-coverartonline.sh "$data"$'\n'$file0 &> /dev/null &
-				else
-					/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
-				fi
+				/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
 			fi
-		elif [[ $urlname == 'https:||icecast.radiofrance.fr|fip-hifi.aac' ]]; then
-			/srv/http/bash/status-coverartonline.sh fip-hifi.aac &> /dev/null &
 		fi
 	fi
 else
