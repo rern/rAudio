@@ -979,7 +979,7 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '#artist, #song, #album' ).css( 'width', '' );
-	if ( !radiofrance || G.status.state === 'stop' ) {
+	if ( !radiofrance ) {
 		$( '#artist' ).html( G.status.Artist );
 		$( '#song' )
 			.html( G.status.Title )

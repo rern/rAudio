@@ -1,7 +1,5 @@
 #!/bin/bash
 
-killall status-polling.sh &> /dev/null
-
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
@@ -370,9 +368,11 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 					$dirbash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
 				fi
 			fi
+		elif [[ $urlname =~ 'radiofrance.fr' ]]; then
+			killall status-polling.sh &> /dev/null
+			$dirbash/status-polling.sh $urlname &> /dev/null &
 		fi
 	fi
-	[[ $urlname =~ 'radiofrance.fr' && $state == play ]] && $dirbash/status-polling.sh $urlname &> /dev/null &
 else
 	args="\
 $file0
