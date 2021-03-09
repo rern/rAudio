@@ -369,7 +369,6 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 				fi
 			fi
 		elif [[ $urlname =~ 'radiofrance.fr' ]]; then
-			killall status-polling.sh &> /dev/null
 			$dirbash/status-polling.sh $urlname &> /dev/null &
 		fi
 	fi
