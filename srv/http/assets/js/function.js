@@ -973,16 +973,18 @@ function renderPlayback() {
 		renderPlaybackBlank();
 		return
 	}
-	
+	var radiofrance = 'file' in G.status && G.status.file.indexOf( 'radiofrance.fr' ) === -1 ? 0 : 1;
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '#artist, #song, #album' ).css( 'width', '' );
-	$( '#artist' ).html( G.status.Artist );
-	$( '#song' )
-		.html( G.status.Title )
-		.toggleClass( 'gr', G.status.state === 'pause' );
+	if ( !radiofrance ) {
+		$( '#artist' ).html( G.status.Artist );
+		$( '#song' )
+			.html( G.status.Title )
+			.toggleClass( 'gr', G.status.state === 'pause' );
+	}
 	$( '#album' )
 		.toggleClass( 'albumradio', G.status.webradio )
 		.html( G.status.Album ).promise().done( function() {
@@ -1000,7 +1002,7 @@ function renderPlayback() {
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		$( '.cover-save' ).remove();
-		if ( !G.status.Title || G.status.Title !== prevtitle ) {
+		if ( !G.status.Title || G.status.Title !== prevtitle && !radiofrance ) {
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		}
 		if ( G.status.state !== 'play' ) {
