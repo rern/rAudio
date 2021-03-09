@@ -990,7 +990,7 @@ function renderPlayback() {
 		.html( G.status.Album ).promise().done( function() {
 		scrollLongText();
 	} );
-	var sampling = G.status.sampling;
+	var sampling = 'sampling' in G.status ? G.status.sampling : '';
 	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
