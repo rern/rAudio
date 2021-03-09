@@ -15,11 +15,9 @@ name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 date=$( date +%s )
 
 onlineCoverart() {
+	rm -f $dirtmp/online-*
 	coverfile=$dirtmp/online-$name.$ext
-	if [[ ! -e $coverfile ]]; then
-		rm -f $dirtmp/online-*
-		curl -s $url -o $coverfile
-	fi
+	curl -s $url -o $coverfile
 	if [[ -e $coverfile ]]; then
 		coverart=/data/shm/online-$name.$date.$ext
 		curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
@@ -43,6 +41,22 @@ if [[ $type =~ radioparadise.com ]]; then
 	esac
 	url=$( jq -r .cover <<< $( wget -qO - https://api.radioparadise.com/api/now_playing?chan=$chan ) )
 	[[ -n $url ]] && ext=jpg && onlineCoverart
+elif [[ $artist == fip-hifi.aac ]]; then
+	metadata=$( curl -s -m 5 -G \
+		--data-urlencode 'operationName=Now' \
+		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":7,"previousTrackLimit":1}' \
+		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
+		https://www.fip.fr/latest/api/graphql \
+		| jq .data.now.playing_item \
+		| grep '"title"\|"subtitle"\|"cover"' \
+		| cut -d'"' -f4 )
+	readarray -t metadata <<< "$metadata"
+	data='{
+  "Artist"   : "'${metadata[0]}'"
+, "coverart" : "'${metadata[2]}'"
+, "Title"    : "'${metadata[1]}'"
+}'
+	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 fi
 
 ### 1 - lastfm ##################################################

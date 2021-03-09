@@ -1,6 +1,5 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
@@ -18,7 +17,7 @@ updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 else
-	controlvolume=$( $dirbash/cmd.sh volumecontrolget )
+	controlvolume=$( /srv/http/bash/cmd.sh volumecontrolget )
 	control=$( echo $controlvolume | cut -d^ -f1 )
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
@@ -79,14 +78,14 @@ airplay )
 	;;
 bluetooth )
 ########
-	status+=$( $dirbash/status-bluetooth.sh )
+	status+=$( /srv/http/bash/status-bluetooth.sh )
 # >>>>>>>>>>
 	echo {$status}
 	;;
 snapclient )
 	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 	snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
-	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
+	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip /srv/http/bash/status.sh snapserverstatus \
 							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 ########
 	status+=${snapserverstatus:1:-1}
@@ -363,13 +362,13 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 			else
 				killall status-coverartonline.sh &> /dev/null # new track - kill if still running
 				if [[ $file0 =~ radioparadise.com ]]; then
-					$dirbash/status-coverartonline.sh "$data"$'\n'$file0 &> /dev/null &
+					/srv/http/bash/status-coverartonline.sh "$data"$'\n'$file0 &> /dev/null &
 				else
-					$dirbash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
+					/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
 				fi
 			fi
-		elif [[ $urlname =~ 'radiofrance.fr' ]]; then
-			$dirbash/status-polling.sh $urlname &> /dev/null &
+		elif [[ $urlname == 'https:||icecast.radiofrance.fr|fip-hifi.aac' ]]; then
+			/srv/http/bash/status-coverartonline.sh fip-hifi.aac &> /dev/null &
 		fi
 	fi
 else
@@ -377,7 +376,7 @@ else
 $file0
 $Artist
 $Album"
-	coverart=$( $dirbash/status-coverart.sh "$args" ) # no escape needed
+	coverart=$( /srv/http/bash/status-coverart.sh "$args" ) # no escape needed
 fi
 ########
 status+='
