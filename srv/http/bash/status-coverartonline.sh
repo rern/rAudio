@@ -44,7 +44,7 @@ if [[ $type =~ radioparadise.com ]]; then
 elif [[ $artist == fip-hifi.aac ]]; then
 	metadata=$( curl -s -m 5 -G \
 		--data-urlencode 'operationName=Now' \
-		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":7,"previousTrackLimit":3}' \
+		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":7,"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
 		| jq .data.now.playing_item \
