@@ -244,7 +244,7 @@ function psMpdPlayer( data ) {
 		} else {
 			$( '#artist' ).html( data.Artist );
 			$( '#song' ).html( data.Title );
-			renderPlaybackCoverart( data.coverart );
+			if ( data.coverart ) renderPlaybackCoverart( data.coverart );
 		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
