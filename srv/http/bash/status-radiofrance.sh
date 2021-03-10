@@ -2,7 +2,6 @@
 
 # Radio France metadata
 # status-radiofrance.sh FILENAME
-[[ -n $2 ]] && sleep $2
 
 name=$( echo $1 | sed 's|.*/\(.*\)\-.*|\1|' )
 case $name in
@@ -37,11 +36,14 @@ metadataGet() {
 		| grep -v '{\|"__typename"\|"start_time"\|}' \
 		| sed 's/^\s\+".*": "*//; s/"*,*$//' )
 	
-	data='{"Artist":"'${metadata[0]}'", "coverart": "'${metadata[2]}'", "Title":"'${metadata[1]}'", "file":"'$1'"}'
+	data='{"Artist":"'${metadata[0]}'", "Title":"'${metadata[1]}'", "coverart": "'${metadata[2]}'"}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
+	
+	servertime=${metadata[4]}
+	difftime=$(( $servertime - $( date +%s ) )) 
+	changeseconds=$(( ${metadata[3]} - $servertime + $difftime ))
+	sleep $(( changeseconds + 10 ))
+	metadataGet
 }
 
 metadataGet
-while sleep 5; do
-	metadataGet
-done
