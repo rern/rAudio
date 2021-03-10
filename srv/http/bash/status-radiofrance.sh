@@ -42,7 +42,7 @@ metadataGet() {
 	servertime=${metadata[4]}
 	difftime=$(( $servertime - $( date +%s ) )) 
 	changeseconds=$(( ${metadata[3]} - $servertime + $difftime ))
-	sleep $(( changeseconds + 10 ))
+	sleep $(( changeseconds + 10 )) # add some delay
 	metadataGet
 }
 
