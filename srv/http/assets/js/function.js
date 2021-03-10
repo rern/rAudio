@@ -1000,12 +1000,11 @@ function renderPlayback() {
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		$( '.cover-save' ).remove();
-		if ( !G.status.Title || G.status.Title !== prevtitle ) {
-			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-		}
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
+			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
+			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
