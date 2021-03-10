@@ -85,6 +85,7 @@ if ifconfig | grep -q 'inet.*broadcast'; then
 else
 	profile=$( ls -p /etc/netctl | grep -v / | head -1 )
 	if [[ -n $profile ]]; then
+		sleep 10
 		netctl start "$profile"
 		for i in {1..10}; do
 			if ifconfig | grep -q 'inet.*broadcast'; then
