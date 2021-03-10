@@ -40,7 +40,7 @@ metadataGet() {
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	servertime=${metadata[4]}
-	difftime=$(( $servertime - $( date +%s ) )) 
+	difftime=$(( $servertime - $( date +%s ) )) # server slower than real time
 	changeseconds=$(( ${metadata[3]} - $servertime + $difftime ))
 	sleep $(( changeseconds + 10 )) # add some delay
 	metadataGet
