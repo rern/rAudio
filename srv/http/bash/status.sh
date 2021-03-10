@@ -1,5 +1,7 @@
 #!/bin/bash
 
+killall status-radiofrance.sh &> /dev/null
+
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
@@ -223,6 +225,10 @@ if [[ ${file:0:4} == http ]]; then
 				albumname=$urlname
 				artistname=$stationname
 				titlename=
+				if [[ $file =~ radiofrance.fr ]]; then
+					albumname=$stationname
+					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
+				fi
 			fi
 		else
 			artistname=$stationname

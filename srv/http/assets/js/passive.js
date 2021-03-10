@@ -239,7 +239,13 @@ function psMpdPlayer( data ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
 		displayPlayback();
-		renderPlayback();
+		if ( data.file.indexOf( 'radiofrance.fr' ) === -1 || G.status.state === 'stop' ) {
+			renderPlayback();
+		} else {
+			$( '#artist' ).html( data.Artist );
+			$( '#song' ).html( data.Title );
+			$( '#coverart' ).attr( 'src', data.coverart );
+		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
 	setTimeout( bannerHide, 3000 );
