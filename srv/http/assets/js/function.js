@@ -979,7 +979,8 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '#artist, #song, #album' ).css( 'width', '' );
-	if ( G.status.Title ) {
+	var radiofrance = G.status.file.indexOf( 'radiofrance.fr' ) === -1 ? 0 : 1;
+	if ( !radiofrance ) {
 		$( '#artist' ).html( G.status.Artist );
 		$( '#song' )
 			.html( G.status.Title )
@@ -1006,7 +1007,7 @@ function renderPlayback() {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
-			if ( G.status.file.indexOf( 'radiofrance.fr' ) === -1 ) {
+			if ( !radiofrance ) {
 				if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 				if ( !G.status.Title ) $( '#song' ).html( blinkdot );
 				if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
