@@ -36,7 +36,17 @@ metadataGet() {
 		| grep -v '{\|"__typename"\|"start_time"\|}' \
 		| sed 's/^\s\+".*": "*//; s/"*,*$//; s/^null$//' )
 	
-	data='{"Artist":"'${metadata[0]}'", "Title":"'${metadata[1]}'", "coverart": "'${metadata[2]}'", "radiofrance": 1}'
+	artist=${metadata[0]}
+	title=${metadata[1]}
+	url=${metadata[2]}
+	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
+	coverfile=/srv/http/data/shm/online-$name.jpg
+	if [[ ! -e $coverfile && -n $url ]]; then
+		rm -f /srv/http/data/shm/online-*
+		curl -s $url -o $coverfile
+	fi
+	[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
+	data='{"Artist":"'$artist'", "Title":"'$title'", "coverart": "'$coverart'", "radiofrance": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	servertime=${metadata[4]}
