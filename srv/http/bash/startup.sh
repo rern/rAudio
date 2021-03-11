@@ -129,7 +129,11 @@ fi
 if [[ -z $connected ]]; then
 	pushNotify 'Network not connected.<br>Enable access point ...'
 	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-	systemctl -q disable hostapd 
+	systemctl -q disable hostapd
+	if systemctl -q is-enabled localbrowser; then
+		sed -i 's/cursor.*/cursor=true/' /etc/localbrowser.conf
+		systemctl restart localbrowser
+	fi
 	exit
 fi
 
