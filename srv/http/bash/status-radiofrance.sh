@@ -34,9 +34,9 @@ metadataGet() {
 		https://www.fip.fr/latest/api/graphql \
 		| jq '.data.now.playing_item, .data.now.server_time' \
 		| grep -v '{\|"__typename"\|"start_time"\|}' \
-		| sed 's/^\s\+".*": "*//; s/"*,*$//' )
+		| sed 's/^\s\+".*": "*//; s/"*,*$//; s/^null$//' )
 	
-	data='{"Artist":"'${metadata[0]}'", "Title":"'${metadata[1]}'", "coverart": "'${metadata[2]}'"}'
+	data='{"Artist":"'${metadata[0]}'", "Title":"'${metadata[1]}'", "coverart": "'${metadata[2]}'", "radiofrance": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	servertime=${metadata[4]}

@@ -239,12 +239,12 @@ function psMpdPlayer( data ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
 		displayPlayback();
-		if ( data.coverart.indexOf( 'radiofrance.fr' ) === -1 || G.status.state === 'stop' ) {
-			renderPlayback();
+		if ( 'radiofrance' in data && G.status.state === 'play' ) {
+			$( '#artist' ).html( G.status.Artist );
+			$( '#song' ).html( G.status.Title );
+			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		} else {
-			$( '#artist' ).html( data.Artist );
-			$( '#song' ).html( data.Title );
-			if ( data.coverart ) renderPlaybackCoverart( data.coverart );
+			renderPlayback();
 		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
