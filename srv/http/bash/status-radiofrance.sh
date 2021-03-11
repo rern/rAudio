@@ -49,10 +49,12 @@ metadataGet() {
 	data='{"Artist":"'$artist'", "Title":"'$title'", "coverart": "'$coverart'", "radiofrance": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
+	endtime=${metadata[3]}
 	servertime=${metadata[4]}
-	difftime=$(( $servertime - $( date +%s ) )) # server slower than real time
-	changeseconds=$(( ${metadata[3]} - $servertime + $difftime ))
-	sleep $(( changeseconds + 10 )) # add some delay
+	localtime=$( date +%s )
+	diff=$(( $localtime - $servertime )) # local time fetched after server time
+	sec2change=$(( $endtime - $servertime - $diff )) # seconds
+	sleep $(( sec2change + 10 )) # add some delay
 	metadataGet
 }
 
