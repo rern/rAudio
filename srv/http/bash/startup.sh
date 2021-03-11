@@ -85,8 +85,11 @@ if ifconfig | grep -q 'inet.*broadcast'; then
 else
 	profile=$( ls -p /etc/netctl | grep -v / | head -1 )
 	if [[ -n $profile ]]; then
-		sleep 10
 		netctl start "$profile"
+		if ! ifconfig | grep -q 'inet.*broadcast'; then
+			sleep 10
+			netctl start "$profile"
+		fi
 		for i in {1..10}; do
 			if ifconfig | grep -q 'inet.*broadcast'; then
 				connected=1 && break
@@ -129,11 +132,7 @@ fi
 if [[ -z $connected ]]; then
 	pushNotify 'Network not connected.<br>Enable access point ...'
 	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-	systemctl -q disable hostapd
-	if systemctl -q is-enabled localbrowser; then
-		sed -i 's/cursor.*/cursor=true/' /etc/localbrowser.conf
-		systemctl restart localbrowser
-	fi
+	systemctl -q disable hostapd 
 	exit
 fi
 
