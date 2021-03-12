@@ -241,9 +241,8 @@ function psMpdPlayer( data ) {
 		displayPlayback();
 		if ( 'radiofrance' in data && G.status.state === 'play' ) {
 			$( '#artist' ).html( G.status.Artist );
-			$( '#song' )
-				.html( G.status.Title || blinkdot )
-				.removeClass( 'gr' );
+			$( '#song' ).html( G.status.Title || blinkdot );
+			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		} else {
 			renderPlayback();

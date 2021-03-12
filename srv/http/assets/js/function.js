@@ -1304,10 +1304,11 @@ function resetOrientation( file, ori, callback ) {
 	}
 	reader.readAsDataURL( file );
 }
-function scrollLongText() {	
+function scrollLongText() {
 	var $el = $( '#artist, #song, #album' );
 	var wW = window.innerWidth;
 	var tWmax = 0;
+	$( '#song' ).removeClass( 'gr' );
 	$el.removeClass( 'scrollellipse' )
 		.each( function() {
 		var $this = $( this );
