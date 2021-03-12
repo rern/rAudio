@@ -979,7 +979,7 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '#artist, #song, #album' ).css( 'width', '' );
-	var radiofrance = 'file' in G.status && G.status.file.indexOf( 'radiofrance.fr' ) === -1 ? 0 : 1;
+	var radiofrance = 'file' in G.status && G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ? 1 : 0;
 	if ( !radiofrance || G.status.state !== 'play' ) {
 		$( '#artist' ).html( G.status.Artist );
 		$( '#song' )
