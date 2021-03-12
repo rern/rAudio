@@ -1,7 +1,5 @@
 #!/bin/bash
 
-killall status-radiofrance.sh &> /dev/null
-
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
@@ -121,6 +119,7 @@ spotify )
 	
 esac
 
+killall status-radiofrance.sh &> /dev/null
 [[ $player != mpd ]] && rm -f $dirtmp/radiofrance-* && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
