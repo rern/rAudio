@@ -489,6 +489,7 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	mpc | grep -q '^\[playing\]' && playing=1
+	[[ ${args[4]} == stop ]] && mpc stop
 	
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
