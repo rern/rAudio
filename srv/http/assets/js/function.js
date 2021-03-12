@@ -979,10 +979,13 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '#artist, #song, #album' ).css( 'width', '' );
-	$( '#artist' ).html( G.status.Artist );
-	$( '#song' )
-		.html( G.status.Title )
-		.toggleClass( 'gr', G.status.state === 'pause' );
+	var radiofrance = G.status.file.indexOf( 'radiofrance.fr' ) === -1 ? 0 : 1;
+	if ( !radiofrance || G.status.state !== 'play' ) {
+		$( '#artist' ).html( G.status.Artist );
+		$( '#song' )
+			.html( G.status.Title )
+			.toggleClass( 'gr', G.status.state === 'pause' );
+	}
 	$( '#album' )
 		.toggleClass( 'albumradio', G.status.webradio )
 		.html( G.status.Album ).promise().done( function() {
@@ -1000,14 +1003,15 @@ function renderPlayback() {
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		$( '.cover-save' ).remove();
-		if ( !G.status.Title || G.status.Title !== prevtitle ) {
-			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-		}
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
+			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
-			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
-			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
+			if ( !radiofrance ) {
+				if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+				if ( !G.status.Title ) $( '#song' ).html( blinkdot );
+				if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
+			}
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			if ( G.display.radioelapsed || G.localhost ) {
 				if ( displaytime ) {

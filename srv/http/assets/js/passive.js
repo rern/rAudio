@@ -239,7 +239,15 @@ function psMpdPlayer( data ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
 		displayPlayback();
-		renderPlayback();
+		if ( 'radiofrance' in data && G.status.state === 'play' ) {
+			$( '#artist' ).html( G.status.Artist );
+			$( '#song' )
+				.html( G.status.Title || blinkdot )
+				.removeClass( 'gr' );
+			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+		} else {
+			renderPlayback();
+		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
 	setTimeout( bannerHide, 3000 );

@@ -86,6 +86,10 @@ else
 	profile=$( ls -p /etc/netctl | grep -v / | head -1 )
 	if [[ -n $profile ]]; then
 		netctl start "$profile"
+		if ! ifconfig | grep -q 'inet.*broadcast'; then
+			sleep 10
+			netctl start "$profile"
+		fi
 		for i in {1..10}; do
 			if ifconfig | grep -q 'inet.*broadcast'; then
 				connected=1 && break
