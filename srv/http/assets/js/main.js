@@ -1084,8 +1084,7 @@ $( '.btn-cmd' ).click( function() {
 			if ( pllength < 2 ) return
 			
 			$( '#song' ).addClass( 'gr' );
-			var stop = G.status.file.indexOf( 'radiofrance' ) !== -1 ? true : false;
-			bash( [ 'mpcprevnext', cmd, song, pllength, stop ] );
+			bash( [ 'mpcprevnext', cmd, song, pllength ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )
