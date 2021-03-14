@@ -1083,7 +1083,8 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			$( '#song' ).addClass( 'gr' );
+			$( '#artist' ).empty();
+			$( '#song' ).html( blinkdot );
 			bash( [ 'mpcprevnext', cmd, song, pllength ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
