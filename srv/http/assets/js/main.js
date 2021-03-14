@@ -1084,7 +1084,10 @@ $( '.btn-cmd' ).click( function() {
 			if ( pllength < 2 ) return
 			
 			$( '#artist' ).empty();
-			$( '#song' ).html( blinkdot );
+			$( '#song' )
+				.html( blinkdot )
+				.removeClass( 'scrollleft' )
+				.removeAttr( 'style' ); // fix - iOS needs whole style removed
 			bash( [ 'mpcprevnext', cmd, song, pllength ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
