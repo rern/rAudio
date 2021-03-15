@@ -42,9 +42,9 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### Image files:
 - GitHub server:
-	- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi4.img.xz)
-	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi2-3.img.xz)
-	- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/rAudio_1-20210222/rAudio-1-RPi0-1.img.xz)
+	- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/20210308/rAudio-1-RPi4.img.xz)
+	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/20210308/rAudio-1-RPi2-3.img.xz)
+	- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/20210308/rAudio-1-RPi0-1.img.xz)
 - Europe mirror:
 	- RPi 4: [rAudio-1-RPi4.img.xz](https://cloud.s-t-franz.de/s/yP5jMwC6YkHmiiJ)
 	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://cloud.s-t-franz.de/s/CxoqeZ3zjAjKsJd)
@@ -60,7 +60,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### How-to
 - Write an image file to a micro SD card (8GB or more):
-	- Install [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+	- Install **Raspberry Pi Imager**
+		- Windows, MacOS, Ubuntu: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
+		- Arch Linux: `pacman -Sy rpi-imager`
+		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file.
 	- `CHOOSE OS` > Use custom (OR right click the image file > Open with > Raspberry Pi Imager)
 	- `CHOOSE SD CARD` > select SD card
@@ -166,18 +169,6 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- With RPi accesspoint only if there's no router
 - Connect to rAudio with IP address instead of raudio.local
 	- Get IP address: Menu > Network > Network Interfaces list
-	- Setup static IP address
-- Static IP address - Always setup at the router unless there is a good reason not to.
-	- Set at each device:
-		- IP addresses have to be in the same range of the router.
-		- IP addresses must not be duplicate of existing ones.
-		- IP address must be reconfigured on every OS reinstallation.
-		- A log is needed to manually update all assigned IP address-device data.
-	- Set at the router:
-		- The router only allows reserved IP addresses in the same range.
-		- Reserved IP addresses are verified not to duplicate.
-		- The device always get the same IP address on every OS reinstallation without reconfigure.
-		- The router always keep the update log of all IP address-device data.
 - Backup SD card which already setup
 	- On Linux: `bash <( wget -qO - https://github.com/rern/rOS/raw/main/imagecreate.sh )`
 		- Shrink ROOT partition to minimum
