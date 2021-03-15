@@ -92,9 +92,10 @@ $( '.boxed-group .btn' ).on( 'taphold', function () {
 	if ( $this.hasClass( 'disabled' ) ) return
 	
 	alias = $this.parent().attr( 'alias' );
+	version = $this.parent().attr( 'version' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );
 	type = $this.text();
-	opt = [ alias, type, 'main' ];
+	opt = [ alias, type, version ];
 	if ( $this.attr( 'warning' ) ) {
 		info( {
 			  icon    : 'jigsaw'

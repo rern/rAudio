@@ -125,7 +125,7 @@ foreach( $arrayalias as $alias ) {
 				</p><i class="fa fa-arrow-up"></i>
 			</legend>
 			'.$revision.'
-			<form class="form-horizontal" alias="'.$alias.'">
+			<form class="form-horizontal" alias="'.$alias.'" version="'.$version.'">
 				<p class="detailtext">'.$description.$detail.'</p>';
 	$blocks .= $version ? $btnin.' &nbsp; '.$btnun : $btnin;
 	$blocks .= '

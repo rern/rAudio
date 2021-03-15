@@ -2,6 +2,7 @@
 
 # Radio France metadata
 # status-radiofrance.sh FILENAME
+dirtmp=/srv/http/data/shm/
 
 name=$( echo $1 | sed 's|.*/\(.*\)\-.*|\1|' )
 case $name in
@@ -40,14 +41,21 @@ metadataGet() {
 	title=${metadata[1]}
 	url=${metadata[2]}
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
-	coverfile=/srv/http/data/shm/online-$name.jpg
+	coverfile=$dirtmp/online-$name.jpg
 	if [[ ! -e $coverfile && -n $url ]]; then
-		rm -f /srv/http/data/shm/online-*
+		rm -f $dirtmp/online-*
 		curl -s $url -o $coverfile
 	fi
-	[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
+	if [[ ! -e $coverfile || -z $url ]]; then
+		rm -f $dirtmp/online-*
+	else
+		coverart=/data/shm/online-$name.$( date +%s ).jpg
+	fi
 	data='{"Artist":"'$artist'", "Title":"'$title'", "coverart": "'$coverart'", "radiofrance": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
+	
+	echo $artist > $dirtmp/radiofrance-Artist
+	echo $title > $dirtmp/radiofrance-Title
 	
 	endtime=${metadata[3]}
 	servertime=${metadata[4]}

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-killall status-radiofrance.sh &> /dev/null
-
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
@@ -121,7 +119,8 @@ spotify )
 	
 esac
 
-[[ $player != mpd ]] && exit
+killall status-radiofrance.sh &> /dev/null
+[[ $player != mpd ]] && rm -f $dirtmp/radiofrance-* && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -225,8 +224,13 @@ if [[ ${file:0:4} == http ]]; then
 				albumname=$urlname
 				artistname=$stationname
 				titlename=
-				if [[ $file =~ radiofrance.fr ]]; then
+				[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
+				if [[ -n radiofrance ]]; then
 					albumname=$stationname
+					Artist=$( cat $dirtmp/radiofrance-Artist 2> /dev/null )
+					Title=$( cat $dirtmp/radiofrance-Title 2> /dev/null )
+					[[ -n $Artist ]] && artistname=$Artist
+					[[ -n $Title ]] && titlename=$Title
 					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
 				fi
 			fi
@@ -260,6 +264,8 @@ else
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
 fi
+
+[[ -z $radiofrance ]] && rm -f $dirtmp/radiofrance-*
 
 samplingLine() {
 	bitdepth=$1
@@ -361,7 +367,12 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 		# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
 		# / - \|: /\n/    split artist - title
 		# args:           "Artist Name"$'\n'"Title Name"$'\ntitle'
-		data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" )
+		if [[ -z $radiofrance ]]; then
+			data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" | tr -d ' "`?/#&'"'" )
+		else
+			data=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
+		Title="$Artist$Title"
+		fi
 		name=$( echo $data | tr -d ' "`?/#&'"'" )
 		onlinefile=$( ls $dirtmp/online-$name.* 2> /dev/null )
 		if [[ -e $onlinefile ]]; then
