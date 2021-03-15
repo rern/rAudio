@@ -75,6 +75,28 @@ timestart() { # timelapse: any argument
 	time0=$( date +%s )
 	[[ $1 ]] && timelapse0=$( date +%s )
 }
+formatTime() {
+	h=00$(( $1 / 3600 ))
+	hh=${h: -2}
+	m=00$(( $1 % 3600 / 60 ))
+	mm=${m: -2}
+	s=00$(( $1 % 60 ))
+	ss=${s: -2}
+	[[ $hh == 00 ]] && hh= || hh=$hh:
+	echo $hh$mm:$ss
+}
+timestop() { # timelapse: any argument
+	time1=$( date +%s )
+	if [[ $1 ]]; then
+		dif=$(( $time1 - $timelapse0 ))
+		stringlapse=' (timelapse)'
+	else
+		dif=$(( $time1 - $time0 ))
+		stringlapse=''
+	fi
+	echo
+	echo Duration$stringlapse $( formatTime $dif )
+}
 wgetnc() {
 	[[ -t 1 ]] && progress='--show-progress'
 	wget -q --no-check-certificate $progress $@
@@ -132,7 +154,7 @@ installstart() { # $1-'u'=update
 	
 	title -l '=' "$bar $type $name ..."
 	
-	SECONDS=0
+	timestart
 	
 	mpc | grep -q ^Updating && updating=1
 }
@@ -140,8 +162,7 @@ installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	
-	echo
-	echo Duration $SECONDS seconds
+	timestop
 	title -l '=' "$bar Done."
 	
 	[[ -n $updating ]] && mpc -q update
