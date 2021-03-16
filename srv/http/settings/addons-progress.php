@@ -159,7 +159,7 @@ $replace = [
 ];
 $skip = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
-$fillbuffer = '<p class="flushdot">'.str_repeat( '.', 4096 ).'</p>';
+$fillbuffer = '<p class="flushdot">'.str_repeat( '.', 40960 ).'</p>';
 ob_implicit_flush();       // start flush: bypass buffer - output to screen
 ob_end_flush();            // force flush: current buffer (run after flush started)
 
