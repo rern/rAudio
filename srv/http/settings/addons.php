@@ -54,7 +54,8 @@ foreach( $arrayalias as $alias ) {
 	}
 	
 	$buttonlabel = $addon[ 'buttonlabel' ] ?? '<i class="fa fa-plus-circle"></i>Install';
-	if ( $nouninstall || ( $versioninstalled && file_exists( "/usr/local/bin/uninstall_$alias.sh" ) ) ) {
+	$uninstallfile = file_exists( "/usr/local/bin/uninstall_$alias.sh" );
+	if ( $nouninstall || $uninstallfile ) {
 		$installed = ' class="installed"';
 		$check = '<grn>&bull;</grn> ';
 		if ( $nouninstall ) {
@@ -70,7 +71,7 @@ foreach( $arrayalias as $alias ) {
 		}
 		if ( $notverified ) {
 			$btnin = '<i class="fa fa-info-circle fa-lg gr info"></i><div class="info">'.$notverified.'</div>';
-		} else if ( $version == $versioninstalled ) {
+		} else if ( !$version || $version == $versioninstalled ) {
 			$icon = $nouninstall ? '<i class="fa fa-folder-refresh"></i>' : '';
 			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
 			$btnin = '<a class="btn btn-default disabled"'.$taphold.'>'.$icon.$buttonlabel.'</a>';
@@ -127,7 +128,7 @@ foreach( $arrayalias as $alias ) {
 			'.$revision.'
 			<form class="form-horizontal" alias="'.$alias.'" version="'.$version.'">
 				<p class="detailtext">'.$description.$detail.'</p>';
-	$blocks .= $version ? $btnin.' &nbsp; '.$btnun : $btnin;
+	$blocks .= $uninstallfile ? $btnin.' &nbsp; '.$btnun : $btnin;
 	$blocks .= '
 			</form>';
 	if ( $thumbnail ) $blocks .= '
