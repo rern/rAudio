@@ -247,7 +247,6 @@ $listos = [
 	, 'hfsprogs'                 => 'https://aur.archlinux.org/packages/hfsprogs'
 	, 'hostapd'                  => 'https://w1.fi/hostapd'
 	, 'I2C Tools'                => 'https://i2c.wiki.kernel.org/index.php/I2C_Tools'
-	, 'ifplugd'                  => 'http://0pointer.de/lennart/projects/ifplugd'
 	, 'ImageMagick'              => 'https://imagemagick.org'
 	, 'Inetutils'                => 'https://www.gnu.org/software/inetutils/'
 	, 'jq'                       => 'https://stedolan.github.io/jq'
