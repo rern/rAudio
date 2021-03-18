@@ -268,7 +268,6 @@ $listos = [
 	, 'PyGObject'                => 'https://wiki.gnome.org/Projects/PyGObject'
 	, 'raspi-rotate'             => 'https://github.com/colinleroy/raspi-rotate'
 	, 'Requests'                 => 'https://github.com/psf/requests'
-	, 'RPi.GPIO'                 => 'https://sourceforge.net/projects/raspberry-gpio-python/'
 	, 'RPLCD'                    => 'https://github.com/dbrgn/RPLCD'
 	, 'Samba'                    => 'http://www.samba.org'
 	, 'Shairport-sync'           => 'https://github.com/mikebrady/shairport-sync'
