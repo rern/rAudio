@@ -352,16 +352,22 @@ $( '#setting-smb' ).click( function() {
 	info( {
 		  icon     : 'network'
 		, title    : 'Samba File Sharing'
-		, message  : '<wh>Write</wh> permission:</gr>'
-		, checkbox : { '<gr>/mnt/MPD/</gr>SD': 1, '<gr>/mnt/MPD/</gr>USB': 1 }
+		, checkbox : {
+			  'read+write <code>/mnt/MPD/SD</code>'  : 1
+			, 'read+write <code>/mnt/MPD/USB</code>' : 1
+			, 'List in Windows Network'              : 1
+		}
 		, preshow  : function() {
 			$( '#infoCheckBox input:eq( 0 )' ).prop( 'checked', G.smbwritesd );
 			$( '#infoCheckBox input:eq( 1 )' ).prop( 'checked', G.smbwriteusb );
+			$( '#infoCheckBox input:eq( 2 )' ).prop( 'checked', G.wsdd );
 			// verify changes
 			if ( G.smb ) {
 				$( '#infoOk' ).addClass( 'disabled' );
 				$( '#infoCheckBox' ).change( function() {
-					var changed = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) !== G.smbwritesd || $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' ) !== G.smbwriteusb;
+					var changed = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) !== G.smbwritesd 
+									|| $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' ) !== G.smbwriteusb
+									|| $( '#infoCheckBox input:eq( 2 )' ).prop( 'checked' ) !== G.wsdd;
 					$( '#infoOk' ).toggleClass( 'disabled', !changed );
 				} );
 			}
@@ -372,7 +378,8 @@ $( '#setting-smb' ).click( function() {
 		, ok       : function() {
 			var smbwritesd = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
 			var smbwriteusb = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' );
-			bash( [ 'smbset', smbwritesd, smbwriteusb ] );
+			var wsdd = $( '#infoCheckBox input:eq( 2 )' ).prop( 'checked' );
+			bash( [ 'smbset', smbwritesd, smbwriteusb, wsdd ] );
 			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'network' );
 		}
 	} );

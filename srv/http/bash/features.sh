@@ -154,6 +154,7 @@ mpdscribbleset )
 	;;
 smbdisable )
 	featureDisable smb
+	featureDisable wsdd
 	;;
 smbset )
 	smbconf=/etc/samba/smb.conf
@@ -161,6 +162,7 @@ smbset )
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
 	featureSet smb
+	[[ ${args[3]} == true ]] && featureSet wsdd || featureDisable wsdd
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient
