@@ -132,16 +132,12 @@ installstart() { # $1-'u'=update
 	
 	title -l '=' "$bar $type $name ..."
 	
-	SECONDS=0
-	
 	mpc | grep -q ^Updating && updating=1
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	
-	echo
-	echo Duration: $SECONDS seconds
 	title -l '=' "$bar Done."
 	
 	[[ -n $updating ]] && mpc -q update
