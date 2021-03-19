@@ -167,7 +167,6 @@
 		<br> &bull; On Windows, <code>Map network drive...</code> with:
 		<br> &emsp; &bull; <code id="mapusb"></code>
 		<br> &emsp; &bull; <code id="mapsd"></code>
-		<br> &bull; If enabled but not listed in Windows Network, disable > enable again.
 	</span>
 </div>
 <pre id="codesmb" class="hide"></pre>
