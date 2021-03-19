@@ -9,6 +9,7 @@ if [[ -e /etc/systemd/system/smb.service.d ]]; then
 	systemctl daemon-reload
 	[[ -n $smb ]] && systemctl restart smb wsdd
 fi
+
 . /srv/http/bash/addons.sh
 
 [[ -e /usr/lib/systemd/system/spotifyd.service ]] || ln -s /usr/lib/systemd/{user,system}/spotifyd.service
