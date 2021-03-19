@@ -35,9 +35,6 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
 		$( '#aria2' ).prop( 'checked', G.aria2 );
 		$( '#smb' ).prop( 'checked', G.smb );
-		var mapip = '\\\\'+ G.ip + '\\';
-		$( '#mapusb' ).text( mapip + 'USB' );
-		$( '#mapsd' ).text( mapip + 'SD' );
 		$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
 		$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );

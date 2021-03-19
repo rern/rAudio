@@ -164,9 +164,7 @@
 	<span <?=$classhelp?>>
 		<a href="https://www.samba.org">Samba</a> - Share files on networks.
 		<br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
-		<br> &bull; On Windows, <code>Map network drive...</code> with:
-		<br> &emsp; &bull; <code id="mapusb"></code>
-		<br> &emsp; &bull; <code id="mapsd"></code>
+		<br> &bull; At address bar of File Explorer in Windows: <code>\\<?=( getHostName() )?></code>
 	</span>
 </div>
 <pre id="codesmb" class="hide"></pre>

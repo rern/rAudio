@@ -5,7 +5,6 @@ dirsystem=/srv/http/data/system
 data+='
 	  "autoplay"        : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
-	, "ip"              : "'$( ifconfig | awk '/inet.*broadcast/ {print $2}' )'"
 	, "lcd"             : '$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )'
 	, "login"           : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 	, "mpdscribble"     : '$( systemctl -q is-active mpdscribble@mpd && echo true || echo false )'
