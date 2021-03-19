@@ -131,8 +131,8 @@
 	<i id="setting-localbrowser" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
-		<br>- HDMI/LCD display must be connected before boot.
-		<br>- Overscan change needs reboot.
+		<br> &bull; HDMI/LCD display must be connected before boot.
+		<br> &bull; Overscan change needs reboot.
 	</span>
 </div>
 <pre id="codelocalbrowser" class="hide"></pre>
@@ -163,7 +163,11 @@
 	<i id="setting-smb" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a href="https://www.samba.org">Samba</a> - Share files on networks.
-		<br>Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
+		<br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
+		<br> &bull; On Windows, <code>Map network drive...</code> with:
+		<br> &emsp; &bull; <code id="mapusb"></code>
+		<br> &emsp; &bull; <code id="mapsd"></code>
+		<br> &bull; If needed, when not listed in Windows Network, disable > enable again.
 	</span>
 </div>
 <pre id="codesmb" class="hide"></pre>
