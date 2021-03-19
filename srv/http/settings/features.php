@@ -152,7 +152,10 @@
 </div>
 <pre id="codearia2" class="hide"></pre>
 	<?php }
-		  if ( file_exists( '/usr/bin/smbd' ) ) { ?>
+		  if ( file_exists( '/usr/bin/smbd' ) ) { 
+			$hostname = getHostName();
+			$ip = getHostByName( $hostname );
+	?>
 <div data-status="smb" <?=$classstatus?>>
 	<a>File Sharing
 	<br><gr>smb<?=$code?></gr></a><i class="fa fa-networks"></i>
@@ -164,7 +167,8 @@
 	<span <?=$classhelp?>>
 		<a href="https://www.samba.org">Samba</a> - Share files on networks.
 		<br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
-		<br> &bull; At address bar of File Explorer in Windows: <code>\\<?=( getHostName() )?></code>
+		<br> &bull; Address bar of Windows File Explorer:
+		<br> &ensp; <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
 	</span>
 </div>
 <pre id="codesmb" class="hide"></pre>
