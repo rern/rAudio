@@ -75,7 +75,7 @@ case 'list':
 			 	.'</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$counthtml = '&emsp;<span class="pl-title">PLAYLISTS</span>&emsp;'
+	$counthtml = '&emsp;<span class="pl-title">PLAYLISTS</span> &emsp; '
 				.'<whl id="pl-savedlist-count">'.number_format( $count ).'</whl>'
 				.'<i class="fa fa-file-playlist"></i>';
 	echo json_encode( [
@@ -260,7 +260,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countradio++;
 		}
 	}
-	$counthtml = $plname ? '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'<gr> · </gr></span>' : '';
+	$counthtml = $plname ? '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'&ensp;<gr> · </gr></span>' : '';
 	$countradiohtml = $countradio ? '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>' : '';
 	if ( $countsong ) {
 		$counthtml.= '<whl id="pl-trackcount">'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
