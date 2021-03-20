@@ -827,7 +827,9 @@ input:checked + .switchlabel.disabled:after {
 	#close,
 	#filetype,
 	#gpioimgtxt,
-	#help {
+	#help,
+	#pkg,
+	#pkglist {
 		cursor: pointer;
 	}
 }
