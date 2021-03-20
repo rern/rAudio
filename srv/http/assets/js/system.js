@@ -735,5 +735,42 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
+$( '#pkg' ).click( function() {
+	if ( $( '#pkglist' ).hasClass( 'hide' ) ) {
+		$( '#pkg i' )
+			.removeClass( 'fa-chevron-down' )
+			.addClass( 'fa-chevron-up' );
+		if ( $( '#pkglist' ).html() ) {
+			$( '#pkglist' ).removeClass( 'hide' );
+		} else {
+			bash( 'pacman -Qq', function( list ) {
+				var list = list.split( '\n' );
+				pkghtml = '';
+				list.forEach( function( pkg ) {
+					pkghtml += '<br><bl>'+ pkg +'</bl>';
+				} );
+				$( '#pkglist' )
+					.html( pkghtml )
+					.removeClass( 'hide' );
+			} );
+		}
+	} else {
+		$( '#pkg i' )
+			.removeClass( 'fa-chevron-up' )
+			.addClass( 'fa-chevron-down' );
+		$( '#pkglist' ).addClass( 'hide' );
+	}
+} );
+var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
+$( '#pkglist' ).on( 'click', 'bl', function() {
+	loader();
+	var pkg = $( this ).text()
+				.replace( 'bluez-alsa', 'bluez-alsa-git' )
+				.replace( '-pushstream', '' );
+	bash( [ 'packagehref', pkg ], function( href ) {
+		loader( 'hide' );
+		window.open( href );
+	} );
+} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

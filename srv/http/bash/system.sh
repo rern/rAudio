@@ -339,6 +339,15 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
+packagehref )
+	pkg=${args[1]}
+	if [[ ' bluez-alsa-git hfsprogs matchbox-window-manager mpdscribble snapcast upmpdcli ' == *" $pkg "* ]]; then
+		url=https://aur.archlinux.org/packages
+	else
+		url=https://archlinuxarm.org/packages/armv7h
+	fi
+	curl -s $url/$pkg | grep -A1 Upstream | tail -1 | cut -d'"' -f2
+	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
