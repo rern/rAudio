@@ -1646,11 +1646,13 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			, format : [ 'file' ]
 		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
+		var format = [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ];
+		if ( G.mode === 'conductor' ) format = [ 'album', 'conductor' ];
 		var query = {
 			  query  : 'find'
 			, mode   : G.mode
 			, string : path
-			, format : [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
+			, format : format
 		}
 	} else { // track list
 		if ( [ 'album', 'composer', 'date' ].indexOf( G.mode ) !== -1  ) {
@@ -1668,10 +1670,10 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, format : [ 'album', 'artist' ]
 				}
 			}
-		} else if ( G.mode === 'genre' ) { // genre (entire album)
+		} else if ( G.mode === 'genre' || G.mode === 'conductor' ) { // genre (entire album)
 			var query = {
 				  query  : 'find'
-				, mode   : [ 'album', 'artist' ]
+				, mode   : [ 'album', G.mode === 'genre' ? 'artist' : 'conductor' ]
 				, string : [ name, path ]
 			}
 		} else {  // artist, albumartist, composer (by album + mode)
