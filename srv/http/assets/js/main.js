@@ -1646,8 +1646,13 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			, format : [ 'file' ]
 		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
-		var format = [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ];
-		if ( G.mode === 'conductor' ) format = [ 'album', 'conductor' ];
+		if ( [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ) {
+			var format = [ 'album', 'artist' ];
+		} else if ( G.mode === 'conductor' ) {
+			var format = [ 'album', 'conductor' ];
+		} else {
+			var format = [ 'album' ];
+		}
 		var query = {
 			  query  : 'find'
 			, mode   : G.mode
