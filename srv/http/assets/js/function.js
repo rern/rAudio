@@ -948,7 +948,10 @@ function renderLibraryList( data ) {
 				.removeClass( 'bars-on' )
 				.css( 'height', pH + 49 - coverH );
 		}
-		if ( !G.display.hidecover ) $( '.licover .li'+ G.mode ).hide()
+		if ( !G.display.hidecover ) {
+			var limode = [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ? G.mode : 'infopath';
+			$( '.licover .li'+ limode ).hide();
+		}
 	} );
 	if ( G.color ) {
 		$( '#lib-list li:eq( 0 )' ).tap();

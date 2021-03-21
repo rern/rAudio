@@ -211,7 +211,7 @@ function playlistRename() {
 function tagEditor() {
 	var file = G.list.path;
 	var cue = file.slice( -4 ) === '.cue';
-	var format = [ 'album', 'albumartist', 'artist', 'composer', 'genre', 'date' ];
+	var format = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
 	var fL = format.length;
 	if ( !G.list.licover ) {
 		if ( !cue ) {
@@ -294,7 +294,7 @@ function tagEditor() {
 							  query  : 'find'
 							, mode   : mode
 							, string : path
-							, format : [ 'genre', 'composer', 'date' ].indexOf( mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
+							, format : [ 'genre', 'composer', 'conductor', 'date' ].indexOf( mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
 						}
 					} else {
 						if ( G.library ) {

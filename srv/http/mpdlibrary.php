@@ -433,6 +433,9 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			if ( $each0->composer ) {
 		$coverhtml.= '<div class="licomposer"><i class="fa fa-composer"></i>'.$each0->composer.'</div>';
 			}
+			if ( $each0->conductor ) {
+		$coverhtml.= '<div class="liconductor"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>';
+			}
 			if ( $each0->genre ) {
 		$coverhtml.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
 			}
