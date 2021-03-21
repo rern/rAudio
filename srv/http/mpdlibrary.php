@@ -77,14 +77,14 @@ case 'find':
 	if ( count( $f ) > 2 ) {
 		$array = htmlTracks( $lists, $f );
 	} else { // modes - album, artist, albumartist, composer, conductor, genre: 2 fields format
-		$array = htmlFind( $mode, $lists, $f );
+		$array = htmlFind( $lists, $f );
 	}
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
 	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display' ) ) $filemode.= 'byartist';
 	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
-	$array = htmlList( $mode, $lists );
+	$array = htmlList( $lists );
 	break;
 case 'ls':
 	$subdirs = 0;
@@ -246,9 +246,10 @@ function HMS2second( $time ) {
 		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
 	}
 }
-function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
+function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -285,7 +286,7 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 		if ( in_array( $mode, [ 'artist', 'albumartist' ] ) ) { // display as artist - album
 			$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
 		} else {
-			$name = $fL > 1 ? $val1.'<gr> • </gr>'.$val0 : $val0;
+			$name = $fL > 1 && $mode !== 'conductor' ? $val1.'<gr> • </gr>'.$val0 : $val0;
 		}
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
@@ -305,9 +306,10 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
 	return [ 'html' => $html, 'index' => $indexbar ];
 }
-function htmlList( $mode, $lists ) { // non-file 'list' command
+function htmlList( $lists ) { // non-file 'list' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
 	$html = '';
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
