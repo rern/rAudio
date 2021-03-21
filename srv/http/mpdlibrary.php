@@ -16,8 +16,12 @@ AlbumArtist
 			track list: mpc find -f %*% album $album albumartist $albumartist
 Composer
 	mpc list composer > /srv/http/data/mpd/composer
-		album list: mpc find -f %composer%^^%album% composer composer
-			track list: mpc find -f %*% album $album composer composer
+		album list: mpc find -f %composer%^^%album% composer $composer
+			track list: mpc find -f %*% album $album composer $composer
+Conductor
+	mpc list conductor > /srv/http/data/mpd/conductor
+		album list: mpc find -f %conductor%^^%album% conductor $conductor
+			track list: mpc find -f %*% album $album conductor $conductor
 Genre
 	mpc list genre > /srv/http/data/mpd/genre
 		artist-album list: mpc find -f %artist%^^%album% genre $genre
@@ -72,7 +76,7 @@ case 'find':
 	}
 	if ( count( $f ) > 2 ) {
 		$array = htmlTracks( $lists, $f );
-	} else { // modes - album, artist, albumartist, composer, genre: 2 fields format
+	} else { // modes - album, artist, albumartist, composer, conductor, genre: 2 fields format
 		$array = htmlFind( $mode, $lists, $f );
 	}
 	break;
