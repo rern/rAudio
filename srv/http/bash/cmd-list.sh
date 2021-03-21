@@ -103,7 +103,7 @@ fi
 album=$( echo "$album_artist_file" | grep . | sort -uf | tee $dirmpd/album | wc -l )
 (( $album > 0 )) && php /srv/http/bash/cmd-listsort.php $dirmpd/album
 
-for mode in albumartist artist composer genre date; do
+for mode in albumartist artist composer conductor genre date; do
 	printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dirmpd/$mode | wc -l )
 	(( $mode > 0 )) && php /srv/http/bash/cmd-listsort.php $dirmpd/$mode
 done
@@ -118,6 +118,7 @@ counts='
 , "albumartist" : '$albumartist'
 , "artist"      : '$artist'
 , "composer"    : '$composer'
+, "conductor"   : '$conductor'
 , "date"        : '$date'
 , "genre"       : '$genre'
 , "nas"         : '$NAS'

@@ -38,10 +38,9 @@ include '/srv/http/indexbar.php';
 $mode = $_POST[ 'mode' ] ?? null;
 $string = $_POST[ 'string' ] ?? null;
 $string = escape( $string );
-$formatall = [ 'album', 'albumartist', 'artist', 'composer', 'date', 'file', 'genre', 'time', 'title', 'track' ];
+$formatall = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
 $f = $_POST[ 'format' ] ?? $formatall;
 $format = '%'.implode( '%^^%', $f ).'%';
-$modes = [ 'album' => 0, 'albumartist' => 1, 'artist' => 2, 'composer' => 3, 'date' => 4, 'genre' => 5 ];
 
 switch( $_POST[ 'query' ] ) {
 
