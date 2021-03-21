@@ -89,18 +89,6 @@ echo '{
 	"time": true,
 	"volume": true
 }' > $dirsystem/display
-echo '[
-	"SD",
-	"USB",
-	"NAS",
-	"WebRadio",
-	"Album",
-	"Artist",
-	"AlbumArtist",
-	"Composer",
-	"Genre",
-	"Date"
-]' > $dirsystem/order
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
 # system

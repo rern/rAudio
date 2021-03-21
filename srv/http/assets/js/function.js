@@ -673,15 +673,13 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( position );
 }
 function orderLibrary() {
-	if ( G.display.order ) {
-		$.each( G.display.order, function( i, name ) {
-			var $libmode = $( '.lib-mode' ).filter( function() {
-				return $( this ).find( '.lipath' ).text() === name;
-			} );
-			$libmode.detach();
-			$( '#lib-mode-list' ).append( $libmode );
+	$.each( G.display.order, function( i, name ) {
+		var $libmode = $( '.lib-mode' ).filter( function() {
+			return $( this ).find( '.lipath' ).text() === name;
 		} );
-	}
+		$libmode.detach();
+		$( '#lib-mode-list' ).append( $libmode );
+	} );
 }
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
