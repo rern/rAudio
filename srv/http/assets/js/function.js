@@ -871,9 +871,9 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'webradio' ) htmlpath += '<i class="button-webradio-new fa fa-plus-circle"></i>';
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else { // dir breadcrumbs
-		var dir = data.modetitle.split( '/' );
+		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
-		var htmlpath = '<i class="fa fa-'+ dir0.toLowerCase() +'"></i>';
+		var htmlpath = '<i class="x fa fa-'+ dir0.toLowerCase() +'"></i>';
 		htmlpath += '<a>'+ dir0 +'/<span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
@@ -948,6 +948,7 @@ function renderLibraryList( data ) {
 				.removeClass( 'bars-on' )
 				.css( 'height', pH + 49 - coverH );
 		}
+		if ( !G.display.hidecover ) $( '.licover .li'+ G.mode ).hide()
 	} );
 	if ( G.color ) {
 		$( '#lib-list li:eq( 0 )' ).tap();

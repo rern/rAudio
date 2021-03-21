@@ -1635,7 +1635,6 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var libpath = $( '#lib-path .lipath' ).text();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
-	var modetitle = G.mode.toUpperCase() +'<gr> • </gr><wh>'+ path +'</wh>';
 	var mode = $( this ).data( 'mode' );
 	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
@@ -1690,6 +1689,8 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			}
 		}
 	}
+	var titlepath = $( '#mode-title wh' ).text() || path;
+	var modetitle = G.mode.toUpperCase() +'<gr> • </gr><wh>'+ titlepath +'</wh>';
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	list( query, function( data ) {
 		data.path = path;
