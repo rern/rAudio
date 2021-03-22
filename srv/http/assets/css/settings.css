@@ -718,9 +718,6 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media ( max-width: 580px ) {
-	#bar-bottom div {
-		width: calc( 100% / 5 );
-	}
 	#bar-bottom a {
 		display: none;
 	}
@@ -831,5 +828,8 @@ input:checked + .switchlabel.disabled:after {
 	#pkg,
 	#pkglist {
 		cursor: pointer;
+	}
+	input:disabled {
+		cursor: not-allowed;
 	}
 }
