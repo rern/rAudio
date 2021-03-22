@@ -360,8 +360,8 @@ heading i.fa-question-circle {
 }
 #bar-bottom div {
 	display: inline-block;
-	width: calc( 100% / 5 );
-	max-width: 132px;
+	width: calc( 100% / 4 );
+	max-width: 165px;
 	height: 40px;
 	cursor: pointer;
 }

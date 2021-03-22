@@ -63,8 +63,9 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <?php
 include "settings/$page.php";
 $htmlbar = '';
-foreach ( [ 'features', 'mpd', 'networks', 'sources', 'system' ] as $name ) {
-	$htmlbar.= '<div id="'.$name.'"><i class="fa fa-'.$name.'"></i><a> '.ucfirst( $name ).'</a></div>';
+foreach ( [ 'Features', 'MPD', 'Networks', 'System' ] as $name ) {
+	$id = strtolower( $name );
+	$htmlbar.= '<div id="'.$id.'"><i class="fa fa-'.$id.'"></i><a> '.$name.'</a></div>';
 }
 ?>
 </div>
