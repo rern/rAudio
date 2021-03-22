@@ -64,6 +64,7 @@ echo '{
 	"albumartist": true,
 	"artist": true,
 	"composer": true,
+	"conductor": true,
 	"date": true,
 	"genre": true,
 	"nas": true,
