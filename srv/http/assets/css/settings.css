@@ -722,7 +722,7 @@ input:checked + .switchlabel.disabled:after {
 		display: none;
 	}
 }
-@media (max-width: 512px) {
+@media (max-width: 515px) {
 	.container {
 		padding: 40px 10px 100px 10px;
 	}
