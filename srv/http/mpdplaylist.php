@@ -1,4 +1,4 @@
-<?php
+<?php 
 include '/srv/http/indexbar.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
