@@ -673,6 +673,8 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( position );
 }
 function orderLibrary() {
+	if ( !G.display.order ) return
+	
 	$.each( G.display.order, function( i, name ) {
 		var $libmode = $( '.lib-mode' ).filter( function() {
 			return $( this ).find( '.lipath' ).text() === name;

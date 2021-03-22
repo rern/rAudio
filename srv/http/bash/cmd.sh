@@ -388,16 +388,11 @@ displayget )
 					| grep -q 'mixer_type.*none' \
 					&& echo true || echo false )
 	fi
-	if [[ -e $dirsystem/order ]]; then
-		order=$( cat $dirsystem/order )
-	else
-		order='["SD","USB","NAS","WebRadio","Album","Artist","AlbumArtist","Composer","Conductor","Genre","Date"]'
-	fi
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
-, "order"      : '$order'
+, "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 , "volumenone" : '$volumenone'
