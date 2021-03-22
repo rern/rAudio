@@ -235,7 +235,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <?php
 $listui = [
 	  'HTML5-Color-Picker'  => 'https://github.com/NC22/HTML5-Color-Picker'
-	, 'Inconsolata font'    => 'https://www.levien.com/type/myfonts/inconsolata.html'
+	, 'Inconsolata font'    => 'https://github.com/google/fonts/tree/main/ofl/inconsolata'
 	, 'jQuery'              => 'https://jquery.com/'
 	, 'jQuery Mobile'       => 'https://jquerymobile.com/'
 	, 'jQuery Selectric'    => 'https://github.com/lcdsantos/jQuery-Selectric'
