@@ -718,9 +718,6 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media ( max-width: 580px ) {
-	#bar-bottom a {
-		display: none;
-	}
 	.wide {
 		display: none;
 	}
@@ -774,6 +771,9 @@ input:checked + .switchlabel.disabled:after {
 		max-width: 100%;
 		padding: 40px 5px;
 	}
+	#bar-bottom {
+		padding: 0;
+	}
 }
 @media (max-width: 450px) {
 	.title {
@@ -786,6 +786,11 @@ input:checked + .switchlabel.disabled:after {
 		margin: 3px auto 0;
 	}
 	#guide .btn span {
+		display: none;
+	}
+}
+@media (max-width: 419px) {
+	#bar-bottom a {
 		display: none;
 	}
 }
