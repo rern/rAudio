@@ -35,17 +35,6 @@ function addonsdl( std ) {
 		location.href = '/settings/addons.php';
 	}
 }
-function bookmarkThumbReplace( $this, newimg ) {
-	var $img = $this.find( 'img' );
-	if ( $img.length ) {
-		$img.attr( 'src', newimg  );
-	} else {
-		$this.find( '.fa-bookmark' ).remove();
-		$this.find( '.divbklabel' ).remove();
-		$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ newimg +'">' );
-		$( '.mode-bookmark img' ).css( 'opacity', '' );
-	}
-}
 function clearIntervalAll() {
 	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
@@ -150,7 +139,9 @@ function coverartChange() {
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'coverart' );
+			imageReplace( imagefile, 'coverart', function( ext ) {
+				$( '.licoverimg img' ).attr( 'src', imagefile +'.'+ hash + ext );
+			} );
 		}
 	}
 	if ( G.playback ) {

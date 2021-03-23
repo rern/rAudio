@@ -1431,7 +1431,16 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, filetype    : 'image/*'
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark', function( ext ) {
-					bookmarkThumbReplace( $this, imagefile +'.'+ hash + ext );
+					var $img = $this.find( 'img' );
+					var newimg = imagefile +'.'+ hash + ext
+					if ( $img.length ) {
+						$img.attr( 'src', newimg  );
+					} else {
+						$this.find( '.fa-bookmark' ).remove();
+						$this.find( '.divbklabel' ).remove();
+						$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ newimg +'">' );
+						$( '.mode-bookmark img' ).css( 'opacity', '' );
+					}
 				} );
 			}
 		}
