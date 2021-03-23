@@ -1639,7 +1639,6 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var mode = $( this ).data( 'mode' );
 	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
-		var modetitle = path;
 		var query = {
 			  query  : 'ls'
 			, string : path
