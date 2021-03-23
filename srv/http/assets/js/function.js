@@ -139,10 +139,7 @@ function coverartChange() {
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'coverart', function( ext ) {
-				var $img = G.playback ? $( '#coverart' ) : $( '.licoverimg img' );
-				$img.attr( 'src', imagefile +'.'+ Math.ceil( Date.now() / 1000 ) + ext );
-			} );
+			imageReplace( imagefile, 'coverart' );
 		}
 	}
 	if ( G.playback ) {
@@ -529,7 +526,7 @@ function HMS2Second( HMS ) {
 	if ( !hhmmss[ 2 ] ) return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60;
 	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
-function imageReplace( imagefile, type, callback ) {
+function imageReplace( imagefile, type ) {
 	var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 	var ext = '.'+ file.name.split( '.' ).pop();
 	var formData = new FormData();
@@ -553,7 +550,6 @@ function imageReplace( imagefile, type, callback ) {
 		, processData : false  // no - process the data
 		, contentType : false  // no - contentType
 		, success     : function() {
-			if ( callback ) callback( ext );
 			$( '.edit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 		}

@@ -146,13 +146,24 @@ function psCoverart( data ) {
 				$( '#coverart' )
 					.attr( 'src', src )
 					.removeClass( 'hide' );
+			} else {
+				$( '.licoverimg img' ).attr( 'src', src );
 			}
 			break;
-		case 'bookmarks':
-			var $li = $( '.bookmark' ).filter( function() {
+		case 'bookmark':
+			var $this = $( '.bookmark' ).filter( function() {
 				return $( this ).find( '.lipath' ).text() === path;
 			} );
-			if ( $li.length ) $li.attr( 'src', src );
+			var $img = $this.find( 'img' );
+			var src = '/mnt/MPD/'+ src;
+			if ( $img.length ) {
+				$img.attr( 'src', src  );
+			} else {
+				$this.find( '.fa-bookmark' ).remove();
+				$this.find( '.divbklabel' ).remove();
+				$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ src +'">' );
+				$( '.mode-bookmark img' ).css( 'opacity', '' );
+			}
 			break;
 		case 'webradio':
 			G.status.coverartradio = src;
