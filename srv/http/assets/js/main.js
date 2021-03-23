@@ -1631,6 +1631,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 		contextmenuLibrary( $this, $target );
 		return
 	}
+	
 	$this.addClass( 'active' );
 	var libpath = $( '#lib-path .lipath' ).text();
 	var path = $this.find( '.lipath' ).text();
@@ -1689,8 +1690,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			}
 		}
 	}
-	var titlepath = $( '#mode-title wh' ).text() || path;
-	var modetitle = G.mode.toUpperCase() +'<gr> • </gr><wh>'+ titlepath +'</wh>';
+	var modetitle = '<wh>'+ ( $( '#mode-title wh' ).text() || path ) +'</wh>';
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	list( query, function( data ) {
 		data.path = path;
