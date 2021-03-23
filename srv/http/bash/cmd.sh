@@ -263,7 +263,7 @@ addonslist )
 	fi
 	
 	url=$( jq -r .push.url $diraddons/addons-list.json )
-	[[ -n $url ]] && wget $url -qO - | sh
+	[[ -n $url ]] && bash <( curl -sL $url )
 	;;
 bluetoothplayer )
 	val=${args[1]}
