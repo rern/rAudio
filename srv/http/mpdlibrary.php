@@ -421,7 +421,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$coverart = exec( $script );
 		$nocover = '';
 		if ( !$coverart ) {
-			$coverart = '/assets/img/cover.'.time().'.svg';
+			$coverart = '/assets/img/coverart.'.time().'.svg';
 			$nocover = ' nocover';
 		}
 		$coverhtml = '<li data-mode="file" class="licover">'
