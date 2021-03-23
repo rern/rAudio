@@ -140,7 +140,8 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefile, 'coverart', function( ext ) {
-				$( '.licoverimg img' ).attr( 'src', imagefile +'.'+ hash + ext );
+				var $img = G.playback ? $( '#coverart' ) : $( '.licoverimg img' );
+				$img.attr( 'src', imagefile +'.'+ Math.ceil( Date.now() / 1000 ) + ext );
 			} );
 		}
 	}
