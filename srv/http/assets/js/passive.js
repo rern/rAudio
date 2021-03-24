@@ -139,18 +139,26 @@ function psCoverart( data ) {
 	var url = decodeURIComponent( data.url );
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
-		case 'coverart':
-			G.status.coverart = src;
+		case 'cover': // change coverart
 			var mpdpath = path.replace( '/mnt/MPD/', '' );
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
-				if ( G.status.webradio || mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
+				if ( mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
 					$( '#coverart' )
 						.attr( 'src', src )
 						.removeClass( 'hide' );
 				}
 			} else if ( G.library ) {
-				if ( $( '.licover .lipath' ).text() === mpdpath ) $( '.licoverimg img' ).attr( 'src', src );
+				if ( mpdpath === $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
+			}
+			break;
+		case 'coverart':
+			G.status.coverart = src;
+			if ( G.playback ) {
+				$( '#vu' ).addClass( 'hide' );
+				$( '#coverart' )
+					.attr( 'src', src )
+					.removeClass( 'hide' );
 			}
 			break;
 		case 'bookmark':

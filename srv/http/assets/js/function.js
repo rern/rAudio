@@ -139,7 +139,7 @@ function coverartChange() {
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'coverart' );
+			imageReplace( imagefile, 'cover' );
 		}
 	}
 	if ( G.playback ) {
