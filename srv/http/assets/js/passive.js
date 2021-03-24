@@ -144,7 +144,7 @@ function psCoverart( data ) {
 			var mpdpath = path.replace( '/mnt/MPD/', '' );
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
-				if ( mpdpath === G.status.file.substr( 0, url.lastIndexOf( '/' ) ) ) {
+				if ( mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
 					$( '#coverart' )
 						.attr( 'src', src )
 						.removeClass( 'hide' );
