@@ -144,13 +144,13 @@ function psCoverart( data ) {
 			var mpdpath = path.replace( '/mnt/MPD/', '' );
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
-				if ( mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
+				if ( G.status.webradio || mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
 					$( '#coverart' )
 						.attr( 'src', src )
 						.removeClass( 'hide' );
 				}
 			} else if ( G.library ) {
-				if ( mpdpath === $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
+				if ( $( '.licover .lipath' ).text() === mpdpath ) $( '.licoverimg img' ).attr( 'src', src );
 			}
 			break;
 		case 'bookmark':
