@@ -141,13 +141,16 @@ function psCoverart( data ) {
 	switch( data.type ) {
 		case 'coverart':
 			G.status.coverart = src;
+			var mpdpath = path.replace( '/mnt/MPD/', '' );
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
-					.attr( 'src', src )
-					.removeClass( 'hide' );
+				if ( mpdpath === G.status.file.substr( 0, url.lastIndexOf( '/' ) ) ) {
+					$( '#coverart' )
+						.attr( 'src', src )
+						.removeClass( 'hide' );
+				}
 			} else if ( G.library ) {
-				if ( path === '/mnt/MPD/'+ $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
+				if ( mpdpath === $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
 			}
 			break;
 		case 'bookmark':
