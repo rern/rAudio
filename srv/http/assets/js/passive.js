@@ -146,8 +146,8 @@ function psCoverart( data ) {
 				$( '#coverart' )
 					.attr( 'src', src )
 					.removeClass( 'hide' );
-			} else {
-				$( '.licoverimg img' ).attr( 'src', src );
+			} else if ( G.library ) {
+				if ( path === '/mnt/MPD/'+ $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
 			}
 			break;
 		case 'bookmark':
