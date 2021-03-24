@@ -150,7 +150,7 @@ rotateSplash() {
 		UD )     degree=180;;
 	esac
 	convert \
-		-density 64 \
+		-density 48 \
 		-background none $dirimg/icon.svg \
 		-rotate $degree \
 		-gravity center \
