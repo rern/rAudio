@@ -269,7 +269,7 @@ function displayCheckbox( checkboxes ) {
 			col = ' class="infocol"';
 			br = '';
 			val = val.slice( 1 );
-		} else if ( key.slice( 0, 2 ) === 'br' ) {
+		} else if ( val.slice( -4 ) === '<br>' ) {
 			html += val;
 			return
 		} else {
