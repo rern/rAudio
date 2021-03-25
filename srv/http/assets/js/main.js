@@ -91,7 +91,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 	G.display.screenoff = G.localhost;
 	var submenu = {
 		  relays     : 'features'
-		, snapclient : 'mpd'
+		, snapclient : 'player'
 		, lock       : 'system'
 		, screenoff  : 'power'
 	};
