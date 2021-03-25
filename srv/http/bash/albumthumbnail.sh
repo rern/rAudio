@@ -27,7 +27,7 @@ count=${#lines[@]}
 i=0
 for mpdpath in "${lines[@]}"; do
 	(( i++ ))
-	percent=$(( $i / $count * 100 ))
+	percent=$(( $i * 100 / $count ))
 	if (( $percent > 0 )); then
 		sec=$SECONDS
 		total=$(( $sec * 100 / $percent ))
