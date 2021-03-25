@@ -836,7 +836,6 @@ function renderLibrary() {
 	$( '.edit' ).remove();
 	$( '#liimg' ).css( 'opacity', '' );
 	orderLibrary();
-//	displayBars();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
 }
 function renderLibraryList( data ) {
