@@ -895,12 +895,14 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	
 	clearTimeout( G.volumebar );
 	volumebarTimeout();
-	var voldn = this.id === 'volume-band-dn';
+	var updn = this.id.slice( -2 );
 	var vol = G.status.volume;
-	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
-	
-	$( '#vol'+ ( voldn ? 'dn' : 'up' ) ).click();
-	voldn ? vol-- : vol++;
+	if ( updn === 'dn' ) {
+		if ( vol > 0 ) vol--;
+	} else {
+		if ( vol < 100 ) vol++;
+	}
+	$( '#vol'+ updn ).click();
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).taphold( function() {
