@@ -365,11 +365,6 @@ function tagEditor() {
 		loader( 'hide' );
 	}, 'json' );
 }
-function updateThumbnails() {
-	// enclosed in double quotes entity &quot;
-	var path = G.list.path.slice( -4 ) !== '.cue' ? G.list.path : G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) );
-	infoCoverartScan( path );
-}
 function webRadioCoverart() {
 	var path = G.library ? G.list.path : G.status.file;
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
@@ -619,7 +614,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		  bookmark   : bookmarkNew
 		, plrename   : playlistRename
 		, pldelete   : playlistDelete
-		, thumbnail  : updateThumbnails
 		, wrcoverart : webRadioCoverart
 		, wrdelete   : webRadioDelete
 		, wredit     : webRadioEdit

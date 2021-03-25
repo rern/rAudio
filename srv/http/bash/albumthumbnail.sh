@@ -28,8 +28,14 @@ i=0
 for mpdpath in "${lines[@]}"; do
 	(( i++ ))
 	percent=$(( $i / $count * 100 ))
-	elapse=$( date -d@$SECONDS -u +%H:%M:%S )
-	(( $percent > 0 )) && total=$(( $SECONDS * 100 / $percent )) || total=0
+	if (( $percent > 0 )); then
+		sec=$SECONDS
+		total=$(( $sec * 100 / $percent ))
+	else
+		sec=0
+		total=0
+	fi
+	elapse=$( date -d@$sec -u +%H:%M:%S )
 	total=$( date -d@$total -u +%H:%M:%S )
 	echo $percent% $( tcolor $elapse/$total 8 )
 	echo $i/$count $( tcolor "$mpdpath" )
