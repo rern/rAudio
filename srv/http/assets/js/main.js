@@ -906,6 +906,8 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).taphold( function() {
+	if ( G.status.volumenone ) return
+	
 	G.hold = 1;
 	clearTimeout( G.volumebar );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
