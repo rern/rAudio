@@ -57,17 +57,16 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Write an image file to a micro SD card (8GB or more):
 	- Install **Raspberry Pi Imager**
 		- Windows, MacOS, Ubuntu: [Raspberry Pi Imager](https://www.raspberrypi.org/software/)
-		- Arch Linux: `pacman -Sy rpi-imager`
+		- Manjaro: `pacman -Sy rpi-imager`
 		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file.
 	- `CHOOSE OS` > Use custom (OR right click the image file > Open with > Raspberry Pi Imager)
-	- `CHOOSE SD CARD` > select SD card
-	- `WRITE`
+	- `CHOOSE SD CARD` > select SD card > `WRITE`
 	- Verify is optional.
 	- Boot from USB drive without SD card
 		- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
 		- Setup [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md)
-		- `CHOOSE SD CARD` > select USB drive
+		- `CHOOSE SD CARD` > select USB drive > `WRITE`
 		- Should be used only when USB drive is faster than SD card.
 - Existing users:
 	- Keep current setup SD card.
