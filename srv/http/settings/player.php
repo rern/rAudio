@@ -22,7 +22,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </span>
 <pre id="codemount" class="hide"></pre>
 
-<heading data-status="mpd" class="status">Status<?=$code?></heading>
+<heading data-status="mpd" class="status">Music Plyer Daemon<?=$code?></heading>
 <div class="col-l text gr">
 	Version
 	<br>Database
