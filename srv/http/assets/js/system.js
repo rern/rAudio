@@ -763,10 +763,12 @@ $( '#pkg' ).click( function() {
 } );
 var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
 $( '#pkglist' ).on( 'click', 'bl', function() {
+	loader();
 	var pkg = $( this ).text()
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )
 				.replace( '-pushstream', '' );
 	bash( [ 'packagehref', pkg ], function( href ) {
+		loader( 'hide' );
 		window.open( href );
 	} );
 } );

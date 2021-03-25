@@ -57,7 +57,7 @@ $color = file_exists( $dirsystem.'color' );
 $filecounts = $dirdata.'mpd/counts';
 $counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Genre', 'Date' ];
+$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Genre', 'Date' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );
@@ -211,7 +211,6 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<a id="features" class="settings"><i class="fa fa-sliders"></i>Features</a>
 	<a id="mpd" class="settings"><i class="fa fa-mpd"></i>MPD</a>
 	<a id="networks" class="settings"><i class="fa fa-networks"></i>Networks</a>
-	<a id="sources" class="settings"><i class="fa fa-folder-cascade"></i>Sources</a>
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
 	<a id="power"><i class="fa fa-power"></i>Power</a>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>

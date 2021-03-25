@@ -70,11 +70,6 @@ title() {
 	[[ $nobottom == 0 ]] && echo $( lcolor $lbottom $cbottom )
 }
 
-# for install/uninstall scripts ##############################################################
-timestart() { # timelapse: any argument
-	time0=$( date +%s )
-	[[ $1 ]] && timelapse0=$( date +%s )
-}
 wgetnc() {
 	[[ -t 1 ]] && progress='--show-progress'
 	wget -q --no-check-certificate $progress $@
@@ -132,16 +127,12 @@ installstart() { # $1-'u'=update
 	
 	title -l '=' "$bar $type $name ..."
 	
-	SECONDS=0
-	
 	mpc | grep -q ^Updating && updating=1
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	
-	echo
-	echo Duration: $SECONDS seconds
 	title -l '=' "$bar Done."
 	
 	[[ -n $updating ]] && mpc -q update

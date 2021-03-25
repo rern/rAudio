@@ -360,8 +360,8 @@ heading i.fa-question-circle {
 }
 #bar-bottom div {
 	display: inline-block;
-	width: calc( 100% / 5 );
-	max-width: 132px;
+	width: calc( 100% / 4 );
+	max-width: 165px;
 	height: 40px;
 	cursor: pointer;
 }
@@ -718,17 +718,11 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media ( max-width: 580px ) {
-	#bar-bottom div {
-		width: calc( 100% / 5 );
-	}
-	#bar-bottom a {
-		display: none;
-	}
 	.wide {
 		display: none;
 	}
 }
-@media (max-width: 512px) {
+@media (max-width: 515px) {
 	.container {
 		padding: 40px 10px 100px 10px;
 	}
@@ -777,6 +771,9 @@ input:checked + .switchlabel.disabled:after {
 		max-width: 100%;
 		padding: 40px 5px;
 	}
+	#bar-bottom {
+		padding: 0;
+	}
 }
 @media (max-width: 450px) {
 	.title {
@@ -789,6 +786,11 @@ input:checked + .switchlabel.disabled:after {
 		margin: 3px auto 0;
 	}
 	#guide .btn span {
+		display: none;
+	}
+}
+@media (max-width: 419px) {
+	#bar-bottom a {
 		display: none;
 	}
 }
@@ -831,5 +833,8 @@ input:checked + .switchlabel.disabled:after {
 	#pkg,
 	#pkglist {
 		cursor: pointer;
+	}
+	input:disabled {
+		cursor: not-allowed;
 	}
 }

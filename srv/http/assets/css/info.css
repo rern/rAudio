@@ -308,7 +308,6 @@ hr {
 #infoFilename {
 	display: inline-block;
 	margin-bottom: 10px;
-	max-width: calc( 100% - 120px );
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

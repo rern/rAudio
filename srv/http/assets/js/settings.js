@@ -21,7 +21,7 @@ var cmd = {
 	, iw           : [ 'iw list' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
-	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev', 'cat /etc/fstab' ]
+	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, powerbutton  : [ 'systemctl status powerbutton' ]
 	, rfkill       : [ 'rfkill' ]
@@ -309,6 +309,8 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
 $( '.status' ).click( function( e ) {
+	if ( e.target.id ) return
+	
 	codeToggle( $( this ).data( 'status' ), e.target );
 } );
 // bar-bottom

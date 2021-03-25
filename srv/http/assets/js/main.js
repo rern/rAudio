@@ -1430,9 +1430,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
 			, ok          : function() {
-				imageReplace( imagefile, 'bookmark', function( ext ) {
-					bookmarkThumbReplace( $this, imagefile +'.'+ hash + ext );
-				} );
+				imageReplace( imagefile, 'bookmark' );
 			}
 		}
 		if ( thumbnail ) {
@@ -1631,26 +1629,32 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 		contextmenuLibrary( $this, $target );
 		return
 	}
+	
 	$this.addClass( 'active' );
 	var libpath = $( '#lib-path .lipath' ).text();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
-	var modetitle = G.mode.toUpperCase() +'<gr> • </gr><wh>'+ path +'</wh>';
 	var mode = $( this ).data( 'mode' );
 	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
-		var modetitle = path;
 		var query = {
 			  query  : 'ls'
 			, string : path
 			, format : [ 'file' ]
 		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
+		if ( [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ) {
+			var format = [ 'album', 'artist' ];
+		} else if ( G.mode === 'conductor' ) {
+			var format = [ 'album', 'conductor' ];
+		} else {
+			var format = [ 'album' ];
+		}
 		var query = {
 			  query  : 'find'
 			, mode   : G.mode
 			, string : path
-			, format : [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
+			, format : format
 		}
 	} else { // track list
 		if ( [ 'album', 'composer', 'date' ].indexOf( G.mode ) !== -1  ) {
@@ -1668,10 +1672,10 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, format : [ 'album', 'artist' ]
 				}
 			}
-		} else if ( G.mode === 'genre' ) { // genre (entire album)
+		} else if ( G.mode === 'genre' || G.mode === 'conductor' ) { // genre (entire album)
 			var query = {
 				  query  : 'find'
-				, mode   : [ 'album', 'artist' ]
+				, mode   : [ 'album', G.mode === 'genre' ? 'artist' : 'conductor' ]
 				, string : [ name, path ]
 			}
 		} else {  // artist, albumartist, composer (by album + mode)
@@ -1683,6 +1687,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			}
 		}
 	}
+	var modetitle = '<wh>'+ ( $( '#mode-title wh' ).text() || path ) +'</wh>';
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	list( query, function( data ) {
 		data.path = path;

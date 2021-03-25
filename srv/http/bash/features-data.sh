@@ -25,7 +25,7 @@ fi
 	, "shairport-sync"  : '$( systemctl -q is-active shairport-sync && echo true || echo false )
 [[ -e /usr/bin/snapserver ]] && data+='
 	, "snapserver"      : '$( systemctl -q is-active snapserver && echo true || echo false )'
-	, "snapclient"      : '$( systemctl -q is-active snapclient && echo true || echo false )'
+	, "snapclient"      : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )'
 	, "snappassword"    : "'$( cat $dirsystem/snapclientpw 2> /dev/null )'"'
 [[ -e /usr/bin/spotifyd ]] && data+='

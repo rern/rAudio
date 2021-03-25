@@ -39,7 +39,7 @@ if [[ $type =~ radioparadise.com ]]; then
 		world|eclectic ) chan=3 ;;
 		* )              chan=0 ;;
 	esac
-	url=$( jq -r .cover <<< $( wget -qO - https://api.radioparadise.com/api/now_playing?chan=$chan ) )
+	url=$( jq -r .cover <<< $( curl -sL https://api.radioparadise.com/api/now_playing?chan=$chan ) )
 	[[ -n $url ]] && ext=jpg && onlineCoverart
 fi
 

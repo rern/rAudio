@@ -164,6 +164,7 @@ smbset )
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient
+	pushRefresh
 	;;
 snapclientset )
 	latency=${args[1]}
@@ -171,6 +172,7 @@ snapclientset )
 	sed -i '/OPTS=/ s/".*"/"--latency='$latency'"/' /etc/default/snapclient
 	[[ -n $password ]] && echo $pwd > $dirsystem/snapclientpw
 	touch $dirsystem/snapclient
+	pushRefresh
 	;;
 snapserver )
 	if [[ ${args[1]} == true ]]; then

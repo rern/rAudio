@@ -341,7 +341,7 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	;;
 packagehref )
 	pkg=${args[1]}
-	if [[ 'bluez-alsa-git hfsprogs matchbox-window-manager mpdscribble snapcast upmpdcli' == *"$pkg"* ]]; then
+	if [[ ' bluez-alsa-git hfsprogs matchbox-window-manager mpdscribble snapcast upmpdcli ' == *" $pkg "* ]]; then
 		url=https://aur.archlinux.org/packages
 	else
 		url=https://archlinuxarm.org/packages/armv7h

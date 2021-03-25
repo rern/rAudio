@@ -139,6 +139,19 @@ function psCoverart( data ) {
 	var url = decodeURIComponent( data.url );
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
+		case 'cover': // change coverart
+			var mpdpath = path.replace( '/mnt/MPD/', '' );
+			if ( G.playback ) {
+				$( '#vu' ).addClass( 'hide' );
+				if ( mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
+					$( '#coverart' )
+						.attr( 'src', src )
+						.removeClass( 'hide' );
+				}
+			} else if ( G.library ) {
+				if ( mpdpath === $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
+			}
+			break;
 		case 'coverart':
 			G.status.coverart = src;
 			if ( G.playback ) {
@@ -148,11 +161,20 @@ function psCoverart( data ) {
 					.removeClass( 'hide' );
 			}
 			break;
-		case 'bookmarks':
-			var $li = $( '.bookmark' ).filter( function() {
+		case 'bookmark':
+			var $this = $( '.bookmark' ).filter( function() {
 				return $( this ).find( '.lipath' ).text() === path;
 			} );
-			if ( $li.length ) $li.attr( 'src', src );
+			var $img = $this.find( 'img' );
+			var src = '/mnt/MPD/'+ src;
+			if ( $img.length ) {
+				$img.attr( 'src', src  );
+			} else {
+				$this.find( '.fa-bookmark' ).remove();
+				$this.find( '.divbklabel' ).remove();
+				$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ src +'">' );
+				$( '.mode-bookmark img' ).css( 'opacity', '' );
+			}
 			break;
 		case 'webradio':
 			G.status.coverartradio = src;

@@ -150,7 +150,7 @@ rotateSplash() {
 		UD )     degree=180;;
 	esac
 	convert \
-		-density 64 \
+		-density 48 \
 		-background none $dirimg/icon.svg \
 		-rotate $degree \
 		-gravity center \
@@ -263,7 +263,7 @@ addonslist )
 	fi
 	
 	url=$( jq -r .push.url $diraddons/addons-list.json )
-	[[ -n $url ]] && wget $url -qO - | sh
+	[[ -n $url ]] && bash <( curl -sL $url )
 	;;
 bluetoothplayer )
 	val=${args[1]}
@@ -392,7 +392,7 @@ displayget )
 	data+='
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
-, "order"      : '$( cat $dirsystem/order 2> /dev/null )'
+, "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 , "volumenone" : '$volumenone'

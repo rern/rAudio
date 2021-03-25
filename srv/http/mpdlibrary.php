@@ -16,8 +16,12 @@ AlbumArtist
 			track list: mpc find -f %*% album $album albumartist $albumartist
 Composer
 	mpc list composer > /srv/http/data/mpd/composer
-		album list: mpc find -f %composer%^^%album% composer composer
-			track list: mpc find -f %*% album $album composer composer
+		album list: mpc find -f %composer%^^%album% composer $composer
+			track list: mpc find -f %*% album $album composer $composer
+Conductor
+	mpc list conductor > /srv/http/data/mpd/conductor
+		album list: mpc find -f %conductor%^^%album% conductor $conductor
+			track list: mpc find -f %*% album $album conductor $conductor
 Genre
 	mpc list genre > /srv/http/data/mpd/genre
 		artist-album list: mpc find -f %artist%^^%album% genre $genre
@@ -38,10 +42,9 @@ include '/srv/http/indexbar.php';
 $mode = $_POST[ 'mode' ] ?? null;
 $string = $_POST[ 'string' ] ?? null;
 $string = escape( $string );
-$formatall = [ 'album', 'albumartist', 'artist', 'composer', 'date', 'file', 'genre', 'time', 'title', 'track' ];
+$formatall = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'date', 'file', 'genre', 'time', 'title', 'track' ];
 $f = $_POST[ 'format' ] ?? $formatall;
 $format = '%'.implode( '%^^%', $f ).'%';
-$modes = [ 'album' => 0, 'albumartist' => 1, 'artist' => 2, 'composer' => 3, 'date' => 4, 'genre' => 5 ];
 
 switch( $_POST[ 'query' ] ) {
 
@@ -73,15 +76,15 @@ case 'find':
 	}
 	if ( count( $f ) > 2 ) {
 		$array = htmlTracks( $lists, $f );
-	} else { // modes - album, artist, albumartist, composer, genre: 2 fields format
-		$array = htmlFind( $mode, $lists, $f );
+	} else { // modes - album, artist, albumartist, composer, conductor, genre: 2 fields format
+		$array = htmlFind( $lists, $f );
 	}
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
 	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display' ) ) $filemode.= 'byartist';
 	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
-	$array = htmlList( $mode, $lists );
+	$array = htmlList( $lists );
 	break;
 case 'ls':
 	$subdirs = 0;
@@ -243,9 +246,10 @@ function HMS2second( $time ) {
 		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
 	}
 }
-function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
+function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -282,7 +286,7 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 		if ( in_array( $mode, [ 'artist', 'albumartist' ] ) ) { // display as artist - album
 			$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
 		} else {
-			$name = $fL > 1 ? $val1.'<gr> • </gr>'.$val0 : $val0;
+			$name = $fL > 1 && $mode !== 'conductor' ? $val1.'<gr> • </gr>'.$val0 : $val0;
 		}
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
@@ -302,9 +306,10 @@ function htmlFind( $mode, $lists, $f ) { // non-file 'find' command
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
 	return [ 'html' => $html, 'index' => $indexbar ];
 }
-function htmlList( $mode, $lists ) { // non-file 'list' command
+function htmlList( $lists ) { // non-file 'list' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
 	$html = '';
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
@@ -416,7 +421,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$coverart = exec( $script );
 		$nocover = '';
 		if ( !$coverart ) {
-			$coverart = '/assets/img/cover.'.time().'.svg';
+			$coverart = '/assets/img/coverart.'.time().'.svg';
 			$nocover = ' nocover';
 		}
 		$coverhtml = '<li data-mode="file" class="licover">'
@@ -427,6 +432,9 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.'<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
 			if ( $each0->composer ) {
 		$coverhtml.= '<div class="licomposer"><i class="fa fa-composer"></i>'.$each0->composer.'</div>';
+			}
+			if ( $each0->conductor ) {
+		$coverhtml.= '<div class="liconductor"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>';
 			}
 			if ( $each0->genre ) {
 		$coverhtml.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';

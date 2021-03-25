@@ -35,17 +35,6 @@ function addonsdl( std ) {
 		location.href = '/settings/addons.php';
 	}
 }
-function bookmarkThumbReplace( $this, newimg ) {
-	var $img = $this.find( 'img' );
-	if ( $img.length ) {
-		$img.attr( 'src', newimg  );
-	} else {
-		$this.find( '.fa-bookmark' ).remove();
-		$this.find( '.divbklabel' ).remove();
-		$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ newimg +'">' );
-		$( '.mode-bookmark img' ).css( 'opacity', '' );
-	}
-}
 function clearIntervalAll() {
 	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
@@ -150,7 +139,7 @@ function coverartChange() {
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'coverart' );
+			imageReplace( imagefile, 'cover' );
 		}
 	}
 	if ( G.playback ) {
@@ -537,7 +526,7 @@ function HMS2Second( HMS ) {
 	if ( !hhmmss[ 2 ] ) return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60;
 	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
-function imageReplace( imagefile, type, callback ) {
+function imageReplace( imagefile, type ) {
 	var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 	var ext = '.'+ file.name.split( '.' ).pop();
 	var formData = new FormData();
@@ -561,7 +550,6 @@ function imageReplace( imagefile, type, callback ) {
 		, processData : false  // no - process the data
 		, contentType : false  // no - contentType
 		, success     : function() {
-			if ( callback ) callback( ext );
 			$( '.edit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 		}
@@ -673,15 +661,15 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( position );
 }
 function orderLibrary() {
-	if ( G.display.order ) {
-		$.each( G.display.order, function( i, name ) {
-			var $libmode = $( '.lib-mode' ).filter( function() {
-				return $( this ).find( '.lipath' ).text() === name;
-			} );
-			$libmode.detach();
-			$( '#lib-mode-list' ).append( $libmode );
+	if ( !G.display.order ) return
+	
+	$.each( G.display.order, function( i, name ) {
+		var $libmode = $( '.lib-mode' ).filter( function() {
+			return $( this ).find( '.lipath' ).text() === name;
 		} );
-	}
+		$libmode.detach();
+		$( '#lib-mode-list' ).append( $libmode );
+	} );
 }
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
@@ -873,9 +861,9 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'webradio' ) htmlpath += '<i class="button-webradio-new fa fa-plus-circle"></i>';
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else { // dir breadcrumbs
-		var dir = data.modetitle.split( '/' );
+		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
-		var htmlpath = '<i class="fa fa-'+ dir0.toLowerCase() +'"></i>';
+		var htmlpath = '<i class="x fa fa-'+ dir0.toLowerCase() +'"></i>';
 		htmlpath += '<a>'+ dir0 +'/<span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
@@ -949,6 +937,10 @@ function renderLibraryList( data ) {
 			$( '#lib-list p' )
 				.removeClass( 'bars-on' )
 				.css( 'height', pH + 49 - coverH );
+		}
+		if ( !G.display.hidecover ) {
+			var limode = [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ? G.mode : 'infopath';
+			$( '.licover .li'+ limode ).hide();
 		}
 	} );
 	if ( G.color ) {

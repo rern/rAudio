@@ -211,7 +211,7 @@ function playlistRename() {
 function tagEditor() {
 	var file = G.list.path;
 	var cue = file.slice( -4 ) === '.cue';
-	var format = [ 'album', 'albumartist', 'artist', 'composer', 'genre', 'date' ];
+	var format = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
 	var fL = format.length;
 	if ( !G.list.licover ) {
 		if ( !cue ) {
@@ -294,7 +294,7 @@ function tagEditor() {
 							  query  : 'find'
 							, mode   : mode
 							, string : path
-							, format : [ 'genre', 'composer', 'date' ].indexOf( mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
+							, format : [ 'genre', 'composer', 'conductor', 'date' ].indexOf( mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
 						}
 					} else {
 						if ( G.library ) {
@@ -364,11 +364,6 @@ function tagEditor() {
 		} );
 		loader( 'hide' );
 	}, 'json' );
-}
-function updateThumbnails() {
-	// enclosed in double quotes entity &quot;
-	var path = G.list.path.slice( -4 ) !== '.cue' ? G.list.path : G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) );
-	infoCoverartScan( path );
 }
 function webRadioCoverart() {
 	var path = G.library ? G.list.path : G.status.file;
@@ -619,7 +614,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		  bookmark   : bookmarkNew
 		, plrename   : playlistRename
 		, pldelete   : playlistDelete
-		, thumbnail  : updateThumbnails
 		, wrcoverart : webRadioCoverart
 		, wrdelete   : webRadioDelete
 		, wredit     : webRadioEdit

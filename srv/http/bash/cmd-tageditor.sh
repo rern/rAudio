@@ -6,7 +6,7 @@ album=${args[1]}
 cue=${args[2]}
 path="/mnt/MPD/$file"
 args=( "${args[@]:3}" )
-keys=( album albumartist artist composer genre date )
+keys=( album albumartist artist composer conductor genre date )
 
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "$1"
@@ -15,7 +15,7 @@ pushstream() {
 if [[ $cue == false ]]; then
 	if [[ $album == false ]]; then
 		keys+=( title track )
-		for i in 0 1 2 3 4 5 6 7; do
+		for i in {0..8}; do
 			val=${args[$i]//\"/\\\"}
 			[[ -z $val ]] && continue
 			
@@ -24,7 +24,7 @@ if [[ $cue == false ]]; then
 		done
 		dir=$( dirname "$file" )
 	else
-		for i in 0 1 2 3 4 5; do
+		for i in {0..6}; do
 			val=${args[$i]//\"/\\\"}
 			[[ -z $val ]] && continue
 			
@@ -43,8 +43,8 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 }
 ' "$path"
 	else
-		lines=( 'TITLE' 'PERFORMER' 'REM COMPOSER' 'REM DATE' 'REM GENRE' )
-		for i in 0 1 2 3 4 5; do
+		lines=( 'TITLE' 'PERFORMER' 'REM COMPOSER' 'REM CONDUCTOR' 'REM DATE' 'REM GENRE' )
+		for i in {0..6}; do
 			val=${args[$i]}
 			[[ -z $val ]] && continue
 			
@@ -55,8 +55,9 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 				0 ) sed -i "1 i\TITLE \"$val\"" "$path";;
 				1 ) sed -i "1 i\PERFORMER \"$val\"" "$path";;
 				2 ) sed -i "1 a\REM COMPOSER \"$val\"" "$path";;
-				3 ) sed -i "1 a\REM DATE \"$val\"" "$path";;
-				4 ) sed -i "1 a\REM GENRE \"$val\"" "$path";;
+				3 ) sed -i "1 a\REM CONDUCTOR \"$val\"" "$path";;
+				4 ) sed -i "1 a\REM DATE \"$val\"" "$path";;
+				5 ) sed -i "1 a\REM GENRE \"$val\"" "$path";;
 			esac
 		done
 	fi

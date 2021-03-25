@@ -2,11 +2,9 @@
 
 . /srv/http/bash/addons.sh
 
-timestart
-
 title "$bar Update Album Thumbnails ..."
 
-Sstart=$( date +%s )
+SECONDS=0
 
 albumfile=/srv/http/data/mpd/album
 
@@ -30,10 +28,17 @@ i=0
 for mpdpath in "${lines[@]}"; do
 	(( i++ ))
 	percent=$(( $i * 100 / $count ))
-	elapse=$(( $( date +%s ) - $Sstart ))
-	[[ $percent > 0 ]] && total=$( formatTime $(( $elapse * 100 / $percent )) ) || total=0
-	elapse=$( formatTime $elapse )
-	echo "${percent}% $( tcolor "$elapse/$total $i/$count" 8 ) $( tcolor "$mpdpath" )"
+	if (( $percent > 0 )); then
+		sec=$SECONDS
+		total=$(( $sec * 100 / $percent ))
+	else
+		sec=0
+		total=0
+	fi
+	elapse=$( date -d@$sec -u +%H:%M:%S )
+	total=$( date -d@$total -u +%H:%M:%S )
+	echo $percent% $( tcolor $elapse/$total 8 )
+	echo $i/$count $( tcolor "$mpdpath" )
 	
 	dir="/mnt/MPD/$mpdpath"
 	if ls "$dir/coverart".* &> /dev/null; then
@@ -80,6 +85,6 @@ for mpdpath in "${lines[@]}"; do
 	fi
 done
 
-timestop
+echo Duration: $( date -d@$SECONDS -u +%H:%M:%S )
 
 title -l '=' "$bar Done"
