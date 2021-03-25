@@ -9,7 +9,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	pushstream refresh '{ "page": "mpd" }'
+	pushstream refresh '{ "page": "player" }'
 }
 restartMPD() {
 	/srv/http/bash/mpd-conf.sh
