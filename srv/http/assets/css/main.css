@@ -1521,6 +1521,9 @@ i.map.disabled, .map.disabled i {
 	height: 100%;
 	padding: 90px 7px 7px 7px;
 }
+#lib-mode-list.barshidden {
+	padding: 50px 7px 7px 7px;
+}
 #lib-mode-list:after { /* fix 0 height */
 	content: " "; 
 	display: block;
