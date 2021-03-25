@@ -70,10 +70,15 @@ title() {
 	[[ $nobottom == 0 ]] && echo $( lcolor $lbottom $cbottom )
 }
 
-# for install/uninstall scripts ##############################################################
-timestart() { # timelapse: any argument
-	time0=$( date +%s )
-	[[ $1 ]] && timelapse0=$( date +%s )
+formatTime() {
+	h=00$(( $1 / 3600 ))
+	hh=${h: -2}
+	m=00$(( $1 % 3600 / 60 ))
+	mm=${m: -2}
+	s=00$(( $1 % 60 ))
+	ss=${s: -2}
+	[[ $hh == 00 ]] && hh= || hh=$hh:
+	echo $hh$mm:$ss
 }
 wgetnc() {
 	[[ -t 1 ]] && progress='--show-progress'

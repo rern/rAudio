@@ -2,7 +2,7 @@
 
 . /srv/http/bash/addons.sh
 
-timestart
+SECONDS=0
 
 title "$bar Update Album Thumbnails ..."
 
@@ -80,6 +80,6 @@ for mpdpath in "${lines[@]}"; do
 	fi
 done
 
-timestop
+echo Duration: $( formatTime $SECONDS )
 
 title -l '=' "$bar Done"
