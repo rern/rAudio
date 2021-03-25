@@ -13,7 +13,7 @@ function bash( command, callback, json ) {
 }
 var cmd = {
 	  avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
-	, asound       : [ '/srv/http/bash/mpd.sh devices', -1 ]
+	, asound       : [ '/srv/http/bash/player.sh devices', -1 ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ 'cat /boot/config.txt' ]

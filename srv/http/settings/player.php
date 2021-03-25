@@ -166,7 +166,7 @@ $gid = exec( "$sudo/id -g mpd" );
 			<code>enable "yes"</code>
 		<br>Should be disabled if not used for faster Sources update.
 		<br>Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
-		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/mpd.sh filetype' ) )?></div>
+		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
 	</span>
 </div>
 <div class="col-l double">
