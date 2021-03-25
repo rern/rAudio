@@ -888,7 +888,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+	if ( !G.status.volumenone ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 } ).click( function() {
 	hideGuide();
 	if ( G.status.volumenone ) return
