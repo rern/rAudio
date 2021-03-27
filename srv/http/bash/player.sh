@@ -9,7 +9,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	pushstream refresh '{ "page": "mpd" }'
+	pushstream refresh '{ "page": "player" }'
 }
 restartMPD() {
 	/srv/http/bash/mpd-conf.sh
@@ -160,7 +160,7 @@ customset )
 devices )
 	devices=$'# cat /etc/asound.conf\n'$( cat /etc/asound.conf )
 	devices+=$'\n\n# aplay -l | grep ^card\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n# amixer scontrols\n'$( /srv/http/bash/mpd.sh amixer )
+	devices+=$'\n\n# amixer scontrols\n'$( /srv/http/bash/player.sh amixer )
 	echo "$devices"
 	;;
 dop )

@@ -234,7 +234,7 @@ function displayBars() {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
-		$( '#page-playback' ).addClass ( 'barshidden' );
+		$( '#page-playback, #lib-mode-list' ).addClass ( 'barshidden' );
 		$( '#button-data' ).addClass( 'nobars' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
@@ -244,7 +244,7 @@ function displayBars() {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
-		$( '#page-playback' ).removeClass ( 'barshidden' );
+		$( '#page-playback, #lib-mode-list' ).removeClass ( 'barshidden' );
 		$( '#button-data' ).removeClass( 'nobars' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
@@ -269,7 +269,7 @@ function displayCheckbox( checkboxes ) {
 			col = ' class="infocol"';
 			br = '';
 			val = val.slice( 1 );
-		} else if ( key === 'hr' ) {
+		} else if ( val.slice( -4 ) === '<br>' ) {
 			html += val;
 			return
 		} else {
@@ -836,7 +836,6 @@ function renderLibrary() {
 	$( '.edit' ).remove();
 	$( '#liimg' ).css( 'opacity', '' );
 	orderLibrary();
-//	displayBars();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
 }
 function renderLibraryList( data ) {

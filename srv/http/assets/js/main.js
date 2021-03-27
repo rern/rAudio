@@ -91,7 +91,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 	G.display.screenoff = G.localhost;
 	var submenu = {
 		  relays     : 'features'
-		, snapclient : 'mpd'
+		, snapclient : 'player'
 		, lock       : 'system'
 		, screenoff  : 'power'
 	};
@@ -218,13 +218,16 @@ var chklibrary = {
 	, nas            : '_<i class="fa fa-networks"></i>Network'
 	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
 	, album          : '_<i class="fa fa-album"></i>Album'
-	, artist         : '<i class="fa fa-artist"></i>Artist'
-	, composer       : '_<i class="fa fa-composer"></i>Composer'
+	, br             : '<br>'
+	, artist         : '_<i class="fa fa-artist"></i>Artist'
 	, albumartist    : '<i class="fa fa-albumartist"></i>AlbumArtist'
-	, genre          : '_<i class="fa fa-genre"></i>Genre'
-	, date           : '<i class="fa fa-date"></i>Date'
-	, count          : '_<gr>text</gr> Count'
-	, label          : '<gr>text</gr> Label'
+	, composer       : '_<i class="fa fa-composer"></i>Composer'
+	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
+	, date           : '_<i class="fa fa-date"></i>Date'
+	, genre          : '<i class="fa fa-genre"></i>Genre'
+	, br1            : '<hr><px30/><gr>Text:</gr><br>'
+	, count          : '_Count'
+	, label          : 'Label'
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-coverart"></i>Sort Album by artists'
@@ -232,8 +235,8 @@ var chklibrary2 = {
 	, tapaddplay     : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus"></i>Add + Play'
 	, tapreplaceplay : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace"></i>Replace + Play'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i></gr>'
-	, hr             : '<hr><px30/><i class="fa fa-coverart"></i>Cover art band <gr>in tracks view</gr><br>'
+	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i>'
+	, br             : '<hr><px30/><i class="fa fa-coverart"></i>Cover art band <gr>in tracks view</gr><br>'
 	, hidecover      : 'Hide'
 	, fixedcover     : 'Fix <gr>on large screen</gr>'
 }
@@ -885,6 +888,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
+	if ( G.status.volumenone ) return
+	
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 } ).click( function() {
 	hideGuide();
@@ -892,15 +897,19 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	
 	clearTimeout( G.volumebar );
 	volumebarTimeout();
-	var voldn = this.id === 'volume-band-dn';
+	var updn = this.id.slice( -2 );
 	var vol = G.status.volume;
-	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
-	
-	$( '#vol'+ ( voldn ? 'dn' : 'up' ) ).click();
-	voldn ? vol-- : vol++;
+	if ( updn === 'dn' ) {
+		if ( vol > 0 ) vol--;
+	} else {
+		if ( vol < 100 ) vol++;
+	}
+	$( '#vol'+ updn ).click();
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).taphold( function() {
+	if ( G.status.volumenone ) return
+	
 	G.hold = 1;
 	clearTimeout( G.volumebar );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );

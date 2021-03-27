@@ -95,7 +95,7 @@ function setMixerType( mixertype ) {
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
 }
 refreshData = function() {
-	bash( '/srv/http/bash/mpd-data.sh', function( list ) {
+	bash( '/srv/http/bash/player-data.sh', function( list ) {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		

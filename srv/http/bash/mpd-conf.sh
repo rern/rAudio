@@ -18,7 +18,7 @@ pushstream() {
 restartMPD() {
 	systemctl restart mpd
 	pushstream mpdplayer "$( /srv/http/bash/status.sh )"
-	pushstream refresh '{"page":"mpd"}'
+	pushstream refresh '{"page":"player"}'
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
