@@ -43,21 +43,22 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 }
 ' "$path"
 	else
-		lines=( 'TITLE' 'PERFORMER' 'REM COMPOSER' 'REM CONDUCTOR' 'REM DATE' 'REM GENRE' )
+		lines=( 'TITLE' 'PERFORMER' '' 'REM COMPOSER' 'REM CONDUCTOR' 'REM DATE' 'REM GENRE' )
 		for i in {0..6}; do
 			val=${args[$i]}
 			[[ -z $val ]] && continue
 			
-			sed -i "/^${lines[$i]}/ d" "$path"
+			[[ -n ${lines[$i]} ]] && sed -i "/^${lines[$i]}/ d" "$path"
 			[[ $val == -1 ]] && continue
 			
 			case $i in
 				0 ) sed -i "1 i\TITLE \"$val\"" "$path";;
 				1 ) sed -i "1 i\PERFORMER \"$val\"" "$path";;
-				2 ) sed -i "1 a\REM COMPOSER \"$val\"" "$path";;
-				3 ) sed -i "1 a\REM CONDUCTOR \"$val\"" "$path";;
-				4 ) sed -i "1 a\REM DATE \"$val\"" "$path";;
-				5 ) sed -i "1 a\REM GENRE \"$val\"" "$path";;
+				2 ) sed -i 's/^\(\s\+PERFORMER\).*/\1 "'$val'"/' "$path";;
+				3 ) sed -i "1 a\REM COMPOSER \"$val\"" "$path";;
+				4 ) sed -i "1 a\REM CONDUCTOR \"$val\"" "$path";;
+				5 ) sed -i "1 a\REM DATE \"$val\"" "$path";;
+				6 ) sed -i "1 a\REM GENRE \"$val\"" "$path";;
 			esac
 		done
 	fi
