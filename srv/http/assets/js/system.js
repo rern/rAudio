@@ -40,6 +40,121 @@ function dataBackup( netctl ) {
 		}
 	} );
 }
+var formdata = {}
+var htmlmount = heredoc( function() { /*
+	<form id="formmount" class="infocontent">
+		<div class="infotextlabel">
+			Type<br>
+			Name<br>
+			IP<br>
+			<span id="sharename">Share name</span><br>
+			<span class="guest">
+				User<br>
+				Password<br>
+			</span>
+			Options
+		</div>
+		<div class="infotextbox">
+			<label><input type="radio" name="protocol" value="cifs"> CIFS</label>&emsp;
+			<label><input type="radio" name="protocol" value="nfs"> NFS</label>&emsp;
+			<input type="text" class="infoinput" name="mountpoint" spellcheck="false">
+			<input type="text" class="infoinput" name="ip" spellcheck="false">
+			<input type="text" class="infoinput" name="directory" spellcheck="false">
+			<div class="guest">
+				<input type="text" class="infoinput" name="user" spellcheck="false">
+				<input type="password" id="infoPasswordBox" class="infoinput" name="password">
+			</div>
+			<input type="text" class="infoinput" name="options" spellcheck="false">
+		</div>
+		<div id="infotextsuffix">
+			<i class="eye fa fa-eye fa-lg guest"></i>
+		</div>
+		<div id="infoCheckBox" class="infocontent infocheckbox infohtml">
+			<label><input type="checkbox" name="update" value="true" checked>&ensp;Update Library on mount</label>
+		</div>
+	</form>
+*/ } );
+function infoMount( formdata ) {
+	var data = {};
+	info( {
+		  icon    : 'network'
+		, title   : 'Add Network Share'
+		, content : htmlmount
+		, preshow : function() {
+			if ( $.isEmptyObject( formdata ) ) {
+				$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', 1 );
+				$( '#infotextbox input:eq( 1 )' ).val( '192.168.1.' );
+				$( '#infoCheckBox input' ).prop( 'checked', true );
+			} else {
+				if ( formdata.protocol === 'cifs' ) {
+					$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', 1 );
+					$( '#infotextbox input:eq( 3 )' ).val( formdata.user );
+					$( '#infotextbox input:eq( 4 )' ).val( formdata.password );
+				} else {
+					$( 'input[name=protocol]:eq( 1 )' ).prop( 'checked', 1 );
+					$( '.guest' ).addClass( 'hide' );
+				}
+				$( '#infotextbox input:eq( 0 )' ).val( formdata.mountpoint );
+				$( '#infotextbox input:eq( 1 )' ).val( formdata.ip );
+				$( '#infotextbox input:eq( 2 )' ).val( formdata.directory );
+				$( '#infotextbox input:eq( 5 )' ).val( formdata.options );
+				$( '#infoCheckBox input' ).prop( 'checked', formdata.update );
+			}
+			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
+			$( '.eye.guest' ).css( 'margin-top', '210px' );
+			var $dir = $( 'input[name=directory]' );
+			$( 'input[name=protocol]' ).change( function() {
+				if ( $( this ).val() === 'nfs' ) {
+					$( '#sharename' ).text( 'Share path' );
+					$( '.guest' ).addClass( 'hide' );
+					$dir.val( '/'+ $dir.val() );
+				} else {
+					$( '#sharename' ).text( 'Share name' );
+					$( '.guest' ).removeClass( 'hide' );
+					$dir.val( $dir.val().replace( /\//g, '' ) );
+				}
+			} );
+			// verify
+			$( '#infoOk' ).addClass( 'disabled' );
+			$( '.infoinput' ).keyup( function() {
+				var form = document.getElementById( 'formmount' );
+				data = Object.fromEntries( new FormData( form ).entries() );
+				var valid = data.mountpoint && data.directory && validateIP( data.ip );
+				$( '#infoOk' ).toggleClass( 'disabled', !valid );
+			} );
+		}
+		, ok      : function() {
+			if ( data.protocol === 'cifs' ) {
+				var options = 'noauto';
+				options += ( !data.user ) ? ',username=guest,password=' : ',username='+ data.user +',password='+ data.password;
+				options += ',uid='+ $( '#list' ).data( 'uid' ) +',gid='+ $( '#list' ).data( 'gid' ) +',iocharset=utf8';
+				options += data.options ? ','+ data.options : '';
+			} else {
+				var options = 'defaults,noauto,bg,soft,timeo=5';
+				options += data.options ? ','+ data.options : '';
+			}
+			data.options = options;
+			data.update = $( 'input[name=update]' ).prop( 'checked' );
+			notify( 'Network Mount', 'Mount ...', 'network' );
+			bash( [ 'mount', JSON.stringify( data ) ], function( std ) {
+				if ( std !== 0 ) {
+					info( {
+						  icon    : 'network'
+						, title   : 'Mount Share'
+						, message : std
+						, ok      : function() {
+							infoMount( data );
+						}
+					} );
+				} else {
+					refreshData();
+				}
+				$( '#refreshing' ).addClass( 'hide' );
+			}, 'json' );
+			$( '#refreshing' ).removeClass( 'hide' );
+		}
+	} );
+}
 function rebootText( enable, device ) {
 	var exist = 0;
 	if ( G.reboot.length ) {
@@ -83,6 +198,21 @@ refreshData = function() {
 		);
 		$( '#status' ).html( renderStatus );
 		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
+		var html = '';
+		$.each( G.list, function( i, val ) {
+			if ( val.mounted ) {
+				var dataunmounted = '';
+				var dot = '<grn>&ensp;&bull;&ensp;</grn>';
+			} else {
+				var dataunmounted = ' data-unmounted="1"';
+				var dot = '<red>&ensp;&bull;&ensp;</red>';
+			}
+			html += '<li '+ dataunmounted;
+			html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
+			html += '<gr class="source">'+ val.source +'</gr>';
+			html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
+		} );
+		$( '#list' ).html( html );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
 		$( '#wlan' ).prop( 'checked', G.wlan )
@@ -181,6 +311,66 @@ $( '#refresh' ).click( function( e ) {
 			}, 'json' );
 		}, 10000 );
 		banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
+	}
+} );
+$( '#addnas' ).click( function() {
+	infoMount();
+} );
+$( '#list' ).on( 'click', 'li', function() {
+	var $this = $( this );
+	var mountpoint = $this.find( '.mountpoint' ).text();
+	if ( mountpoint === '/' ) return
+	
+	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
+		var icon = 'network';
+		var title = 'Network Mount';
+	} else {
+		var icon = 'usbdrive';
+		var title = 'Local Mount';
+	}
+	var source = $this.find( '.source' ).text();
+	if ( !$this.data( 'unmounted' ) ) {
+		info( {
+			  icon    : icon
+			, title   : title
+			, message : '<wh>'+ mountpoint +'</wh>'
+			, oklabel : 'Unmount'
+			, okcolor : orange
+			, ok      : function() {
+				notify( title, 'Unmount ...', icon )
+				bash( [ 'unmount', mountpoint ], function() {
+					refreshData();
+					$( '#refreshing' ).addClass( 'hide' );
+				} );
+				$( '#refreshing' ).removeClass( 'hide' );
+			}
+		} );
+	} else { // remove / remount
+		info( {
+			  icon        : icon
+			, title       : title
+			, message     : '<wh>'+ mountpoint +'</wh>'
+			, buttonwidth : 1
+			, buttonlabel : 'Remove'
+			, buttoncolor : red
+			, button      : function() {
+				notify( title, 'Remove ...', icon );
+				bash( [ 'remove', mountpoint ], function() {
+					refreshData();
+					$( '#refreshing' ).addClass( 'hide' );
+				} );
+				$( '#refreshing' ).removeClass( 'hide' );
+			}
+			, oklabel     : 'Remount'
+			, ok          : function() {
+				notify( title, 'Remount ...', icon );
+				bash( [ 'remount', mountpoint, source ], function() {
+					refreshData();
+					$( '#refreshing' ).addClass( 'hide' );
+				} );
+				$( '#refreshing' ).removeClass( 'hide' );
+			}
+		} );
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {

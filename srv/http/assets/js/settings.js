@@ -309,8 +309,6 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
 $( '.status' ).click( function( e ) {
-	if ( e.target.id ) return
-	
 	codeToggle( $( this ).data( 'status' ), e.target );
 } );
 // bar-bottom

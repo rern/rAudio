@@ -227,38 +227,6 @@ mixertype )
 	[[ $mixertype == software ]] && mpc volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
-mount )
-	data=${args[1]}
-	protocol=$( jq -r .protocol <<< $data )
-	ip=$( jq -r .ip <<< $data )
-	directory=$( jq -r .directory <<< $data )
-	mountpoint="/mnt/MPD/NAS/$( jq -r .mountpoint <<< $data )"
-	options=$( jq -r .options <<< $data )
-
-	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP not found.' && exit
-
-	if [[ -e $mountpoint ]]; then
-		find "$mountpoint" -mindepth 1 | read && echo "Mount name <code>$mountpoint</code> not empty." && exit
-	else
-		mkdir "$mountpoint"
-	fi
-	chown mpd:audio "$mountpoint"
-	[[ $protocol == cifs ]] && source="//$ip/$directory" || source="$ip:$directory"
-	mount -t $protocol "$source" "$mountpoint" -o $options
-	if ! mountpoint -q "$mountpoint"; then
-		echo 'Mount failed.'
-		rmdir "$mountpoint"
-		exit
-	fi
-
-	source=${source// /\\040} # escape spaces in fstab
-	name=$( basename "$mountpoint" )
-	mountpoint=${mountpoint// /\\040}
-	echo "$source  $mountpoint  $protocol  $options  0  0" >> /etc/fstab && echo 0
-	/srv/http/bash/sources-update.sh "$mountpoint"
-	[[ $( jq -r .update <<< $data ) == true ]] && mpc update NAS
-	pushRefresh
-	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '/^user/ a\volume_normalization   "yes"' /etc/mpd.conf

@@ -341,7 +341,7 @@ function nicsStatus() {
 				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
 			} );
 		}
-		if ( G.infbt ) {
+		if ( G.btactive ) {
 			$( '#listbt' ).html( htmlbt );
 			var active = $( '#listbt grn' ).length > 0;
 			$( '#headbt' )
