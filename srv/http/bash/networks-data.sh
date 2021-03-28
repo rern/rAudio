@@ -106,7 +106,7 @@ fi
 
 data='
 	  "bluetooth" : '$btlist'
-	, "infbt"     : '$( rfkill | grep -q bluetooth && echo true || echo false )'
+	, "btactive"  : '$( systemctl -q is-active bluetooth && echo true || echo false )'
 	, "inflan"    : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
 	, "infwl"     : '$( rfkill | grep -q wlan && echo true || echo false )'
 	, "list"      : '$list'

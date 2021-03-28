@@ -63,7 +63,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <?php
 include "settings/$page.php";
 $htmlbar = '';
-foreach ( [ 'Features', 'MPD', 'Networks', 'System' ] as $name ) {
+foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	$id = strtolower( $name );
 	$htmlbar.= '<div id="'.$id.'"><i class="fa fa-'.$id.'"></i><a> '.$name.'</a></div>';
 }
