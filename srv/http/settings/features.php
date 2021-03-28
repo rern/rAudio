@@ -2,11 +2,11 @@
 	var set = '<?=( $_GET[ 'set' ] ?? '' )?>';
 </script>
 <div>
-<heading>Renderers<?=$help?></heading>
+<heading>Renderers<?=$ihelp?></heading>
 	<?php if ( file_exists( '/usr/bin/shairport-sync' ) ) { ?>
 <div data-status="shairport-sync" <?=$classstatus?>>
 	<a>AirPlay
-	<br><gr>shairport-sync<?=$code?></gr></a><i class="fa fa-airplay"></i>
+	<br><gr>shairport-sync<?=$istatus?></gr></a><i class="fa fa-airplay"></i>
 </div>
 <div class="col-r">
 	<input id="shairport-sync" <?=$chknoset?>>
@@ -33,7 +33,7 @@
 		  if ( file_exists( '/usr/bin/spotifyd' ) ) { ?>
 <div data-status="spotifyd" <?=$classstatus?>>
 	<a>Spotify
-	<br><gr>spotifyd<?=$code?></gr></a><i class="fa fa-spotify"></i>
+	<br><gr>spotifyd<?=$istatus?></gr></a><i class="fa fa-spotify"></i>
 </div>
 <div class="col-r">
 	<input id="spotifyd" <?=$chknoset?>>
@@ -47,7 +47,7 @@
 		  if ( file_exists( '/usr/bin/upmpdcli' ) ) { ?>
 <div data-status="upmpdcli" <?=$classstatus?>>
 	<a>UPnP
-	<br><gr>upmpdcli<?=$code?></gr></a><i class="fa fa-upnp"></i>
+	<br><gr>upmpdcli<?=$istatus?></gr></a><i class="fa fa-upnp"></i>
 </div>
 <div class="col-r">
 	<input id="upmpdcli" <?=$chknoset?>>
@@ -62,7 +62,7 @@
 </div>
 
 <div>
-<heading>Streamers<?=$help?></heading>
+<heading>Streamers<?=$ihelp?></heading>
 <div class="col-l double">
 	<a>For browsers
 	<br><gr>MPD http</gr></a><i class="fa fa-webradio"></i>
@@ -75,7 +75,7 @@
 	<?php if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
 <div data-status="snapserver" <?=$classstatus?>>
 	<a>SnapServer
-	<br><gr>snapserver<?=$code?></gr></a><i class="fa fa-snapcast"></i>
+	<br><gr>snapserver<?=$istatus?></gr></a><i class="fa fa-snapcast"></i>
 </div>
 <div class="col-r">
 	<input id="snapserver" <?=$chknoset?>>
@@ -91,10 +91,10 @@
 </div>
 
 <div>
-<heading>Others<?=$help?></heading>
+<heading>Others<?=$ihelp?></heading>
 <div data-status="hostapd" <?=$classstatus?>>
 	<a>Access Point
-	<br><gr>hostapd<?=$code?></gr></a><i class="fa fa-accesspoint"></i>
+	<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
 </div>
 <div class="col-r">
 	<input id="hostapd" class="enable hidden" type="checkbox">
@@ -108,7 +108,7 @@
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" <?=$classstatus?>>
 	<a>BitTorrent
-	<br><gr>transmission<?=$code?></gr></a><i class="fa fa-transmission"></i>
+	<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
 </div>
 <div class="col-r">
 	<input id="transmission" <?=$chkenable?>>
@@ -123,7 +123,7 @@
 		  if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div data-status="localbrowser" <?=$classstatus?>>
 	<a>Browser on RPi
-	<br><gr>localbrowser<?=$code?></gr></a><i class="fa fa-chromium"></i>
+	<br><gr>localbrowser<?=$istatus?></gr></a><i class="fa fa-chromium"></i>
 </div>
 <div class="col-r">
 	<input id="localbrowser" <?=$chkenable?>>
@@ -140,7 +140,7 @@
 		  if ( file_exists( '/usr/bin/aria2' ) ) { ?>
 <div data-status="aria2" <?=$classstatus?>>
 	<a>Downloader
-	<br><gr>aria2<?=$code?></gr></a><i class="fa fa-download"></i>
+	<br><gr>aria2<?=$istatus?></gr></a><i class="fa fa-download"></i>
 </div>
 <div class="col-r">
 	<input id="aria2" <?=$chkenable?>>
@@ -158,7 +158,7 @@
 	?>
 <div data-status="smb" <?=$classstatus?>>
 	<a>File Sharing
-	<br><gr>smb<?=$code?></gr></a><i class="fa fa-networks"></i>
+	<br><gr>smb<?=$istatus?></gr></a><i class="fa fa-networks"></i>
 </div>
 <div class="col-r">
 	<input id="smb" <?=$chkenable?>>
@@ -175,7 +175,7 @@
 	<?php } ?>
 <div data-status="mpdscribble" <?=$classstatus?>>
 	<a>Last.fm Scrobbler
-	<br><gr>mpdscribble<?=$code?></gr></a><i class="fa fa-lastfm"></i>
+	<br><gr>mpdscribble<?=$istatus?></gr></a><i class="fa fa-lastfm"></i>
 </div>
 <div class="col-r">
 	<input id="mpdscribble" <?=$chkenable?>>

@@ -16,7 +16,7 @@ foreach( $timezonelist as $key => $zone ) {
 $selecttimezone.= '</select>';
 $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status SERVICE</code></span>';
 ?>
-<heading data-status="journalctl" class="status">System<?=$code?></heading>
+<heading data-status="journalctl" class="status">System<?=$istatus?></heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
 	<br>OS Kernel
@@ -29,7 +29,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <pre id="codejournalctl" class="hide"></pre>
 
 <div>
-<heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$help?></heading>
+<heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$ihelp?></heading>
 <div id="statuslabel" class="col-l text gr">
 		CPU Load
 	<br>CPU Temperatue
@@ -73,7 +73,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 $uid = exec( "$sudo/id -u mpd" );
 $gid = exec( "$sudo/id -g mpd" );
 ?>
-<heading data-status="mount" class="noline status">Storage<?=$code?><i id="addnas" class="fa fa-plus-circle"></i><?=$help?></heading>
+<heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle"></i><?=$ihelp?></heading>
 <ul id="list" class="entries" data-uid="<?=$uid?>" data-gid="<?=$gid?>"></ul>
 <p class="brhalf"></p>
 <span <?=$classhelp?>>
@@ -95,11 +95,11 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 
 <div>
-<heading data-status="rfkill" class="status">Wireless<?=$code?></heading>
+<heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
 <pre id="coderfkill" class="hide"></pre>
 <div data-status="bluetoothctl" <?=$classstatus?>>
 	<a>Bluetooth
-	<br><gr><?=$code?></gr></a><i class="fa fa-bluetooth"></i>
+	<br><gr><?=$istatus?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
@@ -109,7 +109,7 @@ $gid = exec( "$sudo/id -g mpd" );
 <pre id="codebluetoothctl" class="hide"></pre>
 <div data-status="iw" <?=$classstatus?>>
 	<a>Wi-Fi
-	<br><gr><?=$code?></gr></a><i class="fa fa-wifi"></i>
+	<br><gr><?=$istatus?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="wlan" type="checkbox">
@@ -119,7 +119,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 
 <div>
-<heading data-status="configtxt" class="status">GPIO Devices<?=$code?><?=$help?></heading>
+<heading data-status="configtxt" class="status">GPIO Devices<?=$istatus?><?=$ihelp?></heading>
 <pre id="codeconfigtxt" class="hide"></pre>
 <div <?=$classhelp?>>
 	GPIO pin reference: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a>
@@ -154,7 +154,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
 	<a>Power Button
-	<br><gr>WiringPi <?=$code?></gr></a><i class="fa fa-power"></i>
+	<br><gr>WiringPi <?=$istatus?></gr></a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" class="enable" type="checkbox">
@@ -196,7 +196,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 
 <div>
-<heading>Environment<?=$help?></heading>
+<heading>Environment<?=$ihelp?></heading>
 <div class="col-l double">
 	<a>Name
 	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
@@ -222,7 +222,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 <div data-status="soundprofile" class="col-l icon double status">
 		<a>Sound Profile
-	<br><gr>kernel <?=$code?></gr></a><i class="fa fa-soundprofile"></i>
+	<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>
@@ -234,7 +234,7 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 
 <div>
-<heading id="backuprestore">Settings and Data<?=$help?></heading>
+<heading id="backuprestore">Settings and Data<?=$ihelp?></heading>
 <div data-status="backup" class="col-l single">Backup<i class="fa fa-sd"></i></div>
 <div class="col-r">
 	<input id="backup" type="checkbox">
@@ -285,7 +285,7 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <br><gr>by</gr>&emsp;r e r n
 <br>&nbsp;
 <div>
-<heading class="sub">Back End<?=$help?></heading>
+<heading class="sub">Back End<?=$ihelp?></heading>
 <span <?=$classhelp?>>
 	<a href="https://www.archlinuxarm.org">ArchLinuxArm</a>
 	<br><a id="pkg">Packages <i class="fa fa-chevron-down"></i></a>
@@ -293,13 +293,13 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 </span>
 </div>
 <div>
-<heading class="sub">Front End<?=$help?></heading>
+<heading class="sub">Front End<?=$ihelp?></heading>
 <span <?=$classhelp?>>
 	<?=$uihtml?>
 </span>
 </div>
 <div>
-<heading class="sub">Data<?=$help?></heading>
+<heading class="sub">Data<?=$ihelp?></heading>
 <span <?=$classhelp?>>
 	<a href="https://www.last.fm">last.fm</a><gr> - Coverarts and artist biographies</gr><br>
 	<a href="https://webservice.fanart.tv">fanart.tv</a><gr> - Coverarts and artist images</gr><br>

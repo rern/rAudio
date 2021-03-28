@@ -1,4 +1,4 @@
-<heading data-status="mpd" class="status">Music Plyer Daemon<?=$code?></heading>
+<heading data-status="mpd" class="status">Music Plyer Daemon<?=$istatus?></heading>
 <div class="col-l text gr">
 	Version
 	<br>Database
@@ -10,7 +10,7 @@
 <pre id="codempd" class="hide"></pre>
 
 <div class="soundcard">
-<heading data-status="asound" class="status">Output<?=$code?><?=$help?></heading>
+<heading data-status="asound" class="status">Output<?=$istatus?><?=$ihelp?></heading>
 <pre id="codeasound" class="hide"></pre>
 <div class="col-l">Device</div>
 <div class="col-r">
@@ -44,7 +44,7 @@
 </div>
 
 <div class="soundcard">
-<heading>Bit-Perfect<?=$help?></heading>
+<heading>Bit-Perfect<?=$ihelp?></heading>
 <div class="col-l">No Volume</div>
 <div class="col-r">
 	<input id="novolume" type="checkbox">
@@ -73,10 +73,10 @@
 </div>
 
 <div>
-<heading>Volume<?=$help?></heading>
+<heading>Volume<?=$ihelp?></heading>
 <div data-status="crossfade" <?=$classstatus?>>
 	<a>Crossfade
-	<br><gr>mpc<?=$code?></gr></a>
+	<br><gr>mpc<?=$istatus?></gr></a>
 </div>
 <div class="col-r">
 	<input id="crossfade" <?=$chkenable?>>
@@ -117,7 +117,7 @@
 </div>
 
 <div>
-<heading data-status="mpdconf" class="status">Options<?=$code?><?=$help?></heading>
+<heading data-status="mpdconf" class="status">Options<?=$istatus?><?=$ihelp?></heading>
 <pre id="codempdconf" class="hide"></pre>
 <div class="col-l double">
 	<a>Auto Update

@@ -1,6 +1,6 @@
 <div id="divinterface">
 	<div id="divbt">
-	<heading id="headbt" class="status noline" data-status="bluetooth">Bluetooth<?=$code?><i id="btscan" class="fa fa-search"></i><?=$help?></heading>
+	<heading id="headbt" class="status noline" data-status="bluetooth">Bluetooth<?=$istatus?><i id="btscan" class="fa fa-search"></i><?=$ihelp?></heading>
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="hide"></pre>
 	<span <?=$classhelp?>>
@@ -16,18 +16,18 @@
 	</span>
 	</div>
 	<div id="divlan">
-	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><?=$code?></heading>
+	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><?=$istatus?></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
 	</div>
 	<div id="divwl">
-	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$code?><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
+	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>
 	
 	<div>
-	<heading class="status" data-status="avahi">Web User Interface<?=$code?><?=$help?></heading>
+	<heading class="status" data-status="avahi">Web User Interface<?=$istatus?><?=$ihelp?></heading>
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>
 		<div id="qrwebui" class="qr"></div>
@@ -41,7 +41,7 @@
 	<div>
 	<heading class="noline">Wi-Fi
 		<i id="add" class="fa fa-plus-circle"></i><i id="scanning-wifi" class="fa fa-wifi blink"></i>
-		<?=$help?><i class="fa fa-arrow-left back"></i>
+		<?=$ihelp?><i class="fa fa-arrow-left back"></i>
 	</heading>
 	<ul id="listwlscan" class="entries"></ul>
 	<span <?=$classhelp?>>Access points with less than -66dBm should not be used.</span>
@@ -57,7 +57,7 @@
 </div>
 
 <div id="divaccesspoint">
-	<heading>Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$help?></heading>
+	<heading>Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$ihelp?></heading>
 	<div id="boxqr" class="hide">
 		<div class="col-l">
 			<span id="ipwebuiap"></span>
