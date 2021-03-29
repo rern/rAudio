@@ -456,13 +456,11 @@ wlan )
 	enable=${args[1]}
 	if [[ $enable == true ]]; then
 		rfkill | grep -q wlan || modprobe brcmfmac
-		systemctl enable --now netctl-auto@wlan0
 		iw wlan0 set power_save off
 	else
 		if systemctl -q is-active hostapd; then
 			/srv/http/bash/features.sh hostapddisable
 		fi
-		systemctl disable --now netctl-auto@wlan0
 		rmmod brcmfmac &> /dev/null
 	fi
 	pushRefresh
