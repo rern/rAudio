@@ -73,7 +73,11 @@ touch $dirdata/shm/player-mpd
 # onboard + usb wifi >> disable onboard
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
 # no enabled profile >> disable onboard
-! systemctl -q is-enabled netctl-auto@wlan0 && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
+readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+for p in "${profiles[@]}"; do
+	netctl is-enabled "$p" && wifi=1
+done
+[[ -z $wifi ]] && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 
