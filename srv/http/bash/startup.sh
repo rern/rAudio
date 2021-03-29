@@ -75,7 +75,7 @@ touch $dirdata/shm/player-mpd
 # no enabled profile >> disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 for p in "${profiles[@]}"; do
-	netctl is-enabled "$p" &> /dev/null && wifi=1 && break
+	[[ $( netctl is-enabled "$p" ) == enabled ]] && wifi=1 && break
 done
 [[ -z $wifi ]] && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
 
