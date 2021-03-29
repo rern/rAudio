@@ -1,4 +1,5 @@
 <?php
+header("Set-Cookie: key=value; path=/; domain=fanart.tv; HttpOnly; SameSite=Lax");
 $login = file_exists( '/srv/http/data/system/login' );
 if ( $login ) session_start();
 $time = time();  // for cache busting
