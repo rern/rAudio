@@ -67,7 +67,6 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
 		echo "$profile" > /boot/wifi
-		systemctl disable netctl-auto@wlan0
 		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
 		exit
 	fi
@@ -78,7 +77,6 @@ Gateway=$( jq -r .Gateway <<< $data )
 	if [[ -n $new || -n $active ]]; then
 		ifconfig wlan0 down
 		netctl switch-to "$ESSID"
-		systemctl enable netctl-auto@wlan0
 	fi
 	sleep 1
 	pushRefresh
@@ -88,7 +86,6 @@ disconnect )
 	netctl stop-all
 	killall wpa_supplicant
 	ifconfig wlan0 up
-	systemctl disable netctl-auto@wlan0
 	pushRefresh
 	;;
 editlan )
@@ -148,7 +145,6 @@ profileconnect )
 	fi
 	ifconfig wlan0 down
 	netctl switch-to "$ssid"
-	systemctl enable netctl-auto@wlan0
 	pushRefresh
 	pushRefreshFeatures
 	;;
@@ -165,7 +161,6 @@ profileremove )
 		netctl stop "$ssid"
 		killall wpa_supplicant
 		ifconfig wlan0 up
-		systemctl disable netctl-auto@wlan0
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
