@@ -120,7 +120,7 @@ spotify )
 esac
 
 killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd ]] && rm -f $dirtmp/radiofrance-* && exit
+[[ $player != mpd ]] && rm -f $dirtmp/radiofrance && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -226,9 +226,11 @@ if [[ ${file:0:4} == http ]]; then
 				titlename=
 				[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
 				if [[ -n radiofrance ]]; then
-					albumname=$stationname
-					Artist=$( cat $dirtmp/radiofrance-Artist 2> /dev/null )
-					Title=$( cat $dirtmp/radiofrance-Title 2> /dev/null )
+					readarray -t meta <<< $( cat $dirtmp/radiofrance 2> /dev/null )
+					Artist=${meta[0]}
+					Title=${meta[1]}
+					Album=${meta[2]}
+					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
 					[[ -n $Artist ]] && artistname=$Artist
 					[[ -n $Title ]] && titlename=$Title
 					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
@@ -265,7 +267,7 @@ else
 , "Title"     : "'$Title'"'
 fi
 
-[[ -z $radiofrance ]] && rm -f $dirtmp/radiofrance-*
+[[ -z $radiofrance ]] && rm -f $dirtmp/radiofrance
 
 samplingLine() {
 	bitdepth=$1

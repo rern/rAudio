@@ -33,12 +33,12 @@ metadataGet() {
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
-		| jq '.data.now.playing_item, .data.now.server_time' \
-		| grep -v '{\|"__typename"\|"start_time"\|}' \
-		| sed 's/^\s\+".*": "*//; s/"*,*$//; s/^null$//' )
+		| jq .data.now
+		| jq -r .playing_item.title,.playing_item.subtitle,.playing_item.cover,.playing_item.end_time,.server_time,.song.album )
 	
 	artist=${metadata[0]}
 	title=${metadata[1]}
+	album=${metadata[5]}
 	url=${metadata[2]}
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 	coverfile=$dirtmp/online-$name.jpg
@@ -51,12 +51,13 @@ metadataGet() {
 	else
 		coverart=/data/shm/online-$name.$( date +%s ).jpg
 	fi
-	data='{"Artist":"'$artist'", "Title":"'$title'", "coverart": "'$coverart'", "radiofrance": 1}'
+	data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radiofrance": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
-	echo $artist > $dirtmp/radiofrance-Artist
-	echo $title > $dirtmp/radiofrance-Title
-	
+	echo "\
+$artist
+$title
+$album" > $dirtmp/radiofrance
 	endtime=${metadata[3]}
 	servertime=${metadata[4]}
 	localtime=$( date +%s )
