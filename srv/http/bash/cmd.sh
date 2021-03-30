@@ -469,7 +469,7 @@ mpcplayback )
 	touch $flag
 	command=${args[1]}
 	pos=${args[2]}
-	rm -f $dirtmp/radiofrance-*
+	rm -f $dirtmp/radiofrance
 	mpc $command $pos
 	# webradio start - status.sh > 'file:' missing
 	if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
@@ -489,7 +489,7 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/radiofrance-*
+	rm -f $dirtmp/radiofrance
 	mpc | grep -q '^\[playing\]' && playing=1
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
