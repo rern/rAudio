@@ -221,7 +221,7 @@ if [[ ${file:0:4} == http ]]; then
 				artistname=${radioname[0]}
 				titlename=${radioname[1]}
 			else
-				albumname=$urlname
+				albumname=$file
 				artistname=$stationname
 				titlename=
 				[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
