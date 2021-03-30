@@ -994,9 +994,13 @@ function renderPlayback() {
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
 			renderPlaybackCoverart( G.status.coverartradio );
+			$( '#artist, #song, #album' ).removeClass( 'capitalize' );
 		} else {
+			$( '#artist, #album' ).addClass( 'capitalize' );
 			if ( G.status.file.indexOf( 'icecast.radiofrance.fr' ) !== -1 ) {
-				$( '#album' ).toggleClass( 'albumradio', G.status.Album.slice( 0, 4 ) === 'http' );
+				var http = G.status.Album.slice( 0, 4 ) === 'http';
+				$( '#album' ).toggleClass( 'albumradio', http );
+				$( '#album' ).toggleClass( 'capitalize', !http );
 			}
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
@@ -1022,6 +1026,7 @@ function renderPlayback() {
 	}
 	
 	// others ////////////////////////////////////////
+	$( '#artist, #song, #album' ).removeClass( 'capitalize' );
 	$( '#album' ).removeClass( 'albumradio' );
 	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
 		G.coversave = 0;
