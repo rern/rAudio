@@ -996,11 +996,17 @@ function renderPlayback() {
 			renderPlaybackCoverart( G.status.coverartradio );
 			$( '#artist, #song, #album' ).removeClass( 'capitalize' );
 		} else {
-			$( '#artist, #album' ).addClass( 'capitalize' );
+			$( '#artist, #song' ).addClass( 'capitalize' );
 			if ( G.status.file.indexOf( 'icecast.radiofrance.fr' ) !== -1 ) {
-				var http = G.status.Album.slice( 0, 4 ) === 'http';
-				$( '#album' ).toggleClass( 'albumradio', http );
-				$( '#album' ).toggleClass( 'capitalize', !http );
+				if ( G.status.Album.slice( 0, 4 ) === 'http' ) {
+					$( '#album' )
+						.removeClass( 'capitalize' )
+						.addClass( 'albumradio' );
+				} else {
+					$( '#album' )
+						.removeClass( 'albumradio' )
+						.addClass( 'capitalize' );
+				}
 			}
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
