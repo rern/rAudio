@@ -55,9 +55,9 @@ metadataGet() {
 	else
 		coverart=/data/shm/online-$name.$( date +%s ).jpg
 	fi
-	artist=$( echo $artist | sed 's/"/\\"/g' )
-	title=$( echo $title | sed 's/"/\\"/g' )
-	album=$( echo $album | sed 's/"/\\"/g' )
+	artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
+	title=$( echo $title | sed 's/"/\\"/g; s/null//' )
+	album=$( echo $album | sed 's/"/\\"/g; s/null//' )
 	data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radiofrance": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	

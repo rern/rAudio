@@ -264,9 +264,7 @@ function psMpdPlayer( data ) {
 		if ( 'radiofrance' in data && G.status.state === 'play' ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
-			$( '#album' )
-				.html( G.status.Album )
-				.toggleClass( 'albumradio', G.status.Album.slice( 0, 4 ) === 'http' );
+			$( '#album' ).html( G.status.Album );
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		} else {

@@ -975,9 +975,7 @@ function renderPlayback() {
 	$( '#song' )
 		.html( G.status.Title )
 		.toggleClass( 'gr', G.status.state === 'pause' );
-	$( '#album' )
-		.toggleClass( 'albumradio', G.status.webradio )
-		.html( G.status.Album ).promise().done( function() {
+	$( '#album' ).html( G.status.Album ).promise().done( function() {
 		scrollLongText();
 	} );
 	var sampling = G.status.sampling;
@@ -988,6 +986,8 @@ function renderPlayback() {
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
 		G.coversave = 0;
+		$( '#artist, #song, #album' ).addClass( 'capitalize' );
+		$( '#album' ).addClass( 'albumradio' );
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
@@ -1021,6 +1021,8 @@ function renderPlayback() {
 	}
 	
 	// others ////////////////////////////////////////
+	$( '#artist, #song, #album' ).removeClass( 'capitalize' );
+	$( '#album' ).removeClass( 'albumradio' );
 	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
 		G.coversave = 0;
 		renderPlaybackCoverart( G.status.coverart );
