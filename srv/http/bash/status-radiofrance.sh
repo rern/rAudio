@@ -33,8 +33,7 @@ metadataGet() {
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
-		| jq .data.now
-		| jq -r .playing_item.title,.playing_item.subtitle,.playing_item.cover,.playing_item.end_time,.server_time,.song.album )
+		| jq -r .data.now.playing_item.title,.data.now.playing_item.subtitle,.data.now.playing_item.cover,.data.now.playing_item.end_time,.data.now.server_time,.data.now.song.album )
 	
 	artist=${metadata[0]}
 	title=${metadata[1]}

@@ -226,13 +226,15 @@ if [[ ${file:0:4} == http ]]; then
 				titlename=
 				[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
 				if [[ -n radiofrance ]]; then
-					readarray -t meta <<< $( cat $dirtmp/radiofrance 2> /dev/null )
-					Artist=${meta[0]}
-					Title=${meta[1]}
-					Album=${meta[2]}
-					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
-					[[ -n $Artist ]] && artistname=$Artist
-					[[ -n $Title ]] && titlename=$Title
+					if [[ -e $dirtmp/radiofrance ]]; then
+						readarray -t meta <<< $( cat $dirtmp/radiofrance )
+						Artist=${meta[0]}
+						Title=${meta[1]}
+						Album=${meta[2]}
+						[[ -n $Album ]] && albumname=$Album || albumname=$stationname
+						[[ -n $Artist ]] && artistname=$Artist
+						[[ -n $Title ]] && titlename=$Title
+					fi
 					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
 				fi
 			fi
