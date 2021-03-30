@@ -33,12 +33,17 @@ metadataGet() {
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
-		| jq -r .data.now.playing_item.title,.data.now.playing_item.subtitle,.data.now.playing_item.cover,.data.now.playing_item.end_time,.data.now.server_time,.data.now.song.album )
-	
+		| jq -r \
+ .data.now.playing_item.title\
+,.data.now.playing_item.subtitle\
+,.data.now.song.album\
+,.data.now.playing_item.cover\
+,.data.now.playing_item.end_time\
+,.data.now.server_time )
 	artist=${metadata[0]}
 	title=${metadata[1]}
-	album=${metadata[5]}
-	url=${metadata[2]}
+	album=${metadata[2]}
+	url=${metadata[3]}
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 	coverfile=$dirtmp/online-$name.jpg
 	if [[ ! -e $coverfile && -n $url ]]; then
@@ -57,12 +62,12 @@ metadataGet() {
 $artist
 $title
 $album" > $dirtmp/radiofrance
-	endtime=${metadata[3]}
-	servertime=${metadata[4]}
+	endtime=${metadata[4]}
+	servertime=${metadata[5]}
 	localtime=$( date +%s )
 	diff=$(( $localtime - $servertime )) # local time fetched after server time
-	sec2change=$(( $endtime - $servertime - $diff )) # seconds
-	sleep $(( sec2change + 10 )) # add some delay
+	sec2change=$(( $endtime - $servertime - $diff + 10 )) # seconds with 10s delay
+	(( $sec2change > 0 )) && sleep $sec2change
 	metadataGet
 }
 
