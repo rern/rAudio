@@ -996,7 +996,7 @@ function renderPlayback() {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
-			$( '#album' ).toggleClass( 'albumradio', G.status.Album.slice( 0, 4 ) === 'http' );
+			if ( G.status.file.indexOf( 'icecast.radiofrance.fr' ) !== -1 ) $( '#album' ).toggleClass( 'albumradio', G.status.Album.slice( 0, 4 ) === 'http' );
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
