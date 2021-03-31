@@ -72,7 +72,12 @@ function contextmenuLibrary( $li, $target ) {
 	G.list.li = $li; // for contextmenu
 	G.list.licover = $li.hasClass( 'licover' );
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
-	G.list.path = $li.find( '.lipath' ).text() || '';
+	var lipath = $( '#lib-path .lipath' ).text();
+	if ( $( '.licover' ).length || lipath.toLowerCase() === G.mode ) {
+		G.list.path = $li.find( '.lipath' ).text() || '';
+	} else {
+		G.list.path = lipath;
+	}
 	if ( G.playlist ) {
 		G.list.name = $li.find( '.liname' ).text() || '';
 		G.list.artist = $li.find( '.liartist' ).text() || '';

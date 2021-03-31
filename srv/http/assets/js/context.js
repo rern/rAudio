@@ -11,7 +11,7 @@ function addReplace( cmd, command, title ) {
 				+ G.list.li.find( '.li2' )[ 0 ].outerHTML;
 		msg = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
 	} else {
-		var msg = G.list.li.find( '.lipath' ).text();
+		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
 	banner( title, msg, 'list-ul' );
 }

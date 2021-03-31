@@ -109,9 +109,6 @@ function psAirplay( data ) {
 	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
-		bash( [ 'pushstatus', 'lcdchar' ] );
-	}, 2000 );
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -469,7 +466,6 @@ function psSpotify( data ) {
 	if ( !$( '#tab-playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	renderPlayback();
 	setButtonControl();
-	bash( [ 'pushstatus', 'lcdchar' ] );
 }
 function psVolume( data ) {
 	if ( G.local ) return
