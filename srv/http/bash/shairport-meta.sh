@@ -74,4 +74,5 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		curl -s -X POST http://127.0.0.1/pub?id=airplay -d "{$payload}"
 	fi
 	code= # reset code= and start over
+	[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh pushstatus lcdchar
 done
