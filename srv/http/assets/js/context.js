@@ -640,6 +640,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				}
 			} else if ( G.list.singletrack || webradio ) { // single track
 				mpccmd = [ 'pladd', path ];
+			} else if ( $( '.liinfopath' ).length && !$( '.liinfopath' ).hasClass( 'hide' ) ) {
+				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', $( '#lib-path .lipath' ).text() ];
 			} else { // directory or album
 				mpccmd = [ 'plls', path ];
 			}
