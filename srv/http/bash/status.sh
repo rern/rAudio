@@ -215,41 +215,33 @@ if [[ ${file:0:4} == http ]]; then
 		radiodata=$( cat $radiofile )
 		stationname=$( sed -n 1p <<< "$radiodata" )
 		if [[ $state == play ]]; then
-			if [[ -n $Title ]]; then
-				albumname=$stationname
-				readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
-				artistname=${radioname[0]}
-				titlename=${radioname[1]}
-				if [[ $file =~ radioparadise.com ]]; then
-					radioparadise=1
-					Album=$( cat $dirtmp/radioparadise 2> /dev/null )
-					[[ -n $Album ]] && albumname=$Album
-				fi
-			else
-				albumname=$file
-				artistname=$stationname
-				titlename=
-			fi
-			[[ $file =~ radioparadise.com ]] && radioparadise=1
-			[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
+			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
+			[[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]] && radiofrance=1
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
 				if [[ -e $dirtmp/radiometa ]]; then
 					readarray -t meta <<< $( cat $dirtmp/radiometa )
 					Artist=${meta[0]}
 					Title=${meta[1]}
 					Album=${meta[2]}
+					coverart=${meta[3]}
 					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
 					[[ -n $Artist ]] && artistname=$Artist
 					[[ -n $Title ]] && titlename=$Title
-					name=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-					coverfile=$dirtmp/online-$name.jpg
-					[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
 				fi
 				if [[ -n $radioparadise ]]; then
 					/srv/http/bash/status-radioparadise.sh $file &> /dev/null &
 				elif [[ -n $radiofrance ]]; then
 					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
 				fi
+			elif [[ -n $Title ]]; then
+				albumname=$stationname
+				readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
+				artistname=${radioname[0]}
+				titlename=${radioname[1]}
+			else
+				albumname=$file
+				artistname=$stationname
+				titlename=
 			fi
 		else
 			artistname=$stationname
@@ -363,10 +355,8 @@ if grep -q '"cover": false,' /srv/http/data/system/display; then
 # >>>>>>>>>>
 	echo {$status}
 	exit
-fi
-
-# coverart
-if [[ -n $coverart ]]; then
+	
+elif [[ -n $coverart ]]; then
 ########
 	status+='
 , "coverart" : "'$coverart'"'

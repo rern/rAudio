@@ -38,4 +38,6 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 echo "\
 $artist
 $title
-$album" > $dirtmp/radiometa
+$album
+$coverart
+" > $dirtmp/radiometa

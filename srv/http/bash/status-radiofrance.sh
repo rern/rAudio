@@ -68,7 +68,8 @@ metadataGet() {
 	echo "\
 $artist
 $title
-$album" > $dirtmp/radiometa
+$coverart
+" > $dirtmp/radiometa
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
 	localtime=$( date +%s )
