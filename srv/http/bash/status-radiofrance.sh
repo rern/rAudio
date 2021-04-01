@@ -43,11 +43,13 @@ metadataGet() {
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time )
 	artist=${metadata[0]}
-	[[ $artist == null ]] && exit
-	
 	title=${metadata[1]}
 	album=${metadata[2]}
 	url=${metadata[3]}
+	endtime=${metadata[4]}
+	servertime=${metadata[5]}
+	[[ $endtime == null ]] && exit
+	
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 	coverfile=$dirtmp/online-$name.jpg
 	if [[ ! -e $coverfile && -n $url ]]; then
@@ -70,8 +72,6 @@ $artist
 $title
 $coverart
 " > $dirtmp/radiometa
-	endtime=${metadata[4]}
-	servertime=${metadata[5]}
 	localtime=$( date +%s )
 	diff=$(( $localtime - $servertime )) # local time fetched after server time
 	sec2change=$(( $endtime - $servertime - $diff + 10 )) # seconds with 10s delay
