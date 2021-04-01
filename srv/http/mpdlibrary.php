@@ -429,9 +429,11 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
-					.'<div class="liinfo">'
-					.'<div class="lialbum">'.$album.'</div>'
-					.'<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
+					.'<div class="liinfo">';
+			if ( $mode !== 'album' ) {
+		$coverhtml.= '<div class="lialbum">'.$album.'</div>';
+			}
+		$coverhtml.= '<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
 			if ( $each0->composer && $mode !== 'composer' ) {
 		$coverhtml.= '<div class="licomposer"><i class="fa fa-composer"></i>'.$each0->composer.'</div>';
 			}
