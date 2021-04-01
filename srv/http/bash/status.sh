@@ -57,7 +57,7 @@ airplay )
 ########
 		status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
 	done
-	start=$( cat $path-start 2> /dev/null )
+	start=$( cat $path-start 2> /dev/null || echo 0 )
 	Time=$( cat $path-Time 2> /dev/null || echo false )
 	now=$( date +%s%3N )
 	if [[ -n $start && -n $Time ]]; then
