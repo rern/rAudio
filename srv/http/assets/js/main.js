@@ -1703,7 +1703,6 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var modetitle = '<wh>'+ ( $( '#mode-title wh' ).text() || path ) +'</wh>';
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode = G.mode;
-	console.log(query)
 	list( query, function( data ) {
 		data.path = path;
 		data.modetitle = modetitle;
