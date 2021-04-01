@@ -102,7 +102,7 @@ function contextmenuLibrary( $li, $target ) {
 	
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '.tag' ).toggleClass( 'hide', $( '.licover' ).length === 0 );
+	$( '.tag' ).toggleClass( 'hide', $( '.licover' ).length === 0 || ( G.list.licover && G.mode !== 'file' ) );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';
@@ -943,7 +943,6 @@ function renderLibraryList( data ) {
 				.removeClass( 'bars-on' )
 				.css( 'height', pH + 49 - coverH );
 		}
-		if ( !G.display.hidecover ) $( '.licover .li'+ G.mode ).hide();
 	} );
 	if ( G.color ) {
 		$( '#lib-list li:eq( 0 )' ).tap();

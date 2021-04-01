@@ -345,6 +345,8 @@ function htmlList( $lists ) { // non-file 'list' command
 function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
+	if ( is_array( $mode ) ) $mode = $mode[ 1 ];
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -430,20 +432,17 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.'<div class="liinfo">'
 					.'<div class="lialbum">'.$album.'</div>'
 					.'<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
-			if ( $each0->composer ) {
+			if ( $each0->composer && $mode !== 'composer' ) {
 		$coverhtml.= '<div class="licomposer"><i class="fa fa-composer"></i>'.$each0->composer.'</div>';
 			}
-			if ( $each0->conductor ) {
+			if ( $each0->conductor && $mode !== 'conductor' ) {
 		$coverhtml.= '<div class="liconductor"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>';
 			}
-			if ( $each0->genre ) {
+			if ( $each0->genre && $mode !== 'genre' ) {
 		$coverhtml.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
 			}
-			if ( $each0->date ) {
+			if ( $each0->date && $mode !== 'date' ) {
 		$coverhtml.= '<span class="lidate"><i class="fa fa-date"></i>'.$each0->date.'</span>';
-			}
-			if ( $each0->genre || $each0->date ) {
-		$coverhtml.= '<br>';
 			}
 		$coverhtml.= '<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $dir ).'</div>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>'.( count( $array ) )
