@@ -1092,7 +1092,7 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			$( '#artist' ).empty();
+			$( '#artist, #album' ).empty();
 			$( '#song' )
 				.html( blinkdot )
 				.removeClass( 'scrollleft' )
