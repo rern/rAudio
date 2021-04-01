@@ -103,7 +103,7 @@ function contextmenuLibrary( $li, $target ) {
 	
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '.tag' ).toggleClass( 'hide', $( '.licover' ).length === 0 || ( G.list.licover && G.mode !== 'file' ) );
+	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && G.mode !== 'file' );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';

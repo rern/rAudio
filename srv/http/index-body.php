@@ -107,19 +107,19 @@ if ( count( $files ) ) {
 // context menus
 function menuli( $command, $icon, $label, $type = '' ) {
 	if ( $command === 'similar' ) {
-		$class = ' sub';
+		$classsub = ' sub';
 		$submenu = '<i class="fa fa-play-plus submenu" data-cmd="similar"></i>';
 	} else {
-		$class = in_array( $icon, [ 'refresh-library', 'tag', 'minus-circle', 'lastfm' ] ) ? $icon : '';
+		$classsub = '';
 		$submenu = '';
 	}
-	return '<a data-cmd="'.$command.'" class="'.$class.'"><i class="fa fa-'.$icon.'"></i>'.$label.'</a>'.$submenu;
+	return '<a data-cmd="'.$command.'" class="'.$command.$classsub.'"><i class="fa fa-'.$icon.'"></i>'.$label.'</a>'.$submenu;
 }
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
 }
 function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
 	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
