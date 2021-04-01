@@ -1543,7 +1543,8 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 } );
 $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
-	var path = $( this ).find( '.lipath' ).text();
+	var $this = $( this );
+	var path = $this.find( '.lipath' ).text();
 	var query = {
 		  query  : 'ls'
 		, mode   : 'album'
@@ -1551,7 +1552,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	}
 	loader( 'show' );
 	list( query, function( data ) {
-		data.modetitle = 'ALBUM';
+		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
 		renderLibraryList( data );
 	}, 'json' );
 	query.modetitle = 'ALBUM';
@@ -1615,6 +1616,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			var name = ( $target.is( '.licomposer, .fa-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
 			getBio( name );
 		} else if ( $target.is( '.liinfopath' ) ) {
+			var gmode = G.mode;
 			G.mode = 'file';
 			var path = $target.text();
 			var query = {
@@ -1626,7 +1628,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 				data.path = path;
 				data.modetitle = path;
 				renderLibraryList( data );
-				G.mode = 'album';
+				G.mode = gmode;
 			}, 'json' );
 			G.query.push( query );
 		}

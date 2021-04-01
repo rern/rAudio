@@ -440,12 +440,14 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			if ( $each0->conductor && $mode !== 'conductor' ) {
 		$coverhtml.= '<div class="liconductor"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>';
 			}
+			$genredate = '';
 			if ( $each0->genre && $mode !== 'genre' ) {
-		$coverhtml.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
+		$genredate.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
 			}
 			if ( $each0->date && $mode !== 'date' ) {
-		$coverhtml.= '<span class="lidate"><i class="fa fa-date"></i>'.$each0->date.'</span>';
+		$genredate.= '<span class="lidate"><i class="fa fa-date"></i>'.$each0->date.'</span>';
 			}
+			if ( $genredate ) $coverhtml.= $genredate.'<br>';
 		$coverhtml.= '<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $dir ).'</div>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>'.( count( $array ) )
 					.'<gr> • </gr>'.second2HMS( $litime )
