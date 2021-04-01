@@ -4,11 +4,11 @@
 # status-radioparadise.sh FILENAME
 dirtmp=/srv/http/data/shm/
 name=$( basename "$1" )
-case $name in
-	flacm )           id=0;;
-	mellow-flacm )    id=1;;
-	rock-flacm )      id=2;;
-	world-etc-flacm ) id=3;;
+case ${name/-*} in
+	flacm )  id=0;;
+	mellow ) id=1;;
+	rock )   id=2;;
+	world )  id=3;;
 esac
 
 readarray -t metadata <<< $( curl -sL \

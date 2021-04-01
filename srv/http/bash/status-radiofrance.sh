@@ -4,8 +4,8 @@
 # status-radiofrance.sh FILENAME
 dirtmp=/srv/http/data/shm/
 
-name=$( echo $1 | sed 's|.*/\(.*\)\-.*|\1|' )
-case $name in
+name=$( basename "$1" )
+case ${name/-*} in
 	fip )           id=7;;
 	fipelectro )    id=74;;
 	fipgroove )     id=66;;
