@@ -1,5 +1,4 @@
 function addReplace( cmd, command, title ) {
-	console.log( cmd, command )
 	bash( command, function() {
 		if ( G.playbackswitch ) $( '#tab-playback' ).click();
 		G.playbackswitch = 0;
