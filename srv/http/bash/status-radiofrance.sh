@@ -5,26 +5,28 @@
 dirtmp=/srv/http/data/shm/
 
 name=$( basename "$1" )
+name=${name/-*}
+[[ $name != fip && $name != francemusique ]] && name=$( echo $name | sed 's/fip\|francemusique//' )
 case ${name/-*} in
-	fip )           id=7;;
-	fipelectro )    id=74;;
-	fipgroove )     id=66;;
-	fipjazz )       id=65;;
-	fipnouveautes ) id=70;;
-	fippop )        id=78;;
-	fipreggae )     id=71;;
-	fiprock )       id=64;;
-	fipworld )      id=69;;
-	francemusique )                    id=4;;
-	francemusiquebaroque )             id=408;;
-	francemusiqueclassiqueplus )       id=402;;
-	francemusiqueconcertsradiofrance ) id=403;;
-	francemusiqueeasyclassique )       id=401;;
-	francemusiquelabo )                id=407;;
-	francemusiquelacontemporaine )     id=406;;
-	francemusiquelajazz )              id=405;;
-	francemusiqueocoramonde )          id=404;;
-	francemusiqueopera )               id=409;;
+	fip )        id=7;;
+	electro )    id=74;;
+	groove )     id=66;;
+	jazz )       id=65;;
+	nouveautes ) id=70;;
+	pop )        id=78;;
+	reggae )     id=71;;
+	rock )       id=64;;
+	world )      id=69;;
+	francemusique )       id=4;;
+	baroque )             id=408;;
+	classiqueplus )       id=402;;
+	concertsradiofrance ) id=403;;
+	easyclassique )       id=401;;
+	labo )                id=407;;
+	lacontemporaine )     id=406;;
+	lajazz )              id=405;;
+	ocoramonde )          id=404;;
+	opera )               id=409;;
 esac
 
 metadataGet() {
