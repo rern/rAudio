@@ -1127,6 +1127,8 @@ function renderPlayback() {
 }
 function renderPlaybackAlbum() {
 	if ( G.status.Album.slice( 0, 4 ) !== 'http' ) {
+		if ( !( 'file' in G.status ) ) return
+		
 		var radioalbum = G.status.file.indexOf( 'radioparadise.com' ) === -1 && G.status.file.indexOf( 'radiofrance.fr' ) === -1;
 		$( '#album' )
 			.toggleClass( 'albumradio', radioalbum )

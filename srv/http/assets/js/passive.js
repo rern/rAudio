@@ -258,10 +258,7 @@ function psMpdPlayer( data ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
 		displayPlayback();
-		if ( 'radioparadise' in data ) {
-			$( '#album' ).html( G.status.Album );
-			renderPlaybackAlbum();
-		} else if ( 'radiofrance' in data ) {
+		if ( 'radio' in data ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );
