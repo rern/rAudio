@@ -120,7 +120,7 @@ spotify )
 esac
 
 killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd ]] && rm -f $dirtmp/{radiofrance,radioparadise} && exit
+[[ $player != mpd ]] && rm -f $dirtmp/radiometa && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -229,17 +229,25 @@ if [[ ${file:0:4} == http ]]; then
 				albumname=$file
 				artistname=$stationname
 				titlename=
-				[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
-				if [[ -n radiofrance ]]; then
-					if [[ -e $dirtmp/radiofrance ]]; then
-						readarray -t meta <<< $( cat $dirtmp/radiofrance )
-						Artist=${meta[0]}
-						Title=${meta[1]}
-						Album=${meta[2]}
-						[[ -n $Album ]] && albumname=$Album || albumname=$stationname
-						[[ -n $Artist ]] && artistname=$Artist
-						[[ -n $Title ]] && titlename=$Title
-					fi
+			fi
+			[[ $file =~ radioparadise.com ]] && radioparadise=1
+			[[ $file =~ icecast.radiofrance.fr ]] && radiofrance=1
+			if [[ -n $radioparadise || -n $radiofrance ]]; then
+				if [[ -e $dirtmp/radiometa ]]; then
+					readarray -t meta <<< $( cat $dirtmp/radiometa )
+					Artist=${meta[0]}
+					Title=${meta[1]}
+					Album=${meta[2]}
+					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
+					[[ -n $Artist ]] && artistname=$Artist
+					[[ -n $Title ]] && titlename=$Title
+					name=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
+					coverfile=$dirtmp/online-$name.jpg
+					[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
+				fi
+				if [[ -n $radioparadise ]]; then
+					/srv/http/bash/status-radioparadise.sh $file &> /dev/null &
+				elif [[ -n $radiofrance ]]; then
 					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
 				fi
 			fi
@@ -274,8 +282,7 @@ else
 , "Title"     : "'$Title'"'
 fi
 
-[[ -z $radioparadise ]] && rm -f $dirtmp/radioparadise
-[[ -z $radiofrance ]] && rm -f $dirtmp/radiofrance
+[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/radiometa
 
 samplingLine() {
 	bitdepth=$1
@@ -359,6 +366,15 @@ if grep -q '"cover": false,' /srv/http/data/system/display; then
 fi
 
 # coverart
+if [[ -n $coverart ]]; then
+########
+	status+='
+, "coverart" : "'$coverart'"'
+# >>>>>>>>>>
+	echo {$status}
+	exit
+fi
+
 if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
 	date=$( date +%s )
 	rm -f $dirtmp/webradio
@@ -387,13 +403,9 @@ if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' m
 		onlinefile=$( ls $dirtmp/online-$name.* 2> /dev/null )
 		if [[ -e $onlinefile ]]; then
 			coverart=/data/shm/online-$name.$date.${onlinefile/*.}
-		else
+		elif [[ -z $radioparadise && -z $radiofrance ]]; then
 			killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-			if [[ $file0 =~ radioparadise.com ]]; then
-				/srv/http/bash/status-coverartonline.sh "$data"$'\n'$file0 &> /dev/null &
-			else
-				/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
-			fi
+			/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
 		fi
 	fi
 else

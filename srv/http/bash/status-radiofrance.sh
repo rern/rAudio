@@ -41,6 +41,8 @@ metadataGet() {
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time )
 	artist=${metadata[0]}
+	[[ $artist == null ]] && exit
+	
 	title=${metadata[1]}
 	album=${metadata[2]}
 	url=${metadata[3]}
@@ -58,13 +60,13 @@ metadataGet() {
 	artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
 	title=$( echo $title | sed 's/"/\\"/g; s/null//' )
 	album=$( echo $album | sed 's/"/\\"/g; s/null//' )
-	data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radiofrance": 1}'
+	data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radio": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	echo "\
 $artist
 $title
-$album" > $dirtmp/radiofrance
+$album" > $dirtmp/radiometa
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
 	localtime=$( date +%s )
