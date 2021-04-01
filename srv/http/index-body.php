@@ -105,15 +105,8 @@ if ( count( $files ) ) {
 	}
 }
 // context menus
-function menuli( $command, $icon, $label, $type = '' ) {
-	if ( $command === 'similar' ) {
-		$classsub = ' sub';
-		$submenu = '<i class="fa fa-play-plus submenu" data-cmd="similar"></i>';
-	} else {
-		$classsub = '';
-		$submenu = '';
-	}
-	return '<a data-cmd="'.$command.'" class="'.$command.$classsub.'"><i class="fa fa-'.$icon.'"></i>'.$label.'</a>'.$submenu;
+function menuli( $command, $icon, $label ) {
+	return '<a data-cmd="'.$command.'" class="'.$command.'"><i class="fa fa-'.$icon.'"></i>'.$label.'</a>';
 }
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
@@ -125,7 +118,7 @@ function menucommon( $add, $replace ) {
 }
 
 $kid3 = file_exists( '/usr/bin/kid3-cli' );
-
+$menulisimilar = '<a data-cmd="similar" class="similar sub"><i class="fa fa-lastfm"></i>Add similar</a><i class="fa fa-play-plus submenu" data-cmd="similar"></i>';
 $menu = '<div id="contextmenu">';
 
 $htmlcommon = menucommon( 'add', 'replace' );
@@ -136,7 +129,7 @@ $html.= menuli( 'stop',       'stop',         'Stop' );
 $html.= menuli( 'current',    'check',        'Current' );
 $html.= menuli( 'savedpladd', 'save-plus',    'Add to a playlist' );
 $html.= menuli( 'remove',     'minus-circle', 'Remove' );
-$html.= menuli( 'similar',    'lastfm',       'Add similar' );
+$html.= $menulisimilar;
 $html.= menuli( 'tag',        'info-circle',  'Track Info' );
 $menu.= menudiv( 'plaction', $html );
 
@@ -151,7 +144,7 @@ $menu.= menudiv( 'folder', $html );
 
 $menudiv = '';
 $html = menucommon( 'add', 'replace' );
-$html.= menuli( 'similar', 'lastfm', 'Add similar' );
+$html.= $menulisimilar;
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'file', $html );
 
