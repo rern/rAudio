@@ -1,4 +1,5 @@
 function addReplace( cmd, command, title ) {
+	console.log( cmd, command )
 	bash( command, function() {
 		if ( G.playbackswitch ) $( '#tab-playback' ).click();
 		G.playbackswitch = 0;
@@ -672,11 +673,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'plfindadd', mode, path ];
 				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
 			} else {
-				if ( G.mode === 'composer' ) {
-					mpccmd = [ 'plfindadd', 'multi', 'composer', $( '#mode-title wh' ).text(), 'album', G.list.name ];
-				} else {
-					mpccmd = [ 'plfindadd', 'multi', 'artist', path, 'album', G.list.name ];
-				}
+				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title wh' ).text(), 'album', G.list.name ];
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];
