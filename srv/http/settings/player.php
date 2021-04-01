@@ -1,4 +1,4 @@
-<heading data-status="mpd" class="status">Music Plyer Daemon<?=$istatus?></heading>
+<heading data-status="mpd" class="status">Music Player Daemon<?=$istatus?></heading>
 <div class="col-l text gr">
 	Version
 	<br>Database
