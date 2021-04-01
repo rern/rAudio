@@ -1128,7 +1128,7 @@ function renderPlayback() {
 function renderPlaybackAlbum() {
 	if ( G.status.Album.slice( 0, 4 ) !== 'http' ) {
 		$( '#album' )
-			.toggleClass( 'albumradio', G.status.Album.indexOf( 'franceradio.fr' ) === -1 )
+			.toggleClass( 'albumradio', G.status.file.indexOf( 'radiofrance.fr' ) === -1 )
 			.toggleClass( 'capitalize', G.status.webradio );
 	} else {
 		$( '#album' )
