@@ -88,7 +88,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'bookmark':   psBookmark( data );   break;
 		case 'coverart':   psCoverart( data );   break;
 		case 'display':    psDisplay( data );    break;
-		case 'relays':     psRelays( data );       break;
+		case 'relays':     psRelays( data );     break;
 		case 'mpdplayer':  psMpdPlayer( data );  break;
 		case 'mpdupdate' : psMpdUpdate( data );  break;
 		case 'notify':     psNotify( data );     break;
@@ -258,7 +258,10 @@ function psMpdPlayer( data ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
 		displayPlayback();
-		if ( 'radiofrance' in data && G.status.state === 'play' ) {
+		if ( 'radioparadise' in data ) {
+			$( '#album' ).html( G.status.Album );
+			renderPlaybackAlbum();
+		} else if ( 'radiofrance' in data ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );

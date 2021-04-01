@@ -1127,8 +1127,9 @@ function renderPlayback() {
 }
 function renderPlaybackAlbum() {
 	if ( G.status.Album.slice( 0, 4 ) !== 'http' ) {
+		var radioalbum = G.status.file.indexOf( 'radioparadise.com' ) === -1 && G.status.file.indexOf( 'radiofrance.fr' ) === -1;
 		$( '#album' )
-			.toggleClass( 'albumradio', G.status.file.indexOf( 'radiofrance.fr' ) === -1 )
+			.toggleClass( 'albumradio', radioalbum )
 			.toggleClass( 'capitalize', G.status.webradio );
 	} else {
 		$( '#album' )

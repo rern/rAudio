@@ -120,7 +120,7 @@ spotify )
 esac
 
 killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd ]] && rm -f $dirtmp/radiofrance && exit
+[[ $player != mpd ]] && rm -f $dirtmp/{radiofrance,radioparadise} && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -220,6 +220,11 @@ if [[ ${file:0:4} == http ]]; then
 				readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
 				artistname=${radioname[0]}
 				titlename=${radioname[1]}
+				if [[ $file =~ radioparadise.com ]]; then
+					radioparadise=1
+					Album=$( cat $dirtmp/radioparadise 2> /dev/null )
+					[[ -n $Album ]] && albumname=$Album
+				fi
 			else
 				albumname=$file
 				artistname=$stationname
@@ -269,6 +274,7 @@ else
 , "Title"     : "'$Title'"'
 fi
 
+[[ -z $radioparadise ]] && rm -f $dirtmp/radioparadise
 [[ -z $radiofrance ]] && rm -f $dirtmp/radiofrance
 
 samplingLine() {

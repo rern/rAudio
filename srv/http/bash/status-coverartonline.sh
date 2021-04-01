@@ -39,7 +39,14 @@ if [[ $type =~ radioparadise.com ]]; then
 		world|eclectic ) chan=3 ;;
 		* )              chan=0 ;;
 	esac
-	url=$( jq -r .cover <<< $( curl -sL https://api.radioparadise.com/api/now_playing?chan=$chan ) )
+	readarray -t coveralbum <<< $( jq -r .album,.cover <<< $( curl -sL https://api.radioparadise.com/api/now_playing?chan=$chan ) )
+	album=${coveralbum[0]}
+	if [[ -n $album ]]; then
+		dataalbum='{ "Album": "'$album'", "radioparadise": 1 }'
+		curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$dataalbum"
+		echo $album > $dirtmp/radioparadise
+	fi
+	url=${coveralbum[1]}
 	[[ -n $url ]] && ext=jpg && onlineCoverart
 fi
 
