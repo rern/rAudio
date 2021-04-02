@@ -2,7 +2,7 @@
 
 data='
 	  "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
-	, "cputemp"         : '$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )'
+	, "cputemp"         : '$( ( /opt/vc/bin/vcgencmd measure_temp || echo 0 ) | sed 's/[^0-9.]//g' || echo 0 )'
 	, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
 	, "throttled"       : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 	, "time"            : "'$( date +'%T %F' )'"
@@ -22,8 +22,8 @@ if [[ $bluetooth == true ]]; then
 else
 	btdiscoverable=false
 fi
-i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt && echo true || echo false )
-lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
+i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt 2> /dev/null && echo true || echo false )
+lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
 if [[ $i2c == true ]]; then
 	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
@@ -43,13 +43,17 @@ if [[ -e /etc/relays.conf ]]; then
 else
 	relayspins=false
 fi
-revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-case ${revision: -4:1} in
+if greq -q Raspberry /proc/device-tree/model ; then
+  revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+  case ${revision: -4:1} in
 	0 ) soc=BCM2835;;
 	1 ) soc=BCM2836;;
 	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
 	3 ) soc=BCM2711;;
-esac
+  esac
+else
+    soc="unknown"
+fi
 if [[ -e /etc/soundprofile.conf ]]; then
 	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
 else

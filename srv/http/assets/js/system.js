@@ -186,7 +186,7 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		var cpu = G.rpi01 ? '' : '4 ';
+		var cpu = G.rpi01 || !G.rpimodel.match("Raspberry") ? '' : '4 ';
 		cpu += G.soccpu +' <gr>@</gr> ';
 		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 		$( '#systemvalue' ).html(
