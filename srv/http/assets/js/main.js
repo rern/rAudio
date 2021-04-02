@@ -1559,7 +1559,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
-		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
+		data.modetitle = '<wh>'+ $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text() +'</wh>';
 		renderLibraryList( data );
 	}, 'json' );
 	query.modetitle = 'ALBUM';
