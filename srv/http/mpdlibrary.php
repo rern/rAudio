@@ -471,13 +471,12 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$coverart = '/assets/img/coverart.'.time().'.svg';
 			$nocover = ' nocover';
 		}
+		$class = $gmode === 'album' ? ' hide' : '';
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
-					.'<div class="liinfo">';
-			if ( $gmode !== 'album' ) {
-		$coverhtml.= '<div class="lialbum">'.$album.'</div>';
-			}
+					.'<div class="liinfo">'
+					.'<div class="lialbum'.$class.'">'.$album.'</div>';
 			if ( $gmode !== 'artist' && $gmode !== 'albumartist' ) {
 		$coverhtml.= '<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
 			}
