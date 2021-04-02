@@ -14,33 +14,9 @@ dirtmp=/srv/http/data/shm
 name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 date=$( date +%s )
 
-onlineCoverart() {
-	rm -f $dirtmp/online-*
-	coverfile=$dirtmp/online-$name.$ext
-	curl -s $url -o $coverfile
-	if [[ -e $coverfile ]]; then
-		coverart=/data/shm/online-$name.$date.$ext
-		curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
-		exit # for radio paradise
-	fi
-}
-
 if [[ $type == 'licover' ]]; then
 	file=$( ls /srv/http/data/tmp/licover-$name.* 2> /dev/null )
 	[[ -e $file ]] && echo /data/tmp/licover-$name.$date.${file/*.} && exit
-fi
-
-if [[ $type =~ radioparadise.com ]]; then
-	channel=${type/*\/}
-	channelname=${channel/-*}
-	case $channelname in
-		mellow )         chan=1 ;;
-		rock )           chan=2 ;;
-		world|eclectic ) chan=3 ;;
-		* )              chan=0 ;;
-	esac
-	url=$( jq -r .cover <<< $( curl -sL https://api.radioparadise.com/api/now_playing?chan=$chan ) )
-	[[ -n $url ]] && ext=jpg && onlineCoverart
 fi
 
 ### 1 - lastfm ##################################################
@@ -95,5 +71,12 @@ if [[ $type == 'licover' ]]; then # to save ram - keep all in .../data/tmp - not
 		[[ -e $coverfile ]] && echo $coverart
 	fi
 else
-	onlineCoverart
+	rm -f $dirtmp/online-*
+	coverfile=$dirtmp/online-$name.$ext
+	curl -s $url -o $coverfile
+	if [[ -e $coverfile ]]; then
+		coverart=/data/shm/online-$name.$date.$ext
+		curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
+		exit # for radio paradise
+	fi
 fi

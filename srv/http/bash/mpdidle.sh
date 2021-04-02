@@ -27,7 +27,7 @@ mpc idleloop | while read changed; do
 				current=$( mpc current )
 				if [[ -z $current || $current != $currentprev ]]; then
 					killall status-coverartonline.sh &> /dev/null # kill if still running
-					$dirbash/cmd.sh pushstatus$'\n'lcdchar        # status
+					$dirbash/cmd.sh pushstatus                    # status
 					if [[ -e $dirsystem/librandom ]]; then
 						counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
 						pos=${counts/\/*}

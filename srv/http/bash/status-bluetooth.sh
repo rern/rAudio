@@ -44,3 +44,5 @@ data='
 	, "timestamp"  : '$( date +%s%3N )
 
 echo $data
+
+[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh pushstatus lcdchar

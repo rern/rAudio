@@ -88,7 +88,7 @@ pladdPlay() {
 		touch $flag
 		mpc play $pos
 	fi
-	pushstreamStatus lcdchar
+	pushstreamStatus
 }
 pladdPosition() {
 	touch $flagpladd
@@ -108,9 +108,9 @@ pushstreamPlaylist() {
 }
 pushstreamStatus() {
 	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
+	[[ -z $1 ]] && pushstream mpdplayer "$status" # $1=lcdchar - airplay bluetooth spotify
 	rm -f $flag
-	if [[ $1 == lcdchar && -e $dirsystem/lcdchar ]]; then
+	if [[ -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
 									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
@@ -469,7 +469,7 @@ mpcplayback )
 	touch $flag
 	command=${args[1]}
 	pos=${args[2]}
-	rm -f $dirtmp/radiofrance-*
+	rm -f $dirtmp/radiometa
 	mpc $command $pos
 	# webradio start - status.sh > 'file:' missing
 	if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
@@ -477,7 +477,7 @@ mpcplayback )
 		sleep 0.6
 		touch $dirtmp/webradio
 	fi
-	pushstreamStatus lcdchar
+	pushstreamStatus
 	# fix webradio fast stop - start
 	if [[ -n $webradio && $command == play && -z $( echo "$status" | jq -r .Title ) ]]; then
 		sleep 3
@@ -489,7 +489,7 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/radiofrance-*
+	rm -f $dirtmp/radiometa
 	mpc | grep -q '^\[playing\]' && playing=1
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -508,7 +508,7 @@ mpcprevnext )
 	else
 		[[ $( mpc current -f %file% | cut -c1-4 ) == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 	fi
-	pushstreamStatus lcdchar
+	pushstreamStatus
 	;;
 mpcseek )
 	touch $flag
@@ -522,7 +522,7 @@ mpcseek )
 	else
 		mpc seek $seek
 	fi
-	pushstreamStatus lcdchar
+	pushstreamStatus
 	;;
 mpcupdate )
 	wav=${args[1]}
@@ -570,13 +570,13 @@ plcrop )
 	fi
 	touch $flagpladd
 	systemctl -q is-active libraryrandom && randomfile
-	pushstreamStatus lcdchar
+	pushstreamStatus
 	pushstreamPlaylist
 	;;
 plcurrent )
 	mpc play ${args[1]}
 	mpc stop
-	pushstreamStatus lcdchar
+	pushstreamStatus
 	;;
 plfindadd )
 	if [[ ${args[1]} != multi ]]; then
@@ -700,8 +700,7 @@ power )
 	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
 	;;
 pushstatus )
-	lcdchar=${args[1]}
-	pushstreamStatus $lcdchar
+	pushstreamStatus ${args[1]}
 	;;
 randomfile )
 	randomfile

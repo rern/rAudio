@@ -11,7 +11,7 @@ function addReplace( cmd, command, title ) {
 				+ G.list.li.find( '.li2' )[ 0 ].outerHTML;
 		msg = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
 	} else {
-		var msg = G.list.li.find( '.lipath' ).text();
+		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
 	banner( title, msg, 'list-ul' );
 }
@@ -640,6 +640,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				}
 			} else if ( G.list.singletrack || webradio ) { // single track
 				mpccmd = [ 'pladd', path ];
+			} else if ( $( '.liinfopath' ).length && !$( '.liinfopath' ).hasClass( 'hide' ) ) {
+				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.album ];
 			} else { // directory or album
 				mpccmd = [ 'plls', path ];
 			}
@@ -670,11 +672,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'plfindadd', mode, path ];
 				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
 			} else {
-				if ( G.mode === 'composer' ) {
-					mpccmd = [ 'plfindadd', 'multi', 'composer', $( '#mode-title wh' ).text(), 'album', G.list.name ];
-				} else {
-					mpccmd = [ 'plfindadd', 'multi', 'artist', path, 'album', G.list.name ];
-				}
+				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title wh' ).text(), 'album', G.list.name ];
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];

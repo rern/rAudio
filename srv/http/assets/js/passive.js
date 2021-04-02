@@ -88,7 +88,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'bookmark':   psBookmark( data );   break;
 		case 'coverart':   psCoverart( data );   break;
 		case 'display':    psDisplay( data );    break;
-		case 'relays':     psRelays( data );       break;
+		case 'relays':     psRelays( data );     break;
 		case 'mpdplayer':  psMpdPlayer( data );  break;
 		case 'mpdupdate' : psMpdUpdate( data );  break;
 		case 'notify':     psNotify( data );     break;
@@ -109,9 +109,6 @@ function psAirplay( data ) {
 	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
-		bash( [ 'pushstatus', 'lcdchar' ] );
-	}, 2000 );
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -261,9 +258,11 @@ function psMpdPlayer( data ) {
 		setPlaylistScroll();
 	} else if ( G.playback ) {
 		displayPlayback();
-		if ( 'radiofrance' in data && G.status.state === 'play' ) {
+		if ( 'radio' in data ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
+			$( '#album' ).html( G.status.Album );
+			renderPlaybackAlbum();
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		} else {
@@ -467,7 +466,6 @@ function psSpotify( data ) {
 	if ( !$( '#tab-playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	renderPlayback();
 	setButtonControl();
-	bash( [ 'pushstatus', 'lcdchar' ] );
 }
 function psVolume( data ) {
 	if ( G.local ) return

@@ -216,9 +216,8 @@ hostname )
 	sed -i "s/^\(ssid=\).*/\1${args[1]}/" /etc/hostapd/hostapd.conf
 	sed -i '/^\tname =/ s/".*"/"'$hostname'"/' /etc/shairport-sync.conf
 	sed -i "s/^\(friendlyname = \).*/\1${args[1]}/" /etc/upmpdcli.conf
-	rm -f /root/.config/chromium/SingletonLock
-	systemctl daemon-reload
-	systemctl try-restart avahi-daemon bluetooth hostapd mpd smb shairport-sync shairport-meta spotifyd upmpdcli
+	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
+	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport-meta spotifyd upmpdcli
 	pushRefresh
 	;;
 i2smodule )

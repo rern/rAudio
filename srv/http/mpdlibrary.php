@@ -39,6 +39,7 @@ search
 include '/srv/http/bash/cmd-listsort.php';
 include '/srv/http/indexbar.php';
 
+$gmode = $_POST[ 'gmode' ] ?? null;
 $mode = $_POST[ 'mode' ] ?? null;
 $string = $_POST[ 'string' ] ?? null;
 $string = escape( $string );
@@ -234,6 +235,50 @@ case 'webradio':
 echo json_encode( $array );
 
 //-------------------------------------------------------------------------------------
+function directoryList( $lists ) {
+	global $gmode;
+	global $mode;
+	foreach( $lists as $list ) {
+		$dir = basename( $list );
+		$each = ( object )[];
+		$each->path = $list;
+		$each->dir  = $dir;
+		$each->sort = stripSort( $dir );
+		$array[] = $each;
+	}
+	usort( $array, function( $a, $b ) {
+		return strnatcasecmp( $a->sort, $b->sort );
+	} );
+	$nas200 = count( $lists ) > 200 && substr( $string, 0, 3 ) === 'NAS';
+	$time = time();
+	$html = '';
+	foreach( $array as $each ) {
+		$path = $each->path;
+		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+		$indexes[] = $index;
+		$pathnoext = '/mnt/MPD/'.$path.'/thumb';
+		if ( $nas200 || file_exists( $pathnoext.'.jpg' ) ) {
+			$ext = '.jpg';
+		} else if ( file_exists( $pathnoext.'.gif' ) ) {
+			$ext = '.gif';
+		} else {
+			$ext = '';
+		}
+		if ( $ext ) {
+			$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
+			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
+		} else {
+			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';
+		}
+		$html.=  '<li data-mode="file" data-index="'.$index.'">'
+				.$icon
+				.'<a class="lipath">'.$path.'</a>'
+				.'<span class="single">'.$each->dir.'</span>'
+				.'</li>';
+	}
+	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	return [ 'html' => $html, 'index' => $indexbar ];
+}
 function escape( $string ) { // for passing bash arguments
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
@@ -249,6 +294,7 @@ function HMS2second( $time ) {
 function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $gmode;
 	global $mode;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
@@ -345,6 +391,7 @@ function htmlList( $lists ) { // non-file 'list' command
 function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $gmode;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -427,24 +474,27 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
-					.'<div class="liinfo">'
-					.'<div class="lialbum">'.$album.'</div>'
-					.'<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
-			if ( $each0->composer ) {
+					.'<div class="liinfo">';
+			if ( $gmode !== 'album' ) {
+		$coverhtml.= '<div class="lialbum">'.$album.'</div>';
+			}
+			if ( $gmode !== 'artist' && $gmode !== 'albumartist' ) {
+		$coverhtml.= '<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
+			}
+			if ( $each0->composer && $gmode !== 'composer' ) {
 		$coverhtml.= '<div class="licomposer"><i class="fa fa-composer"></i>'.$each0->composer.'</div>';
 			}
-			if ( $each0->conductor ) {
+			if ( $each0->conductor && $gmode !== 'conductor' ) {
 		$coverhtml.= '<div class="liconductor"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>';
 			}
-			if ( $each0->genre ) {
-		$coverhtml.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
+			$genredate = '';
+			if ( $each0->genre && $gmode !== 'genre' ) {
+		$genredate.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
 			}
-			if ( $each0->date ) {
-		$coverhtml.= '<span class="lidate"><i class="fa fa-date"></i>'.$each0->date.'</span>';
+			if ( $each0->date && $gmode !== 'date' ) {
+		$genredate.= '<span class="lidate"><i class="fa fa-date"></i>'.$each0->date.'</span>';
 			}
-			if ( $each0->genre || $each0->date ) {
-		$coverhtml.= '<br>';
-			}
+			if ( $genredate ) $coverhtml.= $genredate.'<br>';
 		$coverhtml.= '<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $dir ).'</div>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>'.( count( $array ) )
 					.'<gr> • </gr>'.second2HMS( $litime )
@@ -459,48 +509,6 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	}
 		
 	return [ 'html' => $coverhtml.$html ];
-}
-function directoryList( $lists ) {
-	foreach( $lists as $list ) {
-		$dir = basename( $list );
-		$each = ( object )[];
-		$each->path = $list;
-		$each->dir  = $dir;
-		$each->sort = stripSort( $dir );
-		$array[] = $each;
-	}
-	usort( $array, function( $a, $b ) {
-		return strnatcasecmp( $a->sort, $b->sort );
-	} );
-	$nas200 = count( $lists ) > 200 && substr( $string, 0, 3 ) === 'NAS';
-	$time = time();
-	$html = '';
-	foreach( $array as $each ) {
-		$path = $each->path;
-		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-		$indexes[] = $index;
-		$pathnoext = '/mnt/MPD/'.$path.'/thumb';
-		if ( $nas200 || file_exists( $pathnoext.'.jpg' ) ) {
-			$ext = '.jpg';
-		} else if ( file_exists( $pathnoext.'.gif' ) ) {
-			$ext = '.gif';
-		} else {
-			$ext = '';
-		}
-		if ( $ext ) {
-			$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
-			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
-		} else {
-			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';
-		}
-		$html.=  '<li data-mode="file" data-index="'.$index.'">'
-				.$icon
-				.'<a class="lipath">'.$path.'</a>'
-				.'<span class="single">'.$each->dir.'</span>'
-				.'</li>';
-	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	return [ 'html' => $html, 'index' => $indexbar ];
 }
 function second2HMS( $second ) {
 	$hh = floor( $second / 3600 );

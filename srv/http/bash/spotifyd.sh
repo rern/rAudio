@@ -5,7 +5,7 @@ if [[ $1 == stop ]]; then
 	rm -f /srv/http/data/shm/spotify-start
 	mv /srv/http/data/shm/player-{*,mpd}
 	/srv/http/bash/cmd.sh volumereset
-	/srv/http/bash/cmd.sh pushstatus$'\n'lcdchar
+	/srv/http/bash/cmd.sh pushstatus
 	exit
 fi
 
@@ -87,14 +87,13 @@ else
 	
 	data=$( curl -s -X GET "https://api.spotify.com/v1/tracks/$TRACK_ID" -H "Authorization: Bearer $token" )
 	metadata='
-		, "Album"      : '$( jq .album.name <<< $data )'
-		, "Artist"     : '$( jq .album.artists[0].name <<< $data )'
-		, "coverart"   : '$( jq .album.images[0].url <<< $data )'
-		, "Time"       : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
-		, "Title"      : '$( jq .name <<< $data )'
-		, "sampling"   : "48 kHz 320 kbit/s &bull; Spotify"
-		, "volumemute" : 0
-	'
+, "Album"      : '$( jq .album.name <<< $data )'
+, "Artist"     : '$( jq .album.artists[0].name <<< $data )'
+, "coverart"   : '$( jq .album.images[0].url <<< $data )'
+, "Time"       : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
+, "Title"      : '$( jq .name <<< $data )'
+, "sampling"   : "48 kHz 320 kbit/s &bull; Spotify"
+, "volumemute" : 0'
 	echo $metadata > $file
 ########
 	status+=$metadata
@@ -103,3 +102,5 @@ else
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
+
+[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh pushstatus lcdchar
