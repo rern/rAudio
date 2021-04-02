@@ -1951,9 +1951,6 @@ input[type=text] {
 	vertical-align: -10%;
 	color: var( --cg60 ) !important;
 }
-.liinfopath {
-	font-size: 15px;
-}
 #lib-list,
 #pl-savedlist {
 	float: left;
