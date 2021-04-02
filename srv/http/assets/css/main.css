@@ -1920,7 +1920,7 @@ input[type=text] {
 	margin-top: 230px;
 }
 .licover.active {
-	background: linear-gradient( #000000 195px, var( --cm ) 0 ) !important;
+	background: linear-gradient( #000000 194px, var( --cm ) 0 ) !important;
 }
 .licoverimg {
 	position: relative;
@@ -1936,7 +1936,7 @@ input[type=text] {
 	position: absolute;
 	bottom: 0;
 	padding-left: 10px;
-	line-height: 33px;
+	line-height: 30px;
 	color: var( --cw );
 }
 .lialbum {
@@ -1950,9 +1950,6 @@ input[type=text] {
 	line-height: 33px !important;
 	vertical-align: -10%;
 	color: var( --cg60 ) !important;
-}
-.liinfopath {
-	font-size: 15px;
 }
 #lib-list,
 #pl-savedlist {
