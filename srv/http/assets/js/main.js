@@ -1092,10 +1092,9 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			$( '#artist, #song, #album' ).empty();
-			$( '#song' )
-				.removeClass( 'scrollleft' )
-				.html( blinkdot );
+			$( '#artist, #song, #album' )
+				.empty()
+				.removeClass( 'scrollleft' );
 			bash( [ 'mpcprevnext', cmd, song, pllength ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
