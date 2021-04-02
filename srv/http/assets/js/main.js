@@ -1093,8 +1093,8 @@ $( '.btn-cmd' ).click( function() {
 			if ( pllength < 2 ) return
 			
 			$( '#artist, #song, #album' )
-				.empty()
-				.removeClass( 'scrollleft' );
+				.removeClass( 'scrollleft' )
+				.empty();
 			bash( [ 'mpcprevnext', cmd, song, pllength ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
