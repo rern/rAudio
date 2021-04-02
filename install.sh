@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-systemctl disable --now netctl-auto@wlan0
+systemctl disable netctl-auto@wlan0
 
 file=/srv/http/data/system/display
 grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
