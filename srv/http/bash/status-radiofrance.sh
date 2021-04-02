@@ -55,9 +55,9 @@ metadataGet() {
 	[[ ! -e $coverfile ]] && rm -f $dirtmp/online-*
 	[[ -n $url ]] && curl -s $url -o $coverfile
 	[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
-	artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
-	title=$( echo $title | sed 's/"/\\"/g; s/null//' )
-	album=$( echo $album | sed 's/"/\\"/g; s/null//' )
+	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radio": 1}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
