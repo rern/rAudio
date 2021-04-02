@@ -469,7 +469,7 @@ mpcplayback )
 	touch $flag
 	command=${args[1]}
 	pos=${args[2]}
-	rm -f $dirtmp/radiofrance
+	rm -f $dirtmp/radiometa
 	mpc $command $pos
 	# webradio start - status.sh > 'file:' missing
 	if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
