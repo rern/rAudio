@@ -158,19 +158,22 @@ case 'track': // for tag editor
 			}
 			exec( 'mpc ls -f "'.$format.'" "'.$file.'"'
 				, $lists );
+			// format: [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ]
 			foreach( $lists as $list ) {
 				$each = explode( '^^', $list );
-				$artist[]   = $each[ 2 ];
-				$composer[] = $each[ 3 ];
-				$date[]     = $each[ 4 ];
-				$genre[]    = $each[ 5 ];
-				$array[]    = $each;
+				$artist[]    = $each[ 2 ];
+				$composer[]  = $each[ 3 ];
+				$conductor[] = $each[ 4 ];
+				$genre[]     = $each[ 5 ];
+				$date[]      = $each[ 6 ];
+				$array[]     = $each;
 			}
 			$array = $array[ 0 ];
-			if ( count( array_unique( $artist ) )   > 1 ) $array[ 2 ] = '*';
-			if ( count( array_unique( $composer ) ) > 1 ) $array[ 3 ] = '*';
-			if ( count( array_unique( $date ) )     > 1 ) $array[ 3 ] = '*';
-			if ( count( array_unique( $genre ) )    > 1 ) $array[ 4 ] = '*';
+			if ( count( array_unique( $artist ) )    > 1 ) $array[ 2 ] = '*';
+			if ( count( array_unique( $composer ) )  > 1 ) $array[ 3 ] = '*';
+			if ( count( array_unique( $conductor ) ) > 1 ) $array[ 4 ] = '*';
+			if ( count( array_unique( $genre ) )     > 1 ) $array[ 5 ] = '*';
+			if ( count( array_unique( $date ) )      > 1 ) $array[ 6 ] = '*';
 		} else {
 			// MPD not read albumartist in *.wav
 			if ( substr( $file, -3 ) === 'wav' ) {
@@ -451,16 +454,18 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	}
 	if ( $searchmode ) return [ 'html' => $html, 'count' => count( $array ) ];
 	
-	if ( !$hidecover ) {
+	if ( $hidecover ) {
+		$coverhtml = '';
+	} else {
 		// fix - mpd cannot read albumartist from *.wav
 		if ( $ext === 'wav' ) $albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		$album = $each0->album;
 		$artist = $each0->albumartist ?: ( $albumartist ?? '' );
 		$icon = 'albumartist';
 		if ( !$artist ) {
 			$artist = $each0->artist;
 			$icon = 'artist';
 		}
-		$album = $each0->album;
 		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$sh = [ ( $cue ? $dir : $file0 ), $artist, $album, 'licover' ];
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "';
@@ -471,42 +476,31 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$coverart = '/assets/img/coverart.'.time().'.svg';
 			$nocover = ' nocover';
 		}
-		$class = $gmode === 'album' ? ' hide' : '';
+		$hidealbum = $album && $gmode !== 'album' ? '' : ' hide';
+		$hideartist = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';
+		$hidecomposer = $each0->composer && $gmode !== 'composer' ? '' : ' hide';
+		$hideconductor = $each0->conductor && $gmode !== 'conductor' ? '' : ' hide';
+		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
+		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
+		$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
-					.'<div class="lialbum'.$class.'">'.$album.'</div>';
-			if ( $gmode !== 'artist' && $gmode !== 'albumartist' ) {
-		$coverhtml.= '<div class="liartist"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>';
-			}
-			if ( $each0->composer && $gmode !== 'composer' ) {
-		$coverhtml.= '<div class="licomposer"><i class="fa fa-composer"></i>'.$each0->composer.'</div>';
-			}
-			if ( $each0->conductor && $gmode !== 'conductor' ) {
-		$coverhtml.= '<div class="liconductor"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>';
-			}
-			$genredate = '';
-			if ( $each0->genre && $gmode !== 'genre' ) {
-		$genredate.= '<span class="ligenre"><i class="fa fa-genre"></i>'.$each0->genre.'</span>&emsp;';
-			}
-			if ( $each0->date && $gmode !== 'date' ) {
-		$genredate.= '<span class="lidate"><i class="fa fa-date"></i>'.$each0->date.'</span>';
-			}
-			if ( $genredate ) $coverhtml.= $genredate.'<br>';
-		$coverhtml.= '<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $dir ).'</div>'
+					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
+					.'<div class="liartist'.$hideartist.'"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>'
+					.'<div class="licomposer'.$hidecomposer.'"><i class="fa fa-composer"></i>'.$each0->composer.'</div>'
+					.'<div class="liconductor'.$hideconductor.'"><i class="fa fa-conductor"></i>'.$each0->conductor.'</div>'
+					.'<span class="ligenre'.$hidegenre.'"><i class="fa fa-genre"></i>'.$each0->genre.'&emsp;</span>'
+					.'<span class="lidate'.$hidedate.'"><i class="fa fa-date"></i>'.$each0->date.'</span>'
+					.( !$hidegenre || !$hidedate ? '<br>' : '' )
+					.'<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $dir ).'</div>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>'.( count( $array ) )
 					.'<gr> • </gr>'.second2HMS( $litime )
-					.'<gr> • </gr>'.strtoupper( $ext );
-			$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
-			if ( $plfile ) {
-		$coverhtml.= '&emsp;<i class="fa fa-file-playlist"></i><gr>'.pathinfo( $plfile, PATHINFO_EXTENSION ).'</gr>';
-			}
-		$coverhtml.= '</div></li>';
-	} else {
-		$coverhtml = '';
+					.'<gr> • </gr>'.strtoupper( $ext )
+					.( $plfile ? '&emsp;<i class="fa fa-file-playlist"></i><gr>'.pathinfo( $plfile, PATHINFO_EXTENSION ).'</gr>' : '' )
+					.'</div></li>';
 	}
-		
 	return [ 'html' => $coverhtml.$html ];
 }
 function second2HMS( $second ) {
