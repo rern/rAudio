@@ -74,7 +74,7 @@ function contextmenuLibrary( $li, $target ) {
 	G.list.album = $li.find( '.lialbum' ).text()
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
 	var lipath = $( '#lib-path .lipath' ).text();
-	if ( $( '.licover' ).length || lipath.toLowerCase() === G.mode ) {
+	if ( G.mode === 'file' || $( '.licover' ).length || lipath.toLowerCase() === G.mode ) {
 		G.list.path = $li.find( '.lipath' ).text() || '';
 	} else {
 		G.list.path = lipath;
@@ -995,10 +995,9 @@ function renderPlayback() {
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
 			renderPlaybackCoverart( G.status.coverartradio );
-			$( '#artist, #song, #album' ).removeClass( 'capitalize' );
+			$( '#info' ).removeClass( 'capitalize' );
 			$( '#album' ).addClass( 'albumradio' );
 		} else {
-			$( '#artist, #song' ).addClass( 'capitalize' );
 			renderPlaybackAlbum();
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
@@ -1024,7 +1023,7 @@ function renderPlayback() {
 	}
 	
 	// others ////////////////////////////////////////
-	$( '#artist, #song, #album' ).removeClass( 'capitalize' );
+	$( '#info' ).removeClass( 'capitalize' );
 	$( '#album' ).removeClass( 'albumradio' );
 	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
 		G.coversave = 0;
@@ -1130,13 +1129,11 @@ function renderPlaybackAlbum() {
 		if ( !( 'file' in G.status ) ) return
 		
 		var radioalbum = G.status.file.indexOf( 'radioparadise.com' ) === -1 && G.status.file.indexOf( 'radiofrance.fr' ) === -1;
-		$( '#album' )
-			.toggleClass( 'albumradio', radioalbum )
-			.toggleClass( 'capitalize', G.status.webradio );
+		$( '#album' ).toggleClass( 'albumradio', radioalbum );
+		$( '#info' ).toggleClass( 'capitalize', G.status.webradio );
 	} else {
-		$( '#album' )
-			.removeClass( 'capitalize' )
-			.addClass( 'albumradio' );
+		$( '#info' ).removeClass( 'capitalize' );
+		$( '#album' ).addClass( 'albumradio' );
 	}
 }
 function renderPlaybackBlank() {

@@ -1920,7 +1920,7 @@ input[type=text] {
 	margin-top: 230px;
 }
 .licover.active {
-	background: linear-gradient( #000000 194px, var( --cm ) 0 ) !important;
+	background: linear-gradient( #000000 192px, var( --cm ) 0 ) !important;
 }
 .licoverimg {
 	position: relative;

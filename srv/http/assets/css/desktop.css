@@ -24,7 +24,7 @@
 	background-color: var( --cml ) !important;
 }
 .licover.active:hover {
-	background: linear-gradient( #000000 194px, var( --cml ) 0 ) !important;
+	background: linear-gradient( #000000 192px, var( --cml ) 0 ) !important;
 }
 .mode:hover {
 	background: var( --cga );
