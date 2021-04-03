@@ -74,7 +74,7 @@ function contextmenuLibrary( $li, $target ) {
 	G.list.album = $li.find( '.lialbum' ).text()
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
 	var lipath = $( '#lib-path .lipath' ).text();
-	if ( $( '.licover' ).length || lipath.toLowerCase() === G.mode ) {
+	if ( G.mode === 'file' || $( '.licover' ).length || lipath.toLowerCase() === G.mode ) {
 		G.list.path = $li.find( '.lipath' ).text() || '';
 	} else {
 		G.list.path = lipath;
