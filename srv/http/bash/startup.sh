@@ -86,9 +86,9 @@ $dirbash/mpd-conf.sh # mpd.service start by this script
 
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
-else # try reconnect if wi-fi failed
+else
 	profile=$( ls -p /etc/netctl | grep -v / | head -1 )
-	if [[ -n $profile ]]; then
+	if [[ -n $profile ]]; then # try reconnect if wi-fi failed
 		for i in {1..20}; do
 			sleep 1
 			ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
