@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export XDG_CACHE_HOME="/tmp/.cache"
-export DISPLAY=:0
 
 if [[ -e /etc/localbrowser.conf ]]; then
 	. /etc/localbrowser.conf
