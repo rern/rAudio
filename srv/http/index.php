@@ -15,14 +15,14 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <html>
 <head>
 	<title>rAudio</title>
-	<meta name="apple-mobile-web-app-title" content="R+R">
+	<meta name="apple-mobile-web-app-title" content="rAudio">
+	<meta name="application-name" content="rAudio">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<meta name="application-name" content="R+R">
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.<?=$time?>.png">
 	<style>
