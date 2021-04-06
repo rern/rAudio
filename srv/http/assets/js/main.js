@@ -668,7 +668,6 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, create            : function () { // maintain shadow angle of handle
-		G.volumeanimate = 0;
 		$( '#volume .rs-transition' ).css( 'transition-property', 'none' ); // disable animation on load
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
@@ -695,7 +694,6 @@ $( '#volume' ).roundSlider( {
 		G.drag = 0;
 	}
 	, valueChange       : function( e ) {
-		G.volumeanimate = 1;
 		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle );
 		$( '#volume .rs-transition' ).css( 'transition-duration', '' );
 	}
