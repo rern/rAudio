@@ -1613,6 +1613,14 @@ function volumeDrag( vol ) {
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
+function volumeKnobSet( vol ) {
+	$( '#volume-knob' ).addClass( 'disabled' );
+	$( '#vol-group i' ).addClass( 'disable' );
+	bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		$( '#volume-knob' ).removeClass( 'disabled' );
+		$( '#vol-group i' ).removeClass( 'disable' );
+	} );
+}
 function volumeSet( pageX ) {
 	var $volumeband = $( '#volume-band' );
 	var posX = pageX - $volumeband.offset().left;
@@ -1632,7 +1640,9 @@ function volumeSet( pageX ) {
 	$( '#volume-text' ).text( vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
-function volumeSpeed( diff ) {
+function volumeSpeed( vol ) {
+	var diff = Math.abs( vol - G.status.volume );
+	if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
 	var sec = Math.ceil( diff / 5 ) * 0.2;
 	$( '.rs-animation .rs-transition' ).css( 'transition-duration', sec +'s' );
 }

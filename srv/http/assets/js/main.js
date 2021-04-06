@@ -692,20 +692,11 @@ $( '#volume' ).roundSlider( {
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		var diff = Math.abs( e.value - G.status.volume );
-		if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
-		volumeSpeed( diff );
+		volumeSpeed( e.value );
 	}
 	, change            : function( e ) { // click
 		$( e.handle.element ).rsRotate( - e.handle.angle );
-		if ( !G.drag ) {
-			$( '#volume-knob' ).addClass( 'disabled' );
-			$( '#vol-group i' ).addClass( 'disable' );
-			bash( [ 'volume', G.status.volume, e.value, G.status.control ], function() {
-				$( '#volume-knob' ).removeClass( 'disabled' );
-				$( '#vol-group i' ).removeClass( 'disable' );
-			} );
-		}
+		if ( !G.drag ) volumeKnobSet( e.value );
 		G.drag = 0;
 	}
 	, valueChange       : function() {
@@ -713,12 +704,7 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volmute' ).click( function() {
-	$( '#volume-knob' ).addClass( 'disabled' );
-	$( '#vol-group i' ).addClass( 'disable' );
-	bash( [ 'volume', G.status.volume, 0, G.status.control ], function() {
-		$( '#volume-knob' ).removeClass( 'disabled' );
-		$( '#vol-group i' ).removeClass( 'disable' );
-	} );
+	volumeKnobSet( 0 );
 } );
 $( '#volup, #voldn' ).click( function() {
 	var voldn = this.id === 'voldn';
