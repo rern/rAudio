@@ -862,7 +862,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	G.drag = 1;
 	e.preventDefault();
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	volumeSet( pageX );
+	volumeBandSet( pageX );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( G.status.volumenone ) return
 	
@@ -882,7 +882,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	} else {
 		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
-		volumeSet( pageX );
+		volumeBandSet( pageX );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {

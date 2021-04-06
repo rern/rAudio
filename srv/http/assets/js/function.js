@@ -1603,25 +1603,7 @@ function volumebarTimeout() {
 		$( '.volumeband' ).addClass( 'transparent' );
 	}, 3000 );
 }
-function volumeDrag( vol ) {
-	if ( G.status.control ) {
-		bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
-	} else {
-		bash( 'mpc volume '+ vol );
-	}
-}
-function volumePushstream() {
-	bash( [ 'volumepushstream' ] );
-}
-function volumeKnobSet( vol ) {
-	$( '#volume-knob' ).addClass( 'disabled' );
-	$( '#vol-group i' ).addClass( 'disable' );
-	bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
-		$( '#volume-knob' ).removeClass( 'disabled' );
-		$( '#vol-group i' ).removeClass( 'disable' );
-	} );
-}
-function volumeSet( pageX ) {
+function volumeBandSet( pageX ) {
 	var $volumeband = $( '#volume-band' );
 	var posX = pageX - $volumeband.offset().left;
 	var bandW = $volumeband.width();
@@ -1639,6 +1621,24 @@ function volumeSet( pageX ) {
 	}
 	$( '#volume-text' ).text( vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+}
+function volumeDrag( vol ) {
+	if ( G.status.control ) {
+		bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
+	} else {
+		bash( 'mpc volume '+ vol );
+	}
+}
+function volumeKnobSet( vol ) {
+	$( '#volume-knob' ).addClass( 'disabled' );
+	$( '#vol-group i' ).addClass( 'disable' );
+	bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		$( '#volume-knob' ).removeClass( 'disabled' );
+		$( '#vol-group i' ).removeClass( 'disable' );
+	} );
+}
+function volumePushstream() {
+	bash( [ 'volumepushstream' ] );
 }
 function volumeSpeed( vol ) {
 	var diff = Math.abs( vol - G.status.volume );
