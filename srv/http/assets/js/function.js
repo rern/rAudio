@@ -1652,7 +1652,7 @@ function volumeSpeed( vol ) {
 	} else {
 		var sec = 0;
 	}
-	$( '.rs-transition' ).css( 'transition-duration', sec +'s' );
+	$( '.rs-handle, .rs-transition' ).css( 'transition-duration', sec +'s' );
 }
 function vu() {
 	var range = 12; // -/+
