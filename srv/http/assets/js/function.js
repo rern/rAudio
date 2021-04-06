@@ -1212,7 +1212,7 @@ renderPlaylist = function( data ) {
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
 	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disable' );
-	$( '#button-pl-crop, #button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
+	$( '#button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
@@ -1582,16 +1582,18 @@ function volColorMute( volumemute ) {
 		.text( volumemute )
 		.addClass( 'bl' );
 	$volumehandle.addClass( 'bgr60' );
-	$( '#volmute' ).addClass( 'active' )
-		.find( 'i' ).removeClass( 'fa-volume' ).addClass( 'fa-mute' );
+	$( '#volmute' )
+		.removeClass( 'fa-volume' )
+		.addClass( 'fa-mute active' );
 	var prefix = G.display.time && window.innerWidth > 613 ? 'ti' : 'i';
 	if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function volColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );
 	$volumehandle.removeClass( 'bgr60' );
-	$( '#volmute' ).removeClass( 'active' )
-		.find( 'i' ).removeClass( 'fa-mute' ).addClass( 'fa-volume' );
+	$( '#volmute' )
+		.removeClass( 'fa-mute active' )
+		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumebarTimeout() {

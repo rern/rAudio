@@ -1741,10 +1741,10 @@ $( '#button-pl-back' ).click( function() {
 $( '#button-pl-open' ).click( function() {
 	G.savedlist = 1;
 	G.savedplaylist = 0;
-	if ( G.status.playlists ) renderPlaylistList();
+	renderPlaylistList();
 } );
 $( '#button-pl-save' ).click( function() {
-	if ( G.status.playlistlength ) playlistNew();
+	playlistNew();
 } );
 $( '#button-pl-consume' ).click( function() {
 	if ( G.status.consume ) {
@@ -1779,8 +1779,6 @@ $( '#button-pl-librandom' ).click( function() {
 	}
 } );
 $( '#button-pl-shuffle' ).click( function() {
-	if ( !G.status.playlistlength ) return
-	
 	info( {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
@@ -1791,8 +1789,6 @@ $( '#button-pl-shuffle' ).click( function() {
 	} );
 } );
 $( '#button-pl-clear' ).click( function() {
-	if ( !G.status.playlistlength ) return
-	
 	if ( G.plremove ) {
 		G.plremove = 0;
 		getPlaybackStatus();
@@ -1849,8 +1845,6 @@ $( '#pl-search-close, #pl-search-btn' ).click( function() {
 	} )
 } );
 $( '#button-pl-search' ).click( function() {
-	if ( !G.status.playlistlength ) return
-	
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
 	$( '#pl-search-input' ).focus();

@@ -311,6 +311,7 @@ i.bookmark,
 }
 .disable {
 	color: var( --cg60 );
+	pointer-events: none;
 }
 .disabled {
 	pointer-events: none;
