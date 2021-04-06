@@ -651,15 +651,12 @@ $( '#time' ).roundSlider( {
 		clearIntervalAll();
 		mpcSeek( e.value );
 	}
-	, start       : function () {
+	, start       : function () { // drag start
 		clearIntervalAll();
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, drag        : function ( e ) { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( Math.round( e.value / 1000 * G.status.Time ) ) );
-	}
-	, stop        : function( e ) { // on 'stop drag'
-		//mpcSeek( e.value );
 	}
 } );
 $( '#volume' ).roundSlider( {
@@ -671,6 +668,7 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, create            : function () { // maintain shadow angle of handle
+		G.volumeanimate = 0;
 		$volumeRS = this;
 		$volumetooltip = $( '#volume' ).find( '.rs-tooltip' );
 		$volumehandle = $( '#volume' ).find( '.rs-handle' );
@@ -700,7 +698,8 @@ $( '#volume' ).roundSlider( {
 		G.drag = 0;
 	}
 	, valueChange       : function() {
-		$( '.rs-animation .rs-transition' ).css( 'transition-duration', '' );
+		G.volumeanimate = 1;
+		$( '.rs-transition' ).css( 'transition-duration', '' );
 	}
 } );
 $( '#volmute' ).click( function() {

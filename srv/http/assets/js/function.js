@@ -1645,10 +1645,14 @@ function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
 function volumeSpeed( vol ) {
-	var diff = Math.abs( vol - G.status.volume );
-	if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
-	var sec = Math.ceil( diff / 5 ) * 0.2;
-	$( '.rs-animation .rs-transition' ).css( 'transition-duration', sec +'s' );
+	if ( G.volumeanimate ) {
+		var diff = Math.abs( vol - G.status.volume );
+		if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
+		var sec = Math.ceil( diff / 5 ) * 0.2;
+	} else {
+		var sec = 0.5;
+	}
+	$( '.rs-transition' ).css( 'transition-duration', sec +'s' );
 }
 function vu() {
 	var range = 12; // -/+

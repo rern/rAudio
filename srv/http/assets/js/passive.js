@@ -73,6 +73,7 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
+		G.volumeanimate = 0;
 		getPlaybackStatus();
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		setTimeout( function() {
