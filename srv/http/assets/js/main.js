@@ -704,8 +704,10 @@ $( '#volume' ).roundSlider( {
 } );
 $( '#volmute' ).click( function() {
 	$( '#volume-knob' ).addClass( 'disabled' );
+	$( '#vol-group i' ).addClass( 'disable' );
 	bash( [ 'volume', G.status.volume, 0, G.status.control ], function() {
 		$( '#volume-knob' ).removeClass( 'disabled' );
+		$( '#vol-group i' ).removeClass( 'disable' );
 	} );
 } );
 $( '#volup, #voldn' ).click( function() {
