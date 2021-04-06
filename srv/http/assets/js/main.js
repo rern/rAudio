@@ -663,14 +663,14 @@ $( '#time' ).roundSlider( {
 	}
 } );
 $( '#volume' ).roundSlider( {
-	  sliderType      : 'default'
-	, radius          : 115
-	, width           : 50
-	, handleSize      : '-25'
-	, startAngle      : -50
-	, endAngle        : 230
-	, editableTooltip : false
-	, create          : function () { // maintain shadow angle of handle
+	  sliderType        : 'default'
+	, radius            : 115
+	, width             : 50
+	, handleSize        : '-25'
+	, startAngle        : -50
+	, endAngle          : 230
+	, editableTooltip   : false
+	, create            : function () { // maintain shadow angle of handle
 		$volumeRS = this;
 		$volumetooltip = $( '#volume' ).find( '.rs-tooltip' );
 		$volumehandle = $( '#volume' ).find( '.rs-handle' );
@@ -678,28 +678,38 @@ $( '#volume' ).roundSlider( {
 			.rsRotate( - this._handle1.angle );                     // initial rotate
 		$( '.rs-transition' ).css( 'transition-property', 'none' ); // disable animation on load
 	}
-	, start           : function( e ) { // touchstart mousedown
+	, start             : function( e ) { // drag start
 		// restore handle color immediately on start drag
 		if ( e.value === 0 ) volColorUnmute(); // value before 'start drag'
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	, drag            : function( e ) {
+	, drag              : function( e ) {
 		G.drag = 1;
 		volumeDrag( e.value );
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 	}
-	, stop            : function() { // touchend mouseup
+	, stop              : function() { // drag end
 		volumePushstream();
 	}
-	, change          : function( e ) { // click
+	, beforeValueChange : function( e ) {
+		var diff = Math.abs( e.value - G.status.volume );
+		if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
+		volumeSpeed( diff );
+	}
+	, change            : function( e ) { // click
 		$( e.handle.element ).rsRotate( - e.handle.angle );
 		if ( !G.drag ) {
 			$( '#volume-knob' ).addClass( 'disabled' );
+			$( '#vol-group i' ).addClass( 'disable' );
 			bash( [ 'volume', G.status.volume, e.value, G.status.control ], function() {
 				$( '#volume-knob' ).removeClass( 'disabled' );
+				$( '#vol-group i' ).removeClass( 'disable' );
 			} );
 		}
 		G.drag = 0;
+	}
+	, valueChange       : function() {
+		$( '.rs-animation .rs-transition' ).css( 'transition-duration', '' );
 	}
 } );
 $( '#volmute' ).click( function() {

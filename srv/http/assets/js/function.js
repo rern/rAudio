@@ -1577,9 +1577,9 @@ function thumbUpdate( path ) {
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 }
-function volColorMute( volumemute ) {
+function volColorMute() {
 	$volumetooltip
-		.text( volumemute )
+		.text( G.status.volumemute )
 		.addClass( 'bl' );
 	$volumehandle.addClass( 'bgr60' );
 	$( '#volmute' )
@@ -1631,6 +1631,10 @@ function volumeSet( pageX ) {
 	}
 	$( '#volume-text' ).text( vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+}
+function volumeSpeed( diff ) {
+	var sec = Math.ceil( diff / 5 ) * 0.2;
+	$( '.rs-animation .rs-transition' ).css( 'transition-duration', sec +'s' );
 }
 function vu() {
 	var range = 12; // -/+
