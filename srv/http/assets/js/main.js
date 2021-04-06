@@ -671,8 +671,8 @@ $( '#volume' ).roundSlider( {
 		G.volumeanimate = 0;
 		$( '#volume .rs-transition' ).css( 'transition-property', 'none' ); // disable animation on load
 		$volumeRS = this;
-		$volumetooltip = $( '#volume' ).find( '.rs-tooltip' );
-		$volumehandle = $( '#volume' ).find( '.rs-handle' );
+		$volumetooltip = $( '#volume .rs-tooltip' );
+		$volumehandle = $( '#volume .rs-handle' );
 	}
 	, start             : function( e ) { // drag start
 		// restore handle color immediately on start drag
@@ -694,8 +694,9 @@ $( '#volume' ).roundSlider( {
 		if ( !G.drag ) volumeKnobSet( e.value );
 		G.drag = 0;
 	}
-	, valueChange       : function() {
+	, valueChange       : function( e ) {
 		G.volumeanimate = 1;
+		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle );
 		$( '#volume .rs-transition' ).css( 'transition-duration', '' );
 	}
 } );
@@ -718,7 +719,6 @@ $( '#volup, #voldn' ).click( function() {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		volumeDrag( vol );
 	}, 100 );
 } ).on( 'mouseup touchend', function() {

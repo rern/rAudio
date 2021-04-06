@@ -486,7 +486,6 @@ function psVolume( data ) {
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
 			$volumeRS.setValue( G.status.volume );
 			mute ? volColorMute() : volColorUnmute();
-			$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		} else {
 			if ( $( '#infoRange .value' ).text() ) {
 				$( '#infoRange .value' ).text( G.status.volume );
