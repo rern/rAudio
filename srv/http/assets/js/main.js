@@ -687,7 +687,10 @@ $( '#volume' ).roundSlider( {
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		volumeSpeed( e.value );
+		var diff = Math.abs( e.value - G.status.volume );
+		if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
+		var speed = Math.ceil( diff / 5 ) * 0.2;
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
 	}
 	, change            : function( e ) { // click
 		$( '#volume .rs-handle' ).css( 'transition-property', '' );

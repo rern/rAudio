@@ -1643,12 +1643,6 @@ function volumeKnobSet( vol ) {
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
-function volumeSpeed( vol ) {
-	var diff = Math.abs( vol - G.status.volume );
-	if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
-	G.volumespeed = Math.ceil( diff / 5 ) * 0.2;
-	$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', G.volumespeed +'s' );
-}
 function vu() {
 	var range = 12; // -/+
 	var deg = 0;
