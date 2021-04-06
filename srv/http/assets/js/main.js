@@ -667,8 +667,8 @@ $( '#volume' ).roundSlider( {
 	, startAngle        : -50
 	, endAngle          : 230
 	, editableTooltip   : false
-	, create            : function () { // maintain shadow angle of handle
-		$( '#volume .rs-transition' ).css( 'transition-property', 'none' ); // disable animation on load
+	, create            : function () {
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
 		$volumehandle = $( '#volume .rs-handle' );
@@ -690,12 +690,12 @@ $( '#volume' ).roundSlider( {
 		volumeSpeed( e.value );
 	}
 	, change            : function( e ) { // click
+		$( '#volume .rs-handle' ).css( 'transition-property', '' );
 		if ( !G.drag ) volumeKnobSet( e.value );
 		G.drag = 0;
 	}
-	, valueChange       : function( e ) {
+	, valueChange       : function( e ) { // after change/click
 		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle );
-		$( '#volume .rs-transition' ).css( 'transition-duration', '' );
 	}
 } );
 $( '#volmute' ).click( function() {
