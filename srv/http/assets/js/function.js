@@ -1646,8 +1646,7 @@ function volumePushstream() {
 function volumeSpeed( vol ) {
 	var diff = Math.abs( vol - G.status.volume );
 	if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
-	var sec = Math.ceil( diff / 5 ) * 0.2;
-	$( '#volume .rs-transition' ).css( 'transition-duration', sec +'s' );
+	$( '#volume .rs-transition' ).css( 'transition-duration', Math.ceil( diff / 5 ) * 0.2 +'s' );
 }
 function vu() {
 	var range = 12; // -/+
