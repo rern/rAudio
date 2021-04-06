@@ -1613,7 +1613,12 @@ function volumeBandSet( pageX ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 		volumeDrag( vol );
 	} else {
-		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
+		var sec = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2;
+		console.log(sec)
+		$( '#volume-bar' ).animate(
+			  { width: vol +'%' }
+			, { duration: sec * 1000, easing: 'linear' }
+		);
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
