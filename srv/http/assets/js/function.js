@@ -622,7 +622,7 @@ function loader( toggle ) {
 	if ( !G.load ) {
 		G.load = 1;
 		$( '#loader' ).removeClass( 'splash' );
-		$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
+		$( '#volume .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	}
 }
 function local( delay ) {
@@ -1652,7 +1652,7 @@ function volumeSpeed( vol ) {
 	} else {
 		var sec = 0;
 	}
-	$( '.rs-handle, .rs-transition' ).css( 'transition-duration', sec +'s' );
+	$( '#volume .rs-transition' ).css( 'transition-duration', sec +'s' );
 }
 function vu() {
 	var range = 12; // -/+
