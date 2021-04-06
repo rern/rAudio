@@ -1650,7 +1650,7 @@ function volumeSpeed( vol ) {
 		if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
 		var sec = Math.ceil( diff / 5 ) * 0.2;
 	} else {
-		var sec = 0.5;
+		var sec = 0;
 	}
 	$( '.rs-transition' ).css( 'transition-duration', sec +'s' );
 }
