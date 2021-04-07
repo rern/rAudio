@@ -227,6 +227,7 @@ if [[ ${file:0:4} == http ]]; then
 					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
 					artistname=$Artist
 					titlename=$Title
+					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
 					/srv/http/bash/status-radioparadise.sh $file &> /dev/null &
@@ -254,7 +255,7 @@ if [[ ${file:0:4} == http ]]; then
 , "Album"    : "'$albumname'"
 , "Artist"   : "'$artistname'"
 , "Name"     : "'$Name'"
-, "station"  : "'$( [[ -n $radioparadise || -n $radiofrance ]] && echo $stationname )'"
+, "station"  : "'$station'"
 , "Time"     : false
 , "Title"    : "'$titlename'"
 , "webradio" : 'true
