@@ -1605,10 +1605,10 @@ function volumeBarSet( pageX ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 		volumeDrag( vol );
 	} else {
-		var sec = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2;
+		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
-			, { duration: sec * 1000, easing: 'linear' }
+			, { duration: ms, easing: 'linear' }
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
