@@ -1595,7 +1595,7 @@ function volColorUnmute() {
 		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
-function volumeBandSet( pageX ) {
+function volumeBarSet( pageX ) {
 	var $volumeband = $( '#volume-band' );
 	var posX = pageX - $volumeband.offset().left;
 	var bandW = $volumeband.width();
@@ -1619,7 +1619,7 @@ function volumeBandSet( pageX ) {
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 	G.status.volume = vol;
 }
-function volumebarTimeout() {
+function volumeBarTimeout() {
 	G.volumebar = setTimeout( function() {
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '#page-playback' ).css( { height: '', 'margin-top': '' } );

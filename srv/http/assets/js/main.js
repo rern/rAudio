@@ -862,11 +862,11 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	G.drag = 1;
 	e.preventDefault();
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	volumeBandSet( pageX );
+	volumeBarSet( pageX );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( G.status.volumenone ) return
 	
-	volumebarTimeout();
+	volumeBarTimeout();
 	G.down = 0;
 	if ( G.drag ) {
 		G.drag = 0;
@@ -882,7 +882,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	} else {
 		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
-		volumeBandSet( pageX );
+		volumeBarSet( pageX );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
@@ -894,7 +894,7 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	if ( G.status.volumenone ) return
 	
 	clearTimeout( G.volumebar );
-	volumebarTimeout();
+	volumeBarTimeout();
 	var updn = this.id.slice( -2 );
 	var vol = G.status.volume;
 	if ( updn === 'dn' ) {
@@ -929,7 +929,7 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 		G.hold = 0;
 		volumePushstream();
 		clearTimeout( G.intVolume );
-		volumebarTimeout();
+		volumeBarTimeout();
 	}
 } );
 $( '#volume-text' ).tap( function() {
