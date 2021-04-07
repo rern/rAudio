@@ -254,7 +254,7 @@ if [[ ${file:0:4} == http ]]; then
 , "Album"    : "'$albumname'"
 , "Artist"   : "'$artistname'"
 , "Name"     : "'$Name'"
-, "station"  : "'$stationname'"
+, "station"  : "'$( [[ -n $radioparadise || -n $radiofrance ]] && echo $stationname )'"
 , "Time"     : false
 , "Title"    : "'$titlename'"
 , "webradio" : 'true
