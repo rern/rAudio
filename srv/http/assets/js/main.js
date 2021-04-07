@@ -671,6 +671,7 @@ $( '#volume' ).roundSlider( {
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
 		$volumehandle = $( '#volume .rs-handle' );
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
 	}
 	, start             : function( e ) { // drag start
 		// restore handle color immediately on start drag
@@ -686,21 +687,16 @@ $( '#volume' ).roundSlider( {
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		if ( G.pushconnect ) {
-			var speed = 0;
-			G.pushconnect = 0;
-		} else {
-			if ( e.value !== G.status.volume ) {
-				var diff = e.value - G.status.volume;
-			} else { // mute/unmute
-				var diff = G.status.volume - G.status.volumemute;
-			}
-			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
+		if ( e.value !== G.status.volume ) {
+			var diff = e.value - G.status.volume;
+		} else { // mute/unmute
+			var diff = G.status.volume - G.status.volumemute;
 		}
+		var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
 	}
 	, change            : function( e ) { // click
-		$( '#volume .rs-handle' ).css( 'transition-property', '' );
+		$( '#volume .rs-handle' ).css( 'transition-property', '' ); // keep handle shadow in sync
 		if ( !G.drag ) volumeKnobSet( e.value );
 		G.drag = 0;
 	}
