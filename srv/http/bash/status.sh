@@ -230,9 +230,9 @@ if [[ ${file:0:4} == http ]]; then
 					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
-					/srv/http/bash/status-radioparadise.sh $file &> /dev/null &
+					/srv/http/bash/status-radioparadise.sh $file "$stationname" &> /dev/null &
 				elif [[ -n $radiofrance ]]; then
-					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
+					/srv/http/bash/status-radiofrance.sh $file "$stationname" &> /dev/null &
 				fi
 			elif [[ -n $Title ]]; then
 				albumname=$stationname

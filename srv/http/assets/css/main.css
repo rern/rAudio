@@ -632,7 +632,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 )
 }
 #sampling .radio { display: none; }
-#sampling .name { display: inline; }
+#sampling .station { display: inline; }
 /* ---------------------- info scrolling ----------------------*/
 #divartist,
 #divsong,

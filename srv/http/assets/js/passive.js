@@ -262,6 +262,7 @@ function psMpdPlayer( data ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );
+			$( '#sampling' ).html( G.status.sampling +' &bull; <span class="station">'+ G.status.station +'</span><span class="radio">Radio</span>' );
 			renderPlaybackAlbum();
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );

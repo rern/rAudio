@@ -982,7 +982,7 @@ function renderPlayback() {
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
 		if ( G.status.state === 'play' && G.status.station ) {
-			sampling += ' &bull; <span class="name">'+ G.status.station +'</span><span class="radio">Radio</span>';
+			sampling += ' &bull; <span class="station">'+ G.status.station +'</span><span class="radio">Radio</span>';
 		} else {
 			sampling += sampling ? ' &bull; Radio' : 'Radio';
 		}
