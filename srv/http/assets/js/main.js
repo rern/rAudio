@@ -668,14 +668,13 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, create            : function () {
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
 		$volumehandle = $( '#volume .rs-handle' );
 	}
 	, start             : function( e ) { // drag start
 		// restore handle color immediately on start drag
-		if ( e.value === 0 ) volColorUnmute(); // value before 'start drag'
+		if ( e.value === 0 ) volColorUnmute();
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, drag              : function( e ) {
@@ -687,12 +686,17 @@ $( '#volume' ).roundSlider( {
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		if ( e.value !== G.status.volume ) {
-			var diff = e.value - G.status.volume;
-		} else { // mute/unmute
-			var diff = G.status.volume - G.status.volumemute;
+		if ( G.pushconnect ) {
+			var speed = 0;
+			G.pushconnect = 0;
+		} else {
+			if ( e.value !== G.status.volume ) {
+				var diff = e.value - G.status.volume;
+			} else { // mute/unmute
+				var diff = G.status.volume - G.status.volumemute;
+			}
+			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
-		var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
 	}
 	, change            : function( e ) { // click
