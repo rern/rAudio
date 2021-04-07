@@ -489,7 +489,7 @@ function psVolume( data ) {
 				$( '#infoRange .value' ).text( vol );
 				$( '#infoRange input' ).val( vol );
 			} else {
-				$( '#volume-bar' ).animate( { width: vol +'%' }, sec * 1000 );
+				$( '#volume-bar' ).css( 'width', vol +'%' );
 				$( '#volume-text' ).html( mute ? '<i class="fa fa-mute"></i>' : vol );
 			}
 		}
