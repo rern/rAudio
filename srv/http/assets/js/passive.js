@@ -472,26 +472,24 @@ function psVolume( data ) {
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		var type = data.type;
 		var val = data.val;
-		var mute = type === 'mute';
+		var mute = data.type === 'mute';
 		if ( mute ) {
-			G.status.volume = 0;
 			G.status.volumemute = val;
+			val = 0;
 		} else {
-			G.status.volume = val;
 			G.status.volumemute = 0;
 		}
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
-			$volumeRS.setValue( G.status.volume );
+			$volumeRS.setValue( val );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
 			if ( $( '#infoRange .value' ).text() ) {
-				$( '#infoRange .value' ).text( G.status.volume );
-				$( '#infoRange input' ).val( G.status.volume );
+				$( '#infoRange .value' ).text( val );
+				$( '#infoRange input' ).val( val );
 			} else {
-				$( '#volume-text' ).html( G.status.volumemute === 0 ? G.status.volume : '<i class="fa fa-mute"></i>' );
-				$( '#volume-bar' ).animate( { width: G.status.volume +'%' }, 600 );
+				$( '#volume-text' ).html( mute ? '<i class="fa fa-mute"></i>' : val );
+				$( '#volume-bar' ).animate( { width: val +'%' }, 600 );
 			}
 		}
 	}, G.debouncems );

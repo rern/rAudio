@@ -701,6 +701,7 @@ $( '#volume' ).roundSlider( {
 		G.drag = 0;
 	}
 	, valueChange       : function( e ) { // after change/click
+		G.status.volume = e.value;
 		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle );
 	}
 } );
