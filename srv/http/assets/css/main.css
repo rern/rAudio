@@ -629,7 +629,8 @@ i.map.disabled, .map.disabled i {
 }
 #sampling {
 	text-align: center;
-	color: var( --cg60 )
+	color: var( --cg60 );
+	text-transform: none;
 }
 #sampling .radio { display: none; }
 #sampling .station { display: inline; }
