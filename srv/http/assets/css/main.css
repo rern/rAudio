@@ -631,6 +631,8 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 )
 }
+#sampling .radio { display: none; }
+#sampling .name { display: inline; }
 /* ---------------------- info scrolling ----------------------*/
 #divartist,
 #divsong,
@@ -2447,6 +2449,8 @@ li.active .li2 bl {
 	}
 }
 @media( max-width: 700px ) {
+	#sampling .radio { display: inline; }
+	#sampling .name { display: none; }
 	#pl-count .title { display: none; }
 }
 @media( max-width: 512px ) {

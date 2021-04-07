@@ -980,7 +980,13 @@ function renderPlayback() {
 		scrollLongText();
 	} );
 	var sampling = G.status.sampling;
-	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
+	if ( G.status.webradio ) {
+		if ( G.status.state === 'play' && G.status.station ) {
+			sampling += ' &bull; <span class="name">'+ G.status.station +'</span><span class="radio">Radio</span>';
+		} else {
+			sampling += sampling ? ' &bull; Radio' : 'Radio';
+		}
+	}
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
 	var displaytime = $( '#time-knob' ).is( ':visible' );

@@ -254,6 +254,7 @@ if [[ ${file:0:4} == http ]]; then
 , "Album"    : "'$albumname'"
 , "Artist"   : "'$artistname'"
 , "Name"     : "'$Name'"
+, "station"  : "'$stationname'"
 , "Time"     : false
 , "Title"    : "'$titlename'"
 , "webradio" : 'true
