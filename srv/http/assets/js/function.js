@@ -1595,13 +1595,6 @@ function volColorUnmute() {
 		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
-function volumebarTimeout() {
-	G.volumebar = setTimeout( function() {
-		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
-		$( '.volumeband' ).addClass( 'transparent' );
-	}, 3000 );
-}
 function volumeBandSet( pageX ) {
 	var $volumeband = $( '#volume-band' );
 	var posX = pageX - $volumeband.offset().left;
@@ -1624,6 +1617,14 @@ function volumeBandSet( pageX ) {
 	}
 	$( '#volume-text' ).text( vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+	G.status.volume = vol;
+}
+function volumebarTimeout() {
+	G.volumebar = setTimeout( function() {
+		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+		$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
+		$( '.volumeband' ).addClass( 'transparent' );
+	}, 3000 );
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {

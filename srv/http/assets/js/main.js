@@ -687,9 +687,12 @@ $( '#volume' ).roundSlider( {
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		var diff = Math.abs( e.value - G.status.volume );
-		if ( diff === 0 ) diff = Math.abs( G.status.volume - G.status.volumemute ); // mute/unmute
-		var speed = Math.ceil( diff / 5 ) * 0.2;
+		if ( e.value !== G.status.volume ) {
+			var diff = e.value - G.status.volume;
+		} else { // mute/unmute
+			var diff = G.status.volume - G.status.volumemute;
+		}
+		var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
 	}
 	, change            : function( e ) { // click
