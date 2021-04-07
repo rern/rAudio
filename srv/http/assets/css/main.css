@@ -1804,7 +1804,7 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	z-index: 112;
 }
-#button-data.nobars {
+#button-data.barshidden {
 	top: 0;
 }
 #pl-path .fa-arrow-left {

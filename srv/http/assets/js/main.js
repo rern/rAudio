@@ -505,11 +505,11 @@ $( '#button-data' ).click( function() {
 	if( $( '#data' ).hasClass( 'hide' ) ) {
 		$( '#data' )
 			.html( JSON.stringify( G.status, null, 2 ) )
-			.toggleClass( 'nobars', !G.bars )
+			.toggleClass( 'barshidden', !G.bars )
 			.removeClass( 'hide' );
 		$( this )
 			.removeAttr( 'class' )
-			.addClass( 'fa fa-times bl nobars' );
+			.addClass( 'fa fa-times bl barshidden' );
 	} else {
 		$( '#data' )
 			.addClass( 'hide' )
