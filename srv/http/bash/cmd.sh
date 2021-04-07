@@ -228,7 +228,7 @@ volumeSet() {
 	fi
 	
 	diff=$(( $target - $current ))
-	if (( -10 < $diff && $diff < 10 )); then
+	if (( -5 < $diff && $diff < 5 )); then
 		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
