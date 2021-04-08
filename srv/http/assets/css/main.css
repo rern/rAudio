@@ -2451,7 +2451,7 @@ li.active .li2 bl {
 }
 @media( max-width: 700px ) {
 	#sampling .radio { display: inline; }
-	#sampling .name { display: none; }
+	#sampling .station { display: none; }
 	#pl-count .title { display: none; }
 }
 @media( max-width: 512px ) {
