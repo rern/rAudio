@@ -484,7 +484,10 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/radiometa
-	mpc | grep -q '^\[playing\]' && playing=1
+	if mpc | grep -q '^\[playing\]'; then
+		playing=1
+		mpc stop
+	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc play $pos
