@@ -221,12 +221,6 @@ volumeSet() {
 	current=$1
 	target=$2
 	control=$3
-	if [[ -z $control ]]; then
-		[[ -z $current ]] && mpc volume $target && exit
-	else
-		[[ -z $current ]] && amixer -M sset "$control" $target% && exit
-	fi
-	
 	diff=$(( $target - $current ))
 	if (( -5 < $diff && $diff < 5 )); then
 		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
@@ -236,9 +230,9 @@ volumeSet() {
 			[[ -z $control ]] && mpc volume $i || amixer -M sset "$control" $i%
 			sleep 0.2
 		done
-		(( $i == $target )) && exit
-		
-		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
+		if (( $i != $target )); then
+			[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
+		fi
 	fi
 	[[ -n $control ]] && alsactl store
 }
