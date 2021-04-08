@@ -475,7 +475,12 @@ function psSpotify( data ) {
 	setButtonControl();
 }
 function psVolume( data ) {
-	if ( G.local ) return
+	if ( G.local ) {
+		return
+	} else if ( data.type === 'enable' ) {
+		$( '#volume-knob, #vol-group i' ).removeClass( 'disable' );
+		return
+	}
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -488,6 +493,7 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
+			$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {

@@ -1638,12 +1638,8 @@ function volumeDrag( vol ) {
 	}
 }
 function volumeKnobSet( vol ) {
-	$( '#volume-knob' ).addClass( 'disabled' );
-	$( '#vol-group i' ).addClass( 'disable' );
-	bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
-		$( '#volume-knob' ).removeClass( 'disabled' );
-		$( '#vol-group i' ).removeClass( 'disable' );
-	} );
+	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
+	bash( [ 'volume', G.status.volume, vol, G.status.control ] );
 }
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );

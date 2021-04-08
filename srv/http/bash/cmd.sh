@@ -762,6 +762,7 @@ volume )
 		fi
 	fi
 	volumeSet "$current" $target "$control" # $current may be blank
+	pushstreamVolume enable true
 	;;
 volume0db )
 	volume0dB
