@@ -407,7 +407,6 @@ code {
 }
 .bl {
 	margin: 20px 0 10px 0;
-	border-bottom: 1px solid var( --cg );
 }
 .brhalf {
 	display: block;

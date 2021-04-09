@@ -169,7 +169,7 @@ function psRefresh( data ) {
 	if ( data.page === page || data.page === 'all' ) refreshData();
 }
 function psReload() {
-	if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) location.reload();
+	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
 	if ( G.local || !$( '#infoRange .value' ).text() ) return
@@ -223,18 +223,19 @@ onVisibilityChange( function( visible ) {
 } );
 //---------------------------------------------------------------------------------------
 G = {}
-var intervalcputime;
-var intervalscan;
-var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var reboot = '';
-var timer;
+var debounce;
 var dirsystem = '/srv/http/data/system';
 var filereboot = '/srv/http/data/shm/reboot';
-var short = window.innerHeight < 570;
+var intervalcputime;
+var intervalscan;
 var local = 0;
-var debounce;
+var localhost = [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1;
 var orange = '#de810e';
+var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
+var reboot = '';
 var red = '#bb2828';
+var short = window.innerHeight < 570;
+var timer;
 
 document.title = page;
 $( '#'+ page ).addClass( 'active' );

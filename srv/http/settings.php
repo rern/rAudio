@@ -1,4 +1,8 @@
 <?php
+session_set_cookie_params(["SameSite" => "Strict"]); //none, lax, strict
+session_set_cookie_params(["Secure" => "true"]); //false, true
+session_set_cookie_params(["HttpOnly" => "true"]); //false, true
+session_start();
 $svg = preg_grep( '/<rect|<path/', file( '/srv/http/assets/img/icon.svg' ) );
 $logo = '<svg viewBox="0 0 180 180">'.implode( '', $svg ).'</svg>';
 

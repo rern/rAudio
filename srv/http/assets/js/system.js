@@ -956,6 +956,8 @@ $( '.listtitle' ).click( function() {
 } );
 var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
 $( '.list' ).on( 'click', 'bl', function() {
+	if ( localhost ) return
+	
 	loader();
 	var pkg = $( this ).text()
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )

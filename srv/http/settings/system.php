@@ -275,7 +275,11 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {
-	$uihtml.= '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
+	if ( $localhost ) {
+		$uihtml.= $name.'<br>';
+	} else {
+		$uihtml.= '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
+	}
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
 ?>
