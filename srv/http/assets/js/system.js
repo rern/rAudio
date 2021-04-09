@@ -925,41 +925,45 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '#pkg' ).click( function() {
-	if ( $( '#pkglist' ).hasClass( 'hide' ) ) {
-		$( '#pkg i' )
+$( '.listtitle' ).click( function() {
+	var $this = $( this );
+	var $chevron = $this.find( 'i' );
+	var $list = $this.next();
+	if ( $list.hasClass( 'hide' ) ) {
+		$chevron
 			.removeClass( 'fa-chevron-down' )
 			.addClass( 'fa-chevron-up' );
-		if ( $( '#pkglist' ).html() ) {
-			$( '#pkglist' ).removeClass( 'hide' );
+		if ( $list.html() ) {
+			$list.removeClass( 'hide' );
 		} else {
 			bash( 'pacman -Qq', function( list ) {
 				var list = list.split( '\n' );
 				pkghtml = '';
 				list.forEach( function( pkg ) {
-					pkghtml += '<br><bl>'+ pkg +'</bl>';
+					pkghtml += '<bl>'+ pkg +'</bl><br>';
 				} );
-				$( '#pkglist' )
-					.html( pkghtml )
+				$list
+					.html( pkghtml.slice( 0, -4 ) )
 					.removeClass( 'hide' );
 			} );
 		}
 	} else {
-		$( '#pkg i' )
+		$chevron
 			.removeClass( 'fa-chevron-up' )
 			.addClass( 'fa-chevron-down' );
-		$( '#pkglist' ).addClass( 'hide' );
+		$list.addClass( 'hide' );
 	}
 } );
 var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
-$( '#pkglist' ).on( 'click', 'bl', function() {
+$( '.list' ).on( 'click', 'bl', function() {
 	loader();
 	var pkg = $( this ).text()
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )
 				.replace( '-pushstream', '' );
+	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
 	bash( [ 'packagehref', pkg ], function( href ) {
 		loader( 'hide' );
-		window.open( href );
+		windowopen.location = href;
 	} );
 } );
 

@@ -660,6 +660,9 @@ input:checked + .switchlabel.disabled:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
+.list {
+	padding-left: 20px;
+}
 #guide {
 	position: absolute;
 	width: 100%;
@@ -818,6 +821,8 @@ input:checked + .switchlabel.disabled:after {
 	.code,
 	.col-l.icon,
 	.entries li,
+	.listtitle,
+	.list,
 	.page-icon,
 	.prev-next,
 	.setting,
@@ -829,9 +834,7 @@ input:checked + .switchlabel.disabled:after {
 	#close,
 	#filetype,
 	#gpioimgtxt,
-	#help,
-	#pkg,
-	#pkglist {
+	#help {
 		cursor: pointer;
 	}
 	input:disabled {
