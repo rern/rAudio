@@ -236,9 +236,9 @@ var reboot = '';
 var red = '#bb2828';
 var short = window.innerHeight < 570;
 var timer;
-
 document.title = page;
 $( '#'+ page ).addClass( 'active' );
+if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 $( '#close' ).click( function() {
 	if ( page === 'system' || page === 'features' ) {
