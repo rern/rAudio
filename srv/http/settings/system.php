@@ -290,15 +290,15 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <br>&nbsp;
 
 <heading class="sub">Back End</heading>
-<a href="https://www.archlinuxarm.org">ArchLinuxArm</a>
+<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
 <br><a class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></a>
 <div class="list hide"></div><br>&nbsp;
 
 <heading class="sub">Front End</heading>
-<br><a href="https://whatwg.org">HTML</a>
-<br><a href="https://www.w3.org/TR/CSS">CSS</a>
-<br><a href="https://www.php.net">PHP</a>
-<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
+<br><a href="https://whatwg.org" target="_blank">HTML</a>
+<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
+<br><a href="https://www.php.net" target="_blank">PHP</a>
+<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
 <br><a class="listtitle">Libraries and Plugins&ensp;<i class="fa fa-chevron-down"></i></a>
 <div class="list hide"><?=$uihtml?></div><br>&nbsp;
 
