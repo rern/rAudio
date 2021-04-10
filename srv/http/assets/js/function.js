@@ -508,6 +508,7 @@ function getPlaybackStatus( render ) {
 			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
+		G.getstatus = 0;
 		$( 'body' ).removeClass( 'disabled' );
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
