@@ -789,7 +789,7 @@ volumeupdown )
 	control=${args[2]}
 	[[ -z $control ]] && mpc volume ${updn}1 || amixer -M sset "$control" 1%$updn
 	volumeGet
-	pushstream volume '{"val":'$volume'}'
+	pushstreamVolume updn $volume
 	;;
 webradioadd )
 	name=${args[1]}

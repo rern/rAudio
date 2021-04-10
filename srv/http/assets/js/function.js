@@ -459,6 +459,7 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 	reader.readAsArrayBuffer( file.slice( 0, 64 * 1024 ) );
 }
 function getPlaybackStatus( render ) {
+	G.getstatus = 1;
 	local();
 	bash( '/srv/http/bash/status.sh', function( list ) {
 		if ( !list ) return
@@ -507,6 +508,10 @@ function getPlaybackStatus( render ) {
 			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
+		$( 'body' ).removeClass( 'disabled' );
+		G.getstatus = 0;
+		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
+		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
 }
 function getPlaylist() {

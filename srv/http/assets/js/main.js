@@ -687,7 +687,7 @@ $( '#volume' ).roundSlider( {
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		if ( G.onstatuschange ) {
+		if ( G.getstatus ) {
 			var speed = 0;
 		} else {
 			if ( e.value !== G.status.volume ) {

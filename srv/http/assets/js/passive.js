@@ -72,18 +72,9 @@ streams.forEach( function( stream ) {
 } );
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
-	if ( status === 2 ) {
-		G.onstatuschange = 1;
+	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
-		setTimeout( function() {
-			$( 'body' ).removeClass( 'disabled' );
-		}, 300 );
-		setTimeout( function() {
-			G.onstatuschange = 0;
-			if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
-		}, 1000 );
-	} else if ( status === 0 ) { // disconnect
+	} else if ( status === 0 ) { // disconnected
 		$( 'body' ).addClass( 'disabled' );
 		bannerHide();
 	}
@@ -493,7 +484,7 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
-			$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
+			if ( data.type !== 'updn' ) $( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
