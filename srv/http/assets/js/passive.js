@@ -73,18 +73,18 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
-		G.connect = 1;
+		G.onstatuschange = 1;
 		getPlaybackStatus();
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		setTimeout( function() {
-			$( '#volume' ).removeClass( 'disabled' );
+			$( 'body' ).removeClass( 'disabled' );
 		}, 300 );
 		setTimeout( function() {
-			G.connect = 0;
+			G.onstatuschange = 0;
 			if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 		}, 1000 );
 	} else if ( status === 0 ) { // disconnect
-		$( '#volume' ).addClass( 'disabled' );
+		$( 'body' ).addClass( 'disabled' );
 		bannerHide();
 	}
 }
