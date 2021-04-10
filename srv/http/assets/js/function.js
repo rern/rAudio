@@ -509,7 +509,6 @@ function getPlaybackStatus( render ) {
 		}
 		setButtonUpdating();
 		$( 'body' ).removeClass( 'disabled' );
-		G.getstatus = 0;
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
