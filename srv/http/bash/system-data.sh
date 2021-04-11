@@ -1,8 +1,9 @@
 #!/bin/bash
 
+cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
 	  "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
-	, "cputemp"         : '$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )'
+	, "cputemp"         : '$( [[ -n $cputemp ]] && echo $cputemp || echo 0 )'
 	, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
 	, "throttled"       : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 	, "time"            : "'$( date +'%T %F' )'"
@@ -22,8 +23,8 @@ if [[ $bluetooth == true ]]; then
 else
 	btdiscoverable=false
 fi
-i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt && echo true || echo false )
-lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
+i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt 2> /dev/null && echo true || echo false )
+lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
 if [[ $i2c == true ]]; then
 	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
@@ -43,13 +44,27 @@ if [[ -e /etc/relays.conf ]]; then
 else
 	relayspins=false
 fi
-revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-case ${revision: -4:1} in
-	0 ) soc=BCM2835;;
-	1 ) soc=BCM2836;;
-	2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
-	3 ) soc=BCM2711;;
-esac
+rpimodel=$( cat /proc/device-tree/model | tr -d '\0' )
+if [[ ${rpimodel:0:9} == Raspberry ]]; then
+	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	case ${revision: -4:1} in
+		0 ) soc=BCM2835;;
+		1 ) soc=BCM2836;;
+		2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837
+			soccpu='4 x '
+			;;
+		3 ) soc=BCM2711
+			soccpu='4 x '
+			;;
+	esac
+	readarray -t cpu_speed <<< $( lscpu | awk '/Model name|CPU max/ {print $NF}' )
+	soccpu+=${cpu_speed[0]}
+	socspeed=${cpu_speed[1]/.*}
+elif [[ $rpimodel == *BeagleBone* ]]; then
+	soc=AM3358
+	soccpu=Cortex-A8
+	socspeed=1000
+fi
 if [[ -e /etc/soundprofile.conf ]]; then
 	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
 else
@@ -125,12 +140,11 @@ data+='
 	, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 	, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 	, "relayspins"      : '$relayspins'
-	, "rpi01"           : '$( [[ $soc == BCM2835 ]] && echo true || echo false )'
-	, "rpimodel"        : "'$( cat /proc/device-tree/model | tr -d '\0' )'"
+	, "rpimodel"        : "'$rpimodel'"
 	, "soc"             : "'$soc'"
-	, "soccpu"          : "'$( lscpu | awk '/Model name/ {print $NF}' )'"
+	, "soccpu"          : "'$soccpu'"
 	, "socram"          : "'$( free -h | grep Mem | awk '{print $2}' )'B"
-	, "socspeed"        : "'$( lscpu | awk '/CPU max/ {print $NF}' | cut -d. -f1 )'"
+	, "socspeed"        : "'$socspeed'"
 	, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
 	, "version"         : "'$version'"
 	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'

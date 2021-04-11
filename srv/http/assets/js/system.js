@@ -165,8 +165,13 @@ function rebootText( enable, device ) {
 	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
+	if ( G.cputemp < 80 ) {
+		var cputemp = G.cputemp ? G.cputemp +' °C' : '(not available)';
+	} else {
+		var cputemp = '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
+	}
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' )
-		+'<br>'+ ( G.cputemp < 80 ? G.cputemp +' °C' : '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>' )
+		+'<br>'+ cputemp
 		+'<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
 		+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
 		+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
@@ -186,8 +191,7 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		var cpu = G.rpi01 ? '' : '4 ';
-		cpu += G.soccpu +' <gr>@</gr> ';
+		var cpu = G.soccpu +' <gr>@</gr> ';
 		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
@@ -764,7 +768,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, 'eth0 txqueuelen'
 	];
 	var textvalue = G.soundprofileval.split( ' ' );
-	if ( G.rpi01 ) {
+	if ( G.soc === 'BCM2835' ) {
 		var lat = [ 1500000, 850000, 500000, 120000, 500000, 145655, 6000000, 1500000 ];
 	} else {
 		var lat = [ 4500000, 3500075, 1000000, 2000000, 3700000, 145655, 6000000, 1500000 ];
