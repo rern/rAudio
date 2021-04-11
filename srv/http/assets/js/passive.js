@@ -466,8 +466,6 @@ function psSpotify( data ) {
 	setButtonControl();
 }
 function psVolume( data ) {
-	if ( G.local ) return
-	
 	if ( data.type === 'enable' ) {
 		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
 		return
