@@ -44,26 +44,21 @@ if [[ -e /etc/relays.conf ]]; then
 else
 	relayspins=false
 fi
+readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
+soccore=${cpu[0]}
+(( $soccore > 1 )) && soccpu="$soccore x ${cpu[1]}" || soccpu=${cpu[1]}
+socspeed=${cpu[2]/.*}
 rpimodel=$( cat /proc/device-tree/model | tr -d '\0' )
-if [[ ${rpimodel:0:9} == Raspberry ]]; then
+if [[ $rpimodel == *BeagleBone* ]]; then
+	soc=AM3358
+else
 	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 	case ${revision: -4:1} in
 		0 ) soc=BCM2835;;
 		1 ) soc=BCM2836;;
-		2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837
-			soccpu='4 x '
-			;;
-		3 ) soc=BCM2711
-			soccpu='4 x '
-			;;
+		2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
+		3 ) soc=BCM2711;;
 	esac
-	readarray -t cpu_speed <<< $( lscpu | awk '/Model name|CPU max/ {print $NF}' )
-	soccpu+=${cpu_speed[0]}
-	socspeed=${cpu_speed[1]/.*}
-elif [[ $rpimodel == *BeagleBone* ]]; then
-	soc=AM3358
-	soccpu=Cortex-A8
-	socspeed=1000
 fi
 if [[ -e /etc/soundprofile.conf ]]; then
 	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
