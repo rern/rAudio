@@ -466,10 +466,10 @@ function psSpotify( data ) {
 	setButtonControl();
 }
 function psVolume( data ) {
-	if ( G.local ) {
-		return
-	} else if ( data.type === 'enable' ) {
-		$( '#volume-knob, #vol-group i' ).removeClass( 'disable' );
+	if ( G.local ) return
+	
+	if ( data.type === 'enable' ) {
+		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
 		return
 	}
 	
@@ -484,7 +484,6 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
-			if ( data.type !== 'updn' ) $( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
