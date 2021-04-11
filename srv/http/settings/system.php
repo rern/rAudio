@@ -32,7 +32,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$ihelp?></heading>
 <div id="statuslabel" class="col-l text gr">
 		CPU Load
-	<br>CPU Temperatue
+	<span id="cputemp"><br>CPU Temperatue</span>
 	<br>Time
 	<br>Up Time
 	<br>Boot Duration
