@@ -211,8 +211,7 @@ input[type="text"] {
 ul {
 	margin: 0;
 }
-pre,
-textarea {
+pre {
 	margin-top: 0;
 	padding: 5px;
 	max-height: 75vh;
@@ -222,16 +221,6 @@ textarea {
 	font-size: 15px;
 	line-height: 20px;
 	overflow-x: auto;
-}
-textarea {
-	width: 100%;
-	max-height: 100vh;
-	height: calc( 100vh - 280px );
-	color: var( --cw );
-	border-radius: 0;
-	border: none;
-	outline: none;
-	resize: none;
 }
 .help-block {
 	display: block;

@@ -24,6 +24,9 @@ info( {                                     // default
 	textrequired  : [ N, ... ]              // (none)         (required fields disable ok button if blank)
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
 	
+	textarea      : 1                       //                (textarea - \n = newline, \t = tab)
+	textareavalue : 'VALUE'                 // (none)         (pre-filled value)
+	
 	passwordlabel : 'LABEL'                 // (blank)        (password input label)
 	pwdrequired   : 1                       // (none)         (password required)
 	
@@ -105,6 +108,7 @@ infocontenthtml = heredoc( function() { /*
 				<div id="infotextbox"></div>
 				<div id="infotextsuffix"></div>
 			</div>
+			<textarea id="infoTextArea" class="infocontent"></textarea>
 			<div id="infoRadio" class="infocontent infocheckbox infohtml"></div>
 			<div id="infoCheckBox" class="infocontent infocheckbox infohtml"></div>
 			<div id="infoSelect" class="infocontent">
@@ -376,6 +380,17 @@ function info( O ) {
 				checkRequired();
 				$( '.infoinput' ).on( 'input', checkRequired );
 			}
+		}
+		if ( 'textarea' in O ) {
+			if ( 'textareavalue' in O ) {
+				$( '#infoTextArea' ).text( O.textareavalue );
+				setTimeout( function() {
+					var h = $( '#infoTextArea' )[ 0 ].scrollHeight;
+					if ( h < 100 ) h = 100;
+					$( '#infoTextArea' ).height( h );
+				}, 0 );
+			}
+			$( '#infoTextArea' ).removeClass( 'hide' );
 		}
 		if ( 'passwordlabel' in O ) {
 			var passwordlabel = typeof O.passwordlabel !== 'object' ? [ O.passwordlabel ] : O.passwordlabel;
