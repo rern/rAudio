@@ -567,13 +567,10 @@ function imageReplace( imagefile, type ) {
 }
 function infoNoData() {
 	loader( 'hide' );
-	var keyword = $( '#lib-search-input' ).val();
-	if ( keyword ) {
-		var message = 'Nothing found for <wh>'+ keyword +'</wh>';
-	} else if ( G.mode === 'nas' ) {
+	if ( G.mode === 'nas' ) {
 		var message = 'Network storage not available.'
 					 +'<br>To setup:'
-					 +'<br>Settings > System > Storage <i class="fa fa-plus-circle"></i>';
+					 +'<br>Settings > System - Storage - <i class="fa fa-plus-circle wh"></i>';
 	} else {
 		var message = 'Database not available for this location.'
 					 +'<br>To populate new files to database:'

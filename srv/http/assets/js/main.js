@@ -1188,7 +1188,11 @@ $( '#lib-search-btn' ).click( function() { // search
 				$( 'html, body' ).scrollTop( 0 );
 			} else {
 				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>&ensp;' );
-				infoNoData();
+				info( {
+					  icon    : 'library'
+					, title   : 'Library Database'
+					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
+				} );
 			}
 		}, 'json' );
 	}
