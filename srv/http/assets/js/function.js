@@ -576,7 +576,7 @@ function infoNoData() {
 					 +'<br>Settings > System > Storage <i class="fa fa-plus-circle"></i>';
 	} else {
 		var message = 'Database not available for this location.'
-					 +'<br>Update for changes then try again:'
+					 +'<br>To populate new files to database:'
 					 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
 	}
 	info( {
