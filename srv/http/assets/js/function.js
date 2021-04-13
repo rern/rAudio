@@ -568,16 +568,21 @@ function imageReplace( imagefile, type ) {
 function infoNoData() {
 	loader( 'hide' );
 	var keyword = $( '#lib-search-input' ).val();
-	var message = !keyword
-					? ( G.librarylist ? 'No data in this location.' : 'No <wh>'+ G.mode +'s</wh> in database.' )
-						 +'<br>Update for changes then try again:'
-						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
-					: 'Nothing found for <wh>'+ keyword +'</wh>';
+	if ( keyword ) {
+		var message = 'Nothing found for <wh>'+ keyword +'</wh>';
+	} else if ( G.mode === 'nas' ) {
+		var message = 'Network storage not available.'
+					 +'<br>To setup:'
+					 +'<br>Settings > System > Storage <i class="fa fa-plus-circle"></i>';
+	} else {
+		var message = 'Database not available for this location.'
+					 +'<br>Update for changes then try again:'
+					 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
+	}
 	info( {
 		  icon      : 'library'
 		, title     : 'Library Database'
 		, message   : message
-		, autoclose : 10000
 	} );
 }
 function infoUpdate( path ) {
@@ -831,7 +836,7 @@ function renderLibrary() {
 		var name = this.id.replace( 'mode-', '' );
 		$( this ).parent().toggleClass( 'hide', !G.display[ name ] );
 	} );
-	$( '#li-count, .mode grl' ).toggleClass( 'hide', !G.display.count );
+	$( '.mode grl' ).toggleClass( 'hide', !G.display.count );
 	if ( G.display.label ) {
 		$( '#lib-mode-list a.label' ).show();
 		$( '.mode' ).removeClass( 'nolabel' );

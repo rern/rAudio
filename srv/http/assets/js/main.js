@@ -1274,9 +1274,8 @@ $( '.mode' ).click( function() {
 	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, genre
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].indexOf( G.mode ) !== -1 ) { // browse by directory
-		if ( G.mode !== 'sd' && !G.status.counts[ G.mode ] ) {
-			loader( 'show' );
-			location.href = 'settings.php?p=sources';
+		if ( !G.status.counts[ G.mode ] ) {
+			infoNoData();
 			return
 		}
 		
