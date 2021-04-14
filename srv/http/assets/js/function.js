@@ -612,13 +612,13 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok       : function() {
-			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
 			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-				bash( [ 'mpcupdate', wav, path ] );
 			} else {
-				bash( [ 'mpcupdate', wav, 'rescan' ] );
+				path = 'rescan';
 			}
+			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
+			bash( [ 'mpcupdate', path, wav ] );
 		}
 	} );
 }

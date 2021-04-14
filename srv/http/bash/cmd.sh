@@ -524,8 +524,8 @@ mpcseek )
 	pushstreamStatus
 	;;
 mpcupdate )
-	wav=${args[1]}
-	path=${args[2]}
+	path=${args[1]}
+	wav=${args[2]}
 	[[ $wav == true ]] && touch $dirsystem/wav
 	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating

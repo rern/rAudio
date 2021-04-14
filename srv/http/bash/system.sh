@@ -363,7 +363,7 @@ mount )
 	fi
 
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  $options  0  0" >> /etc/fstab && echo 0  # \040 - escape spaces in fstab
-	[[ $( jq -r .update <<< $data ) == true ]] && mpc update "${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+	[[ $( jq -r .update <<< $data ) == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 	pushRefresh
 	;;
 packagehref )
