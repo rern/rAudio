@@ -70,31 +70,26 @@ fi
 
 touch $dirdata/shm/player-mpd
 
-# onboard + usb wifi >> disable onboard
-(( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
-# no enabled profile >> disable onboard
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-for p in "${profiles[@]}"; do
-	[[ $( netctl is-enabled "$p" ) == enabled ]] && wifi=1 && break
-done
-if [[ -z $wifi ]] && ! systemctl -q is-enabled hostapd; then
-	rmmod brcmfmac &> /dev/null
-fi
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 
 $dirbash/mpd-conf.sh # mpd.service start by this script
 
+# onboard + usb wifi >> disable onboard
+(( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
+# no profile + no hostapd > disable onboard
+if (( $( ls -p /etc/netctl | grep -v / | wc -l ) > 0 )); then
+	profile=1
+else
+	! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
+fi
+
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
-else
-	profile=$( ls -p /etc/netctl | grep -v / | head -1 )
-	if [[ -n $profile ]]; then # try reconnect if wi-fi failed
-		for i in {1..20}; do
-			sleep 1
-			ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
-			(( $i == 10 )) && netctl stop-all && netctl start "$1"
-		done
-	fi
+elif [[ -n $profile ]]; then # wait for wi-fi connection
+	for i in {1..20}; do
+		sleep 2
+		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
+	done
 fi
 
 fstabnas=$( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
