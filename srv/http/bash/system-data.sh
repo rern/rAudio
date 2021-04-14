@@ -89,13 +89,14 @@ fi
 usb=( $( fdisk -lo device | grep ^/dev/sd ) )
 if [[ -n $usb ]]; then
 	for source in "${usb[@]}"; do
-		mountpoint=$( timeout 0.1s df -l --output=target,source \
+		mountpoint=$( df -l --output=target,source \
 						| grep "$source" \
 						| sed "s| *$source||" )
-		if [[ $? == 0 && -n $mountpoint ]]; then
+		if [[ -n $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
+			mountpoint=/mnt/MPD/USB/$( e2label $source )
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
 		fi
 	done
@@ -103,15 +104,22 @@ fi
 readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ | sed 's/.$//' )
 if [[ -n $nas ]]; then
 	for mountpoint in "${nas[@]}"; do
-		source=$( timeout 0.1s df --output=source,target )
-		if [[ $? == 0 ]]; then
-			source=$( echo "$source" \
+		df=$( timeout 0.1s df --output=source,target )
+		if [[ -n $df ]]; then
+			source=$( echo "$df" \
 						| grep "$mountpoint" \
 						| sed "s| *$mountpoint||" )
+		else
+			source=
+		fi
+		if [[ -n $source ]]; then
 			used_size=( $( df -h --output=used,size,source | grep "$source" ) )
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
-			source=$( mount | grep "$mountpoint" | sed 's| on /.*||' )
+			source=$( cat /etc/fstab \
+						| sed 's|\\040| |g' \
+						| grep "$mountpoint" \
+						| sed "s| *$mountpoint .*||" )
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
 		fi
 	done
