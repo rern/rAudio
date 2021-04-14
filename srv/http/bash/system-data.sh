@@ -96,8 +96,9 @@ if [[ -n $usb ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
-			mountpoint=/mnt/MPD/USB/$( e2label $source )
-			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
+			label=$( e2label $source )
+			[[ -z $label ]] && label=?
+			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
 	done
 fi
