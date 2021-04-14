@@ -86,7 +86,7 @@ fi
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
 elif [[ -n $profile ]]; then # wait for wi-fi connection
-	for i in {1..20}; do
+	for i in {1..10}; do
 		sleep 2
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
 	done
