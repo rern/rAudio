@@ -221,24 +221,20 @@ volumeSet() {
 	current=$1
 	target=$2
 	control=$3
-	if [[ -z $control ]]; then
-		[[ -z $current ]] && mpc volume $target && exit
-	else
-		[[ -z $current ]] && amixer -M sset "$control" $target% && exit
-	fi
-	
 	diff=$(( $target - $current ))
-	if (( -10 < $diff && $diff < 10 )); then
+	if (( -5 < $diff && $diff < 5 )); then
 		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
 	else # increment
+		pushstreamVolume enable true
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
 			[[ -z $control ]] && mpc volume $i || amixer -M sset "$control" $i%
 			sleep 0.2
 		done
-		(( $i == $target )) && exit
-		
-		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
+		if (( $i != $target )); then
+			[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
+		fi
+		pushstreamVolume enable false
 	fi
 	[[ -n $control ]] && alsactl store
 }
@@ -490,7 +486,10 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/radiometa
-	mpc | grep -q '^\[playing\]' && playing=1
+	if mpc | grep -q '^\[playing\]'; then
+		playing=1
+		mpc stop
+	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc play $pos
@@ -525,8 +524,8 @@ mpcseek )
 	pushstreamStatus
 	;;
 mpcupdate )
-	wav=${args[1]}
-	path=${args[2]}
+	path=${args[1]}
+	wav=${args[2]}
 	[[ $wav == true ]] && touch $dirsystem/wav
 	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating
@@ -791,7 +790,7 @@ volumeupdown )
 	control=${args[2]}
 	[[ -z $control ]] && mpc volume ${updn}1 || amixer -M sset "$control" 1%$updn
 	volumeGet
-	pushstream volume '{"val":'$volume'}'
+	pushstreamVolume updn $volume
 	;;
 webradioadd )
 	name=${args[1]}

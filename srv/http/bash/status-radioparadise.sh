@@ -3,6 +3,7 @@
 # Radio Paradise metadata
 # status-radioparadise.sh FILENAME
 dirtmp=/srv/http/data/shm/
+station=$2
 name=$( basename "$1" )
 case ${name/-*} in
 	flacm )  id=0;;
@@ -26,7 +27,14 @@ coverfile=$dirtmp/online-$name.jpg
 artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
 title=$( echo $title | sed 's/"/\\"/g; s/null//' )
 album=$( echo $album | sed 's/"/\\"/g; s/null//' )
-data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radio": 1}'
+data='{
+  "Artist"   : "'$artist'"
+, "Title"    : "'$title'"
+, "Album"    : "'$album'"
+, "coverart" : "'$coverart'"
+, "station"  : "'$station'"
+, "radio"    : 1
+}'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 
 echo "\

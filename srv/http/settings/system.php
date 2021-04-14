@@ -32,7 +32,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$ihelp?></heading>
 <div id="statuslabel" class="col-l text gr">
 		CPU Load
-	<br>CPU Temperatue
+	<span id="cputemp"><br>CPU Temperatue</span>
 	<br>Time
 	<br>Up Time
 	<br>Boot Duration
@@ -260,10 +260,10 @@ $gid = exec( "$sudo/id -g mpd" );
 </div>
 <?php
 $listui = [
-	  'HTML5-Color-Picker'  => 'https://github.com/NC22/HTML5-Color-Picker'
-	, 'Inconsolata font'    => 'https://github.com/google/fonts/tree/main/ofl/inconsolata'
-	, 'jQuery'              => 'https://jquery.com/'
+	  'jQuery'              => 'https://jquery.com/'
 	, 'jQuery Mobile'       => 'https://jquerymobile.com/'
+	, 'HTML5-Color-Picker'  => 'https://github.com/NC22/HTML5-Color-Picker'
+	, 'Inconsolata font'    => 'https://github.com/google/fonts/tree/main/ofl/inconsolata'
 	, 'jQuery Selectric'    => 'https://github.com/lcdsantos/jQuery-Selectric'
 	, 'Lato-Fonts'          => 'http://www.latofonts.com/lato-free-fonts'
 	, 'LazyLoad'            => 'https://github.com/verlok/lazyload'
@@ -275,7 +275,11 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {
-	$uihtml.= '<a href="'.$link.'">'.$name.'</a><br>';
+	if ( $localhost ) {
+		$uihtml.= $name.'<br>';
+	} else {
+		$uihtml.= '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
+	}
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
 ?>
@@ -284,29 +288,25 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
 <br><gr>by</gr>&emsp;r e r n
 <br>&nbsp;
-<div>
-<heading class="sub">Back End<?=$ihelp?></heading>
-<span <?=$classhelp?>>
-	<a href="https://www.archlinuxarm.org">ArchLinuxArm</a>
-	<br><a id="pkg">Packages <i class="fa fa-chevron-down"></i></a>
-	<div id="pkglist" class="hide"></div>
-</span>
-</div>
-<div>
-<heading class="sub">Front End<?=$ihelp?></heading>
-<span <?=$classhelp?>>
-	<?=$uihtml?>
-</span>
-</div>
-<div>
-<heading class="sub">Data<?=$ihelp?></heading>
-<span <?=$classhelp?>>
-	<a href="https://www.last.fm">last.fm</a><gr> - Coverarts and artist biographies</gr><br>
-	<a href="https://webservice.fanart.tv">fanart.tv</a><gr> - Coverarts and artist images</gr><br>
-	<a href="https://radioparadise.com">Radio Paradise</a><gr> - Coverarts of their own (default Webradio stations)</gr><br>
-	<a href="https://www.fip.fr/">Fip</a><gr> - Coverarts of their own</gr><br>
-	<a href="https://www.francemusique.fr/">France Musique</a><gr> - Coverarts of their own</gr>
-</span>
-</div>
+
+<heading class="sub">Back End</heading>
+<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
+<br><a class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></a>
+<div class="list hide"></div><br>&nbsp;
+
+<heading class="sub">Front End</heading>
+<br><a href="https://whatwg.org" target="_blank">HTML</a>
+<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
+<br><a href="https://www.php.net" target="_blank">PHP</a>
+<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
+<br><a class="listtitle">Libraries and Plugins&ensp;<i class="fa fa-chevron-down"></i></a>
+<div class="list hide"><?=$uihtml?></div><br>&nbsp;
+
+<heading class="sub">Data</heading>
+<a href="https://www.last.fm">last.fm</a><gr> - Coverarts and artist biographies</gr><br>
+<a href="https://webservice.fanart.tv">fanart.tv</a><gr> - Coverarts and artist images</gr><br>
+<a href="https://radioparadise.com">Radio Paradise</a><gr> - Coverarts of their own (default Webradio stations)</gr><br>
+<a href="https://www.fip.fr/">Fip</a><gr> - Coverarts of their own</gr><br>
+<a href="https://www.francemusique.fr/">France Musique</a><gr> - Coverarts of their own</gr>
 
 <div style="clear: both"></div>

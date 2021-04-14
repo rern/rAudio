@@ -505,11 +505,11 @@ $( '#button-data' ).click( function() {
 	if( $( '#data' ).hasClass( 'hide' ) ) {
 		$( '#data' )
 			.html( JSON.stringify( G.status, null, 2 ) )
-			.toggleClass( 'nobars', !G.bars )
+			.toggleClass( 'barshidden', !G.bars )
 			.removeClass( 'hide' );
 		$( this )
 			.removeAttr( 'class' )
-			.addClass( 'fa fa-times bl nobars' );
+			.addClass( 'fa fa-times bl barshidden' );
 	} else {
 		$( '#data' )
 			.addClass( 'hide' )
@@ -651,62 +651,66 @@ $( '#time' ).roundSlider( {
 		clearIntervalAll();
 		mpcSeek( e.value );
 	}
-	, start       : function () {
+	, start       : function () { // drag start
 		clearIntervalAll();
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, drag        : function ( e ) { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( Math.round( e.value / 1000 * G.status.Time ) ) );
 	}
-	, stop        : function( e ) { // on 'stop drag'
-		//mpcSeek( e.value );
-	}
 } );
 $( '#volume' ).roundSlider( {
-	  sliderType      : 'default'
-	, radius          : 115
-	, width           : 50
-	, handleSize      : '-25'
-	, startAngle      : -50
-	, endAngle        : 230
-	, editableTooltip : false
-	, create          : function () { // maintain shadow angle of handle
+	  sliderType        : 'default'
+	, radius            : 115
+	, width             : 50
+	, handleSize        : '-25'
+	, startAngle        : -50
+	, endAngle          : 230
+	, editableTooltip   : false
+	, create            : function () {
 		$volumeRS = this;
-		$volumetooltip = $( '#volume' ).find( '.rs-tooltip' );
-		$volumehandle = $( '#volume' ).find( '.rs-handle' );
-		$volumehandle.addClass( 'rs-transition' ).eq( 0 )           // make it rotate with 'rs-transition'
-			.rsRotate( - this._handle1.angle );                     // initial rotate
-		$( '.rs-transition' ).css( 'transition-property', 'none' ); // disable animation on load
+		$volumetooltip = $( '#volume .rs-tooltip' );
+		$volumehandle = $( '#volume .rs-handle' );
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
 	}
-	, start           : function( e ) { // touchstart mousedown
+	, start             : function( e ) { // drag start
 		// restore handle color immediately on start drag
-		if ( e.value === 0 ) volColorUnmute(); // value before 'start drag'
+		if ( e.value === 0 ) volColorUnmute();
 		$( '.map' ).removeClass( 'mapshow' );
 	}
-	, drag            : function( e ) {
+	, drag              : function( e ) {
 		G.drag = 1;
 		volumeDrag( e.value );
-		$( e.handle.element ).rsRotate( - e.handle.angle );
+		$volumehandle.rsRotate( - e.handle.angle );
 	}
-	, stop            : function() { // touchend mouseup
+	, stop              : function() { // drag end
 		volumePushstream();
 	}
-	, change          : function( e ) { // click
-		$( e.handle.element ).rsRotate( - e.handle.angle );
-		if ( !G.drag ) {
-			$( '#volume-knob' ).addClass( 'disabled' );
-			bash( [ 'volume', G.status.volume, e.value, G.status.control ], function() {
-				$( '#volume-knob' ).removeClass( 'disabled' );
-			} );
+	, beforeValueChange : function( e ) {
+		if ( G.getstatus ) {
+			var speed = 0;
+		} else {
+			if ( e.value !== G.status.volume ) {
+				var diff = e.value - G.status.volume;
+			} else { // mute/unmute
+				var diff = G.status.volume - G.status.volumemute;
+			}
+			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
+	}
+	, change            : function( e ) { // click
+		$( '#volume .rs-handle' ).css( 'transition-property', '' ); // keep handle shadow in sync
+		if ( !G.drag ) volumeKnobSet( e.value );
 		G.drag = 0;
+	}
+	, valueChange       : function( e ) { // after change/click
+		G.status.volume = e.value;
+		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle );
 	}
 } );
 $( '#volmute' ).click( function() {
-	$( '#volume-knob' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0, G.status.control ], function() {
-		$( '#volume-knob' ).removeClass( 'disabled' );
-	} );
+	volumeKnobSet( 0 );
 } );
 $( '#volup, #voldn' ).click( function() {
 	var voldn = this.id === 'voldn';
@@ -724,7 +728,6 @@ $( '#volup, #voldn' ).click( function() {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		volumeDrag( vol );
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
@@ -864,11 +867,11 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	G.drag = 1;
 	e.preventDefault();
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	volumeSet( pageX );
+	volumeBarSet( pageX );
 } ).on( 'touchend mouseup', function( e ) {
 	if ( G.status.volumenone ) return
 	
-	volumebarTimeout();
+	volumeBarTimeout();
 	G.down = 0;
 	if ( G.drag ) {
 		G.drag = 0;
@@ -884,7 +887,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	} else {
 		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
 		if ( pageX === G.pageX ) G.drag = 0;
-		volumeSet( pageX );
+		volumeBarSet( pageX );
 	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
@@ -896,7 +899,7 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	if ( G.status.volumenone ) return
 	
 	clearTimeout( G.volumebar );
-	volumebarTimeout();
+	volumeBarTimeout();
 	var updn = this.id.slice( -2 );
 	var vol = G.status.volume;
 	if ( updn === 'dn' ) {
@@ -931,7 +934,7 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 		G.hold = 0;
 		volumePushstream();
 		clearTimeout( G.intVolume );
-		volumebarTimeout();
+		volumeBarTimeout();
 	}
 } );
 $( '#volume-text' ).tap( function() {
@@ -1185,7 +1188,11 @@ $( '#lib-search-btn' ).click( function() { // search
 				$( 'html, body' ).scrollTop( 0 );
 			} else {
 				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>&ensp;' );
-				infoNoData();
+				info( {
+					  icon    : 'library'
+					, title   : 'Library Database'
+					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
+				} );
 			}
 		}, 'json' );
 	}
@@ -1271,9 +1278,8 @@ $( '.mode' ).click( function() {
 	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, genre
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].indexOf( G.mode ) !== -1 ) { // browse by directory
-		if ( G.mode !== 'sd' && !G.status.counts[ G.mode ] ) {
-			loader( 'show' );
-			location.href = 'settings.php?p=sources';
+		if ( !G.status.counts[ G.mode ] ) {
+			infoNoData();
 			return
 		}
 		
@@ -1741,10 +1747,10 @@ $( '#button-pl-back' ).click( function() {
 $( '#button-pl-open' ).click( function() {
 	G.savedlist = 1;
 	G.savedplaylist = 0;
-	if ( G.status.playlists ) renderPlaylistList();
+	renderPlaylistList();
 } );
 $( '#button-pl-save' ).click( function() {
-	if ( G.status.playlistlength ) playlistNew();
+	playlistNew();
 } );
 $( '#button-pl-consume' ).click( function() {
 	if ( G.status.consume ) {
@@ -1779,8 +1785,6 @@ $( '#button-pl-librandom' ).click( function() {
 	}
 } );
 $( '#button-pl-shuffle' ).click( function() {
-	if ( !G.status.playlistlength ) return
-	
 	info( {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
@@ -1791,8 +1795,6 @@ $( '#button-pl-shuffle' ).click( function() {
 	} );
 } );
 $( '#button-pl-clear' ).click( function() {
-	if ( !G.status.playlistlength ) return
-	
 	if ( G.plremove ) {
 		G.plremove = 0;
 		getPlaybackStatus();
@@ -1849,8 +1851,6 @@ $( '#pl-search-close, #pl-search-btn' ).click( function() {
 	} )
 } );
 $( '#button-pl-search' ).click( function() {
-	if ( !G.status.playlistlength ) return
-	
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).removeClass( 'hide' );
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
 	$( '#pl-search-input' ).focus();

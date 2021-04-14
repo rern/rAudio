@@ -27,21 +27,6 @@ refreshData = function() {
 		}
 		if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 		$( '#statusvalue' ).html( htmlstatus );
-		var html = '';
-		$.each( G.list, function( i, val ) {
-			if ( val.mounted ) {
-				var dataunmounted = '';
-				var dot = '<grn>&ensp;&bull;&ensp;</grn>';
-			} else {
-				var dataunmounted = ' data-unmounted="1"';
-				var dot = '<red>&ensp;&bull;&ensp;</red>';
-			}
-			html += '<li '+ dataunmounted;
-			html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-			html += '<gr class="source">'+ val.source +'</gr>';
-			html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
-		} );
-		$( '#list' ).html( html );
 		if ( G.asoundcard == -1 ) {
 			$( '.soundcard' ).addClass( 'hide' );
 		} else {

@@ -6,7 +6,7 @@ dirtmp=/srv/http/data/shm
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
-lcd=$( grep -q dtoverlay=tft35a /boot/config.txt && echo true || echo false )
+lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 playlistlength=$( mpc playlist | wc -l )
@@ -227,11 +227,12 @@ if [[ ${file:0:4} == http ]]; then
 					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
 					artistname=$Artist
 					titlename=$Title
+					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
-					/srv/http/bash/status-radioparadise.sh $file &> /dev/null &
+					/srv/http/bash/status-radioparadise.sh $file "$stationname" &> /dev/null &
 				elif [[ -n $radiofrance ]]; then
-					/srv/http/bash/status-radiofrance.sh $file &> /dev/null &
+					/srv/http/bash/status-radiofrance.sh $file "$stationname" &> /dev/null &
 				fi
 			elif [[ -n $Title ]]; then
 				albumname=$stationname
@@ -254,6 +255,7 @@ if [[ ${file:0:4} == http ]]; then
 , "Album"    : "'$albumname'"
 , "Artist"   : "'$artistname'"
 , "Name"     : "'$Name'"
+, "station"  : "'$station'"
 , "Time"     : false
 , "Title"    : "'$titlename'"
 , "webradio" : 'true

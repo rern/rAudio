@@ -165,11 +165,15 @@ function rebootText( enable, device ) {
 	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
-	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' )
-		+'<br>'+ ( G.cputemp < 80 ? G.cputemp +' °C' : '<red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>' )
-		+'<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
-		+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
-		+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
+	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
+	if ( G.cputemp ) {
+		status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
+	} else {
+		$( '#cputemp' ).hide();
+	}
+	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
+			+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
+			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
@@ -186,8 +190,7 @@ refreshData = function() {
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
 		
-		var cpu = G.rpi01 ? '' : '4 ';
-		cpu += G.soccpu +' <gr>@</gr> ';
+		var cpu = G.soccpu +' <gr>@</gr> ';
 		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
@@ -764,7 +767,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, 'eth0 txqueuelen'
 	];
 	var textvalue = G.soundprofileval.split( ' ' );
-	if ( G.rpi01 ) {
+	if ( G.soc === 'BCM2835' ) {
 		var lat = [ 1500000, 850000, 500000, 120000, 500000, 145655, 6000000, 1500000 ];
 	} else {
 		var lat = [ 4500000, 3500075, 1000000, 2000000, 3700000, 145655, 6000000, 1500000 ];
@@ -925,41 +928,47 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '#pkg' ).click( function() {
-	if ( $( '#pkglist' ).hasClass( 'hide' ) ) {
-		$( '#pkg i' )
+$( '.listtitle' ).click( function() {
+	var $this = $( this );
+	var $chevron = $this.find( 'i' );
+	var $list = $this.next();
+	if ( $list.hasClass( 'hide' ) ) {
+		$chevron
 			.removeClass( 'fa-chevron-down' )
 			.addClass( 'fa-chevron-up' );
-		if ( $( '#pkglist' ).html() ) {
-			$( '#pkglist' ).removeClass( 'hide' );
+		if ( $list.html() ) {
+			$list.removeClass( 'hide' );
 		} else {
 			bash( 'pacman -Qq', function( list ) {
 				var list = list.split( '\n' );
 				pkghtml = '';
 				list.forEach( function( pkg ) {
-					pkghtml += '<br><bl>'+ pkg +'</bl>';
+					pkghtml += '<bl>'+ pkg +'</bl><br>';
 				} );
-				$( '#pkglist' )
-					.html( pkghtml )
+				$list
+					.html( pkghtml.slice( 0, -4 ) )
 					.removeClass( 'hide' );
 			} );
 		}
 	} else {
-		$( '#pkg i' )
+		$chevron
 			.removeClass( 'fa-chevron-up' )
 			.addClass( 'fa-chevron-down' );
-		$( '#pkglist' ).addClass( 'hide' );
+		$list.addClass( 'hide' );
 	}
 } );
 var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
-$( '#pkglist' ).on( 'click', 'bl', function() {
+$( '.list' ).on( 'click', 'bl', function() {
+	if ( localhost ) return
+	
 	loader();
 	var pkg = $( this ).text()
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )
 				.replace( '-pushstream', '' );
+	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
 	bash( [ 'packagehref', pkg ], function( href ) {
 		loader( 'hide' );
-		window.open( href );
+		windowopen.location = href;
 	} );
 } );
 

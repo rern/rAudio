@@ -72,13 +72,10 @@ streams.forEach( function( stream ) {
 } );
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
-	if ( status === 2 ) {
+	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
-		setTimeout( function() {
-			if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
-		}, 1000 );
-	} else if ( status === 0 ) { // disconnect
+	} else if ( status === 0 ) { // disconnected
+		$( 'body' ).addClass( 'disabled' );
 		bannerHide();
 	}
 }
@@ -262,6 +259,7 @@ function psMpdPlayer( data ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );
+			$( '#sampling' ).html( G.status.sampling +' &bull; <span class="station">'+ G.status.station +'</span><span class="radio">Radio</span>' );
 			renderPlaybackAlbum();
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
@@ -468,31 +466,32 @@ function psSpotify( data ) {
 	setButtonControl();
 }
 function psVolume( data ) {
-	if ( G.local ) return
+	if ( data.type === 'enable' ) {
+		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
+		return
+	}
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		var type = data.type;
-		var val = data.val;
-		var mute = type === 'mute';
+		var vol = data.val;
+		var mute = data.type === 'mute';
 		if ( mute ) {
-			G.status.volume = 0;
-			G.status.volumemute = val;
+			G.status.volumemute = vol;
+			vol = 0;
 		} else {
-			G.status.volume = val;
 			G.status.volumemute = 0;
 		}
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
-			$volumeRS.setValue( G.status.volume );
-			mute ? volColorMute( val ) : volColorUnmute();
-			$volumehandle.rsRotate( - $volumeRS._handle1.angle );
+			$volumeRS.setValue( vol );
+			mute ? volColorMute() : volColorUnmute();
 		} else {
-			if ( $( '#infoRange .value' ).text() ) {
-				$( '#infoRange .value' ).text( G.status.volume );
-				$( '#infoRange input' ).val( G.status.volume );
+			G.status.volume = vol;
+			if ( $( '#infoRange .value' ).text() ) { // mpd setting
+				$( '#infoRange .value' ).text( vol );
+				$( '#infoRange input' ).val( vol );
 			} else {
-				$( '#volume-text' ).html( G.status.volumemute === 0 ? G.status.volume : '<i class="fa fa-mute"></i>' );
-				$( '#volume-bar' ).animate( { width: G.status.volume +'%' }, 600 );
+				$( '#volume-bar' ).css( 'width', vol +'%' );
+				$( '#volume-text' ).html( mute ? '<i class="fa fa-mute"></i>' : vol );
 			}
 		}
 	}, G.debouncems );

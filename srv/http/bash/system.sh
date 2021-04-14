@@ -362,12 +362,8 @@ mount )
 		exit
 	fi
 
-	source=${source// /\\040} # escape spaces in fstab
-	name=$( basename "$mountpoint" )
-	mountpoint=${mountpoint// /\\040}
-	echo "$source  $mountpoint  $protocol  $options  0  0" >> /etc/fstab && echo 0
-	/srv/http/bash/sources-update.sh "$mountpoint"
-	[[ $( jq -r .update <<< $data ) == true ]] && mpc update NAS
+	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  $options  0  0" >> /etc/fstab && echo 0  # \040 - escape spaces in fstab
+	[[ $( jq -r .update <<< $data ) == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 	pushRefresh
 	;;
 packagehref )
@@ -407,6 +403,24 @@ relays )
 relayssave )
 	echo ${args[1]} | jq . > /etc/relays.conf
 	relaysOrder
+	;;
+remount )
+	mountpoint=${args[1]}
+	source=${args[2]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		mount "$mountpoint"
+	else
+		udevil mount "$source"
+	fi
+	pushRefresh
+	;;
+remove )
+	mountpoint=${args[1]}
+	umount -l "$mountpoint"
+	sed -i "\|${mountpoint// /.040}| d" /etc/fstab
+	rmdir "$mountpoint" &> /dev/null
+	rm -f "$dirsystem/fstab-${mountpoint/*\/}"
+	pushRefresh
 	;;
 soundprofile )
 	soundprofile
@@ -450,6 +464,25 @@ timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
 	pushRefresh
+	;;
+unmount )
+	mountpoint=${args[1]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		umount -l "$mountpoint"
+	else
+		udevil umount -l "$mountpoint"
+	fi
+	pushRefresh
+	;;
+usbconnect )
+	# for /etc/conf.d/devmon - devmon@http.service
+	pushstream notify '{"title":"USB Drive","text":"Connected.","icon":"usbdrive"}'
+	update
+	;;
+usbremove )
+	# for /etc/conf.d/devmon - devmon@http.service
+	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
+	update
 	;;
 wlan )
 	enable=${args[1]}

@@ -240,8 +240,7 @@ function displayBars() {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
-		$( '#page-playback, #lib-mode-list' ).addClass ( 'barshidden' );
-		$( '#button-data' ).addClass( 'nobars' );
+		$( '#page-playback, #lib-mode-list, #button-data' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', 0 );
@@ -250,8 +249,7 @@ function displayBars() {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
-		$( '#page-playback, #lib-mode-list' ).removeClass ( 'barshidden' );
-		$( '#button-data' ).removeClass( 'nobars' );
+		$( '#page-playback, #lib-mode-list, #button-data' ).removeClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
@@ -461,6 +459,7 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 	reader.readAsArrayBuffer( file.slice( 0, 64 * 1024 ) );
 }
 function getPlaybackStatus( render ) {
+	G.getstatus = 1;
 	local();
 	bash( '/srv/http/bash/status.sh', function( list ) {
 		if ( !list ) return
@@ -509,6 +508,10 @@ function getPlaybackStatus( render ) {
 			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
+		G.getstatus = 0;
+		$( 'body' ).removeClass( 'disabled' );
+		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
+		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
 }
 function getPlaylist() {
@@ -564,17 +567,19 @@ function imageReplace( imagefile, type ) {
 }
 function infoNoData() {
 	loader( 'hide' );
-	var keyword = $( '#lib-search-input' ).val();
-	var message = !keyword
-					? ( G.librarylist ? 'No data in this location.' : 'No <wh>'+ G.mode +'s</wh> in database.' )
-						 +'<br>Update for changes then try again:'
-						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
-					: 'Nothing found for <wh>'+ keyword +'</wh>';
+	if ( G.mode === 'nas' ) {
+		var message = 'Network storage not available.'
+					 +'<br>To setup:'
+					 +'<br>Settings > System - Storage - <i class="fa fa-plus-circle wh"></i>';
+	} else {
+		var message = 'Database not available for this location.'
+					 +'<br>To populate new files to database:'
+					 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
+	}
 	info( {
 		  icon      : 'library'
 		, title     : 'Library Database'
 		, message   : message
-		, autoclose : 10000
 	} );
 }
 function infoUpdate( path ) {
@@ -607,13 +612,13 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok       : function() {
-			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
 			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-				bash( [ 'mpcupdate', wav, path ] );
 			} else {
-				bash( [ 'mpcupdate', wav, 'rescan' ] );
+				path = 'rescan';
 			}
+			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
+			bash( [ 'mpcupdate', path, wav ] );
 		}
 	} );
 }
@@ -622,7 +627,7 @@ function loader( toggle ) {
 	if ( !G.load ) {
 		G.load = 1;
 		$( '#loader' ).removeClass( 'splash' );
-		$( '.rs-animation .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
+		$( '#volume .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	}
 }
 function local( delay ) {
@@ -828,7 +833,7 @@ function renderLibrary() {
 		var name = this.id.replace( 'mode-', '' );
 		$( this ).parent().toggleClass( 'hide', !G.display[ name ] );
 	} );
-	$( '#li-count, .mode grl' ).toggleClass( 'hide', !G.display.count );
+	$( '.mode grl' ).toggleClass( 'hide', !G.display.count );
 	if ( G.display.label ) {
 		$( '#lib-mode-list a.label' ).show();
 		$( '.mode' ).removeClass( 'nolabel' );
@@ -959,7 +964,6 @@ function renderPlayback() {
 	// volume
 	if ( !G.display.volumenone &&  G.display.volume ) {
 		$volumeRS.setValue( G.status.volume );
-		$volumehandle.rsRotate( - $volumeRS._handle1.angle );
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	}
 	// empty queue
@@ -981,7 +985,13 @@ function renderPlayback() {
 		scrollLongText();
 	} );
 	var sampling = G.status.sampling;
-	if ( G.status.webradio ) sampling += sampling ? ' &bull; Radio' : 'Radio';
+	if ( G.status.webradio ) {
+		if ( G.status.state === 'play' && G.status.station ) {
+			sampling += ' &bull; <span class="station">'+ G.status.station +'</span><span class="radio">Radio</span>';
+		} else {
+			sampling += sampling ? ' &bull; Radio' : 'Radio';
+		}
+	}
 	$( '#sampling' ).html( sampling );
 	if ( !G.coversave ) $( '.cover-save' ).remove();
 	var displaytime = $( '#time-knob' ).is( ':visible' );
@@ -1212,7 +1222,7 @@ renderPlaylist = function( data ) {
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
 	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disable' );
-	$( '#button-pl-crop, #button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
+	$( '#button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
@@ -1577,24 +1587,50 @@ function thumbUpdate( path ) {
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 }
-function volColorMute( volumemute ) {
+function volColorMute() {
 	$volumetooltip
-		.text( volumemute )
+		.text( G.status.volumemute )
 		.addClass( 'bl' );
 	$volumehandle.addClass( 'bgr60' );
-	$( '#volmute' ).addClass( 'active' )
-		.find( 'i' ).removeClass( 'fa-volume' ).addClass( 'fa-mute' );
+	$( '#volmute' )
+		.removeClass( 'fa-volume' )
+		.addClass( 'fa-mute active' );
 	var prefix = G.display.time && window.innerWidth > 613 ? 'ti' : 'i';
 	if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function volColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );
 	$volumehandle.removeClass( 'bgr60' );
-	$( '#volmute' ).removeClass( 'active' )
-		.find( 'i' ).removeClass( 'fa-mute' ).addClass( 'fa-volume' );
+	$( '#volmute' )
+		.removeClass( 'fa-mute active' )
+		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
-function volumebarTimeout() {
+function volumeBarSet( pageX ) {
+	var $volumeband = $( '#volume-band' );
+	var posX = pageX - $volumeband.offset().left;
+	var bandW = $volumeband.width();
+	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+	var vol = Math.round( posX / bandW * 100 );
+	if ( G.drag ) {
+		$( '#volume-bar' ).css( 'width', vol +'%' );
+		volumeDrag( vol );
+	} else {
+		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
+		$( '#volume-bar' ).animate(
+			  { width: vol +'%' }
+			, { duration: ms, easing: 'linear' }
+		);
+		$( '.volumeband' ).addClass( 'disabled' );
+		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+			$( '.volumeband' ).removeClass( 'disabled' );
+		} );
+	}
+	$( '#volume-text' ).text( vol );
+	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+	G.status.volume = vol;
+}
+function volumeBarTimeout() {
 	G.volumebar = setTimeout( function() {
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
@@ -1608,27 +1644,12 @@ function volumeDrag( vol ) {
 		bash( 'mpc volume '+ vol );
 	}
 }
+function volumeKnobSet( vol ) {
+	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
+	bash( [ 'volume', G.status.volume, vol, G.status.control ] );
+}
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
-}
-function volumeSet( pageX ) {
-	var $volumeband = $( '#volume-band' );
-	var posX = pageX - $volumeband.offset().left;
-	var bandW = $volumeband.width();
-	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-	var vol = Math.round( posX / bandW * 100 );
-	if ( G.drag ) {
-		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeDrag( vol );
-	} else {
-		$( '#volume-bar' ).animate( { width: vol +'%' }, 600 );
-		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
-			$( '.volumeband' ).removeClass( 'disabled' );
-		} );
-	}
-	$( '#volume-text' ).text( vol );
-	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
 function vu() {
 	var range = 12; // -/+

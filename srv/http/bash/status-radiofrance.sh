@@ -3,7 +3,7 @@
 # Radio France metadata
 # status-radiofrance.sh FILENAME
 dirtmp=/srv/http/data/shm/
-
+station=$2
 name=$( basename "$1" )
 name=${name/-*}
 [[ $name != fip && $name != francemusique ]] && name=$( echo $name | sed 's/fip\|francemusique//' )
@@ -58,7 +58,14 @@ metadataGet() {
 	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	data='{"Artist":"'$artist'", "Title":"'$title'", "Album": "'$album'", "coverart": "'$coverart'", "radio": 1}'
+	data='{
+  "Artist"   : "'$artist'"
+, "Title"    : "'$title'"
+, "Album"    : "'$album'"
+, "coverart" : "'$coverart'"
+, "station"  : "'$station'"
+, "radio"    : 1
+}'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	echo "\

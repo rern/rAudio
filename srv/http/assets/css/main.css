@@ -311,6 +311,7 @@ i.bookmark,
 }
 .disable {
 	color: var( --cg60 );
+	pointer-events: none;
 }
 .disabled {
 	pointer-events: none;
@@ -628,8 +629,11 @@ i.map.disabled, .map.disabled i {
 }
 #sampling {
 	text-align: center;
-	color: var( --cg60 )
+	color: var( --cg60 );
+	text-transform: none;
 }
+#sampling .radio { display: none; }
+#sampling .station { display: inline; }
 /* ---------------------- info scrolling ----------------------*/
 #divartist,
 #divsong,
@@ -1223,6 +1227,10 @@ i.map.disabled, .map.disabled i {
 #volume .rs-path-color {
 	background: linear-gradient( var( --cg ), #000000 );
 }
+#volume .rs-transition,
+#volume .rs-handle {
+	transition-timing-function: linear;
+}
 #volume .rs-handle {
 	border: 1px solid var( --cga );
 	background: var( --cm );
@@ -1797,7 +1805,7 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	z-index: 112;
 }
-#button-data.nobars {
+#button-data.barshidden {
 	top: 0;
 }
 #pl-path .fa-arrow-left {
@@ -2442,6 +2450,8 @@ li.active .li2 bl {
 	}
 }
 @media( max-width: 700px ) {
+	#sampling .radio { display: inline; }
+	#sampling .station { display: none; }
 	#pl-count .title { display: none; }
 }
 @media( max-width: 512px ) {
