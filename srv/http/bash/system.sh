@@ -404,6 +404,24 @@ relayssave )
 	echo ${args[1]} | jq . > /etc/relays.conf
 	relaysOrder
 	;;
+remount )
+	mountpoint=${args[1]}
+	source=${args[2]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		mount "$mountpoint"
+	else
+		udevil mount "$source"
+	fi
+	pushRefresh
+	;;
+remove )
+	mountpoint=${args[1]}
+	umount -l "$mountpoint"
+	sed -i "\|${mountpoint// /.040}| d" /etc/fstab
+	rmdir "$mountpoint" &> /dev/null
+	rm -f "$dirsystem/fstab-${mountpoint/*\/}"
+	pushRefresh
+	;;
 soundprofile )
 	soundprofile
 	;;

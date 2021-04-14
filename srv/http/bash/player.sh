@@ -248,24 +248,6 @@ novolume )
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
-remount )
-	mountpoint=${args[1]}
-	source=${args[2]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		mount "$mountpoint"
-	else
-		udevil mount "$source"
-	fi
-	pushRefresh
-	;;
-remove )
-	mountpoint=${args[1]}
-	umount -l "$mountpoint"
-	sed -i "\|${mountpoint// /.040}| d" /etc/fstab
-	rmdir "$mountpoint" &> /dev/null
-	rm -f "$dirsystem/fstab-${mountpoint/*\/}"
-	pushRefresh
-	;;
 replaygaindisable )
 	sed -i '/^replaygain/ s/".*"/"off"/' /etc/mpd.conf
 	restartMPD
