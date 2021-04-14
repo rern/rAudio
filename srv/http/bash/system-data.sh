@@ -86,34 +86,24 @@ if [[ -n $sd ]]; then
 		list+=',{"icon":"microsd","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 	done
 fi
-usb=( $( fdisk -lo device | grep ^/dev/sd ) )
-if [[ -n $usb ]]; then
-	for source in "${usb[@]}"; do
-		mountpoint=$( timeout 0.1s df -l --output=target,source \
-						| grep "$source" \
-						| sed "s| *$source||" )
+readarray -t usb <<< $( ls -d1 /mnt/MPD/USB/*/ | sed 's/.$//' )
+readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ | sed 's/.$//' )
+lines=( "${usb[@]}" "${nas[@]}" )
+if [[ -n $lines ]]; then
+	for mountpoint in "${lines[@]}"; do
+		[[ $mountpoint == /boot ]] && continue
+		
+		[[ ${mountpoint:9:3} == USB ]] && icon=usbdrive || icon=networks
+		df=$( timeout 0.1s df --output=source,target )
 		if [[ $? == 0 ]]; then
-			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
-			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
-		else
-			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
-		fi
-	done
-fi
-readarray -t nas <<< $( ls -1 /mnt/MPD/NAS )
-if [[ -n $nas ]]; then
-	for name in "${nas[@]}"; do
-		mountpoint="/mnt/MPD/NAS/$name"
-		source=$( timeout 0.1s df --output=source,target )
-		if [[ $? == 0 ]]; then
-			source=$( echo "$source" \
+			source=$( echo "$df" \
 						| grep "$mountpoint" \
 						| sed "s| *$mountpoint||" )
 			used_size=( $( df -h --output=used,size,source | grep "$source" ) )
-			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+			list+=',{"icon":"'$icon'","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
 			source=$( mount | grep "$mountpoint" | sed 's| on /.*||' )
-			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
+			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
 		fi
 	done
 fi
