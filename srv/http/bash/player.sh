@@ -304,24 +304,5 @@ soxrset )
 	touch $dirsystem/soxr
 	restartMPD
 	;;
-unmount )
-	mountpoint=${args[1]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		umount -l "$mountpoint"
-	else
-		udevil umount -l "$mountpoint"
-	fi
-	pushRefresh
-	;;
-usbconnect )
-	# for /etc/conf.d/devmon - devmon@http.service
-	pushstream notify '{"title":"USB Drive","text":"Connected.","icon":"usbdrive"}'
-	update
-	;;
-usbremove )
-	# for /etc/conf.d/devmon - devmon@http.service
-	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
-	update
-	;;
 
 esac
