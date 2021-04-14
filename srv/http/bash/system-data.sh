@@ -92,7 +92,7 @@ if [[ -n $usb ]]; then
 		mountpoint=$( timeout 0.1s df -l --output=target,source \
 						| grep "$source" \
 						| sed "s| *$source||" )
-		if [[ $? == 0 ]]; then
+		if [[ $? == 0 && -n $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
@@ -100,10 +100,9 @@ if [[ -n $usb ]]; then
 		fi
 	done
 fi
-readarray -t nas <<< $( ls -1 /mnt/MPD/NAS )
+readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ | sed 's/.$//' )
 if [[ -n $nas ]]; then
-	for name in "${nas[@]}"; do
-		mountpoint="/mnt/MPD/NAS/$name"
+	for mountpoint in "${nas[@]}"; do
 		source=$( timeout 0.1s df --output=source,target )
 		if [[ $? == 0 ]]; then
 			source=$( echo "$source" \
