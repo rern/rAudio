@@ -299,7 +299,7 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 <br><a href="https://www.php.net" target="_blank">PHP</a>
 <br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
-<br><a class="listtitle">Libraries and Plugins&ensp;<i class="fa fa-chevron-down"></i></a>
+<br><a class="listtitle">JS libraries and plugins&ensp;<i class="fa fa-chevron-down"></i></a>
 <div class="list hide"><?=$uihtml?></div><br>&nbsp;
 
 <heading class="sub">Data</heading>
