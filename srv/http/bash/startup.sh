@@ -97,12 +97,12 @@ if [[ -n $fstabnas && -n $connected ]]; then
 	readarray -t mountpoints <<< "$fstabnas"
 	for mountpoint in "${mountpoints[@]}"; do # ping target before mount
 		ip=$( grep "$mountpoint" /etc/fstab | cut -d' ' -f1 | sed 's|^//||; s|:*/.*$||' )
-		for i in {1..30}; do
+		for i in {1..15}; do
 			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 				mount "$mountpoint" && break
 			else
 				(( i == 10 )) && pushNotify "NAS @$ip cannot be reached."
-				sleep 1
+				sleep 2
 			fi
 		done
 	done
