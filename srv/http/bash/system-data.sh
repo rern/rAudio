@@ -116,8 +116,7 @@ if [[ -n $nas ]]; then
 			used_size=( $( df -h --output=used,size,source | grep "$source" ) )
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
-			source=$( cat /etc/fstab \
-						| sed 's|\\040| |g' \
+			source=$( sed 's|\\040| |g' /etc/fstab \
 						| grep "$mountpoint" \
 						| sed "s| *$mountpoint .*||" )
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
