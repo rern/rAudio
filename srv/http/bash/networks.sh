@@ -5,6 +5,24 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
+netctlSwitch() {
+	ssid=$1
+	connected=$( netctl list | grep ^* | sed 's/^\* //' )
+	ifconfig wlan0 down
+	netctl switch-to "$ssid"
+	for i in {1..10}; do
+		sleep 1
+		if [[ $( netctl is-active "$ssid" ) == active ]]; then
+			[[ -n $connected ]] && netctl disable "$connected"
+			netctl enable "$ssid"
+			active=1
+			break
+		fi
+	done
+	[[ -z $active ]] && netctl switch-to "$connected" && sleep 2
+	pushRefresh
+	pushRefreshFeatures
+}
 pushRefresh() {
 	sleep 2
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
@@ -67,24 +85,17 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
 		echo "$profile" > /boot/wifi
-		systemctl disable netctl-auto@wlan0
 		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
 		exit
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	ifconfig wlan0 down
-	netctl switch-to "$ESSID"
-	systemctl enable netctl-auto@wlan0
-	sleep 1
-	pushRefresh
-	pushRefreshFeatures
+	netctlSwitch "$ESSID"
 	;;
 disconnect )
 	netctl stop-all
 	killall wpa_supplicant
 	ifconfig wlan0 up
-	systemctl disable netctl-auto@wlan0
 	pushRefresh
 	;;
 editlan )
@@ -136,17 +147,12 @@ ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profileconnect )
-	ssid=${args[1]}
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
 		ifconfig wlan0 0.0.0.0
 		sleep 2
 	fi
-	ifconfig wlan0 down
-	netctl switch-to "$ssid"
-	systemctl enable netctl-auto@wlan0
-	pushRefresh
-	pushRefreshFeatures
+	netctlSwitch ${args[1]}
 	;;
 profileget )
 	value=$( cat "/etc/netctl/${args[1]}" \
@@ -157,12 +163,10 @@ profileget )
 	;;
 profileremove )
 	ssid=${args[1]}
-	if [[ -e "/etc/netctl/$ssid" ]]; then
-		netctl stop "$ssid"
-		killall wpa_supplicant
-		ifconfig wlan0 up
-		systemctl disable netctl-auto@wlan0
-	fi
+	netctl disable "$ssid"
+	netctl stop "$ssid"
+	killall wpa_supplicant
+	ifconfig wlan0 up
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;

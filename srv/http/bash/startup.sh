@@ -61,8 +61,14 @@ if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
-	netctl enable "$ssid"
 	netctl start "$ssid"
+	for i in {1..10}; do
+		sleep 1
+		if [[ $( netctl is-active "$ssid" ) == active ]]; then
+			netctl enable "$ssid"
+			break
+		fi
+	done
 fi
 # ----------------------------------------------------------------------------
 
@@ -86,8 +92,8 @@ fi
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
 elif [[ -n $profile ]]; then # wait for wi-fi connection
-	for i in {1..20}; do
-		sleep 2
+	for i in {1..30}; do
+		sleep 3
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
 	done
 fi
