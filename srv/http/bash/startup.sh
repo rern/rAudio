@@ -92,8 +92,8 @@ elif [[ -n $profile ]]; then # wait for wi-fi connection
 	done
 fi
 
-readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
-if [[ -n $connected && -n $nas ]]; then
+[[ -n $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
+if [[ -n $nas ]]; then
 	for mountpoint in "${nas[@]}"; do # ping target before mount
 		ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
 				| cut -d' ' -f1 \
