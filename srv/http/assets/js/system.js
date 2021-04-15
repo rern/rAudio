@@ -409,26 +409,17 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 $( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	if ( !$( '#system .fa-wifi' ).length && !G.hostapd ) {
+	if ( !G.hostapd && !G.wlanprofile ) {
 		notify( 'Wi-Fi', checked, 'wifi' );
 		bash( [ 'wlan', checked ] );
 	} else {
-		var message = !G.hostapd
-						? 'This will disconnect Wi-Fi from router.'
-						: 'This will disable <wh>Access Point</wh>.';
 		info( {
 			  icon    : 'wifi'
 			, title   : 'Wi-Fi'
-			, message : message
-						+'<br>Continue?'
-			, cancel  : function() {
-				$( '#wlan' ).prop( 'checked', 1 );
-			}
-			, ok      : function() {
-				notify( 'Wi-Fi', false, 'wifi' );
-				bash( [ 'wlan', false ] );
-			}
+			, message : 'Cannot be disabled:<br>'
+						+ ( G.hostapd ? 'Access point is still enabled.' : 'Wi-Fi connection is present.' )
 		} );
+		$( this ).prop( 'checked', 1 );
 	}
 } );
 $( '#i2smodulesw' ).click( function() {
