@@ -1,45 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-function dataBackup( netctl ) {
-	var backuptitle = 'Backup Settings';
-	var icon = 'sd';
-	notify( backuptitle, 'Process ...', 'sd blink' );
-	bash( [ 'databackup', netctl ], function( data ) {
-		if ( data == 1 ) {
-			notify( backuptitle, 'Download ...', icon );
-			fetch( '/data/tmp/backup.gz' )
-				.then( response => response.blob() )
-				.then( blob => {
-					var url = window.URL.createObjectURL( blob );
-					var a = document.createElement( 'a' );
-					a.style.display = 'none';
-					a.href = url;
-					a.download = 'backup.gz';
-					document.body.appendChild( a );
-					a.click();
-					setTimeout( () => {
-						a.remove();
-						window.URL.revokeObjectURL( url );
-						bannerHide();
-					}, 1000 );
-				} ).catch( () => {
-					info( {
-						  icon    : icon
-						, title   : backuptitle
-						, message : '<wh>Warning!</wh><br>File download failed.'
-					} );
-					bannerHide();
-				} );
-		} else {
-			info( {
-				  icon    : icon
-				, title   : backuptitle
-				, message : 'Backup failed.'
-			} );
-			bannerHide();
-		}
-	} );
-}
 var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<form id="formmount" class="infocontent">
@@ -826,25 +786,42 @@ $( '#setting-soundprofile' ).click( function() {
 	} );
 } );
 $( '#backup' ).click( function() {
-	bash( 'ls -p /etc/netctl | grep -v /', function( data ) {
-		if ( !data ) {
-			dataBackup();
+	var backuptitle = 'Backup Settings';
+	var icon = 'sd';
+	notify( backuptitle, 'Process ...', 'sd blink' );
+	bash( [ 'databackup' ], function( data ) {
+		if ( data == 1 ) {
+			notify( backuptitle, 'Download ...', icon );
+			fetch( '/data/tmp/backup.gz' )
+				.then( response => response.blob() )
+				.then( blob => {
+					var url = window.URL.createObjectURL( blob );
+					var a = document.createElement( 'a' );
+					a.style.display = 'none';
+					a.href = url;
+					a.download = 'backup.gz';
+					document.body.appendChild( a );
+					a.click();
+					setTimeout( () => {
+						a.remove();
+						window.URL.revokeObjectURL( url );
+						bannerHide();
+					}, 1000 );
+				} ).catch( () => {
+					info( {
+						  icon    : icon
+						, title   : backuptitle
+						, message : '<wh>Warning!</wh><br>File download failed.'
+					} );
+					bannerHide();
+				} );
 		} else {
-			var netctl = data.slice( 0, -1 ).split( '\n' );
-			var radio = { 'None': '' }
-			netctl.forEach( function( el ) {
-				radio[ el ] = el;
-			} );
 			info( {
-				  icon    : 'sd'
-				, title   : 'Backup Settings'
-				, message : 'Select Wi-Fi connection to backup:'
-				, radio   : radio 
-				, oklabel : 'Backup'
-				, ok      : function() {
-					dataBackup( $( '#infoRadio input:checked' ).val() )
-				}
+				  icon    : icon
+				, title   : backuptitle
+				, message : 'Backup failed.'
 			} );
+			bannerHide();
 		}
 	} );
 	$( '#backup' ).prop( 'checked', 0 );

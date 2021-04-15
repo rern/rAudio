@@ -104,7 +104,6 @@ bluetoothset )
 	pushRefresh
 	;;
 databackup )
-	profile=${args[1]}
 	dirconfig=$dirdata/config
 	backupfile=$dirdata/tmp/backup.gz
 	rm -f $backupfile
@@ -140,7 +139,16 @@ databackup )
 	done
 	hostname > $dirsystem/hostname
 	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
-	[[ -n $profile ]] && cp "/etc/netctl/$profile" $dirconfig/boot/wifi
+	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+	if [[ -n $profiles ]]; then
+		cp -r /etc/netctl $dirconfig/etc
+		for profile in "${profiles[@]}"; do
+			if [[ $( netctl is-enabled "$profile" ) == enabled ]]; then
+				echo $profile > $dirsystem/netctlprofile
+				break
+			fi
+		done
+	fi
 	mkdir -p $dirconfig/var/lib
 	cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
 	
@@ -186,8 +194,9 @@ datarestore )
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
+	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
-	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,timezone}
+	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
