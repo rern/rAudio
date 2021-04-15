@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 connected=$( netctl list | grep ^* | sed 's/^\* //' )
-[[ -n $connected ]] && netctl enable "$connected"
+[[ -n $connected ]] && netctl enable "$connected" &> /dev/null
 
 systemctl disable netctl-auto@wlan0
 
