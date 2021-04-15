@@ -696,7 +696,7 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
+	[[ -n $poweroff ]] && poweroff || reboot
 	;;
 pushstatus )
 	pushstreamStatus ${args[1]}

@@ -55,7 +55,7 @@ if [[ -e /boot/lcd ]]; then
 		reboot=1
 	fi
 fi
-[[ -n $reboot ]] && shutdown -r now
+[[ -n $reboot ]] && reboot
 
 if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
