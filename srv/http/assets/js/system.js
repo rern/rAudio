@@ -218,10 +218,8 @@ refreshData = function() {
 		$( '#list' ).html( html );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		$( '#wlan' )
-			.prop( 'checked', G.wlan )
-			.prop( 'disabled', G.hostapd || G.wlanprofile )
-			.next().toggleClass( 'disabled', G.hostapd || G.wlanprofile );
+		$( '#wlan' ).prop( 'checked', G.wlan );
+		disableSwitch( '#wlan', G.hostapd || G.wlanprofile );
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
