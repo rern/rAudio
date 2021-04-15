@@ -72,8 +72,8 @@ Gateway=$( jq -r .Gateway <<< $data )
 		exit
 	fi
 	
-	netctl list | grep ^..$ESSID$ || new=1
-	netctl is-active Home2GHz &> /dev/null && active=1
+	[[ -e "/etc/netctl/$ESSID" ]] || new=1
+	netctl is-active "$ESSID" &> /dev/null && active=1
 	echo "$profile" > "/etc/netctl/$ESSID"
 	if [[ -n $new || -n $active ]]; then
 		ifconfig wlan0 down
@@ -161,7 +161,7 @@ profileget )
 	;;
 profileremove )
 	ssid=${args[1]}
-	if netctl list | grep -q "^\* $ssid$"; then
+	if [[ -e "/etc/netctl/$ssid" ]]; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
 		ifconfig wlan0 up
