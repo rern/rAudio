@@ -72,14 +72,10 @@ Gateway=$( jq -r .Gateway <<< $data )
 		exit
 	fi
 	
-	[[ -e "/etc/netctl/$ESSID" ]] || new=1
-	netctl is-active "$ESSID" &> /dev/null && active=1
 	echo "$profile" > "/etc/netctl/$ESSID"
-	if [[ -n $new || -n $active ]]; then
-		ifconfig wlan0 down
-		netctl switch-to "$ESSID"
-		systemctl enable netctl-auto@wlan0
-	fi
+	ifconfig wlan0 down
+	netctl switch-to "$ESSID"
+	systemctl enable netctl-auto@wlan0
 	sleep 1
 	pushRefresh
 	pushRefreshFeatures
