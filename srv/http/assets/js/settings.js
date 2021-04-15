@@ -87,6 +87,11 @@ function codeToggle( id, target ) {
 		$el.addClass( 'hide' );
 	}
 }
+function disableSwitch( id, truefalse ) {
+	$( id )
+		.prop( 'disabled', truefalse )
+		.next().toggleClass( 'disabled', truefalse );
+}
 function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( title, message, icon +' blink', -1 );

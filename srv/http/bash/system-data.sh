@@ -74,42 +74,53 @@ fi
 version=$( cat $dirsystem/version )
 
 # mounted partitions and remote shares
-dftarget=$( df --output=target | grep '/mnt/MPD/\|^/$' )
-if [[ -n $dftarget ]]; then
-	readarray -t lines <<<"$dftarget"
-	for line in "${lines[@]}"; do
-		source=$( df --output=source "$line" | tail -1 )
-		size=$( df -h --output=used,size "$line" | tail -1 | awk '{print $1"B/"$2"B"}' )
+sd=( $( fdisk -lo device | grep ^/dev/mmcblk ) )
+if [[ -n $sd ]]; then
+	for source in "${sd[@]}"; do
+		mountpoint=$( timeout 0.1s df -l --output=target,source \
+						| grep "$source" \
+						| sed "s| *$source||" )
+		[[ $mountpoint == /boot ]] && continue
 		
-		case ${line:0:12} in
-			/ )            icon=microsd;;
-			/mnt/MPD/NAS ) icon=networks;;
-			/mnt/MPD/USB ) icon=usbdrive;;
-		esac
-		list+=',{"icon":"'$icon'","mountpoint":"'${line//\"/\\\"}'","mounted":true,"source":"'${source//\"/\\\"}'","size":"'$size'"}'
+		used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
+		list+=',{"icon":"microsd","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 	done
 fi
-
-# not mounted partitions
-sources=$( fdisk -lo device | grep ^/dev/sd )
-if [[ -n $sources ]]; then
-	for source in $sources; do
-		if ! df --output=source | grep -q $source; then
-			label=$( udevil info $source | awk '/^  label/ {print $NF}' )
-			mountpoint="/mnt/MPD/USB/$label"
-			list+=',{"icon":"usbdrive","mountpoint":"'${mountpoint//\"/\\\"}'","mounted":false,"source":"'$source'"}'
+usb=( $( fdisk -lo device | grep ^/dev/sd ) )
+if [[ -n $usb ]]; then
+	for source in "${usb[@]}"; do
+		mountpoint=$( df -l --output=target,source \
+						| grep "$source" \
+						| sed "s| *$source||" )
+		if [[ -n $mountpoint ]]; then
+			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
+			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+		else
+			label=$( e2label $source )
+			[[ -z $label ]] && label=?
+			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
 	done
 fi
-
-# not mounted remote shares
-targets=$( grep '/mnt/MPD/NAS/' /etc/fstab | awk '{print $2}' )
-if [[ -n $targets ]]; then
-	for target in $targets; do
-		mountpoint=${target//\\040/ }  # \040 > space
-		if ! df --output=target | grep -q "$mountpoint"; then
-			source=$( grep "${mountpoint// /.040}" /etc/fstab | awk '{print $1}' | sed 's/\\040/ /g' )
-			list+=',{"icon":"networks","mountpoint":"'${mountpoint//\"/\\\"}'","mounted":false,"source":"'${source//\"/\\\"}'"}'
+readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ | sed 's/.$//' )
+if [[ -n $nas ]]; then
+	for mountpoint in "${nas[@]}"; do
+		df=$( timeout 0.1s df --output=source,target )
+		if [[ -n $df ]]; then
+			source=$( echo "$df" \
+						| grep "$mountpoint" \
+						| sed "s| *$mountpoint||" )
+		else
+			source=
+		fi
+		if [[ -n $source ]]; then
+			used_size=( $( df -h --output=used,size,source | grep "$source" ) )
+			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+		else
+			source=$( sed 's|\\040| |g' /etc/fstab \
+						| grep "$mountpoint" \
+						| sed "s| *$mountpoint .*||" )
+			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
 		fi
 	done
 fi
@@ -144,6 +155,7 @@ data+='
 	, "version"         : "'$version'"
 	, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 	, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )'
+	, "wlanconnected"   : '$( ifconfig wlan0 2> /dev/null | grep -q 'inet.*broadcast' && echo true || echo false )'
 	, "soundprofileval" : "'$soundprofileval'"'
 
 echo {$data}

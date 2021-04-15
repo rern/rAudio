@@ -5,6 +5,24 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
+netctlSwitch() {
+	ssid=$1
+	connected=$( netctl list | grep ^* | sed 's/^\* //' )
+	ifconfig wlan0 down
+	netctl switch-to "$ssid"
+	for i in {1..10}; do
+		sleep 1
+		if [[ $( netctl is-active "$ssid" ) == active ]]; then
+			[[ -n $connected ]] && netctl disable "$connected"
+			netctl enable "$ssid"
+			active=1
+			break
+		fi
+	done
+	[[ -z $active ]] && netctl switch-to "$connected" && sleep 2
+	pushRefresh
+	pushRefreshFeatures
+}
 pushRefresh() {
 	sleep 2
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
@@ -71,16 +89,8 @@ Gateway=$( jq -r .Gateway <<< $data )
 		exit
 	fi
 	
-	netctl list | grep ^..$ESSID$ || new=1
-	netctl is-active Home2GHz &> /dev/null && active=1
 	echo "$profile" > "/etc/netctl/$ESSID"
-	if [[ -n $new || -n $active ]]; then
-		ifconfig wlan0 down
-		netctl switch-to "$ESSID"
-	fi
-	sleep 1
-	pushRefresh
-	pushRefreshFeatures
+	netctlSwitch "$ESSID"
 	;;
 disconnect )
 	netctl stop-all
@@ -137,16 +147,12 @@ ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profileconnect )
-	ssid=${args[1]}
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
 		ifconfig wlan0 0.0.0.0
 		sleep 2
 	fi
-	ifconfig wlan0 down
-	netctl switch-to "$ssid"
-	pushRefresh
-	pushRefreshFeatures
+	netctlSwitch ${args[1]}
 	;;
 profileget )
 	value=$( cat "/etc/netctl/${args[1]}" \
@@ -157,11 +163,10 @@ profileget )
 	;;
 profileremove )
 	ssid=${args[1]}
-	if netctl list | grep -q "^\* $ssid$"; then
-		netctl stop "$ssid"
-		killall wpa_supplicant
-		ifconfig wlan0 up
-	fi
+	netctl disable "$ssid"
+	netctl stop "$ssid"
+	killall wpa_supplicant
+	ifconfig wlan0 up
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;

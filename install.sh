@@ -4,9 +4,12 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-grep -q sources.sh /etc/conf.d/devmon && sed -i 's/sources.sh/system.sh/g' /etc/conf.d/devmon
+connected=$( netctl list | grep ^* | sed 's/^\* //' )
+[[ -n $connected ]] && netctl enable "$connected"
 
 systemctl disable netctl-auto@wlan0
+
+grep -q sources.sh /etc/conf.d/devmon && sed -i 's/sources.sh/system.sh/g' /etc/conf.d/devmon
 
 file=/srv/http/data/system/display
 grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
