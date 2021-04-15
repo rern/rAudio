@@ -218,7 +218,10 @@ refreshData = function() {
 		$( '#list' ).html( html );
 		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-		$( '#wlan' ).prop( 'checked', G.wlan )
+		$( '#wlan' )
+			.prop( 'checked', G.wlan )
+			.prop( 'disabled', G.hostapd || G.wlanprofile )
+			.next().toggleClass( 'disabled', G.hostapd || G.wlanprofile );
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
 			var $this = $( this );
@@ -409,18 +412,8 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 $( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	if ( !G.hostapd && !G.wlanprofile ) {
-		notify( 'Wi-Fi', checked, 'wifi' );
-		bash( [ 'wlan', checked ] );
-	} else {
-		info( {
-			  icon    : 'wifi'
-			, title   : 'Wi-Fi'
-			, message : 'Cannot be disabled:<br>'
-						+ ( G.hostapd ? 'Access point is still enabled.' : 'Wi-Fi connection is present.' )
-		} );
-		$( this ).prop( 'checked', 1 );
-	}
+	notify( 'Wi-Fi', checked, 'wifi' );
+	bash( [ 'wlan', checked ] );
 } );
 $( '#i2smodulesw' ).click( function() {
 	// delay to show switch sliding
