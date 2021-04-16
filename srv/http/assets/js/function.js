@@ -954,6 +954,8 @@ function renderLibraryList( data ) {
 		$( '#lib-list li:eq( 0 )' ).tap();
 		colorSet();
 	}
+	if ( $( '#lib-list .coverart' ).length ) return
+	
 	if ( G.mode === 'album' ) {
 		$( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
 		$( '.liinfo .lialbum' ).addClass( 'hide' );
