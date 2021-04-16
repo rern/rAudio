@@ -1560,10 +1560,11 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	var path = $this.find( '.lipath' ).text();
 	var query = {
 		  query  : 'ls'
+		, format : [ 'file' ]
+		, gmode  : 'file'
 		, mode   : 'album'
 		, string : path
 	}
-	query.gmode = G.mode;
 	list( query, function( data ) {
 		data.modetitle = '<wh>'+ $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text() +'</wh>';
 		renderLibraryList( data );
