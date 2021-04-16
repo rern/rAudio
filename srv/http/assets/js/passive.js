@@ -75,7 +75,7 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
-		$( 'body' ).addClass( 'disabled' );
+		if ( !G.library ) $( 'body' ).addClass( 'disabled' );
 		bannerHide();
 	}
 }
