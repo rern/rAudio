@@ -63,7 +63,8 @@ if [[ -e /boot/wifi ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
-	netctl start "$ssid"
+	ifconfig wlan0 down
+	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
 		if [[ $( netctl is-active "$ssid" ) == active ]]; then
