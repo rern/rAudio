@@ -88,7 +88,6 @@ case 'list':
 	$array = htmlList( $lists );
 	break;
 case 'ls':
-	$subdirs = 0;
 	if ( $mode !== 'album' ) {
 		exec( 'mpc ls "'.$string.'"', $mpcls );
 		foreach( $mpcls as $mpdpath ) {
@@ -98,7 +97,7 @@ case 'ls':
 			}
 		}
 	}
-	if ( $subdirs  ) {
+	if ( isset( $subdirs ) ) {
 		exec( 'mpc ls -f %file% "'.$string.'" 2> /dev/null'
 			, $lists );
 		$count = count( $lists );
