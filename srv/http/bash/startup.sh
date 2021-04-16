@@ -57,9 +57,8 @@ if [[ -e /boot/lcd ]]; then
 fi
 [[ -n $reboot ]] && reboot
 
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-
 if [[ -e /boot/wifi ]]; then
+	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
@@ -91,6 +90,7 @@ $dirbash/mpd-conf.sh # mpd.service start by this script
 # onboard + usb wifi >> disable onboard
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
 # no profiles + no hostapd > disable onboard
+readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 [[ -z $profiles ]] && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
 
 if ifconfig | grep -q 'inet.*broadcast'; then
