@@ -635,7 +635,9 @@ $( '#artist, #guide-bio' ).click( function() {
 	}
 } );
 $( '#album, #guide-album' ).click( function() {
-	if ( !G.status.webradio && !G.localhost ) window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
+	if ( G.status.webradio && G.status.state === 'stop' ) return
+	
+	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
 } );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
