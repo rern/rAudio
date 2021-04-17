@@ -683,7 +683,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
-	cmd = cmd.replace( /albumartist|album|artist|composer|genre|date/, '' );
+	cmd = cmd.replace( /albumartist|album|artist|composer|conductor|genre|date/, '' );
 	var command = contextCommand[ cmd ];
 	var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
 	if ( G.status.player !== 'mpd' && addreplaceplay ) {
