@@ -84,16 +84,6 @@ function infoMount( formdata ) {
 			} );
 		}
 		, ok      : function() {
-			if ( data.protocol === 'cifs' ) {
-				var options = 'noauto';
-				options += ( !data.user ) ? ',username=guest,password=' : ',username='+ data.user +',password='+ data.password;
-				options += ',uid='+ $( '#list' ).data( 'uid' ) +',gid='+ $( '#list' ).data( 'gid' ) +',iocharset=utf8';
-				options += data.options ? ','+ data.options : '';
-			} else {
-				var options = 'defaults,noauto,bg,soft,timeo=5';
-				options += data.options ? ','+ data.options : '';
-			}
-			data.options = options;
 			data.update = $( 'input[name=update]' ).prop( 'checked' );
 			notify( 'Network Mount', 'Mount ...', 'network' );
 			bash( [ 'mount', JSON.stringify( data ) ], function( std ) {
