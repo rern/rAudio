@@ -392,6 +392,7 @@ function htmlList( $lists ) { // non-file 'list' command
 function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
 	global $gmode;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
@@ -481,8 +482,9 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
+		$modefile = in_array( $mode, [ 'album', 'file', 'nas', 'sd', 'usb' ] );
 		$coverhtml = '<li data-mode="file" class="licover">'
-					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
+					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>' )
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
