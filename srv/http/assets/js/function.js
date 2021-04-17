@@ -73,12 +73,10 @@ function contextmenuLibrary( $li, $target ) {
 	G.list.licover = $li.hasClass( 'licover' );
 	G.list.album = $li.find( '.lialbum' ).text()
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
-	var lipath = $( '#lib-path .lipath' ).text();
-	if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 || $( '.licover' ).length || lipath.toLowerCase() === G.mode ) {
-		G.list.path = $li.find( '.lipath' ).text() || '';
-	} else {
-		G.list.path = lipath;
-	}
+	// file modes  - path > path ... > tracks
+	// album mode  - path > tracks
+	// other modes - name > name-album > filtered tracks
+	G.list.path = $li.find( '.lipath' ).text() || $( '#mode-title' ).text();
 	if ( G.playlist ) {
 		G.list.name = $li.find( '.liname' ).text() || '';
 		G.list.artist = $li.find( '.liartist' ).text() || '';
