@@ -34,6 +34,7 @@ input::-moz-focus-inner { /* dotted outline */
 	display: inline-block;
 	margin: 0 5px 10px;
 	min-width: 70px;
+	height: 34px !important;
 	padding: 0 10px;
 	line-height: 34px;
 	border: none;
