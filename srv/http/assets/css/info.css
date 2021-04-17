@@ -99,6 +99,7 @@ hr {
 	margin-right: 7px;
 }
 #infoOverlay a {
+	height: 40px;
 	text-shadow: 1px 1px 2px #000000;
 	text-decoration: none;
 }
@@ -236,7 +237,6 @@ hr {
 #infoSelectLabel {
 	display: inline-block;
 	margin-right: 5px;
-	line-height: 40px;
 	text-align: right;
 }
 .infotextbox,
