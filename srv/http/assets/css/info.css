@@ -237,6 +237,7 @@ hr {
 #infoSelectLabel {
 	display: inline-block;
 	margin-right: 5px;
+	line-height: 40px;
 	text-align: right;
 }
 .infotextbox,
@@ -251,6 +252,9 @@ hr {
 .infotextlabel,
 .infotextbox {
 	vertical-align: top;
+}
+.infotextbox {
+	margin-top: 4px;
 }
 .infotextsuffix,
 #infotextsuffix {
