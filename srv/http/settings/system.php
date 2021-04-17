@@ -69,7 +69,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle"></i><?=$ihelp?></heading>
+<heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle wh"></i><?=$ihelp?></heading>
 <ul id="list" class="entries"></ul>
 <p class="brhalf"></p>
 <span <?=$classhelp?>>
