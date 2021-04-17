@@ -357,7 +357,7 @@ mount )
 	password=$( jq -r .password <<< $data )
 	extraoptions=$( jq -r .options <<< $data )
 
-	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP not found.' && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP <code>$ip</code> not found.' && exit
 
 	if [[ -e $mountpoint ]]; then
 		find "$mountpoint" -mindepth 1 | read && echo "Mount name <code>$mountpoint</code> not empty." && exit
@@ -379,13 +379,13 @@ mount )
 		options=defaults,noauto,bg,soft,timeo=5
 	fi
 	[[ -n $extraoptions ]] && options+=,$extraoptions
-	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab && echo 0
-	mount "$mountpoint"
+	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	std=$( mount "$mountpoint" 2>&1 )
 	if mountpoint -q "$mountpoint"; then
 		[[ $( jq -r .update <<< $data ) == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		pushRefresh
 	else
-		echo "Mount <code>$source</code> failed."
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "$ d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
