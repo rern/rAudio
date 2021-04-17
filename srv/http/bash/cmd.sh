@@ -529,10 +529,10 @@ mpcupdate )
 	[[ $wav == true ]] && touch $dirsystem/wav
 	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating
-		mpc rescan
+		mpc -q rescan
 	else
 		echo $path > $dirsystem/updating
-		mpc update "$path"
+		mpc -q update "$path"
 	fi
 	pushstream mpdupdate 1
 	;;

@@ -444,6 +444,7 @@ remove )
 	sed -i "\|${mountpoint// /.040}| d" /etc/fstab
 	rmdir "$mountpoint" &> /dev/null
 	rm -f "$dirsystem/fstab-${mountpoint/*\/}"
+	/srv/http/bash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
 soundprofile )
