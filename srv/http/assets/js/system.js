@@ -93,9 +93,7 @@ function infoMount( formdata ) {
 						, title   : 'Mount Share'
 						, message : std
 						, ok      : function() {
-							setTimeout( function() {
-								infoMount( data );
-							}, 300 );
+							infoMount( data );
 						}
 					} );
 					bannerHide();
