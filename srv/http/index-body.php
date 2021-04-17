@@ -176,7 +176,7 @@ $html.= menuli( 'plrename', 'edit-circle',  'Rename' );
 $html.= menuli( 'pldelete', 'minus-circle', 'Delete' );
 $menu.= menudiv( 'playlist', $html );
 
-foreach( [ 'album', 'albumartist', 'artist', 'composer', 'genre', 'date' ] as $mode ) {
+foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {
 	$menudiv = '';
 	$html = menucommon( $mode.'add', $mode.'replace' );
 	$menu.= menudiv( $mode, $html );
