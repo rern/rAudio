@@ -386,7 +386,7 @@ mount )
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "$ d" /etc/fstab
+		sed -i "/${mountpoint// /\\040}/ d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
 	;;
@@ -443,7 +443,6 @@ remove )
 	umount -l "$mountpoint"
 	sed -i "\|${mountpoint// /.040}| d" /etc/fstab
 	rmdir "$mountpoint" &> /dev/null
-	rm -f "$dirsystem/fstab-${mountpoint/*\/}"
 	/srv/http/bash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
