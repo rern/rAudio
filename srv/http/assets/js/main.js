@@ -1279,7 +1279,7 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	var path = G.mode.toUpperCase();
-	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, genre
+	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].indexOf( G.mode ) !== -1 ) { // browse by directory
 		if ( !G.status.counts[ G.mode ] ) {
@@ -1664,7 +1664,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
-	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, genre
+	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
 		var query = {
 			  query  : 'ls'
