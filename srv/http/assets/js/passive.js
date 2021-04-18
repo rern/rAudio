@@ -75,7 +75,7 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
-		if ( !G.library ) $( 'body' ).addClass( 'disabled' );
+		if ( !G.library && $( '#data' ).hasClass( 'hide' ) ) $( 'body' ).addClass( 'disabled' );
 		bannerHide();
 	}
 }
@@ -259,7 +259,7 @@ function psMpdPlayer( data ) {
 			$( '#artist' ).html( G.status.Artist );
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );
-			$( '#sampling' ).html( G.status.sampling +' &bull; <span class="station">'+ G.status.station +'</span><span class="radio">Radio</span>' );
+			$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 			renderPlaybackAlbum();
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );

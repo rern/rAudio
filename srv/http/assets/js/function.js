@@ -465,6 +465,7 @@ function getOrientation( file, callback ) { // return: 1 - undefined
 function getPlaybackStatus( render ) {
 	G.getstatus = 1;
 	local();
+	$( 'body' ).removeClass( 'disabled' );
 	bash( '/srv/http/bash/status.sh', function( list ) {
 		if ( !list ) return
 		
@@ -513,7 +514,6 @@ function getPlaybackStatus( render ) {
 		}
 		setButtonUpdating();
 		G.getstatus = 0;
-		$( 'body' ).removeClass( 'disabled' );
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
