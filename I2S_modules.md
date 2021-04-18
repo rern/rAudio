@@ -27,6 +27,13 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Audiophonics I-Sabre DAC ES9038Q2M
 - AudioSense-Pi
 - BerryNOS
+- DACBerry AMP2
+- DACBerry One+ - RCA
+- DACBerry One+ - Digital
+- DACBerry Pro
+- DACBerry Pro+
+- DACBerry RDY+ - RCA
+- DACBerry RDY+ - Digital
 - Digital Dreamtime Akkordion
 - Dion Audio Loco DAC-AMP
 - Dion Audio Loco V2 DAC-AMP
@@ -83,6 +90,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Mamboberry Precision DAC+
 - MERUS Audio Amp
 - NanoSound HiFi DAC Pro
+- PecanPi DAC
 - PI 2 Design 502DAC
 - PI 2 Design 502DAC Pro
 - PI 2 Design 503HTA Hybrid Tube Amp
@@ -90,6 +98,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - PiFi DAC+
 - PiFi Digi+
 - Pimoroni pHAT DAC
+- Pimoroni Audio DAC SHIM
 - pisound
 - RaspiDAC 3
 - RaspyPlay 4
@@ -101,6 +110,6 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - SupTronics X400
 - SupTronics X4000K
 - Terra-Berry DAC 2
+- Waveshare WM8960
 - Wolfson Audio
 - X10 DAC
-
