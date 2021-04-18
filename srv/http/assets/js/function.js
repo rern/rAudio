@@ -296,8 +296,14 @@ function displayGet( callback ) {
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
-	var player = G.status.webradio ? 'webradio' : G.status.player;
-	$( '#infoicon i.wh:not( #i-'+ player +' )' ).addClass( 'hide' );
+	$( '#playericon i' ).addClass( 'hide' );
+	if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
+		var player = 'radiofrance';
+	} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
+		var player = 'radioparadise';
+	} else {
+		var player = G.status.webradio ? 'webradio' : G.status.player;
+	}
 	$( '#i-'+ player ).removeClass( 'hide' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )

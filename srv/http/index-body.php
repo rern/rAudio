@@ -232,24 +232,28 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<span id="album"></span>
 		</div>
 		<div id="infoicon">
-			<i id="i-airplay" class="fa fa-airplay wh hide"></i>
-			<i id="i-bluetooth" class="fa fa-bluetooth wh hide"></i>
-			<i id="i-snapclient" class="fa fa-snapclient wh hide"></i>
-			<i id="i-spotify" class="fa fa-spotify wh hide"></i>
-			<i id="i-upnp" class="fa fa-upnp wh hide"></i>
-			<i id="i-webradio" class="fa fa-webradio wh hide"></i>
+			<span id="playericon">
+				<i id="i-airplay" class="fa fa-airplay"></i>
+				<i id="i-bluetooth" class="fa fa-bluetooth"></i>
+				<i id="i-snapclient" class="fa fa-snapclient"></i>
+				<i id="i-spotify" class="fa fa-spotify"></i>
+				<i id="i-upnp" class="fa fa-upnp"></i>
+				<i id="i-webradio" class="fa fa-webradio"></i>
+				<i id="i-radioparadise" class="fa fa-radioparadise"></i>
+				<i id="i-radiofrance" class="fa fa-radiofrance"></i>
+			</span>
 			<span id="progress"></span>
 			<span id="modeicon">
-				<i id="i-random" class="fa fa-random hide"></i>
-				<i id="i-repeat" class="fa fa-repeat hide"></i>
-				<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
-				<i id="i-consume" class="fa fa-flash hide"></i>
-				<i id="i-librandom" class="fa fa-dice hide"></i>
-				<i id="i-mute" class="fa fa-mute hide"></i>
-				<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="i-update" class="fa <?=$libraryicon?> hide"></i>
-				<i id="i-addons" class="fa fa-jigsaw hide"></i>
-				<i id="i-relays" class="fa fa-relays hide"></i>
+				<i id="i-random" class="fa fa-random"></i>
+				<i id="i-repeat" class="fa fa-repeat"></i>
+				<i id="i-repeat1" class="fa fa-repeat-single"></i>
+				<i id="i-consume" class="fa fa-flash"></i>
+				<i id="i-librandom" class="fa fa-dice"></i>
+				<i id="i-mute" class="fa fa-mute"></i>
+				<i id="i-btclient" class="fa fa-bluetooth-client"></i>
+				<i id="i-update" class="fa <?=$libraryicon?>"></i>
+				<i id="i-addons" class="fa fa-jigsaw"></i>
+				<i id="i-relays" class="fa fa-relays"></i>
 			</span>
 		</div>
 		<div id="sampling"></div>

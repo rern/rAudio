@@ -101,6 +101,8 @@
 .fa-power:before { content: "\f520" }
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
+.fa-radiofrance:before { content: "\f595" }
+.fa-radioparadise:before { content: "\f594" }
 .fa-random:before { content: "\f512" }
 .fa-reboot:before { content: "\f521" }
 .fa-redo:before { content: "\f524" }
@@ -607,13 +609,15 @@ i.map.disabled, .map.disabled i {
 	height: 25px;
 	font-size: 0;
 	text-align: center;
-	color: var( --cg60 )
 }
 #infoicon i {
 	font-size: 20px;
 	width: 30px;
 	line-height: 20px;
 	vertical-align: -1px;
+}
+#modeicon {
+	color: var( --cg60 );
 }
 #progress {
 	margin: 0 5px;
