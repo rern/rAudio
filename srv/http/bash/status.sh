@@ -228,7 +228,7 @@ if [[ ${file:0:4} == http ]]; then
 					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
 					artistname=$Artist
 					titlename=$Title
-					station=$stationname
+					station=${stationname/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
 					/srv/http/bash/status-radioparadise.sh $file "$stationname" &> /dev/null &
