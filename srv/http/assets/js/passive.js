@@ -310,9 +310,6 @@ function psMpdUpdate( data ) {
 			$( '#tab-playlist' ).click();
 		}
 		setTimeout( function() {
-			$( '#tab-library, #button-library, #i-update, #ti-update' )
-				.removeClass( 'fa-file-wave' )
-				.addClass( 'fa-library' );
 			$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 			banner( 'Library Update', 'Done', 'library' );
 		}, 2000 );
@@ -320,11 +317,6 @@ function psMpdUpdate( data ) {
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( data.icon === 'file-wave' ) {
-		$( '#tab-library, #button-library, #i-update, #ti-update' )
-			.removeClass( 'fa-library' )
-			.addClass( 'fa-file-wave' );
-	}
 	if ( data.title === 'Power' ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();

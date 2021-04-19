@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Flags: 'updating', 'listing', 'wav'
+# Flags: updating, listing
 #
 #  - Use only `updating` flag from start to finish.
-#  - 'wav' flag - optional: Take times, even more on NAS
 #  - Resume on boot:
-#    - 'updating' flag for resume `mpc update`
-#    - 'listing' flag for resume without `mpc update`
+#    - updating - resume mpc update
+#    - listing  - resume without mpc update
 
 dirdata=/srv/http/data
 diraddons=$dirdata/addons

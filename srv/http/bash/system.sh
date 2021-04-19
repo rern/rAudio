@@ -179,7 +179,7 @@ datarestore )
 	# remove all flags
 	rm -f $dirsystem/{autoplay,login*}                          # features
 	rm -f $dirsystem/{crossfade*,custom*,dop*,mixertype*,soxr*} # mpd
-	rm -f $dirsystem/{updating,listing,wav}                     # updating_db
+	rm -f $dirsystem/{updating,listing}                         # updating_db
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http

@@ -150,9 +150,9 @@ case 'track': // for tag editor
 		$array = explode( '^^', $lists );
 	} else {
 		if ( is_dir( '/mnt/MPD/'.$file ) ) {
-			$wav = glob( '/mnt/MPD/'.$file.'/*.wav', GLOB_BRACE ); // MPD not read albumartist in *.wav
+			$wav = exec( 'mpc ls "'.$file.'" | grep .wav$ | head -1' ); // MPD not read albumartist in *.wav
 			if ( $wav ) {
-				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav[ 0 ].'"' );
+				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
 				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
 			}
 			exec( 'mpc ls -f "'.$format.'" "'.$file.'"'
