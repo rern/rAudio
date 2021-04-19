@@ -1664,6 +1664,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
+	var modetitle = path;
 	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
 		var query = {
@@ -1693,6 +1694,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, mode   : [ 'album', 'artist' ]
 					, string : [ name, path ]
 				}
+				modetitle = name;
 			} else {
 				var query = {
 					  query  : 'find'
@@ -1707,9 +1709,9 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 				, mode   : [ 'album', G.mode ]
 				, string : [ name, libpath ]
 			}
+			modetitle = libpath;
 		}
 	}
-	var modetitle = ( $( '#mode-title wh' ).text() || path );
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode = G.mode;
 	list( query, function( data ) {
