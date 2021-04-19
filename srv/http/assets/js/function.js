@@ -297,10 +297,12 @@ function displayGet( callback ) {
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
 	$( '#playericon i' ).addClass( 'hide' );
-	if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
-		var player = 'radiofrance';
-	} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
-		var player = 'radioparadise';
+	if ( 'file' in G.status ) {
+		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
+			var player = 'radiofrance';
+		} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
+			var player = 'radioparadise';
+		}
 	} else {
 		var player = G.status.webradio ? 'webradio' : G.status.player;
 	}
