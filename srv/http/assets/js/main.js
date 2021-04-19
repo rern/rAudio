@@ -1664,7 +1664,6 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
-	var modetitle = path;
 	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
 		var query = {
@@ -1672,6 +1671,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			, string : path
 			, format : [ 'file' ]
 		}
+		var modetitle = path;
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
 		if ( [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ) {
 			var format = [ 'album', 'artist' ];
@@ -1686,6 +1686,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			, string : path
 			, format : format
 		}
+		var modetitle = path;
 	} else { // track list
 		if ( G.mode === 'album' ) {
 			if ( name ) { // albums with the same names
@@ -1694,7 +1695,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, mode   : [ 'album', 'artist' ]
 					, string : [ name, path ]
 				}
-				modetitle = name;
+				var modetitle = name;
 			} else {
 				var query = {
 					  query  : 'find'
@@ -1702,6 +1703,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, string : path
 					, format : [ 'album', 'artist' ]
 				}
+				var modetitle = path;
 			}
 		} else {
 			var query = {
@@ -1709,7 +1711,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 				, mode   : [ 'album', G.mode ]
 				, string : [ name, libpath ]
 			}
-			modetitle = libpath;
+			var modetitle = libpath;
 		}
 	}
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
