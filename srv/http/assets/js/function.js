@@ -600,19 +600,12 @@ function infoUpdate( path ) {
 		  icon     : 'refresh-library'
 		, title    : 'Library Database'
 		, radio    : { 'Only changed files' : 1, 'Rebuild entire database': 2 }
-		, checkbox : { 'Include changed <code>*.wav</code> album artists': 1 }
-		, radiohr  : 1
 		, preshow  : function() {
 			if ( path ) {
 				$( '#infoRadio' ).hide();
 				$( '#infoMessage' )
 					.html( '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' )
 					.removeClass( 'hide' );
-			}
-			if ( !$( '#mode-nas grl' ).text() ) {
-				$( '#infoCheckBox input' ).prop( 'checked', 1 );
-				$( '#infoCheckBox' ).hide()
-				$( '#infoContent hr' ).remove();
 			}
 		}
 		, ok       : function() {
@@ -621,8 +614,7 @@ function infoUpdate( path ) {
 			} else {
 				path = 'rescan';
 			}
-			var wav = $( '#infoCheckBox input' ).prop( 'checked' );
-			bash( [ 'mpcupdate', path, wav ] );
+			bash( [ 'mpcupdate', path ] );
 		}
 	} );
 }
@@ -891,6 +883,7 @@ function renderLibraryList( data ) {
 		.html( htmlpath )
 		.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
+		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');

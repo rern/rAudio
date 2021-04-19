@@ -525,8 +525,6 @@ mpcseek )
 	;;
 mpcupdate )
 	path=${args[1]}
-	wav=${args[2]}
-	[[ $wav == true ]] && touch $dirsystem/wav
 	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating
 		mpc -q rescan

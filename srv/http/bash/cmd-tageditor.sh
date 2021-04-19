@@ -30,10 +30,8 @@ if [[ $cue == false ]]; then
 			
 			[[ $val == -1 ]] && val=
 			kid3-cli -c "set ${keys[$i]} \"$val\"" "$path/"*.*
-			[[ $i == 1 ]] && albumartist=1
 		done
 		dir=$file
-		[[ -n $albumartist ]] && (( $( ls "$path"/*.wav 2> /dev/null | wc -l ) > 0 )) && touch /srv/http/data/system/wav
 	fi
 else
 	if [[ $album == false ]]; then

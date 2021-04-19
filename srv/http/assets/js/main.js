@@ -1570,7 +1570,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 		, string : path
 	}
 	list( query, function( data ) {
-		data.modetitle = '<wh>'+ $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text() +'</wh>';
+		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
 		renderLibraryList( data );
 	}, 'json' );
 	query.modetitle = 'ALBUM';
@@ -1709,7 +1709,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			}
 		}
 	}
-	var modetitle = '<wh>'+ ( $( '#mode-title wh' ).text() || path ) +'</wh>';
+	var modetitle = ( $( '#mode-title wh' ).text() || path );
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode = G.mode;
 	list( query, function( data ) {

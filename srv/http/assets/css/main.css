@@ -1782,8 +1782,10 @@ i.map.disabled, .map.disabled i {
 .pl-title {
 	font-size: 24px;
 	font-weight: 300;
-	letter-spacing: 4px;
 	color: var( --cw );
+}
+.spaced {
+	letter-spacing: 4px;
 }
 #mode-title wh,
 .pl-title.name {
