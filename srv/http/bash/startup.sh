@@ -87,15 +87,27 @@ touch $dirdata/shm/player-mpd
 
 $dirbash/mpd-conf.sh # mpd.service start by this script
 
-# onboard + usb wifi >> disable onboard
-(( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
-# no profiles + no hostapd > disable onboard
+# ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-[[ -z $profiles ]] && ! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
+systemctl -q is-enabled hostapd && hostapd=1
+(( $( rfkill | grep wlan | wc -l ) > 1 )) && usbwifi=1
+if [[ -z $profiles && -z $hostapd ]] || [[ -n $usbwifi ]]; then
+	rmmod brcmfmac &> /dev/null
+fi
 
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
-elif [[ -n $profiles ]]; then # wait for wi-fi connection
+elif [[ -n $profiles && -z $hostapd ]]; then # wait for wi-fi connection
+	if [[ -n $usbwifi ]]; then
+		for profile in "${profiles[@]}"; do
+			if [[ $( netctl is-enable "$profile" ) == enabled ]]; then
+				netctl stop-all
+				ifconfig wlan0 down
+				netctl switch-to "$profile"
+				break
+			fi
+		done
+	fi
 	for i in {1..30}; do
 		sleep 3
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
