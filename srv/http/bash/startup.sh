@@ -98,16 +98,6 @@ fi
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
 elif [[ -n $profiles && -z $hostapd ]]; then # wait for wi-fi connection
-	if [[ -n $usbwifi ]]; then
-		for profile in "${profiles[@]}"; do
-			if [[ $( netctl is-enable "$profile" ) == enabled ]]; then
-				netctl stop-all
-				ifconfig wlan0 down
-				netctl switch-to "$profile"
-				break
-			fi
-		done
-	fi
 	for i in {1..30}; do
 		sleep 3
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
