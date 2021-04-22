@@ -456,7 +456,7 @@ refreshData = function() {
 refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;
-var wifiicon = '<i class="fa fa-wifi1"></i><i class="fa fa-wifi2"></i><i class="fa fa-wifi3"></i>';
+var wifiicon = '<i class="fa fa-wifi1 fa-layer"></i><i class="fa fa-wifi2 fa-layer"></i><i class="fa fa-wifi3 fa-layerlast"></i>';
 var good = -60;
 var fair = -67;
 $( '.back' ).click( function() {

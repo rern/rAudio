@@ -239,7 +239,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				<i id="i-spotify" class="playericon fa fa-spotify"></i>
 				<i id="i-upnp" class="playericon fa fa-upnp"></i>
 				<i id="i-webradio" class="playericon fa fa-webradio"></i>
-				<span id="i-radioparadise" class="playericon"><i class="fa fa-radioparadise1"></i><i class="fa fa-radioparadise2"></i></span>
+				<span id="i-radioparadise" class="playericon"><i class="fa fa-radioparadise1 fa-layer"></i><i class="fa fa-radioparadise2 fa-layerlast"></i></span>
 				<i id="i-radiofrance" class="playericon fa fa-radiofrance"></i>
 			</span>
 			<span id="progress"></span>
