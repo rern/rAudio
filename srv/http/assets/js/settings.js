@@ -47,8 +47,8 @@ function codeToggle( id, target ) {
 	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
 		var i = services.indexOf( id );
 		if ( i !== -1 ) {
-			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
+			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = 'pacman -Q '+ pkgname +'; systemctl status '+ id;
 			var cmdtxt = '# '+ command +'<br><br>';
 			var systemctl = 1;
