@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/usr/lib/systemd/system/mpdscribble@.service
+if grep -q User=mpdscribble $file; then
+	sed -i 's/User=.*/User=mpd/' $file
+	systemctl daemon-reload
+fi
+
 connected=$( netctl list | grep ^* | sed 's/^\* //' )
 [[ -n $connected ]] && netctl enable "$connected" &> /dev/null
 

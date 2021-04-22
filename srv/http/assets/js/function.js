@@ -296,7 +296,7 @@ function displayGet( callback ) {
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
-	$( '#playericon i' ).addClass( 'hide' );
+	$( '.playericon' ).addClass( 'hide' );
 	if ( 'file' in G.status ) {
 		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
 			var player = 'radiofrance';

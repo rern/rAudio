@@ -233,14 +233,14 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		</div>
 		<div id="infoicon">
 			<span id="playericon">
-				<i id="i-airplay" class="fa fa-airplay"></i>
-				<i id="i-bluetooth" class="fa fa-bluetooth"></i>
-				<i id="i-snapclient" class="fa fa-snapclient"></i>
-				<i id="i-spotify" class="fa fa-spotify"></i>
-				<i id="i-upnp" class="fa fa-upnp"></i>
-				<i id="i-webradio" class="fa fa-webradio"></i>
-				<i id="i-radioparadise" class="fa fa-radioparadise"></i>
-				<i id="i-radiofrance" class="fa fa-radiofrance"></i>
+				<i id="i-airplay" class="playericon fa fa-airplay"></i>
+				<i id="i-bluetooth" class="playericon fa fa-bluetooth"></i>
+				<i id="i-snapclient" class="playericon fa fa-snapclient"></i>
+				<i id="i-spotify" class="playericon fa fa-spotify"></i>
+				<i id="i-upnp" class="playericon fa fa-upnp"></i>
+				<i id="i-webradio" class="playericon fa fa-webradio"></i>
+				<span id="i-radioparadise" class="playericon"><i class="fa fa-radioparadise1"></i><i class="fa fa-radioparadise2"></i></span>
+				<i id="i-radiofrance" class="playericon fa fa-radiofrance"></i>
 			</span>
 			<span id="progress"></span>
 			<span id="modeicon">

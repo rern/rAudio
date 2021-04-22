@@ -101,8 +101,7 @@
 .fa-power:before { content: "\f520" }
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
-.fa-radiofrance:before { content: "\f595" }
-.fa-radioparadise:before { content: "\f594" }
+.fa-radiofrance:before { content: "\f594" }
 .fa-random:before { content: "\f512" }
 .fa-reboot:before { content: "\f521" }
 .fa-redo:before { content: "\f524" }
@@ -141,6 +140,15 @@
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
 .fa-webradio:before { content: "\f55C" }
+.fa-radioparadise1:before { content: "\f595" }
+.fa-radioparadise2:before { content: "\f596" }
+.fa-radioparadise1 {
+	position: absolute;
+	color: var( --cgl );
+}
+.fa-radioparadise2 {
+	position: relative;
+}
 *,
 *:before,
 *:after {
