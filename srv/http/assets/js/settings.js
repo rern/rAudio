@@ -28,11 +28,10 @@ var cmd = {
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 var pkg = {
 	  localbrowser    : 'chromium'
 	, smb             : 'samba'
-	, snapclient      : 'snapcast'
 	, snapserver      : 'snapcast'
 }
 
@@ -67,6 +66,7 @@ function codeToggle( id, target ) {
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
+				console.log(status)
 				var status = status
 								.replace( /(active \(running\))/, '<grn>$1</grn>' )
 								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
