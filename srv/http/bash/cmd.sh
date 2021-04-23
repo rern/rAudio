@@ -724,6 +724,11 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
+statuspkg )
+	status=$( pacman -Q ${args[1]} )$'\n'
+	status+=$( systemctl status ${args[2]} )
+	echo "$status"
+	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}

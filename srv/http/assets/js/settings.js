@@ -2,7 +2,8 @@ function bash( command, callback, json ) {
 	if ( typeof command === 'string' ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
-		var args = { cmd: 'sh', sh: [ page +'.sh' ].concat( command ) }
+		var filesh = command[ 0 ] !== 'statuspkg' ? page : 'cmd';
+		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
 	$.post( 
 		  'cmd.php'
@@ -48,8 +49,8 @@ function codeToggle( id, target ) {
 		if ( i !== -1 ) {
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
 			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = 'pacman -Q '+ pkgname +'; systemctl status '+ id;
-			var cmdtxt = '# '+ command +'<br><br>';
+			var command = [ 'statuspkg', pkgname, id ];
+			var cmdtxt = '# pacman -Q '+ pkgname +'; systemctl status '+ id +'<br><br>';
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
@@ -66,6 +67,7 @@ function codeToggle( id, target ) {
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
+				console.log(status)
 				var status = status
 								.replace( /(active \(running\))/, '<grn>$1</grn>' )
 								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
