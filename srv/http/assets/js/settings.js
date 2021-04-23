@@ -67,7 +67,6 @@ function codeToggle( id, target ) {
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
-				console.log(status)
 				var status = status
 								.replace( /(active \(running\))/, '<grn>$1</grn>' )
 								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
