@@ -2396,7 +2396,7 @@ li.active .li2 bl {
 
 /* scale */
 @media( orientation: landscape ) and ( max-height: 460px ) {
-	#page-playback { padding: 40px 0 40px !important; }
+	#page-playback { padding: 40px 0 !important; }
 	#page-playback.barsalways { --scale: 0.95; padding: 60px 0 60px !important }
 	#page-playback {
 		transform-origin: 0 0;
@@ -2447,7 +2447,6 @@ li.active .li2 bl {
 		padding-top: 50px;
 		line-height: calc( 100vh / 17 );
 	}
-	#sampling { display: none; }
 }
 @media( max-height: 540px ) {
 	#playback-row {
