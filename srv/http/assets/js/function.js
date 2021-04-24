@@ -515,7 +515,6 @@ function getPlaybackStatus( render ) {
 		}
 		setButtonUpdating();
 		G.getstatus = 0;
-		$( '#playback-row, #pl-list li' ).removeClass( 'disabled' );
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );

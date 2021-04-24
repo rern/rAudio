@@ -18,7 +18,6 @@ onVisibilityChange( function( visible ) {
 	} else {
 		clearIntervalAll();
 		pushstream.disconnect();
-		$( '#playback-row, #pl-list li' ).addClass( 'disabled' );
 	}
 } );
 window.addEventListener( 'orientationchange', function() {
