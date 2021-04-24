@@ -1346,7 +1346,7 @@ i.map.disabled, .map.disabled i {
 	width: 100%;
 }
 #biocontent .close-root {
-	position: absolute;
+	float: right;
 	right: 0;
 	margin-top: 0;
 	font-size: 28px;
