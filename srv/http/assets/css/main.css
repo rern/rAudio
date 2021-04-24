@@ -1345,14 +1345,6 @@ i.map.disabled, .map.disabled i {
 #biobanner {
 	width: 100%;
 }
-#biocontent .close-root {
-	float: right;
-	right: 0;
-	margin-top: 0;
-	font-size: 28px;
-	color: var( --cm ) !important;
-	z-index: 5;
-}
 #biocontent {
 	font-size: 16px;
 }
@@ -1361,10 +1353,18 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 	width: 100%;
 	margin-bottom: 10px;
+	padding: 10px 0;
 	font-size: 30px;
-	line-height: 60px;
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
+}
+#biocontent .close-root {
+	float: right;
+	right: 0;
+	margin-top: 0;
+	font-size: 28px;
+	color: var( --cm ) !important;
+	z-index: 5;
 }
 #biocontent .genre {
 	text-transform: capitalize;
