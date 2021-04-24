@@ -18,6 +18,7 @@ onVisibilityChange( function( visible ) {
 	} else {
 		clearIntervalAll();
 		pushstream.disconnect();
+		$( '#playback-row, #pl-list li' ).addClass( 'disabled' );
 	}
 } );
 window.addEventListener( 'orientationchange', function() {
@@ -75,7 +76,6 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
-		if ( !G.library && $( '#data' ).hasClass( 'hide' ) ) $( 'body' ).addClass( 'disabled' );
 		bannerHide();
 	}
 }
