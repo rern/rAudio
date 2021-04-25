@@ -30,6 +30,7 @@ if [[ $1 == bt ]]; then
 	[[ -z $lines ]] && sleep 3 && lines=$( bluetoothctl paired-devices )
 	[[ -z $lines ]] && exit
 	
+	# $( bluealsa-aplay -L ) takes 2 seconds before available
 	readarray -t paired <<< "$lines"
 	for device in "${paired[@]}"; do
 		mac=$( cut -d' ' -f2 <<< "$device" )
