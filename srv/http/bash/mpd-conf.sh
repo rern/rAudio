@@ -34,11 +34,13 @@ if [[ $1 == bt ]]; then
 	for device in "${paired[@]}"; do
 		mac=$( cut -d' ' -f2 <<< "$device" )
 		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) != 2 )) && continue
+		
+		aplaydevice="bluealsa:DEV=$mac,PROFILE=a2dp"
 		btoutput='
 
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
-	device         "bluealsa:DEV='$mac',PROFILE=a2dp"
+	device         "'$aplaydevice'"
 	type           "alsa"
 	mixer_type     "software"'
 		[[ -e /srv/http/data/system/btformat ]] && btoutput+='
@@ -201,12 +203,14 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
-	device=$( aplay -L | grep "^default.*$cardname" )
+	if [[ -z $aplaydevice ]]; then # no bluetooth
+		cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
+		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
+	fi
 	if [[ $( pacman -Q spotifyd ) == 'spotifyd 0.2.24-3' ]]; then
-		sed -i 's/^\(device = \).*/\1'$device'/' /etc/spotifyd.conf
+		sed -i 's/^\(device = \).*/\1'$aplaydevice'/' /etc/spotifyd.conf
 	else
-		sed -i 's/^\(device = \).*/\1"'$device'"/' /etc/spotifyd.conf
+		sed -i 's/^\(device = \).*/\1"'$aplaydevice'"/' /etc/spotifyd.conf
 	fi
 	systemctl try-restart spotifyd
 fi
