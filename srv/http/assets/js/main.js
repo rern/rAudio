@@ -1306,7 +1306,7 @@ $( '.mode' ).click( function() {
 	query.gmode = G.mode;
 	list( query, function( data ) {
 		data.path = path;
-		data.modetitle = G.mode === 'webradio' ? '<n>'+ path +'</n>' : path;
+		data.modetitle = path;
 		renderLibraryList( data );
 	}, 'json' );
 	query.path = path;
