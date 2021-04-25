@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if ! grep -q 'device = \"' /etc/spotifyd.conf; then
+	pacman -Sy spotifyd
+	ln -sf /usr/lib/systemd/{user,system}/spotifyd.service
+fi
+
 file=/usr/lib/systemd/system/mpdscribble@.service
 if grep -q User=mpdscribble $file; then
 	sed -i 's/User=.*/User=mpd/' $file
@@ -19,8 +24,6 @@ grep -q sources.sh /etc/conf.d/devmon && sed -i 's/sources.sh/system.sh/g' /etc/
 
 file=/srv/http/data/system/display
 grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
-
-[[ -e /usr/lib/systemd/system/spotifyd.service ]] || ln -s /usr/lib/systemd/{user,system}/spotifyd.service
 
 installstart "$1"
 
