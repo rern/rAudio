@@ -5,8 +5,18 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 if ! grep -q 'device = \"' /etc/spotifyd.conf; then
+	if systemctl is-active spotifyd; then
+		active=1
+		systemctl disable --now spotifyd
+	fi
 	pacman -Sy spotifyd
 	ln -sf /usr/lib/systemd/{user,system}/spotifyd.service
+	dev=$( grep ^device /etc/spotifyd.conf | cut -d' ' -f3 )
+	echo '[global]
+device = "'$dev'"
+bitrate = 320
+on_song_change_hook = "/srv/http/bash/spotifyd.sh"' > /etc/spotifyd.conf
+	[[ -n $active ]] && systemctl enable --now spotifyd
 fi
 
 file=/usr/lib/systemd/system/mpdscribble@.service
