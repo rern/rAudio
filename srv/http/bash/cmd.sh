@@ -435,7 +435,11 @@ lyrics )
 	
 	lyricsfile="$dirdata/lyrics/${name,,}.txt"
 	if [[ $cmd == local ]]; then
-		[[ -e $lyricsfile ]] && echo "$title^^$( cat "$lyricsfile" )" # return with title for display
+		if [[ -e $lyricsfile ]]; then
+			content=$( cat "$lyricsfile" )
+			[[ -z $content ]] && content='(Lyrics not available.)'
+			echo "$title^^$content" # return with title for display
+		fi
 	elif [[ $cmd == save ]]; then
 		echo -e "${lyrics//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
 	elif [[ $cmd == delete ]]; then
@@ -725,9 +729,8 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 statuspkg )
-	status=$( pacman -Q ${args[1]} )$'\n'
-	status+=$( systemctl status ${args[2]} )
-	echo "$status"
+	echo "$( pacman -Q ${args[1]} )
+$( systemctl status ${args[2]} )"
 	;;
 thumbgif )
 	type=${args[1]}
