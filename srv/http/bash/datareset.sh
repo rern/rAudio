@@ -84,6 +84,7 @@ echo '{
 	"barsalways": false,
 	"buttons": true,
 	"cover": true,
+	"coversmall": false,
 	"progressbar": false,
 	"radioelapsed": false,
 	"time": true,
