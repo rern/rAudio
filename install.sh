@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+sed -i -e '/coversmall/ i
+' -e '/}/ a\    "vu": true
+' /srv/http/data/system/display
+
 if ! grep -q 'device = \"' /etc/spotifyd.conf; then
 	if systemctl is-active spotifyd; then
 		active=1

@@ -1206,10 +1206,10 @@ function renderPlaybackBlank() {
 	} );
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( coverart ) {
+	if ( coverart || G.display.vu ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
-			.attr( 'src', coverart )
+			.attr( 'src', coverart || '/assets/img/coverart.svg' )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
