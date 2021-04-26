@@ -2682,7 +2682,7 @@ li.active .li2 bl {
 	#infoOverlay.noscroll {
 		height: calc( 100% / 0.9 );
 	}
-	.radio.spaced { display: none; }
+	.radiomodetitle { display: none; }
 }
 @media( orientation: portrait ) and ( max-width: 280px ) {
 	#sampling {

@@ -866,7 +866,7 @@ function renderLibraryList( data ) {
 	} else if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
 		if ( G.mode === 'webradio' ) {
-			var radioclass = ' class="radio"';
+			var radioclass = ' class="radiomodetitle"';
 			var radiobtn = '&ensp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 		} else {
 			var radioclass = '';
