@@ -469,8 +469,3 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 <div id="bar-bottom"> <!-- keep single line to suppress spaces -->
 	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-mpd"></i><i id="tab-playlist" class="fa fa-list-ul"></i>
 </div>
-
-<?php if ( $localhost ) { ?>
-<input class="input hide">
-<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
-<?php } ?>
