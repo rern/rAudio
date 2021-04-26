@@ -28,7 +28,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 		var artist = artist_title[ 0 ].trim();
 		var title = artist_title[ 1 ].trim();
 	}*/
-	artist = artist.replace( /(["`])/g, '\\$1' );
+	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
 	title = title.replace( /(["`])/g, '\\$1' );
 	bash( [ 'lyrics', artist, title, 'local' ], function( data ) {
 		if ( data ) {
