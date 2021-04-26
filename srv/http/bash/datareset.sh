@@ -85,11 +85,11 @@ echo '{
 	"buttons": true,
 	"cover": true,
 	"coversmall": false,
+	"novu": false,
 	"progressbar": false,
 	"radioelapsed": false,
 	"time": true,
-	"volume": true,
-	"vu": true
+	"volume": true
 }' > $dirsystem/display
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd

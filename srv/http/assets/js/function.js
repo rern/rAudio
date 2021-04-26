@@ -1206,7 +1206,7 @@ function renderPlaybackBlank() {
 	} );
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( coverart || !G.display.vu ) {
+	if ( coverart || G.display.novu ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
 			.attr( 'src', coverart || '/assets/img/coverart.svg' )

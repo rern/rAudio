@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-grep -q '"vu"' /srv/http/data/system/display || sed -i '/"volume"/ i\    "vu": true,' /srv/http/data/system/display
+grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
 
 if ! grep -q 'device = \"' /etc/spotifyd.conf; then
 	if systemctl is-active spotifyd; then

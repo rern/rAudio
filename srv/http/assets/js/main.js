@@ -325,7 +325,7 @@ var chkplayback = {
 	, buttons      : '_Buttons'
 	, coversmall   : 'Small coverart'
 	, volume       : '_Volume'
-	, vu           : 'VU - No coverart'
+	, novu         : 'No coverart = <i class="fa fa-coverart"></i>'
 }
 $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
