@@ -435,11 +435,7 @@ lyrics )
 	
 	lyricsfile="$dirdata/lyrics/${name,,}.txt"
 	if [[ $cmd == local ]]; then
-		if [[ -e $lyricsfile ]]; then
-			content=$( cat "$lyricsfile" )
-			[[ -z $content ]] && content='(Lyrics not available.)'
-			echo "$title^^$content" # return with title for display
-		fi
+		[[ -e $lyricsfile ]] && echo "$title^^$( cat "$lyricsfile" )" # return with title for display
 	elif [[ $cmd == save ]]; then
 		echo -e "${lyrics//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
 	elif [[ $cmd == delete ]]; then
