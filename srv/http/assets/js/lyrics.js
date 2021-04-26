@@ -83,12 +83,11 @@ $( '#lyricstextarea' ).on( 'input', function() {
 	$( '#lyricsback' ).addClass( 'hide' );
 } );
 $( '#lyricsedit' ).click( function() {
-	var lyricstop = $( '#lyricstext' ).scrollTop();
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
 	$( '#lyricstextarea' )
 		.val( currentlyrics )
-		.scrollTop( lyricstop );
+		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
 $( '#lyricsclose' ).click( function() {
 	if ( $( '#lyricstextarea' ).val() === currentlyrics || $( '#lyricstextarea' ).val() === '' ) {
