@@ -395,7 +395,7 @@ function getBio( artist ) {
 			} );
 			similars = similars.slice( 0, -7 ) +'</span><br><br>';
 		}
-		var html = '<p class="artist">'+ artist +'<i class="closebio fa fa-times close-root"></i></p>'
+		var html = '<p class="artist"><i class="closebio fa fa-times close-root"></i>'+ artist +'</p>'
 				+ genre
 				+ similars
 				+'<p>'+ content +'</p>'
@@ -409,13 +409,17 @@ function getBio( artist ) {
 			$( '#bio' )
 				.removeClass( 'hide' )
 				.scrollTop( 0 );
-			$( '#biobanner, #bioimg' ).hide();
+			$( '#biobanner, #bioimg' ).addClass( 'hide' );
 			loader( 'hide' );
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
 				if ( 'error message' in data ) return
 				
-				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biobanner' ).attr( 'src', data.musicbanner[ 0 ].url.replace( '//assets.', '//' ) ).show();
+				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) {
+					$( '#biobanner' )
+						.attr( 'src', data.musicbanner[ 0 ].url.replace( '//assets.', '//' ) )
+						.removeClass( 'hide' );
+				}
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var url = '';
 					var images = '';
@@ -423,7 +427,9 @@ function getBio( artist ) {
 						url = el.url.replace( '//assets.', '//' );
 						images += '<a href="'+ url +'" target="_blank"><img src="'+ url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
-					$( '#bioimg' ).html( images ).show();
+					$( '#bioimg' )
+						.html( images )
+						.removeClass( 'hide' );
 				}
 			} );
 		} );

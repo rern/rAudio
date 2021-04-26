@@ -1402,11 +1402,6 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	    padding-bottom: 40px;
 }
-@media(max-width: 540px) {
-	#bio .container {
-		padding : 20px 10px;
-	}
-}
 /* ---------------------- lyrics --------------------------------- */
 #lyrics {
 	position: fixed;
@@ -2454,7 +2449,10 @@ li.active .li2 bl {
 	#sampling .station { display: none; }
 	#pl-count .title { display: none; }
 }
-@media( max-width: 512px ) {
+@media(max-width: 540px) {
+	#bio .container {
+		padding : 0 10px;
+	}
 	#pl-count,
 	#pl-path { display: none; }
 }
