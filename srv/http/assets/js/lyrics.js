@@ -88,7 +88,7 @@ $( '#lyricsedit' ).click( function() {
 	if ( !currentlyrics ) currentlyrics = lyrics;
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
-	if ( lyrics !== '(Lyrics not available.)' ) {
+	if ( currentlyrics ) {
 		$( '#lyricstextarea' ).val( currentlyrics ).scrollTop( lyricstop );
 	} else {
 		$( '#lyricstextarea' ).val( '' );
@@ -175,7 +175,7 @@ getLyrics = function() {
 }
 lyricsShow = function( data ) {
 	currentlyrics = data;
-	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '(Lyrics not available.)';
+	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
 	$( '#lyricstitle' ).text( lyricsTitle );
 	$( '#lyricsartist' ).text( lyricsArtist );
 	$( '#lyricstext' ).html( lyricshtml );
