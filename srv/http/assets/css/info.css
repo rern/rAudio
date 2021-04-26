@@ -58,9 +58,10 @@ input::-moz-focus-inner { /* dotted outline */
 	background-color: var( --cg );
 }
 .infobtn.disabled,
-.filebtn.disabled {
-	color: var( --cg60 );
-	background-color: var( --cg );
+.filebtn.disabled,
+.hg-button-enter.disabled {
+	color: var( --cg60 ) !important;
+	background-color: var( --cg ) !important;
 	pointer-events: none;
 }
 .noclick {
