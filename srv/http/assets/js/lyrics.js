@@ -86,11 +86,9 @@ $( '#lyricsedit' ).click( function() {
 	var lyricstop = $( '#lyricstext' ).scrollTop();
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
-	if ( currentlyrics ) {
-		$( '#lyricstextarea' ).val( currentlyrics ).scrollTop( lyricstop );
-	} else {
-		$( '#lyricstextarea' ).val( '' );
-	}
+	$( '#lyricstextarea' )
+		.val( currentlyrics )
+		.scrollTop( lyricstop );
 } );
 $( '#lyricsclose' ).click( function() {
 	if ( $( '#lyricstextarea' ).val() === currentlyrics || $( '#lyricstextarea' ).val() === '' ) {
