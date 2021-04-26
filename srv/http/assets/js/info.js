@@ -588,7 +588,7 @@ function checkRequired() {
 	var $empty = $( '.infoinput.required' ).filter( function() {
 		return !$( this ).val();
 	} );
-	$( '#infoOk, .hg-button-enter' ).toggleClass( 'disabled', $empty.length > 0 );
+	$( '#infoOk' ).toggleClass( 'disabled', $empty.length > 0 );
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {

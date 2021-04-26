@@ -58,6 +58,11 @@
 	background-color: var( --cm ) !important;
 	border: none;
 }
+.hg-button-enter.disabled {
+	color: var( --cg60 ) !important;
+	background-color: var( --cg ) !important;
+	pointer-events: none;
+}
 .hg-standardBtn,
 .hg-button-lock,
 .hg-button-numlock,

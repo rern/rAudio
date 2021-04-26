@@ -58,8 +58,7 @@ input::-moz-focus-inner { /* dotted outline */
 	background-color: var( --cg );
 }
 .infobtn.disabled,
-.filebtn.disabled,
-.hg-button-enter.disabled {
+.filebtn.disabled {
 	color: var( --cg60 ) !important;
 	background-color: var( --cg ) !important;
 	pointer-events: none;
