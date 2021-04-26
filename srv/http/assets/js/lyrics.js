@@ -1,5 +1,4 @@
 var currentlyrics = '';
-var lyrics = '';
 var lyricsArtist = '';
 var lyricsTitle = '';
 var lyricshtml = '';
@@ -14,7 +13,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 	var title = G.status.Title;
 	if ( !artist || !title ) return;
 	
-	if ( artist === lyricsArtist && title === lyricsTitle && lyrics ) {
+	if ( artist === lyricsArtist && title === lyricsTitle && currentlyrics ) {
 		lyricsShow();
 		return
 	}
@@ -85,7 +84,6 @@ $( '#lyricstextarea' ).on( 'input', function() {
 } );
 $( '#lyricsedit' ).click( function() {
 	var lyricstop = $( '#lyricstext' ).scrollTop();
-	if ( !currentlyrics ) currentlyrics = lyrics;
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
 	if ( currentlyrics ) {
@@ -153,7 +151,6 @@ $( '#lyricsdelete' ).click( function() {
 			var artist = $( '#lyricsartist' ).text();
 			var title = $( '#lyricstitle' ).text();
 			bash( [ 'lyrics', artist, title, 'delete' ] );
-			lyrics = '';
 			currentlyrics = '';
 			lyricsHide();
 		}
