@@ -1197,12 +1197,6 @@ i.map.disabled, .map.disabled i {
 	background-color: var( --cg );
 	border-left: 1px solid var( --cga );
 }
-
-.close-root {
-	float: right;
-	margin-top: 20px;
-}
-
 /* ------------------- roundSlider ------------------- */
 .rs-container {
 	box-shadow: #555555 0 0 8px 2px;
@@ -1360,7 +1354,6 @@ i.map.disabled, .map.disabled i {
 }
 #biocontent .close-root {
 	float: right;
-	right: 0;
 	margin-top: 0;
 	font-size: 28px;
 	color: var( --cm ) !important;
