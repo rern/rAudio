@@ -169,13 +169,13 @@ htmlEscape = function( str ) {
 }
 getLyrics = function() {
 	bash( [ 'lyrics', lyricsArtist, lyricsTitle ], function( data ) {
-		lyricsShow( data || '(Lyrics not available.)' );
+		lyricsShow( data );
 	} );
 	banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
 }
 lyricsShow = function( data ) {
 	currentlyrics = data;
-	var lyricshtml = data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·';
+	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '(Lyrics not available.)';
 	$( '#lyricstitle' ).text( lyricsTitle );
 	$( '#lyricsartist' ).text( lyricsArtist );
 	$( '#lyricstext' ).html( lyricshtml );
