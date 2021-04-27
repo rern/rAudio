@@ -1674,7 +1674,7 @@ function vu() {
 	var deg = 0;
 	var inc;
 	clearInterval( G.intVu );
-	vuActive( Math.random() * range );
+	$( '#vuneedle' ).css( 'transform', 'rotate( '+ Math.random() * range +'deg )' );
 	G.intVu = setInterval( function() {
 		inc = Math.random() * range * 2;
 		deg += inc;
@@ -1683,11 +1683,8 @@ function vu() {
 		} else if ( deg > range ) {
 			deg = range - inc;
 		}
-		vuActive( deg );
+		$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
 	}, 500 );
-}
-function vuActive( deg ) {
-	$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
 }
 function vuStop() {
 	clearIntervalAll();

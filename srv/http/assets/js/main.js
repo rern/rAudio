@@ -125,11 +125,12 @@ $( '#coverart' ).on( 'load', function() {
 	loader( 'hide' );
 } ).on( 'error', function() {
 	if ( !G.status.webradio || G.display.novu ) {
-		var coverart = coverdefault;
+		$( this ).attr( 'src', coverdefault );
 	} else {
-		vuStop();
+		$( '#coverart' ).addClass( 'hide' );
+		$( '#vu' ).removeClass( 'hide' );
+		G.status.state === 'play' ? vu() : vuStop();
 	}
-	$( this ).attr( 'src', coverart );
 } );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#bar-top' ).on( 'click', '#button-settings, #badge', function() {
