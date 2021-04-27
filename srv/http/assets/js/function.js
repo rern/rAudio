@@ -1209,7 +1209,7 @@ function renderPlaybackCoverart( coverart ) {
 	if ( coverart || G.display.novu ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
-			.attr( 'src', coverart || '/assets/img/coverart.svg' )
+			.attr( 'src', coverart || coverdefault )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );

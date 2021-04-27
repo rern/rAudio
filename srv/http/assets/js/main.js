@@ -42,7 +42,7 @@ var picaOption = { // pica.js
 };
 var hash = Math.ceil( Date.now() / 1000 );
 var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
-var covervu = '/assets/img/vu.png';
+var covervu = '/assets/img/vu.'+ hash +'.png';
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {
@@ -102,6 +102,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 		}
 	} );
+	if ( G.display.novu ) covervu =  coverdefault;
 } );
 G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
@@ -121,8 +122,6 @@ $( '#coverart' ).on( 'load', function() {
 	} else {
 		$( '.cover-save' ).remove();
 	}
-	var svg = $( '#coverart' ).attr( 'src' ).slice( -3 ) === 'svg';
-	$( '#coverart' ).css( 'border', svg ? 'none' : '' );
 	loader( 'hide' );
 } ).on( 'error', function() {
 	if ( !G.status.webradio ) {
