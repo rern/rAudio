@@ -318,13 +318,13 @@ var chkplayback = {
 	  bars         : '_Top-Bottom bars'
 	, barsalways   : 'Bars always on'
 	, time         : '_Time'
-	, radioelapsed : 'WebRadio time'
-	, progressbar  : '_Progress bar'
-	, cover        : 'Coverart'
-	, buttons      : '_Buttons'
+	, progressbar  : 'Progress bar'
+	, cover        : '_Coverart'
 	, coversmall   : 'Small coverart'
 	, volume       : '_Volume'
 	, novu         : 'No coverart = <i class="fa fa-coverart"></i>'
+	, buttons      : '_Buttons'
+	, radioelapsed : 'WebRadio time'
 }
 $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
@@ -384,11 +384,11 @@ $( '#displayplayback' ).click( function() {
 					if ( $( this ).prop( 'checked' ) ) {
 						if ( !$time.prop( 'checked' ) ) displayCheckboxSet( 'progressbar', true, true );
 						displayCheckboxSet( 'coversmall', true );
-						displayCheckboxSet( 'vu', true );
+						displayCheckboxSet( 'novu', true );
 					} else {
 						displayCheckboxSet( 'progressbar', false, false );
 						displayCheckboxSet( 'coversmall', false, false );
-						displayCheckboxSet( 'vu', false, false );
+						displayCheckboxSet( 'novu', false, false );
 						if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( 'time', true, true );
 					}
 				} );
