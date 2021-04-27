@@ -124,7 +124,7 @@ $( '#coverart' ).on( 'load', function() {
 	}
 	loader( 'hide' );
 } ).on( 'error', function() {
-	if ( !G.status.webradio ) {
+	if ( !G.status.webradio || G.display.novu ) {
 		var coverart = coverdefault;
 	} else {
 		vuStop();
