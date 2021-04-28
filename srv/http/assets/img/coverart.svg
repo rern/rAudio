@@ -3,7 +3,7 @@
 	.st0{fill:#E6E6E6;}
 	.st1{opacity:0.75;}
 </style>
-<rect y="0" class="st0" width="599" height="599"/>
+<rect y="0" class="st0" width="600" height="600"/>
 <polygon class="st1" points="0,270 120,270 120,150 180,150 180,270 300,270 300,60 300,0 0,0 "/>
 <polygon class="st1" points="360,600 557.4,600 360,402.6 "/>
 <polygon class="st1" points="180,330 180,450 120,450 120,330 0,330 0,600 300,600 300,330 "/>
