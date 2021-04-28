@@ -6,7 +6,7 @@ dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
 
 systemctl stop mpd
-rm -f $dirsystem/{relays,soundprofile,updating,listing,wav,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
+rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
 
 # lcd
 file=/etc/modules-load.d/raspberrypi.conf
@@ -85,6 +85,7 @@ echo '{
 	"buttons": true,
 	"cover": true,
 	"coversmall": false,
+	"novu": false,
 	"progressbar": false,
 	"radioelapsed": false,
 	"time": true,

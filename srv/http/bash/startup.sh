@@ -55,17 +55,24 @@ if [[ -e /boot/lcd ]]; then
 		reboot=1
 	fi
 fi
-[[ -n $reboot ]] && shutdown -r now
+[[ -n $reboot ]] && reboot
 
 if [[ -e /boot/wifi ]]; then
+	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
-	netctl start "$ssid"
+	ifconfig wlan0 down
+	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
 		if [[ $( netctl is-active "$ssid" ) == active ]]; then
 			netctl enable "$ssid"
+			if [[ -n $profiles ]]; then
+				for profile in "${profiles[@]}"; do
+					netctl disable "$profile" &> /dev/null
+				done
+			fi
 			break
 		fi
 	done
@@ -80,18 +87,17 @@ touch $dirdata/shm/player-mpd
 
 $dirbash/mpd-conf.sh # mpd.service start by this script
 
-# onboard + usb wifi >> disable onboard
-(( $( rfkill | grep wlan | wc -l ) > 1 )) && rmmod brcmfmac
-# no profile + no hostapd > disable onboard
-if (( $( ls -p /etc/netctl | grep -v / | wc -l ) > 0 )); then
-	profile=1
-else
-	! systemctl -q is-enabled hostapd && rmmod brcmfmac &> /dev/null
+# ( no profile && no hostapd ) || usb wifi > disable onboard
+readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+systemctl -q is-enabled hostapd && hostapd=1
+(( $( rfkill | grep wlan | wc -l ) > 1 )) && usbwifi=1
+if [[ -z $profiles && -z $hostapd ]] || [[ -n $usbwifi ]]; then
+	rmmod brcmfmac &> /dev/null
 fi
 
 if ifconfig | grep -q 'inet.*broadcast'; then
 	connected=1
-elif [[ -n $profile ]]; then # wait for wi-fi connection
+elif [[ -n $profiles && -z $hostapd ]]; then # wait for wi-fi connection
 	for i in {1..30}; do
 		sleep 3
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break

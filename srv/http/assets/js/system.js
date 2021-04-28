@@ -43,22 +43,22 @@ function infoMount( formdata ) {
 		, preshow : function() {
 			if ( $.isEmptyObject( formdata ) ) {
 				$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', 1 );
-				$( '#infotextbox input:eq( 1 )' ).val( '192.168.1.' );
+				$( '.infotextbox input[name=ip]' ).val( '192.168.1.' );
 				$( '#infoCheckBox input' ).prop( 'checked', true );
 			} else {
 				if ( formdata.protocol === 'cifs' ) {
 					$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', 1 );
-					$( '#infotextbox input:eq( 3 )' ).val( formdata.user );
-					$( '#infotextbox input:eq( 4 )' ).val( formdata.password );
+					$( '.infotextbox input[name=user]' ).val( formdata.user );
+					$( '.infotextbox input[name=password]' ).val( formdata.password );
 				} else {
 					$( 'input[name=protocol]:eq( 1 )' ).prop( 'checked', 1 );
 					$( '.guest' ).addClass( 'hide' );
 				}
-				$( '#infotextbox input:eq( 0 )' ).val( formdata.mountpoint );
-				$( '#infotextbox input:eq( 1 )' ).val( formdata.ip );
-				$( '#infotextbox input:eq( 2 )' ).val( formdata.directory );
-				$( '#infotextbox input:eq( 5 )' ).val( formdata.options );
-				$( '#infoCheckBox input' ).prop( 'checked', formdata.update );
+				$( '.infotextbox input[name=mountpoint]' ).val( formdata.mountpoint );
+				$( '.infotextbox input[name=ip]' ).val( formdata.ip );
+				$( '.infotextbox input[name=directory]' ).val( formdata.directory );
+				$( '.infotextbox input[name=options]' ).val( formdata.options );
+				$( '.infoCheckBox input' ).prop( 'checked', formdata.update );
 			}
 			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
 			$( '.eye.guest' ).css( 'margin-top', '210px' );
@@ -84,20 +84,10 @@ function infoMount( formdata ) {
 			} );
 		}
 		, ok      : function() {
-			if ( data.protocol === 'cifs' ) {
-				var options = 'noauto';
-				options += ( !data.user ) ? ',username=guest,password=' : ',username='+ data.user +',password='+ data.password;
-				options += ',uid='+ $( '#list' ).data( 'uid' ) +',gid='+ $( '#list' ).data( 'gid' ) +',iocharset=utf8';
-				options += data.options ? ','+ data.options : '';
-			} else {
-				var options = 'defaults,noauto,bg,soft,timeo=5';
-				options += data.options ? ','+ data.options : '';
-			}
-			data.options = options;
 			data.update = $( 'input[name=update]' ).prop( 'checked' );
 			notify( 'Network Mount', 'Mount ...', 'network' );
 			bash( [ 'mount', JSON.stringify( data ) ], function( std ) {
-				if ( std !== 0 ) {
+				if ( std ) {
 					info( {
 						  icon    : 'network'
 						, title   : 'Mount Share'
@@ -106,12 +96,11 @@ function infoMount( formdata ) {
 							infoMount( data );
 						}
 					} );
+					bannerHide();
 				} else {
 					refreshData();
 				}
-				$( '#refreshing' ).addClass( 'hide' );
-			}, 'json' );
-			$( '#refreshing' ).removeClass( 'hide' );
+			} );
 		}
 	} );
 }

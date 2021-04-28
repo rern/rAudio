@@ -640,8 +640,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				}
 			} else if ( G.list.singletrack || webradio ) { // single track
 				mpccmd = [ 'pladd', path ];
-			} else if ( $( '.liinfopath' ).length && !$( '.liinfopath' ).hasClass( 'hide' ) ) {
-				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.album ];
+			} else if ( $( '.licover' ).length && !$( '.licover .lipath' ).length ) {
+				mpccmd = [ 'plfindadd', 'multi', G.mode, path, 'album', G.list.album ];
 			} else { // directory or album
 				mpccmd = [ 'plls', path ];
 			}
@@ -683,7 +683,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
-	cmd = cmd.replace( /albumartist|album|artist|composer|genre|date/, '' );
+	cmd = cmd.replace( /albumartist|album|artist|composer|conductor|genre|date/, '' );
 	var command = contextCommand[ cmd ];
 	var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
 	if ( G.status.player !== 'mpd' && addreplaceplay ) {

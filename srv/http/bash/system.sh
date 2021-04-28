@@ -179,7 +179,7 @@ datarestore )
 	# remove all flags
 	rm -f $dirsystem/{autoplay,login*}                          # features
 	rm -f $dirsystem/{crossfade*,custom*,dop*,mixertype*,soxr*} # mpd
-	rm -f $dirsystem/{updating,listing,wav}                     # updating_db
+	rm -f $dirsystem/{updating,listing}                         # updating_db
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
@@ -353,9 +353,11 @@ mount )
 	ip=$( jq -r .ip <<< $data )
 	directory=$( jq -r .directory <<< $data )
 	mountpoint="/mnt/MPD/NAS/$( jq -r .mountpoint <<< $data )"
-	options=$( jq -r .options <<< $data )
+	user=$( jq -r .user <<< $data )
+	password=$( jq -r .password <<< $data )
+	extraoptions=$( jq -r .options <<< $data )
 
-	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP not found.' && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP <code>$ip</code> not found.' && exit
 
 	if [[ -e $mountpoint ]]; then
 		find "$mountpoint" -mindepth 1 | read && echo "Mount name <code>$mountpoint</code> not empty." && exit
@@ -363,17 +365,30 @@ mount )
 		mkdir "$mountpoint"
 	fi
 	chown mpd:audio "$mountpoint"
-	[[ $protocol == cifs ]] && source="//$ip/$directory" || source="$ip:$directory"
-	mount -t $protocol "$source" "$mountpoint" -o $options
-	if ! mountpoint -q "$mountpoint"; then
-		echo 'Mount failed.'
-		rmdir "$mountpoint"
-		exit
+	if [[ $protocol == cifs ]]; then
+		source="//$ip/$directory"
+		options=noauto
+		if [[ -z $user ]]; then
+			options+=,username=guest
+		else
+			options+=",username=$user,password=$password"
+		fi
+		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
+	else
+		source="$ip:$directory"
+		options=defaults,noauto,bg,soft,timeo=5
 	fi
-
-	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  $options  0  0" >> /etc/fstab && echo 0  # \040 - escape spaces in fstab
-	[[ $( jq -r .update <<< $data ) == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
-	pushRefresh
+	[[ -n $extraoptions ]] && options+=,$extraoptions
+	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	std=$( mount "$mountpoint" 2>&1 )
+	if mountpoint -q "$mountpoint"; then
+		[[ $( jq -r .update <<< $data ) == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+		pushRefresh
+	else
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		sed -i "/${mountpoint// /\\040}/ d" /etc/fstab
+		rmdir "$mountpoint"
+	fi
 	;;
 packagehref )
 	pkg=${args[1]}
@@ -426,9 +441,9 @@ remount )
 remove )
 	mountpoint=${args[1]}
 	umount -l "$mountpoint"
-	sed -i "\|${mountpoint// /.040}| d" /etc/fstab
+	sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 	rmdir "$mountpoint" &> /dev/null
-	rm -f "$dirsystem/fstab-${mountpoint/*\/}"
+	/srv/http/bash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
 soundprofile )

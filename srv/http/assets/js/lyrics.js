@@ -1,5 +1,4 @@
 var currentlyrics = '';
-var lyrics = '';
 var lyricsArtist = '';
 var lyricsTitle = '';
 var lyricshtml = '';
@@ -14,7 +13,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 	var title = G.status.Title;
 	if ( !artist || !title ) return;
 	
-	if ( artist === lyricsArtist && title === lyricsTitle && lyrics ) {
+	if ( artist === lyricsArtist && title === lyricsTitle && currentlyrics ) {
 		lyricsShow();
 		return
 	}
@@ -29,7 +28,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 		var artist = artist_title[ 0 ].trim();
 		var title = artist_title[ 1 ].trim();
 	}*/
-	artist = artist.replace( /(["`])/g, '\\$1' );
+	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
 	title = title.replace( /(["`])/g, '\\$1' );
 	bash( [ 'lyrics', artist, title, 'local' ], function( data ) {
 		if ( data ) {
@@ -84,15 +83,11 @@ $( '#lyricstextarea' ).on( 'input', function() {
 	$( '#lyricsback' ).addClass( 'hide' );
 } );
 $( '#lyricsedit' ).click( function() {
-	var lyricstop = $( '#lyricstext' ).scrollTop();
-	if ( !currentlyrics ) currentlyrics = lyrics;
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
-	if ( lyrics !== '(Lyrics not available.)' ) {
-		$( '#lyricstextarea' ).val( currentlyrics ).scrollTop( lyricstop );
-	} else {
-		$( '#lyricstextarea' ).val( '' );
-	}
+	$( '#lyricstextarea' )
+		.val( currentlyrics )
+		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
 $( '#lyricsclose' ).click( function() {
 	if ( $( '#lyricstextarea' ).val() === currentlyrics || $( '#lyricstextarea' ).val() === '' ) {
@@ -153,7 +148,6 @@ $( '#lyricsdelete' ).click( function() {
 			var artist = $( '#lyricsartist' ).text();
 			var title = $( '#lyricstitle' ).text();
 			bash( [ 'lyrics', artist, title, 'delete' ] );
-			lyrics = '';
 			currentlyrics = '';
 			lyricsHide();
 		}
@@ -169,13 +163,13 @@ htmlEscape = function( str ) {
 }
 getLyrics = function() {
 	bash( [ 'lyrics', lyricsArtist, lyricsTitle ], function( data ) {
-		lyricsShow( data || '(Lyrics not available.)' );
+		lyricsShow( data );
 	} );
 	banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
 }
 lyricsShow = function( data ) {
 	currentlyrics = data;
-	var lyricshtml = data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·';
+	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
 	$( '#lyricstitle' ).text( lyricsTitle );
 	$( '#lyricsartist' ).text( lyricsArtist );
 	$( '#lyricstext' ).html( lyricshtml );

@@ -70,6 +70,9 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/shortcut.<?=$time?>.js"></script>
 	<?php } ?>
 	<?php if ( $localhost ) { ?>
+<input class="input hide">
+<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
+
 <script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
 <script src="/assets/js/keyboard.<?=$time?>.js"></script>
 	<?php } ?>

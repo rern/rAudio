@@ -42,7 +42,7 @@ var picaOption = { // pica.js
 };
 var hash = Math.ceil( Date.now() / 1000 );
 var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
-var covervu = '/assets/img/vu.png';
+var covervu = '/assets/img/vu.'+ hash +'.png';
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {
@@ -102,6 +102,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 		}
 	} );
+	if ( G.display.novu ) covervu =  coverdefault;
 } );
 G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
@@ -121,16 +122,15 @@ $( '#coverart' ).on( 'load', function() {
 	} else {
 		$( '.cover-save' ).remove();
 	}
-	var svg = $( '#coverart' ).attr( 'src' ).slice( -3 ) === 'svg';
-	$( '#coverart' ).css( 'border', svg ? 'none' : '' );
 	loader( 'hide' );
 } ).on( 'error', function() {
-	if ( !G.status.webradio ) {
-		var coverart = coverdefault;
+	if ( !G.status.webradio || G.display.novu ) {
+		$( this ).attr( 'src', coverdefault );
 	} else {
-		vuStop();
+		$( '#coverart' ).addClass( 'hide' );
+		$( '#vu' ).removeClass( 'hide' );
+		G.status.state === 'play' ? vu() : vuStop();
 	}
-	$( this ).attr( 'src', coverart );
 } );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#bar-top' ).on( 'click', '#button-settings, #badge', function() {
@@ -319,12 +319,13 @@ var chkplayback = {
 	  bars         : '_Top-Bottom bars'
 	, barsalways   : 'Bars always on'
 	, time         : '_Time'
-	, radioelapsed : 'WebRadio time'
-	, cover        : '_Cover art'
-	, coversmall   : 'Small cover art'
-	, progressbar  : '_Progress bar'
-	, volume       : 'Volume'
+	, progressbar  : 'Progress bar'
+	, cover        : '_Coverart'
+	, coversmall   : 'Small coverart'
+	, volume       : '_Volume'
+	, novu         : 'No coverart = <i class="fa fa-coverart"></i>'
 	, buttons      : '_Buttons'
+	, radioelapsed : 'WebRadio time'
 }
 $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
@@ -384,9 +385,11 @@ $( '#displayplayback' ).click( function() {
 					if ( $( this ).prop( 'checked' ) ) {
 						if ( !$time.prop( 'checked' ) ) displayCheckboxSet( 'progressbar', true, true );
 						displayCheckboxSet( 'coversmall', true );
+						displayCheckboxSet( 'novu', true );
 					} else {
 						displayCheckboxSet( 'progressbar', false, false );
 						displayCheckboxSet( 'coversmall', false, false );
+						displayCheckboxSet( 'novu', false, false );
 						if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( 'time', true, true );
 					}
 				} );
@@ -624,6 +627,8 @@ $( '.emptyadd' ).click( function( e ) {
 	}
 } );
 $( '#artist, #guide-bio' ).click( function() {
+	if ( G.status.webradio && G.status.state === 'stop' ) return
+	
 	if ( $( '#bio legend' ).text() != G.status.Artist ) {
 		getBio( $( '#artist' ).text() );
 	} else {
@@ -633,7 +638,9 @@ $( '#artist, #guide-bio' ).click( function() {
 	}
 } );
 $( '#album, #guide-album' ).click( function() {
-	if ( !G.status.webradio && !G.localhost ) window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
+	if ( G.status.webradio && G.status.state === 'stop' ) return
+	
+	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
 } );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
@@ -1275,7 +1282,7 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	var path = G.mode.toUpperCase();
-	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, genre
+	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].indexOf( G.mode ) !== -1 ) { // browse by directory
 		if ( !G.status.counts[ G.mode ] ) {
@@ -1302,7 +1309,7 @@ $( '.mode' ).click( function() {
 	query.gmode = G.mode;
 	list( query, function( data ) {
 		data.path = path;
-		data.modetitle = G.mode === 'webradio' ? '<n>'+ path +'</n>' : path;
+		data.modetitle = path;
 		renderLibraryList( data );
 	}, 'json' );
 	query.path = path;
@@ -1560,12 +1567,13 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	var path = $this.find( '.lipath' ).text();
 	var query = {
 		  query  : 'ls'
+		, format : [ 'file' ]
+		, gmode  : 'file'
 		, mode   : 'album'
 		, string : path
 	}
-	query.gmode = G.mode;
 	list( query, function( data ) {
-		data.modetitle = '<wh>'+ $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text() +'</wh>';
+		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
 		renderLibraryList( data );
 	}, 'json' );
 	query.modetitle = 'ALBUM';
@@ -1659,13 +1667,14 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
-	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, genre
+	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
 		var query = {
 			  query  : 'ls'
 			, string : path
 			, format : [ 'file' ]
 		}
+		var modetitle = path;
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
 		if ( [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ) {
 			var format = [ 'album', 'artist' ];
@@ -1680,6 +1689,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 			, string : path
 			, format : format
 		}
+		var modetitle = path;
 	} else { // track list
 		if ( G.mode === 'album' ) {
 			if ( name ) { // albums with the same names
@@ -1688,6 +1698,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, mode   : [ 'album', 'artist' ]
 					, string : [ name, path ]
 				}
+				var modetitle = name;
 			} else {
 				var query = {
 					  query  : 'find'
@@ -1695,6 +1706,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 					, string : path
 					, format : [ 'album', 'artist' ]
 				}
+				var modetitle = path;
 			}
 		} else {
 			var query = {
@@ -1702,9 +1714,9 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 				, mode   : [ 'album', G.mode ]
 				, string : [ name, libpath ]
 			}
+			var modetitle = libpath;
 		}
 	}
-	var modetitle = '<wh>'+ ( $( '#mode-title wh' ).text() || path ) +'</wh>';
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode = G.mode;
 	list( query, function( data ) {

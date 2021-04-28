@@ -69,12 +69,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 
 <div>
-<?php
-$uid = exec( "$sudo/id -u mpd" );
-$gid = exec( "$sudo/id -g mpd" );
-?>
-<heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle"></i><?=$ihelp?></heading>
-<ul id="list" class="entries" data-uid="<?=$uid?>" data-gid="<?=$gid?>"></ul>
+<heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle wh"></i><?=$ihelp?></heading>
+<ul id="list" class="entries"></ul>
 <p class="brhalf"></p>
 <span <?=$classhelp?>>
 	Available sources, local USB and NAS mounts, for Library.

@@ -32,7 +32,7 @@ data='{
 , "Title"    : "'$title'"
 , "Album"    : "'$album'"
 , "coverart" : "'$coverart'"
-, "station"  : "'$station'"
+, "station"  : "'${station/* - }'"
 , "radio"    : 1
 }'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"

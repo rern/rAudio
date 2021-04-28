@@ -2,7 +2,8 @@ function bash( command, callback, json ) {
 	if ( typeof command === 'string' ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
-		var args = { cmd: 'sh', sh: [ page +'.sh' ].concat( command ) }
+		var filesh = command[ 0 ] !== 'statuspkg' ? page : 'cmd';
+		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
 	$.post( 
 		  'cmd.php'
@@ -28,11 +29,10 @@ var cmd = {
 	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb',   'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 var pkg = {
 	  localbrowser    : 'chromium'
 	, smb             : 'samba'
-	, snapclient      : 'snapcast'
 	, snapserver      : 'snapcast'
 }
 
@@ -47,10 +47,10 @@ function codeToggle( id, target ) {
 	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
 		var i = services.indexOf( id );
 		if ( i !== -1 ) {
-			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
-			var command = 'pacman -Q '+ pkgname +'; systemctl status '+ id;
-			var cmdtxt = '# '+ command +'<br><br>';
+			if ( id === 'mpdscribble' ) id+= '@mpd';
+			var command = [ 'statuspkg', pkgname, id ];
+			var cmdtxt = '# pacman -Q '+ pkgname +'; systemctl status '+ id +'<br><br>';
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';

@@ -82,6 +82,7 @@ $( 'body' ).on( 'click', '.input', function() {
 	$( '.infoinput' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
+	$( '.hg-button-enter' ).toggleClass( 'disabled', $( '#infoOk' ).hasClass( 'disabled' ) );
 } );
 $( 'body' ).on( 'click touchstart', function( e ) {
 	if ( !$( '#keyboard' ).hasClass( 'hide' )
@@ -101,6 +102,7 @@ function onChange( value ) {
 	} else {
 		$( '#infotextbox input' ).trigger( 'input' );
 	}
+	$( '.hg-button-enter' ).toggleClass( 'disabled', $( '#infoOk' ).hasClass( 'disabled' ) );
 }
 function onKeyPress( key ) { // input value not yet changed until onChange
 	var id = $( '.input.active' ).prop( 'id' );

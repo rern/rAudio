@@ -88,7 +88,6 @@ case 'list':
 	$array = htmlList( $lists );
 	break;
 case 'ls':
-	$subdirs = 0;
 	if ( $mode !== 'album' ) {
 		exec( 'mpc ls "'.$string.'"', $mpcls );
 		foreach( $mpcls as $mpdpath ) {
@@ -98,7 +97,7 @@ case 'ls':
 			}
 		}
 	}
-	if ( $subdirs  ) {
+	if ( isset( $subdirs ) ) {
 		exec( 'mpc ls -f %file% "'.$string.'" 2> /dev/null'
 			, $lists );
 		$count = count( $lists );
@@ -151,9 +150,9 @@ case 'track': // for tag editor
 		$array = explode( '^^', $lists );
 	} else {
 		if ( is_dir( '/mnt/MPD/'.$file ) ) {
-			$wav = glob( '/mnt/MPD/'.$file.'/*.wav', GLOB_BRACE ); // MPD not read albumartist in *.wav
+			$wav = exec( 'mpc ls "'.$file.'" | grep .wav$ | head -1' ); // MPD not read albumartist in *.wav
 			if ( $wav ) {
-				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav[ 0 ].'"' );
+				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
 				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
 			}
 			exec( 'mpc ls -f "'.$format.'" "'.$file.'"'
@@ -345,7 +344,6 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 			$datamode = 'album';
 		} // cue //////////////////////////////////////////////////////////////////
 		$html.= '<li data-mode="'.$datamode.'" data-index="'.$index.'">'
-					.'<a class="lipath">'.$path.'</a>'
 					.'<a class="liname">'.$val0.'</a>'
 					.'<i class="fa fa-'.$mode.' lib-icon" data-target="#menu-album"></i>'
 					.'<span class="single">'.$name.'</span>'
@@ -394,6 +392,7 @@ function htmlList( $lists ) { // non-file 'list' command
 function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $mode;
 	global $gmode;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
@@ -484,7 +483,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
-					.'<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>'
+					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>' )
 					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'

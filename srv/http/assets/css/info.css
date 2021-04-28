@@ -34,6 +34,7 @@ input::-moz-focus-inner { /* dotted outline */
 	display: inline-block;
 	margin: 0 5px 10px;
 	min-width: 70px;
+	height: 34px !important;
 	padding: 0 10px;
 	line-height: 34px;
 	border: none;
@@ -58,8 +59,8 @@ input::-moz-focus-inner { /* dotted outline */
 }
 .infobtn.disabled,
 .filebtn.disabled {
-	color: var( --cg60 );
-	background-color: var( --cg );
+	color: var( --cg60 ) !important;
+	background-color: var( --cg ) !important;
 	pointer-events: none;
 }
 .noclick {
@@ -99,6 +100,7 @@ hr {
 	margin-right: 7px;
 }
 #infoOverlay a {
+	height: 40px;
 	text-shadow: 1px 1px 2px #000000;
 	text-decoration: none;
 }
@@ -251,6 +253,9 @@ hr {
 .infotextlabel,
 .infotextbox {
 	vertical-align: top;
+}
+.infotextbox {
+	margin-top: 4px;
 }
 .infotextsuffix,
 #infotextsuffix {

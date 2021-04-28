@@ -16,12 +16,12 @@
 	</span>
 	</div>
 	<div id="divlan">
-	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle"></i><?=$istatus?></heading>
+	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle wh"></i><?=$istatus?></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
 	</div>
 	<div id="divwl">
-	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle"></i><i id="wlscan" class="fa fa-search"></i></heading>
+	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle wh"></i><i id="wlscan" class="fa fa-search wh"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>

@@ -525,14 +525,12 @@ mpcseek )
 	;;
 mpcupdate )
 	path=${args[1]}
-	wav=${args[2]}
-	[[ $wav == true ]] && touch $dirsystem/wav
 	if [[ $path == rescan ]]; then
 		echo rescan > $dirsystem/updating
-		mpc rescan
+		mpc -q rescan
 	else
 		echo $path > $dirsystem/updating
-		mpc update "$path"
+		mpc -q update "$path"
 	fi
 	pushstream mpdupdate 1
 	;;
@@ -696,7 +694,7 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ -n $poweroff ]] && shutdown -h now || shutdown -r now
+	[[ -n $poweroff ]] && poweroff || reboot
 	;;
 pushstatus )
 	pushstreamStatus ${args[1]}
@@ -725,6 +723,10 @@ rotateSplash )
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
+	;;
+statuspkg )
+	echo "$( pacman -Q ${args[1]} )
+$( systemctl status ${args[2]} )"
 	;;
 thumbgif )
 	type=${args[1]}

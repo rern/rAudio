@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Flags: 'updating', 'listing', 'wav'
+# Flags: updating, listing
 #
 #  - Use only `updating` flag from start to finish.
-#  - 'wav' flag - optional: Take times, even more on NAS
 #  - Resume on boot:
-#    - 'updating' flag for resume `mpc update`
-#    - 'listing' flag for resume without `mpc update`
+#    - updating - resume mpc update
+#    - listing  - resume without mpc update
 
 dirdata=/srv/http/data
 diraddons=$dirdata/addons
@@ -58,54 +57,35 @@ if (( $? != 0 )); then # very large database
 fi
 ##### wav list #############################################
 # mpd not read *.wav albumartist
-if [[ ! -e $dirsystem/wav ]]; then
-	if [[ -e $dirmpd/albumwav ]]; then
-		albumwav=$( cat $dirmpd/albumwav )
-		readarray -t dirwav <<< "$( sed 's/.*\^//' <<< "$albumwav" )"
-		for dir in "${dirwav[@]}"; do # remove duplicate directories
-			album_artist_file=$( sed "\|$dir$| d" <<< "$album_artist_file" )
-		done
-		album_artist_file+="$albumwav"$'\n'
-	fi
-else
-	notify '{"title":"Wave files - Album artists","text":"Query ...","icon":"file-wave blink","delay":-1}'
-	dirwav=$( find /mnt/MPD -type f -name *.wav  -printf '%h\n' | sort -u )
-	if [[ -n $dirwav ]]; then
-		readarray -t dirwav <<< "$dirwav"
-		notify '{"title":"Wave files - Album artists","text":"'${#dirwav[@]}' *.wav in Library ...","icon":"file-wave blink"}'
-		for dir in "${dirwav[@]}"; do
-			[[ -e "$dir/"*.cue ]] && continue
-			
-			dirparent=$( dirname "$dir" )
-			if [[ -e "$dirparent/.mpdignore" ]]; then
-				readarray -t mpdignore <<< "$( cat "$dirparent/.mpdignore" )"
-				for dirignore in "${mpdignore[@]}"; do
-					[[ "$dirignore" == "${dir/*\/}" ]] && continue 2
-				done
-			fi
-			file=$( ls "$dir"/*.wav | head -1 )
-			kid=$( kid3-cli -c 'get album' -c 'get albumartist' -c 'get artist' "$file" )
-			if [[ -n $kid ]]; then
-				album_artist_file=$( sed "\|${dir: 9}$| d" <<< "$album_artist_file" )
-				albumwav+=$( echo "$kid" \
-					| head -2 \
-					| awk 1 ORS='^^' \
-					| sed "s|$|${dir:9}|" )$'\n'
-			fi
+readarray -t dirwav <<< $( mpc listall \
+							| grep .wav$ \
+							| sed 's#/[^/]*$##' \
+							| sort -u )
+if [[ -n $dirwav ]]; then
+	for dir in "${dirwav[@]}"; do
+		file="/mnt/MPD/$( mpc ls "$dir" | head -1 )"
+		kid=$( kid3-cli -c 'get album' -c 'get albumartist' -c 'get artist' "$file" )
+		if [[ -n $kid ]]; then
+			albumwav=$( echo "$kid" \
+									| head -2 \
+									| awk 1 ORS='^^' \
+									| sed "s|$|$dir|" )
 			if [[ -n $albumwav ]]; then
-				album_artist_file+=$'\n'$albumwav
-				echo "$albumwav" > $dirmpd/albumwav
+				album_artist_file=$( sed "\|$dir$| d" <<< "$album_artist_file" )
+				album_artist_file+=$'\n'$albumwav$'\n'
 			fi
-		done
-	fi
-	rm $dirsystem/wav
+		fi
+	done
 fi
-album=$( echo "$album_artist_file" | grep . | sort -uf | tee $dirmpd/album | wc -l )
-(( $album > 0 )) && php /srv/http/bash/cmd-listsort.php $dirmpd/album
 
-for mode in albumartist artist composer conductor genre date; do
-	printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dirmpd/$mode | wc -l )
-	(( $mode > 0 )) && php /srv/http/bash/cmd-listsort.php $dirmpd/$mode
+for mode in album albumartist artist composer conductor genre date; do
+	dircount=$dirmpd/$mode
+	if [[ $mode == album ]]; then
+		album=$( echo "$album_artist_file" | grep . | sort -uf | tee $dirmpd/album | wc -l )
+	else
+		printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dircount | wc -l )
+	fi
+	(( $mode > 0 )) && php /srv/http/bash/cmd-listsort.php $dircount
 done
 ##### count #############################################
 for mode in NAS SD USB; do
@@ -131,7 +111,7 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "{$counts}"
 chown -R mpd:audio $dirmpd
 rm -f $dirsystem/{updating,listing}
 
-[[ -z $toolarge ]] && exit
-
-sleep 3
-notify '{"title":"Update Library Database","text":"Library is too large.<br>Album list cannot be created.","icon":"refresh-library","delay":-1}'
+if [[ -n $toolarge ]]; then
+	sleep 3
+	notify '{"title":"Update Library Database","text":"Library is too large.<br>Album list cannot be created.","icon":"refresh-library","delay":-1}'
+fi
