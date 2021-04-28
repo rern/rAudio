@@ -5,7 +5,7 @@
 <heading>Renderers<?=$ihelp?></heading>
 	<?php if ( file_exists( '/usr/bin/shairport-sync' ) ) { ?>
 <div data-status="shairport-sync" <?=$classstatus?>>
-	<!-- iOS fix - keep <br> in the same line to prevent last character stripped -->
+	<!-- iOS 14.5 fix - keep <br> in the same line to prevent last character stripped -->
 	<a>AirPlay<br><gr>shairport-sync<?=$istatus?></gr></a><i class="fa fa-airplay"></i>
 </div>
 <div class="col-r">
