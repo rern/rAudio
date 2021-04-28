@@ -75,8 +75,7 @@
 <div>
 <heading>Volume<?=$ihelp?></heading>
 <div data-status="crossfade" <?=$classstatus?>>
-	<a>Crossfade
-	<br><gr>mpc<?=$istatus?></gr></a>
+	<a>Crossfade<br><gr>mpc<?=$istatus?></gr></a>
 </div>
 <div class="col-r">
 	<input id="crossfade" <?=$chkenable?>>
@@ -89,8 +88,7 @@
 </div>
 <pre id="codecrossfade" class="hide"></pre>
 <div class="col-l double">
-	<a>Normalization
-	<br><gr>option</gr></a>
+	<a>Normalization<br><gr>option</gr></a>
 </div>
 <div class="col-r">
 	<input id="normalization" <?=$chknoset?>>
@@ -101,8 +99,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>Replay Gain
-	<br><gr>option</gr></a>
+	<a>Replay Gain<br><gr>option</gr></a>
 </div>
 <div class="col-r">
 	<input id="replaygain" <?=$chkenable?>>
@@ -120,8 +117,7 @@
 <heading data-status="mpdconf" class="status">Options<?=$istatus?><?=$ihelp?></heading>
 <pre id="codempdconf" class="hide"></pre>
 <div class="col-l double">
-	<a>Auto Update
-	<br><gr>Library</gr></a>
+	<a>Auto Update<br><gr>Library</gr></a>
 </div>
 <div class="col-r">
 	<input id="autoupdate"  <?=$chknoset?>>
@@ -132,8 +128,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>FFmpeg
-	<br><gr>decoder</gr></a>
+	<a>FFmpeg<br><gr>decoder</gr></a>
 </div>
 <div class="col-r">
 	<input id="ffmpeg"  <?=$chknoset?>>
@@ -146,8 +141,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>Audio Buffer
-	<br><gr>custom size</gr></a>
+	<a>Audio Buffer<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
 	<input id="buffer" <?=$chkenable?>>
@@ -160,8 +154,7 @@
 	</span>
 </div>
 <div class="col-l double">
-		<a>Output Buffer
-	<br><gr>custom size</gr></a>
+	<a>Output Buffer<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
 	<input id="bufferoutput" <?=$chkenable?>>
@@ -174,8 +167,7 @@
 	</span>
 </div>
 <div class="col-l double">
-		<a>Resampling
-	<br><gr>SoXR custom settings</gr></a>
+	<a>Resampling<br><gr>SoXR custom settings</gr></a>
 </div>
 <div class="col-r">
 	<input id="soxr" <?=$chkenable?>>

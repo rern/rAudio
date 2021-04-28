@@ -94,8 +94,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
 <pre id="coderfkill" class="hide"></pre>
 <div data-status="bluetoothctl" <?=$classstatus?>>
-	<a>Bluetooth
-	<br><gr><?=$istatus?></gr></a><i class="fa fa-bluetooth"></i>
+	<a>Bluetooth<br><gr><?=$istatus?></gr></a><i class="fa fa-bluetooth"></i>
 </div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
@@ -104,8 +103,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
 <div data-status="iw" <?=$classstatus?>>
-	<a>Wi-Fi
-	<br><gr><?=$istatus?></gr></a><i class="fa fa-wifi"></i>
+	<a>Wi-Fi<br><gr><?=$istatus?></gr></a><i class="fa fa-wifi"></i>
 </div>
 <div class="col-r">
 	<input id="wlan" type="checkbox">
@@ -134,8 +132,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
 <div class="col-l double">
-	<a>Character LCD
-	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
+	<a>Character LCD<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" <?=$chkenable?>>
@@ -149,8 +146,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
-	<a>Power Button
-	<br><gr>WiringPi <?=$istatus?></gr></a><i class="fa fa-power"></i>
+	<a>Power Button<br><gr>WiringPi <?=$istatus?></gr></a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" class="enable" type="checkbox">
@@ -163,8 +159,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
 <div class="col-l double">
-	<a>Relay Module
-	<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
+	<a>Relay Module<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
 </div>
 <div class="col-r">
 	<input id="relays" <?=$chknoset?>>
@@ -177,8 +172,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 <div class="col-l double">
-	<a>TFT 3.5" LCD
-	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" <?=$chknoset?>>
@@ -194,16 +188,14 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div>
 <heading>Environment<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>Name
-	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
+	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
 	<span <?=$classhelp?>>Name for Renderers, Streamers, RPi access point, Bluetooth and system hostname.</span>
 </div>
 <div class="col-l double">
-	<a>Timezone
-	<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
+	<a>Timezone<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
 </div>
 <div class="col-r">
 	<?=$selecttimezone?>
@@ -217,8 +209,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 <div data-status="soundprofile" class="col-l icon double status">
-		<a>Sound Profile
-	<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>

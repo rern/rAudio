@@ -5,8 +5,7 @@
 <heading>Renderers<?=$ihelp?></heading>
 	<?php if ( file_exists( '/usr/bin/shairport-sync' ) ) { ?>
 <div data-status="shairport-sync" <?=$classstatus?>>
-	<a>AirPlay
-	<br><gr>shairport-sync<?=$istatus?></gr></a><i class="fa fa-airplay"></i>
+	<a>AirPlay<br><gr>shairport-sync<?=$istatus?></gr></a><i class="fa fa-airplay"></i>
 </div>
 <div class="col-r">
 	<input id="shairport-sync" <?=$chknoset?>>
@@ -32,8 +31,7 @@
 	<?php }
 		  if ( file_exists( '/usr/bin/spotifyd' ) ) { ?>
 <div data-status="spotifyd" <?=$classstatus?>>
-	<a>Spotify
-	<br><gr>spotifyd<?=$istatus?></gr></a><i class="fa fa-spotify"></i>
+	<a>Spotify<br><gr>spotifyd<?=$istatus?></gr></a><i class="fa fa-spotify"></i>
 </div>
 <div class="col-r">
 	<input id="spotifyd" <?=$chknoset?>>
@@ -46,8 +44,7 @@
 	<?php }
 		  if ( file_exists( '/usr/bin/upmpdcli' ) ) { ?>
 <div data-status="upmpdcli" <?=$classstatus?>>
-	<a>UPnP
-	<br><gr>upmpdcli<?=$istatus?></gr></a><i class="fa fa-upnp"></i>
+	<a>UPnP<br><gr>upmpdcli<?=$istatus?></gr></a><i class="fa fa-upnp"></i>
 </div>
 <div class="col-r">
 	<input id="upmpdcli" <?=$chknoset?>>
@@ -64,8 +61,7 @@
 <div>
 <heading>Streamers<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>For browsers
-	<br><gr>MPD http</gr></a><i class="fa fa-webradio"></i>
+	<a>For browsers<br><gr>MPD http</gr></a><i class="fa fa-webradio"></i>
 </div>
 <div class="col-r">
 	<input id="streaming" <?=$chknoset?>>
@@ -74,8 +70,7 @@
 </div>
 	<?php if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
 <div data-status="snapserver" <?=$classstatus?>>
-	<a>SnapServer
-	<br><gr>snapserver<?=$istatus?></gr></a><i class="fa fa-snapcast"></i>
+	<a>SnapServer<br><gr>snapserver<?=$istatus?></gr></a><i class="fa fa-snapcast"></i>
 </div>
 <div class="col-r">
 	<input id="snapserver" <?=$chknoset?>>
@@ -93,8 +88,7 @@
 <div>
 <heading>Others<?=$ihelp?></heading>
 <div data-status="hostapd" <?=$classstatus?>>
-	<a>Access Point
-	<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
+	<a>Access Point<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
 </div>
 <div class="col-r">
 	<input id="hostapd" class="enable hidden" type="checkbox">
@@ -107,8 +101,7 @@
 <pre id="codehostapd" class="hide"></pre>
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" <?=$classstatus?>>
-	<a>BitTorrent
-	<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
+	<a>BitTorrent<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
 </div>
 <div class="col-r">
 	<input id="transmission" <?=$chkenable?>>
@@ -122,8 +115,7 @@
 	<?php }
 		  if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div data-status="localbrowser" <?=$classstatus?>>
-	<a>Browser on RPi
-	<br><gr>localbrowser<?=$istatus?></gr></a><i class="fa fa-chromium"></i>
+	<a>Browser on RPi<br><gr>localbrowser<?=$istatus?></gr></a><i class="fa fa-chromium"></i>
 </div>
 <div class="col-r">
 	<input id="localbrowser" <?=$chkenable?>>
@@ -139,8 +131,7 @@
 	<?php } 
 		  if ( file_exists( '/usr/bin/aria2' ) ) { ?>
 <div data-status="aria2" <?=$classstatus?>>
-	<a>Downloader
-	<br><gr>aria2<?=$istatus?></gr></a><i class="fa fa-download"></i>
+	<a>Downloader<br><gr>aria2<?=$istatus?></gr></a><i class="fa fa-download"></i>
 </div>
 <div class="col-r">
 	<input id="aria2" <?=$chkenable?>>
@@ -157,8 +148,7 @@
 			$ip = getHostByName( $hostname );
 	?>
 <div data-status="smb" <?=$classstatus?>>
-	<a>File Sharing
-	<br><gr>smb<?=$istatus?></gr></a><i class="fa fa-networks"></i>
+	<a>File Sharing<br><gr>smb<?=$istatus?></gr></a><i class="fa fa-networks"></i>
 </div>
 <div class="col-r">
 	<input id="smb" <?=$chkenable?>>
@@ -174,8 +164,7 @@
 <pre id="codesmb" class="hide"></pre>
 	<?php } ?>
 <div data-status="mpdscribble" <?=$classstatus?>>
-	<a>Last.fm Scrobbler
-	<br><gr>mpdscribble<?=$istatus?></gr></a><i class="fa fa-lastfm"></i>
+	<a>Last.fm Scrobbler<br><gr>mpdscribble<?=$istatus?></gr></a><i class="fa fa-lastfm"></i>
 </div>
 <div class="col-r">
 	<input id="mpdscribble" <?=$chkenable?>>
@@ -187,8 +176,7 @@
 </div>
 <pre id="codempdscribble" class="hide"></pre>
 <div class="col-l double">
-	<a>Password Login
-	<br><gr>PHP Blowfish</gr></a><i class="fa fa-lock-circle"></i>
+	<a>Password Login<br><gr>PHP Blowfish</gr></a><i class="fa fa-lock-circle"></i>
 </div>
 <div class="col-r">
 	<input id="login" <?=$chkenable?>>
@@ -197,8 +185,7 @@
 	<span <?=$classhelp?>>Force browser interface login with set password.</span>
 </div>
 <div class="col-l double">
-	<a>Play on Startup
-	<br><gr>System</gr></a><i class="fa fa-refresh-play"></i>
+	<a>Play on Startup<br><gr>System</gr></a><i class="fa fa-refresh-play"></i>
 </div>
 <div class="col-r">
 	<input id="autoplay" <?=$chknoset?>>
