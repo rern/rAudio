@@ -40,6 +40,8 @@ function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 				, title     : 'Wi-Fi'
 				, message   : 'Connect to <wh>'+ ssid +'</wh> failed.'
 			} );
+		} else {
+			$( '.back' ).click();
 		}
 	} );
 }
