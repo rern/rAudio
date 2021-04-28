@@ -615,7 +615,6 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-r {
 	width: calc( 100% - 170px );
-	min-width: 230px;
 	padding-right: 0;
 	padding-left: 0 !important;
 	font-weight: normal;
@@ -714,40 +713,10 @@ input:checked + .switchlabel.disabled:after {
 	.head {
 		padding-right: 0 !important;
 	}
-	.col-l {
-		width: 100%;
-		padding: 5px 0;
-		text-align: left;
-	}
-	.col-l.text {
-		width: 120px;
-	}
-	.col-r.text {
-		float: none;
-		z-index: -1;
-	}
-	.col-r {
-		width: 100%;
-		padding-top: 0;
-	}
-	.col-l i {
-		float: left;
-		width: 40px;
-		text-align: center;
-	}
-	.col-l.double i {
-		width: 30px;
-		margin-right: 10px;
-		line-height: 28px;
-	}
-	.col-l i.fa-gear {
-		float: none;
-		margin: 0 0 0 5px;
-		vertical-align: baseline;
-	}
-	.col-l i.fa-status {
-		float: none;
-		line-height: 16px;
+	.help-block {
+		margin-left: -170px;
+		padding-bottom: 10px;
+		border-bottom: 1px solid var( --cga );
 	}
 	grw {
 		display: none;
