@@ -144,7 +144,7 @@ refreshData = function() {
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
 			+'<br>'+ G.kernel
-			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<gr>$1</gr>' )
+			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
 			+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
 			+'<br>'+ cpu
 		);

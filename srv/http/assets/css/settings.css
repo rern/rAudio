@@ -188,7 +188,8 @@ a:hover {
 	text-decoration: none !important;
 }
 input[type="text"] {
-	width: 230px;
+	width: 100%;
+	max-width: 230px;
 	height: 40px;
 	margin-bottom: 10px;
 	padding: 10px;
@@ -248,6 +249,9 @@ heading {
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
 	user-select: none;
+}
+heading {
+	letter-spacing: 5px;
 }
 heading.sub {
 	margin: 5px 0 5px 0;
@@ -621,7 +625,6 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-r.text {
 	float: left;
-	width: auto;
 	white-space: nowrap;
 	line-height: 26px;
 }
@@ -702,24 +705,21 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media ( max-width: 580px ) {
+	.container {
+		padding: 30px 10px 100px 10px;
+	}
+	.head {
+		padding-right: 0 !important;
+	}
 	.wide {
 		display: none;
 	}
 }
 @media (max-width: 515px) {
-	.container {
-		padding: 40px 10px 100px 10px;
-	}
-	.head {
-		padding-right: 0 !important;
-	}
 	.help-block {
 		margin-left: -170px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
-	}
-	grw {
-		display: none;
 	}
 	#guide {
 		max-width: 100%;
@@ -729,9 +729,20 @@ input:checked + .switchlabel.disabled:after {
 		padding: 0;
 	}
 }
+@media (max-width: 465px) {
+	.settingedit { 
+		display: none;
+	}
+}
 @media (max-width: 450px) {
 	.title {
 		letter-spacing: 12px;
+	}
+	heading {
+		letter-spacing: 4px;
+	}
+	grw {
+		display: none;
 	}
 	#guide .btn {
 		width: 70px;
@@ -751,6 +762,9 @@ input:checked + .switchlabel.disabled:after {
 @media (max-width: 375px) {
 	.title {
 		letter-spacing: 7px;
+	}
+	heading {
+		letter-spacing: 0;
 	}
 }
 @media (hover: hover) {
