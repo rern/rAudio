@@ -6,7 +6,7 @@ alias=r1
 
 grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
 
-if ! grep -q 'device = \"' /etc/spotifyd.conf; then
+if [[ -e /usr/bin/spotifyd ]] && ! grep -q 'device = \"' /etc/spotifyd.conf; then
 	if systemctl is-active spotifyd; then
 		active=1
 		systemctl disable --now spotifyd
