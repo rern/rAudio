@@ -220,11 +220,6 @@ legend .fa-arrow-up {
 		display: none;
 	}
 }
-@media(max-width: 360px) {
-	h1 span {
-		font-size: 26px;
-	}
-}
 #hidescrollv {
 	max-height: calc( 100vh - 110px );
 	margin-top: 10px;

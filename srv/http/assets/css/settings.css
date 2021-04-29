@@ -238,7 +238,6 @@ grn, .green { color: #0f0; }
 .clear { clear: both; }
 whl,
 grl,
-h1,
 heading {
 	display: inline-block;
 	margin: 25px 0 10px 0;
@@ -522,9 +521,7 @@ input:checked + .switchlabel.disabled:after {
 	background-color: var( --cgd );
 }
 .setting,
-.settingedit,
-.code {
-	left: 85px;
+.settingedit {
 	line-height: 40px;
 	width: 40px !important;
 	text-align: center;
@@ -532,6 +529,7 @@ input:checked + .switchlabel.disabled:after {
 }
 .setting {
 	position: absolute;
+	margin-left: 5px;
 }
 .cg {
 	background: var( --cg );
@@ -629,7 +627,6 @@ input:checked + .switchlabel.disabled:after {
 	line-height: 26px;
 }
 .col-r .fa {
-	width: 20px;
 	text-align: center;
 }
 #fliptxt {
@@ -761,7 +758,7 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 375px) {
 	.title {
-		letter-spacing: 7px;
+		letter-spacing: 5px;
 	}
 	heading {
 		letter-spacing: 0;
