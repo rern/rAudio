@@ -198,8 +198,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<a>Timezone<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
 </div>
 <div class="col-r">
-	<?=$selecttimezone?>
-	<i id="setting-regional" class="settingedit fa fa-gear"></i>
+	<?=$selecttimezone?><i id="setting-regional" class="settingedit fa fa-gear"></i>
 	<span <?=$classhelp?>>
 		Wi-Fi regulatory domain:
 		<p>

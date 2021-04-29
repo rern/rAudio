@@ -522,14 +522,14 @@ input:checked + .switchlabel.disabled:after {
 }
 .setting,
 .settingedit {
-	line-height: 40px;
 	width: 40px !important;
-	text-align: center;
+	margin-left: 5px;
 	font-size: 26px;
+	line-height: 40px;
+	text-align: center;
 }
 .setting {
 	position: absolute;
-	margin-left: 5px;
 }
 .cg {
 	background: var( --cg );
