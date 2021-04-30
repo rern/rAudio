@@ -86,9 +86,7 @@
 	</span>
 </div>
 <pre id="codecrossfade" class="hide"></pre>
-<div class="col-l double">
-	<a>Normalization<br><gr>option</gr></a>
-</div>
+<div class="col-l">Normalization</div>
 <div class="col-r">
 	<input id="normalization" <?=$chknoset?>>
 	<div class="switchlabel" for="normalization"></div>
@@ -97,9 +95,7 @@
 		<br>Normalize the volume level of songs as they play.
 	</span>
 </div>
-<div class="col-l double">
-	<a>Replay Gain<br><gr>option</gr></a>
-</div>
+<div class="col-l">Replay Gain</div>
 <div class="col-r">
 	<input id="replaygain" <?=$chkenable?>>
 	<div class="switchlabel" for="replaygain"></div>
@@ -127,20 +123,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>FFmpeg<br><gr>decoder</gr></a>
-</div>
-<div class="col-r">
-	<input id="ffmpeg"  <?=$chknoset?>>
-	<div class="switchlabel" for="ffmpeg"></div>
-	<span <?=$classhelp?>>
-			<code>enable "yes"</code>
-		<br>Should be disabled if not used for faster Sources update.
-		<br>Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
-		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
-	</span>
-</div>
-<div class="col-l double">
-	<a>Audio Buffer<br><gr>custom size</gr></a>
+	<a>Buffer - Audio<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
 	<input id="buffer" <?=$chkenable?>>
@@ -153,7 +136,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>Output Buffer<br><gr>custom size</gr></a>
+	<a>Buffer - Output<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
 	<input id="bufferoutput" <?=$chkenable?>>
@@ -163,6 +146,19 @@
 		<code>max_output_buffer_size "kB"</code>
 		<br>Default buffer size: 8192 kB
 		<br>Increase to fix missing Album list with large Library.
+	</span>
+</div>
+<div class="col-l double">
+	<a>FFmpeg<br><gr>decoder</gr></a>
+</div>
+<div class="col-r">
+	<input id="ffmpeg"  <?=$chknoset?>>
+	<div class="switchlabel" for="ffmpeg"></div>
+	<span <?=$classhelp?>>
+			<code>enable "yes"</code>
+		<br>Should be disabled if not used for faster Sources update.
+		<br>Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
+		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
 	</span>
 </div>
 <div class="col-l double">
@@ -192,7 +188,7 @@
 		</p>
 	</span>
 </div>
-<div class="col-l">User's Custom Settings</div>
+<div class="col-l">User's Configurations</div>
 <div class="col-r">
 	<input id="custom" <?=$chkenable?>>
 	<div class="switchlabel" for="custom"></div>
