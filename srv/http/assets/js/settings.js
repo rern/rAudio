@@ -314,7 +314,7 @@ $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( 'body' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) || $( e.target ).hasClass( 'fa-plus-circle' ) ) return
 	
 	codeToggle( $( this ).data( 'status' ), e.target );

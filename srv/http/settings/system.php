@@ -93,18 +93,14 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <div>
 <heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
 <pre id="coderfkill" class="hide"></pre>
-<div data-status="bluetoothctl" <?=$classstatus?>>
-	<a>Bluetooth<br><gr><?=$istatus?></gr></a><i class="fa fa-bluetooth"></i>
-</div>
+<div id="bt" data-status="bluetoothctl"></div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
-<div data-status="iw" <?=$classstatus?>>
-	<a>Wi-Fi<br><gr><?=$istatus?></gr></a><i class="fa fa-wifi"></i>
-</div>
+<div id="wl" data-status="iw"></div>
 <div class="col-r">
 	<input id="wlan" type="checkbox">
 	<div class="switchlabel" for="onboardwlan"></div>
