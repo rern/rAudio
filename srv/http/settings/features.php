@@ -26,7 +26,6 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapClient - Connect: Menu >&ensp;<i class="fa fa-folder-cascade"></i>&ensp;Sources |&ensp;<i class="fa fa-snapcast"></i>
-		<br>(Note: Not available while SnapServer enabled.)
 	</span>
 </div>
 	<?php }
@@ -62,12 +61,12 @@
 <div>
 <heading>Streamers<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>For browsers<br><gr>MPD http</gr></a><i class="fa fa-webradio"></i>
+	<a>For browsers<br><gr>MPD httpd</gr></a><i class="fa fa-webradio"></i>
 </div>
 <div class="col-r">
 	<input id="streaming" <?=$chknoset?>>
 	<div class="switchlabel" for="streaming"></div>
-	<span <?=$classhelp?>>Asynchronous streaming for browsers via <code id="ip"></code> (Latency - several seconds)</span>
+	<span <?=$classhelp?>><a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code id="ip"></code> (Latency - several seconds)</span>
 </div>
 	<?php if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
 <div data-status="snapserver" <?=$classstatus?>>
@@ -79,7 +78,6 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
-		<br>(Note: Not available while SnapClient enabled.)
 	</span>
 </div>
 <pre id="codesnapserver" class="hide"></pre>
@@ -96,7 +94,7 @@
 	<input id="hostapdchk" type="checkbox">
 	<div class="switchlabel" for="hostapd"></div>
 	<i id="setting-hostapd" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Connect with rAudio hotspot directly when no routers available.
+	<span <?=$classhelp?>><a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
 		<br>This should be used only when necessary.</span>
 </div>
 <pre id="codehostapd" class="hide"></pre>
@@ -176,16 +174,16 @@
 </div>
 <pre id="codempdscribble" class="hide"></pre>
 <div class="col-l double">
-	<a>Password Login<br><gr>PHP Blowfish</gr></a><i class="fa fa-lock-circle"></i>
+	<a>Password Login<br><gr>PHP bcrypt</gr></a><i class="fa fa-lock-circle"></i>
 </div>
 <div class="col-r">
 	<input id="login" <?=$chkenable?>>
 	<div class="switchlabel" for="password"></div>
 	<i id="setting-login" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Force browser interface login with set password.</span>
+	<span <?=$classhelp?>><a href="https://en.wikipedia.org/wiki/Bcrypt">bcrypt</a> - Force browser interface login with set password.</span>
 </div>
-<div class="col-l double">
-	<a>Play on Startup<br><gr>System</gr></a><i class="fa fa-refresh-play"></i>
+<div class="col-l single">
+	Play on Startup<i class="fa fa-refresh-play"></i>
 </div>
 <div class="col-r">
 	<input id="autoplay" <?=$chknoset?>>
