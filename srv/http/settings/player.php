@@ -21,8 +21,7 @@
 <div id="divhwmixer">
 	<div class="col-l">Mixer Device</div>
 	<div class="col-r">
-		<select id="hwmixer"></select>
-		<i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
+		<select id="hwmixer"></select><i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
 		<span <?=$classhelp?>>
 			<i class="fa fa-volume"></i> <code>amixer</code> / <code>alsamixer</code>&ensp;volume control
 		</span>
