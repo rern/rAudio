@@ -905,7 +905,6 @@ $( '.listtitle' ).click( function() {
 		$list.addClass( 'hide' );
 	}
 } );
-var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
 $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
@@ -914,9 +913,9 @@ $( '.list' ).on( 'click', 'bl', function() {
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )
 				.replace( '-pushstream', '' );
 	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
-	bash( [ 'packagehref', pkg ], function( href ) {
+	bash( [ 'packagehref', pkg ], function( url ) {
 		loader( 'hide' );
-		windowopen.location = href;
+		windowopen.location = url;
 	} );
 } );
 
