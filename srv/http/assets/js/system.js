@@ -186,7 +186,7 @@ refreshData = function() {
 			$( '#wl' )
 				.removeAttr( 'class' )
 				.addClass( 'col-l double status' )
-				.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+				.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
 		} else {
 			$( '#wlan' ).prop( 'checked', false );
 			$( '#wl' )
