@@ -171,7 +171,7 @@ refreshData = function() {
 			$( '#bt' )
 				.removeAttr( 'class' )
 				.addClass( 'col-l double status' )
-				.html( '<a>Bluetooth<br><gr><i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
+				.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
 		} else {
 			$( '#bluetooth' ).prop( 'checked', false );
 			$( '#setting-bluetooth' ).toggleClass( 'hide', true );
@@ -186,7 +186,7 @@ refreshData = function() {
 			$( '#wl' )
 				.removeAttr( 'class' )
 				.addClass( 'col-l double status' )
-				.html( '<a>Wi-Fi<br><gr><i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+				.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
 		} else {
 			$( '#wlan' ).prop( 'checked', false );
 			$( '#wl' )
