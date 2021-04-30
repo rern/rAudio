@@ -156,10 +156,9 @@
 	<div class="switchlabel" for="smb"></div>
 	<i id="setting-smb" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a href="https://www.samba.org">Samba</a> - Share files on networks.
+		<a href="https://www.samba.org">Samba</a> - Share files on network.
 		<br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
-		<br> &bull; Address bar of Windows File Explorer:
-		<br> &ensp; <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
+		<br> &bull; At address bar of Windows File Explorer: <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
 	</span>
 </div>
 <pre id="codesmb" class="hide"></pre>
