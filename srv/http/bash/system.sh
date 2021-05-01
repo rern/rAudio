@@ -441,8 +441,8 @@ remount )
 remove )
 	mountpoint=${args[1]}
 	umount -l "$mountpoint"
-	sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 	rmdir "$mountpoint" &> /dev/null
+	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
 	/srv/http/bash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;

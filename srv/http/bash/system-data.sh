@@ -36,8 +36,11 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
-powerbuttonconf=$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )
-[[ -z $powerbuttonconf ]] && powerbuttonconf='40 33'
+if [[ -e /etc/powerbutton.conf ]]; then
+	powerbuttonconf=$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )
+else
+	powerbuttonconf='40 33'
+fi
 if [[ -e /etc/relays.conf ]]; then
 	relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
 	relayspins=[${relayspins:0:-1}]
@@ -74,19 +77,11 @@ fi
 version=$( cat $dirsystem/version )
 
 # mounted partitions and remote shares
-sd=( $( fdisk -lo device | grep ^/dev/mmcblk ) )
-if [[ -n $sd ]]; then
-	for source in "${sd[@]}"; do
-		mountpoint=$( timeout 0.1s df -l --output=target,source \
-						| grep "$source" \
-						| sed "s| *$source||" )
-		[[ $mountpoint == /boot ]] && continue
-		
-		used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
-		list+=',{"icon":"microsd","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
-	done
+if mount | grep -q 'mmcblk0p2 on /'; then
+	used_size=( $( df -lh --output=used,size,target | grep '\/$' ) )
+	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 fi
-usb=( $( fdisk -lo device | grep ^/dev/sd ) )
+usb=( $( mount | grep ^/dev/sd | cut -d' ' -f1 ) )
 if [[ -n $usb ]]; then
 	for source in "${usb[@]}"; do
 		mountpoint=$( df -l --output=target,source \
@@ -102,24 +97,16 @@ if [[ -n $usb ]]; then
 		fi
 	done
 fi
-readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ | sed 's/.$//' )
+nas=$( awk '/\/mnt\/MPD\/NAS/ {print $1" "$2}' /etc/fstab )
 if [[ -n $nas ]]; then
-	for mountpoint in "${nas[@]}"; do
-		df=$( timeout 0.1s df --output=source,target )
-		if [[ -n $df ]]; then
-			source=$( echo "$df" \
-						| grep "$mountpoint" \
-						| sed "s| *$mountpoint||" )
-		else
-			source=
-		fi
-		if [[ -n $source ]]; then
-			used_size=( $( df -h --output=used,size,source | grep "$source" ) )
+	readarray -t nas <<< "$nas"
+	for line in "${nas[@]}"; do
+		source=$( echo $line | cut -d' ' -f1 | sed 's/\\040/ /g' )
+		mountpoint=$( echo $line | cut -d' ' -f2 | sed 's/\\040/ /g' )
+		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
+		if [[ -n $used_size ]]; then
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
-			source=$( sed 's|\\040| |g' /etc/fstab \
-						| grep "$mountpoint" \
-						| sed "s| *$mountpoint .*||" )
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
 		fi
 	done
