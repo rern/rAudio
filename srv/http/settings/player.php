@@ -112,17 +112,6 @@
 <heading data-status="mpdconf" class="status">Options<?=$istatus?><?=$ihelp?></heading>
 <pre id="codempdconf" class="hide"></pre>
 <div class="col-l double">
-	<a>Auto Update<br><gr>Library</gr></a>
-</div>
-<div class="col-r">
-	<input id="autoupdate"  <?=$chknoset?>>
-	<div class="switchlabel" for="autoupdate"></div>
-	<span <?=$classhelp?>>
-			<code>auto_update "yes"</code>
-		<br>Automatic update MPD database when files changed.
-	</span>
-</div>
-<div class="col-l double">
 	<a>Buffer - Audio<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
@@ -149,7 +138,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>FFmpeg<br><gr>decoder</gr></a>
+	<a>FFmpeg<br><gr>decoder plugin</gr></a>
 </div>
 <div class="col-r">
 	<input id="ffmpeg"  <?=$chknoset?>>
@@ -159,6 +148,15 @@
 		<br>Should be disabled if not used for faster Sources update.
 		<br>Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
 		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
+	</span>
+</div>
+<div class="col-l">Library Auto Update</div>
+<div class="col-r">
+	<input id="autoupdate"  <?=$chknoset?>>
+	<div class="switchlabel" for="autoupdate"></div>
+	<span <?=$classhelp?>>
+			<code>auto_update "yes"</code>
+		<br>Automatic update MPD database when files changed.
 	</span>
 </div>
 <div class="col-l double">
@@ -193,7 +191,7 @@
 	<input id="custom" <?=$chkenable?>>
 	<div class="switchlabel" for="custom"></div>
 	<i id="setting-custom" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Insert settings into <code>/etc/mpd.conf</code>.</span>
+	<span <?=$classhelp?>>Insert custom configurations into <code>/etc/mpd.conf</code>.</span>
 </div>
 </div>
 

@@ -174,13 +174,13 @@
 </div>
 <pre id="codempdscribble" class="hide"></pre>
 <div class="col-l double">
-	<a>Password Login<br><gr>PHP bcrypt</gr></a><i class="fa fa-lock-circle"></i>
+	<a>Password Login<br><gr>password_hash</gr></a><i class="fa fa-lock-circle"></i>
 </div>
 <div class="col-r">
 	<input id="login" <?=$chkenable?>>
 	<div class="switchlabel" for="password"></div>
 	<i id="setting-login" <?=$classsetting?>></i>
-	<span <?=$classhelp?>><a href="https://en.wikipedia.org/wiki/Bcrypt">bcrypt</a> - Force browser interface login with set password.</span>
+	<span <?=$classhelp?>><a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.</span>
 </div>
 <div class="col-l single">
 	Play on Startup<i class="fa fa-refresh-play"></i>

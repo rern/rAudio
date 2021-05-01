@@ -385,7 +385,7 @@ code {
 	font-size: 15px;
 	color: var( --cg75 );
 	background-color: var( --cg );
-	padding: 0 8px;
+	padding: 0 4px;
 	border-radius: 3px;
 }
 .bl {

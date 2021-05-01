@@ -142,14 +142,14 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
-	<a>Power Button<br><gr>WiringPi <?=$istatus?></gr></a><i class="fa fa-power"></i>
+	<a>Power Button<br><gr>powerbutton<?=$istatus?></gr></a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" class="enable" type="checkbox">
 	<div class="switchlabel" for="powerbutton"></div>
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Power button for on/off rAudio.
+		Power button for on/off rAudio with <a href="http://wiringpi.com/">WiringPi</a>
 		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/181#discussion-3100261">Wiring</a>
 	</span>
 </div>
@@ -162,9 +162,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<div class="switchlabel" for="relays"></div>
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a href="https://sourceforge.net/projects/raspberry-gpio-python/">RPi.GPIO</a> - Python module to control GPIO.
-		<br>&bull; Control GPIO-connected relay module for power on / off equipments.
-		<br>&bull; This can be enabled and run as a test without a connected relay module.
+		Control GPIO-connected relay module for power on / off equipments with <a href="http://wiringpi.com/">WiringPi</a>
+		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
 <div class="col-l double">
@@ -188,7 +187,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
-	<span <?=$classhelp?>>Name for Renderers, Streamers, RPi access point, Bluetooth and system hostname.</span>
+	<span <?=$classhelp?>>Name for Renderers, Streamers, Access point, Bluetooth and system Hostname.</span>
 </div>
 <div class="col-l double">
 	<a>Timezone<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
