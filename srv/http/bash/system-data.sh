@@ -76,13 +76,14 @@ else
 fi
 version=$( cat $dirsystem/version )
 
-# mounted partitions and remote shares
+# sd, usb and nas
 if mount | grep -q 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '\/$' ) )
 	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 fi
-usb=( $( mount | grep ^/dev/sd | cut -d' ' -f1 ) )
+usb=$( fdisk -lo device | grep ^/dev/sd )
 if [[ -n $usb ]]; then
+	readarray -t usb <<< "$usb"
 	for source in "${usb[@]}"; do
 		mountpoint=$( df -l --output=target,source \
 						| grep "$source" \
