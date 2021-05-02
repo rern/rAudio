@@ -938,7 +938,7 @@ $( '.list' ).on( 'click', 'bl', function() {
 	var pkg = $( this ).text()
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )
 				.replace( '-pushstream', '' );
-	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
+	var windowopen = window.open(); // fix: some browsers not allow window.open() in ajax/async
 	bash( [ 'packagehref', pkg ], function( url ) {
 		loader( 'hide' );
 		windowopen.location = url;
