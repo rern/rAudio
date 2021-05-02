@@ -166,6 +166,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
+<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
 	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
@@ -178,6 +179,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
+<?php } ?>
 </div>
 
 <div>
