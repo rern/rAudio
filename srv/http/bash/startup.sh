@@ -64,18 +64,7 @@ if [[ -e /boot/wifi ]]; then
 	mv /boot/wifi "/etc/netctl/$ssid"
 	ifconfig wlan0 down
 	netctl switch-to "$ssid"
-	for i in {1..10}; do
-		sleep 1
-		if [[ $( netctl is-active "$ssid" ) == active ]]; then
-			netctl enable "$ssid"
-			if [[ -n $profiles ]]; then
-				for profile in "${profiles[@]}"; do
-					netctl disable "$profile" &> /dev/null
-				done
-			fi
-			break
-		fi
-	done
+	netctl enable "$ssid"
 fi
 # ----------------------------------------------------------------------------
 
