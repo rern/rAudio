@@ -188,7 +188,8 @@ a:hover {
 	text-decoration: none !important;
 }
 input[type="text"] {
-	width: 230px;
+	width: 100%;
+	max-width: 230px;
 	height: 40px;
 	margin-bottom: 10px;
 	padding: 10px;
@@ -237,7 +238,6 @@ grn, .green { color: #0f0; }
 .clear { clear: both; }
 whl,
 grl,
-h1,
 heading {
 	display: inline-block;
 	margin: 25px 0 10px 0;
@@ -248,6 +248,9 @@ heading {
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
 	user-select: none;
+}
+heading {
+	letter-spacing: 5px;
 }
 heading.sub {
 	margin: 5px 0 5px 0;
@@ -382,7 +385,7 @@ code {
 	font-size: 15px;
 	color: var( --cg75 );
 	background-color: var( --cg );
-	padding: 0 8px;
+	padding: 0 4px;
 	border-radius: 3px;
 }
 .bl {
@@ -518,13 +521,12 @@ input:checked + .switchlabel.disabled:after {
 	background-color: var( --cgd );
 }
 .setting,
-.settingedit,
-.code {
-	left: 85px;
-	line-height: 40px;
+.settingedit {
 	width: 40px !important;
-	text-align: center;
+	margin-left: 5px;
 	font-size: 26px;
+	line-height: 40px;
+	text-align: center;
 }
 .setting {
 	position: absolute;
@@ -615,19 +617,16 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-r {
 	width: calc( 100% - 170px );
-	min-width: 230px;
 	padding-right: 0;
 	padding-left: 0 !important;
 	font-weight: normal;
 }
 .col-r.text {
 	float: left;
-	width: auto;
 	white-space: nowrap;
 	line-height: 26px;
 }
 .col-r .fa {
-	width: 20px;
 	text-align: center;
 }
 #fliptxt {
@@ -703,54 +702,21 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media ( max-width: 580px ) {
+	.container {
+		padding: 30px 10px 100px 10px;
+	}
+	.head {
+		padding-right: 0 !important;
+	}
 	.wide {
 		display: none;
 	}
 }
 @media (max-width: 515px) {
-	.container {
-		padding: 40px 10px 100px 10px;
-	}
-	.head {
-		padding-right: 0 !important;
-	}
-	.col-l {
-		width: 100%;
-		padding: 5px 0;
-		text-align: left;
-	}
-	.col-l.text {
-		width: 120px;
-	}
-	.col-r.text {
-		float: none;
-		z-index: -1;
-	}
-	.col-r {
-		width: 100%;
-		padding-top: 0;
-	}
-	.col-l i {
-		float: left;
-		width: 40px;
-		text-align: center;
-	}
-	.col-l.double i {
-		width: 30px;
-		margin-right: 10px;
-		line-height: 28px;
-	}
-	.col-l i.fa-gear {
-		float: none;
-		margin: 0 0 0 5px;
-		vertical-align: baseline;
-	}
-	.col-l i.fa-status {
-		float: none;
-		line-height: 16px;
-	}
-	grw {
-		display: none;
+	.help-block {
+		margin-left: -170px;
+		padding-bottom: 10px;
+		border-bottom: 1px solid var( --cga );
 	}
 	#guide {
 		max-width: 100%;
@@ -760,9 +726,20 @@ input:checked + .switchlabel.disabled:after {
 		padding: 0;
 	}
 }
+@media (max-width: 465px) {
+	.settingedit { 
+		display: none;
+	}
+}
 @media (max-width: 450px) {
 	.title {
 		letter-spacing: 12px;
+	}
+	heading {
+		letter-spacing: 4px;
+	}
+	grw {
+		display: none;
 	}
 	#guide .btn {
 		width: 70px;
@@ -781,7 +758,10 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 375px) {
 	.title {
-		letter-spacing: 7px;
+		letter-spacing: 5px;
+	}
+	heading {
+		letter-spacing: 0;
 	}
 }
 @media (hover: hover) {

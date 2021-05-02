@@ -5,8 +5,8 @@
 <heading>Renderers<?=$ihelp?></heading>
 	<?php if ( file_exists( '/usr/bin/shairport-sync' ) ) { ?>
 <div data-status="shairport-sync" <?=$classstatus?>>
-	<a>AirPlay
-	<br><gr>shairport-sync<?=$istatus?></gr></a><i class="fa fa-airplay"></i>
+	<!-- iOS 14.5 fix - keep <br> in the same line to prevent last character stripped -->
+	<a>AirPlay<br><gr>shairport-sync<?=$istatus?></gr></a><i class="fa fa-airplay"></i>
 </div>
 <div class="col-r">
 	<input id="shairport-sync" <?=$chknoset?>>
@@ -26,14 +26,12 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapClient - Connect: Menu >&ensp;<i class="fa fa-folder-cascade"></i>&ensp;Sources |&ensp;<i class="fa fa-snapcast"></i>
-		<br>(Note: Not available while SnapServer enabled.)
 	</span>
 </div>
 	<?php }
 		  if ( file_exists( '/usr/bin/spotifyd' ) ) { ?>
 <div data-status="spotifyd" <?=$classstatus?>>
-	<a>Spotify
-	<br><gr>spotifyd<?=$istatus?></gr></a><i class="fa fa-spotify"></i>
+	<a>Spotify<br><gr>spotifyd<?=$istatus?></gr></a><i class="fa fa-spotify"></i>
 </div>
 <div class="col-r">
 	<input id="spotifyd" <?=$chknoset?>>
@@ -46,8 +44,7 @@
 	<?php }
 		  if ( file_exists( '/usr/bin/upmpdcli' ) ) { ?>
 <div data-status="upmpdcli" <?=$classstatus?>>
-	<a>UPnP
-	<br><gr>upmpdcli<?=$istatus?></gr></a><i class="fa fa-upnp"></i>
+	<a>UPnP<br><gr>upmpdcli<?=$istatus?></gr></a><i class="fa fa-upnp"></i>
 </div>
 <div class="col-r">
 	<input id="upmpdcli" <?=$chknoset?>>
@@ -64,18 +61,16 @@
 <div>
 <heading>Streamers<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>For browsers
-	<br><gr>MPD http</gr></a><i class="fa fa-webradio"></i>
+	<a>For browsers<br><gr>MPD httpd</gr></a><i class="fa fa-webradio"></i>
 </div>
 <div class="col-r">
 	<input id="streaming" <?=$chknoset?>>
 	<div class="switchlabel" for="streaming"></div>
-	<span <?=$classhelp?>>Asynchronous streaming for browsers via <code id="ip"></code> (Latency - several seconds)</span>
+	<span <?=$classhelp?>><a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code id="ip"></code> (Latency - several seconds)</span>
 </div>
 	<?php if ( file_exists( '/usr/bin/snapserver' ) ) { ?>
 <div data-status="snapserver" <?=$classstatus?>>
-	<a>SnapServer
-	<br><gr>snapserver<?=$istatus?></gr></a><i class="fa fa-snapcast"></i>
+	<a>SnapServer<br><gr>snapserver<?=$istatus?></gr></a><i class="fa fa-snapcast"></i>
 </div>
 <div class="col-r">
 	<input id="snapserver" <?=$chknoset?>>
@@ -83,7 +78,6 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 		<br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
-		<br>(Note: Not available while SnapClient enabled.)
 	</span>
 </div>
 <pre id="codesnapserver" class="hide"></pre>
@@ -93,22 +87,20 @@
 <div>
 <heading>Others<?=$ihelp?></heading>
 <div data-status="hostapd" <?=$classstatus?>>
-	<a>Access Point
-	<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
+	<a>Access Point<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
 </div>
 <div class="col-r">
 	<input id="hostapd" class="enable hidden" type="checkbox">
 	<input id="hostapdchk" type="checkbox">
 	<div class="switchlabel" for="hostapd"></div>
 	<i id="setting-hostapd" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Connect with rAudio hotspot directly when no routers available.
+	<span <?=$classhelp?>><a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
 		<br>This should be used only when necessary.</span>
 </div>
 <pre id="codehostapd" class="hide"></pre>
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" <?=$classstatus?>>
-	<a>BitTorrent
-	<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
+	<a>BitTorrent<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
 </div>
 <div class="col-r">
 	<input id="transmission" <?=$chkenable?>>
@@ -122,8 +114,7 @@
 	<?php }
 		  if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div data-status="localbrowser" <?=$classstatus?>>
-	<a>Browser on RPi
-	<br><gr>localbrowser<?=$istatus?></gr></a><i class="fa fa-chromium"></i>
+	<a>Browser on RPi<br><gr>localbrowser<?=$istatus?></gr></a><i class="fa fa-chromium"></i>
 </div>
 <div class="col-r">
 	<input id="localbrowser" <?=$chkenable?>>
@@ -139,8 +130,7 @@
 	<?php } 
 		  if ( file_exists( '/usr/bin/aria2' ) ) { ?>
 <div data-status="aria2" <?=$classstatus?>>
-	<a>Downloader
-	<br><gr>aria2<?=$istatus?></gr></a><i class="fa fa-download"></i>
+	<a>Downloader<br><gr>aria2<?=$istatus?></gr></a><i class="fa fa-download"></i>
 </div>
 <div class="col-r">
 	<input id="aria2" <?=$chkenable?>>
@@ -157,25 +147,22 @@
 			$ip = getHostByName( $hostname );
 	?>
 <div data-status="smb" <?=$classstatus?>>
-	<a>File Sharing
-	<br><gr>smb<?=$istatus?></gr></a><i class="fa fa-networks"></i>
+	<a>File Sharing<br><gr>smb<?=$istatus?></gr></a><i class="fa fa-networks"></i>
 </div>
 <div class="col-r">
 	<input id="smb" <?=$chkenable?>>
 	<div class="switchlabel" for="smb"></div>
 	<i id="setting-smb" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a href="https://www.samba.org">Samba</a> - Share files on networks.
+		<a href="https://www.samba.org">Samba</a> - Share files on network.
 		<br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
-		<br> &bull; Address bar of Windows File Explorer:
-		<br> &ensp; <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
+		<br> &bull; At address bar of Windows File Explorer: <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
 	</span>
 </div>
 <pre id="codesmb" class="hide"></pre>
 	<?php } ?>
 <div data-status="mpdscribble" <?=$classstatus?>>
-	<a>Last.fm Scrobbler
-	<br><gr>mpdscribble<?=$istatus?></gr></a><i class="fa fa-lastfm"></i>
+	<a>Last.fm Scrobbler<br><gr>mpdscribble<?=$istatus?></gr></a><i class="fa fa-lastfm"></i>
 </div>
 <div class="col-r">
 	<input id="mpdscribble" <?=$chkenable?>>
@@ -187,18 +174,16 @@
 </div>
 <pre id="codempdscribble" class="hide"></pre>
 <div class="col-l double">
-	<a>Password Login
-	<br><gr>PHP Blowfish</gr></a><i class="fa fa-lock-circle"></i>
+	<a>Password Login<br><gr>password_hash</gr></a><i class="fa fa-lock-circle"></i>
 </div>
 <div class="col-r">
 	<input id="login" <?=$chkenable?>>
 	<div class="switchlabel" for="password"></div>
 	<i id="setting-login" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Force browser interface login with set password.</span>
+	<span <?=$classhelp?>><a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.</span>
 </div>
-<div class="col-l double">
-	<a>Play on Startup
-	<br><gr>System</gr></a><i class="fa fa-refresh-play"></i>
+<div class="col-l single">
+	Play on Startup<i class="fa fa-refresh-play"></i>
 </div>
 <div class="col-r">
 	<input id="autoplay" <?=$chknoset?>>

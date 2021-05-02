@@ -470,7 +470,7 @@ $( '#setting-custom' ).click( function() {
 	var aplayname = device.aplayname;
 	info( {
 		  icon     : 'mpd'
-		, title    : "User's Custom Settings"
+		, title    : "User's Configurations"
 		, content  : custominfo
 		, msgalign : 'left'
 		, boxwidth : 'max'

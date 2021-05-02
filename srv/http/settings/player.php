@@ -21,8 +21,7 @@
 <div id="divhwmixer">
 	<div class="col-l">Mixer Device</div>
 	<div class="col-r">
-		<select id="hwmixer"></select>
-		<i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
+		<select id="hwmixer"></select><i id="setting-hwmixer" class="settingedit fa fa-volume"></i><br>
 		<span <?=$classhelp?>>
 			<i class="fa fa-volume"></i> <code>amixer</code> / <code>alsamixer</code>&ensp;volume control
 		</span>
@@ -75,8 +74,7 @@
 <div>
 <heading>Volume<?=$ihelp?></heading>
 <div data-status="crossfade" <?=$classstatus?>>
-	<a>Crossfade
-	<br><gr>mpc<?=$istatus?></gr></a>
+	<a>Crossfade<br><gr>mpc<?=$istatus?></gr></a>
 </div>
 <div class="col-r">
 	<input id="crossfade" <?=$chkenable?>>
@@ -88,10 +86,7 @@
 	</span>
 </div>
 <pre id="codecrossfade" class="hide"></pre>
-<div class="col-l double">
-	<a>Normalization
-	<br><gr>option</gr></a>
-</div>
+<div class="col-l">Normalization</div>
 <div class="col-r">
 	<input id="normalization" <?=$chknoset?>>
 	<div class="switchlabel" for="normalization"></div>
@@ -100,10 +95,7 @@
 		<br>Normalize the volume level of songs as they play.
 	</span>
 </div>
-<div class="col-l double">
-	<a>Replay Gain
-	<br><gr>option</gr></a>
-</div>
+<div class="col-l">Replay Gain</div>
 <div class="col-r">
 	<input id="replaygain" <?=$chkenable?>>
 	<div class="switchlabel" for="replaygain"></div>
@@ -120,34 +112,7 @@
 <heading data-status="mpdconf" class="status">Options<?=$istatus?><?=$ihelp?></heading>
 <pre id="codempdconf" class="hide"></pre>
 <div class="col-l double">
-	<a>Auto Update
-	<br><gr>Library</gr></a>
-</div>
-<div class="col-r">
-	<input id="autoupdate"  <?=$chknoset?>>
-	<div class="switchlabel" for="autoupdate"></div>
-	<span <?=$classhelp?>>
-			<code>auto_update "yes"</code>
-		<br>Automatic update MPD database when files changed.
-	</span>
-</div>
-<div class="col-l double">
-	<a>FFmpeg
-	<br><gr>decoder</gr></a>
-</div>
-<div class="col-r">
-	<input id="ffmpeg"  <?=$chknoset?>>
-	<div class="switchlabel" for="ffmpeg"></div>
-	<span <?=$classhelp?>>
-			<code>enable "yes"</code>
-		<br>Should be disabled if not used for faster Sources update.
-		<br>Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
-		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
-	</span>
-</div>
-<div class="col-l double">
-	<a>Audio Buffer
-	<br><gr>custom size</gr></a>
+	<a>Buffer - Audio<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
 	<input id="buffer" <?=$chkenable?>>
@@ -160,8 +125,7 @@
 	</span>
 </div>
 <div class="col-l double">
-		<a>Output Buffer
-	<br><gr>custom size</gr></a>
+	<a>Buffer - Output<br><gr>custom size</gr></a>
 </div>
 <div class="col-r">
 	<input id="bufferoutput" <?=$chkenable?>>
@@ -174,8 +138,29 @@
 	</span>
 </div>
 <div class="col-l double">
-		<a>Resampling
-	<br><gr>SoXR custom settings</gr></a>
+	<a>FFmpeg<br><gr>decoder plugin</gr></a>
+</div>
+<div class="col-r">
+	<input id="ffmpeg"  <?=$chknoset?>>
+	<div class="switchlabel" for="ffmpeg"></div>
+	<span <?=$classhelp?>>
+			<code>enable "yes"</code>
+		<br>Should be disabled if not used for faster Sources update.
+		<br>Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
+		<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
+	</span>
+</div>
+<div class="col-l">Library Auto Update</div>
+<div class="col-r">
+	<input id="autoupdate"  <?=$chknoset?>>
+	<div class="switchlabel" for="autoupdate"></div>
+	<span <?=$classhelp?>>
+			<code>auto_update "yes"</code>
+		<br>Automatic update MPD database when files changed.
+	</span>
+</div>
+<div class="col-l double">
+	<a>Resampling<br><gr>SoXR custom settings</gr></a>
 </div>
 <div class="col-r">
 	<input id="soxr" <?=$chkenable?>>
@@ -201,12 +186,12 @@
 		</p>
 	</span>
 </div>
-<div class="col-l">User's Custom Settings</div>
+<div class="col-l">User's Configurations</div>
 <div class="col-r">
 	<input id="custom" <?=$chkenable?>>
 	<div class="switchlabel" for="custom"></div>
 	<i id="setting-custom" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Insert settings into <code>/etc/mpd.conf</code>.</span>
+	<span <?=$classhelp?>>Insert custom configurations into <code>/etc/mpd.conf</code>.</span>
 </div>
 </div>
 

@@ -298,7 +298,7 @@ $( '#help' ).click( function() {
 	var eltop = $( 'heading' ).filter( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
-	var offset0 = eltop.getBoundingClientRect().top;
+	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( $( '.help-block:not(.hide)' ).length > 0 ) {
 		$( this ).removeClass( 'blue' );
 		$( '.help-block' ).addClass( 'hide' );
@@ -308,13 +308,13 @@ $( '#help' ).click( function() {
 		$( '.help-block' ).removeClass( 'hide' );
 		if ( short ) $( '#bar-bottom' ).removeClass( 'transparent' );
 	}
-	$( window ).scrollTop( eltop.offsetTop - offset0 );
+	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
 } );
 $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( 'body' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) || $( e.target ).hasClass( 'fa-plus-circle' ) ) return
 	
 	codeToggle( $( this ).data( 'status' ), e.target );

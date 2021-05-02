@@ -144,7 +144,7 @@ refreshData = function() {
 		$( '#systemvalue' ).html(
 			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
 			+'<br>'+ G.kernel
-			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<gr>$1</gr>' )
+			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
 			+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
 			+'<br>'+ cpu
 		);
@@ -165,9 +165,35 @@ refreshData = function() {
 			html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 		} );
 		$( '#list' ).html( html );
-		$( '#bluetooth' ).prop( 'checked', G.bluetooth );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
+		if ( G.bluetooth ) {
+			$( '#bluetooth' ).prop( 'checked', true );
+			$( '#setting-bluetooth' ).toggleClass( 'hide', false );
+			$( '#bt' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l double status' )
+				.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
+		} else {
+			$( '#bluetooth' ).prop( 'checked', false );
+			$( '#setting-bluetooth' ).toggleClass( 'hide', true );
+			$( '#bt' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l single' )
+				.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
+		}
 		$( '#wlan' ).prop( 'checked', G.wlan );
+		if ( G.wlan ) {
+			$( '#wlan' ).prop( 'checked', true );
+			$( '#wl' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l double status' )
+				.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+		} else {
+			$( '#wlan' ).prop( 'checked', false );
+			$( '#wl' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l single' )
+				.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
+		}
 		disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
 		$( '#i2smodule' ).val( 'none' );
 		$( '#i2smodule option' ).filter( function() {
@@ -905,7 +931,6 @@ $( '.listtitle' ).click( function() {
 		$list.addClass( 'hide' );
 	}
 } );
-var custompkg = [ 'bluez-alsa-git', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ];
 $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
@@ -914,9 +939,9 @@ $( '.list' ).on( 'click', 'bl', function() {
 				.replace( 'bluez-alsa', 'bluez-alsa-git' )
 				.replace( '-pushstream', '' );
 	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
-	bash( [ 'packagehref', pkg ], function( href ) {
+	bash( [ 'packagehref', pkg ], function( url ) {
 		loader( 'hide' );
-		windowopen.location = href;
+		windowopen.location = url;
 	} );
 } );
 

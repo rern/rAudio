@@ -1,7 +1,8 @@
 .selectric-wrapper {
 	position: relative;
 	display: inline-block;
-	width: 230px;
+	width: 100%;
+	max-width: 230px;
 	margin-bottom: 11px;
 	vertical-align: middle;
 	cursor: pointer;
@@ -87,7 +88,6 @@ select,
 }
 .selectric-hide-select.selectric-is-native {
 	position: absolute;
-	width: 100%;
 	height: 100%;
 	z-index: 10;
 }
