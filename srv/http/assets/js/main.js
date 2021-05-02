@@ -677,43 +677,52 @@ $( '#volume' ).roundSlider( {
 	, create            : function () {
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
-		$volumehandle = $( '#volume .rs-handle' );
+		$volumehandle = $( '#volume .rs-handle' );   // not available for self events
 		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
 	}
-	, start             : function( e ) { // drag start
+	// drag: start > beforeValueChange > drag > valueChange > change > stop
+	// tap: beforeValueChange > change > valueChange
+	, start             : function( e ) {
+		G.drag = 1;
 		// restore handle color immediately on start drag
 		if ( e.value === 0 ) volColorUnmute();
 		$( '.map' ).removeClass( 'mapshow' );
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', '0s' );
 	}
 	, drag              : function( e ) {
-		G.drag = 1;
+		G.status.volume = e.value;
 		volumeDrag( e.value );
-		$volumehandle.rsRotate( - e.handle.angle );
+		$( '#volume .rs-handle' ).rsRotate( - e.handle.angle );
 	}
-	, stop              : function() { // drag end
+	, stop              : function() {
+		G.drag = 0;
 		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
-		if ( G.getstatus ) {
+		if ( G.drag ) return
+		
+		if ( G.getstatus || G.drag ) {
 			var speed = 0;
 		} else {
-			if ( e.value !== G.status.volume ) {
-				var diff = e.value - G.status.volume;
-			} else { // mute/unmute
-				var diff = G.status.volume - G.status.volumemute;
-			}
+			var diff = e.value - G.status.volume;
+			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
 			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
+		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', '' );
 		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
 	}
-	, change            : function( e ) { // click
-		$( '#volume .rs-handle' ).css( 'transition-property', '' ); // keep handle shadow in sync
-		if ( !G.drag ) volumeKnobSet( e.value );
-		G.drag = 0;
+	, change            : function( e ) {
+		if ( G.drag ) return
+		
+		volumeKnobSet( e.value );
+		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
 	}
-	, valueChange       : function( e ) { // after change/click
+	, valueChange       : function( e ) {
+		if ( G.drag ) return
+		
 		G.status.volume = e.value;
-		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle );
+		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$( '#volume-knob, #vol-group i' ).removeClass( 'disable' );
 	}
 } );
 $( '#volmute' ).click( function() {
