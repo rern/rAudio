@@ -102,6 +102,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 			- Create a blank file `lcd` in `BOOT`
 		- Custom startup script
 			- Copy custom script named `startup` to `BOOT`
+- Boot duration
+	- RPi4: 20+ seconds
+	- RPi3: 50+ seconds
+	- RPi1, Zero: 80+ seconds
 - After initial boot:
 	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
