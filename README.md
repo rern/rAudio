@@ -98,7 +98,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- Expand `root` partition:
 			- By default, `root` partition will be expaned on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
-		- GPIO 3.5" LCD display
+		- GPIO 3.5" LCD display (Not for Zero and 1)
 			- Create a blank file `lcd` in `BOOT`
 		- Custom startup script
 			- Copy custom script named `startup` to `BOOT`
