@@ -90,9 +90,9 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <pre id="codemount" class="hide"></pre>
 </div>
 
-<?php 
-$rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
+	<?php 
+	$rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
+	if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 <div>
 <heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
 <pre id="coderfkill" class="hide"></pre>
@@ -110,7 +110,7 @@ if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 </div>
 <pre id="codeiw" class="hide"></pre>
 </div>
-<?php } ?>
+	<?php } ?>
 
 <div>
 <heading data-status="configtxt" class="status">GPIO Devices<?=$istatus?><?=$ihelp?></heading>
@@ -170,6 +170,7 @@ if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
+	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
 	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
@@ -182,6 +183,7 @@ if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
+	<?php } ?>
 </div>
 
 <div>

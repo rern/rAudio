@@ -86,6 +86,7 @@
 
 <div>
 <heading>Others<?=$ihelp?></heading>
+	<?php if ( file_exists( '/usr/bin/hostapd' ) ) { ?>
 <div data-status="hostapd" <?=$classstatus?>>
 	<a>Access Point<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
 </div>
@@ -98,6 +99,7 @@
 		<br>This should be used only when necessary.</span>
 </div>
 <pre id="codehostapd" class="hide"></pre>
+	<?php } ?>
 	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
 <div data-status="transmission" <?=$classstatus?>>
 	<a>BitTorrent<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
