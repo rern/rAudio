@@ -40,7 +40,7 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 	# no on-board wireless - remove bluetooth
 	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	[[ -e /boot/kernel8.img || ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	[[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then

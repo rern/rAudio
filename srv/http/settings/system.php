@@ -90,9 +90,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <pre id="codemount" class="hide"></pre>
 </div>
 
-	<?php 
-	$rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-	if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
+	<?php $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
+		  if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 <div>
 <heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
 <pre id="coderfkill" class="hide"></pre>
