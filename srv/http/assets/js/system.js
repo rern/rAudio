@@ -657,14 +657,35 @@ $( '#setting-relays' ).click( function() {
 } );
 $( '#setting-lcd' ).click( function() {
 	info( {
-		  icon    : 'lcd'
-		, title   : 'TFT LCD'
-		, message : 'Calibrate touchscreen?'
-						+'<br>(Get stylus ready.)'
-		, oklabel : 'Start'
-		, ok      : function() {
-			notify( 'Calibrate Touchscreen', 'Start ...', 'lcd' );
-			bash( [ 'lcdcalibrate' ] );
+		  icon        : 'lcd'
+		, title       : 'TFT LCD'
+		, selectlabel : 'Type'
+		, select      : {
+			  'Generic'               : 'tft35a'
+			, 'Waveshare (A)'         : 'waveshare35a'
+			, 'Waveshare (B)'         : 'waveshare35b'
+			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
+			, 'Waveshare (C)'         : 'waveshare35c'
+		}
+		, checked     : G.lcdmodel
+		, boxwidth    : 200
+		, buttonlabel : 'Calibrate'
+		, button      : function() {
+			info( {
+				  icon    : 'lcd'
+				, title   : 'TFT LCD'
+				, message : 'Calibrate touchscreen?'
+								+'<br>(Get stylus ready.)'
+				, ok      : function() {
+					notify( 'Calibrate Touchscreen', 'Start ...', 'lcd' );
+					bash( [ 'lcdcalibrate' ] );
+				}
+			} );
+		}
+		, ok          : function() {
+			notify( 'TFT 3.5" LCD', 'Change ...', 'lcd' );
+			rebootText( 1, 'TFT 3.5" LCD' );
+			bash( [ 'lcdmodel', $( '#infoSelectBox').val() ] );
 		}
 	} );
 } );
@@ -934,14 +955,15 @@ $( '.listtitle' ).click( function() {
 $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
-	var pkg = $( this ).text();
-	if ( [ 'bluez-alsa', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
-		pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
-		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
-	} else {
-		pkg = pkg.replace( '-pushstream', '' );
-		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
-	}
+	loader();
+	var pkg = $( this ).text()
+				.replace( 'bluez-alsa', 'bluez-alsa-git' )
+				.replace( '-pushstream', '' );
+	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
+	bash( [ 'packagehref', pkg ], function( url ) {
+		loader( 'hide' );
+		windowopen.location = url;
+	} );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

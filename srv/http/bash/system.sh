@@ -261,12 +261,13 @@ dtparam=audio=on"
 lcd )
 	enable=${args[1]}
 	reboot=${args[2]}
+	model=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 	if [[ $enable == true ]]; then
 		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
 		config="\
 hdmi_force_hotplug=1
 dtparam=spi=on
-dtoverlay=tft35a:rotate=0"
+dtoverlay=$model:rotate=0"
 		! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
 dtparam=i2c_arm=on"
 		echo -n "$config" >> $fileconfig
@@ -278,7 +279,7 @@ i2c-dev
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	else
 		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-		sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|tft35a/ d' $fileconfig
+		sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
 		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	fi
@@ -347,6 +348,16 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
+lcdmodel )
+	model=${args[1]}
+	if [[ $model != tft35a ]]; then
+		echo $model > /srv/http/data/system/lcdmodel
+	else
+		rm /srv/http/data/system/lcdmodel
+	fi
+	sed -i "s/dtoverlay=.*:rotate/dtoverlay=$model:rotate/" $fileconfig
+	pushRefresh
+	;;
 mount )
 	data=${args[1]}
 	protocol=$( jq -r .protocol <<< $data )
@@ -389,6 +400,15 @@ mount )
 		sed -i "/${mountpoint// /\\040}/ d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
+	;;
+packagehref )
+	pkg=${args[1]}
+	if [[ ' bluez-alsa-git hfsprogs matchbox-window-manager mpdscribble snapcast upmpdcli ' == *" $pkg "* ]]; then
+		url=https://aur.archlinux.org/packages
+	else
+		url=https://archlinuxarm.org/packages/armv7h
+	fi
+	curl -s $url/$pkg | grep -A1 Upstream | tail -1 | cut -d'"' -f2
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
