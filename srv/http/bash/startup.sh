@@ -27,6 +27,9 @@ pushNotify() {
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 }
 
+revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+[[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && onboardwireless=1
+
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
@@ -39,8 +42,7 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	[[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] || sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	[[ -z $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -82,6 +84,9 @@ systemctl -q is-enabled hostapd && hostapd=1
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && usbwifi=1
 if [[ -z $profiles && -z $hostapd ]] || [[ -n $usbwifi ]]; then
 	rmmod brcmfmac &> /dev/null
+fi
+if [[ -z $onboardwireless ]]; then # usb bluetooth
+	rfkill | grep -q bluetooth && systemctl enable --now bluetooth || systemctl disable --now bluetooth
 fi
 
 if ifconfig | grep -q 'inet.*broadcast'; then
