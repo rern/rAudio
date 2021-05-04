@@ -2005,7 +2005,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
 	if ( radio ) {
-		var notsaved = $thisli.find( '.li1 .radioname' ).text() === '';
+		var notsaved = $this.hasClass( 'bl' );
 		$menu.find( '.save' ).toggleClass( 'hide', !notsaved );
 		$menu.find( '.savedpladd' ).toggleClass( 'hide', notsaved );
 		$menu.find( '.similar, .submenu, .tag' ).addClass( 'hide' );
