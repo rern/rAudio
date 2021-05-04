@@ -2105,6 +2105,9 @@ input[type=text] {
 li.active .iconthumb {
 	outline: none;
 }
+li.active .pl-icon.bl {
+	color: var( --cw ) !important;
+}
 #pl-list li.radio {
 	margin: 0;
 }
