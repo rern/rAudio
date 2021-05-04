@@ -3,6 +3,7 @@
 readarray -t args <<< "$1"
 
 mpdpath=${args[0]}
+[[ ${mpdpath: -14:10} == .cue/track ]] && mpdpath=$( dirname "$mpdpath" )
 artistalbumtype=$( sed '1 d' <<< "$1" )
 
 path="/mnt/MPD/$mpdpath"
