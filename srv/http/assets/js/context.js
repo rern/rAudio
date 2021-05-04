@@ -488,6 +488,12 @@ function webRadioNew( name, url ) {
 					} );
 				} else if ( data ) {
 					webRadioExists( data, url );
+				} else {
+					if ( G.playlist ) {
+						G.list.li.find( '.liname' ).text( newname );
+						G.list.li.find( '.li1 .radioname' ).text( newname );
+						G.list.li.find( '.li2 .radioname' ).text( newname +' • ' );
+					}
 				}
 				bannerHide();
 			} );
