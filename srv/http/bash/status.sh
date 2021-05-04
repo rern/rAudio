@@ -251,7 +251,7 @@ if [[ ${file:0:4} == http ]]; then
 				titlename=
 			fi
 		else
-			artistname=$stationname
+			[[ -e "$radiofile" ]] && artistname=$stationname
 			titlename=
 			albumname=$file
 		fi
