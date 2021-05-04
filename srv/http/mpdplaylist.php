@@ -248,14 +248,14 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$thumbsrc = '/data/webradiosimg/'.rawurlencode( $urlname ).'-thumb.'.$time.$ext;
 				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon = '<i class="fa fa-webradio pl-icon'.( $stationname ? '' : ' wh' ).'" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li>'
 						.$icon
 						.'<a class="lipath">'.$list->file.'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<span class="li1"><span class="radioname">'.$stationname.'</span><a class="song"></a><span class="duration"><a class="elapsed"></a></span></span>'
-						.'<span class="li2">'.$i.' • <span class="radioname hide">'.$stationname.' • </span>'.$list->file.'</span>'
+						.'<span class="li2">'.$i.' • <span class="radioname hide">'.( $stationname ? $stationname.' • ' : '' ).'</span>'.$list->file.'</span>'
 					.'</li>';
 			$countradio++;
 		}
