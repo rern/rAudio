@@ -234,27 +234,27 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		</div>
 		<div id="infoicon">
 			<span id="playericon">
-				<i id="i-airplay" class="playericon fa fa-airplay"></i>
-				<i id="i-bluetooth" class="playericon fa fa-bluetooth"></i>
-				<i id="i-snapclient" class="playericon fa fa-snapclient"></i>
-				<i id="i-spotify" class="playericon fa fa-spotify"></i>
-				<i id="i-upnp" class="playericon fa fa-upnp"></i>
-				<i id="i-webradio" class="playericon fa fa-webradio"></i>
-				<span id="i-radioparadise" class="playericon"><i class="fa fa-radioparadise1 fa-layer"></i><i class="fa fa-radioparadise2 fa-layerlast"></i></span>
-				<i id="i-radiofrance" class="playericon fa fa-radiofrance"></i>
+				<i id="i-airplay" class="playericon fa fa-airplay hide"></i>
+				<i id="i-bluetooth" class="playericon fa fa-bluetooth hide"></i>
+				<i id="i-snapclient" class="playericon fa fa-snapclient hide"></i>
+				<i id="i-spotify" class="playericon fa fa-spotify hide"></i>
+				<i id="i-upnp" class="playericon fa fa-upnp hide"></i>
+				<i id="i-webradio" class="playericon fa fa-webradio hide"></i>
+				<span id="i-radioparadise" class="playericon hide"><i class="fa fa-radioparadise1 fa-layer"></i><i class="fa fa-radioparadise2 fa-layerlast"></i></span>
+				<i id="i-radiofrance" class="playericon fa fa-radiofrance hide"></i>
 			</span>
 			<span id="progress"></span>
 			<span id="modeicon">
-				<i id="i-random" class="fa fa-random"></i>
-				<i id="i-repeat" class="fa fa-repeat"></i>
-				<i id="i-repeat1" class="fa fa-repeat-single"></i>
-				<i id="i-consume" class="fa fa-flash"></i>
-				<i id="i-librandom" class="fa fa-dice"></i>
-				<i id="i-mute" class="fa fa-mute"></i>
-				<i id="i-btclient" class="fa fa-bluetooth-client"></i>
-				<i id="i-update" class="fa <?=$libraryicon?>"></i>
-				<i id="i-addons" class="fa fa-jigsaw"></i>
-				<i id="i-relays" class="fa fa-relays"></i>
+				<i id="i-random" class="fa fa-random hide"></i>
+				<i id="i-repeat" class="fa fa-repeat hide"></i>
+				<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
+				<i id="i-consume" class="fa fa-flash hide"></i>
+				<i id="i-librandom" class="fa fa-dice hide"></i>
+				<i id="i-mute" class="fa fa-mute hide"></i>
+				<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
+				<i id="i-update" class="fa <?=$libraryicon?> hide"></i>
+				<i id="i-addons" class="fa fa-jigsaw hide"></i>
+				<i id="i-relays" class="fa fa-relays hide"></i>
 			</span>
 		</div>
 		<div id="sampling"></div>
