@@ -1970,8 +1970,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
-} );
-$( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
+} ).on( 'click', '.pl-icon', function( e ) {
 	var $this = $( this );
 	var $thisli = $this.parent();
 	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' );
@@ -1983,7 +1982,6 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	G.list.index = $thisli.index();
 	var menutop = ( $thisli.position().top + 48 ) +'px';
 	var $menu = $( '#menu-plaction' );
-	var $contextlist = $( '#menu-plaction a' );
 	$( '#pl-list li' ).removeClass( 'updn' );
 	if ( !$menu.hasClass( 'hide' ) 
 		&& $menu.css( 'top' ) === menutop
@@ -1997,18 +1995,24 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	var active = $thisli.hasClass( 'active' );
 	var mpd = G.status.player === 'mpd';
 	$thisli.addClass( 'updn' );
-	$contextlist.removeClass( 'hide' );
+	$( '#menu-plaction a' ).removeClass( 'hide' );
 	if ( active ) {
-		$contextlist.eq( 0 ).toggleClass( 'hide', play );
-		$contextlist.eq( 1 ).toggleClass( 'hide', !play || $( e.target ).hasClass( 'fa-webradio' ) );
-		$contextlist.eq( 2 ).toggleClass( 'hide', state === 'stop' );
+		$menu.find( '.play' ).toggleClass( 'hide', play );
+		$menu.find( '.pause' ).toggleClass( 'hide', !play || $( e.target ).hasClass( 'fa-webradio' ) );
+		$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
 	} else {
-		$contextlist.eq( 1 ).add( $contextlist.eq( 2 ) ).addClass( 'hide' );
+		$menu.find( '.pause, .stop' ).addClass( 'hide' );
 	}
-	$contextlist.eq( 3 ).toggleClass( 'hide', active || play );
-	$contextlist.eq( 6 ).toggleClass( 'hide', radio );
-	$contextlist.eq( 7 ).toggleClass( 'hide', radio );
-	$( '#menu-plaction .submenu' ).toggleClass( 'hide', radio );
+	$menu.find( '.current' ).toggleClass( 'hide', active || play );
+	if ( radio ) {
+		var notsaved = $thisli.find( '.li1 .radioname' ).text() === '';
+		$menu.find( '.save' ).toggleClass( 'hide', !notsaved );
+		$menu.find( '.savedpladd' ).toggleClass( 'hide', notsaved );
+		$menu.find( '.similar, .submenu, .tag' ).addClass( 'hide' );
+	} else {
+		$menu.find( '.save' ).addClass( 'hide' );
+		$menu.find( '.savedpladd, .similar, .submenu, .tag' ).removeClass( 'hide' );
+	}
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
 	$menu
@@ -2017,8 +2021,7 @@ $( '#pl-list' ).on( 'click', '.pl-icon', function( e ) {
 	var targetB = $menu.offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-} );
-$( '#pl-list' ).on( 'click', '.pl-remove', function() { // remove from playlist
+} ).on( 'click', '.pl-remove', function() { // remove from playlist
 	if ( G.status.playlistlength > 1 ) {
 		var $li = $( this ).parent();
 		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
