@@ -433,7 +433,9 @@ function webRadioEdit() {
 		, preshow      : function() {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-				var changed = $( '#infoTextBox' ).val() !== name || $( '#infoTextBox1' ).val() !== url;
+				var changed = ( $( '#infoTextBox' ).val() !== name || $( '#infoTextBox1' ).val() !== url )
+								&& $( '#infoTextBox' ).val()
+								&& $( '#infoTextBox1' ).val();
 				$( '#infoOk' ).toggleClass( 'disabled', !changed );
 			} );
 		}
@@ -462,16 +464,16 @@ function webRadioExists( data, url ) {
 		}
 	} );
 }
-function webRadioNew( name, url ) {
+function webRadioNew( name, url, save ) {
 	info( {
 		  icon         : 'webradio'
-		, title        : 'Add WebRadio'
+		, title        : save ? 'Save WebRadio' : 'Add WebRadio'
 		, width        : 500
-		, message      : 'Add new WebRadio:'
+		, message      : save ? 'Save WebRadio as:' : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
 		, textvalue    : [ ( name || '' ), ( url || '' ) ]
 		, textrequired : [ 0, 1 ]
-		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
+		, footer       : save ? '' : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
 			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
@@ -545,7 +547,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
 			return
 		case 'save':
-			webRadioNew( '', G.list.li.find( '.lipath' ).text() );
+			webRadioNew( '', G.list.li.find( '.lipath' ).text(), 'save' );
 			return
 		case 'savedpladd':
 			info( {
