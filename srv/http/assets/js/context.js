@@ -1,4 +1,4 @@
-function addReplace( cmd, command, title ) {
+function addReplace( command, title ) {
 	bash( command, function() {
 		if ( G.playbackswitch ) $( '#tab-playback' ).click();
 		G.playbackswitch = 0;
@@ -681,7 +681,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'plfindadd', mode, path ];
 				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
 			} else {
-				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title wh' ).text(), 'album', G.list.name ];
+				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.name ];
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];
@@ -701,16 +701,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	if ( G.display.playbackswitch && addreplaceplay ) G.playbackswitch = 1;
 	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
-		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
-		addReplace( cmd, command, msg );
+		var title = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
+		addReplace( command, title );
 	} else {
-		var msg = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
+		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
 		if ( G.display.plclear && G.status.playlistlength ) {
 			infoReplace( function() {
-				addReplace( cmd, command, msg );
+				addReplace( command, title );
 			} );
 		} else {
-			addReplace( cmd, command, msg );
+			addReplace( command, title );
 		}
 	}
 } );

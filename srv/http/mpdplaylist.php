@@ -202,7 +202,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( !$artist && !$list->Album ) $li2.= $list->file;
 			$datatrack = '';
 			$file = $list->file;
-			if ( isset( $list->Range ) && $list->Range ) {
+			if ( strpos( $file, '.cue/track' ) ) {
 				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
 				$file = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
 			}
