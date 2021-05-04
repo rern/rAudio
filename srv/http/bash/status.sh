@@ -317,7 +317,7 @@ if [[ $state != stop ]]; then
 	else
 		if [[ -n $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			echo $stationname$'\n'$sampling > $radiofile
+			[[ -e $radiofile ]] && echo $stationname$'\n'$sampling > $radiofile
 		else
 			sampling=$( sed -n 2p <<< "$radiodata" )
 		fi
