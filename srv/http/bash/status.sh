@@ -263,6 +263,11 @@ if [[ ${file:0:4} == http ]]; then
 	fi
 else
 	ext=${file/*.}
+	if [[ ${ext:0:9} == cue/track ]]; then
+		cuefile=$( dirname "$file" )
+		cuesrc=$( grep ^FILE "/mnt/MPD/$cuefile" | head -1 | sed 's/FILE "\|" WAVE.*//g' )
+		ext=${cuesrc/*.}
+	fi
 	ext=${ext^^}
 	# missing id3tags
 	[[ -z $Album ]] && Album=
@@ -284,7 +289,6 @@ samplingLine() {
 	samplerate=$2
 	bitrate=$3
 	ext=$4
-	
 	[[ $bitrate -eq 0 || -z $bitrate ]] && bitrate=$(( bitdepth * samplerate * 2 ))
 	if (( $bitrate < 1000000 )); then
 		rate="$(( bitrate / 1000 )) kbit/s"
@@ -294,7 +298,7 @@ samplingLine() {
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
-			sampling="${samplerate^^} &bull; $rate"
+		sampling="${samplerate^^} &bull; $rate"
 	else
 		if [[ $bitdepth == 'N/A' ]]; then
 			[[ $ext == WAV || $ext == AIFF ]] && bit="$(( bitrate / samplerate / 2 )) bit"
@@ -305,8 +309,8 @@ samplingLine() {
 		fi
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
 		sampling="$bit $sample $rate"
-		[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 	fi
+	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
 
 if [[ $state != stop ]]; then
@@ -329,6 +333,7 @@ else
 		if [[ $ext == DSF || $ext == DFF ]]; then
 			# DSF: byte# 56+4 ? DSF: byte# 60+4
 			[[ $ext == DSF ]] && byte=56 || byte=60;
+			[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
 			hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 			dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 			bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
