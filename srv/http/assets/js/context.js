@@ -538,6 +538,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
 			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
 			return
+		case 'save':
+			webRadioNew( '', G.list.li.find( '.lipath' ).text() );
+			return
 		case 'savedpladd':
 			info( {
 				  icon    : 'list-ul'
