@@ -213,8 +213,13 @@ if [[ ${file:0:4} == http ]]; then
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
-		radiodata=$( cat $radiofile )
-		stationname=$( sed -n 1p <<< "$radiodata" )
+		if [[ -e "$radiofile" ]]; then
+			radiodata=$( cat $radiofile )
+			stationname=$( sed -n 1p <<< "$radiodata" )
+			radiosampling=$( sed -n 2p <<< "$radiodata" )
+		else
+			stationname=$file
+		fi
 		if [[ $state == play ]]; then
 			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
 			[[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]] && radiofrance=1
@@ -323,13 +328,11 @@ if [[ $state != stop ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && echo $stationname$'\n'$sampling > $radiofile
 		else
-			sampling=$( sed -n 2p <<< "$radiodata" )
+			sampling=$radiosampling
 		fi
 	fi
 else
-	if [[ $ext == Radio ]]; then
-		sampling=$( sed -n 2p <<< "$radiodata" )
-	else
+	if [[ $ext != Radio ]]; then
 		if [[ $ext == DSF || $ext == DFF ]]; then
 			# DSF: byte# 56+4 ? DSF: byte# 60+4
 			[[ $ext == DSF ]] && byte=56 || byte=60;
@@ -349,6 +352,8 @@ else
 			bitrate=${data[2]}
 			samplingLine $bitdepth $samplerate $bitrate $ext
 		fi
+	else
+		sampling=$radiosampling
 	fi
 fi
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
