@@ -621,9 +621,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, ok           : function() {
 					var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 					bash( [ 'webradioadd', newname, url ], function() {
-						G.list.li.find( '.liname' ).text( newname );
-						G.list.li.find( '.li1 .radioname' ).text( newname );
-						G.list.li.find( '.li2 .radioname' ).text( newname +' • ' );
+						G.list.li.find( '.liname, .radioname' ).text( newname );
+						G.list.li.find( '.li2 .radioname' ).append( ' • ' );
 					} );
 				}
 			} );
