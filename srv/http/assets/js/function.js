@@ -951,7 +951,7 @@ function renderLibraryList( data ) {
 			loader( 'hide' );
 		}
 		$( '#lib-list' ).removeClass( 'hide' );
-		$( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
+		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 		if ( $( '.coverart' ).length ) {
 			var coverH = $( '.coverart' ).height();
 			var pH = $( '#lib-list p' ).height();

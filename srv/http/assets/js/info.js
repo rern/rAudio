@@ -228,7 +228,6 @@ function infoReset() {
 	$( '#infoFileLabel' ).addClass( 'infobtn-primary' )
 	$( '#infoOk, #infoFileLabel' ).removeClass( 'disabled' );
 	$( '.extrabtn, #infoContent hr' ).remove();
-//	$( '#loader' ).addClass( 'hide' ); // for 'X' click
 	if ( infoscroll ) {
 		$( 'html, body' ).scrollTop( infoscroll );
 		infoscroll = 0;
