@@ -1975,7 +1975,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$( '.contextmenu' ).addClass( 'hide' );
 } ).on( 'click', '.pl-icon', function() {
 	var $this = $( this );
-	var notsaved = $this.parent().hasClass( 'notsaved' );
 	var $thisli = $this.parent();
 	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' );
 	G.list = {};
@@ -2009,6 +2008,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
 	if ( radio ) {
+		var notsaved = $thisli.hasClass( 'notsaved' );
 		$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
 		$menu.find( '.savedpladd' ).toggleClass( 'hide', notsaved );
 		$menu.find( '.similar, .submenu, .tag' ).addClass( 'hide' );
