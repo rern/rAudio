@@ -1938,14 +1938,14 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'savewr' ) || $target.parent().hasClass( 'savewr' ) ) return
+	var $this = $( this );
+	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $this.hasClass( 'notsaved' ) ) return
 	
 	if ( G.status.player !== 'mpd' ) {
-		$( this ).find( '.pl-icon' ).click();
+		$this.find( '.pl-icon' ).click();
 		return
 	}
 	
-	var $this = $( this );
 	var listnumber = $this.index() + 1;
 	$( '#menu-plaction' ).addClass( 'hide' );
 	if ( $this.hasClass( 'active' ) ) {
@@ -1972,7 +1972,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', '.pl-icon, .savewr', function( e ) {
 	var $this = $( this );
-	var notsaved = $this.prev().hasClass( 'savewr' ) || $this.hasClass( 'savewr' ) || $this.parent().hasClass( 'savewr' );
+	var notsaved = $this.parent().hasClass( 'notsaved' );
 	if ( notsaved ) $this = $this.next();
 	var $thisli = $this.parent();
 	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' ) || notsaved;

@@ -625,6 +625,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 						G.list.li.find( '.liname, .radioname' ).text( newname );
 						G.list.li.find( '.li2 .radioname' ).append( ' • ' );
 						G.list.li.find( '.savewr' ).remove();
+						G.list.li.removeClass( 'notsaved' );
 						G.local = 0;
 					} );
 				}

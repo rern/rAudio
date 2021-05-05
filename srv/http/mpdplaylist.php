@@ -252,7 +252,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$icon = $notsaved ? '<div class="savewr"><i class="fa fa-save"></i></div>' : '';
 				$icon.= '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
-			$html.= '<li>'
+			$html.= '<li'.( $notsaved ? ' class="notsaved"' : '' ).'>'
 						.$icon
 						.'<a class="lipath">'.$list->file.'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
