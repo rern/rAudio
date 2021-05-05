@@ -1970,12 +1970,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
-} ).on( 'click', '.pl-icon, .savewr', function( e ) {
+} ).on( 'click', '.savewr', function() {
+	webRadioSave( $( this ).next().next().text() );
+} ).on( 'click', '.pl-icon', function() {
 	var $this = $( this );
 	var notsaved = $this.parent().hasClass( 'notsaved' );
-	if ( notsaved ) $this = $this.next();
 	var $thisli = $this.parent();
-	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' ) || notsaved;
+	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' );
 	G.list = {};
 	G.list.li = $thisli;
 	G.list.path = $thisli.find( '.lipath' ).text();

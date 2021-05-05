@@ -2114,9 +2114,10 @@ li.active .iconthumb {
 	background: var( --cw );
 }
 .savewr i {
-	position: absolute;
+	position: relative;
 	top: -14px;
-	left: -11px;
+	width: 18px !important;
+	height: 18px;
 	font-size: 15px !important;
 	color: #000000 !important;
 }

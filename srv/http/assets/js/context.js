@@ -497,6 +497,26 @@ function webRadioNew( name, url ) {
 		}
 	} );
 }
+function webRadioSave( url ) {
+	info( {
+		  icon         : 'webradio'
+		, title        : 'Save WebRadio'
+		, message      : url
+		, textlabel    : 'Name'
+		, textrequired : 1
+		, ok           : function() {
+			G.local = 1;
+			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			bash( [ 'webradioadd', newname, url ], function() {
+				G.list.li.find( '.liname, .radioname' ).text( newname );
+				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
+				G.list.li.find( '.savewr' ).remove();
+				G.list.li.removeClass( 'notsaved' );
+				G.local = 0;
+			} );
+		}
+	} );
+}
 //----------------------------------------------------------------------------------------------
 $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var $this = $( this );
@@ -611,25 +631,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			infoUpdate( G.list.path );
 			return
 		case 'wrsave':
-			var url = G.list.li.find( '.lipath' ).text();
-			info( {
-				  icon         : 'webradio'
-				, title        : 'Save WebRadio'
-				, message      : url
-				, textlabel    : 'Name'
-				, textrequired : 1
-				, ok           : function() {
-					G.local = 1;
-					var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-					bash( [ 'webradioadd', newname, url ], function() {
-						G.list.li.find( '.liname, .radioname' ).text( newname );
-						G.list.li.find( '.li2 .radioname' ).append( ' • ' );
-						G.list.li.find( '.savewr' ).remove();
-						G.list.li.removeClass( 'notsaved' );
-						G.local = 0;
-					} );
-				}
-			} );
+			webRadioSave( G.list.li.find( '.lipath' ).text() );
 			return
 	}
 	
