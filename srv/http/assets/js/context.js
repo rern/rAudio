@@ -624,7 +624,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					bash( [ 'webradioadd', newname, url ], function() {
 						G.list.li.find( '.liname, .radioname' ).text( newname );
 						G.list.li.find( '.li2 .radioname' ).append( ' • ' );
-						G.list.li.find( '.notsaved' ).remove();
+						G.list.li.find( '.savewr' ).remove();
 						G.local = 0;
 					} );
 				}
