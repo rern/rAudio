@@ -249,7 +249,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$thumbsrc = '/data/webradiosimg/'.rawurlencode( $urlname ).'-thumb.'.$time.$ext;
 				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = $notsaved ? '<i class="fa fa-save notsaved"></i>' : '';
+				$icon = $notsaved ? '<div class="savewr"><i class="fa fa-save"></i></div>' : '';
 				$icon.= '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li>'

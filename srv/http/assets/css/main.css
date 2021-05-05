@@ -2105,14 +2105,20 @@ input[type=text] {
 li.active .iconthumb {
 	outline: none;
 }
-.notsaved {
+.savewr {
 	position: absolute;
-	margin: 15px 0 0 -12px !important;
-	font-size: 16px !important;
-	color: var( --cm ) !important;
+	margin-top: 27px;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var( --cw );
 }
-li.active .notsaved {
-	color: var( --cw ) !important;
+.savewr i {
+	position: relative;
+	margin-left: -10px; 
+	font-size: 16px !important;
+	line-height: 15px !important;
+	color: #000000 !important;
 }
 #pl-list li.radio {
 	margin: 0;

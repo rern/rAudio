@@ -1938,7 +1938,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'notsaved' ) ) return
+	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'savewr' ) || $target.parent().hasClass( 'savewr' ) ) return
 	
 	if ( G.status.player !== 'mpd' ) {
 		$( this ).find( '.pl-icon' ).click();
@@ -1970,12 +1970,12 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
-} ).on( 'click', '.pl-icon, .notsaved', function( e ) {
+} ).on( 'click', '.pl-icon, .savewr', function( e ) {
 	var $this = $( this );
-	var notsaved = $( e.target ).hasClass( 'notsaved' );
+	var notsaved = $this.prev().hasClass( 'savewr' ) || $this.hasClass( 'savewr' ) || $this.parent().hasClass( 'savewr' );
 	if ( notsaved ) $this = $this.next();
 	var $thisli = $this.parent();
-	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' );
+	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' ) || notsaved;
 	G.list = {};
 	G.list.li = $thisli;
 	G.list.path = $thisli.find( '.lipath' ).text();
