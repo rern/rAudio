@@ -2108,16 +2108,17 @@ li.active .iconthumb {
 .savewr {
 	position: absolute;
 	margin: 27px 0 0 1px;
-	width: 20px;
-	height: 20px;
 	border-radius: 50%;
 	background: var( --cw );
+}
+.savewr,
+.savewr i {
+	width: 20px !important;
+	height: 20px;
 }
 .savewr i {
 	position: relative;
 	top: -13px;
-	width: 20px !important;
-	height: 20px;
 	font-size: 16px !important;
 	color: #000000 !important;
 }

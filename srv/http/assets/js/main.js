@@ -1972,6 +1972,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', '.savewr', function() {
 	webRadioSave( $( this ).next().next().text() );
+	$( '.contextmenu' ).addClass( 'hide' );
 } ).on( 'click', '.pl-icon', function() {
 	var $this = $( this );
 	var notsaved = $this.parent().hasClass( 'notsaved' );
