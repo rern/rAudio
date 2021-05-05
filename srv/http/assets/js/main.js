@@ -1986,9 +1986,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var menutop = ( $thisli.position().top + 48 ) +'px';
 	var $menu = $( '#menu-plaction' );
 	$( '#pl-list li' ).removeClass( 'updn' );
-	if ( !$menu.hasClass( 'hide' ) 
-		&& $menu.css( 'top' ) === menutop
-	) {
+	if ( !$menu.hasClass( 'hide' ) && $menu.css( 'top' ) === menutop ) {
 		$menu.addClass( 'hide' );
 		return
 	}
