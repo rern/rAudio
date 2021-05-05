@@ -955,15 +955,14 @@ $( '.listtitle' ).click( function() {
 $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
-	loader();
-	var pkg = $( this ).text()
-				.replace( 'bluez-alsa', 'bluez-alsa-git' )
-				.replace( '-pushstream', '' );
-	var windowopen = window.open(); // fix: ios safari not allow window.open() in ajax/async
-	bash( [ 'packagehref', pkg ], function( url ) {
-		loader( 'hide' );
-		windowopen.location = url;
-	} );
+	var pkg = $( this ).text();
+	if ( [ 'bluez-alsa', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
+		pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
+		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
+	} else {
+		pkg = pkg.replace( '-pushstream', '' );
+		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
+	}
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
