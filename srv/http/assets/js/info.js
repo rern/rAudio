@@ -373,7 +373,7 @@ function info( O ) {
 			$( '#infoText' ).removeClass( 'hide' );
 			if ( 'textalign' in O ) $( '.infoinput' ).css( 'text-align', O.textalign );
 			if ( 'textrequired' in O ) {
-				if ( typeof O.textrequired !== 'object' ) O.textrequired = [ O.textrequired ];
+				if ( typeof O.textrequired !== 'object' ) O.textrequired = [ 0 ];
 				O.textrequired.forEach( function( e ) {
 					$( '.infoinput' ).eq( e ).addClass( 'required' );
 				} );

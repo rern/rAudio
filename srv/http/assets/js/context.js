@@ -467,13 +467,13 @@ function webRadioExists( data, url ) {
 function webRadioNew( name, url, save ) {
 	info( {
 		  icon         : 'webradio'
-		, title        : save ? 'Save WebRadio' : 'Add WebRadio'
+		, title        : 'Add WebRadio'
 		, width        : 500
-		, message      : save ? 'Save WebRadio as:' : 'Add new WebRadio:'
+		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
 		, textvalue    : [ ( name || '' ), ( url || '' ) ]
 		, textrequired : [ 0, 1 ]
-		, footer       : save ? '' : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
+		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
 			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
@@ -490,12 +490,6 @@ function webRadioNew( name, url, save ) {
 					} );
 				} else if ( data ) {
 					webRadioExists( data, url );
-				} else {
-					if ( G.playlist ) {
-						G.list.li.find( '.liname' ).text( newname );
-						G.list.li.find( '.li1 .radioname' ).text( newname );
-						G.list.li.find( '.li2 .radioname' ).text( newname +' • ' );
-					}
 				}
 				bannerHide();
 			} );
@@ -545,9 +539,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			G.contextmenu = 1;
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
 			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
-			return
-		case 'save':
-			webRadioNew( '', G.list.li.find( '.lipath' ).text(), 'save' );
 			return
 		case 'savedpladd':
 			info( {
@@ -619,7 +610,26 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
 			infoUpdate( G.list.path );
 			return
+		case 'wrsave':
+			var url = G.list.li.find( '.lipath' ).text();
+			info( {
+				  icon         : 'webradio'
+				, title        : 'Save WebRadio'
+				, message      : url
+				, textlabel    : 'Name'
+				, textrequired : 1
+				, ok           : function() {
+					var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+					bash( [ 'webradioadd', newname, url ], function() {
+						G.list.li.find( '.liname' ).text( newname );
+						G.list.li.find( '.li1 .radioname' ).text( newname );
+						G.list.li.find( '.li2 .radioname' ).text( newname +' • ' );
+					} );
+				}
+			} );
+			return
 	}
+	
 	// functions with dialogue box ////////////////////////////////////////////
 	var contextFunction = {
 		  bookmark   : bookmarkNew
