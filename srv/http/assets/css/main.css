@@ -2105,7 +2105,13 @@ input[type=text] {
 li.active .iconthumb {
 	outline: none;
 }
-li.active .pl-icon.bl {
+.notsaved {
+	position: absolute;
+	margin: 15px 0 0 -12px !important;
+	font-size: 16px !important;
+	color: var( --cm ) !important;
+}
+li.active .notsaved {
 	color: var( --cw ) !important;
 }
 #pl-list li.radio {

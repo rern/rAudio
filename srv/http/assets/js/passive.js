@@ -490,6 +490,7 @@ function psVolume( data ) {
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )
 	if ( G.librarylist ) $( '#mode-webradio grl' ).click();
+	if ( G.playlist && !G.local ) getPlaylist();
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )

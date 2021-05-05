@@ -1938,7 +1938,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	if ( G.swipe || $target.hasClass( 'pl-icon' ) ) return
+	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'notsaved' ) ) return
 	
 	if ( G.status.player !== 'mpd' ) {
 		$( this ).find( '.pl-icon' ).click();
@@ -1970,8 +1970,10 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
-} ).on( 'click', '.pl-icon', function( e ) {
+} ).on( 'click', '.pl-icon, .notsaved', function( e ) {
 	var $this = $( this );
+	var notsaved = $( e.target ).hasClass( 'notsaved' );
+	if ( notsaved ) $this = $this.next();
 	var $thisli = $this.parent();
 	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' );
 	G.list = {};
@@ -1998,19 +2000,18 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$( '#menu-plaction a' ).removeClass( 'hide' );
 	if ( active ) {
 		$menu.find( '.play' ).toggleClass( 'hide', play );
-		$menu.find( '.pause' ).toggleClass( 'hide', !play || $( e.target ).hasClass( 'fa-webradio' ) );
+		$menu.find( '.pause' ).toggleClass( 'hide', !play || radio );
 		$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
 	} else {
 		$menu.find( '.pause, .stop' ).addClass( 'hide' );
 	}
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
 	if ( radio ) {
-		var notsaved = $this.hasClass( 'bl' );
-		$menu.find( '.save' ).toggleClass( 'hide', !notsaved );
+		$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
 		$menu.find( '.savedpladd' ).toggleClass( 'hide', notsaved );
 		$menu.find( '.similar, .submenu, .tag' ).addClass( 'hide' );
 	} else {
-		$menu.find( '.save' ).addClass( 'hide' );
+		$menu.find( '.wrsave' ).addClass( 'hide' );
 		$menu.find( '.savedpladd, .similar, .submenu, .tag' ).removeClass( 'hide' );
 	}
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
