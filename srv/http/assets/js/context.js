@@ -464,7 +464,7 @@ function webRadioExists( data, url ) {
 		}
 	} );
 }
-function webRadioNew( name, url, save ) {
+function webRadioNew( name, url ) {
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
