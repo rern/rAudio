@@ -2107,18 +2107,18 @@ li.active .iconthumb {
 }
 .savewr {
 	position: absolute;
-	margin: 29px 0 0 1px;
-	width: 18px;
-	height: 18px;
+	margin: 27px 0 0 1px;
+	width: 20px;
+	height: 20px;
 	border-radius: 50%;
 	background: var( --cw );
 }
 .savewr i {
 	position: relative;
-	top: -14px;
-	width: 18px !important;
-	height: 18px;
-	font-size: 15px !important;
+	top: -13px;
+	width: 20px !important;
+	height: 20px;
+	font-size: 16px !important;
 	color: #000000 !important;
 }
 #pl-list li.radio {
