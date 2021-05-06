@@ -249,7 +249,8 @@ ib {
 	font-size: 48px;
 	width: 48px;
 }
-#infoMessage .fa-coverart {
+#infoContent .fa-coverart {
+	position: static;
 	color: var( --cw );
 }
 w, wh, whl,
