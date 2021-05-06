@@ -122,6 +122,7 @@ infocontenthtml = heredoc( function() { /*
 */ } );
 var infoscroll = 0;
 var splitcols = 0;
+var arrow = 0;
 
 $( 'body' ).prepend( containerhtml );
 
@@ -206,8 +207,8 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	if ( !G.arrow ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
-	G.arrow = 0;
+	if ( !arrow ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
+	arrow = 0;
 	$( '#infoBox' ).css( {
 		  margin     : ''
 		, visibility : 'hidden'
@@ -327,13 +328,13 @@ function info( O ) {
 									.removeClass( 'hide' )
 									.click( function() {
 										O.arrowleft();
-										G.arrow = 1;
+										arrow = 1;
 									} );
 		if ( 'arrowright' in O ) $( '.infoarrowright' )
 									.removeClass( 'hide' )
 									.click( function() {
 										O.arrowright();
-										G.arrow = 1;
+										arrow = 1;
 									} );
 		// message
 		if ( 'message' in O && O.message ) $( '#infoMessage' ).html( O.message ).removeClass( 'hide' );
