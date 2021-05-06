@@ -568,15 +568,14 @@ $( '#tab-playlist' ).click( function() {
 $( '#page-playback' ).tap( function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
-	if ( $( '.edit' ).length ) {
-		if ( $( e.target ).hasClass( 'edit' ) ) return
-		
-		$( '.licover-cover' ).remove();
-		$( '#coverart' ).css( 'opacity', '' );
-		return
+	if ( $( '#divcover' ).find( '.fa-save, .fa-coverart' ).length ) {
+		if ( !$( e.target ).hasClass( 'fa-coverart' ) ) {
+			$( '#divcover .fa-coverart' ).remove();
+			$( '#coverart' ).css( 'opacity', '' );
+		}
+	} else if ( G.guide ) {
+		hideGuide();
 	}
-	
-	if ( G.guide ) hideGuide();
 } );
 $( '#page-library' ).tap( function( e ) {
 	var $target = $( e.target );
@@ -848,7 +847,7 @@ $( '.covermap' ).taphold( function( e ) {
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<i class="edit licover-cover fa fa-coverart"></i>' );
+		.after( '<i class="edit fa fa-coverart"></i>' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -959,12 +958,12 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'click', '.edit, .cover-save', function( e ) {
+$( '#divcover' ).on( 'click', '.fa-save, .fa-coverart', function( e ) {
 	var $this = $( e.target );
-	if ( $this.hasClass( 'licover-cover' ) ) {
-		G.status.webradio ? webRadioCoverart () : coverartChange();
-	} else {
+	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
+	} else {
+		G.status.webradio ? webRadioCoverart () : coverartChange();
 	}
 } );
 var btnctrl = {
@@ -1535,7 +1534,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		$this = $( this );
 		var buttonhtml = '<i class="edit mode-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="edit mode-edit fa fa-edit-circle"></i>';
-		if ( !$this.data( 'album' ) ) buttonhtml += '<i class="edit mode-cover fa fa-coverart"></i>';
+		buttonhtml += '<i class="edit mode-cover fa fa-coverart"></i>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
@@ -1588,7 +1587,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
 } );
-$( '#lib-list' ).on( 'tap', '.liedit',  function() {
+$( '#lib-list' ).on( 'tap', '.fa-save, .fa-coverart',  function() {
 	var $this = $( this );
 	var $img = $this.siblings( 'img' );
 	var $thisli = $this.parent().parent();
@@ -1596,10 +1595,10 @@ $( '#lib-list' ).on( 'tap', '.liedit',  function() {
 	var artist = $thisli.find( '.liartist' ).text();
 	var lipath = $thisli.next().find( '.lipath' ).text();
 	var path = '/mnt/MPD/'+ lipath.substr( 0, lipath.lastIndexOf( '/' ) );
-	if ( $this.hasClass( 'licover-cover' ) ) {
-		coverartChange();
-	} else if ( $this.hasClass( 'cover-save' ) ) {
+	if ( $this.hasClass( 'fa-save' ) ) {
 		coverartSave();
+	} else {
+		coverartChange();
 	}
 } );
 $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
@@ -1609,7 +1608,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<i class="liedit edit licover-cover fa fa-coverart"></i>' );
+		.after( '<i class="fa fa-coverart"></i>' );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );

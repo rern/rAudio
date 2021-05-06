@@ -905,7 +905,7 @@ function renderLibraryList( data ) {
 				html += 'fa-refresh albumrefresh"></i><img src="'+ $img0.data( 'src' ) +'" class="albumimg"></span>';
 				var defaultcover = 0;
 			} else {
-				html += 'fa-search albumrefresh"></i><i class="fa fa-coverart licover-cover"></i>';
+				html += 'fa-search albumrefresh"></i><i class="fa fa-coverart"></i>';
 				defaultcover = 1;
 			}
 			$( '#lib-breadcrumbs' ).append( html );

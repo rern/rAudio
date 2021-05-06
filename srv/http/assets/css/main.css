@@ -1565,7 +1565,7 @@ i.map.disabled, .map.disabled i {
 	line-height: 60px;
 }
 .mode i.edit {
-	line-height: 35px;
+	line-height: 30px;
 }
 .nolabel {
 	padding-top: 25px;
@@ -1615,7 +1615,7 @@ i.map.disabled, .map.disabled i {
 .edit {
 	position: absolute;
 	right: 0;
-	width: 40px !important;
+	width: 35px !important;
 	height: 35px;
 	line-height: 40px;
 	text-align: center;
@@ -1628,13 +1628,13 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 }
 .mode-edit {
-	top: 35px;
+	top: 37px;
 }
 .mode-cover {
 	bottom: 0;
 }
-.licover-cover,
-.contextmenu .fa-coverart {
+.fa-coverart {
+	position: absolute;
 	bottom: 5px;
 	right: 5px;
 	width: 25px !important;
@@ -1643,11 +1643,22 @@ i.map.disabled, .map.disabled i {
 	line-height: 22px !important;
 	text-align: left !important;
 	padding-left: 4px;
+	color: var( --cw ) !important;
 	background: var( --cgl );
+}
+#divcover .fa-coverart {
+	z-index: 102;
 }
 .contextmenu .fa-coverart {
 	margin: 0 8px;
 	vertical-align: 0;
+}
+#infoTop .fa-coverart {
+	position: static;
+	margin-top: 6px;
+}
+#infoTop .imgicon .fa-coverart {
+	top: 3px;
 }
 #infoMessage img {
 	width: auto;
@@ -2231,9 +2242,6 @@ li.active .time,
 	color: var( --cga ) !important;
 }
 li.active .pl-icon.wh {
-	color: var( --cw ) !important;
-}
-li.active i.liedit {
 	color: var( --cw ) !important;
 }
 li.active gr {
