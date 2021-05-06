@@ -1608,7 +1608,7 @@ i.map.disabled, .map.disabled i {
 .mode .fa-bookmark {
 	color: var( --cm );
 }
-/* coverart edit icons */
+/* coverart/bookmark edit icons */
 .bkedit {
 	position: absolute;
 	right: 0;
