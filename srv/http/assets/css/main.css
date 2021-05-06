@@ -1748,14 +1748,15 @@ i.map.disabled, .map.disabled i {
 #button-coverart {
 	margin-left: 15px;
 }
+#button-coverart .fa-coverart {
+	vertical-align: 4px;
+}
+#button-coverart .fa-search {
+	width: 30px !important;
+}
 .albumrefresh {
 	position: absolute;
-	font-size: 26px !important;
 	text-shadow: 0 0 4px #000000 !important;
-}
-.albumcoverart {
-	font-size: 30px !important;
-	color: var( --cm )  !important;
 }
 .albumimg {
 	width: 30px;
