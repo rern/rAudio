@@ -1945,16 +1945,15 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
+	var $liactive = $( '#pl-list li.active' );
 	var listnumber = $this.index() + 1;
 	$( '#menu-plaction' ).addClass( 'hide' );
+	$liactive.find( '.song' ).empty();
+	$liactive.find( '.li1 .radioname' ).removeClass( 'hide' );
+	$liactive.find( '.li2 .radioname' ).addClass( 'hide' );
 	if ( $this.hasClass( 'active' ) ) {
 		if ( G.status.state == 'play' ) {
-			if ( $this.find( '.lipath' ).text().slice( 0, 4 ) === 'http' ) {
-				$( '#stop' ).click();
-				$this.find( '.song' ).empty();
-				$( '.li1 .radioname' ).removeClass( 'hide' );
-				$( '.li2 .radioname' ).addClass( 'hide' );
-			} else {
+			if ( $this.find( '.lipath' ).text().slice( 0, 4 ) !== 'http' ) {
 				$( '#pause' ).click();
 				$this.find( '.elapsed i' ).removeClass( 'fa-play' ).addClass( 'fa-pause' );
 			}
@@ -1965,7 +1964,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		clearIntervalAll();
 		$( '.elapsed' ).empty();
 		bash( [ 'mpcplayback', 'play', listnumber ] );
-		$( '#pl-list li.active .elapsed' ).empty();
+		$liactive.find( '.elapsed' ).empty();
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
