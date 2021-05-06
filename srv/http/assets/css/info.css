@@ -147,6 +147,7 @@ hr {
 	z-index: 1;
 }
 #infoTop .imgicon {
+	position: relative;
 	float: left;
 	margin-top: 4px;
 	width: 35px;
@@ -154,6 +155,9 @@ hr {
 #infoTop .imgicon i {
 	position: absolute;
 	line-height: 32px;
+}
+#infoTop .imgicon .licover-cover {
+	top: 3px;
 }
 #infoTop .imgicon img {
 	width: 30px;

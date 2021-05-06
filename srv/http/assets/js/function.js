@@ -901,7 +901,7 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
 			var html = '<span id="button-coverart"><i class="fa ';
-			if ( !$img0.length ) {
+			if ( $img0.length ) {
 				html += 'fa-refresh albumrefresh"></i><img src="'+ $img0.data( 'src' ) +'" class="albumimg"></span>';
 				var defaultcover = 0;
 			} else {
