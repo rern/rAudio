@@ -1633,16 +1633,16 @@ i.map.disabled, .map.disabled i {
 .mode-cover {
 	bottom: 0;
 }
-.coverart-cover {
-	bottom: 5px;
-}
 .licover-cover {
-	height: 40px;
-	bottom: 0;
-}
-#divcover .edit {
-	bottom: 0;
-	right: 0;
+	bottom: 5px;
+	right: 5px;
+	width: 25px !important;
+	height: 25px;
+	font-size: 18px !important;
+	line-height: 22px !important;
+	text-align: left !important;
+	padding-left: 4px;
+	background: var( --cgl );
 }
 #infoMessage img {
 	width: auto;
