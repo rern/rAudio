@@ -152,7 +152,7 @@ function coverartChange() {
 		var pbcoverdefault = $( '#coverart' ).attr( 'src' ).slice( -3 ) === 'svg';
 	} else {
 		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
-		var lionlinefetched = $( '.liedit.cover-save' ).length;
+		var lionlinefetched = $( '.licover .cover-save' ).length;
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ).slice( -3 ) === 'svg';
 	}
 	if ( ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
@@ -1541,7 +1541,7 @@ function setTrackCoverart() {
 				if ( url ) {
 					$( '#liimg' )
 						.attr( 'src', url )
-						.after( '<i class="fa fa-save cover-save liedit"></i>' )
+						.after( '<i class="fa fa-save cover-save"></i>' )
 						.on( 'load', function() {
 							$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
 						} );

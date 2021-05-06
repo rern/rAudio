@@ -1613,7 +1613,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
 	var $target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'liedit' ) ) return
+	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'fa-coverart' ) ) return
 	
 	$( '.licover .edit' ).remove();
 	$( '.licover img' ).css( 'opacity', '' );
