@@ -1971,6 +1971,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$this.add( '#play' ).addClass( 'active' );
 	}
 } ).on( 'click', '.savewr', function() {
+	G.list.li = $( this ).parent();
 	webRadioSave( $( this ).next().next().text() );
 	$( '.contextmenu' ).addClass( 'hide' );
 } ).on( 'click', '.pl-icon', function() {

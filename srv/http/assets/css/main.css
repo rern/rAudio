@@ -1633,7 +1633,8 @@ i.map.disabled, .map.disabled i {
 .mode-cover {
 	bottom: 0;
 }
-.licover-cover {
+.licover-cover,
+.contextmenu .fa-coverart {
 	bottom: 5px;
 	right: 5px;
 	width: 25px !important;
@@ -1643,6 +1644,10 @@ i.map.disabled, .map.disabled i {
 	text-align: left !important;
 	padding-left: 4px;
 	background: var( --cgl );
+}
+.contextmenu .fa-coverart {
+	margin: 0 8px;
+	vertical-align: 0;
 }
 #infoMessage img {
 	width: auto;
