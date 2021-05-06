@@ -164,8 +164,9 @@ for line in "${lines[@]}"; do
 		Album | AlbumArtist | Artist | Name | Title )
 			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
 		file )
-			file0=$val             # no escape " for coverart and ffprobe
-			file=${val//\"/\\\"};; # escape " for json
+			file0=$val           # no escape " for coverart and ffprobe
+			file=${val//\"/\\\"} # escape " for json
+			file=${file/\?*};;   # remove url trailing '?...'
 		# string
 		* ) # state | updating_db
 			printf -v $key '%s' "$val"
@@ -179,12 +180,13 @@ mpc | grep -q ^Updating && updating_db=true || updating_db=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
-, "elapsed"        : '$elapsed'
-, "song"           : '$song'
-, "state"          : "'$state'"
-, "timestamp"      : '$( date +%s%3N )'
-, "updating_db"    : '$updating_db'
-, "volumemute"     : '$volumemute
+, "elapsed"     : '$elapsed'
+, "file"        : "'$file'"
+, "song"        : '$song'
+, "state"       : "'$state'"
+, "timestamp"   : '$( date +%s%3N )'
+, "updating_db" : '$updating_db'
+, "volumemute"  : '$volumemute
 
 if (( $playlistlength  == 0 )); then
 ########
@@ -217,7 +219,6 @@ if [[ ${file:0:4} == http ]]; then
 			stationname=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		else
-			file=${file/\?*}
 			stationname=$file
 		fi
 		if [[ $state == play ]]; then
@@ -260,7 +261,6 @@ if [[ ${file:0:4} == http ]]; then
 		status+='
 , "Album"    : "'$albumname'"
 , "Artist"   : "'$artistname'"
-, "file"     : "'$file'"
 , "Name"     : "'$Name'"
 , "station"  : "'$station'"
 , "Time"     : false
@@ -282,10 +282,10 @@ else
 	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
-, "Album"     : "'$Album'"
-, "Artist"    : "'$Artist'"
-, "Time"      : '$Time'
-, "Title"     : "'$Title'"'
+, "Album"  : "'$Album'"
+, "Artist" : "'$Artist'"
+, "Time"   : '$Time'
+, "Title"  : "'$Title'"'
 fi
 
 [[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/radiometa
