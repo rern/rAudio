@@ -1421,7 +1421,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
-	if ( $target.hasClass( 'bk-edit' ) ) {
+	if ( $target.hasClass( 'bk-rename' ) ) {
 		info( {
 			  icon         : 'bookmark'
 			, title        : 'Rename Bookmark'
@@ -1533,7 +1533,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	$( '.mode-bookmark' ).each( function() {
 		$this = $( this );
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
-		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-edit fa fa-edit-circle"></i>';
+		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
 		buttonhtml += '<i class="bkedit bk-cover fa fa-coverart"></i>';
 		$this.append( buttonhtml );
 	} );
@@ -1632,7 +1632,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	if ( menushow ) return
 	
 	$( '#lib-list li' ).removeClass( 'active' );
-	if ( $target.hasClass( 'edit' ) ) return
+	if ( $target.hasClass( 'bkedit' ) ) return
 	
 	if ( $( '.bkedit' ).length ) {
 		$( '.bkedit' ).remove();
