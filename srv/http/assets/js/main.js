@@ -118,7 +118,7 @@ $( '#coverart' ).on( 'load', function() {
 		&& G.status.player !== 'bluetooth'
 	) {
 		G.coversave = 1;
-		$( '#divcover' ).append( '<div class="cover-save"><i class="fa fa-save"></i></div>' );
+		$( '#divcover' ).append( '<i class="fa fa-save cover-save"></i>' );
 	} else {
 		$( '.cover-save' ).remove();
 	}

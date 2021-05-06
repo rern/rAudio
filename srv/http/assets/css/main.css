@@ -907,24 +907,19 @@ i.map.disabled, .map.disabled i {
 
 .cover-save {
 	position: absolute;
-	bottom: 0;
-	width: 40px;
-	height: 40px;
-	padding: 5px;
-	text-align: center;
-	z-index: 102;
-}
-.cover-save i {
-	position: relative;
+	bottom: 5px;
+	left: 5px;
 	width: 30px !important;
 	height: 30px;
-	margin-top: 0 !important;
-	font-size: 24px;
-	line-height: 30px !important;
-	border-radius: 15px;
+	border-radius: 50%;
+	padding: 5px;
+	font-size: 24px !important;
+	line-height: 20px !important;
+	text-align: center;
 	color: #000000 !important;
-	background: var( --cw ) !important;
+	background: var( --cw );
 	box-shadow: 1px 1px 2px #000000;
+	z-index: 102;
 }
 .controls {
 	position: absolute;
@@ -2083,8 +2078,7 @@ input[type=text] {
 .pl-icon,
 #pl-savedlist span:before,
 #pl-savedlist i,
-#lib-list i,
-#pl-list i {
+#lib-list i {
 	width: 40px;
 	margin-top: 3px;
 	font-size: 26px;
@@ -2108,19 +2102,14 @@ li.active .iconthumb {
 .savewr {
 	position: absolute;
 	margin: 27px 0 0 1px;
-	border-radius: 50%;
-	background: var( --cw );
-}
-.savewr,
-.savewr i {
-	width: 20px !important;
+	width: 20px;
 	height: 20px;
-}
-.savewr i {
-	position: relative;
-	top: -13px;
-	font-size: 16px !important;
-	color: #000000 !important;
+	border-radius: 50%;
+	font-size: 16px;
+	line-height: 20px;
+	text-align: center;
+	color: #000000;
+	background: var( --cw );
 }
 #pl-list li.radio {
 	margin: 0;

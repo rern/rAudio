@@ -1541,7 +1541,7 @@ function setTrackCoverart() {
 				if ( url ) {
 					$( '#liimg' )
 						.attr( 'src', url )
-						.after( '<div class="liedit cover-save"><i class="fa fa-save"></i></div>' )
+						.after( '<i class="fa fa-save cover-save liedit"></i>' )
 						.on( 'load', function() {
 							$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
 						} );
