@@ -1956,6 +1956,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			if ( $this.find( '.lipath' ).text().slice( 0, 4 ) !== 'http' ) {
 				$( '#pause' ).click();
 				$this.find( '.elapsed i' ).removeClass( 'fa-play' ).addClass( 'fa-pause' );
+			} else {
+				$( '#stop' ).click();
 			}
 		} else {
 			$( '#play' ).click();
