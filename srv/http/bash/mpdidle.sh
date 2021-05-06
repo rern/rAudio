@@ -17,8 +17,6 @@ flagpl=$dirtmp/flagpl
 flagpladd=$dirtmp/flagpladd
 
 mpc idleloop | while read changed; do
-	[[ $changed == playlist && $( mpc current -f %file% | cut -c1-4 ) == http ]] && continue
-	
 	case $changed in
 		player )
 			if [[ ! -e $flag ]]; then # track change only
@@ -52,7 +50,16 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		playlist ) # consume mode: playlist+player at once - run player fisrt
-			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]]; then
+			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
+				pllength=$( mpc playlist | wc -l )
+				pldiff=$(( $pllength - $( cat $dirtmp/playlistlength ) ))
+				if (( $pldiff > 0 )); then
+					echo $pllength > $dirtmp/playlistlength
+				else
+					continue
+				fi
+			fi
+			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]] || (( $pldiff > 0 )); then
 				( sleep 0.05
 					if [[ -e $flag ]]; then
 						touch $flagpl
