@@ -53,11 +53,7 @@ mpc idleloop | while read changed; do
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
 				pllength=$( mpc playlist | wc -l )
 				pldiff=$(( $pllength - $( cat $dirtmp/playlistlength ) ))
-				if (( $pldiff > 0 )); then
-					echo $pllength > $dirtmp/playlistlength
-				else
-					continue
-				fi
+				(( $pldiff > 0 )) && echo $pllength > $dirtmp/playlistlength || continue
 			fi
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]] || (( $pldiff > 0 )); then
 				( sleep 0.05
