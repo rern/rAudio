@@ -194,7 +194,7 @@ function psCoverart( data ) {
 				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
 			}
 			if ( G.playback ) {
-				$( '.edit' ).remove();
+				$( '#divcover .fa-coverart' ).remove();
 				$( '#coverart' ).addClass( 'hide' );
 				$( '#vu' ).removeClass( 'hide' );
 				G.status.state === 'stop'|| !G.status.coverart ? vuStop() : vu();

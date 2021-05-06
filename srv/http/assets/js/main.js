@@ -118,7 +118,7 @@ $( '#coverart' ).on( 'load', function() {
 		&& G.status.player !== 'bluetooth'
 	) {
 		G.coversave = 1;
-		$( '#divcover' ).append( '<i class="fa fa-save cover-save"></i>' );
+		$( '#divcover' ).append( '<i class="covedit fa fa-save cover-save"></i>' );
 	} else {
 		$( '.cover-save' ).remove();
 	}
@@ -568,7 +568,7 @@ $( '#tab-playlist' ).click( function() {
 $( '#page-playback' ).tap( function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
-	if ( $( '#divcover' ).find( '.fa-save, .fa-coverart' ).length ) {
+	if ( $( '#divcover .covedit' ).length ) {
 		if ( !$( e.target ).hasClass( 'fa-coverart' ) ) {
 			$( '#divcover .fa-coverart' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
@@ -584,7 +584,7 @@ $( '#page-library' ).tap( function( e ) {
 		&& !$target.closest( '.coverart' ).length
 	) {
 		G.bookmarkedit = 0;
-		$( '.edit' ).remove();
+		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' )
 			.css( 'background', '' )
 			.find( '.fa-bookmark, .bklabel, img' )
@@ -838,7 +838,7 @@ $( '#coverT, #timeT' ).tap( function() {
 			$( '#volume-bar' ).removeClass( 'hide' );
 		}
 	}
-	$( '.edit' ).remove();
+	$( '#divcover .covedit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 	$( '.cover-save' ).css( 'z-index', 100 );
 } );
@@ -847,7 +847,7 @@ $( '.covermap' ).taphold( function( e ) {
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<i class="edit fa fa-coverart"></i>' );
+		.after( '<i class="covedit fa fa-coverart"></i>' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -958,7 +958,7 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'click', '.fa-save, .fa-coverart', function( e ) {
+$( '#divcover' ).on( 'click', '.covedit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
@@ -1031,7 +1031,7 @@ $( '.btn-cmd' ).click( function() {
 		setButtonOptions();
 		local( 600 );
 	} else {
-		if ( $( '.edit' ).length ) return
+		if ( $( '#divcover .fa-coverart' ).length ) return
 		
 		if ( cmd !== 'play' ) clearIntervalAll();
 		if ( cmd === 'play' ) {
@@ -1411,8 +1411,8 @@ $( '#infoFileBox' ).change( function() {
 } );
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
-	if ( $( '.edit' ).length && !$( e.target ).hasClass( 'edit' )  ) {
-		$( '.edit' ).remove();
+	if ( $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' )  ) {
+		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
 		return
 	}
@@ -1421,7 +1421,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
-	if ( $target.hasClass( 'mode-edit' ) ) {
+	if ( $target.hasClass( 'bk-edit' ) ) {
 		info( {
 			  icon         : 'bookmark'
 			, title        : 'Rename Bookmark'
@@ -1444,7 +1444,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 				$this.find( '.bklabel' ).text( newname );
 			}
 		} );
-	} else if ( $target.hasClass( 'mode-cover' ) ) {
+	} else if ( $target.hasClass( 'bk-cover' ) ) {
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
@@ -1480,7 +1480,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			}
 		}
 		info( jsoninfo );
-	} else if ( $target.hasClass( 'mode-remove' ) ) {
+	} else if ( $target.hasClass( 'bk-remove' ) ) {
 		var $img = $this.find( 'img' );
 		if ( $img.length ) {
 			var src = $img.attr( 'src' );
@@ -1532,9 +1532,9 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
 		$this = $( this );
-		var buttonhtml = '<i class="edit mode-remove fa fa-minus-circle"></i>';
-		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="edit mode-edit fa fa-edit-circle"></i>';
-		buttonhtml += '<i class="edit mode-cover fa fa-coverart"></i>';
+		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
+		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-edit fa fa-edit-circle"></i>';
+		buttonhtml += '<i class="bkedit bk-cover fa fa-coverart"></i>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
@@ -1549,7 +1549,7 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	, onStart       : function () {
 		G.bookmarkedit = 0;
 		G.drag = 1;
-		$( '.edit' ).remove();
+		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
 	}
 	, onEnd         : function () {
@@ -1587,7 +1587,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
 } );
-$( '#lib-list' ).on( 'tap', '.fa-save, .fa-coverart',  function() {
+$( '#lib-list' ).on( 'tap', '.covedit',  function() {
 	var $this = $( this );
 	var $img = $this.siblings( 'img' );
 	var $thisli = $this.parent().parent();
@@ -1608,14 +1608,14 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<i class="fa fa-coverart"></i>' );
+		.after( '<i class="covedit fa fa-coverart"></i>' );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
 	var $target = $( e.target );
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'fa-coverart' ) ) return
 	
-	$( '.licover .edit' ).remove();
+	$( '.licover' ).find( '.covedit' ).remove();
 	$( '.licover img' ).css( 'opacity', '' );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
@@ -1634,8 +1634,8 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#lib-list li' ).removeClass( 'active' );
 	if ( $target.hasClass( 'edit' ) ) return
 	
-	if ( $( '.edit' ).length ) {
-		$( '.edit' ).remove();
+	if ( $( '.bkedit' ).length ) {
+		$( '.bkedit' ).remove();
 		$( '.licoverimg img' ).css( 'opacity', '' );
 		if ( $( this ).is( '.licover' ) ) return
 	}

@@ -1564,9 +1564,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 48px;
 	line-height: 60px;
 }
-.mode i.edit {
-	line-height: 30px;
-}
 .nolabel {
 	padding-top: 25px;
 }
@@ -1612,25 +1609,24 @@ i.map.disabled, .map.disabled i {
 	color: var( --cm );
 }
 /* coverart edit icons */
-.edit {
+.bkedit {
 	position: absolute;
 	right: 0;
 	width: 35px !important;
-	height: 35px;
-	line-height: 40px;
+	line-height: 35px !important;
 	text-align: center;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
 	z-index: 102;
 }
-.mode-remove,
+.bk-remove,
 .coverart-remove {
 	top: 0;
 }
-.mode-edit {
+.bk-edit {
 	top: 37px;
 }
-.mode-cover {
+.bk-cover {
 	bottom: 0;
 }
 .fa-coverart {
@@ -1650,8 +1646,8 @@ i.map.disabled, .map.disabled i {
 	z-index: 102;
 }
 .contextmenu .fa-coverart {
-	margin: 0 8px;
-	vertical-align: 0;
+	position: relative;
+	margin: 0 2px 0 13px;
 }
 #infoTop .fa-coverart {
 	position: static;
@@ -2736,6 +2732,6 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .edit,
-	#divcover .cover-save { top: 0; }
+	#divcover .fa-coverart,
+	#divcover .fa-save { top: 5px; }
 }

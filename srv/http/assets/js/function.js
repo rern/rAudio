@@ -164,7 +164,7 @@ function coverartChange() {
 		jsoninfo.button      = function() {
 			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
-				$( '.edit' ).remove();
+				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
 					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? covervu : coverdefault ) );
@@ -571,7 +571,7 @@ function imageReplace( imagefile, type ) {
 		, processData : false  // no - process the data
 		, contentType : false  // no - contentType
 		, success     : function() {
-			$( '.edit' ).remove();
+			G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 		}
 	} );
@@ -848,7 +848,7 @@ function renderLibrary() {
 	$( '#lib-mode-list' ).removeClass( 'hide' );
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
-	$( '.edit' ).remove();
+	$( '.bkedit' ).remove();
 	$( '#liimg' ).css( 'opacity', '' );
 	orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
@@ -1541,7 +1541,7 @@ function setTrackCoverart() {
 				if ( url ) {
 					$( '#liimg' )
 						.attr( 'src', url )
-						.after( '<i class="fa fa-save cover-save"></i>' )
+						.after( '<i class="covedit fa fa-save cover-save"></i>' )
 						.on( 'load', function() {
 							$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
 						} );
