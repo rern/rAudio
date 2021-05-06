@@ -180,7 +180,6 @@ volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
 , "elapsed"        : '$elapsed'
-, "file"           : "'$file'"
 , "song"           : '$song'
 , "state"          : "'$state'"
 , "timestamp"      : '$( date +%s%3N )'
@@ -218,6 +217,7 @@ if [[ ${file:0:4} == http ]]; then
 			stationname=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		else
+			file=${file/\?*}
 			stationname=$file
 		fi
 		if [[ $state == play ]]; then
@@ -260,6 +260,7 @@ if [[ ${file:0:4} == http ]]; then
 		status+='
 , "Album"    : "'$albumname'"
 , "Artist"   : "'$artistname'"
+, "file"     : "'$file'"
 , "Name"     : "'$Name'"
 , "station"  : "'$station'"
 , "Time"     : false
