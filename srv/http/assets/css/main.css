@@ -249,9 +249,10 @@ ib {
 	font-size: 48px;
 	width: 48px;
 }
-#infoContent .fa-coverart {
-	position: static;
-	color: var( --cw );
+#infoContent .imgicon {
+	width: 30px;
+	margin-left: 10px;
+	vertical-align: -10px;
 }
 w, wh, whl,
 .wh { color: var( --cw ) !important; }

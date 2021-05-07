@@ -349,6 +349,7 @@ function displaySave( page ) {
 	$( '#infoCheckBox input' ).each( function() {
 		G.display[ this.name ] = $( this ).prop( 'checked' );
 	} );
+	G.display.novu = $( '#infoContent input[name=novu]' ).val();
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265

@@ -323,21 +323,26 @@ var chkplayback = {
 	, cover        : '_Coverart'
 	, coversmall   : 'Small coverart'
 	, volume       : '_Volume'
-	, novu         : 'No coverart = <i class="fa fa-coverart"></i>'
-	, buttons      : '_Buttons'
 	, radioelapsed : 'WebRadio time'
+	, buttons      : '_Buttons'
 }
 $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
 	displayGet( function( data ) {
 		G.display = data;
 		var bars = G.display.bars;
+		var content = displayCheckbox( chkplayback )
 		info( {
 			  icon     : 'play-circle'
 			, title    : 'Playback Display'
 			, message  : 'Show selected items:'
 			, checkbox : displayCheckbox( chkplayback )
 			, preshow  : function() {
+				$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
+						+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
+						+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
+				$( 'input[name=novu]' ).val( [ G.display.novu ] );
+				$( '#divnovu' ).toggleClass( 'hide', !G.display.cover );
 				if ( !G.display.bars ) displayCheckboxSet( 'barsalways' );  // disable by bars hide
 				if ( G.display.time ) displayCheckboxSet( 'progressbar' );  // disable by time
 				if ( !G.display.cover ) displayCheckboxSet( 'coversmall' ); // disable by cover
@@ -385,12 +390,12 @@ $( '#displayplayback' ).click( function() {
 					if ( $( this ).prop( 'checked' ) ) {
 						if ( !$time.prop( 'checked' ) ) displayCheckboxSet( 'progressbar', true, true );
 						displayCheckboxSet( 'coversmall', true );
-						displayCheckboxSet( 'novu', true );
+						$( '#divnovu' ).removeClass( 'hide' );
 					} else {
 						displayCheckboxSet( 'progressbar', false, false );
 						displayCheckboxSet( 'coversmall', false, false );
-						displayCheckboxSet( 'novu', false, false );
 						if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( 'time', true, true );
+						$( '#divnovu' ).addClass( 'hide' );
 					}
 				} );
 			}
