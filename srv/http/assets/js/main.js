@@ -2054,11 +2054,10 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
-	if ( G.swipe ) return
+	var $target = $( e.target );
+	if ( G.swipe || $target.hasClass( 'savewr' ) ) return
 	
 	$this = $( this );
-	var $target = $( e.target );
-	var plicon = $target.hasClass( 'pl-icon' );
 	if ( $this.hasClass( 'active' )
 			&& $( '.contextmenu:not( .hide )' ).length ) {
 		$( '.menu' ).addClass( 'hide' );
@@ -2066,6 +2065,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var pladd = Object.keys( G.pladd ).length;
+	var plicon = $target.hasClass( 'pl-icon' );
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.savedplaylist || plicon ) {
 		if ( !pladd ) {
