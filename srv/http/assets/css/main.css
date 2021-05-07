@@ -2340,6 +2340,7 @@ li.active .li2 bl {
 	width: 70px;
 	height: 36px;
 	line-height: 36px;
+	box-shadow: 0 0 6px 5px #000000;
 }
 #colorcancel {
 	position: absolute;
