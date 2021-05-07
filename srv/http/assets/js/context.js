@@ -109,7 +109,7 @@ function infoReplace( callback ) {
 		, ok      : callback
 	} );
 }
-function playlistAdd( name, oldname ) {
+function playlistSave( name, oldname ) {
 	if ( oldname ) {
 		bash( [ 'plrename', oldname, name ] );
 	} else {
@@ -124,7 +124,7 @@ function playlistAdd( name, oldname ) {
 					, button      : playlistNew
 					, oklabel     : '<i class="fa fa-flash"></i>Replace'
 					, ok          : function() {
-						oldname ? playlistAdd( name, oldname ) : playlistAdd( name );
+						oldname ? playlistSave( name, oldname ) : playlistSave( name );
 					}
 				} );
 			} else {
@@ -179,7 +179,7 @@ function playlistNew() {
 		, textrequired : 0
 		, boxwidth     : 'max'
 		, ok           : function() {
-			playlistAdd( $( '#infoTextBox' ).val() );
+			playlistSave( $( '#infoTextBox' ).val() );
 		}
 	} );
 }
@@ -203,7 +203,7 @@ function playlistRename() {
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
 			var newname = $( '#infoTextBox' ).val();
-			playlistAdd( newname, name );
+			playlistSave( newname, name );
 			G.list.li.find( '.plname' ).text( newname );
 		}
 	} );
