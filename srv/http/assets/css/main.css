@@ -1636,10 +1636,10 @@ i.map.disabled, .map.disabled i {
 	right: 5px;
 	width: 25px !important;
 	height: 25px;
-	font-size: 18px !important;
-	line-height: 22px !important;
+	padding-left: 5px;
+	font-size: 17px !important;
+	line-height: 21px !important;
 	text-align: left !important;
-	padding-left: 4px;
 	color: var( --cw ) !important;
 	background: var( --cgl );
 }
