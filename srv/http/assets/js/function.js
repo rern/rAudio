@@ -500,10 +500,10 @@ function getPlaybackStatus( render ) {
 			return
 		}
 		
+		setButtonControl();
 		displayBottom();
 		if ( G.playback || render ) { // 'render' - add to blank playlist
 			displayPlayback();
-			setButtonControl();
 			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
@@ -1401,7 +1401,7 @@ function setButtonControl() {
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ G.status.state ).addClass( 'active' );
 	}
-	setTimeout( setButtonOptions, 0 );
+	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
 function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
