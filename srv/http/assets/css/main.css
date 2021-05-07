@@ -909,8 +909,8 @@ i.map.disabled, .map.disabled i {
 
 .cover-save {
 	position: absolute;
-	bottom: 5px;
-	left: 5px;
+	bottom: 4px;
+	left: 4px;
 	width: 30px !important;
 	height: 30px;
 	border-radius: 50%;
