@@ -1937,9 +1937,9 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	var $this = $( this );
-	if ( G.swipe || $target.hasClass( 'fa' ) || $target.hasClass( 'fa-save' ) ) return
+	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
 	
+	var $this = $( this );
 	if ( G.status.player !== 'mpd' ) {
 		$this.find( '.pl-icon' ).click();
 		return
