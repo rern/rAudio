@@ -197,7 +197,7 @@ function psCoverart( data ) {
 				$( '#divcover .fa-coverart' ).remove();
 				$( '#coverart' ).addClass( 'hide' );
 				$( '#vu' ).removeClass( 'hide' );
-				G.status.state === 'stop'|| !G.status.coverart ? vuStop() : vu();
+				if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
 			}

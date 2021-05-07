@@ -1216,7 +1216,7 @@ function renderPlaybackCoverart( coverart ) {
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
-		G.status.state === 'play' ? vu() : vuStop();
+		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 		loader( 'hide' );
 	}
 }

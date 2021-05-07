@@ -127,7 +127,7 @@ $( '#coverart' ).on( 'load', function() {
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
-		G.status.state === 'play' ? vu() : vuStop();
+		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
 } );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
