@@ -67,9 +67,14 @@ input::-moz-focus-inner { /* dotted outline */
 	pointer-events: none;
 }
 hr {
-	margin: 7px -10px;
 	border: none;
     border-bottom: 1px solid var( --cg );}
+#infoContent hr {
+	margin: 10px 30px;
+}
+#infoCheckBox hr {
+	margin: 10px -10px;
+}
 #infoOverlay {
 	position: absolute;
 	top: 0;
