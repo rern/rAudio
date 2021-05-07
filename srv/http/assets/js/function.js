@@ -149,11 +149,11 @@ function coverartChange() {
 	if ( G.playback ) {
 		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
-		var pbcoverdefault = $( '#coverart' ).attr( 'src' ).slice( -3 ) === 'svg';
+		var pbcoverdefault = $( '#coverart' ).attr( 'src' ) === G.coverdefault;
 	} else {
 		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
-		var lionlinefetched = $( '.liedit.cover-save' ).length;
-		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ).slice( -3 ) === 'svg';
+		var lionlinefetched = $( '.licover .cover-save' ).length;
+		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
 	}
 	if ( ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
 		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
@@ -164,12 +164,12 @@ function coverartChange() {
 		jsoninfo.button      = function() {
 			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
-				$( '.edit' ).remove();
+				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
-					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? covervu : coverdefault ) );
+					$( '#coverart' ).attr( 'src', url || G.coverdefault );
 				} else {
-					$( '.licoverimg img' ).attr( 'src', url || coverdefault );
+					$( '.licoverimg img' ).attr( 'src', url || G.coverdefault );
 				}
 			} );
 		}
@@ -349,6 +349,8 @@ function displaySave( page ) {
 	$( '#infoCheckBox input' ).each( function() {
 		G.display[ this.name ] = $( this ).prop( 'checked' );
 	} );
+	G.display.novu = $( '#infoContent input[name=novu]:checked' ).val() === 'true';
+	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
@@ -500,10 +502,10 @@ function getPlaybackStatus( render ) {
 			return
 		}
 		
+		setButtonControl();
 		displayBottom();
 		if ( G.playback || render ) { // 'render' - add to blank playlist
 			displayPlayback();
-			setButtonControl();
 			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
@@ -571,7 +573,7 @@ function imageReplace( imagefile, type ) {
 		, processData : false  // no - process the data
 		, contentType : false  // no - contentType
 		, success     : function() {
-			$( '.edit' ).remove();
+			G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 		}
 	} );
@@ -848,7 +850,7 @@ function renderLibrary() {
 	$( '#lib-mode-list' ).removeClass( 'hide' );
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
-	$( '.edit' ).remove();
+	$( '.bkedit' ).remove();
 	$( '#liimg' ).css( 'opacity', '' );
 	orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
@@ -905,7 +907,7 @@ function renderLibraryList( data ) {
 				html += 'fa-refresh albumrefresh"></i><img src="'+ $img0.data( 'src' ) +'" class="albumimg"></span>';
 				var defaultcover = 0;
 			} else {
-				html += 'fa-search albumrefresh"></i><i class="fa fa-coverart albumcoverart"></i>';
+				html += 'fa-search albumrefresh"></i><i class="fa fa-coverart"></i>';
 				defaultcover = 1;
 			}
 			$( '#lib-breadcrumbs' ).append( html );
@@ -913,14 +915,14 @@ function renderLibraryList( data ) {
 		$( '#liimg' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
 		} ).on( 'error', function() {
-			$( this ).attr( 'src', coverdefault );
+			$( this ).attr( 'src', G.coverdefault );
 		} );
 		$( '#lib-list .lazy' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
 				.on( 'error', function() {
 					if ( G.mode === 'album' ) {
-						$( this ).attr( 'src', coverdefault );
+						$( this ).attr( 'src', G.coverdefault );
 					} else {
 						$( this ).replaceWith( '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>' );
 					}
@@ -951,7 +953,7 @@ function renderLibraryList( data ) {
 			loader( 'hide' );
 		}
 		$( '#lib-list' ).removeClass( 'hide' );
-		$( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
+		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 		if ( $( '.coverart' ).length ) {
 			var coverH = $( '.coverart' ).height();
 			var pH = $( '#lib-list p' ).height();
@@ -1188,12 +1190,12 @@ function renderPlaybackBlank() {
 			$( '#qrwebui' ).html( qr );
 			$( '#coverTR' ).toggleClass( 'empty', !G.bars );
 			$( '#coverart' )
-				.attr( 'src', coverdefault )
+				.attr( 'src', G.coverdefault )
 				.addClass( 'hide' );
 			$( '#sampling' ).empty();
 		} else {
 			$( '#coverart' )
-				.attr( 'src', coverdefault )
+				.attr( 'src', G.coverdefault )
 				.removeClass( 'hide' );
 			$( '#page-playback .emptyadd' ).empty();
 			$( '#sampling' )
@@ -1209,12 +1211,12 @@ function renderPlaybackCoverart( coverart ) {
 	if ( coverart || G.display.novu ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
-			.attr( 'src', coverart || coverdefault )
+			.attr( 'src', coverart || G.coverdefault )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
-		G.status.state === 'play' ? vu() : vuStop();
+		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 		loader( 'hide' );
 	}
 }
@@ -1401,7 +1403,7 @@ function setButtonControl() {
 		$( '#playback-controls .btn' ).removeClass( 'active' );
 		$( '#'+ G.status.state ).addClass( 'active' );
 	}
-	setTimeout( setButtonOptions, 0 );
+	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
 function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
@@ -1541,7 +1543,7 @@ function setTrackCoverart() {
 				if ( url ) {
 					$( '#liimg' )
 						.attr( 'src', url )
-						.after( '<div class="liedit cover-save"><i class="fa fa-save"></i></div>' )
+						.after( '<i class="covedit fa fa-save cover-save"></i>' )
 						.on( 'load', function() {
 							$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
 						} );

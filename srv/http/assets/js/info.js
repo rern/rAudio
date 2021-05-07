@@ -122,7 +122,7 @@ infocontenthtml = heredoc( function() { /*
 */ } );
 var infoscroll = 0;
 var splitcols = 0;
-G = {}
+var arrow = 0;
 
 $( 'body' ).prepend( containerhtml );
 
@@ -207,8 +207,8 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	if ( !G.arrow ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
-	G.arrow = 0;
+	if ( !arrow ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
+	arrow = 0;
 	$( '#infoBox' ).css( {
 		  margin     : ''
 		, visibility : 'hidden'
@@ -228,7 +228,6 @@ function infoReset() {
 	$( '#infoFileLabel' ).addClass( 'infobtn-primary' )
 	$( '#infoOk, #infoFileLabel' ).removeClass( 'disabled' );
 	$( '.extrabtn, #infoContent hr' ).remove();
-//	$( '#loader' ).addClass( 'hide' ); // for 'X' click
 	if ( infoscroll ) {
 		$( 'html, body' ).scrollTop( infoscroll );
 		infoscroll = 0;
@@ -329,13 +328,13 @@ function info( O ) {
 									.removeClass( 'hide' )
 									.click( function() {
 										O.arrowleft();
-										G.arrow = 1;
+										arrow = 1;
 									} );
 		if ( 'arrowright' in O ) $( '.infoarrowright' )
 									.removeClass( 'hide' )
 									.click( function() {
 										O.arrowright();
-										G.arrow = 1;
+										arrow = 1;
 									} );
 		// message
 		if ( 'message' in O && O.message ) $( '#infoMessage' ).html( O.message ).removeClass( 'hide' );
@@ -373,7 +372,7 @@ function info( O ) {
 			$( '#infoText' ).removeClass( 'hide' );
 			if ( 'textalign' in O ) $( '.infoinput' ).css( 'text-align', O.textalign );
 			if ( 'textrequired' in O ) {
-				if ( typeof O.textrequired !== 'object' ) O.textrequired = [ O.textrequired ];
+				if ( typeof O.textrequired !== 'object' ) O.textrequired = [ 0 ];
 				O.textrequired.forEach( function( e ) {
 					$( '.infoinput' ).eq( e ).addClass( 'required' );
 				} );

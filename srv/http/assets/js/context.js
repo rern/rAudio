@@ -1,4 +1,4 @@
-function addReplace( cmd, command, title ) {
+function addReplace( command, title ) {
 	bash( command, function() {
 		if ( G.playbackswitch ) $( '#tab-playback' ).click();
 		G.playbackswitch = 0;
@@ -109,7 +109,7 @@ function infoReplace( callback ) {
 		, ok      : callback
 	} );
 }
-function playlistAdd( name, oldname ) {
+function playlistSave( name, oldname ) {
 	if ( oldname ) {
 		bash( [ 'plrename', oldname, name ] );
 	} else {
@@ -117,14 +117,14 @@ function playlistAdd( name, oldname ) {
 			if ( data == -1 ) {
 				info( {
 					  icon        : 'list-ul'
-					, title       : oldname ? 'Rename Playlist' : 'Add Playlist'
+					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
 					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
 								   +'<br>Already exists.'
 					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
 					, button      : playlistNew
 					, oklabel     : '<i class="fa fa-flash"></i>Replace'
 					, ok          : function() {
-						oldname ? playlistAdd( name, oldname ) : playlistAdd( name );
+						oldname ? playlistSave( name, oldname ) : playlistSave( name );
 					}
 				} );
 			} else {
@@ -173,13 +173,13 @@ function playlistLoad( path, play, replace ) {
 function playlistNew() {
 	info( {
 		  icon         : 'list-ul'
-		, title        : 'Add Playlist'
+		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
 		, textrequired : 0
 		, boxwidth     : 'max'
 		, ok           : function() {
-			playlistAdd( $( '#infoTextBox' ).val() );
+			playlistSave( $( '#infoTextBox' ).val() );
 		}
 	} );
 }
@@ -203,7 +203,7 @@ function playlistRename() {
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
 			var newname = $( '#infoTextBox' ).val();
-			playlistAdd( newname, name );
+			playlistSave( newname, name );
 			G.list.li.find( '.plname' ).text( newname );
 		}
 	} );
@@ -389,15 +389,15 @@ function webRadioCoverart() {
 		}
 	}
 	var coverart = G.playback
-					? G.status.coverartradio || covervu
-					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || covervu;
+					? G.status.coverartradio || G.coverdefault
+					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
 	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
 	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
 	info( infojson );
 }
 function webRadioDelete() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
@@ -418,7 +418,7 @@ function webRadioDelete() {
 }
 function webRadioEdit() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
@@ -433,7 +433,9 @@ function webRadioEdit() {
 		, preshow      : function() {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-				var changed = $( '#infoTextBox' ).val() !== name || $( '#infoTextBox1' ).val() !== url;
+				var changed = ( $( '#infoTextBox' ).val() !== name || $( '#infoTextBox1' ).val() !== url )
+								&& $( '#infoTextBox' ).val()
+								&& $( '#infoTextBox1' ).val();
 				$( '#infoOk' ).toggleClass( 'disabled', !changed );
 			} );
 		}
@@ -492,6 +494,26 @@ function webRadioNew( name, url ) {
 				bannerHide();
 			} );
 			if ( [ 'm3u', 'pls' ].indexOf( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
+		}
+	} );
+}
+function webRadioSave( url ) {
+	info( {
+		  icon         : 'webradio'
+		, title        : 'Save WebRadio'
+		, message      : url
+		, textlabel    : 'Name'
+		, textrequired : 1
+		, ok           : function() {
+			G.local = 1;
+			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			bash( [ 'webradioadd', newname, url ], function() {
+				G.list.li.find( '.liname, .radioname' ).text( newname );
+				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
+				G.list.li.find( '.savewr' ).remove();
+				G.list.li.removeClass( 'notsaved' );
+				G.local = 0;
+			} );
 		}
 	} );
 }
@@ -608,7 +630,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
 			infoUpdate( G.list.path );
 			return
+		case 'wrsave':
+			webRadioSave( G.list.li.find( '.lipath' ).text() );
+			return
 	}
+	
 	// functions with dialogue box ////////////////////////////////////////////
 	var contextFunction = {
 		  bookmark   : bookmarkNew
@@ -672,7 +698,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'plfindadd', mode, path ];
 				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
 			} else {
-				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title wh' ).text(), 'album', G.list.name ];
+				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.name ];
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];
@@ -692,16 +718,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	if ( G.display.playbackswitch && addreplaceplay ) G.playbackswitch = 1;
 	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
-		var msg = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
-		addReplace( cmd, command, msg );
+		var title = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
+		addReplace( command, title );
 	} else {
-		var msg = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
+		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
 		if ( G.display.plclear && G.status.playlistlength ) {
 			infoReplace( function() {
-				addReplace( cmd, command, msg );
+				addReplace( command, title );
 			} );
 		} else {
-			addReplace( cmd, command, msg );
+			addReplace( command, title );
 		}
 	}
 } );

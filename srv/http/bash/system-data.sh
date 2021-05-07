@@ -24,7 +24,8 @@ else
 	btdiscoverable=false
 fi
 i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt 2> /dev/null && echo true || echo false )
-lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
+lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
+lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
 if [[ $i2c == true ]]; then
 	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
@@ -127,6 +128,7 @@ data+='
 	, "lcdcharaddr"     : "'$lcdcharaddr'"
 	, "lcdcharconf"     : "'$lcdcharconf'"
 	, "list"            : ['${list:1}']
+	, "lcdmodel"        : "'$lcdmodel'"
 	, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 	, "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
 	, "powerbuttonconf" : "'$powerbuttonconf'"

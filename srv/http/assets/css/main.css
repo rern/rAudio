@@ -249,8 +249,10 @@ ib {
 	font-size: 48px;
 	width: 48px;
 }
-#infoMessage .fa-coverart {
-	color: var( --cw );
+#infoContent .imgicon {
+	width: 30px;
+	margin-left: 10px;
+	vertical-align: -10px;
 }
 w, wh, whl,
 .wh { color: var( --cw ) !important; }
@@ -907,24 +909,19 @@ i.map.disabled, .map.disabled i {
 
 .cover-save {
 	position: absolute;
-	bottom: 0;
-	width: 40px;
-	height: 40px;
-	padding: 5px;
-	text-align: center;
-	z-index: 102;
-}
-.cover-save i {
-	position: relative;
+	bottom: 4px;
+	left: 4px;
 	width: 30px !important;
 	height: 30px;
-	margin-top: 0 !important;
-	font-size: 24px;
-	line-height: 30px !important;
-	border-radius: 15px;
+	border-radius: 50%;
+	padding: 5px;
+	font-size: 24px !important;
+	line-height: 20px !important;
+	text-align: center;
 	color: #000000 !important;
-	background: var( --cw ) !important;
+	background: var( --cw );
 	box-shadow: 1px 1px 2px #000000;
+	z-index: 102;
 }
 .controls {
 	position: absolute;
@@ -1569,9 +1566,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 48px;
 	line-height: 60px;
 }
-.mode i.edit {
-	line-height: 35px;
-}
 .nolabel {
 	padding-top: 25px;
 }
@@ -1616,38 +1610,62 @@ i.map.disabled, .map.disabled i {
 .mode .fa-bookmark {
 	color: var( --cm );
 }
-/* coverart edit icons */
-.edit {
+/* coverart/bookmark edit icons */
+.bkedit {
 	position: absolute;
 	right: 0;
-	width: 40px !important;
-	height: 35px;
-	line-height: 40px;
+	width: 34px !important;
+	line-height: 35px !important;
 	text-align: center;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
 	z-index: 102;
 }
-.mode-remove,
+.bk-remove,
 .coverart-remove {
 	top: 0;
 }
-.mode-edit {
-	top: 35px;
+.bk-rename {
+	top: 37px;
 }
-.mode-cover {
+.bk-cover {
 	bottom: 0;
 }
-.coverart-cover {
+.fa-coverart {
+	position: absolute;
 	bottom: 5px;
+	right: 5px;
+	width: 26px !important;
+	height: 26px;
+	padding-left: 4px;
+	font-size: 18px !important;
+	line-height: 23px !important;
+	text-align: left !important;
+	color: var( --cw ) !important;
+	background: var( --cgl );
+	text-shadow: none !important;
+	box-shadow: 1px 1px 2px #000000;
 }
-.licover-cover {
-	height: 40px;
-	bottom: 0;
+#divcover .fa-coverart {
+	z-index: 102;
 }
-#divcover .edit {
-	bottom: 0;
-	right: 0;
+.bkedit.fa-coverart {
+	width: 23px !important;
+	height: 23px;
+	padding-left: 4px;
+	font-size: 16px !important;
+	line-height: 21px !important;
+}
+.contextmenu .fa-coverart {
+	position: relative;
+	margin: 0 2px 0 13px;
+}
+#infoTop .fa-coverart {
+	position: static;
+	margin-top: 6px;
+}
+#infoTop .imgicon .fa-coverart {
+	top: 3px;
 }
 #infoMessage img {
 	width: auto;
@@ -1753,14 +1771,15 @@ i.map.disabled, .map.disabled i {
 #button-coverart {
 	margin-left: 15px;
 }
+#button-coverart .fa-coverart {
+	vertical-align: 4px;
+}
+#button-coverart .fa-search {
+	width: 30px !important;
+}
 .albumrefresh {
 	position: absolute;
-	font-size: 26px !important;
 	text-shadow: 0 0 4px #000000 !important;
-}
-.albumcoverart {
-	font-size: 30px !important;
-	color: var( --cm )  !important;
 }
 .albumimg {
 	width: 30px;
@@ -1776,7 +1795,6 @@ i.map.disabled, .map.disabled i {
 .spaced {
 	letter-spacing: 4px;
 }
-#mode-title wh,
 .pl-title.name {
 	letter-spacing: normal;
 }
@@ -2084,8 +2102,7 @@ input[type=text] {
 .pl-icon,
 #pl-savedlist span:before,
 #pl-savedlist i,
-#lib-list i,
-#pl-list i {
+#lib-list i {
 	width: 40px;
 	margin-top: 3px;
 	font-size: 26px;
@@ -2105,6 +2122,18 @@ input[type=text] {
 }
 li.active .iconthumb {
 	outline: none;
+}
+.savewr {
+	position: absolute;
+	margin: 27px 0 0 1px !important;
+	width: 20px !important;
+	height: 20px;
+	border-radius: 50%;
+	font-size: 16px !important;
+	line-height: 20px !important;
+	text-align: center;
+	color: #000000 !important;
+	background: var( --cw );
 }
 #pl-list li.radio {
 	margin: 0;
@@ -2222,9 +2251,6 @@ li.active .time,
 li.active .pl-icon.wh {
 	color: var( --cw ) !important;
 }
-li.active i.liedit {
-	color: var( --cw ) !important;
-}
 li.active gr {
 
 }
@@ -2323,6 +2349,7 @@ li.active .li2 bl {
 	width: 70px;
 	height: 36px;
 	line-height: 36px;
+	box-shadow: 0 0 6px 5px #000000;
 }
 #colorcancel {
 	position: absolute;
@@ -2717,6 +2744,6 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .edit,
-	#divcover .cover-save { top: 0; }
+	#divcover .fa-coverart,
+	#divcover .fa-save { top: 5px; }
 }

@@ -194,10 +194,10 @@ function psCoverart( data ) {
 				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
 			}
 			if ( G.playback ) {
-				$( '.edit' ).remove();
+				$( '#divcover .fa-coverart' ).remove();
 				$( '#coverart' ).addClass( 'hide' );
 				$( '#vu' ).removeClass( 'hide' );
-				G.status.state === 'stop'|| !G.status.coverart ? vuStop() : vu();
+				if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
 			}
@@ -490,6 +490,7 @@ function psVolume( data ) {
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )
 	if ( G.librarylist ) $( '#mode-webradio grl' ).click();
+	if ( G.playlist && !G.local ) getPlaylist();
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )

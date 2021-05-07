@@ -202,7 +202,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( !$artist && !$list->Album ) $li2.= $list->file;
 			$datatrack = '';
 			$file = $list->file;
-			if ( isset( $list->Range ) && $list->Range ) {
+			if ( strpos( $file, '.cue/track' ) ) {
 				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
 				$file = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
 			}
@@ -235,7 +235,9 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$counttime += $sec;
 		} else {
 			$stationname = $list->Name;
-			$urlname = str_replace( '/', '|', $list->file );
+			$notsaved = $stationname === '';
+			$file = preg_replace( '/\?.*$/', '', $list->file );
+			$urlname = str_replace( '/', '|', $file );
 			$pathnoext = '/srv/http/data/webradiosimg/'.$urlname.'-thumb';
 			if ( file_exists( $pathnoext.'.jpg' ) ) {
 				$ext = '.jpg';
@@ -248,14 +250,15 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$thumbsrc = '/data/webradiosimg/'.rawurlencode( $urlname ).'-thumb.'.$time.$ext;
 				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon = $notsaved ? '<i class="fa fa-save savewr"></i>' : '';
+				$icon.= '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
-			$html.= '<li>'
+			$html.= '<li'.( $notsaved ? ' class="notsaved"' : '' ).'>'
 						.$icon
-						.'<a class="lipath">'.$list->file.'</a>'
+						.'<a class="lipath">'.$file.'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<span class="li1"><span class="radioname">'.$stationname.'</span><a class="song"></a><span class="duration"><a class="elapsed"></a></span></span>'
-						.'<span class="li2">'.$i.' • <span class="radioname hide">'.$stationname.' • </span>'.$list->file.'</span>'
+						.'<span class="li2">'.$i.' • <span class="radioname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.$file.'</span>'
 					.'</li>';
 			$countradio++;
 		}

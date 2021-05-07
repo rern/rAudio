@@ -10,7 +10,7 @@ counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
-playlistlength=$( mpc playlist | wc -l )
+playlistlength=$( mpc playlist | wc -l | tee $dirtmp/playlistlength ) # save for add webradio by other apps
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
@@ -164,8 +164,9 @@ for line in "${lines[@]}"; do
 		Album | AlbumArtist | Artist | Name | Title )
 			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
 		file )
-			file0=$val             # no escape " for coverart and ffprobe
-			file=${val//\"/\\\"};; # escape " for json
+			file0=$val           # no escape " for coverart and ffprobe
+			file=${val//\"/\\\"} # escape " for json
+			file=${file/\?*};;   # remove url trailing '?...'
 		# string
 		* ) # state | updating_db
 			printf -v $key '%s' "$val"
@@ -179,13 +180,13 @@ mpc | grep -q ^Updating && updating_db=true || updating_db=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
-, "elapsed"        : '$elapsed'
-, "file"           : "'$file'"
-, "song"           : '$song'
-, "state"          : "'$state'"
-, "timestamp"      : '$( date +%s%3N )'
-, "updating_db"    : '$updating_db'
-, "volumemute"     : '$volumemute
+, "elapsed"     : '$elapsed'
+, "file"        : "'$file'"
+, "song"        : '$song'
+, "state"       : "'$state'"
+, "timestamp"   : '$( date +%s%3N )'
+, "updating_db" : '$updating_db'
+, "volumemute"  : '$volumemute
 
 if (( $playlistlength  == 0 )); then
 ########
@@ -213,8 +214,13 @@ if [[ ${file:0:4} == http ]]; then
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
-		radiodata=$( cat $radiofile )
-		stationname=$( sed -n 1p <<< "$radiodata" )
+		if [[ -e "$radiofile" ]]; then
+			radiodata=$( cat $radiofile )
+			stationname=$( sed -n 1p <<< "$radiodata" )
+			radiosampling=$( sed -n 2p <<< "$radiodata" )
+		else
+			stationname=$file
+		fi
 		if [[ $state == play ]]; then
 			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
 			[[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]] && radiofrance=1
@@ -246,7 +252,7 @@ if [[ ${file:0:4} == http ]]; then
 				titlename=
 			fi
 		else
-			artistname=$stationname
+			[[ -e "$radiofile" ]] && artistname=$stationname
 			titlename=
 			albumname=$file
 		fi
@@ -263,6 +269,11 @@ if [[ ${file:0:4} == http ]]; then
 	fi
 else
 	ext=${file/*.}
+	if [[ ${ext:0:9} == cue/track ]]; then
+		cuefile=$( dirname "$file" )
+		cuesrc=$( grep ^FILE "/mnt/MPD/$cuefile" | head -1 | sed 's/FILE "\|" WAVE.*//g' )
+		ext=${cuesrc/*.}
+	fi
 	ext=${ext^^}
 	# missing id3tags
 	[[ -z $Album ]] && Album=
@@ -271,10 +282,10 @@ else
 	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
-, "Album"     : "'$Album'"
-, "Artist"    : "'$Artist'"
-, "Time"      : '$Time'
-, "Title"     : "'$Title'"'
+, "Album"  : "'$Album'"
+, "Artist" : "'$Artist'"
+, "Time"   : '$Time'
+, "Title"  : "'$Title'"'
 fi
 
 [[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/radiometa
@@ -284,7 +295,6 @@ samplingLine() {
 	samplerate=$2
 	bitrate=$3
 	ext=$4
-	
 	[[ $bitrate -eq 0 || -z $bitrate ]] && bitrate=$(( bitdepth * samplerate * 2 ))
 	if (( $bitrate < 1000000 )); then
 		rate="$(( bitrate / 1000 )) kbit/s"
@@ -294,7 +304,7 @@ samplingLine() {
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
-			sampling="${samplerate^^} &bull; $rate"
+		sampling="${samplerate^^} &bull; $rate"
 	else
 		if [[ $bitdepth == 'N/A' ]]; then
 			[[ $ext == WAV || $ext == AIFF ]] && bit="$(( bitrate / samplerate / 2 )) bit"
@@ -305,8 +315,8 @@ samplingLine() {
 		fi
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
 		sampling="$bit $sample $rate"
-		[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 	fi
+	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
 
 if [[ $state != stop ]]; then
@@ -317,18 +327,17 @@ if [[ $state != stop ]]; then
 	else
 		if [[ -n $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			echo $stationname$'\n'$sampling > $radiofile
+			[[ -e $radiofile ]] && echo $stationname$'\n'$sampling > $radiofile
 		else
-			sampling=$( sed -n 2p <<< "$radiodata" )
+			sampling=$radiosampling
 		fi
 	fi
 else
-	if [[ $ext == Radio ]]; then
-		sampling=$( sed -n 2p <<< "$radiodata" )
-	else
+	if [[ $ext != Radio ]]; then
 		if [[ $ext == DSF || $ext == DFF ]]; then
 			# DSF: byte# 56+4 ? DSF: byte# 60+4
 			[[ $ext == DSF ]] && byte=56 || byte=60;
+			[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
 			hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 			dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 			bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
@@ -344,6 +353,8 @@ else
 			bitrate=${data[2]}
 			samplingLine $bitdepth $samplerate $bitrate $ext
 		fi
+	else
+		sampling=$radiosampling
 	fi
 fi
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
