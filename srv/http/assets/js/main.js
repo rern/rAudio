@@ -2097,6 +2097,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				
 				$( '.replace' ).toggleClass( 'hide', !G.status.playlistlength );
 				$( '.similar' ).toggleClass( 'hide', G.list.path.slice( 0, 4 ) === 'http' );
+				$menu.find( '.wrsave' ).toggleClass( 'hide', !$this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
@@ -2115,6 +2116,10 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 		renderSavedPlaylist( $this.find( '.plname' ).text() );
 		if ( pladd ) playlistInsertTarget();
 	}
+} ).on( 'click', '.savewr', function() {
+	G.list.li = $( this ).parent();
+	webRadioSave( $( this ).next().next().text() );
+	$( '.contextmenu' ).addClass( 'hide' );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

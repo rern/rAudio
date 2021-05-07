@@ -156,6 +156,7 @@ $menu.= menudiv( 'filepl', $html );
 $menudiv = '';
 $html = $htmlcommon;
 $html.= menuli( 'similar',       'lastfm',       'Add similar' );
+$html.= menuli( 'wrsave',        'save',         'Save to WebRadio' );
 $html.= menuli( 'savedplremove', 'minus-circle', 'Remove' );
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'filesavedpl', $html );
