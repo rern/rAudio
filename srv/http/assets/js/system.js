@@ -658,7 +658,7 @@ $( '#setting-relays' ).click( function() {
 $( '#setting-lcd' ).click( function() {
 	info( {
 		  icon        : 'lcd'
-		, title       : 'TFT LCD'
+		, title       : 'TFT 3.5" LCD'
 		, selectlabel : 'Type'
 		, select      : {
 			  'Generic'               : 'tft35a'
