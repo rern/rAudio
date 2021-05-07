@@ -389,15 +389,15 @@ function webRadioCoverart() {
 		}
 	}
 	var coverart = G.playback
-					? G.status.coverartradio || covervu
-					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || covervu;
+					? G.status.coverartradio || G.coverdefault
+					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
 	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
 	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
 	info( infojson );
 }
 function webRadioDelete() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
@@ -418,7 +418,7 @@ function webRadioDelete() {
 }
 function webRadioEdit() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || covervu;
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {

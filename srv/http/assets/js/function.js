@@ -149,11 +149,11 @@ function coverartChange() {
 	if ( G.playback ) {
 		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
-		var pbcoverdefault = $( '#coverart' ).attr( 'src' ).slice( -3 ) === 'svg';
+		var pbcoverdefault = $( '#coverart' ).attr( 'src' ) === G.coverdefault;
 	} else {
 		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var lionlinefetched = $( '.licover .cover-save' ).length;
-		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ).slice( -3 ) === 'svg';
+		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
 	}
 	if ( ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
 		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
@@ -167,9 +167,9 @@ function coverartChange() {
 				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
-					$( '#coverart' ).attr( 'src', url || ( G.status.webradio ? covervu : coverdefault ) );
+					$( '#coverart' ).attr( 'src', url || G.coverdefault );
 				} else {
-					$( '.licoverimg img' ).attr( 'src', url || coverdefault );
+					$( '.licoverimg img' ).attr( 'src', url || G.coverdefault );
 				}
 			} );
 		}
@@ -349,7 +349,8 @@ function displaySave( page ) {
 	$( '#infoCheckBox input' ).each( function() {
 		G.display[ this.name ] = $( this ).prop( 'checked' );
 	} );
-	G.display.novu = $( '#infoContent input[name=novu]' ).val();
+	G.display.novu = $( '#infoContent input[name=novu]:checked' ).val() === 'true';
+	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
@@ -914,14 +915,14 @@ function renderLibraryList( data ) {
 		$( '#liimg' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
 		} ).on( 'error', function() {
-			$( this ).attr( 'src', coverdefault );
+			$( this ).attr( 'src', G.coverdefault );
 		} );
 		$( '#lib-list .lazy' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
 				.on( 'error', function() {
 					if ( G.mode === 'album' ) {
-						$( this ).attr( 'src', coverdefault );
+						$( this ).attr( 'src', G.coverdefault );
 					} else {
 						$( this ).replaceWith( '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>' );
 					}
@@ -1189,12 +1190,12 @@ function renderPlaybackBlank() {
 			$( '#qrwebui' ).html( qr );
 			$( '#coverTR' ).toggleClass( 'empty', !G.bars );
 			$( '#coverart' )
-				.attr( 'src', coverdefault )
+				.attr( 'src', G.coverdefault )
 				.addClass( 'hide' );
 			$( '#sampling' ).empty();
 		} else {
 			$( '#coverart' )
-				.attr( 'src', coverdefault )
+				.attr( 'src', G.coverdefault )
 				.removeClass( 'hide' );
 			$( '#page-playback .emptyadd' ).empty();
 			$( '#sampling' )
@@ -1210,7 +1211,7 @@ function renderPlaybackCoverart( coverart ) {
 	if ( coverart || G.display.novu ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
-			.attr( 'src', coverart || coverdefault )
+			.attr( 'src', coverart || G.coverdefault )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );

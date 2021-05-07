@@ -41,8 +41,6 @@ var picaOption = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var hash = Math.ceil( Date.now() / 1000 );
-var coverdefault = '/assets/img/coverart.'+ hash +'.svg';
-var covervu = '/assets/img/vu.'+ hash +'.png';
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {
@@ -78,6 +76,7 @@ var nameplayer = {
 displayGet( function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
 	G.bars = data.bars;
+	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 	$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 	$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
 	$.event.special.tap.tapholdThreshold = 1000;
@@ -102,7 +101,6 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 		}
 	} );
-	if ( G.display.novu ) covervu =  coverdefault;
 } );
 G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
@@ -125,7 +123,7 @@ $( '#coverart' ).on( 'load', function() {
 	loader( 'hide' );
 } ).on( 'error', function() {
 	if ( !G.status.webradio || G.display.novu ) {
-		$( this ).attr( 'src', coverdefault );
+		$( this ).attr( 'src', G.coverdefault );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
