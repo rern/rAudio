@@ -117,7 +117,7 @@ function playlistAdd( name, oldname ) {
 			if ( data == -1 ) {
 				info( {
 					  icon        : 'list-ul'
-					, title       : oldname ? 'Rename Playlist' : 'Add Playlist'
+					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
 					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
 								   +'<br>Already exists.'
 					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
@@ -173,7 +173,7 @@ function playlistLoad( path, play, replace ) {
 function playlistNew() {
 	info( {
 		  icon         : 'list-ul'
-		, title        : 'Add Playlist'
+		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
 		, textrequired : 0
