@@ -267,6 +267,20 @@ if [[ ${file:0:4} == http ]]; then
 , "Title"    : "'$titlename'"
 , "webradio" : 'true
 	fi
+elif [[ ${file:0:4} == cdda ]]; then
+	ext=AudioCD
+	if [[ -e $dirtmp/audiocd-artist ]]; then
+		Artist=$( cat $dirtmp/audiocd-artist )
+		Album=$( cat $dirtmp/audiocd-album )
+		track=${file/*\/}
+		Title=$( sed -n $track p $dirtmp/audiocd-title )
+		Time=$( sed -n $track p $dirtmp/audiocd-time )
+		status+='
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "Time"      : '$duration'
+, "Title"     : "'$Title'"'
+	fi
 else
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
@@ -319,7 +333,9 @@ samplingLine() {
 	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
 
-if [[ $state != stop ]]; then
+if [[ $ext == AudioCD ]]; then
+	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; AudioCD'
+elif [[ $state != stop ]]; then
 	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
 	# save only webradio: update sampling database on each play
 	if [[ $ext != Radio ]]; then
