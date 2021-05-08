@@ -49,6 +49,22 @@ Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0"
 	fi
 	;;
+audiocd )
+	if [[ ${args[1]} == true ]]; then
+		sed -i '/plugin.*"curl"/ {n;a\
+	input {\
+		plugin         "cdio_paranoia"\
+	}
+	}' /etc/mpd.conf
+	else
+		line=$( grep -n cdio_paranoia /etc/mpd.conf | cut -d: -f1 )
+		from=$(( line - 1 ))
+		to=$(( line + 1 ))
+		sed -i "$from,$to d" /etc/mpd.conf
+	fi
+	systemctl restart mpd
+	pushRefresh
+	;;
 audiooutput )
 	aplayname=${args[1]}
 	card=${args[2]}

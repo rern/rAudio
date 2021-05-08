@@ -111,6 +111,19 @@
 <div>
 <heading data-status="mpdconf" class="status">Options<?=$istatus?><?=$ihelp?></heading>
 <pre id="codempdconf" class="hide"></pre>
+	<?php if ( file_exists( '/usr/bin/cd-discid' ) ) { ?>
+<div class="col-l double">
+	<a>Audio CD<br><gr>cdio_paranoia</gr></a>
+</div>
+<div class="col-r">
+	<input id="audiocd" <?=$chknoset?>>
+	<div class="switchlabel" for="audiocd"></div>
+	<span <?=$classhelp?>>
+			<code>cdio_paranoia</code>
+		<br>Play audio CD via USB drive. Tracks will be added to Playlist on insert and remove on eject.
+	</span>
+</div>
+	<?php } ?>
 <div class="col-l double">
 	<a>Buffer - Audio<br><gr>custom size</gr></a>
 </div>
