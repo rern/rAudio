@@ -18,7 +18,7 @@ if [[ $1 == clear ]]; then # remove tracks from playlist
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -z $tracks ]] && exit
 	
-	pushstreamNotify 'AudioCD removed from Playlist.'
+	pushstreamNotify 'Removed from Playlist.'
 	[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
 	mpc del $tracks
 	pushstreamPlaylist
