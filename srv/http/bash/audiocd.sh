@@ -6,7 +6,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamNotify() {
-	pushstream notify '{"title":"Audio CD", "text":"'"$1"'", "icon":"list-ul", "delay":-1}' # double quote "$1" needed
+	pushstream notify '{"title":"Audio CD", "text":"'"$1"'", "icon":"audiocd"}' # double quote "$1" needed
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -21,7 +21,12 @@ if [[ $1 == eject ]]; then # remove tracks from playlist
 	exit
 fi
 
-discid=$( cd-discid ) # id tracks leadinframe frame1 frame2 ... totalseconds
+discid=$( cd-discid 2> /dev/null ) # id tracks leadinframe frame1 frame2 ... totalseconds
+if [[ -z $discid ]]; then
+	pushstreamNotify 'No CD found.'
+	exit
+fi
+
 discidata=( $discid )
 tracksL=${discidata[1]}
 id=${discidata[0]}
