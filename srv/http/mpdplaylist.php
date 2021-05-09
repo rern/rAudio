@@ -282,14 +282,35 @@ function playlist() { // current playlist
 		@unlink( '/srv/http/data/shm/playlist' );
 		exit( '-1' );
 	}
+	
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		$list = explode( '^^', $list );
 		$each = ( object )[];
 		for ( $i = 0; $i < $fL; $i++ ) {
 			$key = $f[ $i ];
-			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
-			$each->$key = $list[ $i ];
+			$val = $list[ $i ];
+			if ( $key === 'file' ) {
+				if ( substr( $val, 0, 4 )  === 'cdda' ) {
+					$id = @file_get_contents( '/srv/http/data/shm/audiocd' );
+					if ( $id ) {
+						$track = substr( $list[ $i ], 8 );
+//						echo 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id;
+//						echo exec( 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id );
+						$audiocd = explode( '^', exec( 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id ) );
+						$each->Artist = $audiocd[ 0 ];
+						$each->Album = $audiocd[ 1 ];
+						$each->Title = $audiocd[ 2 ];
+						$each->Time = $audiocd[ 3 ];
+						$each->file = $val;
+						$each->Track = $track;
+						break;
+					}
+				}
+			} else {
+				$key = ucfirst( $key ); // mpd protocol keys
+			}
+			$each->$key = $val;
 		}
 		if ( substr( $each->file, 0, 4 ) === 'http' ) {
 			$radiofile = '/srv/http/data/webradios/'.str_replace( '/', '|', $each->file );
