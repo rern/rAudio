@@ -399,7 +399,7 @@ elif [[ -n $coverart ]]; then
 	exit
 fi
 
-if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
+if [[ $ext == AudioCD || $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
 	date=$( date +%s )
 	rm -f $dirtmp/webradio
 	filenoext=/data/webradiosimg/$urlname
