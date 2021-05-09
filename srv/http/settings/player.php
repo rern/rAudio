@@ -120,7 +120,7 @@
 	<div class="switchlabel" for="audiocd"></div>
 	<span <?=$classhelp?>>
 			<code>cdio_paranoia</code>
-		<br>Play audio CD via USB drive. Tracks will be added to Playlist on insert and remove on eject.
+		<br>Play audio CD with USB drive. (Must be powered by external 5V.)
 	</span>
 </div>
 	<?php } ?>
