@@ -417,11 +417,12 @@ if [[ $ext == AudioCD || $ext == Radio || -e $dirtmp/webradio ]]; then # webradi
 		# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
 		# / - \|: /\n/    split artist - title
 		# args:           "Artist Name"$'\n'"Title Name"$'\ntitle'
-		if [[ -z $radiofrance ]]; then
-			data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" | tr -d ' "`?/#&'"'" )
+		if [[ $ext == AudioCD ]]; then
+			data="$Artist$Album"
+		elif [[ -z $radiofrance ]]; then
+			data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" )
 		else
-			data=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-		Title="$Artist$Title"
+			data="$Artist$Title"
 		fi
 		name=$( echo $data | tr -d ' "`?/#&'"'" )
 		onlinefile=$( ls $dirtmp/online-$name.* 2> /dev/null )
