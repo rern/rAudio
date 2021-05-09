@@ -152,7 +152,6 @@ $( '.settings' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'audiocd':
-			console.log( '/srv/http/bash/audiocd.sh '+ ( G.status.audiocd ? 'eject' : '' ) );
 			bash( '/srv/http/bash/audiocd.sh '+ ( G.status.audiocd ? 'eject' : '' ) );
 			break;
 		case 'relays':
