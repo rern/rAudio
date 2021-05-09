@@ -2,13 +2,11 @@
 
 dirtmp=/srv/http/data/shm
 
-[[ -e $dirtmp/eject ]] && exit
-
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamNotify() {
-	pushstream notify '{"title":"Audio CD", "text":"'"$1"'", "icon":"list-ul"}' # double quote "$1" needed
+	pushstream notify '{"title":"Audio CD", "text":"'"$1"'", "icon":"list-ul", "delay":-1}' # double quote "$1" needed
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -16,27 +14,28 @@ pushstreamPlaylist() {
 }
 
 if [[ $1 == eject ]]; then # remove tracks from playlist
-	touch $dirtmp/eject
-	( sleep 5; rm -f $dirtmp/eject ) &> /dev/null &
+	mpc stop
 	pushstreamNotify 'Remove from Playlist ...'
-	rm -f $dirtmp/audiocd
-	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	mpc del $tracks
+	mpc del $( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	pushstreamPlaylist
+	sleep 10
+	rm -f $dirtmp/audiocd
 	exit
 fi
 
-server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
-options='hello=owner+rAudio+rAudio+1&proto=6'
+[[ -e $dirtmp/audiocd ]] && exit
+
 discid=$( cd-discid ) # id tracks leadinframe frame1 frame2 ... totalseconds
 discidata=( $discid )
 tracksL=${discidata[1]}
 id=${discidata[0]}
 
-echo $id > $dirtmp/audiocd
+chmod +r /dev/sr0
 
 if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 	pushstreamNotify 'Get data ...'
+	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
+	options='hello=owner+rAudio+rAudio+1&proto=6'
 	query=$( curl -s "$server+query+${discid// /+}&$options" | head -2 )
 	code=$( echo "$query" | head -1 | cut -d' ' -f1 )
 	if (( $code == 210 )); then  # exact match
@@ -66,4 +65,5 @@ pushstreamNotify 'Add to Playlist ...'
 for i in $( seq 1 $tracksL ); do
   mpc add cdda:///$i
 done
+echo $id > $dirtmp/audiocd
 pushstreamPlaylist
