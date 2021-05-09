@@ -6,7 +6,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamNotify() {
-	pushstream notify '{"title":"Audio CD", "text":"'$1'", "icon":"list-ul"}'
+	pushstream notify '{"title":"Audio CD", "text":"'"$1"'", "icon":"list-ul"}' # double quote "$1" needed
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
