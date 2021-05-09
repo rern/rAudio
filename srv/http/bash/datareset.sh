@@ -48,7 +48,7 @@ dtparam=krnbt=on"
 	echo "$config" > /boot/config.txt
 fi
 # data directories
-mkdir -p $dirdata/{addons,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 # addons - new/restore
 if [[ -n $version ]]; then # from create-ros.sh

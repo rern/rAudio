@@ -269,7 +269,8 @@ if [[ ${file:0:4} == http ]]; then
 	fi
 elif [[ ${file:0:4} == cdda ]]; then
 	ext=AudioCD
-	if [[ -e $dirtmp/audiocd ]]; then
+	id=$( cat $dirtmp/audiocd )
+	if [[ -e /srv/http/data/audiocd/$id ]]; then
 		track=${file/*\/}
 		readarray -t audiocd <<< $( sed -n ${track}p $dirtmp/audiocd | tr ^ '\n' )
 		status+='
