@@ -8,8 +8,7 @@ switch( $cmd ) {
 case 'current':
 	$lists = playlist();
 	$array = htmlPlaylist( $lists );
-	$playlist = json_encode( $array );
-	echo $playlist;
+	echo json_encode( $array );
 	break;
 case 'delete':
 	unlink( '/srv/http/data/playlists/'.$_POST[ 'name' ] );
