@@ -338,7 +338,11 @@ function psOrder( data ) {
 }
 function psPlaylist( data ) {
 	if ( data == -1 ) {
-		renderPlaylist( -1 );
+		G.playback ) {
+			getPlaybackStatus();
+		} else if ( G.playlist ) {
+			renderPlaylist( -1 );
+		}
 	} else if ( 'html' in data ) {
 		if ( G.playback ) {
 			getPlaybackStatus();
