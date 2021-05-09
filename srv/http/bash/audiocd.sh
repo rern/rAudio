@@ -9,7 +9,7 @@ pushstreamNotify() {
 	pushstream notify '{"title":"Audio CD", "text":"'$1'", "icon":"list-ul"}'
 }
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+#	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 	rm -f $dirtmp/flagpladd
 }
 

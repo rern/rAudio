@@ -272,7 +272,7 @@ elif [[ ${file:0:4} == cdda ]]; then
 	id=$( cat $dirtmp/audiocd )
 	if [[ -e /srv/http/data/audiocd/$id ]]; then
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n ${track}p $dirtmp/audiocd | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$id | tr ^ '\n' )
 		status+='
 , "Album"     : "'${audiocd[1]}'"
 , "Artist"    : "'${audiocd[0]}'"
