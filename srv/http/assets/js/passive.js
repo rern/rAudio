@@ -338,7 +338,7 @@ function psOrder( data ) {
 }
 function psPlaylist( data ) {
 	if ( data == -1 ) {
-		G.playback ) {
+		if ( G.playback ) {
 			getPlaybackStatus();
 		} else if ( G.playlist ) {
 			renderPlaylist( -1 );
