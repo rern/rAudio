@@ -412,7 +412,7 @@ if [[ $ext == AudioCD || $ext == Radio || -e $dirtmp/webradio ]]; then # webradi
 ########
 	status+='
 , "coverartradio" : "'$coverartradio'"'
-	if [[ $state == play && -n $Title ]]; then
+	if [[ ( $state == play || $ext == AudioCD ) && -n $Title ]]; then
 		# $Title          Artist Name - Title Name or Artist Name: Title Name (extra tag)
 		# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
 		# / - \|: /\n/    split artist - title
