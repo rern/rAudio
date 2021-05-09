@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+[[ ! -e /usr/bin/cd-discid ]] && pacman -Sy --noconfirm cd-discid
+
 grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
 
 if [[ -e /usr/bin/spotifyd ]] && ! grep -q 'device = \"' /etc/spotifyd.conf; then
@@ -11,7 +13,7 @@ if [[ -e /usr/bin/spotifyd ]] && ! grep -q 'device = \"' /etc/spotifyd.conf; the
 		active=1
 		systemctl disable --now spotifyd
 	fi
-	pacman -Sy spotifyd
+	pacman -Sy --noconfirm spotifyd
 	ln -sf /usr/lib/systemd/{user,system}/spotifyd.service
 	dev=$( grep ^device /etc/spotifyd.conf | cut -d' ' -f3 )
 	echo '[global]
