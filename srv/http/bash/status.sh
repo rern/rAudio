@@ -275,11 +275,15 @@ elif [[ ${file:0:4} == cdda ]]; then
 	if [[ -e /srv/http/data/audiocd/$id ]]; then
 		track=${file/*\/}
 		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$id | tr ^ '\n' )
+		Artist=${audiocd[0]}
+		Album=${audiocd[1]}
+		Title=${audiocd[2]}
+		Time=${audiocd[3]}
 		status+='
-, "Album"     : "'${audiocd[1]}'"
-, "Artist"    : "'${audiocd[0]}'"
-, "Time"      : '${audiocd[3]}'
-, "Title"     : "'${audiocd[2]}'"'
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "Time"      : '$Time'
+, "Title"     : "'$Title'"'
 	fi
 else
 	ext=${file/*.}
