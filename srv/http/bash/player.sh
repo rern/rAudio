@@ -52,10 +52,10 @@ Simple mixer control 'Speaker Digital',0"
 audiocd )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '/plugin.*"curl"/ {n;a\
-	input {\
-		plugin         "cdio_paranoia"\
-	}
-	}' /etc/mpd.conf
+input {\
+	plugin         "cdio_paranoia"\
+}
+}' /etc/mpd.conf
 	else
 		line=$( grep -n cdio_paranoia /etc/mpd.conf | cut -d: -f1 )
 		from=$(( line - 1 ))
