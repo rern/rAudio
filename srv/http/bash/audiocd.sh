@@ -14,7 +14,7 @@ pushstreamPlaylist() {
 }
 
 if [[ $1 == eject ]]; then # remove tracks from playlist
-	mpc stop
+	[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
 	mpc del $( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	rm -f $dirtmp/audiocd
 	pushstreamPlaylist
