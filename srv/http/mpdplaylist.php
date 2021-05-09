@@ -295,13 +295,11 @@ function playlist() { // current playlist
 					$id = @file_get_contents( '/srv/http/data/shm/audiocd' );
 					if ( $id ) {
 						$track = substr( $list[ $i ], 8 );
-//						echo 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id;
-//						echo exec( 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id );
 						$audiocd = explode( '^', exec( 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id ) );
 						$each->Artist = $audiocd[ 0 ];
 						$each->Album = $audiocd[ 1 ];
 						$each->Title = $audiocd[ 2 ];
-						$each->Time = $audiocd[ 3 ];
+						$each->Time = second2HMS( $audiocd[ 3 ] );
 						$each->file = $val;
 						$each->Track = $track;
 						break;
