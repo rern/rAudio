@@ -2,6 +2,8 @@
 
 dirtmp=/srv/http/data/shm
 
+[[ -e $dirtmp/eject ]] && exit
+
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
@@ -14,6 +16,8 @@ pushstreamPlaylist() {
 }
 
 if [[ $1 == eject ]]; then # remove tracks from playlist
+	touch $dirtmp/eject
+	( sleep 5; rm -f $dirtmp/eject ) &> /dev/null &
 	pushstreamNotify 'Remove from Playlist ...'
 	rm -f $dirtmp/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
