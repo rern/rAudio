@@ -1782,8 +1782,8 @@ $( '#button-pl-save' ).click( function() {
 		info( {
 			  icon    : 'list-ul'
 			, title   : 'Save Playlist'
-			, message : 'Playlist with <wh><i class="fa fa-audiocd"></i> audio CD</wh> tracks'
-						+'<br>cannot be saved.'
+			, message : 'Playlist contains <wh><i class="fa fa-audiocd"></i> audio CD</wh> tracks'
+						+'<br>which will be orphans once CD removed.'
 		} );
 	} else {
 		playlistNew();
