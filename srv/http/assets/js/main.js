@@ -153,7 +153,7 @@ $( '.settings' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'audiocd':
-			bash( '/srv/http/bash/audiocd.sh '+ ( G.status.audiocd ? 'eject' : '' ) );
+			bash( '/srv/http/bash/audiocd.sh '+ ( G.status.audiocd ? 'clear' : '' ) );
 			break;
 		case 'relays':
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );

@@ -13,10 +13,13 @@ pushstreamPlaylist() {
 	rm -f $dirtmp/flagpladd
 }
 
-if [[ $1 == eject ]]; then # remove tracks from playlist
-	[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
-	mpc del $( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+if [[ $1 == clear ]]; then # remove tracks from playlist
 	rm -f $dirtmp/audiocd
+	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	[[ -z $tracks ]] && exit
+	
+	[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
+	mpc del $tracks
 	pushstreamPlaylist
 	exit
 fi
