@@ -11,33 +11,30 @@ fi
 
 server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 options='hello=owner+rAudio+rAudio+1&proto=6'
-discid=$( cd-discid | tr ' ' + )
-query=$( curl -s "$server+query+$discid&$options" | head -2 )
+discid=$( cd-discid )
+discidata=( $discid )
+tracksL=${discidata[1]}
+query=$( curl -s "$server+query+${discid// /+}&$options" | head -2 )
 code=$( echo "$query" | head -1 | cut -d' ' -f1 )
 if (( $code == 210 )); then  # exact match
   genre_id=$( echo "$query" | tail -1 | cut -d' ' -f1,2 | tr ' ' + )
 elif (( $code == 200 )); then
-  genre_id=$( echo "$query" | tail -1 | cut -d' ' -f2,3 | tr ' ' + )
+  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 fi
 if [[ -n $genre_id ]]; then
-	data=$( curl -s "$server+read+$genre_id&$options" | sed 's/\r//' ) # contains \r
+	data=$( curl -s "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 	artist_album=$( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |^|' )
-	echo ${artist_album/^*} > $dirtmp/audiocd-artist
-	echo ${artist_album/*^} > $dirtmp/audiocd-album
-	echo "$data" | grep '^TTITLE' | cut -d= -f2- > $dirtmp/audiocd-title
-	readarray -t frames <<< $( echo"$data" | awk '/^#\s+[0-9]+/ {print $NF}' )
-	framesL=${#frames[@]}
-	for (( i=1; i < framesL; i++ )); do
+	readarray -t titles <<< $( echo "$data" | tail -n +2 | cut -d= -f2 )
+	frames=( ${discidata[@]:2:$tracksL} )  # id 
+	for (( i=1; i < tracksL; i++ )); do
 		f0=${frames[$(( i - 1 ))]}
 		f1=${frames[i]}
-		time+=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
+		time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
+		tracks+="$artist_album^${titles[i]}^$time"
 	done
-	echo "$time" > $dirtmp/audiocd-time
+	echo "$tracks" > /srv/http/data/shm/audiocd
 fi
 # add tracks to playlist
-tracks=$( cdparanoia -sQ |& grep -P '^\s+\d+\.' | wc -l )
-for i in $( seq 1 $tracks ); do
+for i in $( seq 1 $tracksL ); do
   mpc add cdda:///$i
 done
-
-# remove tracks - audiocd.sh stop

@@ -269,17 +269,14 @@ if [[ ${file:0:4} == http ]]; then
 	fi
 elif [[ ${file:0:4} == cdda ]]; then
 	ext=AudioCD
-	if [[ -e $dirtmp/audiocd-artist ]]; then
-		Artist=$( cat $dirtmp/audiocd-artist )
-		Album=$( cat $dirtmp/audiocd-album )
+	if [[ -e $dirtmp/audiocd ]]; then
 		track=${file/*\/}
-		Title=$( sed -n $track p $dirtmp/audiocd-title )
-		Time=$( sed -n $track p $dirtmp/audiocd-time )
+		readarray -t audiocd <<< $( sed -n ${track}p $dirtmp/audiocd | tr ^ '\n' )
 		status+='
-, "Album"     : "'$Album'"
-, "Artist"    : "'$Artist'"
-, "Time"      : '$duration'
-, "Title"     : "'$Title'"'
+, "Album"     : "'${audiocd[1]}'"
+, "Artist"    : "'${audiocd[0]}'"
+, "Time"      : '${audiocd[3]}'
+, "Title"     : "'${audiocd[2]}'"'
 	fi
 else
 	ext=${file/*.}
