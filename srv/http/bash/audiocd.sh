@@ -17,9 +17,7 @@ if [[ $1 == eject ]]; then # remove tracks from playlist
 	pushstreamNotify 'Remove from Playlist ...'
 	rm -f $dirtmp/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	for i in $tracks; do
-	  mpc del $i
-	done
+	mpc del $tracks
 	pushstreamPlaylist
 	exit
 fi
