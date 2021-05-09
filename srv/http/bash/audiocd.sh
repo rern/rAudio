@@ -25,30 +25,28 @@ if [[ $1 == clear ]]; then # remove tracks from playlist
 	exit
 fi
 
+chmod +r /dev/sr0 # fix permission
+
 discid=$( cd-discid 2> /dev/null ) # id tracks leadinframe frame1 frame2 ... totalseconds
-if [[ -z $discid ]]; then
-	pushstreamNotify 'No CD found.'
-	exit
-fi
+[[ -z $discid ]] && exit
 
 discidata=( $discid )
 tracksL=${discidata[1]}
 id=${discidata[0]}
 
-chmod +r /dev/sr0 # fix permission
-
 if [[ ! -e /srv/http/data/audiocd/$id ]]; then
-	pushstreamNotify 'Get data ...'
+	pushstreamNotify 'Get disc id ...'
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	options='hello=owner+rAudio+rAudio+1&proto=6'
-	query=$( curl -s "$server+query+${discid// /+}&$options" | head -2 )
-	code=$( echo "$query" | head -1 | cut -d' ' -f1 )
+	query=$( curl -s "$server+query+${discid// /+}&$options" | head -2 | tr -d '\r' )
+	code=$( echo "$query" | head -c 3 )
 	if (( $code == 210 )); then  # exact match
-	  genre_id=$( echo "$query" | tail -1 | cut -d' ' -f1,2 | tr ' ' + )
+	  genre_id=$( echo "$query" | sed -n 2p | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
 	if [[ -n $genre_id ]]; then
+		pushstreamNotify 'Get tracks data ...'
 		data=$( curl -s "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		artist_album=$( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |^|' )
 		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
