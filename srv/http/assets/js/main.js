@@ -1778,7 +1778,16 @@ $( '#button-pl-open' ).click( function() {
 	renderPlaylistList();
 } );
 $( '#button-pl-save' ).click( function() {
-	playlistNew();
+	if ( $( '#pl-list .pl-icon.fa-audiocd' ).length ) {
+		info( {
+			  icon    : 'list-ul'
+			, title   : 'Save Playlist'
+			, message : 'Playlist with <wh><i class="fa fa-audiocd"></i> audio CD</wh> tracks'
+						+'<br>cannot be saved.'
+		} );
+	} else {
+		playlistNew();
+	}
 } );
 $( '#button-pl-consume' ).click( function() {
 	if ( G.status.consume ) {
@@ -2017,12 +2026,12 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( radio ) {
 		var notsaved = $thisli.hasClass( 'notsaved' );
 		$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
-		$menu.find( '.savedpladd' ).toggleClass( 'hide', notsaved );
 		$menu.find( '.similar, .submenu, .tag' ).addClass( 'hide' );
 	} else {
 		$menu.find( '.wrsave' ).addClass( 'hide' );
 		$menu.find( '.savedpladd, .similar, .submenu, .tag' ).removeClass( 'hide' );
 	}
+	$menu.find( '.savedpladd' ).toggleClass( 'hide', G.list.path.slice( 0, 4 ) === 'cdda' );
 	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
 	$menu
