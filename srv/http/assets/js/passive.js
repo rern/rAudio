@@ -337,7 +337,6 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	bannerHide();
 	if ( data == -1 ) {
 		if ( G.playback ) {
 			getPlaybackStatus();
