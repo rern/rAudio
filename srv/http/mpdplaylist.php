@@ -219,7 +219,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
 				$icon = '<img class="lazy iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon = '<i class="fa fa-'.( substr( $file, 0, 4 ) === 'cdda' ? 'audiocd' : 'music' ).' pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li class="file" '.$datatrack.'>'
 						.$icon
