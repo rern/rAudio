@@ -15,22 +15,18 @@ pushstreamPlaylist() {
 
 if [[ $1 == eject ]]; then # remove tracks from playlist
 	mpc stop
-	pushstreamNotify 'Remove from Playlist ...'
 	mpc del $( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	pushstreamPlaylist
-	sleep 10
 	rm -f $dirtmp/audiocd
+	pushstreamPlaylist
 	exit
 fi
-
-[[ -e $dirtmp/audiocd ]] && exit
 
 discid=$( cd-discid ) # id tracks leadinframe frame1 frame2 ... totalseconds
 discidata=( $discid )
 tracksL=${discidata[1]}
 id=${discidata[0]}
 
-chmod +r /dev/sr0
+chmod +r /dev/sr0 # fix permission
 
 if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 	pushstreamNotify 'Get data ...'

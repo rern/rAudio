@@ -386,6 +386,7 @@ displayget )
 	fi
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
+, "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'

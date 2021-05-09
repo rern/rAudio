@@ -1406,6 +1406,7 @@ function setButtonControl() {
 	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
 function setButtonOptions() {
+	$( '#audiocd' ).toggleClass( 'on', G.status.audiocd );
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );

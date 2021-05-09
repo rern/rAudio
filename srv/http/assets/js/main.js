@@ -91,10 +91,11 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 	var submenu = {
 		  relays     : 'features'
 		, snapclient : 'player'
+		, audiocd    : 'networks'
 		, lock       : 'system'
 		, screenoff  : 'power'
 	};
-	[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
+	[ 'relays', 'audiocd', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
 		if ( G.display[ sub ] ) {
 			$( '#'+ submenu[ sub ] )
 				.addClass( 'sub' )
@@ -150,6 +151,10 @@ $( '.settings' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
+		case 'audiocd':
+			console.log( '/srv/http/bash/audiocd.sh '+ ( G.status.audiocd ? 'eject' : '' ) );
+			bash( '/srv/http/bash/audiocd.sh '+ ( G.status.audiocd ? 'eject' : '' ) );
+			break;
 		case 'relays':
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
