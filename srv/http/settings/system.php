@@ -179,7 +179,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
-	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
 	<?php } ?>
