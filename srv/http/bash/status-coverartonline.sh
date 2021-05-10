@@ -73,7 +73,7 @@ else
 	else
 		rm -f $dirtmp/online-*
 		coverfile=$dirtmp/online-$name.$ext
-		coverart=/data/tmp/$name.$date.$ext
+		coverart=/data/shm/online-$name.$date.$ext
 	fi
 	curl -s $url -o $coverfile
 	if [[ -e $coverfile ]]; then
