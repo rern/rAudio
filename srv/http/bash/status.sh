@@ -3,7 +3,6 @@
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
-audiocd=$( [[ -e /dev/sr0 ]] && echo true || echo false )
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
@@ -33,7 +32,6 @@ else
 ########
 	status='
   "player"         : "'$player'"
-, "audiocd"        : '$audiocd'
 , "btclient"       : '$btclient'
 , "consume"        : '$consume'
 , "control"        : "'$control'"
@@ -270,7 +268,7 @@ if [[ ${file:0:4} == http ]]; then
 , "webradio" : 'true
 	fi
 elif [[ ${file:0:4} == cdda ]]; then
-	ext=AudioCD
+	ext=CD
 	id=$( cat $dirtmp/audiocd )
 	if [[ -e /srv/http/data/audiocd/$id ]]; then
 		track=${file/*\/}
@@ -339,8 +337,8 @@ samplingLine() {
 	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
 
-if [[ $ext == AudioCD ]]; then
-	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; AudioCD'
+if [[ $ext == CD ]]; then
+	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; CD'
 elif [[ $state != stop ]]; then
 	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
 	# save only webradio: update sampling database on each play
@@ -401,9 +399,9 @@ elif [[ -n $coverart ]]; then
 	exit
 fi
 
-if [[ $ext == Radio || -e $dirtmp/webradio || ( $ext == AudioCD && -z $coverart ) ]]; then # webradio start - 'file:' missing
+if [[ $ext == Radio || -e $dirtmp/webradio || ( $ext == CD && -z $coverart ) ]]; then # webradio start - 'file:' missing
 	date=$( date +%s )
-	if [[ $ext != AudioCD ]]; then
+	if [[ $ext != CD ]]; then
 		rm -f $dirtmp/webradio
 		filenoext=/data/webradiosimg/$urlname
 		pathnoext=/srv/http$filenoext
@@ -416,12 +414,12 @@ if [[ $ext == Radio || -e $dirtmp/webradio || ( $ext == AudioCD && -z $coverart 
 ########
 	status+='
 , "coverartradio" : "'$coverartradio'"'
-	if [[ ( $state == play || $ext == AudioCD ) && -n $Title ]]; then
+	if [[ ( $state == play || $ext == CD ) && -n $Title ]]; then
 		# $Title          Artist Name - Title Name or Artist Name: Title Name (extra tag)
 		# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
 		# / - \|: /\n/    split artist - title
 		# args:           "Artist Name"$'\n'"Title Name"$'\ntitle'
-		if [[ $ext == AudioCD ]]; then
+		if [[ $ext == CD ]]; then
 			data="$Artist$Album"
 		elif [[ -z $radiofrance ]]; then
 			data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" )
@@ -434,7 +432,7 @@ if [[ $ext == Radio || -e $dirtmp/webradio || ( $ext == AudioCD && -z $coverart 
 			coverart=/data/shm/online-$name.$date.${onlinefile/*.}
 		elif [[ -z $radioparadise && -z $radiofrance ]]; then
 			killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-			[[ $ext == AudioCD ]] && data="$Artist"$'\n'"$Album"$'\naudiocd\n'$id || data+=$'\ntitle'
+			[[ $ext == CD ]] && data="$Artist"$'\n'"$Album"$'\naudiocd\n'$id || data+=$'\ntitle'
 			/srv/http/bash/status-coverartonline.sh "$data" &> /dev/null &
 		fi
 	fi

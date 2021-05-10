@@ -32,7 +32,6 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 		mpc del $tracks
 		pushstreamPlaylist
 	fi
-	[[ $2 == uieject ]] && eject # eject from ui
 	if [[ $1 == off ]]; then
 		line=$( grep -n cdio_paranoia /etc/mpd.conf | cut -d: -f1 )
 		from=$(( line - 1 ))
@@ -85,7 +84,7 @@ if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 	fi
 fi
 # add tracks to playlist
-pushstreamNotify 'Add to Playlist ...'
+pushstreamNotify 'Add tracks to Playlist ...'
 for i in $( seq 1 $tracksL ); do
   mpc add cdda:///$i
 done

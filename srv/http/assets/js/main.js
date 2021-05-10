@@ -150,18 +150,6 @@ $( '.settings' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
-		case 'audiocd':
-			info( {
-				  icon    : 'audiocd'
-				, title   : 'Eject Audio CD'
-				, message : '&bull; Remove all audio CD tracks'
-							+'<br>&bull; Eject CD'
-				, msgalign : 'left'
-				, ok      : function() {
-					bash( '/srv/http/bash/audiocd.sh eject uieject' );
-				}
-			} );
-			break;
 		case 'relays':
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
