@@ -129,6 +129,15 @@ function coverartChange() {
 		var album = $( '.licover .lialbum' ).text();
 		var artist = $( '.licover .liartist' ).text();
 	}
+	if ( G.status.file.slice( 0, 4 ) !== 'cdda' ) {
+		var audiocd = 0;
+		var imagefile = '/mnt/MPD/'+ path +'/cover'  // no ext
+		var type = 'coverart';
+	} else {
+		var audiocd = 1;
+		var imagefile = '/srv/http'+ src.split( '.' ).shift();
+		var type = 'audiocd';
+	}
 	var jsoninfo = {
 		  icon        : 'coverart'
 		, title       : 'Change Album CoverArt'
@@ -142,11 +151,7 @@ function coverartChange() {
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, ok          : function() {
-			if ( G.status.file.slice( 0, 4 ) !== 'cdda' ) {
-				imageReplace( '/mnt/MPD/'+ path +'/cover', 'coverart' ); // no ext
-			} else {
-				imageReplace( '/srv/http'+ src.split( '.' ).shift(), 'audiocd' );
-			}
+			imageReplace( imagefile, type );
 		}
 	}
 	if ( G.playback ) {

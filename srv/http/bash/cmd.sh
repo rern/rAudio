@@ -347,6 +347,15 @@ coverartreset )
 	artist=${args[3]}
 	album=${args[4]}
 	dir=$( dirname "$coverfile" )
+	if [[ $( basename "$dir" ) == audiocd ]]; then
+		filename=$( basename "$coverfile" )
+		id=${filename/.*}
+		rm -f "$coverfile"
+		killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+		$dirbash/status-coverartonline.sh "$artist"$'\n'"$album"$'\naudiocd\n'$id &> /dev/null &
+		exit
+	fi
+	
 	rm -f "$coverfile" "$dir/coverart".* "$dir/thumb".*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
