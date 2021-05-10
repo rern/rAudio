@@ -159,7 +159,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 							+'<br>&bull; Eject CD'
 				, msgalign : 'left'
 				, ok      : function() {
-					bash( '/srv/http/bash/audiocd.sh eject' );
+					bash( '/srv/http/bash/audiocd.sh eject uieject' );
 				}
 			} );
 			break;

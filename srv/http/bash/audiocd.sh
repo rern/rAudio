@@ -32,6 +32,7 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 		mpc del $tracks
 		pushstreamPlaylist
 	fi
+	[[ $2 == uieject ]] && eject # eject from ui
 	if [[ $1 == off ]]; then
 		line=$( grep -n cdio_paranoia /etc/mpd.conf | cut -d: -f1 )
 		from=$(( line - 1 ))
