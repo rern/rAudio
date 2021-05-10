@@ -17,6 +17,7 @@ pushstream() {
 }
 restartMPD() {
 	systemctl restart mpd
+	mpc playlist | wc -l > /srv/http/data/shm/playlistlength  # for add tracks by other apps
 	pushstream mpdplayer "$( /srv/http/bash/status.sh )"
 	pushstream refresh '{"page":"player"}'
 	if [[ -e $dirsystem/updating ]]; then
