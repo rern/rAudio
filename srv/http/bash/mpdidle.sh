@@ -51,8 +51,9 @@ mpc idleloop | while read changed; do
 			;;
 		playlist ) # consume mode: playlist+player at once - run player fisrt
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
+				pllength0=$( cat $dirtmp/playlistlength 2> /dev/null || echo 0 )
 				pllength=$( mpc playlist | wc -l )
-				pldiff=$(( $pllength - $( cat $dirtmp/playlistlength ) ))
+				pldiff=$(( $pllength - $pllength0 ))
 				(( $pldiff > 0 )) && echo $pllength > $dirtmp/playlistlength || continue
 			fi
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]] || (( $pldiff > 0 )); then
