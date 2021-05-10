@@ -127,7 +127,6 @@ function psBookmark( data ) {
 	}, G.debouncems );
 }
 function psCoverart( data ) {
-	console.log(data)
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
@@ -136,7 +135,9 @@ function psCoverart( data ) {
 		case 'coverart': // change coverart
 			var mpdpath = path.replace( '/mnt/MPD/', '' );
 			if ( G.playback ) {
-				if ( src.slice( 0, 5 ) === '/data' || mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
+				var onlinecover = src.slice( 0, 5 ) === '/data';
+				var filepath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+				if ( onlinecover || mpdpath === filepath ) {
 					G.status.coverart = src;
 					$( '#vu' ).addClass( 'hide' );
 					$( '#coverart' )
