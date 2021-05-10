@@ -111,15 +111,22 @@ case 'displayset':
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type = $_POST[ 'type' ];
-	if ( isset( $_POST[ 'base64' ] ) ) { // jpg/png - album coverart(path /mnt/...) needs sudo
+	$base64 = isset( $_POST[ 'base64' ] );
+	$ext = $base64 ? '.jpg' : '.gif';
+	if ( $type === 'audiocd' ) {
+		$filenoext = substr( $imagefile, 0, -3 );
+		exec( 'rm -f '.$filenoext.'*' );
+		$content = $base64 ? base64_decode( $_POST[ 'base64' ] ) : $_FILES[ 'file' ][ 'tmp_name' ];
+		file_put_contents( $imagefile, $content );
+		$coverfile = substr( $filenoext, 9 ).time().$ext; // remove /srv/http
+		pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"coverart"}' ) );
+	} else if ( $base64 ) { // jpg/png - album coverart(path /mnt/...) needs sudo
 		$tmpfile = $dirdata.'shm/binary';
 		file_put_contents( $tmpfile, base64_decode( $_POST[ 'base64' ] ) );
 		cmdsh( [ 'thumbjpg', $type, $tmpfile, $imagefile ] );
-		$ext = '.jpg';
 	} else { // gif passed as file
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
-		$ext = '.gif';
 	}
 	break;
 case 'login':
