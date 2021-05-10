@@ -9,6 +9,7 @@ readarray -t args <<< "$1"
 artist=${args[0]}
 arg1=${args[1]}
 type=${args[2]}
+discid=${args[3]}
 
 dirtmp=/srv/http/data/shm
 name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
@@ -62,20 +63,20 @@ fi
 ext=${url/*.}
 
 if [[ $type == 'licover' ]]; then # to save ram - keep all in .../data/tmp - not .../data/shm
-	coverfile=/srv/http/data/tmp/licover-$name.$ext
-	coverart=/data/tmp/licover-$name.$date.$ext
-	if [[ -e $coverfile ]]; then
-		echo $coverart
-	else
-		curl -s $url -o $coverfile
-		[[ -e $coverfile ]] && echo $coverart
-	fi
+	coverfile=$dirtmp/licover-$name.$ext
+	curl -s $url -o $coverfile
+	[[ -e $coverfile ]] && echo /data/tmp/licover-$name.$date.$ext
 else
-	rm -f $dirtmp/online-*
-	coverfile=$dirtmp/online-$name.$ext
+	if [[ $type == 'audiocd' ]]; then
+		coverfile=/srv/http/data/audiocd/$discid.$ext
+		coverart=/data/audiocd/$discid.$date.$ext
+	else
+		rm -f $dirtmp/online-*
+		coverfile=$dirtmp/online-$name.$ext
+		coverart=/data/tmp/$name.$date.$ext
+	fi
 	curl -s $url -o $coverfile
 	if [[ -e $coverfile ]]; then
-		coverart=/data/shm/online-$name.$date.$ext
 		curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
 		exit # for radio paradise
 	fi

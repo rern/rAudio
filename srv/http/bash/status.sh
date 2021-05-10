@@ -279,12 +279,13 @@ elif [[ ${file:0:4} == cdda ]]; then
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
-		[[ -e /srv/http/data/audiocd/$id.jpg ]] && coverart=/srv/http/data/audiocd/$id.$( date +%s ).jpg
 		status+='
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
+		cdcoverfile=$( ls /srv/http/data/audiocd/$id.* 2> /dev/null )
+		[[ -e $cdcoverfile ]] && coverart=/data/audiocd/$id.$( date +%s ).${cdcoverfile/*.}
 	fi
 else
 	ext=${file/*.}
@@ -433,7 +434,7 @@ if [[ $ext == Radio || -e $dirtmp/webradio || ( $ext == AudioCD && -z $coverart 
 			coverart=/data/shm/online-$name.$date.${onlinefile/*.}
 		elif [[ -z $radioparadise && -z $radiofrance ]]; then
 			killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-			[[ $ext == AudioCD ]] && data="$Artist"$'\n'"$Album" || data+=$'\ntitle'
+			[[ $ext == AudioCD ]] && data="$Artist"$'\n'"$Album"$'\naudiocd\n'$id || data+=$'\ntitle'
 			/srv/http/bash/status-coverartonline.sh "$data" &> /dev/null &
 		fi
 	fi
