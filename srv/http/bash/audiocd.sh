@@ -45,6 +45,7 @@ fi
 
 [[ -n $1 || ! -e /dev/sr0 ]] && exit
 
+eject -x 0 /dev/sr0 # for drives with multi speed
 discid=$( cd-discid 2> /dev/null ) # id tracks leadinframe frame1 frame2 ... totalseconds
 [[ -z $discid ]] && exit
 
@@ -64,7 +65,7 @@ if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
 	if [[ -z $genre_id ]]; then
-		pushstreamNotify 'CD not in database.'
+		pushstreamNotify 'CD data not found.'
 	else
 		pushstreamNotify 'Fetch CD data ...'
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
@@ -90,3 +91,4 @@ for i in $( seq 1 $tracksL ); do
 done
 echo $id > $dirtmp/audiocd
 pushstreamPlaylist
+eject -x 12 /dev/sr0 # for drives with multi speed
