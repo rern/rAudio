@@ -1413,8 +1413,6 @@ function setButtonControl() {
 }
 function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
-	$( '#networks' ).toggleClass( 'sub', G.status.audiocd );
-	$( '#audiocd' ).toggleClass( 'hide', !G.status.audiocd );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var displaytime = $( '#time-knob' ).is( ':visible' );
