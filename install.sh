@@ -5,6 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 [[ ! -e /usr/bin/cd-discid ]] && pacman -Sy --noconfirm cd-discid
+mkdir -p /srv/http/data/audiocd
 
 grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
 
