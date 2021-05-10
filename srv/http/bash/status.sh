@@ -279,6 +279,7 @@ elif [[ ${file:0:4} == cdda ]]; then
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
+		[[ -e /srv/http/data/audiocd/$id.jpg ]] && coverart=/srv/http/data/audiocd/$id.$( date +%s ).jpg
 		status+='
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
@@ -399,15 +400,17 @@ elif [[ -n $coverart ]]; then
 	exit
 fi
 
-if [[ $ext == AudioCD || $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
+if [[ $ext == Radio || -e $dirtmp/webradio || ( $ext == AudioCD && -z $coverart ) ]]; then # webradio start - 'file:' missing
 	date=$( date +%s )
-	rm -f $dirtmp/webradio
-	filenoext=/data/webradiosimg/$urlname
-	pathnoext=/srv/http$filenoext
-	if [[ -e $pathnoext.gif ]]; then
-		coverartradio=$filenoext.$date.gif
-	elif [[ -e $pathnoext.jpg ]]; then
-		coverartradio=$filenoext.$date.jpg
+	if [[ $ext != AudioCD ]]; then
+		rm -f $dirtmp/webradio
+		filenoext=/data/webradiosimg/$urlname
+		pathnoext=/srv/http$filenoext
+		if [[ -e $pathnoext.gif ]]; then
+			coverartradio=$filenoext.$date.gif
+		elif [[ -e $pathnoext.jpg ]]; then
+			coverartradio=$filenoext.$date.jpg
+		fi
 	fi
 ########
 	status+='
@@ -430,7 +433,8 @@ if [[ $ext == AudioCD || $ext == Radio || -e $dirtmp/webradio ]]; then # webradi
 			coverart=/data/shm/online-$name.$date.${onlinefile/*.}
 		elif [[ -z $radioparadise && -z $radiofrance ]]; then
 			killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-			/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
+			[[ $ext == AudioCD ]] && data="$Artist"$'\n'"$Album" || data+=$'\ntitle'
+			/srv/http/bash/status-coverartonline.sh "$data" &> /dev/null &
 		fi
 	fi
 else

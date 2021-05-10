@@ -154,8 +154,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'audiocd':
 			info( {
 				  icon    : 'audiocd'
-				, title   : 'Audio CD'
-				, message : 'Eject?'
+				, title   : 'Eject Audio CD'
+				, message : '&bull; Remove all audio CD tracks'
+							+'<br>&bull; Eject CD'
+				, msgalign : 'left'
 				, ok      : function() {
 					bash( '/srv/http/bash/audiocd.sh eject' );
 				}
