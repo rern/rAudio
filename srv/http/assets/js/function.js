@@ -130,11 +130,9 @@ function coverartChange() {
 		var artist = $( '.licover .liartist' ).text();
 	}
 	if ( G.status.file.slice( 0, 4 ) !== 'cdda' ) {
-		var audiocd = 0;
 		var imagefile = '/mnt/MPD/'+ path +'/cover'  // no ext
 		var type = 'coverart';
 	} else {
-		var audiocd = 1;
 		var imagefile = '/srv/http'+ src.split( '.' ).shift();
 		var type = 'audiocd';
 	}

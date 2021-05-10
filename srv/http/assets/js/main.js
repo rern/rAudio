@@ -114,7 +114,6 @@ $( '#coverart' ).on( 'load', function() {
 		&& G.status.coverart.split( '-' )[ 0 ] === '/data/shm/online'
 		&& !G.status.webradio
 		&& G.status.player !== 'bluetooth'
-		&& G.status.file.slice( 0, 4 ) !== 'cdda'
 	) {
 		G.coversave = 1;
 		$( '#divcover' ).append( '<i class="covedit fa fa-save cover-save"></i>' );
