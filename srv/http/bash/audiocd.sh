@@ -45,7 +45,7 @@ fi
 
 [[ -n $1 || ! -e /dev/sr0 ]] && exit
 
-eject -x 0 /dev/sr0 # for drives with multi speed
+eject -x 0 /dev/sr0 # set max speed if supported by device
 discid=$( cd-discid 2> /dev/null ) # id tracks leadinframe frame1 frame2 ... totalseconds
 [[ -z $discid ]] && exit
 
@@ -91,4 +91,4 @@ for i in $( seq 1 $tracksL ); do
 done
 echo $id > $dirtmp/audiocd
 pushstreamPlaylist
-eject -x 12 /dev/sr0 # for drives with multi speed
+eject -x 12 /dev/sr0 # set 12x speed if supported by device
