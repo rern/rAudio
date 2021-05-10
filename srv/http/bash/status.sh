@@ -3,7 +3,7 @@
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
-audiocd=$( mpc -f %file% playlist | grep -q ^cdda && echo true || echo false )
+audiocd=$( [[ -e /dev/sr0 ]] && echo true || echo false )
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )

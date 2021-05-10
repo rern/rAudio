@@ -10,7 +10,6 @@ data='
 	  "devices"         : ['$devices']
 	, "active"          : '$active'
 	, "asoundcard"      : '$i'
-	, "audiocd"         : '$( grep -q cdio_paranoia /etc/mpd.conf && echo true || echo false )'
 	, "audioaplayname"  : "'${Aaplayname[$i]}'"
 	, "audiooutput"     : "'${Aname[$i]}'"
 	, "autoupdate"      : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true || echo false )'

@@ -13,19 +13,36 @@ pushstreamPlaylist() {
 	rm -f $dirtmp/flagpladd
 }
 
-if [[ $1 == clear ]]; then # remove tracks from playlist
+[[ -n $1 ]] && pushstreamNotify "USB CD $1"
+
+if [[ $1 == on ]]; then
+	sed -i '/plugin.*"curl"/ {n;a\
+input {\
+	plugin         "cdio_paranoia"\
+}
+}' /etc/mpd.conf
+	systemctl restart mpd
+	pushstream refresh '{ "page": "player" }'
+elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playlist
 	rm -f $dirtmp/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ -z $tracks ]] && exit
-	
-	pushstreamNotify 'Removed from Playlist.'
-	[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
-	mpc del $tracks
-	pushstreamPlaylist
-	exit
+	if [[ -n $tracks ]]; then
+		pushstreamNotify 'Removed from Playlist.'
+		[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
+		mpc del $tracks
+		pushstreamPlaylist
+	fi
+	if [[ $1 == off ]]; then
+		line=$( grep -n cdio_paranoia /etc/mpd.conf | cut -d: -f1 )
+		from=$(( line - 1 ))
+		to=$(( line + 1 ))
+		sed -i "$from,$to d" /etc/mpd.conf
+		systemctl restart mpd
+		pushstream refresh '{ "page": "player" }'
+	fi
 fi
 
-chmod +r /dev/sr0 # fix permission
+[[ -n $1 || ! -e /dev/sr0 ]] && exit
 
 discid=$( cd-discid 2> /dev/null ) # id tracks leadinframe frame1 frame2 ... totalseconds
 [[ -z $discid ]] && exit
@@ -35,19 +52,21 @@ tracksL=${discidata[1]}
 id=${discidata[0]}
 
 if [[ ! -e /srv/http/data/audiocd/$id ]]; then
-	pushstreamNotify 'Get disc id ...'
+	pushstreamNotify 'Search CD data ...'
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	options='hello=owner+rAudio+rAudio+1&proto=6'
-	query=$( curl -s "$server+query+${discid// /+}&$options" | head -2 | tr -d '\r' )
+	query=$( curl -sL "$server+query+${discid// /+}&$options" | head -2 | tr -d '\r' )
 	code=$( echo "$query" | head -c 3 )
 	if (( $code == 210 )); then  # exact match
 	  genre_id=$( echo "$query" | sed -n 2p | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
-	if [[ -n $genre_id ]]; then
-		pushstreamNotify 'Get tracks data ...'
-		data=$( curl -s "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
+	if [[ -z $genre_id ]]; then
+		pushstreamNotify 'CD not in database.'
+	else
+		pushstreamNotify 'Fetch CD data ...'
+		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		artist_album=$( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |^|' )
 		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
 		frames=( ${discidata[@]:2} )

@@ -65,7 +65,6 @@ refreshData = function() {
 		$( '#normalization' ).prop( 'checked', G.normalization );
 		$( '#replaygain' ).prop( 'checked', G.replaygain );
 		$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
-		$( '#audiocd' ).prop( 'checked', G.audiocd );
 		$( '#buffer' ).prop( 'checked', G.buffer );
 		$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
 		$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
@@ -111,8 +110,7 @@ $( '.enable' ).click( function() {
 } );
 $( '.enablenoset' ).click( function() {
 	var idname = {
-		  audiocd       : 'Audio CD'
-		, autoupdate    : 'Auto Update'
+		  autoupdate    : 'Auto Update'
 		, ffmpeg        : 'FFmpeg Decoder'
 		, normalization : 'Normalization'
 	}

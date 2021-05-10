@@ -319,6 +319,16 @@ function psNotify( data ) {
 	if ( data.title === 'Power' ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();
+	} else if ( data.icon === 'audiocd' ) {
+		if ( data.text.replace( 'USB CD ', '' ) === 'off' ) {
+			G.status.audiocd = false;
+			$( '#audiocd' ).addClass( 'hide' );
+			$( '#networks' ).removeClass( 'sub' );
+		} else {
+			G.status.audiocd = true;
+			$( '#audiocd' ).removeClass( 'hide' );
+			$( '#networks' ).addClass( 'sub' );
+		}
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
 	}

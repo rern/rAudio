@@ -1,0 +1,36 @@
+# power on  : add > change
+# insert CD : change
+# eject CD  : change > eject
+# power off : remove
+
+SUBSYSTEM!="block", GOTO="cdrom_end"
+KERNEL!="sr[0-9]*, GOTO="cdrom_end"
+ENV{DEVTYPE}!="disk", GOTO="cdrom_end"
+
+##### power off
+ACTION=="remove", RUN+="/srv/http/bash/audiocd.sh off", GOTO="cdrom_end"
+
+# tag device as CDROM
+KERNEL=="sr[0-9]*", ENV{ID_CDROM}="1"
+
+# stop any mounts on eject button pressed
+ENV{ID_CDROM}=="1", ENV{SYSTEMD_MOUNT_DEVICE_BOUND}="1"
+
+##### eject button
+ENV{DISK_EJECT_REQUEST}=="?*", RUN+="/srv/http/bash/audiocd.sh eject", GOTO="cdrom_end"
+
+# import device, media properties and lock tray to enable eject button events
+IMPORT{program}="cdrom_id --lock-media $devnode"
+
+# cleans up of stale mounts after eject
+ENV{DISK_MEDIA_CHANGE}=="?*", ENV{ID_CDROM_MEDIA}!="?*", ENV{SYSTEMD_READY}="0"
+
+KERNEL=="sr0", SYMLINK+="cdrom", OPTIONS+="link_priority=-100"
+
+##### set rw permission (default 0660)
+ACTION=="add", MODE="0666", RUN+="/srv/http/bash/audiocd.sh on"
+
+##### power on, insert, eject
+ACTION=="change", RUN+="/srv/http/bash/audiocd.sh"
+
+LABEL="cdrom_end"

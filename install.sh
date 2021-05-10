@@ -26,7 +26,6 @@ fi
 file=/usr/lib/systemd/system/mpdscribble@.service
 if grep -q User=mpdscribble $file; then
 	sed -i 's/User=.*/User=mpd/' $file
-	systemctl daemon-reload
 fi
 
 connected=$( netctl list | grep ^* | sed 's/^\* //' )
@@ -38,6 +37,8 @@ grep -q sources.sh /etc/conf.d/devmon && sed -i 's/sources.sh/system.sh/g' /etc/
 
 file=/srv/http/data/system/display
 grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
+
+systemctl daemon-reload
 
 installstart "$1"
 
