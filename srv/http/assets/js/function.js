@@ -303,16 +303,14 @@ function displayGet( callback ) {
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
 	$( '.playericon' ).addClass( 'hide' );
-	if ( 'file' in G.status ) {
-		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
-			var player = 'radiofrance';
-		} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
-			var player = 'radioparadise';
-		}
-	} else {
-		var player = G.status.webradio ? 'webradio' : G.status.player;
+	if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
+		var iplayer = 'radiofrance';
+	} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
+		var iplayer = 'radioparadise';
+	} else if ( G.status.webradio ) {
+		var iplayer = G.status.webradio ? 'webradio' : G.status.player;
 	}
-	$( '#i-'+ player ).removeClass( 'hide' );
+	$( '#i-'+ iplayer ).removeClass( 'hide' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
