@@ -908,22 +908,6 @@ i.map.disabled, .map.disabled i {
 	z-index: 6;
 }
 
-.cover-save {
-	position: absolute;
-	bottom: 4px;
-	left: 4px;
-	width: 30px !important;
-	height: 30px;
-	border-radius: 50%;
-	padding: 5px;
-	font-size: 24px !important;
-	line-height: 20px !important;
-	text-align: center;
-	color: #000000 !important;
-	background: var( --cw );
-	box-shadow: 1px 1px 2px #000000;
-	z-index: 102;
-}
 .controls {
 	position: absolute;
 	top: 0;
@@ -1647,8 +1631,23 @@ i.map.disabled, .map.disabled i {
 	text-shadow: none !important;
 	box-shadow: 1px 1px 2px #000000;
 }
-#divcover .fa-coverart {
-	z-index: 102;
+.covedit {
+	z-index: 17;
+}
+.cover-save {
+	position: absolute;
+	bottom: 4px;
+	left: 4px;
+	width: 30px !important;
+	height: 30px;
+	border-radius: 50%;
+	padding: 5px;
+	font-size: 24px !important;
+	line-height: 20px !important;
+	text-align: center;
+	color: #000000 !important;
+	background: var( --cw );
+	box-shadow: 1px 1px 2px #000000;
 }
 .bkedit.fa-coverart {
 	width: 23px !important;

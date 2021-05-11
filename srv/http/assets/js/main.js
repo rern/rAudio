@@ -841,9 +841,7 @@ $( '#coverT, #timeT' ).tap( function() {
 			$( '#volume-bar' ).removeClass( 'hide' );
 		}
 	}
-	$( '#divcover .covedit' ).remove();
-	$( '#coverart' ).css( 'opacity', '' );
-	$( '.cover-save' ).css( 'z-index', 100 );
+	$( '.covedit' ).css( 'z-index', 15 );
 } );
 $( '.covermap' ).taphold( function( e ) {
 	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
