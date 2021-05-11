@@ -425,7 +425,7 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $coverart && $fileheader != cdda && $fileheader != http ]] && exit
+[[ -n $coverart || ( $fileheader != cdda && $fileheader != http ) ]] && exit
 
 if [[ $ext == Radio ]]; then
 	[[ $state != play || -z $Artist || -z $Title ]] && exit
