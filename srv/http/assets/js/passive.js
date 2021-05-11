@@ -133,32 +133,22 @@ function psCoverart( data ) {
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
 		case 'coverart': // change coverart
-			var matched = 0;
-			if ( url.slice( 0, 9 ) === '/mnt/MPD/' ) {
-				// /mnt/MPD/path/cover.jpg > path
-				var coverpath = url.substr( 9, url.lastIndexOf( '/' ) );
-				// path/filename.ext > path
-				var currentpath = G.playback ? G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) : $( '.licover .lipath' ).text();
-				matched = coverpath === currentpath;
-			} else {
-				if ( G.playback ) {
-					if ( 'discid' in G.status ) {
-						// /data/audiocd/DISCID.jpg > DISCID
-						var covername = url.split( '/' ).pop().split( '.' ).shift();
-						matched = covername === G.status.discid;
-					} else {
-						// /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
-						var covername = url.split( '-' ).pop().split( '.' ).shift();
-						var name = G.status.Artist
-						name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
-					}
-					// Artist Name Title Name > ArtistNameTitleName
-					var currentname = name.replace( /[ "`?/#&'"']/g, '' );
-					matched = covername === currentname;
-				}
+			var urlhead = url.slice( 0, 9 );
+			var coverpath, covername, currentpath, currentname;
+			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
+				coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
+			} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
+				covername = url.split( '-' ).pop().split( '.' ).shift();
+			} else { // /data/audiocd/DISCID.jpg > DISCID
+				covername = url.split( '/' ).pop().split( '.' ).shift();
 			}
 			if ( G.playback ) {
-				if ( matched ) {
+				// path/filename.ext > path
+				currentpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+				var name = G.status.Artist
+				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
+				currentname = name.replace( /[ "`?/#&'"']/g, '' );
+				if ( coverpath === currentpath || covername === currentname ) {
 					G.status.coverart = url;
 					$( '#vu' ).addClass( 'hide' );
 					$( '#coverart' )
@@ -166,7 +156,25 @@ function psCoverart( data ) {
 						.removeClass( 'hide' );
 				}
 			} else if ( G.library ) {
-				if ( matched ) $( '.licoverimg img' ).attr( 'src', url );
+				if ( $( '.licover' ).length ) {
+					currentpath = $( '.licover .lipath' ).text();
+					if ( coverpath === currentpath ) $( '.licoverimg img' ).attr( 'src', url );
+				} else {
+					$( '#lib-list li' ).filter( function() {
+						return $( this ).find( '.lipath' ).text() === coverpath
+					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+				}
+			} else {
+				if ( !$( '#pl-index' ).hasClass( 'hide' ) ) return
+				
+				var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+				var lipath;
+				$li.filter( function() {
+					lipath = $( this ).find( '.lipath' ).text()
+					return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath
+				} ).each( function() {
+					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+				} );
 			}
 			break;
 		case 'bookmark':
