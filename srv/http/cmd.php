@@ -119,7 +119,7 @@ case 'imagereplace':
 		$content = $base64 ? base64_decode( $_POST[ 'base64' ] ) : $_FILES[ 'file' ][ 'tmp_name' ];
 		file_put_contents( $imagefile, $content );
 		$coverfile = substr( $filenoext, 9 ).time().$ext; // remove /srv/http
-		pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"coverart","replace":1}' ) );
+		pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"coverart"}' ) );
 	} else if ( $base64 ) { // jpg/png - album coverart(path /mnt/...) needs sudo
 		$tmpfile = $dirdata.'shm/binary';
 		file_put_contents( $tmpfile, base64_decode( $_POST[ 'base64' ] ) );
