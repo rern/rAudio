@@ -124,7 +124,7 @@ esac
 killall status-radiofrance.sh &> /dev/null
 [[ $player != mpd ]] && rm -f $dirtmp/radiometa && exit
 
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|'
+filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
 
 mpdStatus() {
@@ -139,13 +139,7 @@ mpdStatus currentsong
 #     - 'currentsong' has no data
 #     - use 'playlistinfo 0' instead
 #   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
-if ! grep -q '^file: .\+' <<< "$mpdtelnet"; then
-	if grep -q '^playlistlength: 1$' <<< "$mpdtelnet"; then
-		mpdStatus 'playlistinfo 0'
-	else
-		mpdStatus currentsong
-	fi
-fi
+! grep -q '^file: .\+' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
 # 'state:' - missing on webradio track change
 grep -q '^state' <<< "$mpdtelnet" || mpdStatus currentsong
 
