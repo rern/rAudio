@@ -325,7 +325,11 @@ hr {
 }
 #infoFilename {
 	display: inline-block;
+	width: 100%;
 	margin-bottom: 10px;
+}
+#infoFilename code {
+	max-width: 90%;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
