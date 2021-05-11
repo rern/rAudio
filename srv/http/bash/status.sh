@@ -417,7 +417,7 @@ $Artist
 $Album" )
 fi
 ########
-samplimg="$(( song + 1 ))/$playlistlength &bull; $sampling"
+sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
 , "sampling" : "'$sampling'"
 , "coverart" : "'$coverart'"'
