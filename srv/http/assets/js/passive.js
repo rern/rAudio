@@ -127,31 +127,41 @@ function psBookmark( data ) {
 	}, G.debouncems );
 }
 function psCoverart( data ) {
+	console.log(data)
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
 		case 'coverart': // change coverart
-			covername = url.split( '-' ).pop().slice( 0, -4 );
-			if ( G.playback ) {
-				if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
-					var name = G.status.discid;
-				} else {
-					var name = G.status.Artist
-					name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
+			var matched = 0;
+			if ( url.slice( 0, 9 ) === '/mnt/MPD/' ) {
+				var coverpath = url.substr( 0, url.lastIndexOf( '/' ) ); // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
+				var currentpath = G.playback ? G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) : $( '.licover .lipath' ).text();
+				matched = coverpath === '/mnt/MPD/'+ currentpath;
+			} else {
+				var covername = url.split( '-' ).pop().split( '.' ).shift(); // /data/shm/online-ArtistTitle.1234567890.png > ArtistTitle
+				if ( G.playback ) {
+					if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
+						var name = G.status.discid;
+					} else {
+						var name = G.status.Artist
+						name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
+					}
+					var currentname = name.replace( /[ "`?/#&'"']/g, '' );
+					matched = covername === currentname;
 				}
-				currentname = name.replace( /[ "`?/#&'"']/g, '' );
-				if ( currentname === covername ) {
-					G.status.coverart = src;
+			}
+			if ( G.playback ) {
+				if ( matched ) {
+					G.status.coverart = url;
 					$( '#vu' ).addClass( 'hide' );
 					$( '#coverart' )
-						.attr( 'src', src )
+						.attr( 'src', url )
 						.removeClass( 'hide' );
 				}
-			} else if ( G.library && $( '.licover' ).length ) {
-				var currentpath = $( '.licover .lipath' ).text();
-				if ( currentpath === path ) $( '.licoverimg img' ).attr( 'src', src );
+			} else if ( G.library ) {
+				if ( matched ) $( '.licoverimg img' ).attr( 'src', url );
 			}
 			break;
 		case 'bookmark':
