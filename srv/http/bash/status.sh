@@ -211,8 +211,8 @@ fi
 fileheader=${file:0:4}
 if [[ $fileheader == cdda ]]; then
 	ext=CD
-	discid=$( cat $dirtmp/audiocd )
-	if [[ -e /srv/http/data/audiocd/$discid ]]; then
+	discid=$( cat $dirtmp/audiocd 2> /dev/null )
+	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
 		track=${file/*\/}
 		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
@@ -421,6 +421,7 @@ fi
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
 , "coverart" : "'$coverart'"
+, "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
 # >>>>>>>>>>
 echo {$status}

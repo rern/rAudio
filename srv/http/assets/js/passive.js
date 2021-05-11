@@ -127,7 +127,6 @@ function psBookmark( data ) {
 	}, G.debouncems );
 }
 function psCoverart( data ) {
-	console.log(data)
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
@@ -143,7 +142,7 @@ function psCoverart( data ) {
 				matched = coverpath === currentpath;
 			} else {
 				if ( G.playback ) {
-					if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
+					if ( G.status.ext === 'CD' ) {
 						// /data/audiocd/DISCID.jpg > DISCID
 						var covername = url.split( '/' ).pop().split( '.' ).shift();
 						matched = covername === G.status.discid;

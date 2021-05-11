@@ -129,7 +129,7 @@ function coverartChange() {
 		var album = $( '.licover .lialbum' ).text();
 		var artist = $( '.licover .liartist' ).text();
 	}
-	if ( G.status.file.slice( 0, 4 ) !== 'cdda' ) {
+	if ( G.status.ext !== 'CD' ) {
 		var imagefile = '/mnt/MPD/'+ path +'/cover'  // no ext
 		var type = 'coverart';
 	} else {
