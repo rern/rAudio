@@ -477,11 +477,9 @@ mpcplayback )
 	pos=${args[2]}
 	rm -f $dirtmp/radiometa
 	mpc $command $pos
-	# webradio start - status.sh > 'file:' missing
 	if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
 		webradio=1
-		sleep 0.6
-		touch $dirtmp/webradio
+		sleep 1 # fix: webradio start - blank 'file:' status
 	fi
 	pushstreamStatus
 	# fix webradio fast stop - start
@@ -691,8 +689,6 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
-	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ -n $tracks ]] && mpc del $tracks
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
 	if [[ -n $poweroff ]]; then
 		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
