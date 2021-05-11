@@ -129,12 +129,12 @@ function coverartChange() {
 		var album = $( '.licover .lialbum' ).text();
 		var artist = $( '.licover .liartist' ).text();
 	}
-	if ( G.status.ext !== 'CD' ) {
-		var imagefile = '/mnt/MPD/'+ path +'/cover'  // no ext
-		var type = 'coverart';
-	} else {
-		var imagefile = '/srv/http'+ src.split( '.' ).shift();
+	if ( 'discid' in G.status ) {
+		var imagefile = '/srv/http/data/audiocd/'+ G.status.discid; // no ext
 		var type = 'audiocd';
+	} else {
+		var imagefile = '/mnt/MPD/'+ path +'/cover' // no ext
+		var type = 'coverart';
 	}
 	var jsoninfo = {
 		  icon        : 'coverart'

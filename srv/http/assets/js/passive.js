@@ -142,7 +142,7 @@ function psCoverart( data ) {
 				matched = coverpath === currentpath;
 			} else {
 				if ( G.playback ) {
-					if ( G.status.ext === 'CD' ) {
+					if ( 'discid' in G.status ) {
 						// /data/audiocd/DISCID.jpg > DISCID
 						var covername = url.split( '/' ).pop().split( '.' ).shift();
 						matched = covername === G.status.discid;
