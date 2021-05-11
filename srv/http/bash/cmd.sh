@@ -49,7 +49,7 @@ gifThumbnail() {
 	esac
 	coverfile=${target:9:-4}
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).gif'","type":"'$type'"}'
+	pushstream coverart '{"url":"'$coverfile.$( date +%s ).gif'","type":"'$type'","replace":1}'
 }
 jpgThumbnail() {
 	type=$1
@@ -78,7 +78,7 @@ jpgThumbnail() {
 	esac
 	[[ $type == coverart ]] && coverfile=${target:0:-4} || coverfile=${target:9:-4}
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).jpg'","type":"'$type'"}'
+	pushstream coverart '{"url":"'$coverfile.$( date +%s ).jpg'","type":"'$type'","replace":1}'
 }
 pladdPlay() {
 	pushstreamPlaylist

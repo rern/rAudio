@@ -133,19 +133,20 @@ function psCoverart( data ) {
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
 		case 'coverart': // change coverart
-			var mpdpath = path.replace( '/mnt/MPD/', '' );
+			if ( 'replace' in data ) {
+				var mpdpath = path.replace( '/mnt/MPD/', '' );
+				var filepath = G.playback ? G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) : $( '.licover .lipath' ).text();
+				if ( mpdpath !== filepath ) return
+			}
+			
 			if ( G.playback ) {
-				var onlinecover = src.slice( 0, 5 ) === '/data';
-				var filepath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
-				if ( onlinecover || mpdpath === filepath ) {
-					G.status.coverart = src;
-					$( '#vu' ).addClass( 'hide' );
-					$( '#coverart' )
-						.attr( 'src', src )
-						.removeClass( 'hide' );
-				}
+				G.status.coverart = src;
+				$( '#vu' ).addClass( 'hide' );
+				$( '#coverart' )
+					.attr( 'src', src )
+					.removeClass( 'hide' );
 			} else if ( G.library ) {
-				if ( mpdpath === $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
+				$( '.licoverimg img' ).attr( 'src', src );
 			}
 			break;
 		case 'bookmark':
