@@ -309,6 +309,8 @@ function displayPlayback() {
 		var iplayer = 'radioparadise';
 	} else if ( G.status.webradio ) {
 		var iplayer = G.status.webradio ? 'webradio' : G.status.player;
+	} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
+		var iplayer = 'audiocd';
 	}
 	$( '#i-'+ iplayer ).removeClass( 'hide' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );

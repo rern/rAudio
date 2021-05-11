@@ -236,6 +236,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="infoicon">
 			<span id="playericon">
 				<i id="i-airplay" class="playericon fa fa-airplay hide"></i>
+				<i id="i-audiocd" class="playericon fa fa-audiocd hide"></i>
 				<i id="i-bluetooth" class="playericon fa fa-bluetooth hide"></i>
 				<i id="i-snapclient" class="playericon fa fa-snapclient hide"></i>
 				<i id="i-spotify" class="playericon fa fa-spotify hide"></i>
