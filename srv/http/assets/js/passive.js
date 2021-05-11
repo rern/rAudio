@@ -136,18 +136,24 @@ function psCoverart( data ) {
 		case 'coverart': // change coverart
 			var matched = 0;
 			if ( url.slice( 0, 9 ) === '/mnt/MPD/' ) {
-				var coverpath = url.substr( 0, url.lastIndexOf( '/' ) ); // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
+				// /mnt/MPD/path/cover.jpg > path
+				var coverpath = url.substr( 9, url.lastIndexOf( '/' ) );
+				// path/filename.ext > path
 				var currentpath = G.playback ? G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) : $( '.licover .lipath' ).text();
-				matched = coverpath === '/mnt/MPD/'+ currentpath;
+				matched = coverpath === currentpath;
 			} else {
-				var covername = url.split( '-' ).pop().split( '.' ).shift(); // /data/shm/online-ArtistTitle.1234567890.png > ArtistTitle
 				if ( G.playback ) {
 					if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
-						var name = G.status.discid;
+						// /data/audiocd/DISCID.jpg > DISCID
+						var covername = url.split( '/' ).pop().split( '.' ).shift();
+						matched = covername === G.status.discid;
 					} else {
+						// /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
+						var covername = url.split( '-' ).pop().split( '.' ).shift();
 						var name = G.status.Artist
 						name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
 					}
+					// Artist Name Title Name > ArtistNameTitleName
 					var currentname = name.replace( /[ "`?/#&'"']/g, '' );
 					matched = covername === currentname;
 				}
