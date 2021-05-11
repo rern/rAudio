@@ -419,8 +419,8 @@ fi
 ########
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
-, "sampling" : "'$sampling'"
-, "coverart" : "'$coverart'"'
+, "coverart" : "'$coverart'"
+, "sampling" : "'$sampling'"'
 # >>>>>>>>>>
 echo {$status}
 
