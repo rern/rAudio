@@ -173,7 +173,7 @@ function coverartChange() {
 				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
-					$( '#coverart' ).attr( 'src', url || G.coverdefault );
+					coverartDefault();
 				} else {
 					$( '.licoverimg img' ).attr( 'src', url || G.coverdefault );
 				}
@@ -182,6 +182,15 @@ function coverartChange() {
 	}
 	if ( ( G.playback && pbembedded ) || ( G.library && liembedded ) ) jsoninfo.footer = '<i class="fa fa-coverart"></i>&ensp;embedded';
 	info( jsoninfo );
+}
+function coverartDefault() {
+	if ( !G.status.webradio || G.display.novu ) {
+		$( this ).attr( 'src', G.coverdefault );
+	} else {
+		$( '#coverart' ).addClass( 'hide' );
+		$( '#vu' ).removeClass( 'hide' );
+		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
+	}
 }
 function coverartSave() {
 	if ( G.playback ) {

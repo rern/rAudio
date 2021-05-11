@@ -132,15 +132,31 @@ function psCoverart( data ) {
 	var url = decodeURIComponent( data.url );
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
+		case 'bookmark':
+			var $this = $( '.bookmark' ).filter( function() {
+				return $( this ).find( '.lipath' ).text() === path;
+			} );
+			var $img = $this.find( 'img' );
+			var src = '/mnt/MPD/'+ src;
+			if ( $img.length ) {
+				$img.attr( 'src', src  );
+			} else {
+				$this.find( '.fa-bookmark' ).remove();
+				$this.find( '.divbklabel' ).remove();
+				$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ src +'">' );
+				$( '.mode-bookmark img' ).css( 'opacity', '' );
+			}
+			break;
 		case 'coverart': // change coverart
 			var urlhead = url.slice( 0, 9 );
-			var coverpath, covername, currentpath, currentname;
+			var coverpath, covername, currentpath, currentname, cd;
 			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
 				coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
 			} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
 				covername = url.split( '-' ).pop().split( '.' ).shift();
 			} else { // /data/audiocd/DISCID.jpg > DISCID
 				covername = url.split( '/' ).pop().split( '.' ).shift();
+				cd = 1;
 			}
 			if ( G.playback ) {
 				// path/filename.ext > path
@@ -148,12 +164,13 @@ function psCoverart( data ) {
 				var name = G.status.Artist
 				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
 				currentname = name.replace( /[ "`?/#&'"']/g, '' );
-				if ( coverpath === currentpath || covername === currentname ) {
+				if ( coverpath === currentpath || covername === currentname || cd ) {
 					G.status.coverart = url;
 					$( '#vu' ).addClass( 'hide' );
 					$( '#coverart' )
 						.attr( 'src', url )
 						.removeClass( 'hide' );
+				console.log(covername)
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -175,21 +192,6 @@ function psCoverart( data ) {
 				} ).each( function() {
 					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
 				} );
-			}
-			break;
-		case 'bookmark':
-			var $this = $( '.bookmark' ).filter( function() {
-				return $( this ).find( '.lipath' ).text() === path;
-			} );
-			var $img = $this.find( 'img' );
-			var src = '/mnt/MPD/'+ src;
-			if ( $img.length ) {
-				$img.attr( 'src', src  );
-			} else {
-				$this.find( '.fa-bookmark' ).remove();
-				$this.find( '.divbklabel' ).remove();
-				$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ src +'">' );
-				$( '.mode-bookmark img' ).css( 'opacity', '' );
 			}
 			break;
 		case 'webradio':

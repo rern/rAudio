@@ -121,15 +121,7 @@ $( '#coverart' ).on( 'load', function() {
 		$( '.cover-save' ).remove();
 	}
 	loader( 'hide' );
-} ).on( 'error', function() {
-	if ( !G.status.webradio || G.display.novu ) {
-		$( this ).attr( 'src', G.coverdefault );
-	} else {
-		$( '#coverart' ).addClass( 'hide' );
-		$( '#vu' ).removeClass( 'hide' );
-		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
-	}
-} );
+} ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#bar-top' ).on( 'click', '#button-settings, #badge', function() {
 //$( '#button-settings' ).click( function() {
