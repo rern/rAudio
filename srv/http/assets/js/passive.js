@@ -133,20 +133,25 @@ function psCoverart( data ) {
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
 		case 'coverart': // change coverart
-			if ( 'replace' in data ) {
-				var mpdpath = path.replace( '/mnt/MPD/', '' );
-				var filepath = G.playback ? G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) : $( '.licover .lipath' ).text();
-				if ( mpdpath !== filepath ) return
-			}
-			
+			covername = url.split( '-' ).pop().slice( 0, -4 );
 			if ( G.playback ) {
-				G.status.coverart = src;
-				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
-					.attr( 'src', src )
-					.removeClass( 'hide' );
-			} else if ( G.library ) {
-				$( '.licoverimg img' ).attr( 'src', src );
+				if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
+					var name = G.status.discid;
+				} else {
+					var name = G.status.Artist
+					name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
+				}
+				currentname = name.replace( /[ "`?/#&'"']/g, '' );
+				if ( currentname === covername ) {
+					G.status.coverart = src;
+					$( '#vu' ).addClass( 'hide' );
+					$( '#coverart' )
+						.attr( 'src', src )
+						.removeClass( 'hide' );
+				}
+			} else if ( G.library && $( '.licover' ).length ) {
+				var currentpath = $( '.licover .lipath' ).text();
+				if ( currentpath === path ) $( '.licoverimg img' ).attr( 'src', src );
 			}
 			break;
 		case 'bookmark':

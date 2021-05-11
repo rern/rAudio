@@ -211,10 +211,10 @@ fi
 fileheader=${file:0:4}
 if [[ $fileheader == cdda ]]; then
 	ext=CD
-	id=$( cat $dirtmp/audiocd )
-	if [[ -e /srv/http/data/audiocd/$id ]]; then
+	discid=$( cat $dirtmp/audiocd )
+	if [[ -e /srv/http/data/audiocd/$discid ]]; then
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$id | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
@@ -222,10 +222,11 @@ if [[ $fileheader == cdda ]]; then
 		status+='
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
+, "discid"    : "'$discid'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
-		coverfile=$( ls /srv/http/data/audiocd/$id.* 2> /dev/null )
-		[[ -e $coverfile ]] && coverart=/data/audiocd/$id.$( date +%s ).${coverfile/*.}
+		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null )
+		[[ -e $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	fi
 elif [[ $fileheader == http ]]; then
 	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
@@ -439,7 +440,7 @@ $Artist
 $Album"
 	[[ $ext == CD ]] && args+="
 audiocd
-$id"
+$discid"
 fi
 if [[ -n $args ]]; then
 	killall status-coverartonline.sh &> /dev/null # new track - kill if still running
