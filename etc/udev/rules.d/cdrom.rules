@@ -4,7 +4,7 @@
 # power off : remove
 
 SUBSYSTEM!="block", GOTO="cdrom_end"
-KERNEL!="sr[0-9]*, GOTO="cdrom_end"
+KERNEL!="sr[0-9]*", GOTO="cdrom_end"
 ENV{DEVTYPE}!="disk", GOTO="cdrom_end"
 
 ##### power off

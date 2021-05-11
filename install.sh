@@ -39,12 +39,13 @@ grep -q sources.sh /etc/conf.d/devmon && sed -i 's/sources.sh/system.sh/g' /etc/
 file=/srv/http/data/system/display
 grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
 
-systemctl daemon-reload
-
 installstart "$1"
 
 getinstallzip
 
 /srv/http/bash/mpd-conf.sh
+systemctl daemon-reload
+systemctl restart systemd-udevd
+udevadm control --reload-rules && udevadm trigger
 
 installfinish
