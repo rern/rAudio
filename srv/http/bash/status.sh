@@ -239,9 +239,10 @@ elif [[ $fileheader == http ]]; then
 , "Artist" : "'$Artist'"
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
+		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null )
-		[[ -e $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null )
+		[[ -e $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -275,22 +276,24 @@ elif [[ $fileheader == http ]]; then
 					/srv/http/bash/status-radiofrance.sh $file "$stationname" &> /dev/null &
 				fi
 			elif [[ -n $Title ]]; then
-				albumname=$stationname
-				# $Title          Artist Name - Title Name or Artist Name: Title Name (extra tag)
-				# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
-				# / - \|: /\n/    split artist - title
-				readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
+				# $Title - 's/ - \|: /\n/' split Artist - Title
+				#  - Artist - Title (extra tag)
+				#  - Artist: Title (extra tag)
+				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/g' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				artistname=$Artist
 				titlename=$Title
+				albumname=$stationname
+				# fetched coverart
+				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null )
-				[[ -e $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null )
+				[[ -e $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 			else
-				albumname=$file
 				artistname=$stationname
 				titlename=
+				albumname=$file
 			fi
 		else
 			[[ -e "$radiofile" ]] && artistname=$stationname
@@ -407,18 +410,16 @@ else
 		sampling=$radiosampling
 	fi
 fi
-sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
-########
-status+='
-, "sampling" : "'$sampling'"'
 
-if [[ -z $coverart && $fileheader != cdda && $fileheader != http ]] && grep -q '"cover": true,' /srv/http/data/system/display; then
+if [[ $fileheader != cdda && $fileheader != http ]] && grep -q '"cover": true,' /srv/http/data/system/display; then
 	coverart=$( /srv/http/bash/status-coverart.sh "$file0
 $Artist
 $Album" )
 fi
 ########
+samplimg="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
+, "sampling" : "'$sampling'"
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 echo {$status}
