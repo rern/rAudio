@@ -207,16 +207,10 @@ case 'webradio':
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$name = str_replace( '/', '|', $each->url );
-		$pathnoext = '/srv/http/data/webradiosimg/'.$name.'-thumb';
-		if ( file_exists( $pathnoext.'.jpg' ) ) {
-			$ext = '.jpg';
-		} else if ( file_exists( $pathnoext.'.gif' ) ) {
-			$ext = '.gif';
-		} else {
-			$ext = '';
-		}
-		if ( $ext ) {
-			$thumbsrc = '/data/webradiosimg/'.rawurlencode( $name ).'-thumb.'.$time.$ext;
+		$pathnoext = '/data/webradiosimg/'.$name.'-thumb.';
+		$coverfile = glob( '/srv/http'.$pathnoext.'*' );
+		if ( count( $coverfile ) ) {
+			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
 			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">';
 		} else {
 			$icon = '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>';
@@ -251,23 +245,18 @@ function directoryList( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$nas200 = count( $lists ) > 200 && substr( $string, 0, 3 ) === 'NAS';
+	$nas200 = count( $lists ) > 100 && substr( $string, 0, 3 ) === 'NAS'; // limit search <100 dirs on NAS
 	$time = time();
 	$html = '';
 	foreach( $array as $each ) {
 		$path = $each->path;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$pathnoext = '/mnt/MPD/'.$path.'/thumb';
-		if ( $nas200 || file_exists( $pathnoext.'.jpg' ) ) {
-			$ext = '.jpg';
-		} else if ( file_exists( $pathnoext.'.gif' ) ) {
-			$ext = '.gif';
-		} else {
-			$ext = '';
-		}
-		if ( $ext ) {
-			$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
+		$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
+		$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
+		$coverfile = $nas200 ? [ '.jpg' ] : glob( $pathglob.'*' );
+		if ( count( $coverfile ) ) {
+			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
 			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
 		} else {
 			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';

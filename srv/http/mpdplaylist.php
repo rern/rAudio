@@ -207,7 +207,8 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
 				$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
-				$coverfile = glob( $pathnoext.'*' );
+				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
+				$coverfile = glob( $pathglob.'*' );
 			} else {
 				$disid = file_get_contents( '/srv/http/data/shm/audiocd' );
 				$pathnoext = '/data/audiocd/'.rtrim( $disid ).'.';
