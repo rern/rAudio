@@ -148,6 +148,8 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'coverart': // change coverart
+			if ( !( 'file' in G.status ) ) return
+			
 			var urlhead = url.slice( 0, 9 );
 			var coverpath, covername, currentpath, currentname, cd;
 			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
