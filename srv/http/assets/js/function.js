@@ -314,6 +314,8 @@ function displayGet( callback ) {
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
 	$( '.playericon' ).addClass( 'hide' );
+	if ( !( 'file' in G.status ) ) return
+	
 	if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
 		var iplayer = 'radiofrance';
 	} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
