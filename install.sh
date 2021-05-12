@@ -4,8 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-[[ ! -e /usr/bin/cd-discid ]] && pacman -Sy --noconfirm cd-discid
-mkdir -p /srv/http/data/audiocd
+if [[ ! -e /usr/bin/cd-discid ]]; then
+	pacman -Sy --noconfirm cd-discid
+	mkdir -p /srv/http/data/audiocd
+	udevdrestart=1
+fi
 
 grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
 
@@ -43,9 +46,11 @@ installstart "$1"
 
 getinstallzip
 
-/srv/http/bash/mpd-conf.sh
 systemctl daemon-reload
-systemctl restart systemd-udevd
-udevadm control --reload-rules && udevadm trigger
+/srv/http/bash/mpd-conf.sh
+if [[ -n $udevdrestart ]]; then
+	systemctl restart systemd-udevd
+	udevadm control --reload-rules && udevadm trigger
+fi
 
 installfinish
