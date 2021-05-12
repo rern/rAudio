@@ -2,9 +2,8 @@
 
 readarray -t args <<< "$1"
 
-mpdpath=${args[0]}
+[[ ${#args[@]} > 1 ]] && mpdpath=${args[2]} || mpdpath=${args[0]} # for mpdlibrary.php
 [[ ${mpdpath: -14:10} == .cue/track ]] && mpdpath=$( dirname "$mpdpath" )
-artistalbumtype=$( sed '1 d' <<< "$1" )
 
 path="/mnt/MPD/$mpdpath"
 ### 1 - coverfile in directory ##################################
@@ -27,11 +26,10 @@ if [[ -n $coverfile ]]; then
 	exit
 fi
 
-[[ ${#args[@]} == 1 ]] && exit
+[[ ${#args[@]} == 1 ]] && exit # local file only
 
 ### 2 - already extracted embedded-file #########################
-name=$( echo $artistalbumtype | tr -d ' "`?/#&'"'" )
-embeddedname=$( sed 's/licover$//' <<< $name ) # remove licover from end (mpdlibrary.php line #3)
+embeddedname=$( echo "$1" | head -2 | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
 embeddedfile=/srv/http/data/embedded/$embeddedname.jpg
 coverfile=/data/embedded/$embeddedname.$date.jpg
 [[ -e $embeddedfile ]] && echo $coverfile && exit
@@ -45,19 +43,5 @@ for file in "${files[@]}"; do
 		#ffmpeg -i "$file" $embeddedfile &> /dev/null
 		kid3-cli -c "select \"$file\"" -c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
 		[[ -e $embeddedfile ]] && echo $coverfile && exit
-		break
 	fi
 done
-
-### 4 - previously downloaded ###################################
-onlinefile=$( ls /srv/http/data/shm/online-$name.* 2> /dev/null ) # jpg / png
-if [[ -e $onlinefile ]]; then
-	echo /data/shm/online-$name.$date.${onlinefile/*.}
-	exit
-else
-	rm -f /srv/http/data/shm/online-*
-fi
-
-### 5 - get online ##############################################
-#killall status-coverartonline.sh &> /dev/null # kill if still running
-/srv/http/bash/status-coverartonline.sh "$artistalbumtype" &> /dev/null &

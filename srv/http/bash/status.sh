@@ -407,9 +407,10 @@ else
 fi
 
 if [[ $fileheader != cdda && $fileheader != http ]] && grep -q '"cover": true,' /srv/http/data/system/display; then
-	coverart=$( /srv/http/bash/status-coverart.sh "$file0
+	coverart=$( /srv/http/bash/status-coverart.sh "\
 $Artist
-$Album" )
+$Album
+$file0" )
 fi
 ########
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
@@ -419,7 +420,7 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $coverart || ( $fileheader != cdda && $fileheader != http ) ]] && exit
+[[ -n $coverart ]] && exit
 
 if [[ $ext == Radio ]]; then
 	[[ $state != play || -z $Artist || -z $Title ]] && exit

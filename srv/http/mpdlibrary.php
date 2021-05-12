@@ -466,7 +466,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$icon = 'artist';
 		}
 		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$sh = [ ( $cue ? $dir : $file0 ), $artist, $album, 'licover' ];
+		$sh = [ $artist, $album, ( $cue ? $dir : $file0 ) ];
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "';
 		$script.= escape( implode( "\n", $sh ) ).'"';
 		$coverart = exec( $script );
