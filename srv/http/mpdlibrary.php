@@ -245,7 +245,7 @@ function directoryList( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$dirs100 = count( $lists ) > 100; // limit search <100 dirs
+	$dirs100 = count( $lists ) > 100 && substr( $list, 0, 3 ) === 'NAS'; // slow on NAS - limit search <100 dirs
 	$time = time();
 	$html = '';
 	foreach( $array as $each ) {
