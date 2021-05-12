@@ -195,34 +195,33 @@ function psCoverart( data ) {
 			break;
 		case 'webradio':
 			G.status.coverartradio = src;
-			if ( G.mode === 'webradio' ) {
-				var srcnoext = src.slice( 0, -15 );
-				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
-				var $el = webradioIcon( srcnoext );
-				$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
-			}
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
 					.attr( 'src', src )
 					.css( 'opacity', '' )
 					.removeClass( 'hide' );
-			} else if ( G.playlist ) {
+			} else if ( G.library ) {
+				if ( G.mode === 'webradio' ) {
+					var srcnoext = src.slice( 0, -15 );
+					var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
+					var $el = webradioIcon( srcnoext );
+					$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
+				}
+			} else {
 				$( '#tab-playlist' ).click();
 			}
 			break;
 		case 'webradioreset':
 			G.status.coverartradio = '';
-			if ( G.mode === 'webradio' ) {
-				var $el = webradioIcon( src );
-				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
-			}
 			if ( G.playback ) {
-				$( '#divcover .fa-coverart' ).remove();
-				$( '#coverart' ).addClass( 'hide' );
-				$( '#vu' ).removeClass( 'hide' );
-				if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
-			} else if ( G.playlist ) {
+				coverartDefault();
+			} else if ( G.library ) {
+				if ( G.mode === 'webradio' ) {
+					var $el = webradioIcon( src );
+					$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
+				}
+			} else {
 				$( '#tab-playlist' ).click();
 			}
 			break;

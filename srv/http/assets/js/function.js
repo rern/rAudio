@@ -186,6 +186,8 @@ function coverartChange() {
 function coverartDefault() {
 	if ( !G.status.webradio || G.display.novu ) {
 		$( this ).attr( 'src', G.coverdefault );
+		$( '#coverart' ).removeClass( 'hide' );
+		$( '#vu' ).addClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
@@ -218,7 +220,7 @@ function coverartSave() {
 			var ext = src.slice( -4 );
 			var tmpfile = '/srv/http'+ src.slice( 0, -15 ) + ext;
 			bash( [ 'coversave', tmpfile, path ], function( std ) {
-				$( '.cover-save' ).remove();
+				$( '#divcover .cover-save' ).remove();
 			} );
 		}
 	} );
@@ -555,7 +557,7 @@ function hideGuide() {
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '.cover-save' ).css( 'z-index', '' );
+		$( '.covedit' ).css( 'z-index', '' );
 	}
 }
 function HMS2Second( HMS ) {
@@ -1028,7 +1030,7 @@ function renderPlayback() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
-	if ( !G.coversave ) $( '.cover-save' ).remove();
+	if ( !G.coversave ) $( '#divcover .cover-save' ).remove();
 	var displaytime = $( '#time-knob' ).is( ':visible' );
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
@@ -1036,7 +1038,7 @@ function renderPlayback() {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
-		$( '.cover-save' ).remove();
+		$( '#divcover .cover-save' ).remove();
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
 			renderPlaybackCoverart( G.status.coverartradio );
@@ -1188,7 +1190,7 @@ function renderPlaybackBlank() {
 	$( '#artist, #song, #album, #progress, #elapsed, #total' ).empty();
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
-	$( '.cover-save' ).remove();
+	$( '#divcover .cover-save' ).remove();
 	bash( "ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}'", function( ip ) {
 		if ( ip ) {
 			var ips = ip.split( '\n' );
