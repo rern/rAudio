@@ -170,6 +170,8 @@ function psCoverart( data ) {
 					$( '#coverart' )
 						.attr( 'src', url )
 						.removeClass( 'hide' );
+					$( '#divcover .covedit' ).remove();
+					$( '#coverart' ).css( 'opacity', '' );
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -180,6 +182,8 @@ function psCoverart( data ) {
 						return $( this ).find( '.lipath' ).text() === coverpath
 					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
 				}
+				$( '.licover .covedit' ).remove();
+				$( '.licoverimg ' ).css( 'opacity', '' );
 			} else {
 				if ( !$( '#pl-index' ).hasClass( 'hide' ) ) return
 				

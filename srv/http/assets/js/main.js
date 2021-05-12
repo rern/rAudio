@@ -119,6 +119,7 @@ $( '#coverart' ).on( 'load', function() {
 		$( '#divcover' ).append( '<i class="covedit fa fa-save cover-save"></i>' );
 	} else {
 		$( '#divcover .cover-save' ).remove();
+		$( '#coverart' ).css( 'opacity', '' );
 	}
 	loader( 'hide' );
 } ).on( 'error', coverartDefault );
