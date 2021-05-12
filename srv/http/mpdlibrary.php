@@ -245,7 +245,7 @@ function directoryList( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$dirs100 = count( $lists ) > 100 && substr( $list, 0, 3 ) === 'NAS'; // slow on NAS - limit search <100 dirs
+	$nas100 = count( $lists ) > 100 && substr( $list, 0, 3 ) === 'NAS'; // slow on NAS - limit search <100 dirs
 	$time = time();
 	$html = '';
 	foreach( $array as $each ) {
@@ -254,7 +254,7 @@ function directoryList( $lists ) {
 		$indexes[] = $index;
 		$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
 		$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
-		$coverfile = $dirs100 ? [ '.jpg' ] : glob( $pathglob.'*' );
+		$coverfile = $nas100 ? [ '.jpg' ] : glob( $pathglob.'*' );
 		if ( count( $coverfile ) ) {
 			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
 			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
