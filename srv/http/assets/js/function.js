@@ -1532,6 +1532,8 @@ function setPlaylistScroll() {
 	} );
 	if ( G.status.state !== 'stop' ) setTitleWidth();
 	$( '#pl-list li' ).removeClass( 'active updn' );
+	if ( $( '#pl-list li' ).length < G.status.song + 1 ) return // on eject cd G.status.song not yet refreshed
+	
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
