@@ -26,13 +26,13 @@ if [[ -n $coverfile ]]; then
 	exit
 fi
 
-[[ ${#args[@]} == 1 ]] && exit # local file only
-
 ### 2 - already extracted embedded-file #########################
-embeddedname=$( echo "$1" | head -2 | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
-embeddedfile=/srv/http/data/embedded/$embeddedname.jpg
-coverfile=/data/embedded/$embeddedname.$date.jpg
-[[ -e $embeddedfile ]] && echo $coverfile && exit
+if [[ ${#args[@]} > 1 ]]; then
+	embeddedname=$( echo "$1" | head -2 | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
+	embeddedfile=/srv/http/data/embedded/$embeddedname.jpg
+	coverfile=/data/embedded/$embeddedname.$date.jpg
+	[[ -e $embeddedfile ]] && echo $coverfile && exit
+fi
 
 ### 3 - embedded ################################################
 files=$( mpc ls "$mpdpath" 2> /dev/null )
