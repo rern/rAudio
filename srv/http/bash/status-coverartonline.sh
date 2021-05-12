@@ -15,11 +15,6 @@ dirtmp=/srv/http/data/shm
 name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 date=$( date +%s )
 
-if [[ $type == 'licover' ]]; then
-	file=$( ls /srv/http/data/tmp/licover-$name.* 2> /dev/null )
-	[[ -e $file ]] && echo /data/tmp/licover-$name.$date.${file/*.} && exit
-fi
-
 ### 1 - lastfm ##################################################
 if [[ $type != title ]]; then
 	param="album=$arg1"
@@ -61,23 +56,16 @@ fi
 [[ -z $url || $url == null ]] && exit
 
 ext=${url/*.}
-
-if [[ $type == 'licover' ]]; then # to save ram - keep all in .../data/tmp - not .../data/shm
-	coverfile=$dirtmp/licover-$name.$ext
-	curl -s $url -o $coverfile
-	[[ -e $coverfile ]] && echo /data/tmp/licover-$name.$date.$ext
+if [[ $type == 'audiocd' ]]; then
+	coverfile=/srv/http/data/audiocd/$discid.$ext
+	coverart=/data/audiocd/$discid.$date.$ext
 else
-	if [[ $type == 'audiocd' ]]; then
-		coverfile=/srv/http/data/audiocd/$discid.$ext
-		coverart=/data/audiocd/$discid.$date.$ext
-	else
-		rm -f $dirtmp/online-*
-		coverfile=$dirtmp/online-$name.$ext
-		coverart=/data/shm/online-$name.$date.$ext
-	fi
-	curl -s $url -o $coverfile
-	if [[ -e $coverfile ]]; then
-		curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
-		exit # for radio paradise
-	fi
+	rm -f $dirtmp/online-*
+	coverfile=$dirtmp/online-$name.$ext
+	coverart=/data/shm/online-$name.$date.$ext
+fi
+curl -s $url -o $coverfile
+if [[ -e $coverfile ]]; then
+	curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
+	exit # for radio paradise
 fi

@@ -26,21 +26,32 @@ if [[ -n $coverfile ]]; then
 	exit
 fi
 
+[[ ${#args[@]} == 1 ]] && exit
+
 ### 2 - already extracted embedded-file #########################
-if [[ ${#args[@]} > 1 ]]; then
-	embeddedname=$( echo "$1" | head -2 | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
-	embeddedfile=/srv/http/data/embedded/$embeddedname.jpg
-	coverfile=/data/embedded/$embeddedname.$date.jpg
-	[[ -e $embeddedfile ]] && echo $coverfile && exit
+covername=$( echo "$1" | head -2 | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
+embeddedfile=/srv/http/data/embedded/$covername.jpg
+coverfile=/data/embedded/$covername.$date.jpg
+if [[ -e $embeddedfile ]]; then
+	echo $coverfile
+	exit
 fi
 
-### 3 - embedded ################################################
+### 3 - already fetched online-file #########################
+fetchedfile=$( ls /srv/http/data/shm/online-$covername.* 2> /dev/null )
+echo $fetchedfile > /root/fetchedfile
+if [[ -e $fetchedfile ]]; then
+	echo /data/shm/online-$covername.$date.${fetchedfile/*.}
+	exit
+fi
+
+### 4 - embedded ################################################
 files=$( mpc ls "$mpdpath" 2> /dev/null )
 readarray -t files <<<"$files"
 for file in "${files[@]}"; do
 	file="/mnt/MPD/$file"
 	if [[ -f "$file" ]]; then
-		#ffmpeg -i "$file" $embeddedfile &> /dev/null
+		#ffmpeg -i "$file" $file &> /dev/null
 		kid3-cli -c "select \"$file\"" -c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
 		[[ -e $embeddedfile ]] && echo $coverfile && exit
 	fi
