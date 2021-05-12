@@ -2046,9 +2046,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 				$count.prev().addBack().remove();
 			}
 		}
-		bash( [ 'plremove', $li.index() + 1 ] );
-		if ( $li.hasClass( 'active' ) ) $li.next().addClass( 'active' );
-		$li.remove();
+		plRemove( $li );
 	} else {
 		bash( [ 'plremove' ] );
 	}

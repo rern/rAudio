@@ -641,10 +641,12 @@ plorder )
 	;;
 plremove )
 	pos=${args[1]}
+	activenext=${args[2]}
 	touch $flagpladd
 	touch $flag
 	if [[ -n $pos ]]; then
 		mpc del $pos
+		[[ -n $activenext ]] && mpc play $activenext && mpc stop
 	else
 		mpc clear
 	fi

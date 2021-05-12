@@ -834,6 +834,22 @@ function playlistProgress() {
 		setTitleWidth();
 	}
 }
+function plRemove( $li ) {
+	var tracknum = $li.index() + 1;
+	var activenext = -1;
+	if ( $li.hasClass( 'active' ) ) {
+		if ( tracknum < G.status.playlistlength ) {
+			activenext = tracknum;
+		} else {
+			activenext = tracknum - 1;
+		}
+	}
+	bash( [ 'plremove', tracknum, activenext ] );
+	if ( activenext !== -1 ) {
+		activenext === tracknum ? $li.next().addClass( 'active' ) : $li.prev().addClass( 'active' );
+	}
+	$li.remove();
+}
 function renderLibrary() {
 	G.query = [];
 	$( '#lib-path' ).css( 'max-width', '' );

@@ -558,7 +558,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'remove':
 			G.contextmenu = 1;
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
-			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
+			plRemove( G.list.li );
 			return
 		case 'savedpladd':
 			info( {

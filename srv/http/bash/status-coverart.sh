@@ -39,7 +39,6 @@ fi
 
 ### 3 - already fetched online-file #########################
 fetchedfile=$( ls /srv/http/data/shm/online-$covername.* 2> /dev/null )
-echo $fetchedfile > /root/fetchedfile
 if [[ -e $fetchedfile ]]; then
 	echo /data/shm/online-$covername.$date.${fetchedfile/*.}
 	exit
