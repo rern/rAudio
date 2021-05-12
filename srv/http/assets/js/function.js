@@ -835,20 +835,42 @@ function playlistProgress() {
 	}
 }
 function plRemove( $li ) {
-	var tracknum = $li.index() + 1;
-	var activenext = -1;
-	if ( $li.hasClass( 'active' ) ) {
-		if ( tracknum < G.status.playlistlength ) {
-			activenext = tracknum;
+	if ( G.status.playlistlength === 1 ) {
+		bash( [ 'plremove' ] );
+	} else {
+		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
+		var file = $li.hasClass( 'file' );
+		var $count = file ? $( '#pl-trackcount' ) : $( '#pl-radiocount' );
+		var count = +$count.text().replace( /,|\./g, '' ) - 1;
+		if ( count ) {
+			$count.text( count.toLocaleString() );
+			if ( file ) $( '#pl-time' )
+							.data( 'time', total )
+							.text( second2HMS( total ) );
 		} else {
-			activenext = tracknum - 1;
+			if ( file ) {
+				$( '#pl-time' ).data( 'time', 0 ).empty();
+				$count.next().addBack().remove()
+			} else {
+				$count.prev().addBack().remove();
+			}
 		}
+		var tracknum = $li.index() + 1;
+		if ( $li.hasClass( 'active' ) ) {
+			if ( tracknum < G.status.playlistlength ) {
+				var activenext = tracknum;
+				$li.next().addClass( 'active' );
+			} else {
+				var activenext = tracknum - 1;
+				$li.prev().addClass( 'active' );
+			}
+		} else {
+			var activenext = '';
+		}
+		console.log( [ 'plremove', tracknum, activenext ] );
+		bash( [ 'plremove', tracknum, activenext ] );
+		$li.remove();
 	}
-	bash( [ 'plremove', tracknum, activenext ] );
-	if ( activenext !== -1 ) {
-		activenext === tracknum ? $li.next().addClass( 'active' ) : $li.prev().addClass( 'active' );
-	}
-	$li.remove();
 }
 function renderLibrary() {
 	G.query = [];

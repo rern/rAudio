@@ -2027,29 +2027,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var wH = window.innerHeight;
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
-	if ( G.status.playlistlength > 1 ) {
-		var $li = $( this ).parent();
-		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
-		var file = $li.hasClass( 'file' );
-		var $count = file ? $( '#pl-trackcount' ) : $( '#pl-radiocount' );
-		var count = +$count.text().replace( /,|\./g, '' ) - 1;
-		if ( count ) {
-			$count.text( count.toLocaleString() );
-			if ( file ) $( '#pl-time' )
-							.data( 'time', total )
-							.text( second2HMS( total ) );
-		} else {
-			if ( file ) {
-				$( '#pl-time' ).data( 'time', 0 ).empty();
-				$count.next().addBack().remove()
-			} else {
-				$count.prev().addBack().remove();
-			}
-		}
-		plRemove( $li );
-	} else {
-		bash( [ 'plremove' ] );
-	}
+	plRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	var $target = $( e.target );
