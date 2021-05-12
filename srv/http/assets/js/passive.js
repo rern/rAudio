@@ -170,7 +170,6 @@ function psCoverart( data ) {
 					$( '#coverart' )
 						.attr( 'src', url )
 						.removeClass( 'hide' );
-				console.log(covername)
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
