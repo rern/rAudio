@@ -455,14 +455,16 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$icon = 'artist';
 		}
 		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$sh = [ $artist, $album, ( $cue ? $dir : $file0 ) ];
-		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "';
-		$script.= escape( implode( "\n", $sh ) ).'"';
+		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
+		$script.= ' "'.escape( implode( "\n", [ $artist, $album, ( $cue ? $dir : $file0 ) ] ) ).'"';
 		$coverart = exec( $script );
 		$nocover = '';
 		if ( $coverart ) {
 			$nocover = substr( $coverart, 0, 5 ) === '/data' ? ' nocover' : '';
 		} else {
+			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
+			$script.= ' "'.escape( implode( "\n", [ $artist, $album, 'licover' ] ) ).'" &> /dev/null &';
+			$coverart = exec( $script );
 			$coverart = '/assets/img/coverart.'.time().'.svg';
 			$nocover = ' nocover';
 		}
