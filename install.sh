@@ -7,7 +7,26 @@ alias=r1
 if [[ ! -e /usr/bin/cd-discid ]]; then
 	pacman -Sy --noconfirm cd-discid
 	mkdir -p /srv/http/data/audiocd
-	udevdrestart=1
+fi
+file=/etc/systemd/system/systemd-udevd.service.d/ipaddressallow.conf
+if ! grep -q IPAddressDeny=$ $file; then
+	echo "\
+[Service]
+IPAddressDeny=
+" > $file
+	systemctl daemon-reload
+	systemctl restart systemd-udevd
+fi
+file=/etc/udev/rules.d/cdrom.rules
+if [[ ! -e $file ]]; then
+	wget -q https://github.com/rern/rOS/raw/main$file -P /etc/udev/rules.d
+	udevadm control --reload-rules && udevadm trigger
+fi
+
+if [[ ! -e /boot/overlays/waveshare35a.dtbo ]]; then
+	for name in a b b-v2 c; do
+		wget -q https://github.com/rern/rOS/raw/main/boot/overlays/waveshare35$name.dtbo -P /boot/overlays
+	done
 fi
 
 grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
@@ -30,6 +49,7 @@ fi
 file=/usr/lib/systemd/system/mpdscribble@.service
 if grep -q User=mpdscribble $file; then
 	sed -i 's/User=.*/User=mpd/' $file
+	systemctl daemon-reload
 fi
 
 connected=$( netctl list | grep ^* | sed 's/^\* //' )
@@ -45,9 +65,5 @@ grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
 installstart "$1"
 
 getinstallzip
-
-systemctl daemon-reload
-systemctl restart systemd-udevd
-udevadm control --reload-rules && udevadm trigger
 
 installfinish
