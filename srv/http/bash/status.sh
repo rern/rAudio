@@ -420,7 +420,7 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $coverart ]] && exit
+[[ -n $coverart || $ext == CD ]] && exit
 
 if [[ $ext == Radio ]]; then
 	[[ $state != play || -z $Artist || -z $Title ]] && exit
@@ -429,15 +429,13 @@ if [[ $ext == Radio ]]; then
 $Artist
 $Title
 title"
-elif [[ -n $Artist && -n $Album ]]; then
+else
+	[[ -z $Artist || -z $Album ]] && exit
+	
 	args="\
 $Artist
 $Album"
-	[[ $ext == CD ]] && args+="
-audiocd
-$discid"
 fi
-if [[ -n $args ]]; then
-	killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-	/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
-fi
+
+killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &

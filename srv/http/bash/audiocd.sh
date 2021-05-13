@@ -87,12 +87,6 @@ if [[ ! -e /srv/http/data/audiocd/$discid ]]; then
 			tracks+="$artist^$album^${titles[i]}^$time"
 		done
 		echo "$tracks" > /srv/http/data/audiocd/$discid
-		args="\
-$artist
-$album
-audiocd
-$discid"
-		/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
 	fi
 fi
 # add tracks to playlist
@@ -103,3 +97,18 @@ done
 echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
+
+# coverart
+if [[ -z $( ls /srv/http/data/audiocd/$discid.* 2> /dev/null ) ]]; then
+	if [[ -z $artist ]]; then
+		data=$( head -1 /srv/http/data/audiocd/$discid )
+		artist=$( echo $data | cut -d^ -f1 )
+		album=$( echo $data | cut -d^ -f2 )
+	fi
+	args="\
+$artist
+$album
+audiocd
+$discid"
+	/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
+fi
