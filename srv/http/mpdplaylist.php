@@ -1,6 +1,8 @@
 <?php
 include '/srv/http/indexbar.php';
 
+$dirplaylist = '/srv/http/data/playlists';
+$dirtmp = '/srv/http/data/shm';
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 // current, delete, edit, get, list, load, save
 switch( $cmd ) {
@@ -11,11 +13,11 @@ case 'current':
 	echo json_encode( $array );
 	break;
 case 'delete':
-	unlink( '/srv/http/data/playlists/'.$_POST[ 'name' ] );
+	unlink( $dirplaylist.'/'.$_POST[ 'name' ] );
 	break;
 case 'edit':
 	$name = $_POST[ 'name' ];
-	$file = '/srv/http/data/playlists/'.$name;
+	$file = $dirplaylist.'/'.$name;
 	$contents = file_get_contents( $file );
 	$list = json_decode( $contents );
 	
@@ -43,13 +45,13 @@ case 'edit':
 	break;
 case 'get':
 	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
-	$lists = json_decode( file_get_contents( '/srv/http/data/playlists/'.$name ) );
+	$lists = json_decode( file_get_contents( $dirplaylist.'/'.$name ) );
 	$array = htmlPlaylist( $lists, $name );
 	echo json_encode( $array );
 	break;
 case 'list':
 	include '/srv/http/bash/cmd-listsort.php';
-	$lists = array_slice( scandir( '/srv/http/data/playlists' ), 2 );
+	$lists = array_slice( scandir( $dirplaylist ), 2 );
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
@@ -102,7 +104,7 @@ case 'load': // load saved playlist to current
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
 	
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
-	$lines = file_get_contents( '/srv/http/data/playlists/'.$name );
+	$lines = file_get_contents( $dirplaylist.'/'.$name );
 	$lines = json_decode( $lines );
 	$list = $range = $fileprev = '';
 	$track0prev = $trackprev = $i = $j = 0;
@@ -158,9 +160,8 @@ case 'load': // load saved playlist to current
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
 	break;
 case 'save':
-	$path = '/srv/http/data/playlists/';
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
-	$file = $path.$name;
+	$file = $dirplaylist.'/'.$name;
 	if ( file_exists( $file ) ) exit( '-1' );
 	
 	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
@@ -210,8 +211,8 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
 				$coverfile = glob( $pathglob.'*' );
 			} else {
-				$disid = file_get_contents( '/srv/http/data/shm/audiocd' );
-				$pathnoext = '/data/audiocd/'.rtrim( $disid ).'.';
+				$disid = file( $dirtmp.'/audiocd' )[ 0 ];
+				$pathnoext = '/data/audiocd/'.$disid.'.';
 				$coverfile = glob( '/srv/http'.$pathnoext.'*' );
 			}
 			if ( count( $coverfile ) ) {
@@ -271,7 +272,7 @@ function playlist() { // current playlist
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
 	if ( !count( $lists ) ) {
-		@unlink( '/srv/http/data/shm/playlist' );
+		@unlink( $dirtmp.'/playlist' );
 		exit( '-1' );
 	}
 	
@@ -284,7 +285,7 @@ function playlist() { // current playlist
 			$val = $list[ $i ];
 			if ( $key === 'file' ) {
 				if ( substr( $val, 0, 4 )  === 'cdda' ) {
-					$id = @file_get_contents( '/srv/http/data/shm/audiocd' );
+					$id = @file_get_contents( $dirtmp.'/audiocd' );
 					if ( $id ) {
 						$track = substr( $list[ $i ], 8 );
 						$audiocd = explode( '^', exec( 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id ) );
