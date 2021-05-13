@@ -110,8 +110,7 @@ $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( 'coverart' in G.status 
-		&& G.status.coverart.split( '-' )[ 0 ] === '/data/shm/online'
+	if ( G.status.coverart.slice( 0, 5 ) === '/data'
 		&& !G.status.webradio
 		&& G.status.player !== 'bluetooth'
 	) {

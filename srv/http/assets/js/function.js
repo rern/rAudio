@@ -313,17 +313,27 @@ function displayGet( callback ) {
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
-	$( '.playericon' ).addClass( 'hide' );
 	if ( !( 'file' in G.status ) ) return
 	
+	var iplayer;
 	if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
-		var iplayer = 'radiofrance';
+		iplayer = 'radiofrance';
 	} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
-		var iplayer = 'radioparadise';
+		iplayer = 'radioparadise';
 	} else if ( G.status.webradio ) {
-		var iplayer = G.status.webradio ? 'webradio' : G.status.player;
+		iplayer = 'webradio';
 	} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
-		var iplayer = 'audiocd';
+		iplayer = 'audiocd';
+	} else {
+		iplayer = G.status.player === 'mpd' ? '' : G.status.player;
+	}
+	if ( iplayer ) {
+		$( '#playericon' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-'+ iplayer )
+			.removeClass( 'hide' );
+	} else {
+		$( '#playericon' ).addClass( 'hide' );
 	}
 	$( '#i-'+ iplayer ).removeClass( 'hide' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
