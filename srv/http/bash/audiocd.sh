@@ -30,11 +30,13 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
 		pushstreamNotify 'Removed from Playlist.'
-		[[ $( mpc | head -1 | cut -d: -f1 ) == cdda ]] && mpc stop
+		[[ $( mpc | head -c 4 ) == cdda ]] && mpc stop
 		tracktop=$( echo "$tracks" | head -1 )
 		mpc del $tracks
-		mpc play $(( tracktop - 1 ))
-		mpc stop
+		if (( $tracktop > 1 )); then
+			mpc play $(( tracktop - 1 ))
+			mpc stop
+		fi
 		pushstreamPlaylist
 	fi
 	if [[ $1 == off ]]; then
