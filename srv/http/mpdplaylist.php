@@ -211,9 +211,13 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
 				$coverfile = glob( $pathglob.'*' );
 			} else {
-				$disid = file( $dirtmp.'/audiocd' )[ 0 ];
-				$pathnoext = '/data/audiocd/'.$disid.'.';
-				$coverfile = glob( '/srv/http'.$pathnoext.'*' );
+				if ( file_exists( $dirtmp.'/audiocd' ) ) {
+					$disid = file( $dirtmp.'/audiocd' )[ 0 ];
+					$pathnoext = '/data/audiocd/'.$disid.'.';
+					$coverfile = glob( '/srv/http'.$pathnoext.'*' );
+				} else {
+					$coverfile = [];
+				}
 			}
 			if ( count( $coverfile ) ) {
 				$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
