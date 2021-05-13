@@ -2,6 +2,9 @@
 include '/srv/http/indexbar.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
+$dirplaylists = '/srv/http/data/playlists/';
+$dirtmp = '/srv/http/data/shm';
+
 // current, delete, edit, get, list, load, save
 switch( $cmd ) {
 	
@@ -11,11 +14,11 @@ case 'current':
 	echo json_encode( $array );
 	break;
 case 'delete':
-	unlink( '/srv/http/data/playlists/'.$_POST[ 'name' ] );
+	unlink( $dirplaylists.$_POST[ 'name' ] );
 	break;
 case 'edit':
 	$name = $_POST[ 'name' ];
-	$file = '/srv/http/data/playlists/'.$name;
+	$file = $dirplaylists.$name;
 	$contents = file_get_contents( $file );
 	$list = json_decode( $contents );
 	
@@ -43,13 +46,13 @@ case 'edit':
 	break;
 case 'get':
 	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
-	$lists = json_decode( file_get_contents( '/srv/http/data/playlists/'.$name ) );
+	$lists = json_decode( file_get_contents( $dirplaylists.$name ) );
 	$array = htmlPlaylist( $lists, $name );
 	echo json_encode( $array );
 	break;
 case 'list':
 	include '/srv/http/bash/cmd-listsort.php';
-	$lists = array_slice( scandir( '/srv/http/data/playlists' ), 2 );
+	$lists = array_slice( scandir( $dirplaylists ), 2 );
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
@@ -102,7 +105,7 @@ case 'load': // load saved playlist to current
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
 	
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
-	$lines = file_get_contents( '/srv/http/data/playlists/'.$name );
+	$lines = file_get_contents( $dirplaylists.$name );
 	$lines = json_decode( $lines );
 	$list = $range = $fileprev = '';
 	$track0prev = $trackprev = $i = $j = 0;
@@ -158,9 +161,8 @@ case 'load': // load saved playlist to current
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
 	break;
 case 'save':
-	$path = '/srv/http/data/playlists/';
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
-	$file = $path.$name;
+	$file = $dirplaylists.$name;
 	if ( file_exists( $file ) ) exit( '-1' );
 	
 	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
