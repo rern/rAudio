@@ -421,8 +421,8 @@ if [[ $fileheader != cdda && $fileheader != http ]]; then
 $Artist
 $Album
 $file0"
-	coverfile=$( /srv/http/bash/status-coverart.sh "$args" )
-	coverart="/mnt/MPD/$( dirname "$file0" )/${coverfile%.*}.$date.${coverfile/*.}"
+	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
+	[[ ${coverart:0:1} != / ]] && coverart="/mnt/MPD/$( dirname "$file0" )/${coverart%.*}.$date.${coverart/*.}"
 fi
 ########
 status+='
