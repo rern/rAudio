@@ -189,12 +189,19 @@ function psCoverart( data ) {
 			} else {
 				if ( !$( '#pl-index' ).hasClass( 'hide' ) ) return
 				
-				var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
-				var lipath;
-				$li.filter( function() {
-					lipath = $( this ).find( '.lipath' ).text()
-					return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath
-				} ).each( function() {
+				if ( !cd ) {
+					var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+					var lipath;
+					var $litarget = $li.filter( function() {
+						lipath = $( this ).find( '.lipath' ).text()
+						return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath;
+					} );
+				} else {
+					var $litarget = $( '#pl-list li' ).filter( function() {
+						return $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda';
+					} );
+				}
+				$litarget.each( function() {
 					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
 				} );
 			}
