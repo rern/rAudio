@@ -460,7 +460,9 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$script.= escape( implode( "\n", $sh ) ).'"';
 		$coverart = exec( $script );
 		$nocover = '';
-		if ( !$coverart ) {
+		if ( $coverart ) {
+			$nocover = substr( $coverart, 0, 5 ) === '/data' ? ' nocover' : '';
+		} else {
 			$coverart = '/assets/img/coverart.'.time().'.svg';
 			$nocover = ' nocover';
 		}
