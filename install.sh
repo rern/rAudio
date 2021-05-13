@@ -47,10 +47,7 @@ installstart "$1"
 getinstallzip
 
 systemctl daemon-reload
-/srv/http/bash/mpd-conf.sh
-if [[ -n $udevdrestart ]]; then
-	systemctl restart systemd-udevd
-	udevadm control --reload-rules && udevadm trigger
-fi
+systemctl restart systemd-udevd
+udevadm control --reload-rules && udevadm trigger
 
 installfinish
