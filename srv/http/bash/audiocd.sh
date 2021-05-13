@@ -23,6 +23,7 @@ input {\
 }' /etc/mpd.conf
 	systemctl restart mpd
 	pushstream refresh '{ "page": "player" }'
+	exit
 elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playlist
 	rm -f $dirtmp/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
@@ -43,9 +44,10 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 		systemctl restart mpd
 		pushstream refresh '{ "page": "player" }'
 	fi
+	exit
 fi
 
-[[ -n $1 || ! -e /dev/sr0 || -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+[[ -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
 eject -x 0 /dev/sr0 # set max speed if supported by device
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
