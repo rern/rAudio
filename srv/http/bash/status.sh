@@ -422,7 +422,7 @@ $Artist
 $Album
 $file0"
 	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
-	[[ ${coverart:0:1} != / ]] && coverart="/mnt/MPD/$( dirname "$file0" )/${coverart%.*}.$date.${coverart/*.}"
+	[[ ${coverart:0:1} != / ]] && coverart="/mnt/MPD/$( dirname "$file0" )/$coverart"
 fi
 ########
 status+='
