@@ -48,18 +48,17 @@ fi
 [[ -n $1 || ! -e /dev/sr0 ]] && exit
 
 eject -x 0 /dev/sr0 # set max speed if supported by device
-discid=$( cd-discid 2> /dev/null ) # id tracks leadinframe frame1 frame2 ... totalseconds
-[[ -z $discid ]] && exit
+cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
+[[ -z $cddiscid ]] && exit
 
-discidata=( $discid )
-tracksL=${discidata[1]}
-id=${discidata[0]}
+discid=${cddiscid[0]}
 
-if [[ ! -e /srv/http/data/audiocd/$id ]]; then
+if [[ ! -e /srv/http/data/audiocd/$discid ]]; then
 	pushstreamNotify 'Search CD data ...'
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
+	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
-	query=$( curl -sL "$server+query+${discid// /+}&$options" | head -2 | tr -d '\r' )
+	query=$( curl -sL "$server+query+$discdata&$options" | head -2 | tr -d '\r' )
 	code=$( echo "$query" | head -c 3 )
 	if (( $code == 210 )); then  # exact match
 	  genre_id=$( echo "$query" | sed -n 2p | cut -d' ' -f1,2 | tr ' ' + )
@@ -75,9 +74,9 @@ if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 		artist=${artist_album[0]}
 		album=${artist_album[1]}
 		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
-		frames=( ${discidata[@]:2} )
+		frames=( ${cddiscid[@]:2} )
 		unset 'frames[-1]'
-		frames+=( $(( ${discidata[@]: -1} * 75 )) )
+		frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
 		framesL=${#frames[@]}
 		for (( i=1; i < framesL; i++ )); do
 			f0=${frames[$(( i - 1 ))]}
@@ -85,20 +84,20 @@ if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 			time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
 			tracks+="$artist^$album^${titles[i]}^$time"
 		done
-		echo "$tracks" > /srv/http/data/audiocd/$id
+		echo "$tracks" > /srv/http/data/audiocd/$discid
 		args="\
 $artist
 $album
 audiocd
-$id"
+$discid"
 		/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
 	fi
 fi
 # add tracks to playlist
 pushstreamNotify 'Add tracks to Playlist ...'
-for i in $( seq 1 $tracksL ); do
+for i in $( seq 1 ${cddiscid[1]} ); do
   mpc add cdda:///$i
 done
-echo $id > $dirtmp/audiocd
+echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
