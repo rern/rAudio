@@ -57,15 +57,12 @@ fi
 
 ext=${url/*.}
 if [[ $type == 'audiocd' ]]; then
-	coverfile=/srv/http/data/audiocd/$discid.$ext
-	coverart=/data/audiocd/$discid.$date.$ext
+	urlname=/data/audiocd/$discid
 else
 	rm -f $dirtmp/online-*
-	coverfile=$dirtmp/online-$name.$ext
-	coverart=/data/shm/online-$name.$date.$ext
+	[[ $type == 'licover' ]] && prefix=licover || prefix=online
+	urlname=/data/shm/$prefix-$name
 fi
+coverfile=/srv/http$urlname.$ext
 curl -s $url -o $coverfile
-if [[ -e $coverfile ]]; then
-	curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
-	exit # for radio paradise
-fi
+[[ -e $coverfile ]] && curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'
