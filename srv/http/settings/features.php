@@ -185,6 +185,14 @@
 	<span <?=$classhelp?>><a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.</span>
 </div>
 <div class="col-l single">
+	Play on Insert CD<i class="fa fa-audiocd"></i>
+</div>
+<div class="col-r">
+	<input id="autoplaycd" <?=$chknoset?>>
+	<div class="switchlabel" for="autoplaycd"></div>
+	<span <?=$classhelp?>>Start playing automatically on audio CD inserting.</span>
+</div>
+<div class="col-l single">
 	Play on Startup<i class="fa fa-refresh-play"></i>
 </div>
 <div class="col-r">
@@ -192,7 +200,6 @@
 	<div class="switchlabel" for="autoplay"></div>
 	<span <?=$classhelp?>>Start playing automatically after boot.</span>
 </div>
-
 </div>
 
 <div style="clear: both"></div>

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 dirtmp=/srv/http/data/shm
+diraudiocd=/srv/http/data/audiocd
 
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
@@ -55,7 +56,7 @@ cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2
 
 discid=${cddiscid[0]}
 
-if [[ ! -e /srv/http/data/audiocd/$discid ]]; then
+if [[ ! -e $diraudiocd/$discid ]]; then
 	pushstreamNotify 'Search CD data ...'
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
@@ -86,7 +87,7 @@ if [[ ! -e /srv/http/data/audiocd/$discid ]]; then
 			time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
 			tracks+="$artist^$album^${titles[i]}^$time"
 		done
-		echo "$tracks" > /srv/http/data/audiocd/$discid
+		echo "$tracks" > $diraudiocd/$discid
 	fi
 fi
 # add tracks to playlist
@@ -97,11 +98,12 @@ done
 echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
+[[ -e /srv/http/data/system/autoplaycd ]] && mpc play $( mpc -f %position% playlist | grep ^cdda: | head -1 )
 
 # coverart
-if [[ -z $( ls /srv/http/data/audiocd/$discid.* 2> /dev/null ) ]]; then
+if [[ -z $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
 	if [[ -z $artist ]]; then
-		data=$( head -1 /srv/http/data/audiocd/$discid )
+		data=$( head -1 $diraudiocd/$discid )
 		artist=$( echo $data | cut -d^ -f1 )
 		album=$( echo $data | cut -d^ -f2 )
 	fi
