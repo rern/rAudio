@@ -985,10 +985,10 @@ function renderLibraryList( data ) {
 					}
 				} );
 		} );
-		if ( $( '#lib-list img.lazy' ).length ) {
-			G.lazyload.update();
-		} else if ( $( '.licover' ).length ) {
+		if ( $( '.licover' ).length ) {
 			setTrackCoverart();
+		} else if ( $( '#lib-list img.lazy' ).length ) {
+			G.lazyload.update();
 		}
 		$( '#lib-list p' )
 			.toggleClass( 'fixedcover', $( '#lib-list li:eq( 1 )' ).hasClass( 'track1' ) )
@@ -1588,30 +1588,17 @@ function setTitleWidth() {
 	$( '.duration-right' ).css( 'right', '' );
 }
 function setTrackCoverart() {
-	$( '#liimg' ).on( 'load', function() {
+	if ( G.display.hidecover ) return
+	
+	$( '#liimg' ).on( 'load', function() { // not exist on initial page load
 		$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
+		if ( $( '.licoverimg' ).hasClass( 'nocover' ) && $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) {
+			$( '#liimg' ).after( '<i class="covedit fa fa-save cover-save"></i>' );
+		}
 	} );
 	if ( !G.display.fixedcover ) {
 		$( '.licover' ).addClass( 'nofixed' );
 		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
-	}
-	if ( $( '.licoverimg' ).hasClass( 'nocover' ) ) {
-		var artist = $( '.liartist' ).text();
-		var album = $( '.lialbum' ).text();
-		$.post(
-			  cmdphp
-			, { cmd: 'sh', sh: [ 'status-coverartonline.sh', artist, album, 'licover' ] }
-			, function( url ) {
-				if ( url ) {
-					$( '#liimg' )
-						.attr( 'src', url )
-						.after( '<i class="covedit fa fa-save cover-save"></i>' )
-						.on( 'load', function() {
-							$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
-						} );
-				}
-			}
-		);
 	}
 }
 function stopAirplay() {
