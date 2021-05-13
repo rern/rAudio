@@ -36,7 +36,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Support boot from USB drive without SD card
 - USB drive
 	- plug ang play
-	- Audio CD - with metadata and coverarts
+	- Audio CD (external power needed) - with metadata and coverarts
 	
 ### Default root password: `ros`
 
