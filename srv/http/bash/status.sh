@@ -420,17 +420,17 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $coverart || $ext == CD ]] && exit
+[[ -n $coverart || $ext == CD || -z $Artist ]] && exit
 
 if [[ $ext == Radio ]]; then
-	[[ $state != play || -z $Artist || -z $Title ]] && exit
+	[[ $state != play || -z $Title ]] && exit
 	
 	args="\
 $Artist
 $Title
 title"
 else
-	[[ -z $Artist || -z $Album ]] && exit
+	[[ -z $Album ]] && exit
 	
 	args="\
 $Artist
