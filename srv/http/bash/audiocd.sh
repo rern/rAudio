@@ -71,7 +71,9 @@ if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 	else
 		pushstreamNotify 'Fetch CD data ...'
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
-		artist_album=$( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |^|' )
+		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
+		artist=${artist_album[0]}
+		album=${artist_album[1]}
 		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
 		frames=( ${discidata[@]:2} )
 		unset 'frames[-1]'
@@ -81,9 +83,15 @@ if [[ ! -e /srv/http/data/audiocd/$id ]]; then
 			f0=${frames[$(( i - 1 ))]}
 			f1=${frames[i]}
 			time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
-			tracks+="$artist_album^${titles[i]}^$time"
+			tracks+="$artist^$album^${titles[i]}^$time"
 		done
 		echo "$tracks" > /srv/http/data/audiocd/$id
+		args="\
+$artist
+$album
+audiocd
+$id"
+		/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
 	fi
 fi
 # add tracks to playlist
