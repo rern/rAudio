@@ -190,7 +190,7 @@
 <div class="col-r">
 	<input id="autoplaycd" <?=$chknoset?>>
 	<div class="switchlabel" for="autoplaycd"></div>
-	<span <?=$classhelp?>>Start playing automatically on audio CD inserting.</span>
+	<span <?=$classhelp?>>Start playing automatically on audio CD inserting or power on with CD inserted.</span>
 </div>
 <div class="col-l single">
 	Play on Startup<i class="fa fa-refresh-play"></i>
