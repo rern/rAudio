@@ -27,7 +27,7 @@ coverfile=$( ls -1 "$dir" \
 				| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 				| grep -i '.gif$\|.jpg$\|.png$' \
 				| head -1 )
-[[ -e $coverfile ]] && echo $dir/${coverfile%.*}.$date.${coverfile/*.} && exit
+[[ -e "$dir/$coverfile" ]] && echo $dir/${coverfile%.*}.$date.${coverfile/*.} && exit
 
 ### 4 - embedded ################################################
 urlname=/data/embedded/$covername

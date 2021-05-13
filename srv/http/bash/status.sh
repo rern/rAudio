@@ -406,17 +406,26 @@ else
 	fi
 fi
 
-if [[ $fileheader != cdda && $fileheader != http ]] && grep -q '"cover": true,' /srv/http/data/system/display; then
-	coverart=$( /srv/http/bash/status-coverart.sh "\
-$Artist
-$Album
-$file0" )
-fi
 ########
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
-, "coverart" : "'$coverart'"
 , "sampling" : "'$sampling'"'
+if grep -q '"cover": false,' /srv/http/data/system/display; then
+# >>>>>>>>>>
+	echo {$status}
+	exit
+fi
+
+if [[ $fileheader != cdda && $fileheader != http ]]; then
+	args="\
+$Artist
+$Album
+$file0"
+	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
+fi
+########
+status+='
+, "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 echo {$status}
 
@@ -436,6 +445,6 @@ else
 $Artist
 $Album"
 fi
-
+echo "$args"; exit
 killall status-coverartonline.sh &> /dev/null # new track - kill if still running
 /srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
