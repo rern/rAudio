@@ -92,14 +92,14 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 fi
 # add tracks to playlist
 pushstreamNotify 'Add tracks to Playlist ...'
+[[ -e /srv/http/data/system/autoplaycd ]] && pllength=$( mpc playlist | wc -l )
 for i in $( seq 1 ${cddiscid[1]} ); do
   mpc add cdda:///$i
 done
 echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
-[[ -e /srv/http/data/system/autoplaycd ]] && mpc play $( mpc -f %position% playlist | grep ^cdda: | head -1 )
-
+[[ -n $pllength ]] && mpc play $(( $pllength + 1 ))
 # coverart
 if [[ -z $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
 	if [[ -z $artist ]]; then
