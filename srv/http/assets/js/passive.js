@@ -361,6 +361,8 @@ function psNotify( data ) {
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
+	} else if ( data.title === 'Audio CD' && data.text === 'Change track ...' ) {
+		clearIntervalAll();
 	}
 }
 function psOption( data ) {

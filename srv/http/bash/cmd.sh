@@ -477,15 +477,21 @@ mpcplayback )
 	pos=${args[2]}
 	rm -f $dirtmp/radiometa
 	mpc $command $pos
-	if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
-		webradio=1
-		sleep 1 # fix: webradio start - blank 'file:' status
+	if [[ $command == play ]]; then
+		fileheadder=$( mpc | head -c 4 )
+		if [[ $fileheadder == http ]]; then
+			webradio=1
+			sleep 1 # fix: webradio start - blank 'file:' status
+		elif [[ $fileheadder == cdda ]]; then
+			pushstream notify '{"title":"Audio CD","text":"Start play ...","icon":"audiocd blink","delay":9000}'
+			sleep 10
+		fi
 	fi
 	pushstreamStatus
 	# fix webradio fast stop - start
-	if [[ -n $webradio && $command == play && -z $( echo "$status" | jq -r .Title ) ]]; then
+	if [[ -n $webradio && -z $( echo "$status" | jq -r .Title ) ]]; then
 		sleep 3
-		/srv/http/bash/cmd.sh pushstatus
+		pushstreamStatus
 	fi
 	;;
 mpcprevnext )
@@ -513,7 +519,13 @@ mpcprevnext )
 	if [[ -z $playing ]]; then
 		mpc stop
 	else
-		[[ $( mpc current -f %file% | cut -c1-4 ) == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
+		fileheadder=$( mpc | head -c 4 )
+		if [[ $fileheadder == cdda ]]; then
+			pushstream notify '{"title":"Audio CD","text":"Change track ...","icon":"audiocd blink","delay":6000}'
+			sleep 7
+		else
+			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
+		fi
 	fi
 	pushstreamStatus
 	;;
