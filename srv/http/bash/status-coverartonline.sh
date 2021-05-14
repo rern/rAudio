@@ -59,14 +59,11 @@ ext=${url/*.}
 if [[ $type == 'audiocd' ]]; then
 	urlname=/data/audiocd/$discid
 else
-	if [[ $type == 'licover' ]]; then
-		prefix=licover
-	else
-		prefix=online
-	fi
-	files=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
-	(( $( echo "$files" | wc -l ) > 10 )) && rm $( echo $files | tail -1 )
+	[[ $type == 'licover' ]] && prefix=licover && prefix=online
 	urlname=/data/shm/$prefix-$name
+	# limit fetched files: 10
+	fetchedfiles=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
+	(( $( echo "$fetchedfiles" | wc -l ) > 10 )) && rm $( echo $fetchedfiles | tail -1 )
 fi
 coverfile=/srv/http$urlname.$ext
 curl -s $url -o $coverfile
