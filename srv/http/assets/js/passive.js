@@ -133,7 +133,7 @@ function psAudiocd( data ) {
 	} else if ( 'autoplaycd' in data ) {
 		local( 5000 );
 	} else {
-		banner( 'Audio CD', data.text, 'audiocd' );
+		banner( 'Audio CD', data.text, 'audiocd blink', data.delay );
 		if ( data.text === 'Change track ...' ) clearIntervalAll();
 	}
 }

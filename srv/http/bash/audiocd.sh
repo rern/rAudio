@@ -7,14 +7,14 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamAudiocd() {
-	pushstream audiocd '{"text":"'"$1"'"}' # double quote "$1" needed
+	pushstream audiocd '{"text":"'"$1"'","delay":'$2'}' # double quote "$1" needed
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 	rm -f $dirtmp/flagpladd
 }
 
-[[ -n $1 ]] && pushstreamAudiocd "USB CD $1"
+[[ -n $1 ]] && pushstreamAudiocd "USB CD $1" 3000
 
 if [[ $1 == on ]]; then
 	sed -i '/plugin.*"curl"/ {n;a\
@@ -29,7 +29,7 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	rm -f $dirtmp/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
-		pushstreamAudiocd 'Removed from Playlist.'
+		pushstreamAudiocd 'Removed from Playlist.' -1
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc stop
 		tracktop=$( echo "$tracks" | head -1 )
 		mpc del $tracks
@@ -59,7 +59,7 @@ cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2
 discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
-	pushstreamAudiocd 'Search CD data ...'
+	pushstreamAudiocd 'Search CD data ...' -1
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
@@ -73,7 +73,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	if [[ -z $genre_id ]]; then
 		pushstream audiocd '{"discid":"'$discid'"}'
 	else
-		pushstreamAudiocd 'Fetch CD data ...'
+		pushstreamAudiocd 'Fetch CD data ...' -1
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
 		artist=${artist_album[0]}
@@ -97,7 +97,7 @@ if [[ -e /srv/http/data/system/autoplaycd ]]; then
 	autoplaycd=1
 	pushstream audiocd '{"autoplaycd":1}'
 fi
-pushstreamAudiocd 'Add tracks to Playlist ...'
+pushstreamAudiocd 'Add tracks to Playlist ...' 3000
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
   mpc add cdda:///$i

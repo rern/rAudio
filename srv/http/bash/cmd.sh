@@ -483,7 +483,7 @@ mpcplayback )
 			webradio=1
 			sleep 1 # fix: webradio start - blank 'file:' status
 		elif [[ $fileheadder == cdda ]]; then
-			pushstream notify '{"title":"Audio CD","text":"Start play ...","icon":"audiocd blink","delay":9000}'
+			pushstream audiocd '{"text":"Start play ...","delay":-1}'
 			sleep 10
 		fi
 	fi
@@ -521,7 +521,7 @@ mpcprevnext )
 	else
 		fileheadder=$( mpc | head -c 4 )
 		if [[ $fileheadder == cdda ]]; then
-			pushstream notify '{"title":"Audio CD","text":"Change track ...","icon":"audiocd blink","delay":6000}'
+			pushstream audiocd '{"text":"Change track ...","delay":-1}'
 			sleep 7
 		else
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
