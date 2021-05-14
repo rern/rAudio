@@ -458,15 +458,11 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
 		$script.= ' "'.escape( implode( "\n", [ $artist, $album, ( $cue ? $dir : $file0 ) ] ) ).'"';
 		$coverart = exec( $script );
-		$nocover = '';
-		if ( $coverart ) {
-			$nocover = substr( $coverart, 0, 5 ) === '/data' ? ' nocover' : '';
-		} else {
+		if ( !$coverart ) {
 			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
 			$script.= ' "'.escape( implode( "\n", [ $artist, $album, 'licover' ] ) ).'" &> /dev/null &';
 			$coverart = exec( $script );
 			$coverart = '/assets/img/coverart.'.time().'.svg';
-			$nocover = ' nocover';
 		}
 		$hidealbum = $album && $gmode !== 'album' ? '' : ' hide';
 		$hideartist = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';
@@ -477,7 +473,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>' )
-					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
+					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
 					.'<div class="liartist'.$hideartist.'"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>'

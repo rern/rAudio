@@ -14,11 +14,7 @@ urlname=/data/shm/licover-$covername
 coverfile=$( ls /srv/http$urlname.* 2> /dev/null )
 [[ -e $coverfile ]] && echo $urlname.$date.${coverfile/*.} && exit
 
-### 2 - already extracted embedded-file #########################
-urlname=/data/embedded/$covername
-[[ -e /srv/http$urlname.jpg ]] && echo $urlname.$date.jpg && exit
-
-### 3 - coverfile in directory ##################################
+### 2 - coverfile in directory ##################################
 [[ ${#args[@]} > 1 ]] && mpdpath=${args[2]} || mpdpath=${args[0]} # for mpdlibrary.php
 [[ ${mpdpath: -14:10} == .cue/track ]] && mpdpath=$( dirname "$mpdpath" )
 path="/mnt/MPD/$mpdpath"
@@ -27,7 +23,11 @@ coverfile=$( ls -1 "$dir" \
 				| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 				| grep -i '.gif$\|.jpg$\|.png$' \
 				| head -1 )
-[[ -e "$dir/$coverfile" ]] && echo ${coverfile/.*}.$date.${coverfile/*.} && exit
+[[ -n $coverfile ]] && echo $dir/${coverfile/.*}.$date.${coverfile/*.} && exit
+
+### 3 - already extracted embedded-file #########################
+urlname=/data/embedded/$covername
+[[ -e /srv/http$urlname.jpg ]] && echo $urlname.$date.jpg && exit
 
 ### 4 - embedded ################################################
 urlname=/data/embedded/$covername

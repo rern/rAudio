@@ -110,14 +110,13 @@ $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( G.status.coverart.slice( 0, 5 ) === '/data'
+	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& !G.status.webradio
 		&& G.status.player !== 'bluetooth'
 	) {
-		G.coversave = 1;
 		$( '#divcover' ).append( '<i class="covedit fa fa-save cover-save"></i>' );
 	} else {
-		$( '#divcover .cover-save' ).remove();
+		$( '#divcover .covedit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 	}
 	loader( 'hide' );

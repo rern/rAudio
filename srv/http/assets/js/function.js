@@ -1059,11 +1059,13 @@ function renderPlayback() {
 		return
 	}
 	
+	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '.emptyadd' ).addClass( 'hide' );
+	$( '#artist, #song, #album' ).css( 'width', '' );
+	$( '#coverart' ).css( 'opacity', '' );
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
-	$( '.playback-controls' ).css( 'visibility', 'visible' );
-	$( '#artist, #song, #album' ).css( 'width', '' );
+	
 	$( '#artist' ).html( G.status.Artist );
 	$( '#song' )
 		.html( G.status.Title )
@@ -1080,14 +1082,9 @@ function renderPlayback() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
-	if ( !G.coversave ) {
-		$( '#divcover .covedit' ).remove();
-		$( '#coverart' ).css( 'opacity', '' );
-	}
 	var displaytime = $( '#time-knob' ).is( ':visible' );
 	// webradio ////////////////////////////////////////
 	if ( G.status.webradio ) {
-		G.coversave = 0;
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
@@ -1124,10 +1121,9 @@ function renderPlayback() {
 	// others ////////////////////////////////////////
 	$( '#info' ).removeClass( 'capitalize' );
 	$( '#album' ).removeClass( 'albumradio' );
-	if ( G.status.Artist !== previousartist || G.status.Album !== previousalbum || G.status.player === 'airplay' ) {
-		G.coversave = 0;
-		renderPlaybackCoverart( G.status.coverart );
-	}
+	if ( G.status.Artist !== previousartist
+		|| G.status.Album !== previousalbum
+		|| G.status.player === 'airplay' ) renderPlaybackCoverart( G.status.coverart );
 	// time
 	time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
@@ -1602,7 +1598,7 @@ function setTrackCoverart() {
 	
 	$( '#liimg' ).on( 'load', function() { // not exist on initial page load
 		$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
-		if ( $( '.licoverimg' ).hasClass( 'nocover' ) && $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) {
+		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
 			$( '#liimg' ).after( '<i class="covedit fa fa-save cover-save"></i>' );
 		}
 	} );
