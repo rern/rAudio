@@ -71,7 +71,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
 	if [[ -z $genre_id ]]; then
-		pushstreamNotify 'CD data not found.'
+		pushstream notify '{"discid":"'$discid'"}'
 	else
 		pushstreamNotify 'Fetch CD data ...'
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r

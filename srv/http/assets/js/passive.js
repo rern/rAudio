@@ -355,14 +355,30 @@ function psMpdUpdate( data ) {
 	}
 }
 function psNotify( data ) {
+	if ( 'discid' in data ) {
+		info( {
+			  icon      : 'audiocd'
+			, title     : 'Audio CD Data'
+			, message   : 'CD data not found.'
+			, textlabel : [ 'Artist', 'Album' ]
+			, textrequired : [ 0, 1 ]
+			, ok        : function() {
+				var artist = $( '#infoTextBox' ).val();
+				var album = $( '#infoTextBox1' ).val();
+				bash( 'echo '+ artist +'^'+ album +' > /srv/http/data/audiocd/'+ data.discid );
+			}
+		} );
+		return
+	}
+	
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( data.title === 'Power' ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
-	} else if ( data.title === 'Audio CD' && data.text === 'Change track ...' ) {
-		clearIntervalAll();
+	} else if ( data.title === 'Audio CD' ) {
+		if ( data.text === 'Change track ...' ) clearIntervalAll();
 	}
 }
 function psOption( data ) {
