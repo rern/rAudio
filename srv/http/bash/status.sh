@@ -213,14 +213,17 @@ if [[ $fileheader == cdda ]]; then
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
+		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
+		[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+	else
+		Time=0
+	fi
 		status+='
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
 , "discid"    : "'$discid'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
-		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
-		[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	fi
 elif [[ $fileheader == http ]]; then
 	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
