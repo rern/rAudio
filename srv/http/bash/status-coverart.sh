@@ -15,7 +15,7 @@ coverfile=$( ls /srv/http$urlname.* 2> /dev/null )
 [[ -e $coverfile ]] && echo $urlname.$date.${coverfile/*.} && exit
 
 ### 2 - coverfile in directory ##################################
-[[ ${#args[@]} > 1 ]] && mpdpath=${args[2]} || mpdpath=${args[0]} # for mpdlibrary.php
+mpdpath=${args[2]}
 [[ ${mpdpath: -14:10} == .cue/track ]] && mpdpath=$( dirname "$mpdpath" )
 path="/mnt/MPD/$mpdpath"
 [[ -d $path ]] && dir=$path || dir=$( dirname "$path" )
