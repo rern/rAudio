@@ -50,7 +50,8 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	exit
 fi
 
-[[ -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+playlist=$( mpc -f %file% playlist )
+[[ -n $( echo "$playlist" | grep ^cdda: ) ]] && exit
 
 eject -x 0 /dev/sr0 # set max speed if supported by device
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
@@ -94,14 +95,17 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 fi
 # add tracks to playlist
 pushstreamNotify 'Add tracks to Playlist ...'
-[[ -e /srv/http/data/system/autoplaycd ]] && pllength=$( mpc playlist | wc -l )
+[[ -e /srv/http/data/system/autoplaycd ]] && autoplaypos=$(( $( echo "$playlist" | wc -l ) + 1 ))
 for i in $( seq 1 ${cddiscid[1]} ); do
   mpc add cdda:///$i
 done
 echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
-[[ -n $pllength ]] && mpc play $(( $pllength + 1 ))
+[[ -n $autoplaypos ]] && /srv/http/bash/cmd.sh "mpcplayback
+play
+$autoplaypos"
+
 # coverart
 if [[ -z $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
 	if [[ -z $artist ]]; then

@@ -111,6 +111,14 @@
 .fa-wifi3:before { content: "\f58A" }
 .fa-layer { position: absolute }
 .fa-layerlast { position: relative }
+.fa-audiocdplay:before { content: "\f597" }
+.fa-audiocdplay:after {
+	content: '\f503';
+	margin-left: -18px;
+	font-size: 24px;
+	color: var( --cg );
+	opacity: .8;
+}
 .wf1, .wf2, .wf3 {
 	width: 40px !important;
 	margin-right: 5px;

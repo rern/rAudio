@@ -185,7 +185,7 @@
 	<span <?=$classhelp?>><a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.</span>
 </div>
 <div class="col-l single">
-	Play on Insert CD<i class="fa fa-audiocd"></i>
+	Play on Insert CD<i class="fa fa-audiocdplay"></i>
 </div>
 <div class="col-r">
 	<input id="autoplaycd" <?=$chknoset?>>
