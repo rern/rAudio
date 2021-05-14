@@ -65,7 +65,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
+var streams = [ 'airplay', 'audiocd', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
@@ -81,6 +81,7 @@ pushstream.onstatuschange = function( status ) {
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
 		case 'airplay':    psAirplay( data );    break;
+		case 'audiocd':    psAudiocd( data );    break;
 		case 'bookmark':   psBookmark( data );   break;
 		case 'coverart':   psCoverart( data );   break;
 		case 'display':    psDisplay( data );    break;
@@ -105,6 +106,36 @@ function psAirplay( data ) {
 	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
+}
+function psAudiocd( data ) {
+	if ( 'discid' in data ) {
+		info( {
+			  icon         : 'audiocd'
+			, title        : 'Audio CD Data'
+			, message      : 'CD data not found.'
+			, textlabel    : [ 'Artist', 'Album' ]
+			, textrequired : [ 0, 1 ]
+			, preshow      : function() {
+				$( '.infoinput' ).click( function() {
+					noresponse = 0;
+				} );
+			}
+			, ok           : function() {
+				var artist = $( '#infoTextBox' ).val();
+				var album = $( '#infoTextBox1' ).val();
+				bash( 'echo '+ artist +'^'+ album +' > /srv/http/data/audiocd/'+ data.discid );
+			}
+		} );
+		var noresponse = 1;
+		setTimeout( function() {
+			if ( noresponse ) $( '#infoX' ).click();
+		}, 10000 );
+	} else if ( 'autoplaycd' in data ) {
+		local( 5000 );
+	} else {
+		banner( 'Audio CD', data.text, 'audiocd' );
+		if ( data.text === 'Change track ...' ) clearIntervalAll();
+	}
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -355,30 +386,12 @@ function psMpdUpdate( data ) {
 	}
 }
 function psNotify( data ) {
-	if ( 'discid' in data ) {
-		info( {
-			  icon      : 'audiocd'
-			, title     : 'Audio CD Data'
-			, message   : 'CD data not found.'
-			, textlabel : [ 'Artist', 'Album' ]
-			, textrequired : [ 0, 1 ]
-			, ok        : function() {
-				var artist = $( '#infoTextBox' ).val();
-				var album = $( '#infoTextBox1' ).val();
-				bash( 'echo '+ artist +'^'+ album +' > /srv/http/data/audiocd/'+ data.discid );
-			}
-		} );
-		return
-	}
-	
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( data.title === 'Power' ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
-	} else if ( data.title === 'Audio CD' ) {
-		if ( data.text === 'Change track ...' ) clearIntervalAll();
 	}
 }
 function psOption( data ) {
@@ -395,6 +408,8 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
+	if ( G.local ) return
+	
 	if ( data == -1 ) {
 		if ( G.playback ) {
 			getPlaybackStatus();
