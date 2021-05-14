@@ -183,6 +183,7 @@ case 'track': // for tag editor
 			$array = explode( '^^', $lists );
 		}
 	}
+	if ( isset( $_POST[ 'coverart' ] ) ) $array[] = exec( '/srv/http/bash/status-coverart.sh "'.escape( $file ).'"' );
 	break;
 case 'webradio':
 	$dirwebradios = '/srv/http/data/webradios';
