@@ -183,7 +183,6 @@ case 'track': // for tag editor
 			$array = explode( '^^', $lists );
 		}
 	}
-	if ( isset( $_POST[ 'coverart' ] ) ) $array[] = exec( '/srv/http/bash/status-coverart.sh "'.escape( $file ).'"' );
 	break;
 case 'webradio':
 	$dirwebradios = '/srv/http/data/webradios';
@@ -454,9 +453,9 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$artist = $each0->artist;
 			$icon = 'artist';
 		}
-		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
+		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
-		$script.= ' "'.escape( implode( "\n", [ $artist, $album, ( $cue ? $dir : $file0 ) ] ) ).'"';
+		$script.= ' "'.escape( implode( "\n", [ $artist.$album, $mpdpath, 'licover' ] ) ).'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) {
 			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
@@ -470,7 +469,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hideconductor = $each0->conductor && $gmode !== 'conductor' ? '' : ' hide';
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
-		$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
+		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>' )
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'

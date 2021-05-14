@@ -219,8 +219,8 @@ if [[ $fileheader == cdda ]]; then
 , "discid"    : "'$discid'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
-		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null )
-		[[ -e $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
+		[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	fi
 elif [[ $fileheader == http ]]; then
 	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
@@ -236,8 +236,8 @@ elif [[ $fileheader == http ]]; then
 , "Title"  : "'$Title'"'
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-		fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null )
-		[[ -e $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
+		fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+		[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -283,8 +283,8 @@ elif [[ $fileheader == http ]]; then
 				# fetched coverart
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null )
-				[[ -e $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
+				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+				[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 			else
 				artistname=$stationname
 				titlename=
@@ -418,9 +418,8 @@ fi
 
 if [[ $fileheader != cdda && $fileheader != http ]]; then
 	args="\
-$Artist
-$Album
-$file0"
+$Artist$Album
+$( dirname "$file0")"
 	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
 fi
 ########
@@ -445,6 +444,5 @@ else
 $Artist
 $Album"
 fi
-echo "$args"; exit
 killall status-coverartonline.sh &> /dev/null # new track - kill if still running
 /srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
