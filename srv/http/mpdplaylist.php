@@ -284,29 +284,30 @@ function playlist() { // current playlist
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		$list = explode( '^^', $list );
+		if ( substr( $list[ 3 ], 0, 4 ) === 'cdda' ) {
+			$each = ( object )[];
+			$file = $list[ 3 ];
+			$id = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$track = substr( $file, 8 );
+			$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
+			$data = $content[ $track - 1 ];
+			if ( !$data ) $data = $content[ 0 ];
+			$audiocd = explode( '^', $data );
+			$each->Artist = $audiocd[ 0 ];
+			$each->Album = $audiocd[ 1 ];
+			$each->Title = $audiocd[ 2 ];
+			$each->Time = second2HMS( $audiocd[ 3 ] );
+			$each->file = $file;
+			$each->Track = $track;
+			$array[] = $each;
+			continue;
+		}
+		
 		$each = ( object )[];
 		for ( $i = 0; $i < $fL; $i++ ) {
 			$key = $f[ $i ];
 			$val = $list[ $i ];
-			if ( $key === 'file' ) {
-				if ( substr( $val, 0, 4 )  === 'cdda' ) {
-					$id = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-					$track = substr( $list[ $i ], 8 );
-					$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
-					$data = $content[ $track - 1 ];
-					if ( !$data ) $data = $content[ 0 ];
-					$audiocd = explode( '^', $data );
-					$each->Artist = $audiocd[ 0 ];
-					$each->Album = $audiocd[ 1 ];
-					$each->Title = $audiocd[ 2 ];
-					$each->Time = second2HMS( $audiocd[ 3 ] );
-					$each->file = $val;
-					$each->Track = $track;
-					break;
-				}
-			} else {
-				$key = ucfirst( $key ); // mpd protocol keys
-			}
+			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
 			$each->$key = $val;
 		}
 		if ( substr( $each->file, 0, 4 ) === 'http' ) {
