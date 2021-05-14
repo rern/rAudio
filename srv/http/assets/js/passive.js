@@ -123,13 +123,9 @@ function psAudiocd( data ) {
 			, ok           : function() {
 				var artist = $( '#infoTextBox' ).val();
 				var album = $( '#infoTextBox1' ).val();
-				bash( 'echo '+ artist +'^'+ album +' > /srv/http/data/audiocd/'+ data.discid );
+				bash( '/srv/http/bash/audiocd.sh data "'+ artist +'^'+ album +'" '+ data.discid );
 			}
 		} );
-		var noresponse = 1;
-		setTimeout( function() {
-			if ( noresponse ) $( '#infoX' ).click();
-		}, 10000 );
 	} else if ( 'autoplaycd' in data ) {
 		local( 5000 );
 	} else {

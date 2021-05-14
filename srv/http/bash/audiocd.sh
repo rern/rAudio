@@ -14,6 +14,14 @@ pushstreamPlaylist() {
 	rm -f $dirtmp/flagpladd
 }
 
+if [[ $1 == data ]]; then
+	artistalbum=$3
+	discid=$2
+	sed -i "s/\^/$artistalbum/" $diraudiocd/$discid
+	pushstreamPlaylist
+	exit
+fi
+
 [[ -n $1 ]] && pushstreamAudiocd "USB CD $1" 3000
 
 if [[ $1 == on ]]; then
@@ -70,27 +78,25 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	elif (( $code == 200 )); then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
-	if [[ -z $genre_id ]]; then
-		pushstream audiocd '{"discid":"'$discid'"}'
-	else
+	if [[ -n $genre_id ]]; then
 		pushstreamAudiocd 'Fetch CD data ...' -1
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
 		artist=${artist_album[0]}
 		album=${artist_album[1]}
 		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
-		frames=( ${cddiscid[@]:2} )
-		unset 'frames[-1]'
-		frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
-		framesL=${#frames[@]}
-		for (( i=1; i < framesL; i++ )); do
-			f0=${frames[$(( i - 1 ))]}
-			f1=${frames[i]}
-			time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
-			tracks+="$artist^$album^${titles[i]}^$time"
-		done
-		echo "$tracks" > $diraudiocd/$discid
 	fi
+	frames=( ${cddiscid[@]:2} )
+	unset 'frames[-1]'
+	frames+=( $(( ${cddiscid[@]: -1} * 75 )) )
+	framesL=${#frames[@]}
+	for (( i=1; i < framesL; i++ )); do
+		f0=${frames[$(( i - 1 ))]}
+		f1=${frames[i]}
+		time=$(( ( f1 - f0 ) / 75 ))$'\n'  # 75 frames/sec
+		tracks+="$artist^$album^${titles[i]}^$time"
+	done
+	echo "$tracks" > $diraudiocd/$discid
 fi
 # add tracks to playlist
 if [[ -e /srv/http/data/system/autoplaycd ]]; then
@@ -105,12 +111,16 @@ done
 echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
-if [[ -n $autoplaycd ]]; then
+
+if [[ -z $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))
 	/srv/http/bash/cmd.sh "mpcplayback
 play
 $cdtrack1"
 fi
+
+[[ -z $genre_id ]] && pushstream audiocd '{"discid":"'$discid'"}' && exit
+
 # coverart
 if [[ -z $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
 	if [[ -z $artist ]]; then

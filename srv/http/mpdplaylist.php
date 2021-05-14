@@ -291,12 +291,11 @@ function playlist() { // current playlist
 			$track = substr( $file, 8 );
 			$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
 			$data = $content[ $track - 1 ];
-			if ( !$data ) $data = $content[ 0 ];
 			$audiocd = explode( '^', $data );
 			$each->Artist = $audiocd[ 0 ];
 			$each->Album = $audiocd[ 1 ];
-			$each->Title = $audiocd[ 2 ] ?? '';
-			$each->Time = second2HMS( $audiocd[ 3 ] ?? 0 );
+			$each->Title = $audiocd[ 2 ];
+			$each->Time = second2HMS( $audiocd[ 3 ] );
 			$each->file = $file;
 			$each->Track = $track;
 			$array[] = $each;
