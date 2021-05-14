@@ -290,18 +290,19 @@ function playlist() { // current playlist
 			$val = $list[ $i ];
 			if ( $key === 'file' ) {
 				if ( substr( $val, 0, 4 )  === 'cdda' ) {
-					$id = @file_get_contents( '/srv/http/data/shm/audiocd' );
-					if ( $id ) {
-						$track = substr( $list[ $i ], 8 );
-						$audiocd = explode( '^', exec( 'sed -n '.$track.'p /srv/http/data/audiocd/'.$id ) );
-						$each->Artist = $audiocd[ 0 ];
-						$each->Album = $audiocd[ 1 ];
-						$each->Title = $audiocd[ 2 ];
-						$each->Time = second2HMS( $audiocd[ 3 ] );
-						$each->file = $val;
-						$each->Track = $track;
-						break;
-					}
+					$id = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+					$track = substr( $list[ $i ], 8 );
+					$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
+					$data = $content[ $track - 1 ];
+					if ( !$data ) $data = $content[ 0 ];
+					$audiocd = explode( '^', $data );
+					$each->Artist = $audiocd[ 0 ];
+					$each->Album = $audiocd[ 1 ];
+					$each->Title = $audiocd[ 2 ];
+					$each->Time = second2HMS( $audiocd[ 3 ] );
+					$each->file = $val;
+					$each->Track = $track;
+					break;
 				}
 			} else {
 				$key = ucfirst( $key ); // mpd protocol keys
