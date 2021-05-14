@@ -216,7 +216,7 @@ if [[ $fileheader == cdda ]]; then
 		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
 		[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	else
-		Time=0
+		[[ $state == stop ]] && Time=0
 	fi
 		status+='
 , "Album"     : "'$Album'"
@@ -224,7 +224,6 @@ if [[ $fileheader == cdda ]]; then
 , "discid"    : "'$discid'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
-	fi
 elif [[ $fileheader == http ]]; then
 	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
 	urlnet=$( echo $file | sed 's|.*//\(.*\):.*|\1|' | cut -d. -f1-2 )
