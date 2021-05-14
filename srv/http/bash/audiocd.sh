@@ -112,14 +112,17 @@ echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
 eject -x 12 /dev/sr0 # set 12x speed if supported by device
 
-if [[ -z $autoplaycd ]]; then
+if [[ -n $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))
 	/srv/http/bash/cmd.sh "mpcplayback
 play
 $cdtrack1"
 fi
 
-[[ -z $genre_id ]] && pushstream audiocd '{"discid":"'$discid'"}' && exit
+if [[ -z $( head -1 $diraudiocd/$discid | cut -d^ -f1 ) ]]; then
+	pushstream audiocd '{"discid":"'$discid'"}'
+	exit
+fi
 
 # coverart
 if [[ -z $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
