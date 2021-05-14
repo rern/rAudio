@@ -295,8 +295,8 @@ function playlist() { // current playlist
 			$audiocd = explode( '^', $data );
 			$each->Artist = $audiocd[ 0 ];
 			$each->Album = $audiocd[ 1 ];
-			$each->Title = $audiocd[ 2 ];
-			$each->Time = second2HMS( $audiocd[ 3 ] );
+			$each->Title = $audiocd[ 2 ] ?? '';
+			$each->Time = second2HMS( $audiocd[ 3 ] ?? 0 );
 			$each->file = $file;
 			$each->Track = $track;
 			$array[] = $each;
