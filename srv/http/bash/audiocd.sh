@@ -97,7 +97,7 @@ fi
 # add tracks to playlist
 if [[ -e /srv/http/data/system/autoplaycd ]]; then
 	autoplaycd=1
-	pushstream notify '{"autoplaycd":1}'
+	pushstream playlist '{"autoplaycd":1}'
 fi
 pushstreamNotify 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}

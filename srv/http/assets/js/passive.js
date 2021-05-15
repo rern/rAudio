@@ -361,8 +361,6 @@ function psNotify( data ) {
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
-	} else if ( 'autoplaycd' in data ) {
-		local( 5000 );
 	} else if ( data.text === 'Change track ...' ) {
 		clearIntervalAll();
 	}
@@ -381,6 +379,10 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
+	if ( 'autoplaycd' in data ) {
+		G.autoplaycd = 1;
+		setTimeout( function() { delete G.autoplaycd }, 5000 );
+	}
 	if ( G.local ) return
 	
 	if ( data == -1 ) {
@@ -391,7 +393,7 @@ function psPlaylist( data ) {
 		}
 	} else if ( 'html' in data ) {
 		if ( G.playback ) {
-			getPlaybackStatus();
+			if ( !( 'autoplaycd' in G ) ) getPlaybackStatus();
 		} else if ( G.playlist ) {
 			if ( !G.plremove ) renderPlaylist( data );
 		}
