@@ -109,7 +109,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamAudiocd() {
-	pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1,"cdstart":1}'
+	pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1,"nodelay":1}'
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
