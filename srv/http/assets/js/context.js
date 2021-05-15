@@ -558,7 +558,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'remove':
 			G.contextmenu = 1;
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
-			bash( [ 'plremove', (  G.list.li.index() + 1 ) ] );
+			plRemove( G.list.li );
 			return
 		case 'savedpladd':
 			info( {
@@ -614,6 +614,31 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'tag':
 			tagEditor();
+			return
+		case 'tagcd':
+			var discid = G.list.li.data( 'discid' );
+			var artist = G.list.li.find( '.artist' ).text();
+			var album = G.list.li.find( '.album' ).text();
+			var title = G.list.li.find( '.name' ).text();
+			var time = G.list.li.find( '.time' ).data( 'time' );
+			var track = G.list.li.find( '.track' ).text() ;
+			var src = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
+			info( {
+				  icon      : 'audiocd'
+				, title     : 'Audio CD Tag Editor'
+				, message   : '<img src="'+ src +'">'
+							 +'<br># '+ track +' &bull; '+ second2HMS( time )
+				, msgalign  : 'left'
+				, textlabel : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
+				, textvalue : [ artist, album, title ]
+				, boxwidth  : 'max'
+				, ok        : function() {
+					var data = $( '#infoTextBox' ).val() +'^'+ $( '#infoTextBox1' ).val() +'^'+ $( '#infoTextBox2' ).val() +'^'+ time;
+					data = data.replace( /'/g, "\\'" );
+					bash( [ 'audiocdtag', track, data, discid ] );
+					banner( 'Audio CD', 'Tag Changed', 'audiocd' );
+				}
+			} );
 			return
 		case 'thumb':
 			info( {

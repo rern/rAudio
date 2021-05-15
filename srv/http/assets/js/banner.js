@@ -6,7 +6,9 @@ $( 'body' ).prepend(
 </div>'
 );
 $( '#banner' ).click( bannerHide );
+var bannertimeout;
 function banner( title, message, icon, delay ) {
+	clearTimeout( bannertimeout );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
 					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
@@ -14,11 +16,11 @@ function banner( title, message, icon, delay ) {
 	$( '#bannerTitle' ).html( title );
 	$( '#bannerMessage' ).html( message );
 	$( '#banner' ).removeClass( 'hide' );
-	if ( delay !== -1 ) setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
 	$( '#banner' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' );
-	$( '#bannerTitle, #bannerMessage' ).empty();
+	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
 }

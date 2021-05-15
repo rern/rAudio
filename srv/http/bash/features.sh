@@ -40,6 +40,10 @@ autoplay )
 	[[ ${args[1]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
+autoplaycd )
+	[[ ${args[1]} == true ]] && touch $dirsystem/autoplaycd || rm -f $dirsystem/autoplaycd
+	pushRefresh
+	;;
 hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0

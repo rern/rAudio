@@ -4,6 +4,31 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if [[ ! -e /usr/bin/cd-discid ]]; then
+	pacman -Sy --noconfirm cd-discid
+	mkdir -p /srv/http/data/audiocd
+fi
+file=/etc/systemd/system/systemd-udevd.service.d/ipaddressallow.conf
+if ! grep -q IPAddressDeny=$ $file; then
+	echo "\
+[Service]
+IPAddressDeny=
+" > $file
+	systemctl daemon-reload
+	systemctl restart systemd-udevd
+fi
+file=/etc/udev/rules.d/cdrom.rules
+if [[ ! -e $file ]]; then
+	wget -q https://github.com/rern/rOS/raw/main$file -P /etc/udev/rules.d
+	udevadm control --reload-rules && udevadm trigger
+fi
+
+if [[ ! -e /boot/overlays/waveshare35a.dtbo ]]; then
+	for name in a b b-v2 c; do
+		wget -q https://github.com/rern/rOS/raw/main/boot/overlays/waveshare35$name.dtbo -P /boot/overlays
+	done
+fi
+
 grep -q '"novu"' /srv/http/data/system/display || sed -i '/progressbar/ i\    "novu": false,' /srv/http/data/system/display
 
 if [[ -e /usr/bin/spotifyd ]] && ! grep -q 'device = \"' /etc/spotifyd.conf; then
@@ -11,7 +36,7 @@ if [[ -e /usr/bin/spotifyd ]] && ! grep -q 'device = \"' /etc/spotifyd.conf; the
 		active=1
 		systemctl disable --now spotifyd
 	fi
-	pacman -Sy spotifyd
+	pacman -Sy --noconfirm spotifyd
 	ln -sf /usr/lib/systemd/{user,system}/spotifyd.service
 	dev=$( grep ^device /etc/spotifyd.conf | cut -d' ' -f3 )
 	echo '[global]
@@ -40,7 +65,5 @@ grep -q conductor $file || sed -i '/composer/ a\\t"conductor": true,' $file
 installstart "$1"
 
 getinstallzip
-
-/srv/http/bash/mpd-conf.sh
 
 installfinish

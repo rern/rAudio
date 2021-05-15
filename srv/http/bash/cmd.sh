@@ -14,6 +14,12 @@ flagpladd=$dirtmp/flagpladd
 # convert each line to each args
 readarray -t args <<< "$1"
 
+audiocdWaitStart() {
+	sleep 5
+	for i in {1..20}; do
+		[[ $( mpc | awk '/^\[playing\]/ {print $3}' | cut -d/ -f1 ) == 0:00 ]] && sleep 1 || break
+	done
+}
 gifNotify() {
 	pushstream notify '{"title":"Thumbnail","text":"Resize animated GIF ...","icon":"coverart blink","delay":-1}'
 }
@@ -101,6 +107,9 @@ pladdPosition() {
 }
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
+pushstreamAudiocd() {
+	pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1,"nodelay":1}'
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -261,6 +270,13 @@ addonslist )
 	url=$( jq -r .push.url $diraddons/addons-list.json )
 	[[ -n $url ]] && bash <( curl -sL $url )
 	;;
+audiocdtag )
+	track=${args[1]}
+	tag=${args[2]}
+	discid=${args[3]}
+	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
+	pushstreamPlaylist
+	;;
 bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
@@ -347,6 +363,15 @@ coverartreset )
 	artist=${args[3]}
 	album=${args[4]}
 	dir=$( dirname "$coverfile" )
+	if [[ $( basename "$dir" ) == audiocd ]]; then
+		filename=$( basename "$coverfile" )
+		id=${filename/.*}
+		rm -f "$coverfile"
+		killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+		$dirbash/status-coverartonline.sh "$artist"$'\n'"$album"$'\naudiocd\n'$id &> /dev/null &
+		exit
+	fi
+	
 	rm -f "$coverfile" "$dir/coverart".* "$dir/thumb".*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
@@ -359,9 +384,9 @@ coverartreset )
 		fi
 		rm "$backupfile"
 	fi
-	url=$( $dirbash/status-coverart.sh "$mpdpath
-$artist
-$album" )
+	url=$( $dirbash/status-coverart.sh "\
+$artist$album
+$mpdpath" )
 	echo $url
 	;;
 coverartradioreset )
@@ -386,6 +411,7 @@ displayget )
 	fi
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
+, "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
@@ -465,19 +491,24 @@ mpcplayback )
 	touch $flag
 	command=${args[1]}
 	pos=${args[2]}
+	mpc | grep -q '^\[paused\]' && pause=1
 	rm -f $dirtmp/radiometa
 	mpc $command $pos
-	# webradio start - status.sh > 'file:' missing
-	if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
-		webradio=1
-		sleep 0.6
-		touch $dirtmp/webradio
+	if [[ $command == play ]]; then
+		fileheadder=$( mpc | head -c 4 )
+		if [[ $fileheadder == http ]]; then
+			webradio=1
+			sleep 1 # fix: webradio start - blank 'file:' status
+		elif [[ $fileheadder == cdda && -z $pause ]]; then
+			pushstreamAudiocd "Start play ..."
+			audiocdWaitStart
+		fi
 	fi
 	pushstreamStatus
 	# fix webradio fast stop - start
-	if [[ -n $webradio && $command == play && -z $( echo "$status" | jq -r .Title ) ]]; then
+	if [[ -n $webradio && -z $( echo "$status" | jq -r .Title ) ]]; then
 		sleep 3
-		/srv/http/bash/cmd.sh pushstatus
+		pushstreamStatus
 	fi
 	;;
 mpcprevnext )
@@ -505,7 +536,13 @@ mpcprevnext )
 	if [[ -z $playing ]]; then
 		mpc stop
 	else
-		[[ $( mpc current -f %file% | cut -c1-4 ) == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
+		fileheadder=$( mpc | head -c 4 )
+		if [[ $fileheadder == cdda ]]; then
+			pushstreamAudiocd "Change track ..."
+			audiocdWaitStart
+		else
+			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
+		fi
 	fi
 	pushstreamStatus
 	;;
@@ -632,10 +669,12 @@ plorder )
 	;;
 plremove )
 	pos=${args[1]}
+	activenext=${args[2]}
 	touch $flagpladd
 	touch $flag
 	if [[ -n $pos ]]; then
 		mpc del $pos
+		[[ -n $activenext ]] && mpc play $activenext && mpc stop
 	else
 		mpc clear
 	fi
@@ -681,6 +720,8 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
+	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	[[ -n $tracks ]] && mpc del $tracks
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
 	if [[ -n $poweroff ]]; then
 		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py

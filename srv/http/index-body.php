@@ -132,6 +132,7 @@ $html.= menuli( 'savedpladd', 'save-plus',    'Add to a playlist' );
 $html.= menuli( 'remove',     'minus-circle', 'Remove' );
 $html.= $menulisimilar;
 $html.= menuli( 'tag',        'info-circle',  'Track Info' );
+$html.= menuli( 'tagcd',      'tag',          'CD Tag Editor' );
 $menu.= menudiv( 'plaction', $html );
 
 $menudiv = '';
@@ -234,16 +235,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<span id="album"></span>
 		</div>
 		<div id="infoicon">
-			<span id="playericon">
-				<i id="i-airplay" class="playericon fa fa-airplay hide"></i>
-				<i id="i-bluetooth" class="playericon fa fa-bluetooth hide"></i>
-				<i id="i-snapclient" class="playericon fa fa-snapclient hide"></i>
-				<i id="i-spotify" class="playericon fa fa-spotify hide"></i>
-				<i id="i-upnp" class="playericon fa fa-upnp hide"></i>
-				<i id="i-webradio" class="playericon fa fa-webradio hide"></i>
-				<span id="i-radioparadise" class="playericon hide"><i class="fa fa-radioparadise1 fa-layer"></i><i class="fa fa-radioparadise2 fa-layerlast"></i></span>
-				<i id="i-radiofrance" class="playericon fa fa-radiofrance hide"></i>
-			</span>
+			<i id="playericon"></i>
 			<span id="progress"></span>
 			<span id="modeicon">
 				<i id="i-random" class="fa fa-random hide"></i>

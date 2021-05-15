@@ -36,6 +36,7 @@ refreshData = function() { // system page: use resetLocal() to aviod delay
 		$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
 		$( '#login' ).prop( 'checked', G.login );
 		$( '#setting-login' ).toggleClass( 'hide', !G.login );
+		$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
 		$( '#autoplay' ).prop( 'checked', G.autoplay );
 		[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
 			codeToggle( id, 'status' );
@@ -110,6 +111,7 @@ $( '.enable' ).click( function() {
 $( '.enablenoset' ).click( function() {
 	var idname = {
 		  autoplay         : [ 'Play on Startup',                  'refresh-play' ]
+		, autoplaycd       : [ 'Play on Insert CD',                'audiocd' ]
 		, localbrowser     : [ 'Chromium - Browser on RPi',        'chromium' ]
 		, 'shairport-sync' : [ 'AirPlay Renderer',                 'airplay' ]
 		, snapserver       : [ 'Snapcast - Sync Streaming Server', 'snapcast' ]

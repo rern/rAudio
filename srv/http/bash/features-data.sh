@@ -4,6 +4,7 @@ dirsystem=/srv/http/data/system
 
 data+='
 	  "autoplay"        : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
+	, "autoplaycd"      : '$( [[ -e $dirsystem/autoplaycd ]] && echo true || echo false )'
 	, "hostname"        : "'$( hostname )'"
 	, "lcd"             : '$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )'
 	, "login"           : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'

@@ -183,7 +183,6 @@ case 'track': // for tag editor
 			$array = explode( '^^', $lists );
 		}
 	}
-	if ( isset( $_POST[ 'coverart' ] ) ) $array[] = exec( '/srv/http/bash/status-coverart.sh "'.escape( $file ).'"' );
 	break;
 case 'webradio':
 	$dirwebradios = '/srv/http/data/webradios';
@@ -207,16 +206,10 @@ case 'webradio':
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$name = str_replace( '/', '|', $each->url );
-		$pathnoext = '/srv/http/data/webradiosimg/'.$name.'-thumb';
-		if ( file_exists( $pathnoext.'.jpg' ) ) {
-			$ext = '.jpg';
-		} else if ( file_exists( $pathnoext.'.gif' ) ) {
-			$ext = '.gif';
-		} else {
-			$ext = '';
-		}
-		if ( $ext ) {
-			$thumbsrc = '/data/webradiosimg/'.rawurlencode( $name ).'-thumb.'.$time.$ext;
+		$pathnoext = '/data/webradiosimg/'.$name.'-thumb.';
+		$coverfile = glob( '/srv/http'.$pathnoext.'*' );
+		if ( count( $coverfile ) ) {
+			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
 			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">';
 		} else {
 			$icon = '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>';
@@ -251,23 +244,18 @@ function directoryList( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$nas200 = count( $lists ) > 200 && substr( $string, 0, 3 ) === 'NAS';
+	$nas100 = count( $lists ) > 100 && substr( $list, 0, 3 ) === 'NAS'; // slow on NAS - limit search <100 dirs
 	$time = time();
 	$html = '';
 	foreach( $array as $each ) {
 		$path = $each->path;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$pathnoext = '/mnt/MPD/'.$path.'/thumb';
-		if ( $nas200 || file_exists( $pathnoext.'.jpg' ) ) {
-			$ext = '.jpg';
-		} else if ( file_exists( $pathnoext.'.gif' ) ) {
-			$ext = '.gif';
-		} else {
-			$ext = '';
-		}
-		if ( $ext ) {
-			$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.$ext;
+		$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
+		$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
+		$coverfile = $nas100 ? [ '.jpg' ] : glob( $pathglob.'*' );
+		if ( count( $coverfile ) ) {
+			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
 			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
 		} else {
 			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';
@@ -465,15 +453,15 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$artist = $each0->artist;
 			$icon = 'artist';
 		}
-		$dir = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$sh = [ ( $cue ? $dir : $file0 ), $artist, $album, 'licover' ];
-		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "';
-		$script.= escape( implode( "\n", $sh ) ).'"';
+		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
+		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
+		$script.= ' "'.escape( implode( "\n", [ $artist.$album, $mpdpath, 'licover' ] ) ).'"';
 		$coverart = exec( $script );
-		$nocover = '';
 		if ( !$coverart ) {
+			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
+			$script.= ' "'.escape( implode( "\n", [ $artist, $album, 'licover' ] ) ).'" &> /dev/null &';
+			$coverart = exec( $script );
 			$coverart = '/assets/img/coverart.'.time().'.svg';
-			$nocover = ' nocover';
 		}
 		$hidealbum = $album && $gmode !== 'album' ? '' : ' hide';
 		$hideartist = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';
@@ -481,10 +469,10 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hideconductor = $each0->conductor && $gmode !== 'conductor' ? '' : ' hide';
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
-		$plfile = exec( 'mpc ls "'.$dir.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
+		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>' )
-					.'<div class="licoverimg'.$nocover.'"><img id="liimg" src="'.$coverart.'"></div>'
+					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
 					.'<div class="liartist'.$hideartist.'"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>'

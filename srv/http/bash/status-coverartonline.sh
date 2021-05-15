@@ -9,15 +9,11 @@ readarray -t args <<< "$1"
 artist=${args[0]}
 arg1=${args[1]}
 type=${args[2]}
+discid=${args[3]}
 
 dirtmp=/srv/http/data/shm
 name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 date=$( date +%s )
-
-if [[ $type == 'licover' ]]; then
-	file=$( ls /srv/http/data/tmp/licover-$name.* 2> /dev/null )
-	[[ -e $file ]] && echo /data/tmp/licover-$name.$date.${file/*.} && exit
-fi
 
 ### 1 - lastfm ##################################################
 if [[ $type != title ]]; then
@@ -60,23 +56,15 @@ fi
 [[ -z $url || $url == null ]] && exit
 
 ext=${url/*.}
-
-if [[ $type == 'licover' ]]; then # to save ram - keep all in .../data/tmp - not .../data/shm
-	coverfile=/srv/http/data/tmp/licover-$name.$ext
-	coverart=/data/tmp/licover-$name.$date.$ext
-	if [[ -e $coverfile ]]; then
-		echo $coverart
-	else
-		curl -s $url -o $coverfile
-		[[ -e $coverfile ]] && echo $coverart
-	fi
+if [[ $type == 'audiocd' ]]; then
+	urlname=/data/audiocd/$discid
 else
-	rm -f $dirtmp/online-*
-	coverfile=$dirtmp/online-$name.$ext
-	curl -s $url -o $coverfile
-	if [[ -e $coverfile ]]; then
-		coverart=/data/shm/online-$name.$date.$ext
-		curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$coverart'", "type": "coverart" }'
-		exit # for radio paradise
-	fi
+	[[ $type == 'licover' ]] && prefix=licover && prefix=online
+	urlname=/data/shm/$prefix-$name
+	# limit fetched files: 10
+	fetchedfiles=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
+	(( $( echo "$fetchedfiles" | wc -l ) > 10 )) && rm $( echo $fetchedfiles | tail -1 )
 fi
+coverfile=/srv/http$urlname.$ext
+curl -s $url -o $coverfile
+[[ -e $coverfile ]] && curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'

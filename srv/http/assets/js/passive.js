@@ -132,28 +132,6 @@ function psCoverart( data ) {
 	var url = decodeURIComponent( data.url );
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
-		case 'cover': // change coverart
-			var mpdpath = path.replace( '/mnt/MPD/', '' );
-			if ( G.playback ) {
-				$( '#vu' ).addClass( 'hide' );
-				if ( mpdpath === G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) ) ) {
-					$( '#coverart' )
-						.attr( 'src', src )
-						.removeClass( 'hide' );
-				}
-			} else if ( G.library ) {
-				if ( mpdpath === $( '.licover .lipath' ).text() ) $( '.licoverimg img' ).attr( 'src', src );
-			}
-			break;
-		case 'coverart':
-			G.status.coverart = src;
-			if ( G.playback ) {
-				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
-					.attr( 'src', src )
-					.removeClass( 'hide' );
-			}
-			break;
 		case 'bookmark':
 			var $this = $( '.bookmark' ).filter( function() {
 				return $( this ).find( '.lipath' ).text() === path;
@@ -169,36 +147,96 @@ function psCoverart( data ) {
 				$( '.mode-bookmark img' ).css( 'opacity', '' );
 			}
 			break;
+		case 'coverart': // change coverart
+			var urlhead = url.slice( 0, 9 );
+			var coverpath, covername, currentpath, currentname, cd, name;
+			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
+				coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
+			} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
+				covername = url.split( '-' ).pop().split( '.' ).shift();
+			} else { // /data/audiocd/DISCID.jpg > DISCID
+				covername = url.split( '/' ).pop().split( '.' ).shift();
+				cd = 1;
+			}
+			if ( G.playback ) {
+				// path/filename.ext > path
+				if ( 'file' in G.status ) currentpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+				name = G.status.Artist
+				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
+				currentname = name.replace( /[ "`?/#&'"']/g, '' );
+				if ( coverpath === currentpath || covername === currentname || cd ) {
+					G.status.coverart = url;
+					$( '#vu' ).addClass( 'hide' );
+					$( '#coverart' )
+						.attr( 'src', url )
+						.removeClass( 'hide' );
+					$( '#divcover .covedit' ).remove();
+					$( '#coverart' ).css( 'opacity', '' );
+				}
+			} else if ( G.library ) {
+				if ( $( '.licover' ).length ) {
+					currentpath = $( '.licover .lipath' ).text();
+					name = $( '.licover .liartist' ).text() + $( '.licover .lialbum' ).text();
+					currentname = name.replace( /[ "`?/#&'"']/g, '' );
+					if ( coverpath === currentpath || covername === currentname ) {
+						$( '#liimg' ).attr( 'src', url );
+						$( '.licover .covedit' ).remove();
+						$( '.licoverimg ' ).css( 'opacity', '' );
+					}
+				} else {
+					$( '#lib-list li' ).filter( function() {
+						return $( this ).find( '.lipath' ).text() === coverpath
+					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+				}
+			} else {
+				if ( !$( '#pl-index' ).hasClass( 'hide' ) ) return
+				
+				if ( !cd ) {
+					var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+					var lipath;
+					var $litarget = $li.filter( function() {
+						lipath = $( this ).find( '.lipath' ).text()
+						return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath;
+					} );
+				} else {
+					var $litarget = $( '#pl-list li' ).filter( function() {
+						return $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda';
+					} );
+				}
+				$litarget.each( function() {
+					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+				} );
+			}
+			break;
 		case 'webradio':
 			G.status.coverartradio = src;
-			if ( G.mode === 'webradio' ) {
-				var srcnoext = src.slice( 0, -15 );
-				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
-				var $el = webradioIcon( srcnoext );
-				$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
-			}
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
 					.attr( 'src', src )
 					.css( 'opacity', '' )
 					.removeClass( 'hide' );
-			} else if ( G.playlist ) {
+			} else if ( G.library ) {
+				if ( G.mode === 'webradio' ) {
+					var srcnoext = src.slice( 0, -15 );
+					var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
+					var $el = webradioIcon( srcnoext );
+					$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
+				}
+			} else {
 				$( '#tab-playlist' ).click();
 			}
 			break;
 		case 'webradioreset':
 			G.status.coverartradio = '';
-			if ( G.mode === 'webradio' ) {
-				var $el = webradioIcon( src );
-				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
-			}
 			if ( G.playback ) {
-				$( '#divcover .fa-coverart' ).remove();
-				$( '#coverart' ).addClass( 'hide' );
-				$( '#vu' ).removeClass( 'hide' );
-				if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
-			} else if ( G.playlist ) {
+				coverartDefault();
+			} else if ( G.library ) {
+				if ( G.mode === 'webradio' ) {
+					var $el = webradioIcon( src );
+					$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
+				}
+			} else {
 				$( '#tab-playlist' ).click();
 			}
 			break;
@@ -259,7 +297,7 @@ function psMpdPlayer( data ) {
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );
 			$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-			renderPlaybackAlbum();
+			setRadioAlbum();
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		} else {
@@ -267,7 +305,7 @@ function psMpdPlayer( data ) {
 		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
-	setTimeout( bannerHide, 3000 );
+	setTimeout( bannerHide, 'nodelay' in data ? 0 : 3000 );
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
@@ -321,6 +359,8 @@ function psNotify( data ) {
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
+	} else if ( data.text === 'Change track ...' ) {
+		clearIntervalAll();
 	}
 }
 function psOption( data ) {
@@ -337,10 +377,24 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
+	if ( 'autoplaycd' in data ) {
+		G.autoplaycd = 1;
+		setTimeout( function() { delete G.autoplaycd }, 5000 );
+	}
+	if ( G.local ) return
+	
 	if ( data == -1 ) {
-		renderPlaylist( -1 );
+		if ( G.playback ) {
+			getPlaybackStatus();
+		} else if ( G.playlist ) {
+			renderPlaylist( -1 );
+		}
 	} else if ( 'html' in data ) {
-		if ( !G.plremove ) renderPlaylist( data );
+		if ( G.playback ) {
+			getPlaybackStatus();
+		} else if ( G.playlist ) {
+			if ( !G.plremove ) renderPlaylist( data );
+		}
 	} else if ( data.playlist === 'save' ) {
 		if ( G.savedlist ) $( '#button-pl-open' ).click();
 	} else {

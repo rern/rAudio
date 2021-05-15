@@ -179,7 +179,6 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		For 3.5" 420x320 pixels TFT LCD with resistive touchscreen.
-	<br><i class="fa fa-gear"></i>&ensp;Calibrate touchscreen precision.
 	</span>
 </div>
 	<?php } ?>
@@ -289,10 +288,13 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <div class="list hide"><?=$uihtml?></div><br>&nbsp;
 
 <heading class="sub">Data</heading>
-<a href="https://www.last.fm">last.fm</a><gr> - Coverarts and artist biographies</gr><br>
-<a href="https://webservice.fanart.tv">fanart.tv</a><gr> - Coverarts and artist images</gr><br>
-<a href="https://radioparadise.com">Radio Paradise</a><gr> - Coverarts of their own (default Webradio stations)</gr><br>
-<a href="https://www.fip.fr/">Fip</a><gr> - Coverarts of their own</gr><br>
-<a href="https://www.francemusique.fr/">France Musique</a><gr> - Coverarts of their own</gr>
+<dev class="gr">
+<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
+<a href="https://webservice.fanart.tv">fanart.tv</a> - Coverarts and artist images<br>
+<a href="https://radioparadise.com">Radio Paradise</a> - Coverarts of their own (default Webradio stations)<br>
+<a href="https://www.fip.fr/">Fip</a> - Coverarts of their own<br>
+<a href="https://www.francemusique.fr/">France Musique</a> - Coverarts of their own<br>
+<a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
+</div>
 
 <div style="clear: both"></div>

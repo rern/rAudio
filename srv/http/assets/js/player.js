@@ -65,12 +65,12 @@ refreshData = function() {
 		$( '#normalization' ).prop( 'checked', G.normalization );
 		$( '#replaygain' ).prop( 'checked', G.replaygain );
 		$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
-		$( '#autoupdate' ).prop( 'checked', G.autoupdate );
-		$( '#ffmpeg' ).prop( 'checked', G.ffmpeg );
 		$( '#buffer' ).prop( 'checked', G.buffer );
 		$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
 		$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		$( '#setting-bufferoutput' ).toggleClass( 'hide', !G.bufferoutput );
+		$( '#ffmpeg' ).prop( 'checked', G.ffmpeg );
+		$( '#autoupdate' ).prop( 'checked', G.autoupdate );
 		$( '#custom' ).prop( 'checked', G.custom );
 		$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 		$( '#soxr' ).prop( 'checked', G.soxr );

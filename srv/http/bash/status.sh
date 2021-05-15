@@ -2,6 +2,7 @@
 
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
+date=$( date +%s )
 
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
@@ -133,10 +134,14 @@ mpdStatus() {
 }
 mpdStatus currentsong
 
-# when playlist is empty, add song without play - currentsong = (blank)
-! grep -q '^file' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
-# webradio track changed events - one missed state data
-! grep -q '^state' <<< "$mpdtelnet" && mpdStatus currentsong
+# 'file:' missing / blank
+#   - when playlist is empty, add song without play
+#     - 'currentsong' has no data
+#     - use 'playlistinfo 0' instead
+#   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
+! grep -q '^file: .\+' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
+# 'state:' - missing on webradio track change
+grep -q '^state' <<< "$mpdtelnet" || mpdStatus currentsong
 
 readarray -t lines <<< "$mpdtelnet"
 for line in "${lines[@]}"; do
@@ -197,7 +202,29 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 
-if [[ ${file:0:4} == http ]]; then
+fileheader=${file:0:4}
+if [[ $fileheader == cdda ]]; then
+	ext=CD
+	discid=$( cat $dirtmp/audiocd 2> /dev/null )
+	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
+		track=${file/*\/}
+		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$discid | tr ^ '\n' )
+		Artist=${audiocd[0]}
+		Album=${audiocd[1]}
+		Title=${audiocd[2]}
+		Time=${audiocd[3]}
+		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
+		[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+	else
+		[[ $state == stop ]] && Time=0
+	fi
+		status+='
+, "Album"     : "'$Album'"
+, "Artist"    : "'$Artist'"
+, "discid"    : "'$discid'"
+, "Time"      : '$Time'
+, "Title"     : "'$Title'"'
+elif [[ $fileheader == http ]]; then
 	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
 	urlnet=$( echo $file | sed 's|.*//\(.*\):.*|\1|' | cut -d. -f1-2 )
 	if systemctl -q is-active upmpdcli && [[ $gatewaynet == $urlnet ]]; then # internal ip
@@ -209,6 +236,10 @@ if [[ ${file:0:4} == http ]]; then
 , "Artist" : "'$Artist'"
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
+		# fetched coverart
+		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
+		fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+		[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -242,30 +273,47 @@ if [[ ${file:0:4} == http ]]; then
 					/srv/http/bash/status-radiofrance.sh $file "$stationname" &> /dev/null &
 				fi
 			elif [[ -n $Title ]]; then
+				# $Title - 's/ - \|: /\n/' split Artist - Title
+				#  - Artist - Title (extra tag)
+				#  - Artist: Title (extra tag)
+				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/g' )
+				Artist=${radioname[0]}
+				Title=${radioname[1]}
+				artistname=$Artist
+				titlename=$Title
 				albumname=$stationname
-				readarray -t radioname <<< "$( sed 's/\s*$//; s/ - \|: /\n/g' <<< "$Title" )"
-				artistname=${radioname[0]}
-				titlename=${radioname[1]}
+				# fetched coverart
+				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
+				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
+				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+				[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 			else
-				albumname=$file
 				artistname=$stationname
 				titlename=
+				albumname=$file
 			fi
 		else
 			[[ -e "$radiofile" ]] && artistname=$stationname
 			titlename=
 			albumname=$file
 		fi
+		filenoext=/data/webradiosimg/$urlname
+		pathnoext=/srv/http$filenoext
+		if [[ -e $pathnoext.gif ]]; then
+			coverartradio=$filenoext.$date.gif
+		elif [[ -e $pathnoext.jpg ]]; then
+			coverartradio=$filenoext.$date.jpg
+		fi
 ########
-		status=$( sed '/^, "webradio".*/ d' <<< "$status" )
 		status+='
-, "Album"    : "'$albumname'"
-, "Artist"   : "'$artistname'"
-, "Name"     : "'$Name'"
-, "station"  : "'$station'"
-, "Time"     : false
-, "Title"    : "'$titlename'"
-, "webradio" : 'true
+, "Album"         : "'$albumname'"
+, "Artist"        : "'$artistname'"
+, "coverartradio" : "'$coverartradio'"
+, "Name"          : "'$Name'"
+, "station"       : "'$station'"
+, "Time"          : false
+, "Title"         : "'$titlename'"
+, "webradio"      : true'
 	fi
 else
 	ext=${file/*.}
@@ -319,7 +367,9 @@ samplingLine() {
 	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
 
-if [[ $state != stop ]]; then
+if [[ $ext == CD ]]; then
+	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; CD'
+elif [[ $state != stop ]]; then
 	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
 	# save only webradio: update sampling database on each play
 	if [[ $ext != Radio ]]; then
@@ -357,70 +407,44 @@ else
 		sampling=$radiosampling
 	fi
 fi
-sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
+
 ########
+sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
 , "sampling" : "'$sampling'"'
-
 if grep -q '"cover": false,' /srv/http/data/system/display; then
-########
-	status+='
-, "coverartradio" : ""'
-# >>>>>>>>>>
-	echo {$status}
-	exit
-	
-elif [[ -n $coverart ]]; then
-########
-	status+='
-, "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 	echo {$status}
 	exit
 fi
 
-if [[ $ext == Radio || -e $dirtmp/webradio ]]; then # webradio start - 'file:' missing
-	date=$( date +%s )
-	rm -f $dirtmp/webradio
-	filenoext=/data/webradiosimg/$urlname
-	pathnoext=/srv/http$filenoext
-	if [[ -e $pathnoext.gif ]]; then
-		coverartradio=$filenoext.$date.gif
-	elif [[ -e $pathnoext.jpg ]]; then
-		coverartradio=$filenoext.$date.jpg
-	fi
-########
-	status+='
-, "coverartradio" : "'$coverartradio'"'
-	if [[ $state == play && -n $Title ]]; then
-		# $Title          Artist Name - Title Name or Artist Name: Title Name (extra tag)
-		# /\s*$\| (.*$//  remove trailing sapces and extra ( tag )
-		# / - \|: /\n/    split artist - title
-		# args:           "Artist Name"$'\n'"Title Name"$'\ntitle'
-		if [[ -z $radiofrance ]]; then
-			data=$( sed 's/\s*$\| (.*$//; s/ - \|: /\n/g' <<< "$Title" | tr -d ' "`?/#&'"'" )
-		else
-			data=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-		Title="$Artist$Title"
-		fi
-		name=$( echo $data | tr -d ' "`?/#&'"'" )
-		onlinefile=$( ls $dirtmp/online-$name.* 2> /dev/null )
-		if [[ -e $onlinefile ]]; then
-			coverart=/data/shm/online-$name.$date.${onlinefile/*.}
-		elif [[ -z $radioparadise && -z $radiofrance ]]; then
-			killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-			/srv/http/bash/status-coverartonline.sh "$data"$'\ntitle' &> /dev/null &
-		fi
-	fi
-else
+if [[ $fileheader != cdda && $fileheader != http ]]; then
 	args="\
-$file0
-$Artist
-$Album"
-	coverart=$( /srv/http/bash/status-coverart.sh "$args" ) # no escape needed
+$Artist$Album
+$( dirname "$file0")"
+	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
 fi
 ########
 status+='
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 echo {$status}
+
+[[ -n $coverart || $ext == CD || -z $Artist ]] && exit
+
+if [[ $ext == Radio ]]; then
+	[[ $state != play || -z $Title ]] && exit
+	
+	args="\
+$Artist
+$Title
+title"
+else
+	[[ -z $Album ]] && exit
+	
+	args="\
+$Artist
+$Album"
+fi
+killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
