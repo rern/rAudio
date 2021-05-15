@@ -228,7 +228,9 @@ pre {
 	display: block;
 	margin-top: 0;
 	margin-bottom: 20px;
+	line-height: 22px;
 	color: var( --cg75 );
+	white-space: normal;
 }
 .help-block .fa {
 	width: 20px;
@@ -633,7 +635,7 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-r.text {
 	float: left;
-	white-space: nowrap;
+	white-space: nowrap !important;
 	line-height: 26px;
 }
 .col-r .fa {

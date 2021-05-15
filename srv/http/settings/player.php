@@ -1,10 +1,15 @@
-<heading data-status="mpd" class="status">Music Player Daemon<?=$istatus?></heading>
+<heading data-status="mpd" class="status">Music Player Daemon<?=$istatus?><?=$ihelp?></heading>
 <div class="col-l text gr">
 	Version
 	<br>Database
 </div>
 <div class="col-r text">
 	<div id="statusvalue"></div>
+	<span <?=$classhelp?>>
+		&nbsp;<br>
+		<a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
+		Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
+	</span>
 </div>
 <div style="clear:both"></div>
 <pre id="codempd" class="hide"></pre>
