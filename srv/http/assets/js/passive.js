@@ -297,7 +297,7 @@ function psMpdPlayer( data ) {
 			$( '#song' ).html( G.status.Title || blinkdot );
 			$( '#album' ).html( G.status.Album );
 			$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-			renderPlaybackAlbum();
+			setRadioAlbum();
 			scrollLongText();
 			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 		} else {

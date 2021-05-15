@@ -268,7 +268,6 @@ gr, grl,
 red, .red { color: #f00; }
 whl, grl,
 .whl, .grl,
-.albumradio,
 #elapsed,
 #volume,
 .rs-tooltip,
@@ -604,7 +603,8 @@ i.map.disabled, .map.disabled i {
 #album {
 	font-size: 18px
 }
-.albumradio {
+.albumgray {
+	font-weight: 300;
 	color: var( --cgl );
 }
 .capitalize {

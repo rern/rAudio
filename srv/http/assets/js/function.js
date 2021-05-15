@@ -1061,7 +1061,9 @@ function renderPlayback() {
 	
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '.emptyadd' ).addClass( 'hide' );
-	$( '#artist, #song, #album' ).css( 'width', '' );
+	$( '#artist, #song, #album' )
+		.css( 'width', '' )
+		.removeClass( 'capitalize albumgray' );
 	$( '#coverart' ).css( 'opacity', '' );
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
@@ -1091,10 +1093,7 @@ function renderPlayback() {
 		if ( G.status.state !== 'play' ) {
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
 			renderPlaybackCoverart( G.status.coverartradio );
-			$( '#info' ).removeClass( 'capitalize' );
-			$( '#album' ).addClass( 'albumradio' );
 		} else {
-			renderPlaybackAlbum();
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
@@ -1115,12 +1114,11 @@ function renderPlayback() {
 				}
 			}
 		}
+		setRadioAlbum();
 		return
 	}
 	
 	// others ////////////////////////////////////////
-	$( '#info' ).removeClass( 'capitalize' );
-	$( '#album' ).removeClass( 'albumradio' );
 	if ( G.status.Artist !== previousartist
 		|| G.status.Album !== previousalbum
 		|| G.status.player === 'airplay' ) renderPlaybackCoverart( G.status.coverart );
@@ -1217,17 +1215,6 @@ function renderPlayback() {
 			position++;
 			$( '#time-bar' ).css( 'width', position / 10 +'%' );
 		}, time );
-	}
-}
-function renderPlaybackAlbum() {
-	if ( G.status.Album.slice( 0, 4 ) === 'http' ) {
-		var station = G.status.file.split( '.' )[ 1 ];
-		var radioalbum = 'file' in G.status ? ( station === 'radioparadise' || url === 'radiofrance' ) : false;
-		$( '#album' ).toggleClass( 'albumradio', radioalbum );
-		$( '#info' ).toggleClass( 'capitalize', G.status.webradio );
-	} else {
-		$( '#info' ).removeClass( 'capitalize' );
-		$( '#album' ).removeClass( 'albumradio' );
 	}
 }
 function renderPlaybackBlank() {
@@ -1575,6 +1562,15 @@ function setPlaylistScroll() {
 		$( 'html, body' ).scrollTop( scrollpos );
 	}
 	playlistProgress();
+}
+function setRadioAlbum() {
+	var playing = G.status.state === 'play';
+	var radioalbum = false;
+	if ( 'file' in G.status ) radioalbum = [ 'radioparadise', 'radiofrance' ].indexOf( G.status.file.split( '.' )[ 1 ] ) !== -1;
+	$( '#artist, #song' ).toggleClass( 'capitalize', playing );
+	$( '#album' )
+		.toggleClass( 'albumgray', !playing || !radioalbum ) // gray text
+		.toggleClass( 'capitalize', playing && G.status.Album.slice( 0, 4 ) !== 'http' );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
