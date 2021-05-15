@@ -17,7 +17,7 @@ readarray -t args <<< "$1"
 audiocdWaitStart() {
 	sleep 5
 	for i in {1..20}; do
-		[[ $( mpc | awk '/^\[playing\]/ {print $3}' | cut -d/ -f1 ) == 0:00 ]] && break || sleep 1
+		[[ $( mpc | awk '/^\[playing\]/ {print $3}' | cut -d/ -f1 ) == 0:00 ]] && sleep 1 || break
 	done
 }
 gifNotify() {
