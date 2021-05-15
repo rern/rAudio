@@ -108,25 +108,7 @@ function psAirplay( data ) {
 	clearTimeout( G.debounce );
 }
 function psAudiocd( data ) {
-	if ( 'discid' in data ) {
-		info( {
-			  icon         : 'audiocd'
-			, title        : 'Audio CD Data'
-			, message      : 'CD data not found.'
-			, textlabel    : [ 'Artist', 'Album' ]
-			, textrequired : [ 0, 1 ]
-			, preshow      : function() {
-				$( '.infoinput' ).click( function() {
-					noresponse = 0;
-				} );
-			}
-			, ok           : function() {
-				var artist = $( '#infoTextBox' ).val();
-				var album = $( '#infoTextBox1' ).val();
-				bash( '/srv/http/bash/audiocd.sh data "'+ artist +'^'+ album +'" '+ data.discid );
-			}
-		} );
-	} else if ( 'autoplaycd' in data ) {
+	if ( 'autoplaycd' in data ) {
 		local( 5000 );
 	} else {
 		banner( 'Audio CD', data.text, 'audiocd blink', data.delay );

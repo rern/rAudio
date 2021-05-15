@@ -261,6 +261,13 @@ addonslist )
 	url=$( jq -r .push.url $diraddons/addons-list.json )
 	[[ -n $url ]] && bash <( curl -sL $url )
 	;;
+audiocdtag )
+	track=${args[1]}
+	tag=${args[2]}
+	discid=${args[3]}
+	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
+	pushstreamPlaylist
+	;;
 bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected

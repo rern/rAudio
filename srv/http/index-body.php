@@ -132,6 +132,7 @@ $html.= menuli( 'savedpladd', 'save-plus',    'Add to a playlist' );
 $html.= menuli( 'remove',     'minus-circle', 'Remove' );
 $html.= $menulisimilar;
 $html.= menuli( 'tag',        'info-circle',  'Track Info' );
+$html.= menuli( 'tagcd',      'tag',          'CD Tag Editor' );
 $menu.= menudiv( 'plaction', $html );
 
 $menudiv = '';

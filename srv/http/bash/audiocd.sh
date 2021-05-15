@@ -14,14 +14,6 @@ pushstreamPlaylist() {
 	rm -f $dirtmp/flagpladd
 }
 
-if [[ $1 == data ]]; then
-	artistalbum=$3
-	discid=$2
-	sed -i "s/\^/$artistalbum/" $diraudiocd/$discid
-	pushstreamPlaylist
-	exit
-fi
-
 [[ -n $1 ]] && pushstreamAudiocd "USB CD $1" 3000
 
 if [[ $1 == on ]]; then

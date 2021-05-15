@@ -194,10 +194,10 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$sec = HMS2Second( $list->Time );
 			$track = preg_replace( '/^#*0*/', '', $list->Track );
 			$li2 = $i.' • ';
-			if ( $track ) $li2.= $track.' - ';
+			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
 			$artist = $list->Artist ?: $list->Albumartist;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-			if ( $list->Album ) $li2.= $list->Album;
+			if ( $list->Album ) $li2.= '<a class="album">'.$list->Album.'</a>';
 			if ( !$artist && !$list->Album ) $li2.= $file;
 			$datatrack = '';
 			if ( strpos( $file, '.cue/track' ) ) {
@@ -212,13 +212,10 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
 				$coverfile = glob( $pathglob.'*' );
 			} else {
-				if ( file_exists( '/srv/http/data/shm/audiocd' ) ) {
-					$disid = file( '/srv/http/data/shm/audiocd' )[ 0 ];
-					$pathnoext = '/data/audiocd/'.rtrim( $disid ).'.';
-					$coverfile = glob( '/srv/http'.$pathnoext.'*' );
-				} else {
-					$coverfile = [];
-				}
+				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+				$pathnoext = '/data/audiocd/'.$discid.'.';
+				$coverfile = glob( '/srv/http'.$pathnoext.'*' );
+				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 			}
 			if ( count( $coverfile ) ) {
 				$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
