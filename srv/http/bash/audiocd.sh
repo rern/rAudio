@@ -6,15 +6,19 @@ diraudiocd=/srv/http/data/audiocd
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
-pushstreamAudiocd() {
-	pushstream audiocd '{"text":"'"$1"'","delay":'$2'}' # double quote "$1" needed
+pushstreamNotify() { # double quote "$1" needed
+	if [[ -n $2 ]]; then
+		pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1}'
+	else
+		pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd"}'
+	fi
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 	rm -f $dirtmp/flagpladd
 }
 
-[[ -n $1 ]] && pushstreamAudiocd "USB CD $1" 3000
+[[ -n $1 ]] && pushstreamNotify "USB CD $1"
 
 if [[ $1 == on ]]; then
 	sed -i '/plugin.*"curl"/ {n;a\
@@ -29,7 +33,7 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	rm -f $dirtmp/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
-		pushstreamAudiocd 'Removed from Playlist.' -1
+		pushstreamNotify 'Removed from Playlist.'
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc stop
 		tracktop=$( echo "$tracks" | head -1 )
 		mpc del $tracks
@@ -59,7 +63,7 @@ cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2
 discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
-	pushstreamAudiocd 'Search CD data ...' -1
+	pushstreamNotify 'Search CD data ...' -1
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
@@ -71,7 +75,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
 	if [[ -n $genre_id ]]; then
-		pushstreamAudiocd 'Fetch CD data ...' -1
+		pushstreamNotify 'Fetch CD data ...' -1
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
 		artist=${artist_album[0]}
@@ -93,9 +97,9 @@ fi
 # add tracks to playlist
 if [[ -e /srv/http/data/system/autoplaycd ]]; then
 	autoplaycd=1
-	pushstream audiocd '{"autoplaycd":1}'
+	pushstream notify '{"autoplaycd":1}'
 fi
-pushstreamAudiocd 'Add tracks to Playlist ...' 3000
+pushstreamNotify 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
   mpc add cdda:///$i
@@ -111,22 +115,17 @@ play
 $cdtrack1"
 fi
 
-if [[ -z $( head -1 $diraudiocd/$discid | cut -d^ -f1 ) ]]; then
-	pushstream audiocd '{"discid":"'$discid'"}'
-	exit
-fi
-
 # coverart
-if [[ -z $( ls $diraudiocd/$discid.* 2> /dev/null ) ]]; then
-	if [[ -z $artist ]]; then
-		data=$( head -1 $diraudiocd/$discid )
-		artist=$( echo $data | cut -d^ -f1 )
-		album=$( echo $data | cut -d^ -f2 )
-	fi
-	args="\
+if [[ -z $artist || -z $album ]]; then
+	artist_album=$( head -1 $diraudiocd/$discid )
+	artist=$( echo $artist_album | cut -d^ -f1 )
+	album=$( echo $artist_album | cut -d^ -f2 )
+fi
+[[ -z $artist || -z $album ]] && exit
+
+args="\
 $artist
 $album
 audiocd
 $discid"
-	/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
-fi
+/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &

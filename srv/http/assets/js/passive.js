@@ -65,7 +65,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'audiocd', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
+var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
@@ -81,7 +81,6 @@ pushstream.onstatuschange = function( status ) {
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
 		case 'airplay':    psAirplay( data );    break;
-		case 'audiocd':    psAudiocd( data );    break;
 		case 'bookmark':   psBookmark( data );   break;
 		case 'coverart':   psCoverart( data );   break;
 		case 'display':    psDisplay( data );    break;
@@ -106,14 +105,6 @@ function psAirplay( data ) {
 	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
-}
-function psAudiocd( data ) {
-	if ( 'autoplaycd' in data ) {
-		local( 5000 );
-	} else {
-		banner( 'Audio CD', data.text, 'audiocd blink', data.delay );
-		if ( data.text === 'Change track ...' ) clearIntervalAll();
-	}
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -370,6 +361,10 @@ function psNotify( data ) {
 		loader();
 	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
 		loader();
+	} else if ( 'autoplaycd' in data ) {
+		local( 5000 );
+	} else if ( data.text === 'Change track ...' ) {
+		clearIntervalAll();
 	}
 }
 function psOption( data ) {
