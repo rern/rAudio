@@ -14,6 +14,12 @@ flagpladd=$dirtmp/flagpladd
 # convert each line to each args
 readarray -t args <<< "$1"
 
+audiocdWaitStart() {
+	sleep 5
+	for i in {1..20}; do
+		[[ $( mpc | awk '/^\[playing\]/ {print $3}' | cut -d/ -f1 ) == 0:00 ]] && break || sleep 1
+	done
+}
 gifNotify() {
 	pushstream notify '{"title":"Thumbnail","text":"Resize animated GIF ...","icon":"coverart blink","delay":-1}'
 }
@@ -492,7 +498,7 @@ mpcplayback )
 			sleep 1 # fix: webradio start - blank 'file:' status
 		elif [[ $fileheadder == cdda && -z $pause ]]; then
 			pushstream notify '{"title":"Audio CD","text":"Start play ...","icon":"audiocd blink","delay":-1}'
-			sleep 10
+			audiocdWaitStart
 		fi
 	fi
 	pushstreamStatus
@@ -530,7 +536,7 @@ mpcprevnext )
 		fileheadder=$( mpc | head -c 4 )
 		if [[ $fileheadder == cdda ]]; then
 			pushstream notify '{"title":"Audio CD","text":"Change track ...","icon":"audiocd blink","delay":-1}'
-			sleep 7
+			audiocdWaitStart
 		else
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
