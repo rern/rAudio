@@ -94,11 +94,12 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	done
 	echo "$tracks" > $diraudiocd/$discid
 fi
-# add tracks to playlist
+# suppress getPlaybackStatus in passive.js
 if [[ -e /srv/http/data/system/autoplaycd ]]; then
 	autoplaycd=1
 	pushstream playlist '{"autoplaycd":1}'
 fi
+# add tracks to playlist
 pushstreamNotify 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do

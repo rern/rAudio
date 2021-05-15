@@ -108,6 +108,9 @@ pladdPosition() {
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
+pushstreamAudiocd() {
+	pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1,"cdstart":1}'
+}
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 	rm -f $flagpladd
@@ -497,7 +500,7 @@ mpcplayback )
 			webradio=1
 			sleep 1 # fix: webradio start - blank 'file:' status
 		elif [[ $fileheadder == cdda && -z $pause ]]; then
-			pushstream notify '{"title":"Audio CD","text":"Start play ...","icon":"audiocd blink","delay":-1}'
+			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
 	fi
@@ -535,7 +538,7 @@ mpcprevnext )
 	else
 		fileheadder=$( mpc | head -c 4 )
 		if [[ $fileheadder == cdda ]]; then
-			pushstream notify '{"title":"Audio CD","text":"Change track ...","icon":"audiocd blink","delay":-1}'
+			pushstreamAudiocd "Change track ..."
 			audiocdWaitStart
 		else
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events

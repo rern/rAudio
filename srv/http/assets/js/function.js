@@ -1173,6 +1173,8 @@ function renderPlayback() {
 		return
 	}
 	
+	if ( 'autoplaycd' in G ) return // wait for cd cache on start
+	
 	if ( displaytime ) {
 		if ( G.status.player === 'mpd' && G.status.elapsed ) $( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
 		G.intElapsed = setInterval( function() {

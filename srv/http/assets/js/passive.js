@@ -305,7 +305,7 @@ function psMpdPlayer( data ) {
 		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
-	setTimeout( bannerHide, $( '#bannerTitle' ).text() === 'Audio CD' ? 0 : 3000 );
+	setTimeout( bannerHide, 'cdstart' in data ? 0 : 3000 );
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
@@ -391,7 +391,7 @@ function psPlaylist( data ) {
 		}
 	} else if ( 'html' in data ) {
 		if ( G.playback ) {
-			if ( !( 'autoplaycd' in G ) ) getPlaybackStatus();
+			getPlaybackStatus();
 		} else if ( G.playlist ) {
 			if ( !G.plremove ) renderPlaylist( data );
 		}
