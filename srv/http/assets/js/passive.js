@@ -148,8 +148,6 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'coverart': // change coverart
-			if ( !( 'file' in G.status ) ) return
-			
 			var urlhead = url.slice( 0, 9 );
 			var coverpath, covername, currentpath, currentname, cd, name;
 			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
@@ -162,7 +160,7 @@ function psCoverart( data ) {
 			}
 			if ( G.playback ) {
 				// path/filename.ext > path
-				currentpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+				if ( 'file' in G.status ) currentpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
 				name = G.status.Artist
 				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
 				currentname = name.replace( /[ "`?/#&'"']/g, '' );

@@ -313,17 +313,17 @@ function displayGet( callback ) {
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
-	if ( !( 'file' in G.status ) ) return
-	
 	var iplayer;
-	if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
-		iplayer = 'radiofrance';
-	} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
-		iplayer = 'radioparadise';
-	} else if ( G.status.webradio ) {
-		iplayer = 'webradio';
-	} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
-		iplayer = 'audiocd';
+	if ( 'file' in G.status ) {
+		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
+			iplayer = 'radiofrance';
+		} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
+			iplayer = 'radioparadise';
+		} else if ( G.status.webradio ) {
+			iplayer = 'webradio';
+		} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
+			iplayer = 'audiocd';
+		}
 	} else {
 		iplayer = G.status.player === 'mpd' ? '' : G.status.player;
 	}
@@ -1220,15 +1220,14 @@ function renderPlayback() {
 	}
 }
 function renderPlaybackAlbum() {
-	if ( G.status.Album.slice( 0, 4 ) !== 'http' ) {
-		if ( !( 'file' in G.status ) ) return
-		
-		var radioalbum = G.status.file.indexOf( 'radioparadise.com' ) === -1 && G.status.file.indexOf( 'radiofrance.fr' ) === -1;
+	if ( G.status.Album.slice( 0, 4 ) === 'http' ) {
+		var radioalbum = false;
+		if ( 'file' in G.status ) radioalbum = G.status.file.indexOf( 'radioparadise.com' ) === -1 && G.status.file.indexOf( 'radiofrance.fr' ) === -1;
 		$( '#album' ).toggleClass( 'albumradio', radioalbum );
 		$( '#info' ).toggleClass( 'capitalize', G.status.webradio );
 	} else {
 		$( '#info' ).removeClass( 'capitalize' );
-		$( '#album' ).addClass( 'albumradio' );
+		$( '#album' ).removeClass( 'albumradio' );
 	}
 }
 function renderPlaybackBlank() {
