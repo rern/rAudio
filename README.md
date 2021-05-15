@@ -37,7 +37,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - USB drive
 	- plug ang play
 	- Audio CD (with external power supply)
-		- with metadata and coverarts from GnuDB.org
+		- with metadata and coverarts
 		- editable existing/missing metadata
 	
 ### Default root password: `ros`
