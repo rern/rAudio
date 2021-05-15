@@ -1221,6 +1221,7 @@ function renderPlayback() {
 }
 function renderPlaybackAlbum() {
 	if ( G.status.Album.slice( 0, 4 ) === 'http' ) {
+		var station = G.status.file.split( '.' )[ 1 ];
 		var radioalbum = 'file' in G.status ? ( station === 'radioparadise' || url === 'radiofrance' ) : false;
 		$( '#album' ).toggleClass( 'albumradio', radioalbum );
 		$( '#info' ).toggleClass( 'capitalize', G.status.webradio );
