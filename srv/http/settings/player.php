@@ -1,3 +1,4 @@
+<div>
 <heading data-status="mpd" class="status">Music Player Daemon<?=$istatus?><?=$ihelp?></heading>
 <div class="col-l text gr">
 	Version
@@ -13,6 +14,7 @@
 </div>
 <div style="clear:both"></div>
 <pre id="codempd" class="hide"></pre>
+</div>
 
 <div class="soundcard">
 <heading data-status="asound" class="status">Output<?=$istatus?><?=$ihelp?></heading>
