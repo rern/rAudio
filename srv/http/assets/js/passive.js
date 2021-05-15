@@ -305,7 +305,7 @@ function psMpdPlayer( data ) {
 		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
-	setTimeout( bannerHide, 3000 );
+	setTimeout( bannerHide, $( '#bannerTitle' ).text() === 'Audio CD' ? 0 : 3000 );
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );

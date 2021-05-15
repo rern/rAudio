@@ -20,5 +20,5 @@ function bannerHide() {
 	$( '#banner' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' );
-	$( '#bannerTitle, #bannerMessage' ).empty();
+	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
 }
