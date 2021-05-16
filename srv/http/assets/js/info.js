@@ -221,7 +221,8 @@ function infoReset() {
 	$( '.infomessage, .infoinput, #infoFooter' ).css( 'text-align', '' );
 	$( '#infoBox, .infolabel, #infotextbox, .infoinput, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '.selectric-items' ).css( 'min-width', '' );
-	$( '#infoMessage, .infolabel, .infoarrowleft, .infoarrowright' ).off( 'click' );
+	$( '#infoContent input' ).off( 'keyup change' );
+	$( '.filebtn, .infobtn, .infolabel, .infoarrowleft, .infoarrowright, #infoMessage' ).off( 'click' );
 	$( '.filebtn, .infobtn' ).removeClass( 'active' ).css( 'background', '' ).off( 'click' );
 	$( '#infoIcon' ).removeAttr( 'class' ).empty();
 	$( '#infoFileBox' ).val( '' ).removeAttr( 'accept' );
@@ -384,8 +385,6 @@ function info( O ) {
 					} );
 					$( '#infoOk' ).toggleClass( 'disabled', blank );
 				} );
-			} else {
-				$( '.infoinput' ).off( 'input' );
 			}
 		}
 		if ( 'textarea' in O ) {
@@ -534,11 +533,7 @@ function info( O ) {
 	}
 
 	if ( 'preshow' in O ) O.preshow();
-	if ( 'checkchanged' in O ) {
-		checkChanged( O.checkchanged );
-	} else {
-		$( '#infoContent input' ).off( 'keyup change' );
-	}
+	if ( 'checkchanged' in O ) checkChanged( O.checkchanged );
 	$( '#infoOverlay' )
 		.removeClass( 'hide' )
 		.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
@@ -692,23 +687,9 @@ function verifyPassword( title, pwd, fn ) {
 	} );
 }
 function verifyPasswordblank( title, message, label, fn ) {
-	info( {
-		  title   : title
-		, message : 'Blank password not allowed.'
-		, ok      : function() {
-			info( {
-				  title         : title
-				, message       : message
-				, passwordlabel : 'Password'
-				, ok            : function() {
-					var pwd = $( '#infoPasswordBox' ).val();
-					if ( !pwd ) {
-						verifyPasswordblank( title, message, label, fn );
-					} else {
-						verifyPassword( title, pwd, fn )
-					}
-				}
-			} );
-		}
+	var blank;
+	$( '#infoOk' ).addClass( 'disabled' );
+	$( '#infoPasswordBox' ).on( 'input', function() {
+		$( '#infoOk' ).toggleClass( 'disabled', !$( this ).val() );
 	} );
 }
