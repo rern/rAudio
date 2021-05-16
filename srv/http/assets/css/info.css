@@ -380,6 +380,10 @@ hr {
 #infoFile {
 	display: block;
 }
+.infocol {
+	display: inline-block;
+	width: 160px;
+}
 #infoButtons {
 	padding: 10px 0 20px 0;
 }
