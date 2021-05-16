@@ -8,10 +8,6 @@ path="/mnt/MPD/$file"
 args=( "${args[@]:3}" )
 keys=( album albumartist artist composer conductor genre date )
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "$1"
-}
-
 if [[ $cue == false ]]; then
 	if [[ $album == false ]]; then
 		keys+=( title track )
@@ -62,6 +58,6 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 	fi
 fi
 
-pushstream 1
+curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d 1
 touch /srv/http/data/system/updating
 mpc update "$dir"
