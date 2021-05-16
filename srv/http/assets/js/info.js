@@ -52,7 +52,7 @@ info( {                                     // default
 	                                                            } ); )
 	checked       : [ N, ... ]              // (none)         (pre-select array input indexes - single can be  N)
 	checkboxhr    : 1                       // (none)         (horizontal line after)
-	checkchanged  : [ VALUE, ... ] .        // (none)         (check values changed - text, radio, checkbox)
+	checkchanged  : [ VALUE, ... ] .        // (none)         (check values changed - text, radio, checkbox, select)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
 	footalign     : 'CSS'                   // (blank)        (footer text alignment)
@@ -113,9 +113,7 @@ infocontenthtml = heredoc( function() { /*
 			<textarea id="infoTextArea" class="infocontent"></textarea>
 			<div id="infoRadio" class="infocontent infocheckbox infohtml"></div>
 			<div id="infoCheckBox" class="infocontent infocheckbox infohtml"></div>
-			<div id="infoSelect" class="infocontent">
-				<a id="infoSelectLabel" class="infolabel"></a><select class="infohtml" id="infoSelectBox"></select>
-			</div>
+			<div id="infoSelect" class="infocontent"></div>
 			<div id="infoRange" class="infocontent inforange infohtml">
 				<div class="value"></div>
 				<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
@@ -123,7 +121,6 @@ infocontenthtml = heredoc( function() { /*
 			<p id="infoFooter" class="infomessage"></p>
 */ } );
 var infoscroll = 0;
-var splitcols = 0;
 var arrow = 0;
 
 $( 'body' ).prepend( containerhtml );
@@ -222,7 +219,7 @@ function infoReset() {
 	$( '.infomessage, .infoinput, #infoFooter' ).css( 'text-align', '' );
 	$( '#infoBox, .infolabel, #infotextbox, .infoinput, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '.selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent input' ).off( 'keyup change' );
+	$( '#infoContent input, #infoContent select' ).off( 'keyup change' );
 	$( '.filebtn, .infobtn, .infolabel, .infoarrowleft, .infoarrowright, #infoMessage' ).off( 'click' );
 	$( '.filebtn, .infobtn' ).removeClass( 'active' ).css( 'background', '' ).off( 'click' );
 	$( '#infoIcon' ).removeAttr( 'class' ).empty();
@@ -467,15 +464,14 @@ function info( json ) {
 				var html = O.radio;
 			} else {
 				var html = '';
-				var splitcols; cl, label, br;
+				var cl, label, br;
 				$.each( O.radio, function( key, val ) {
 					if ( key[ 0 ] === '_' ) {
-						splitcols = 1;
-						cl = ' class="splitl"';
+						cl = ' class="infocol"';
 						label = key.substring( 1 );
 						br = '';
 					} else {
-						cl = splitcols ? ' class="splitr"' : '';
+						cl = '';
 						label = key;
 						br = '<br>';
 					}
@@ -495,12 +491,11 @@ function info( json ) {
 				var cl, label, br;
 				$.each( O.checkbox, function( key, val ) {
 					if ( key[ 0 ] === '_' ) {
-						splitcols = 1;
-						cl = ' class="splitl"';
+						cl = ' class="infocol"';
 						label = key.substring( 1 );
 						br = '';
 					} else {
-						cl = ' class="splitr"';
+						cl = '';
 						label = key;
 						br = '<br>';
 					}
@@ -521,13 +516,14 @@ function info( json ) {
 			if ( typeof O.select !== 'object' ) {
 				var html = O.select;
 			} else {
-				var html = '';
+				var html = '<a id="infoSelectLabel" class="infolabel"></a><select class="infohtml" id="infoSelectBox">';
 				$.each( O.select, function( key, val ) {
 					html += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
 				} );
+				html += '</select>';
 			}
-			renderOption( $( '#infoSelectBox' ), html, 'checked' in O ? O.checked : '' );
-			$( '#infoSelect, #infoSelectLabel, #infoSelectBox' ).removeClass( 'hide' );
+			renderOption( $( '#infoSelect' ), html, 'checked' in O ? O.checked : '' );
+			$( '#infoSelect' ).removeClass( 'hide' );
 		}
 		if ( 'rangevalue' in O ) {
 			$( '#infoRange .value' ).text( O.rangevalue );
@@ -598,13 +594,12 @@ function alignVertical() { // make infoBox scrollable
 function checkChanged() {
 	$( '#infoOk' ).addClass( 'disabled' );
 	$( '.infoinput' ).keyup( checkChangedValue );
-	$( '#infoContent input[type=radio], #infoContent input[type=checkbox]' ).change( checkChangedValue );
+	$( '#infoContent input[type=radio], #infoContent input[type=checkbox], #infoContent select' ).change( checkChangedValue );
 }
 function checkChangedValue() {
-	var $text = $( '#infoContent input[type=text]' );
 	if ( 'textlength' in O ) {
 		var shorter = O.textlength.some( function( v, i ) {
-			if ( $text.eq( i ).val().length < v ) return true
+			if ( $( '.infoinput' ).eq( i ).val().length < v ) return true
 		} );
 		if ( shorter ) {
 			$( '#infoOk' ).addClass( 'disabled' );
@@ -612,11 +607,19 @@ function checkChangedValue() {
 		}
 	}
 	
-	var v;
+	var values = getInfoValues();
 	var changed = false;
+	changed = values.some( function( v, i ) {
+		if ( v !== O.checkchanged[ i ] ) return true
+	} );
+	$( '#infoOk' ).toggleClass( 'disabled', !changed );
+}
+function getInfoValues() {
+	var v;
 	var values = [];
+	var $text = $( '#infoContent input[type=text]' );
 	if ( $text.length ) {
-		$text.each( function( i, el ) {
+		$text.each( function() {
 			v = $( this ).val();
 			if ( /^\d+$/.test( v ) ) v = Number( v );
 			values.push( v );
@@ -624,25 +627,36 @@ function checkChangedValue() {
 	}
 	var $radio = $( '#infoContent input[type=radio]' );
 	if ( $radio.length ) {
-		$radio.each( function( i, el ) {
+		$radio.each( function() {
 			if ( $( this ).prop( 'checked' ) ) {
 				v = $( this ).val();
-				if ( v === 'true' ) { v = true } else if ( v === 'false' ) { v = false }
+				if ( /^\d+$/.test( v ) ) {
+					v = Number( v );
+				} else if ( v === 'true' ) {
+					v = true;
+				} else if ( v === 'false' ) {
+					v = false;
+				}
 				values.push( v );
 			}
 		} );
 	}
 	var $checkbox = $( '#infoContent input[type=checkbox]' );
 	if ( $checkbox.length ) {
-		$checkbox.each( function( i, el ) {
+		$checkbox.each( function() {
 			values.push( $( this ).prop( 'checked' ) );
 		} );
 	}
-	changed = values.some( function( v, i ) {
-//		console.log(i, O.checkchanged[ i ])
-		if ( v !== O.checkchanged[ i ] ) return true
-	} );
-	$( '#infoOk' ).toggleClass( 'disabled', !changed );
+	var $select = $( '#infoContent select' );
+	if ( $select.length ) {
+		$select.each( function() {
+			v = $( this ).val();
+			if ( /^\d+$/.test( v ) ) v = Number( v );
+			values.push( v );
+		} );
+	}
+	return values
+	
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {
@@ -662,25 +676,6 @@ function renderOption( $el, htm, chk ) {
 				$el.find( opt +'[value="'+ chk +'"]' ).prop( opt === 'option' ? 'selected' : 'checked', true );
 			}
 		}
-		if ( !splitcols ) return
-	
-		setTimeout( function() {
-			var types = []
-			if ( $( '#infoRadio label' ).length ) types.push( 'Radio' );
-			if ( $( '#infoCheckBox label' ).length ) types.push( 'CheckBox' );
-			types.forEach( function( type ) {
-				[ 'splitl', 'splitr' ].forEach( function( cl ) {
-					var $el = $( '#info'+ type +' label.'+ cl );
-					var widest = 0;
-					var pad = cl === 'splitl' ? 20 : 5;
-					$el.each( function() {
-						w = $( this ).width();
-						if ( w > widest ) widest = w;
-					} );
-					$el.width( widest + pad );
-				} );
-			} );
-		}, 0 );
 	} );
 }
 
