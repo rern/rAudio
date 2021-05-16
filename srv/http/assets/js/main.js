@@ -234,11 +234,17 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	var checklist = !options ? chklibrary : chklibrary2;
 	displayGet( function( data ) {
 		G.display = data;
+		var keys = Object.keys( !options ? chklibrary : chklibrary2 );
+		var values = [];
+		keys.forEach( function( k ) {
+			if ( k in G.display ) values.push( G.display[ k ] );
+		} );
 		var json = {
 			  icon     : 'library'
 			, title    : !options ? 'Library Home Display' : 'Library/Playlist Options'
 			, message  : !options ? '1/2 - Show selected items:' : ''
 			, checkbox : displayCheckbox( checklist )
+			, checkchanged : { checkbox: values }
 			, preshow  : function() {
 				if ( options ) {
 					$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
@@ -321,11 +327,17 @@ $( '#displayplayback' ).click( function() {
 		G.display = data;
 		var bars = G.display.bars;
 		var content = displayCheckbox( chkplayback )
+		var keys = Object.keys( chkplayback );
+		var values = [];
+		keys.forEach( function( k ) {
+			values.push( G.display[ k ] );
+		} );
 		info( {
 			  icon     : 'play-circle'
 			, title    : 'Playback Display'
 			, message  : 'Show selected items:'
 			, checkbox : displayCheckbox( chkplayback )
+			, checkchanged : { checkbox: values, radio: [ G.display.novu ] }
 			, preshow  : function() {
 				$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
 						+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'

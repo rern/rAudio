@@ -595,30 +595,32 @@ function checkChanged( value ) {
 	$( '#infoOk' ).addClass( 'disabled' );
 	if ( 'text' in value ) {
 		var $text = $( '#infoContent input[type=text]' );
-		var changed;
+		var changedtext = false;
 		$text.keyup( function() {
-			changed = value.text.some( function( val, i ) {
+			changedtext = value.text.some( function( val, i ) {
 				if ( $text.eq( i ).val() !== val ) return true
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', !changed );
+			$( '#infoOk' ).toggleClass( 'disabled', !changedtext );
 		} );
 	}
 	if ( 'radio' in value ) {
 		var $radio = $( '#infoContent input[type=radio]' );
+		var changedradio = false;
 		$radio.change( function() {
-			var changed = value.radio.some( function( val, i ) {
+			changedradio = value.radio.some( function( val, i ) {
 				if ( $radio.eq( i ).prop( 'checked' ) !== val ) return true
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', !changed );
+			$( '#infoOk' ).toggleClass( 'disabled', !changedradio );
 		} );
 	}
 	if ( 'checkbox' in value ) {
 		var $checkbox = $( '#infoContent input[type=checkbox]' );
+		var changedcheckbox = false;
 		$checkbox.change( function() {
-			var changed = value.checkbox.some( function( val, i ) {
+			changedcheckbox = value.checkbox.some( function( val, i ) {
 				if ( $checkbox.eq( i ).prop( 'checked' ) !== val ) return true
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', !changed );
+			$( '#infoOk' ).toggleClass( 'disabled', !changedcheckbox );
 		} );
 	}
 }
