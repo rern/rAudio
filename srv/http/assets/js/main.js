@@ -1422,7 +1422,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 							+'<br><a class="bklabel">'+ name +'</a>'
 							+'To:'
 			, textvalue    : name
-			, textrequired : 0
+			, textrequired : [ 0 ]
 			, boxwidth     : 'max'
 			, oklabel      : '<i class="fa fa-flash"></i>Rename'
 			, ok           : function() {

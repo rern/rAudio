@@ -74,7 +74,7 @@ function bookmarkIcon( path ) {
 						+'<br><w>'+ path +'</w>'
 						+'<br>As:'
 		, textvalue    : path.split( '/' ).pop()
-		, textrequired : 0
+		, textrequired : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
 			$.post( cmdphp, {
@@ -176,7 +176,7 @@ function playlistNew() {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
-		, textrequired : 0
+		, textrequired : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
 			playlistSave( $( '#infoTextBox' ).val() );
@@ -192,7 +192,7 @@ function playlistRename() {
 						+'<br><w>'+ name +'</w>'
 						+'<br>To:'
 		, textvalue    : name
-		, textrequired : 0
+		, textrequired : [ 0 ]
 		, boxwidth     : 'max'
 		, preshow      : function() {
 			$( '#infoOk' ).addClass( 'disabled' );
@@ -334,28 +334,12 @@ function tagEditor() {
 			}
 			, nobutton     : G.playlist
 			, nofocus      : 1
-			, preshow      : function() {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '.infoinput' ).keyup( function() {
-					var changed = 0;
-					for ( i = 0; i < fL; i++ ) {
-						if ( $( '.infoinput:eq( '+ i +' )' ).val() !== value[ i ] ) {
-							changed = 1;
-							break;
-						}
-					}
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				} );
-			}
+			, checkchanged : { text: value }
 			, ok           : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				for ( i = 0; i < fL; i++ ) {
 					var val = $( '.infoinput:eq( '+ i +' )' ).val();
-					if ( val === value[ i ] ) {
-						val = '';
-					} else {
-						if ( !val ) val = -1;
-					}
+					val = val === value[ i ] ? '' : ( val || -1 );
 					tag.push( val );
 				}
 				banner( 'Tag Editor', 'Change ...', 'tag blink', -1 );
@@ -503,7 +487,7 @@ function webRadioSave( url ) {
 		, title        : 'Save WebRadio'
 		, message      : url
 		, textlabel    : 'Name'
-		, textrequired : 1
+		, textrequired : [ 0 ]
 		, ok           : function() {
 			G.local = 1;
 			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
@@ -623,6 +607,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var time = G.list.li.find( '.time' ).data( 'time' );
 			var track = G.list.li.find( '.track' ).text() ;
 			var src = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
+			var value = [ artist, album, title ];
 			info( {
 				  icon      : 'audiocd'
 				, title     : 'Audio CD Tag Editor'
@@ -630,8 +615,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 							 +'<br># '+ track +' &bull; '+ second2HMS( time )
 				, msgalign  : 'left'
 				, textlabel : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
-				, textvalue : [ artist, album, title ]
+				, textvalue : value
 				, boxwidth  : 'max'
+				, checkchanged : { text: value }
 				, ok        : function() {
 					var data = $( '#infoTextBox' ).val() +'^'+ $( '#infoTextBox1' ).val() +'^'+ $( '#infoTextBox2' ).val() +'^'+ time;
 					data = data.replace( /'/g, "\\'" );

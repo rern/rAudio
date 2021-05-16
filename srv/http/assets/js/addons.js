@@ -221,7 +221,7 @@ function getoptions() {
 							opt.push( 0 );
 							sendcommand();
 						} else {
-							blankPassword( title, ojson.message, ojson.label, function() {
+							verifyPasswordblank( title, ojson.message, ojson.label, function() {
 								opt.push( pwd );
 								sendcommand();
 							} );

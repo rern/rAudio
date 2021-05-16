@@ -51,6 +51,7 @@ info( {                                     // default
 	                                                            } ); )
 	checked       : [ N, ... ]              // (none)         (pre-select array input indexes - single can be  N)
 	checkboxhr    : 1                       // (none)         (horizontal line after)
+	checkchanged  : { TYPE: [ VALUE, .. ] } //                (check if any values changed)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
 	footalign     : 'CSS'                   // (blank)        (footer text alignment)
@@ -375,12 +376,16 @@ function info( O ) {
 			$( '#infoText' ).removeClass( 'hide' );
 			if ( 'textalign' in O ) $( '.infoinput' ).css( 'text-align', O.textalign );
 			if ( 'textrequired' in O ) {
-				if ( typeof O.textrequired !== 'object' ) O.textrequired = [ 0 ];
-				O.textrequired.forEach( function( e ) {
-					$( '.infoinput' ).eq( e ).addClass( 'required' );
+				var blank;
+				$( '#infoOk' ).addClass( 'disabled' );
+				$( '.infoinput' ).on( 'input', function() {
+					blank = O.textrequired.some( function( i ) {
+						if ( $( '.infoinput' ).eq( i ).val() === '' ) return true
+					} );
+					$( '#infoOk' ).toggleClass( 'disabled', blank );
 				} );
-				checkRequired();
-				$( '.infoinput' ).on( 'input', checkRequired );
+			} else {
+				$( '.infoinput' ).off( 'input' );
 			}
 		}
 		if ( 'textarea' in O ) {
@@ -529,6 +534,11 @@ function info( O ) {
 	}
 
 	if ( 'preshow' in O ) O.preshow();
+	if ( 'checkchanged' in O ) {
+		checkChanged( O.checkchanged );
+	} else {
+		$( '#infoContent input' ).off( 'keyup change' );
+	}
 	$( '#infoOverlay' )
 		.removeClass( 'hide' )
 		.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
@@ -586,11 +596,36 @@ function alignVertical() { // make infoBox scrollable
 		$( 'html, body' ).scrollTop( 0 );
 	}, 0 );
 }
-function checkRequired() {
-	var $empty = $( '.infoinput.required' ).filter( function() {
-		return !$( this ).val();
-	} );
-	$( '#infoOk' ).toggleClass( 'disabled', $empty.length > 0 );
+function checkChanged( value ) {
+	$( '#infoOk' ).addClass( 'disabled' );
+	if ( 'text' in value ) {
+		var $text = $( '#infoContent input[type=text]' );
+		var changed;
+		$text.keyup( function() {
+			changed = value.text.some( function( val, i ) {
+				if ( $text.eq( i ).val() !== val ) return true
+			} );
+			$( '#infoOk' ).toggleClass( 'disabled', !changed );
+		} );
+	}
+	if ( 'radio' in value ) {
+		var $radio = $( '#infoContent input[type=radio]' );
+		$radio.change( function() {
+			var changed = value.radio.some( function( val, i ) {
+				if ( $radio.eq( i ).prop( 'checked' ) !== val ) return true
+			} );
+			$( '#infoOk' ).toggleClass( 'disabled', !changed );
+		} );
+	}
+	if ( 'checkbox' in value ) {
+		var $checkbox = $( '#infoContent input[type=checkbox]' );
+		$checkbox.change( function() {
+			var changed = value.checkbox.some( function( val, i ) {
+				if ( $checkbox.eq( i ).prop( 'checked' ) !== val ) return true
+			} );
+			$( '#infoOk' ).toggleClass( 'disabled', !changed );
+		} );
+	}
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {
@@ -631,7 +666,11 @@ function renderOption( $el, htm, chk ) {
 		}, 0 );
 	} );
 }
+
+// verify password - called from addons.js ///////////////////////////////////////
 function verifyPassword( title, pwd, fn ) {
+	if ( !title ) return
+	
 	info( {
 		  title         : title
 		, message       : 'Please retype'
@@ -652,7 +691,7 @@ function verifyPassword( title, pwd, fn ) {
 		}
 	} );
 }
-function blankPassword( title, message, label, fn ) {
+function verifyPasswordblank( title, message, label, fn ) {
 	info( {
 		  title   : title
 		, message : 'Blank password not allowed.'
@@ -664,7 +703,7 @@ function blankPassword( title, message, label, fn ) {
 				, ok            : function() {
 					var pwd = $( '#infoPasswordBox' ).val();
 					if ( !pwd ) {
-						blankPassword( title, message, label, fn );
+						verifyPasswordblank( title, message, label, fn );
 					} else {
 						verifyPassword( title, pwd, fn )
 					}
