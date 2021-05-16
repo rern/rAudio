@@ -51,7 +51,7 @@ info( {                                     // default
 	                                                            } ); )
 	checked       : [ N, ... ]              // (none)         (pre-select array input indexes - single can be  N)
 	checkboxhr    : 1                       // (none)         (horizontal line after)
-	checkchanged  : { TYPE: [ VALUE, .. ] } //                (check if any values changed)
+	checkchanged  : [ VALUE, ... ] .        // (none)         (check values changed - text, radio, checkbox)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
 	footalign     : 'CSS'                   // (blank)        (footer text alignment)
@@ -236,7 +236,10 @@ function infoReset() {
 	}
 }
 
-function info( O ) {
+O = {}
+
+function info( json ) {
+	O = json;
 	infoReset();
 	infoscroll = $( window ).scrollTop();
 	setTimeout( function() { // fix: wait for infoReset() on 2nd info
@@ -463,7 +466,7 @@ function info( O ) {
 				var html = O.radio;
 			} else {
 				var html = '';
-				var cl, label, br;
+				var splitcols; cl, label, br;
 				$.each( O.radio, function( key, val ) {
 					if ( key[ 0 ] === '_' ) {
 						splitcols = 1;
@@ -471,7 +474,7 @@ function info( O ) {
 						label = key.substring( 1 );
 						br = '';
 					} else {
-						cl = ' class="splitr"';
+						cl = splitcols ? ' class="splitr"' : '';
 						label = key;
 						br = '<br>';
 					}
@@ -533,7 +536,7 @@ function info( O ) {
 	}
 
 	if ( 'preshow' in O ) O.preshow();
-	if ( 'checkchanged' in O ) checkChanged( O.checkchanged );
+	if ( O.checkchanged ) checkChanged( O.checkchanged );
 	$( '#infoOverlay' )
 		.removeClass( 'hide' )
 		.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
@@ -591,38 +594,41 @@ function alignVertical() { // make infoBox scrollable
 		$( 'html, body' ).scrollTop( 0 );
 	}, 0 );
 }
-function checkChanged( value ) {
+function checkChanged() {
 	$( '#infoOk' ).addClass( 'disabled' );
-	if ( 'text' in value ) {
-		var $text = $( '#infoContent input[type=text]' );
-		var changedtext = false;
-		$text.keyup( function() {
-			changedtext = value.text.some( function( val, i ) {
-				if ( $text.eq( i ).val() !== val ) return true
-			} );
-			$( '#infoOk' ).toggleClass( 'disabled', !changedtext );
+	$( '.infoinput' ).keyup( checkChangedValue );
+	$( '#infoContent input[type=radio], #infoContent input[type=checkbox]' ).change( checkChangedValue );
+}
+function checkChangedValue() {
+	var changed = false;
+	var values = [];
+	var $text = $( '#infoContent input[type=text]' );
+	if ( $text.length ) {
+		$text.each( function( i, el ) {
+			values.push( $( this ).val() );
 		} );
 	}
-	if ( 'radio' in value ) {
-		var $radio = $( '#infoContent input[type=radio]' );
-		var changedradio = false;
-		$radio.change( function() {
-			changedradio = value.radio.some( function( val, i ) {
-				if ( $radio.eq( i ).prop( 'checked' ) !== val ) return true
-			} );
-			$( '#infoOk' ).toggleClass( 'disabled', !changedradio );
+	var $radio = $( '#infoContent input[type=radio]' );
+	if ( $radio.length ) {
+		var v;
+		$radio.each( function( i, el ) {
+			if ( $( this ).prop( 'checked' ) ) {
+				v = $( this ).val();
+				if ( v === 'true' ) { v = true } else if ( v === 'false' ) { v = false }
+				values.push( v );
+			}
 		} );
 	}
-	if ( 'checkbox' in value ) {
-		var $checkbox = $( '#infoContent input[type=checkbox]' );
-		var changedcheckbox = false;
-		$checkbox.change( function() {
-			changedcheckbox = value.checkbox.some( function( val, i ) {
-				if ( $checkbox.eq( i ).prop( 'checked' ) !== val ) return true
-			} );
-			$( '#infoOk' ).toggleClass( 'disabled', !changedcheckbox );
+	var $checkbox = $( '#infoContent input[type=checkbox]' );
+	if ( $checkbox.length ) {
+		$checkbox.each( function( i, el ) {
+			values.push( $( this ).prop( 'checked' ) );
 		} );
 	}
+	changed = values.some( function( v, i ) {
+		if ( v !== O.checkchanged[ i ] ) return true
+	} );
+	$( '#infoOk' ).toggleClass( 'disabled', !changed );
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {

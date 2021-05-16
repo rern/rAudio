@@ -240,12 +240,12 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 			if ( k in G.display ) values.push( G.display[ k ] );
 		} );
 		var json = {
-			  icon     : 'library'
-			, title    : !options ? 'Library Home Display' : 'Library/Playlist Options'
-			, message  : !options ? '1/2 - Show selected items:' : ''
-			, checkbox : displayCheckbox( checklist )
-			, checkchanged : { checkbox: values }
-			, preshow  : function() {
+			  icon         : 'library'
+			, title        : !options ? 'Library Home Display' : 'Library/Playlist Options'
+			, message      : !options ? '1/2 - Show selected items:' : ''
+			, checkbox     : displayCheckbox( checklist )
+			, checkchanged : values
+			, preshow      : function() {
 				if ( options ) {
 					$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
 						var toggle = $( this ).prop( 'name' ) === 'tapaddplay' ? 'tapreplaceplay' : 'tapaddplay';
@@ -261,7 +261,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 					$( 'input[name=fixedcover]' ).prop( 'disabled', G.display.hidecover );
 				}
 			}
-			, ok       : function () {
+			, ok           : function () {
 				displaySave( 'library' );
 				$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 				if ( G.library ) {
@@ -328,17 +328,17 @@ $( '#displayplayback' ).click( function() {
 		var bars = G.display.bars;
 		var content = displayCheckbox( chkplayback )
 		var keys = Object.keys( chkplayback );
-		var values = [];
+		var values = [ G.display.novu ];
 		keys.forEach( function( k ) {
 			values.push( G.display[ k ] );
 		} );
 		info( {
-			  icon     : 'play-circle'
-			, title    : 'Playback Display'
-			, message  : 'Show selected items:'
-			, checkbox : displayCheckbox( chkplayback )
-			, checkchanged : { checkbox: values, radio: [ G.display.novu ] }
-			, preshow  : function() {
+			  icon         : 'play-circle'
+			, title        : 'Playback Display'
+			, message      : 'Show selected items:'
+			, checkbox     : displayCheckbox( chkplayback )
+			, checkchanged : values
+			, preshow      : function() {
 				$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
 						+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
 						+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
@@ -400,7 +400,7 @@ $( '#displayplayback' ).click( function() {
 					}
 				} );
 			}
-			, ok       : function () {
+			, ok           : function () {
 				displaySave( 'playback' );
 				G.bars = G.display.bars;
 				displayBars();
