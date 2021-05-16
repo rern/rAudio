@@ -172,9 +172,7 @@ snapclientdisable )
 	;;
 snapclientset )
 	latency=${args[1]}
-	password=${args[2]}
 	sed -i '/OPTS=/ s/".*"/"--latency='$latency'"/' /etc/default/snapclient
-	[[ -n $password ]] && echo $pwd > $dirsystem/snapclientpw
 	touch $dirsystem/snapclient
 	pushRefresh
 	;;

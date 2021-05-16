@@ -22,6 +22,7 @@ info( {                                     // default
 	textvalue     : [ 'VALUE', ... ]        // (blank)        (pre-filled array input value)
 	textsuffix    : [ 'LABEL', ... ]        // (blank)        (inputbox suffix array)
 	textrequired  : [ N, ... ]              // (none)         (required fields disable ok button if blank)
+	textlength    : [ N, ... ]              // (none)         (minimun characters of each box)
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
 	
 	textarea      : 1                       //                (textarea - \n = newline, \t = tab)
@@ -600,17 +601,29 @@ function checkChanged() {
 	$( '#infoContent input[type=radio], #infoContent input[type=checkbox]' ).change( checkChangedValue );
 }
 function checkChangedValue() {
+	var $text = $( '#infoContent input[type=text]' );
+	if ( 'textlength' in O ) {
+		var shorter = O.textlength.some( function( v, i ) {
+			if ( $text.eq( i ).val().length < v ) return true
+		} );
+		if ( shorter ) {
+			$( '#infoOk' ).addClass( 'disabled' );
+			return
+		}
+	}
+	
+	var v;
 	var changed = false;
 	var values = [];
-	var $text = $( '#infoContent input[type=text]' );
 	if ( $text.length ) {
 		$text.each( function( i, el ) {
-			values.push( $( this ).val() );
+			v = $( this ).val();
+			if ( /^\d+$/.test( v ) ) v = Number( v );
+			values.push( v );
 		} );
 	}
 	var $radio = $( '#infoContent input[type=radio]' );
 	if ( $radio.length ) {
-		var v;
 		$radio.each( function( i, el ) {
 			if ( $( this ).prop( 'checked' ) ) {
 				v = $( this ).val();
@@ -626,6 +639,7 @@ function checkChangedValue() {
 		} );
 	}
 	changed = values.some( function( v, i ) {
+//		console.log(i, O.checkchanged[ i ])
 		if ( v !== O.checkchanged[ i ] ) return true
 	} );
 	$( '#infoOk' ).toggleClass( 'disabled', !changed );

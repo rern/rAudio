@@ -27,8 +27,7 @@ fi
 [[ -e /usr/bin/snapserver ]] && data+='
 	, "snapserver"      : '$( systemctl -q is-active snapserver && echo true || echo false )'
 	, "snapclient"      : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
-	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )'
-	, "snappassword"    : "'$( cat $dirsystem/snapclientpw 2> /dev/null )'"'
+	, "snaplatency"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )
 [[ -e /usr/bin/spotifyd ]] && data+='
 	, "spotifyd"        : '$( systemctl -q is-active spotifyd && echo true || echo false )
 [[ -e /usr/bin/upmpdcli ]] && data+='
