@@ -35,7 +35,7 @@ data=$( curl -s -m 5 -G \
 error=$( jq -r .error <<< "$data" )
 [[ $error != null ]] && exit
 
-if [[ $type == 'title' ]]; then
+if [[ $type == title ]]; then
 	album=$( jq -r .track.album <<< "$data" )
 else
 	album=$( jq -r .album <<< "$data" )
@@ -56,10 +56,10 @@ fi
 [[ -z $url || $url == null ]] && exit
 
 ext=${url/*.}
-if [[ $type == 'audiocd' ]]; then
+if [[ $type == audiocd ]]; then
 	urlname=/data/audiocd/$discid
 else
-	[[ $type == 'licover' ]] && prefix=licover && prefix=online
+	[[ $type == licover ]] && prefix=licover || prefix=online
 	urlname=/data/shm/$prefix-$name
 	# limit fetched files: 10
 	fetchedfiles=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
