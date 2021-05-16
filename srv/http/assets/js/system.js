@@ -668,6 +668,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
 		, checked     : G.lcdmodel
+		, checkchanged : [ G.lcdmodel ]
 		, boxwidth    : 200
 		, buttonlabel : 'Calibrate'
 		, button      : function() {
@@ -780,6 +781,8 @@ $( '#setting-soundprofile' ).click( function() {
 		var radioval = Object.values( radio );
 		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
 	}
+	var checkevalues = G.soundprofileval.split( ' ' );
+	checkevalues.push( G.soundprofileval );
 	var iL = textlabel.length;
 	info( {
 		  icon      : 'sliders'
@@ -789,6 +792,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, boxwidth  : 110
 		, radio     : radio
 		, checked   : G.soundprofileval
+//		, checkchanged : ( G.soundprofile ? checkevalues : '' )
 		, preshow   : function() {
 			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
 			// verify changes + interactive values
@@ -814,10 +818,8 @@ $( '#setting-soundprofile' ).click( function() {
 		, ok        : function() {
 			var soundprofileval = $( '#infoTextBox' ).val();
 			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
-			var custom = radioval.indexOf( soundprofileval ) !== -1 ? false : true;
 			bash( [ 'soundprofileset', soundprofileval ] );
-			var action = !G.soundprofile ? 'Enabled ...' : ( soundprofileval !== defaultval ? 'Change ...' : 'Default ...' );
-			notify( 'Kernel Sound Profile', action, 'volume' );
+			notify( 'Kernel Sound Profile', !G.soundprofile ? 'Enabled ...' : 'Change ...', 'volume' );
 		}
 	} );
 } );
