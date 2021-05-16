@@ -598,45 +598,34 @@ function checkChanged() {
 }
 function checkChangedValue() {
 	if ( 'textlength' in O ) {
-		var shorter = O.textlength.some( function( v, i ) {
-			if ( $( '.infoinput' ).eq( i ).val().length < v ) return true
+		var shorter = O.textlength.some( function( l, i ) {
+			if ( $( '.infoinput' ).eq( i ).val().length < l ) return true
 		} );
-		if ( shorter ) {
-			$( '#infoOk' ).addClass( 'disabled' );
-			return
-		}
+		if ( shorter ) $( '#infoOk' ).addClass( 'disabled' ); return
 	}
 	
 	var values = getInfoValues();
 	var changed = false;
 	changed = values.some( function( v, i ) {
-		if ( v !== O.checkchanged[ i ] ) return true
+		if ( v != O.checkchanged[ i ] ) return true
 	} );
 	$( '#infoOk' ).toggleClass( 'disabled', !changed );
 }
 function getInfoValues() {
-	var v;
 	var values = [];
 	var $text = $( '#infoContent input[type=text]' );
 	if ( $text.length ) {
 		$text.each( function() {
-			v = $( this ).val();
-			if ( /^\d+$/.test( v ) ) v = Number( v );
-			values.push( v );
+			values.push( $( this ).val() );
 		} );
 	}
 	var $radio = $( '#infoContent input[type=radio]' );
 	if ( $radio.length ) {
+		var v;
 		$radio.each( function() {
 			if ( $( this ).prop( 'checked' ) ) {
 				v = $( this ).val();
-				if ( /^\d+$/.test( v ) ) {
-					v = Number( v );
-				} else if ( v === 'true' ) {
-					v = true;
-				} else if ( v === 'false' ) {
-					v = false;
-				}
+				if ( v === 'true' ) { v = true; } else if ( v === 'false' ) { v = false; }
 				values.push( v );
 			}
 		} );
@@ -650,13 +639,10 @@ function getInfoValues() {
 	var $select = $( '#infoContent select' );
 	if ( $select.length ) {
 		$select.each( function() {
-			v = $( this ).val();
-			if ( /^\d+$/.test( v ) ) v = Number( v );
-			values.push( v );
+			values.push( $( this ).val() );
 		} );
 	}
 	return values
-	
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {
