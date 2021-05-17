@@ -58,7 +58,7 @@ soundprofile() {
 		swappiness=60
 		mtu=1500
 		txqueuelen=1000
-		rm -f $dirsystem/soundprofile
+		rm -f /etc/soundprofile.conf $dirsystem/soundprofile
 	else
 		. /etc/soundprofile.conf
 		touch $dirsystem/soundprofile
