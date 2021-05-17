@@ -604,12 +604,14 @@ function checkChangedLength( $text, L ) {
 function checkChangedValue() {
 	if ( O.checklength ) return
 		
-	var values = getInfoValues();
-	var changed = false;
-	changed = values.some( function( v, i ) {
-		if ( v != O.checkchanged[ i ] ) return true
-	} );
-	$( '#infoOk' ).toggleClass( 'disabled', !changed );
+	setTimeout( function() { // force after custom check
+		var values = getInfoValues();
+		var changed = false;
+		changed = values.some( function( v, i ) {
+			if ( v != O.checkchanged[ i ] ) return true
+		} );
+		$( '#infoOk' ).toggleClass( 'disabled', !changed );
+	}, 0 );
 }
 function getInfoValues() {
 	var values = [];

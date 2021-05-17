@@ -792,24 +792,22 @@ $( '#setting-soundprofile' ).click( function() {
 		, boxwidth  : 110
 		, radio     : radio
 		, rchecked  : G.soundprofileval
-//		, checkchanged : ( G.soundprofile ? checkevalues : '' )
+		, checkchanged : ( G.soundprofile ? checkevalues : '' )
 		, preshow   : function() {
-			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
-			// verify changes + interactive values
-			$( '#infoOk' ).addClass( 'disabled' );
+			$( '#infoRadio input' ).last().prop( 'disabled', true );
 			$( '#infoRadio' ).change( function() {
 				var soundprofileval = $( '#infoRadio input:checked' ).val();
 				var val = soundprofileval.split( ' ' );
 				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
-				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
-				
 			} );
 			$( '.infoinput' ).keyup( function() {
-				var soundprofileval = $( '#infoTextBox' ).val();
-				for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
-				$( '#infoRadio input' ).val( [ textvalue.indexOf( soundprofileval ) !== -1 ? soundprofileval : G.soundprofileval ] );
-				$( '#infoOk' ).toggleClass( 'disabled', soundprofileval === G.soundprofileval );
-				$( '#infoRadio input' ).last().prop( 'checked', radioval.indexOf( soundprofileval ) === -1 );
+				var values = '';
+				$( '.infoinput' ).each( function() {
+					values += $( this ).val() +' ';
+				} );
+				values = values.trimEnd();
+				if ( radioval.indexOf( values ) === -1 ) values = 0;
+				$( '#infoRadio input[value="'+ values +'"]' ).prop( 'checked', true )
 			} );
 		}
 		, cancel    : function() {
