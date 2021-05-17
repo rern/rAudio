@@ -353,7 +353,7 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 		, ok           : function() {
 			var v = getInfoValues();
-			notify( 'Bluetooth', ( G.bluetooth ? 'Change ...' : !G.bluetooth ), 'bluetooth' );
+			notify( 'Bluetooth', G.bluetooth ? 'Change ...' : 'Enable ...', 'bluetooth' );
 			bash( [ 'bluetoothset', v[ 0 ], v[ 1 ] ] );
 		}
 	} );
@@ -583,7 +583,7 @@ var infopowerbutton = heredoc( function() { /*
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			notify( 'Power Button', G.powerbutton ? 'Change ...' : !G.powerbutton, 'power' );
+			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 			bash( [ 'powerbuttonset', $( '#swpin' ).val(), $( '#ledpin' ).val() ] );
 		}
 	} );
@@ -623,7 +623,7 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : !G.lcd, 'lcd' );
+			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdset', $( '#infoSelectBox').val(), G.reboot.join( '\n' ) ] );
 		}
@@ -734,7 +734,7 @@ $( '#setting-soundprofile' ).click( function() {
 			var soundprofileval = $( '#infoTextBox' ).val();
 			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
 			bash( [ 'soundprofileset', soundprofileval ] );
-			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : !G.soundprofile, 'volume' );
+			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );
 } );
