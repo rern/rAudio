@@ -34,33 +34,23 @@ var htmlmount = heredoc( function() { /*
 		</div>
 	</form>
 */ } );
-function infoMount( formdata ) {
-	var data = {};
+function infoMount( data ) {
+	if ( !data ) var data = {}
 	info( {
 		  icon    : 'network'
 		, title   : 'Add Network Share'
 		, content : htmlmount
 		, preshow : function() {
-			if ( $.isEmptyObject( formdata ) ) {
-				$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', 1 );
-				$( '.infotextbox input[name=ip]' ).val( '192.168.1.' );
-				$( '#infoCheckBox input' ).prop( 'checked', true );
-			} else {
-				if ( formdata.protocol === 'cifs' ) {
-					$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', 1 );
-					$( '.infotextbox input[name=user]' ).val( formdata.user );
-					$( '.infotextbox input[name=password]' ).val( formdata.password );
-				} else {
-					$( 'input[name=protocol]:eq( 1 )' ).prop( 'checked', 1 );
-					$( '.guest' ).addClass( 'hide' );
-				}
-				$( '.infotextbox input[name=mountpoint]' ).val( formdata.mountpoint );
-				$( '.infotextbox input[name=ip]' ).val( formdata.ip );
-				$( '.infotextbox input[name=directory]' ).val( formdata.directory );
-				$( '.infotextbox input[name=options]' ).val( formdata.options );
-				$( '.infoCheckBox input' ).prop( 'checked', formdata.update );
-			}
+			$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', data.protocol || 'cifs' );
+			$( '.infotextbox input[name=mountpoint]' ).val( data.mountpoint );
+			$( '.infotextbox input[name=ip]' ).val( data.ip || '192.168.1.' );
+			$( '.infotextbox input[name=directory]' ).val( data.directory );
+			$( '.infotextbox input[name=user]' ).val( data.user );
+			$( '.infotextbox input[name=password]' ).val( data.password );
+			$( '.infotextbox input[name=options]' ).val( data.options );
+			$( '.infoCheckBox input' ).prop( 'checked', data.update || 1 );
 			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
+			$( '.guest' ).toggleClass( 'hide', data.protocol === 'nfs' );
 			$( '.eye.guest' ).css( 'margin-top', '210px' );
 			var $dir = $( 'input[name=directory]' );
 			$( 'input[name=protocol]' ).change( function() {
@@ -74,17 +64,13 @@ function infoMount( formdata ) {
 					$dir.val( $dir.val().replace( /\//g, '' ) );
 				}
 			} );
-			// verify
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '.infoinput' ).keyup( function() {
-				var form = document.getElementById( 'formmount' );
-				data = Object.fromEntries( new FormData( form ).entries() );
-				var valid = data.mountpoint && data.directory && validateIP( data.ip );
-				$( '#infoOk' ).toggleClass( 'disabled', !valid );
+			$( '.infotextbox input[name=ip]' ).keyup( function() {
+				$( '#infoOk' ).toggleClass( 'disabled', validateIP( $( this ).val() ) );
 			} );
 		}
 		, ok      : function() {
-			data.update = $( 'input[name=update]' ).prop( 'checked' );
+			var form = document.getElementById( 'formmount' );
+			data = Object.fromEntries( new FormData( form ).entries() );
 			notify( 'Network Mount', 'Mount ...', 'network' );
 			bash( [ 'mount', JSON.stringify( data ) ], function( std ) {
 				if ( std ) {
@@ -353,33 +339,22 @@ $( '#list' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
-	var btdiscoverable, btformat;
+	var checked = [];
+	if ( !G.bluetooth || G.btdiscoverable ) checked.push( 0 );
+	if ( G.btformat ) checked.push( 1 );
 	info( {
-		  icon     : 'bluetooth'
-		, title    : 'Bluetooth'
-		, checkbox : { 'Discoverable <gr>by senders</gr>': 1, 'Sampling 16bit 44.1kHz <gr>to receivers</gr>': 2 }
-		, checked  : [ !G.bluetooth || G.btdiscoverable ? 0 : 2, G.btformat ? 1 : 2 ]
-		, preshow  : function() {
-			if ( G.bluetooth ) {
-				$( '#infoOk' ).addClass( 'disabled' )
-				$( '#infoCheckBox' ).change( function() {
-					btdiscoverable = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
-					btformat = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' );
-					var changed = btdiscoverable !== G.btdiscoverable || btformat !== G.btformat;
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				} );
-			}
-		}
-		, cancel  : function() {
+		  icon         : 'bluetooth'
+		, title        : 'Bluetooth'
+		, checkbox     : { 'Discoverable <gr>by senders</gr>': 1, 'Sampling 16bit 44.1kHz <gr>to receivers</gr>': 2 }
+		, cchecked     : checked
+		, checkchanged : ( G.bluetooth ? [ G.btdiscoverable, G.btformat ] : '' )
+		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
-		, ok       : function() {
-			if ( !G.bluetooth ) {
-				btdiscoverable = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
-				btformat = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' );
-			}
+		, ok           : function() {
+			var v = getInfoValues();
 			notify( 'Bluetooth', ( G.bluetooth ? 'Change ...' : !G.bluetooth ), 'bluetooth' );
-			bash( [ 'bluetoothset', btdiscoverable, btformat ] );
+			bash( [ 'bluetoothset', v[ 0 ], v[ 1 ] ] );
 		}
 	} );
 } );
@@ -608,7 +583,7 @@ var infopowerbutton = heredoc( function() { /*
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			notify( 'Power Button', 'Change ...', 'power' );
+			notify( 'Power Button', G.powerbutton ? 'Change ...' : !G.powerbutton, 'power' );
 			bash( [ 'powerbuttonset', $( '#swpin' ).val(), $( '#ledpin' ).val() ] );
 		}
 	} );
@@ -648,7 +623,7 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			notify( 'TFT 3.5" LCD', 'Change ...', 'lcd' );
+			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : !G.lcd, 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdset', $( '#infoSelectBox').val(), G.reboot.join( '\n' ) ] );
 		}
@@ -727,15 +702,15 @@ $( '#setting-soundprofile' ).click( function() {
 	checkevalues.push( G.soundprofileval );
 	var iL = textlabel.length;
 	info( {
-		  icon      : 'sliders'
-		, title     : 'Kernel Sound Profile'
-		, textlabel : textlabel
-		, textvalue : textvalue
-		, boxwidth  : 110
-		, radio     : radio
-		, rchecked  : checked
+		  icon         : 'sliders'
+		, title        : 'Kernel Sound Profile'
+		, textlabel    : textlabel
+		, textvalue    : textvalue
+		, boxwidth     : 110
+		, radio        : radio
+		, rchecked     : checked
 		, checkchanged : ( G.soundprofile ? checkevalues : '' )
-		, preshow   : function() {
+		, preshow      : function() {
 			$( '#infoRadio input' ).last().prop( 'disabled', true );
 			$( '.infoinput' ).keyup( function() {
 				var values = '';
@@ -752,14 +727,14 @@ $( '#setting-soundprofile' ).click( function() {
 				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
 			} );
 		}
-		, cancel    : function() {
+		, cancel       : function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
-		, ok        : function() {
+		, ok           : function() {
 			var soundprofileval = $( '#infoTextBox' ).val();
 			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
 			bash( [ 'soundprofileset', soundprofileval ] );
-			notify( 'Kernel Sound Profile', !G.soundprofile ? 'Enabled ...' : 'Change ...', 'volume' );
+			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : !G.soundprofile, 'volume' );
 		}
 	} );
 } );
