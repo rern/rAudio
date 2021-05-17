@@ -213,7 +213,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="soundprofile" <?=$chkenable?>>
 	<div class="switchlabel" for="soundprofile"></div>
 	<i id="setting-soundprofile" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
+	<span <?=$classhelp?>>Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
 </div>
 <pre id="codesoundprofile" class="hide"></pre>
 </div>
