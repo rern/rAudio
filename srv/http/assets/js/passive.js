@@ -377,10 +377,6 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( 'autoplaycd' in data ) {
-		G.autoplaycd = 1;
-		setTimeout( function() { delete G.autoplaycd }, 5000 );
-	}
 	if ( G.local ) return
 	
 	if ( data == -1 ) {
@@ -389,6 +385,9 @@ function psPlaylist( data ) {
 		} else if ( G.playlist ) {
 			renderPlaylist( -1 );
 		}
+	} else if ( 'autoplaycd' in data ) {
+		G.autoplaycd = 1;
+		setTimeout( function() { delete G.autoplaycd }, 5000 );
 	} else if ( 'html' in data ) {
 		if ( G.playback ) {
 			getPlaybackStatus();
