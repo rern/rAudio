@@ -745,42 +745,26 @@ $( '#setting-soundprofile' ).click( function() {
 		, 'eth0 mtu <gr>(byte)</gr>'
 		, 'eth0 txqueuelen'
 	];
+	var radio = {
+		  _Default  : '18000000 60 1500 1000'
+		, RuneAudio : '1500000 0 1500 1000'
+		, _ACX      : '850000 0 1500 4000'
+		, Orion     : '500000 20 1000 4000'
+		, _OrionV2  : '120000 0 1000 4000'
+		, OrionV3   : '1500000 0 1000 4000'
+		, _OrionV4  : '145655 60 1000 4000'
+		, Um3ggh1U  : '500000 0 1500 1000'
+		, _Custom   : '0'
+	}
 	var textvalue = G.soundprofileval.split( ' ' );
-	if ( G.soc === 'BCM2835' ) {
-		var lat = [ 1500000, 850000, 500000, 120000, 500000, 145655, 6000000, 1500000 ];
-	} else {
-		var lat = [ 4500000, 3500075, 1000000, 2000000, 3700000, 145655, 6000000, 1500000 ];
-	}
-	if ( textvalue.length > 2 ) {
-		var defaultval = '18000000 60 1500 1000';
-		var radio = {
-			  _Default  : defaultval
-			, RuneAudio : lat[ 0 ] +' 0 1500 1000'
-			, _ACX      : lat[ 1 ] +' 0 1500 4000'
-			, Orion     : lat[ 2 ] +' 20 1000 4000'
-			, _OrionV2  : lat[ 3 ] +' 0 1000 4000'
-			, OrionV3   : lat[ 4 ] +' 0 1000 4000'
-			, _OrionV4  : lat[ 5 ] +' 60 1000 4000'
-			, Um3ggh1U  : lat[ 6 ] +' 0 1500 1000'
-		}
-		var radioval = Object.values( radio );
-		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
-	} else {
+	if ( textvalue.length < 3 ) { // no eth0
 		textlabel = textlabel.slice( 0, 2 );
-		var defaultval = '18000000 60';
-		var radio = {
-			  _Default  : defaultval
-			, RuneAudio : lat[ 0 ] +' 0'
-			, _ACX      : lat[ 1 ] +' 0'
-			, Orion     : lat[ 2 ] +' 20'
-			, _OrionV2  : lat[ 3 ] +' 0 '
-			, OrionV3   : lat[ 4 ] +' 0'
-			, _OrionV4  : lat[ 5 ] +' 60'
-			, Um3ggh1U  : lat[ 6 ] +' 0'
-		}
-		var radioval = Object.values( radio );
-		radio._Custom   = radioval.indexOf( G.soundprofileval ) === -1 ? G.soundprofileval : 0;
+		$.each( radio, function( k, v ) {
+			radio[ k ] = v.split( ' ' ).splice( 0, 2 ).join( ' ' );
+		} );
 	}
+	var radioval = Object.values( radio );
+	var checked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
 	var checkevalues = G.soundprofileval.split( ' ' );
 	checkevalues.push( G.soundprofileval );
 	var iL = textlabel.length;
@@ -791,15 +775,10 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue : textvalue
 		, boxwidth  : 110
 		, radio     : radio
-		, rchecked  : G.soundprofileval
+		, rchecked  : checked
 		, checkchanged : ( G.soundprofile ? checkevalues : '' )
 		, preshow   : function() {
 			$( '#infoRadio input' ).last().prop( 'disabled', true );
-			$( '#infoRadio' ).change( function() {
-				var soundprofileval = $( '#infoRadio input:checked' ).val();
-				var val = soundprofileval.split( ' ' );
-				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
-			} );
 			$( '.infoinput' ).keyup( function() {
 				var values = '';
 				$( '.infoinput' ).each( function() {
@@ -808,6 +787,11 @@ $( '#setting-soundprofile' ).click( function() {
 				values = values.trimEnd();
 				if ( radioval.indexOf( values ) === -1 ) values = 0;
 				$( '#infoRadio input[value="'+ values +'"]' ).prop( 'checked', true )
+			} );
+			$( '#infoRadio' ).change( function() {
+				var soundprofileval = $( '#infoRadio input:checked' ).val();
+				var val = soundprofileval.split( ' ' );
+				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
 			} );
 		}
 		, cancel    : function() {
