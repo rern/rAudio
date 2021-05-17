@@ -174,7 +174,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
-	<input id="lcd" <?=$chknoset?>>
+	<input id="lcd" class="enable" type="checkbox">
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>

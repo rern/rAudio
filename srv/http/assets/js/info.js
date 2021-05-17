@@ -136,7 +136,6 @@ $( '#infoOverlay' ).keydown( function( e ) {
 			e.preventDefault();
 			$( '.infocheckbox input.active' ).click();
 		} else if ( key === 'Escape' ) {
-			local(); // suppress settings
 			$( '#infoCancel' ).click();
 		} else if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
 			e.preventDefault();

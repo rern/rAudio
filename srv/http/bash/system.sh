@@ -258,32 +258,11 @@ dtparam=audio=on"
 	echo "$reboot" > $filereboot
 	pushRefresh
 	;;
-lcd )
-	enable=${args[1]}
-	reboot=${args[2]}
-	model=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
-	if [[ $enable == true ]]; then
-		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-		config="\
-hdmi_force_hotplug=1
-dtparam=spi=on
-dtoverlay=$model:rotate=0"
-		! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
-dtparam=i2c_arm=on"
-		echo -n "$config" >> $fileconfig
-		! grep -q 'i2c-bcm2708' $filemodule && echo -n "\
-i2c-bcm2708
-i2c-dev
-" >> $filemodule
-		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	else
-		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-		sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
-		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	fi
-	echo "$reboot" > $filereboot
+lcddisable )
+	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
+	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
+	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -348,14 +327,28 @@ backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
-lcdmodel )
+lcdset )
 	model=${args[1]}
+	reboot=${args[2]}
 	if [[ $model != tft35a ]]; then
 		echo $model > /srv/http/data/system/lcdmodel
 	else
 		rm /srv/http/data/system/lcdmodel
 	fi
-	sed -i "s/dtoverlay=.*:rotate/dtoverlay=$model:rotate/" $fileconfig
+	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+	config="\
+hdmi_force_hotplug=1
+dtparam=spi=on
+dtoverlay=$model:rotate=0"
+	! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
+dtparam=i2c_arm=on"
+	echo -n "$config" >> $fileconfig
+	! grep -q 'i2c-bcm2708' $filemodule && echo -n "\
+i2c-bcm2708
+i2c-dev
+" >> $filemodule
+	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
+	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	pushRefresh
 	;;
 mount )

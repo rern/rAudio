@@ -234,6 +234,7 @@ refreshData();
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'On-board Bluetooth'
+		, lcd          : 'TFT LCD'
 		, lcdchar      : 'Character LCD'
 		, powerbutton  : 'Power Button'
 		, soundprofile : 'Kernel Sound Profile'
@@ -248,8 +249,7 @@ $( '.enable' ).click( function() {
 } );
 $( '.enablenoset' ).click( function() {
 	var idname = {
-		  lcd          : 'TFT LCD'
-		, onboardaudio : 'On-board Audio'
+		  onboardaudio : 'On-board Audio'
 		, relays       : 'GPIO Relay'
 	}
 	var checked = $( this ).prop( 'checked' );
@@ -488,6 +488,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, content       : infolcdchar
 		, boxwidth      : 180
 		, nofocus       : 1
+//		, checkchanged  : ( G.lcdchar ? [  ] : '' )
 		, preshow       : function() {
 			var val;
 			function optHtml() {
@@ -624,29 +625,23 @@ var infopowerbutton = heredoc( function() { /*
 	</div>
 */ } );
 	info( {
-		  icon     : 'power'
-		, title    : 'Power Button'
-		, content  : infopowerbutton
-		, boxwidth : 80
-		, preshow  : function() {
+		  icon         : 'power'
+		, title        : 'Power Button'
+		, content      : infopowerbutton
+		, boxwidth     : 80
+		, checkchanged : ( G.powerbutton ? [ swpin, ledpin ] : '' )
+		, preshow      : function() {
 			var val = G.powerbuttonconf.split( ' ' );
 			var swpin = val[ 0 ];
 			var ledpin = val[ 1 ];
 			$( '#swpin, #ledpin' ).html( optionpin );
 			$( '#swpin' ).val( swpin );
 			$( '#ledpin' ).val( ledpin );
-			// verify changes
-			if ( G.powerbutton ) $( '#infoOk' ).addClass( 'disabled' );
-			$( '#swpin, #ledpin' ).change( function() {
-				var swset = $( '#swpin' ).val();
-				var ledset = $( '#ledpin' ).val();
-				$( '#infoOk' ).toggleClass( 'disabled', ( swset === swpin && ledset === ledpin ) || swset === ledset );
-			} );
 		}
-		, cancel        : function() {
+		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
-		, ok       : function() {
+		, ok           : function() {
 			notify( 'Power Button', 'Change ...', 'power' );
 			bash( [ 'powerbuttonset', $( '#swpin' ).val(), $( '#ledpin' ).val() ] );
 		}
@@ -668,7 +663,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
 		, rchecked     : G.lcdmodel
-		, checkchanged : [ G.lcdmodel ]
+		, checkchanged : ( G.lcd ? [ G.lcdmodel ] : '' )
 		, boxwidth     : 200
 		, buttonlabel  : 'Calibrate'
 		, button       : function() {
@@ -683,27 +678,29 @@ $( '#setting-lcd' ).click( function() {
 				}
 			} );
 		}
+		, cancel    : function() {
+			$( '#lcd' ).prop( 'checked', G.lcd );
+		}
 		, ok           : function() {
 			notify( 'TFT 3.5" LCD', 'Change ...', 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
-			bash( [ 'lcdmodel', $( '#infoSelectBox').val() ] );
+			bash( [ 'lcdset', $( '#infoSelectBox').val(), G.reboot.join( '\n' ) ] );
 		}
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
 	info( {
-		  icon      : 'plus-r'
-		, title     : 'Player Name'
-		, textlabel : 'Name'
-		, textvalue : G.hostname
-		, preshow   : function() {
-			$( '#infoOk' ).addClass( 'disabled' );
+		  icon         : 'plus-r'
+		, title        : 'Player Name'
+		, textlabel    : 'Name'
+		, textvalue    : G.hostname
+		, checkchanged : [ G.hostname ]
+		, preshow      : function() {
 			$( '#infoTextBox' ).keyup( function() {
 				$( '#infoTextBox' ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
-				$( '#infoOk' ).toggleClass( 'disabled', $( '#infoTextBox' ).val() === G.hostname );
 			} );
 		}
-		, ok        : function() {
+		, ok           : function() {
 			notify( 'Name', 'Change ...', 'plus-r' );
 			bash( [ 'hostname', $( '#infoTextBox' ).val() ] );
 		}
@@ -714,21 +711,16 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-regional' ).click( function() {
+	var textvalue = [ G.ntp, G.regdom || '00' ];
 	info( {
-		  icon      : 'globe'
-		, title     : 'Regional Settings'
-		, textlabel : [ 'NTP server', 'Regulatory domain' ]
-		, textvalue : [ G.ntp, G.regdom || '00' ]
-		, boxwidth  : 200
-		, footer    : '<px70/><px60/>00 - common for all regions'
-		, preshow   : function() {
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-				var changed = $( '#infoTextBox' ).val() !== G.ntp || $( '#infoTextBox1' ).val() !== G.regdom;
-				$( '#infoOk' ).toggleClass( 'disabled', !changed );
-			} );
-		}
-		, ok        : function() {
+		  icon         : 'globe'
+		, title        : 'Regional Settings'
+		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
+		, textvalue    : textvalue
+		, boxwidth     : 200
+		, footer       : '<px70/><px60/>00 - common for all regions'
+		, checkchanged : textvalue
+		, ok           : function() {
 			var ntp = $( '#infoTextBox' ).val();
 			var regdom = $( '#infoTextBox1' ).val();
 			G.ntp = ntp;
