@@ -316,13 +316,14 @@ i2c-dev" >> $filemodule
 			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
+	[[ ${val[4]} == true ]] && backlight=True || backlight=False
 	echo -n "\
 [var]
 cols=${val[0]}
 charmap=${val[1]}
 address=${val[2]}
 chip=${val[3]}
-backlight=${val[4]}
+backlight=$backlight
 " > /etc/lcdchar.conf
 	touch $dirsystem/lcdchar
 	pushRefresh

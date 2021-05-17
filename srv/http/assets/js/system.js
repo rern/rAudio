@@ -554,13 +554,12 @@ $( '#setting-lcdchar' ).click( function() {
 		, ok            : function() {
 			var v = getInfoValues(); // [ 0pin_rs, 1pin_rw, 2pin_e, 3pins_data, 4cols, 5charmap, 6i2c, 7i2caddress, 8backlight, 9i2cchip ]
 			var lcdcharconf = v[ 4 ] +' '+ v[ 5 ] +' ';
-			var backlight = v[ 8 ] ? 'True' : 'False';
 			if ( v[ 6 ] === 'i2c' ) { // [ cols, charmap, i2caddress, i2cchip, backlight ]
-				lcdcharconf += v[ 7 ] +' '+ v[ 9 ] +' '+ backlight;
+				lcdcharconf += v[ 7 ] +' '+ v[ 9 ] +' '+ v[ 8 ];
 				rebootText( 1, 'Character LCD' );
 				bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );
 			} else { // [ cols, charmap, pin_rs, pin_rw, pin_e, pins_data, backlight ]
-				lcdcharconf += v[ 0 ] +' '+ v[ 1 ] +' '+ v[ 2 ] +' '+ v[ 3 ] +' '+ backlight;
+				lcdcharconf += v[ 0 ] +' '+ v[ 1 ] +' '+ v[ 2 ] +' '+ v[ 3 ] +' '+ v[ 8 ];
 				bash( [ 'lcdchargpioset', lcdcharconf ] );
 			}
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
