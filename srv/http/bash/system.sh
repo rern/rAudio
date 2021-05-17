@@ -322,7 +322,7 @@ cols=${val[0]}
 charmap=${val[1]}
 address=${val[2]}
 chip=${val[3]}
-backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
+backlight=${val[4]}
 " > /etc/lcdchar.conf
 	touch $dirsystem/lcdchar
 	pushRefresh

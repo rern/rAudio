@@ -449,7 +449,7 @@ var infolcdchar = heredoc( function() { /*
 		</div>
 	</div>
 	<div class="infotextbox lcdradio">
-		<div id="cols" class="infocontent infohtml lcd">
+		<div id="cols" class="infocontent infohtml lcd" style="margin-top: 0">
 			<label><input type="radio" name="size" value="16"> 16x2</label>
 			<label><input type="radio" name="size" value="20"> 20x4</label>
 			<label><input type="radio" name="size" value="40"> 40x4</label>
@@ -481,99 +481,63 @@ var infolcdchar = heredoc( function() { /*
 	</div>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
-	var lcdcharconf;
+	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
+	var values = val.split( ' ' ); // data order: [ cols, charmap, ..., backlight ]
+	if ( values.length < 6 ) {
+		var v = [ ...values.slice( 0, 2 ), ...[ 15, 18, 16, '21,22,23,24' ], ...values.slice( 2 ) ];
+		var inf = 'i2c';
+		var i2c = true;
+	} else {
+		values.pop(); // remove backlight
+		var v = [ ...values, [ '0x27', 'PCF8574', 'False' ] ];
+		var inf = 'gpio';
+		var i2c = false;
+	}
+	var cols = v[ 0 ];
+	var charmap = v[ 1 ];
+	var pin_rs = v[ 2 ];
+	var pin_rw = v[ 3 ];
+	var pin_e = v[ 4 ];
+	var pins_data = v[ 5 ];
+	var i2caddress = v[ 6 ];
+	var i2cchip = v[ 7 ];
+	var backlight = v[ 8 ] === 'True';
+	// checkechanged order: text > radio > checkbox > select
+	var checkechanged = [ pin_rs, pin_rw, pin_e, pins_data, cols, charmap, inf, i2caddress, backlight, i2cchip ];
+	function setValues( i2c ) {
+		$( '#cols input' ).val( [ cols ] );
+		$( '#charmap input' ).val( [ charmap ] );
+		$( '#inf input' ).val( [ i2c ? 'i2c' : 'gpio' ] );
+		$( '#address input' ).val( [ i2caddress ] );
+		$( '#chip input' ).val( [ i2cchip ] );
+		$( '#pin_rs' ).val( pin_rs );
+		$( '#pin_rw' ).val( pin_rw );
+		$( '#pin_e' ).val( pin_e );
+		$( '#pins_data' ).val( pins_data );
+		$( '#backlightoff' ).prop( 'checked', backlight );
+		$( '.lcdradio' ).width( 230 );
+		$( '.lcd label' ).width( 75 );
+		$( '.i2c' ).toggleClass( 'hide', !i2c );
+		$( '.gpio' ).toggleClass( 'hide', i2c );
+	}
+	var lcdcharaddr = G.lcdcharaddr || '27 3F';
+	var addr = lcdcharaddr.split( ' ' );
+	var opt = '';
+	addr.forEach( function( el ) {
+		opt += '<label><input type="radio" name="address" value="0x'+ el +'"> 0x'+ el +'</label>';
+	} );
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
 		, boxwidth      : 180
 		, nofocus       : 1
-//		, checkchanged  : ( G.lcdchar ? [  ] : '' )
+		, checkchanged  : ( G.lcdchar ? checkechanged : '' )
 		, preshow       : function() {
-			var val;
-			function optHtml() {
-				var lcdcharaddr = G.lcdcharaddr || '27 3F';
-				var addr = lcdcharaddr.split( ' ' );
-				var opt = '';
-				addr.forEach( function( el ) {
-					opt += '<label><input type="radio" name="address" value="0x'+ el +'"> 0x'+ el +'</label>';
-				} );
-				$( '#address' ).html( opt );
-			}
-			function setValues( inf, val ) {
-				if ( !val ) val = inf === 'i2c' ? '20 A00 0x27 PCF8574' : '20 A00 15 18 16 21,22,23,24';
-				var v = val.split( ' ' );
-				if ( v.length < 6 ) { // i2c
-					var cols = v[ 0 ];
-					var charmap = v[ 1 ];
-					var i2caddress = v[ 2 ];
-					var i2cchip = v[ 3 ];
-					var backlightoff = v[ 4 ] === 'True';
-					optHtml();
-					$( '#inf input' ).val( [ 'i2c' ] );
-					$( '#address input' ).val( [ i2caddress ] );
-					$( '#chip input' ).val( [ i2cchip ] );
-					$( '.i2c' ).removeClass( 'hide' );
-					$( '.gpio' ).addClass( 'hide' );
-				} else {
-					var cols = v[ 0 ];
-					var charmap = v[ 1 ];
-					var pin_rs = v[ 2 ];
-					var pin_rw = v[ 3 ];
-					var pin_e = v[ 4 ];
-					var pins_data = v[ 5 ];
-					var backlightoff = v[ 6 ] === 'True';
-					$( '#inf input' ).val( [ 'gpio' ] );
-					$( '#pin_rs' ).val( pin_rs );
-					$( '#pin_rw' ).val( pin_rw );
-					$( '#pin_e' ).val( pin_e );
-					$( '#pins_data' ).val( pins_data );
-					$( '.i2c' ).addClass( 'hide' );
-					$( '.gpio' ).removeClass( 'hide' );
-				}
-				$( '#cols input' ).val( [ cols ] );
-				$( '#charmap input' ).val( [ charmap ] );
-				$( '#backlightoff' ).prop( 'checked', backlightoff );
-				$( '.lcdradio' ).width( 230 );
-				$( '.lcd label' ).width( 75 );
-			}
-			var inf = !G.lcdcharconf ? 'i2c' : ( G.lcdcharconf.split( ' ' ).length < 6 ? 'i2c' : 'gpio' );
-			if ( inf === 'i2c' ) optHtml();
-			setValues( inf, G.lcdcharconf );
+			$( '#address' ).html( opt );
+			setValues( i2c );
 			$( '#inf' ).change( function() {
-				var i = $( '#inf input:checked' ).val();
-				$( '.i2c' ).toggleClass( 'hide', i === 'gpio' );
-				$( '.gpio' ).toggleClass( 'hide', i === 'i2c' );
-				var val = i === inf ? G.lcdcharconf : '';
-				setValues( i, val );
-			} );
-			// verify changes
-			if ( G.lcdchar ) $( '#infoOk' ).addClass( 'disabled' );
-			$( '#cols, #inf, #charmap, #address, #chip, #backlightoff' ).change( function() {
-				lcdcharconf = $( '#cols input:checked' ).val();
-				lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
-				if ( $( '#inf input:checked' ).val() === 'i2c' ) {
-					lcdcharconf += ' '+ $( '#address input:checked' ).val();
-					lcdcharconf += ' '+ $( '#chip option:selected' ).val();
-				}
-				lcdcharconf += $( '#backlightoff' ).prop( 'checked' ) ? ' True' : '';
-				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', lcdcharconf === G.lcdcharconf );
-			} );
-			$( '.gpio input' ).keyup( function() {
-				var i = $( this ).index();
-				var $this = $( this );
-				var val = $this.val();
-				if ( i < 3 ) {
-					$this.val( val.replace( /[^0-9]/, '' ) );
-					var count = true
-				} else {
-					$this.val( val.replace( /[^0-9,]/, '' ) );
-					var count = val.split( ',' ).length === 4;
-				}
-				lcdcharconf = $( '#cols input:checked' ).val();
-				lcdcharconf += ' '+ $( '#charmap input:checked' ).val();
-				for ( i = 0; i < 4; i++ ) lcdcharconf += ' '+ $( '.gpio input' ).eq( i ).val();
-				if ( G.lcdchar ) $( '#infoOk' ).toggleClass( 'disabled', !val || lcdcharconf === G.lcdcharconf || !count );
+				setValues( $( '#inf input:checked' ).val() === 'i2c' );
 			} );
 		}
 		, buttonwidth   : 1
@@ -588,12 +552,15 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			if ( $( '#inf input:checked' ).val() === 'i2c' ) {
-				if ( !lcdcharconf ) lcdcharconf = '20 A00 0x27 PCF8574';
+			var v = getInfoValues(); // [ 0pin_rs, 1pin_rw, 2pin_e, 3pins_data, 4cols, 5charmap, 6i2c, 7i2caddress, 8backlight, 9i2cchip ]
+			var lcdcharconf = v[ 4 ] +' '+ v[ 5 ] +' ';
+			var backlight = v[ 8 ] ? 'True' : 'False';
+			if ( v[ 6 ] === 'i2c' ) { // [ cols, charmap, i2caddress, i2cchip, backlight ]
+				lcdcharconf += v[ 7 ] +' '+ v[ 9 ] +' '+ backlight;
 				rebootText( 1, 'Character LCD' );
 				bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );
-			} else {
-				if ( !lcdcharconf ) lcdcharconf = '20 A00 15 18 16 21,22,23,24';
+			} else { // [ cols, charmap, pin_rs, pin_rw, pin_e, pins_data, backlight ]
+				lcdcharconf += v[ 0 ] +' '+ v[ 1 ] +' '+ v[ 2 ] +' '+ v[ 3 ] +' '+ backlight;
 				bash( [ 'lcdchargpioset', lcdcharconf ] );
 			}
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );

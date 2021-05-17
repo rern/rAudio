@@ -510,11 +510,10 @@ function info( json ) {
 			renderOption( $( '#infoCheckBox' ), html, O.cchecked );
 		}
 		if ( 'select' in O ) {
-			$( '#infoSelectLabel' ).html( O.selectlabel );
 			if ( typeof O.select !== 'object' ) {
 				var html = O.select;
 			} else {
-				var html = '<a id="infoSelectLabel" class="infolabel"></a><select class="infohtml" id="infoSelectBox">';
+				var html = '<a id="infoSelectLabel" class="infolabel">'+ O.selectlabel +'</a><select class="infohtml" id="infoSelectBox">';
 				$.each( O.select, function( key, val ) {
 					html += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
 				} );
@@ -612,7 +611,7 @@ function checkChangedValue() {
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
-function getInfoValues() {
+function getInfoValues() { // order: text > radio > checkbox > select
 	var values = [];
 	var $text = $( '#infoContent input[type=text]' );
 	if ( $text.length ) {
