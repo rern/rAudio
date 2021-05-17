@@ -657,21 +657,21 @@ $( '#setting-relays' ).click( function() {
 } );
 $( '#setting-lcd' ).click( function() {
 	info( {
-		  icon        : 'lcd'
-		, title       : 'TFT 3.5" LCD'
-		, selectlabel : 'Type'
-		, select      : {
+		  icon         : 'lcd'
+		, title        : 'TFT 3.5" LCD'
+		, selectlabel  : 'Type'
+		, select       : {
 			  'Generic'               : 'tft35a'
 			, 'Waveshare (A)'         : 'waveshare35a'
 			, 'Waveshare (B)'         : 'waveshare35b'
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, checked     : G.lcdmodel
+		, rchecked     : G.lcdmodel
 		, checkchanged : [ G.lcdmodel ]
-		, boxwidth    : 200
-		, buttonlabel : 'Calibrate'
-		, button      : function() {
+		, boxwidth     : 200
+		, buttonlabel  : 'Calibrate'
+		, button       : function() {
 			info( {
 				  icon    : 'lcd'
 				, title   : 'TFT LCD'
@@ -683,7 +683,7 @@ $( '#setting-lcd' ).click( function() {
 				}
 			} );
 		}
-		, ok          : function() {
+		, ok           : function() {
 			notify( 'TFT 3.5" LCD', 'Change ...', 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdmodel', $( '#infoSelectBox').val() ] );
@@ -791,7 +791,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue : textvalue
 		, boxwidth  : 110
 		, radio     : radio
-		, checked   : G.soundprofileval
+		, rchecked  : G.soundprofileval
 //		, checkchanged : ( G.soundprofile ? checkevalues : '' )
 		, preshow   : function() {
 			$( '#infoRadio input' ).last().prop( 'disabled', radio._Custom === 0 );
@@ -874,7 +874,7 @@ $( '#restore' ).click( function() {
 			  'Backup file <code>*.gz</code>' : 'restore'
 			, 'Reset to default'              : 'reset'
 		}
-		, checked     : 'restore'
+		, rchecked    : 'restore'
 		, fileoklabel : 'Restore'
 		, filetype    : '.gz'
 		, filefilter  : 1

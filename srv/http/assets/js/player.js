@@ -215,12 +215,12 @@ $( '#dop' ).click( function() {
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
-		  icon    : 'mpd'
-		, title   : 'Crossfade'
-		, message : 'Seconds:'
-		, radio   : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 }
-		, checked : G.crossfadeval || 1
-		, preshow       : function() {
+		  icon     : 'mpd'
+		, title    : 'Crossfade'
+		, message  : 'Seconds:'
+		, radio    : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 }
+		, rchecked : G.crossfadeval || 1
+		, preshow  : function() {
 			// verify changes
 			if ( G.crossfade ) {
 				$( '#infoOk' ).addClass( 'disabled' );
@@ -229,10 +229,10 @@ $( '#setting-crossfade' ).click( function() {
 				} );
 			}
 		}
-		, cancel    : function() {
+		, cancel   : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
-		, ok      : function() {
+		, ok       : function() {
 			crossfadeval = $( 'input[name=inforadio]:checked' ).val();
 			bash( [ 'crossfadeset', crossfadeval ] );
 			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
@@ -241,11 +241,11 @@ $( '#setting-crossfade' ).click( function() {
 } );
 $( '#setting-replaygain' ).click( function() {
 	info( {
-		  icon    : 'mpd'
-		, title   : 'Replay Gain'
-		, radio   : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, checked : G.replaygainval || 'auto'
-		, preshow       : function() {
+		  icon     : 'mpd'
+		, title    : 'Replay Gain'
+		, radio    : { Auto: 'auto', Album: 'album', Track: 'track' }
+		, rchecked : G.replaygainval || 'auto'
+		, preshow  : function() {
 			// verify changes
 			if ( G.replaygain ) {
 				$( '#infoOk' ).addClass( 'disabled' );
@@ -254,10 +254,10 @@ $( '#setting-replaygain' ).click( function() {
 				} );
 			}
 		}
-		, cancel  : function() {
+		, cancel   : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
-		, ok      : function() {
+		, ok       : function() {
 			replaygainval = $( 'input[name=inforadio]:checked' ).val();
 			bash( [ 'replaygainset', replaygainval ] );
 			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );

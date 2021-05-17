@@ -21,15 +21,14 @@ info( {                                     // default
 	textlabel     : [ 'LABEL', ... ]        // (blank)        (label array input label)
 	textvalue     : [ 'VALUE', ... ]        // (blank)        (pre-filled array input value)
 	textsuffix    : [ 'LABEL', ... ]        // (blank)        (inputbox suffix array)
-	textrequired  : [ N, ... ]              // (none)         (required fields disable ok button if blank)
-	textlength    : [ N, ... ]              // (none)         (minimun characters of each box)
+	textrequired  : [ i, ... ]              // (none)         (required text in 'i' - disable ok button)
+	textlength    : { i: N, ... }           // (none)         (required min N characters in 'i')
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
 	
 	textarea      : 1                       //                (textarea - \n = newline, \t = tab)
 	textareavalue : 'VALUE'                 // (none)         (pre-filled value)
 	
 	passwordlabel : 'LABEL'                 // (blank)        (password input label)
-	pwdrequired   : 1                       // (none)         (password required)
 	
 	filelabel     : 'LABEL'                 // 'Browse'       (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
@@ -39,23 +38,25 @@ info( {                                     // default
 	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
 	
 	radio         : { LABEL: 'VALUE', ... } //                ( var value = $( '#infoRadio input:checked' ).val(); )
-	checked       : N                       // 0              (pre-select input index)
+	rchecked      : N                       // 0              (pre-select input index)
 	radiohr       : 1                       // (none)         (horizontal line after)
-	
-	select        : { LABEL: 'VALUE', ... } //                ( var value = $( '#infoSelectBox').val(); )
-	selectlabel   : 'LABEL'                 // (blank)        (select input label)
-	checked       : N                       // 0              (pre-select option index)
 	
 	checkbox      : { LABEL: 'VALUE', ... } //                ( var value = [];
 	                                                            $( '#infoCheckBox input:checked' ).each( function() {
 	                                                                value.push( this.value );
 	                                                            } ); )
-	checked       : [ N, ... ]              // (none)         (pre-select array input indexes - single can be  N)
+	cchecked      : [ N, ... ]              // (none)         (pre-select array input indexes - single can be  N)
 	checkboxhr    : 1                       // (none)         (horizontal line after)
+	
+	select        : { LABEL: 'VALUE', ... } //                ( var value = $( '#infoSelectBox').val(); )
+	selectlabel   : 'LABEL'                 // (blank)        (select input label)
+	schecked      : N                       // 0              (pre-select option index)
+	
 	checkchanged  : [ VALUE, ... ] .        // (none)         (check values changed - text, radio, checkbox, select)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
 	footalign     : 'CSS'                   // (blank)        (footer text alignment)
+	
 	oklabel       : 'LABEL'                 // 'OK'           (ok button label)
 	okcolor       : 'COLOR'                 // '#0095d8'      (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
@@ -378,13 +379,13 @@ function info( json ) {
 			$( '#infoText' ).removeClass( 'hide' );
 			if ( 'textalign' in O ) $( '.infoinput' ).css( 'text-align', O.textalign );
 			if ( 'textrequired' in O ) {
-				var blank;
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '.infoinput' ).on( 'input', function() {
-					blank = O.textrequired.some( function( i ) {
-						if ( $( '.infoinput' ).eq( i ).val() === '' ) return true
-					} );
-					$( '#infoOk' ).toggleClass( 'disabled', blank );
+				O.textrequired.forEach( function( i ) {
+					checkChangedLength( $( '.infoinput' ).eq( i ), 1 );
+				} );
+			}
+			if ( 'textlength' in O ) {
+				$.each( O.textlength, function( i, L ) {
+					checkChangedLength( $( '.infoinput' ).eq( i ), L );
 				} );
 			}
 		}
@@ -481,7 +482,7 @@ function info( json ) {
 				} );
 			}
 			if ( 'radiohr' in O ) $( '#infoRadio' ).after( '<hr>' );
-			renderOption( $( '#infoRadio' ), html, 'checked' in O ? O.checked : '' );
+			renderOption( $( '#infoRadio' ), html, O.rchecked );
 		}
 		if ( 'checkbox' in O ) {
 			if ( typeof O.checkbox !== 'object' ) {
@@ -504,15 +505,13 @@ function info( json ) {
 				} );
 			}
 			if ( 'checkboxhr' in O ) $( '#infoCheckBox' ).after( '<hr>' );
-			if ( 'checked' in O ) {
-				if ( typeof O.checked !== 'object' ) O.checked = [ O.checked ];
-			} else {
-				O.checked = '';
+			if ( 'cchecked' in O ) {
+				if ( typeof O.cchecked !== 'object' ) O.cchecked = [ O.cchecked ];
 			}
-			renderOption( $( '#infoCheckBox' ), html, O.checked );
+			renderOption( $( '#infoCheckBox' ), html, O.cchecked );
 		}
 		if ( 'select' in O ) {
-			$( '#infoSelectLabel' ).html( 'selectlabel' in O ? O.selectlabel : '' );
+			$( '#infoSelectLabel' ).html( O.selectlabel );
 			if ( typeof O.select !== 'object' ) {
 				var html = O.select;
 			} else {
@@ -522,7 +521,7 @@ function info( json ) {
 				} );
 				html += '</select>';
 			}
-			renderOption( $( '#infoSelect' ), html, 'checked' in O ? O.checked : '' );
+			renderOption( $( '#infoSelect' ), html, O.schecked );
 			$( '#infoSelect' ).removeClass( 'hide' );
 		}
 		if ( 'rangevalue' in O ) {
@@ -596,14 +595,15 @@ function checkChanged() {
 	$( '.infoinput' ).keyup( checkChangedValue );
 	$( '#infoContent input[type=radio], #infoContent input[type=checkbox], #infoContent select' ).change( checkChangedValue );
 }
+function checkChangedLength( $text, L ) {
+	$text.on( 'input', function() {
+		O.checklength = $text.val().length < L;
+		$( '#infoOk' ).toggleClass( 'disabled', O.checklength );
+	} );
+}
 function checkChangedValue() {
-	if ( 'textlength' in O ) {
-		var shorter = O.textlength.some( function( l, i ) {
-			if ( $( '.infoinput' ).eq( i ).val().length < l ) return true
-		} );
-		if ( shorter ) $( '#infoOk' ).addClass( 'disabled' ); return
-	}
-	
+	if ( O.checklength ) return
+		
 	var values = getInfoValues();
 	var changed = false;
 	changed = values.some( function( v, i ) {

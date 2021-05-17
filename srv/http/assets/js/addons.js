@@ -234,12 +234,12 @@ function getoptions() {
 		case 'radio': // single value
 			ojson = option[ oj ];
 			info( {
-				  icon    : 'jigsaw'
-				, title   : title
-				, message : ojson.message
-				, radio   : ojson.list
-				, checked : ojson.checked
-				, ok      : function() {
+				  icon     : 'jigsaw'
+				, title    : title
+				, message  : ojson.message
+				, radio    : ojson.list
+				, rchecked : ojson.checked
+				, ok       : function() {
 					var radiovalue = $( '#infoRadio input:checked' ).val();
 					opt.push( radiovalue );
 					sendcommand();
@@ -269,7 +269,7 @@ function getoptions() {
 				, message     : ojson.message
 				, selectlabel : ojson.label
 				, select      : ojson.list
-				, checked     : ojson.checked
+				, schecked    : ojson.checked
 				, boxwidth    : ojson.width || 80
 				, preshow     : function() {
 					$( '#infoSelectBox').selectric();
@@ -303,7 +303,7 @@ function getoptions() {
 				, title    : title
 				, message  : ojson.message
 				, checkbox : ojson.list
-				, checked  : ojson.checked
+				, cchecked : ojson.checked
 				, ok       : function() {
 					$( '#infoCheckBox input' ).each( function() {
 						opt.push( $( this ).prop( 'checked' ) ? 1 : 0 );

@@ -175,8 +175,8 @@ $( '#setting-hostapd' ).click( function() {
 		, message      : 'Password - 8 characters or more'
 		, textlabel    : [ 'Password', 'IP' ]
 		, textvalue    : [ G.hostapdpwd, G.hostapdip ]
-		, textrequired : [ 0, 1 ]
-		, textlength   : [ 8 ]
+		, textrequired : [ 1 ]
+		, textlength   : { 0: 8 }
 		, checkchanged : [ G.hostapdpwd, G.hostapdip ]
 		, cancel       : function() {
 			if ( set ) {
@@ -263,16 +263,16 @@ $( '#setting-smb' ).click( function() {
 	if ( G.smbwritesd ) checked.push( 0 );
 	if ( G.smbwriteusb ) checked.push( 1 );
 	info( {
-		  icon     : 'network'
-		, title    : 'Samba File Sharing'
-		, message  : '<wh>Write</wh> permission:</gr>'
-		, checkbox : { '<gr>/mnt/MPD/</gr>SD': 1, '<gr>/mnt/MPD/</gr>USB': 1 }
-		, checked  : checked
+		  icon         : 'network'
+		, title        : 'Samba File Sharing'
+		, message      : '<wh>Write</wh> permission:</gr>'
+		, checkbox     : { '<gr>/mnt/MPD/</gr>SD': 1, '<gr>/mnt/MPD/</gr>USB': 1 }
+		, cchecked     : checked
 		, checkchanged : ( G.smb ? [ G.smbwritesd, G.smbwriteusb ] : '' )
-		, cancel   : function() {
+		, cancel       : function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
-		, ok       : function() {
+		, ok           : function() {
 			var smbwritesd = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
 			var smbwriteusb = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' );
 			bash( [ 'smbset', smbwritesd, smbwriteusb ] );
