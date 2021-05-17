@@ -131,11 +131,9 @@ customdisable )
 	rm -f $dirsystem/custom
 	restartMPD
 	;;
-customgetglobal )
-	cat $dirsystem/custom-global
-	;;
-customgetoutput )
-	cat "$dirsystem/custom-output-${args[1]}"
+customget )
+	data="$( cat $dirsystem/custom-global )^^$( cat "$dirsystem/custom-output-${args[1]}" )"
+	echo "$data"
 	;;
 customset )
 	file=$dirsystem/custom
@@ -156,6 +154,12 @@ customset )
 		sed -i "/^user/ a$global" /etc/mpd.conf
 	fi
 	restartMPD
+	if ! systemctl -q is-active mpd; then
+		sed -i '/ #custom$/ d' /etc/mpd.conf
+		rm -f $dirsystem/custom
+		restartMPD
+		echo -1
+	fi
 	;;
 devices )
 	devices=$'# cat /etc/asound.conf\n'$( cat /etc/asound.conf )

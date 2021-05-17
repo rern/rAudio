@@ -215,24 +215,16 @@ $( '#dop' ).click( function() {
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
-		  icon     : 'mpd'
-		, title    : 'Crossfade'
-		, message  : 'Seconds:'
-		, radio    : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 }
-		, rchecked : G.crossfadeval || 1
-		, preshow  : function() {
-			// verify changes
-			if ( G.crossfade ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoRadio' ).change( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', +$( this ).find( 'input:checked' ).val() === G.crossfadeval );
-				} );
-			}
-		}
-		, cancel   : function() {
+		  icon         : 'mpd'
+		, title        : 'Crossfade'
+		, message      : 'Seconds:'
+		, radio        : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 }
+		, rchecked     : G.crossfadeval || 1
+		, checkchanged : ( G.crossfade ? [ G.crossfadeval ] : '' )
+		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
-		, ok       : function() {
+		, ok           : function() {
 			crossfadeval = $( 'input[name=inforadio]:checked' ).val();
 			bash( [ 'crossfadeset', crossfadeval ] );
 			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
@@ -241,23 +233,15 @@ $( '#setting-crossfade' ).click( function() {
 } );
 $( '#setting-replaygain' ).click( function() {
 	info( {
-		  icon     : 'mpd'
-		, title    : 'Replay Gain'
-		, radio    : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, rchecked : G.replaygainval || 'auto'
-		, preshow  : function() {
-			// verify changes
-			if ( G.replaygain ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoRadio' ).change( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', $( this ).find( 'input:checked' ).val() === G.replaygainval );
-				} );
-			}
-		}
-		, cancel   : function() {
+		  icon         : 'mpd'
+		, title        : 'Replay Gain'
+		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
+		, rchecked     : G.replaygainval || 'auto'
+		, checkchanged : ( G.replaygain ? [ G.replaygainval ] : '' )
+		, cancel       : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
-		, ok       : function() {
+		, ok           : function() {
 			replaygainval = $( 'input[name=inforadio]:checked' ).val();
 			bash( [ 'replaygainset', replaygainval ] );
 			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
@@ -269,24 +253,16 @@ $( '#filetype' ).click( function() {
 } );
 $( '#setting-buffer' ).click( function() {
 	info( {
-		  icon      : 'mpd'
-		, title     : 'Custom Audio Buffer'
-		, message   : '<code>audio_buffer_size</code> (default: 4096)'
-		, textlabel : 'Size <gr>(kB)</gr>'
-		, textvalue : G.bufferval || 4096
-		, preshow       : function() {
-			// verify changes
-			if ( G.buffer ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoTextBox' ).keyup( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', +$( this ).val() === G.bufferval );
-				} );
-			}
-		}
-		, cancel    : function() {
+		  icon         : 'mpd'
+		, title        : 'Custom Audio Buffer'
+		, message      : '<code>audio_buffer_size</code> (default: 4096)'
+		, textlabel    : 'Size <gr>(kB)</gr>'
+		, textvalue    : G.bufferval || 4096
+		, checkchanged : ( G.buffer ? [ G.bufferval ] : '' )
+		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
-		, ok        : function() {
+		, ok           : function() {
 			var bufferval = $( '#infoTextBox' ).val().replace( /\D/g, '' );
 			bash( [ 'bufferset', bufferval ] );
 			notify( 'Custom Audio Buffer', G.buffer ? 'Change ...' : 'Enable ...', 'mpd' );
@@ -295,24 +271,16 @@ $( '#setting-buffer' ).click( function() {
 } );
 $( '#setting-bufferoutput' ).click( function() {
 	info( {
-		  icon      : 'mpd'
-		, title     : 'Custom Output Buffer'
-		, message   : '<code>max_output_buffer_size</code> (default: 8192)'
-		, textlabel : 'Size <gr>(kB)</gr>'
-		, textvalue : G.bufferoutputval || 8192
-		, preshow       : function() {
-			// verify changes
-			if ( G.bufferoutput ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoTextBox' ).keyup( function() {
-					$( '#infoOk' ).toggleClass( 'disabled', +$( this ).val() === G.bufferoutputval );
-				} );
-			}
-		}
-		, cancel    : function() {
+		  icon         : 'mpd'
+		, title        : 'Custom Output Buffer'
+		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
+		, textlabel    : 'Size <gr>(kB)</gr>'
+		, textvalue    : G.bufferoutputval || 8192
+		, checkchanged : ( G.bufferoutput ? [ G.bufferoutputval ] : '' )
+		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
-		, ok        : function() {
+		, ok           : function() {
 			var bufferoutputval = $( '#infoTextBox' ).val().replace( /\D/g, '' );
 			bash( [ 'bufferoutputset', bufferoutputval ] );
 			notify( 'Custom Output Buffer', G.bufferoutput ? 'Change ...' : 'Enable ...', 'mpd' );
@@ -366,14 +334,20 @@ var soxrinfo = heredoc( function() { /*
 	</div>
 */ } );
 $( '#setting-soxr' ).click( function() {
-	var defaultval = [ 20, 50, 91.3, 100, 0, 0, ];
+	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
+	if ( G.soxr ) {
+		var val = G.soxrval.split( ' ' );
+		var checkchanged = val.slice( 1, -1 ).concat( [ val[ 0 ], val[ 5 ] ] ); // reorder: text > select
+	} else {
+		var val = defaultval;
+	}
 	info( {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
 		, nofocus       : 1
+		, checkchanged  : ( G.soxr ? checkchanged : '' )
 		, preshow       : function() {
-			var val = G.soxrval ? G.soxrval.split( ' ' ) : defaultval;
 			$( '#infoSelectBox option[value='+ val[ 0 ] +']' ).prop( 'selected', 1 );
 			$( '#infoSelectBox1 option[value='+ val[ 5 ] +']' ).prop( 'selected', 1 );
 			for ( i = 1; i < 5; i++ ) {
@@ -383,42 +357,6 @@ $( '#setting-soxr' ).click( function() {
 				$( '#extra .selectric, #extra .selectric-wrapper' ).css( 'width', '185px' );
 				$( '#extra .selectric-items' ).css( 'min-width', '185px' );
 			}, 30 );
-			// // verify changes + values
-			if ( G.soxr ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoSelectBox, #infoSelectBox1' ).change( function() {
-					var soxrval = $( '#infoSelectBox' ).val();
-					for ( i = 1; i < 5; i++ ) soxrval += ' '+ $( '#infoTextBox'+ i ).val();
-					soxrval += ' '+ $( '#infoSelectBox1' ).val();
-					$( '#infoOk' ).toggleClass( 'disabled', soxrval === G.soxrval );
-				} );
-				$( '.infoinput' ).keyup( function() {
-					var soxrval = $( '#infoSelectBox' ).val();
-					for ( i = 1; i < 5; i++ ) soxrval += ' '+ $( '#infoTextBox'+ i ).val();
-					soxrval += ' '+ $( '#infoSelectBox1' ).val();
-					var v = soxrval.split( ' ' );
-					var errors = false;
-					if (   ( v[ 1 ] < 0 || v[ 1 ] > 100 )
-						|| ( v[ 2 ] < 0 || v[ 2 ] > 100 )
-						|| ( v[ 3 ] < 100 || v[ 3 ] > 150 )
-						|| ( v[ 4 ] < 0 || v[ 4 ] > 30 )
-					) errors = true;
-					$( '#infoOk' ).toggleClass( 'disabled', soxrval === G.soxrval || errors );
-				} );
-			} else { // verify values
-				$( '.infoinput' ).keyup( function() {
-					var soxrval = 0;
-					for ( i = 1; i < 5; i++ ) soxrval += ' '+ $( '#infoTextBox'+ i ).val();
-					var v = soxrval.split( ' ' );
-					var errors = false;
-					if (   ( v[ 1 ] < 0 || v[ 1 ] > 100 )
-						|| ( v[ 2 ] < 0 || v[ 2 ] > 100 )
-						|| ( v[ 3 ] < 100 || v[ 3 ] > 150 )
-						|| ( v[ 4 ] < 0 || v[ 4 ] > 30 )
-					) errors = true;
-					$( '#infoOk' ).toggleClass( 'disabled', errors );
-				} );
-			}
 		}
 		, boxwidth      : 70
 		, buttonlabel   : '<i class="fa fa-undo"></i>Default'
@@ -466,49 +404,53 @@ var custominfo = heredoc( function() { /*
 	</p>
 */ } );
 $( '#setting-custom' ).click( function() {
-	var valglobal, valoutput;
-	var aplayname = device.aplayname;
-	info( {
-		  icon     : 'mpd'
-		, title    : "User's Configurations"
-		, content  : custominfo
-		, msgalign : 'left'
-		, boxwidth : 'max'
-		, preshow  : function() {
-			bash( [ 'customgetglobal' ], function( data ) { // get directly to keep white spaces
-				valglobal = data || '';
-				bash( [ 'customgetoutput', aplayname ], function( data ) {
-					valoutput = data || '';
-					$( '#global' ).val( valglobal );
-					$( '#output' ).val( valoutput );
+	bash( [ 'customget', device.aplayname ], function( data ) { // get directly to keep white spaces
+		var valglobal;
+		var valoutput;
+		if ( data ) {
+			var data = data.split( '^^' );
+			valglobal = data[ 0 ];
+			valoutput = data[ 1 ];
+		}
+		info( {
+			  icon     : 'mpd'
+			, title    : "User's Configurations"
+			, content  : custominfo
+			, msgalign : 'left'
+			, boxwidth : 'max'
+			, checkchanged : ( G.custom ? [ valglobal, valoutput ] : '' )
+			, preshow  : function() {
+				$( '#global' ).val( valglobal );
+				$( '#output' ).val( valoutput );
+				$( '.msg' ).css( {
+					  width          : '100%'
+					, margin         : 0
+					, 'text-align'   : 'left'
+					, 'padding-left' : '35px'
 				} );
-			} );
-			$( '.msg' ).css( {
-				  width          : '100%'
-				, margin         : 0
-				, 'text-align'   : 'left'
-				, 'padding-left' : '35px'
-			} );
-			$( '.msg, #global, #output' ).css( 'font-family', 'Inconsolata' );
-			$( '#output' ).css( 'padding-left', '39px' )
-			// // verify changes
-			if ( G.custom ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#global, #output' ).keyup( function() {
-					var changed = $( '#global' ).val() !== valglobal || $( '#output' ).val() !== valoutput;
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				} );
+				$( '.msg, #global, #output' ).css( 'font-family', 'Inconsolata' );
+				$( '#output' ).css( 'padding-left', '39px' )
 			}
-		}
-		, cancel   : function() {
-			$( '#custom' ).prop( 'checked', G.custom );
-		}
-		, ok       : function() {
-			var customglobal = lines2line( $( '#global' ).val() );
-			var customoutput = lines2line( $( '#output' ).val() );
-			bash( [ 'customset', customglobal, customoutput, aplayname ] );
-			notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
-		}
+			, cancel   : function() {
+				$( '#custom' ).prop( 'checked', G.custom );
+			}
+			, ok       : function() {
+				var customglobal = lines2line( $( '#global' ).val() );
+				var customoutput = lines2line( $( '#output' ).val() );
+				bash( [ 'customset', customglobal, customoutput, device.aplayname ], function( std ) {
+					if ( std == -1 ) {
+						bannerHide();
+						info( {
+							  icon    : 'mpd'
+							, title   : "User's Configurations"
+							, message : 'MPD failed with the added lines'
+										+'<br>Restored to previous configurations.'
+						} );
+					}
+				} );
+				notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
+			}
+		} );
 	} );
 } );
 

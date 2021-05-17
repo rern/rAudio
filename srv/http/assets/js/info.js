@@ -613,7 +613,7 @@ function checkChangedValue() {
 }
 function getInfoValues() { // order: text > radio > checkbox > select
 	var values = [];
-	var $text = $( '#infoContent input[type=text]' );
+	var $text = $( '#infoContent input[type=text], #infoContent input[type=password], #infoContent textarea' ); // text, textarea, password
 	if ( $text.length ) {
 		$text.each( function() {
 			values.push( $( this ).val() );
