@@ -249,6 +249,7 @@ function tagEditor() {
 			, textlabel    : label
 			, textvalue    : value
 			, boxwidth     : 'max'
+			, checkchanged : value
 			, preshow      : function() {
 				$( '#infoMessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
@@ -334,15 +335,18 @@ function tagEditor() {
 			}
 			, nobutton     : G.playlist
 			, nofocus      : 1
-			, checkchanged : { text: value }
 			, ok           : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
-				for ( i = 0; i < fL; i++ ) {
-					var val = $( '.infoinput:eq( '+ i +' )' ).val();
-					val = val === value[ i ] ? '' : ( val || -1 );
+				var values = getInfoValues();
+				var val;
+				values.forEach( function( v, i ) {
+					val = v === value[ i ] ? '' : ( v || -1 );
 					tag.push( val );
-				}
-				banner( 'Tag Editor', 'Change ...', 'tag blink', -1 );
+				} );
+				banner( 'Tag Editor', 'Change tags ...', 'tag blink', -1 );
+				setTimeout( function() {
+					banner( 'Tag Editor', 'Update Library ...', 'tag blink' );
+				}, 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
 			}
 		} );
@@ -609,16 +613,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var src = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 			var value = [ artist, album, title ];
 			info( {
-				  icon      : 'audiocd'
-				, title     : 'Audio CD Tag Editor'
-				, message   : '<img src="'+ src +'">'
-							 +'<br># '+ track +' &bull; '+ second2HMS( time )
-				, msgalign  : 'left'
-				, textlabel : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
-				, textvalue : value
-				, boxwidth  : 'max'
-				, checkchanged : { text: value }
-				, ok        : function() {
+				  icon         : 'audiocd'
+				, title        : 'Audio CD Tag Editor'
+				, message      : '<img src="'+ src +'">'
+								+'<br># '+ track +' &bull; '+ second2HMS( time )
+				, msgalign     : 'left'
+				, textlabel    : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
+				, textvalue    : value
+				, boxwidth     : 'max'
+				, checkchanged : value
+				, ok           : function() {
 					var data = $( '#infoTextBox' ).val() +'^'+ $( '#infoTextBox1' ).val() +'^'+ $( '#infoTextBox2' ).val() +'^'+ time;
 					data = data.replace( /'/g, "\\'" );
 					bash( [ 'audiocdtag', track, data, discid ] );
@@ -628,11 +632,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'thumb':
 			info( {
-				  icon     : 'coverart'
-				, title    : 'Album Thumbnails'
-				, message  : 'Update album thumbnails in:'
+				  icon    : 'coverart'
+				, title   : 'Album Thumbnails'
+				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'
-				, ok       : function() {
+				, ok      : function() {
 					thumbUpdate( G.list.path );
 				}
 			} );

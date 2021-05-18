@@ -17,14 +17,14 @@ var htmlmount = heredoc( function() { /*
 		<div class="infotextbox">
 			<label><input type="radio" name="protocol" value="cifs"> CIFS</label>&emsp;
 			<label><input type="radio" name="protocol" value="nfs"> NFS</label>&emsp;
-			<input type="text" class="infoinput" name="mountpoint" spellcheck="false">
-			<input type="text" class="infoinput" name="ip" spellcheck="false">
-			<input type="text" class="infoinput" name="directory" spellcheck="false">
+			<input type="text" class="infoinput" name="mountpoint">
+			<input type="text" class="infoinput" name="ip">
+			<input type="text" class="infoinput" name="directory">
 			<div class="guest">
-				<input type="text" class="infoinput" name="user" spellcheck="false">
+				<input type="text" class="infoinput" name="user">
 				<input type="password" id="infoPasswordBox" class="infoinput" name="password">
 			</div>
-			<input type="text" class="infoinput" name="options" spellcheck="false">
+			<input type="text" class="infoinput" name="options">
 		</div>
 		<div id="infotextsuffix">
 			<i class="eye fa fa-eye fa-lg guest"></i>
@@ -63,9 +63,6 @@ function infoMount( data ) {
 					$( '.guest' ).removeClass( 'hide' );
 					$dir.val( $dir.val().replace( /\//g, '' ) );
 				}
-			} );
-			$( '.infotextbox input[name=ip]' ).keyup( function() {
-				$( '#infoOk' ).toggleClass( 'disabled', validateIP( $( this ).val() ) );
 			} );
 		}
 		, ok      : function() {
@@ -477,8 +474,6 @@ $( '#setting-lcdchar' ).click( function() {
 	var i2caddress = v[ 6 ];
 	var i2cchip = v[ 7 ];
 	var backlight = v[ 8 ] === 'True';
-	// checkechanged order: text > radio > checkbox > select
-	var checkechanged = [ pin_rs, pin_rw, pin_e, pins_data, cols, charmap, inf, i2caddress, backlight, i2cchip ];
 	function setValues( i2c ) {
 		$( '#cols input' ).val( [ cols ] );
 		$( '#charmap input' ).val( [ charmap ] );
@@ -507,7 +502,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, content       : infolcdchar
 		, boxwidth      : 180
 		, nofocus       : 1
-		, checkchanged  : ( G.lcdchar ? checkechanged : '' )
+		, checkchanged  : ( G.lcdchar ? v : '' )
 		, preshow       : function() {
 			$( '#address' ).html( opt );
 			setValues( i2c );

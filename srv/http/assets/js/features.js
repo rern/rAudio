@@ -207,8 +207,8 @@ var localbrowserinfo = heredoc( function() { /*
 			</a>
 		</div>
 		<div id="infotextbox">
-			<input type="text" class="infoinput input" id="infoTextBox" spellcheck="false" style="width: 60px; text-align: center">
-			<input type="text" class="infoinput input" id="infoTextBox1" spellcheck="false" style="width: 60px; text-align: center">
+			<input type="text" class="infoinput input" id="infoTextBox" style="width: 60px; text-align: center">
+			<input type="text" class="infoinput input" id="infoTextBox1" style="width: 60px; text-align: center">
 		</div>
 	</div>
 	<hr>

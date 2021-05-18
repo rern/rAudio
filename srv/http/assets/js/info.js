@@ -111,7 +111,7 @@ infocontenthtml = heredoc( function() { /*
 				<div id="infotextbox"></div>
 				<div id="infotextsuffix"></div>
 			</div>
-			<textarea id="infoTextArea" class="infocontent"></textarea>
+			<div id="infoTextArea" class="infocontent"></div>
 			<div id="infoRadio" class="infocontent infocheckbox infohtml"></div>
 			<div id="infoCheckBox" class="infocontent infocheckbox infohtml"></div>
 			<div id="infoSelect" class="infocontent"></div>
@@ -368,7 +368,7 @@ function info( json ) {
 				labelhtml += '<a class="infolabel">'+ labeltext +'</a>';
 				boxhtml += '<input type="text" class="infoinput input" id="infoTextBox'+ iid +'"';
 				if ( textvalue ) boxhtml += textvalue[ i ] !== '' ? ' value="'+ textvalue[ i ].toString().replace( /"/g, '&quot;' ) +'"' : '';
-				boxhtml += ' spellcheck="false">';
+				boxhtml += '>';
 				if ( textsuffix ) suffixhtml += textsuffix[ i ] !== '' ? '<gr>'+ textsuffix[ i ] +'</gr>' : '<gr>&nbsp;</gr>';
 			}
 			if ( textsuffix.length ) $( '#infotextbox' ).css( 'width', 'fit-content' );
@@ -390,7 +390,7 @@ function info( json ) {
 		}
 		if ( 'textarea' in O ) {
 			if ( 'textareavalue' in O ) {
-				$( '#infoTextArea' ).text( O.textareavalue );
+				$( '#infoTextArea' ).html( '<textarea class="infoinput">'+ O.textareavalue +'</textarea>' );
 				setTimeout( function() {
 					var h = $( '#infoTextArea' )[ 0 ].scrollHeight;
 					if ( h < 100 ) h = 100;
@@ -586,6 +586,7 @@ function alignVertical() { // make infoBox scrollable
 			, 'visibility' : 'visible'
 		} );
 		$( 'html, body' ).scrollTop( 0 );
+		$( '.infoinput' ).prop( 'spellcheck', false );
 	}, 0 );
 }
 function checkChanged() {
@@ -595,14 +596,14 @@ function checkChanged() {
 }
 function checkChangedLength( $text, L ) {
 	$text.on( 'input', function() {
-		O.checklength = $text.val().length < L;
+		O.shortlength = $text.val().length < L;
 		$( '#infoOk' ).toggleClass( 'disabled', O.checklength );
 	} );
 }
 function checkChangedValue() {
-	if ( O.checklength ) return
-		
-	setTimeout( function() { // force after custom check
+	if ( O.shortlength ) return // shorter - already disabled
+	
+	setTimeout( function() { // force after checkChangedLength() and custom check
 		var values = getInfoValues();
 		var changed = false;
 		changed = values.some( function( v, i ) {
@@ -611,37 +612,33 @@ function checkChangedValue() {
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
-function getInfoValues() { // order: text > radio > checkbox > select
-	var values = [];
-	var $text = $( '#infoContent input[type=text], #infoContent input[type=password], #infoContent textarea' ); // text, textarea, password
-	if ( $text.length ) {
-		$text.each( function() {
-			values.push( $( this ).val() );
-		} );
-	}
-	var $radio = $( '#infoContent input[type=radio]' );
-	if ( $radio.length ) {
-		var v;
-		$radio.each( function() {
-			if ( $( this ).prop( 'checked' ) ) {
-				v = $( this ).val();
-				if ( v === 'true' ) { v = true; } else if ( v === 'false' ) { v = false; }
-				values.push( v );
+function getInfoValues( json ) {
+	var $el = $( '#infoContent' ).find( 'input[type=text], input[type=password], input[type=radio], input[type=checkbox], select, textarea' );
+	var values = json ? {} : [];
+	var $this, type, name, val;
+	$el.each( function() {
+		$this = $( this );
+		type = $this.prop( 'type' );
+		if ( json ) name = $this.prop( 'name' ) || 'unnamed';
+		val = null;
+		if ( type === 'radio' ) { // radio has multiple inputs - skip unchecked inputs
+			if ( $this.prop( 'checked' ) ) {
+				val = $this.val();
+			} else {
+				return
 			}
-		} );
-	}
-	var $checkbox = $( '#infoContent input[type=checkbox]' );
-	if ( $checkbox.length ) {
-		$checkbox.each( function() {
-			values.push( $( this ).prop( 'checked' ) );
-		} );
-	}
-	var $select = $( '#infoContent select' );
-	if ( $select.length ) {
-		$select.each( function() {
-			values.push( $( this ).val() );
-		} );
-	}
+			if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
+		} else if ( type === 'checkbox' ) {
+			val = $this.prop( 'checked' );
+		} else {
+			val = $this.val();
+		}
+		if ( json ) {
+			values[ name ] = val;
+		} else {
+			if ( val !== null ) values.push( val );
+		}
+	} );
 	return values
 }
 function renderOption( $el, htm, chk ) {

@@ -135,9 +135,6 @@ function showContent() {
 		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
-function validateIP( ip ) {  
-	return /^(?!.*\.$)((?!0\d)(1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test( ip )
-} 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
 var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];

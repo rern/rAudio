@@ -374,12 +374,11 @@ function displayPlayback() {
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	displayBars();
 }
-function displaySave( page ) {
-	$( '#infoCheckBox input' ).each( function() {
-		G.display[ this.name ] = $( this ).prop( 'checked' );
+function displaySave() {
+	var values = getInfoValues( 'json' );
+	$.each( values, function( k, v ) {
+		G.display[ k ] = v;
 	} );
-	G.display.novu = $( '#infoContent input[name=novu]:checked' ).val() === 'true';
-	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265

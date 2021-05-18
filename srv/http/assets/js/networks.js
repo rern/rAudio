@@ -54,18 +54,10 @@ function editLAN( data ) {
 		, message      : message
 		, textlabel    : [ 'IP', 'Gateway' ]
 		, textvalue    : [ data.ip, data.gateway ]
+		, checkchanged : [ data.ip, data.gateway ]
 		, textrequired : [ 0 ]
 		, preshow      : function() {
 			if ( data.dhcp === 'dhcp' || !data.ip ) $( '#infoButton' ).addClass( 'hide' );
-			if ( data.ip ) {
-				$( '#infoOk' ).addClass( 'disabled' );
-				// verify
-				$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-					var ip = $( '#infoTextBox' ).val();
-					var changed = ip !== data.ip || $( '#infoTextBox1' ).val() !== data.gateway;
-					$( '#infoOk' ).toggleClass( 'disabled', !changed || !validateIP( ip ) );
-				} );
-			}
 		}
 		, buttonlabel  : '<i class="fa fa-undo"></i>DHCP'
 		, buttonwidth  : 1
@@ -79,8 +71,6 @@ function editLAN( data ) {
 			var data1 = {}
 			data1.ip = $( '#infoTextBox' ).val();
 			data1.gateway = $( '#infoTextBox1' ).val();
-			if ( data1.ip === data.ip && data1.gateway === data.gateway ) return
-			
 			notify( 'LAN IP Address', 'Change ip to '+ data1.ip, 'lan' );
 			bash( [ 'editlan', data1.ip, data1.gateway ], function( used ) {
 				if ( used == -1 ) {
@@ -95,55 +85,30 @@ function editLAN( data ) {
 				}
 				bannerHide();
 			} );
-			
 		}
 	} );
 }
 function editWiFi( ssid, data ) {
-	if ( data ) data.Hidden = 'Hidden' in data ? true : false;
 	var existing = data;
 	var newval;
+	var checkchanged = [
+		  ssid
+		, data.Address || ''
+		, data.Gateway || ''
+		, data.Key | ''
+		, data.IP === 'static' ? true : false
+		, data.Hidden
+		, data.Security === 'wep' ? true : false
+	];
 	info( {
 		  icon          : ssid ? 'edit-circle' : 'wifi'
 		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, checkbox      : { 'Static IP': 1, 'Hidden SSID': 1, 'WEP': 1 }
 		, passwordlabel : 'Password'
+		, textlength    : { 2: 8 }
+		, checkchanged  : checkchanged
 		, preshow       : function() {
-			function verify() {
-				var Key = $( '#infoPasswordBox' ).val();
-				var Address = $( '#infoTextBox1' ).val();
-				var Gateway = $( '#infoTextBox2' ).val();
-				if ( Key.length < 8 || !validateIP( Address ) || !validateIP( Gateway ) ) {
-					$( '#infoOk' ).toggleClass( 'disabled', true );
-					return
-				}
-				
-				newval = {
-					  ESSID     : $( '#infoTextBox' ).val()
-					, Key       : Key
-					, IP        : ( $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' ) ? 'static' : 'dhcp' )
-					, Hidden    : $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' )
-					, Security  : ( $( '#infoCheckBox input:eq( 2 )' ).prop( 'checked' ) ? 'wep' : 'wpa' )
-				}
-				if ( newval.IP === 'static' ) {
-					newval.Address = $( '#infoTextBox1' ).val();
-					newval.Gateway = $( '#infoTextBox2' ).val();
-				}
-				var changed = false;
-				if ( !ssid || newval.length !== existing.length ) {
-					changed = true;
-				} else {
-					for ( key in newval ) {
-						if ( newval[ key ] !== existing[ key ] ) {
-							changed = true;
-							break;
-						}
-					}
-				}
-				$( '#infoOk' ).toggleClass( 'disabled', !changed );
-			}
-			
 			if ( !ssid ) {
 				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
 			} else {
@@ -158,30 +123,37 @@ function editWiFi( ssid, data ) {
 					}, 'json' );
 				}
 			}
-			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoCheckBox' ).on( 'click', 'input:eq( 0 )', function() {
 				$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
 			} );
-			// verify
-			$( '.infoinput' ).keyup( verify );
-			$( '#infoCheckBox' ).click( verify );
 		}
 		, ok            : function() {
-			if ( newval.IP === 'dhcp' ) {
-				connect( newval );
+			var k =[ 'ESSID', 'Address', 'Gateway', 'Key', 'IP', 'Hidden', 'Security' ];
+			var v = getInfoValues();
+			values = {}
+			$.each( v, function( i, v ) {
+				if ( i === 4 ) {
+					v = v ? 'static' : 'dhcp';
+				} else if ( i === 6 ) {
+					v = v ? 'wep' : 'wpa';
+				}
+				values[ k[ i ] ] = v;
+			} );
+			if ( values.IP === 'dhcp' ) {
+				connect( values );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ newval.Address +' &> /dev/null && echo -1', function( std ) {
+				bash( 'ping -c 1 -w 1 '+ values.Address +' &> /dev/null && echo -1', function( std ) {
 					if ( std == -1 ) {
 						info( {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
-							, message : 'IP <wh>'+ newval.Address +'</wh> already in use.'
+							, message : 'IP <wh>'+ values.Address +'</wh> already in use.'
 							, ok      : function() {
-								editWiFi( ssid, newval );
+								editWiFi( ssid, values );
 							}
 						} );
 					} else {
-						connect( newval );
+						connect( values );
 					}
 				} );
 			}

@@ -262,7 +262,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 				}
 			}
 			, ok           : function () {
-				displaySave( 'library' );
+				displaySave();
 				$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 				if ( G.library ) {
 					if ( G.librarylist ) {
@@ -297,8 +297,6 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 					} else {
 						renderLibrary();
 					}
-				} else if ( G.playlist ) {
-					if ( G.savedlist ) $( '#button-pl-back' ).css( 'float', G.display.backonleft ? 'left' : '' );
 				}
 			}
 		}
@@ -328,9 +326,10 @@ $( '#displayplayback' ).click( function() {
 		var bars = G.display.bars;
 		var content = displayCheckbox( chkplayback )
 		var keys = Object.keys( chkplayback );
-		var values = [ G.display.novu ];
+		keys.push( 'novu' );
+		var values = [];
 		keys.forEach( function( k ) {
-			values.push( G.display[ k ] );
+			if ( k in G.display ) values.push( G.display[ k ] );
 		} );
 		info( {
 			  icon         : 'play-circle'
@@ -401,8 +400,9 @@ $( '#displayplayback' ).click( function() {
 				} );
 			}
 			, ok           : function () {
-				displaySave( 'playback' );
+				displaySave();
 				G.bars = G.display.bars;
+				G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 				displayBars();
 				if ( G.playback ) {
 					displayPlayback();

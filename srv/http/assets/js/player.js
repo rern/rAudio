@@ -337,7 +337,6 @@ $( '#setting-soxr' ).click( function() {
 	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
 	if ( G.soxr ) {
 		var val = G.soxrval.split( ' ' );
-		var checkchanged = val.slice( 1, -1 ).concat( [ val[ 0 ], val[ 5 ] ] ); // reorder: text > select
 	} else {
 		var val = defaultval;
 	}
@@ -346,7 +345,7 @@ $( '#setting-soxr' ).click( function() {
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
 		, nofocus       : 1
-		, checkchanged  : ( G.soxr ? checkchanged : '' )
+		, checkchanged  : ( G.soxr ? val : '' )
 		, preshow       : function() {
 			$( '#infoSelectBox option[value='+ val[ 0 ] +']' ).prop( 'selected', 1 );
 			$( '#infoSelectBox1 option[value='+ val[ 5 ] +']' ).prop( 'selected', 1 );
@@ -387,7 +386,7 @@ var custominfo = heredoc( function() { /*
 		<br>user<px style="width: 153px"></px>"mpd"
 	</p>
 	<div class="infotextbox">
-		<textarea class="infoinput" id="global" spellcheck="false"></textarea>
+		<textarea class="infoinput" id="global"></textarea>
 	</div>
 	<p class="infomessage msg">
 			...
@@ -397,7 +396,7 @@ var custominfo = heredoc( function() { /*
 		<br><px30/>mixer_device<px style="width: 24px"></px>"hw:N"
 	</p>
 	<div class="infotextbox">
-		<textarea class="infoinput" id="output" spellcheck="false"></textarea>
+		<textarea class="infoinput" id="output"></textarea>
 	</div>
 	<p class="infomessage msg">
 		}
