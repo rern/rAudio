@@ -91,10 +91,9 @@ $( '.enable' ).click( function() {
 				, passwordlabel : 'Password'
 				, pwdrequired   : 1
 				, ok            : function() {
-					var password = $( '#infoPasswordBox' ).val();
 					$.post( 'cmd.php', {
 						  cmd      : 'login'
-						, password : password
+						, password : $( '#infoPasswordBox' ).val()
 					}, function( std ) {
 						if ( std ) {
 							notify( 'Password Login', 'Disable ...', 'lock-circle' );
@@ -138,7 +137,7 @@ $( '#setting-snapclient' ).click( function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
 		, ok            : function() {
-			var snaplatency = Math.abs( $( '#infoTextBox' ).val() );
+			var snaplatency = Math.abs( getInfoValues() );
 			bash( [ 'snapclientset', snaplatency ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
 		}
@@ -187,8 +186,9 @@ $( '#setting-hostapd' ).click( function() {
 			}
 		}
 		, ok           : function() {
-			var pwd = $( '#infoTextBox' ).val();
-			var ip = $( '#infoTextBox1' ).val();
+			var values = getInfoValues();
+			var pwd = values[ 0 ];
+			var ip = values[ 1 ];
 			var ips = ip.split( '.' );
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );
@@ -249,11 +249,12 @@ $( '#setting-localbrowser' ).click( function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok          : function() {
-			var localcursor    = $( '#infoCheckBox input' ).prop( 'checked' );
-			var localrotate    = $( 'input[name=inforadio]:checked' ).val();
-			var localscreenoff = $( '#infoTextBox' ).val() * 60;
-			var localzoom = parseFloat( $( '#infoTextBox1' ).val() ) || 1;
-			bash( [ 'localbrowserset', localrotate, localscreenoff, localcursor, localzoom ] );
+			var values = getInfoValues();
+			var localscreenoff = values[ 0 ] * 60;
+			var localzoom = parseFloat( values[ 1 ] ) || 1;
+			var localrotate    = values[ 2 ];
+			var localcursor    = values[ 3 ];
+			bash( [ 'localbrowserset', localscreenoff, localzoom, localrotate, localcursor ] );
 			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
 		}
 	} );
@@ -273,9 +274,8 @@ $( '#setting-smb' ).click( function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
 		, ok           : function() {
-			var smbwritesd = $( '#infoCheckBox input:eq( 0 )' ).prop( 'checked' );
-			var smbwriteusb = $( '#infoCheckBox input:eq( 1 )' ).prop( 'checked' );
-			bash( [ 'smbset', smbwritesd, smbwriteusb ] );
+			var values = getInfoValues();
+			bash( [ 'smbset', values[ 0 ], values[ 1 ] ] );
 			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'network' );
 		}
 	} );
@@ -300,9 +300,8 @@ $( '#setting-mpdscribble' ).click( function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}
 		, ok            : function() {
-			var user = $( '#infoTextBox' ).val().replace( /(["&()\\])/g, '\$1' );
-			var password = $( '#infoPasswordBox' ).val().replace( /(["&()\\])/g, '\$1' );
-			bash( [ 'mpdscribbleset', user, password ], function( std ) {
+			var values = getInfoValues();
+			bash( [ 'mpdscribbleset', escapeUsrPwd( values[ 0 ] ), escapeUsrPwd( values[ 1 ] ) ], function( std ) {
 				if ( std == -1 ) {
 					info( {
 						  icon    : 'lastfm'
@@ -322,19 +321,17 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, pwdrequired   : 1
+		, textrequired  : ( G.login ? [ 0, 1 ] : [ 0 ] )
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}
 		, ok            : function() {
-			var password = $( '#infoPasswordBox' ).val();
-			var pwdnew = $( '#infoPasswordBox1' ).length ? $( '#infoPasswordBox1' ).val() : password;
-			var type = G.login ? 'changed.' : 'enabled.';
+			var values = getInfoValues();
 			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock-circle' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
-				, password : password
-				, pwdnew   : pwdnew
+				, password : escapeUsrPwd( values[ 0 ] )
+				, pwdnew   : escapeUsrPwd( values[ 1 ] )
 			}, function( std ) {
 				if ( !std ) passwordWrong();
 				bannerHide();

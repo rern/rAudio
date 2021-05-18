@@ -68,9 +68,10 @@ function editLAN( data ) {
 			bash( [ 'editlan' ] );
 		}
 		, ok           : function() {
+			var values = getInfoValues();
 			var data1 = {}
-			data1.ip = $( '#infoTextBox' ).val();
-			data1.gateway = $( '#infoTextBox1' ).val();
+			data1.ip = values[ 0 ];
+			data1.gateway = values[ 1 ];
 			notify( 'LAN IP Address', 'Change ip to '+ data1.ip, 'lan' );
 			bash( [ 'editlan', data1.ip, data1.gateway ], function( used ) {
 				if ( used == -1 ) {
@@ -537,7 +538,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				, oklabel       : 'Connect'
 				, ok            : function() {
 					vals.Security = wpa;
-					vals.Key      = $( '#infoPasswordBox' ).val();
+					vals.Key      = getInfoValues();
 					connect( vals );
 				}
 			} );

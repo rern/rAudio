@@ -258,13 +258,6 @@ dtparam=audio=on"
 	echo "$reboot" > $filereboot
 	pushRefresh
 	;;
-lcddisable )
-	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	pushRefresh
-	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
@@ -283,26 +276,18 @@ lcdchardisable )
 	rm $dirsystem/lcdchar
 	pushRefresh
 	;;
-lcdchargpioset )
-	val=( ${args[1]} )
-echo -n "\
-[var]
-cols=${val[0]}
-charmap=${val[1]}
-pin_rs=${val[2]}
-pin_rw=${val[3]}
-pin_e=${val[4]}
-pins_data=${val[5]}
-" > /etc/lcdchar.conf
-	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-	touch $dirsystem/lcdchar
-	pushRefresh
-	;;
 lcdcharset )
+	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
 	val=( ${args[1]} )
 	reboot=${args[2]}
-	if (( ${#val[@]} > 2 )); then
+	conf="\
+[var]
+cols=${val[0]}
+charmap=${val[1]}"
+	if [[ ${val[2]} == i2c ]]; then
+		conf="
+address=${val[3]}
+chip=${val[4]}"
 		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
 			sed -i '$ a\dtparam=i2c_arm=on' $fileconfig
 			echo "\
@@ -311,21 +296,27 @@ i2c-dev" >> $filemodule
 			echo "$reboot" > $filereboot
 		fi
 	else
+		conf+="
+pin_rs=${val[5]}
+pin_rw=${val[6]}
+pin_e=${val[7]}
+pins_data=${val[8]}"
 		if ! grep -q tft35a $fileconfig; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
-	[[ ${val[4]} == true ]] && backlight=True || backlight=False
-	echo -n "\
-[var]
-cols=${val[0]}
-charmap=${val[1]}
-address=${val[2]}
-chip=${val[3]}
-backlight=$backlight
-" > /etc/lcdchar.conf
+	conf+="
+backlight=${val[9]^}"
+	echo "$conf" > /etc/lcdchar.conf
 	touch $dirsystem/lcdchar
+	pushRefresh
+	;;
+lcddisable )
+	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
+	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
+	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	pushRefresh
 	;;
 lcdset )

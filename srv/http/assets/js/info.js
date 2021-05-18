@@ -254,7 +254,6 @@ function info( json ) {
 		alignVertical();
 		return;
 	}
-	
 	// title
 	var width = 'width' in O ? O.width : '';
 	if ( width ) {
@@ -377,16 +376,6 @@ function info( json ) {
 			$( '#infotextsuffix' ).html( suffixhtml );
 			$( '#infoText' ).removeClass( 'hide' );
 			if ( 'textalign' in O ) $( '.infoinput' ).css( 'text-align', O.textalign );
-			if ( 'textrequired' in O ) {
-				O.textrequired.forEach( function( i ) {
-					checkChangedLength( $( '.infoinput' ).eq( i ), 1 );
-				} );
-			}
-			if ( 'textlength' in O ) {
-				$.each( O.textlength, function( i, L ) {
-					checkChangedLength( $( '.infoinput' ).eq( i ), L );
-				} );
-			}
 		}
 		if ( 'textarea' in O ) {
 			if ( 'textareavalue' in O ) {
@@ -416,6 +405,16 @@ function info( json ) {
 			$( '#infotextbox' ).append( boxhtml );
 			$( '#infotextsuffix' ).append( suffixhtml.slice( 0, -4 ) );
 			$( '#infoText' ).removeClass( 'hide' );
+		}
+		if ( 'textrequired' in O ) {
+			O.textrequired.forEach( function( i ) {
+				checkChangedLength( $( '.infoinput' ).eq( i ), 1 );
+			} );
+		}
+		if ( 'textlength' in O ) {
+			$.each( O.textlength, function( i, L ) {
+				checkChangedLength( $( '.infoinput' ).eq( i ), L );
+			} );
 		}
 		if ( 'fileoklabel' in O ) {
 			$( '#infoOk' )
@@ -595,9 +594,11 @@ function checkChanged() {
 	$( '#infoContent input[type=radio], #infoContent input[type=checkbox], #infoContent select' ).change( checkChangedValue );
 }
 function checkChangedLength( $text, L ) {
+	O.shortlength = $text.val().length < L;
+	$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 	$text.on( 'input', function() {
 		O.shortlength = $text.val().length < L;
-		$( '#infoOk' ).toggleClass( 'disabled', O.checklength );
+		$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 	} );
 }
 function checkChangedValue() {
@@ -605,6 +606,7 @@ function checkChangedValue() {
 	
 	setTimeout( function() { // force after checkChangedLength() and custom check
 		var values = getInfoValues();
+		if ( typeof values === 'string' ) values = [ values ];
 		var changed = false;
 		changed = values.some( function( v, i ) {
 			if ( v != O.checkchanged[ i ] ) return true
@@ -639,7 +641,7 @@ function getInfoValues( json ) {
 			if ( val !== null ) values.push( val );
 		}
 	} );
-	return values
+	return values.length > 1 ? values : values[ 0 ]
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {

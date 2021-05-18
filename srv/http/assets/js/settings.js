@@ -92,6 +92,9 @@ function disableSwitch( id, truefalse ) {
 		.prop( 'disabled', truefalse )
 		.next().toggleClass( 'disabled', truefalse );
 }
+function escapeUsrPwd( usrpwd ) {
+	return usrpwd.replace( /(["&()\\])/g, '\$1' )
+}
 function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( title, message, icon +' blink', -1 );

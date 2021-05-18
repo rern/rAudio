@@ -79,10 +79,10 @@ localbrowserdisable )
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	;;
 localbrowserset )
-	rotate=${args[1]}
-	screenoff=${args[2]}
-	cursor=${args[3]}
-	zoom=${args[4]}
+	screenoff=${args[1]}
+	zoom=${args[2]}
+	rotate=${args[3]}
+	cursor=${args[4]}
 	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
 	rotateset=${conf[0]}
 	screenoffset=${conf[1]}

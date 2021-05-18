@@ -422,22 +422,22 @@ var infolcdchar = heredoc( function() { /*
 	</div>
 	<div class="infotextbox lcdradio">
 		<div id="cols" class="infocontent infohtml lcd" style="margin-top: 0">
-			<label><input type="radio" name="size" value="16"> 16x2</label>
-			<label><input type="radio" name="size" value="20"> 20x4</label>
-			<label><input type="radio" name="size" value="40"> 40x4</label>
+			<label><input type="radio" name="cols" value="16"> 16x2</label>
+			<label><input type="radio" name="cols" value="20"> 20x4</label>
+			<label><input type="radio" name="cols" value="40"> 40x4</label>
 		</div>
 		<div id="charmap" class="infocontent infohtml lcd">
 			<label><input type="radio" name="charmap" value="A00"> A00</label>
 			<label><input type="radio" name="charmap" value="A02"> A02</label>
 		</div>
 		<div id="inf" class="infocontent infohtml lcd">
-			<label><input type="radio" name="interface" value="i2c"> I&#178;C</label>
-			<label><input type="radio" name="interface" value="gpio"> GPIO</label>
+			<label><input type="radio" name="inf" value="i2c"> I&#178;C</label>
+			<label><input type="radio" name="inf" value="gpio"> GPIO</label>
 		</div>
 		<div class="i2c">
-			<div id="address" class="infocontent infohtml lcd">
+			<div id="i2caddress" class="infocontent infohtml lcd">
 			</div>
-			<select id="chip" class="infocontent infohtml">
+			<select id="i2cchip" class="infocontent infohtml">
 				<option value="PCF8574"> PCF8574</option>
 				<option value="MCP23008"> MCP23008</option>
 				<option value="MCP23017"> MCP23017</option>
@@ -449,46 +449,22 @@ var infolcdchar = heredoc( function() { /*
 			<input type="text" id="pin_e" class="infoinput infocontent infohtml">
 			<input type="text" id="pins_data" class="infoinput infocontent infohtml">
 		</div>
-		<label><input id="backlightoff" type="checkbox"> Backlight off <gr>(stop 1 m.)</gr></label>
+		<label><input id="backlight" type="checkbox"> Backlight off <gr>(stop 1 m.)</gr></label>
 	</div>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
 	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
-	var values = val.split( ' ' ); // data order: [ cols, charmap, ..., backlight ]
-	if ( values.length < 6 ) {
-		var v = [ ...values.slice( 0, 2 ), ...[ 15, 18, 16, '21,22,23,24' ], ...values.slice( 2 ) ];
-		var inf = 'i2c';
+	var val = val.split( ' ' );
+	var backlight = val.slice( -1 ) === 'True';
+	// i2c : cols charmap | inf | i2caddress i2cchip | backlight
+	// gpio: cols charmap | inf | pin_rs pin_rw pin_e pins_data backlight
+	// 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
+	if ( val.length < 6 ) { // inset inf
 		var i2c = true;
+		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2, -1 ), 15, 18, 16, '21,22,23,24', backlight ]
 	} else {
-		values.pop(); // remove backlight
-		var v = [ ...values, [ '0x27', 'PCF8574', 'False' ] ];
-		var inf = 'gpio';
 		var i2c = false;
-	}
-	var cols = v[ 0 ];
-	var charmap = v[ 1 ];
-	var pin_rs = v[ 2 ];
-	var pin_rw = v[ 3 ];
-	var pin_e = v[ 4 ];
-	var pins_data = v[ 5 ];
-	var i2caddress = v[ 6 ];
-	var i2cchip = v[ 7 ];
-	var backlight = v[ 8 ] === 'True';
-	function setValues( i2c ) {
-		$( '#cols input' ).val( [ cols ] );
-		$( '#charmap input' ).val( [ charmap ] );
-		$( '#inf input' ).val( [ i2c ? 'i2c' : 'gpio' ] );
-		$( '#address input' ).val( [ i2caddress ] );
-		$( '#chip input' ).val( [ i2cchip ] );
-		$( '#pin_rs' ).val( pin_rs );
-		$( '#pin_rw' ).val( pin_rw );
-		$( '#pin_e' ).val( pin_e );
-		$( '#pins_data' ).val( pins_data );
-		$( '#backlightoff' ).prop( 'checked', backlight );
-		$( '.lcdradio' ).width( 230 );
-		$( '.lcd label' ).width( 75 );
-		$( '.i2c' ).toggleClass( 'hide', !i2c );
-		$( '.gpio' ).toggleClass( 'hide', i2c );
+		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val( 2, -1 ), backlight ];
 	}
 	var lcdcharaddr = G.lcdcharaddr || '27 3F';
 	var addr = lcdcharaddr.split( ' ' );
@@ -504,10 +480,27 @@ $( '#setting-lcdchar' ).click( function() {
 		, nofocus       : 1
 		, checkchanged  : ( G.lcdchar ? v : '' )
 		, preshow       : function() {
-			$( '#address' ).html( opt );
-			setValues( i2c );
+			$( '#i2caddress' ).html( opt );
+			
+			$( '#cols input' ).val( [ v[ 0 ] ] );
+			$( '#charmap input' ).val( [ v[ 1 ] ] );
+			$( '#inf input' ).val( [ v[ 2 ] ] );
+			$( '#i2caddress input' ).val( [ v[ 3 ] ] );
+			$( '#i2cchip' ).val( v[ 4 ] );
+			$( '#pin_rs' ).val( v[ 5 ] );
+			$( '#pin_rw' ).val( v[ 6 ] );
+			$( '#pin_e' ).val( v[ 7 ] );
+			$( '#pins_data' ).val( v[ 8 ] );
+			$( '#backlight' ).prop( 'checked', v[ 9 ] );
+			
+			$( '.lcdradio' ).width( 230 );
+			$( '.lcd label' ).width( 75 );
+			$( '.i2c' ).toggleClass( 'hide', !i2c );
+			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#inf' ).change( function() {
-				setValues( $( '#inf input:checked' ).val() === 'i2c' );
+				i2c = $( '#inf input:checked' ).val() === 'i2c';
+				$( '.i2c' ).toggleClass( 'hide', !i2c );
+				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
 		}
 		, buttonwidth   : 1
@@ -522,16 +515,14 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			var v = getInfoValues(); // [ 0pin_rs, 1pin_rw, 2pin_e, 3pins_data, 4cols, 5charmap, 6i2c, 7i2caddress, 8backlight, 9i2cchip ]
-			var lcdcharconf = v[ 4 ] +' '+ v[ 5 ] +' ';
-			if ( v[ 6 ] === 'i2c' ) { // [ cols, charmap, i2caddress, i2cchip, backlight ]
-				lcdcharconf += v[ 7 ] +' '+ v[ 9 ] +' '+ v[ 8 ];
+			var values = getInfoValues();
+			var lcdcharconf = values.join( ' ' );
+			var cmd = [ 'lcdcharset', lcdcharconf ];
+			if ( values[ 2 ] === 'i2c' ) {
 				rebootText( 1, 'Character LCD' );
-				bash( [ 'lcdcharset', lcdcharconf, G.reboot.join( '\n' ) ] );
-			} else { // [ cols, charmap, pin_rs, pin_rw, pin_e, pins_data, backlight ]
-				lcdcharconf += v[ 0 ] +' '+ v[ 1 ] +' '+ v[ 2 ] +' '+ v[ 3 ] +' '+ v[ 8 ];
-				bash( [ 'lcdchargpioset', lcdcharconf ] );
+				cmd.push( G.reboot.join( '\n' ) );
 			}
+			bash( cmd );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
@@ -578,8 +569,9 @@ var infopowerbutton = heredoc( function() { /*
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
+			var values = getInfoValues();
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
-			bash( [ 'powerbuttonset', $( '#swpin' ).val(), $( '#ledpin' ).val() ] );
+			bash( [ 'powerbuttonset', values[ 0 ], values[ 1 ] ] );
 		}
 	} );
 } );
@@ -618,9 +610,10 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
+			var lcdmodel = getInfoValues();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
-			bash( [ 'lcdset', $( '#infoSelectBox').val(), G.reboot.join( '\n' ) ] );
+			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
 		}
 	} );
 } );
@@ -637,8 +630,9 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			} );
 		}
 		, ok           : function() {
+			var hostname = getInfoValues();
 			notify( 'Name', 'Change ...', 'plus-r' );
-			bash( [ 'hostname', $( '#infoTextBox' ).val() ] );
+			bash( [ 'hostname', hostname ] );
 		}
 	} );
 } );
@@ -657,12 +651,9 @@ $( '#setting-regional' ).click( function() {
 		, footer       : '<px70/><px60/>00 - common for all regions'
 		, checkchanged : textvalue
 		, ok           : function() {
-			var ntp = $( '#infoTextBox' ).val();
-			var regdom = $( '#infoTextBox1' ).val();
-			G.ntp = ntp;
-			G.regdom = regdom;
+			var values = getInfoValues();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
-			bash( [ 'regional', ntp, regdom ] );
+			bash( [ 'regional', values[ 0 ], values[ 1 ] ] );
 		}
 	} );
 } );
@@ -726,8 +717,7 @@ $( '#setting-soundprofile' ).click( function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
 		, ok           : function() {
-			var soundprofileval = $( '#infoTextBox' ).val();
-			for ( i = 1; i < iL; i++ ) soundprofileval += ' '+ $( '#infoTextBox'+ i ).val();
+			var soundprofileval = getInfoValues().slice( 0, 4 ).join( ' ' );
 			bash( [ 'soundprofileset', soundprofileval ] );
 			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
 		}
@@ -803,7 +793,8 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
-			var checked = $( '#infoRadio input:checked' ).val();
+			var checked = getInfoValues();
+			console.log(checked);return
 			if ( checked === 'reset' ) {
 				bash( '/srv/http/bash/datareset.sh', bannerHide );
 			} else {

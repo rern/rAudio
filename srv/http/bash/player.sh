@@ -77,8 +77,12 @@ bufferdisable )
 bufferset )
 	buffer=${args[1]}
 	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
-	sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
-	echo $buffer > $dirsystem/bufferset
+	if (( $buffer == 4096 )); then
+		rm -f $dirsystem/bufferset
+	else
+		sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
+		echo $buffer > $dirsystem/bufferset
+	fi
 	restartMPD
 	;;
 bufferoutputdisable )
@@ -88,8 +92,12 @@ bufferoutputdisable )
 bufferoutputset )
 	buffer=${args[1]}
 	sed -i '/^max_output_buffer_size/ d' /etc/mpd.conf
-	sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
-	echo $buffer > $dirsystem/bufferoutputset
+	if (( $buffer == 8192 )); then
+		rm -f $dirsystem/bufferoutputset
+	else
+		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
+		echo $buffer > $dirsystem/bufferoutputset
+	fi
 	restartMPD
 	;;
 count )
