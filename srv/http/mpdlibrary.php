@@ -471,7 +471,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
-					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $dir ).'</a>' )
+					.( $mode && $mode !== 'album' ? '' : '<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>' )
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
@@ -481,7 +481,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.'<span class="ligenre'.$hidegenre.'"><i class="fa fa-genre"></i>'.$each0->genre.'&emsp;</span>'
 					.'<span class="lidate'.$hidedate.'"><i class="fa fa-date"></i>'.$each0->date.'</span>'
 					.( !$hidegenre || !$hidedate ? '<br>' : '' )
-					.'<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $dir ).'</div>'
+					.'<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $mpdpath ).'</div>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>'.( count( $array ) )
 					.'<gr> • </gr>'.second2HMS( $litime )
 					.'<gr> • </gr>'.strtoupper( $ext )
