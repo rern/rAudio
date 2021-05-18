@@ -646,7 +646,7 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok       : function() {
-			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
+			if ( path || getInfoValues() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
 			} else {
 				path = 'rescan';
@@ -764,7 +764,7 @@ function playlistInsertTarget() {
 			G.pladd = {};
 		}
 		, ok      : function() {
-			var target = $( '#infoRadio input:checked' ).val();
+			var target = getInfoValues();
 			G.pladd.select = target;
 			if ( target !== 'select' ) {
 				playlistInsert( target );

@@ -179,7 +179,7 @@ function playlistNew() {
 		, textrequired : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
-			playlistSave( $( '#infoTextBox' ).val() );
+			playlistSave( getInfoValues() );
 		}
 	} );
 }
@@ -202,7 +202,7 @@ function playlistRename() {
 		}
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
-			var newname = $( '#infoTextBox' ).val();
+			var newname = getInfoValues();
 			playlistSave( newname, name );
 			G.list.li.find( '.plname' ).text( newname );
 		}
@@ -429,8 +429,9 @@ function webRadioEdit() {
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
-			var newname = $( '#infoTextBox' ).val();
-			var newurl = $( '#infoTextBox1' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var values = getInfoValues();
+			var newname = values[ 0 ];
+			var newurl = values[ 1 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioedit', url, newname, newurl ], function( data ) {
 				data ? webRadioExists( data, url ) : $( '#mode-webradio' ).click();
 			} );
@@ -464,7 +465,7 @@ function webRadioNew( name, url ) {
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
-			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var newname = getInfoValues().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			var url = $( '#infoTextBox1' ).val();
 			bash( [ 'webradioadd', newname, url ], function( data ) {
 				if ( data == -1 ) {
@@ -494,7 +495,7 @@ function webRadioSave( url ) {
 		, textrequired : [ 0 ]
 		, ok           : function() {
 			G.local = 1;
-			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var newname = getInfoValues().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', newname, url ], function() {
 				G.list.li.find( '.liname, .radioname' ).text( newname );
 				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
@@ -623,7 +624,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, boxwidth     : 'max'
 				, checkchanged : value
 				, ok           : function() {
-					var data = $( '#infoTextBox' ).val() +'^'+ $( '#infoTextBox1' ).val() +'^'+ $( '#infoTextBox2' ).val() +'^'+ time;
+					var values = getInfoValues();
+					var data = values.join( '^' ) +'^'+ time;
 					data = data.replace( /'/g, "\\'" );
 					bash( [ 'audiocdtag', track, data, discid ] );
 					banner( 'Audio CD', 'Tag Changed', 'audiocd' );
