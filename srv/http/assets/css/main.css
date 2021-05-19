@@ -1648,11 +1648,8 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 1px 1px 2px #000000;
 }
 .bkedit.fa-coverart {
-	width: 23px !important;
-	height: 23px;
-	padding-left: 4px;
-	font-size: 16px !important;
-	line-height: 21px !important;
+	height: 35px;
+	font-size: 24px !important;
 }
 .contextmenu .fa-coverart {
 	position: relative;
