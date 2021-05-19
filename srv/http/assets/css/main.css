@@ -36,7 +36,7 @@
 .fa-arrow-left:before { content: "\f602" }
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
-.fa-audiocd:before { content: "\f597" }
+.fa-audiocd:before { content: "\f58A" }
 .fa-bars:before { content: "\f51C" }
 .fa-bio:before { content: "\f515" }
 .fa-bookmark:before { content: "\f550" }
@@ -47,9 +47,9 @@
 .fa-code:before { content: "\f50C" }
 .fa-composer:before { content: "\f558" }
 .fa-conductor:before { content: "\f559" }
-.fa-coverart:before { content: "\f610"; color: var( --cw ); }
+.fa-coverart:before { content: "\f59C"; color: var( --cw ); }
 .fa-coverart:after {
-	content: "\f611";
+	content: "\f59D";
 	margin-left: -0.86em;
 	color: #000000;
 	opacity: 0.75;
@@ -102,8 +102,8 @@
 .fa-plus:before { content: "\f519" }
 .fa-plus-circle:before { content: "\f564" }
 .fa-plus-o:before { content: "\f530" }
-.fa-plus-r:before { content: "\f612" }
-.fa-plus-r-nobox:before { content: "\f613" }
+.fa-plus-r:before { content: "\f588" }
+.fa-plus-r-nobox:before { content: "\f589" }
 .fa-power:before { content: "\f520" }
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
