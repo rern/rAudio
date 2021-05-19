@@ -30,7 +30,6 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
-.fa-addons:before { content: "\f581" }
 .fa-airplay:before { content: "\f590" }
 .fa-album:before { content: "\f555" }
 .fa-albumartist:before { content: "\f557" }
@@ -41,8 +40,8 @@
 .fa-bars:before { content: "\f51C" }
 .fa-bio:before { content: "\f515" }
 .fa-bookmark:before { content: "\f550" }
-.fa-bluetooth:before { content: "\f58C" }
-.fa-bluetooth-client:before { content: "\f58D" }
+.fa-bluetooth:before { content: "\f580" }
+.fa-bluetooth-client:before { content: "\f581" }
 .fa-brush:before { content: "\f536" }
 .fa-check:before { content: "\f51B" }
 .fa-code:before { content: "\f50C" }
@@ -97,8 +96,8 @@
 .fa-plus:before { content: "\f519" }
 .fa-plus-circle:before { content: "\f564" }
 .fa-plus-o:before { content: "\f530" }
-.fa-plus-r:before { content: "\f581" }
-.fa-plus-r-nobox:before { content: "\f580" }
+.fa-plus-r:before { content: "\f612" }
+.fa-plus-r-nobox:before { content: "\f613" }
 .fa-power:before { content: "\f520" }
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }

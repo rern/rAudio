@@ -26,7 +26,6 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
-.fa-addons:before { content: "\f581" }
 .fa-arrow-down:before { content: "\f601" }
 .fa-arrow-up:before { content: "\f600" }
 .fa-bars:before { content: "\f51C" }
@@ -43,7 +42,7 @@
 .fa-minus-circle:before { content: "\f563" }
 .fa-plus-circle:before { content: "\f564" }
 .fa-plus-o:before { content: "\f530" }
-.fa-plus-r:before { content: "\f581" }
+.fa-plus-r:before { content: "\f612" }
 .fa-question-circle:before { content: "\f560" }
 .fa-refresh:before { content: "\f526" }
 .fa-reset:before { content: "\f527" }

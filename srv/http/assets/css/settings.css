@@ -26,14 +26,13 @@
 }
 .fa-lg { font-size: 22px; line-height: 18px; }
 .fa-accesspoint:before { content: "\f554" }
-.fa-addons:before { content: "\f581" }
 .fa-airplay:before { content: "\f590" }
 .fa-album:before { content: "\f555" }
 .fa-arrow-left:before { content: "\f602" }
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
 .fa-audiocd:before { content: "\f597" }
-.fa-bluetooth:before { content: "\f58C" }
+.fa-bluetooth:before { content: "\f580" }
 .fa-check:before { content: "\f51B" }
 .fa-chevron-down:before { content: "\f605" }
 .fa-chevron-up:before { content: "\f604" }
@@ -74,7 +73,7 @@
 .fa-play-circle:before { content: "\f507" }
 .fa-plus:before { content: "\f519" }
 .fa-plus-circle:before { content: "\f564" }
-.fa-plus-r:before { content: "\f581" }
+.fa-plus-r:before { content: "\f612" }
 .fa-power:before { content: "\f520" }
 .fa-question-circle:before { content: "\f560" }
 .fa-reboot:before { content: "\f521" }
@@ -96,7 +95,7 @@
 .fa-sources:before { content: "\f538" }
 .fa-spotify:before { content: "\f593" }
 .fa-status:before { content: "\f50A" }
-.fa-system:before { content: "\f581" }
+.fa-system:before { content: "\f612" }
 .fa-times:before { content: "\f51A" }
 .fa-transmission:before { content: "\f586" }
 .fa-undo:before { content: "\f523" }
@@ -105,10 +104,14 @@
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
 .fa-webradio:before { content: "\f55C" }
-.fa-wifi:before { content: "\f58B" }
-.fa-wifi1:before { content: "\f588" }
-.fa-wifi2:before { content: "\f589" }
-.fa-wifi3:before { content: "\f58A" }
+.fa-wifi:before { content: "\f597" }
+.fa-wifi1:before { content: "\f598" }
+.fa-wifi1:after { content: "\f599" }
+.fa-wifi2:before { content: "\f59A" }
+.fa-wifi2:after { content: "\f59B" }
+.fa-wifi1:after,
+.fa-wifi2:after { margin-left: -20.5px; color: var( --cga ); }
+.fa-wifi3:before { content: "\f597" }
 .fa-layer { position: absolute }
 .fa-layerlast { position: relative }
 .fa-audiocdplay:before { content: "\f597" }
@@ -118,15 +121,6 @@
 	font-size: 24px;
 	color: var( --cg );
 	opacity: .8;
-}
-.wf1, .wf2, .wf3 {
-	width: 40px !important;
-	margin-right: 5px;
-}
-.wf1 .fa-wifi2,
-.wf1 .fa-wifi3,
-.wf2 .fa-wifi3 {
-	color: var( --cga );
 }
 .message .fa-wifi:before { font-size: 20px }
 

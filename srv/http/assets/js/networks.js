@@ -278,11 +278,11 @@ function nicsStatus() {
 			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
 			html += val.hostname ? ' data-hostname="'+ val.hostname +'"' : '';
 			html += ' data-dhcp="'+ val.dhcp +'"';
-			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'"' : '';
+			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'">' : '>';
 			if ( val.interface === 'eth0' ) {
 				if ( !val.ip ) return
 				
-				htmllan = html +'><i class="fa fa-lan"></i>';
+				htmllan = html +'<i class="fa fa-lan"></i>';
 				htmllan += val.ip ? '<grn>&bull;</grn>&ensp;'+ val.ip : '';
 				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
 				htmllan += '</li>';
@@ -293,7 +293,7 @@ function nicsStatus() {
 					fair = 56;
 				}
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
-				htmlwl = html +'><span class="wf'+ signal +'">'+ wifiicon +'</span>';
+				htmlwl = html +'<i class="fa fa-wifi'+ signal +'"></i>';
 				if ( G.hostapd ) {
 					htmlwl += '<grn>&bull;</grn>&ensp;<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
 				} else {
@@ -398,7 +398,7 @@ function wlanScan() {
 				html += val.password ? ' data-password="'+ val.password +'"' : '';
 				html += val.profile ? ' data-profile="'+ val.profile +'">' : '>';
 				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
-				html += '<span class="wf'+ signal +'">'+ wifiicon +'</span>'
+				html += '<i class="fa fa-wifi'+ signal +'"></i>'
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
 				html += val.dbm < fair ? '<gr>'+ val.ssid +'</gr>' : val.ssid;
 				html += val.encrypt === 'on' ? ' <i class="fa fa-lock"></i>' : '';
@@ -431,7 +431,6 @@ refreshData = function() {
 refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;
-var wifiicon = '<i class="fa fa-wifi1 fa-layer"></i><i class="fa fa-wifi2 fa-layer"></i><i class="fa fa-wifi3 fa-layerlast"></i>';
 var good = -60;
 var fair = -67;
 $( '.back' ).click( function() {
