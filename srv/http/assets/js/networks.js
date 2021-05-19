@@ -68,7 +68,7 @@ function editLAN( data ) {
 			bash( [ 'editlan' ] );
 		}
 		, ok           : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			var data1 = {}
 			data1.ip = values[ 0 ];
 			data1.gateway = values[ 1 ];
@@ -130,7 +130,7 @@ function editWiFi( ssid, data ) {
 		}
 		, ok            : function() {
 			var k =[ 'ESSID', 'Address', 'Gateway', 'Key', 'IP', 'Hidden', 'Security' ];
-			var v = getInfoValues();
+			var v = infoVal();
 			values = {}
 			$.each( v, function( i, v ) {
 				if ( i === 4 ) {
@@ -538,7 +538,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				, oklabel       : 'Connect'
 				, ok            : function() {
 					vals.Security = wpa;
-					vals.Key      = getInfoValues();
+					vals.Key      = infoVal();
 					connect( vals );
 				}
 			} );

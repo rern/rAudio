@@ -349,7 +349,7 @@ $( '#setting-bluetooth' ).click( function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
 		, ok           : function() {
-			var v = getInfoValues();
+			var v = infoVal();
 			notify( 'Bluetooth', G.bluetooth ? 'Change ...' : 'Enable ...', 'bluetooth' );
 			bash( [ 'bluetoothset', v[ 0 ], v[ 1 ] ] );
 		}
@@ -515,7 +515,7 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			var lcdcharconf = values.join( ' ' );
 			var cmd = [ 'lcdcharset', lcdcharconf ];
 			if ( values[ 2 ] === 'i2c' ) {
@@ -569,7 +569,7 @@ var infopowerbutton = heredoc( function() { /*
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 			bash( [ 'powerbuttonset', values[ 0 ], values[ 1 ] ] );
 		}
@@ -610,7 +610,7 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			var lcdmodel = getInfoValues();
+			var lcdmodel = infoVal();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
@@ -630,7 +630,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			} );
 		}
 		, ok           : function() {
-			var hostname = getInfoValues();
+			var hostname = infoVal();
 			notify( 'Name', 'Change ...', 'plus-r' );
 			bash( [ 'hostname', hostname ] );
 		}
@@ -651,7 +651,7 @@ $( '#setting-regional' ).click( function() {
 		, footer       : '<px70/><px60/>00 - common for all regions'
 		, checkchanged : textvalue
 		, ok           : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
 			bash( [ 'regional', values[ 0 ], values[ 1 ] ] );
 		}
@@ -717,7 +717,7 @@ $( '#setting-soundprofile' ).click( function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
 		, ok           : function() {
-			var soundprofileval = getInfoValues().slice( 0, 4 ).join( ' ' );
+			var soundprofileval = infoVal().slice( 0, 4 ).join( ' ' );
 			bash( [ 'soundprofileset', soundprofileval ] );
 			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
 		}
@@ -793,7 +793,7 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
-			var checked = getInfoValues();
+			var checked = infoVal();
 			console.log(checked);return
 			if ( checked === 'reset' ) {
 				bash( '/srv/http/bash/datareset.sh', bannerHide );

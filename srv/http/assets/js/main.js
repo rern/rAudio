@@ -1438,7 +1438,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, boxwidth     : 'max'
 			, oklabel      : '<i class="fa fa-flash"></i>Rename'
 			, ok           : function() {
-				var newname = getInfoValues();
+				var newname = infoVal();
 				$.post( cmdphp, {
 					  cmd    : 'bookmarkrename'
 					, path   : path

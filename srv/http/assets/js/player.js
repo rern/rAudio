@@ -225,7 +225,7 @@ $( '#setting-crossfade' ).click( function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
 		, ok           : function() {
-			crossfadeval = getInfoValues();
+			crossfadeval = infoVal();
 			bash( [ 'crossfadeset', crossfadeval ] );
 			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
@@ -242,7 +242,7 @@ $( '#setting-replaygain' ).click( function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
 		, ok           : function() {
-			replaygainval = getInfoValues();
+			replaygainval = infoVal();
 			bash( [ 'replaygainset', replaygainval ] );
 			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
@@ -263,7 +263,7 @@ $( '#setting-buffer' ).click( function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
 		, ok           : function() {
-			var bufferval = getInfoValues().replace( /\D/g, '' );
+			var bufferval = infoVal().replace( /\D/g, '' );
 			bash( [ 'bufferset', bufferval ] );
 			notify( 'Custom Audio Buffer', G.buffer ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
@@ -281,7 +281,7 @@ $( '#setting-bufferoutput' ).click( function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
 		, ok           : function() {
-			var bufferoutputval = getInfoValues().replace( /\D/g, '' );
+			var bufferoutputval = infoVal().replace( /\D/g, '' );
 			bash( [ 'bufferoutputset', bufferoutputval ] );
 			notify( 'Custom Output Buffer', G.bufferoutput ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
@@ -371,7 +371,7 @@ $( '#setting-soxr' ).click( function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			var soxrval = getInfoValues();
+			var soxrval = infoVal();
 			for ( i = 1; i < 5; i++ ) soxrval += ' '+ $( '#infoTextBox'+ i ).val();
 			soxrval += ' '+ $( '#infoSelectBox1' ).val();
 			bash( [ 'soxrset', soxrval ] );
@@ -434,7 +434,7 @@ $( '#setting-custom' ).click( function() {
 				$( '#custom' ).prop( 'checked', G.custom );
 			}
 			, ok       : function() {
-				var values = getInfoValues();
+				var values = infoVal();
 				var customglobal = lines2line( values[ 0 ] );
 				var customoutput = lines2line( values[ 1 ] );
 				bash( [ 'customset', customglobal, customoutput, device.aplayname ], function( std ) {

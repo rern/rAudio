@@ -179,7 +179,7 @@ function playlistNew() {
 		, textrequired : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
-			playlistSave( getInfoValues() );
+			playlistSave( infoVal() );
 		}
 	} );
 }
@@ -202,7 +202,7 @@ function playlistRename() {
 		}
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
-			var newname = getInfoValues();
+			var newname = infoVal();
 			playlistSave( newname, name );
 			G.list.li.find( '.plname' ).text( newname );
 		}
@@ -337,7 +337,7 @@ function tagEditor() {
 			, nofocus      : 1
 			, ok           : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
-				var values = getInfoValues();
+				var values = infoVal();
 				var val;
 				values.forEach( function( v, i ) {
 					val = v === value[ i ] ? '' : ( v || -1 );
@@ -429,7 +429,7 @@ function webRadioEdit() {
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioedit', url, newname, newurl ], function( data ) {
@@ -465,7 +465,7 @@ function webRadioNew( name, url ) {
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
-			var newname = getInfoValues().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			var url = $( '#infoTextBox1' ).val();
 			bash( [ 'webradioadd', newname, url ], function( data ) {
 				if ( data == -1 ) {
@@ -495,7 +495,7 @@ function webRadioSave( url ) {
 		, textrequired : [ 0 ]
 		, ok           : function() {
 			G.local = 1;
-			var newname = getInfoValues().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', newname, url ], function() {
 				G.list.li.find( '.liname, .radioname' ).text( newname );
 				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
@@ -624,7 +624,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, boxwidth     : 'max'
 				, checkchanged : value
 				, ok           : function() {
-					var values = getInfoValues();
+					var values = infoVal();
 					var data = values.join( '^' ) +'^'+ time;
 					data = data.replace( /'/g, "\\'" );
 					bash( [ 'audiocdtag', track, data, discid ] );

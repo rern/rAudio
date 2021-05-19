@@ -605,7 +605,7 @@ function checkChangedValue() {
 	if ( O.shortlength ) return // shorter - already disabled
 	
 	setTimeout( function() { // force after checkChangedLength() and custom check
-		var values = getInfoValues();
+		var values = infoVal();
 		if ( typeof values === 'string' ) values = [ values ];
 		var changed = false;
 		changed = values.some( function( v, i ) {
@@ -614,7 +614,7 @@ function checkChangedValue() {
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
-function getInfoValues( json ) {
+function infoVal( json ) {
 	var $el = $( '#infoContent' ).find( 'input[type=text], input[type=password], input[type=radio], input[type=checkbox], select, textarea' );
 	var values = json ? {} : [];
 	var $this, type, name, val;

@@ -137,7 +137,7 @@ $( '#setting-snapclient' ).click( function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
 		, ok            : function() {
-			var snaplatency = Math.abs( getInfoValues() );
+			var snaplatency = Math.abs( infoVal() );
 			bash( [ 'snapclientset', snaplatency ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
 		}
@@ -186,7 +186,7 @@ $( '#setting-hostapd' ).click( function() {
 			}
 		}
 		, ok           : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			var pwd = values[ 0 ];
 			var ip = values[ 1 ];
 			var ips = ip.split( '.' );
@@ -249,7 +249,7 @@ $( '#setting-localbrowser' ).click( function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok          : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			var localscreenoff = values[ 0 ] * 60;
 			var localzoom = parseFloat( values[ 1 ] ) || 1;
 			var localrotate    = values[ 2 ];
@@ -274,7 +274,7 @@ $( '#setting-smb' ).click( function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
 		, ok           : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			bash( [ 'smbset', values[ 0 ], values[ 1 ] ] );
 			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'network' );
 		}
@@ -300,7 +300,7 @@ $( '#setting-mpdscribble' ).click( function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}
 		, ok            : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			bash( [ 'mpdscribbleset', escapeUsrPwd( values[ 0 ] ), escapeUsrPwd( values[ 1 ] ) ], function( std ) {
 				if ( std == -1 ) {
 					info( {
@@ -326,7 +326,7 @@ $( '#setting-login' ).click( function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}
 		, ok            : function() {
-			var values = getInfoValues();
+			var values = infoVal();
 			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock-circle' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'

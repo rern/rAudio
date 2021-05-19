@@ -375,7 +375,7 @@ function displayPlayback() {
 	displayBars();
 }
 function displaySave() {
-	var values = getInfoValues( 'json' );
+	var values = infoVal( 'json' );
 	$.each( values, function( k, v ) {
 		G.display[ k ] = v;
 	} );
@@ -646,7 +646,7 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok       : function() {
-			if ( path || getInfoValues() == 1 ) {
+			if ( path || infoVal() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
 			} else {
 				path = 'rescan';
@@ -764,7 +764,7 @@ function playlistInsertTarget() {
 			G.pladd = {};
 		}
 		, ok      : function() {
-			var target = getInfoValues();
+			var target = infoVal();
 			G.pladd.select = target;
 			if ( target !== 'select' ) {
 				playlistInsert( target );
