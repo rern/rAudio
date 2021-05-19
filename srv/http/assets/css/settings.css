@@ -31,7 +31,7 @@
 .fa-arrow-left:before { content: "\f602" }
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
-.fa-audiocd:before { content: "\f58A" }
+.fa-audiocd:before { content: "\f54A" }
 .fa-bluetooth:before { content: "\f580" }
 .fa-check:before { content: "\f51B" }
 .fa-chevron-down:before { content: "\f605" }
@@ -86,7 +86,7 @@
 .fa-save:before { content: "\f542"}
 .fa-save-circle:before { content: "\f546"}
 .fa-sd:before { content: "\f543" }
-.fa-sd-restore:before { content: "\f54A" }
+.fa-sd-restore:before { content: "\f544" }
 .fa-search:before { content: "\f56A" }
 .fa-sliders:before { content: "\f50B" }
 .fa-snapcast:before { content: "\f592" }
@@ -114,7 +114,7 @@
 .fa-wifi3:before { content: "\f597" }
 .fa-layer { position: absolute }
 .fa-layerlast { position: relative }
-.fa-audiocdplay:before { content: "\f58A" }
+.fa-audiocdplay:before { content: "\f54A" }
 .fa-audiocdplay:after {
 	content: '\f503';
 	margin-left: -18px;

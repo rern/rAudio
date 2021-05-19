@@ -36,7 +36,7 @@
 .fa-arrow-left:before { content: "\f602" }
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
-.fa-audiocd:before { content: "\f58A" }
+.fa-audiocd:before { content: "\f54A" }
 .fa-bars:before { content: "\f51C" }
 .fa-bio:before { content: "\f515" }
 .fa-bookmark:before { content: "\f550" }
@@ -61,9 +61,8 @@
 .fa-edit:before { content: "\f565" }
 .fa-edit-circle:before { content: "\f566" }
 .fa-eye:before { content: "\f576" }
-.fa-file-music:before { content: "\f57A" }
-.fa-file-playlist:before { content: "\f57B" }
-.fa-file-wave:before { content: "\f57C" }
+.fa-file-music:before { content: "\f548" }
+.fa-file-playlist:before { content: "\f549" }
 .fa-flash:before { content: "\f567" }
 .fa-folder:before { content: "\f540" }
 .fa-folder-cascade:before { content: "\f538" }
@@ -103,7 +102,7 @@
 .fa-plus-circle:before { content: "\f564" }
 .fa-plus-o:before { content: "\f530" }
 .fa-plus-r:before { content: "\f588" }
-.fa-plus-r-nobox:before { content: "\f589" }
+.fa-plus-r-nobox:before { content: "\f500" }
 .fa-power:before { content: "\f520" }
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
