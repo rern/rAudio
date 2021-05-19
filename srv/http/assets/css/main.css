@@ -47,7 +47,13 @@
 .fa-code:before { content: "\f50C" }
 .fa-composer:before { content: "\f558" }
 .fa-conductor:before { content: "\f559" }
-.fa-coverart:before { content: "\f60D" }
+.fa-coverart:before { content: "\f610"; color: var( --cw ); }
+.fa-coverart:after {
+	content: "\f611";
+	margin-left: -0.86em;
+	color: #000000;
+	opacity: 0.75;
+}
 .fa-coverart-refresh:before { content: "\f53D" }
 .fa-crop:before { content: "\f568" }
 .fa-date:before { content: "\f54B" }
@@ -1617,18 +1623,12 @@ i.map.disabled, .map.disabled i {
 }
 .fa-coverart {
 	position: absolute;
-	bottom: 5px;
-	right: 5px;
-	width: 26px !important;
-	height: 26px;
-	padding-left: 4px;
-	font-size: 18px !important;
-	line-height: 23px !important;
-	text-align: left !important;
-	color: var( --cw ) !important;
-	background: var( --cgl );
-	text-shadow: none !important;
-	box-shadow: 1px 1px 2px #000000;
+	width: 40px;
+	height: 40px;
+	bottom: 0;
+	right: 0;
+	font-size: 28px !important;
+	line-height: 40px;
 }
 .covedit {
 	z-index: 17;
@@ -1771,10 +1771,12 @@ i.map.disabled, .map.disabled i {
 	margin-left: 15px;
 }
 #button-coverart .fa-coverart {
-	vertical-align: 4px;
+	position: relative;
+	vertical-align: -1px;
 }
 #button-coverart .fa-search {
-	width: 30px !important;
+	width: 44px !important;
+	z-index: 18;
 }
 .albumrefresh {
 	position: absolute;
