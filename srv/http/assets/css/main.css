@@ -1657,7 +1657,7 @@ i.map.disabled, .map.disabled i {
 }
 .contextmenu .fa-coverart {
 	position: relative;
-	margin: 0 2px 0 13px;
+	text-shadow: none;
 }
 #infoTop .fa-coverart {
 	position: static;
