@@ -106,8 +106,8 @@ function editWiFi( $el ) {
 	var cchecked = [];
 	if ( $el ) {
 		ssid = $el.data( 'ssid' );
-		ip = $el.data( 'ip' );
-		gateway = $el.data( 'gateway' );
+		ip = $el.data( 'ip' ) || '';
+		gateway = $el.data( 'gateway' ) || '';
 		password = $el.data( 'password' );
 		dhcp = $el.data( 'dhcp' ) === 'static';
 		hidden = $el.data( 'hidden' ) === 'true';
@@ -176,7 +176,6 @@ function infoAccesspoint() {
 	} );
 }
 function infoConnect( $this ) {
-	var connected = $this.data( 'connected' ) == 1;
 	var ssid = $this.data( 'ssid' );
 	var ip = $this.data( 'ip' );
 	var gw = $this.data( 'gateway' );
@@ -218,12 +217,12 @@ function infoConnect( $this ) {
 				editWiFi( $this );
 			}
 		]
-		, oklabel : connected ? 'Disconnect' : 'Connect'
-		, okcolor : connected ? orange : ''
+		, oklabel : ip ? 'Disconnect' : 'Connect'
+		, okcolor : ip ? orange : ''
 		, ok      : function() {
 			clearTimeout( intervalscan );
-			notify( ssid, connected ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
-			if ( connected ) {
+			notify( ssid, ip ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
+			if ( ip ) {
 				bash( [ 'disconnect' ] );
 			} else {
 				bash( [ 'profileconnect', ssid ] );
@@ -268,8 +267,12 @@ function nicsStatus() {
 			}
 		}
 		if ( G.listwlannc ) {
-			G.listwlannc.forEach( function( ssid ) {
-				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
+			G.listwlannc.forEach( function( list ) {
+				var val = list;
+				htmlwl += '<li class="wlan0" data-dhcp="'+ val.dhcp +'" ';
+				htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
+				htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
+				htmlwl += '<i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ val.ssid +'</li>';
 			} );
 		}
 		if ( G.activebt ) {
@@ -463,7 +466,7 @@ $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
 } );
 $( '#listwl' ).on( 'click', 'li', function() {
-	if ( !( 'ssid' in G ) ) infoConnect( $( this ) );
+	infoConnect( $( this ) );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );

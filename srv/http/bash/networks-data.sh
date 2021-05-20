@@ -57,11 +57,23 @@ fi
 
 readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//' )
 if [[ -n $notconnected ]]; then
-	for name in "${notconnected[@]}"; do
-		nc+=',"'$name'"'
+	for ssid in "${notconnected[@]}"; do
+		netctl=$( cat "/etc/netctl/$ssid" )
+		dhcp=$( echo "$netctl" | grep ^IP | cut -d= -f2 )
+		hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
+		password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
+		security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
+		
+		listwlannc+=',{
+  "dhcp"     : "'$dhcp'"
+, "hidden"   : '$hidden'
+, "password" : "'$password'"
+, "security" : "'$security'"
+, "ssid"     : "'$ssid'"
+}'
 	done
+	listwlannc=[${listwlannc:1}]
 fi
-[[ -n $nc ]] && listwlannc="[${nc:1}]"
 
 # bluetooth
 if systemctl -q is-active bluetooth; then
@@ -76,7 +88,11 @@ if systemctl -q is-active bluetooth; then
 			mac=${line#*^}
 			name=${line/^*}
 			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
-			listbt+=',{"name":"'${name//\"/\\\"}'","connected":'$connected',"mac":"'$mac'"}'
+			listbt+=',{
+  "name"      : "'${name//\"/\\\"}'"
+, "connected" : '$connected'
+, "mac"       : "'$mac'"
+}'
 		done
 		listbt=[${listbt:1}]
 	fi
