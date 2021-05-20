@@ -421,7 +421,7 @@ var infolcdchar = heredoc( function() { /*
 		</div>
 	</div>
 	<div class="infotextbox lcdradio">
-		<div id="cols" class="infocontent infohtml lcd" style="margin-top: 0">
+		<div id="cols" class="infocontent infohtml lcd">
 			<label><input type="radio" name="cols" value="16"> 16x2</label>
 			<label><input type="radio" name="cols" value="20"> 20x4</label>
 			<label><input type="radio" name="cols" value="40"> 40x4</label>
