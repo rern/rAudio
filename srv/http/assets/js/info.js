@@ -484,7 +484,7 @@ function info( json ) {
 			if ( 'radiohr' in O ) $( '#infoRadio' ).after( '<hr>' );
 			$( '#infoRadio' ).html( html ).promise().done( function() {
 				if ( 'rchecked' in O ) {
-					$( '#infoRadio input[value="'+ O.rchecked.toString().replace( /"/g, '&quot;' ) +'"]' ).prop( 'checked', true );
+					$( '#infoRadio input' ).val( [ O.rchecked ] );
 				} else {
 					$( '#infoRadio input:eq( 0 )' ).prop( 'checked', true );
 				}
@@ -532,12 +532,7 @@ function info( json ) {
 				html += '</select>';
 			}
 			$( '#infoSelect' ).html( html ).promise().done( function() {
-				if ( 'schecked' in O ) {
-					console.log(O.schecked)
-					$( '#infoSelectBox option[value="'+ O.schecked.toString().replace( /"/g, '&quot;' ) +'"]' ).prop( 'selected', true );
-				} else {
-					$( '#infoSelectBox option:eq( 0 )' ).prop( 'selected', true );
-				}
+				if ( 'schecked' in O ) $( '#infoSelectBox' ).val( O.schecked );
 				$( '#infoSelect' ).removeClass( 'hide' );
 			} );
 		}
