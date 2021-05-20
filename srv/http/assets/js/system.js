@@ -528,6 +528,9 @@ $( '#setting-lcdchar' ).click( function() {
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
+	var val = G.powerbuttonconf.split( ' ' );
+	var swpin = val[ 0 ];
+	var ledpin = val[ 1 ];
 	var pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 	if ( G.relayspins ) {
 		pins = pins.filter( function( i ) {
@@ -538,7 +541,7 @@ $( '#setting-powerbutton' ).click( function() {
 	pins.forEach( function( p ) { 
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
-var infopowerbutton = heredoc( function() { /*
+	var infopowerbutton = heredoc( function() { /*
 	GPIO pins <gr>(J8 numbering)</gr>:<br>
 	<div class="infotextlabel">
 		<a class="infolabel">On <gr>(fixed)</gr></a>
@@ -556,11 +559,8 @@ var infopowerbutton = heredoc( function() { /*
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
-		, checkchanged : ( G.powerbutton ? [ swpin, ledpin ] : '' )
+		, checkchanged : ( G.powerbutton ? [ 5, swpin, ledpin ] : '' )
 		, preshow      : function() {
-			var val = G.powerbuttonconf.split( ' ' );
-			var swpin = val[ 0 ];
-			var ledpin = val[ 1 ];
 			$( '#swpin, #ledpin' ).html( optionpin );
 			$( '#swpin' ).val( swpin );
 			$( '#ledpin' ).val( ledpin );
@@ -571,7 +571,7 @@ var infopowerbutton = heredoc( function() { /*
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
-			bash( [ 'powerbuttonset', values[ 0 ], values[ 1 ] ] );
+			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 		}
 	} );
 } );
