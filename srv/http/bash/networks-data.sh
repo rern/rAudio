@@ -37,7 +37,7 @@ if [[ -n $ipwlan ]]; then
 	[[ -n $ipwlan ]] && hostname=$( avahi-resolve -a4 $ipwlan | awk '{print $NF}' )
 	ssid=$( iwgetid wlan0 -r )
 	netctl=$( cat "/etc/netctl/$ssid" )
-	wpa=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
+	security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
 	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
 	hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
@@ -50,6 +50,7 @@ if [[ -n $ipwlan ]]; then
 		, "hostname" : "'$hostname'"
 		, "ip"       : "'$ipwlan'"
 		, "password" : "'$password'"
+		, "security" : "'$security'"
 		, "ssid"     : "'$ssid'"
 	}'
 fi

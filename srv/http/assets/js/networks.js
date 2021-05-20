@@ -45,19 +45,26 @@ function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 		}
 	} );
 }
-function editLAN( data ) {
-	var data0 = data;
-	var message = data.ip ? 'Current: <wh>'+ ( data.dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh><br>&nbsp;' : '';
+function editLAN( $el ) {
+	var ip = '';
+	var gateway = '';
+	var dhcp = '';
+	if ( $el ) {
+		ip = $el.data( 'ip' );
+		gateway = $el.data( 'gateway' );
+		dhcp = $el.data( 'dhcp' );
+	}
+	var message = ip ? 'Current: <wh>'+ ( dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh><br>&nbsp;' : '';
 	info( {
 		  icon         : 'lan'
-		, title        : ( data.ip ? 'LAN' : 'Add LAN' )
+		, title        : ( ip ? 'LAN' : 'Add LAN' )
 		, message      : message
 		, textlabel    : [ 'IP', 'Gateway' ]
-		, textvalue    : [ data.ip, data.gateway ]
-		, checkchanged : [ data.ip, data.gateway ]
+		, textvalue    : [ ip, gateway ]
+		, checkchanged : ( ip ? [ ip, gateway ] : '' )
 		, textrequired : [ 0 ]
 		, preshow      : function() {
-			if ( data.dhcp === 'dhcp' || !data.ip ) $( '#infoButton' ).addClass( 'hide' );
+			if ( dhcp === 'dhcp' || !ip ) $( '#infoButton' ).addClass( 'hide' );
 		}
 		, buttonlabel  : '<i class="fa fa-undo"></i>DHCP'
 		, buttonwidth  : 1
@@ -80,7 +87,7 @@ function editLAN( data ) {
 						, title   : 'Duplicate IP'
 						, message : 'IP <wh>'+ data1.ip +'</wh> already in use.'
 						, ok      : function() {
-							editLAN( data0 );
+							editLAN( $el );
 						}
 					} );
 				}
@@ -89,29 +96,39 @@ function editLAN( data ) {
 		}
 	} );
 }
-function editWiFi( data ) {
-	var ESSID = data.ESSID || '';
-	var Address = data.Address || '';
-	var Gateway = data.Gateway || '';
-	var Key = data.Key || '';                     // password
-	var IP = data.IP === 'static' ? true : false; // dhcp
-	var Hidden = data.Hidden || false;
-	var Security = data.Security === 'wep' ? true : false
+function editWiFi( $el ) {
+	var ssid = '';
+	var ip = '';
+	var gateway = '';
+	var password = '';
+	var dhcp = false;
+	var hidden = false;
+	var security = false
 	var cchecked = [];
-	if ( IP ) cchecked.push( 0 );
-	if ( Hidden ) cchecked.push( 1 );
-	if ( Security ) cchecked.push( 2 );
+	if ( $el ) {
+		ssid = $el.data( 'ssid' );
+		ip = $el.data( 'ip' );
+		gateway = $el.data( 'gateway' );
+		password = $el.data( 'password' );
+		dhcp = $el.data( 'dhcp' ) === 'static';
+		hidden = $el.data( 'hidden' ) === 'true';
+		security = $el.data( 'security' ) === 'wep';
+	}
+	var cchecked = [];
+	if ( dhcp ) cchecked.push( 0 );
+	if ( hidden ) cchecked.push( 1 );
+	if ( security ) cchecked.push( 2 );
 	info( {
-		  icon          : ESSID ? 'edit-circle' : 'wifi'
-		, title         : ESSID ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
+		  icon          : ssid ? 'edit-circle' : 'wifi'
+		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
-		, textvalue     : [ ssid, Address, Gateway ]
+		, textvalue     : [ ssid, ip, gateway ]
 		, checkbox      : { 'Static IP': 1, 'Hidden SSID': 1, 'WEP': 1 }
 		, cchecked      : cchecked
 		, passwordlabel : 'Password'
-		, passwordvalue : Key
+		, passwordvalue : password
 		, textlength    : { 3: 8 }
-		, checkchanged  : [ ssid, Address, Gateway, Key, IP, Hidden, Security ]
+		, checkchanged  : [ ssid, ip, gateway, password, dhcp, hidden, security ]
 		, preshow       : function() {
 			$( '#infoTextBox' ).prop( 'disabled', 1 );
 			if ( !ssid ) $( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
@@ -141,7 +158,7 @@ function editWiFi( data ) {
 							, title   : 'Duplicate IP'
 							, message : 'IP <wh>'+ values.Address +'</wh> already in use.'
 							, ok      : function() {
-								editWiFi( values );
+								editWiFi( $el );
 							}
 						} );
 					} else {
@@ -239,8 +256,9 @@ function nicsStatus() {
 		}
 		if ( G.listwlan ) {
 			var val = G.listwlan;
-			htmlwl += '<li class="wlan0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" data-ssid="'+ val.ssid +'" ';
+			htmlwl += '<li class="wlan0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
 			htmlwl += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'" ';
+			htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
 			htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
 			var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
 			htmlwl += '<i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
@@ -431,17 +449,13 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#lanadd' ).click( function() {
-	editLAN( { dhcp: '', ip: '', gateway: '' } );
+	editLAN();
 } );
 $( '#listlan' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	if ( !$this.data( 'ip' ) ) return
 	
-	editLAN( {
-		  ip      : $this.data( 'ip' ) || ''
-		, gateway : $this.data( 'gateway' ) || ''
-		, dhcp    : $this.data( 'dhcp' )
-	} );
+	editLAN( $this );
 	$( '#infoCheckBox' ).on( 'click', 'input', function() {
 		$( '#infoText' ).toggle( $( this ).prop( 'checked' ) );
 	} );
