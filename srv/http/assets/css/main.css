@@ -102,8 +102,8 @@
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
 .fa-radiofrance:before { content: "\f594" }
-.fa-radioparadise:before {content: "\f596"; position: absolute; }
-.fa-radioparadise:after {content: "\f595"; color: var( --cgl ); }
+.fa-radioparadise:before {content: "\f595"; position: absolute; color: var( --cgl ); }
+.fa-radioparadise:after {content: "\f596"; position: relative; } /* position: relative - fix order */
 .fa-random:before { content: "\f512" }
 .fa-reboot:before { content: "\f521" }
 .fa-redo:before { content: "\f524" }
