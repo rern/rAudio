@@ -340,10 +340,7 @@ function info( json ) {
 									} );
 		// message
 		if ( 'message' in O && O.message ) $( '#infoMessage' ).html( O.message ).removeClass( 'hide' );
-		if ( 'msgalign' in O ) $( '#infoMessage' ).css( {
-			  width       : '100%'
-			, 'text-align': O.msgalign
-		} );
+		if ( 'msgalign' in O ) $( '#infoMessage' ).css( 'text-align', O.msgalign );
 		if ( 'msghr' in O ) $( '#infoMessage' ).after( '<hr>' );
 		if ( 'footer' in O && O.footer ) {
 			$( '#infoFooter' ).html( O.footer ).removeClass( 'hide' );
