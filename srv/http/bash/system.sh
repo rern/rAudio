@@ -58,7 +58,7 @@ soundprofile() {
 		swappiness=60
 		mtu=1500
 		txqueuelen=1000
-		rm -f /etc/soundprofile.conf $dirsystem/soundprofile
+		rm -f $dirsystem/soundprofile
 	else
 		. /etc/soundprofile.conf
 		touch $dirsystem/soundprofile
@@ -451,6 +451,7 @@ soundprofileget )
 soundprofileset )
 	values=${args[1]}
 	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
+		rm -f /etc/soundprofile.conf
 		soundprofile reset
 	else
 		val=( $values )
