@@ -228,7 +228,7 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( value ) {
-		var src = G.playlist ? value.pop() : $( '.licoverimg img' ).attr( 'src' );
+		var src = G.playlist ? value.pop() : $( '.licoverimg img' ).attr( 'src' ) || G.list.li.find( 'img' ).attr( 'src' );
 		var label = [];
 		format.forEach( function( el, i ) {
 			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
