@@ -47,13 +47,8 @@
 .fa-code:before { content: "\f50C" }
 .fa-composer:before { content: "\f558" }
 .fa-conductor:before { content: "\f559" }
-.fa-coverart:before { content: "\f59C"; color: var( --cw ); }
-.fa-coverart:after {
-	content: "\f59D";
-	margin-left: -0.86em;
-	color: #000000;
-	opacity: 0.75;
-}
+.fa-coverart:before { content: "\f59C"; position: absolute; color: var( --cw ); }
+.fa-coverart:after { content: "\f59D"; color: #000000; opacity: 0.75; }
 .fa-coverart-refresh:before { content: "\f53D" }
 .fa-crop:before { content: "\f568" }
 .fa-date:before { content: "\f54B" }
@@ -107,8 +102,8 @@
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
 .fa-radiofrance:before { content: "\f594" }
-.fa-radioparadise:before {content: "\f595"; color: var( --cgl ); }
-.fa-radioparadise:after {content: "\f596"; margin-left: -17px; }
+.fa-radioparadise:before {content: "\f596"; position: absolute; }
+.fa-radioparadise:after {content: "\f595"; color: var( --cgl ); }
 .fa-random:before { content: "\f512" }
 .fa-reboot:before { content: "\f521" }
 .fa-redo:before { content: "\f524" }

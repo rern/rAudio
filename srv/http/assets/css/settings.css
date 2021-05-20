@@ -32,6 +32,7 @@
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
 .fa-audiocd:before { content: "\f54A" }
+.fa-audiocdplay:before { content: "\f53C" }
 .fa-bluetooth:before { content: "\f580" }
 .fa-check:before { content: "\f51B" }
 .fa-chevron-down:before { content: "\f605" }
@@ -105,23 +106,10 @@
 .fa-warning:before { content: "\f562" }
 .fa-webradio:before { content: "\f55C" }
 .fa-wifi:before { content: "\f597" }
-.fa-wifi1:before { content: "\f598" }
-.fa-wifi1:after { content: "\f599" }
-.fa-wifi2:before { content: "\f59A" }
-.fa-wifi2:after { content: "\f59B" }
-.fa-wifi1:after,
-.fa-wifi2:after { margin-left: -20.5px; color: var( --cga ); }
-.fa-wifi3:before { content: "\f597" }
-.fa-layer { position: absolute }
-.fa-layerlast { position: relative }
-.fa-audiocdplay:before { content: "\f54A" }
-.fa-audiocdplay:after {
-	content: '\f503';
-	margin-left: -18px;
-	font-size: 24px;
-	color: var( --cg );
-	opacity: .8;
-}
+.fa-wifi1:before { content: "\f598"; position: absolute; }
+.fa-wifi1:after { content: "\f599"; color: var( --cga ); }
+.fa-wifi2:before { content: "\f59A"; position: absolute; }
+.fa-wifi2:after { content: "\f59B"; color: var( --cga ); }
 .message .fa-wifi:before { font-size: 20px }
 
 #button-data {
