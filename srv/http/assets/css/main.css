@@ -1652,7 +1652,6 @@ i.map.disabled, .map.disabled i {
 }
 #infoTop .fa-coverart {
 	position: static;
-	margin-top: 6px;
 }
 #infoTop .imgicon .fa-coverart {
 	top: 3px;
