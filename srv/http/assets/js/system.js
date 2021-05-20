@@ -590,7 +590,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, rchecked     : G.lcdmodel
+		, schecked     : G.lcdmodel
 		, checkchanged : ( G.lcd ? [ G.lcdmodel ] : '' )
 		, boxwidth     : 200
 		, buttonlabel  : 'Calibrate'
@@ -683,7 +683,7 @@ $( '#setting-soundprofile' ).click( function() {
 		} );
 	}
 	var radioval = Object.values( radio );
-	var checked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
+	var rchecked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
 	var checkevalues = G.soundprofileval.split( ' ' );
 	checkevalues.push( G.soundprofileval );
 	var iL = textlabel.length;
@@ -694,8 +694,8 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue    : textvalue
 		, boxwidth     : 110
 		, radio        : radio
-		, rchecked     : checked
-		, checkchanged : ( G.soundprofile ? checkevalues : '' )
+		, rchecked     : rchecked
+		, checkchanged : checkevalues
 		, preshow      : function() {
 			$( '#infoRadio input' ).last().prop( 'disabled', true );
 			$( '.infoinput' ).keyup( function() {
