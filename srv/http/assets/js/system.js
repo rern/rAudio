@@ -455,10 +455,9 @@ var infolcdchar = heredoc( function() { /*
 $( '#setting-lcdchar' ).click( function() {
 	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
 	var val = val.split( ' ' );
-	var backlight = val.pop() === 'True';
 	// i2c : cols charmap | inf | i2caddress i2cchip | backlight
-	// gpio: cols charmap | inf | pin_rs pin_rw pin_e pins_data backlight
-	// 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
+	// gpio: cols charmap | inf | pin_rs pin_rw pin_e pins_data | backlight
+	var backlight = val.pop() === 'True';
 	if ( val.length < 6 ) { // inset inf
 		var i2c = true;
 		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2 ), 15, 18, 16, '21,22,23,24', backlight ]
@@ -466,6 +465,7 @@ $( '#setting-lcdchar' ).click( function() {
 		var i2c = false;
 		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val( 2 ), backlight ];
 	}
+	// v: 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight 
 	var lcdcharaddr = G.lcdcharaddr || '27 3F';
 	var addr = lcdcharaddr.split( ' ' );
 	var opt = '';
