@@ -544,12 +544,12 @@ $( '#setting-powerbutton' ).click( function() {
 	var infopowerbutton = heredoc( function() { /*
 	GPIO pins <gr>(J8 numbering)</gr>:<br>
 	<div class="infotextlabel">
-		<a class="infolabel">On <gr>(fixed)</gr></a>
+		<a class="infolabel">On</a>
 		<a class="infolabel">Off</a>
 		<a class="infolabel">LED</a>
 	</div>
 	<div class="infotextbox lcdradio">
-		<select id="onpin" disabled><option value="5">5</option></select>
+		<input type="text" value="5" disabled style="width: 80px; margin: 2px 0 !important;">
 		<select id="swpin"></select>
 		<select id="ledpin"></select>
 	</div>

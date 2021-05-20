@@ -154,6 +154,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>
 		Power button for on/off rAudio with <a href="http://wiringpi.com/">WiringPi</a>
 		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/181#discussion-3100261">Wiring</a>
+		<br>&bull; On pin is fixed.
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
