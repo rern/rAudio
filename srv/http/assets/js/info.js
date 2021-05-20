@@ -643,7 +643,11 @@ function infoVal( json ) {
 			if ( val !== null ) values.push( val );
 		}
 	} );
-	return values.length > 1 ? values : values[ 0 ]
+	if ( json || values.length > 1 ) {
+		return values
+	} else {
+		return values[ 0 ]
+	}
 }
 function renderOption( $el, htm, chk ) {
 	$el.html( htm ).promise().done( function() {
