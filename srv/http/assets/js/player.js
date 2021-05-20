@@ -371,9 +371,7 @@ $( '#setting-soxr' ).click( function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			var soxrval = infoVal();
-			for ( i = 1; i < 5; i++ ) soxrval += ' '+ $( '#infoTextBox'+ i ).val();
-			soxrval += ' '+ $( '#infoSelectBox1' ).val();
+			var soxrval = infoVal().join( ' ' );
 			bash( [ 'soxrset', soxrval ] );
 			notify( 'SoXR Custom Settings', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
 		}

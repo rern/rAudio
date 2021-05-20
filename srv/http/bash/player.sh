@@ -279,7 +279,6 @@ soxrdisable )
 	quality        "very high"\
 }
 ' /etc/mpd.conf
-	rm -f $dirsystem/soxr
 	restartMPD
 	;;
 soxrset )
@@ -291,11 +290,10 @@ soxrset )
 	stopband_begin "'${val[3]}'"
 	attenuation    "'${val[4]}'"
 	flags          "'${val[5]}'"
-}' > $dirsystem/soxrset
+}' > $dirsystem/soxr
 	sed -i -e '/quality/,/}/ d
-' -e "/soxr/ r $dirsystem/soxrset
+' -e "/soxr/ r $dirsystem/soxr
 " /etc/mpd.conf
-	touch $dirsystem/soxr
 	restartMPD
 	;;
 
