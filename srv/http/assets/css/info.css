@@ -253,7 +253,7 @@ hr {
 #infotextbox {
 	display: inline-block;
 	width: min-content;
-	line-height: 35px;
+	line-height: 39px;
 	text-align: left;
 }
 .infotextlabel,
@@ -334,8 +334,7 @@ hr {
 }
 .infohtml {
 	display: table;
-	margin: 5px auto 0;
-	height: 34px;
+	margin: 1px auto 0;
 	text-align: left;
 }
 .infotextbox .infohtml {
