@@ -1,7 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function btRender( data ) {
-	var dot;
 	var html = '';
 	data.forEach( function( list ) {
 		html += '<li data-mac="'+ list.mac +'" data-connected="'+ list.connected +'"><i class="fa fa-bluetooth"></i>'
@@ -13,7 +12,7 @@ function btRender( data ) {
 }
 function btScan() {
 	bash( '/srv/http/bash/networks-scanbt.sh', function( data ) {
-		if ( data.length ) btRender( data );
+		if ( data ) btRender( data );
 		intervalscan = setTimeout( btScan, 12000 );
 	}, 'json' );
 }
