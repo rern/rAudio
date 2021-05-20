@@ -285,7 +285,7 @@ lcdcharset )
 cols=${val[0]}
 charmap=${val[1]}"
 	if [[ ${val[2]} == i2c ]]; then
-		conf="
+		conf+="
 address=${val[3]}
 chip=${val[4]}"
 		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
