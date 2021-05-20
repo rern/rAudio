@@ -405,7 +405,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
-	<div class="infotextlabel" style="margin-top: -4px">
+	<div class="infotextlabel">
 		<a class="infolabel">Size</a>
 		<a class="infolabel">&emsp;Character Map</a>
 		<a class="infolabel">Interface</a>
