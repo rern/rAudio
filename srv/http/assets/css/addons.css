@@ -32,7 +32,6 @@
 .fa-check:before { content: "\f51B" }
 .fa-chevron-down:before { content: "\f605" }
 .fa-eye:before { content: "\f576" }
-.fa-folder-refresh:before { content: "\f534" }
 .fa-gear:before { content: "\f509" }
 .fa-github:before { content: "\f583" }
 .fa-info-circle:before { content: "\f561" }
@@ -50,6 +49,7 @@
 .fa-source:before { content: "\f52A" }
 .fa-times:before { content: "\f51A" }
 .fa-undo:before { content: "\f523" }
+.fa-update:before { content: "\f534" }
 .fa-warning:before { content: "\f562" }
 
 body {
