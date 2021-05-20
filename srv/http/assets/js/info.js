@@ -478,11 +478,18 @@ function info( json ) {
 					}
 					// <label> for clickable label
 					html += '<label'+ cl +'><input type="radio" name="inforadio" value="'
-							+ val.toString().replace( /"/g, '&quot;' )+'">&ensp;'+ label +'</label>'+ br;
+							+ val.toString().replace( /"/g, '&quot;' ) +'">&ensp;'+ label +'</label>'+ br;
 				} );
 			}
 			if ( 'radiohr' in O ) $( '#infoRadio' ).after( '<hr>' );
-			renderOption( $( '#infoRadio' ), html, O.rchecked );
+			$( '#infoRadio' ).html( html ).promise().done( function() {
+				if ( 'rchecked' in O ) {
+					$( '#infoRadio input[val="'+ O.rchecked.toString().replace( /"/g, '&quot;' ) +'"]' ).prop( 'checked', true );
+				} else {
+					$( '#infoRadio input:eq( 0 )' ).prop( 'checked', true );
+				}
+				$( '#infoRadio' ).removeClass( 'hide' );
+			} );
 		}
 		if ( 'checkbox' in O ) {
 			if ( typeof O.checkbox !== 'object' ) {
@@ -505,10 +512,14 @@ function info( json ) {
 				} );
 			}
 			if ( 'checkboxhr' in O ) $( '#infoCheckBox' ).after( '<hr>' );
-			if ( 'cchecked' in O ) {
-				if ( typeof O.cchecked !== 'object' ) O.cchecked = [ O.cchecked ];
-			}
-			renderOption( $( '#infoCheckBox' ), html, O.cchecked );
+			$( '#infoCheckBox' ).html( html ).promise().done( function() {
+				if ( 'cchecked' in O ) {
+					O.cchecked.forEach( function( i ) {
+						$( '#infoCheckBox input' ).eq( i ).prop( 'checked', true );
+					} );
+				}
+				$( '#infoCheckBox' ).removeClass( 'hide' );
+			} );
 		}
 		if ( 'select' in O ) {
 			if ( typeof O.select !== 'object' ) {
@@ -520,8 +531,14 @@ function info( json ) {
 				} );
 				html += '</select>';
 			}
-			renderOption( $( '#infoSelect' ), html, O.schecked );
-			$( '#infoSelect' ).removeClass( 'hide' );
+			$( '#infoSelect' ).html( html ).promise().done( function() {
+				if ( 'schecked' in O ) {
+					$( '#infoSelect option[val="'+ O.schecked.toString().replace( /"/g, '&quot;' ) +'"]' ).prop( 'selected', true );
+				} else {
+					$( '#infoSelect option:eq( 0 )' ).prop( 'selected', true );
+				}
+				$( '#infoSelect' ).removeClass( 'hide' );
+			} );
 		}
 		if ( 'rangevalue' in O ) {
 			$( '#infoRange .value' ).text( O.rangevalue );
@@ -648,26 +665,6 @@ function infoVal( json ) {
 	} else {
 		return values[ 0 ]
 	}
-}
-function renderOption( $el, htm, chk ) {
-	$el.html( htm ).promise().done( function() {
-		$el.removeClass( 'hide' );
-		var id = $el.prop( 'id' );
-		if ( id === 'infoCheckBox' ) { // by index
-			if ( chk ) {
-				chk.forEach( function( val ) {
-					$el.find( 'input' ).eq( val ).prop( 'checked', true );
-				} );
-			}
-		} else {                      // radio/select - by value
-			var opt = $el.prop( 'id' ) === 'infoSelectBox' ? 'option' : 'input';
-			if ( !chk ) { // undefined
-				$el.find( opt ).eq( 0 ).prop( 'checked', true );
-			} else {
-				$el.find( opt +'[value="'+ chk +'"]' ).prop( opt === 'option' ? 'selected' : 'checked', true );
-			}
-		}
-	} );
 }
 
 // verify password - called from addons.js ///////////////////////////////////////
