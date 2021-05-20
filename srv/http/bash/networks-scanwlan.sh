@@ -64,7 +64,18 @@ for line in "${lines[@]}"; do
 		gateway=
 		ip=
 	fi
-	list+=',{"dbm":"'$dbm'","ssid":"'$ssid'","encrypt":"'$encrypt'","wpa":"'$wpa'","profile":'$profile',"dhcp":"'$dhcp'","connected":'$connected',"gateway":"'$gateway'","ip":"'$ip'","password":"'$password'"}'
+	list+=',{
+  "dbm"       : "'$dbm'"
+, "ssid"      : "'$ssid'"
+, "encrypt"   : "'$encrypt'"
+, "wpa"       : "'$wpa'"
+, "profile"   : '$profile'
+, "dhcp"      : "'$dhcp'"
+, "connected" : '$connected'
+, "gateway"   : "'$gateway'"
+, "ip"        : "'$ip'"
+, "password"  : "'$password'"
+}'
 done
 
 echo [${list:1}] # 'remove leading ,
