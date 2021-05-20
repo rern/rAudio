@@ -1,6 +1,6 @@
 <div id="divinterface">
 	<div id="divbt">
-	<heading id="headbt" class="status noline" data-status="bluetooth">Bluetooth<?=$istatus?><i id="btscan" class="fa fa-search"></i><?=$ihelp?></heading>
+	<heading id="headbt" class="status" data-status="bluetooth">Bluetooth<?=$istatus?><i id="btscan" class="fa fa-search"></i><?=$ihelp?></heading>
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="hide"></pre>
 	<span <?=$classhelp?>>
@@ -16,12 +16,12 @@
 	</span>
 	</div>
 	<div id="divlan">
-	<heading id="headlan" class="status noline" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle wh"></i><?=$istatus?></heading>
+	<heading id="headlan" class="status" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle wh"></i><?=$istatus?></heading>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
 	</div>
 	<div id="divwl">
-	<heading id="headwl" class="status noline" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle wh"></i><i id="wlscan" class="fa fa-search wh"></i></heading>
+	<heading id="headwl" class="status" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle wh"></i><i id="wlscan" class="fa fa-search wh"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>

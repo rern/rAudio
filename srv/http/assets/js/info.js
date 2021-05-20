@@ -29,6 +29,7 @@ info( {                                     // default
 	textareavalue : 'VALUE'                 // (none)         (pre-filled value)
 	
 	passwordlabel : 'LABEL'                 // (blank)        (password input label)
+	passwordvalue : 'VALUE'                 // (blank)        (password input value)
 	
 	filelabel     : 'LABEL'                 // 'Browse'       (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
@@ -387,6 +388,7 @@ function info( json ) {
 		}
 		if ( 'passwordlabel' in O ) {
 			var passwordlabel = typeof O.passwordlabel !== 'object' ? [ O.passwordlabel ] : O.passwordlabel;
+			var passwordvalue = typeof O.passwordvalue !== 'object' ? [ O.passwordvalue ] : O.passwordvalue;
 			var labelhtml = '';
 			var boxhtml = '';
 			var suffixhtml = '';
@@ -395,7 +397,7 @@ function info( json ) {
 				var iid = i || '';
 				var labeltext = passwordlabel[ i ];
 				labelhtml += '<a class="infolabel">'+ passwordlabel[ i ] +'</a>';
-				boxhtml += '<input type="password" class="infoinput input" id="infoPasswordBox'+ iid +'">';
+				boxhtml += '<input type="password" class="infoinput input" id="infoPasswordBox'+ iid +'" value="'+ passwordvalue[ i ] +'">';
 				suffixhtml += '<i class="fa fa-eye fa-lg"></i><br>';
 			}
 			$( '#infotextlabel' ).append( labelhtml );

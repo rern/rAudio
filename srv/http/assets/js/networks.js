@@ -89,42 +89,33 @@ function editLAN( data ) {
 		}
 	} );
 }
-function editWiFi( ssid, data ) {
-	var existing = data;
-	var newval;
-	var checkchanged = [
-		  ssid
-		, data.Address || ''
-		, data.Gateway || ''
-		, data.Key | ''
-		, data.IP === 'static' ? true : false
-		, data.Hidden
-		, data.Security === 'wep' ? true : false
-	];
+function editWiFi( data ) {
+	var ESSID = data.ESSID || '';
+	var Address = data.Address || '';
+	var Gateway = data.Gateway || '';
+	var Key = data.Key || '';                     // password
+	var IP = data.IP === 'static' ? true : false; // dhcp
+	var Hidden = data.Hidden || false;
+	var Security = data.Security === 'wep' ? true : false
+	var cchecked = [];
+	if ( IP ) cchecked.push( 0 );
+	if ( Hidden ) cchecked.push( 1 );
+	if ( Security ) cchecked.push( 2 );
 	info( {
-		  icon          : ssid ? 'edit-circle' : 'wifi'
-		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
+		  icon          : ESSID ? 'edit-circle' : 'wifi'
+		, title         : ESSID ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
+		, textvalue     : [ ssid, Address, Gateway ]
 		, checkbox      : { 'Static IP': 1, 'Hidden SSID': 1, 'WEP': 1 }
+		, cchecked      : cchecked
 		, passwordlabel : 'Password'
-		, textlength    : { 2: 8 }
-		, checkchanged  : checkchanged
+		, passwordvalue : Key
+		, textlength    : { 3: 8 }
+		, checkchanged  : [ ssid, Address, Gateway, Key, IP, Hidden, Security ]
 		, preshow       : function() {
-			if ( !ssid ) {
-				$( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
-			} else {
-				if ( existing ) {
-					editWiFiSet( ssid, existing );
-				} else {
-					bash( [ 'profileget', ssid ], function( data ) {
-						data.Address = 'Address' in data ? data.Address.replace( '/24', '' ) : '';
-						data.Hidden = 'Hidden' in data ? true : false;
-						existing = data;
-						editWiFiSet( ssid, existing );
-					}, 'json' );
-				}
-			}
-			$( '#infoCheckBox' ).on( 'click', 'input:eq( 0 )', function() {
+			$( '#infoTextBox' ).prop( 'disabled', 1 );
+			if ( !ssid ) $( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
+			$( '#infoCheckBox' ).change( function() {
 				$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
 			} );
 		}
@@ -150,7 +141,7 @@ function editWiFi( ssid, data ) {
 							, title   : 'Duplicate IP'
 							, message : 'IP <wh>'+ values.Address +'</wh> already in use.'
 							, ok      : function() {
-								editWiFi( ssid, values );
+								editWiFi( values );
 							}
 						} );
 					} else {
@@ -160,30 +151,6 @@ function editWiFi( ssid, data ) {
 			}
 		}
 	} );
-}
-function editWiFiSet( ssid, data ) {
-	var static = data.IP === 'static';
-	$( '#infoMessage' ).html(
-		 '<i class="fa fa-wifi"></i>&ensp;<wh>'+ ssid +'</wh>'
-		+'<br>Current: <wh>'+ ( static ? 'Static IP' : 'DHCP' ) +'</wh><br>&nbsp;'
-	).css( 'text-align', 'center' );
-	$( '#infoPasswordBox' ).val( data.Key );
-	$( '#infoCheckBox input:eq( 0 )' ).prop( 'checked', static );
-	$( '#infoCheckBox input:eq( 2 )' ).prop( 'checked', data.Security === 'wep' );
-	$( '#infoTextBox' )
-		.val( ssid )
-		.prop( 'disabled', 1 );
-	if ( data.Address ) {
-		$( '#infoFooter' ).hide();
-	} else {
-		$( '#infoFooter' ).html( '<br>*Connect to get DHCP IPs' );
-	}
-	if ( static ) {
-		$( '#infoTextBox1' ).val( data.Address );
-		$( '#infoTextBox2' ).val( data.Gateway );
-	} else {
-		$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).hide();
-	}
 }
 function infoAccesspoint() {
 	info( {
@@ -232,15 +199,7 @@ function infoConnect( $this ) {
 				bash( [ 'profileremove', ssid ] );
 			}
 			, function() {
-				if ( ip ) {
-					bash( [ 'profileget', ssid ], function( data ) {
-						if ( 'Address' in data ) data.Address = data.Address.slice( 0, -3 );
-						data.Hidden = 'Hidden' in data ? true : false;
-						editWiFi( ssid, data );
-					}, 'json' );
-				} else {
-					editWiFi( ssid );
-				}
+				editWiFi( $this );
 			}
 		]
 		, oklabel : connected ? 'Disconnect' : 'Connect'
@@ -264,60 +223,39 @@ function nicsStatus() {
 		var htmlbt = '';
 		var htmllan = '';
 		var htmlwl = '';
-		var html = '';
-		if ( G.bluetooth ) {
-			G.bluetooth.forEach( function( list ) {
+		if ( G.listbt ) {
+			G.listbt.forEach( function( list ) {
 				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
 				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
 			} );
+			$( '#listbt' ).html( htmlbt );
 			$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
 		}
-		$.each( G.list, function( i, val ) {
-			html = '<li class="'+ val.interface +'"';
-			html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
-			html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
-			html += val.hostname ? ' data-hostname="'+ val.hostname +'"' : '';
-			html += ' data-dhcp="'+ val.dhcp +'"';
-			html += 'ssid' in val ? ' data-ssid="'+ val.ssid +'">' : '>';
-			if ( val.interface === 'eth0' ) {
-				if ( !val.ip ) return
-				
-				htmllan = html +'<i class="fa fa-lan"></i>';
-				htmllan += val.ip ? '<grn>&bull;</grn>&ensp;'+ val.ip : '';
-				htmllan += val.gateway ? '<gr>&ensp;&raquo;&ensp;'+ val.gateway +'&ensp;</gr>' : '';
-				htmllan += '</li>';
-			} else if ( val.interface.slice( 0, 4 ) === 'wlan' ) {
-				if ( !val.ip && !G.hostapd ) return
-				if ( val.dbm > 0 ) { // percent
-					good = 66;
-					fair = 56;
-				}
-				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
-				htmlwl = html +'<i class="fa fa-wifi'+ signal +'"></i>';
-				if ( G.hostapd ) {
-					htmlwl += '<grn>&bull;</grn>&ensp;<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip
-				} else {
-					G.wlconnected = val.interface;
-					htmlwl += '<grn>&bull;</grn>&ensp;'+ val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr>';
-				}
-				htmlwl += '</li>';
+		if ( G.listeth ) {
+			var val = G.listeth;
+			htmllan += '<li class="eth0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
+			htmllan += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'">';
+			htmllan += '<i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ val.ip +'</li>';
+		}
+		if ( G.listwlan ) {
+			var val = G.listwlan;
+			htmlwl += '<li class="wlan0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" data-ssid="'+ val.ssid +'" ';
+			htmlwl += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'" ';
+			htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
+			var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
+			htmlwl += '<i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
+			if ( !G.hostapd ) {
+				htmlwl += val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr></li>';
+			} else {
+				htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 			}
-		} );
-		if ( G.profiles ) {
-			var htmlprofile = '';
-			G.profiles.forEach( function( val ) {
-				if ( val[ 0 ] === '*' ) {
-					var connected = '&ensp;<grn>&bull;</grn>';
-					var ssid = val.slice( 1 );
-				} else {
-					var connected = '';
-					var ssid = val;
-				}
+		}
+		if ( G.listwlannc ) {
+			G.listwlannc.forEach( function( ssid ) {
 				htmlwl += '<li data-ssid="'+ ssid +'"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ ssid +'</li>';
 			} );
 		}
-		if ( G.btactive ) {
-			$( '#listbt' ).html( htmlbt );
+		if ( G.activebt ) {
 			var active = $( '#listbt grn' ).length > 0;
 			$( '#headbt' )
 				.toggleClass( 'noline', htmlbt !== '' )
@@ -328,7 +266,7 @@ function nicsStatus() {
 		} else {
 			$( '#divbt' ).addClass( 'hide' );
 		}
-		if ( G.inflan ) {
+		if ( G.activeeth ) {
 			$( '#listlan' ).html( htmllan );
 			$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
 			$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
@@ -336,7 +274,7 @@ function nicsStatus() {
 		} else {
 			$( '#divlan' ).addClass( 'hide' );
 		}
-		if ( G.infwl ) {
+		if ( G.activewlan ) {
 			$( '#listwl' ).html( htmlwl );
 			$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
 			$( '#divwl' ).removeClass( 'hide' );
@@ -397,7 +335,7 @@ function wlanScan() {
 				html += ' data-dhcp="'+ val.dhcp +'"';
 				html += val.password ? ' data-password="'+ val.password +'"' : '';
 				html += val.profile ? ' data-profile="'+ val.profile +'">' : '>';
-				var signal = val.dbm > good ? 3 : ( val.dbm < fair ? 1 : 2 );
+				var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
 				html += '<i class="fa fa-wifi'+ signal +'"></i>'
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
 				html += val.dbm < fair ? '<gr>'+ val.ssid +'</gr>' : val.ssid;

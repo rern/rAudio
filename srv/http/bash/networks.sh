@@ -133,16 +133,6 @@ editwifidhcp )
 	netctl start "$ssid"
 	pushRefresh
 	;;
-ifconfig )
-	ifconfig wlan0 up &> /dev/null # force up
-	lines=$( ifconfig \
-		| sed -n '/^eth\|^wlan/,/ether/ p' \
-		| grep -v inet6 \
-		| sed 's/^\(.*\): .*/\1/; s/^ *inet \(.*\)   *net.*/\1/; s/^ *ether \(.*\)   *txq.*/\1=/' \
-		| tr '\n' ' ' \
-		| sed 's/= /\n/g' )
-	echo "$lines"
-	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
