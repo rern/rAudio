@@ -110,7 +110,7 @@ $( '.enable' ).click( function() {
 $( '.enablenoset' ).click( function() {
 	var idname = {
 		  autoplay         : [ 'Play on Startup',                  'refresh-play' ]
-		, autoplaycd       : [ 'Play on Insert CD',                'audiocd' ]
+		, autoplaycd       : [ 'Play on Insert CD',                'audiocdplay' ]
 		, localbrowser     : [ 'Chromium - Browser on RPi',        'chromium' ]
 		, 'shairport-sync' : [ 'AirPlay Renderer',                 'airplay' ]
 		, snapserver       : [ 'Snapcast - Sync Streaming Server', 'snapcast' ]
@@ -176,7 +176,7 @@ $( '#setting-hostapd' ).click( function() {
 		, textvalue    : [ G.hostapdpwd, G.hostapdip ]
 		, textrequired : [ 1 ]
 		, textlength   : { 0: 8 }
-		, checkchanged : [ G.hostapdpwd, G.hostapdip ]
+		, checkchanged : ( G.hostapd ? [ G.hostapdpwd, G.hostapdip ] : '' )
 		, cancel       : function() {
 			if ( set ) {
 				loader();
