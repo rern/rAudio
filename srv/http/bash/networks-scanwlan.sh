@@ -50,7 +50,7 @@ for line in "${lines[@]}"; do
 		grep -q 'IP=dhcp' "$file" && dhcp=dhcp || dhcp=static
 		password=$( grep '^Key' "$file" | tr -d '"' | cut -d'=' -f2 )
 	else
-		profile=
+		profile=0
 		dhcp=
 		password=
 	fi
@@ -60,11 +60,11 @@ for line in "${lines[@]}"; do
 		gateway=$( ip r | grep "^default.*wlan0" | awk '{print $3}' )
 		[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -n1 | cut -d' ' -f3 )
 	else
-		connected=
+		connected=0
 		gateway=
 		ip=
 	fi
-	list+=',{"dbm":"'$dbm'","ssid":"'$ssid'","encrypt":"'$encrypt'","wpa":"'$wpa'","profile":"'$profile'","dhcp":"'$dhcp'","connected":"'$connected'","gateway":"'$gateway'","ip":"'$ip'","password":"'$password'"}'
+	list+=',{"dbm":"'$dbm'","ssid":"'$ssid'","encrypt":"'$encrypt'","wpa":"'$wpa'","profile":'$profile',"dhcp":"'$dhcp'","connected":'$connected',"gateway":"'$gateway'","ip":"'$ip'","password":"'$password'"}'
 done
 
 echo [${list:1}] # 'remove leading ,

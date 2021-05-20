@@ -177,7 +177,7 @@ function infoAccesspoint() {
 	} );
 }
 function infoConnect( $this ) {
-	var connected = $this.data( 'ip' );
+	var connected = $this.data( 'connected' ) == 1;
 	var ssid = $this.data( 'ssid' );
 	var ip = $this.data( 'ip' );
 	var gw = $this.data( 'gateway' );
@@ -185,7 +185,7 @@ function infoConnect( $this ) {
 	var dhcp = $this.data( 'dhcp' );
 	var encrypt = $this.data( 'encrypt' ) === 'on';
 	var password = $this.data( 'password' );
-	var profile = $this.data( 'profile' );
+	var profile = $this.data( 'profile' ) == 1;
 	info( {
 		  icon        : 'wifi'
 		, title       : ssid
@@ -346,13 +346,10 @@ function wlanScan() {
 		var html = '';
 		if ( list.length ) {
 			$.each( list, function( i, val ) {
-				html += '<li data-db="'+ val.dbm +'" data-ssid="'+ val.ssid +'" data-encrypt="'+ val.encrypt +'" data-wpa="'+ val.wpa +'"';
-				html += val.connected  ? ' data-connected="1"' : '';
-				html += val.gateway ? ' data-gateway="'+ val.gateway +'"' : '';
-				html += val.ip ? ' data-ip="'+ val.ip +'"' : '';
-				html += ' data-dhcp="'+ val.dhcp +'"';
-				html += val.password ? ' data-password="'+ val.password +'"' : '';
-				html += val.profile ? ' data-profile="'+ val.profile +'">' : '>';
+				html += '<li data-ssid="'+ val.ssid +'" data-encrypt="'+ val.encrypt +'" data-wpa="'+ val.wpa +'"';
+				html += ' data-connected="'+ val.connected +'" data-gateway="'+ val.gateway +'"';
+				html += 'data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'"';
+				html += ' data-password="'+ val.password +'" data-profile="'+ val.profile +'">';
 				var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
 				html += '<i class="fa fa-wifi'+ signal +'"></i>'
 				html += val.connected ? '<grn>&bull;</grn>&ensp;' : '';
@@ -471,11 +468,11 @@ $( '#listwl' ).on( 'click', 'li', function() {
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );
-	var connected = $this.data( 'connected' );
-	var profile = $this.data( 'profile' ) || connected;
+	var connected = $this.data( 'connected' ) == 1;
 	var ssid = $this.data( 'ssid' );
 	var wpa = $this.data( 'wpa' ) || 'wep';
 	var encrypt = $this.data( 'encrypt' ) === 'on';
+	var profile = $this.data( 'profile' ) == 1;
 	var vals = {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
