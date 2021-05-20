@@ -260,9 +260,6 @@ hr {
 .infotextbox {
 	vertical-align: top;
 }
-.infotextbox {
-	margin-top: 4px;
-}
 .infotextsuffix,
 #infotextsuffix {
 	width: fit-content;
