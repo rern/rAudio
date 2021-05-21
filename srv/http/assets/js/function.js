@@ -853,7 +853,6 @@ function plRemove( $li ) {
 		} else {
 			var activenext = '';
 		}
-		console.log( [ 'plremove', tracknum, activenext ] );
 		bash( [ 'plremove', tracknum, activenext ] );
 		$li.remove();
 	}

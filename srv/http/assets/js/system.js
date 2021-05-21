@@ -788,7 +788,6 @@ $( '#restore' ).click( function() {
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
 			var checked = infoVal();
-			console.log(checked);return
 			if ( checked === 'reset' ) {
 				bash( '/srv/http/bash/datareset.sh', bannerHide );
 			} else {
