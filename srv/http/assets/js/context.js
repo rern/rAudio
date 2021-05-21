@@ -228,15 +228,18 @@ function tagEditor() {
 	}
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
-	list( query, function( data ) {
-		var values = data.slice( 0 );
+	list( query, function( values ) {
 		var label = [];
 		format.forEach( function( el, i ) {
 			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
-		var $img = G.library ? $( '.licoverimg img' ) || G.list.li.find( 'img' ) : G.list.li.find( 'img' );
+		if ( G.library ) {
+			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
+		} else {
+			var img =  G.list.li.find( 'img' );
+		}
 		var message = '<img src="'+ ( $img.length ? $img.attr( 'src' ) : G.coverdefault ) +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
 		var footer = '';
