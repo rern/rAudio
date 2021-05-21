@@ -388,7 +388,7 @@ function info( json ) {
 				var line;
 				var i = 0;
 				$.each( O.radio, function( key, val ) {
-					line = '<label><input type="radio" name="'+ val +'" value="'
+					line = '<label><input type="radio" name="inforadio" value="'
 							+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</label>';
 					if ( !O.radiocolumn ) {
 						htm += '<tr><td class="chk">'+ line +'</td></tr>';
