@@ -280,36 +280,11 @@ function displayBottom() {
 	$( '#bar-bottom i' ).removeClass( 'active' );
 	$( '#tab-'+ G.page ).addClass( 'active' );
 }
-function displayCheckbox( checkboxes ) {
-	var html = '';
-	var col,br;
-	$.each( checkboxes, function( key, val ) {
-		if ( val[ 0 ] === '_' ) {
-			col = ' class="infocol"';
-			br = '';
-			val = val.slice( 1 );
-		} else if ( val.slice( -4 ) === '<br>' ) {
-			html += val;
-			return
-		} else {
-			col = '';
-			br = '<br>';
-		}
-		html += '<label'+ col +'><input name="'+ key +'" type="checkbox" '+ ( G.display[ key ] ? 'checked' : '' ) +'>&ensp;'+ val +'</label>'+ br;
-	} );
-	return html;
-}
 function displayCheckboxSet( name, enable, check ) {
 	$( 'input[name="'+ name +'"]' )
 		.prop( 'disabled', !enable )
 		.prop( 'checked', check )
 		.parent().toggleClass( 'gr', !enable );
-}
-function displayGet( callback ) {
-	G.albumbyartist = G.display.albumbyartist;
-	bash( [ 'displayget' ], function( data ) {
-		callback( data );
-	}, 'json' );
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;

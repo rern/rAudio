@@ -190,15 +190,6 @@ hr {
 	width: 400px;
 	max-width: 98%;
 }
-#infoContent {
-	padding: 25px 10px 10px 10px;
-	font-size: 16px;
-}
-#infoContent label {
-	display: inline-block;
-	margin: 0;
-	font-weight: normal;
-}
 .infoarrowleft,
 .infoarrowright {
 	width: 40px;
@@ -211,6 +202,32 @@ hr {
 }
 .infoarrowright {
 	float: right;
+}
+#infoContent {
+	padding: 25px 10px 10px 10px;
+	font-size: 16px;
+}
+#infoContent label {
+	display: inline-block;
+	margin: 0;
+	font-weight: normal;
+}
+#infoContent table {
+	margin: 0 auto;
+}
+#infoContent td {
+	text-align: left;
+	padding: 0 3px;
+	white-space: nowrap;
+}
+#infoContent td:first-child {
+	text-align: right;
+}
+#infoRadio td,
+#infoCheckBox td {
+	height: 32px;
+	padding-right: 10px;
+	text-align: left !important;
 }
 .infomessage,
 #infoMessage {
@@ -238,37 +255,6 @@ hr {
 }
 #infoMessage .colL {
 	padding-right: 10px;
-}
-.infotextlabel,
-#infotextlabel,
-#infoSelectLabel {
-	display: inline-block;
-	margin-right: 5px;
-	line-height: 40px;
-	text-align: right;
-}
-.infotextbox,
-.infotextsuffix,
-#infotextsuffix,
-#infotextbox {
-	display: inline-block;
-	width: min-content;
-	line-height: 39px;
-	text-align: left;
-}
-.infotextlabel,
-.infotextbox {
-	vertical-align: top;
-}
-.infotextsuffix,
-#infotextsuffix {
-	width: fit-content;
-	margin-left: 5px;
-	line-height: 40px;
-}
-.infotextsuffix gr,
-#infotextsuffix gr {
-	display: block;
 }
 #infoContent textarea {
 	width: 100%;
@@ -298,7 +284,7 @@ hr {
 #infoContent input[type=number],
 #infoContent input[type=password] {
 	display: block;
-	margin: 4px 0 !important;
+	margin: 0 !important;
 	width: 230px;
 	height: 36px !important;
 	padding: 10px;
@@ -345,7 +331,7 @@ hr {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
-	margin: 3px 0;
+	margin: 3px 6px 3px 0;
 	vertical-align: -10px;
 	border: none;
 	border-radius: 3px;
@@ -382,7 +368,7 @@ hr {
 	padding: 10px 0 20px 0;
 }
 #infoContent .selectric-wrapper {
-	margin: 2px 0;
+	margin: 0;
 }
 #infoSelect .selectric-wrapper {
 	width: auto;

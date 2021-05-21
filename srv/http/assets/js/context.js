@@ -289,7 +289,7 @@ function tagEditor() {
 					}, 'json' );
 				} );
 				setTimeout( function() {
-					var boxW = parseInt( $( '#infotextbox input' ).css('width') );
+					var boxW = parseInt( $( '#infoText input' ).css('width') );
 					var boxS = boxW - 88;
 					$( '#infoFooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {

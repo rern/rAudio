@@ -2,37 +2,33 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var formdata = {}
 var htmlmount = heredoc( function() { /*
-	<form id="formmount" class="infocontent">
-		<div class="infotextlabel">
-			Type<br>
-			Name<br>
-			IP<br>
-			<span id="sharename">Share name</span><br>
-			<span class="guest">
-				User<br>
-				Password<br>
-			</span>
-			Options
-		</div>
-		<div class="infotextbox">
-			<label><input type="radio" name="protocol" value="cifs"> CIFS</label>&emsp;
-			<label><input type="radio" name="protocol" value="nfs"> NFS</label>&emsp;
-			<input type="text" class="infoinput" name="mountpoint">
-			<input type="text" class="infoinput" name="ip">
-			<input type="text" class="infoinput" name="directory">
-			<div class="guest">
-				<input type="text" class="infoinput" name="user">
-				<input type="password" id="infoPasswordBox" class="infoinput" name="password">
-			</div>
-			<input type="text" class="infoinput" name="options">
-		</div>
-		<div id="infotextsuffix">
-			<i class="eye fa fa-eye fa-lg guest"></i>
-		</div>
-		<div id="infoCheckBox" class="infocontent infocheckbox infohtml">
-			<label><input type="checkbox" name="update" value="true" checked>&ensp;Update Library on mount</label>
-		</div>
-	</form>
+	<table id="tblinfomount">
+	<tr><td>Type</td>
+		<td><label><input type="radio" name="protocol" value="cifs">CIFS</label></td>
+		<td><label><input type="radio" name="protocol" value="nfs">NFS</label></td>
+	</tr>
+	<tr><td>Name</td>
+		<td colspan="2"><input type="text" class="infoinput" name="mountpoint"></td>
+	</tr>
+	<tr><td>IP</td>
+		<td colspan="2"><input type="text" class="infoinput" name="ip"></td>
+	</tr>
+	<tr id="sharename"><td>Share name</td>
+		<td colspan="2"><input type="text" class="infoinput" name="directory"></td>
+	</tr>
+	<tr class="guest"><td>User</td>
+		<td colspan="2"><input type="text" class="infoinput" name="user"></td>
+	</tr>
+	<tr class="guest"><td>Password</td>
+		<td colspan="2"><input type="password" id="infoPasswordBox" class="infoinput" name="password"></td>
+	</tr>
+	<tr><td>Options</td>
+		<td colspan="2"><input type="text" class="infoinput" name="options"></td>
+	</tr>
+	<tr><td></td>
+		<td colspan=2><label><input type="checkbox" name="update" value="true" checked>Update Library on mount</label></td>
+	</tr>
+	</table>
 */ } );
 function infoMount( data ) {
 	if ( !data ) var data = {}
@@ -41,6 +37,7 @@ function infoMount( data ) {
 		, title   : 'Add Network Share'
 		, content : htmlmount
 		, preshow : function() {
+			$( '#tblinfomount td:eq( 1 )' ).css( 'width', '60px' );
 			$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', data.protocol || 'cifs' );
 			$( '.infotextbox input[name=mountpoint]' ).val( data.mountpoint );
 			$( '.infotextbox input[name=ip]' ).val( data.ip || '192.168.1.' );
@@ -405,52 +402,46 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
-	<div class="infotextlabel">
-		<a class="infolabel">Size</a>
-		<a class="infolabel">&emsp;Character Map</a>
-		<a class="infolabel">Interface</a>
-		<div class="i2c">
-			<a class="infolabel">Address</a>
-			<a class="infolabel">I&#178;C Chip</a>
-		</div>
-		<div class="gpio">
-			<a class="infolabel">pin_rs</a>
-			<a class="infolabel">pin_rw</a>
-			<a class="infolabel">pin_e</a>
-			<a class="infolabel">pins_data</a>
-		</div>
-	</div>
-	<div class="infotextbox lcdradio">
-		<div id="cols" class="infocontent infohtml lcd">
-			<label><input type="radio" name="cols" value="16"> 16x2</label>
-			<label><input type="radio" name="cols" value="20"> 20x4</label>
-			<label><input type="radio" name="cols" value="40"> 40x4</label>
-		</div>
-		<div id="charmap" class="infocontent infohtml lcd">
-			<label><input type="radio" name="charmap" value="A00"> A00</label>
-			<label><input type="radio" name="charmap" value="A02"> A02</label>
-		</div>
-		<div id="inf" class="infocontent infohtml lcd">
-			<label><input type="radio" name="inf" value="i2c"> I&#178;C</label>
-			<label><input type="radio" name="inf" value="gpio"> GPIO</label>
-		</div>
-		<div class="i2c">
-			<div id="i2caddress" class="infocontent infohtml lcd">
-			</div>
-			<select id="i2cchip" class="infocontent infohtml">
-				<option value="PCF8574"> PCF8574</option>
-				<option value="MCP23008"> MCP23008</option>
-				<option value="MCP23017"> MCP23017</option>
-			</select>
-		</div>
-		<div class="gpio">
-			<input type="text" id="pin_rs" class="infoinput infocontent infohtml">
-			<input type="text" id="pin_rw" class="infoinput infocontent infohtml">
-			<input type="text" id="pin_e" class="infoinput infocontent infohtml">
-			<input type="text" id="pins_data" class="infoinput infocontent infohtml">
-		</div>
-		<label><input id="backlight" type="checkbox"> Backlight off <gr>(stop 1 m.)</gr></label>
-	</div>
+	<table id="tbllcdchar">
+	<tr id="cols"><td>Size</td>
+		<td><label><input type="radio" name="cols" value="16">16x2</label></td>
+		<td><label><input type="radio" name="cols" value="20">20x4</label></td>
+		<td><label><input type="radio" name="cols" value="40">40x4</label></td>
+	</tr>
+	<tr><td>Character Map</td>
+		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
+		<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
+	</tr>
+	<tr><td>Interface</td>
+		<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
+		<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
+	</tr>
+	<tr id="i2caddress" class="i2c"></tr>
+	<tr class="i2c"><td>I&#178;C Chip</td>
+		<td colspan="3">
+		<select id="i2cchip" class="infocontent infohtml">
+			<option value="PCF8574">PCF8574</option>
+			<option value="MCP23008">MCP23008</option>
+			<option value="MCP23017">MCP23017</option>
+		</select>
+		</td>
+	</tr>
+	<tr class="gpio"><td>pin_rs</td>
+		<td><input type="text" id="pin_rs" class="infoinput infocontent infohtml"></td>
+	</tr>
+	<tr class="gpio"><td>pin_rw</td>
+		<td><input type="text" id="pin_rw" class="infoinput infocontent infohtml"></td>
+	</tr>
+	<tr class="gpio"><td>pin_e</td>
+		<td><input type="text" id="pin_e" class="infoinput infocontent infohtml"></td>
+	</tr>
+	<tr class="gpio"><td>pins_data</td>
+		<td><input type="text" id="pins_data" class="infoinput infocontent infohtml"></td>
+	</tr>
+	<tr><td></td>
+		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop 1 m.)</gr></label></td>
+	</tr>
+	</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
 	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
@@ -468,9 +459,9 @@ $( '#setting-lcdchar' ).click( function() {
 	// v: 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight 
 	var lcdcharaddr = G.lcdcharaddr || '27 3F';
 	var addr = lcdcharaddr.split( ' ' );
-	var opt = '';
+	var opt = '<td>Address</td>';
 	addr.forEach( function( el ) {
-		opt += '<label><input type="radio" name="address" value="0x'+ el +'"> 0x'+ el +'</label>';
+		opt += '<td><label><input type="radio" name="address" value="0x'+ el +'">0x'+ el +'</label></td>';
 	} );
 	info( {
 		  icon          : 'lcdchar'
@@ -481,11 +472,12 @@ $( '#setting-lcdchar' ).click( function() {
 		, checkchanged  : ( G.lcdchar ? v : '' )
 		, preshow       : function() {
 			$( '#i2caddress' ).html( opt );
+			$( '#tbllcdchar' ).find( 'td:eq( 1 ), td:eq( 2 )' ).css( 'width', '80px' );
 			
-			$( '#cols input' ).val( [ v[ 0 ] ] );
-			$( '#charmap input' ).val( [ v[ 1 ] ] );
-			$( '#inf input' ).val( [ v[ 2 ] ] );
-			$( '#i2caddress input' ).val( [ v[ 3 ] ] );
+			$( '#infoContent input[name=cols]' ).val( [ v[ 0 ] ] );
+			$( '#infoContent input[name=charmap]' ).val( [ v[ 1 ] ] );
+			$( '#infoContent input[name=inf]' ).val( [ v[ 2 ] ] );
+			$( '#infoContent input[name=address]' ).val( [ v[ 3 ] ] );
 			$( '#i2cchip' ).val( v[ 4 ] );
 			$( '#pin_rs' ).val( v[ 5 ] );
 			$( '#pin_rw' ).val( v[ 6 ] );
@@ -542,17 +534,18 @@ $( '#setting-powerbutton' ).click( function() {
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
 	var infopowerbutton = heredoc( function() { /*
-	GPIO pins <gr>(J8 numbering)</gr>:<br>
-	<div class="infotextlabel">
-		<a class="infolabel">On</a>
-		<a class="infolabel">Off</a>
-		<a class="infolabel">LED</a>
-	</div>
-	<div class="infotextbox lcdradio">
-		<input type="text" value="5" disabled style="width: 80px; margin: 2px 0 !important;">
-		<select id="swpin"></select>
-		<select id="ledpin"></select>
-	</div>
+	GPIO pins <gr>(J8 numbering)</gr>:
+	<table>
+	<tr><td>On</td>
+		<td><input type="text" value="5" disabled></td>
+	</tr>
+	<tr><td>Off</td>
+		<td><select id="swpin"></select></td>
+	</tr>
+	<tr><td>LED</td>
+		<td><select id="ledpin"></select></td>
+	</tr>
+	</table>
 */ } );
 	info( {
 		  icon         : 'power'
@@ -648,7 +641,7 @@ $( '#setting-regional' ).click( function() {
 		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
 		, textvalue    : textvalue
 		, boxwidth     : 200
-		, footer       : '<px70/><px60/>00 - common for all regions'
+		, footer       : '<px70/><px70/> <code>00</code> - common for all regions'
 		, checkchanged : textvalue
 		, ok           : function() {
 			var values = infoVal();
@@ -665,15 +658,15 @@ $( '#setting-soundprofile' ).click( function() {
 		, 'eth0 txqueuelen'
 	];
 	var radio = {
-		  _Default  : '18000000 60 1500 1000'
+		  Default  : '18000000 60 1500 1000'
 		, RuneAudio : '1500000 0 1500 1000'
-		, _ACX      : '850000 0 1500 4000'
+		, ACX      : '850000 0 1500 4000'
 		, Orion     : '500000 20 1000 4000'
-		, _OrionV2  : '120000 0 1000 4000'
+		, OrionV2  : '120000 0 1000 4000'
 		, OrionV3   : '1500000 0 1000 4000'
-		, _OrionV4  : '145655 60 1000 4000'
+		, OrionV4  : '145655 60 1000 4000'
 		, Um3ggh1U  : '500000 0 1500 1000'
-		, _Custom   : '0'
+		, Custom   : '0'
 	}
 	var textvalue = G.soundprofileval.split( ' ' );
 	if ( textvalue.length < 3 ) { // no eth0
@@ -694,6 +687,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, textvalue    : textvalue
 		, boxwidth     : 110
 		, radio        : radio
+		, radiocolumn  : 1
 		, rchecked     : rchecked
 		, checkchanged : checkevalues
 		, preshow      : function() {

@@ -73,7 +73,7 @@ var nameplayer = {
 	, upnp       : 'UPnP'
 }
 
-displayGet( function( data ) { // get mpd status with passive.js on pushstream connect
+bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
 	G.bars = data.bars;
 	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
@@ -101,7 +101,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 		}
 	} );
-} );
+}, 'json' );
 G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -202,20 +202,20 @@ $( '#power' ).click( function() {
 	} );
 } );
 var chklibrary = {
-	  sd             : '_<i class="fa fa-microsd"></i>SD'
+	  sd             : '<i class="fa fa-microsd"></i>SD'
 	, usb            : '<i class="fa fa-usbdrive"></i>USB'
-	, nas            : '_<i class="fa fa-networks"></i>Network'
+	, nas            : '<i class="fa fa-networks"></i>Network'
 	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
-	, album          : '_<i class="fa fa-album"></i>Album'
-	, br             : '<br>'
-	, artist         : '_<i class="fa fa-artist"></i>Artist'
+	, album          : '<i class="fa fa-album"></i>Album'
+	, bl             : ''
+	, artist         : '<i class="fa fa-artist"></i>Artist'
 	, albumartist    : '<i class="fa fa-albumartist"></i>AlbumArtist'
-	, composer       : '_<i class="fa fa-composer"></i>Composer'
+	, composer       : '<i class="fa fa-composer"></i>Composer'
 	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
-	, date           : '_<i class="fa fa-date"></i>Date'
+	, date           : '<i class="fa fa-date"></i>Date'
 	, genre          : '<i class="fa fa-genre"></i>Genre'
-	, br1            : '<hr><px30/><gr>Text:</gr><br>'
-	, count          : '_Count'
+	, hr             : '<px30/><gr>Text:</gr>'
+	, count          : 'Count'
 	, label          : 'Label'
 }
 var chklibrary2 = {
@@ -225,199 +225,205 @@ var chklibrary2 = {
 	, tapreplaceplay : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace"></i>Replace + Play'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i>'
-	, br             : '<hr><px30/><i class="fa fa-coverart"></i>Cover art band <gr>in tracks view</gr><br>'
+	, hr             : '<px30/><i class="fa fa-coverart"></i>Cover art band <gr>in tracks view</gr><br>'
 	, hidecover      : 'Hide'
 	, fixedcover     : 'Fix <gr>on large screen</gr>'
 }
 $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	var options = this.id === 'displaylibrary2';
-	var checklist = !options ? chklibrary : chklibrary2;
-	displayGet( function( data ) {
-		G.display = data;
-		var keys = Object.keys( !options ? chklibrary : chklibrary2 );
-		var values = [];
-		keys.forEach( function( k ) {
-			if ( k in G.display ) values.push( G.display[ k ] );
-		} );
-		var json = {
-			  icon         : 'library'
-			, title        : !options ? 'Library Home Display' : 'Library/Playlist Options'
-			, message      : !options ? '1/2 - Show selected items:' : ''
-			, checkbox     : displayCheckbox( checklist )
-			, checkchanged : values
-			, preshow      : function() {
-				if ( options ) {
-					$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
-						var toggle = $( this ).prop( 'name' ) === 'tapaddplay' ? 'tapreplaceplay' : 'tapaddplay';
-						if ( $( this ).prop( 'checked' ) ) $( 'input[ name="'+ toggle +'" ]' ).prop( 'checked', 0 ) ;
-					} );
-					$( 'input[name=hidecover]' ).change( function() {
-						if ( $( this ).prop( 'checked' ) ) {
-							displayCheckboxSet( 'fixedcover', false, false );
-						} else {
-							displayCheckboxSet( 'fixedcover', true );
-						}
-					} );
-					$( 'input[name=fixedcover]' ).prop( 'disabled', G.display.hidecover );
-				}
-			}
-			, ok           : function () {
-				displaySave();
-				$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-				if ( G.library ) {
-					if ( G.librarylist ) {
-						if ( $( '.lib-index' ).length ) return
-						
-						if ( G.display.hidecover ) {
-							$( '.licover' ).addClass( 'hide' );
-						} else {
-							if ( !$( '.licover' ).length ) {
-								var query = G.query[ G.query.length - 1 ];
-								list( query, function( data ) {
-									data.path = query.path;
-									data.modetitle = query.modetitle;
-									renderLibraryList( data );
-								}, 'json' );
-								return
-							}
-							
-							var pH = G.bars ? 130 : 90;
-							if ( G.display.fixedcover ) {
-								pH += 230;
-								$( '.licover' ).removeClass( 'nofixed' );
-								$( '#lib-list li:eq( 1 )' ).addClass( 'track1' );
-								$( '#lib-list p' ).addClass( 'fixedcover' )
-							} else {
-								$( '.licover' ).addClass( 'nofixed' );
-								$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
-								$( '#lib-list p' ).removeClass( 'fixedcover' )
-							}
-							$( '.licover' ).removeClass( 'hide' );
-						}
-					} else {
-						renderLibrary();
-					}
-				}
-			}
-		}
-		if ( !options ) {
-			json.arrowright = function() { $( '#displaylibrary2' ).click(); }
-		} else {
-			json.arrowleft = function() { $( '#displaylibrary' ).click(); }
-		}
-		info( json );
+	var keys = Object.keys( !options ? chklibrary : chklibrary2 );
+	keys = keys.filter( function( k ) {
+		return [ 'bl', 'hr' ].indexOf( k ) === -1
 	} );
+	var cchecked = [];
+	var checkchanged = [];
+	keys.forEach( function( k, i ) {
+		checkchanged.push( G.display[ k ] );
+		if ( G.display[ k ] ) cchecked.push( i );
+	} );
+	var json = {
+		  icon         : 'library'
+		, cchecked     : cchecked
+		, checkchanged : checkchanged
+		, preshow      : function() {
+			if ( options ) {
+				$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
+					var toggle = $( this ).prop( 'name' ) === 'tapaddplay' ? 'tapreplaceplay' : 'tapaddplay';
+					if ( $( this ).prop( 'checked' ) ) $( 'input[ name="'+ toggle +'" ]' ).prop( 'checked', 0 ) ;
+				} );
+				$( 'input[name=hidecover]' ).change( function() {
+					if ( $( this ).prop( 'checked' ) ) {
+						displayCheckboxSet( 'fixedcover', false, false );
+					} else {
+						displayCheckboxSet( 'fixedcover', true );
+					}
+				} );
+				$( 'input[name=fixedcover]' ).prop( 'disabled', G.display.hidecover );
+			}
+		}
+		, ok           : function () {
+			displaySave();
+			$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
+			if ( G.library ) {
+				if ( G.librarylist ) {
+					if ( $( '.lib-index' ).length ) return
+					
+					if ( G.display.hidecover ) {
+						$( '.licover' ).addClass( 'hide' );
+					} else {
+						if ( !$( '.licover' ).length ) {
+							var query = G.query[ G.query.length - 1 ];
+							list( query, function( data ) {
+								data.path = query.path;
+								data.modetitle = query.modetitle;
+								renderLibraryList( data );
+							}, 'json' );
+							return
+						}
+						
+						var pH = G.bars ? 130 : 90;
+						if ( G.display.fixedcover ) {
+							pH += 230;
+							$( '.licover' ).removeClass( 'nofixed' );
+							$( '#lib-list li:eq( 1 )' ).addClass( 'track1' );
+							$( '#lib-list p' ).addClass( 'fixedcover' )
+						} else {
+							$( '.licover' ).addClass( 'nofixed' );
+							$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
+							$( '#lib-list p' ).removeClass( 'fixedcover' )
+						}
+						$( '.licover' ).removeClass( 'hide' );
+					}
+				} else {
+					renderLibrary();
+				}
+			}
+		}
+	}
+	if ( !options ) {
+		json.title       = 'Library Home Display';
+		json.message     = '1/2 - Show selected items:';
+		json.checkbox    = chklibrary;
+		json.checkcolumn = 1
+		json.arrowright  = function() { $( '#displaylibrary2' ).click(); }
+	} else {
+		json.title       = 'Library/Playlist Options';
+		json.message     = '';
+		json.checkbox    = chklibrary2;
+		json.checkcolumn = ''
+		json.arrowleft   = function() { $( '#displaylibrary' ).click(); }
+	}
+	info( json );
 } );
 var chkplayback = {
-	  bars         : '_Top-Bottom bars'
+	  bars         : 'Top-Bottom bars'
 	, barsalways   : 'Bars always on'
-	, time         : '_Time'
+	, time         : 'Time'
 	, progressbar  : 'Progress bar'
-	, cover        : '_Coverart'
+	, cover        : 'Coverart'
 	, coversmall   : 'Small coverart'
-	, volume       : '_Volume'
+	, volume       : 'Volume'
 	, radioelapsed : 'WebRadio time'
-	, buttons      : '_Buttons'
+	, buttons      : 'Buttons'
 }
 $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
-	displayGet( function( data ) {
-		G.display = data;
-		var bars = G.display.bars;
-		var content = displayCheckbox( chkplayback )
-		var keys = Object.keys( chkplayback );
-		keys.push( 'novu' );
-		var values = [];
-		keys.forEach( function( k ) {
-			if ( k in G.display ) values.push( G.display[ k ] );
-		} );
-		info( {
-			  icon         : 'play-circle'
-			, title        : 'Playback Display'
-			, message      : 'Show selected items:'
-			, checkbox     : displayCheckbox( chkplayback )
-			, checkchanged : values
-			, preshow      : function() {
-				$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
-						+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
-						+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
-				$( 'input[name=novu]' ).val( [ G.display.novu ] );
-				$( '#divnovu' ).toggleClass( 'hide', !G.display.cover );
-				if ( !G.display.bars ) displayCheckboxSet( 'barsalways' );  // disable by bars hide
-				if ( G.display.time ) displayCheckboxSet( 'progressbar' );  // disable by time
-				if ( !G.display.cover ) displayCheckboxSet( 'coversmall' ); // disable by cover
-				if ( G.display.volumenone ) displayCheckboxSet( 'volume' ); // disable by mpd volume
-				if ( !G.display.time && !G.display.volume ) {
-					displayCheckboxSet( 'cover' ); // disable by autohide
-					displayCheckboxSet( 'buttons' );
-				}
-				if ( G.status.player !== 'mpd' ) displayCheckboxSet( 'buttons' );
-				var $bars = $( 'input[name=bars]' );
-				var $time = $( 'input[name=time]' );
-				var $cover = $( 'input[name=cover]' );
-				var $volume = $( 'input[name=volume]' );
-				var $timevolume = $( 'input[name=time], input[name=volume]' );
-				$timevolume.change( function() {
-					var time = $time.prop( 'checked' );
-					var volume = $volume.prop( 'checked' );
-					if ( time || volume ) {
-						displayCheckboxSet( 'cover', true );
-						displayCheckboxSet( 'progressbar', false, false );
-						displayCheckboxSet( 'buttons', true );
-					} else {
-						displayCheckboxSet( 'cover', false, true );
-						displayCheckboxSet( 'progressbar', false, false );
-						displayCheckboxSet( 'buttons', false, false );
-					}
-					if ( !time && $cover.prop( 'checked' ) ) {
-						displayCheckboxSet( 'progressbar', true, true );
-					} else {
-						displayCheckboxSet( 'progressbar', false, false );
-					}
-					if ( !time && ( !volume || G.display.volumenone ) ) {
-						displayCheckboxSet( 'cover', true, true );
-						displayCheckboxSet( 'progressbar', true, true );
-					}
-				} );
-				$bars.change( function() {
-					if ( $( this ).prop( 'checked' ) ) {
-						displayCheckboxSet( 'barsalways', true );
-					} else {
-						displayCheckboxSet( 'barsalways', false, false );
-					}
-				} );
-				$cover.change( function() {
-					if ( $( this ).prop( 'checked' ) ) {
-						if ( !$time.prop( 'checked' ) ) displayCheckboxSet( 'progressbar', true, true );
-						displayCheckboxSet( 'coversmall', true );
-						$( '#divnovu' ).removeClass( 'hide' );
-					} else {
-						displayCheckboxSet( 'progressbar', false, false );
-						displayCheckboxSet( 'coversmall', false, false );
-						if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( 'time', true, true );
-						$( '#divnovu' ).addClass( 'hide' );
-					}
-				} );
+	var keys = Object.keys( chkplayback );
+	keys.push( 'novu' );
+	var cchecked = [];
+	var checkchanged = [];
+	keys.forEach( function( k, i ) {
+		checkchanged.push( G.display[ k ] );
+		if ( G.display[ k ] ) cchecked.push( i );
+	} );
+	info( {
+		  icon         : 'play-circle'
+		, title        : 'Playback Display'
+		, message      : 'Show selected items:'
+		, checkbox     : chkplayback
+		, checkcolumn  : 1
+		, cchecked     : cchecked
+		, checkchanged : checkchanged
+		, preshow      : function() {
+			$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
+					+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
+					+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
+			$( 'input[name=novu]' ).val( [ G.display.novu ] );
+			$( '#divnovu' ).toggleClass( 'hide', !G.display.cover );
+			if ( !G.display.bars ) displayCheckboxSet( 'barsalways' );  // disable by bars hide
+			if ( G.display.time ) displayCheckboxSet( 'progressbar' );  // disable by time
+			if ( !G.display.cover ) displayCheckboxSet( 'coversmall' ); // disable by cover
+			if ( G.display.volumenone ) displayCheckboxSet( 'volume' ); // disable by mpd volume
+			if ( !G.display.time && !G.display.volume ) {
+				displayCheckboxSet( 'cover' ); // disable by autohide
+				displayCheckboxSet( 'buttons' );
 			}
-			, ok           : function () {
-				displaySave();
-				G.bars = G.display.bars;
-				G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
-				displayBars();
-				if ( G.playback ) {
-					displayPlayback();
-					setButtonControl();
-					renderPlayback();
-					$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
-				} else if ( G.library ) {
-					$( '.list p' ).toggleClass( 'bars-on', G.bars );
-					if ( bars !== G.bars && $( '.coverart' ).length ) {
-						G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
-						$( '#mode-album' ).click();
-					}
+			if ( G.status.player !== 'mpd' ) displayCheckboxSet( 'buttons' );
+			var $bars = $( 'input[name=bars]' );
+			var $time = $( 'input[name=time]' );
+			var $cover = $( 'input[name=cover]' );
+			var $volume = $( 'input[name=volume]' );
+			var $timevolume = $( 'input[name=time], input[name=volume]' );
+			$timevolume.change( function() {
+				var time = $time.prop( 'checked' );
+				var volume = $volume.prop( 'checked' );
+				if ( time || volume ) {
+					displayCheckboxSet( 'cover', true );
+					displayCheckboxSet( 'progressbar', false, false );
+					displayCheckboxSet( 'buttons', true );
+				} else {
+					displayCheckboxSet( 'cover', false, true );
+					displayCheckboxSet( 'progressbar', false, false );
+					displayCheckboxSet( 'buttons', false, false );
+				}
+				if ( !time && $cover.prop( 'checked' ) ) {
+					displayCheckboxSet( 'progressbar', true, true );
+				} else {
+					displayCheckboxSet( 'progressbar', false, false );
+				}
+				if ( !time && ( !volume || G.display.volumenone ) ) {
+					displayCheckboxSet( 'cover', true, true );
+					displayCheckboxSet( 'progressbar', true, true );
+				}
+			} );
+			$bars.change( function() {
+				if ( $( this ).prop( 'checked' ) ) {
+					displayCheckboxSet( 'barsalways', true );
+				} else {
+					displayCheckboxSet( 'barsalways', false, false );
+				}
+			} );
+			$cover.change( function() {
+				if ( $( this ).prop( 'checked' ) ) {
+					if ( !$time.prop( 'checked' ) ) displayCheckboxSet( 'progressbar', true, true );
+					displayCheckboxSet( 'coversmall', true );
+					$( '#divnovu' ).removeClass( 'hide' );
+				} else {
+					displayCheckboxSet( 'progressbar', false, false );
+					displayCheckboxSet( 'coversmall', false, false );
+					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( 'time', true, true );
+					$( '#divnovu' ).addClass( 'hide' );
+				}
+			} );
+		}
+		, ok           : function () {
+			displaySave();
+			G.bars = G.display.bars;
+			G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
+			displayBars();
+			if ( G.playback ) {
+				displayPlayback();
+				setButtonControl();
+				renderPlayback();
+				$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
+			} else if ( G.library ) {
+				$( '.list p' ).toggleClass( 'bars-on', G.bars );
+				if ( bars !== G.bars && $( '.coverart' ).length ) {
+					G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
+					$( '#mode-album' ).click();
 				}
 			}
-		} );
+		}
 	} );
 } );
 $( '#colorok' ).click( function() {
