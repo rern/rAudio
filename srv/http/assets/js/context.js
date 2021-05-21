@@ -231,7 +231,7 @@ function tagEditor() {
 	list( query, function( values ) {
 		var label = [];
 		format.forEach( function( el, i ) {
-			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
+			label.push( '<i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
