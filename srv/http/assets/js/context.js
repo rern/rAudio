@@ -229,6 +229,7 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
+		console.log(values)
 		var label = [];
 		format.forEach( function( el, i ) {
 			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
@@ -238,7 +239,7 @@ function tagEditor() {
 		if ( G.library ) {
 			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
 		} else {
-			var img =  G.list.li.find( 'img' );
+			var $img =  G.list.li.find( 'img' );
 		}
 		var message = '<img src="'+ ( $img.length ? $img.attr( 'src' ) : G.coverdefault ) +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;

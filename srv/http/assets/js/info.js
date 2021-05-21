@@ -204,7 +204,7 @@ function infoReset() {
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '.infoarrowleft, .infoarrowright, #infoRange, #infoFile, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
 	$( '#infoMessage, #infoFooter' ).css( 'text-align', '' );
-	$( '#infoText input, .selectric, .selectric-wrapper' ).css( 'width', '' );
+	$( '#infoBox, #infoText input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '.selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent input, #infoContent select' ).off( 'keyup change' );
 	$( '.filebtn, .infobtn, #infoContent td, .infoarrowleft, .infoarrowright, #infoMessage' ).off( 'click' );
