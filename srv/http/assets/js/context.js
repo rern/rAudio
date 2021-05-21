@@ -239,9 +239,9 @@ function tagEditor() {
 		var message = '<img src="'+ src +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
 		var footer = '';
-		if ( G.list.licover ) footer += '* Various values<br>';
+		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
 		footer += 'Tap icons: Browse by that mode - value';
-		footer += '<br><i id="tagname" class="fa fa-question-circle fa-lg"></i>&ensp;Tag names';
+		footer += '<br><span id="tagname"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag names</span>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
