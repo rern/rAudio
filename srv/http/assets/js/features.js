@@ -132,6 +132,7 @@ $( '#setting-snapclient' ).click( function() {
 		, message       : 'Sync SnapClient with SnapServer:'
 		, textlabel     : 'Latency <gr>(ms)</gr>'
 		, textvalue     : G.snaplatency || 800
+		, boxwidth      : 100
 		, checkchange   : ( G.snapclient ? [ G.snaplatency ] : '' )
 		, cancel        : function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );

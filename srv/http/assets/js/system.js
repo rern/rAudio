@@ -640,8 +640,7 @@ $( '#setting-regional' ).click( function() {
 		, title        : 'Regional Settings'
 		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
 		, textvalue    : textvalue
-		, boxwidth     : 200
-		, footer       : '<px70/><px70/> <code>00</code> - common for all regions'
+		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
 		, checkchanged : textvalue
 		, ok           : function() {
 			var values = infoVal();
@@ -691,28 +690,25 @@ $( '#setting-soundprofile' ).click( function() {
 		, rchecked     : rchecked
 		, checkchanged : checkevalues
 		, preshow      : function() {
-			$( '#infoRadio input' ).last().prop( 'disabled', true );
-			$( '.infoinput' ).keyup( function() {
-				var values = '';
-				$( '.infoinput' ).each( function() {
-					values += $( this ).val() +' ';
-				} );
-				values = values.trimEnd();
+			var values, val;
+			var $text = $( '#infoContent input[type=text]' );
+			var $radio = $( '#infoContent input[type=radio]' );
+			$radio.last().prop( 'disabled', true );
+			$text.keyup( function() {
+				values = infoVal().slice( 0, -1 ).join( ' ' );
 				if ( radioval.indexOf( values ) === -1 ) values = 0;
-				$( '#infoRadio input[value="'+ values +'"]' ).prop( 'checked', true )
+				$radio.val( [ values ] );
 			} );
-			$( '#infoRadio' ).change( function() {
-				var soundprofileval = $( '#infoRadio input:checked' ).val();
-				var val = soundprofileval.split( ' ' );
-				for ( i = 0; i < iL; i++ ) $( '.infoinput' ).eq( i ).val( val[ i ] );
+			$radio.change( function() {
+				val = $( this ).val().split( ' ' );
+				for ( i = 0; i < iL; i++ ) $text.eq( i ).val( val[ i ] );
 			} );
 		}
 		, cancel       : function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
 		, ok           : function() {
-			var soundprofileval = infoVal().slice( 0, 4 ).join( ' ' );
-			bash( [ 'soundprofileset', soundprofileval ] );
+			bash( [ 'soundprofileset', infoVal().slice( 0, -1 ).join( ' ' ) ] );
 			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );
@@ -773,8 +769,8 @@ $( '#restore' ).click( function() {
 		, filetype    : '.gz'
 		, filefilter  : 1
 		, preshow     : function() {
-			$( '#infoRadio input' ).click( function() {
-				if ( $( '#infoRadio input:checked' ).val() !== 'restore' ) {
+			$( '#infoContent input' ).click( function() {
+				if ( infoVal() !== 'restore' ) {
 					$( '#infoFilename' ).empty()
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
@@ -787,8 +783,7 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
-			var checked = infoVal();
-			if ( checked === 'reset' ) {
+			if ( infoVal() === 'reset' ) {
 				bash( '/srv/http/bash/datareset.sh', bannerHide );
 			} else {
 				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];

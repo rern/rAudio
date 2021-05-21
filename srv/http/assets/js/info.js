@@ -100,7 +100,7 @@ var containerhtml = heredoc( function() { /*
 		<div id="infoButtons">
 			<div id="infoFile" class="hide">
 				<span id="infoFilename"></span>
-				<input type="file" class="infoinput" id="infoFileBox">
+				<input type="file" class="hide" id="infoFileBox">
 			</div>
 			<a id="infoFileLabel" class="filebtn infobtn-primary">Browse</a>
 			<a id="infoCancel" class="infobtn infobtn-default"></a>
@@ -155,7 +155,7 @@ $( '#infoOverlay' ).keydown( function( e ) {
 				$next.addClass( 'active' );
 			}
 		} else if ( [ 'ArrowLeft', 'ArrowRight' ].indexOf( key ) !== -1 ) {
-			if ( $( '.infoinput:focus' ).length ) return
+			if ( $( '#infoContent input:focus' ).length ) return
 			
 			var $btn = $( '.infobtn:not( .hide )' );
 			if ( $btn.length === 1 ) return
@@ -352,7 +352,7 @@ function info( json ) {
 			for ( i = 0; i < iL; i++ ) {
 				var labeltext = textlabel[ i ] || '';
 				htm += '<tr><td>'+ labeltext +'</td>';
-				htm += '<td><input type="text" class="infoinput"';
+				htm += '<td><input type="text"';
 				if ( textvalue ) htm += textvalue[ i ] !== '' ? ' value="'+ textvalue[ i ].toString().replace( /"/g, '&quot;' ) +'">' : '>';
 				if ( textsuffix ) htm += textsuffix[ i ] !== '' ? '<gr>'+ textsuffix[ i ] +'</gr>' : '<gr>&nbsp;</gr>';
 				htm += '</td></tr>'
@@ -366,20 +366,10 @@ function info( json ) {
 			var iL = passwordlabel.length;
 			for ( i = 0; i < iL; i++ ) {
 				htm += '<tr><td>'+ passwordlabel[ i ] +'</td>';
-				htm += '<td><input type="password" class="infoinput"';
+				htm += '<td><input type="password"';
 				if ( passwordvalue ) htm += ' value="'+ passwordvalue[ i ] +'"';
 				htm += '>&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
 			}
-		}
-		if ( 'textrequired' in O ) {
-			O.textrequired.forEach( function( i ) {
-				checkChangedLength( $( '.infoinput' ).eq( i ), 1 );
-			} );
-		}
-		if ( 'textlength' in O ) {
-			$.each( O.textlength, function( i, L ) {
-				checkChangedLength( $( '.infoinput' ).eq( i ), L );
-			} );
 		}
 		if ( 'radio' in O ) {
 			if ( typeof O.radio !== 'object' ) {
@@ -418,7 +408,7 @@ function info( json ) {
 					}
 					line = val ? '<label><input type="checkbox" name="'+ key +'">'+ val +'</label>' : '';
 					if ( !O.checkcolumn ) {
-						htm += '<tr><td class="chk">'+ line +'</td></tr>';
+						htm += '<tr><td></td><td class="chk">'+ line +'</td></tr>';
 					} else {
 						i++
 						if ( i % 2 ) {
@@ -491,18 +481,30 @@ function info( json ) {
 			} );
 		}
 		$( '#infoContent' ).html( htmlmsg +'<table>'+ htm +'</table>'+ htmlfooter ).promise().done( function() {
+			var $text = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
+			var $radio = $( '#infoContent input[type=radio]' );
+			var $check = $( '#infoContent input[type=checkbox]' );
 			if ( 'rchecked' in O ) {
-				$( '#infoContent input[type=radio]' ).val( [ O.rchecked ] );
+				$radio.val( [ O.rchecked ] );
 			} else {
-				$( '#infoContent input[type=radio]:eq( 0 )' ).prop( 'checked', true );
+				$radio.eq( 0 ).prop( 'checked', true );
 			}
 			if ( 'cchecked' in O ) {
-				var $chk = $( '#infoContent input[type=checkbox]' );
 				O.cchecked.forEach( function( i ) {
-					$chk.eq( i ).prop( 'checked', true );
+					$check.eq( i ).prop( 'checked', true );
 				} );
 			}
 			if ( 'schecked' in O ) $( '#infoContent select' ).val( O.schecked );
+			if ( 'textrequired' in O ) {
+				O.textrequired.forEach( function( i ) {
+					checkChangedLength( $text.eq( i ), 1 );
+				} );
+			}
+			if ( 'textlength' in O ) {
+				$.each( O.textlength, function( i, L ) {
+					checkChangedLength( $text.eq( i ), L );
+				} );
+			}
 		} );
 	}
 
@@ -529,7 +531,7 @@ function info( json ) {
 		var labelW = $( '#infoContent td:first-child' ).width();
 		var boxW = O.boxwidth !== 'max' ? O.boxwidth : allW - 50 - labelW;
 		setTimeout( function() {
-			$( '#infoContent input[type=text], #infoContent textarea, #infoOverlay .selectric, #infoOverlay .selectric-wrapper' ).css( 'width', boxW +'px' );
+			$( '#infoContent' ).find( 'input[type=text], input[type=password], textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}, 0 );
 	}
@@ -557,12 +559,12 @@ function alignVertical() { // make infoBox scrollable
 			, 'visibility' : 'visible'
 		} );
 		$( 'html, body' ).scrollTop( 0 );
-		$( '.infoinput' ).prop( 'spellcheck', false );
+		$( '#infoContent input[type=text]' ).prop( 'spellcheck', false );
 	}, 0 );
 }
 function checkChanged() {
 	$( '#infoOk' ).addClass( 'disabled' );
-	$( '.infoinput' ).keyup( checkChangedValue );
+	$( '#infoContent input[type=text], #infoContent input[type=password], #infoContent textarea' ).keyup( checkChangedValue );
 	$( '#infoContent input[type=radio], #infoContent input[type=checkbox], #infoContent select' ).change( checkChangedValue );
 }
 function checkChangedLength( $text, L ) {

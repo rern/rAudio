@@ -53,7 +53,7 @@ function editLAN( $el ) {
 		gateway = $el.data( 'gateway' );
 		dhcp = $el.data( 'dhcp' );
 	}
-	var message = ip ? 'Current: <wh>'+ ( dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh><br>&nbsp;' : '';
+	var message = ip ? 'Current: <wh>'+ ( dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh>' : '';
 	info( {
 		  icon         : 'lan'
 		, title        : ( ip ? 'LAN' : 'Add LAN' )
@@ -122,6 +122,7 @@ function editWiFi( $el ) {
 		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, textvalue     : [ ssid, ip, gateway ]
+		, boxwidth      : 180
 		, checkbox      : { static: 'Static IP', hidden: 'Hidden SSID', wep: 'WEP' }
 		, cchecked      : cchecked
 		, passwordlabel : 'Password'

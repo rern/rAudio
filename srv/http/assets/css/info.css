@@ -300,11 +300,10 @@ hr {
 }
 #infoContent input[type=text]:disabled {
 	background: none !important;
+	outline: none;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
-}
-.infoinput:focus {
 	outline: none;
 }
 #infoFilename {
@@ -320,14 +319,6 @@ hr {
 }
 .eyeactive {
 	color: var( --cm );
-}
-.infohtml {
-	display: table;
-	margin: 1px auto 0;
-	text-align: left;
-}
-.infotextbox .infohtml {
-	margin-left: 0;
 }
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
@@ -362,10 +353,6 @@ hr {
 }
 #infoFile {
 	display: block;
-}
-.infocol {
-	display: inline-block;
-	width: 160px;
 }
 #infoButtons {
 	padding: 10px 0 20px 0;

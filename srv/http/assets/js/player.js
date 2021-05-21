@@ -376,9 +376,7 @@ var custominfo = heredoc( function() { /*
 		<br>...
 		<br>user<px style="width: 153px"></px>"mpd"
 	</p>
-	<div class="infotextbox">
-		<textarea class="infoinput" id="global"></textarea>
-	</div>
+	<textarea class="infoinput" id="global"></textarea>
 	<p class="infomessage msg">
 			...
 		<br>
@@ -386,9 +384,7 @@ var custominfo = heredoc( function() { /*
 		<br><px30/>...
 		<br><px30/>mixer_device<px style="width: 24px"></px>"hw:N"
 	</p>
-	<div class="infotextbox">
-		<textarea class="infoinput" id="output"></textarea>
-	</div>
+	<textarea class="infoinput" id="output"></textarea>
 	<p class="infomessage msg">
 		}
 	</p>
