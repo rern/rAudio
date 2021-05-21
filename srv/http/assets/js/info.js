@@ -300,10 +300,10 @@ function info( json ) {
 		}
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
-		$( '#infoOverlay' ).addClass( 'hide' );
 		if ( 'cancel' in O && typeof O.cancel === 'function' ) {
 			O.cancel();
 		} else {
+			arrow = 0;
 			infoReset();
 		}
 	} );

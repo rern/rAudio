@@ -202,21 +202,20 @@ $( '#power' ).click( function() {
 	} );
 } );
 var chklibrary = {
-	  sd             : '<i class="fa fa-microsd"></i>SD'
-	, usb            : '<i class="fa fa-usbdrive"></i>USB'
+	  album          : '<i class="fa fa-album"></i>Album'
 	, nas            : '<i class="fa fa-networks"></i>Network'
-	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
-	, album          : '<i class="fa fa-album"></i>Album'
-	, bl             : ''
-	, artist         : '<i class="fa fa-artist"></i>Artist'
 	, albumartist    : '<i class="fa fa-albumartist"></i>AlbumArtist'
+	, sd             : '<i class="fa fa-microsd"></i>SD'
+	, artist         : '<i class="fa fa-artist"></i>Artist'
+	, usb            : '<i class="fa fa-usbdrive"></i>USB'
 	, composer       : '<i class="fa fa-composer"></i>Composer'
+	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
 	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
+	, bl             : ''
 	, date           : '<i class="fa fa-date"></i>Date'
+	, count          : 'Count'
 	, genre          : '<i class="fa fa-genre"></i>Genre'
-	, hr             : ''
-	, count          : 'Count <gr>Text</gr>'
-	, label          : 'Label <gr>Text</gr>'
+	, label          : 'Label'
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-coverart"></i>Sort Album by artists'
@@ -225,7 +224,6 @@ var chklibrary2 = {
 	, tapreplaceplay : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace"></i>Replace + Play'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i>'
-	, hr             : ''
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
