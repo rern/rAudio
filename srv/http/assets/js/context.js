@@ -212,6 +212,7 @@ function tagEditor() {
 	var file = G.list.path;
 	var cue = file.slice( -4 ) === '.cue';
 	var format = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
+	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var fL = format.length;
 	if ( !G.list.licover ) {
 		if ( !cue ) {
@@ -231,7 +232,7 @@ function tagEditor() {
 		var src = G.playlist ? value.pop() : $( '.licoverimg img' ).attr( 'src' ) || G.list.li.find( 'img' ).attr( 'src' );
 		var label = [];
 		format.forEach( function( el, i ) {
-			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname hide">'+ name[ i ] +'</span>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
@@ -239,6 +240,7 @@ function tagEditor() {
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
 		var footer = 'Tap icons: Browse by that mode - value';
 		if ( G.list.licover ) footer += '<br>* Various values';
+		footer += '<br><i id="tagname" class="fa fa-question-circle fa-lg"></i>&ensp;Tag names';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
@@ -285,6 +287,19 @@ function tagEditor() {
 						renderLibraryList( data );
 					}, 'json' );
 				} );
+				setTimeout( function() {
+					var boxW = parseInt( $( '#infotextbox input' ).css('width') );
+					var boxS = boxW - 88;
+					$( '#infoFooter' ).on( 'click', '#tagname', function() {
+						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
+							$( '.tagname' ).removeClass( 'hide' );
+							$( '.infoinput' ).css( 'width', boxS );
+						} else {
+							$( '.tagname' ).addClass( 'hide' );
+							$( '.infoinput' ).css( 'width', boxW );
+						}
+					} );
+				}, 600 );
 				$( '.infolabel' ).click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
 					var path = $( '.infoinput' ).eq( $( this ).index() ).val();
