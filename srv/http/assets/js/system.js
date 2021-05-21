@@ -652,9 +652,9 @@ $( '#setting-regional' ).click( function() {
 } );
 $( '#setting-soundprofile' ).click( function() {
 	var textlabel = [
-		  'kernel.sched_latency_ns <gr>(ns)</gr>'
+		  'sched_latency_ns'
 		, 'vm.swappiness'
-		, 'eth0 mtu <gr>(byte)</gr>'
+		, 'eth0 mtu'
 		, 'eth0 txqueuelen'
 	];
 	var radio = {

@@ -199,18 +199,14 @@ $( '#setting-hostapd' ).click( function() {
 	} );
 } );
 var localbrowserinfo = heredoc( function() { /*
-	<div id="infoText" class="infocontent">
-		<div id="infotextlabel">
-			<a class="infolabel">
-				Screen off <gr>(min)</gr><br>
-				Zoom <gr>(0.5-2.0)</gr>
-			</a>
-		</div>
-		<div id="infotextbox">
-			<input type="text" class="infoinput input" id="infoTextBox" style="width: 60px; text-align: center">
-			<input type="text" class="infoinput input" id="infoTextBox1" style="width: 60px; text-align: center">
-		</div>
-	</div>
+	<table>
+		<tr><td>Screen off <gr>(min)</gr></td>
+			<td><input type="text" class="infoinput" style="width: 60px; text-align: center"></td>
+		</tr>
+		<tr><td>Zoom <gr>(0.5-2.0)</gr></td>
+			<td><input type="text" class="infoinput" style="width: 60px; text-align: center"></td>
+		</tr>
+	</table>
 	<hr>
 	Screen rotation<br>
 	<div id="infoRadio" class="infocontent infohtml" style="text-align: center">

@@ -223,6 +223,9 @@ hr {
 #infoContent td:first-child {
 	text-align: right;
 }
+#infoContent td.chk {
+	text-align: left !important;
+}
 #infoRadio td,
 #infoCheckBox td {
 	height: 32px;
@@ -283,7 +286,7 @@ hr {
 #infoContent input[type=text],
 #infoContent input[type=number],
 #infoContent input[type=password] {
-	display: block;
+	display: inline-block;
 	margin: 0 !important;
 	width: 230px;
 	height: 36px !important;
