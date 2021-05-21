@@ -228,15 +228,16 @@ function tagEditor() {
 	}
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
-	list( query, function( value ) {
-		var src = G.playlist ? value.pop() : $( '.licoverimg img' ).attr( 'src' ) || G.list.li.find( 'img' ).attr( 'src' );
+	list( query, function( data ) {
+		var values = data.slice( 0 );
 		var label = [];
 		format.forEach( function( el, i ) {
 			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
-		var message = '<img src="'+ src +'"><br>'
+		var $img = G.library ? $( '.licoverimg img' ) || G.list.li.find( 'img' ) : G.list.li.find( 'img' );
+		var message = '<img src="'+ ( $img.length ? $img.attr( 'src' ) : G.coverdefault ) +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
 		var footer = '';
 		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
@@ -250,9 +251,9 @@ function tagEditor() {
 			, msgalign     : 'left'
 			, footer       : footer
 			, textlabel    : label
-			, textvalue    : value
+			, textvalue    : values
 			, boxwidth     : 'max'
-			, checkchanged : value
+			, checkchanged : values
 			, preshow      : function() {
 				var $text = $( '#infoContent input' );
 				$( '#infoMessage' )
