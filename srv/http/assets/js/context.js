@@ -238,8 +238,9 @@ function tagEditor() {
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
 		var message = '<img src="'+ src +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
-		var footer = 'Tap icons: Browse by that mode - value';
-		if ( G.list.licover ) footer += '<br>* Various values';
+		var footer = '';
+		if ( G.list.licover ) footer += '* Various values<br>';
+		footer += 'Tap icons: Browse by that mode - value';
 		footer += '<br><i id="tagname" class="fa fa-question-circle fa-lg"></i>&ensp;Tag names';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
