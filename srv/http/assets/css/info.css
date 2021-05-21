@@ -68,12 +68,7 @@ input::-moz-focus-inner { /* dotted outline */
 }
 hr {
 	border: none;
-    border-bottom: 1px solid var( --cg );}
-#infoContent hr {
-	margin: 10px 30px;
-}
-#infoCheckBox hr {
-	margin: 10px -10px;
+	border-bottom: 1px solid var( --cg );
 }
 #infoOverlay {
 	position: absolute;
@@ -207,11 +202,6 @@ hr {
 	padding: 25px 10px 10px 10px;
 	font-size: 16px;
 }
-#infoContent label {
-	display: inline-block;
-	margin: 0;
-	font-weight: normal;
-}
 #infoContent table {
 	margin: 0 auto;
 }
@@ -232,6 +222,18 @@ hr {
 	padding-right: 10px;
 	text-align: left !important;
 }
+#infoContent label i {
+	text-align: center;
+	width: 22px;
+	color: var( --cg60 );
+	font-size: 20px;
+	margin-right: 5px;
+}
+#infoContent td:first-child i {
+	font-size: 22px;
+	width: 30px;
+	text-align: center;
+}
 .infomessage,
 #infoMessage {
 	display: inline-block;
@@ -249,16 +251,6 @@ hr {
 	margin-bottom: 0;
 	color: var( --cg60 );
 }
-#infoMessage .colL,
-#infoMessage .colR {
-	display: inline-block;
-	margin-bottom: 5px;
-	width: fit-content !important;
-	text-align: right;
-}
-#infoMessage .colL {
-	padding-right: 10px;
-}
 #infoContent textarea {
 	width: 100%;
 	height: 100px;
@@ -274,14 +266,6 @@ hr {
 	color: var( --cw );
 	background: var( --cgd );
 	overflow: hidden;
-}
-.infolabel {
-	display: block;
-	text-align: right;
-	color: var( --cw );
-}
-.infolabel:hover {
-	color: var( --cw );
 }
 #infoContent input[type=text],
 #infoContent input[type=number],
@@ -325,7 +309,7 @@ hr {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
-	margin: 3px 6px 3px 0;
+	margin: 3px 8px 3px 0;
 	vertical-align: -10px;
 	border: none;
 	border-radius: 3px;
@@ -501,8 +485,6 @@ px100 { width: 100px }
 	}
 	input[type=checkbox],
 	input[type=radio],
-	.infocheckbox label,
-	.inforadio label,
 	.fa-eye {
 		cursor: pointer;
 	}

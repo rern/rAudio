@@ -232,7 +232,7 @@ function tagEditor() {
 		var src = G.playlist ? value.pop() : $( '.licoverimg img' ).attr( 'src' ) || G.list.li.find( 'img' ).attr( 'src' );
 		var label = [];
 		format.forEach( function( el, i ) {
-			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname hide">'+ name[ i ] +'</span>' );
+			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
@@ -254,15 +254,17 @@ function tagEditor() {
 			, boxwidth     : 'max'
 			, checkchanged : value
 			, preshow      : function() {
+				var $text = $( '#infoContent input' );
 				$( '#infoMessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
-				$( '.infoinput' ).each( function( i, $el ) {
-					var $el = $( this );
-					if ( G.playlist && !$el.val() ) $( '.infolabel:eq( '+ i +' ), .infoinput:eq( '+ i +' )' ).hide();
-				} );
-				if ( cue ) $( '.infolabel:eq( 2 ), .infoinput:eq( 2 )' ).hide();
-				var plcue = !$( '.infoinput' ).filter( function() {
+				if ( G.playlist ) {
+					$text.each( function( i, $el ) {
+						if ( !$( this ).val() ) $text.eq( i ).parents( 'tr' ).hide();
+					} );
+				}
+				if ( cue ) $text.eq( 2 ).parents( 'tr' ).hide();
+				var plcue = !$text.filter( function() {
 					return $( this ).val() !== '';
 				} ).length
 				if ( plcue ) {
@@ -289,21 +291,21 @@ function tagEditor() {
 					}, 'json' );
 				} );
 				setTimeout( function() {
-					var boxW = parseInt( $( '#infoText input' ).css('width') );
+					var boxW = parseInt( $text.css('width') );
 					var boxS = boxW - 88;
 					$( '#infoFooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );
-							$( '.infoinput' ).css( 'width', boxS );
+							$text.css( 'width', boxS );
 						} else {
 							$( '.tagname' ).addClass( 'hide' );
-							$( '.infoinput' ).css( 'width', boxW );
+							$text.css( 'width', boxW );
 						}
 					} );
 				}, 600 );
-				$( '.infolabel' ).click( function() {
+				$( '#infoContent td:first-child' ).click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
-					var path = $( '.infoinput' ).eq( $( this ).index() ).val();
+					var path = $text.eq( $( this ).index() ).val();
 					if ( !path || mode === 'title' || mode === 'track' || ( G.library && mode === 'album' ) ) return
 					
 					if ( mode !== 'album' ) {
@@ -319,8 +321,8 @@ function tagEditor() {
 							return
 						}
 						
-						var albumartist = $( '.infoinput' ).eq( 1 ).val();
-						var artist = $( '.infoinput' ).eq( 2 ).val();
+						var albumartist = $text.eq( 1 ).val();
+						var artist = $text.eq( 2 ).val();
 						var query = {
 							  query  : 'find'
 							, mode   : [ 'album', albumartist ? 'albumartist' : 'artist' ]

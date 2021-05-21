@@ -214,9 +214,9 @@ var chklibrary = {
 	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
 	, date           : '<i class="fa fa-date"></i>Date'
 	, genre          : '<i class="fa fa-genre"></i>Genre'
-	, hr             : '<px30/><gr>Text:</gr>'
-	, count          : 'Count'
-	, label          : 'Label'
+	, hr             : ''
+	, count          : 'Count <gr>Text</gr>'
+	, label          : 'Label <gr>Text</gr>'
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-coverart"></i>Sort Album by artists'
@@ -225,9 +225,9 @@ var chklibrary2 = {
 	, tapreplaceplay : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace"></i>Replace + Play'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i>'
-	, hr             : '<px30/><i class="fa fa-coverart"></i>Cover art band <gr>in tracks view</gr><br>'
-	, hidecover      : 'Hide'
-	, fixedcover     : 'Fix <gr>on large screen</gr>'
+	, hr             : ''
+	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
+	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
 $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	var options = this.id === 'displaylibrary2';
