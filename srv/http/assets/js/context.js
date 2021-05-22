@@ -312,12 +312,22 @@ function tagEditor() {
 				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
 					if ( [ 'title', 'track' ].indexOf( mode ) !== -1 ) {
-						if ( G.playlist ) $td.find( '.fa-album' ).click();
+						if ( G.library ) {
+							banner( 'Browse Mode', 'Already here', 'library' );
+							$( '#infoX' ).click();
+						} else {
+							$td.find( '.fa-album' ).click();
+						}
 						return
 					}
 					
 					var path = $text.eq( $( this ).parents( 'tr' ).index() ).val();
-					if ( !path || ( G.library && mode === 'album' ) ) return
+					if ( !path || ( G.library && mode === 'album' ) ) {
+						banner( 'Browse Mode', 'Already here', 'library' );
+						$( '#infoX' ).click();
+						return
+					}
+					
 					if ( mode !== 'album' ) {
 						var query = {
 							  query  : 'find'
