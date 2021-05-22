@@ -234,11 +234,10 @@ $( '#setting-localbrowser' ).click( function() {
 		, boxwidth     : 60
 		, checkchanged : ( G.localbrowser ? [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ] : '' )
 		, preshow      : function() {
-			var $text = $( '#infoContent input[type=text]' );
-			$( '#infoContent input[type=text]:eq( 0 )' ).val( G.localzoom );
-			$( '#infoContent input[type=text]:eq( 1 )' ).val( G.localscreenoff / 60 );
-			$( '#infoContent input[type=radio]' ).val( [ G.localrotate || 'NORMAL' ] );
-			$( '#infoContent input[type=checkbox]' ).prop( 'checked', G.localcursor );
+			$( '#infoContent input:text:eq( 0 )' ).val( G.localzoom );
+			$( '#infoContent input:text:eq( 1 )' ).val( G.localscreenoff / 60 );
+			$( '#infoContent input:radio' ).val( [ G.localrotate || 'NORMAL' ] );
+			$( '#infoContent input:checkbox' ).prop( 'checked', G.localcursor );
 		}
 		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
 		, buttoncolor  : orange
@@ -261,15 +260,12 @@ $( '#setting-localbrowser' ).click( function() {
 	} );
 } );
 $( '#setting-smb' ).click( function() {
-	var checked = [];
-	if ( G.smbwritesd ) checked.push( 0 );
-	if ( G.smbwriteusb ) checked.push( 1 );
 	info( {
 		  icon         : 'network'
 		, title        : 'Samba File Sharing'
 		, message      : '<wh>Write</wh> permission:</gr>'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
-		, cchecked     : checked
+		, values       : [ G.smbwritesd, G.smbwriteusb ]
 		, checkchanged : ( G.smb ? [ G.smbwritesd, G.smbwriteusb ] : '' )
 		, cancel       : function() {
 			$( '#smb' ).prop( 'checked', G.smb );

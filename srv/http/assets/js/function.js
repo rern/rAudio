@@ -136,7 +136,7 @@ function coverartChange() {
 		var imagefile = '/mnt/MPD/'+ path +'/cover' // no ext
 		var type = 'coverart';
 	}
-	var jsoninfo = {
+	var json = {
 		  icon        : 'coverart'
 		, title       : 'Change Album CoverArt'
 		, message     : '<img class="imgold">'
@@ -164,10 +164,10 @@ function coverartChange() {
 	if ( ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
 		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
 	) {
-		jsoninfo.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
-		jsoninfo.buttoncolor = red;
-		jsoninfo.buttonwidth = 1;
-		jsoninfo.button      = function() {
+		json.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
+		json.buttoncolor = red;
+		json.buttonwidth = 1;
+		json.button      = function() {
 			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
 				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
@@ -180,8 +180,8 @@ function coverartChange() {
 			} );
 		}
 	}
-	if ( ( G.playback && pbembedded ) || ( G.library && liembedded ) ) jsoninfo.footer = '<i class="fa fa-coverart"></i>&ensp;embedded';
-	info( jsoninfo );
+	if ( ( G.playback && pbembedded ) || ( G.library && liembedded ) ) json.footer = '<i class="fa fa-coverart"></i>&ensp;embedded';
+	info( json );
 }
 function coverartDefault() {
 	if ( !G.status.webradio || G.display.novu ) {

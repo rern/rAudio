@@ -320,14 +320,11 @@ $( '#list' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
-	var checked = [];
-	if ( !G.bluetooth || G.btdiscoverable ) checked.push( 0 );
-	if ( G.btformat ) checked.push( 1 );
 	info( {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, cchecked     : checked
+		, values       : [ G.btdiscoverable, G.btformat ]
 		, checkchanged : ( G.bluetooth ? [ G.btdiscoverable, G.btformat ] : '' )
 		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
@@ -570,7 +567,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, schecked     : G.lcdmodel
+		, values       : G.lcdmodel
 		, checkchanged : ( G.lcd ? [ G.lcdmodel ] : '' )
 		, boxwidth     : 200
 		, buttonlabel  : 'Calibrate'
@@ -663,9 +660,7 @@ $( '#setting-soundprofile' ).click( function() {
 	}
 	var radioval = Object.values( radio );
 	var rchecked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
-	var checkevalues = G.soundprofileval.split( ' ' );
-	checkevalues.push( G.soundprofileval );
-	var iL = textlabel.length;
+	values.push( rchecked );
 	info( {
 		  icon         : 'sliders'
 		, title        : 'Kernel Sound Profile'
@@ -674,18 +669,18 @@ $( '#setting-soundprofile' ).click( function() {
 		, boxwidth     : 110
 		, radio        : radio
 		, radiocolumn  : 1
-		, rchecked     : rchecked
-		, checkchanged : checkevalues
+		, checkchanged : values
 		, preshow      : function() {
 			var values, val;
-			var $text = $( '#infoContent input[type=text]' );
-			var $radio = $( '#infoContent input[type=radio]' );
+			var $text = $( '#infoContent input:text' );
+			var $radio = $( '#infoContent input:radio' );
 			$radio.last().prop( 'disabled', true );
 			$text.keyup( function() {
 				values = infoVal().slice( 0, -1 ).join( ' ' );
 				if ( radioval.indexOf( values ) === -1 ) values = 0;
 				$radio.val( [ values ] );
 			} );
+			var iL = textlabel.length;
 			$radio.change( function() {
 				val = $( this ).val().split( ' ' );
 				for ( i = 0; i < iL; i++ ) $text.eq( i ).val( val[ i ] );
@@ -751,7 +746,7 @@ $( '#restore' ).click( function() {
 			  'Backup file <code>*.gz</code>' : 'restore'
 			, 'Reset to default'              : 'reset'
 		}
-		, rchecked    : 'restore'
+		, values      : 'restore'
 		, fileoklabel : 'Restore'
 		, filetype    : '.gz'
 		, filefilter  : 1

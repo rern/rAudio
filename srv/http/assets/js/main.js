@@ -1462,7 +1462,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		//    - gif    > [file]   - no canvas
 		//    - others > [base64] - data:image/jpeg;base64,...
 		var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
-		var jsoninfo =  {
+		var json =  {
 			  icon        : 'bookmark'
 			, title       : 'Change Bookmark Thumbnail'
 			, message     : icon
@@ -1474,9 +1474,9 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			}
 		}
 		if ( thumbnail ) {
-			jsoninfo.buttonlabel = '<i class="fa fa-undo"></i>Reset';
-			jsoninfo.buttonwidth = 1;
-			jsoninfo.button      = function() {
+			json.buttonlabel = '<i class="fa fa-undo"></i>Reset';
+			json.buttonwidth = 1;
+			json.button      = function() {
 				bash( [ 'bookmarkreset', path ], function() {
 					var label = path.split( '/' ).pop();
 					$this.find( 'img' ).remove();
@@ -1484,7 +1484,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 				} );
 			}
 		}
-		info( jsoninfo );
+		info( json );
 	} else if ( $target.hasClass( 'bk-remove' ) ) {
 		var $img = $this.find( 'img' );
 		if ( $img.length ) {

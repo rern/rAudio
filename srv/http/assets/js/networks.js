@@ -103,7 +103,6 @@ function editWiFi( $el ) {
 	var dhcp = false;
 	var hidden = false;
 	var security = false
-	var cchecked = [];
 	if ( $el ) {
 		ssid = $el.data( 'ssid' );
 		ip = $el.data( 'ip' ) || '';

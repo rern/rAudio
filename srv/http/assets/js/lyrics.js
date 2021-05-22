@@ -71,7 +71,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			infojson.checkbox = { 1: 'Title with parentheses content' }
 			infojson.preshow  = function() {
 				$( '#infoContent input' ).change( function() {
-					$( '#infoContent input[type=text]:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
+					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
 				} );
 			}
 		}

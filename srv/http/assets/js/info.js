@@ -473,18 +473,6 @@ function info( json ) {
 				}
 			} );
 		}
-		
-		if ( 'rchecked' in O ) {
-			$radio.val( [ O.rchecked ] );
-		} else {
-			$radio.eq( 0 ).prop( 'checked', true );
-		}
-		if ( 'cchecked' in O ) {
-			O.cchecked.forEach( function( i ) {
-				$check.eq( i ).prop( 'checked', true );
-			} );
-		}
-		if ( 'schecked' in O ) $( '#infoContent select' ).val( O.schecked );
 		if ( 'textrequired' in O ) {
 			O.textrequired.forEach( function( i ) {
 				checkChangedLength( $text.eq( i ), 1 );
@@ -514,7 +502,7 @@ function info( json ) {
 			var labelW = $( '#infoContent td:first-child' ).width();
 			var boxW = O.boxwidth !== 'max' ? O.boxwidth : allW - 50 - labelW;
 			setTimeout( function() {
-				$( '#infoContent' ).find( 'input[type=text], input[type=password], textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
+				$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 				$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 			}, 0 );
 		}
@@ -543,13 +531,13 @@ function alignVertical() { // make infoBox scrollable
 			, 'visibility' : 'visible'
 		} );
 		$( 'html, body' ).scrollTop( 0 );
-		$( '#infoContent input[type=text]' ).prop( 'spellcheck', false );
+		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 	}, 0 );
 }
 function checkChanged() {
 	$( '#infoOk' ).addClass( 'disabled' );
-	$( '#infoContent input[type=text], #infoContent input[type=password], #infoContent textarea' ).keyup( checkChangedValue );
-	$( '#infoContent input[type=radio], #infoContent input[type=checkbox], #infoContent select' ).change( checkChangedValue );
+	$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChangedValue );
+	$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChangedValue );
 }
 function checkChangedLength( $text, L ) {
 	O.shortlength = $text.val().length < L;
@@ -573,7 +561,7 @@ function checkChangedValue() {
 	}, 0 );
 }
 function infoVal( json ) {
-	var $el = $( '#infoContent' ).find( 'input[type=text], input[type=password], input[type=radio], input[type=checkbox], select, textarea' );
+	var $el = $( '#infoContent' ).find( 'input, select, textarea' );
 	var values = json ? {} : [];
 	var $this, type, name, val;
 	$el.each( function() {

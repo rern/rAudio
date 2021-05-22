@@ -220,7 +220,7 @@ $( '#setting-crossfade' ).click( function() {
 		, message      : 'Seconds:'
 		, radio        : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 }
 		, radiocolumn  : 1
-		, rchecked     : G.crossfadeval || 1
+		, values       : G.crossfadeval || 1
 		, checkchanged : ( G.crossfade ? [ G.crossfadeval ] : '' )
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
@@ -240,7 +240,7 @@ $( '#setting-replaygain' ).click( function() {
 		  icon         : 'mpd'
 		, title        : 'Replay Gain'
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, rchecked     : G.replaygainval || 'auto'
+		, values       : G.replaygainval || 'auto'
 		, checkchanged : ( G.replaygain ? [ G.replaygainval ] : '' )
 		, cancel       : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
