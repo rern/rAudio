@@ -442,7 +442,7 @@ function info( json ) {
 			name = this.name;
 			if ( !name ) {
 				return true
-			} else if (	name !== nameprev ) {
+			} else if (	name !== nameprev ) { // each radio group: multiple inputs with same name
 				nameprev = name;
 				return true
 			}
