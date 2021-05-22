@@ -178,7 +178,7 @@ $( '#setting-hostapd' ).click( function() {
 		, values       : [ G.hostapdpwd, G.hostapdip ]
 		, textrequired : [ 1 ]
 		, textlength   : { 0: 8 }
-		, checkchanged : ( G.hostapd ? [ G.hostapdpwd, G.hostapdip ] : '' )
+		, checkchanged : ( G.hostapd ? 1 : 0 )
 		, cancel       : function() {
 			if ( set ) {
 				loader();
@@ -231,14 +231,9 @@ $( '#setting-localbrowser' ).click( function() {
 		  icon         : 'chromium'
 		, title        : 'Browser on RPi'
 		, content      : localbrowserinfo
+		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, boxwidth     : 60
-		, checkchanged : ( G.localbrowser ? [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ] : '' )
-		, preshow      : function() {
-			$( '#infoContent input:text:eq( 0 )' ).val( G.localzoom );
-			$( '#infoContent input:text:eq( 1 )' ).val( G.localscreenoff / 60 );
-			$( '#infoContent input:radio' ).val( [ G.localrotate || 'NORMAL' ] );
-			$( '#infoContent input:checkbox' ).prop( 'checked', G.localcursor );
-		}
+		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
@@ -266,7 +261,7 @@ $( '#setting-smb' ).click( function() {
 		, message      : '<wh>Write</wh> permission:</gr>'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : [ G.smbwritesd, G.smbwriteusb ]
-		, checkchanged : ( G.smb ? [ G.smbwritesd, G.smbwriteusb ] : '' )
+		, checkchanged : ( G.smb ? 1 : 0 )
 		, cancel       : function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
@@ -289,7 +284,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		, textlabel     : 'User'
 		, values        : user
 		, passwordlabel : 'Password'
-		, checkchanged  : ( G.mpdscribble ? [ user, pwd ] : '' )
+		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
 		, preshow       : function() {
 			$( '#infoPasswordBox' ).val( pwd );
 		}

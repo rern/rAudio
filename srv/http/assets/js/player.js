@@ -221,7 +221,7 @@ $( '#setting-crossfade' ).click( function() {
 		, radio        : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 }
 		, radiocolumn  : 1
 		, values       : G.crossfadeval || 1
-		, checkchanged : ( G.crossfade ? [ G.crossfadeval ] : '' )
+		, checkchanged : ( G.crossfade ? 1 : 0 )
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
@@ -241,7 +241,7 @@ $( '#setting-replaygain' ).click( function() {
 		, title        : 'Replay Gain'
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : G.replaygainval || 'auto'
-		, checkchanged : ( G.replaygain ? [ G.replaygainval ] : '' )
+		, checkchanged : ( G.replaygain ? 1 : 0 )
 		, cancel       : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
@@ -263,7 +263,7 @@ $( '#setting-buffer' ).click( function() {
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, values       : G.bufferval || 4096
 		, textrequired : [ 0 ]
-		, checkchanged : ( G.buffer ? [ G.bufferval ] : '' )
+		, checkchanged : ( G.buffer ? 1 : 0 )
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
@@ -282,7 +282,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, values       : G.bufferoutputval || 8192
 		, textrequired : [ 0 ]
-		, checkchanged : ( G.bufferoutput ? [ G.bufferoutputval ] : '' )
+		, checkchanged : ( G.bufferoutput ? 1 : 0 )
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
@@ -342,7 +342,7 @@ $( '#setting-soxr' ).click( function() {
 		, content       : soxrinfo
 		, nofocus       : 1
 		, values        : values
-		, checkchanged  : ( G.soxr ? values : '' )
+		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, preshow       : function() {
 			setTimeout( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );
@@ -402,9 +402,10 @@ $( '#setting-custom' ).click( function() {
 			  icon     : 'mpd'
 			, title    : "User's Configurations"
 			, content  : custominfo
+			, values   : [ valglobal, valoutput ]
 			, msgalign : 'left'
 			, boxwidth : 330
-			, checkchanged : ( G.custom ? [ valglobal, valoutput ] : '' )
+			, checkchanged : ( G.custom ? 1 : 0 )
 			, preshow  : function() {
 				$( '#global' ).val( valglobal );
 				$( '#output' ).val( valoutput );

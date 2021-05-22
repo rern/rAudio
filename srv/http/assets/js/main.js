@@ -242,7 +242,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 		  icon         : 'library'
 		, checkbox     : checkbox
 		, values       : values
-		, checkchanged : values
+		, checkchanged : 1
 		, preshow      : function() {
 			if ( options ) {
 				$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
@@ -337,7 +337,7 @@ $( '#displayplayback' ).click( function() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, values       : values
-		, checkchanged : values
+		, checkchanged : 1
 		, preshow      : function() {
 			$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
 					+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'

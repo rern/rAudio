@@ -42,7 +42,7 @@ info( {                                     // default
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
 	values        : [ VALUE, ... ]          // (none)         (default values in appeared order)
-	checkchanged  : [ VALUE, ... ] .        // (none)         (check values changed)
+	checkchanged  : 1              .        // (none)         (check values changed)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
 	footalign     : 'CSS'                   // (blank)        (footer text alignment)
@@ -436,55 +436,45 @@ function info( json ) {
 		var htmlcontent = htmlmsg +'<table>'+ htm +'</table>'+ htmlfooter;
 	}
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
-		var $text = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
-		var $check = $( '#infoContent input:checkbox' );
-		
-		var $radio = $( '#infoContent input:radio' );
-		var radioset = [];
-		if ( $radio.length ) { // filter radio to each group
-			var name;
-			$radio.each( function( i, e ) {
-				name = $( e ).prop( 'name' );
-				if ( radioset.indexOf( name ) == -1 ) {
-					radioset.push( name );
-					$( e ).eq( 0 ).prop( 'checked', true ); // set default to 1st
-				}
-			} );
-		}
+		var $input = $( '#infoContent' ).find( 'input, select, textarea' );
+		var name, nameprev;
+		$input = $input.filter( function() { // filter each radio group
+			name = this.name;
+			if ( !name ) {
+				return true
+			} else if (	name !== nameprev ) {
+				nameprev = name;
+				return true
+			}
+		} );
 		if ( 'values' in O && O.values ) {
 			if ( typeof O.values !== 'object' ) O.values = [ O.values ];
-			var $input = $( '#infoContent' ).find( 'input:text, input:password, input:radio, input:checkbox, select, textarea' );
-			if ( radioset.length ) {
-				radioset.forEach( function( v ) { // filter radio to each group
-					$input.splice( v, 1 );
-				} );
-			}
 			var $this, type, val;
 			$input.each( function( i, e ) {
 				$this = $( e );
 				type = $this.prop( 'type' );
 				val = O.values[ i ];
-				if ( type === 'radio' ) {
-					$this.val( [ val ] );
+				if ( type === 'radio' ) { // reselect radio by name
+					$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
 				} else if ( type === 'checkbox' ) {
 					$this.prop( 'checked',  val );
 				} else { // text, password, textarea, select
 					$this.val( val );
 				}
 			} );
+			if ( O.checkchanged ) checkChanged();
 		}
 		if ( 'textrequired' in O ) {
 			O.textrequired.forEach( function( i ) {
-				checkChangedLength( $text.eq( i ), 1 );
+				checkChangedLength( $input.eq( i ), 1 );
 			} );
 		}
 		if ( 'textlength' in O ) {
 			$.each( O.textlength, function( i, L ) {
-				checkChangedLength( $text.eq( i ), L );
+				checkChangedLength( $input.eq( i ), L );
 			} );
 		}
 		if ( 'preshow' in O ) O.preshow();
-		if ( O.checkchanged ) checkChanged( O.checkchanged );
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
@@ -493,7 +483,6 @@ function info( json ) {
 		$( '#infoOverlay' ).addClass( 'noclick' );
 		setTimeout( function() { // prevent click OK on consecutive info
 			$( '#infoOverlay' ).removeClass( 'noclick' );
-			var $input = $( '#infoContent' ).find( 'select, input' )
 			var type0 = $( $input[ 0 ] ).prop( 'type' );
 			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) $input[ 0 ].focus();
 		}, 300 );
@@ -515,7 +504,7 @@ function info( json ) {
 			} );
 			$( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
-		if ( $( '#infoContent option' ).length ) $( '#infoContent select' ).selectric();
+		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		/////////////////////////////////////////////////////////////////////////////
 		}, 0 );
 	} );
@@ -539,11 +528,11 @@ function checkChanged() {
 	$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChangedValue );
 	$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChangedValue );
 }
-function checkChangedLength( $text, L ) {
-	O.shortlength = $text.val().length < L;
+function checkChangedLength( $input, L ) {
+	O.shortlength = $input.val().length < L;
 	$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-	$text.on( 'input', function() {
-		O.shortlength = $text.val().length < L;
+	$input.on( 'input', function() {
+		O.shortlength = $input.val().length < L;
 		$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 	} );
 }
@@ -555,7 +544,7 @@ function checkChangedValue() {
 		if ( typeof values === 'string' ) values = [ values ];
 		var changed = false;
 		changed = values.some( function( v, i ) {
-			if ( v != O.checkchanged[ i ] ) return true
+			if ( v != O.values[ i ] ) return true
 		} );
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
