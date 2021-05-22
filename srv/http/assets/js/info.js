@@ -93,6 +93,7 @@ var containerhtml = heredoc( function() { /*
 		</div>
 		<div id="infoContent">
 		</div>
+		<textarea id="infoTextarea" class="infoinput hide"></textarea>
 		<div id="infoRange" class="infocontent inforange hide">
 			<div class="value"></div>
 			<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
@@ -202,9 +203,9 @@ function infoReset() {
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
 	$( '#infoContent' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '.infoarrowleft, .infoarrowright, #infoRange, #infoFile, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
+	$( '.infoarrowleft, .infoarrowright, #infoTextarea, #infoRange, #infoFile, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
 	$( '#infoMessage, #infoFooter' ).css( 'text-align', '' );
-	$( '#infoBox, #infoText input, .selectric, .selectric-wrapper' ).css( 'width', '' );
+	$( '#infoBox, #infoText input, #infoTextarea, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '.selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent input, #infoContent select' ).off( 'keyup change' );
 	$( '.filebtn, .infobtn, #infoContent td, .infoarrowleft, .infoarrowright, #infoMessage' ).off( 'click' );
@@ -300,12 +301,9 @@ function info( json ) {
 		}
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
-		if ( 'cancel' in O && typeof O.cancel === 'function' ) {
-			O.cancel();
-		} else {
-			arrow = 0;
-			infoReset();
-		}
+		if ( 'cancel' in O && typeof O.cancel === 'function' ) O.cancel();
+		arrow = 0;
+		infoReset();
 	} );
 	
 	if ( 'content' in O ) {
@@ -353,8 +351,8 @@ function info( json ) {
 				var labeltext = textlabel[ i ] || '';
 				htm += '<tr><td>'+ labeltext +'</td>';
 				htm += '<td><input type="text"';
-				if ( textvalue ) htm += textvalue[ i ] !== '' ? ' value="'+ textvalue[ i ].toString().replace( /"/g, '&quot;' ) +'">' : '>';
-				if ( textsuffix ) htm += textsuffix[ i ] !== '' ? '<gr>'+ textsuffix[ i ] +'</gr>' : '<gr>&nbsp;</gr>';
+				htm += textvalue[ i ] !== '' ? ' value="'+ textvalue[ i ].toString().replace( /"/g, '&quot;' ) +'">' : '>';
+				if ( textsuffix[ i ] !== '' ) htm += '<gr>'+ textsuffix[ i ] +'</gr>';
 				htm += '</td></tr>'
 			}
 		}
@@ -370,6 +368,11 @@ function info( json ) {
 				if ( passwordvalue ) htm += ' value="'+ passwordvalue[ i ] +'"';
 				htm += '>&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
 			}
+		}
+		if ( 'textarea' in O ) {
+			$( '#infoTextarea' )
+				.text( O.textareavalue )
+				.removeClass( 'hide' );
 		}
 		if ( 'radio' in O ) {
 			if ( typeof O.radio !== 'object' ) {
