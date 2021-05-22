@@ -231,7 +231,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	var options = this.id === 'displaylibrary2';
 	var keys = Object.keys( !options ? chklibrary : chklibrary2 );
 	keys = keys.filter( function( k ) {
-		return [ 'bl', 'hr' ].indexOf( k ) === -1
+		return k !== 'bl'
 	} );
 	var cchecked = [];
 	var checkchanged = [];
