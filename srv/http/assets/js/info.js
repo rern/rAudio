@@ -82,8 +82,8 @@ var containerhtml = heredoc( function() { /*
 		</div>
 		<div id="infoContent">
 		</div>
-		<textarea id="infoTextarea" class="infoinput hide"></textarea>
-		<div id="infoRange" class="infocontent inforange hide">
+		<textarea id="infoTextarea" class="hide"></textarea>
+		<div id="infoRange" class="hide">
 			<div class="value"></div>
 			<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
 		</div>
@@ -233,7 +233,7 @@ function info( json ) {
 	if ( width ) {
 		$( '#infoBox' ).css( 'width', width +'px' );
 	}
-	if ( 'icon' in O ) {
+	if ( 'icon' in O && O.icon ) {
 		if ( O.icon.charAt( 0 ) !== '<' ) {
 			$( '#infoIcon' ).addClass( 'fa fa-'+ O.icon );
 		} else {
@@ -244,8 +244,8 @@ function info( json ) {
 	}
 	var title = 'title' in O ? O.title : 'Information';
 	$( '#infoTitle' ).html( title );
-	if ( 'nox' in O ) $( '#infoX' ).addClass( 'hide' );
-	if ( 'autoclose' in O ) {
+	if ( 'nox' in O && O.nox ) $( '#infoX' ).addClass( 'hide' );
+	if ( 'autoclose' in O && O.autoclose ) {
 		setTimeout( function() {
 			$( '#infoCancel' ).click();
 		}, O.autoclose );
@@ -258,7 +258,7 @@ function info( json ) {
 			.css( 'background-color', O.okcolor || '' )
 			.removeClass( 'hide' );
 			if ( typeof O.ok === 'function' ) $( '#infoOk' ).click( O.ok );
-		if ( 'cancel' in O ) {
+		if ( 'cancel' in O && O.cancel ) {
 			$( '#infoCancel' )
 				.html( 'cancellabel' in O ? O.cancellabel : 'Cancel' )
 				.css( 'background-color', 'cancelcolor' in O ? O.cancelcolor : '' );
@@ -280,26 +280,26 @@ function info( json ) {
 									.click( button[ i ] );
 			}
 		}
-		if ( 'buttonnoreset' in O ) {
+		if ( 'buttonnoreset' in O && O.buttonnoreset ) {
 			$( '#infoOk, #infoCancel' ).click( infoReset );
 		} else {
 			$( '.infobtn' ).click( infoReset );
 		}
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
-		if ( 'cancel' in O && typeof O.cancel === 'function' ) O.cancel();
+		if ( 'cancel' in O && O.cancel ) O.cancel();
 		infoReset( 'infox' );
 	} );
 	
-	if ( 'content' in O ) {
+	if ( 'content' in O && O.content ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
 		// arrow
-		if ( 'arrowleft' in O ) $( '.infoarrowleft' )
+		if ( 'arrowleft' in O && O.arrowleft ) $( '.infoarrowleft' )
 									.removeClass( 'hide' )
 									.click( O.arrowleft );
-		if ( 'arrowright' in O ) $( '.infoarrowright' )
+		if ( 'arrowright' in O && O.arrowright ) $( '.infoarrowright' )
 									.removeClass( 'hide' )
 									.click( O.arrowright );
 		// message
@@ -318,24 +318,24 @@ function info( json ) {
 			htmlfooter += '>'+ O.footer +'</p>';
 		}
 		// inputs
-		if ( 'textlabel' in O ) {
+		if ( 'textlabel' in O && O.textlabel ) {
 			if ( typeof O.textlabel !== 'object' ) O.textlabel = [ O.textlabel ];
 			O.textlabel.forEach( function( lbl ) {
 				htm += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
 			} );
 		}
-		if ( 'passwordlabel' in O ) {
+		if ( 'passwordlabel' in O && O.passwordlabel ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
 			O.passwordlabel.forEach( function( lbl ) {
 				htm += '<tr><td>'+ lbl +'</td><td><input type="password">&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 		}
-		if ( 'textarea' in O ) {
+		if ( 'textarea' in O && O.textarea ) {
 			$( '#infoTextarea' )
 				.text( O.textareavalue )
 				.removeClass( 'hide' );
 		}
-		if ( 'radio' in O ) { // single set only
+		if ( 'radio' in O && O.radio ) { // single set only
 			var line;
 			var i = 0;
 			$.each( O.radio, function( lbl, val ) {
@@ -353,7 +353,7 @@ function info( json ) {
 				}
 			} );
 		}
-		if ( 'checkbox' in O ) {
+		if ( 'checkbox' in O && O.checkbox ) {
 			var line, colspan;
 			var i = 0;
 			O.checkbox.forEach( function( lbl ) {
@@ -375,7 +375,7 @@ function info( json ) {
 				}
 			} );
 		}
-		if ( 'select' in O ) {
+		if ( 'select' in O && O.select ) {
 			if ( typeof O.select !== 'object' ) {
 				var htm = O.select;
 			} else {
@@ -386,12 +386,12 @@ function info( json ) {
 				htm += '</select></td></tr>';
 			}
 		}
-		if ( 'rangevalue' in O ) {
+		if ( 'rangevalue' in O && O.rangevalue ) {
 			$( '#infoRange .value' ).text( O.rangevalue );
 			$( '#infoRange input' ).val( +O.rangevalue );
 			$( '#infoRange' ).removeClass( 'hide' );
 		}
-		if ( 'fileoklabel' in O ) {
+		if ( 'fileoklabel' in O && O.fileoklabel ) {
 			$( '#infoOk' )
 				.html( O.fileoklabel )
 				.addClass( 'hide' );
@@ -464,29 +464,24 @@ function info( json ) {
 			} );
 			if ( O.checkchanged ) checkChanged();
 		}
-		if ( 'textrequired' in O ) {
+		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
 				checkChangedLength( $input.eq( i ), 1 );
 			} );
 		}
-		if ( 'textlength' in O ) {
+		if ( 'textlength' in O && O.textlength ) {
 			$.each( O.textlength, function( i, L ) {
 				checkChangedLength( $input.eq( i ), L );
 			} );
 		}
-		if ( 'preshow' in O ) O.preshow();
+		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
+		if ( 'preshow' in O && O.preshow ) O.preshow();
 		$( '#infoOverlay' )
+			.addClass( 'noclick' )
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 		alignVertical();
-		
-		$( '#infoOverlay' ).addClass( 'noclick' );
-		setTimeout( function() { // prevent click OK on consecutive info
-			$( '#infoOverlay' ).removeClass( 'noclick' );
-			var type0 = $( $input[ 0 ] ).prop( 'type' );
-			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) $input[ 0 ].focus();
-		}, 300 );
-		if ( 'boxwidth' in O ) {
+		if ( 'boxwidth' in O && O.boxwidth ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width();
 			var boxW = O.boxwidth !== 'max' ? O.boxwidth : allW - 50 - labelW;
@@ -495,7 +490,7 @@ function info( json ) {
 				$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 			}, 0 );
 		}
-		if ( 'buttonwidth' in O ) {
+		if ( 'buttonwidth' in O && O.buttonwidth ) {
 			var widest = 0;
 			var w;
 			$.each( $( '#infoButtons a' ), function() {
@@ -504,7 +499,11 @@ function info( json ) {
 			} );
 			$( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
-		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
+		setTimeout( function() { // prevent click OK on consecutive info
+			$( '#infoOverlay' ).removeClass( 'noclick' );
+			var type0 = $( $input[ 0 ] ).prop( 'type' );
+			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) $input[ 0 ].focus();
+		}, 300 );
 		/////////////////////////////////////////////////////////////////////////////
 		}, 0 );
 	} );

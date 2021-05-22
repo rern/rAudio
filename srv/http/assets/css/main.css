@@ -285,8 +285,7 @@ whl, grl,
 	width: 175px;
 }
 
-#progress wh,
-.infocontent i {
+#progress wh {
 	width: 25px;
 	margin-right: 5px;
 	text-align: center;
@@ -309,9 +308,6 @@ i.bookmark,
 	font-size: 3em;
 	color: var( --cm );
 	text-shadow: 2px 2px 4px #000000;
-}
-.infocontent .fa-webradio {
-	color: var( --cg60 );
 }
 .disable {
 	color: var( --cg60 );

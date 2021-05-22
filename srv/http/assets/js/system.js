@@ -4,29 +4,29 @@ var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<table id="tblinfomount">
 	<tr><td>Type</td>
-		<td><label><input type="radio" name="protocol" value="cifs">CIFS</label></td>
-		<td><label><input type="radio" name="protocol" value="nfs">NFS</label></td>
+		<td><label><input type="radio" name="inforadio" value="cifs">CIFS</label></td>
+		<td><label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 	</tr>
 	<tr><td>Name</td>
-		<td colspan="2"><input type="text" class="infoinput" name="mountpoint"></td>
+		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr><td>IP</td>
-		<td colspan="2"><input type="text" class="infoinput" name="ip"></td>
+		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr id="sharename"><td>Share name</td>
-		<td colspan="2"><input type="text" class="infoinput" name="directory"></td>
+		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>User</td>
-		<td colspan="2"><input type="text" class="infoinput" name="user"></td>
+		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>Password</td>
-		<td colspan="2"><input type="password" id="infoPasswordBox" class="infoinput" name="password">&ensp;<i class="fa fa-eye"></i></td>
+		<td colspan="2"><input type="password" id="infoPasswordBox">&ensp;<i class="fa fa-eye"></i></td>
 	</tr>
 	<tr><td>Options</td>
-		<td colspan="2"><input type="text" class="infoinput" name="options"></td>
+		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan=2><label><input type="checkbox" name="update" value="true" checked>Update Library on mount</label></td>
+		<td colspan=2><label><input type="checkbox" value="true" checked>Update Library on mount</label></td>
 	</tr>
 	</table>
 */ } );
@@ -403,7 +403,7 @@ var infolcdchar = heredoc( function() { /*
 	<tr id="i2caddress" class="i2c"></tr>
 	<tr class="i2c"><td>I&#178;C Chip</td>
 		<td colspan="3">
-		<select id="i2cchip" class="infocontent infohtml">
+		<select id="i2cchip">
 			<option value="PCF8574">PCF8574</option>
 			<option value="MCP23008">MCP23008</option>
 			<option value="MCP23017">MCP23017</option>
@@ -411,16 +411,16 @@ var infolcdchar = heredoc( function() { /*
 		</td>
 	</tr>
 	<tr class="gpio"><td>pin_rs</td>
-		<td><input type="text" id="pin_rs" class="infoinput infocontent infohtml"></td>
+		<td><input type="text" id="pin_rs"></td>
 	</tr>
 	<tr class="gpio"><td>pin_rw</td>
-		<td><input type="text" id="pin_rw" class="infoinput infocontent infohtml"></td>
+		<td><input type="text" id="pin_rw"></td>
 	</tr>
 	<tr class="gpio"><td>pin_e</td>
-		<td><input type="text" id="pin_e" class="infoinput infocontent infohtml"></td>
+		<td><input type="text" id="pin_e"></td>
 	</tr>
 	<tr class="gpio"><td>pins_data</td>
-		<td><input type="text" id="pins_data" class="infoinput infocontent infohtml"></td>
+		<td><input type="text" id="pins_data"></td>
 	</tr>
 	<tr><td></td>
 		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop 1 m.)</gr></label></td>

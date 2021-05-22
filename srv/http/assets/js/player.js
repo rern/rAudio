@@ -305,16 +305,16 @@ var soxrinfo = heredoc( function() { /*
 				</select>&ensp;<gr>bit</gr></td>
 		</tr>
 		<tr><td>Phase Response</td>
-			<td><input type="text" class="infoinput">&ensp;<gr>0-100</gr></td>
+			<td><input type="text">&ensp;<gr>0-100</gr></td>
 		</tr>
 		<tr><td>Passband End</td>
-			<td><input type="text" class="infoinput">&ensp;<gr>0-100%</gr></td>
+			<td><input type="text">&ensp;<gr>0-100%</gr></td>
 		</tr>
 		<tr><td>Stopband Begin</td>
-			<td><input type="text" class="infoinput">&ensp;<gr>100-150%</gr></td>
+			<td><input type="text">&ensp;<gr>100-150%</gr></td>
 		</tr>
 		<tr><td>Attenuation</td>
-			<td><input type="text" class="infoinput">&ensp;<gr>0-30dB</gr></td>
+			<td><input type="text">&ensp;<gr>0-30dB</gr></td>
 		</tr>
 		<tr><td>Extra Settings</td>
 			<td><select>
@@ -348,7 +348,7 @@ $( '#setting-soxr' ).click( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );
 				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );
 				$extra.find( '.selectric-items' ).css( 'min-width', '185px' );
-			}, 10 );
+			}, 0 );
 		}
 		, boxwidth      : 90
 		, buttonlabel   : '<i class="fa fa-undo"></i>Default'
@@ -376,7 +376,7 @@ var custominfo = heredoc( function() { /*
 		<br>...
 		<br>user<px style="width: 153px"></px>"mpd"
 	</p>
-	<textarea class="infoinput" id="global"></textarea>
+	<textarea id="global"></textarea>
 	<p class="infomessage msg">
 			...
 		<br>
@@ -384,7 +384,7 @@ var custominfo = heredoc( function() { /*
 		<br><px30/>...
 		<br><px30/>mixer_device<px style="width: 24px"></px>"hw:N"
 	</p>
-	<textarea class="infoinput" id="output"></textarea>
+	<textarea id="output"></textarea>
 	<p class="infomessage msg">
 		}
 	</p>

@@ -280,8 +280,8 @@ function displayBottom() {
 	$( '#bar-bottom i' ).removeClass( 'active' );
 	$( '#tab-'+ G.page ).addClass( 'active' );
 }
-function displayCheckboxSet( name, enable, check ) {
-	$( 'input[name="'+ name +'"]' )
+function displayCheckboxSet( i, enable, check ) {
+	$( '#infoContent input' ).eq( i )
 		.prop( 'disabled', !enable )
 		.prop( 'checked', check )
 		.parent().toggleClass( 'gr', !enable );
