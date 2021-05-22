@@ -41,7 +41,8 @@ info( {                                     // default
 	select        : { LABEL: 'VALUE', ... }
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
-	values        : [ VALUE, ... ]          // (none)         (default values in appeared order)
+	keys          : [ 'KEY', ... ]         // (none)          (keys for json return)
+	values        : [ 'VALUE', ... ]        // (none)         (default values in appeared order)
 	checkchanged  : 1              .        // (none)         (check values changed)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
@@ -548,15 +549,15 @@ function checkChangedValue() {
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
-function infoVal( json ) {
+function infoVal() {
 	var $el = $( '#infoContent' ).find( 'input, select, textarea' );
-	var values = json ? {} : [];
+	var values = [];
 	var $this, type, name, val;
+	var i = 0;
 	$el.each( function() {
 		$this = $( this );
 		type = $this.prop( 'type' );
-		if ( json ) name = $this.prop( 'name' ) || 'unnamed';
-		val = null;
+		val = '';
 		if ( type === 'radio' ) { // radio has multiple inputs - skip unchecked inputs
 			if ( $this.prop( 'checked' ) ) {
 				val = $this.val();
@@ -569,13 +570,15 @@ function infoVal( json ) {
 		} else {
 			val = $this.val();
 		}
-		if ( json ) {
-			values[ name ] = val;
-		} else {
-			if ( val !== null ) values.push( val );
-		}
+		values.push( val );
 	} );
-	if ( json || values.length > 1 ) {
+	if ( 'keys' in O && O.keys ) {
+		var json = {}
+		O.keys.forEach( function( k, i ) {
+			json[ k ] = values[ i ];
+		} );
+		return json
+	} else if ( values.length > 1 ) {
 		return values
 	} else {
 		return values[ 0 ]
