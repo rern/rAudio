@@ -715,8 +715,8 @@ function playlistInsertSelect( $this ) {
 		, message     : 'Insert'
 				   +'<br><w>'+ G.pladd.name +'</w>'
 				   +'<br>before'
-				   +'<br><w>'+ $this.find( '.name' ).text() +'</w>'
-		, buttonlabel : 'i class="fa fa-undo"></i>Reselect'
+				   +'<br><w># '+ ( $this.index() + 1 ) +' - '+ $this.find( '.name' ).text() +'</w>'
+		, buttonlabel : '<i class="fa fa-undo"></i>Reselect'
 		, button  : function() {
 			playlistInsertTarget();
 		}
