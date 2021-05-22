@@ -262,8 +262,8 @@ $( '#setting-buffer' ).click( function() {
 		, message      : '<code>audio_buffer_size</code> (default: 4096)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, values       : G.bufferval || 4096
-		, textrequired : [ 0 ]
 		, checkchanged : ( G.buffer ? 1 : 0 )
+		, textrequired : [ 0 ]
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
@@ -281,8 +281,8 @@ $( '#setting-bufferoutput' ).click( function() {
 		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, values       : G.bufferoutputval || 8192
-		, textrequired : [ 0 ]
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
+		, textrequired : [ 0 ]
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
@@ -402,9 +402,9 @@ $( '#setting-custom' ).click( function() {
 			  icon     : 'mpd'
 			, title    : "User's Configurations"
 			, content  : custominfo
-			, values   : [ valglobal, valoutput ]
 			, msgalign : 'left'
 			, boxwidth : 330
+			, values   : [ valglobal, valoutput ]
 			, checkchanged : ( G.custom ? 1 : 0 )
 			, preshow  : function() {
 				$( '#global' ).val( valglobal );

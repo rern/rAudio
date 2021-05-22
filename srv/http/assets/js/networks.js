@@ -60,7 +60,7 @@ function editLAN( $el ) {
 		, message      : message
 		, textlabel    : [ 'IP', 'Gateway' ]
 		, values       : [ ip, gateway ]
-		, checkchanged : ( ip ? [ ip, gateway ] : '' )
+		, checkchanged : ( ip ? 1 : 0 )
 		, textrequired : [ 0 ]
 		, preshow      : function() {
 			if ( dhcp === 'dhcp' || !ip ) $( '#infoButton' ).addClass( 'hide' );
@@ -116,12 +116,12 @@ function editWiFi( $el ) {
 		  icon          : ssid ? 'edit-circle' : 'wifi'
 		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
-		, values        : [ ssid, ip, gateway, password, dhcp, hidden, security ]
 		, boxwidth      : 180
 		, checkbox      : ['Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
+		, values        : [ ssid, ip, gateway, password, dhcp, hidden, security ]
+		, checkchanged  : 1
 		, textlength    : { 3: 8 }
-		, checkchanged  : [ ssid, ip, gateway, password, dhcp, hidden, security ]
 		, preshow       : function() {
 			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
 				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggle( $( this ).prop( 'checked' ) );

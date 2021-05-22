@@ -191,10 +191,10 @@ function playlistRename() {
 		, message      : 'Rename:'
 						+'<br><w>'+ name +'</w>'
 						+'<br>To:'
-		, values       : name
-		, textrequired : [ 0 ]
-		, checkchanged : [ name ]
 		, boxwidth     : 'max'
+		, values       : name
+		, checkchanged : 1
+		, textrequired : [ 0 ]
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
 			var newname = infoVal();
@@ -250,9 +250,9 @@ function tagEditor() {
 			, msgalign     : 'left'
 			, footer       : footer
 			, textlabel    : label
-			, values       : values
 			, boxwidth     : 'max'
-			, checkchanged : values
+			, values       : values
+			, checkchanged : 1
 			, preshow      : function() {
 				var $text = $( '#infoContent input' );
 				$( '#infoMessage' )
@@ -449,8 +449,8 @@ function webRadioEdit() {
 		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : [ name, url ]
+		, checkchanged : 1
 		, textrequired : [ 0, 1 ]
-		, checkchanged : [ name, url ]
 		, boxwidth     : 'max'
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
@@ -646,9 +646,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 								+'<br># '+ track +' &bull; '+ second2HMS( time )
 				, msgalign     : 'left'
 				, textlabel    : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
-				, values       : values
 				, boxwidth     : 'max'
-				, checkchanged : values
+				, values       : values
+				, checkchanged : 1
 				, ok           : function() {
 					var values = infoVal();
 					var data = values.join( '^' ) +'^'+ time;

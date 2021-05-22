@@ -176,9 +176,9 @@ $( '#setting-hostapd' ).click( function() {
 		, message      : 'Password - 8 characters or more'
 		, textlabel    : [ 'Password', 'IP' ]
 		, values       : [ G.hostapdpwd, G.hostapdip ]
+		, checkchanged : ( G.hostapd ? 1 : 0 )
 		, textrequired : [ 1 ]
 		, textlength   : { 0: 8 }
-		, checkchanged : ( G.hostapd ? 1 : 0 )
 		, cancel       : function() {
 			if ( set ) {
 				loader();
@@ -231,8 +231,8 @@ $( '#setting-localbrowser' ).click( function() {
 		  icon         : 'chromium'
 		, title        : 'Browser on RPi'
 		, content      : localbrowserinfo
-		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, boxwidth     : 60
+		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
 		, buttoncolor  : orange
@@ -282,8 +282,8 @@ $( '#setting-mpdscribble' ).click( function() {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobbler'
 		, textlabel     : 'User'
-		, values        : user
 		, passwordlabel : 'Password'
+		, values        : user
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
 		, preshow       : function() {
 			$( '#infoPasswordBox' ).val( pwd );

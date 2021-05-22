@@ -325,7 +325,7 @@ $( '#setting-bluetooth' ).click( function() {
 		, title        : 'Bluetooth'
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : [ G.btdiscoverable, G.btformat ]
-		, checkchanged : ( G.bluetooth ? [ G.btdiscoverable, G.btformat ] : '' )
+		, checkchanged : ( G.bluetooth ? 1 : 0 )
 		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
@@ -453,7 +453,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, content       : infolcdchar
 		, boxwidth      : 180
 		, nofocus       : 1
-		, checkchanged  : ( G.lcdchar ? v : '' )
+		, values        : v
+		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, preshow       : function() {
 			$( '#i2caddress' ).html( opt );
 			$( '#tbllcdchar' ).find( 'td:eq( 1 ), td:eq( 2 )' ).css( 'width', '80px' );
@@ -536,7 +537,8 @@ $( '#setting-powerbutton' ).click( function() {
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
-		, checkchanged : ( G.powerbutton ? [ 5, swpin, ledpin ] : '' )
+		, values       : [ 5, swpin, ledpin ]
+		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, preshow      : function() {
 			$( '#swpin, #ledpin' ).html( optionpin );
 			$( '#swpin' ).val( swpin );
@@ -568,7 +570,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
 		, values       : G.lcdmodel
-		, checkchanged : ( G.lcd ? [ G.lcdmodel ] : '' )
+		, checkchanged : ( G.lcd ? 1 : 0 )
 		, boxwidth     : 200
 		, buttonlabel  : 'Calibrate'
 		, button       : function() {
@@ -600,7 +602,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : 'Player Name'
 		, textlabel    : 'Name'
 		, values       : G.hostname
-		, checkchanged : [ G.hostname ]
+		, checkchanged : 1
 		, preshow      : function() {
 			$( '#infoContent input' ).keyup( function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
@@ -623,9 +625,9 @@ $( '#setting-regional' ).click( function() {
 		  icon         : 'globe'
 		, title        : 'Regional Settings'
 		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
-		, values       : values
 		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
-		, checkchanged : values
+		, values       : values
+		, checkchanged : 1
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
@@ -665,11 +667,11 @@ $( '#setting-soundprofile' ).click( function() {
 		  icon         : 'sliders'
 		, title        : 'Kernel Sound Profile'
 		, textlabel    : textlabel
-		, values       : values
 		, boxwidth     : 110
 		, radio        : radio
 		, radiocolumn  : 1
-		, checkchanged : values
+		, values       : values
+		, checkchanged : 1
 		, preshow      : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );
