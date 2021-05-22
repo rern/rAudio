@@ -229,9 +229,10 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
-		var label = [];
+		var mode, label = [];
 		format.forEach( function( el, i ) {
-			label.push( '<i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i> <span class="tagname gr hide">'+ name[ i ] +'</span>' );
+			mode = el
+			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span>&ensp;<i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
@@ -296,7 +297,7 @@ function tagEditor() {
 				} );
 				setTimeout( function() {
 					var boxW = parseInt( $text.css('width') );
-					var boxS = boxW - 88;
+					var boxS = boxW - 85;
 					$( '#infoFooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );
@@ -307,11 +308,16 @@ function tagEditor() {
 						}
 					} );
 				}, 600 );
-				$( '#infoContent td:first-child' ).click( function() {
+				var $td = $( '#infoContent td:first-child' );
+				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
-					var path = $text.eq( $( this ).index() ).val();
-					if ( !path || mode === 'title' || mode === 'track' || ( G.library && mode === 'album' ) ) return
+					if ( [ 'title', 'track' ].indexOf( mode ) !== -1 ) {
+						if ( G.playlist ) $td.find( '.fa-album' ).click();
+						return
+					}
 					
+					var path = $text.eq( $( this ).parents( 'tr' ).index() ).val();
+					if ( !path || ( G.library && mode === 'album' ) ) return
 					if ( mode !== 'album' ) {
 						var query = {
 							  query  : 'find'
