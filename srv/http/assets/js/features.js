@@ -127,17 +127,18 @@ $( '.enablenoset' ).click( function() {
 
 $( '#setting-snapclient' ).click( function() {
 	info( {
-		  icon          : 'snapcast'
-		, title         : 'SnapClient'
-		, message       : 'Sync SnapClient with SnapServer:'
-		, textlabel     : 'Latency <gr>(ms)</gr>'
-		, textvalue     : G.snaplatency || 800
-		, boxwidth      : 100
-		, checkchange   : ( G.snapclient ? [ G.snaplatency ] : '' )
-		, cancel        : function() {
+		  icon         : 'snapcast'
+		, title        : 'SnapClient'
+		, message      : 'Sync SnapClient with SnapServer:'
+		, textlabel    : 'Latency <gr>(ms)</gr>'
+		, textrequired : [ 0 ]
+		, values       : G.snaplatency || 800
+		, boxwidth     : 100
+		, checkchange  : ( G.snapclient ? [ G.snaplatency ] : '' )
+		, cancel       : function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
-		, ok            : function() {
+		, ok           : function() {
 			var snaplatency = Math.abs( infoVal() );
 			bash( [ 'snapclientset', snaplatency ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
@@ -174,7 +175,7 @@ $( '#setting-hostapd' ).click( function() {
 		, title        : 'RPi Access Point Settings'
 		, message      : 'Password - 8 characters or more'
 		, textlabel    : [ 'Password', 'IP' ]
-		, textvalue    : [ G.hostapdpwd, G.hostapdip ]
+		, values       : [ G.hostapdpwd, G.hostapdip ]
 		, textrequired : [ 1 ]
 		, textlength   : { 0: 8 }
 		, checkchanged : ( G.hostapd ? [ G.hostapdpwd, G.hostapdip ] : '' )
@@ -201,51 +202,54 @@ $( '#setting-hostapd' ).click( function() {
 } );
 var localbrowserinfo = heredoc( function() { /*
 	<table>
-		<tr><td>Screen off <gr>(min)</gr></td>
-			<td><input type="text" class="infoinput" style="width: 60px; text-align: center"></td>
+		<tr><td>Screen off</td>
+			<td><input type="text">&ensp;<gr>min</gr></td>
 		</tr>
-		<tr><td>Zoom <gr>(0.5-2.0)</gr></td>
-			<td><input type="text" class="infoinput" style="width: 60px; text-align: center"></td>
+		<tr><td>Zoom</td>
+			<td><input type="text">&ensp;<gr>0.5-2.0</gr></td>
 		</tr>
 	</table>
 	<hr>
 	Screen rotation<br>
-	<div id="infoRadio" class="infocontent infohtml" style="text-align: center">
-		&ensp;0°<br>
-		<label><input type="radio" name="inforadio" value="NORMAL"></label><br>
-		&nbsp;<label>90°&ensp;<i class="fa fa-undo"></i>&ensp;<input type="radio" name="inforadio" value="CCW"></label><px30/>
-		<label><input type="radio" name="inforadio" value="CW"> <i class="fa fa-redo"></i>&ensp;90°&nbsp;</label><br>
-		<label><input type="radio" name="inforadio" value="UD"></label><br>
-		&nbsp;180°
-	</div>
+	<table>
+		<tr><td></td><td style="text-align: center;">0°</td><td></td></tr>
+		<tr><td></td><td><label><input type="radio" name="inforadio" value="NORMAL"></label></td><td></td></tr>
+		<tr>
+			<td><label>90° <i class="fa fa-undo"></i> <input type="radio" name="inforadio" value="CCW"></label></td>
+			<td></td>
+			<td><input type="radio" name="inforadio" value="CW"> <i class="fa fa-redo gr" style="font-size: 22px"></i>&nbsp; 90°</label></td>
+		</tr>
+		<tr><td></td><td><input type="radio" name="inforadio" value="UD"></label></td><td></td></tr>
+		<tr><td></td><td>180°</td><td></td></tr>
+	</table>
 	<hr>
-	<div id="infoCheckBox" class="infocontent infohtml">
-		<label><input type="checkbox">&ensp;Mouse pointer</label><br>
-	</div>
+	<label><input type="checkbox">Mouse pointer</label><br>
 */ } );
+if ( G.lcd ) localbrowserinfo += '<br><gr>(Rotate TFT LCD: Reboot required.)</gr>';
 $( '#setting-localbrowser' ).click( function() {
 	info( {
-		  icon        : 'chromium'
-		, title       : 'Browser on RPi'
-		, content     : localbrowserinfo
+		  icon         : 'chromium'
+		, title        : 'Browser on RPi'
+		, content      : localbrowserinfo
+		, boxwidth     : 60
 		, checkchanged : ( G.localbrowser ? [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ] : '' )
-		, preshow     : function() {
-			$( '#infoTextBox1' ).val( G.localzoom );
-			$( '#infoTextBox' ).val( G.localscreenoff / 60 );
-			$( '#infoRadio input' ).val( [ G.localrotate || 'NORMAL' ] );
-			$( '#infoCheckBox input' ).prop( 'checked', G.localcursor );
-			if ( G.lcd ) $( '#infoRadio' ).after( '<gr>(Rotate TFT LCD: Reboot required.)</gr>' );
+		, preshow      : function() {
+			var $text = $( '#infoContent input[type=text]' );
+			$( '#infoContent input[type=text]:eq( 0 )' ).val( G.localzoom );
+			$( '#infoContent input[type=text]:eq( 1 )' ).val( G.localscreenoff / 60 );
+			$( '#infoContent input[type=radio]' ).val( [ G.localrotate || 'NORMAL' ] );
+			$( '#infoContent input[type=checkbox]' ).prop( 'checked', G.localcursor );
 		}
-		, buttonlabel : '<i class="fa fa-refresh"></i>Refresh'
-		, buttoncolor : orange
-		, button      : function() {
+		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
+		, buttoncolor  : orange
+		, button       : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
-		, buttonwidth : 1
-		, cancel      : function() {
+		, buttonwidth  : 1
+		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
-		, ok          : function() {
+		, ok           : function() {
 			var values = infoVal();
 			var localscreenoff = values[ 0 ] * 60;
 			var localzoom = parseFloat( values[ 1 ] ) || 1;
@@ -264,7 +268,7 @@ $( '#setting-smb' ).click( function() {
 		  icon         : 'network'
 		, title        : 'Samba File Sharing'
 		, message      : '<wh>Write</wh> permission:</gr>'
-		, checkbox     : { sd: '<gr>/mnt/MPD/</gr>SD', usb: '<gr>/mnt/MPD/</gr>USB' }
+		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, cchecked     : checked
 		, checkchanged : ( G.smb ? [ G.smbwritesd, G.smbwriteusb ] : '' )
 		, cancel       : function() {
@@ -287,7 +291,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobbler'
 		, textlabel     : 'User'
-		, textvalue     : user
+		, values        : user
 		, passwordlabel : 'Password'
 		, checkchanged  : ( G.mpdscribble ? [ user, pwd ] : '' )
 		, preshow       : function() {

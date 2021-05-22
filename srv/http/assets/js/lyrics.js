@@ -44,14 +44,13 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			, title       : 'Bio / Lyrics'
 			, width       : 500
 			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
-			, textvalue   : [ artist, title ]
-			, textalign   : 'center'
+			, values      : [ artist, title ]
 			, boxwidth    : 'max'
 			, buttonwidth : 1
 			, buttonlabel : '<i class="fa fa-bio wh"></i>Bio'
 			, button      : function() {
 				if ( $( '#bio legend' ).text() != G.status.Artist ) {
-					getBio( $( '#infoTextBox' ).val() );
+					getBio( infoVal()[ 0 ] );
 				} else {
 					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 					$( '#bio' ).removeClass( 'hide' );
@@ -60,18 +59,19 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			}
 			, oklabel     : '<i class="fa fa-lyrics wh"></i>Lyrics'
 			, ok          : function() {
-				lyricsArtist = $( '#infoTextBox' ).val();
-				lyricsTitle = $( '#infoTextBox1' ).val();
+				var values = infoVal();
+				lyricsArtist = values[ 0 ];
+				lyricsTitle = values[ 1 ];
 				getLyrics();
 			}
 		}
 		if ( title.slice( -1 ) === ')' ) {
 			querytitle = title.replace( / $| \(.*$/, '' );
-			infojson.textvalue = [ artist, querytitle ];
-			infojson.checkbox  = { 'Title with parentheses content': 0 }
-			infojson.preshow   = function() {
-				$( '#infoCheckBox input' ).change( function() {
-					$( '#infoTextBox1' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
+			infojson.values   = [ artist, querytitle ];
+			infojson.checkbox = { 1: 'Title with parentheses content' }
+			infojson.preshow  = function() {
+				$( '#infoContent input' ).change( function() {
+					$( '#infoContent input[type=text]:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
 				} );
 			}
 		}

@@ -59,7 +59,7 @@ function editLAN( $el ) {
 		, title        : ( ip ? 'LAN' : 'Add LAN' )
 		, message      : message
 		, textlabel    : [ 'IP', 'Gateway' ]
-		, textvalue    : [ ip, gateway ]
+		, values       : [ ip, gateway ]
 		, checkchanged : ( ip ? [ ip, gateway ] : '' )
 		, textrequired : [ 0 ]
 		, preshow      : function() {
@@ -113,27 +113,19 @@ function editWiFi( $el ) {
 		hidden = $el.data( 'hidden' ) === 'true';
 		security = $el.data( 'security' ) === 'wep';
 	}
-	var cchecked = [];
-	if ( dhcp ) cchecked.push( 0 );
-	if ( hidden ) cchecked.push( 1 );
-	if ( security ) cchecked.push( 2 );
 	info( {
 		  icon          : ssid ? 'edit-circle' : 'wifi'
 		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
-		, textvalue     : [ ssid, ip, gateway ]
+		, values        : [ ssid, ip, gateway, password, dhcp, hidden, security ]
 		, boxwidth      : 180
-		, checkbox      : { static: 'Static IP', hidden: 'Hidden SSID', wep: 'WEP' }
-		, cchecked      : cchecked
+		, checkbox      : ['Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
-		, passwordvalue : password
 		, textlength    : { 3: 8 }
 		, checkchanged  : [ ssid, ip, gateway, password, dhcp, hidden, security ]
 		, preshow       : function() {
-			$( '#infoTextBox' ).prop( 'disabled', 1 );
-			if ( !ssid ) $( '#infotextlabel a:eq( 1 ), #infoTextBox1, #infotextlabel a:eq( 2 ), #infoTextBox2' ).hide();
-			$( '#infoCheckBox' ).change( function() {
-				$( '.infolabel:eq( 1 ), .infolabel:eq( 2 ), #infoTextBox1, #infoTextBox2' ).toggle( $( this ).prop( 'checked' ) );
+			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
+				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggle( $( this ).prop( 'checked' ) );
 			} );
 		}
 		, ok            : function() {
@@ -452,13 +444,7 @@ $( '#lanadd' ).click( function() {
 	editLAN();
 } );
 $( '#listlan' ).on( 'click', 'li', function() {
-	var $this = $( this );
-	if ( !$this.data( 'ip' ) ) return
-	
 	editLAN( $this );
-	$( '#infoCheckBox' ).on( 'click', 'input', function() {
-		$( '#infoText' ).toggle( $( this ).prop( 'checked' ) );
-	} );
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : editWiFi();

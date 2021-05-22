@@ -216,12 +216,6 @@ hr {
 #infoContent td.chk {
 	text-align: left !important;
 }
-#infoRadio td,
-#infoCheckBox td {
-	height: 32px;
-	padding-right: 10px;
-	text-align: left !important;
-}
 #infoContent label i {
 	text-align: center;
 	width: 22px;
@@ -328,7 +322,7 @@ hr {
 #infoOverlay input[type=radio]:disabled {
 	background-color: var( --cgd );
 }
-#infoSelect button {
+#infoContent button {
 	height: 40px;
 	margin-left: 5px;
 	padding-right: 25px;
@@ -343,13 +337,13 @@ hr {
 #infoContent .selectric-wrapper {
 	margin: 0;
 }
-#infoSelect .selectric-wrapper {
+#infoContent .selectric-wrapper {
 	width: auto;
 	max-width: 100%;
 }
 #infoOverlay white,
 #infoOverlay code,
-#infoSelect .selectric-items ul {
+#infoContent .selectric-items ul {
 	color: var( --cw );
 }
 #infoContent .selectric {
@@ -365,9 +359,6 @@ hr {
 	margin: 1px 0;
 	padding: 0 10px;
 	line-height: 34px;
-}
-#infoRadio i {
-	vertical-align: baseline !important;
 }
 #infoRange input {
 	height: 40px;

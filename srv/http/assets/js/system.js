@@ -20,7 +20,7 @@ var htmlmount = heredoc( function() { /*
 		<td colspan="2"><input type="text" class="infoinput" name="user"></td>
 	</tr>
 	<tr class="guest"><td>Password</td>
-		<td colspan="2"><input type="password" id="infoPasswordBox" class="infoinput" name="password"></td>
+		<td colspan="2"><input type="password" id="infoPasswordBox" class="infoinput" name="password">&ensp;<i class="fa fa-eye"></i></td>
 	</tr>
 	<tr><td>Options</td>
 		<td colspan="2"><input type="text" class="infoinput" name="options"></td>
@@ -30,25 +30,13 @@ var htmlmount = heredoc( function() { /*
 	</tr>
 	</table>
 */ } );
-function infoMount( data ) {
-	if ( !data ) var data = {}
+function infoMount( values ) {
 	info( {
 		  icon    : 'network'
 		, title   : 'Add Network Share'
 		, content : htmlmount
+		, values  : values || false
 		, preshow : function() {
-			$( '#tblinfomount td:eq( 1 )' ).css( 'width', '60px' );
-			$( 'input[name=protocol]:eq( 0 )' ).prop( 'checked', data.protocol || 'cifs' );
-			$( '.infotextbox input[name=mountpoint]' ).val( data.mountpoint );
-			$( '.infotextbox input[name=ip]' ).val( data.ip || '192.168.1.' );
-			$( '.infotextbox input[name=directory]' ).val( data.directory );
-			$( '.infotextbox input[name=user]' ).val( data.user );
-			$( '.infotextbox input[name=password]' ).val( data.password );
-			$( '.infotextbox input[name=options]' ).val( data.options );
-			$( '.infoCheckBox input' ).prop( 'checked', data.update || 1 );
-			if ( G.autoupdate ) $( '#infoCheckBox input' ).prop( 'disabled', 1 );
-			$( '.guest' ).toggleClass( 'hide', data.protocol === 'nfs' );
-			$( '.eye.guest' ).css( 'margin-top', '210px' );
 			var $dir = $( 'input[name=directory]' );
 			$( 'input[name=protocol]' ).change( function() {
 				if ( $( this ).val() === 'nfs' ) {
@@ -63,17 +51,16 @@ function infoMount( data ) {
 			} );
 		}
 		, ok      : function() {
-			var form = document.getElementById( 'formmount' );
-			data = Object.fromEntries( new FormData( form ).entries() );
+			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
 			notify( 'Network Mount', 'Mount ...', 'network' );
-			bash( [ 'mount', JSON.stringify( data ) ], function( std ) {
+			bash( [ 'mount', values ], function( std ) {
 				if ( std ) {
 					info( {
 						  icon    : 'network'
 						, title   : 'Mount Share'
 						, message : std
 						, ok      : function() {
-							infoMount( data );
+							infoMount( values );
 						}
 					} );
 					bannerHide();
@@ -339,7 +326,7 @@ $( '#setting-bluetooth' ).click( function() {
 	info( {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
-		, checkbox     : { discover: 'Discoverable <gr>by senders</gr>', sampling: 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' }
+		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, cchecked     : checked
 		, checkchanged : ( G.bluetooth ? [ G.btdiscoverable, G.btformat ] : '' )
 		, cancel       : function() {
@@ -615,11 +602,11 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		  icon         : 'plus-r'
 		, title        : 'Player Name'
 		, textlabel    : 'Name'
-		, textvalue    : G.hostname
+		, values       : G.hostname
 		, checkchanged : [ G.hostname ]
 		, preshow      : function() {
-			$( '#infoTextBox' ).keyup( function() {
-				$( '#infoTextBox' ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
+			$( '#infoContent input' ).keyup( function() {
+				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
 		, ok           : function() {
@@ -634,14 +621,14 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-regional' ).click( function() {
-	var textvalue = [ G.ntp, G.regdom || '00' ];
+	var values = [ G.ntp, G.regdom || '00' ];
 	info( {
 		  icon         : 'globe'
 		, title        : 'Regional Settings'
 		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
-		, textvalue    : textvalue
+		, values       : values
 		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
-		, checkchanged : textvalue
+		, checkchanged : values
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
@@ -667,8 +654,8 @@ $( '#setting-soundprofile' ).click( function() {
 		, Um3ggh1U  : '500000 0 1500 1000'
 		, Custom   : '0'
 	}
-	var textvalue = G.soundprofileval.split( ' ' );
-	if ( textvalue.length < 3 ) { // no eth0
+	var values = G.soundprofileval.split( ' ' );
+	if ( values.length < 3 ) { // no eth0
 		textlabel = textlabel.slice( 0, 2 );
 		$.each( radio, function( k, v ) {
 			radio[ k ] = v.split( ' ' ).splice( 0, 2 ).join( ' ' );
@@ -683,7 +670,7 @@ $( '#setting-soundprofile' ).click( function() {
 		  icon         : 'sliders'
 		, title        : 'Kernel Sound Profile'
 		, textlabel    : textlabel
-		, textvalue    : textvalue
+		, values       : values
 		, boxwidth     : 110
 		, radio        : radio
 		, radiocolumn  : 1

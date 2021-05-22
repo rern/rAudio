@@ -349,10 +349,10 @@ function displayPlayback() {
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	displayBars();
 }
-function displaySave() {
-	var values = infoVal( 'json' );
-	$.each( values, function( k, v ) {
-		G.display[ k ] = v;
+function displaySave( keys ) {
+	var values = infoVal();
+	keys.forEach( function( k, i ) {
+		G.display[ k ] = values[ i ];
 	} );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
@@ -614,7 +614,7 @@ function infoUpdate( path ) {
 		, radio    : { 'Only changed files' : 1, 'Rebuild entire database': 2 }
 		, preshow  : function() {
 			if ( path ) {
-				$( '#infoRadio' ).hide();
+				$( '#infoContent' ).hide();
 				$( '#infoMessage' )
 					.html( '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' )
 					.removeClass( 'hide' );

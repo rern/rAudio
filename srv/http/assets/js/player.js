@@ -261,7 +261,8 @@ $( '#setting-buffer' ).click( function() {
 		, title        : 'Custom Audio Buffer'
 		, message      : '<code>audio_buffer_size</code> (default: 4096)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
-		, textvalue    : G.bufferval || 4096
+		, values       : G.bufferval || 4096
+		, textrequired : [ 0 ]
 		, checkchanged : ( G.buffer ? [ G.bufferval ] : '' )
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
@@ -279,7 +280,8 @@ $( '#setting-bufferoutput' ).click( function() {
 		, title        : 'Custom Output Buffer'
 		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
-		, textvalue    : G.bufferoutputval || 8192
+		, values       : G.bufferoutputval || 8192
+		, textrequired : [ 0 ]
 		, checkchanged : ( G.bufferoutput ? [ G.bufferoutputval ] : '' )
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
@@ -330,20 +332,18 @@ var soxrinfo = heredoc( function() { /*
 $( '#setting-soxr' ).click( function() {
 	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
 	if ( G.soxr ) {
-		var val = G.soxrval.split( ' ' );
+		var values = G.soxrval.split( ' ' );
 	} else {
-		var val = defaultval;
+		var values = defaultval;
 	}
 	info( {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
 		, nofocus       : 1
-		, checkchanged  : ( G.soxr ? val : '' )
+		, values        : values
+		, checkchanged  : ( G.soxr ? values : '' )
 		, preshow       : function() {
-			$( '#infoContent' ).find( 'select, input[type=text]' ).each( function( i ) {
-				$( this ).val( val[ i ] )
-			} );
 			setTimeout( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );
 				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );
@@ -354,9 +354,9 @@ $( '#setting-soxr' ).click( function() {
 		, buttonlabel   : '<i class="fa fa-undo"></i>Default'
 		, buttoncolor   : orange
 		, button        : function() {
-			for ( i = 1; i < 5; i++ ) {
-				$( '#infoTextBox'+ i ).val( defaultval[ i ] );
-			}
+			$( '#infoContent' ).find( 'select, input:text' ).each( function( i ) {
+				$( this ).val( defaultval[ i ] )
+			} );
 		}
 		, buttonnoreset : 1
 		, buttonwidth   : 1
@@ -414,7 +414,7 @@ $( '#setting-custom' ).click( function() {
 					, 'text-align'   : 'left'
 					, 'padding-left' : '35px'
 				} );
-				$( '.msg, #global, #output' ).css( 'font-family', 'Inconsolata' );
+				$( '.msg' ).css( 'font-family', 'Inconsolata' );
 				$( '#output' ).css( 'padding-left', '39px' )
 			}
 			, cancel   : function() {

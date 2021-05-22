@@ -73,14 +73,14 @@ function bookmarkIcon( path ) {
 						+'<br>'
 						+'<br><w>'+ path +'</w>'
 						+'<br>As:'
-		, textvalue    : path.split( '/' ).pop()
+		, values       : path.split( '/' ).pop()
 		, textrequired : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
 			$.post( cmdphp, {
 				  cmd  : 'bookmark'
 				, path : path
-				, name : $( '#infoTextBox' ).val()
+				, name : infoVal()
 			} );
 			banner( 'Bookmark Added', path, 'bookmark' );
 		}
@@ -191,15 +191,10 @@ function playlistRename() {
 		, message      : 'Rename:'
 						+'<br><w>'+ name +'</w>'
 						+'<br>To:'
-		, textvalue    : name
+		, values       : name
 		, textrequired : [ 0 ]
+		, checkchanged : [ name ]
 		, boxwidth     : 'max'
-		, preshow      : function() {
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoTextBox' ).keyup( function() {
-				$( '#infoOk' ).toggleClass( 'disabled', $( '#infoTextBox' ).val() === name );
-			} );
-		}
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
 			var newname = infoVal();
@@ -255,7 +250,7 @@ function tagEditor() {
 			, msgalign     : 'left'
 			, footer       : footer
 			, textlabel    : label
-			, textvalue    : values
+			, values       : values
 			, boxwidth     : 'max'
 			, checkchanged : values
 			, preshow      : function() {
@@ -453,18 +448,10 @@ function webRadioEdit() {
 		, width        : 500
 		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
-		, textvalue    : [ name, url ]
+		, values       : [ name, url ]
 		, textrequired : [ 0, 1 ]
+		, checkchanged : [ name, url ]
 		, boxwidth     : 'max'
-		, preshow      : function() {
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-				var changed = ( $( '#infoTextBox' ).val() !== name || $( '#infoTextBox1' ).val() !== url )
-								&& $( '#infoTextBox' ).val()
-								&& $( '#infoTextBox1' ).val();
-				$( '#infoOk' ).toggleClass( 'disabled', !changed );
-			} );
-		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
 			var values = infoVal();
@@ -498,13 +485,14 @@ function webRadioNew( name, url ) {
 		, width        : 500
 		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
-		, textvalue    : [ ( name || '' ), ( url || '' ) ]
+		, values       : [ ( name || '' ), ( url || '' ) ]
 		, textrequired : [ 0, 1 ]
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
-			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			var url = $( '#infoTextBox1' ).val();
+			var values = infoVal();
+			var newname = values[ 0 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var url = values[ 1 ];
 			bash( [ 'webradioadd', newname, url ], function( data ) {
 				if ( data == -1 ) {
 					info( {
@@ -650,7 +638,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var time = G.list.li.find( '.time' ).data( 'time' );
 			var track = G.list.li.find( '.track' ).text() ;
 			var src = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-			var value = [ artist, album, title ];
+			var values = [ artist, album, title ];
 			info( {
 				  icon         : 'audiocd'
 				, title        : 'Audio CD Tag Editor'
@@ -658,9 +646,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 								+'<br># '+ track +' &bull; '+ second2HMS( time )
 				, msgalign     : 'left'
 				, textlabel    : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
-				, textvalue    : value
+				, values       : values
 				, boxwidth     : 'max'
-				, checkchanged : value
+				, checkchanged : values
 				, ok           : function() {
 					var values = infoVal();
 					var data = values.join( '^' ) +'^'+ time;

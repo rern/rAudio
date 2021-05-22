@@ -229,20 +229,20 @@ var chklibrary2 = {
 }
 $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	var options = this.id === 'displaylibrary2';
+	var checkbox = Object.values( !options ? chklibrary : chklibrary2 );
 	var keys = Object.keys( !options ? chklibrary : chklibrary2 );
 	keys = keys.filter( function( k ) {
 		return k !== 'bl'
 	} );
-	var cchecked = [];
-	var checkchanged = [];
+	var values = [];
 	keys.forEach( function( k, i ) {
-		checkchanged.push( G.display[ k ] );
-		if ( G.display[ k ] ) cchecked.push( i );
+		values.push( G.display[ k ] );
 	} );
 	var json = {
 		  icon         : 'library'
-		, cchecked     : cchecked
-		, checkchanged : checkchanged
+		, checkbox     : checkbox
+		, values       : values
+		, checkchanged : values
 		, preshow      : function() {
 			if ( options ) {
 				$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
@@ -260,7 +260,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 			}
 		}
 		, ok           : function () {
-			displaySave();
+			displaySave( keys );
 			$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 			if ( G.library ) {
 				if ( G.librarylist ) {
@@ -301,13 +301,11 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	if ( !options ) {
 		json.title       = 'Library Home Display';
 		json.message     = '1/2 - Show selected items:';
-		json.checkbox    = chklibrary;
 		json.checkcolumn = 1
 		json.arrowright  = function() { $( '#displaylibrary2' ).click(); }
 	} else {
 		json.title       = 'Library/Playlist Options';
 		json.message     = '';
-		json.checkbox    = chklibrary2;
 		json.checkcolumn = ''
 		json.arrowleft   = function() { $( '#displaylibrary' ).click(); }
 	}
@@ -328,20 +326,18 @@ $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
 	var keys = Object.keys( chkplayback );
 	keys.push( 'novu' );
-	var cchecked = [];
-	var checkchanged = [];
+	var values = [];
 	keys.forEach( function( k, i ) {
-		checkchanged.push( G.display[ k ] );
-		if ( G.display[ k ] ) cchecked.push( i );
+		values.push( G.display[ k ] );
 	} );
 	info( {
 		  icon         : 'play-circle'
 		, title        : 'Playback Display'
 		, message      : 'Show selected items:'
-		, checkbox     : chkplayback
+		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
-		, cchecked     : cchecked
-		, checkchanged : checkchanged
+		, values       : values
+		, checkchanged : values
 		, preshow      : function() {
 			$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
 					+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
@@ -405,7 +401,7 @@ $( '#displayplayback' ).click( function() {
 			} );
 		}
 		, ok           : function () {
-			displaySave();
+			displaySave( keys );
 			G.bars = G.display.bars;
 			G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 			displayBars();
@@ -480,7 +476,7 @@ $( '#addons' ).click( function () {
 		  icon      : 'jigsaw'
 		, title     : 'Addons'
 		, textlabel : 'Tree #/Branch'
-		, textvalue : 'UPDATE'
+		, values    : 'UPDATE'
 		, ok        : function() {
 			banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
 			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function( std ) {
@@ -1437,7 +1433,8 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, message      : '<i class="fa fa-bookmark bookmark"></i>'
 							+'<br><a class="bklabel">'+ name +'</a>'
 							+'To:'
-			, textvalue    : name
+			, textlabel    : 'Name'
+			, values       : name
 			, textrequired : [ 0 ]
 			, boxwidth     : 'max'
 			, oklabel      : '<i class="fa fa-flash"></i>Rename'

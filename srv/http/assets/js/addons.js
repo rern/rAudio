@@ -46,10 +46,10 @@ function branchtest( alias, type, message, install ) {
 		, title     : title
 		, message   : message
 		, textlabel : 'Tree #/Branch'
-		, textvalue : 'UPDATE'
+		, values    : 'UPDATE'
 		, boxwidth  : 'max'
 		, ok        : function() {
-			opt = [ alias, type, $( '#infoTextBox' ).val() ];
+			opt = [ alias, type, infoVal() ];
 			option = addons[ alias ].option;
 			j = 0;
 			if ( install && option ) {
@@ -74,7 +74,7 @@ $( '.boxed-group .btn' ).on( 'taphold', function () {
 			, radiohtml : '<label><input type="radio" name="inforadio" value="1" checked>&ensp;Rollback to previous version</label><br>'
 						 +'<label><input type="radio" name="inforadio" value="Branch">&ensp;Tree # / Branch ...</label>'
 			, ok        : function() {
-				if ( $( '#infoRadio input:checked').val() == 1 ) {
+				if ( infoVal() == 1 ) {
 					opt = [ alias, type, rollback ];
 					postcmd();
 				} else {
@@ -189,14 +189,10 @@ function getoptions() {
 				, title     : title
 				, message   : ojson.message
 				, textlabel : ojson.label
-				, textvalue : ojson.value
+				, values    : ojson.value
 				, boxwidth  : ojson.width
 				, ok        : function() {
-					var input = '';
-					$( '.infotextbox .infoinput' ).each( function() {
-						var input = this.value;
-						opt.push( input || 0 );
-					} );
+					opt.push( infoVaal() || 0 );
 					sendcommand();
 				}
 			} );
@@ -210,7 +206,7 @@ function getoptions() {
 				, message       : ojson.message
 				, passwordlabel : ojson.label
 				, ok:          function() {
-					var pwd = $( '#infoPasswordBox' ).val();
+					var pwd = infoVal();
 					if ( pwd ) {
 						verifyPassword( title, pwd, function() {
 							opt.push( pwd );
@@ -234,29 +230,14 @@ function getoptions() {
 		case 'radio': // single value
 			ojson = option[ oj ];
 			info( {
-				  icon     : 'jigsaw'
-				, title    : title
-				, message  : ojson.message
-				, radio    : ojson.list
-				, rchecked : ojson.checked
-				, ok       : function() {
-					var radiovalue = $( '#infoRadio input:checked' ).val();
-					opt.push( radiovalue );
+				  icon    : 'jigsaw'
+				, title   : title
+				, message : ojson.message
+				, radio   : ojson.list
+				, values  : ojson.checked
+				, ok      : function() {
+					opt.push( infoVal() );
 					sendcommand();
-				}
-			} );
-			$( '#infoRadio input' ).change( function() { // cutom value
-				if ( $( this ).val() === '?' ) {
-					info( {
-						  icon      : 'jigsaw'
-						, title     : title
-						, message   : ojson.message
-						, textlabel : 'Custom'
-						, ok        : function() {
-							opt.push( $( '#infoTextBox' ).val() );
-							sendcommand();
-						}
-					} );
 				}
 			} );
 			break;
@@ -269,29 +250,11 @@ function getoptions() {
 				, message     : ojson.message
 				, selectlabel : ojson.label
 				, select      : ojson.list
-				, schecked    : ojson.checked
+				, values      : ojson.checked
 				, boxwidth    : ojson.width || 80
-				, preshow     : function() {
-					$( '#infoSelectBox').selectric();
-				}
 				, ok          : function() {
-					opt.push( $( '#infoSelectBox').val() );
+					opt.push( infoVal() );
 					sendcommand();
-				}
-			} );
-			$( '#infoSelectBox' ).change( function() { // cutom value
-				if ( $( '#infoSelectBox :selected' ).val() === '?' ) {
-					info( {
-						  icon      : 'jigsaw'
-						, title     : title
-						, message   : ojson.message
-						, textlabel : 'Custom'
-						, ok        : function() {
-							var input = $( '#infoTextBox' ).val();
-							opt.push( input || 0 );
-							sendcommand();
-						}
-					} );
 				}
 			} );
 			break;
@@ -303,11 +266,9 @@ function getoptions() {
 				, title    : title
 				, message  : ojson.message
 				, checkbox : ojson.list
-				, cchecked : ojson.checked
+				, values   : ojson.checked
 				, ok       : function() {
-					$( '#infoCheckBox input' ).each( function() {
-						opt.push( $( this ).prop( 'checked' ) ? 1 : 0 );
-					} );
+					opt.push( infoVal() );
 					sendcommand();
 				}
 			} );
