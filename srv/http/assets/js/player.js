@@ -136,25 +136,24 @@ $( '#hwmixer' ).change( function() {
 	bash( [ 'hwmixer', device.aplayname, hwmixer ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
+	var novolume = device.mixertype === 'none';
 	bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
 		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
 			, message    : device.hwmixer
 			, rangevalue : level
+			, footer     : ( novolume ? '<br>( Control: None / 0dB )' : '' )
 			, postshow   : function() {
-				$( '#infoRange input' ).on( 'click input', function() {
-					var val = $( this ).val();
-					$( '#infoRange .value' ).text( val );
-					bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
-				} ).on( 'mouseup touchend', function() {
-					bash( "/srv/http/bash/cmd.sh volumepushstream$'\n'\""+ device.aplayname +'"' );
-				} );
-				if ( device.mixertype === 'none' ) {
+				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
-					$( '#infoRange' ).after( '<br><input type="checkbox" checked><gr>Control:</gr> <code>None / 0dB</code>' );
-					$( '#infoContent' ).on( 'click', 'input:checkbox', function() {
-						$( '#infoRange input' ).prop( 'disabled', $( this ).prop( 'checked' ) );
+				} else {
+					$( '#infoRange input' ).on( 'click input', function() {
+						var val = $( this ).val();
+						$( '#infoRange .value' ).text( val );
+						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
+					} ).on( 'mouseup touchend', function() {
+						bash( '/srv/http/bash/cmd.sh volumepushstream' );
 					} );
 				}
 			}

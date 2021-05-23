@@ -823,15 +823,7 @@ volumeget )
 volumepushstream )
 	volumeGet
 	[[ -n $control ]] && alsactl store
-	aplayname=${args[1]}
-	filemixertype="$dirsystem/mixertype-$aplayname"
-	file0db="$filemixertype-0dB"
-	if [[ -e $file0db ]]; then
-		[[ $volume != $( cat "$file0db" ) ]] && rm -f "$filemixertype"
-		pushstream refresh '{ "page": "player" }'
-	else
-		pushstream volume '{"val":'$volume'}'
-	fi
+	pushstream volume '{"val":'$volume'}'
 	;;
 volumereset )
 	volumeReset
