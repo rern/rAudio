@@ -227,6 +227,10 @@ function info( json ) {
 		alignVertical();
 		return;
 	}
+	$( '#infoX, #infoCancel' ).click( function() {
+		if ( 'cancel' in O && O.cancel ) O.cancel();
+		infoReset( 'infox' );
+	} );
 	// title
 	var width = 'width' in O ? O.width : '';
 	if ( width ) {
@@ -285,10 +289,48 @@ function info( json ) {
 			$( '.infobtn' ).click( infoReset );
 		}
 	}
-	$( '#infoX, #infoCancel' ).click( function() {
-		if ( 'cancel' in O && O.cancel ) O.cancel();
-		infoReset( 'infox' );
-	} );
+	if ( 'fileoklabel' in O && O.fileoklabel ) {
+		$( '#infoOk' )
+			.html( O.fileoklabel )
+			.addClass( 'hide' );
+		if ( 'filelabel' in O ) $( '#infoFileLabel' ).html( O.filelabel );
+		$( '#infoFileLabel' ).click( function() {
+			$( '#infoFileBox' ).click();
+		} );
+		$( '#infoFile, #infoFileLabel' ).removeClass( 'hide' );
+		if ( 'filetype' in O ) $( '#infoFileBox' ).attr( 'accept', O.filetype );
+		$( '#infoFileBox' ).change( function() {
+			var file = this.files[ 0 ];
+			if ( !file ) return
+			
+			var filename = file.name;
+			var ext = filename.split( '.' ).pop();
+			if ( 'filefilter' in O && O.filetype.indexOf( ext ) === -1 ) {
+				info( {
+					  icon    : 'warning'
+					, title   : O.title
+					, message : 'File extension must be: <code>'+ O.filetype +'</code>'
+					, ok      : function() {
+						info( {
+							  title       : title
+							, message     : message
+							, fileoklabel : O.fileoklabel
+							, filetype    : O.filetype
+							, ok          : function() {
+								info( O );
+							}
+						} );
+					}
+				} );
+				return;
+			}
+			
+			$( '#infoOk' ).removeClass( 'hide' );
+			$( '#infoFileLabel' ).removeClass( 'infobtn-primary' )
+			if ( 'fileokdisable' in O ) $( '#infoFileLabel' ).addClass( 'disabled' );
+			$( '#infoFilename' ).html( '<code>'+ filename +'</code>' );
+		} );
+	}
 	
 	if ( 'content' in O && O.content ) {
 		// custom html content
@@ -389,48 +431,6 @@ function info( json ) {
 				} );
 				htmls.select += '</select></td></tr>';
 			}
-		}
-		if ( 'fileoklabel' in O && O.fileoklabel ) {
-			$( '#infoOk' )
-				.html( O.fileoklabel )
-				.addClass( 'hide' );
-			if ( 'filelabel' in O ) $( '#infoFileLabel' ).html( O.filelabel );
-			$( '#infoFileLabel' ).click( function() {
-				$( '#infoFileBox' ).click();
-			} );
-			$( '#infoFile, #infoFileLabel' ).removeClass( 'hide' );
-			if ( 'filetype' in O ) $( '#infoFileBox' ).attr( 'accept', O.filetype );
-			$( '#infoFileBox' ).change( function() {
-				var file = this.files[ 0 ];
-				if ( !file ) return
-				
-				var filename = file.name;
-				var ext = filename.split( '.' ).pop();
-				if ( 'filefilter' in O && O.filetype.indexOf( ext ) === -1 ) {
-					info( {
-						  icon    : 'warning'
-						, title   : O.title
-						, message : 'File extension must be: <code>'+ O.filetype +'</code>'
-						, ok      : function() {
-							info( {
-								  title       : title
-								, message     : message
-								, fileoklabel : O.fileoklabel
-								, filetype    : O.filetype
-								, ok          : function() {
-									info( O );
-								}
-							} );
-						}
-					} );
-					return;
-				}
-				
-				$( '#infoOk' ).removeClass( 'hide' );
-				$( '#infoFileLabel' ).removeClass( 'infobtn-primary' )
-				if ( 'fileokdisable' in O ) $( '#infoFileLabel' ).addClass( 'disabled' );
-				$( '#infoFilename' ).html( '<code>'+ filename +'</code>' );
-			} );
 		}
 		if ( 'rangevalue' in O && O.rangevalue ) {
 			htmls.range = '<div id="infoRange">'
