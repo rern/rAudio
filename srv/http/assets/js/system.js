@@ -90,13 +90,15 @@ function renderStatus() {
 	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
 			+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
-	if ( G.throttled ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
+	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
+		status += '<br><span class="undervoltage"><i class="fa fa-warning';
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += '<br><i class="fa fa-warning blink red"></i>&ensp;Voltage under 4.7V - currently detected.'
+			status += ' blink red"></i>&ensp;Voltage under 4.7V - currently detected.';
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
-			status += '<br><i class="fa fa-warning"></i>&ensp;Voltage under 4.7V - occurred.';
+			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
+		status += ' <i class="fa fa-status"></i></span></span>';
 	}
 	return status
 }
@@ -259,6 +261,17 @@ $( '#refresh' ).click( function( e ) {
 		banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
 	}
 } );
+$( '#status' ).on( 'click', '.undervoltage', function() {
+	if ( $( '#codeundervoltage' ).is( ':empty' ) ) {
+		bash( 'journalctl -b | grep "Under-voltage detected"', function( log ) {
+			$( '#codeundervoltage' )
+				.html( log )
+				.removeClass( 'hide' );
+		} );
+	} else {
+		$( '#codeundervoltage' ).toggleClass( 'hide' );
+	}
+} );
 $( '#addnas' ).click( function() {
 	infoMount();
 } );
@@ -296,7 +309,6 @@ $( '#list' ).on( 'click', 'li', function() {
 			  icon        : icon
 			, title       : title
 			, message     : '<wh>'+ mountpoint +'</wh>'
-			, buttonwidth : 1
 			, buttonlabel : 'Remove'
 			, buttoncolor : red
 			, button      : function() {
@@ -480,7 +492,6 @@ $( '#setting-lcdchar' ).click( function() {
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
 		}
-		, buttonwidth   : 1
 		, cancel        : function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}

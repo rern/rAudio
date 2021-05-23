@@ -198,7 +198,6 @@ $( '#power' ).click( function() {
 		, ok          : function() {
 			bash( [ 'power', 'off' ] );
 		}
-		, buttonwidth : 1
 	} );
 } );
 var chklibrary = {
@@ -1474,7 +1473,6 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		}
 		if ( thumbnail ) {
 			json.buttonlabel = '<i class="fa fa-undo"></i>Reset';
-			json.buttonwidth = 1;
 			json.button      = function() {
 				bash( [ 'bookmarkreset', path ], function() {
 					var label = path.split( '/' ).pop();
@@ -1869,7 +1867,6 @@ $( '#button-pl-clear' ).click( function() {
 				bash( [ 'plremove' ] );
 				renderPlaybackBlank();
 			}
-			, buttonwidth : 1
 		} );
 	}
 } );

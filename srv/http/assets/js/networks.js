@@ -66,7 +66,6 @@ function editLAN( $el ) {
 			if ( dhcp === 'dhcp' || !ip ) $( '#infoButton' ).addClass( 'hide' );
 		}
 		, buttonlabel  : '<i class="fa fa-undo"></i>DHCP'
-		, buttonwidth  : 1
 		, button       : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
 			loader();
@@ -190,7 +189,6 @@ function infoConnect( $this ) {
 		, preshow     : function() {
 			if ( profile ) $( '#infoButton1' ).hide();
 		}
-		, buttonwidth : 1
 		, buttonlabel : [
 			  '<i class="fa fa-minus-circle"></i> Forget'
 			, '<i class="fa fa-edit-circle"></i> Edit'
@@ -399,7 +397,6 @@ $( '#listbt' ).on( 'click', 'li', function( e ) {
 		, preshow : function() {
 			if ( !connected ) $( '#infoOk' ).addClass( 'hide' );
 		}
-		, buttonwidth : 1
 		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, buttoncolor : red
 		, button      : function() {

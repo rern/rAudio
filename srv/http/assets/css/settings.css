@@ -786,6 +786,7 @@ input:checked + .switchlabel.disabled:after {
 	.settingedit,
 	.status,
 	.switchlabel,
+	.undervoltage,
 	#button-data,
 	#close,
 	#filetype,

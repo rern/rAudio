@@ -239,7 +239,6 @@ $( '#setting-localbrowser' ).click( function() {
 		, button       : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
-		, buttonwidth  : 1
 		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}

@@ -359,7 +359,6 @@ $( '#setting-soxr' ).click( function() {
 			} );
 		}
 		, buttonnoreset : 1
-		, buttonwidth   : 1
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}

@@ -23,10 +23,9 @@ info( {                                     // default
 	textlength    : { i: N, ... }           // (none)         (required min N characters in 'i')
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
 	
-	textarea      : 1                       //                (textarea - \n = newline, \t = tab)
+	textarea      : 1                       //
 	
 	passwordlabel : 'LABEL'                 // (blank)        (password input label)
-	passwordvalue : 'VALUE'                 // (blank)        (password input value)
 	
 	filelabel     : 'LABEL'                 // 'Browse'       (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
@@ -41,8 +40,7 @@ info( {                                     // default
 	select        : { LABEL: 'VALUE', ... }
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
-	keys          : [ 'KEY', ... ]         // (none)          (keys for json return)
-	values        : [ 'VALUE', ... ]        // (none)         (default values in appeared order)
+	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkchanged  : 1              .        // (none)         (check values changed)
 	
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
@@ -59,7 +57,7 @@ info( {                                     // default
 	buttonlabel   : [ 'LABEL', ... ]        //                (label array)
 	button        : [ FUNCTION, ... ]       //                (function array)
 	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
-	buttonwidth   : 1                       // (none)         (equal buttons width)
+	buttonfit     : 1                       // (none)         (fit buttons width to label)
 } );
 Note:
 - No default - must be specified.
@@ -491,7 +489,7 @@ function info( json ) {
 				$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 			}, 0 );
 		}
-		if ( 'buttonwidth' in O && O.buttonwidth ) {
+		if ( !( 'buttonfit' in O ) ) {
 			var widest = 0;
 			var w;
 			$.each( $( '#infoButtons a' ), function() {
@@ -572,13 +570,7 @@ function infoVal() {
 		}
 		values.push( val );
 	} );
-	if ( 'keys' in O && O.keys ) {
-		var json = {}
-		O.keys.forEach( function( k, i ) {
-			json[ k ] = values[ i ];
-		} );
-		return json
-	} else if ( values.length > 1 ) {
+	if ( values.length > 1 ) {
 		return values
 	} else {
 		return values[ 0 ]

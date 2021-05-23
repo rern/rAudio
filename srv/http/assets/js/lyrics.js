@@ -46,7 +46,6 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
 			, values      : [ artist, title ]
 			, boxwidth    : 'max'
-			, buttonwidth : 1
 			, buttonlabel : '<i class="fa fa-bio wh"></i>Bio'
 			, button      : function() {
 				if ( $( '#bio legend' ).text() != G.status.Artist ) {

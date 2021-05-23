@@ -403,7 +403,6 @@ function webRadioCoverart() {
 		|| ( G.library && !G.list.li.find( '.lib-icon' ).hasClass( 'fa' ) )
 	) {
 		infojson.buttonlabel = '<i class="fa fa-webradio"></i>Default';
-		infojson.buttonwidth = 1;
 		infojson.buttoncolor = orange;
 		infojson.button      = function() {
 			bash( [ 'coverartradioreset', imagefile ] );

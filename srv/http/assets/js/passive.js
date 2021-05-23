@@ -428,7 +428,6 @@ function psRelays( response ) { // on receive broadcast
 			, title       : 'GPIO Relays Countdown'
 			, message     : stopwatch
 			, footer      : '<white>'+ delay +'</white>'
-			, buttonwidth : 1
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
