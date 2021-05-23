@@ -441,16 +441,6 @@ function info( json ) {
 				return true
 			}
 		} );
-		if ( 'textrequired' in O && O.textrequired ) {
-			O.textrequired.forEach( function( i ) {
-				checkChangedLength( $input.eq( i ), 1 );
-			} );
-		}
-		if ( 'textlength' in O && O.textlength ) {
-			$.each( O.textlength, function( i, L ) {
-				checkChangedLength( $input.eq( i ), L );
-			} );
-		}
 		if ( 'values' in O && O.values ) {
 			if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 			var $this, type, val;
@@ -467,6 +457,16 @@ function info( json ) {
 				}
 			} );
 			if ( O.checkchanged ) checkChanged();
+		}
+		if ( 'textrequired' in O && O.textrequired ) {
+			O.textrequired.forEach( function( i ) {
+				checkChangedLength( $input.eq( i ), 1 );
+			} );
+		}
+		if ( 'textlength' in O && O.textlength ) {
+			$.each( O.textlength, function( i, L ) {
+				checkChangedLength( $input.eq( i ), L );
+			} );
 		}
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		$( '#infoOverlay' )

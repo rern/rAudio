@@ -674,7 +674,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, radiocolumn  : 1
 		, values       : values
 		, checkchanged : 1
-//		, textrequired : [ 0, 1, 2, 3 ]
+		, textrequired : [ 0, 1, 2, 3 ]
 		, postshow     : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );
