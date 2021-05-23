@@ -248,8 +248,8 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 		, values       : values
 		, checkchanged : 1
 		, preshow      : function() {
+			$( '#infoContent' ).css( 'height', '310px' );
 			if ( options ) {
-				$( '#infoContent' ).css( 'height', '301px' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
