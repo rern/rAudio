@@ -182,7 +182,9 @@ function infoReset( infox ) {
 		, visibility : 'hidden'
 	} );
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
-	$( '#infoContent' ).empty();
+	$( '#infoContent' )
+		.empty()
+		.css( 'height', '' );
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '.infoarrowleft, .infoarrowright, #infoTextarea, #infoRange, #infoFile, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
 	$( '#infoMessage, #infoFooter' ).css( 'text-align', '' );
@@ -209,7 +211,7 @@ function info( json ) {
 	O = json;
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
-	setTimeout( function() { // fix: wait for infoReset() on 2nd info
+//	setTimeout( function() { // fix: wait for infoReset() on 2nd info
 	///////////////////////////////////////////////////////////////////
 	// simple use as info( 'message' )
 	if ( typeof O !== 'object' ) {
@@ -499,7 +501,7 @@ function info( json ) {
 			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) $input[ 0 ].focus();
 		}, 300 );
 		/////////////////////////////////////////////////////////////////////////////
-		}, 0 );
+//		}, 0 );
 	} );
 }
 
