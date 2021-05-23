@@ -60,7 +60,6 @@ audiooutput )
 	' /etc/shairport-sync.conf
 	restartMPD
 	systemctl try-restart shairport-sync shairport-meta
-	pushRefresh
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
