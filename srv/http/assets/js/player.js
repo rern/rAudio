@@ -217,16 +217,13 @@ $( '#setting-crossfade' ).click( function() {
 	info( {
 		  icon         : 'mpd'
 		, title        : 'Crossfade'
-		, message      : 'Seconds:'
-		, radio        : { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6 }
-		, radiocolumn  : 1
+		, textlabel    : 'Seconds'
+		, boxwidth     : 60
 		, values       : G.crossfadeval || 1
 		, checkchanged : ( G.crossfade ? 1 : 0 )
+		, textrequired : [ 0 ]
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
-		}
-		, preshow      : function() {
-			$( '#infoContent td:first-child' ).css( 'width', '70px' );
 		}
 		, ok           : function() {
 			crossfadeval = infoVal();
