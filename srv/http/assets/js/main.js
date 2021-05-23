@@ -340,7 +340,6 @@ $( '#displayplayback' ).click( function() {
 			$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
 					+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
 					+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
-			$( 'input[name=novu]' ).val( [ G.display.novu ] );
 			$( '#divnovu' ).toggleClass( 'hide', !G.display.cover );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time

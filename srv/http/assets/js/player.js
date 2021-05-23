@@ -340,6 +340,7 @@ $( '#setting-soxr' ).click( function() {
 		, nofocus       : 1
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
+		, textrequired : [ 1, 2, 3, 4 ]
 		, preshow       : function() {
 			setTimeout( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );

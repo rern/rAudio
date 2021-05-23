@@ -19,7 +19,7 @@ info( {                                     // default
 	msgalign      : 'CSS'                   // 'center'       (message under title)
 	
 	textlabel     : [ 'LABEL', ... ]        // (blank)        (label array input label)
-	textrequired  : [ i, ... ]              // (none)         (required text in 'i' - disable ok button)
+	textrequired  : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
 	textlength    : { i: N, ... }           // (none)         (required min N characters in 'i')
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
 	
@@ -435,6 +435,7 @@ function info( json ) {
 		var htmlcontent = htmlmsg +'<table>'+ htm +'</table>'+ htmlfooter;
 	}
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
+		if ( 'preshow' in O && O.preshow ) O.preshow();
 		var $input = $( '#infoContent' ).find( 'input, select, textarea' );
 		var name, nameprev;
 		$input = $input.filter( function() { // filter each radio group
@@ -446,6 +447,7 @@ function info( json ) {
 				return true
 			}
 		} );
+		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
 				checkChangedLength( $input.eq( i ), 1 );
@@ -473,8 +475,6 @@ function info( json ) {
 			} );
 			if ( O.checkchanged ) checkChanged();
 		}
-		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
-		if ( 'preshow' in O && O.preshow ) O.preshow();
 		$( '#infoOverlay' )
 			.addClass( 'noclick' )
 			.removeClass( 'hide' )

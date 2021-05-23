@@ -177,7 +177,7 @@ $( '#setting-hostapd' ).click( function() {
 		, textlabel    : [ 'Password', 'IP' ]
 		, values       : [ G.hostapdpwd, G.hostapdip ]
 		, checkchanged : ( G.hostapd ? 1 : 0 )
-		, textrequired : [ 1 ]
+		, textrequired : [ 0, 1 ]
 		, textlength   : { 0: 8 }
 		, cancel       : function() {
 			if ( set ) {
@@ -234,6 +234,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, boxwidth     : 60
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
+		, textrequired : [ 0, 1 ]
 		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
@@ -284,6 +285,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		, passwordlabel : 'Password'
 		, values        : user
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
+		, textrequired : [ 0, 1 ]
 		, preshow       : function() {
 			$( '#infoPasswordBox' ).val( pwd );
 		}
@@ -312,7 +314,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, textrequired  : ( G.login ? [ 0, 1 ] : [ 0 ] )
+		, textrequired  : [ 0 ]
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}

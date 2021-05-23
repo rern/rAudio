@@ -4,7 +4,7 @@ var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<table id="tblinfomount">
 	<tr><td>Type</td>
-		<td><label><input type="radio" name="inforadio" value="cifs">CIFS</label></td>
+		<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label></td>
 		<td><label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 	</tr>
 	<tr><td>Name</td>
@@ -20,13 +20,13 @@ var htmlmount = heredoc( function() { /*
 		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>Password</td>
-		<td colspan="2"><input type="password" id="infoPasswordBox">&ensp;<i class="fa fa-eye"></i></td>
+		<td colspan="2"><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
 	</tr>
 	<tr><td>Options</td>
 		<td colspan="2"><input type="text"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan=2><label><input type="checkbox" value="true" checked>Update Library on mount</label></td>
+		<td colspan=2><label><input type="checkbox" checked>Update Library on mount</label></td>
 	</tr>
 	</table>
 */ } );
@@ -35,18 +35,20 @@ function infoMount( values ) {
 		  icon    : 'network'
 		, title   : 'Add Network Share'
 		, content : htmlmount
-		, values  : values || false
+		, values  : values
 		, preshow : function() {
-			var $dir = $( 'input[name=directory]' );
-			$( 'input[name=protocol]' ).change( function() {
+			var $sharelabel = $( '#sharename td:eq( 0 )' );
+			var $share = $( '#sharename input' );
+			var $guest = $( '.guest' );
+			$( '#infoContent input:radio' ).change( function() {
 				if ( $( this ).val() === 'nfs' ) {
-					$( '#sharename' ).text( 'Share path' );
-					$( '.guest' ).addClass( 'hide' );
-					$dir.val( '/'+ $dir.val() );
+					$sharelabel.text( 'Share path' );
+					$guest.addClass( 'hide' );
+					$share.val( '/'+ $share.val() );
 				} else {
-					$( '#sharename' ).text( 'Share name' );
-					$( '.guest' ).removeClass( 'hide' );
-					$dir.val( $dir.val().replace( /\//g, '' ) );
+					$sharelabel.text( 'Share name' );
+					$guest.removeClass( 'hide' );
+					$share.val( $share.val().replace( /\//g, '' ) );
 				}
 			} );
 		}
@@ -470,18 +472,6 @@ $( '#setting-lcdchar' ).click( function() {
 		, preshow       : function() {
 			$( '#i2caddress' ).html( opt );
 			$( '#tbllcdchar' ).find( 'td:eq( 1 ), td:eq( 2 )' ).css( 'width', '80px' );
-			
-			$( '#infoContent input[name=cols]' ).val( [ v[ 0 ] ] );
-			$( '#infoContent input[name=charmap]' ).val( [ v[ 1 ] ] );
-			$( '#infoContent input[name=inf]' ).val( [ v[ 2 ] ] );
-			$( '#infoContent input[name=address]' ).val( [ v[ 3 ] ] );
-			$( '#i2cchip' ).val( v[ 4 ] );
-			$( '#pin_rs' ).val( v[ 5 ] );
-			$( '#pin_rw' ).val( v[ 6 ] );
-			$( '#pin_e' ).val( v[ 7 ] );
-			$( '#pins_data' ).val( v[ 8 ] );
-			$( '#backlight' ).prop( 'checked', v[ 9 ] );
-			
 			$( '.lcdradio' ).width( 230 );
 			$( '.lcd label' ).width( 75 );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
@@ -639,6 +629,7 @@ $( '#setting-regional' ).click( function() {
 		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
 		, values       : values
 		, checkchanged : 1
+		, textrequired : [ 0, 1 ]
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
@@ -683,6 +674,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, radiocolumn  : 1
 		, values       : values
 		, checkchanged : 1
+		, textrequired : [ 0, 1, 2, 3 ]
 		, preshow      : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );

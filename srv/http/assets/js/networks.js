@@ -61,7 +61,7 @@ function editLAN( $el ) {
 		, textlabel    : [ 'IP', 'Gateway' ]
 		, values       : [ ip, gateway ]
 		, checkchanged : ( ip ? 1 : 0 )
-		, textrequired : [ 0 ]
+		, textrequired : [ 0, 1 ]
 		, preshow      : function() {
 			if ( dhcp === 'dhcp' || !ip ) $( '#infoButton' ).addClass( 'hide' );
 		}
@@ -121,6 +121,7 @@ function editWiFi( $el ) {
 		, values        : [ ssid, ip, gateway, password, dhcp, hidden, security ]
 		, checkchanged  : 1
 		, textlength    : { 3: 8 }
+		, textrequired  : [ 0 ]
 		, preshow       : function() {
 			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
 				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggle( $( this ).prop( 'checked' ) );
@@ -440,7 +441,7 @@ $( '#lanadd' ).click( function() {
 	editLAN();
 } );
 $( '#listlan' ).on( 'click', 'li', function() {
-	editLAN( $this );
+	editLAN( $( this ) );
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : editWiFi();
