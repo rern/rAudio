@@ -12,7 +12,8 @@ info( {                                     // default
 	nofocus       : 1                       // (input box)    (no focus at input box)
 	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
 	autoclose     : N                       // (disabled)     (auto close in ms)
-	preshow       : FUNCTION                // (none)         (function before show)
+	preshow       : FUNCTION                // (none)         (function after html content - before set width)
+	postshow      : FUNCTION                // (none)         (function after values set)
 	
 	content       : 'HTML'                  //                (replace whole '#infoContent' html)
 	message       : 'MESSAGE'               // (blank)        (message under title)
@@ -80,11 +81,6 @@ var containerhtml = heredoc( function() { /*
 			<i class="fa fa-arrow-left infoarrowleft"></i><i class="fa fa-arrow-right infoarrowright"></i>
 		</div>
 		<div id="infoContent">
-		</div>
-		<textarea id="infoTextarea" class="hide"></textarea>
-		<div id="infoRange" class="hide">
-			<div class="value"></div>
-			<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
 		</div>
 		<div id="infoButtons">
 			<div id="infoFile" class="hide">
@@ -330,9 +326,7 @@ function info( json ) {
 			} );
 		}
 		if ( 'textarea' in O && O.textarea ) {
-			$( '#infoTextarea' )
-				.text( O.textareavalue )
-				.removeClass( 'hide' );
+			htm += '<textarea></textarea>';
 		}
 		if ( 'radio' in O && O.radio ) { // single set only
 			var line;
@@ -385,11 +379,6 @@ function info( json ) {
 				htm += '</select></td></tr>';
 			}
 		}
-		if ( 'rangevalue' in O && O.rangevalue ) {
-			$( '#infoRange .value' ).text( O.rangevalue );
-			$( '#infoRange input' ).val( +O.rangevalue );
-			$( '#infoRange' ).removeClass( 'hide' );
-		}
 		if ( 'fileoklabel' in O && O.fileoklabel ) {
 			$( '#infoOk' )
 				.html( O.fileoklabel )
@@ -432,6 +421,11 @@ function info( json ) {
 				$( '#infoFilename' ).html( '<code>'+ filename +'</code>' );
 			} );
 		}
+		if ( 'rangevalue' in O && O.rangevalue ) {
+			htm += '<div id="infoRange">'
+					+'<div class="value">'+ O.rangevalue +'</div>'
+					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
+		}
 		var htmlcontent = htmlmsg +'<table>'+ htm +'</table>'+ htmlfooter;
 	}
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
@@ -447,7 +441,6 @@ function info( json ) {
 				return true
 			}
 		} );
-		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
 				checkChangedLength( $input.eq( i ), 1 );
@@ -475,6 +468,7 @@ function info( json ) {
 			} );
 			if ( O.checkchanged ) checkChanged();
 		}
+		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		$( '#infoOverlay' )
 			.addClass( 'noclick' )
 			.removeClass( 'hide' )
@@ -496,8 +490,9 @@ function info( json ) {
 				w = $( this ).outerWidth();
 				if ( w > widest ) widest = w;
 			} );
-			$( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
+			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
+		if ( 'postshow' in O && O.postshow ) O.postshow();
 		setTimeout( function() { // prevent click OK on consecutive info
 			$( '#infoOverlay' ).removeClass( 'noclick' );
 			var type0 = $( $input[ 0 ] ).prop( 'type' );

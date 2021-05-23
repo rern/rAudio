@@ -253,7 +253,7 @@ function tagEditor() {
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : 1
-			, preshow      : function() {
+			, postshow      : function() {
 				var $text = $( '#infoContent input' );
 				$( '#infoMessage' )
 					.css( 'width', 'calc( 100% - 40px )' )

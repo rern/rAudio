@@ -4,7 +4,7 @@ var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<table id="tblinfomount">
 	<tr><td>Type</td>
-		<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label></td>
+		<td width="100"><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label></td>
 		<td><label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 	</tr>
 	<tr><td>Name</td>
@@ -32,11 +32,11 @@ var htmlmount = heredoc( function() { /*
 */ } );
 function infoMount( values ) {
 	info( {
-		  icon    : 'network'
-		, title   : 'Add Network Share'
-		, content : htmlmount
-		, values  : values
-		, preshow : function() {
+		  icon     : 'network'
+		, title    : 'Add Network Share'
+		, content  : htmlmount
+		, values   : values
+		, postshow : function() {
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
@@ -52,7 +52,7 @@ function infoMount( values ) {
 				}
 			} );
 		}
-		, ok      : function() {
+		, ok       : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
 			notify( 'Network Mount', 'Mount ...', 'network' );
 			bash( [ 'mount', values ], function( std ) {
@@ -425,16 +425,16 @@ var infolcdchar = heredoc( function() { /*
 		</td>
 	</tr>
 	<tr class="gpio"><td>pin_rs</td>
-		<td><input type="text" id="pin_rs"></td>
+		<td colspan="3"><input type="text" id="pin_rs"></td>
 	</tr>
 	<tr class="gpio"><td>pin_rw</td>
-		<td><input type="text" id="pin_rw"></td>
+		<td colspan="3"><input type="text" id="pin_rw"></td>
 	</tr>
 	<tr class="gpio"><td>pin_e</td>
-		<td><input type="text" id="pin_e"></td>
+		<td colspan="3"><input type="text" id="pin_e"></td>
 	</tr>
 	<tr class="gpio"><td>pins_data</td>
-		<td><input type="text" id="pins_data"></td>
+		<td colspan="3"><input type="text" id="pins_data"></td>
 	</tr>
 	<tr><td></td>
 		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop 1 m.)</gr></label></td>
@@ -467,8 +467,6 @@ $( '#setting-lcdchar' ).click( function() {
 		, content       : infolcdchar
 		, boxwidth      : 180
 		, nofocus       : 1
-		, values        : v
-		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, preshow       : function() {
 			$( '#i2caddress' ).html( opt );
 			$( '#tbllcdchar' ).find( 'td:eq( 1 ), td:eq( 2 )' ).css( 'width', '80px' );
@@ -476,8 +474,12 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '.lcd label' ).width( 75 );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
-			$( '#inf' ).change( function() {
-				i2c = $( '#inf input:checked' ).val() === 'i2c';
+		}
+		, values        : v
+		, checkchanged  : ( G.lcdchar ? 1 : 0 )
+		, postshow      : function() {
+			$( '#infoContent input[name=inf]' ).change( function() {
+				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
 				$( '.i2c' ).toggleClass( 'hide', !i2c );
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
@@ -523,7 +525,7 @@ $( '#setting-powerbutton' ).click( function() {
 	GPIO pins <gr>(J8 numbering)</gr>:
 	<table>
 	<tr><td>On</td>
-		<td><input type="text" value="5" disabled></td>
+		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
 		<td><select id="swpin"></select></td>
@@ -538,13 +540,11 @@ $( '#setting-powerbutton' ).click( function() {
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
-		, values       : [ 5, swpin, ledpin ]
-		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, preshow      : function() {
 			$( '#swpin, #ledpin' ).html( optionpin );
-			$( '#swpin' ).val( swpin );
-			$( '#ledpin' ).val( ledpin );
 		}
+		, values       : [ 5, swpin, ledpin ]
+		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
@@ -604,7 +604,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, textlabel    : 'Name'
 		, values       : G.hostname
 		, checkchanged : 1
-		, preshow      : function() {
+		, postshow     : function() {
 			$( '#infoContent input' ).keyup( function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
@@ -674,8 +674,8 @@ $( '#setting-soundprofile' ).click( function() {
 		, radiocolumn  : 1
 		, values       : values
 		, checkchanged : 1
-		, textrequired : [ 0, 1, 2, 3 ]
-		, preshow      : function() {
+//		, textrequired : [ 0, 1, 2, 3 ]
+		, postshow     : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );
@@ -755,7 +755,7 @@ $( '#restore' ).click( function() {
 		, fileoklabel : 'Restore'
 		, filetype    : '.gz'
 		, filefilter  : 1
-		, preshow     : function() {
+		, postshow     : function() {
 			$( '#infoContent input' ).click( function() {
 				if ( infoVal() !== 'restore' ) {
 					$( '#infoFilename' ).empty()

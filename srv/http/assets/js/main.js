@@ -247,7 +247,7 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 		, arrowleft    : !options ? '' : function() { $( '#displaylibrary' ).click(); }
 		, values       : values
 		, checkchanged : 1
-		, preshow      : function() {
+		, postshow     : function() {
 			$( '#infoContent' ).css( 'height', '310px' );
 			if ( options ) {
 				var $chk = $( '#infoContent input' );
@@ -355,6 +355,8 @@ $( '#displayplayback' ).click( function() {
 				window[ '$'+ k ] = $chk.eq( i );
 				window[ k ] = i;
 			} );
+		}
+		, postshow     : function() {
 			$time.add( $volume ).change( function() {
 				var t = $time.prop( 'checked' );
 				var v = $volume.prop( 'checked' );
@@ -533,7 +535,7 @@ $( '#tab-playback' ).click( function() {
 			  icon       : 'volume'
 			, title      : 'Volume'
 			, rangevalue : G.status.volume
-			, preshow    : function() {
+			, postshow   : function() {
 				$( '#infoOverlay' ).addClass( 'noscroll' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					var vol = $( this ).val();

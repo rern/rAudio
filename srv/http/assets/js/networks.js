@@ -62,7 +62,7 @@ function editLAN( $el ) {
 		, values       : [ ip, gateway ]
 		, checkchanged : ( ip ? 1 : 0 )
 		, textrequired : [ 0, 1 ]
-		, preshow      : function() {
+		, postshow     : function() {
 			if ( dhcp === 'dhcp' || !ip ) $( '#infoButton' ).addClass( 'hide' );
 		}
 		, buttonlabel  : '<i class="fa fa-undo"></i>DHCP'
@@ -122,7 +122,7 @@ function editWiFi( $el ) {
 		, checkchanged  : 1
 		, textlength    : { 3: 8 }
 		, textrequired  : [ 0 ]
-		, preshow       : function() {
+		, postshow      : function() {
 			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
 				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggle( $( this ).prop( 'checked' ) );
 			} );
@@ -187,7 +187,7 @@ function infoConnect( $this ) {
 				+ ip +'<br>'
 				+ gw
 			+'</div>'
-		, preshow     : function() {
+		, postshow    : function() {
 			if ( profile ) $( '#infoButton1' ).hide();
 		}
 		, buttonlabel : [
@@ -392,10 +392,10 @@ $( '#listbt' ).on( 'click', 'li', function( e ) {
 	var name = $this.data( 'name' );
 	var mac = $this.data( 'mac' );
 	info( {
-		  icon    : 'bluetooth'
-		, title   : 'Bluetooth'
-		, message : name
-		, preshow : function() {
+		  icon        : 'bluetooth'
+		, title       : 'Bluetooth'
+		, message     : name
+		, postshow    : function() {
 			if ( !connected ) $( '#infoOk' ).addClass( 'hide' );
 		}
 		, buttonlabel : '<i class="fa fa-minus-circle"></i>Forget'
@@ -404,9 +404,9 @@ $( '#listbt' ).on( 'click', 'li', function( e ) {
 			notify( name, 'Forget ... ', 'bluetooth' );
 			bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
 		}
-		, oklabel : 'Disconnect'
-		, okcolor : orange
-		, ok      : function() {
+		, oklabel     : 'Disconnect'
+		, okcolor     : orange
+		, ok          : function() {
 			notify( name, 'Disconnect ... ', 'bluetooth' );
 			bash( '/srv/http/bash/networks.sh btdisconnect' );
 		}

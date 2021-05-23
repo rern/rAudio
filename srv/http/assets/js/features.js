@@ -273,22 +273,14 @@ $( '#setting-smb' ).click( function() {
 	} );
 } );
 $( '#setting-mpdscribble' ).click( function() {
-	if ( G.mpdscribbleval ) {
-		var data = G.mpdscribbleval.split( '^' );
-		var user = data[ 0 ];
-		var pwd = data[ 1 ];
-	}
 	info( {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobbler'
 		, textlabel     : 'User'
 		, passwordlabel : 'Password'
-		, values        : user
+		, values        : ( G.mpdscribbleval ? G.mpdscribbleval.split( '^' ) : '' )
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
 		, textrequired : [ 0, 1 ]
-		, preshow       : function() {
-			$( '#infoPasswordBox' ).val( pwd );
-		}
 		, cancel        : function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}

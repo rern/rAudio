@@ -143,15 +143,8 @@ $( '#setting-hwmixer' ).click( function() {
 			, title      : 'Mixer Device Volume'
 			, message    : control
 			, rangevalue : level
+			, footer     : ( device.mixertype === 'none' ? '<br>Volume Control: None / 0dB' : '' )
 			, preshow    : function() {
-				if ( device.mixertype === 'none' ) {
-					$( '#infoRange input' ).prop( 'disabled', 1 );
-					$( '#infoFooter' )
-						.html( '<br>Volume Control: None / 0dB' )
-						.removeClass( 'hide' );
-					return
-				}
-				
 				$( '#infoRange input' ).on( 'click input', function() {
 					var val = $( this ).val();
 					$( '#infoRange .value' ).text( val );
@@ -340,8 +333,8 @@ $( '#setting-soxr' ).click( function() {
 		, nofocus       : 1
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
-		, textrequired : [ 1, 2, 3, 4 ]
-		, preshow       : function() {
+		, textrequired  : [ 1, 2, 3, 4 ]
+		, postshow      : function() {
 			setTimeout( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );
 				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );

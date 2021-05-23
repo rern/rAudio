@@ -68,7 +68,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			querytitle = title.replace( / $| \(.*$/, '' );
 			infojson.values   = [ artist, querytitle ];
 			infojson.checkbox = { 1: 'Title with parentheses content' }
-			infojson.preshow  = function() {
+			infojson.postshow  = function() {
 				$( '#infoContent input' ).change( function() {
 					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
 				} );

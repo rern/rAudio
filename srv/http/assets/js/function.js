@@ -600,26 +600,19 @@ function infoNoData() {
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
 		info( {
-			  icon     : 'refresh-library'
-			, title    : 'Library Database'
-			, message  : 'Update in progress ...'
+			  icon    : 'refresh-library'
+			, title   : 'Library Database'
+			, message : 'Update in progress ...'
 		} );
 		return
 	}
 	
 	info( {
-		  icon     : 'refresh-library'
-		, title    : 'Library Database'
-		, radio    : { 'Only changed files' : 1, 'Rebuild entire database': 2 }
-		, preshow  : function() {
-			if ( path ) {
-				$( '#infoContent' ).hide();
-				$( '#infoMessage' )
-					.html( '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' )
-					.removeClass( 'hide' );
-			}
-		}
-		, ok       : function() {
+		  icon    : 'refresh-library'
+		, title   : 'Library Database'
+		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
+		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
+		, ok      : function() {
 			if ( path || infoVal() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
 			} else {
