@@ -390,55 +390,48 @@ var custominfo = heredoc( function() { /*
 	</p>
 */ } );
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', device.aplayname ], function( data ) { // get directly to keep white spaces
-		var valglobal;
-		var valoutput;
-		if ( data ) {
-			var data = data.split( '^^' );
-			valglobal = data[ 0 ];
-			valoutput = data[ 1 ];
+	var valglobal = G.userglobal.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
+	var valoutput = G.useroutput.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
+	info( {
+		  icon     : 'mpd'
+		, title    : "User's Configurations"
+		, content  : custominfo
+		, msgalign : 'left'
+		, boxwidth : 330
+		, values   : [ valglobal, valoutput ]
+		, checkchanged : ( G.custom ? 1 : 0 )
+		, preshow  : function() {
+			$( '#global' ).val( valglobal );
+			$( '#output' ).val( valoutput );
+			$( '.msg' ).css( {
+				  width          : '100%'
+				, margin         : 0
+				, 'text-align'   : 'left'
+				, 'padding-left' : '35px'
+			} );
+			$( '.msg' ).css( 'font-family', 'Inconsolata' );
+			$( '#output' ).css( 'padding-left', '39px' )
 		}
-		info( {
-			  icon     : 'mpd'
-			, title    : "User's Configurations"
-			, content  : custominfo
-			, msgalign : 'left'
-			, boxwidth : 330
-			, values   : [ valglobal, valoutput ]
-			, checkchanged : ( G.custom ? 1 : 0 )
-			, preshow  : function() {
-				$( '#global' ).val( valglobal );
-				$( '#output' ).val( valoutput );
-				$( '.msg' ).css( {
-					  width          : '100%'
-					, margin         : 0
-					, 'text-align'   : 'left'
-					, 'padding-left' : '35px'
-				} );
-				$( '.msg' ).css( 'font-family', 'Inconsolata' );
-				$( '#output' ).css( 'padding-left', '39px' )
-			}
-			, cancel   : function() {
-				$( '#custom' ).prop( 'checked', G.custom );
-			}
-			, ok       : function() {
-				var values = infoVal();
-				var customglobal = lines2line( values[ 0 ] );
-				var customoutput = lines2line( values[ 1 ] );
-				bash( [ 'customset', customglobal, customoutput, device.aplayname ], function( std ) {
-					if ( std == -1 ) {
-						bannerHide();
-						info( {
-							  icon    : 'mpd'
-							, title   : "User's Configurations"
-							, message : 'MPD failed with the added lines'
-										+'<br>Restored to previous configurations.'
-						} );
-					}
-				} );
-				notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
-			}
-		} );
+		, cancel   : function() {
+			$( '#custom' ).prop( 'checked', G.custom );
+		}
+		, ok       : function() {
+			var values = infoVal();
+			var customglobal = lines2line( values[ 0 ] );
+			var customoutput = lines2line( values[ 1 ] );
+			bash( [ 'customset', customglobal, customoutput, device.aplayname ], function( std ) {
+				if ( std == -1 ) {
+					bannerHide();
+					info( {
+						  icon    : 'mpd'
+						, title   : "User's Configurations"
+						, message : 'MPD failed with the added lines'
+									+'<br>Restored to previous configurations.'
+					} );
+				}
+			} );
+			notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
+		}
 	} );
 } );
 

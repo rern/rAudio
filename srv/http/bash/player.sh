@@ -139,10 +139,6 @@ customdisable )
 	rm -f $dirsystem/custom
 	restartMPD
 	;;
-customget )
-	data="$( cat $dirsystem/custom-global )^^$( cat "$dirsystem/custom-output-${args[1]}" )"
-	echo "$data"
-	;;
 customset )
 	file=$dirsystem/custom
 	if [[ ${args[1]} == customset ]]; then

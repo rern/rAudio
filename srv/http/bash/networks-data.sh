@@ -6,9 +6,9 @@ if systemctl -q is-active hostapd; then
 	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
 	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
 	ap='
-	  "ssid"       : "'${ssid//\"/\\\"}'"
-	, "passphrase" : "'${passphrase//\"/\\\"}'"
-	, "hostapdip"  : "'$hostapdip'"'
+  "ssid"       : "'${ssid//\"/\\\"}'"
+, "passphrase" : "'${passphrase//\"/\\\"}'"
+, "hostapdip"  : "'$hostapdip'"'
 fi
 
 ipeth=$( ifconfig eth0 | awk '/^\s*inet/ {print $2}' )
@@ -19,12 +19,12 @@ if [[ -n $ipeth ]]; then
 	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
 	[[ -n $ipeth ]] && hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
 	listeth='{
-		  "dhcp"     : "'$dhcp'"
-		, "gateway"  : "'$gateway'"
-		, "hostname" : "'$hostname'"
-		, "interface": "'$interface'"
-		, "ip"       : "'$ipeth'"
-	}'
+  "dhcp"     : "'$dhcp'"
+, "gateway"  : "'$gateway'"
+, "hostname" : "'$hostname'"
+, "interface": "'$interface'"
+, "ip"       : "'$ipeth'"
+}'
 fi
 
 ifconfig wlan0 up &> /dev/null # force up
@@ -43,16 +43,16 @@ if [[ -n $ipwlan ]]; then
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ -z $dbm ]] && dbm=0
 	listwlan='{
-		  "dbm"      : '$dbm'
-		, "dhcp"     : "'$dhcp'"
-		, "gateway"  : "'$gateway'"
-		, "hidden"   : '$hidden'
-		, "hostname" : "'$hostname'"
-		, "ip"       : "'$ipwlan'"
-		, "password" : "'$password'"
-		, "security" : "'$security'"
-		, "ssid"     : "'$ssid'"
-	}'
+  "dbm"      : '$dbm'
+, "dhcp"     : "'$dhcp'"
+, "gateway"  : "'$gateway'"
+, "hidden"   : '$hidden'
+, "hostname" : "'$hostname'"
+, "ip"       : "'$ipwlan'"
+, "password" : "'$password'"
+, "security" : "'$security'"
+, "ssid"     : "'$ssid'"
+}'
 fi
 
 readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//' )
@@ -99,15 +99,15 @@ if systemctl -q is-active bluetooth; then
 fi
 
 data='
-	  "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
-	, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
-	, "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
-	, "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
-	, "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
-	, "listwlannc" : '$( [[ -n $listwlannc ]] && echo $listwlannc || echo false )'
-	, "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
-	, "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
-	, "hostname"   : "'$( hostname )'"
-	, "reboot"     : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
+  "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
+, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
+, "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
+, "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
+, "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
+, "listwlannc" : '$( [[ -n $listwlannc ]] && echo $listwlannc || echo false )'
+, "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
+, "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
+, "hostname"   : "'$( hostname )'"
+, "reboot"     : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
 
 echo {$data}
