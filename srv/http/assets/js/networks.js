@@ -112,7 +112,7 @@ function editWiFi( $el ) {
 		security = $el.data( 'security' ) === 'wep';
 	}
 	info( {
-		  icon          : ssid ? 'edit-circle' : 'wifi'
+		  icon          : 'wifi'
 		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, boxwidth      : 180
@@ -179,14 +179,9 @@ function infoConnect( $this ) {
 	info( {
 		  icon        : 'wifi'
 		, title       : ssid
-		, message     : !ip ? 'Saved connection' : '<div class="colL">'
-				+ ( dhcp === 'dhcp' ? 'DHCP IP' : 'Static IP' ) +'<br>'
-				+'Gateway'
-			+'</div>'
-			+'<div class="colR wh" style="text-align: left;">'
-				+ ip +'<br>'
-				+ gw
-			+'</div>'
+		, message     : !ip ? 'Saved connection' : '<table>'
+				+'<tr><td>'+ ( dhcp === 'dhcp' ? 'DHCP IP:' : 'Static IP:' ) +'</td><td>'+ ip +'</td></tr>'
+				+'<tr><td>Gateway:</td><td>'+ gw +'</td></tr></table>'
 		, postshow    : function() {
 			if ( profile ) $( '#infoButton1' ).hide();
 		}
