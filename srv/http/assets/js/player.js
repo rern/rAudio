@@ -376,7 +376,7 @@ var custominfo = heredoc( function() { /*
 		<br>...
 		<br>user<px style="width: 153px"></px>"mpd"
 	</p>
-	<textarea id="global"></textarea>
+	<textarea></textarea>
 	<p class="infomessage msg">
 			...
 		<br>
@@ -384,7 +384,7 @@ var custominfo = heredoc( function() { /*
 		<br><px30/>...
 		<br><px30/>mixer_device<px style="width: 24px"></px>"hw:N"
 	</p>
-	<textarea id="output"></textarea>
+	<textarea style="padding-left: 39px"></textarea>
 	<p class="infomessage msg">
 		}
 	</p>
@@ -406,9 +406,8 @@ $( '#setting-custom' ).click( function() {
 				, margin         : 0
 				, 'text-align'   : 'left'
 				, 'padding-left' : '35px'
+				, 'font-family'  : 'Inconsolata'
 			} );
-			$( '.msg' ).css( 'font-family', 'Inconsolata' );
-			$( '#output' ).css( 'padding-left', '39px' )
 		}
 		, cancel   : function() {
 			$( '#custom' ).prop( 'checked', G.custom );
