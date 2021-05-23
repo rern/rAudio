@@ -401,8 +401,6 @@ $( '#setting-custom' ).click( function() {
 		, values   : [ valglobal, valoutput ]
 		, checkchanged : ( G.custom ? 1 : 0 )
 		, preshow  : function() {
-			$( '#global' ).val( valglobal );
-			$( '#output' ).val( valoutput );
 			$( '.msg' ).css( {
 				  width          : '100%'
 				, margin         : 0
