@@ -265,7 +265,7 @@ $( '#status' ).on( 'click', '.undervoltage', function() {
 	if ( $( '#codeundervoltage' ).is( ':empty' ) ) {
 		bash( 'journalctl -b | grep "Under-voltage detected"', function( log ) {
 			$( '#codeundervoltage' )
-				.html( log )
+				.html( "# journalctl -b | grep 'Under-voltage detected'\n\n"+ log )
 				.removeClass( 'hide' );
 		} );
 	} else {
