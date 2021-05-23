@@ -822,8 +822,8 @@ volumeget )
 	;;
 volumepushstream )
 	volumeGet
-	[[ -n $control ]] && alsactl store
 	pushstream volume '{"val":'$volume'}'
+	[[ -n $control ]] && alsactl store
 	;;
 volumereset )
 	volumeReset
