@@ -41,6 +41,8 @@ info( {                                     // default
 	select        : { LABEL: 'VALUE', ... }
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
+	order         : [ TYPE, ... ]           // (sequence)     (order of inputs)
+	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkchanged  : 1              .        // (none)         (check values changed)
 	
@@ -293,57 +295,62 @@ function info( json ) {
 		var htmlcontent = O.content;
 	} else {
 		// arrow
-		if ( 'arrowleft' in O && O.arrowleft ) $( '.infoarrowleft' )
-									.removeClass( 'hide' )
-									.click( O.arrowleft );
-		if ( 'arrowright' in O && O.arrowright ) $( '.infoarrowright' )
-									.removeClass( 'hide' )
-									.click( O.arrowright );
+		if ( 'arrowleft' in O && O.arrowleft ) {
+			$( '.infoarrowleft' )
+				.removeClass( 'hide' )
+				.click( O.arrowleft );
+		}
+		if ( 'arrowright' in O && O.arrowright ) {
+			$( '.infoarrowright' )
+				.removeClass( 'hide' )
+				.click( O.arrowright );
+		}
 		// message
-		var htm = '';
-		var htmlmsg = '';
-		var htmlfooter = '';
+		var htmls = {}
 		if ( 'message' in O && O.message ) {
-			htmlmsg += '<p id="infoMessage" class="infomessage"';
-			if ( 'msgalign' in O ) htmlmsg += ' style="text-align:'+ O.msgalign +'"';
-			htmlmsg += '>'+ O.message +'</p>';
-			if ( 'msghr' in O ) htm += '<hr>';
+			htmls.message = '<p id="infoMessage" class="infomessage"';
+			if ( 'msgalign' in O ) htmls.message += ' style="text-align:'+ O.msgalign +'"';
+			htmls.message += '>'+ O.message +'</p>';
+			if ( 'msghr' in O ) htmls.message += '<hr>';
 		}
 		if ( 'footer' in O && O.footer ) {
-			htmlfooter += '<p id="infoFooter" class="infomessage"';
-			if ( 'footalign' in O ) htmlfooter += ' style="text-align:'+ O.footalign +'"';
-			htmlfooter += '>'+ O.footer +'</p>';
+			htmls.footer = '<p id="infoFooter" class="infomessage"';
+			if ( 'footalign' in O ) htmls.footer += ' style="text-align:'+ O.footalign +'"';
+			htmls.footer += '>'+ O.footer +'</p>';
 		}
 		// inputs
 		if ( 'textlabel' in O && O.textlabel ) {
 			if ( typeof O.textlabel !== 'object' ) O.textlabel = [ O.textlabel ];
+			htmls.text = '';
 			O.textlabel.forEach( function( lbl ) {
-				htm += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
+				htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
 			} );
 		}
 		if ( 'passwordlabel' in O && O.passwordlabel ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
+			htmls.password = '';
 			O.passwordlabel.forEach( function( lbl ) {
-				htm += '<tr><td>'+ lbl +'</td><td><input type="password">&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
+				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password">&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 		}
 		if ( 'textarea' in O && O.textarea ) {
-			htm += '<textarea></textarea>';
+			htmls.textarea = '<textarea></textarea>';
 		}
 		if ( 'radio' in O && O.radio ) { // single set only
 			var line;
 			var i = 0;
+			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
 				line = '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
 				if ( !O.radiocolumn ) {
-					htm += '<tr><td class="chk">'+ line +'</td></tr>';
+					htmls.radio += '<tr><td class="chk">'+ line +'</td></tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htm += '<tr><td class="chk">'+ line +'</td>';
+						htmls.radio += '<tr><td class="chk">'+ line +'</td>';
 						return
 					} else {
-						htm += '<td>'+ line +'</td></tr>';
+						htmls.radio += '<td>'+ line +'</td></tr>';
 					}
 				}
 			} );
@@ -351,6 +358,7 @@ function info( json ) {
 		if ( 'checkbox' in O && O.checkbox ) {
 			var line, colspan;
 			var i = 0;
+			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
 				if ( lbl === '' ) {
 					line = '<td></td>';
@@ -358,27 +366,28 @@ function info( json ) {
 					line = '<label><input type="checkbox">'+ lbl +'</label>';
 				}
 				if ( !O.checkcolumn ) {
-					htm += '<tr><td></td><td class="chk">'+ line +'</td></tr>';
+					htmls.checkbox += '<tr><td></td><td class="chk">'+ line +'</td></tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htm += '<tr><td class="chk">'+ line +'</td>';
+						htmls.checkbox += '<tr><td class="chk">'+ line +'</td>';
 						return
 					} else {
-						htm += '<td>'+ line +'</td></tr>';
+						htmls.checkbox += '<td>'+ line +'</td></tr>';
 					}
 				}
 			} );
 		}
 		if ( 'select' in O && O.select ) {
+			htmls.select = '';
 			if ( typeof O.select !== 'object' ) {
-				var htm = O.select;
+				htmls.select += O.select;
 			} else {
-				var htm = '<tr><td>'+ O.selectlabel +'</td><td><select>';
+				htmls.select += '<tr><td>'+ O.selectlabel +'</td><td><select>';
 				$.each( O.select, function( key, val ) {
-					htm += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
+					htmls.select += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
 				} );
-				htm += '</select></td></tr>';
+				htmls.select += '</select></td></tr>';
 			}
 		}
 		if ( 'fileoklabel' in O && O.fileoklabel ) {
@@ -424,11 +433,19 @@ function info( json ) {
 			} );
 		}
 		if ( 'rangevalue' in O && O.rangevalue ) {
-			htm += '<div id="infoRange">'
+			htmls.range = '<div id="infoRange">'
 					+'<div class="value">'+ O.rangevalue +'</div>'
 					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
 		}
-		var htmlcontent = htmlmsg +'<table>'+ htm +'</table>'+ htmlfooter;
+		if ( !( 'order' in O ) || !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
+		var htmlcontent = ''; 
+		if ( 'message' in htmls ) htmlcontent += htmls.message;
+		htmlcontent += '<table>';
+		O.order.forEach( function( type ) {
+			if ( type in htmls ) htmlcontent += htmls[ type ];
+		} );
+		htmlcontent += '</table>';
+		if ( 'footer' in htmls ) htmlcontent += htmls.footer;
 	}
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		if ( 'preshow' in O && O.preshow ) O.preshow();

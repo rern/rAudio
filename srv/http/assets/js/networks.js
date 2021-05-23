@@ -124,7 +124,7 @@ function editWiFi( $el ) {
 		, textrequired  : [ 0 ]
 		, postshow      : function() {
 			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
-				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggle( $( this ).prop( 'checked' ) );
+				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
 		}
 		, ok            : function() {
