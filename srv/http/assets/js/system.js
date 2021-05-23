@@ -94,11 +94,11 @@ function renderStatus() {
 		status += '<br><span class="undervoltage"><i class="fa fa-warning';
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += ' blink red"></i>&ensp;Voltage under 4.7V - currently detected.';
+			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
 			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
-		status += ' <i class="fa fa-status"></i></span></span>';
+		status += '&emsp;<i class="fa fa-status gr"></i></span></span>';
 	}
 	return status
 }
