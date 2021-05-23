@@ -229,6 +229,7 @@ mixertype )
 		rm -f "$dirsystem/mixertype-$aplayname"
 	else
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
+		[[ $mixertype == none ]] && /srv/http/bash/cmd.sh volumeget > "$dirsystem/mixertype-$aplayname-0dB"
 	fi
 	restartMPD
 	[[ $mixertype == software ]] && mpc volume $vol
@@ -250,6 +251,7 @@ novolume )
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
 	mpc crossfade 0
+	amixer sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
