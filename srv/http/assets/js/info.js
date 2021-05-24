@@ -181,30 +181,24 @@ function infoReset( infox ) {
 	var arrow = 'arrowleft' in O || 'arrowright' in O;
 	if ( !arrow || infox ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
 	O.infoscroll = 0;
-	$( '#infoBox' ).css( {
-		  margin     : ''
-		, visibility : 'hidden'
-	} );
+	$( '#infoBox' ).css( { margin: '', width: '', visibility: 'hidden' } );
+	
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '#infoContent' )
-		.empty()
-		.css( 'height', '' );
 	$( '.infoarrowleft, .infoarrowright, #infoFile, .filebtn, .infobtn' ).addClass( 'hide' );
-	$( '#infoBox' ).css( 'width', '' );
+	
+	$( '#infoContent' ).empty().css( 'height', '' );
 	$( '#infoContent' ).find( 'input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input, select, textarea' )
-		.off( 'keyup change' )
-		.prop( 'disabled', 0 );
-	$( '.filebtn, .infobtn, #infoContent td, .infoarrowleft, .infoarrowright' ).off( 'click' );
-	$( '.filebtn, .infobtn' ).removeClass( 'active' ).css( 'background', '' );
-	$( '#infoIcon' ).removeAttr( 'class' ).empty();
-	$( '#infoFileBox' ).val( '' ).removeAttr( 'accept' );
+	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
+	$( '#infoContent' ).find( '.filebtn, .infobtn, td, .infoarrowleft, .infoarrowright' ).off( 'click' );
+	
+	$( '.infobtn, .filebtn' ).removeClass( 'active disabled' ).css( 'background', '' );
+	$( '#infoFileBox' ).removeAttr( 'accept' ).val( '' );
 	$( '#infoFilename' ).empty();
 	$( '#infoFileLabel' ).addClass( 'infobtn-primary' );
-	$( '#infoOk, #infoFileLabel' ).removeClass( 'disabled' );
 	$( '.extrabtn' ).remove();
+	
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
