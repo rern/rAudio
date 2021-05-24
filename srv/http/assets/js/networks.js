@@ -164,58 +164,6 @@ function infoAccesspoint() {
 		, message : 'RPi Access Point must be disabled.'
 	} );
 }
-function infoConnect( $this ) {
-	var ssid = $this.data( 'ssid' );
-	var ip = $this.data( 'ip' );
-	var gw = $this.data( 'gateway' );
-	var wpa = $this.data( 'wpa' );
-	var dhcp = $this.data( 'dhcp' );
-	var encrypt = $this.data( 'encrypt' ) === 'on';
-	var password = $this.data( 'password' );
-	var profile = $this.data( 'profile' ) == 1;
-	info( {
-		  icon        : 'wifi'
-		, title       : ssid
-/*		, message     : !ip ? 'Saved connection' : '<table>'
-				+'<tr><td>'+ ( dhcp === 'dhcp' ? 'DHCP IP :' : 'Static IP :' ) +'</td><td>'+ ip +'</td></tr>'
-				+'<tr><td>Gateway :</td><td>'+ gw +'</td></tr></table>'*/
-		, textlabel   : [ ( dhcp === 'dhcp' ? 'DHCP IP :' : 'Static IP :' ), 'Gateway' ]
-		, values      : [ ip, gw ]
-		, postshow    : function() {
-			if ( ip ) $( '#infoContent input' ).prop( 'disabled', 1 );
-			if ( profile ) $( '#infoButton1' ).hide();
-		}
-		, buttonlabel : [
-			  '<i class="fa fa-minus-circle"></i> Forget'
-			, '<i class="fa fa-edit-circle"></i> Edit'
-		]
-		, buttoncolor : [
-			  red
-			, ''
-		]
-		, button      : [
-			  function() {
-				clearTimeout( intervalscan );
-				notify( ssid, 'Forget ...', 'wifi' );
-				bash( [ 'profileremove', ssid ] );
-			}
-			, function() {
-				editWiFi( $this );
-			}
-		]
-		, oklabel : ip ? 'Disconnect' : 'Connect'
-		, okcolor : ip ? orange : ''
-		, ok      : function() {
-			clearTimeout( intervalscan );
-			notify( ssid, ip ? 'Disconnect ...' : 'Connect ...', 'wifi blink' );
-			if ( ip ) {
-				bash( [ 'disconnect' ] );
-			} else {
-				bash( [ 'profileconnect', ssid ] );
-			}
-		}
-	} );
-}
 function nicsStatus() {
 	bash( '/srv/http/bash/networks-data.sh', function( list ) {
 		var list2G = list2JSON( list );
@@ -505,13 +453,12 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	var ssid = $this.data( 'ssid' );
 	var wpa = $this.data( 'wpa' ) || 'wep';
-	var profile = $this.data( 'profile' ) == 1;
 	var vals = {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
-	if ( !profile ) {
-		if ( encrypt ) {
+	if ( !$this.data( 'profile' ) ) {
+		if ( $this.data( 'encrypt' ) ) {
 			info( {
 				  icon          : 'wifi'
 				, title         : ssid
@@ -527,7 +474,30 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			connect( vals );
 		}
 	} else {
-		infoConnect( $this );
+		var ssid = $this.data( 'ssid' );
+		var ip = $this.data( 'ip' );
+		info( {
+			  icon        : 'wifi'
+			, title       : ssid
+			, buttonlabel : ip ? '<i class="fa fa-minus-circle"></i> Forget' : ''
+			, buttoncolor : red
+			, button      : function() {
+				clearTimeout( intervalscan );
+				notify( ssid, 'Forget ...', 'wifi' );
+				bash( [ 'profileremove', ssid ] );
+			}
+			, oklabel : ip ? 'Disconnect' : 'Connect'
+			, okcolor : ip ? orange : ''
+			, ok      : function() {
+				clearTimeout( intervalscan );
+				notify( ssid, ip ? 'Disconnect ...' : 'Connect ...', 'wifi' );
+				if ( ip ) {
+					bash( [ 'disconnect' ] );
+				} else {
+					bash( [ 'profileconnect', ssid ] );
+				}
+			}
+		} );
 	}
 } );
 $( '#setting-accesspoint' ).click( function() {
