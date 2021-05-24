@@ -95,6 +95,10 @@ function disableSwitch( id, truefalse ) {
 function escapeUsrPwd( usrpwd ) {
 	return usrpwd.replace( /(["&()\\])/g, '\$1' )
 }
+function notify( title, message, icon ) {
+	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
+	banner( title, message, icon +' blink', -1 );
+}
 function list2JSON( list ) {
 		try {
 			G = JSON.parse( list );
@@ -114,10 +118,6 @@ function list2JSON( list ) {
 }
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
-}
-function notify( title, message, icon ) {
-	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( title, message, icon +' blink', -1 );
 }
 function resetLocal( ms ) {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return

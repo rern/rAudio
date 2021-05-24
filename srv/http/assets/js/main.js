@@ -227,9 +227,9 @@ var chklibrary2 = {
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
 $( '#displaylibrary, #displaylibrary2' ).click( function() {
-	var page1 = this.id === 'displaylibrary';
-	var checkbox = Object.values( page1 ? chklibrary : chklibrary2 );
-	var keys = Object.keys( page1 ? chklibrary : chklibrary2 );
+	var options = this.id === 'displaylibrary2';
+	var checkbox = Object.values( !options ? chklibrary : chklibrary2 );
+	var keys = Object.keys( !options ? chklibrary : chklibrary2 );
 	keys = keys.filter( function( k ) {
 		return k !== 'bl'
 	} );
@@ -239,17 +239,17 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home Display' : 'Library/Playlist Options'
-		, height       : 310
-		, message      : page1 ? '1/2 - Show selected items:' : ''
+		, title        : !options ? 'Library Home Display' : 'Library/Playlist Options'
+		, message      : !options ? '1/2 - Show selected items:' : ''
 		, checkbox     : checkbox
-		, checkcolumn  : page1 ? 1 : ''
-		, arrowright   : page1 ? function() { $( '#displaylibrary2' ).click(); } : ''
-		, arrowleft    : page1 ? '' : function() { $( '#displaylibrary' ).click(); }
+		, checkcolumn  : !options ? 1 : ''
+		, arrowright   : !options ? function() { $( '#displaylibrary2' ).click(); } : ''
+		, arrowleft    : !options ? '' : function() { $( '#displaylibrary' ).click(); }
 		, values       : values
 		, checkchanged : 1
 		, postshow     : function() {
-			if ( !page1 ) {
+			$( '#infoContent' ).css( 'height', '310px' );
+			if ( options ) {
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
@@ -2022,6 +2022,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.similar, .submenu, .tag' ).toggleClass( 'hide', radio );
 	$menu.find( '.savedpladd, .tag' ).toggleClass( 'hide', audiocd );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
+	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
 	$menu
 		.removeClass( 'hide' )
@@ -2033,17 +2034,22 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	plRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
-	$( '.menu' ).addClass( 'hide' );
 	var $target = $( e.target );
 	if ( G.swipe || $target.hasClass( 'savewr' ) ) return
 	
 	$this = $( this );
-	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
+	if ( $this.hasClass( 'active' )
+			&& $( '.contextmenu:not( .hide )' ).length ) {
+		$( '.menu' ).addClass( 'hide' );
+		return
+	}
 	
 	var pladd = Object.keys( G.pladd ).length;
 	var plicon = $target.hasClass( 'pl-icon' );
+	$( '.menu' ).addClass( 'hide' );
 	if ( G.savedplaylist || plicon ) {
 		if ( !pladd ) {
+			$( '.menu' ).addClass( 'hide' );
 			var datatarget = $target.data( 'target' ) || $this.find( '.pl-icon' ).data ( 'target' );
 			var $menu = $( datatarget );
 			G.list = {};
