@@ -96,7 +96,7 @@ function editWiFi( $el ) {
 	var ip = '';
 	var gateway = '';
 	var password = '';
-	var dhcp = false;
+	var static = false;
 	var hidden = false;
 	var security = false
 	if ( $el ) {
@@ -104,7 +104,7 @@ function editWiFi( $el ) {
 		ip = $el.data( 'ip' ) || '';
 		gateway = $el.data( 'gateway' ) || '';
 		password = $el.data( 'password' );
-		dhcp = $el.data( 'dhcp' ) === 'static';
+		static = $el.data( 'dhcp' ) === 'static';
 		hidden = $el.data( 'hidden' ) === 'true';
 		security = $el.data( 'security' ) === 'wep';
 	}
@@ -115,13 +115,15 @@ function editWiFi( $el ) {
 		, boxwidth      : 180
 		, checkbox      : ['Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
-		, values        : [ ssid, ip, gateway, password, dhcp, hidden, security ]
+		, values        : [ ssid, ip, gateway, password, static, hidden, security ]
 		, checkchanged  : 1
 		, textlength    : { 3: 8 }
 		, textrequired  : [ 0 ]
 		, postshow      : function() {
+			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
+			$static.toggleClass( 'hide', !static );
 			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
-				$( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 ), tr:eq( 3 )' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
+				$static.toggleClass( 'hide', !$( this ).prop( 'checked' ) );
 			} );
 		}
 		, ok            : function() {
