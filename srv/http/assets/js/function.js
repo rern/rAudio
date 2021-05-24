@@ -167,7 +167,7 @@ function coverartChange() {
 		json.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
 		json.buttoncolor = red;
 		json.button      = function() {
-			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
+			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
 				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );

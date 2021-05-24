@@ -186,22 +186,23 @@ function infoReset( infox ) {
 		, visibility : 'hidden'
 	} );
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
+	$( '#infoX' ).removeClass( 'hide' );
 	$( '#infoContent' )
 		.empty()
 		.css( 'height', '' );
-	$( '#infoX' ).removeClass( 'hide' );
-	$( '.infoarrowleft, .infoarrowright, #infoTextarea, #infoRange, #infoFile, .filebtn, .infobtn, #infoFile' ).addClass( 'hide' );
-	$( '#infoMessage, #infoFooter' ).css( 'text-align', '' );
-	$( '#infoBox, #infoContent input, #infoTextarea, .selectric, .selectric-wrapper' ).css( 'width', '' );
-	$( '.selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent input, #infoContent select' ).off( 'keyup change' );
-	$( '.filebtn, .infobtn, #infoContent td, .infoarrowleft, .infoarrowright, #infoMessage' ).off( 'click' );
-	$( '.filebtn, .infobtn' ).removeClass( 'active' ).css( 'background', '' ).off( 'click' );
+	$( '.infoarrowleft, .infoarrowright, #infoFile, .filebtn, .infobtn' ).addClass( 'hide' );
+	$( '#infoBox' ).css( 'width', '' );
+	$( '#infoContent' ).find( 'input, .selectric, .selectric-wrapper' ).css( 'width', '' );
+	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
+	$( '#infoContent' ).find( 'input, select, textarea' )
+		.off( 'keyup change' )
+		.prop( 'disabled', 0 );
+	$( '.filebtn, .infobtn, #infoContent td, .infoarrowleft, .infoarrowright' ).off( 'click' );
+	$( '.filebtn, .infobtn' ).removeClass( 'active' ).css( 'background', '' );
 	$( '#infoIcon' ).removeAttr( 'class' ).empty();
 	$( '#infoFileBox' ).val( '' ).removeAttr( 'accept' );
 	$( '#infoFilename' ).empty();
 	$( '#infoFileLabel' ).addClass( 'infobtn-primary' );
-	$( '#infoContent input' ).prop( 'disabled', 0 );
 	$( '#infoOk, #infoFileLabel' ).removeClass( 'disabled' );
 	$( '.extrabtn' ).remove();
 	if ( O.infoscroll ) {
@@ -349,13 +350,13 @@ function info( json ) {
 		}
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
-			htmls.message = '<p id="infoMessage" class="infomessage"';
+			htmls.message = '<p class="infomessage"';
 			if ( 'msgalign' in O ) htmls.message += ' style="text-align:'+ O.msgalign +'"';
 			htmls.message += '>'+ O.message +'</p>';
 			if ( 'msghr' in O ) htmls.message += '<hr>';
 		}
 		if ( 'footer' in O && O.footer ) {
-			htmls.footer = '<p id="infoFooter" class="infomessage"';
+			htmls.footer = '<p class="infomessage"';
 			if ( 'footalign' in O ) htmls.footer += ' style="text-align:'+ O.footalign +'"';
 			htmls.footer += '>'+ O.footer +'</p>';
 		}
@@ -488,7 +489,7 @@ function info( json ) {
 		// #5 - check text input not blank
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
-				checkChangedLength( O.inputs.eq( i ), 1 );
+				checkChangedEmpty( O.inputs.eq( i ) );
 			} );
 		}
 		// #6 - check changed values
@@ -550,6 +551,14 @@ function checkChanged() {
 	$( '#infoOk' ).addClass( 'disabled' );
 	$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChangedValue );
 	$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChangedValue );
+}
+function checkChangedEmpty( $input ) {
+	O.shortlength = $input.text().trim() === '';
+	$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+	$input.on( 'input', function() {
+		O.shortlength = $input.text().trim() === '';
+		$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+	} );
 }
 function checkChangedLength( $input, L ) {
 	O.shortlength = $input.val().length < L;

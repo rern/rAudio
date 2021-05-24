@@ -244,15 +244,6 @@ ul {
 ib {
 	display: inline-block;
 }
-#infoMessage .fa-bookmark {
-	font-size: 48px;
-	width: 48px;
-}
-#infoContent .imgicon {
-	width: 30px;
-	margin-left: 10px;
-	vertical-align: -10px;
-}
 w, wh, whl,
 .wh { color: var( --cw ) !important; }
 bl,
@@ -1650,14 +1641,6 @@ i.map.disabled, .map.disabled i {
 }
 #infoTop .imgicon .fa-coverart {
 	top: 3px;
-}
-#infoMessage img {
-	width: auto;
-	height: 100px;
-	margin-bottom: 10px;
-}
-#infoMessage .stopwatch {
-	margin-bottom: 0;
 }
 .imgname {
 	clear: both;

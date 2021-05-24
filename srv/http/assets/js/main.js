@@ -1363,7 +1363,7 @@ $( '#infoFileBox' ).change( function() {
 	if ( file.name.slice( -3 ) === 'gif' ) {
 		var img = new Image();
 		img.onload = function() {
-			$( '#infoMessage' ).append(
+			$( '.infomessage' ).append(
 				 '<img id="imgnew" src="'+ URL.createObjectURL( file ) +'">'
 				+'<div class="imagewh"><span>'+ this.width +' x '+ this.height +'</span></div>'
 			);
@@ -1391,7 +1391,7 @@ $( '#infoFileBox' ).change( function() {
 				canvas.height = pxH;
 				pica.resize( filecanvas, canvas, picaOption ).then( function() {
 					var resizedimg = canvas.toDataURL( 'image/jpeg' ); // canvas -> base64
-					$( '#infoMessage' ).append(
+					$( '.infomessage' ).append(
 						 '<img id="imgnew" src="'+ resizedimg +'">'
 						+'<div class="imagewh"><span>'+ pxW +' x '+ pxH
 						+'<br>original: '+ imgW +' x '+ imgH
@@ -1401,7 +1401,7 @@ $( '#infoFileBox' ).change( function() {
 					bannerHide();
 				} );
 			} else {
-				$( '#infoMessage' ).append( 
+				$( '.infomessage' ).append( 
 					 '<img id="imgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
 					+'<div class="imagewh"><span>'+ imgW +' x '+ imgH
 					+ htmlrotate

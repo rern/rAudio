@@ -255,7 +255,7 @@ function tagEditor() {
 			, checkchanged : 1
 			, postshow      : function() {
 				var $text = $( '#infoContent input' );
-				$( '#infoMessage' )
+				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
 				if ( G.playlist ) {
@@ -269,9 +269,9 @@ function tagEditor() {
 				} ).length
 				if ( plcue ) {
 					$( 'ib:last').remove();
-					$( '#infoFooter' ).text( 'Tap coverart to browse this album' );
+					$( '.infofooter' ).text( 'Tap coverart to browse this album' );
 				}
-				$( '#infoMessage' ).click( function() {
+				$( '.infomessage' ).click( function() {
 					if ( G.library ) return
 					
 					G.mode = 'file';
@@ -293,7 +293,7 @@ function tagEditor() {
 				setTimeout( function() {
 					var boxW = parseInt( $text.css('width') );
 					var boxS = boxW - 89;
-					$( '#infoFooter' ).on( 'click', '#tagname', function() {
+					$( '.infofooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );
 							$text.css( 'width', boxS );

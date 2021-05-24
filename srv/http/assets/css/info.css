@@ -90,11 +90,6 @@ hr {
 #infoOverlay .fa {
 	vertical-align: -2px;
 }
-#infoMessage .fa {
-	width: 25px;
-	vertical-align: 0;
-	font-size: 20px;
-}
 #infoButtons .fa {
 	font-size: 18px;
 	margin-right: 7px;
@@ -228,8 +223,7 @@ hr {
 	width: 30px;
 	text-align: center;
 }
-.infomessage,
-#infoMessage {
+.infomessage {
 	display: inline-block;
 	width: fit-content;
 	max-width: 100%;
@@ -239,10 +233,24 @@ hr {
 	overflow: hidden;
 	color: var( --cg60 );
 }
-#infoFooter {
-	display: block;
-	margin-bottom: 0;
-	color: var( --cg60 );
+.infomessage .fa {
+	width: 25px;
+	vertical-align: 0;
+	font-size: 20px;
+}
+.infomessage img {
+	width: auto;
+	height: 100px;
+	margin-bottom: 10px;
+}
+.infomessage .fa-bookmark {
+	font-size: 48px;
+	width: 48px;
+}
+#infoContent .imgicon {
+	width: 30px;
+	margin-left: 10px;
+	vertical-align: -10px;
 }
 #infoContent textarea {
 	width: 100%;

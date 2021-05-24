@@ -441,7 +441,7 @@ function psRelays( response ) { // on receive broadcast
 		delay--
 		G.intRelaysTimer = setInterval( function() {
 			if ( delay ) {
-				$( '#infoFooter white' ).text( delay-- );
+				$( '.infofooter white' ).text( delay-- );
 			} else {
 				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
@@ -471,7 +471,7 @@ function psRelays( response ) { // on receive broadcast
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
 			$( '.infobtn' ).addClass( 'hide' );
-			$( '#infoFooter white' ).html( devices );
+			$( '.infofooter white' ).html( devices );
 		}
 	}
 }
