@@ -450,13 +450,13 @@ function info( json ) {
 	}
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		if ( 'preshow' in O && O.preshow ) O.preshow();
-		var $input = $( '#infoContent' ).find( 'input, select, textarea' );
+		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' ); // .selectric-input in select
 		var name, nameprev;
-		$input = $input.filter( function() { // filter each radio group
+		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
 			name = this.name;
 			if ( !name ) {
 				return true
-			} else if (	name !== nameprev ) { // each radio group: multiple inputs with same name
+			} else if (	name !== nameprev ) {
 				nameprev = name;
 				return true
 			}
@@ -464,7 +464,7 @@ function info( json ) {
 		if ( 'values' in O && O.values ) {
 			if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 			var $this, type, val;
-			$input.each( function( i, e ) {
+			O.inputs.each( function( i, e ) {
 				$this = $( e );
 				type = $this.prop( 'type' );
 				val = O.values[ i ];
@@ -480,12 +480,12 @@ function info( json ) {
 		}
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
-				checkChangedLength( $input.eq( i ), 1 );
+				checkChangedLength( O.inputs.eq( i ), 1 );
 			} );
 		}
 		if ( 'textlength' in O && O.textlength ) {
 			$.each( O.textlength, function( i, L ) {
-				checkChangedLength( $input.eq( i ), L );
+				checkChangedLength( O.inputs.eq( i ), L );
 			} );
 		}
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
@@ -515,8 +515,8 @@ function info( json ) {
 		if ( 'postshow' in O && O.postshow ) O.postshow();
 		setTimeout( function() { // prevent click OK on consecutive info
 			$( '#infoOverlay' ).removeClass( 'noclick' );
-			var type0 = $( $input[ 0 ] ).prop( 'type' );
-			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) $input[ 0 ].focus();
+			var type0 = $( O.inputs[ 0 ] ).prop( 'type' );
+			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) O.inputs[ 0 ].focus();
 		}, 300 );
 		/////////////////////////////////////////////////////////////////////////////
 		}, 0 );
@@ -563,20 +563,15 @@ function checkChangedValue() {
 	}, 0 );
 }
 function infoVal() {
-	var $el = $( '#infoContent' ).find( 'input, select, textarea' );
 	var values = [];
 	var $this, type, name, val;
 	var i = 0;
-	$el.each( function() {
+	O.inputs.each( function() {
 		$this = $( this );
 		type = $this.prop( 'type' );
 		val = '';
-		if ( type === 'radio' ) { // radio has multiple inputs - skip unchecked inputs
-			if ( $this.prop( 'checked' ) ) {
-				val = $this.val();
-			} else {
-				return
-			}
+		if ( type === 'radio' ) { // radio has only single checked - skip unchecked inputs
+			val = $( '#infoContent input:radio[name='+ this.name +']:checked' ).val();
 			if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
 		} else if ( type === 'checkbox' ) {
 			val = $this.prop( 'checked' );
