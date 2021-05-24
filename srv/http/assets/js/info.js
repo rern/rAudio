@@ -213,7 +213,7 @@ function info( json ) {
 	O = json;
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
-//	setTimeout( function() { // fix: wait for infoReset() on 2nd info
+	setTimeout( function() { // fix: wait for infoReset() on 2nd info
 	///////////////////////////////////////////////////////////////////
 	// simple use as info( 'message' )
 	if ( typeof O !== 'object' ) {
@@ -518,7 +518,7 @@ function info( json ) {
 			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) $input[ 0 ].focus();
 		}, 300 );
 		/////////////////////////////////////////////////////////////////////////////
-//		}, 0 );
+		}, 0 );
 	} );
 }
 
