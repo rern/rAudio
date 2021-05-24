@@ -477,11 +477,10 @@ function info( json ) {
 		// #4 - check text input length
 		if ( 'textlength' in O && O.textlength ) {
 			$.each( O.textlength, function( i, L ) {
-				var $text = O.inputs.eq( i );
-				O.shortlength = $text.val().length < L;
+				O.shortlength = O.inputs.eq( i ).val().length < L;
 				$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-				$text.on( 'input', function() {
-					O.shortlength = $text.val().length < L;
+				O.inputs.eq( i ).on( 'input', function() {
+					O.shortlength = $( this ).val().length < L;
 					$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 				} );
 			} );
@@ -489,11 +488,10 @@ function info( json ) {
 		// #5 - check text input not blank
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
-				var $text = O.inputs.eq( i );
-				O.shortlength = $text.val().trim() === '';
+				O.shortlength = O.inputs.eq( i ).val().trim() === '';
 				$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-				$text.on( 'input', function() {
-					O.shortlength = $text.val().trim() === '';
+				O.inputs.eq( i ).on( 'input', function() {
+					O.shortlength = $( this ).val().trim() === '';
 					$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 				} );
 			} );
