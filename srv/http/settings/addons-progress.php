@@ -47,9 +47,9 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: enhance;
-			src        : url( '/assets/fonts/enhance.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/enhance.<?=$time?>.ttf' ) format( 'truetype' );
+			font-family: rern;
+			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
+			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
 			font-weight: normal;
 			font-style : normal;
 		}
@@ -64,7 +64,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<heading>Addons Progress<i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<w><?=$title?></w><br>
-		<i class="fa fa-gear blink"></i>&ensp;Please wait until done ...
+		<i class="fa fa-gear blink"></i>&ensp;Please wait until finished ...
 	</p>
 	
 <script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>

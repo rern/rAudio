@@ -15,15 +15,15 @@
 		<br>&emsp; - Turn off discoverable to hide from unpaired senders.
 	</span>
 	</div>
-	<div id="divlan">
-	<heading id="headlan" class="status" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle wh"></i><?=$istatus?></heading>
-	<ul id="listlan" class="entries"></ul>
-	<pre id="codelan" class="hide"></pre>
-	</div>
 	<div id="divwl">
 	<heading id="headwl" class="status" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle wh"></i><i id="wlscan" class="fa fa-search wh"></i></heading>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
+	</div>
+	<div id="divlan">
+	<heading id="headlan" class="status" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle wh"></i><?=$istatus?></heading>
+	<ul id="listlan" class="entries"></ul>
+	<pre id="codelan" class="hide"></pre>
 	</div>
 	
 	<div>
@@ -75,4 +75,11 @@
 			&bull; Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</span>
+</div>
+
+<div id="menu" class="menu hide">
+<a class="connect"><i class="fa fa-check"></i>Connect</a>
+<a class="disconnect"><i class="fa fa-times"></i>Disconnect</a>
+<a class="edit"><i class="fa fa-edit-circle"></i>Edit</a>
+<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 </div>

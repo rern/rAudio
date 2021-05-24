@@ -66,6 +66,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		</div>
 	</span>
 </div>
+<div style="clear:both"></div>
+<pre id="codeundervoltage" class="hide"></pre>
 </div>
 
 <div>

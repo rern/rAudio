@@ -23,10 +23,10 @@
 	font-style: normal;
 }
 /* ---------------------- fontawesome mod ---------------------- */
-/* 'enhance' declared in <head> for cache busting */
+/* 'rern' declared in <head> for cache busting */
 .fa {
 	display: inline-block;
-	font-family: enhance;
+	font-family: rern;
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
@@ -2232,7 +2232,7 @@ li.active .li2 bl {
 .lib-sortable-ghost .mode:after {
 	position: absolute;
 	content: "\f609";
-	font-family: enhance;
+	font-family: rern;
 	left: 0;
 	top: 0;
 	width: 100%;
@@ -2259,7 +2259,7 @@ li.active .li2 bl {
 .pl-sortable-ghost:before {
 	position: absolute;
 	content: "\f608";
-	font-family: enhance;
+	font-family: rern;
 	width: 40px;
 	font-size: 22px;
 	line-height: 30px;

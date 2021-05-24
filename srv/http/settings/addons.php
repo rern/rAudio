@@ -17,9 +17,9 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: enhance;
-			src        : url( '/assets/fonts/enhance.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/enhance.<?=$time?>.ttf' ) format( 'truetype' );
+			font-family: rern;
+			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
+			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
 			font-weight: normal;
 			font-style : normal;
 		}
