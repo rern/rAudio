@@ -477,17 +477,33 @@ function info( json ) {
 		// #4 - check text input length
 		if ( 'textlength' in O && O.textlength ) {
 			$.each( O.textlength, function( i, L ) {
-				checkChangedLength( O.inputs.eq( i ), L );
+				var $text = O.inputs.eq( i );
+				O.shortlength = $text.val().length < L;
+				$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+				$text.on( 'input', function() {
+					O.shortlength = $text.val().length < L;
+					$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+				} );
 			} );
 		}
 		// #5 - check text input not blank
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
-				checkChangedEmpty( O.inputs.eq( i ) );
+				var $text = O.inputs.eq( i );
+				O.shortlength = $text.val().trim() === '';
+				$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+				$text.on( 'input', function() {
+					O.shortlength = $text.val().trim() === '';
+					$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+				} );
 			} );
 		}
 		// #6 - check changed values
-		if ( 'inputs' in O && O.checkchanged ) checkChanged();
+		if ( 'values' in O && O.checkchanged ) {
+			$( '#infoOk' ).addClass( 'disabled' );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChanged );
+			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChanged );
+		}
 		// #7 - apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		// #8 - show
@@ -542,31 +558,9 @@ function alignVertical() { // make infoBox scrollable
 	}, 0 );
 }
 function checkChanged() {
-	$( '#infoOk' ).addClass( 'disabled' );
-	$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChangedValue );
-	$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChangedValue );
-}
-function checkChangedEmpty( $input ) {
-	O.shortlength = $input.val().trim() === '';
-	$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-	$input.on( 'input', function() {
-		O.shortlength = $input.val().trim() === '';
-		$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-	} );
-}
-function checkChangedLength( $input, L ) {
-	O.shortlength = $input.val().length < L;
-	$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-	$input.on( 'input', function() {
-		O.shortlength = $input.val().length < L;
-		$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
-	} );
-}
-function checkChangedValue() {
 	if ( O.shortlength ) return // shorter - already disabled
 	
-	console.log(9)
-	setTimeout( function() { // force after checkChangedLength() and custom check
+	setTimeout( function() { // force after check length
 		var values = infoVal();
 		if ( typeof values === 'string' ) values = [ values ];
 		var changed = false;
