@@ -337,7 +337,6 @@ function info( json ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
-		// arrow
 		if ( 'arrowleft' in O && O.arrowleft ) {
 			$( '.infoarrowleft' )
 				.removeClass( 'hide' )
@@ -348,7 +347,6 @@ function info( json ) {
 				.removeClass( 'hide' )
 				.click( O.arrowright );
 		}
-		// message
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
 			htmls.message = '<p id="infoMessage" class="infomessage"';
@@ -361,7 +359,7 @@ function info( json ) {
 			if ( 'footalign' in O ) htmls.footer += ' style="text-align:'+ O.footalign +'"';
 			htmls.footer += '>'+ O.footer +'</p>';
 		}
-		// inputs
+		// inputs html ///////////////////////////////////////////////////////////
 		if ( 'textlabel' in O && O.textlabel ) {
 			if ( typeof O.textlabel !== 'object' ) O.textlabel = [ O.textlabel ];
 			htmls.text = '';
@@ -448,8 +446,11 @@ function info( json ) {
 		htmlcontent += '</table>';
 		if ( 'footer' in htmls ) htmlcontent += htmls.footer;
 	}
+	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
+		// #1 - add extra html / layout functions
 		if ( 'preshow' in O && O.preshow ) O.preshow();
+		// #2 - get all input fields
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' ); // .selectric-input in select
 		var name, nameprev;
 		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
@@ -461,6 +462,7 @@ function info( json ) {
 				return true
 			}
 		} );
+		// #3 - assign values
 		if ( 'values' in O && O.values ) {
 			if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 			var $this, type, val;
@@ -476,23 +478,29 @@ function info( json ) {
 					$this.val( val );
 				}
 			} );
-			if ( O.checkchanged ) checkChanged();
 		}
-		if ( 'textrequired' in O && O.textrequired ) {
-			O.textrequired.forEach( function( i ) {
-				checkChangedLength( O.inputs.eq( i ), 1 );
-			} );
-		}
+		// #4 - check text input length
 		if ( 'textlength' in O && O.textlength ) {
 			$.each( O.textlength, function( i, L ) {
 				checkChangedLength( O.inputs.eq( i ), L );
 			} );
 		}
+		// #5 - check text input not blank
+		if ( 'textrequired' in O && O.textrequired ) {
+			O.textrequired.forEach( function( i ) {
+				checkChangedLength( O.inputs.eq( i ), 1 );
+			} );
+		}
+		// #6 - check changed values
+		if ( 'inputs' in O && O.checkchanged ) checkChanged();
+		// #7 - apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
+		// #8 - show
 		$( '#infoOverlay' )
 			.addClass( 'noclick' )
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		// #9 - set vertical position and button width(cannot get width if hidden)
 		alignVertical();
 		if ( 'boxwidth' in O && O.boxwidth ) {
 			var allW = $( '#infoContent' ).width();
@@ -512,8 +520,10 @@ function info( json ) {
 			} );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
+		// #10 - apply custom function (based on values)
 		if ( 'postshow' in O && O.postshow ) O.postshow();
-		setTimeout( function() { // prevent click OK on consecutive info
+		// #11 - prevent click OK on consecutive info
+		setTimeout( function() {
 			$( '#infoOverlay' ).removeClass( 'noclick' );
 			var type0 = $( O.inputs[ 0 ] ).prop( 'type' );
 			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) O.inputs[ 0 ].focus();
