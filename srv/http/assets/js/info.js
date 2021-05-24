@@ -4,13 +4,13 @@ info( 'message' );
 
 normal usage:
 info( {                                     // default
-	width         : N                       // 400            (info width)
+	width         : N                       // 400            (infocontent width)
+	height        : N                       // (fit)          (infocontent height)
 	icon          : 'NAME'                  // 'question'     (top icon)
 	title         : 'TITLE'                 // 'Information'  (top title)
 	nox           : 1                       // (show)         (no top 'X' close button)
 	nobutton      : 1                       // (show)         (no button)
 	nofocus       : 1                       // (input box)    (no focus at input box)
-	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
 	autoclose     : N                       // (disabled)     (auto close in ms)
 	preshow       : FUNCTION                // (none)         (function after html content - before set width)
 	postshow      : FUNCTION                // (none)         (function after values set)
@@ -27,6 +27,8 @@ info( {                                     // default
 	textarea      : 1                       //
 	
 	passwordlabel : 'LABEL'                 // (blank)        (password input label)
+	
+	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
 	
 	filelabel     : 'LABEL'                 // 'Browse'       (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
@@ -198,7 +200,8 @@ function infoReset( infox ) {
 	$( '#infoIcon' ).removeAttr( 'class' ).empty();
 	$( '#infoFileBox' ).val( '' ).removeAttr( 'accept' );
 	$( '#infoFilename' ).empty();
-	$( '#infoFileLabel' ).addClass( 'infobtn-primary' )
+	$( '#infoFileLabel' ).addClass( 'infobtn-primary' );
+	$( '#infoContent input' ).prop( 'disabled', 0 );
 	$( '#infoOk, #infoFileLabel' ).removeClass( 'disabled' );
 	$( '.extrabtn' ).remove();
 	if ( O.infoscroll ) {
@@ -232,10 +235,8 @@ function info( json ) {
 		infoReset( 'infox' );
 	} );
 	// title
-	var width = 'width' in O ? O.width : '';
-	if ( width ) {
-		$( '#infoBox' ).css( 'width', width +'px' );
-	}
+	if ( 'width' in O && O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
+	if ( 'height' in O && O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
 	if ( 'icon' in O && O.icon ) {
 		if ( O.icon.charAt( 0 ) !== '<' ) {
 			$( '#infoIcon' ).addClass( 'fa fa-'+ O.icon );
