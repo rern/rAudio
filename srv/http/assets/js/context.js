@@ -227,7 +227,7 @@ function tagEditor() {
 		var mode, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
-			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span>&ensp;<i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
@@ -292,7 +292,7 @@ function tagEditor() {
 				} );
 				setTimeout( function() {
 					var boxW = parseInt( $text.css('width') );
-					var boxS = boxW - 85;
+					var boxS = boxW - 89;
 					$( '#infoFooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );

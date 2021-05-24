@@ -1618,7 +1618,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	var $target = $( e.target );
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'fa-coverart' ) ) return
 	
-	$( '.licover' ).find( '.covedit' ).remove();
+	$( '.licover .fa-coverart' ).remove();
 	$( '.licover img' ).css( 'opacity', '' );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
