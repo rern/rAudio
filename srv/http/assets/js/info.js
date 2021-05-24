@@ -604,25 +604,17 @@ function verifyPassword( title, pwd, fn ) {
 		, message       : 'Please retype'
 		, passwordlabel : 'Password'
 		, ok            : function() {
-			if ( $( '#infoPasswordBox' ).val() === pwd ) {
+			if ( infoVal() === pwd ) {
 				fn();
-				return;
+			} else {
+				info( {
+					  title   : title
+					, message : 'Passwords not matched. Please try again.'
+					, ok      : function() {
+						verifyPassword( title, pwd, fn )
+					}
+				} );
 			}
-			
-			info( {
-				  title   : title
-				, message : 'Passwords not matched. Please try again.'
-				, ok      : function() {
-					verifyPassword( title, pwd, fn )
-				}
-			} );
 		}
-	} );
-}
-function verifyPasswordblank( title, message, label, fn ) {
-	var blank;
-	$( '#infoOk' ).addClass( 'disabled' );
-	$( '#infoPasswordBox' ).on( 'input', function() {
-		$( '#infoOk' ).toggleClass( 'disabled', !$( this ).val() );
 	} );
 }
