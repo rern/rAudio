@@ -547,10 +547,10 @@ function checkChanged() {
 	$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChangedValue );
 }
 function checkChangedEmpty( $input ) {
-	O.shortlength = $input.text().trim() === '';
+	O.shortlength = $input.val().trim() === '';
 	$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 	$input.on( 'input', function() {
-		O.shortlength = $input.text().trim() === '';
+		O.shortlength = $input.val().trim() === '';
 		$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
 	} );
 }
@@ -565,6 +565,7 @@ function checkChangedLength( $input, L ) {
 function checkChangedValue() {
 	if ( O.shortlength ) return // shorter - already disabled
 	
+	console.log(9)
 	setTimeout( function() { // force after checkChangedLength() and custom check
 		var values = infoVal();
 		if ( typeof values === 'string' ) values = [ values ];
