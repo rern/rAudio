@@ -472,6 +472,9 @@ grw,
 .entries li .fa-info-circle {
     font-size: 22px !important;
 }
+.entries li.active {
+	background: var( --cga );
+}
 .remove {
 	float: right;
 	margin-right: 0 !important;
@@ -797,7 +800,7 @@ input:checked + .switchlabel.disabled:after {
 		text-decoration: none;
 	}
 	.entries li:hover {
-		background: var( --cgd );
+		background: var( --cga );
 	}
 	#menu a:hover {
 		color: var( --cw );

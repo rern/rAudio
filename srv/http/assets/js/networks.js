@@ -366,6 +366,8 @@ $( '#wlscan' ).click( function() {
 $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	G.li = $( this );
 	G.list = G.li.parent().prop( 'id' );
+	$( 'li' ).removeClass( 'active' );
+	G.li.addClass( 'active' );
 	var $menu = $( '#menu' );
 	if ( !$menu.hasClass( 'hide' ) ) {
 		$menu.addClass( 'hide' );
@@ -395,7 +397,10 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( 'body' ).click( function( e ) {
-	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) $( '#menu' ).addClass( 'hide' );
+	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) {
+		$( '#menu' ).addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+	}
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( intervalscan );
