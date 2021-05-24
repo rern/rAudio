@@ -223,7 +223,8 @@ hr {
 	width: 30px;
 	text-align: center;
 }
-.infomessage {
+.infomessage,
+.infofooter {
 	display: inline-block;
 	width: fit-content;
 	max-width: 100%;

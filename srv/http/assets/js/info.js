@@ -350,7 +350,7 @@ function info( json ) {
 			if ( 'msghr' in O ) htmls.message += '<hr>';
 		}
 		if ( 'footer' in O && O.footer ) {
-			htmls.footer = '<p class="infomessage"';
+			htmls.footer = '<p class="infofooter"';
 			if ( 'footalign' in O ) htmls.footer += ' style="text-align:'+ O.footalign +'"';
 			htmls.footer += '>'+ O.footer +'</p>';
 		}
