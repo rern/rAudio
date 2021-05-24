@@ -423,7 +423,7 @@ $( '.disconnect' ).click( function() {
 		, title   : ssidname
 		, message : 'Disconnect?'
 		, oklabel : '<i class="fa fa-times"></i>OK'
-		, okcolor : '#de810e'
+		, okcolor : orange
 		, ok      : function() {
 			clearTimeout( intervalscan );
 			notify( ssidname, 'Disconnect ...', icon );
@@ -448,7 +448,7 @@ $( '.forget' ).click( function() {
 		, title   : ssidname
 		, message : 'Forget?'
 		, oklabel : '<i class="fa fa-minus-circle"></i>OK'
-		, okcolor : '#bb2828'
+		, okcolor : red
 		, ok      : function() {
 			clearTimeout( intervalscan );
 			notify( ssidname, 'Forget ...', icon );
@@ -484,16 +484,10 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		var ssid = $this.data( 'ssid' );
 		var ip = $this.data( 'ip' );
 		info( {
-			  icon        : 'wifi'
-			, title       : ssid
-			, buttonlabel : ip ? '<i class="fa fa-minus-circle"></i> Forget' : ''
-			, buttoncolor : red
-			, button      : function() {
-				clearTimeout( intervalscan );
-				notify( ssid, 'Forget ...', 'wifi' );
-				bash( [ 'profileremove', ssid ] );
-			}
-			, oklabel : ip ? 'Disconnect' : 'Connect'
+			  icon    : 'wifi'
+			, title   : ssid
+			, message : ip ? 'Disconnect?' : 'Connect?'
+			, oklabel : ip ? '<i class="fa fa-times"></i>OK' : '<i class="fa fa-check"></i>OK'
 			, okcolor : ip ? orange : ''
 			, ok      : function() {
 				clearTimeout( intervalscan );
