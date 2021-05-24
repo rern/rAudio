@@ -56,10 +56,11 @@
 	<input id="novolume" type="checkbox">
 	<div class="switchlabel" for="novolume"></div>
 	<span <?=$classhelp?>>
-		Disable all manipulations for bit-perfect stream from MPD to DAC.
+		Disable all manipulations for bit-perfect stream from MPD to DAC output.
 		<p>
-			&bull; Mixer device volume set to 0dB - No amplitude manipulations.
-		<br>&bull; Volume Control <code>None</code> - Hide Volume in Playback.
+			&bull; No changes in data stream until it reaches amplifier volume control.
+		<br>&bull; Mixer device volume set to 0dB - No amplitude manipulations.
+		<br>&bull; Volume Control <code>None / 0db</code> - Hide Volume in Playback.
 		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
 		</p>
 	</span>
@@ -70,10 +71,12 @@
 	<div class="col-r dop">
 		<input id="dop" type="checkbox">
 		<div class="switchlabel" for="dop"></div>
-		<span <?=$classhelp?>>For DSD-capable devices without drivers dedicated for native DSD. Enable if there's no sound from the DAC.
-			<br>DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
-			Then PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
-			<br>On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect</span>
+		<span <?=$classhelp?>>
+				For DSD-capable devices without drivers dedicated for native DSD.
+			<br>&bull; Enable if there's static/no sound from the DAC.
+			<br>&bull; DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
+			<br>&bull; PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
+			<br>&bull; On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect</span>
 	</div>
 </div>
 </div>
