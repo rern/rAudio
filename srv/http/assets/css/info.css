@@ -177,18 +177,15 @@ hr {
 	width: 400px;
 	max-width: 98%;
 }
-.infoarrowleft,
-.infoarrowright {
+#infoArrow i {
+	float: left;
 	width: 40px;
 	height: 40px;
 	font-size: 24px;
 	color: var( --cm );
 }
-.infoarrowleft {
-	float: left;
-}
-.infoarrowright {
-	float: right;
+.fa-arrow-right {
+	float: right !important;
 }
 #infoContent {
 	padding: 25px 10px 10px 10px;

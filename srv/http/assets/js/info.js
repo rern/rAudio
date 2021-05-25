@@ -81,9 +81,6 @@ var containerhtml = heredoc( function() { /*
 			</div>
 			<i id="infoX" class="fa fa-times hide"></i>
 		</div>
-		<div id="infoArrow">
-			<i class="fa fa-arrow-left infoarrowleft"></i><i class="fa fa-arrow-right infoarrowright"></i>
-		</div>
 		<div id="infoContent">
 		</div>
 		<div id="infoButtons">
@@ -93,7 +90,6 @@ var containerhtml = heredoc( function() { /*
 	</div>
 </div>
 */ } );
-
 $( 'body' ).prepend( containerhtml );
 
 $( '#infoOverlay' ).keydown( function( e ) {
@@ -173,8 +169,6 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	console.log('infoReset');
-	console.log('sequence' in O)
 	var keep = 'arrowleft' in O || 'arrowright' in O || 'sequence' in O;
 	if ( !keep ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
 	O.infoscroll = 0;
@@ -182,16 +176,21 @@ function infoReset() {
 	
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '.infoarrowleft, .infoarrowright, .infobtn' ).addClass( 'hide' );
+	$( '#infoArrow' ).remove();
+	$( '#infoArrow i' ).off( 'click' );
 	
 	$( '#infoContent' ).empty().css( 'height', '' );
 	$( '#infoContent' ).find( 'input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
-	$( '#infoContent' ).find( '.infobtn, td, .infoarrowleft, .infoarrowright' ).off( 'click' );
+	$( '#infoContent' ).find( 'td' ).off( 'click' );
 	
-	$( '.infobtn' ).removeClass( 'active disabled' ).css( 'background', '' );
 	$( '#infoFile' ).remove();
+	$( '.infobtn' )
+		.removeClass( 'active disabled' )
+		.addClass( 'hide' )
+		.css( 'background', '' )
+		.off( 'click' );
 	
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
@@ -325,15 +324,13 @@ function info( json ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
-		if ( 'arrowleft' in O && O.arrowleft ) {
-			$( '.infoarrowleft' )
-				.removeClass( 'hide' )
-				.click( O.arrowleft );
-		}
 		if ( 'arrowright' in O && O.arrowright ) {
-			$( '.infoarrowright' )
-				.removeClass( 'hide' )
-				.click( O.arrowright );
+			$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-right"></i></div>' );
+			$( '#infoArrow i' ).click( O.arrowright );
+		}
+		if ( 'arrowleft' in O && O.arrowleft ) {
+			$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-left"></i></div>' );
+			$( '#infoArrow i' ).click( O.arrowleft );
 		}
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
