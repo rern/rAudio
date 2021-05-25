@@ -169,9 +169,8 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	var keep = 'arrowleft' in O || 'arrowright' in O || 'sequence' in O;
-	if ( !keep ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
 	O.infoscroll = 0;
+	$( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
 	$( '#infoBox' ).css( { margin: '', width: '', visibility: 'hidden' } );
 	
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
@@ -220,7 +219,6 @@ function info( json ) {
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
-		$( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
 		infoReset();
 	} );
 	// title
@@ -299,7 +297,6 @@ function info( json ) {
 			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
 			if ( 'filetype' in O && O.filetype.indexOf( ext ) === -1 ) {
 				var Oprev = JSON.parse( JSON.stringify( O ) );
-				Oprev.sequence = 1; // prevent hide/show flash
 				$( '#infoOk' ).off( 'click' );
 				$( '#infoFilename' ).hide();
 				info( {
@@ -326,11 +323,17 @@ function info( json ) {
 	} else {
 		if ( 'arrowright' in O && O.arrowright ) {
 			$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-right"></i></div>' );
-			$( '#infoArrow i' ).click( O.arrowright );
+			$( '#infoArrow i' ).click( function() {
+				O.arrowright();
+				$( '#infoOverlay' ).removeClass( 'hide' );
+			} );
 		}
 		if ( 'arrowleft' in O && O.arrowleft ) {
 			$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-left"></i></div>' );
-			$( '#infoArrow i' ).click( O.arrowleft );
+			$( '#infoArrow i' ).click( function() {
+				O.arrowleft();
+				$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
+			} );
 		}
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
