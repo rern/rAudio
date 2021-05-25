@@ -219,6 +219,7 @@ function info( json ) {
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
+		delete O.sequence;
 		infoReset();
 	} );
 	// title
@@ -301,11 +302,12 @@ function info( json ) {
 				$( '#infoOk' ).off( 'click' );
 				$( '#infoFilename' ).hide();
 				info( {
-					  icon    : 'warning'
-					, title   : O.title
-					, message : '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
+					  icon     : 'warning'
+					, title    : O.title
+					, sequence : 1
+					, message  : '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
 								+'<tr><td>Extension not :</td><td><code>'+ O.filetype +'</code></td></tr></table>'
-					, ok      : function() {
+					, ok       : function() {
 						info( Oprev );
 					}
 				} );
