@@ -12,7 +12,6 @@ input::-moz-focus-inner { /* dotted outline */
 	border: 0;
 }
 .infobtn,
-.filebtn,
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
@@ -29,8 +28,7 @@ input::-moz-focus-inner { /* dotted outline */
 #infoOverlay input[type=checkbox]:focus {
 	outline: none;
 }
-.infobtn,
-.filebtn {
+.infobtn {
 	display: inline-block;
 	margin: 0 5px 10px;
 	min-width: 70px;
@@ -57,8 +55,7 @@ input::-moz-focus-inner { /* dotted outline */
 .infobtn-default {
 	background-color: var( --cg );
 }
-.infobtn.disabled,
-.filebtn.disabled {
+.infobtn.disabled {
 	color: var( --cg60 ) !important;
 	background-color: var( --cg ) !important;
 	pointer-events: none;
@@ -292,17 +289,6 @@ hr {
 	margin-top: 0 !important;
 	outline: none;
 }
-#infoFilename {
-	display: inline-block;
-	width: 100%;
-	margin-bottom: 10px;
-}
-#infoFilename code {
-	max-width: 90%;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 .eyeactive {
 	color: var( --cm );
 }
@@ -337,8 +323,8 @@ hr {
 	padding-right: 25px;
 	font-size: 16px;
 }
-#infoFile {
-	display: block;
+#infoFilename {
+	margin-bottom: 10px;
 }
 #infoButtons {
 	padding: 10px 0 20px 0;

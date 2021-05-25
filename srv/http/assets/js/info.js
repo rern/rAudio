@@ -12,6 +12,7 @@ info( {                                     // default
 	nobutton      : 1                       // (show)         (no button)
 	nofocus       : 1                       // (input box)    (no focus at input box)
 	autoclose     : N                       // (disabled)     (auto close in ms)
+	sequence      : 1                       // (none)         (prevent hide/show flash for info in sequence)
 	preshow       : FUNCTION                // (none)         (function after html content - before set width)
 	postshow      : FUNCTION                // (none)         (function after values set)
 	
@@ -32,7 +33,6 @@ info( {                                     // default
 	
 	filelabel     : 'LABEL'                 // 'Browse'       (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
-	fileokdisable : 1                       // (enable)       (disable file button after select)
 	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
 	filetypecheck : 1                       // (no)           (check matched filetype)
 	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
@@ -87,11 +87,6 @@ var containerhtml = heredoc( function() { /*
 		<div id="infoContent">
 		</div>
 		<div id="infoButtons">
-			<div id="infoFile" class="hide">
-				<span id="infoFilename"></span>
-				<input type="file" class="hide" id="infoFileBox">
-			</div>
-			<a id="infoFileLabel" class="filebtn infobtn-primary">Browse</a>
 			<a id="infoCancel" class="infobtn infobtn-default"></a>
 			<a id="infoOk" class="infobtn infobtn-primary"></a>
 		</div>
@@ -177,27 +172,24 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 	}
 } );
 
-function infoReset( infox ) {
-	var arrow = 'arrowleft' in O || 'arrowright' in O;
-	if ( !arrow || infox ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
+function infoReset() {
+	var keep = 'arrowleft' in O || 'arrowright' in O || 'sequence' in O;
+	if ( !keep ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
 	O.infoscroll = 0;
 	$( '#infoBox' ).css( { margin: '', width: '', visibility: 'hidden' } );
 	
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '.infoarrowleft, .infoarrowright, #infoFile, .filebtn, .infobtn' ).addClass( 'hide' );
+	$( '.infoarrowleft, .infoarrowright, .infobtn' ).addClass( 'hide' );
 	
 	$( '#infoContent' ).empty().css( 'height', '' );
 	$( '#infoContent' ).find( 'input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
-	$( '#infoContent' ).find( '.filebtn, .infobtn, td, .infoarrowleft, .infoarrowright' ).off( 'click' );
+	$( '#infoContent' ).find( '.infobtn, td, .infoarrowleft, .infoarrowright' ).off( 'click' );
 	
-	$( '.infobtn, .filebtn' ).removeClass( 'active disabled' ).css( 'background', '' );
-	$( '#infoFileBox' ).removeAttr( 'accept' ).val( '' );
-	$( '#infoFilename' ).empty();
-	$( '#infoFileLabel' ).addClass( 'infobtn-primary' );
-	$( '.extrabtn' ).remove();
+	$( '.infobtn' ).removeClass( 'active disabled' ).css( 'background', '' );
+	$( '#infoFile' ).remove();
 	
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
@@ -227,7 +219,7 @@ function info( json ) {
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
-		infoReset( 'infox' );
+		infoReset();
 	} );
 	// title
 	if ( 'width' in O && O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
@@ -286,45 +278,41 @@ function info( json ) {
 		}
 	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
+		var htmlfile = '<div id="infoFile">'
+				+'<code id="infoFilename" class="hide"></code>'
+				+'<input type="file" class="hide" id="infoFileBox">'
+				+'</div>'
+				+'<a id="infoFileLabel" class="infobtn file infobtn-primary"'
+				+' accept="'+ O.filelabel +'">'+ ( O.filelabel || 'Browse' ) +'</a>';
+		$( '#infoButtons' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( O.fileoklabel )
 			.addClass( 'hide' );
-		if ( 'filelabel' in O ) $( '#infoFileLabel' ).html( O.filelabel );
 		$( '#infoFileLabel' ).click( function() {
 			$( '#infoFileBox' ).click();
 		} );
-		$( '#infoFile, #infoFileLabel' ).removeClass( 'hide' );
-		if ( 'filetype' in O ) $( '#infoFileBox' ).attr( 'accept', O.filetype );
 		$( '#infoFileBox' ).change( function() {
-			var file = this.files[ 0 ];
-			if ( !file ) return
-			
-			var filename = file.name;
-			var ext = filename.split( '.' ).pop();
-			if ( 'filefilter' in O && O.filetype.indexOf( ext ) === -1 ) {
+			var filename = this.files[ 0 ].name;
+			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
+			if ( 'filetype' in O && O.filetype.indexOf( ext ) === -1 ) {
+				var Oprev = JSON.parse( JSON.stringify( O ) );
+				Oprev.sequence = 1; // prevent hide/show flash
+				$( '#infoOk' ).off( 'click' );
+				$( '#infoFile' ).remove();
 				info( {
 					  icon    : 'warning'
 					, title   : O.title
-					, message : 'File extension must be: <code>'+ O.filetype +'</code>'
+					, message : '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
+								+'<tr><td>Extension not :</td><td><code>'+ O.filetype +'</code></td></tr></table>'
 					, ok      : function() {
-						info( {
-							  title       : title
-							, message     : message
-							, fileoklabel : O.fileoklabel
-							, filetype    : O.filetype
-							, ok          : function() {
-								info( O );
-							}
-						} );
+						info( Oprev );
 					}
 				} );
-				return;
+			} else {
+				$( '#infoFilename' ).text( filename );
+				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
+				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
 			}
-			
-			$( '#infoOk' ).removeClass( 'hide' );
-			$( '#infoFileLabel' ).removeClass( 'infobtn-primary' )
-			if ( 'fileokdisable' in O ) $( '#infoFileLabel' ).addClass( 'disabled' );
-			$( '#infoFilename' ).html( '<code>'+ filename +'</code>' );
 		} );
 	}
 	
