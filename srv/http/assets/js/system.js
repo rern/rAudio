@@ -442,24 +442,25 @@ var infolcdchar = heredoc( function() { /*
 	</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
-	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
+	var val = G.lcdcharconf || '20 A00 27 PCF8574 False';
 	var val = val.split( ' ' );
-	// i2c : cols charmap | inf | i2caddress i2cchip | backlight
-	// gpio: cols charmap | inf | pin_rs pin_rw pin_e pins_data | backlight
+	// i2c : cols charmap | i2caddress i2cchip | backlight
+	// gpio: cols charmap | pin_rs pin_rw pin_e pins_data | backlight
+	// v   : 0cols 1charmap | 2inf | 3i2caddress 4i2cchip | 5pin_rs 6pin_rw 7pin_e 8pins_data | 9backlight 
 	var backlight = val.pop() === 'True';
-	if ( val.length < 6 ) { // inset inf
+	if ( val.length < 6 ) {
 		var i2c = true;
+		val[ 2 ] = val[ 2 ].replace( '0x', '' ); // remove leading 0x of hex
 		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2 ), 15, 18, 16, '21,22,23,24', backlight ]
 	} else {
 		var i2c = false;
-		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val( 2 ), backlight ];
+		var v = [ ...val.slice( 0, 2 ), 'gpio', '27', 'PCF8574', ...val( 2 ), backlight ];
 	}
-	// v: 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight 
 	var lcdcharaddr = G.lcdcharaddr || '27 3F';
 	var addr = lcdcharaddr.split( ' ' );
 	var opt = '<td>Address</td>';
 	addr.forEach( function( el ) {
-		opt += '<td><label><input type="radio" name="address" value="0x'+ el +'">0x'+ el +'</label></td>';
+		opt += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el +'</label></td>';
 	} );
 	info( {
 		  icon          : 'lcdchar'
@@ -496,6 +497,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			var values = infoVal();
+			values[ 3 ] = '0x'+ values[ 3 ]; // add back leading 0x of hex
 			var lcdcharconf = values.join( ' ' );
 			var cmd = [ 'lcdcharset', lcdcharconf ];
 			if ( values[ 2 ] === 'i2c' ) {
