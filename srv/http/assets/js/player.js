@@ -262,8 +262,7 @@ $( '#setting-buffer' ).click( function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
 		, ok           : function() {
-			var bufferval = infoVal().replace( /\D/g, '' );
-			bash( [ 'bufferset', bufferval ] );
+			bash( [ 'bufferset', infoVal() ] );
 			notify( 'Custom Audio Buffer', G.buffer ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -281,8 +280,7 @@ $( '#setting-bufferoutput' ).click( function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
 		, ok           : function() {
-			var bufferoutputval = infoVal().replace( /\D/g, '' );
-			bash( [ 'bufferoutputset', bufferoutputval ] );
+			bash( [ 'bufferoutputset', infoVal() ] );
 			notify( 'Custom Output Buffer', G.bufferoutput ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );

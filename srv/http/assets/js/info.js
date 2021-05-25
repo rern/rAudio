@@ -560,17 +560,17 @@ function checkChanged() {
 	
 	setTimeout( function() { // force after check length
 		var values = infoVal();
-		if ( typeof values === 'string' ) values = [ values ];
+		if ( typeof values !== 'object' ) values = [ values ];
 		var changed = false;
 		changed = values.some( function( v, i ) {
-			if ( v != O.values[ i ] ) return true
+			if ( v !== O.values[ i ] ) return true
 		} );
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
 function infoVal() {
 	var values = [];
-	var $this, type, name, val;
+	var $this, type, name, val, n;
 	var i = 0;
 	O.inputs.each( function() {
 		$this = $( this );
@@ -582,7 +582,11 @@ function infoVal() {
 		} else if ( type === 'checkbox' ) {
 			val = $this.prop( 'checked' );
 		} else {
-			val = $this.val();
+			val = $this.val().trim();
+		}
+		if ( [ true, false, '' ].indexOf( val ) === -1 ) {
+			n = Number( val );
+			val = isNaN( n ) ? val : n;
 		}
 		values.push( val );
 	} );
