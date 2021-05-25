@@ -1403,7 +1403,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, message     : icon
 			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-			, filetype    : '.jpg,.png.gif'
+			, filetype    : 'image/*'
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark' );
 			}

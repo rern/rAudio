@@ -144,7 +144,7 @@ function coverartChange() {
 					   +'<br>'+ artist +'</w>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : '.jpg,.png.gif'
+		, filetype    : 'image/*'
 		, preshow     : function() { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );
 		}

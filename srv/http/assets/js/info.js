@@ -298,8 +298,9 @@ function info( json ) {
 		$( '#infoFileBox' ).change( function() {
 			var file = this.files[ 0 ];
 			var filename = file.name;
+			var fileimg = O.filetype === 'image/*';
 			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
-			if ( 'filetype' in O && O.filetype.indexOf( ext ) === -1 ) {
+			if ( !fileimg && O.filetype.indexOf( ext ) === -1 ) {
 				var Oprev = JSON.parse( JSON.stringify( O ) );
 				$( '#infoOk' ).off( 'click' );
 				$( '#infoFilename' ).hide();
@@ -317,7 +318,7 @@ function info( json ) {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( [ 'jpg', 'png', 'gif' ].indexOf( ext ) !== -1 ) fileImage( file );
+				if ( fileimg ) fileImage( file );
 			}
 		} );
 	}
