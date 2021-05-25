@@ -249,7 +249,10 @@ function info( json ) {
 			.html( 'oklabel' in O ? O.oklabel : 'OK' )
 			.css( 'background-color', O.okcolor || '' )
 			.removeClass( 'hide' );
-			if ( typeof O.ok === 'function' ) $( '#infoOk' ).click( O.ok );
+			if ( typeof O.ok === 'function' ) $( '#infoOk' ).click( function() {
+				$( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
+				O.ok
+			} );
 		if ( 'cancel' in O && O.cancel ) {
 			$( '#infoCancel' )
 				.html( 'cancellabel' in O ? O.cancellabel : 'Cancel' )
