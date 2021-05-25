@@ -233,7 +233,7 @@ function tagEditor() {
 				}
 			} );
 		}
-		var mode, tagtextW, label = [];
+		var mode, labelW, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
 			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
@@ -260,10 +260,10 @@ function tagEditor() {
 			, footer       : footer
 			, textlabel    : label
 			, boxwidth     : 'max'
-			, preshow      : function() {
+			, preshow      : function() { // get label width without show
 				$( '#infoOverlay' ).css( 'visiblity', 'hidden' );
 				$( '#infoOverlay, .tagname' ).removeClass( 'hide' );
-				tagtextW = $( '#infoContent td:eq( 0 )' ).width() - 30;
+				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
 				$( '#infoOverlay' ).css( 'visiblity', '' );
 				$( '#infoOverlay, .tagname' ).addClass( 'hide' );
 			}
@@ -295,7 +295,7 @@ function tagEditor() {
 				} );
 				setTimeout( function() {
 					var boxW = parseInt( $text.css( 'width' ) );
-					var boxS = boxW - tagtextW;
+					var boxS = boxW - labelW;
 					$( '.infofooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );
