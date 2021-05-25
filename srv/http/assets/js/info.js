@@ -175,6 +175,7 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 function infoReset() {
 	var keep = 'arrowleft' in O || 'arrowright' in O || 'sequence' in O;
 	if ( !keep ) $( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
+	delete O.sequence;
 	O.infoscroll = 0;
 	$( '#infoBox' ).css( { margin: '', width: '', visibility: 'hidden' } );
 	
@@ -219,7 +220,6 @@ function info( json ) {
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
-		delete O.sequence;
 		infoReset();
 	} );
 	// title
