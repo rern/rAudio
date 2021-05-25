@@ -222,20 +222,8 @@ function info( json ) {
 		infoReset();
 	} );
 	// switch arrows
-	if ( 'arrowright' in O && O.arrowright ) {
-		$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-right"></i></div>' );
-		$( '#infoArrow i' ).click( function() {
-			O.arrowright();
-			$( '#infoOverlay' ).removeClass( 'hide' );
-		} );
-	}
-	if ( 'arrowleft' in O && O.arrowleft ) {
-		$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-left"></i></div>' );
-		$( '#infoArrow i' ).click( function() {
-			O.arrowleft();
-			$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
-		} );
-	}
+	if ( 'arrowright' in O && O.arrowright ) switchRL( 'right', O.arrowright )
+	if ( 'arrowleft' in O && O.arrowleft ) switchRL( 'left', O.arrowleft )
 	// title
 	if ( 'width' in O && O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
 	if ( 'height' in O && O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
@@ -585,6 +573,13 @@ function infoVal() {
 	} else {
 		return values[ 0 ]
 	}
+}
+function switchRL( rl, fn ) {
+	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
+	$( '#infoArrow i' ).click( function() {
+		fn();
+		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
+	} );
 }
 
 // verify password - called from addons.js ///////////////////////////////////////
