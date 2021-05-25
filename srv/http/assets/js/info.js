@@ -221,6 +221,21 @@ function info( json ) {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
 		infoReset();
 	} );
+	// switch arrows
+	if ( 'arrowright' in O && O.arrowright ) {
+		$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-right"></i></div>' );
+		$( '#infoArrow i' ).click( function() {
+			O.arrowright();
+			$( '#infoOverlay' ).removeClass( 'hide' );
+		} );
+	}
+	if ( 'arrowleft' in O && O.arrowleft ) {
+		$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-left"></i></div>' );
+		$( '#infoArrow i' ).click( function() {
+			O.arrowleft();
+			$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
+		} );
+	}
 	// title
 	if ( 'width' in O && O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
 	if ( 'height' in O && O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
@@ -321,20 +336,6 @@ function info( json ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
-		if ( 'arrowright' in O && O.arrowright ) {
-			$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-right"></i></div>' );
-			$( '#infoArrow i' ).click( function() {
-				O.arrowright();
-				$( '#infoOverlay' ).removeClass( 'hide' );
-			} );
-		}
-		if ( 'arrowleft' in O && O.arrowleft ) {
-			$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-left"></i></div>' );
-			$( '#infoArrow i' ).click( function() {
-				O.arrowleft();
-				$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
-			} );
-		}
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
 			htmls.message = '<p class="infomessage"';
