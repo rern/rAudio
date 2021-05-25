@@ -140,11 +140,11 @@ function coverartChange() {
 		  icon        : 'coverart'
 		, title       : 'Change Album CoverArt'
 		, message     : '<img class="imgold">'
-					   +'<p class="imgname"><w>'+ album +'</w>'
-					   +'<br>'+ artist +'</p>'
-		, filelabel   : '<i class="fa fa-folder-open"></i>Browse'
+					   +'<w class="imgname">'+ album
+					   +'<br>'+ artist +'</w>'
+		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : 'image/*'
+		, filetype    : '.jpg,.png.gif'
 		, preshow     : function() { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );
 		}
@@ -215,8 +215,8 @@ function coverartSave() {
 		  icon    : 'coverart'
 		, title   : 'Save Album CoverArt'
 		, message : '<img src="'+ src +'">'
-					   +'<p class="imgname"><w>'+ album +'</w>'
-					   +'<br>'+ artist +'</p>'
+					   +'<w class="imgname">'+ album
+					   +'<br>'+ artist +'</w>'
 		, ok      : function() {
 			var ext = src.slice( -4 );
 			var tmpfile = '/srv/http'+ src.slice( 0, -15 ) + ext;

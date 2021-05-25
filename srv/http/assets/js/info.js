@@ -296,7 +296,8 @@ function info( json ) {
 			$( '#infoFileBox' ).click();
 		} );
 		$( '#infoFileBox' ).change( function() {
-			var filename = this.files[ 0 ].name;
+			var file = this.files[ 0 ];
+			var filename = file.name;
 			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
 			if ( 'filetype' in O && O.filetype.indexOf( ext ) === -1 ) {
 				var Oprev = JSON.parse( JSON.stringify( O ) );
@@ -316,6 +317,7 @@ function info( json ) {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
+				if ( [ 'jpg', 'png', 'gif' ].indexOf( ext ) !== -1 ) fileImage( file );
 			}
 		} );
 	}
@@ -326,15 +328,15 @@ function info( json ) {
 	} else {
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
-			htmls.message = '<p class="infomessage"';
+			htmls.message = '<div class="infomessage"';
 			if ( 'msgalign' in O ) htmls.message += ' style="text-align:'+ O.msgalign +'"';
-			htmls.message += '>'+ O.message +'</p>';
+			htmls.message += '>'+ O.message +'</div>';
 			if ( 'msghr' in O ) htmls.message += '<hr>';
 		}
 		if ( 'footer' in O && O.footer ) {
-			htmls.footer = '<p class="infofooter"';
+			htmls.footer = '<div class="infofooter"';
 			if ( 'footalign' in O ) htmls.footer += ' style="text-align:'+ O.footalign +'"';
-			htmls.footer += '>'+ O.footer +'</p>';
+			htmls.footer += '>'+ O.footer +'</div>';
 		}
 		// inputs html ///////////////////////////////////////////////////////////
 		if ( 'textlabel' in O && O.textlabel ) {
@@ -416,11 +418,11 @@ function info( json ) {
 		if ( !( 'order' in O ) || !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
 		var htmlcontent = ''; 
 		if ( 'message' in htmls ) htmlcontent += htmls.message;
-		htmlcontent += '<table>';
+		var htmlinputs = '';
 		O.order.forEach( function( type ) {
-			if ( type in htmls ) htmlcontent += htmls[ type ];
+			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
-		htmlcontent += '</table>';
+		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
 		if ( 'footer' in htmls ) htmlcontent += htmls.footer;
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
@@ -582,6 +584,67 @@ function switchRL( rl, fn ) {
 	$( '#infoArrow i' ).click( function() {
 		fn();
 		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
+	} );
+}
+function fileImage( file ) {
+	var timeout = setTimeout( function() {
+		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
+	}, 1000 );
+	G.rotate = 0;
+	$( '#infoButton' ).hide();
+	if ( !file ) return
+	
+//	$( '#infoFilename' ).empty();
+	$( '#imgnew, .imagewh, .imgname' ).remove();
+	if ( file.name.slice( -3 ) === 'gif' ) {
+		var img = new Image();
+		img.onload = function() {
+			$( '.infomessage' ).append(
+				 '<img id="imgnew" src="'+ URL.createObjectURL( file ) +'">'
+				+'<div class="imagewh"><span>'+ this.width +' x '+ this.height +'</span></div>'
+			);
+			clearTimeout( timeout );
+			bannerHide();
+		}
+		img.src = URL.createObjectURL( file );
+		return
+	}
+	getOrientation( file, function( ori ) {
+		resetOrientation( file, ori, function( filecanvas, imgW, imgH ) {
+			var maxsize = ( G.library && !G.librarylist ) ? 200 : 1000;
+			var htmlrotate = '<br><i class="fa fa-redo"></i>&ensp;Tap to rotate</span></div>';
+			if ( imgW > maxsize || imgH > maxsize ) {
+				if ( imgW > imgH ) {
+					pxW = maxsize;
+					pxH = Math.round( imgH / imgW * maxsize );
+				} else {
+					pxH = maxsize;
+					pxW = Math.round( imgW / imgH * maxsize );
+				}
+				var canvas = document.createElement( 'canvas' );
+				canvas.width = pxW;
+				canvas.height = pxH;
+				pica.resize( filecanvas, canvas, picaOption ).then( function() {
+					var resizedimg = canvas.toDataURL( 'image/jpeg' ); // canvas -> base64
+					$( '.infomessage' ).append(
+						 '<img id="imgnew" src="'+ resizedimg +'">'
+						+'<div class="imagewh"><span>'+ pxW +' x '+ pxH
+						+'<br>original: '+ imgW +' x '+ imgH
+						+ htmlrotate
+					);
+					clearTimeout( timeout );
+					bannerHide();
+				} );
+			} else {
+				$( '.infomessage' ).append( 
+					 '<img id="imgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
+					+'<div class="imagewh"><span>'+ imgW +' x '+ imgH
+					+ htmlrotate
+				);
+				clearTimeout( timeout );
+				bannerHide();
+			}
+		} );
 	} );
 }
 

@@ -1349,69 +1349,6 @@ $( '#infoContent' ).on( 'click', '#imgnew', function() {
 	ctx.drawImage( img, -cw, -ch );
 	image.src = canvas.toDataURL( 'image/jpeg' );
 } );
-$( '#infoFileBox' ).change( function() {
-	var timeout = setTimeout( function() {
-		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
-	}, 1000 );
-	G.rotate = 0;
-	var file = this.files[ 0 ];
-	$( '#infoButton' ).hide();
-	if ( !file ) return
-	
-	$( '#infoFilename' ).empty();
-	$( '#imgnew, .imagewh, .imgname' ).remove();
-	if ( file.name.slice( -3 ) === 'gif' ) {
-		var img = new Image();
-		img.onload = function() {
-			$( '.infomessage' ).append(
-				 '<img id="imgnew" src="'+ URL.createObjectURL( file ) +'">'
-				+'<div class="imagewh"><span>'+ this.width +' x '+ this.height +'</span></div>'
-			);
-			clearTimeout( timeout );
-			bannerHide();
-		}
-		img.src = URL.createObjectURL( file );
-		return
-	}
-	
-	getOrientation( file, function( ori ) {
-		resetOrientation( file, ori, function( filecanvas, imgW, imgH ) {
-			var maxsize = ( G.library && !G.librarylist ) ? 200 : 1000;
-			var htmlrotate = '<br><i class="fa fa-redo"></i>&ensp;Tap to rotate</span></div>';
-			if ( imgW > maxsize || imgH > maxsize ) {
-				if ( imgW > imgH ) {
-					pxW = maxsize;
-					pxH = Math.round( imgH / imgW * maxsize );
-				} else {
-					pxH = maxsize;
-					pxW = Math.round( imgW / imgH * maxsize );
-				}
-				var canvas = document.createElement( 'canvas' );
-				canvas.width = pxW;
-				canvas.height = pxH;
-				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					var resizedimg = canvas.toDataURL( 'image/jpeg' ); // canvas -> base64
-					$( '.infomessage' ).append(
-						 '<img id="imgnew" src="'+ resizedimg +'">'
-						+'<div class="imagewh"><span>'+ pxW +' x '+ pxH
-						+'<br>original: '+ imgW +' x '+ imgH
-						+ htmlrotate
-					);
-					clearTimeout( timeout );
-					bannerHide();
-				} );
-			} else {
-				$( '.infomessage' ).append( 
-					 '<img id="imgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
-					+'<div class="imagewh"><span>'+ imgW +' x '+ imgH
-					+ htmlrotate
-				);
-				clearTimeout( timeout );
-				bannerHide();
-			}
-		} );
-	} );
-} );
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
 	if ( $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' )  ) {
@@ -1429,10 +1366,9 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			  icon         : 'bookmark'
 			, title        : 'Rename Bookmark'
 			, width        : 500
-			, message      : '<i class="fa fa-bookmark bookmark"></i>'
-							+'<br><a class="bklabel">'+ name +'</a>'
-							+'To:'
-			, textlabel    : 'Name'
+			, message      : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
+							+'<br><span class="bklabel">'+ name +'</span></div>'
+			, textlabel    : 'To:'
 			, values       : name
 			, textrequired : [ 0 ]
 			, boxwidth     : 'max'
@@ -1452,7 +1388,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
-					  +'<p class="imgname">'+ name +'</p>';
+					  +'<w class="imgname">'+ name +'</w>';
 		} else {
 			var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
 		}
@@ -1465,9 +1401,9 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			  icon        : 'bookmark'
 			, title       : 'Change Bookmark Thumbnail'
 			, message     : icon
-			, filelabel   : '<i class="fa fa-folder-open"></i>Browse'
+			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-			, filetype    : 'image/*'
+			, filetype    : '.jpg,.png.gif'
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark' );
 			}

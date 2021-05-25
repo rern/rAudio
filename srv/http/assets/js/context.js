@@ -393,8 +393,9 @@ function webRadioCoverart() {
 	var infojson = {
 		  icon        : 'coverart'
 		, title       : 'WebRadio CoverArt'
+		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : 'image/*'
+		, filetype    : '.jpg,.png.gif'
 		, ok          : function() {
 			imageReplace( imagefile, 'webradio' );
 		}
@@ -412,7 +413,7 @@ function webRadioCoverart() {
 					? G.status.coverartradio || G.coverdefault
 					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
 	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
-	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
+	infojson.message += '<w class="imgname">'+ name +'</w>';
 	info( infojson );
 }
 function webRadioDelete() {
