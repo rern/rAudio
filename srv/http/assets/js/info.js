@@ -415,9 +415,9 @@ function info( json ) {
 					+'<div class="value">'+ O.rangevalue +'</div>'
 					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
 		}
-		if ( !( 'order' in O ) || !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
 		var htmlcontent = ''; 
 		if ( 'message' in htmls ) htmlcontent += htmls.message;
+		if ( !( 'order' in O ) || !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
 		var htmlinputs = '';
 		O.order.forEach( function( type ) {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
