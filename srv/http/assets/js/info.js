@@ -280,10 +280,11 @@ function info( json ) {
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
 				+'<code id="infoFilename" class="hide"></code>'
-				+'<input type="file" class="hide" id="infoFileBox">'
+				+'<input type="file" class="hide" id="infoFileBox"'
+				+ ( O.filetype ? ' accept="'+ O.filetype +'">' : '>' )
 				+'</div>'
-				+'<a id="infoFileLabel" class="infobtn file infobtn-primary"'
-				+' accept="'+ O.filelabel +'">'+ ( O.filelabel || 'Browse' ) +'</a>';
+				+'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
+				+ ( O.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( O.fileoklabel )
@@ -298,7 +299,7 @@ function info( json ) {
 				var Oprev = JSON.parse( JSON.stringify( O ) );
 				Oprev.sequence = 1; // prevent hide/show flash
 				$( '#infoOk' ).off( 'click' );
-				$( '#infoFile' ).remove();
+				$( '#infoFilename' ).hide();
 				info( {
 					  icon    : 'warning'
 					, title   : O.title
