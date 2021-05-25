@@ -553,7 +553,7 @@ function checkChanged() {
 		if ( typeof values !== 'object' ) values = [ values ];
 		var changed = false;
 		changed = values.some( function( v, i ) {
-			if ( v !== O.values[ i ] ) return true
+			if ( v != O.values[ i ] ) return true
 		} );
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
@@ -573,10 +573,6 @@ function infoVal() {
 			val = $this.prop( 'checked' );
 		} else {
 			val = $this.val().trim();
-		}
-		if ( [ true, false, '' ].indexOf( val ) === -1 ) {
-			n = Number( val );
-			val = isNaN( n ) ? val : n;
 		}
 		values.push( val );
 	} );
