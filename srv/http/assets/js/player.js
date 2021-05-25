@@ -310,11 +310,11 @@ var soxrinfo = heredoc( function() { /*
 		<tr><td>Attenuation</td>
 			<td><input type="text"></td><td><gr>0-30dB</gr></td>
 		</tr>
-		<tr><td>Extra Settings</td>
+		<tr><td>Rolloff</td>
 			<td colspan="2"><select>
-					<option value="0">0 - Rolloff - Small</option>
-					<option value="1">1 - Rolloff - Medium</option>
-					<option value="2">2 - Rolloff - None</option>
+					<option value="0">0 - Small</option>
+					<option value="1">1 - Medium</option>
+					<option value="2">2 - None</option>
 					<option value="8">8 - High precision</option>
 					<option value="16">16 - Double precision</option>
 					<option value="32">32 - Variable rate</option>
