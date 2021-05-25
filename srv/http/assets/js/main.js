@@ -1388,7 +1388,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
-					  +'<w class="imgname">'+ name +'</w>';
+					  +'<p class="imgname">'+ name +'</p>';
 		} else {
 			var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
 		}

@@ -140,8 +140,8 @@ function coverartChange() {
 		  icon        : 'coverart'
 		, title       : 'Change Album CoverArt'
 		, message     : '<img class="imgold">'
-					   +'<w class="imgname">'+ album
-					   +'<br>'+ artist +'</w>'
+					   +'<p class="imgname">'+ album
+					   +'<br>'+ artist +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
@@ -215,8 +215,8 @@ function coverartSave() {
 		  icon    : 'coverart'
 		, title   : 'Save Album CoverArt'
 		, message : '<img src="'+ src +'">'
-					   +'<w class="imgname">'+ album
-					   +'<br>'+ artist +'</w>'
+					   +'<p class="imgname">'+ album
+					   +'<br>'+ artist +'</p>'
 		, ok      : function() {
 			var ext = src.slice( -4 );
 			var tmpfile = '/srv/http'+ src.slice( 0, -15 ) + ext;
