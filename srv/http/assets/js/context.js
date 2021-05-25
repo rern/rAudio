@@ -224,7 +224,16 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
-		var mode, label = [];
+		if ( G.playlist ) {
+			values.forEach( function( v, i ) {
+				if ( v === '' ) {
+					format.splice( i, 1 );
+					name.splice( i, 1 );
+					values.splice( i, 1 );
+				}
+			} );
+		}
+		var mode, tagtextW, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
 			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
@@ -251,6 +260,13 @@ function tagEditor() {
 			, footer       : footer
 			, textlabel    : label
 			, boxwidth     : 'max'
+			, preshow      : function() {
+				$( '#infoOverlay' ).css( 'visiblity', 'hidden' );
+				$( '#infoOverlay, .tagname' ).removeClass( 'hide' );
+				tagtextW = $( '#infoContent td:eq( 0 )' ).width() - 30;
+				$( '#infoOverlay' ).css( 'visiblity', '' );
+				$( '#infoOverlay, .tagname' ).addClass( 'hide' );
+			}
 			, values       : values
 			, checkchanged : 1
 			, postshow      : function() {
@@ -258,19 +274,6 @@ function tagEditor() {
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
-				if ( G.playlist ) {
-					$text.each( function( i, $el ) {
-						if ( !$( this ).val() ) $text.eq( i ).parents( 'tr' ).hide();
-					} );
-				}
-				if ( cue ) $text.eq( 2 ).parents( 'tr' ).hide();
-				var plcue = !$text.filter( function() {
-					return $( this ).val() !== '';
-				} ).length
-				if ( plcue ) {
-					$( 'ib:last').remove();
-					$( '.infofooter' ).text( 'Tap coverart to browse this album' );
-				}
 				$( '.infomessage' ).click( function() {
 					if ( G.library ) return
 					
@@ -291,8 +294,8 @@ function tagEditor() {
 					}, 'json' );
 				} );
 				setTimeout( function() {
-					var boxW = parseInt( $text.css('width') );
-					var boxS = boxW - 89;
+					var boxW = parseInt( $text.css( 'width' ) );
+					var boxS = boxW - tagtextW;
 					$( '.infofooter' ).on( 'click', '#tagname', function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );

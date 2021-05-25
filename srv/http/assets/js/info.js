@@ -496,7 +496,7 @@ function info( json ) {
 		if ( 'boxwidth' in O && O.boxwidth ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width();
-			var boxW = O.boxwidth !== 'max' ? O.boxwidth : allW - 50 - labelW;
+			var boxW = O.boxwidth !== 'max' ? O.boxwidth : allW - ( allW > 399 ? 50 : 20 ) - labelW;
 			setTimeout( function() {
 				$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 				$( '.selectric-items' ).css( 'min-width', boxW +'px' );
