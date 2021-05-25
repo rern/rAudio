@@ -329,10 +329,6 @@ hr {
 #infoContent .selectric-wrapper {
 	margin: 0;
 }
-#infoContent .selectric-wrapper {
-	width: auto;
-	max-width: 100%;
-}
 #infoOverlay white,
 #infoOverlay code,
 #infoContent .selectric-items ul {
@@ -346,6 +342,9 @@ hr {
 #infoContent .selectric-items li {
 	height: 34px;
 	text-align: left;
+}
+#infoContent .selectric-items {
+	min-width: 100%;
 }
 #infoContent .selectric .label {
 	margin: 1px 0;

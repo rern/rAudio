@@ -416,7 +416,7 @@ var infolcdchar = heredoc( function() { /*
 	</tr>
 	<tr id="i2caddress" class="i2c"></tr>
 	<tr class="i2c"><td>I&#178;C Chip</td>
-		<td colspan="3">
+		<td colspan="2">
 		<select id="i2cchip">
 			<option value="PCF8574">PCF8574</option>
 			<option value="MCP23008">MCP23008</option>
@@ -572,7 +572,7 @@ $( '#setting-lcd' ).click( function() {
 		}
 		, values       : G.lcdmodel
 		, checkchanged : ( G.lcd ? 1 : 0 )
-		, boxwidth     : 200
+		, boxwidth     : 190
 		, buttonlabel  : 'Calibrate'
 		, button       : function() {
 			info( {
@@ -754,16 +754,21 @@ $( '#restore' ).click( function() {
 		, values      : 'restore'
 		, fileoklabel : 'Restore'
 		, filetype    : '.gz'
-		, filefilter  : 1
-		, postshow     : function() {
+		, postshow    : function() {
 			$( '#infoContent input' ).click( function() {
 				if ( infoVal() !== 'restore' ) {
 					$( '#infoFilename' ).empty()
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
-					$( '#infoOk' ).removeClass( 'hide' );
+					$( '#infoOk' )
+						.html( 'Reset' )
+						.css( 'background-color', orange )
+						.removeClass( 'hide' );
 				} else {
-					$( '#infoOk' ).addClass( 'hide' );
+					$( '#infoOk' )
+						.html( 'Restore' )
+						.css( 'background-color', '' )
+						.addClass( 'hide' );
 					$( '#infoFileLabel' ).removeClass( 'hide' );
 				}
 			} );

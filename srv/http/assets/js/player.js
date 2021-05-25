@@ -255,6 +255,7 @@ $( '#setting-buffer' ).click( function() {
 		, title        : 'Custom Audio Buffer'
 		, message      : '<code>audio_buffer_size</code> (default: 4096)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
+		, boxwidth     : 125
 		, values       : G.bufferval || 4096
 		, checkchanged : ( G.buffer ? 1 : 0 )
 		, textrequired : [ 0 ]
@@ -273,6 +274,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, title        : 'Custom Output Buffer'
 		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
+		, boxwidth     : 125
 		, values       : G.bufferoutputval || 8192
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
 		, textrequired : [ 0 ]
@@ -288,28 +290,28 @@ $( '#setting-bufferoutput' ).click( function() {
 var soxrinfo = heredoc( function() { /*
 	<table>
 		<tr><td>Precision</td>
-			<td><select>
+			<td width="100"><select>
 				<option value="16">16</option>
 				<option value="20">20</option>
 				<option value="24">24</option>
 				<option value="28">28</option>
 				<option value="32">32</option>
-				</select>&ensp;<gr>bit</gr></td>
+				</select></td><td><gr>bit</gr></td>
 		</tr>
 		<tr><td>Phase Response</td>
-			<td><input type="text">&ensp;<gr>0-100</gr></td>
+			<td><input type="text"></td><td><gr>0-100</gr></td>
 		</tr>
 		<tr><td>Passband End</td>
-			<td><input type="text">&ensp;<gr>0-100%</gr></td>
+			<td><input type="text"></td><td><gr>0-100%</gr></td>
 		</tr>
 		<tr><td>Stopband Begin</td>
-			<td><input type="text">&ensp;<gr>100-150%</gr></td>
+			<td><input type="text"></td><td><gr>100-150%</gr></td>
 		</tr>
 		<tr><td>Attenuation</td>
-			<td><input type="text">&ensp;<gr>0-30dB</gr></td>
+			<td><input type="text"></td><td><gr>0-30dB</gr></td>
 		</tr>
 		<tr><td>Extra Settings</td>
-			<td><select>
+			<td colspan="2"><select>
 					<option value="0">0 - Rolloff - Small</option>
 					<option value="1">1 - Rolloff - Medium</option>
 					<option value="2">2 - Rolloff - None</option>
@@ -389,7 +391,7 @@ $( '#setting-custom' ).click( function() {
 		, title    : "User's Configurations"
 		, content  : custominfo
 		, msgalign : 'left'
-		, boxwidth : 330
+		, boxwidth : 320
 		, values   : [ valglobal, valoutput ]
 		, checkchanged : ( G.custom ? 1 : 0 )
 		, preshow  : function() {

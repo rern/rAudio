@@ -425,10 +425,35 @@ function info( json ) {
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
-		// #1 - add extra html / layout functions
+		// set hide > hidden - get width
+		$( '#infoOverlay' )
+			.css( 'visiblity', 'hidden' )
+			.removeClass( 'hide' );
+		// set vertical position
+		alignVertical();
+		// add extra html / layout functions
 		if ( 'preshow' in O && O.preshow ) O.preshow();
-		// #2 - get all input fields
-		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' ); // .selectric-input in select
+		// apply selectric
+		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
+		if ( !( 'buttonfit' in O ) ) {
+			var widest = 0;
+			var w;
+			$.each( $( '#infoButtons a' ), function() {
+				w = $( this ).outerWidth();
+				if ( w > widest ) widest = w;
+			} );
+			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
+		}
+		if ( 'boxwidth' in O && O.boxwidth ) {
+			var allW = $( '#infoContent' ).width();
+			var labelW = $( '#infoContent td:first-child' ).width();
+			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - ( allW > 399 ? 50 : 20 ) - labelW;
+			var $boxes = $( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' );
+			$boxes.css( 'width', boxW +'px' );
+			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
+		}
+		// get all input fields - omit .selectric-input for select
+		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
 			name = this.name;
@@ -439,7 +464,7 @@ function info( json ) {
 				return true
 			}
 		} );
-		// #3 - assign values
+		// assign values
 		if ( 'values' in O && O.values ) {
 			if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 			var $this, type, val;
@@ -456,7 +481,7 @@ function info( json ) {
 				}
 			} );
 		}
-		// #4 - check text input length
+		// check text input length
 		if ( 'textlength' in O && O.textlength ) {
 			$.each( O.textlength, function( i, L ) {
 				O.shortlength = O.inputs.eq( i ).val().length < L;
@@ -467,7 +492,7 @@ function info( json ) {
 				} );
 			} );
 		}
-		// #5 - check text input not blank
+		// check text input not blank
 		if ( 'textrequired' in O && O.textrequired ) {
 			O.textrequired.forEach( function( i ) {
 				O.shortlength = O.inputs.eq( i ).val().trim() === '';
@@ -478,42 +503,20 @@ function info( json ) {
 				} );
 			} );
 		}
-		// #6 - check changed values
+		// check changed values
 		if ( 'values' in O && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChanged );
 		}
-		// #7 - apply selectric
-		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
-		// #8 - show
+		// show
 		$( '#infoOverlay' )
 			.addClass( 'noclick' )
-			.removeClass( 'hide' )
+			.css( 'visiblity', '' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
-		// #9 - set vertical position and button width(cannot get width if hidden)
-		alignVertical();
-		if ( 'boxwidth' in O && O.boxwidth ) {
-			var allW = $( '#infoContent' ).width();
-			var labelW = $( '#infoContent td:first-child' ).width();
-			var boxW = O.boxwidth !== 'max' ? O.boxwidth : allW - ( allW > 399 ? 50 : 20 ) - labelW;
-			setTimeout( function() {
-				$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
-				$( '.selectric-items' ).css( 'min-width', boxW +'px' );
-			}, 0 );
-		}
-		if ( !( 'buttonfit' in O ) ) {
-			var widest = 0;
-			var w;
-			$.each( $( '#infoButtons a' ), function() {
-				w = $( this ).outerWidth();
-				if ( w > widest ) widest = w;
-			} );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
-		}
-		// #10 - apply custom function (based on values)
+		// custom function (based on values)
 		if ( 'postshow' in O && O.postshow ) O.postshow();
-		// #11 - prevent click OK on consecutive info
+		// prevent click OK on consecutive info
 		setTimeout( function() {
 			$( '#infoOverlay' ).removeClass( 'noclick' );
 			var type0 = $( O.inputs[ 0 ] ).prop( 'type' );
