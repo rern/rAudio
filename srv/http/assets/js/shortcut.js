@@ -222,24 +222,27 @@ $( document ).keydown( function( e ) {
 		
 		if ( G.library && $( '#lib-list .coverart' ).length ) { // album
 			if ( !$( '#lib-list .coverart.active' ).length ) {
-				$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
+				$( '#lib-list .coverart:eq( 0 )' ).addClass( 'active' );
 				return
 			}
 			
 			var $active = $( '#lib-list .coverart.active' );
-			if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
-				if ( key === 'ArrowLeft' && $active.index() === 0 ) return
-				if ( key === 'ArrowRight' && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
+			var arrowL = key === 'ArrowLeft';
+			var arrowR = key === 'ArrowRight';
+			if ( arrowL || arrowR ) {
+				if ( arrowL && $active.index() === 0 ) return
+				if ( arrowR && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
 				
-				var $next = key === 'ArrowRight' ? $active.next() : $active.prev();
+				var $next = arrowR ? $active.next() : $active.prev();
 				$active.removeClass( 'active' )
 				$next.addClass( 'active' );
+				var rect = $next[ 0 ].getBoundingClientRect();
+				var wH = $( window ).height();
 				var eH = $next.height();
 				var top = $next.offset().top;
-				var updn = scrollAlbum( $next, eH );
-				if ( updn === 'down' ) {
+				if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
 					var scroll = top - ( G.bars ? 80 : 40 );
-				} else if ( updn === 'up' ) {
+				} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
 					var scroll = top - eH;
 				}
 				$( 'html, body' ).scrollTop( scroll );
@@ -301,15 +304,6 @@ $( document ).keydown( function( e ) {
 		}
 	}
 } );
-function scrollAlbum( $el, eH ) {
-	var rect = $el[ 0 ].getBoundingClientRect();
-	var wH = $( window ).height();
-	if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
-		return 'down'
-	} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
-		return 'up'
-	}
-}
 function scrollUpDown( $list, key ) {
 	var $li = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
