@@ -293,7 +293,7 @@ function tagEditor() {
 				setTimeout( function() {
 					var boxW = parseInt( $text.css( 'width' ) );
 					var boxS = boxW - labelW;
-					$( '.infofooter' ).on( 'click', '#tagname', function() {
+					$( '#tagname' ).click( function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );
 							$text.css( 'width', boxS );
