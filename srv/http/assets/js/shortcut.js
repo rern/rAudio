@@ -243,6 +243,8 @@ $( document ).keydown( function( e ) {
 					var scroll = top - eH;
 				}
 				$( 'html, body' ).scrollTop( scroll );
+			} else if ( key === 'ArrowUp' ) {
+				$( '#button-lib-back' ).click();
 			} else if ( key === 'Enter' ) {
 				G.iactive = $( '#lib-list .coverart.active' ).index();
 				$active.trigger( 'tap' );
