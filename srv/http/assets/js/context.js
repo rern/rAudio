@@ -390,31 +390,27 @@ function webRadioCoverart() {
 	var path = G.library ? G.list.path : G.status.file;
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
 	var imagefile = '/srv/http'+ radiopath; //no ext
-	var infojson = {
-		  icon        : 'coverart'
-		, title       : 'WebRadio CoverArt'
-		, filelabel   : '<i class="fa fa-folder-open"></i>File'
-		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : 'image/*'
-		, ok          : function() {
-			imageReplace( imagefile, 'webradio' );
-		}
-	}
-	if ( ( G.playback && $( '#vu' ).hasClass( 'hide' ) )
-		|| ( G.library && !G.list.li.find( '.lib-icon' ).hasClass( 'fa' ) )
-	) {
-		infojson.buttonlabel = '<i class="fa fa-webradio"></i>Default';
-		infojson.buttoncolor = orange;
-		infojson.button      = function() {
-			bash( [ 'coverartradioreset', imagefile ] );
-		}
-	}
 	var coverart = G.playback
 					? G.status.coverartradio || G.coverdefault
 					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
-	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
-	infojson.message += '<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>';
-	info( infojson );
+	var radioicon = coverart === G.coverdefault;
+	info( {
+		  icon        : 'coverart'
+		, title       : 'WebRadio CoverArt'
+		, message     : '<img class="imgold" src="'+ coverart +'" >'
+						+'<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>'
+		, filelabel   : '<i class="fa fa-folder-open"></i>File'
+		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filetype    : 'image/*'
+		, buttonlabel : radioicon ? '' : '<i class="fa fa-webradio"></i>Default'
+		, buttoncolor : radioicon ? '' : orange
+		, button      : radioicon ? '' : function() {
+			bash( [ 'coverartradioreset', imagefile ] );
+		}
+		, ok          : function() {
+			imageReplace( imagefile, 'webradio' );
+		}
+	} );
 }
 function webRadioDelete() {
 	var name = G.list.name;
