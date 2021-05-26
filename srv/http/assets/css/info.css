@@ -233,14 +233,30 @@ hr {
 	vertical-align: 0;
 	font-size: 20px;
 }
+.infomessage .fa-bookmark {
+	font-size: 48px;
+	width: 48px;
+}
 .infomessage img {
 	width: auto;
 	height: 100px;
 	margin-bottom: 10px;
 }
-.infomessage .fa-bookmark {
-	font-size: 48px;
-	width: 48px;
+.infoimgnew {
+	margin-left: 10px;
+}
+.infoimgwh {
+	font-size: 14px;
+}
+.infoimgwh span {
+	float: right;
+	display: inline-block;
+	text-align: right;
+	font-size: 14px;
+}
+.infoimgwh i {
+	font-size: 18px;
+	margin: 0;
 }
 #infoContent .imgicon {
 	width: 30px;

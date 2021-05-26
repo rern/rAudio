@@ -1327,28 +1327,6 @@ $( '.mode' ).click( function() {
 	query.modetitle = path;
 	G.query.push( query );
 } );
-$( '#infoContent' ).on( 'click', '#imgnew', function() {
-	G.rotate += 90;
-	if ( G.rotate === 360 ) G.rotate = 0;
-	var canvas = document.createElement( 'canvas' );
-	var ctx = canvas.getContext( '2d' );
-	var image = document.getElementById( 'imgnew' );
-	var img = new Image();
-	img.onload = function() {
-		ctx.drawImage( image, 0, 0 );
-	}
-	img.src = image.src;
-	var w = img.width;
-	var h = img.height;
-	var cw = Math.round( w / 2 );
-	var ch = Math.round( h / 2 );
-	canvas.width = h;
-	canvas.height = w;
-	ctx.translate( ch, cw );
-	ctx.rotate( Math.PI / 2 );
-	ctx.drawImage( img, -cw, -ch );
-	image.src = canvas.toDataURL( 'image/jpeg' );
-} );
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
 	if ( $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' )  ) {
@@ -1388,7 +1366,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
-					  +'<p class="imgname">'+ name +'</p>';
+					  +'<p class="infoimgname">'+ name +'</p>';
 		} else {
 			var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
 		}

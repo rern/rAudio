@@ -1642,24 +1642,8 @@ i.map.disabled, .map.disabled i {
 #infoTop .imgicon .fa-coverart {
 	top: 3px;
 }
-.imgname {
+.infoimgname {
 	clear: both;
-	margin: 0;
-}
-#imgnew {
-	margin-left: 10px;
-}
-.imagewh {
-	font-size: 14px;
-}
-.imagewh span {
-	float: right;
-	display: inline-block;
-	text-align: right;
-	font-size: 14px;
-}
-.imagewh i {
-	font-size: 18px;
 	margin: 0;
 }
 /* ---------------------- breadcrumb and index ---------------------- */

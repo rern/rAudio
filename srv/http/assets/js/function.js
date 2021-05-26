@@ -140,7 +140,7 @@ function coverartChange() {
 		  icon        : 'coverart'
 		, title       : 'Change Album CoverArt'
 		, message     : '<img class="imgold">'
-					   +'<p class="imgname">'+ album
+					   +'<p class="infoimgname">'+ album
 					   +'<br>'+ artist +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
@@ -215,7 +215,7 @@ function coverartSave() {
 		  icon    : 'coverart'
 		, title   : 'Save Album CoverArt'
 		, message : '<img src="'+ src +'">'
-					   +'<p class="imgname">'+ album
+					   +'<p class="infoimgname">'+ album
 					   +'<br>'+ artist +'</p>'
 		, ok      : function() {
 			var ext = src.slice( -4 );
@@ -558,7 +558,7 @@ function imageReplace( imagefile, type ) {
 	formData.append( 'cmd', 'imagereplace' );
 	if ( ext !== '.gif' ) {
 		ext = '.jpg';
-		var base64 = $( '#imgnew' )
+		var base64 = $( '.infoimgnew' )
 						.attr( 'src' )
 						.split( ',' )
 						.pop();

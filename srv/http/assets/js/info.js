@@ -556,7 +556,7 @@ function checkChanged() {
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
-function infoVal() {
+function infoVal( keys ) {
 	var values = [];
 	var $this, type, name, val, n;
 	var i = 0;
@@ -574,7 +574,13 @@ function infoVal() {
 		}
 		values.push( val );
 	} );
-	if ( values.length > 1 ) {
+	if ( keys ) {
+		var json = {}
+		keys.forEach( function( k, i ) {
+			json[ k ] = values[ i ];
+		} );
+		return json
+	} else if ( values.length > 1 ) {
 		return values
 	} else {
 		return values[ 0 ]
@@ -593,16 +599,13 @@ function fileImage( file ) {
 	}, 1000 );
 	G.rotate = 0;
 	$( '#infoButton' ).hide();
-	if ( !file ) return
-	
-//	$( '#infoFilename' ).empty();
-	$( '#imgnew, .imagewh, .imgname' ).remove();
+	$( '.infoimgnew, .infoimgwh, .infoimgname' ).remove();
 	if ( file.name.slice( -3 ) === 'gif' ) {
 		var img = new Image();
 		img.onload = function() {
 			$( '.infomessage' ).append(
-				 '<img id="imgnew" src="'+ URL.createObjectURL( file ) +'">'
-				+'<div class="imagewh"><span>'+ this.width +' x '+ this.height +'</span></div>'
+				 '<img class="infoimgnew" src="'+ URL.createObjectURL( file ) +'">'
+				+'<div class="infoimgwh"><span>'+ this.width +' x '+ this.height +'</span></div>'
 			);
 			clearTimeout( timeout );
 			bannerHide();
@@ -628,8 +631,8 @@ function fileImage( file ) {
 				pica.resize( filecanvas, canvas, picaOption ).then( function() {
 					var resizedimg = canvas.toDataURL( 'image/jpeg' ); // canvas -> base64
 					$( '.infomessage' ).append(
-						 '<img id="imgnew" src="'+ resizedimg +'">'
-						+'<div class="imagewh"><span>'+ pxW +' x '+ pxH
+						 '<img class="infoimgnew" src="'+ resizedimg +'">'
+						+'<div class="infoimgwh"><span>'+ pxW +' x '+ pxH
 						+'<br>original: '+ imgW +' x '+ imgH
 						+ htmlrotate
 					);
@@ -638,8 +641,8 @@ function fileImage( file ) {
 				} );
 			} else {
 				$( '.infomessage' ).append( 
-					 '<img id="imgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
-					+'<div class="imagewh"><span>'+ imgW +' x '+ imgH
+					 '<img class="infoimgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
+					+'<div class="infoimgwh"><span>'+ imgW +' x '+ imgH
 					+ htmlrotate
 				);
 				clearTimeout( timeout );
@@ -648,6 +651,28 @@ function fileImage( file ) {
 		} );
 	} );
 }
+$( '#infoContent' ).on( 'click', '.infoimgnew', function() {
+	G.rotate += 90;
+	if ( G.rotate === 360 ) G.rotate = 0;
+	var canvas = document.createElement( 'canvas' );
+	var ctx = canvas.getContext( '2d' );
+	var image = $( this )[ 0 ];
+	var img = new Image();
+	img.onload = function() {
+		ctx.drawImage( image, 0, 0 );
+	}
+	img.src = image.src;
+	var w = img.width;
+	var h = img.height;
+	var cw = Math.round( w / 2 );
+	var ch = Math.round( h / 2 );
+	canvas.width = h;
+	canvas.height = w;
+	ctx.translate( ch, cw );
+	ctx.rotate( Math.PI / 2 );
+	ctx.drawImage( img, -cw, -ch );
+	image.src = canvas.toDataURL( 'image/jpeg' );
+} );
 
 // verify password - called from addons.js ///////////////////////////////////////
 function verifyPassword( title, pwd, fn ) {
