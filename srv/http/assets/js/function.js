@@ -931,6 +931,7 @@ function renderLibraryList( data ) {
 		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+			G.albumlist = 1;
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
 			var html = '<span id="button-coverart"><i class="fa ';
 			if ( $img0.length ) {
@@ -941,6 +942,8 @@ function renderLibraryList( data ) {
 				defaultcover = 1;
 			}
 			$( '#lib-breadcrumbs' ).append( html );
+		} else {
+			G.albumlist = 0;
 		}
 		$( '#liimg' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
