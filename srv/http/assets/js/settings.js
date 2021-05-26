@@ -96,21 +96,21 @@ function escapeUsrPwd( usrpwd ) {
 	return usrpwd.replace( /(["&()\\])/g, '\$1' )
 }
 function list2JSON( list ) {
-		try {
-			G = JSON.parse( list );
-		} catch( e ) {
-			var msg = e.message.split( ' ' );
-			var pos = msg.pop();
-			var errors = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
-						+'<hr>'
-						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			$( '#data' ).html( errors ).removeClass( 'hide' );
-			return false
-		}
-		$( '#button-data' ).removeAttr( 'class' );
-		$( '#data' ).empty().addClass( 'hide' );
-		if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
-		return true
+	try {
+		G = JSON.parse( list );
+	} catch( e ) {
+		var msg = e.message.split( ' ' );
+		var pos = msg.pop();
+		var errors = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+					+'<hr>'
+					+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+		$( '#data' ).html( errors ).removeClass( 'hide' );
+		return false
+	}
+	$( '#button-data' ).removeAttr( 'class' );
+	$( '#data' ).empty().addClass( 'hide' );
+	if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
+	return true
 }
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
@@ -171,7 +171,11 @@ function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
 }
 function psRefresh( data ) {
-	if ( data.page === page || data.page === 'all' ) refreshData();
+	if ( data.page === page ) {
+		renderPage( data );
+	} else if ( data.page === 'all' ) {
+		refreshData();
+	}
 }
 function psReload() {
 	if ( localhost ) location.reload();

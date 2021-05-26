@@ -99,7 +99,8 @@ if systemctl -q is-active bluetooth; then
 fi
 
 data='
-  "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
+  "page"       : "networks"
+, "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
 , "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'

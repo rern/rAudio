@@ -105,99 +105,105 @@ function renderStatus() {
 	return status
 }
 
-refreshData = function() {
-	bash( '/srv/http/bash/system-data.sh', function( list ) {
+renderPage = function( list ) {
+	if ( typeof list === 'string' ) { // on load, try catching any errors
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
-		
-		var cpu = G.soccpu +' <gr>@</gr> ';
-		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
-		$( '#systemvalue' ).html(
-			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
-			+'<br>'+ G.kernel
-			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
-			+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
-			+'<br>'+ cpu
-		);
-		$( '#status' ).html( renderStatus );
-		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
-		var html = '';
-		$.each( G.list, function( i, val ) {
-			if ( val.mounted ) {
-				var dataunmounted = '';
-				var dot = '<grn>&ensp;&bull;&ensp;</grn>';
-			} else {
-				var dataunmounted = ' data-unmounted="1"';
-				var dot = '<red>&ensp;&bull;&ensp;</red>';
-			}
-			html += '<li '+ dataunmounted;
-			html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-			html += '<gr class="source">'+ val.source +'</gr>';
-			html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
-		} );
-		$( '#list' ).html( html );
-		if ( G.bluetooth ) {
-			$( '#bluetooth' ).prop( 'checked', true );
-			$( '#setting-bluetooth' ).toggleClass( 'hide', false );
-			$( '#bt' )
-				.removeAttr( 'class' )
-				.addClass( 'col-l double status' )
-				.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
+	} else {
+		G = list;
+	}
+	var cpu = G.soccpu +' <gr>@</gr> ';
+	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
+	$( '#systemvalue' ).html(
+		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
+		+'<br>'+ G.kernel
+		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
+		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
+		+'<br>'+ cpu
+	);
+	$( '#status' ).html( renderStatus );
+	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
+	var html = '';
+	$.each( G.list, function( i, val ) {
+		if ( val.mounted ) {
+			var dataunmounted = '';
+			var dot = '<grn>&ensp;&bull;&ensp;</grn>';
 		} else {
-			$( '#bluetooth' ).prop( 'checked', false );
-			$( '#setting-bluetooth' ).toggleClass( 'hide', true );
-			$( '#bt' )
-				.removeAttr( 'class' )
-				.addClass( 'col-l single' )
-				.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
+			var dataunmounted = ' data-unmounted="1"';
+			var dot = '<red>&ensp;&bull;&ensp;</red>';
 		}
-		$( '#wlan' ).prop( 'checked', G.wlan );
-		if ( G.wlan ) {
-			$( '#wlan' ).prop( 'checked', true );
-			$( '#wl' )
-				.removeAttr( 'class' )
-				.addClass( 'col-l double status' )
-				.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
-		} else {
-			$( '#wlan' ).prop( 'checked', false );
-			$( '#wl' )
-				.removeAttr( 'class' )
-				.addClass( 'col-l single' )
-				.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
-		}
-		disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
-		$( '#i2smodule' ).val( 'none' );
-		$( '#i2smodule option' ).filter( function() {
-			var $this = $( this );
-			return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
-		} ).prop( 'selected', true );
-		$( '#i2smodule' ).selectric( 'refresh' );
-		var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
-		$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
-		$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
-		$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-		$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
-		$( '#lcd' ).prop( 'checked', G.lcd );
-		$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
-		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-		$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-		var powerbuttonconf = G.powerbuttonconf.split( ' ' );
-		$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
-		$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
-		$( '#relays' ).prop( 'checked', G.relays );
-		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
-		$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
-		$( '#hostname' ).val( G.hostname );
-		$( '#timezone' )
-			.val( G.timezone )
-			.selectric( 'refresh' );
-		[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
-			codeToggle( id, 'status' );
-		} );
-		resetLocal();
-		showContent();
+		html += '<li '+ dataunmounted;
+		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
+		html += '<gr class="source">'+ val.source +'</gr>';
+		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
+	} );
+	$( '#list' ).html( html );
+	if ( G.bluetooth ) {
+		$( '#bluetooth' ).prop( 'checked', true );
+		$( '#setting-bluetooth' ).toggleClass( 'hide', false );
+		$( '#bt' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l double status' )
+			.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
+	} else {
+		$( '#bluetooth' ).prop( 'checked', false );
+		$( '#setting-bluetooth' ).toggleClass( 'hide', true );
+		$( '#bt' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l single' )
+			.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
+	}
+	$( '#wlan' ).prop( 'checked', G.wlan );
+	if ( G.wlan ) {
+		$( '#wlan' ).prop( 'checked', true );
+		$( '#wl' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l double status' )
+			.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+	} else {
+		$( '#wlan' ).prop( 'checked', false );
+		$( '#wl' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l single' )
+			.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
+	}
+	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
+	$( '#i2smodule' ).val( 'none' );
+	$( '#i2smodule option' ).filter( function() {
+		var $this = $( this );
+		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
+	} ).prop( 'selected', true );
+	$( '#i2smodule' ).selectric( 'refresh' );
+	var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
+	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
+	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
+	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
+	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
+	$( '#lcd' ).prop( 'checked', G.lcd );
+	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
+	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
+	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
+	var powerbuttonconf = G.powerbuttonconf.split( ' ' );
+	$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
+	$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
+	$( '#relays' ).prop( 'checked', G.relays );
+	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
+	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
+	$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+	$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+	$( '#hostname' ).val( G.hostname );
+	$( '#timezone' )
+		.val( G.timezone )
+		.selectric( 'refresh' );
+	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+		codeToggle( id, 'status' );
+	} );
+	resetLocal();
+	showContent();
+}
+refreshData = function() {
+	bash( '/srv/http/bash/system-data.sh', function( list ) {
+		renderPage( list );
 	} );
 }
 refreshData();

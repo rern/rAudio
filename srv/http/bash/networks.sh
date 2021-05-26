@@ -5,6 +5,14 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
+pushRefresh() {
+	sleep 2
+	data=$( /srv/http/bash/networks-data.sh )
+	pushstream refresh "$data"
+}
 netctlSwitch() {
 	ssid=$1
 	connected=$( netctl list | grep ^* | sed 's/^\* //' )
@@ -21,14 +29,10 @@ netctlSwitch() {
 	done
 	[[ -z $active ]] && netctl switch-to "$connected" && sleep 2
 	pushRefresh
-	pushRefreshFeatures
-}
-pushRefresh() {
-	sleep 2
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
-}
-pushRefreshFeatures() {
-	systemctl -q is-active hostapd && curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "features" }'
+	if systemctl -q is-active hostapd; then
+		data=$( /srv/http/bash/features-data.sh )
+		pushstream refresh "$data"
+	fi
 }
 
 case ${args[0]} in
@@ -85,7 +89,8 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
 		echo "$profile" > /boot/wifi
-		curl -s -X POST http://127.0.0.1/pub?id=wifi -d '{ "ssid": "'"$ESSID"'" }'
+		data='{ "ssid": "'"$ESSID"'" }'
+		pushstream wifi "$data"
 		exit
 	fi
 	

@@ -8,11 +8,16 @@ filereboot=/srv/http/data/shm/reboot
 # convert each line to each args
 readarray -t args <<< "$1"
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
 pushRefresh() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "features" }'
+	data=$( /srv/http/bash/features-data.sh )
+	pushstream refresh "$data"
 }
 pushRefreshNetworks() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
+	data=$( /srv/http/bash/networks-data.sh )
+	pushstream refresh "$data"
 }
 featureDisable() {
 	systemctl disable --now $@

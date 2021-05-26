@@ -12,8 +12,12 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 # convert each line to each args
 readarray -t args <<< "$1"
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
 pushRefresh() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "system" }'
+	data=$( /srv/http/bash/system-data.sh )
+	pushstream refresh "$data"
 }
 relaysOrder() {
 	conf=$( cat /etc/relays.conf )
@@ -214,8 +218,8 @@ getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
 		cat "$filebootlog"
 	else
-		curl -s -X POST http://127.0.0.1/pub?id=notify \
-			-d '{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
+		data='{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
+		pushstream notify "$data"
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;

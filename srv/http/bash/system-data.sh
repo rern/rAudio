@@ -2,7 +2,8 @@
 
 cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
-  "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
+  "page"            : "system"
+, "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
 , "cputemp"         : '$( [[ -n $cputemp ]] && echo $cputemp || echo 0 )'
 , "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
 , "throttled"       : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"

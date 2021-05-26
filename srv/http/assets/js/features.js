@@ -10,39 +10,45 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', G.login );
 }
 
-refreshData = function() { // system page: use resetLocal() to aviod delay
-	bash( '/srv/http/bash/features-data.sh', function( list ) {
+renderPage = function( list ) {
+	if ( typeof list === 'string' ) { // on load, try catching any errors
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
-		
-		$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
-		$( '#spotifyd' ).prop( 'checked', G.spotifyd );
-		$( '#snapclient' ).prop( 'checked', G.snapclient );
-		disableSwitch( '#snapclient', G.snapserver );
-		$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
-		$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
-		$( '#streaming' ).prop( 'checked', G.streaming );
-		$( '#snapserver' ).prop( 'checked', G.snapserver );
-		disableSwitch( '#snapserver', G.snapclient );
-		$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
-		$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
-		$( '#transmission' ).prop( 'checked', G.transmission );
-		$( '#localbrowser' ).prop( 'checked', G.localbrowser );
-		$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
-		$( '#aria2' ).prop( 'checked', G.aria2 );
-		$( '#smb' ).prop( 'checked', G.smb );
-		$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
-		$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
-		$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
-		$( '#login' ).prop( 'checked', G.login );
-		$( '#setting-login' ).toggleClass( 'hide', !G.login );
-		$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
-		$( '#autoplay' ).prop( 'checked', G.autoplay );
-		[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
-			codeToggle( id, 'status' );
-		} );
-		resetLocal();
-		showContent();
+	} else {
+		G = list;
+	}
+	$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
+	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
+	$( '#snapclient' ).prop( 'checked', G.snapclient );
+	disableSwitch( '#snapclient', G.snapserver );
+	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
+	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
+	$( '#streaming' ).prop( 'checked', G.streaming );
+	$( '#snapserver' ).prop( 'checked', G.snapserver );
+	disableSwitch( '#snapserver', G.snapclient );
+	$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
+	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
+	$( '#transmission' ).prop( 'checked', G.transmission );
+	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
+	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
+	$( '#aria2' ).prop( 'checked', G.aria2 );
+	$( '#smb' ).prop( 'checked', G.smb );
+	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
+	$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
+	$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
+	$( '#login' ).prop( 'checked', G.login );
+	$( '#setting-login' ).toggleClass( 'hide', !G.login );
+	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
+	$( '#autoplay' ).prop( 'checked', G.autoplay );
+	[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
+		codeToggle( id, 'status' );
+	} );
+	resetLocal();
+	showContent();
+}
+refreshData = function() {
+	bash( '/srv/http/bash/features-data.sh', function( list ) {
+		renderPage( list );
 	} );
 }
 refreshData();

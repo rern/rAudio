@@ -166,87 +166,88 @@ function infoAccesspoint() {
 		, message : 'RPi Access Point must be disabled.'
 	} );
 }
-function nicsStatus() {
-	bash( '/srv/http/bash/networks-data.sh', function( list ) {
+renderPage = function( list ) {
+	if ( typeof list === 'string' ) { // on load, try catching any errors
 		var list2G = list2JSON( list );
 		if ( !list2G ) return
-		
-		var htmlbt = '';
-		var htmllan = '';
-		var htmlwl = '';
-		if ( G.listbt ) {
-			G.listbt.forEach( function( list ) {
-				htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
-				htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
-			} );
-			$( '#listbt' ).html( htmlbt );
-			$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
+	} else {
+		G = list;
+	}
+	var htmlbt = '';
+	var htmllan = '';
+	var htmlwl = '';
+	if ( G.listbt ) {
+		G.listbt.forEach( function( list ) {
+			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
+			htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
+		} );
+		$( '#listbt' ).html( htmlbt );
+		$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
+	}
+	if ( G.listeth ) {
+		var val = G.listeth;
+		htmllan += '<li class="eth0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
+		htmllan += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'">';
+		htmllan += '<i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ val.ip +'</li>';
+	}
+	if ( G.listwlan ) {
+		var val = G.listwlan;
+		htmlwl += '<li class="wlan0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
+		htmlwl += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'" ';
+		htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
+		htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
+		var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
+		htmlwl += '<i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
+		if ( !G.hostapd ) {
+			htmlwl += val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr></li>';
+		} else {
+			htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 		}
-		if ( G.listeth ) {
-			var val = G.listeth;
-			htmllan += '<li class="eth0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
-			htmllan += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'">';
-			htmllan += '<i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ val.ip +'</li>';
-		}
-		if ( G.listwlan ) {
-			var val = G.listwlan;
-			htmlwl += '<li class="wlan0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
-			htmlwl += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'" ';
+	}
+	if ( G.listwlannc ) {
+		G.listwlannc.forEach( function( list ) {
+			var val = list;
+			htmlwl += '<li class="wlan0" data-ip="" data-dhcp="'+ val.dhcp +'" ';
 			htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
 			htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
-			var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
-			htmlwl += '<i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
-			if ( !G.hostapd ) {
-				htmlwl += val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr></li>';
-			} else {
-				htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
-			}
-		}
-		if ( G.listwlannc ) {
-			G.listwlannc.forEach( function( list ) {
-				var val = list;
-				htmlwl += '<li class="wlan0" data-ip="" data-dhcp="'+ val.dhcp +'" ';
-				htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
-				htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
-				htmlwl += '<i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ val.ssid +'</li>';
-			} );
-		}
-		if ( G.activebt ) {
-			var active = $( '#listbt grn' ).length > 0;
-			$( '#headbt' )
-				.toggleClass( 'noline', htmlbt !== '' )
-				.toggleClass( 'status', active );
-			$( '#headbt' ).data( 'status', active ? 'bt' : '' );
-			$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
-			$( '#divbt' ).removeClass( 'hide' );
-		} else {
-			$( '#divbt' ).addClass( 'hide' );
-		}
-		if ( G.activeeth ) {
-			$( '#listlan' ).html( htmllan );
-			$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
-			$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
-			$( '#divlan' ).removeClass( 'hide' );
-		} else {
-			$( '#divlan' ).addClass( 'hide' );
-		}
-		if ( G.activewlan ) {
-			$( '#listwl' ).html( htmlwl );
-			$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
-			$( '#divwl' ).removeClass( 'hide' );
-		} else {
-			$( '#divwl' ).addClass( 'hide' );
-		}
-		$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
-		if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
-		
-		renderQR();
-		bannerHide();
-		[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
-			codeToggle( id, 'status' );
+			htmlwl += '<i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ val.ssid +'</li>';
 		} );
-		showContent();
+	}
+	if ( G.activebt ) {
+		var active = $( '#listbt grn' ).length > 0;
+		$( '#headbt' )
+			.toggleClass( 'noline', htmlbt !== '' )
+			.toggleClass( 'status', active );
+		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
+		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
+		$( '#divbt' ).removeClass( 'hide' );
+	} else {
+		$( '#divbt' ).addClass( 'hide' );
+	}
+	if ( G.activeeth ) {
+		$( '#listlan' ).html( htmllan );
+		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
+		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
+		$( '#divlan' ).removeClass( 'hide' );
+	} else {
+		$( '#divlan' ).addClass( 'hide' );
+	}
+	if ( G.activewlan ) {
+		$( '#listwl' ).html( htmlwl );
+		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+		$( '#divwl' ).removeClass( 'hide' );
+	} else {
+		$( '#divwl' ).addClass( 'hide' );
+	}
+	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
+	if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
+	
+	renderQR();
+	bannerHide();
+	[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
+		codeToggle( id, 'status' );
 	} );
+	showContent();
 }
 function qr( msg ) {
 	return new QRCode( {
@@ -315,7 +316,9 @@ refreshData = function() {
 	} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
 		btScan();
 	} else {
-		nicsStatus();
+		bash( '/srv/http/bash/networks-data.sh', function( list ) {
+			renderPage( list );
+		} );
 	}
 	resetLocal();
 }

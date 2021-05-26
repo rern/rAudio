@@ -88,7 +88,11 @@ $( '#infoOverlay' ).keydown( function( e ) {
 	
 	var key = e.key;
 	if ( key == 'Enter' && !$( 'textarea' ).is( ':focus' ) ) {
-		$( '.infobtn.active' ).click();
+		if ( $( '.infobtn.active' ).length ) {
+			$( '.infobtn.active' ).click();
+		} else {
+			$( '#infoOk' ).click();
+		}
 	} else if ( e.keyCode === 32 ) { // spacebar
 		e.preventDefault();
 		$( '#infoContent input:checkbox.active' ).click();
