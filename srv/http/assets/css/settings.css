@@ -119,7 +119,7 @@
 	width: 150px;
 	padding: 0;
 	background: var( --cg );
-	box-shadow: 4px 4px 10px #000000;
+	box-shadow: -4px 4px 10px #000000;
 	z-index: 11;
 }
 .menu a {
