@@ -213,7 +213,9 @@ $( document ).keydown( function( e ) {
 				if ( !$div.length ) $div = $( '.lib-mode:not( .hide ):eq( 0 )' );
 				$div.addClass( 'updn' );
 			} else if ( key === 'Enter' ) {
-				$( '.lib-mode.updn .mode' ).click();
+				$( '.lib-mode.updn .mode' )
+					.trigger( 'click' )
+					.trigger( 'tap' );
 			}
 			return
 		}
