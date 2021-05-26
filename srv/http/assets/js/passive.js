@@ -274,7 +274,7 @@ function psDisplay( data ) {
 			} else {
 				setTrackCoverart();
 			}
-		} else if ( $( '#lib-list .coverart' ).length && G.albumbyartist !== G.display.albumbyartist ) {
+		} else if ( G.albumlist && G.albumbyartist !== G.display.albumbyartist ) {
 			G.query = [];
 			$( '#mode-album' ).click();
 		}

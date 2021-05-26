@@ -987,7 +987,7 @@ function renderLibraryList( data ) {
 		}
 		$( '#lib-list' ).removeClass( 'hide' );
 		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
-		if ( G.iactive && $( '#lib-list .coverart' ).length ) {
+		if ( G.iactive && G.albumlist ) {
 			$( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			delete G.iactive
 		}
@@ -1003,7 +1003,7 @@ function renderLibraryList( data ) {
 		$( '#lib-list li:eq( 0 )' ).tap();
 		colorSet();
 	}
-	if ( $( '#lib-list .coverart' ).length ) return
+	if ( G.albumlist ) return
 	
 	if ( G.mode === 'album' ) {
 		$( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
