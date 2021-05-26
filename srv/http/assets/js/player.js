@@ -139,12 +139,12 @@ $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
 	bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
 		info( {
-			  icon       : 'volume'
-			, title      : 'Mixer Device Volume'
-			, message    : device.hwmixer
-			, rangevalue : level
-			, footer     : ( novolume ? '<br>( Control: None / 0dB )' : '' )
-			, postshow   : function() {
+			  icon          : 'volume'
+			, title         : 'Mixer Device Volume'
+			, message       : device.hwmixer
+			, rangevalue    : level
+			, footer        : ( novolume ? '<br>( Control: None / 0dB )' : '' )
+			, postshow      : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
@@ -157,7 +157,11 @@ $( '#setting-hwmixer' ).click( function() {
 					} );
 				}
 			}
-			, nobutton   : 1
+			, buttonnoreset : 1
+			, oklabel       : novolume ? '' : '<i class="fa fa-undo"></i>0dB'
+			, ok            : novolume ? '' : function() {
+				bash( [ 'volume0db', device.hwmixer ] );
+			}
 		} );
 	}, 'json' );
 } );

@@ -292,5 +292,10 @@ soxrset )
 " /etc/mpd.conf
 	restartMPD
 	;;
-
+volume0db )
+	amixer sset "${args[1]}" 0dB
+	level=$( /srv/http/bash/cmd.sh volumeget )
+	pushstream volume '{"val":'$level'}'
+	;;
+	
 esac
