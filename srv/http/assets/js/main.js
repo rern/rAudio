@@ -319,11 +319,11 @@ var chkplayback = {
 	, volume       : 'Volume'
 	, radioelapsed : 'WebRadio time'
 	, buttons      : 'Buttons'
+	, novu         : ''
 }
 $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
 	var keys = Object.keys( chkplayback );
-	keys.push( 'novu' );
 	var values = [];
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );

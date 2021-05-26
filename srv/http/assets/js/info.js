@@ -556,7 +556,7 @@ function checkChanged() {
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
 }
-function infoVal( keys ) {
+function infoVal() {
 	var values = [];
 	var $this, type, name, val, n;
 	var i = 0;
@@ -574,13 +574,7 @@ function infoVal( keys ) {
 		}
 		values.push( val );
 	} );
-	if ( keys ) {
-		var json = {}
-		keys.forEach( function( k, i ) {
-			json[ k ] = values[ i ];
-		} );
-		return json
-	} else if ( values.length > 1 ) {
+	if ( values.length > 1 ) {
 		return values
 	} else {
 		return values[ 0 ]
