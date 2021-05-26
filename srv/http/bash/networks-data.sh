@@ -63,10 +63,19 @@ if [[ -n $notconnected ]]; then
 		hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
 		password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
 		security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
+		if [[ $dhcp == static ]]; then
+			gateway=$( echo "$netctl" | grep ^Gateway | cut -d= -f2 )
+			ip=$( echo "$netctl" | grep ^Address | cut -d= -f2 | cut -d/ -f1 )
+		else
+			gateway=
+			ip=
+		fi
 		
 		listwlannc+=',{
   "dhcp"     : "'$dhcp'"
+, "gateway"  : "'$gateway'"
 , "hidden"   : '$hidden'
+, "ip"       : "'$ip'"
 , "password" : "'$password'"
 , "security" : "'$security'"
 , "ssid"     : "'$ssid'"
