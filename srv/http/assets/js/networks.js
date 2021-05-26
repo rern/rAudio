@@ -192,8 +192,8 @@ renderPage = function( list ) {
 	}
 	if ( G.listwlan ) {
 		var val = G.listwlan;
-		htmlwl += '<li class="wlan0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
-		htmlwl += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'" ';
+		htmlwl += '<li class="wlan0" data-dhcp="'+ val.dhcp +'" data-hostname="'+ val.hostname +'" ';
+		htmlwl += 'data-ip="'+ val.ip +'" data-gateway="'+ val.gateway +'" ';
 		htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
 		htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
 		var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
@@ -207,7 +207,8 @@ renderPage = function( list ) {
 	if ( G.listwlannc ) {
 		G.listwlannc.forEach( function( list ) {
 			var val = list;
-			htmlwl += '<li class="wlan0" data-ip="" data-dhcp="'+ val.dhcp +'" ';
+			htmlwl += '<li class="wlan0" data-dhcp="'+ val.dhcp +'" data-offline="1" ';
+			htmlwl += 'data-ip="'+ val.ip +'" data-gateway="'+ val.gateway +'" ';
 			htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
 			htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
 			htmlwl += '<i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ val.ssid +'</li>';
@@ -387,7 +388,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
 	} else {
-		var connected = G.li.data( 'ip' ) !== '';
+		var connected = G.li.data( 'offline' ) != 1;
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', !connected );
