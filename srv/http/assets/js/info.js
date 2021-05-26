@@ -184,11 +184,11 @@ function infoReset() {
 	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
 	$( '#infoContent' ).find( 'td' ).off( 'click' );
 	
-	$( '#infoFile' ).remove();
+	$( '#infoFile, #infoFileLabel, .extrabtn' ).remove();
 	$( '.infobtn' )
 		.removeClass( 'active disabled' )
 		.addClass( 'hide' )
-		.css( 'background', '' )
+		.css( 'background-color', '' )
 		.off( 'click' );
 	
 	if ( O.infoscroll ) {
@@ -268,10 +268,9 @@ function info( json ) {
 			var iL = button.length;
 			for ( i = 0; i < iL; i++ ) {
 				var iid = i || '';
-				$( '#infoOk' ).before( '<a id="infoButton'+ iid +'" class="infobtn extrabtn infobtn-default">'+ buttonlabel[ i ] +'</a>' );
-				$( '#infoButton'+ iid )
-									.css( 'background-color', buttoncolor[ i ] || '' )
-									.click( button[ i ] );
+				var color = buttoncolor[ i ] ? ' style="background-color:'+ buttoncolor[ i ] +'"' : '';
+				$( '#infoOk' ).before( '<a id="infoButton'+ iid +'"'+ color +' class="infobtn extrabtn infobtn-default">'+ buttonlabel[ i ] +'</a>' );
+				$( '#infoButton'+ iid ).click( button[ i ] );
 			}
 		}
 		if ( 'buttonnoreset' in O && O.buttonnoreset ) {
