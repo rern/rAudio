@@ -413,7 +413,7 @@ function webRadioCoverart() {
 					? G.status.coverartradio || G.coverdefault
 					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
 	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
-	infojson.message += '<p class="infoimgname">'+ name +'</p>';
+	infojson.message += '<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>';
 	info( infojson );
 }
 function webRadioDelete() {
