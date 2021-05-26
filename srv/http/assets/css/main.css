@@ -271,10 +271,6 @@ whl, grl,
 }
 .bgr { background-color: var( --cg ) !important; }
 .bgr60 { background-color: var( --cg60 ) !important; }
-.px175 {
-	display: inline-block;
-	width: 175px;
-}
 
 #progress wh {
 	width: 25px;
@@ -282,10 +278,6 @@ whl, grl,
 	text-align: center;
 	font-size: 22px;
 	color: var( --cg60 );
-}
-.infocol {
-	display: inline-block;
-	width: 160px;
 }
 .infobookmark {
 	float: left;

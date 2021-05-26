@@ -1382,7 +1382,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
-			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Reset'
+			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 			, buttoncolor : !thumbnail ? '' : orange
 			, button      : !thumbnail ? '' : function() {
 				bash( [ 'bookmarkreset', path ], function() {

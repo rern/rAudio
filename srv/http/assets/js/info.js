@@ -75,80 +75,71 @@ function heredoc( fn ) {
 var containerhtml = heredoc( function() { /*
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
-		<div id="infoTopBg">
-			<div id="infoTop">
-				<i id="infoIcon"></i><a id="infoTitle"></a>
-			</div>
-			<i id="infoX" class="fa fa-times hide"></i>
-		</div>
-		<div id="infoContent">
-		</div>
-		<div id="infoButtons">
-			<a id="infoCancel" class="infobtn infobtn-default"></a>
-			<a id="infoOk" class="infobtn infobtn-primary"></a>
-		</div>
+		<div id="infoTopBg"><div id="infoTop"></div><i id="infoX" class="fa fa-times hide"></i></div>
+		<div id="infoContent"></div>
+		<div id="infoButtons"></div>
 	</div>
 </div>
 */ } );
 $( 'body' ).prepend( containerhtml );
 
 $( '#infoOverlay' ).keydown( function( e ) {
-	var key = e.key;
+	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
-	if ( $( '#infoOverlay' ).is( ':visible' ) ) {
-		if ( key == 'Enter' && !$( '#infoOk' ).hasClass( 'disabled' ) && !$( 'textarea' ).is( ':focus' ) ) {
-			$( '#infoOk' ).click();
-		} else if ( e.keyCode === 32 && $( '.infocheckbox input.active' ).length ) {
-			e.preventDefault();
-			$( '.infocheckbox input.active' ).click();
-		} else if ( key === 'Escape' ) {
-			$( '#infoCancel' ).click();
-		} else if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
-			e.preventDefault();
-			var $el = $( '.infocheckbox input:not(:disabled)' );
-			if ( $el.length === 1 ) return
-			
-			var $elactive = $( '.infocheckbox input.active' );
-			if ( !$elactive.length ) {
-				$el.eq( 0 ).addClass( 'active' );
-			} else {
-				var ellast = $el.length - 1;
-				var elindex;
-				$.each( $el, function( i, el ) {
-					if ( $( el ).hasClass( 'active' ) ) {
-						elindex = i;
-						return false
-					}
-				} );
-				if ( key === 'ArrowUp' ) {
-					var i = elindex !== 0 ? elindex - 1 : ellast;
-					var $next = $el.eq( i );
-				} else {
-					var i = elindex !== ellast ? elindex + 1 : 0;
-					var $next = $el.eq( i );
+	var key = e.key;
+	if ( key == 'Enter' && !$( 'textarea' ).is( ':focus' ) ) {
+		$( '.infobtn.active' ).click();
+	} else if ( e.keyCode === 32 ) { // spacebar
+		e.preventDefault();
+		$( '#infoContent input:checkbox.active' ).click();
+		$( '#infoContent input:radio.active' ).click();
+	} else if ( key === 'Escape' ) {
+		$( '#infoCancel' ).click();
+	} else if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
+		e.preventDefault();
+		var $el = $( '#infoContent input' );
+		if ( $el.length === 1 ) return
+		
+		var $elactive = $( '#infoContent input.active' );
+		if ( !$elactive.length ) {
+			$el.eq( 0 ).addClass( 'active' );
+		} else {
+			var ellast = $el.length - 1;
+			var elindex;
+			$.each( $el, function( i, el ) {
+				if ( $( el ).hasClass( 'active' ) ) {
+					elindex = i;
+					return false
 				}
-				$elactive.removeClass( 'active' );
-				$next.addClass( 'active' );
+			} );
+			if ( key === 'ArrowUp' ) {
+				var i = elindex !== 0 ? elindex - 1 : ellast;
+				var $next = $el.eq( i );
+			} else {
+				var i = elindex !== ellast ? elindex + 1 : 0;
+				var $next = $el.eq( i );
 			}
-		} else if ( [ 'ArrowLeft', 'ArrowRight' ].indexOf( key ) !== -1 ) {
-			if ( $( '#infoContent input:focus' ).length ) return
-			
-			var $btn = $( '.infobtn:not( .hide )' );
-			if ( $btn.length === 1 ) return
-			
-			var $btnactive = $( '.infobtn.active' );
-			if ( !$btnactive.length ) {
-				$btn.eq( 0 ).addClass( 'active' );
+			$elactive.removeClass( 'active' );
+			$next.addClass( 'active' );
+		}
+	} else if ( [ 'ArrowLeft', 'ArrowRight' ].indexOf( key ) !== -1 ) {
+		if ( $( '#infoContent input:focus' ).length ) return
+		
+		var $btn = $( '.infobtn:not( .hide )' );
+		if ( $btn.length === 1 ) return
+		
+		var $btnactive = $( '.infobtn.active' );
+		if ( !$btnactive.length ) {
+			$btn.eq( 0 ).addClass( 'active' );
+		} else {
+			if ( key === 'ArrowLeft' ) {
+				var $next = $btnactive.prev( '.infobtn:not( .hide )' );
 			} else {
-				if ( key === 'ArrowLeft' ) {
-					var $next = $btnactive.prev( '.infobtn:not( .hide )' );
-				} else {
-					var $next = $btnactive.next( '.infobtn:not( .hide )' );
-				}
-				if ( $next.length ) {
-					$btnactive.removeClass( 'active' );
-					$next.eq( 0 ).addClass( 'active' );
-				}
+				var $next = $btnactive.next( '.infobtn:not( .hide )' );
+			}
+			if ( $next.length ) {
+				$btnactive.removeClass( 'active' );
+				$next.eq( 0 ).addClass( 'active' );
 			}
 		}
 	}
@@ -184,12 +175,12 @@ function infoReset() {
 	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
 	$( '#infoContent' ).find( 'td' ).off( 'click' );
 	
-	$( '#infoFile, #infoFileLabel, .extrabtn' ).remove();
 	$( '.infobtn' )
 		.removeClass( 'active disabled' )
 		.addClass( 'hide' )
 		.css( 'background-color', '' )
 		.off( 'click' );
+	$( '#infoFile, #infoFileLabel, .infobtn' ).remove();
 	
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
@@ -247,17 +238,7 @@ function info( json ) {
 	
 	// buttons
 	if ( !( 'nobutton' in O ) || !O.nobutton ) {
-		$( '#infoOk' )
-			.html( 'oklabel' in O ? O.oklabel : 'OK' )
-			.css( 'background-color', O.okcolor || '' )
-			.removeClass( 'hide' );
-			if ( typeof O.ok === 'function' ) $( '#infoOk' ).click( O.ok );
-		if ( 'cancel' in O && O.cancel ) {
-			$( '#infoCancel' )
-				.html( 'cancellabel' in O ? O.cancellabel : 'Cancel' )
-				.css( 'background-color', 'cancelcolor' in O ? O.cancelcolor : '' );
-			if ( 'cancelbutton' in O || 'cancellabel' in O ) $( '#infoCancel' ).removeClass( 'hide' );
-		}
+		var htmlbutton = ''
 		if ( 'button' in O && O.button ) {
 			var button = 'button' in O ? O.button : '';
 			var buttonlabel = 'buttonlabel' in O ? O.buttonlabel : '';
@@ -265,18 +246,40 @@ function info( json ) {
 			if ( typeof button !== 'object' ) button = [ button ];
 			if ( typeof buttonlabel !== 'object' ) buttonlabel = [ buttonlabel ];
 			if ( typeof buttoncolor !== 'object' ) buttoncolor = [ buttoncolor ];
-			var iL = button.length;
+			var iL = buttonlabel.length;
 			for ( i = 0; i < iL; i++ ) {
 				var iid = i || '';
 				var color = buttoncolor[ i ] ? ' style="background-color:'+ buttoncolor[ i ] +'"' : '';
-				$( '#infoOk' ).before( '<a id="infoButton'+ iid +'"'+ color +' class="infobtn extrabtn infobtn-default">'+ buttonlabel[ i ] +'</a>' );
-				$( '#infoButton'+ iid ).click( button[ i ] );
+				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-default">'+ buttonlabel[ i ] +'</a>';
 			}
 		}
-		if ( 'buttonnoreset' in O && O.buttonnoreset ) {
-			$( '#infoOk, #infoCancel' ).click( infoReset );
-		} else {
-			$( '.infobtn' ).click( infoReset );
+		if ( 'cancel' in O && O.cancel ) {
+			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
+			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
+		}
+		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
+		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+		$( '#infoButtons' ).html( htmlbutton );
+		if ( 'button' in O && O.button ) {
+			if ( typeof button !== 'object' ) button = [ button ];
+			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
+				var fn = button[ $( this ).index( '.extrabtn' ) ];
+				fn();
+				if ( !noreset ) infoReset();
+			} );
+		}
+		var noreset = 'buttonnoreset' in O;
+		if ( typeof O.cancel === 'function' ) {
+			$( '#infoCancel' ).click( function() {
+				O.cancel();
+				if ( !noreset ) infoReset();
+			} );
+		}
+		if ( typeof O.ok === 'function' ) {
+			$( '#infoOk' ).click( function() {
+				O.ok();
+				if ( !noreset ) infoReset();
+			} );
 		}
 	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
@@ -437,12 +440,17 @@ function info( json ) {
 		if ( 'preshow' in O && O.preshow ) O.preshow();
 		// apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
+		// set button width
 		if ( !( 'buttonfit' in O ) ) {
 			var widest = 0;
-			var w;
+			var $this, w, btnhide;
 			$.each( $( '#infoButtons a' ), function() {
-				w = $( this ).outerWidth();
+				$this = $( this )
+				btnhide = $this.hasClass( 'hide' );
+				$this.removeClass( 'hide' );
+				w = $this.outerWidth();
 				if ( w > widest ) widest = w;
+				$this.toggleClass( 'hide', btnhide );
 			} );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}

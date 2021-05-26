@@ -85,7 +85,7 @@ hr {
 	height: 100%;
 }
 #infoOverlay .fa {
-	vertical-align: -2px;
+	vertical-align: -1px;
 }
 #infoButtons .fa {
 	font-size: 18px;
@@ -499,6 +499,7 @@ px100 { width: 100px }
 	input[type=checkbox].active,
 	input[type=radio].active,
 	.infobtn.active {
-		border: 2px solid var( --cw ) !important;
+		box-shadow: 0 0 2px 2px var( --cg60 );
+
 	}
 }
