@@ -372,12 +372,13 @@ $( '#wlscan' ).click( function() {
 $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	G.li = $( this );
 	G.list = G.li.parent().prop( 'id' );
+	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
 	var $menu = $( '#menu' );
 	if ( !$menu.hasClass( 'hide' ) ) {
 		$menu.addClass( 'hide' );
-		return
+		if ( active ) return
 	}
 	
 	if ( G.list === 'listbt' ) {
