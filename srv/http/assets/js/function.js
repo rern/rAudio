@@ -136,22 +136,6 @@ function coverartChange() {
 		var imagefile = '/mnt/MPD/'+ path +'/cover' // no ext
 		var type = 'coverart';
 	}
-	var json = {
-		  icon        : 'coverart'
-		, title       : 'Change Album CoverArt'
-		, message     : '<img class="imgold">'
-					   +'<p class="infoimgname">'+ album
-					   +'<br>'+ artist +'</p>'
-		, filelabel   : '<i class="fa fa-folder-open"></i>File'
-		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : 'image/*'
-		, preshow     : function() { // fix direct replace src
-			$( '.imgold' ).attr( 'src', src );
-		}
-		, ok          : function() {
-			imageReplace( imagefile, type );
-		}
-	}
 	if ( G.playback ) {
 		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
@@ -161,15 +145,25 @@ function coverartChange() {
 		var lionlinefetched = $( '.licover .cover-save' ).length;
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
 	}
-	if ( ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
-		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
-	) {
-		json.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
-		json.buttoncolor = red;
-		json.button      = function() {
+	var coverartlocal = ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
+						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault );
+	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
+	info( {
+		  icon        : 'coverart'
+		, title       : 'Change Album CoverArt'
+		, message     : '<img class="imgold">'
+					   +'<p class="infoimgname">'+ album
+					   +'<br>'+ artist +'</p>'
+		, footer      : footer
+		, filelabel   : '<i class="fa fa-folder-open"></i>File'
+		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filetype    : 'image/*'
+		, buttonlabel : !coverartlocal ? '' : '<i class="fa fa-minus-circle"></i>Remove'
+		, buttoncolor : !coverartlocal ? '' : red
+		, button      : !coverartlocal ? '' : function() {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
-				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
+				G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
 					coverartDefault();
@@ -178,9 +172,13 @@ function coverartChange() {
 				}
 			} );
 		}
-	}
-	if ( ( G.playback && pbembedded ) || ( G.library && liembedded ) ) json.footer = '<i class="fa fa-coverart"></i>&ensp;embedded';
-	info( json );
+		, preshow     : function() { // fix direct replace src
+			$( '.imgold' ).attr( 'src', src );
+		}
+		, ok          : function() {
+			imageReplace( imagefile, type );
+		}
+	} );
 }
 function coverartDefault() {
 	if ( !G.status.webradio || G.display.novu ) {
@@ -192,7 +190,7 @@ function coverartDefault() {
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
-	$( '#divcover .covedit' ).remove();
+	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 }
 function coverartSave() {
@@ -542,7 +540,7 @@ function hideGuide() {
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '.covedit' ).css( 'z-index', '' );
+		$( '.coveredit' ).css( 'z-index', '' );
 	}
 }
 function HMS2Second( HMS ) {
@@ -575,7 +573,7 @@ function imageReplace( imagefile, type ) {
 		, processData : false  // no - process the data
 		, contentType : false  // no - contentType
 		, success     : function() {
-			G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
+			G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 		}
 	} );
@@ -1192,7 +1190,7 @@ function renderPlaybackBlank() {
 	$( '#artist, #song, #album, #progress, #elapsed, #total' ).empty();
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
-	$( '#divcover .covedit' ).remove();
+	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 	bash( "ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}'", function( ip ) {
 		if ( ip ) {
@@ -1562,7 +1560,7 @@ function setTrackCoverart() {
 	$( '#liimg' ).on( 'load', function() { // not exist on initial page load
 		$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
 		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
-			$( '#liimg' ).after( '<i class="covedit fa fa-save cover-save"></i>' );
+			$( '#liimg' ).after( '<i class="coveredit fa fa-save cover-save"></i>' );
 		}
 	} );
 	if ( !G.display.fixedcover ) {

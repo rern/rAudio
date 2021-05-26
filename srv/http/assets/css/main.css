@@ -1601,16 +1601,7 @@ i.map.disabled, .map.disabled i {
 .bk-cover {
 	bottom: 0;
 }
-.fa-coverart {
-	position: absolute;
-	width: 40px;
-	height: 40px;
-	bottom: 0;
-	right: 0;
-	font-size: 28px !important;
-	line-height: 40px;
-}
-.covedit {
+.coveredit {
 	z-index: 17;
 }
 .cover-save {
@@ -1628,7 +1619,17 @@ i.map.disabled, .map.disabled i {
 	background: var( --cw );
 	box-shadow: 1px 1px 2px #000000;
 }
+.coveredit.fa-coverart {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	bottom: 0;
+	right: 0;
+	font-size: 28px !important;
+	line-height: 40px;
+}
 .bkedit.fa-coverart {
+	position: absolute;
 	height: 35px;
 	font-size: 24px !important;
 }

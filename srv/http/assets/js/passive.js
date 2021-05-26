@@ -170,7 +170,7 @@ function psCoverart( data ) {
 					$( '#coverart' )
 						.attr( 'src', url )
 						.removeClass( 'hide' );
-					$( '#divcover .covedit' ).remove();
+					$( '#divcover .coveredit' ).remove();
 					$( '#coverart' ).css( 'opacity', '' );
 				}
 			} else if ( G.library ) {
@@ -180,7 +180,7 @@ function psCoverart( data ) {
 					currentname = name.replace( /[ "`?/#&'"']/g, '' );
 					if ( coverpath === currentpath || covername === currentname ) {
 						$( '#liimg' ).attr( 'src', url );
-						$( '.licover .covedit' ).remove();
+						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );
 					}
 				} else {

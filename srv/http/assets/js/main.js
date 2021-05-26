@@ -114,9 +114,9 @@ $( '#coverart' ).on( 'load', function() {
 		&& !G.status.webradio
 		&& G.status.player !== 'bluetooth'
 	) {
-		$( '#divcover' ).append( '<i class="covedit fa fa-save cover-save"></i>' );
+		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
 	} else {
-		$( '#divcover .covedit' ).remove();
+		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 	}
 	loader( 'hide' );
@@ -573,7 +573,7 @@ $( '#tab-playlist' ).click( function() {
 $( '#page-playback' ).tap( function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
-	if ( $( '#divcover .covedit' ).length ) {
+	if ( $( '#divcover .coveredit' ).length ) {
 		if ( !$( e.target ).hasClass( 'fa-coverart' ) ) {
 			$( '#divcover .fa-coverart' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
@@ -843,14 +843,14 @@ $( '#coverT, #timeT' ).tap( function() {
 			$( '#volume-bar' ).removeClass( 'hide' );
 		}
 	}
-	$( '.covedit' ).css( 'z-index', 15 );
+	$( '.coveredit' ).css( 'z-index', 15 );
 } );
 $( '.covermap' ).taphold( function( e ) {
 	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<i class="covedit fa fa-coverart"></i>' );
+		.after( '<i class="coveredit fa fa-coverart"></i>' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -961,7 +961,7 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'click', '.covedit', function( e ) {
+$( '#divcover' ).on( 'click', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
@@ -1375,28 +1375,26 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		//    - gif    > [file]   - no canvas
 		//    - others > [base64] - data:image/jpeg;base64,...
 		var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
-		var json =  {
+		info( {
 			  icon        : 'bookmark'
 			, title       : 'Change Bookmark Thumbnail'
 			, message     : icon
 			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
-			, ok          : function() {
-				imageReplace( imagefile, 'bookmark' );
-			}
-		}
-		if ( thumbnail ) {
-			json.buttonlabel = '<i class="fa fa-undo"></i>Reset';
-			json.button      = function() {
+			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Reset'
+			, buttoncolor : !thumbnail ? '' : orange
+			, button      : !thumbnail ? '' : function() {
 				bash( [ 'bookmarkreset', path ], function() {
 					var label = path.split( '/' ).pop();
 					$this.find( 'img' ).remove();
 					$this.find( '.lipath' ).after( '<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'+ label +'</span></div>' );
 				} );
 			}
-		}
-		info( json );
+			, ok          : function() {
+				imageReplace( imagefile, 'bookmark' );
+			}
+		} );
 	} else if ( $target.hasClass( 'bk-remove' ) ) {
 		var $img = $this.find( 'img' );
 		if ( $img.length ) {
@@ -1504,7 +1502,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
 } );
-$( '#lib-list' ).on( 'tap', '.covedit',  function() {
+$( '#lib-list' ).on( 'tap', '.coveredit',  function() {
 	var $this = $( this );
 	var $img = $this.siblings( 'img' );
 	var $thisli = $this.parent().parent();
@@ -1525,7 +1523,7 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<i class="covedit fa fa-coverart"></i>' );
+		.after( '<i class="coveredit fa fa-coverart"></i>' );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );

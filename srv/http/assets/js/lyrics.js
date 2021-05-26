@@ -39,13 +39,21 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			return
 		}
 		
-		var infojson = {
+		var noparen = title.slice( -1 ) !== ')';
+		var titlenoparen = title.replace( / $| \(.*$/, '' );
+		info( {
 			  icon        : 'lyrics'
 			, title       : 'Bio / Lyrics'
 			, width       : 500
 			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
-			, values      : [ artist, title ]
+			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
 			, boxwidth    : 'max'
+			, checkbox    : noparen ? '' : [ 'Title with parentheses content' ]
+			, postshow    : noparen ? '' : function() {
+				$( '#infoContent input' ).change( function() {
+					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+				} );
+			}
 			, buttonlabel : '<i class="fa fa-bio wh"></i>Bio'
 			, button      : function() {
 				if ( $( '#bio legend' ).text() != G.status.Artist ) {
@@ -63,18 +71,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 				lyricsTitle = values[ 1 ];
 				getLyrics();
 			}
-		}
-		if ( title.slice( -1 ) === ')' ) {
-			querytitle = title.replace( / $| \(.*$/, '' );
-			infojson.values   = [ artist, querytitle ];
-			infojson.checkbox = { 1: 'Title with parentheses content' }
-			infojson.postshow  = function() {
-				$( '#infoContent input' ).change( function() {
-					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
-				} );
-			}
-		}
-		info( infojson );
+		} );
 	} );
 } );
 $( '#lyricstextarea' ).on( 'input', function() {
