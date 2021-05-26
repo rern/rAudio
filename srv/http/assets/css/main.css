@@ -1871,6 +1871,9 @@ input[type=text] {
 	padding-top: 3px;
 	line-height: 15px;
 }
+.coverart.active .coverart2 {
+	color: var( --cga ) !important;
+}
 .licover {
 	position: fixed;
 	width: 100%;

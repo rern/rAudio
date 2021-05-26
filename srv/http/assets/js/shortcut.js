@@ -220,6 +220,36 @@ $( document ).keydown( function( e ) {
 			return
 		}
 		
+		if ( G.library && $( '#lib-list .coverart' ).length ) { // album
+			if ( !$( '#lib-list .coverart.active' ).length ) {
+				$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
+				return
+			}
+			
+			var $active = $( '#lib-list .coverart.active' );
+			if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
+				if ( key === 'ArrowLeft' && $active.index() === 0 ) return
+				if ( key === 'ArrowRight' && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
+				
+				var $next = key === 'ArrowRight' ? $active.next() : $active.prev();
+				$active.removeClass( 'active' )
+				$next.addClass( 'active' );
+				var eH = $next.height();
+				var top = $next.offset().top;
+				var updn = scrollAlbum( $next, eH );
+				if ( updn === 'down' ) {
+					var scroll = top - ( G.bars ? 80 : 40 );
+				} else if ( updn === 'up' ) {
+					var scroll = top - eH;
+				}
+				$( 'html, body' ).scrollTop( scroll );
+			} else if ( key === 'Enter' ) {
+				G.iactive = $( '#lib-list .coverart.active' ).index();
+				$active.trigger( 'tap' );
+			}
+			return
+		}
+		
 		if ( key === 'ArrowLeft' ) { // back button
 			$( '#button-lib-back' ).click();
 			return
@@ -269,6 +299,15 @@ $( document ).keydown( function( e ) {
 		}
 	}
 } );
+function scrollAlbum( $el, eH ) {
+	var rect = $el[ 0 ].getBoundingClientRect();
+	var wH = $( window ).height();
+	if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
+		return 'down'
+	} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
+		return 'up'
+	}
+}
 function scrollUpDown( $list, key ) {
 	var $li = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
