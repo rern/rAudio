@@ -227,10 +227,6 @@ hr {
 	overflow: hidden;
 	color: var( --cg60 );
 }
-.infofooter .fa-coverart {
-	position: static;
-	width: auto;
-}
 .infomessage .fa {
 	width: 25px;
 	vertical-align: 0;
