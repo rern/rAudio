@@ -291,7 +291,7 @@ $( '#tab-library, #button-library' ).click( function() {
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
-$( '#logo, #button-library, #button-playlist' ).taphold( function() {
+$( '#logo, #reload, #button-library, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#logo' ).click( function() {

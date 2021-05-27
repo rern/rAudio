@@ -435,6 +435,12 @@ i.map.disabled, .map.disabled i {
 	right: 50px;
 }
 /* ---------------------- bars ----------------------*/
+#reload {
+	position: fixed;
+	width: 40px;
+	height: 40px;
+	z-index: 104;
+}
 #bar-top,
 #bar-bottom {
 	position: fixed;

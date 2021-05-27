@@ -191,6 +191,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 <div id="loader" class="splash">
 	<?=$logo?>
 </div>
+<div id="reload"></div>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
