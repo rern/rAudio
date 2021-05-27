@@ -259,7 +259,6 @@ hr {
 }
 #infoContent .imgicon {
 	width: 30px;
-	margin-left: 10px;
 	vertical-align: -10px;
 }
 #infoContent textarea {
@@ -316,7 +315,10 @@ hr {
 	background-color: var( --cg );
 }
 #infoOverlay input[type=radio] {
+	width: 26px;
+	height: 26px;
 	border-radius: 50%;
+	margin: 2px 7px 2px 0;
 }
 #infoOverlay input:checked {
 	background-color: var( --cm );

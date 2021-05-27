@@ -585,10 +585,12 @@ var chklibrary = {
 	, composer       : '<i class="fa fa-composer"></i>Composer'
 	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
 	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
-	, bl             : ''
 	, date           : '<i class="fa fa-date"></i>Date'
-	, count          : 'Count'
 	, genre          : '<i class="fa fa-genre"></i>Genre'
+	, '-'            : ''
+	, '-1'           : '<hr>'
+	, '-2'           : '<hr>'
+	, count          : 'Count'
 	, label          : 'Label'
 }
 var chklibrary2 = {
@@ -605,7 +607,7 @@ function infoLibrary( page2 ) {
 	var checkbox = Object.values( !page2 ? chklibrary : chklibrary2 );
 	var keys = Object.keys( !page2 ? chklibrary : chklibrary2 );
 	keys = keys.filter( function( k ) {
-		return k !== 'bl'
+		return k[ 0 ] !== '-'
 	} );
 	var values = [];
 	keys.forEach( function( k, i ) {
@@ -708,9 +710,10 @@ function infoPlayback() {
 		, message      : 'Show selected items:'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
+		, checkhr      : 1
 		, radio        : {
-			  '<gr>default</gr><img class="imgicon" src="/assets/img/coverart.svg">' : true
-			, '<gr>default</gr><img class="imgicon" src="/assets/img/vu.png">'       : false
+			  '<gr>default</gr>&ensp;<img class="imgicon" src="/assets/img/vu.png">' : false
+			, '<img class="imgicon" src="/assets/img/coverart.svg">'                 : true
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]

@@ -368,7 +368,11 @@ function info( json ) {
 			var i = 0;
 			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
-				line = '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
+				if ( lbl === '' || lbl === '<hr>' ) {
+					line = lbl;
+				} else {
+					line = '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
+				}
 				if ( !O.radiocolumn ) {
 					htmls.radio += '<tr><td class="chk">'+ line +'</td></tr>';
 				} else {
@@ -381,14 +385,15 @@ function info( json ) {
 					}
 				}
 			} );
+			if ( 'radiohr' in O ) htmls.checkbox += O.radiocolumn ? '<tr><td colspan="2"><hr></td></tr>' : '<hr>';
 		}
 		if ( 'checkbox' in O && O.checkbox ) {
 			var line, colspan;
 			var i = 0;
 			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
-				if ( lbl === '' ) {
-					line = '<td></td>';
+				if ( lbl === '' || lbl === '<hr>' ) {
+					line = lbl;
 				} else {
 					line = '<label><input type="checkbox">'+ lbl +'</label>';
 				}
@@ -404,6 +409,7 @@ function info( json ) {
 					}
 				}
 			} );
+			if ( 'checkhr' in O ) htmls.checkbox += O.checkcolumn ? '<tr><td colspan="2"><hr></td></tr>' : '<hr>';
 		}
 		if ( 'select' in O && O.select ) {
 			htmls.select = '';
