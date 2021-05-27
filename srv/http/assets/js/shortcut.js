@@ -3,6 +3,15 @@ $( document ).keydown( function( e ) {
 	if ( G.local || !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
+	if ( key === 'Home' ) {
+		if ( G.library ) {
+			$( '#tab-library' ).click();
+		} else if ( G.playlist ) {
+			$( '#tab-playlist' ).click();
+		}
+		return
+	}
+	
 	if ( key === '#' || key >= 'a' && key <= 'z' ) { // index bar
 		key = key.toUpperCase();
 		if ( G.library && !$( '#lib-list .index' ).hasClass( 'hide' ) ) {
