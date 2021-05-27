@@ -242,10 +242,10 @@ $( '#displaylibrary, #displaylibrary2' ).click( function() {
 		, title        : page1 ? 'Library Home Display' : 'Library/Playlist Options'
 		, height       : 310
 		, message      : page1 ? '1/2 - Show selected items:' : ''
-		, checkbox     : checkbox
-		, checkcolumn  : page1 ? 1 : ''
 		, arrowright   : page1 ? function() { $( '#displaylibrary2' ).click(); } : ''
 		, arrowleft    : page1 ? '' : function() { $( '#displaylibrary' ).click(); }
+		, checkbox     : checkbox
+		, checkcolumn  : page1 ? 1 : ''
 		, values       : values
 		, checkchanged : 1
 		, postshow     : function() {
@@ -334,13 +334,16 @@ $( '#displayplayback' ).click( function() {
 		, message      : 'Show selected items:'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
+		, radio        : {
+			  '<gr>default</gr><img class="imgicon" src="/assets/img/coverart.svg">' : false
+			, '<gr>default</gr><img class="imgicon" src="/assets/img/vu.png">'       : true
+		}
+		, radiocolumn  : 1
+		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
 		, preshow      : function() {
-			$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
-					+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
-					+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
-			$( '#divnovu' ).toggleClass( 'hide', !G.display.cover );
+			$( '#infoContent tr' ).last().toggleClass( 'hide', !G.display.cover );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
