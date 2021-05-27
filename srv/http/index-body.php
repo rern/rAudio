@@ -222,7 +222,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<i id="guide-bio" class="map guide fa fa-bio"></i>
 	<i id="guide-lyrics" class="map guide fa fa-lyrics"></i>
-	<i id="guide-album" class="map guide fa fa-info-circle"></i>
+	<i id="guide-album" class="map guide fa fa-lastfm"></i>
 	<div id="info">
 		<div id="divartist">
 			<span id="artist"></span>
