@@ -195,8 +195,9 @@ hr {
 	margin: 0 auto;
 }
 #infoContent td {
+	height: 32px;
+	padding: 0;
 	text-align: left;
-	padding: 0 3px;
 	white-space: nowrap;
 }
 #infoContent td:first-child {
@@ -204,6 +205,9 @@ hr {
 }
 #infoContent td.chk {
 	text-align: left !important;
+}
+#infoContent td.chk label {
+	margin-right: 10px;
 }
 #infoContent label i {
 	text-align: center;
@@ -213,14 +217,12 @@ hr {
 	margin-right: 5px;
 }
 #infoContent td:first-child i {
-	font-size: 22px;
+	font-size: 20px;
 	width: 30px;
 	text-align: center;
 }
 .infomessage,
 .infofooter {
-	width: fit-content;
-	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
 	word-wrap: break-word;

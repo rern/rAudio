@@ -468,9 +468,17 @@ function info( json ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width();
 			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - ( allW > 399 ? 50 : 20 ) - labelW;
-			var $boxes = $( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' );
-			$boxes.css( 'width', boxW +'px' );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
+		}
+		if ( $( '#infoContent table' ).length ) {
+			if ( O.contentwidth ) {
+				var tblW = O.contentwidth
+				$( '#infoContent table' ).css( 'width', tblW +'px' );
+			} else {
+				var tblW = $( '#infoContent table' ).width();
+			}
+			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
 		}
 		// get all input fields - omit .selectric-input for select
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
