@@ -252,7 +252,7 @@ function displayBars() {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
-		$( '#page-playback, #lib-mode-list, #button-data' ).addClass ( 'barshidden' );
+		$( '#page-playback, #lib-mode-list' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', 0 );
@@ -261,7 +261,7 @@ function displayBars() {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
-		$( '#page-playback, #lib-mode-list, #button-data' ).removeClass ( 'barshidden' );
+		$( '#page-playback, #lib-mode-list' ).removeClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
@@ -535,7 +535,7 @@ function hideGuide() {
 		G.guide = 0;
 		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !G.bars );
 		$( '.map' ).removeClass( 'mapshow' );
-		$( '#button-data, #bar-bottom' ).removeClass( 'translucent' );
+		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
