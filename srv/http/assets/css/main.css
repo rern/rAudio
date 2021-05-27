@@ -2025,11 +2025,13 @@ input[type=text] {
 #pl-savedlist span.plname {
 	line-height: 48px;
 }
-#lib-list .active,
+#lib-list .active:not(.coverart),
+#lib-list .active .coverart1,
+#lib-list .active .coverart2,
 #pl-list .active,
 #pl-savedlist .active {
 	color: var( --cw );
-	background: var( --cm )
+	background: var( --cm );
 }
 #pl-list .pl-remove {
 	float: right;
