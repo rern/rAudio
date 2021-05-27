@@ -137,7 +137,7 @@ $( '#setting-snapclient' ).click( function() {
 		, title        : 'SnapClient'
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, values       : G.snaplatency || 800
 		, boxwidth     : 100
 		, checkchange  : ( G.snapclient ? [ G.snaplatency ] : '' )
@@ -179,12 +179,13 @@ $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'network'
 		, title        : 'RPi Access Point Settings'
-		, message      : 'Password - 8 characters or more'
-		, textlabel    : [ 'Password', 'IP' ]
-		, values       : [ G.hostapdpwd, G.hostapdip ]
+		, footer       : 'Password - 8 characters or more'
+		, footeralign  : 'right'
+		, textlabel    : [ 'IP', 'Password' ]
+		, values       : [ G.hostapdip, G.hostapdpwd ]
 		, checkchanged : ( G.hostapd ? 1 : 0 )
-		, textrequired : [ 0, 1 ]
-		, textlength   : { 0: 8 }
+		, checkblank   : [ 0 ]
+		, checklength  : { 1: 8 }
 		, cancel       : function() {
 			if ( set ) {
 				loader();
@@ -240,7 +241,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, boxwidth     : 60
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
-		, textrequired : [ 0, 1 ]
+		, checkblank   : [ 0, 1 ]
 		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
@@ -286,7 +287,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		, passwordlabel : 'Password'
 		, values        : ( G.mpdscribbleval ? G.mpdscribbleval.split( '^' ) : '' )
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
-		, textrequired : [ 0, 1 ]
+		, checkblank    : [ 0, 1 ]
 		, cancel        : function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}
@@ -312,7 +313,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, textrequired  : [ 0 ]
+		, checkblank    : [ 0 ]
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}

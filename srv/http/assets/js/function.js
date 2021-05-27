@@ -617,7 +617,7 @@ function infoLibrary( page2 ) {
 		  icon         : 'library'
 		, title        : !page2 ? 'Library Home Display' : 'Library/Playlist Options'
 		, message      : !page2 ? '1/2 - Show selected items:' : '2/2 - Options:'
-		, msgalign     : 'left'
+		, messagealign : 'left'
 		, arrowright   : !page2 ? function() { infoLibrary( 2 ); } : ''
 		, arrowleft    : !page2 ? '' : infoLibrary
 		, checkbox     : checkbox
@@ -710,7 +710,7 @@ function infoPlayback() {
 		  icon         : 'play-circle'
 		, title        : 'Playback Display'
 		, message      : 'Show selected items:'
-		, msgalign     : 'left'
+		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, checkhr      : 1

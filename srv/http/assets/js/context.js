@@ -74,7 +74,7 @@ function bookmarkIcon( path ) {
 						+'<br><w>'+ path +'</w>'
 						+'<br>As:'
 		, values       : path.split( '/' ).pop()
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
 			$.post( cmdphp, {
@@ -176,7 +176,7 @@ function playlistNew() {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
 			playlistSave( infoVal() );
@@ -194,7 +194,7 @@ function playlistRename() {
 		, boxwidth     : 'max'
 		, values       : name
 		, checkchanged : 1
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
 			var newname = infoVal();
@@ -256,7 +256,7 @@ function tagEditor() {
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
 			, width        : 500
 			, message      : message
-			, msgalign     : 'left'
+			, messagealign : 'left'
 			, footer       : footer
 			, textlabel    : label
 			, boxwidth     : 'max'
@@ -446,7 +446,7 @@ function webRadioEdit() {
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : [ name, url ]
 		, checkchanged : 1
-		, textrequired : [ 0, 1 ]
+		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
@@ -482,7 +482,7 @@ function webRadioNew( name, url ) {
 		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : [ ( name || '' ), ( url || '' ) ]
-		, textrequired : [ 0, 1 ]
+		, checkblank   : [ 0, 1 ]
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
@@ -514,7 +514,7 @@ function webRadioSave( url ) {
 		, title        : 'Save WebRadio'
 		, message      : url
 		, textlabel    : 'Name'
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, ok           : function() {
 			G.local = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
@@ -640,7 +640,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, title        : 'Audio CD Tag Editor'
 				, message      : '<img src="'+ src +'">'
 								+'<br># '+ track +' &bull; '+ second2HMS( time )
-				, msgalign     : 'left'
+				, messagealign : 'left'
 				, textlabel    : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
 				, boxwidth     : 'max'
 				, values       : values

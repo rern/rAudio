@@ -634,7 +634,7 @@ $( '#setting-regional' ).click( function() {
 		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
 		, values       : values
 		, checkchanged : 1
-		, textrequired : [ 0, 1 ]
+		, checkblank   : [ 0, 1 ]
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
@@ -679,7 +679,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, radiocolumn  : 1
 		, values       : values
 		, checkchanged : 1
-		, textrequired : [ 0, 1, 2, 3 ]
+		, checkblank   : [ 0, 1, 2, 3 ]
 		, postshow     : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );

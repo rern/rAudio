@@ -128,8 +128,8 @@ $( '.enablenoset' ).click( function() {
 $( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
-			 +'<br><br>Signal level will be set to full amplitude to 0dB'
-			 +'<br>Too high volume can damage speakers and ears';
+			 +'<br><br>Signal will be set to original level (0dB).'
+			 +'<br>Beware of too high volume from speakers.';
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).val();
 	var dev = G.devices[ card ];
@@ -205,12 +205,12 @@ $( '#novolume' ).click( function() {
 		} );
 	} else {
 		info( {
-			  icon    : 'volume'
-			, title   : 'No Volume'
-			, message : '<wh>No volume</wh> will be disabled on:'
-						+'<br>&emsp; &bull; Select a Mixer Control'
-						+'<br>&emsp; &bull; Enable any Volume options'
-			, msgalign : 'left'
+			  icon         : 'volume'
+			, title        : 'No Volume'
+			, message      : '<wh>No volume</wh> will be disabled on:'
+							+'<br>&emsp; &bull; Select a Mixer Control'
+							+'<br>&emsp; &bull; Enable any Volume options'
+			, messagealign : 'left'
 		} );
 		$( this ).prop( 'checked', 1 );
 	}
@@ -228,7 +228,7 @@ $( '#setting-crossfade' ).click( function() {
 		, boxwidth     : 60
 		, values       : G.crossfadeval || 1
 		, checkchanged : ( G.crossfade ? 1 : 0 )
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
@@ -268,7 +268,7 @@ $( '#setting-buffer' ).click( function() {
 		, boxwidth     : 125
 		, values       : G.bufferval || 4096
 		, checkchanged : ( G.buffer ? 1 : 0 )
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
@@ -287,7 +287,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, boxwidth     : 125
 		, values       : G.bufferoutputval || 8192
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
-		, textrequired : [ 0 ]
+		, checkblank   : [ 0 ]
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
@@ -347,7 +347,7 @@ $( '#setting-soxr' ).click( function() {
 		, nofocus       : 1
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
-		, textrequired  : [ 1, 2, 3, 4 ]
+		, checkblank    : [ 1, 2, 3, 4 ]
 		, postshow      : function() {
 			setTimeout( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );
@@ -397,14 +397,14 @@ $( '#setting-custom' ).click( function() {
 	var valglobal = G.userglobal.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
 	var valoutput = G.useroutput.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
 	info( {
-		  icon     : 'mpd'
-		, title    : "User's Configurations"
-		, content  : custominfo
-		, msgalign : 'left'
-		, boxwidth : 320
-		, values   : [ valglobal, valoutput ]
+		  icon         : 'mpd'
+		, title        : "User's Configurations"
+		, content      : custominfo
+		, messagealign : 'left'
+		, boxwidth     : 320
+		, values       : [ valglobal, valoutput ]
 		, checkchanged : ( G.custom ? 1 : 0 )
-		, preshow  : function() {
+		, preshow      : function() {
 			$( '.msg' ).css( {
 				  width          : '100%'
 				, margin         : 0
@@ -413,10 +413,10 @@ $( '#setting-custom' ).click( function() {
 				, 'font-family'  : 'Inconsolata'
 			} );
 		}
-		, cancel   : function() {
+		, cancel       : function() {
 			$( '#custom' ).prop( 'checked', G.custom );
 		}
-		, ok       : function() {
+		, ok           : function() {
 			var values = infoVal();
 			var customglobal = lines2line( values[ 0 ] );
 			var customoutput = lines2line( values[ 1 ] );

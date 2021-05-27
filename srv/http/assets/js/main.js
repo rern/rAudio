@@ -937,14 +937,14 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					+'<br><px30/>&bull; Create directory icons'
 	}
 	info( {
-		  icon     : 'coverart'
-		, title    : 'Album Thumbnails'
-		, message  : message
-		, msgalign : 'left'
-		, preshow  : function() {
+		  icon         : 'coverart'
+		, title        : 'Album Thumbnails'
+		, message      : message
+		, messagealign : 'left'
+		, preshow      : function() {
 			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );
 		}
-		, ok       : function() {
+		, ok           : function() {
 			thumbUpdate( '' );
 		}
 	} );
@@ -1117,7 +1117,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 							+'<br><span class="bklabel">'+ name +'</span></div>'
 			, textlabel    : 'To:'
 			, values       : name
-			, textrequired : [ 0 ]
+			, checkblank   : [ 0 ]
 			, boxwidth     : 'max'
 			, oklabel      : '<i class="fa fa-flash"></i>Rename'
 			, ok           : function() {

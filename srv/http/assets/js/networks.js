@@ -61,7 +61,7 @@ function editLAN( $el ) {
 		, textlabel    : [ 'IP', 'Gateway' ]
 		, values       : [ ip, gateway ]
 		, checkchanged : ( ip ? 1 : 0 )
-		, textrequired : [ 0, 1 ]
+		, checkblank   : [ 0, 1 ]
 		, buttonlabel  : dhcp === 'dhcp' ? '' : '<i class="fa fa-undo"></i>DHCP'
 		, button       : dhcp === 'dhcp' ? '' : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
@@ -117,8 +117,8 @@ function editWiFi( $el ) {
 		, passwordlabel : 'Password'
 		, values        : [ ssid, ip, gateway, password, static, hidden, security ]
 		, checkchanged  : 1
-		, textlength    : { 3: 8 }
-		, textrequired  : [ 0 ]
+		, checklength   : { 3: 8 }
+		, checkblank    : [ 0 ]
 		, postshow      : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', !static );

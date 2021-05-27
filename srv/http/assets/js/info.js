@@ -18,11 +18,11 @@ info( {                                     // default
 	
 	content       : 'HTML'                  //                (replace whole '#infoContent' html)
 	message       : 'MESSAGE'               // (blank)        (message under title)
-	msgalign      : 'CSS'                   // 'center'       (message under title)
+	messagealign  : 'CSS'                   // 'center'       (message under title)
 	
 	textlabel     : [ 'LABEL', ... ]        // (blank)        (label array input label)
-	textrequired  : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
-	textlength    : { i: N, ... }           // (none)         (required min N characters in 'i')
+	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
+	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
 	
 	textarea      : 1                       //
@@ -338,13 +338,13 @@ function info( json ) {
 		var htmls = {}
 		if ( 'message' in O && O.message ) {
 			htmls.message = '<div class="infomessage"';
-			if ( 'msgalign' in O ) htmls.message += ' style="text-align:'+ O.msgalign +'"';
+			if ( 'messagealign' in O ) htmls.message += ' style="text-align:'+ O.messagealign +'"';
 			htmls.message += '>'+ O.message +'</div>';
 			if ( 'msghr' in O ) htmls.message += '<hr>';
 		}
 		if ( 'footer' in O && O.footer ) {
 			htmls.footer = '<div class="infofooter"';
-			if ( 'footalign' in O ) htmls.footer += ' style="text-align:'+ O.footalign +'"';
+			if ( 'footeralign' in O ) htmls.footer += ' style="text-align:'+ O.footeralign +'"';
 			htmls.footer += '>'+ O.footer +'</div>';
 		}
 		// inputs html ///////////////////////////////////////////////////////////
@@ -473,7 +473,7 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
-		if ( O.msgalign && $( '#infoContent table' ).length ) {
+		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
 		}
@@ -507,24 +507,24 @@ function info( json ) {
 			} );
 		}
 		// check text input length
-		if ( 'textlength' in O && O.textlength ) {
-			$.each( O.textlength, function( i, L ) {
-				O.shortlength = O.inputs.eq( i ).val().length < L;
-				$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+		if ( 'checklength' in O && O.checklength ) {
+			$.each( O.checklength, function( i, L ) {
+				O.short = O.inputs.eq( i ).val().length < L;
+				$( '#infoOk' ).toggleClass( 'disabled', O.short );
 				O.inputs.eq( i ).on( 'input', function() {
-					O.shortlength = $( this ).val().length < L;
-					$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+					O.short = $( this ).val().length < L;
+					$( '#infoOk' ).toggleClass( 'disabled', O.short );
 				} );
 			} );
 		}
 		// check text input not blank
-		if ( 'textrequired' in O && O.textrequired ) {
-			O.textrequired.forEach( function( i ) {
-				O.shortlength = O.inputs.eq( i ).val().trim() === '';
-				$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+		if ( 'checkblank' in O && O.checkblank ) {
+			O.checkblank.forEach( function( i ) {
+				O.blank = O.inputs.eq( i ).val().trim() === '';
+				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 				O.inputs.eq( i ).on( 'input', function() {
-					O.shortlength = $( this ).val().trim() === '';
-					$( '#infoOk' ).toggleClass( 'disabled', O.shortlength );
+					O.blank = $( this ).val().trim() === '';
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 				} );
 			} );
 		}
@@ -566,7 +566,7 @@ function alignVertical() { // make infoBox scrollable
 	}, 0 );
 }
 function checkChanged() {
-	if ( O.shortlength ) return // shorter - already disabled
+	if ( O.short || O.blank ) return // shorter - already disabled
 	
 	setTimeout( function() { // force after check length
 		var values = infoVal();
