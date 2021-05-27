@@ -325,18 +325,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 48px;
 	color: var( --cg ) !important;
 }
-#data {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	margin: 0;
-	padding: 40px 10px 10px;
-	background: #000;
-	font-family: Inconsolata;
-	white-space: pre-wrap;
-	overflow-x: hidden;
-	z-index: 111;
-}
 #loader {
 	position: fixed;
 	width: 100%;
@@ -1757,19 +1745,6 @@ i.map.disabled, .map.disabled i {
 	width: 40px;
 	line-height: 40px;
 	text-align: center;
-}
-#button-data {
-	position: absolute;
-	width: 40px;
-	top: 40px;
-	font-size: 30px;
-	text-align: center;
-	z-index: 112;
-	background: var( --cg );
-	border-radius: 50%;
-}
-#button-data.barshidden {
-	top: 0;
 }
 #pl-path .fa-arrow-left {
 	width: 40px !important;
