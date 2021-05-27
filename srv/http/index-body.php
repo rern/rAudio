@@ -210,8 +210,8 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
 	<a id="power"><i class="fa fa-power"></i>Power</a>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
-		<i id="displaylibrary2" class="hide"></i>
 		<i id="update" class="fa fa-refresh-library submenu"></i>
+		<i id="displaylibrary2" class="hide"></i>
 	<a id="displayplayback" class="sub"><i class="fa fa-play-circle"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></i>
 	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
