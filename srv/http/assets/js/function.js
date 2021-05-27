@@ -712,8 +712,8 @@ function infoPlayback() {
 		, checkcolumn  : 1
 		, checkhr      : 1
 		, radio        : {
-			  '<gr>default</gr>&ensp;<img class="imgicon" src="/assets/img/vu.png">' : false
-			, '<img class="imgicon" src="/assets/img/coverart.svg">'                 : true
+			  '<img class="imgicon" src="/assets/img/vu.png">&ensp;<gr>No cover</gr>' : false
+			, '<img class="imgicon" src="/assets/img/coverart.svg">'                  : true
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
