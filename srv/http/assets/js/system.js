@@ -471,7 +471,6 @@ $( '#setting-lcdchar' ).click( function() {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
-		, boxwidth      : 180
 		, nofocus       : 1
 		, preshow       : function() {
 			$( '#i2caddress' ).html( opt );

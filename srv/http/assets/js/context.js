@@ -292,7 +292,7 @@ function tagEditor() {
 				} );
 				setTimeout( function() {
 					var boxW = parseInt( $text.css( 'width' ) );
-					var boxS = boxW - labelW;
+					var boxS = boxW - labelW - 6;
 					$( '#tagname' ).click( function() {
 						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
 							$( '.tagname' ).removeClass( 'hide' );

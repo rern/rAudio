@@ -56,7 +56,7 @@ info( {                                     // default
 	ok            : FUNCTION                // (reset)        (ok click function)
 	cancellabel   : 'LABEL'                 // 'Cancel'       (cancel button label)
 	cancelcolor   : 'COLOR'                 // '#34495e'      (cancel button color)
-	cancelbutton  : 1                       // (hide)         (cancel button color)
+	cancelshow    : 1                       // (hide)         (show cancel button)
 	cancel        : FUNCTION                // (reset)        (cancel click function)
 	
 	buttonlabel   : [ 'LABEL', ... ]        //                (label array)
@@ -173,18 +173,19 @@ function infoReset() {
 	$( '#infoArrow' ).remove();
 	$( '#infoArrow i' ).off( 'click' );
 	
-	$( '#infoContent' ).empty().css( 'height', '' );
-	$( '#infoContent' ).find( 'input, .selectric, .selectric-wrapper' ).css( 'width', '' );
+	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
 	$( '#infoContent' ).find( 'td' ).off( 'click' );
+	$( '#infoContent' ).empty().css( 'height', '' );
 	
 	$( '.infobtn' )
 		.removeClass( 'active disabled' )
 		.addClass( 'hide' )
+		.empty()
 		.css( 'background-color', '' )
 		.off( 'click' );
-	$( '#infoFile, #infoFileLabel, .infobtn' ).remove();
+	$( '#infoButtons' ).empty();
 	
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
@@ -259,7 +260,8 @@ function info( json ) {
 		}
 		if ( 'cancel' in O && O.cancel ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
-			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
+			var hide = O.cancelshow ? '' : ' hide';
+			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
 		}
 		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
@@ -472,12 +474,7 @@ function info( json ) {
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
 		if ( $( '#infoContent table' ).length ) {
-			if ( O.contentwidth ) {
-				var tblW = O.contentwidth
-				$( '#infoContent table' ).css( 'width', tblW +'px' );
-			} else {
-				var tblW = $( '#infoContent table' ).width();
-			}
+			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
 		}
 		// get all input fields - omit .selectric-input for select

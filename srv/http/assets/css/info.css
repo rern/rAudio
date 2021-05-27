@@ -201,13 +201,11 @@ hr {
 	white-space: nowrap;
 }
 #infoContent td:first-child {
+	padding-right: 5px;
 	text-align: right;
 }
 #infoContent td.chk {
 	text-align: left !important;
-}
-#infoContent td.chk label {
-	margin-right: 10px;
 }
 #infoContent label i {
 	text-align: center;
@@ -218,7 +216,7 @@ hr {
 }
 #infoContent td:first-child i {
 	font-size: 20px;
-	width: 30px;
+	width: 24px;
 	text-align: center;
 }
 .infomessage,
@@ -310,7 +308,7 @@ hr {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
-	margin: 3px 8px 3px 0;
+	margin: 3px 6px 3px 0;
 	vertical-align: -10px;
 	border: none;
 	border-radius: 3px;

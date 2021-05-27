@@ -616,8 +616,6 @@ function infoLibrary( page2 ) {
 	info( {
 		  icon         : 'library'
 		, title        : !page2 ? 'Library Home Display' : 'Library/Playlist Options'
-		, height       : 330
-		, contentwidth : 300
 		, message      : !page2 ? '1/2 - Show selected items:' : '2/2 - Options:'
 		, msgalign     : 'left'
 		, arrowright   : !page2 ? function() { infoLibrary( 2 ); } : ''
@@ -627,7 +625,9 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, postshow     : function() {
+			$( '#infoContent' ).css( 'height', '330px' );
 			if ( page2 ) {
+				$( '#infoContent table' ).css( 'width', '300px' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
