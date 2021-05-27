@@ -291,13 +291,15 @@ $( '#tab-library, #button-library' ).click( function() {
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
-$( '#logo, #button-library, #button-data, #button-playlist' ).taphold( function() {
+$( '#button-library, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#logo' ).click( function() {
 	window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
-$( '#button-data' ).click( function() {
+$( '#button-data' ).tap( function() {
+	location.reload();
+} ).taphold( function() {
 	if( $( '#data' ).hasClass( 'hide' ) ) {
 		$( '#data' )
 			.html( JSON.stringify( G.status, null, 2 ) )
