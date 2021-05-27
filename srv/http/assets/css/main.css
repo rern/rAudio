@@ -1758,6 +1758,19 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 }
+#button-data {
+	position: absolute;
+	width: 40px;
+	top: 40px;
+	font-size: 30px;
+	text-align: center;
+	z-index: 112;
+	background: var( --cg );
+	border-radius: 50%;
+}
+#button-data.barshidden {
+	top: 0;
+}
 #pl-path .fa-arrow-left {
 	width: 40px !important;
 }

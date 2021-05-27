@@ -291,11 +291,31 @@ $( '#tab-library, #button-library' ).click( function() {
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
-$( '#logo, #button-library, #button-playlist' ).taphold( function() {
+$( '#button-library, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#logo' ).click( function() {
 	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+} );
+$( '#button-data' ).tap( function() {
+	location.reload();
+} ).taphold( function() {
+	if( $( '#data' ).hasClass( 'hide' ) ) {
+		$( '#data' )
+			.html( JSON.stringify( G.status, null, 2 ) )
+			.toggleClass( 'barshidden', !G.bars )
+			.removeClass( 'hide' );
+		$( this )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-times bl barshidden' );
+	} else {
+		$( '#data' )
+			.addClass( 'hide' )
+			.css( 'max-height', '' );
+		$( this )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-redo transparent' );
+	}
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
@@ -585,6 +605,7 @@ $( '#coverT, #timeT' ).tap( function() {
 	$( '#volume-text' ).addClass( 'hide' );
 	$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 	$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
+	$( '#button-data' ).addClass( 'translucent' );
 	if ( !G.bars ) $( '#bar-bottom' ).addClass( 'translucent' );
 	if ( window.innerWidth < 614 && !G.display.volume ) {
 		$( '#coverTL' )
