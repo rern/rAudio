@@ -473,7 +473,7 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
-		if ( $( '#infoContent table' ).length ) {
+		if ( O.msgalign && $( '#infoContent table' ).length ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
 		}
