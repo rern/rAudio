@@ -171,6 +171,7 @@ hr {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	letter-spacing: 2px;
 }
 #infoArrow {
 	position: absolute;
