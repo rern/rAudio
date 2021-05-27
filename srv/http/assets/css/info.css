@@ -219,6 +219,9 @@ hr {
 	width: 24px;
 	text-align: center;
 }
+#infoContent td:nth-child( 3 ) {
+	padding-left: 5px;
+}
 .infomessage,
 .infofooter {
 	max-height: 800px;
