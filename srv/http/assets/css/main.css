@@ -954,7 +954,7 @@ i.map.disabled, .map.disabled i {
 	opacity: 0;
 }
 .map.mapshow {
-	opacity: 0.8;
+	opacity: 0.9;
 }
 #coverTR.empty {
 	background: none;
