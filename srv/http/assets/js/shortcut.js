@@ -33,33 +33,6 @@ $( document ).keydown( function( e ) {
 		return
 	}
 	
-	if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
-		e.preventDefault();
-		if ( G.library ) {
-			var $index = $( '#lib-index1' ).css( 'display' ) === 'none' ? $( '#lib-index' ) : $( '#lib-index1' );
-		} else {
-			var $index = $( '#pl-index' );
-		}
-		var $indexedbgr = $index.find( '.indexed.bgr' );
-		if ( $indexedbgr.length ) {
-			if ( key === 'ArrowUp' ) {
-				if ( $indexedbgr.index() ) {
-					$indexedbgr.prevAll( '.indexed' ).eq( 0 ).addClass( 'bgr' );
-				} else {
-					$index.find( '.indexed:last' ).addClass( 'bgr' );
-				}
-			} else {
-				if ( $indexedbgr.index() !== $index.find( '.indexed:last' ).index() ) {
-					$indexedbgr.nextAll( '.indexed' ).eq( 0 ).addClass( 'bgr' );
-				} else {
-					$index.find( 'a:eq( 0 )' ).addClass( 'bgr' );
-				}
-			}
-			$indexedbgr.removeClass( 'bgr' );
-			return
-		}
-	}
-	
 	if ( key === 'Enter' ) {
 		if ( !$( '#settings' ).hasClass( 'hide' ) ) {
 			var $menu = $( '#settings' ).find( 'a.active' );
@@ -85,23 +58,6 @@ $( document ).keydown( function( e ) {
 		return
 	}
 		
-	if ( key === 'Control' ) {
-		if ( G.library ) {
-			var $index = $( '#lib-index1' ).css( 'display' ) === 'none' ? $( '#lib-index' ) : $( '#lib-index1' );
-		} else {
-			var $index = $( '#pl-index' );
-		}
-		if ( $index.find( '.indexed' ).length === 1 ) return
-		
-		var $indexedbgr = $index.find( '.indexed.bgr' );
-		if ( $indexedbgr.length ) {
-			$indexedbgr.removeClass( 'bgr' );
-		} else {
-			$index.find( 'a:eq( 0 )' ).addClass( 'bgr' );
-		}
-		return
-	}
-			
 	var keyevent = {
 		  AudioVolumeDown    : 'voldn'
 		, AudioVolumeMute    : 'volmute'
@@ -294,6 +250,7 @@ $( document ).keydown( function( e ) {
 		
 		// list ///////////////////////////////////////
 		if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
+			e.preventDefault();
 			scrollUpDown( $( '#lib-list' ), key );
 		} else if ( key === 'Enter' ) {
 			var $liactive = $( '#lib-list li.active' );
@@ -364,13 +321,11 @@ function scrollUpDown( $list, key ) {
 	}
 	
 	$linext.addClass( classactive );
-	setTimeout( function() {
-		var litop = $linext[ 0 ].getBoundingClientRect().top;
-		var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
-		if ( key === 'ArrowUp' ) {
-			if ( libottom > window.innerHeight - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - window.innerHeight + 89 );
-		} else {
-			if ( libottom > window.innerHeight - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
-		}
-	}, 300 );
+	var litop = $linext[ 0 ].getBoundingClientRect().top;
+	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
+	if ( key === 'ArrowUp' ) {
+		if ( libottom > window.innerHeight - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - window.innerHeight + 89 );
+	} else {
+		if ( libottom > window.innerHeight - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
+	}
 }
