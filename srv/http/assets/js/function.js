@@ -987,10 +987,7 @@ function renderLibraryList( data ) {
 		}
 		$( '#lib-list' ).removeClass( 'hide' );
 		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
-		if ( G.iactive && G.albumlist ) {
-			$( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
-			delete G.iactive
-		}
+		if ( G.iactive && G.albumlist ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 		if ( $( '.coverart' ).length ) {
 			var coverH = $( '.coverart' ).height();
 			var pH = $( '#lib-list p' ).height();
