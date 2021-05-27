@@ -486,6 +486,7 @@ $( '#addons' ).click( function () {
 } );
 $( '#tab-library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
+	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
 		if ( G.librarylist || G.bookmarkedit ) {

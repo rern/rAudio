@@ -12,6 +12,15 @@ $( document ).keydown( function( e ) {
 		return
 	}
 	
+	if ( key === 'Backspace' && !$( 'input:focus, textarea:focus' ).length ) {
+		if ( G.library ) {
+			$( '#button-lib-back' ).click();
+		} else if ( G.playlist ) {
+			$( '#button-pl-back' ).click();
+		}
+		return
+	}
+	
 	if ( key === '#' || key >= 'a' && key <= 'z' ) { // index bar
 		key = key.toUpperCase();
 		if ( G.library && !$( '#lib-list .index' ).hasClass( 'hide' ) ) {
