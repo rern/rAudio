@@ -709,8 +709,8 @@ function infoPlayback() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, radio        : {
-			  '<gr>default</gr><img class="imgicon" src="/assets/img/coverart.svg">' : false
-			, '<gr>default</gr><img class="imgicon" src="/assets/img/vu.png">'       : true
+			  '<gr>default</gr><img class="imgicon" src="/assets/img/coverart.svg">' : true
+			, '<gr>default</gr><img class="imgicon" src="/assets/img/vu.png">'       : false
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
