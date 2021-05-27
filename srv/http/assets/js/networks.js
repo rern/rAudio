@@ -113,7 +113,7 @@ function editWiFi( $el ) {
 		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, boxwidth      : 180
-		, checkbox      : ['Static IP', 'Hidden SSID', 'WEP' ]
+		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
 		, values        : [ ssid, ip, gateway, password, static, hidden, security ]
 		, checkchanged  : 1
