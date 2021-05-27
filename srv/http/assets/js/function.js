@@ -617,8 +617,8 @@ function infoLibrary( page2 ) {
 	info( {
 		  icon         : 'library'
 		, title        : !page2 ? 'Library Home Display' : 'Library/Playlist Options'
-		, height       : 310
-		, message      : !page2 ? '1/2 - Show selected items:' : ''
+		, height       : 330
+		, message      : !page2 ? '1/2 - Show selected items:' : '2/2 - Options:'
 		, arrowright   : !page2 ? function() { infoLibrary( 2 ); } : ''
 		, arrowleft    : !page2 ? '' : infoLibrary
 		, checkbox     : checkbox
@@ -634,7 +634,7 @@ function infoLibrary( page2 ) {
 				} );
 				$tapaddplay.add( $tapreplaceplay ).click( function() {
 					var i = $chk.index( this ) === tapaddplay ? tapreplaceplay : tapaddplay;
-					$chk.eq( i ).prop( 'checked', !$( this ).prop( 'checked' ) ) ;
+					if ( $( this ).prop( 'checked' ) ) $chk.eq( i ).prop( 'checked', 0 );
 				} );
 				$hidecover.change( function() {
 					if ( $( this ).prop( 'checked' ) ) {
