@@ -197,7 +197,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>Name for Renderers, Streamers, Access point, Bluetooth and system Hostname.</span>
 </div>
 <div class="col-l double">
-	<a>Timezone<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
+	<a>Timezone<br>NTP, regdomain</a><i class="fa fa-globe"></i>
 </div>
 <div class="col-r">
 	<?=$selecttimezone?><i id="setting-regional" class="settingedit fa fa-gear"></i>

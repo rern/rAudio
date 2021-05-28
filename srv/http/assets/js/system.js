@@ -624,8 +624,8 @@ $( '#setting-regional' ).click( function() {
 	info( {
 		  icon         : 'globe'
 		, title        : 'Regional Settings'
-		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
-		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
+		, textlabel    : [ 'NTP server', 'Wi-Fi regdomain' ]
+		, footer       : '<px90/><code>00</code> - common for all regions'
 		, values       : values
 		, checkchanged : 1
 		, checkblank   : [ 0, 1 ]
