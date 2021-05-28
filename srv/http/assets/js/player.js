@@ -335,11 +335,7 @@ var soxrinfo = heredoc( function() { /*
 */ } );
 $( '#setting-soxr' ).click( function() {
 	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
-	if ( G.soxr ) {
-		var values = G.soxrval.split( ' ' );
-	} else {
-		var values = defaultval;
-	}
+	var values = G.soxr ? G.soxrval.split( ' ' ) : defaultval;
 	info( {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
@@ -356,14 +352,6 @@ $( '#setting-soxr' ).click( function() {
 			}, 0 );
 		}
 		, boxwidth      : 90
-		, buttonlabel   : '<i class="fa fa-undo"></i>Default'
-		, buttoncolor   : orange
-		, button        : function() {
-			$( '#infoContent' ).find( 'select, input:text' ).each( function( i ) {
-				$( this ).val( defaultval[ i ] )
-			} );
-		}
-		, buttonnoreset : 1
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}

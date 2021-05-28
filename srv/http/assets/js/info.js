@@ -9,17 +9,13 @@ info( {                                     // default
 	icon          : 'NAME'                  // 'question'     (top icon)
 	title         : 'TITLE'                 // 'Information'  (top title)
 	nox           : 1                       // (show)         (no top 'X' close button)
-	nobutton      : 1                       // (show)         (no button)
-	nofocus       : 1                       // (input box)    (no focus at input box)
 	autoclose     : N                       // (disabled)     (auto close in ms)
-	sequence      : 1                       // (none)         (prevent hide/show flash for info in sequence)
-	beforeshow    : FUNCTION                // (none)         (function after values set)
 	
-	content       : 'HTML'                  // ***            (replace whole '#infoContent' html)
+	content       : 'HTML'                  // ***            (custom inputs content)
 	message       : 'MESSAGE'               // (blank)        (message under title)
-	messagealign  : 'CSS'                   // 'center'       (message under title)
+	messagealign  : 'CSS'                   // 'center'
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
-	footeralign   : 'CSS'                   // (blank)        (footer text alignment)
+	footeralign   : 'CSS'                   // (blank)
 	
 	textlabel     : [ 'LABEL', ... ]        // ***            (label array input label)
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
@@ -29,6 +25,7 @@ info( {                                     // default
 	textarea      : 1                       // ***
 	
 	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
+	nofocus       : 1                       // (input box)    (no focus at input box)
 	
 	radio         : { LABEL: 'VALUE', ... } // ***
 	
@@ -44,6 +41,7 @@ info( {                                     // default
 	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
 	filetypecheck : 1                       // (no)           (check matched filetype)
 	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
+	nobutton      : 1                       // (show)         (no button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
@@ -56,11 +54,14 @@ info( {                                     // default
 	button        : [ FUNCTION, ... ]       // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
 	buttonfit     : 1                       // (none)         (fit buttons width to label)
+	buttonnoreset : 1                       // (none)         (do not hide on button clicked)
 	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
 	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
 	checkchanged  : 1              .        // (none)         (check values changed)
+	
+	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
 Note:
 - Single value/function - no need to be array
@@ -170,9 +171,7 @@ function infoReset() {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
 	}
-	$( '#infoOverlay' )
-		.addClass( 'hide noclick' ) // noclick - prevent click OK on consecutive info
-		.removeClass( 'noscroll' );
+	$( '#infoOverlay' ).addClass( 'hide noclick' ) // prevent click OK on consecutive info
 	$( '#infoBox' ).css( {
 		  margin     : ''
 		, width      : ''
@@ -214,6 +213,8 @@ function info( json ) {
 		alignVertical();
 		return;
 	}
+	
+	$( '#infoOverlay' ).toggleClass( 'noscroll', 'noscroll' in O ); // for volume input range
 	$( '#infoX, #infoCancel' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
 		infoReset();
@@ -272,19 +273,18 @@ function info( json ) {
 			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
 				var fn = button[ $( this ).index( '.extrabtn' ) ];
 				fn();
-				if ( !noreset ) infoReset();
+				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		var noreset = 'buttonnoreset' in O;
 		if ( typeof O.cancel === 'function' ) {
 			$( '#infoCancel' ).click( function() {
 				O.cancel();
-				if ( !noreset ) infoReset();
+				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
 		$( '#infoOk' ).click( function() {
 			if ( typeof O.ok === 'function' ) O.ok();
-			if ( !noreset ) infoReset();
+			if ( !O.buttonnoreset ) infoReset();
 		} );
 	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
@@ -305,18 +305,17 @@ function info( json ) {
 		$( '#infoFileBox' ).change( function() {
 			var file = this.files[ 0 ];
 			var filename = file.name;
-			var fileimg = O.filetype === 'image/*';
 			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
-			if ( !fileimg && O.filetype.indexOf( ext ) === -1 ) {
+			if ( O.filetype && O.filetype.indexOf( ext ) === -1 ) {
 				var Oprev = JSON.parse( JSON.stringify( O ) );
+				O.buttonnoreset = 1;
 				$( '#infoOk' ).off( 'click' );
 				$( '#infoFilename' ).hide();
 				info( {
 					  icon     : 'warning'
 					, title    : O.title
-					, sequence : 1
 					, message  : '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
-								+'<tr><td>Extension not :</td><td><code>'+ O.filetype +'</code></td></tr></table>'
+								+'<tr><td>File not :</td><td><code>'+ O.filetype +'</code></td></tr></table>'
 					, ok       : function() {
 						info( Oprev );
 					}
@@ -325,7 +324,7 @@ function info( json ) {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( fileimg ) fileImage( file );
+				if ( O.filetype ) fileImage( file );
 			}
 		} );
 	}
