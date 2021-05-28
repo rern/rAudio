@@ -74,7 +74,9 @@ function heredoc( fn ) {
 var containerhtml = heredoc( function() { /*
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
-		<div id="infoTopBg"><div id="infoTop"></div><i id="infoX" class="fa fa-times hide"></i></div>
+		<div id="infoTopBg">
+			<div id="infoTop"></div><i id="infoX" class="fa fa-times hide"></i>
+		</div>
 		<div id="infoContent"></div>
 		<div id="infoButtons"></div>
 	</div>
@@ -97,7 +99,9 @@ $( '#infoOverlay' ).keydown( function( e ) {
 		$( '#infoContent input:checkbox.active' ).click();
 		$( '#infoContent input:radio.active' ).click();
 	} else if ( key === 'Escape' ) {
-		$( '#infoCancel' ).click();
+		G.local = 1; // no local() in settings
+		setTimeout( function() { G.local = 0 }, 300 );
+		$( '#infoX' ).click();
 	} else if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
 		e.preventDefault();
 		var $el = $( '#infoContent input' );
@@ -163,33 +167,32 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	O.infoscroll = 0;
-	$( '#infoOverlay' ).addClass( 'hide' ).removeClass( 'noscroll' );
-	$( '#infoBox' ).css( { margin: '', width: '', visibility: 'hidden' } );
-	
+	if ( O.infoscroll ) {
+		$( 'html, body' ).scrollTop( O.infoscroll );
+		O.infoscroll = 0;
+	}
+	$( '#infoOverlay' )
+		.addClass( 'hide noclick' ) // noclick - prevent click OK on consecutive info
+		.removeClass( 'noscroll' );
+	$( '#infoBox' ).css( {
+		  margin     : ''
+		, width      : ''
+		, visibility : 'hidden'
+	} );
 	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '#infoArrow' ).remove();
 	$( '#infoArrow i' ).off( 'click' );
-	
+	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
 	$( '#infoContent' ).find( 'td' ).off( 'click' );
 	$( '#infoContent' ).empty().css( 'height', '' );
-	
 	$( '.infobtn' )
-		.removeClass( 'active disabled' )
-		.addClass( 'hide' )
-		.empty()
+		.removeClass( 'active' )
 		.css( 'background-color', '' )
 		.off( 'click' );
 	$( '#infoButtons' ).empty();
-	
-	if ( O.infoscroll ) {
-		$( 'html, body' ).scrollTop( O.infoscroll );
-		O.infoscroll = 0;
-	}
 }
 
 O = {}
@@ -439,10 +442,10 @@ function info( json ) {
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
-		// set hide > hidden - get width
+		// show to get width - still visibility hidden
 		$( '#infoOverlay' )
-			.css( 'visiblity', 'hidden' )
-			.removeClass( 'hide' );
+			.removeClass( 'hide' )
+			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 		// set vertical position
 		alignVertical();
 		// apply selectric
@@ -532,17 +535,6 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( 'beforeshow' in O && O.beforeshow ) O.beforeshow();
-		// show
-		$( '#infoOverlay' )
-			.addClass( 'noclick' )
-			.css( 'visiblity', '' )
-			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
-		// prevent click OK on consecutive info
-		setTimeout( function() {
-			$( '#infoOverlay' ).removeClass( 'noclick' );
-			var type0 = $( O.inputs[ 0 ] ).prop( 'type' );
-			if ( [ 'text', 'password' ].indexOf( type0 ) !== -1 && !( 'nofocus' in O ) ) O.inputs[ 0 ].focus();
-		}, 300 );
 		/////////////////////////////////////////////////////////////////////////////
 		}, 0 );
 	} );
@@ -558,8 +550,11 @@ function alignVertical() { // make infoBox scrollable
 			, 'visibility' : 'visible'
 		} );
 		$( 'html, body' ).scrollTop( 0 );
+		$( '#infoOverlay' ).removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
-	}, 0 );
+		$input0 = $( O.inputs[ 0 ] );
+		if ( !( 'nofocus' in O ) && [ 'text', 'password' ].indexOf( $input0.prop( 'type' ) ) !== -1 ) $input0.focus();
+	}, 200 );
 }
 function checkChanged() {
 	if ( O.short || O.blank ) return // shorter - already disabled
