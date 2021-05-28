@@ -15,58 +15,57 @@ info( {                                     // default
 	sequence      : 1                       // (none)         (prevent hide/show flash for info in sequence)
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 	
-	content       : 'HTML'                  //                (replace whole '#infoContent' html)
+	content       : 'HTML'                  // ***            (replace whole '#infoContent' html)
 	message       : 'MESSAGE'               // (blank)        (message under title)
 	messagealign  : 'CSS'                   // 'center'       (message under title)
+	footer        : 'FOOTER'                // (blank)        (footer above buttons)
+	footeralign   : 'CSS'                   // (blank)        (footer text alignment)
 	
-	textlabel     : [ 'LABEL', ... ]        // (blank)        (label array input label)
-	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
-	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
+	textlabel     : [ 'LABEL', ... ]        // ***            (label array input label)
 	textalign     : 'CSS'                   // 'left'         (input text alignment)
-	
-	textarea      : 1                       //
 	
 	passwordlabel : 'LABEL'                 // (blank)        (password input label)
 	
+	textarea      : 1                       // ***
+	
 	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
 	
-	filelabel     : 'LABEL'                 // 'Browse'       (browse button label)
-	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
-	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
-	filetypecheck : 1                       // (no)           (check matched filetype)
-	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
-	radio         : { LABEL: 'VALUE', ... }
+	radio         : { LABEL: 'VALUE', ... } // ***
 	
-	checkbox      : [ 'LABEL', ... ]
+	checkbox      : [ 'LABEL', ... ]        // ***
 	
-	select        : { LABEL: 'VALUE', ... }
+	select        : { LABEL: 'VALUE', ... } // ***
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
 	order         : [ TYPE, ... ]           // (sequence)     (order of inputs)
 	
-	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
-	checkchanged  : 1              .        // (none)         (check values changed)
-	
-	footer        : 'FOOTER'                // (blank)        (footer above buttons)
-	footalign     : 'CSS'                   // (blank)        (footer text alignment)
-	
-	oklabel       : 'LABEL'                 // 'OK'           (ok button label)
-	okcolor       : 'COLOR'                 // '#0095d8'      (ok button color)
+	filelabel     : 'LABEL'                 // ***            (browse button label)
+	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
+	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
+	filetypecheck : 1                       // (no)           (check matched filetype)
+	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
+	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
+	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
-	cancellabel   : 'LABEL'                 // 'Cancel'       (cancel button label)
-	cancelcolor   : 'COLOR'                 // '#34495e'      (cancel button color)
+	cancellabel   : 'LABEL'                 // ***            (cancel button label)
+	cancelcolor   : 'COLOR'                 // var( --cg )    (cancel button color)
 	cancelshow    : 1                       // (hide)         (show cancel button)
 	cancel        : FUNCTION                // (reset)        (cancel click function)
 	
-	buttonlabel   : [ 'LABEL', ... ]        //                (label array)
-	button        : [ FUNCTION, ... ]       //                (function array)
+	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
+	button        : [ FUNCTION, ... ]       // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
 	buttonfit     : 1                       // (none)         (fit buttons width to label)
+	
+	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
+	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
+	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
+	checkchanged  : 1              .        // (none)         (check values changed)
 } );
 Note:
-- No default - must be specified.
 - Single value/function - no need to be array
 - select requires Selectric.js
+- Get values - infoVal()
 */
 function heredoc( fn ) {
 	return fn.toString().match( /\/\*\s*([\s\S]*?)\s*\*\//m )[ 1 ];
