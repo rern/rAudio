@@ -741,31 +741,32 @@ $( '#backup' ).click( function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).click( function() {
-	var icon = 'sd-restore';
+	var icon = 'restore';
+	var title = 'Restore Settings';
 	info( {
 		  icon        : icon
-		, title       : 'Restore Settings'
+		, title       : title
 		, message     : 'Restore from:'
 		, radio       : {
 			  'Backup file <code>*.gz</code>' : 'restore'
 			, 'Reset to default'              : 'reset'
 		}
 		, values      : 'restore'
-		, fileoklabel : 'Restore'
+		, fileoklabel : '<i class="fa fa-restore"></i>Restore'
 		, filetype    : '.gz'
 		, beforeshow  : function() {
 			$( '#infoContent input' ).click( function() {
 				if ( infoVal() !== 'restore' ) {
-					$( '#infoFilename' ).empty()
+					$( '#infoFilename' ).addClass( 'hide' );
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
 					$( '#infoOk' )
-						.html( 'Reset' )
+						.html( '<i class="fa fa-reset"></i>Reset' )
 						.css( 'background-color', orange )
 						.removeClass( 'hide' );
 				} else {
 					$( '#infoOk' )
-						.html( 'Restore' )
+						.html( '<i class="fa fa-restore"></i>Restore' )
 						.css( 'background-color', '' )
 						.addClass( 'hide' );
 					$( '#infoFileLabel' ).removeClass( 'hide' );
@@ -791,7 +792,7 @@ $( '#restore' ).click( function() {
 						if ( data == -1 ) {
 							info( {
 								  icon    : icon
-								, title   : 'Restore Settings'
+								, title   : title
 								, message : 'File upload failed.'
 							} );
 							bannerHide();

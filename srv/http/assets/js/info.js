@@ -311,7 +311,7 @@ function info( json ) {
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
 				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
 										 +'<tr><td>File not :</td><td><code>'+ O.filetype +'</code></td></tr></table>' );
-				$( '#infoButtons' ).prepend( '<a id="infoButton" class="btntemp infobtn infobtn-primary">OK</a>' );
+				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButtons' ).on( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					setValues();

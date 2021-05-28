@@ -239,7 +239,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 
-<div data-status="restore" class="col-l single">Restore<i class="fa fa-sd-restore"></i></div>
+<div data-status="restore" class="col-l single">Restore<i class="fa fa-restore"></i></div>
 <div class="col-r">
 	<input id="restore" type="checkbox">
 	<div class="switchlabel" for="restore"></div>
