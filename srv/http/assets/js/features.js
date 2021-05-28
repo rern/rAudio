@@ -179,8 +179,7 @@ $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'network'
 		, title        : 'RPi Access Point Settings'
-		, footer       : 'Password - 8 characters or more'
-		, footeralign  : 'right'
+		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : [ G.hostapdip, G.hostapdpwd ]
 		, checkchanged : ( G.hostapd ? 1 : 0 )
