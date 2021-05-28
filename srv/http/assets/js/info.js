@@ -505,7 +505,7 @@ function info( json ) {
 					$this.val( val );
 				}
 			} );
-			$( '#infoContent select' ).selectric( 'refresh' );
+			if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
 		}
 		// check text input length
 		if ( 'checklength' in O && O.checklength ) {

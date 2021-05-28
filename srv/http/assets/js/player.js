@@ -306,19 +306,19 @@ var soxrinfo = heredoc( function() { /*
 				<option value="24">24</option>
 				<option value="28">28</option>
 				<option value="32">32</option>
-				</select></td><td><gr>bit</gr></td>
+				</select></td><td>&nbsp;<gr>bit</gr></td>
 		</tr>
 		<tr><td>Phase Response</td>
-			<td><input type="text"></td><td><gr>0-100</gr></td>
+			<td><input type="text"></td><td>&nbsp;<gr>0-100</gr></td>
 		</tr>
 		<tr><td>Passband End</td>
-			<td><input type="text"></td><td><gr>0-100%</gr></td>
+			<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
 		</tr>
 		<tr><td>Stopband Begin</td>
-			<td><input type="text"></td><td><gr>100-150%</gr></td>
+			<td><input type="text"></td><td>&nbsp;<gr>100-150%</gr></td>
 		</tr>
 		<tr><td>Attenuation</td>
-			<td><input type="text"></td><td><gr>0-30dB</gr></td>
+			<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
 		</tr>
 		<tr><td>Rolloff</td>
 			<td colspan="2"><select>

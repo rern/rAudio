@@ -576,17 +576,17 @@ function imageReplace( imagefile, type ) {
 	} );
 }
 var chklibrary = {
-	  album          : '<i class="fa fa-album"></i>Album'
-	, nas            : '<i class="fa fa-networks"></i>Network'
-	, albumartist    : '<i class="fa fa-albumartist"></i>AlbumArtist'
-	, sd             : '<i class="fa fa-microsd"></i>SD'
-	, artist         : '<i class="fa fa-artist"></i>Artist'
-	, usb            : '<i class="fa fa-usbdrive"></i>USB'
-	, composer       : '<i class="fa fa-composer"></i>Composer'
-	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
-	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
-	, date           : '<i class="fa fa-date"></i>Date'
-	, genre          : '<i class="fa fa-genre"></i>Genre'
+	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
+	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
+	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>AlbumArtist</gr>'
+	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
+	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
+	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
+	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
+	, webradio       : '<i class="fa fa-webradio wh"></i><gr>WebRadio</gr>'
+	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
+	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
+	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
 	, '-'            : ''
 	, '-1'           : '<hr>'
 	, '-2'           : '<hr>'
@@ -594,12 +594,12 @@ var chklibrary = {
 	, label          : 'Label'
 }
 var chklibrary2 = {
-	  albumbyartist  : '<i class="fa fa-coverart"></i>Sort Album by artists'
-	, backonleft     : '<i class="fa fa-arrow-left"></i>Back button on left side'
-	, tapaddplay     : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus"></i>Add + Play'
-	, tapreplaceplay : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace"></i>Replace + Play'
+	  albumbyartist  : '<i class="fa fa-coverart wh"></i>Sort Album by artists'
+	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
+	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
+	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
+	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i>'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
@@ -625,9 +625,9 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, postshow     : function() {
-			$( '#infoContent' ).css( 'height', '330px' );
+			$( '#infoContent' ).css( 'height', '340px' );
 			if ( page2 ) {
-				$( '#infoContent table' ).css( 'width', '300px' );
+				$( '#infoContent td:eq( 1 )' ).attr( 'width', '292' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
