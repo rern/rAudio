@@ -32,11 +32,11 @@ var htmlmount = heredoc( function() { /*
 */ } );
 function infoMount( values ) {
 	info( {
-		  icon     : 'network'
-		, title    : 'Add Network Share'
-		, content  : htmlmount
-		, values   : values
-		, postshow : function() {
+		  icon       : 'network'
+		, title      : 'Add Network Share'
+		, content    : htmlmount
+		, values     : values
+		, beforeshow : function() {
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
@@ -52,7 +52,7 @@ function infoMount( values ) {
 				}
 			} );
 		}
-		, ok       : function() {
+		, ok         : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
 			notify( 'Network Mount', 'Mount ...', 'network' );
 			bash( [ 'mount', values ], function( std ) {
@@ -475,7 +475,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, nofocus       : 1
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
-		, postshow      : function() {
+		, beforeshow    : function() {
 			$( '#tbllcdchar' ).find( 'td' ).css( 'width', '78px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
@@ -603,7 +603,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, textlabel    : 'Name'
 		, values       : G.hostname
 		, checkchanged : 1
-		, postshow     : function() {
+		, beforeshow   : function() {
 			$( '#infoContent input' ).keyup( function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
@@ -674,7 +674,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, values       : values
 		, checkchanged : 1
 		, checkblank   : [ 0, 1, 2, 3 ]
-		, postshow     : function() {
+		, beforeshow   : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );
@@ -753,7 +753,7 @@ $( '#restore' ).click( function() {
 		, values      : 'restore'
 		, fileoklabel : 'Restore'
 		, filetype    : '.gz'
-		, postshow    : function() {
+		, beforeshow  : function() {
 			$( '#infoContent input' ).click( function() {
 				if ( infoVal() !== 'restore' ) {
 					$( '#infoFilename' ).empty()

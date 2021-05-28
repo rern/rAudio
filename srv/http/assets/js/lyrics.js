@@ -49,7 +49,7 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
 			, boxwidth    : 'max'
 			, checkbox    : noparen ? '' : [ 'Title with parentheses content' ]
-			, postshow    : noparen ? '' : function() {
+			, beforeshow  : noparen ? '' : function() {
 				$( '#infoContent input' ).change( function() {
 					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );

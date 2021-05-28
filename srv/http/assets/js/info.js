@@ -13,8 +13,7 @@ info( {                                     // default
 	nofocus       : 1                       // (input box)    (no focus at input box)
 	autoclose     : N                       // (disabled)     (auto close in ms)
 	sequence      : 1                       // (none)         (prevent hide/show flash for info in sequence)
-	preshow       : FUNCTION                // (none)         (function after html content - before set width)
-	postshow      : FUNCTION                // (none)         (function after values set)
+	beforeshow    : FUNCTION                // (none)         (function after values set)
 	
 	content       : 'HTML'                  //                (replace whole '#infoContent' html)
 	message       : 'MESSAGE'               // (blank)        (message under title)
@@ -446,8 +445,6 @@ function info( json ) {
 			.removeClass( 'hide' );
 		// set vertical position
 		alignVertical();
-		// add extra html / layout functions
-		if ( 'preshow' in O && O.preshow ) O.preshow();
 		// apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		// set button width
@@ -533,13 +530,13 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChanged );
 		}
+		// custom function before show
+		if ( 'beforeshow' in O && O.beforeshow ) O.beforeshow();
 		// show
 		$( '#infoOverlay' )
 			.addClass( 'noclick' )
 			.css( 'visiblity', '' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
-		// custom function (based on values)
-		if ( 'postshow' in O && O.postshow ) O.postshow();
 		// prevent click OK on consecutive info
 		setTimeout( function() {
 			$( '#infoOverlay' ).removeClass( 'noclick' );

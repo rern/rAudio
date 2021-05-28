@@ -150,7 +150,7 @@ $( '#setting-hwmixer' ).click( function() {
 			, message       : device.hwmixer
 			, rangevalue    : level
 			, footer        : ( novolume ? '<br>( Control: None / 0dB )' : '' )
-			, postshow      : function() {
+			, beforeshow    : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
@@ -348,7 +348,7 @@ $( '#setting-soxr' ).click( function() {
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : [ 1, 2, 3, 4 ]
-		, postshow      : function() {
+		, beforeshow    : function() {
 			setTimeout( function() {
 				var $extra = $( '#infoContent tr:eq( 5 )' );
 				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );

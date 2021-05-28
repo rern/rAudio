@@ -305,7 +305,7 @@ $( '#tab-playback' ).click( function() {
 			  icon       : 'volume'
 			, title      : 'Volume'
 			, rangevalue : G.status.volume
-			, postshow   : function() {
+			, beforeshow : function() {
 				$( '#infoOverlay' ).addClass( 'noscroll' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					var vol = $( this ).val();

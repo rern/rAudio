@@ -155,7 +155,7 @@ function coverartChange() {
 					   +'<p class="infoimgname">'+ album
 					   +'<br>'+ artist +'</p>'
 		, footer      : footer
-		, postshow     : function() { // fix direct replace src
+		, beforeshow  : function() { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
@@ -624,7 +624,7 @@ function infoLibrary( page2 ) {
 		, checkcolumn  : !page2 ? 1 : ''
 		, values       : values
 		, checkchanged : 1
-		, postshow     : function() {
+		, beforeshow   : function() {
 			$( '#infoContent' ).css( 'height', '340px' );
 			if ( page2 ) {
 				$( '#infoContent td:eq( 1 )' ).attr( 'width', '292' );
@@ -722,7 +722,7 @@ function infoPlayback() {
 		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
-		, postshow      : function() {
+		, beforeshow   : function() {
 			$( '#infoContent tr' ).last().toggleClass( 'hide', !G.display.cover );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
