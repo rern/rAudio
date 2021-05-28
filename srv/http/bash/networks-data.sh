@@ -6,79 +6,82 @@ if systemctl -q is-active hostapd; then
 	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
 	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
 	ap='
-	  "ssid"       : "'${ssid//\"/\\\"}'"
-	, "passphrase" : "'${passphrase//\"/\\\"}'"
-	, "hostapdip"  : "'$hostapdip'"'
+  "ssid"       : "'${ssid//\"/\\\"}'"
+, "passphrase" : "'${passphrase//\"/\\\"}'"
+, "hostapdip"  : "'$hostapdip'"'
 fi
 
-readarray -t lines <<< $( /srv/http/bash/networks.sh ifconfig )
-for line in "${lines[@]}"; do
-	items=( $line )
-	interface=${items[0]}
-	inftype=${interface:0:4}
-	[[ $inftype != eth0 && $inftype != wlan ]] && continue
-	
-	items1=${items[1]}
-	items2=${items[2]}
-	if [[ ${items1:2:1} != : ]]; then
-		ip=$items1
-		mac=$items2
-	else
-		ip=
-		mac=$items1
-	fi
-	ipr=$( ip r | grep "^default.*$interface" )
-	dhcp=$( [[ $ipr == *"dhcp src $ip "* ]] && echo dhcp || echo static )
-	if [[ $ip != $hostapdip ]]; then
-		gateway=$( cut -d' ' -f3 <<< $ipr )
-		[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
-	else
-		gateway=$ip
-	fi
-	if [[ $inftype == wlan && -n $ip && $ip != $hostapdip ]]; then
-		ssid=$( iwgetid wlan0 -r )
-		wpa=$( grep ^Security "/etc/netctl/$ssid" | cut -d= -f2 )
-		password=$( grep ^Key "/etc/netctl/$ssid" | cut -d= -f2- | tr -d '"' )
-		dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
-		[[ -z $dbm ]] && dbm=0
-	else
-		ssid=
-		dbm=0
-	fi
-	[[ -n $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
-	list+=',{
-		  "dhcp"     : "'$dhcp'"
-		, "gateway"  : "'$gateway'"
-		, "hostname" : "'$hostname'"
-		, "interface": "'$interface'"
-		, "ip"       : "'$ip'"
-		, "mac"      : "'$mac'"
-		, "ssid"     : "'$ssid'"
-		, "dbm"      : '$dbm'
-	}'
-	dhcp=
-	gateway=
-	hostname=
-	interface=
-	ip=
-	mac=
-	ssid=
-	dbm=
-done
-[[ -n $list ]] && list=[${list:1}] || list=false
+ipeth=$( ifconfig eth0 | awk '/^\s*inet/ {print $2}' )
+if [[ -n $ipeth ]]; then
+	ipr=$( ip r | grep "^default.*eth0" )
+	dhcp=$( [[ $ipr == *"dhcp src $ipeth "* ]] && echo dhcp || echo static )
+	gateway=$( echo $ipr | cut -d' ' -f3 )
+	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	[[ -n $ipeth ]] && hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+	listeth='{
+  "dhcp"     : "'$dhcp'"
+, "gateway"  : "'$gateway'"
+, "hostname" : "'$hostname'"
+, "interface": "'$interface'"
+, "ip"       : "'$ipeth'"
+}'
+fi
 
-profiles=$( netctl list )
-if [[ -n $profiles ]]; then
-	ssid=$( iwgetid -r )
-	profiles=$( echo "$profiles" \
-					| cut -c3- \
-					| sed "/^$ssid$/ d" \
-					| sed 's/.*/"&"/' \
-					| tr '\n' , \
-					| head -c -1 )
-	profiles=[$profiles]
-else
-	profiles=false
+ifconfig wlan0 up &> /dev/null # force up
+ipwlan=$( ifconfig wlan0 | awk '/^\s*inet/ {print $2}' )
+if [[ -n $ipwlan ]]; then
+	ipr=$( ip r | grep "^default.*wlan0" )
+	dhcp=$( [[ $ipr == *"dhcp src $ipwlan "* ]] && echo dhcp || echo static )
+	gateway=$( echo $ipr | cut -d' ' -f3 )
+	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	[[ -n $ipwlan ]] && hostname=$( avahi-resolve -a4 $ipwlan | awk '{print $NF}' )
+	ssid=$( iwgetid wlan0 -r )
+	netctl=$( cat "/etc/netctl/$ssid" )
+	security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
+	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
+	hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
+	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
+	[[ -z $dbm ]] && dbm=0
+	listwlan='{
+  "dbm"      : '$dbm'
+, "dhcp"     : "'$dhcp'"
+, "gateway"  : "'$gateway'"
+, "hidden"   : '$hidden'
+, "hostname" : "'$hostname'"
+, "ip"       : "'$ipwlan'"
+, "password" : "'$password'"
+, "security" : "'$security'"
+, "ssid"     : "'$ssid'"
+}'
+fi
+
+readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//' )
+if [[ -n $notconnected ]]; then
+	for ssid in "${notconnected[@]}"; do
+		netctl=$( cat "/etc/netctl/$ssid" )
+		dhcp=$( echo "$netctl" | grep ^IP | cut -d= -f2 )
+		hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
+		password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
+		security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
+		if [[ $dhcp == static ]]; then
+			gateway=$( echo "$netctl" | grep ^Gateway | cut -d= -f2 )
+			ip=$( echo "$netctl" | grep ^Address | cut -d= -f2 | cut -d/ -f1 )
+		else
+			gateway=
+			ip=
+		fi
+		
+		listwlannc+=',{
+  "dhcp"     : "'$dhcp'"
+, "gateway"  : "'$gateway'"
+, "hidden"   : '$hidden'
+, "ip"       : "'$ip'"
+, "password" : "'$password'"
+, "security" : "'$security'"
+, "ssid"     : "'$ssid'"
+}'
+	done
+	listwlannc=[${listwlannc:1}]
 fi
 
 # bluetooth
@@ -94,25 +97,27 @@ if systemctl -q is-active bluetooth; then
 			mac=${line#*^}
 			name=${line/^*}
 			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
-			btlist+=',{"name":"'${name//\"/\\\"}'","connected":'$connected',"mac":"'$mac'"}'
+			listbt+=',{
+  "name"      : "'${name//\"/\\\"}'"
+, "connected" : '$connected'
+, "mac"       : "'$mac'"
+}'
 		done
-		btlist=[${btlist:1}]
-	else
-		btlist=false
+		listbt=[${listbt:1}]
 	fi
-else
-	btlist=false
 fi
 
 data='
-	  "bluetooth" : '$btlist'
-	, "btactive"  : '$( systemctl -q is-active bluetooth && echo true || echo false )'
-	, "inflan"    : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
-	, "infwl"     : '$( rfkill | grep -q wlan && echo true || echo false )'
-	, "list"      : '$list'
-	, "hostapd"   : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
-	, "hostname"  : "'$( hostname )'"
-	, "profiles"  : '$profiles'
-	, "reboot"    : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
+  "page"       : "networks"
+, "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
+, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
+, "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
+, "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
+, "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
+, "listwlannc" : '$( [[ -n $listwlannc ]] && echo $listwlannc || echo false )'
+, "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
+, "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
+, "hostname"   : "'$( hostname )'"
+, "reboot"     : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
 
 echo {$data}

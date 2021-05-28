@@ -39,19 +39,25 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			return
 		}
 		
-		var infojson = {
+		var noparen = title.slice( -1 ) !== ')';
+		var titlenoparen = title.replace( / $| \(.*$/, '' );
+		info( {
 			  icon        : 'lyrics'
 			, title       : 'Bio / Lyrics'
 			, width       : 500
 			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
-			, textvalue   : [ artist, title ]
-			, textalign   : 'center'
+			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
 			, boxwidth    : 'max'
-			, buttonwidth : 1
+			, checkbox    : noparen ? '' : [ 'Title with parentheses content' ]
+			, beforeshow  : noparen ? '' : function() {
+				$( '#infoContent input' ).change( function() {
+					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+				} );
+			}
 			, buttonlabel : '<i class="fa fa-bio wh"></i>Bio'
 			, button      : function() {
 				if ( $( '#bio legend' ).text() != G.status.Artist ) {
-					getBio( $( '#infoTextBox' ).val() );
+					getBio( infoVal()[ 0 ] );
 				} else {
 					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 					$( '#bio' ).removeClass( 'hide' );
@@ -60,22 +66,12 @@ $( '#song, #guide-lyrics' ).tap( function() {
 			}
 			, oklabel     : '<i class="fa fa-lyrics wh"></i>Lyrics'
 			, ok          : function() {
-				lyricsArtist = $( '#infoTextBox' ).val();
-				lyricsTitle = $( '#infoTextBox1' ).val();
+				var values = infoVal();
+				lyricsArtist = values[ 0 ];
+				lyricsTitle = values[ 1 ];
 				getLyrics();
 			}
-		}
-		if ( title.slice( -1 ) === ')' ) {
-			querytitle = title.replace( / $| \(.*$/, '' );
-			infojson.textvalue = [ artist, querytitle ];
-			infojson.checkbox  = { 'Title with parentheses content': 0 }
-			infojson.preshow   = function() {
-				$( '#infoCheckBox input' ).change( function() {
-					$( '#infoTextBox1' ).val( $( this ).prop( 'checked' ) ? title : querytitle );
-				} );
-			}
-		}
-		info( infojson );
+		} );
 	} );
 } );
 $( '#lyricstextarea' ).on( 'input', function() {

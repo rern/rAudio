@@ -92,29 +92,32 @@ function disableSwitch( id, truefalse ) {
 		.prop( 'disabled', truefalse )
 		.next().toggleClass( 'disabled', truefalse );
 }
-function notify( title, message, icon ) {
-	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( title, message, icon +' blink', -1 );
+function escapeUsrPwd( usrpwd ) {
+	return usrpwd.replace( /(["&()\\])/g, '\$1' )
 }
 function list2JSON( list ) {
-		try {
-			G = JSON.parse( list );
-		} catch( e ) {
-			var msg = e.message.split( ' ' );
-			var pos = msg.pop();
-			var errors = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
-						+'<hr>'
-						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			$( '#data' ).html( errors ).removeClass( 'hide' );
-			return false
-		}
-		$( '#button-data' ).removeAttr( 'class' );
-		$( '#data' ).empty().addClass( 'hide' );
-		if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
-		return true
+	try {
+		G = JSON.parse( list );
+	} catch( e ) {
+		var msg = e.message.split( ' ' );
+		var pos = msg.pop();
+		var errors = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+					+'<hr>'
+					+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+		$( '#data' ).html( errors ).removeClass( 'hide' );
+		return false
+	}
+	$( '#button-data' ).removeAttr( 'class' );
+	$( '#data' ).empty().addClass( 'hide' );
+	if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
+	return true
 }
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
+}
+function notify( title, message, icon ) {
+	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
+	banner( title, message, icon +' blink', -1 );
 }
 function resetLocal( ms ) {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
@@ -135,9 +138,6 @@ function showContent() {
 		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
-function validateIP( ip ) {  
-	return /^(?!.*\.$)((?!0\d)(1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/.test( ip )
-} 
 
 var pushstream = new PushStream( { modes: 'websocket' } );
 var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
@@ -171,7 +171,11 @@ function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
 }
 function psRefresh( data ) {
-	if ( data.page === page || data.page === 'all' ) refreshData();
+	if ( data.page === page ) {
+		renderPage( data );
+	} else if ( data.page === 'all' ) {
+		refreshData();
+	}
 }
 function psReload() {
 	if ( localhost ) location.reload();
@@ -179,6 +183,10 @@ function psReload() {
 function psVolume( data ) {
 	if ( G.local || !$( '#infoRange .value' ).text() ) return
 	
+	if ( data.type === '0dB' ) {
+		var changed = $( '#infoRange .value' ).text() != data.val;
+		banner( 'Volume', changed ? 'Reset to 0dB at '+ data.val : 'Already at 0dB', 'volume' );
+	}
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var val = data.type !== 'mute' ? data.val : 0;

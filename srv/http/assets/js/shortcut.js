@@ -3,32 +3,52 @@ $( document ).keydown( function( e ) {
 	if ( G.local || !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
-	
-	if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
-		e.preventDefault();
+	if ( key === 'Home' ) {
 		if ( G.library ) {
-			var $index = $( '#lib-index1' ).css( 'display' ) === 'none' ? $( '#lib-index' ) : $( '#lib-index1' );
-		} else {
-			var $index = $( '#pl-index' );
+			$( '#tab-library' ).click();
+		} else if ( G.playlist ) {
+			$( '#tab-playlist' ).click();
 		}
-		var $indexedbgr = $index.find( '.indexed.bgr' );
-		if ( $indexedbgr.length ) {
-			if ( key === 'ArrowUp' ) {
-				if ( $indexedbgr.index() ) {
-					$indexedbgr.prevAll( '.indexed' ).eq( 0 ).addClass( 'bgr' );
+		return
+	}
+	
+	if ( key === 'Backspace' && !$( 'input:focus, textarea:focus' ).length ) {
+		if ( G.library ) {
+			$( '#button-lib-back' ).click();
+		} else if ( G.playlist ) {
+			$( '#button-pl-back' ).click();
+		}
+		return
+	}
+	
+	if ( key === '#' || key >= 'a' && key <= 'z' ) { // index bar
+		key = key.toUpperCase();
+		if ( G.library && !$( '#lib-list .index' ).hasClass( 'hide' ) ) {
+			$( '#lib-index' ).find( 'wh:contains('+ key +')' ).click();
+			if ( G.albumlist ) {
+				$( '#lib-list .coverart.active' ).removeClass( 'active' );
+				if ( key !== '#' ) {
+					$( '#lib-list .coverart[data-index='+ key +']:eq( 0 )' ).addClass( 'active' );
 				} else {
-					$index.find( '.indexed:last' ).addClass( 'bgr' );
+					$( '#lib-list .coverart:eq( 0 )' ).addClass( 'active' );
 				}
 			} else {
-				if ( $indexedbgr.index() !== $index.find( '.indexed:last' ).index() ) {
-					$indexedbgr.nextAll( '.indexed' ).eq( 0 ).addClass( 'bgr' );
+				$( '#lib-list li.active' ).removeClass( 'active' );
+				if ( key !== '#' ) {
+					$( '#lib-list li[data-index='+ key +']:eq( 0 )' ).addClass( 'active' );
 				} else {
-					$index.find( 'a:eq( 0 )' ).addClass( 'bgr' );
+					$( '#lib-list li:eq( 0 )' ).addClass( 'active' );
 				}
 			}
-			$indexedbgr.removeClass( 'bgr' );
-			return
+		} else if ( G.playlist && !$( '#pl-list .index' ).hasClass( 'hide' ) ) {
+			$( '#pl-savedlist li.active' ).removeClass( 'active' );
+			if ( key !== '#' ) {
+				$( '#pl-savedlist li[data-index='+ key +']:eq( 0 )' ).addClass( 'active' );
+			} else {
+				$( '#pl-savedlist li:eq( 0 )' ).addClass( 'active' );
+			}
 		}
+		return
 	}
 	
 	if ( key === 'Enter' ) {
@@ -56,23 +76,6 @@ $( document ).keydown( function( e ) {
 		return
 	}
 		
-	if ( key === 'Control' ) {
-		if ( G.library ) {
-			var $index = $( '#lib-index1' ).css( 'display' ) === 'none' ? $( '#lib-index' ) : $( '#lib-index1' );
-		} else {
-			var $index = $( '#pl-index' );
-		}
-		if ( $index.find( '.indexed' ).length === 1 ) return
-		
-		var $indexedbgr = $index.find( '.indexed.bgr' );
-		if ( $indexedbgr.length ) {
-			$indexedbgr.removeClass( 'bgr' );
-		} else {
-			$index.find( 'a:eq( 0 )' ).addClass( 'bgr' );
-		}
-		return
-	}
-			
 	var keyevent = {
 		  AudioVolumeDown    : 'voldn'
 		, AudioVolumeMute    : 'volmute'
@@ -213,7 +216,44 @@ $( document ).keydown( function( e ) {
 				if ( !$div.length ) $div = $( '.lib-mode:not( .hide ):eq( 0 )' );
 				$div.addClass( 'updn' );
 			} else if ( key === 'Enter' ) {
-				$( '.lib-mode.updn .mode' ).click();
+				$( '.lib-mode.updn .mode' )
+					.trigger( 'click' )
+					.trigger( 'tap' );
+			}
+			return
+		}
+		
+		if ( G.albumlist ) { // album
+			if ( !$( '#lib-list .coverart.active' ).length ) {
+				$( '#lib-list .coverart:eq( 0 )' ).addClass( 'active' );
+				return
+			}
+			
+			var $active = $( '#lib-list .coverart.active' );
+			var arrowL = key === 'ArrowLeft';
+			var arrowR = key === 'ArrowRight';
+			if ( arrowL || arrowR ) {
+				if ( arrowL && $active.index() === 0 ) return
+				if ( arrowR && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
+				
+				var $next = arrowR ? $active.next() : $active.prev();
+				$active.removeClass( 'active' );
+				$next.addClass( 'active' );
+				var rect = $next[ 0 ].getBoundingClientRect();
+				var wH = $( window ).height();
+				var eH = $next.height();
+				var top = $next.offset().top;
+				if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
+					var scroll = top - ( G.bars ? 80 : 40 );
+				} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
+					var scroll = top - eH;
+				}
+				$( 'html, body' ).scrollTop( scroll );
+			} else if ( key === 'ArrowUp' ) {
+				$( '#button-lib-back' ).click();
+			} else if ( key === 'Enter' ) {
+				G.iactive = $( '#lib-list .coverart.active' ).index();
+				$active.trigger( 'tap' );
 			}
 			return
 		}
@@ -228,6 +268,7 @@ $( document ).keydown( function( e ) {
 		
 		// list ///////////////////////////////////////
 		if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
+			e.preventDefault();
 			scrollUpDown( $( '#lib-list' ), key );
 		} else if ( key === 'Enter' ) {
 			var $liactive = $( '#lib-list li.active' );
@@ -298,13 +339,11 @@ function scrollUpDown( $list, key ) {
 	}
 	
 	$linext.addClass( classactive );
-	setTimeout( function() {
-		var litop = $linext[ 0 ].getBoundingClientRect().top;
-		var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
-		if ( key === 'ArrowUp' ) {
-			if ( libottom > window.innerHeight - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - window.innerHeight + 89 );
-		} else {
-			if ( libottom > window.innerHeight - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
-		}
-	}, 300 );
+	var litop = $linext[ 0 ].getBoundingClientRect().top;
+	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
+	if ( key === 'ArrowUp' ) {
+		if ( libottom > window.innerHeight - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - window.innerHeight + 89 );
+	} else {
+		if ( libottom > window.innerHeight - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
+	}
 }

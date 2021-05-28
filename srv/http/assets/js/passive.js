@@ -170,7 +170,7 @@ function psCoverart( data ) {
 					$( '#coverart' )
 						.attr( 'src', url )
 						.removeClass( 'hide' );
-					$( '#divcover .covedit' ).remove();
+					$( '#divcover .coveredit' ).remove();
 					$( '#coverart' ).css( 'opacity', '' );
 				}
 			} else if ( G.library ) {
@@ -180,7 +180,7 @@ function psCoverart( data ) {
 					currentname = name.replace( /[ "`?/#&'"']/g, '' );
 					if ( coverpath === currentpath || covername === currentname ) {
 						$( '#liimg' ).attr( 'src', url );
-						$( '.licover .covedit' ).remove();
+						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );
 					}
 				} else {
@@ -274,7 +274,7 @@ function psDisplay( data ) {
 			} else {
 				setTrackCoverart();
 			}
-		} else if ( $( '#lib-list .coverart' ).length && G.albumbyartist !== G.display.albumbyartist ) {
+		} else if ( G.albumlist && G.albumbyartist !== G.display.albumbyartist ) {
 			G.query = [];
 			$( '#mode-album' ).click();
 		}
@@ -305,7 +305,7 @@ function psMpdPlayer( data ) {
 		}
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
-	setTimeout( bannerHide, 'nodelay' in data ? 0 : 3000 );
+	bannerHide();
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
@@ -377,10 +377,6 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( 'autoplaycd' in data ) {
-		G.autoplaycd = 1;
-		setTimeout( function() { delete G.autoplaycd }, 5000 );
-	}
 	if ( G.local ) return
 	
 	if ( data == -1 ) {
@@ -389,6 +385,9 @@ function psPlaylist( data ) {
 		} else if ( G.playlist ) {
 			renderPlaylist( -1 );
 		}
+	} else if ( 'autoplaycd' in data ) {
+		G.autoplaycd = 1;
+		setTimeout( function() { delete G.autoplaycd }, 5000 );
 	} else if ( 'html' in data ) {
 		if ( G.playback ) {
 			getPlaybackStatus();
@@ -429,7 +428,6 @@ function psRelays( response ) { // on receive broadcast
 			, title       : 'GPIO Relays Countdown'
 			, message     : stopwatch
 			, footer      : '<white>'+ delay +'</white>'
-			, buttonwidth : 1
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
@@ -443,7 +441,7 @@ function psRelays( response ) { // on receive broadcast
 		delay--
 		G.intRelaysTimer = setInterval( function() {
 			if ( delay ) {
-				$( '#infoFooter white' ).text( delay-- );
+				$( '.infofooter white' ).text( delay-- );
 			} else {
 				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
@@ -473,7 +471,7 @@ function psRelays( response ) { // on receive broadcast
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
 			$( '.infobtn' ).addClass( 'hide' );
-			$( '#infoFooter white' ).html( devices );
+			$( '.infofooter white' ).html( devices );
 		}
 	}
 }

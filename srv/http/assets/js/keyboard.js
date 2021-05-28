@@ -79,7 +79,7 @@ var keyboard = new Keyboard( {
 } );
 $( 'body' ).on( 'click', '.input', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
-	$( '.infoinput' ).removeClass( 'active' );
+	$( '#infoContent input:text' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
 	$( '.hg-button-enter' ).toggleClass( 'disabled', $( '#infoOk' ).hasClass( 'disabled' ) );

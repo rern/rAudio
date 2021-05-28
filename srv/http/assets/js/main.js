@@ -73,7 +73,7 @@ var nameplayer = {
 	, upnp       : 'UPnP'
 }
 
-displayGet( function( data ) { // get mpd status with passive.js on pushstream connect
+bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
 	G.bars = data.bars;
 	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
@@ -101,7 +101,7 @@ displayGet( function( data ) { // get mpd status with passive.js on pushstream c
 				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 		}
 	} );
-} );
+}, 'json' );
 G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -111,12 +111,12 @@ $( '#loader' ).click( function() {
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
-		&& !G.status.webradio
+		&& G.status.file.slice( 0, 4 ) !== 'http'
 		&& G.status.player !== 'bluetooth'
 	) {
-		$( '#divcover' ).append( '<i class="covedit fa fa-save cover-save"></i>' );
+		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
 	} else {
-		$( '#divcover .covedit' ).remove();
+		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 	}
 	loader( 'hide' );
@@ -198,215 +198,13 @@ $( '#power' ).click( function() {
 		, ok          : function() {
 			bash( [ 'power', 'off' ] );
 		}
-		, buttonwidth : 1
 	} );
 } );
-var chklibrary = {
-	  sd             : '_<i class="fa fa-microsd"></i>SD'
-	, usb            : '<i class="fa fa-usbdrive"></i>USB'
-	, nas            : '_<i class="fa fa-networks"></i>Network'
-	, webradio       : '<i class="fa fa-webradio"></i>WebRadio'
-	, album          : '_<i class="fa fa-album"></i>Album'
-	, br             : '<br>'
-	, artist         : '_<i class="fa fa-artist"></i>Artist'
-	, albumartist    : '<i class="fa fa-albumartist"></i>AlbumArtist'
-	, composer       : '_<i class="fa fa-composer"></i>Composer'
-	, conductor      : '<i class="fa fa-conductor"></i>Conductor'
-	, date           : '_<i class="fa fa-date"></i>Date'
-	, genre          : '<i class="fa fa-genre"></i>Genre'
-	, br1            : '<hr><px30/><gr>Text:</gr><br>'
-	, count          : '_Count'
-	, label          : 'Label'
-}
-var chklibrary2 = {
-	  albumbyartist  : '<i class="fa fa-coverart"></i>Sort Album by artists'
-	, backonleft     : '<i class="fa fa-arrow-left"></i>Back button on left side'
-	, tapaddplay     : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus"></i>Add + Play'
-	, tapreplaceplay : 'Tap song&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace"></i>Replace + Play'
-	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus"></i>or <i class="fa fa-play-replace"></i>'
-	, br             : '<hr><px30/><i class="fa fa-coverart"></i>Cover art band <gr>in tracks view</gr><br>'
-	, hidecover      : 'Hide'
-	, fixedcover     : 'Fix <gr>on large screen</gr>'
-}
-$( '#displaylibrary, #displaylibrary2' ).click( function() {
-	var options = this.id === 'displaylibrary2';
-	var checklist = !options ? chklibrary : chklibrary2;
-	displayGet( function( data ) {
-		G.display = data;
-		var json = {
-			  icon     : 'library'
-			, title    : !options ? 'Library Home Display' : 'Library/Playlist Options'
-			, message  : !options ? '1/2 - Show selected items:' : ''
-			, checkbox : displayCheckbox( checklist )
-			, preshow  : function() {
-				if ( options ) {
-					$( 'input[name="tapaddplay"], input[name="tapreplaceplay"]' ).click( function() {
-						var toggle = $( this ).prop( 'name' ) === 'tapaddplay' ? 'tapreplaceplay' : 'tapaddplay';
-						if ( $( this ).prop( 'checked' ) ) $( 'input[ name="'+ toggle +'" ]' ).prop( 'checked', 0 ) ;
-					} );
-					$( 'input[name=hidecover]' ).change( function() {
-						if ( $( this ).prop( 'checked' ) ) {
-							displayCheckboxSet( 'fixedcover', false, false );
-						} else {
-							displayCheckboxSet( 'fixedcover', true );
-						}
-					} );
-					$( 'input[name=fixedcover]' ).prop( 'disabled', G.display.hidecover );
-				}
-			}
-			, ok       : function () {
-				displaySave( 'library' );
-				$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-				if ( G.library ) {
-					if ( G.librarylist ) {
-						if ( $( '.lib-index' ).length ) return
-						
-						if ( G.display.hidecover ) {
-							$( '.licover' ).addClass( 'hide' );
-						} else {
-							if ( !$( '.licover' ).length ) {
-								var query = G.query[ G.query.length - 1 ];
-								list( query, function( data ) {
-									data.path = query.path;
-									data.modetitle = query.modetitle;
-									renderLibraryList( data );
-								}, 'json' );
-								return
-							}
-							
-							var pH = G.bars ? 130 : 90;
-							if ( G.display.fixedcover ) {
-								pH += 230;
-								$( '.licover' ).removeClass( 'nofixed' );
-								$( '#lib-list li:eq( 1 )' ).addClass( 'track1' );
-								$( '#lib-list p' ).addClass( 'fixedcover' )
-							} else {
-								$( '.licover' ).addClass( 'nofixed' );
-								$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
-								$( '#lib-list p' ).removeClass( 'fixedcover' )
-							}
-							$( '.licover' ).removeClass( 'hide' );
-						}
-					} else {
-						renderLibrary();
-					}
-				} else if ( G.playlist ) {
-					if ( G.savedlist ) $( '#button-pl-back' ).css( 'float', G.display.backonleft ? 'left' : '' );
-				}
-			}
-		}
-		if ( !options ) {
-			json.arrowright = function() { $( '#displaylibrary2' ).click(); }
-		} else {
-			json.arrowleft = function() { $( '#displaylibrary' ).click(); }
-		}
-		info( json );
-	} );
+$( '#displaylibrary' ).click( function() {
+	infoLibrary();
 } );
-var chkplayback = {
-	  bars         : '_Top-Bottom bars'
-	, barsalways   : 'Bars always on'
-	, time         : '_Time'
-	, progressbar  : 'Progress bar'
-	, cover        : '_Coverart'
-	, coversmall   : 'Small coverart'
-	, volume       : '_Volume'
-	, radioelapsed : 'WebRadio time'
-	, buttons      : '_Buttons'
-}
 $( '#displayplayback' ).click( function() {
-	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
-	displayGet( function( data ) {
-		G.display = data;
-		var bars = G.display.bars;
-		var content = displayCheckbox( chkplayback )
-		info( {
-			  icon     : 'play-circle'
-			, title    : 'Playback Display'
-			, message  : 'Show selected items:'
-			, checkbox : displayCheckbox( chkplayback )
-			, preshow  : function() {
-				$( '#infoContent' ).append( '<div id="divnovu"><hr>Default coverart:&emsp;'
-						+'<label><input type="radio" name="novu" value="true"><img class="imgicon" src="/assets/img/coverart.svg"></label>&emsp;&emsp;'
-						+'<label><input type="radio" name="novu" value="false"><img class="imgicon" src="/assets/img/vu.png"></label></div>' );
-				$( 'input[name=novu]' ).val( [ G.display.novu ] );
-				$( '#divnovu' ).toggleClass( 'hide', !G.display.cover );
-				if ( !G.display.bars ) displayCheckboxSet( 'barsalways' );  // disable by bars hide
-				if ( G.display.time ) displayCheckboxSet( 'progressbar' );  // disable by time
-				if ( !G.display.cover ) displayCheckboxSet( 'coversmall' ); // disable by cover
-				if ( G.display.volumenone ) displayCheckboxSet( 'volume' ); // disable by mpd volume
-				if ( !G.display.time && !G.display.volume ) {
-					displayCheckboxSet( 'cover' ); // disable by autohide
-					displayCheckboxSet( 'buttons' );
-				}
-				if ( G.status.player !== 'mpd' ) displayCheckboxSet( 'buttons' );
-				var $bars = $( 'input[name=bars]' );
-				var $time = $( 'input[name=time]' );
-				var $cover = $( 'input[name=cover]' );
-				var $volume = $( 'input[name=volume]' );
-				var $timevolume = $( 'input[name=time], input[name=volume]' );
-				$timevolume.change( function() {
-					var time = $time.prop( 'checked' );
-					var volume = $volume.prop( 'checked' );
-					if ( time || volume ) {
-						displayCheckboxSet( 'cover', true );
-						displayCheckboxSet( 'progressbar', false, false );
-						displayCheckboxSet( 'buttons', true );
-					} else {
-						displayCheckboxSet( 'cover', false, true );
-						displayCheckboxSet( 'progressbar', false, false );
-						displayCheckboxSet( 'buttons', false, false );
-					}
-					if ( !time && $cover.prop( 'checked' ) ) {
-						displayCheckboxSet( 'progressbar', true, true );
-					} else {
-						displayCheckboxSet( 'progressbar', false, false );
-					}
-					if ( !time && ( !volume || G.display.volumenone ) ) {
-						displayCheckboxSet( 'cover', true, true );
-						displayCheckboxSet( 'progressbar', true, true );
-					}
-				} );
-				$bars.change( function() {
-					if ( $( this ).prop( 'checked' ) ) {
-						displayCheckboxSet( 'barsalways', true );
-					} else {
-						displayCheckboxSet( 'barsalways', false, false );
-					}
-				} );
-				$cover.change( function() {
-					if ( $( this ).prop( 'checked' ) ) {
-						if ( !$time.prop( 'checked' ) ) displayCheckboxSet( 'progressbar', true, true );
-						displayCheckboxSet( 'coversmall', true );
-						$( '#divnovu' ).removeClass( 'hide' );
-					} else {
-						displayCheckboxSet( 'progressbar', false, false );
-						displayCheckboxSet( 'coversmall', false, false );
-						if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( 'time', true, true );
-						$( '#divnovu' ).addClass( 'hide' );
-					}
-				} );
-			}
-			, ok       : function () {
-				displaySave( 'playback' );
-				G.bars = G.display.bars;
-				displayBars();
-				if ( G.playback ) {
-					displayPlayback();
-					setButtonControl();
-					renderPlayback();
-					$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
-				} else if ( G.library ) {
-					$( '.list p' ).toggleClass( 'bars-on', G.bars );
-					if ( bars !== G.bars && $( '.coverart' ).length ) {
-						G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
-						$( '#mode-album' ).click();
-					}
-				}
-			}
-		} );
-	} );
+	infoPlayback();
 } );
 $( '#colorok' ).click( function() {
 	G.color = 0;
@@ -464,7 +262,7 @@ $( '#addons' ).click( function () {
 		  icon      : 'jigsaw'
 		, title     : 'Addons'
 		, textlabel : 'Tree #/Branch'
-		, textvalue : 'UPDATE'
+		, values    : 'UPDATE'
 		, ok        : function() {
 			banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
 			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function( std ) {
@@ -475,6 +273,7 @@ $( '#addons' ).click( function () {
 } );
 $( '#tab-library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
+	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
 		if ( G.librarylist || G.bookmarkedit ) {
@@ -492,29 +291,11 @@ $( '#tab-library, #button-library' ).click( function() {
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
-$( '#logo, #button-library, #button-data, #button-playlist' ).taphold( function() {
+$( '#logo, #reload, #button-library, #button-playlist' ).taphold( function() {
 	location.reload();
 } );
 $( '#logo' ).click( function() {
 	window.open( 'https://github.com/rern/rAudio-1/discussions' );
-} );
-$( '#button-data' ).click( function() {
-	if( $( '#data' ).hasClass( 'hide' ) ) {
-		$( '#data' )
-			.html( JSON.stringify( G.status, null, 2 ) )
-			.toggleClass( 'barshidden', !G.bars )
-			.removeClass( 'hide' );
-		$( this )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-times bl barshidden' );
-	} else {
-		$( '#data' )
-			.addClass( 'hide' )
-			.css( 'max-height', '' );
-		$( this )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-redo transparent' );
-	}
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
@@ -524,7 +305,7 @@ $( '#tab-playback' ).click( function() {
 			  icon       : 'volume'
 			, title      : 'Volume'
 			, rangevalue : G.status.volume
-			, preshow    : function() {
+			, beforeshow : function() {
 				$( '#infoOverlay' ).addClass( 'noscroll' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					var vol = $( this ).val();
@@ -562,7 +343,7 @@ $( '#tab-playlist' ).click( function() {
 $( '#page-playback' ).tap( function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
-	if ( $( '#divcover .covedit' ).length ) {
+	if ( $( '#divcover .coveredit' ).length ) {
 		if ( !$( e.target ).hasClass( 'fa-coverart' ) ) {
 			$( '#divcover .fa-coverart' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
@@ -804,7 +585,6 @@ $( '#coverT, #timeT' ).tap( function() {
 	$( '#volume-text' ).addClass( 'hide' );
 	$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 	$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
-	$( '#button-data' ).addClass( 'translucent' );
 	if ( !G.bars ) $( '#bar-bottom' ).addClass( 'translucent' );
 	if ( window.innerWidth < 614 && !G.display.volume ) {
 		$( '#coverTL' )
@@ -832,14 +612,14 @@ $( '#coverT, #timeT' ).tap( function() {
 			$( '#volume-bar' ).removeClass( 'hide' );
 		}
 	}
-	$( '.covedit' ).css( 'z-index', 15 );
+	$( '.coveredit' ).css( 'z-index', 15 );
 } );
 $( '.covermap' ).taphold( function( e ) {
 	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<i class="covedit fa fa-coverart"></i>' );
+		.after( '<i class="coveredit fa fa-coverart"></i>' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -950,7 +730,7 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'click', '.covedit', function( e ) {
+$( '#divcover' ).on( 'click', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
@@ -1157,15 +937,12 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					+'<br><px30/>&bull; Create directory icons'
 	}
 	info( {
-		  icon     : 'coverart'
-		, title    : 'Album Thumbnails'
-		, message  : message
-		, msgalign : 'left'
-		, preshow  : function() {
-			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );
-		}
-		, ok       : function() {
-			thumbUpdate( '' );
+		  icon         : 'coverart'
+		, title        : 'Album Thumbnails'
+		, message      : message
+		, messagealign : 'left'
+		, ok           : function() {
+			thumbUpdate();
 		}
 	} );
 } );
@@ -1316,91 +1093,6 @@ $( '.mode' ).click( function() {
 	query.modetitle = path;
 	G.query.push( query );
 } );
-$( '#infoContent' ).on( 'click', '#imgnew', function() {
-	G.rotate += 90;
-	if ( G.rotate === 360 ) G.rotate = 0;
-	var canvas = document.createElement( 'canvas' );
-	var ctx = canvas.getContext( '2d' );
-	var image = document.getElementById( 'imgnew' );
-	var img = new Image();
-	img.onload = function() {
-		ctx.drawImage( image, 0, 0 );
-	}
-	img.src = image.src;
-	var w = img.width;
-	var h = img.height;
-	var cw = Math.round( w / 2 );
-	var ch = Math.round( h / 2 );
-	canvas.width = h;
-	canvas.height = w;
-	ctx.translate( ch, cw );
-	ctx.rotate( Math.PI / 2 );
-	ctx.drawImage( img, -cw, -ch );
-	image.src = canvas.toDataURL( 'image/jpeg' );
-} );
-$( '#infoFileBox' ).change( function() {
-	var timeout = setTimeout( function() {
-		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
-	}, 1000 );
-	G.rotate = 0;
-	var file = this.files[ 0 ];
-	$( '#infoButton' ).hide();
-	if ( !file ) return
-	
-	$( '#infoFilename' ).empty();
-	$( '#imgnew, .imagewh, .imgname' ).remove();
-	if ( file.name.slice( -3 ) === 'gif' ) {
-		var img = new Image();
-		img.onload = function() {
-			$( '#infoMessage' ).append(
-				 '<img id="imgnew" src="'+ URL.createObjectURL( file ) +'">'
-				+'<div class="imagewh"><span>'+ this.width +' x '+ this.height +'</span></div>'
-			);
-			clearTimeout( timeout );
-			bannerHide();
-		}
-		img.src = URL.createObjectURL( file );
-		return
-	}
-	
-	getOrientation( file, function( ori ) {
-		resetOrientation( file, ori, function( filecanvas, imgW, imgH ) {
-			var maxsize = ( G.library && !G.librarylist ) ? 200 : 1000;
-			var htmlrotate = '<br><i class="fa fa-redo"></i>&ensp;Tap to rotate</span></div>';
-			if ( imgW > maxsize || imgH > maxsize ) {
-				if ( imgW > imgH ) {
-					pxW = maxsize;
-					pxH = Math.round( imgH / imgW * maxsize );
-				} else {
-					pxH = maxsize;
-					pxW = Math.round( imgW / imgH * maxsize );
-				}
-				var canvas = document.createElement( 'canvas' );
-				canvas.width = pxW;
-				canvas.height = pxH;
-				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					var resizedimg = canvas.toDataURL( 'image/jpeg' ); // canvas -> base64
-					$( '#infoMessage' ).append(
-						 '<img id="imgnew" src="'+ resizedimg +'">'
-						+'<div class="imagewh"><span>'+ pxW +' x '+ pxH
-						+'<br>original: '+ imgW +' x '+ imgH
-						+ htmlrotate
-					);
-					clearTimeout( timeout );
-					bannerHide();
-				} );
-			} else {
-				$( '#infoMessage' ).append( 
-					 '<img id="imgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
-					+'<div class="imagewh"><span>'+ imgW +' x '+ imgH
-					+ htmlrotate
-				);
-				clearTimeout( timeout );
-				bannerHide();
-			}
-		} );
-	} );
-} );
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
 	if ( $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' )  ) {
@@ -1418,15 +1110,15 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			  icon         : 'bookmark'
 			, title        : 'Rename Bookmark'
 			, width        : 500
-			, message      : '<i class="fa fa-bookmark bookmark"></i>'
-							+'<br><a class="bklabel">'+ name +'</a>'
-							+'To:'
-			, textvalue    : name
-			, textrequired : 0
+			, message      : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
+							+'<br><span class="bklabel">'+ name +'</span></div>'
+			, textlabel    : 'To:'
+			, values       : name
+			, checkblank   : [ 0 ]
 			, boxwidth     : 'max'
 			, oklabel      : '<i class="fa fa-flash"></i>Rename'
 			, ok           : function() {
-				var newname = $( '#infoTextBox' ).val();
+				var newname = infoVal();
 				$.post( cmdphp, {
 					  cmd    : 'bookmarkrename'
 					, path   : path
@@ -1440,7 +1132,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
-					  +'<p class="imgname">'+ name +'</p>';
+					  +'<p class="infoimgname">'+ name +'</p>';
 		} else {
 			var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
 		}
@@ -1449,29 +1141,26 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		//    - gif    > [file]   - no canvas
 		//    - others > [base64] - data:image/jpeg;base64,...
 		var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
-		var jsoninfo =  {
+		info( {
 			  icon        : 'bookmark'
 			, title       : 'Change Bookmark Thumbnail'
 			, message     : icon
-			, filelabel   : '<i class="fa fa-folder-open"></i>Browse'
+			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
-			, ok          : function() {
-				imageReplace( imagefile, 'bookmark' );
-			}
-		}
-		if ( thumbnail ) {
-			jsoninfo.buttonlabel = '<i class="fa fa-undo"></i>Reset';
-			jsoninfo.buttonwidth = 1;
-			jsoninfo.button      = function() {
+			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
+			, buttoncolor : !thumbnail ? '' : orange
+			, button      : !thumbnail ? '' : function() {
 				bash( [ 'bookmarkreset', path ], function() {
 					var label = path.split( '/' ).pop();
 					$this.find( 'img' ).remove();
 					$this.find( '.lipath' ).after( '<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'+ label +'</span></div>' );
 				} );
 			}
-		}
-		info( jsoninfo );
+			, ok          : function() {
+				imageReplace( imagefile, 'bookmark' );
+			}
+		} );
 	} else if ( $target.hasClass( 'bk-remove' ) ) {
 		var $img = $this.find( 'img' );
 		if ( $img.length ) {
@@ -1579,7 +1268,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
 } );
-$( '#lib-list' ).on( 'tap', '.covedit',  function() {
+$( '#lib-list' ).on( 'tap', '.coveredit',  function() {
 	var $this = $( this );
 	var $img = $this.siblings( 'img' );
 	var $thisli = $this.parent().parent();
@@ -1600,14 +1289,14 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<i class="covedit fa fa-coverart"></i>' );
+		.after( '<i class="coveredit fa fa-coverart"></i>' );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
 	var $target = $( e.target );
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'fa-coverart' ) ) return
 	
-	$( '.licover' ).find( '.covedit' ).remove();
+	$( '.licover .fa-coverart' ).remove();
 	$( '.licover img' ).css( 'opacity', '' );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
@@ -1857,7 +1546,6 @@ $( '#button-pl-clear' ).click( function() {
 				bash( [ 'plremove' ] );
 				renderPlaybackBlank();
 			}
-			, buttonwidth : 1
 		} );
 	}
 } );
@@ -2012,7 +1700,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.similar, .submenu, .tag' ).toggleClass( 'hide', radio );
 	$menu.find( '.savedpladd, .tag' ).toggleClass( 'hide', audiocd );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
-	var contextnum = $menu.find( 'a:not(.hide)' ).length;
 	var menuH = $menu.height();
 	$menu
 		.removeClass( 'hide' )
@@ -2024,22 +1711,17 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	plRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
+	$( '.menu' ).addClass( 'hide' );
 	var $target = $( e.target );
 	if ( G.swipe || $target.hasClass( 'savewr' ) ) return
 	
 	$this = $( this );
-	if ( $this.hasClass( 'active' )
-			&& $( '.contextmenu:not( .hide )' ).length ) {
-		$( '.menu' ).addClass( 'hide' );
-		return
-	}
+	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
 	
 	var pladd = Object.keys( G.pladd ).length;
 	var plicon = $target.hasClass( 'pl-icon' );
-	$( '.menu' ).addClass( 'hide' );
 	if ( G.savedplaylist || plicon ) {
 		if ( !pladd ) {
-			$( '.menu' ).addClass( 'hide' );
 			var datatarget = $target.data( 'target' ) || $this.find( '.pl-icon' ).data ( 'target' );
 			var $menu = $( datatarget );
 			G.list = {};

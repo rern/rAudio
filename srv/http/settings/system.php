@@ -19,7 +19,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 <heading data-status="journalctl" class="status">System<?=$istatus?></heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
-	<br>OS Kernel
+	<br>Kernel
 	<br>Hardware
 	<br>SoC
 	<br>CPU
@@ -66,6 +66,8 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 		</div>
 	</span>
 </div>
+<div style="clear:both"></div>
+<pre id="codeundervoltage" class="hide"></pre>
 </div>
 
 <div>
@@ -154,6 +156,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>
 		Power button for on/off rAudio with <a href="http://wiringpi.com/">WiringPi</a>
 		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/181#discussion-3100261">Wiring</a>
+		<br>&bull; On pin is fixed.
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
@@ -174,7 +177,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
-	<input id="lcd" <?=$chknoset?>>
+	<input id="lcd" class="enable" type="checkbox">
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -194,7 +197,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<span <?=$classhelp?>>Name for Renderers, Streamers, Access point, Bluetooth and system Hostname.</span>
 </div>
 <div class="col-l double">
-	<a>Timezone<br><gr>NTP, RegDom</gr></a><i class="fa fa-globe"></i>
+	<a>Timezone<br>NTP, regdomain</a><i class="fa fa-globe"></i>
 </div>
 <div class="col-r">
 	<?=$selecttimezone?><i id="setting-regional" class="settingedit fa fa-gear"></i>
@@ -213,7 +216,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	<input id="soundprofile" <?=$chkenable?>>
 	<div class="switchlabel" for="soundprofile"></div>
 	<i id="setting-soundprofile" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>Tweak kernel parameters for <a htef="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
+	<span <?=$classhelp?>>Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
 </div>
 <pre id="codesoundprofile" class="hide"></pre>
 </div>
@@ -236,7 +239,7 @@ $helpstatus = '<i class="fa fa-code w2x"></i>Tap label: <code>systemctl status S
 	</span>
 </div>
 
-<div data-status="restore" class="col-l single">Restore<i class="fa fa-sd-restore"></i></div>
+<div data-status="restore" class="col-l single">Restore<i class="fa fa-restore"></i></div>
 <div class="col-r">
 	<input id="restore" type="checkbox">
 	<div class="switchlabel" for="restore"></div>

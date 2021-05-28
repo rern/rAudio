@@ -21,19 +21,19 @@
 }
 .fa {
 	display: inline-block;
-	font-family: enhance;
+	font-family: rern;
 	font-style: normal;
 }
 .fa-lg { font-size: 22px; line-height: 18px; }
 .fa-accesspoint:before { content: "\f554" }
-.fa-addons:before { content: "\f581" }
 .fa-airplay:before { content: "\f590" }
 .fa-album:before { content: "\f555" }
 .fa-arrow-left:before { content: "\f602" }
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
-.fa-audiocd:before { content: "\f597" }
-.fa-bluetooth:before { content: "\f58C" }
+.fa-audiocd:before { content: "\f53A" }
+.fa-audiocdplay:before { content: "\f53C" }
+.fa-bluetooth:before { content: "\f580" }
 .fa-check:before { content: "\f51B" }
 .fa-chevron-down:before { content: "\f605" }
 .fa-chevron-up:before { content: "\f604" }
@@ -45,7 +45,7 @@
 .fa-external-link:before { content: "\f52C" }
 .fa-eye:before { content: "\f576" }
 .fa-features:before { content: "\f50B" }
-.fa-folder-cascade:before { content: "\f538" }
+.fa-folder-open:before { content: "\f541" }
 .fa-gear:before { content: "\f509" }
 .fa-gear-restore:before { content: "\f53C" }
 .fa-gears:before { content: "\f50A" }
@@ -74,7 +74,7 @@
 .fa-play-circle:before { content: "\f507" }
 .fa-plus:before { content: "\f519" }
 .fa-plus-circle:before { content: "\f564" }
-.fa-plus-r:before { content: "\f581" }
+.fa-plus-r:before { content: "\f588" }
 .fa-power:before { content: "\f520" }
 .fa-question-circle:before { content: "\f560" }
 .fa-reboot:before { content: "\f521" }
@@ -83,20 +83,20 @@
 .fa-refresh-play:before { content: "\f53B" }
 .fa-relays:before { content: "\f522" }
 .fa-reload:before { content: "\f525" }
+.fa-reset:before { content: "\f527" }
+.fa-restore:before { content: "\f544" }
 .fa-right:before { content: "\f607" }
 .fa-save:before { content: "\f542"}
 .fa-save-circle:before { content: "\f546"}
 .fa-sd:before { content: "\f543" }
-.fa-sd-restore:before { content: "\f54A" }
 .fa-search:before { content: "\f56A" }
 .fa-sliders:before { content: "\f50B" }
 .fa-snapcast:before { content: "\f592" }
 .fa-soundprofile:before { content: "\f570" }
 .fa-source:before { content: "\f52A" }
-.fa-sources:before { content: "\f538" }
 .fa-spotify:before { content: "\f593" }
 .fa-status:before { content: "\f50A" }
-.fa-system:before { content: "\f581" }
+.fa-system:before { content: "\f588" }
 .fa-times:before { content: "\f51A" }
 .fa-transmission:before { content: "\f586" }
 .fa-undo:before { content: "\f523" }
@@ -104,31 +104,41 @@
 .fa-usbdrive:before { content: "\f553" }
 .fa-volume:before { content: "\f516" }
 .fa-warning:before { content: "\f562" }
-.fa-webradio:before { content: "\f55C" }
-.fa-wifi:before { content: "\f58B" }
-.fa-wifi1:before { content: "\f588" }
-.fa-wifi2:before { content: "\f589" }
-.fa-wifi3:before { content: "\f58A" }
-.fa-layer { position: absolute }
-.fa-layerlast { position: relative }
-.fa-audiocdplay:before { content: "\f597" }
-.fa-audiocdplay:after {
-	content: '\f503';
-	margin-left: -18px;
-	font-size: 24px;
-	color: var( --cg );
-	opacity: .8;
-}
-.wf1, .wf2, .wf3 {
-	width: 40px !important;
-	margin-right: 5px;
-}
-.wf1 .fa-wifi2,
-.wf1 .fa-wifi3,
-.wf2 .fa-wifi3 {
-	color: var( --cga );
-}
+.fa-webradio:before { content: "\f55D" }
+.fa-wifi:before { content: "\f597" }
+.fa-wifi1:before { content: "\f598"; position: absolute; }
+.fa-wifi1:after { content: "\f599"; color: var( --cga ); }
+.fa-wifi2:before { content: "\f59A"; position: absolute; }
+.fa-wifi2:after { content: "\f59B"; color: var( --cga ); }
 .message .fa-wifi:before { font-size: 20px }
+
+.menu {
+	position: absolute;
+	margin-left: 40px;
+	width: 150px;
+	padding: 0;
+	background: var( --cg );
+	box-shadow: -4px 4px 10px #000000;
+	z-index: 11;
+}
+.menu a {
+	display: inline-block;
+	width: 100%;
+	margin: 0;
+	line-height: 40px;
+	font-size: 16px;
+	color: var( --cg75 );
+	border-top: 1px solid var( --cga ) !important;
+}
+.menu i {
+	width: 40px;
+	line-height: 40px;
+	vertical-align: -3px;
+	text-align: center;
+	font-size: 22px;
+	color: var( --cw );
+	text-shadow: -1px 1px 2px #000000;
+}
 
 #button-data {
 	position: fixed;
@@ -228,7 +238,9 @@ pre {
 	display: block;
 	margin-top: 0;
 	margin-bottom: 20px;
+	line-height: 22px;
 	color: var( --cg75 );
+	white-space: normal;
 }
 .help-block .fa {
 	width: 20px;
@@ -309,7 +321,7 @@ heading i.fa-question-circle {
 	line-height: 38px;
 	text-align: center;
 	font-size: 24px;
-	text-shadow: 1px 1px 2px #000000;
+	text-shadow: -1px 1px 2px #000000;
 }
 .page-icon {
 	float: left;
@@ -369,7 +381,7 @@ heading i.fa-question-circle {
 	vertical-align: -3px;
 	font-size: 24px;
 	color: var( --cw );
-	text-shadow: 1px 1px 2px #000000;
+	text-shadow: -1px 1px 2px #000000;
 }
 #bar-bottom a {
 	font-size: 16px;
@@ -459,6 +471,9 @@ grw,
 }
 .entries li .fa-info-circle {
     font-size: 22px !important;
+}
+.entries li.active {
+	background: var( --cga );
 }
 .remove {
 	float: right;
@@ -633,7 +648,7 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-r.text {
 	float: left;
-	white-space: nowrap;
+	white-space: nowrap !important;
 	line-height: 26px;
 }
 .col-r .fa {
@@ -785,7 +800,11 @@ input:checked + .switchlabel.disabled:after {
 		text-decoration: none;
 	}
 	.entries li:hover {
-		background: var( --cgd );
+		background: var( --cga );
+	}
+	#menu a:hover {
+		color: var( --cw );
+		background-color: var( --cgl );
 	}
 	heading i,
 	.back,
@@ -802,14 +821,16 @@ input:checked + .switchlabel.disabled:after {
 	.settingedit,
 	.status,
 	.switchlabel,
+	.undervoltage,
 	#button-data,
 	#close,
 	#filetype,
 	#gpioimgtxt,
-	#help {
+	#help,
+	#menu {
 		cursor: pointer;
 	}
 	input:disabled {
-		cursor: not-allowed;
+		cursor: not-allowed !important;
 	}
 }

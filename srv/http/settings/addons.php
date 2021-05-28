@@ -17,9 +17,9 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: enhance;
-			src        : url( '/assets/fonts/enhance.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/enhance.<?=$time?>.ttf' ) format( 'truetype' );
+			font-family: rern;
+			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
+			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
 			font-weight: normal;
 			font-style : normal;
 		}
@@ -72,7 +72,7 @@ foreach( $arrayalias as $alias ) {
 		if ( $notverified ) {
 			$btnin = '<i class="fa fa-info-circle fa-lg gr info"></i><div class="info">'.$notverified.'</div>';
 		} else if ( !$version || $version == $versioninstalled ) {
-			$icon = $nouninstall ? '<i class="fa fa-folder-refresh"></i>' : '';
+			$icon = $nouninstall ? '<i class="fa fa-update"></i>' : '';
 			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
 			$btnin = '<a class="btn btn-default disabled"'.$taphold.'>'.$icon.$buttonlabel.'</a>';
 		} else {
@@ -80,7 +80,7 @@ foreach( $arrayalias as $alias ) {
 			$update = 1;
 			$installed = ' class="installed update"';
 			$check = '<grn class="blink">&bull;</grn> ';
-			$btnin = '<a class="btn btn-primary"><i class="fa fa-folder-refresh"></i>Update</a>';
+			$btnin = '<a class="btn btn-primary"><i class="fa fa-update"></i>Update</a>';
 		}
 		$btnunattr = isset( $addon[ 'rollback' ] ) ? ' rollback="'.$addon[ 'rollback' ].'"' : '';
 		$btnun = '<a class="btn btn-primary red'.$hide.'" '.$btnunattr.'><i class="fa fa-minus-circle"></i>Uninstall</a>';
@@ -93,7 +93,7 @@ foreach( $arrayalias as $alias ) {
 	
 	// addon list ---------------------------------------------------------------
 	$title = $addon[ 'title' ];
-	if ( $update ) $title = '<i class="fa fa-folder-refresh"></i>&ensp;'.$title;
+	if ( $update ) $title = '<i class="fa fa-update"></i>'.$title;
 	$list.= '<li alias="'.$alias.'"'.$installed.'>'.$title.'</li>';
 	// addon blocks -------------------------------------------------------------
 	$revisionclass = $version ? 'revision' : 'revisionnone';

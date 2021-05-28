@@ -19,7 +19,8 @@ restartMPD() {
 	systemctl restart mpd
 	mpc playlist | wc -l > /srv/http/data/shm/playlistlength  # for add tracks by other apps
 	pushstream mpdplayer "$( /srv/http/bash/status.sh )"
-	pushstream refresh '{"page":"player"}'
+	data=$( /srv/http/bash/player-data.sh )
+	pushstream refresh "$data"
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"

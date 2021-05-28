@@ -136,22 +136,6 @@ function coverartChange() {
 		var imagefile = '/mnt/MPD/'+ path +'/cover' // no ext
 		var type = 'coverart';
 	}
-	var jsoninfo = {
-		  icon        : 'coverart'
-		, title       : 'Change Album CoverArt'
-		, message     : '<img class="imgold">'
-					   +'<p class="imgname"><w>'+ album +'</w>'
-					   +'<br>'+ artist +'</p>'
-		, filelabel   : '<i class="fa fa-folder-open"></i>Browse'
-		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : 'image/*'
-		, preshow     : function() { // fix direct replace src
-			$( '.imgold' ).attr( 'src', src );
-		}
-		, ok          : function() {
-			imageReplace( imagefile, type );
-		}
-	}
 	if ( G.playback ) {
 		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
@@ -161,16 +145,28 @@ function coverartChange() {
 		var lionlinefetched = $( '.licover .cover-save' ).length;
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
 	}
-	if ( ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
-		|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
-	) {
-		jsoninfo.buttonlabel = '<i class="fa fa-minus-circle"></i>Remove';
-		jsoninfo.buttoncolor = red;
-		jsoninfo.buttonwidth = 1;
-		jsoninfo.button      = function() {
-			var ext = $( '#infoMessage .imgold' ).attr( 'src' ).slice( -3 );
+	var coverartlocal = ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
+						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault );
+	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
+	info( {
+		  icon        : 'coverart'
+		, title       : 'Change Album CoverArt'
+		, message     : '<img class="imgold">'
+					   +'<p class="infoimgname">'+ album
+					   +'<br>'+ artist +'</p>'
+		, footer      : footer
+		, beforeshow  : function() { // fix direct replace src
+			$( '.imgold' ).attr( 'src', src );
+		}
+		, filelabel   : '<i class="fa fa-folder-open"></i>File'
+		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filetype    : 'image/*'
+		, buttonlabel : !coverartlocal ? '' : '<i class="fa fa-minus-circle"></i>Remove'
+		, buttoncolor : !coverartlocal ? '' : red
+		, button      : !coverartlocal ? '' : function() {
+			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
-				G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
+				G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
 				$( '#coverart, #liimg' ).css( 'opacity', '' );
 				if ( G.playback ) {
 					coverartDefault();
@@ -179,9 +175,10 @@ function coverartChange() {
 				}
 			} );
 		}
-	}
-	if ( ( G.playback && pbembedded ) || ( G.library && liembedded ) ) jsoninfo.footer = '<i class="fa fa-coverart"></i>&ensp;embedded';
-	info( jsoninfo );
+		, ok          : function() {
+			imageReplace( imagefile, type );
+		}
+	} );
 }
 function coverartDefault() {
 	if ( !G.status.webradio || G.display.novu ) {
@@ -193,7 +190,7 @@ function coverartDefault() {
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
-	$( '#divcover .covedit' ).remove();
+	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 }
 function coverartSave() {
@@ -216,7 +213,7 @@ function coverartSave() {
 		  icon    : 'coverart'
 		, title   : 'Save Album CoverArt'
 		, message : '<img src="'+ src +'">'
-					   +'<p class="imgname"><w>'+ album +'</w>'
+					   +'<p class="infoimgname">'+ album
 					   +'<br>'+ artist +'</p>'
 		, ok      : function() {
 			var ext = src.slice( -4 );
@@ -255,7 +252,7 @@ function displayBars() {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
-		$( '#page-playback, #lib-mode-list, #button-data' ).addClass ( 'barshidden' );
+		$( '#page-playback, #lib-mode-list' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', 0 );
@@ -264,7 +261,7 @@ function displayBars() {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
-		$( '#page-playback, #lib-mode-list, #button-data' ).removeClass ( 'barshidden' );
+		$( '#page-playback, #lib-mode-list' ).removeClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
@@ -280,36 +277,11 @@ function displayBottom() {
 	$( '#bar-bottom i' ).removeClass( 'active' );
 	$( '#tab-'+ G.page ).addClass( 'active' );
 }
-function displayCheckbox( checkboxes ) {
-	var html = '';
-	var col,br;
-	$.each( checkboxes, function( key, val ) {
-		if ( val[ 0 ] === '_' ) {
-			col = ' class="infocol"';
-			br = '';
-			val = val.slice( 1 );
-		} else if ( val.slice( -4 ) === '<br>' ) {
-			html += val;
-			return
-		} else {
-			col = '';
-			br = '<br>';
-		}
-		html += '<label'+ col +'><input name="'+ key +'" type="checkbox" '+ ( G.display[ key ] ? 'checked' : '' ) +'>&ensp;'+ val +'</label>'+ br;
-	} );
-	return html;
-}
-function displayCheckboxSet( name, enable, check ) {
-	$( 'input[name="'+ name +'"]' )
+function displayCheckboxSet( i, enable, check ) {
+	$( '#infoContent input' ).eq( i )
 		.prop( 'disabled', !enable )
 		.prop( 'checked', check )
 		.parent().toggleClass( 'gr', !enable );
-}
-function displayGet( callback ) {
-	G.albumbyartist = G.display.albumbyartist;
-	bash( [ 'displayget' ], function( data ) {
-		callback( data );
-	}, 'json' );
 }
 function displayPlayback() {
 	var wide = window.innerWidth > 613;
@@ -374,12 +346,11 @@ function displayPlayback() {
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	displayBars();
 }
-function displaySave( page ) {
-	$( '#infoCheckBox input' ).each( function() {
-		G.display[ this.name ] = $( this ).prop( 'checked' );
+function displaySave( keys ) {
+	var values = infoVal();
+	keys.forEach( function( k, i ) {
+		G.display[ k ] = values[ i ];
 	} );
-	G.display.novu = $( '#infoContent input[name=novu]:checked' ).val() === 'true';
-	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
@@ -519,18 +490,15 @@ function getPlaybackStatus( render ) {
 			var errors = '<red>Error:</red> '+ msg.replace( pos, '<red>'+ pos +'</red>' )
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			$( '#data' ).html( errors ).removeClass( 'hide' );
+			$( '#loader' )
+				.html( '<pre>'+ errors +'</pre>' )
+				.removeClass( 'hide' );
 			return false
 		}
 		
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		if ( !$( '#data' ).hasClass( 'hide' ) ) {
-			$( '#data' ).html( JSON.stringify( G.status, null, 2 ) )
-			return
-		}
-		
 		setButtonControl();
 		displayBottom();
 		if ( G.playback || render ) { // 'render' - add to blank playlist
@@ -564,12 +532,12 @@ function hideGuide() {
 		G.guide = 0;
 		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !G.bars );
 		$( '.map' ).removeClass( 'mapshow' );
-		$( '#button-data, #bar-bottom' ).removeClass( 'translucent' );
+		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '.covedit' ).css( 'z-index', '' );
+		$( '.coveredit' ).css( 'z-index', '' );
 	}
 }
 function HMS2Second( HMS ) {
@@ -585,7 +553,7 @@ function imageReplace( imagefile, type ) {
 	formData.append( 'cmd', 'imagereplace' );
 	if ( ext !== '.gif' ) {
 		ext = '.jpg';
-		var base64 = $( '#imgnew' )
+		var base64 = $( '.infoimgnew' )
 						.attr( 'src' )
 						.split( ',' )
 						.pop();
@@ -602,8 +570,233 @@ function imageReplace( imagefile, type ) {
 		, processData : false  // no - process the data
 		, contentType : false  // no - contentType
 		, success     : function() {
-			G.playback ? $( '.covedit' ).remove() : $( '.bkedit' ).remove();
+			G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
+		}
+	} );
+}
+var chklibrary = {
+	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
+	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
+	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>AlbumArtist</gr>'
+	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
+	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
+	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
+	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
+	, webradio       : '<i class="fa fa-webradio wh"></i><gr>WebRadio</gr>'
+	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
+	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
+	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
+	, '-'            : ''
+	, '-1'           : '<hr>'
+	, '-2'           : '<hr>'
+	, count          : 'Count'
+	, label          : 'Label'
+}
+var chklibrary2 = {
+	  albumbyartist  : '<i class="fa fa-coverart wh"></i>Sort Album by artists'
+	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
+	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
+	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
+	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
+	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
+	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
+	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
+}
+function infoLibrary( page2 ) {
+	var checkbox = Object.values( !page2 ? chklibrary : chklibrary2 );
+	var keys = Object.keys( !page2 ? chklibrary : chklibrary2 );
+	keys = keys.filter( function( k ) {
+		return k[ 0 ] !== '-'
+	} );
+	var values = [];
+	keys.forEach( function( k, i ) {
+		values.push( G.display[ k ] );
+	} );
+	info( {
+		  icon         : 'library'
+		, title        : !page2 ? 'Library Home Display' : 'Library/Playlist Options'
+		, message      : !page2 ? '1/2 - Show selected items:' : '2/2 - Options:'
+		, messagealign : 'left'
+		, arrowright   : !page2 ? function() { infoLibrary( 2 ); } : ''
+		, arrowleft    : !page2 ? '' : infoLibrary
+		, checkbox     : checkbox
+		, checkcolumn  : !page2 ? 1 : ''
+		, values       : values
+		, checkchanged : 1
+		, beforeshow   : function() {
+			$( '#infoContent' ).css( 'height', '340px' );
+			if ( page2 ) {
+				$( '#infoContent td:eq( 1 )' ).attr( 'width', '292' );
+				var $chk = $( '#infoContent input' );
+				keys.forEach( function( k, i ) {
+					window[ '$'+ k ] = $chk.eq( i );
+					window[ k ] = i;
+				} );
+				$tapaddplay.add( $tapreplaceplay ).click( function() {
+					var i = $chk.index( this ) === tapaddplay ? tapreplaceplay : tapaddplay;
+					if ( $( this ).prop( 'checked' ) ) $chk.eq( i ).prop( 'checked', 0 );
+				} );
+				$hidecover.change( function() {
+					if ( $( this ).prop( 'checked' ) ) {
+						displayCheckboxSet( fixedcover, false, false );
+					} else {
+						displayCheckboxSet( fixedcover, true );
+					}
+				} );
+				$fixedcover.prop( 'disabled', G.display.hidecover );
+			}
+		}
+		, ok           : function () {
+			displaySave( keys );
+			$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
+			if ( G.library ) {
+				if ( G.librarylist ) {
+					if ( $( '.lib-index' ).length ) return
+					
+					if ( G.display.hidecover ) {
+						$( '.licover' ).addClass( 'hide' );
+					} else {
+						if ( !$( '.licover' ).length ) {
+							var query = G.query[ G.query.length - 1 ];
+							list( query, function( data ) {
+								data.path = query.path;
+								data.modetitle = query.modetitle;
+								renderLibraryList( data );
+							}, 'json' );
+							return
+						}
+						
+						var pH = G.bars ? 130 : 90;
+						if ( G.display.fixedcover ) {
+							pH += 230;
+							$( '.licover' ).removeClass( 'nofixed' );
+							$( '#lib-list li:eq( 1 )' ).addClass( 'track1' );
+							$( '#lib-list p' ).addClass( 'fixedcover' )
+						} else {
+							$( '.licover' ).addClass( 'nofixed' );
+							$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
+							$( '#lib-list p' ).removeClass( 'fixedcover' )
+						}
+						$( '.licover' ).removeClass( 'hide' );
+					}
+				} else {
+					renderLibrary();
+				}
+			}
+		}
+	} );
+}
+var chkplayback = {
+	  bars         : 'Top-Bottom bars'
+	, barsalways   : 'Bars always on'
+	, time         : 'Time'
+	, progressbar  : 'Progress bar'
+	, cover        : 'Coverart'
+	, coversmall   : 'Small coverart'
+	, volume       : 'Volume'
+	, radioelapsed : 'WebRadio time'
+	, buttons      : 'Buttons'
+	, novu         : ''
+}
+function infoPlayback() {
+	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
+	var keys = Object.keys( chkplayback );
+	var values = [];
+	keys.forEach( function( k, i ) {
+		values.push( G.display[ k ] );
+	} );
+	info( {
+		  icon         : 'play-circle'
+		, title        : 'Playback Display'
+		, message      : 'Show selected items:'
+		, messagealign : 'left'
+		, checkbox     : Object.values( chkplayback )
+		, checkcolumn  : 1
+		, checkhr      : 1
+		, radio        : {
+			  '<img class="imgicon" src="/assets/img/vu.png">&ensp;<gr>No cover</gr>'       : false
+			, '<img class="imgicon" src="/assets/img/coverart.svg">&ensp;<gr>No cover</gr>' : true
+		}
+		, radiocolumn  : 1
+		, order        : [ 'checkbox', 'radio' ]
+		, values       : values
+		, checkchanged : 1
+		, beforeshow   : function() {
+			$( '#infoContent tr' ).last().toggleClass( 'hide', !G.display.cover );
+			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
+			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
+			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
+			if ( G.display.volumenone ) displayCheckboxSet( 6 ); // disable by mpd volume
+			if ( !G.display.time && !G.display.volume ) {
+				displayCheckboxSet( 4 ); // disable by autohide
+				displayCheckboxSet( 8 );
+			}
+			if ( G.status.player !== 'mpd' ) displayCheckboxSet( 8 );
+			var $chk = $( '#infoContent input' );
+			keys.forEach( function( k, i ) {
+				window[ '$'+ k ] = $chk.eq( i );
+				window[ k ] = i;
+			} );
+			$time.add( $volume ).change( function() {
+				var t = $time.prop( 'checked' );
+				var v = $volume.prop( 'checked' );
+				if ( t || v ) {
+					displayCheckboxSet( cover, true );
+					displayCheckboxSet( progressbar, false, false );
+					displayCheckboxSet( buttons, true );
+				} else {
+					displayCheckboxSet( cover, false, true );
+					displayCheckboxSet( progressbar, false, false );
+					displayCheckboxSet( buttons, false, false );
+				}
+				if ( !t && $cover.prop( 'checked' ) ) {
+					displayCheckboxSet( progressbar, true, true );
+				} else {
+					displayCheckboxSet( progressbar, false, false );
+				}
+				if ( !t && ( !v || G.display.volumenone ) ) {
+					displayCheckboxSet( cover, true, true );
+					displayCheckboxSet( progressbar, true, true );
+				}
+			} );
+			$bars.change( function() {
+				if ( $( this ).prop( 'checked' ) ) {
+					displayCheckboxSet( barsalways, true );
+				} else {
+					displayCheckboxSet( barsalways, false, false );
+				}
+			} );
+			$cover.change( function() {
+				if ( $( this ).prop( 'checked' ) ) {
+					if ( !$time.prop( 'checked' ) ) displayCheckboxSet( progressbar, true, true );
+					displayCheckboxSet( coversmall, true );
+					$( '#divnovu' ).removeClass( 'hide' );
+				} else {
+					displayCheckboxSet( progressbar, false, false );
+					displayCheckboxSet( coversmall, false, false );
+					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( time, true, true );
+					$( '#divnovu' ).addClass( 'hide' );
+				}
+			} );
+		}
+		, ok           : function () {
+			displaySave( keys );
+			G.bars = G.display.bars;
+			G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
+			displayBars();
+			if ( G.playback ) {
+				displayPlayback();
+				setButtonControl();
+				renderPlayback();
+				$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
+			} else if ( G.library ) {
+				$( '.list p' ).toggleClass( 'bars-on', G.bars );
+				if ( bars !== G.bars && $( '.coverart' ).length ) {
+					G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
+					$( '#mode-album' ).click();
+				}
+			}
 		}
 	} );
 }
@@ -627,27 +820,20 @@ function infoNoData() {
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
 		info( {
-			  icon     : 'refresh-library'
-			, title    : 'Library Database'
-			, message  : 'Update in progress ...'
+			  icon    : 'refresh-library'
+			, title   : 'Library Database'
+			, message : 'Update in progress ...'
 		} );
 		return
 	}
 	
 	info( {
-		  icon     : 'refresh-library'
-		, title    : 'Library Database'
-		, radio    : { 'Only changed files' : 1, 'Rebuild entire database': 2 }
-		, preshow  : function() {
-			if ( path ) {
-				$( '#infoRadio' ).hide();
-				$( '#infoMessage' )
-					.html( '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' )
-					.removeClass( 'hide' );
-			}
-		}
-		, ok       : function() {
-			if ( path || $( '#infoRadio input:checked' ).val() == 1 ) {
+		  icon    : 'refresh-library'
+		, title   : 'Library Database'
+		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
+		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
+		, ok      : function() {
+			if ( path || infoVal() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
 			} else {
 				path = 'rescan';
@@ -741,8 +927,8 @@ function playlistInsertSelect( $this ) {
 		, message     : 'Insert'
 				   +'<br><w>'+ G.pladd.name +'</w>'
 				   +'<br>before'
-				   +'<br><w>'+ $this.find( '.name' ).text() +'</w>'
-		, buttonlabel : 'i class="fa fa-undo"></i>Reselect'
+				   +'<br><w># '+ ( $this.index() + 1 ) +' - '+ $this.find( '.name' ).text() +'</w>'
+		, buttonlabel : '<i class="fa fa-undo"></i>Reselect'
 		, button  : function() {
 			playlistInsertTarget();
 		}
@@ -765,7 +951,7 @@ function playlistInsertTarget() {
 			G.pladd = {};
 		}
 		, ok      : function() {
-			var target = $( '#infoRadio input:checked' ).val();
+			var target = infoVal();
 			G.pladd.select = target;
 			if ( target !== 'select' ) {
 				playlistInsert( target );
@@ -879,7 +1065,6 @@ function plRemove( $li ) {
 		} else {
 			var activenext = '';
 		}
-		console.log( [ 'plremove', tracknum, activenext ] );
 		bash( [ 'plremove', tracknum, activenext ] );
 		$li.remove();
 	}
@@ -968,6 +1153,7 @@ function renderLibraryList( data ) {
 		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+			G.albumlist = 1;
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
 			var html = '<span id="button-coverart"><i class="fa ';
 			if ( $img0.length ) {
@@ -978,6 +1164,8 @@ function renderLibraryList( data ) {
 				defaultcover = 1;
 			}
 			$( '#lib-breadcrumbs' ).append( html );
+		} else {
+			G.albumlist = 0;
 		}
 		$( '#liimg' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
@@ -1021,6 +1209,7 @@ function renderLibraryList( data ) {
 		}
 		$( '#lib-list' ).removeClass( 'hide' );
 		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
+		if ( G.iactive && G.albumlist ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 		if ( $( '.coverart' ).length ) {
 			var coverH = $( '.coverart' ).height();
 			var pH = $( '#lib-list p' ).height();
@@ -1033,7 +1222,7 @@ function renderLibraryList( data ) {
 		$( '#lib-list li:eq( 0 )' ).tap();
 		colorSet();
 	}
-	if ( $( '#lib-list .coverart' ).length ) return
+	if ( G.albumlist ) return
 	
 	if ( G.mode === 'album' ) {
 		$( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
@@ -1065,6 +1254,7 @@ function renderPlayback() {
 		.css( 'width', '' )
 		.removeClass( 'capitalize albumgray' );
 	$( '#coverart' ).css( 'opacity', '' );
+	$( '#divcover .fa-coverart' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	
@@ -1226,7 +1416,7 @@ function renderPlaybackBlank() {
 	$( '#artist, #song, #album, #progress, #elapsed, #total' ).empty();
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
-	$( '#divcover .covedit' ).remove();
+	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 	bash( "ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}'", function( ip ) {
 		if ( ip ) {
@@ -1596,7 +1786,7 @@ function setTrackCoverart() {
 	$( '#liimg' ).on( 'load', function() { // not exist on initial page load
 		$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
 		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
-			$( '#liimg' ).after( '<i class="covedit fa fa-save cover-save"></i>' );
+			$( '#liimg' ).after( '<i class="coveredit fa fa-save cover-save"></i>' );
 		}
 	} );
 	if ( !G.display.fixedcover ) {
@@ -1654,7 +1844,7 @@ function thumbUpdate( path ) {
 					+'<input type="hidden" name="sh[]" value="cove">'
 					+'<input type="hidden" name="sh[]" value="Update">'
 					+'<input type="hidden" name="sh[]" value="main">'
-					+'<input type="hidden" name="sh[]" value="'+ path +'">'
+					+'<input type="hidden" name="sh[]" value="'+ ( path || '' ) +'">'
 			  +'</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();

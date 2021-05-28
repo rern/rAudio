@@ -12,8 +12,12 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 # convert each line to each args
 readarray -t args <<< "$1"
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
 pushRefresh() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "system" }'
+	data=$( /srv/http/bash/system-data.sh )
+	pushstream refresh "$data"
 }
 relaysOrder() {
 	conf=$( cat /etc/relays.conf )
@@ -214,8 +218,8 @@ getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
 		cat "$filebootlog"
 	else
-		curl -s -X POST http://127.0.0.1/pub?id=notify \
-			-d '{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
+		data='{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
+		pushstream notify "$data"
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;
@@ -258,34 +262,6 @@ dtparam=audio=on"
 	echo "$reboot" > $filereboot
 	pushRefresh
 	;;
-lcd )
-	enable=${args[1]}
-	reboot=${args[2]}
-	model=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
-	if [[ $enable == true ]]; then
-		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-		config="\
-hdmi_force_hotplug=1
-dtparam=spi=on
-dtoverlay=$model:rotate=0"
-		! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
-dtparam=i2c_arm=on"
-		echo -n "$config" >> $fileconfig
-		! grep -q 'i2c-bcm2708' $filemodule && echo -n "\
-i2c-bcm2708
-i2c-dev
-" >> $filemodule
-		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	else
-		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-		sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
-		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	fi
-	echo "$reboot" > $filereboot
-	pushRefresh
-	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
@@ -304,26 +280,18 @@ lcdchardisable )
 	rm $dirsystem/lcdchar
 	pushRefresh
 	;;
-lcdchargpioset )
-	val=( ${args[1]} )
-echo -n "\
-[var]
-cols=${val[0]}
-charmap=${val[1]}
-pin_rs=${val[2]}
-pin_rw=${val[3]}
-pin_e=${val[4]}
-pins_data=${val[5]}
-" > /etc/lcdchar.conf
-	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-	touch $dirsystem/lcdchar
-	pushRefresh
-	;;
 lcdcharset )
+	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
 	val=( ${args[1]} )
 	reboot=${args[2]}
-	if (( ${#val[@]} > 2 )); then
+	conf="\
+[var]
+cols=${val[0]}
+charmap=${val[1]}"
+	if [[ ${val[2]} == i2c ]]; then
+		conf+="
+address=${val[3]}
+chip=${val[4]}"
 		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
 			sed -i '$ a\dtparam=i2c_arm=on' $fileconfig
 			echo "\
@@ -332,30 +300,51 @@ i2c-dev" >> $filemodule
 			echo "$reboot" > $filereboot
 		fi
 	else
+		conf+="
+pin_rs=${val[5]}
+pin_rw=${val[6]}
+pin_e=${val[7]}
+pins_data=${val[8]}"
 		if ! grep -q tft35a $fileconfig; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
-	echo -n "\
-[var]
-cols=${val[0]}
-charmap=${val[1]}
-address=${val[2]}
-chip=${val[3]}
-backlight=$( [[ -n ${val[4]} ]] && echo True || echo Flase )
-" > /etc/lcdchar.conf
+	conf+="
+backlight=${val[9]^}"
+	echo "$conf" > /etc/lcdchar.conf
 	touch $dirsystem/lcdchar
 	pushRefresh
 	;;
-lcdmodel )
+lcddisable )
+	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
+	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
+	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+	pushRefresh
+	;;
+lcdset )
 	model=${args[1]}
+	reboot=${args[2]}
 	if [[ $model != tft35a ]]; then
 		echo $model > /srv/http/data/system/lcdmodel
 	else
 		rm /srv/http/data/system/lcdmodel
 	fi
-	sed -i "s/dtoverlay=.*:rotate/dtoverlay=$model:rotate/" $fileconfig
+	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+	config="\
+hdmi_force_hotplug=1
+dtparam=spi=on
+dtoverlay=$model:rotate=0"
+	! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
+dtparam=i2c_arm=on"
+	echo -n "$config" >> $fileconfig
+	! grep -q 'i2c-bcm2708' $filemodule && echo -n "\
+i2c-bcm2708
+i2c-dev
+" >> $filemodule
+	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
+	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	pushRefresh
 	;;
 mount )
@@ -466,6 +455,7 @@ soundprofileget )
 soundprofileset )
 	values=${args[1]}
 	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
+		rm -f /etc/soundprofile.conf
 		soundprofile reset
 	else
 		val=( $values )

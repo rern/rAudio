@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if [[ -e /srv/http/data/system/soxrset ]]; then
+	rm -f /srv/http/data/system/soxr
+	mv /srv/http/data/system/soxr{set,}
+fi
 if [[ ! -e /usr/bin/cd-discid ]]; then
 	pacman -Sy --noconfirm cd-discid
 	mkdir -p /srv/http/data/audiocd

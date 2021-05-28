@@ -15,6 +15,7 @@ section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
 backlight = bool( config.get( section, 'backlight' ) )
+
 if config.has_option( section, 'address' ):
     address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
     chip = config.get( section, 'chip' )

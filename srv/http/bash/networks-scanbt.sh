@@ -3,7 +3,7 @@
 bluetoothctl --timeout=10 scan on &> /dev/null
 
 readarray -t lines <<< $( bluetoothctl devices | cut -d' ' -f2,3- )
-[[ -z $lines ]] && echo [] && exit
+[[ -z $lines ]] && exit
 
 for line in "${lines[@]}"; do
 	devices+="
@@ -17,11 +17,11 @@ for line in "${lines[@]}"; do
 	mac=${line#*^}
 	connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
 	paired=$( bluetoothctl info $mac | grep -q 'Paired: yes' && echo true || echo false )
-	data+='{"name":"'${name//\"/\\\"}'","mac":"'$mac'","connected":'$connected',"paired":'$paired'}\n'
+	data+=',{
+  "name"      : "'${name//\"/\\\"}'"
+, "mac"       : "'$mac'"
+, "connected" : '$connected'
+, "paired"    : '$paired'
+}'
 done
-if [[ -n $data ]]; then
-	data=$( echo -e "$data" | sort -f | awk NF | tr '\n' ',' )
-	echo [${data:0:-1}]
-else
-	echo []
-fi
+echo [${data:1}]

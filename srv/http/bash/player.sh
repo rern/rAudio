@@ -9,7 +9,8 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	pushstream refresh '{ "page": "player" }'
+	data=$( /srv/http/bash/player-data.sh )
+	pushstream refresh "$data"
 }
 restartMPD() {
 	/srv/http/bash/mpd-conf.sh
@@ -60,7 +61,6 @@ audiooutput )
 	' /etc/shairport-sync.conf
 	restartMPD
 	systemctl try-restart shairport-sync shairport-meta
-	pushRefresh
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
@@ -77,8 +77,12 @@ bufferdisable )
 bufferset )
 	buffer=${args[1]}
 	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
-	sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
-	echo $buffer > $dirsystem/bufferset
+	if (( $buffer == 4096 )); then
+		rm -f $dirsystem/bufferset
+	else
+		sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
+		echo $buffer > $dirsystem/bufferset
+	fi
 	restartMPD
 	;;
 bufferoutputdisable )
@@ -88,8 +92,12 @@ bufferoutputdisable )
 bufferoutputset )
 	buffer=${args[1]}
 	sed -i '/^max_output_buffer_size/ d' /etc/mpd.conf
-	sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
-	echo $buffer > $dirsystem/bufferoutputset
+	if (( $buffer == 8192 )); then
+		rm -f $dirsystem/bufferoutputset
+	else
+		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
+		echo $buffer > $dirsystem/bufferoutputset
+	fi
 	restartMPD
 	;;
 count )
@@ -131,12 +139,6 @@ customdisable )
 	rm -f $dirsystem/custom
 	restartMPD
 	;;
-customgetglobal )
-	cat $dirsystem/custom-global
-	;;
-customgetoutput )
-	cat "$dirsystem/custom-output-${args[1]}"
-	;;
 customset )
 	file=$dirsystem/custom
 	if [[ ${args[1]} == customset ]]; then
@@ -156,6 +158,12 @@ customset )
 		sed -i "/^user/ a$global" /etc/mpd.conf
 	fi
 	restartMPD
+	if ! systemctl -q is-active mpd; then
+		sed -i '/ #custom$/ d' /etc/mpd.conf
+		rm -f $dirsystem/custom
+		restartMPD
+		echo -1
+	fi
 	;;
 devices )
 	devices=$'# cat /etc/asound.conf\n'$( cat /etc/asound.conf )
@@ -243,6 +251,7 @@ novolume )
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
 	mpc crossfade 0
+	amixer sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
@@ -267,7 +276,6 @@ soxrdisable )
 	quality        "very high"\
 }
 ' /etc/mpd.conf
-	rm -f $dirsystem/soxr
 	restartMPD
 	;;
 soxrset )
@@ -279,12 +287,16 @@ soxrset )
 	stopband_begin "'${val[3]}'"
 	attenuation    "'${val[4]}'"
 	flags          "'${val[5]}'"
-}' > $dirsystem/soxrset
+}' > $dirsystem/soxr
 	sed -i -e '/quality/,/}/ d
-' -e "/soxr/ r $dirsystem/soxrset
+' -e "/soxr/ r $dirsystem/soxr
 " /etc/mpd.conf
-	touch $dirsystem/soxr
 	restartMPD
 	;;
-
+volume0db )
+	amixer sset "${args[1]}" 0dB
+	level=$( /srv/http/bash/cmd.sh volumeget )
+	pushstream volume '{"type":"0dB","val":'$level'}'
+	;;
+	
 esac

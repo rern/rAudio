@@ -32,11 +32,11 @@ var htmlmount = heredoc( function() { /*
 */ } );
 function infoMount( values ) {
 	info( {
-		  icon       : 'network'
-		, title      : 'Add Network Share'
-		, content    : htmlmount
-		, values     : values
-		, beforeshow : function() {
+		  icon     : 'network'
+		, title    : 'Add Network Share'
+		, content  : htmlmount
+		, values   : values
+		, postshow : function() {
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
@@ -52,7 +52,7 @@ function infoMount( values ) {
 				}
 			} );
 		}
-		, ok         : function() {
+		, ok       : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
 			notify( 'Network Mount', 'Mount ...', 'network' );
 			bash( [ 'mount', values ], function( std ) {
@@ -105,105 +105,99 @@ function renderStatus() {
 	return status
 }
 
-renderPage = function( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
-	var cpu = G.soccpu +' <gr>@</gr> ';
-	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
-	$( '#systemvalue' ).html(
-		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
-		+'<br>'+ G.kernel
-		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
-		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
-		+'<br>'+ cpu
-	);
-	$( '#status' ).html( renderStatus );
-	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
-	var html = '';
-	$.each( G.list, function( i, val ) {
-		if ( val.mounted ) {
-			var dataunmounted = '';
-			var dot = '<grn>&ensp;&bull;&ensp;</grn>';
-		} else {
-			var dataunmounted = ' data-unmounted="1"';
-			var dot = '<red>&ensp;&bull;&ensp;</red>';
-		}
-		html += '<li '+ dataunmounted;
-		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>';
-		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
-	} );
-	$( '#list' ).html( html );
-	if ( G.bluetooth ) {
-		$( '#bluetooth' ).prop( 'checked', true );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', false );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
-	} else {
-		$( '#bluetooth' ).prop( 'checked', false );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', true );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
-	}
-	$( '#wlan' ).prop( 'checked', G.wlan );
-	if ( G.wlan ) {
-		$( '#wlan' ).prop( 'checked', true );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
-	} else {
-		$( '#wlan' ).prop( 'checked', false );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
-	}
-	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
-	$( '#i2smodule' ).val( 'none' );
-	$( '#i2smodule option' ).filter( function() {
-		var $this = $( this );
-		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
-	} ).prop( 'selected', true );
-	$( '#i2smodule' ).selectric( 'refresh' );
-	var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
-	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
-	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
-	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
-	$( '#lcd' ).prop( 'checked', G.lcd );
-	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
-	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-	var powerbuttonconf = G.powerbuttonconf.split( ' ' );
-	$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
-	$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
-	$( '#relays' ).prop( 'checked', G.relays );
-	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
-	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-	$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-	$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
-	$( '#hostname' ).val( G.hostname );
-	$( '#timezone' )
-		.val( G.timezone )
-		.selectric( 'refresh' );
-	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
-	resetLocal();
-	showContent();
-}
 refreshData = function() {
 	bash( '/srv/http/bash/system-data.sh', function( list ) {
-		renderPage( list );
+		var list2G = list2JSON( list );
+		if ( !list2G ) return
+		
+		var cpu = G.soccpu +' <gr>@</gr> ';
+		cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
+		$( '#systemvalue' ).html(
+			  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
+			+'<br>'+ G.kernel
+			+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
+			+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
+			+'<br>'+ cpu
+		);
+		$( '#status' ).html( renderStatus );
+		$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
+		var html = '';
+		$.each( G.list, function( i, val ) {
+			if ( val.mounted ) {
+				var dataunmounted = '';
+				var dot = '<grn>&ensp;&bull;&ensp;</grn>';
+			} else {
+				var dataunmounted = ' data-unmounted="1"';
+				var dot = '<red>&ensp;&bull;&ensp;</red>';
+			}
+			html += '<li '+ dataunmounted;
+			html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
+			html += '<gr class="source">'+ val.source +'</gr>';
+			html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
+		} );
+		$( '#list' ).html( html );
+		if ( G.bluetooth ) {
+			$( '#bluetooth' ).prop( 'checked', true );
+			$( '#setting-bluetooth' ).toggleClass( 'hide', false );
+			$( '#bt' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l double status' )
+				.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
+		} else {
+			$( '#bluetooth' ).prop( 'checked', false );
+			$( '#setting-bluetooth' ).toggleClass( 'hide', true );
+			$( '#bt' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l single' )
+				.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
+		}
+		$( '#wlan' ).prop( 'checked', G.wlan );
+		if ( G.wlan ) {
+			$( '#wlan' ).prop( 'checked', true );
+			$( '#wl' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l double status' )
+				.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+		} else {
+			$( '#wlan' ).prop( 'checked', false );
+			$( '#wl' )
+				.removeAttr( 'class' )
+				.addClass( 'col-l single' )
+				.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
+		}
+		disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
+		$( '#i2smodule' ).val( 'none' );
+		$( '#i2smodule option' ).filter( function() {
+			var $this = $( this );
+			return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
+		} ).prop( 'selected', true );
+		$( '#i2smodule' ).selectric( 'refresh' );
+		var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
+		$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
+		$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
+		$( '#lcdchar' ).prop( 'checked', G.lcdchar );
+		$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
+		$( '#lcd' ).prop( 'checked', G.lcd );
+		$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
+		$( '#powerbutton' ).prop( 'checked', G.powerbutton );
+		$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
+		var powerbuttonconf = G.powerbuttonconf.split( ' ' );
+		$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
+		$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
+		$( '#relays' ).prop( 'checked', G.relays );
+		$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
+		$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
+		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+		$( '#hostname' ).val( G.hostname );
+		$( '#timezone' )
+			.val( G.timezone )
+			.selectric( 'refresh' );
+		[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+			codeToggle( id, 'status' );
+		} );
+		resetLocal();
+		showContent();
 	} );
 }
 refreshData();
@@ -420,9 +414,9 @@ var infolcdchar = heredoc( function() { /*
 		<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
 		<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
 	</tr>
-	<tr id="i2caddress" class="i2c">RADIO</tr>
+	<tr id="i2caddress" class="i2c"></tr>
 	<tr class="i2c"><td>I&#178;C Chip</td>
-		<td colspan="2">
+		<td colspan="3">
 		<select id="i2cchip">
 			<option value="PCF8574">PCF8574</option>
 			<option value="MCP23008">MCP23008</option>
@@ -443,7 +437,7 @@ var infolcdchar = heredoc( function() { /*
 		<td colspan="3"><input type="text" id="pins_data"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(>1 min. stop)</gr></label></td>
+		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop 1 m.)</gr></label></td>
 	</tr>
 	</table>
 */ } );
@@ -463,22 +457,27 @@ $( '#setting-lcdchar' ).click( function() {
 	}
 	var lcdcharaddr = G.lcdcharaddr || '0x27 0x3F';
 	var addr = lcdcharaddr.split( ' ' );
-	var option = '<td>Address</td>';
+	var opt = '<td>Address</td>';
 	addr.forEach( function( el ) {
-		option += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
+		opt += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
 	} );
-	infolcdchar = infolcdchar.replace( 'RADIO', option );
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
+		, boxwidth      : 180
 		, nofocus       : 1
-		, values        : v
-		, checkchanged  : ( G.lcdchar ? 1 : 0 )
-		, beforeshow    : function() {
-			$( '#tbllcdchar' ).find( 'td' ).css( 'width', '78px' );
+		, preshow       : function() {
+			$( '#i2caddress' ).html( opt );
+			$( '#tbllcdchar' ).find( 'td:eq( 1 ), td:eq( 2 )' ).css( 'width', '80px' );
+			$( '.lcdradio' ).width( 230 );
+			$( '.lcd label' ).width( 75 );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
+		}
+		, values        : v
+		, checkchanged  : ( G.lcdchar ? 1 : 0 )
+		, postshow      : function() {
 			$( '#infoContent input[name=inf]' ).change( function() {
 				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
 				$( '.i2c' ).toggleClass( 'hide', !i2c );
@@ -529,19 +528,21 @@ $( '#setting-powerbutton' ).click( function() {
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
-		<td><select id="swpin">OPTION</select></td>
+		<td><select id="swpin"></select></td>
 	</tr>
 	<tr><td>LED</td>
-		<td><select id="ledpin">OPTION</select></td>
+		<td><select id="ledpin"></select></td>
 	</tr>
 	</table>
 */ } );
-infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
+		, preshow      : function() {
+			$( '#swpin, #ledpin' ).html( optionpin );
+		}
 		, values       : [ 5, swpin, ledpin ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
@@ -571,7 +572,7 @@ $( '#setting-lcd' ).click( function() {
 		}
 		, values       : G.lcdmodel
 		, checkchanged : ( G.lcd ? 1 : 0 )
-		, boxwidth     : 190
+		, boxwidth     : 200
 		, buttonlabel  : 'Calibrate'
 		, button       : function() {
 			info( {
@@ -603,7 +604,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, textlabel    : 'Name'
 		, values       : G.hostname
 		, checkchanged : 1
-		, beforeshow   : function() {
+		, postshow     : function() {
 			$( '#infoContent input' ).keyup( function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
@@ -624,11 +625,11 @@ $( '#setting-regional' ).click( function() {
 	info( {
 		  icon         : 'globe'
 		, title        : 'Regional Settings'
-		, textlabel    : [ 'NTP server', 'Wi-Fi regdomain' ]
-		, footer       : '<px90/><code>00</code> - common for all regions'
+		, textlabel    : [ 'NTP server', 'Regulatory domain' ]
+		, footer       : '<px100/>&emsp;<code>00</code> - common for all regions'
 		, values       : values
 		, checkchanged : 1
-		, checkblank   : [ 0, 1 ]
+		, textrequired : [ 0, 1 ]
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'Regional Settings', 'Change ...', 'globe' );
@@ -673,8 +674,8 @@ $( '#setting-soundprofile' ).click( function() {
 		, radiocolumn  : 1
 		, values       : values
 		, checkchanged : 1
-		, checkblank   : [ 0, 1, 2, 3 ]
-		, beforeshow   : function() {
+		, textrequired : [ 0, 1, 2, 3 ]
+		, postshow     : function() {
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );
@@ -741,32 +742,31 @@ $( '#backup' ).click( function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).click( function() {
-	var icon = 'restore';
-	var title = 'Restore Settings';
+	var icon = 'sd-restore';
 	info( {
 		  icon        : icon
-		, title       : title
+		, title       : 'Restore Settings'
 		, message     : 'Restore from:'
 		, radio       : {
 			  'Backup file <code>*.gz</code>' : 'restore'
 			, 'Reset to default'              : 'reset'
 		}
 		, values      : 'restore'
-		, fileoklabel : '<i class="fa fa-restore"></i>Restore'
+		, fileoklabel : 'Restore'
 		, filetype    : '.gz'
-		, beforeshow  : function() {
+		, postshow    : function() {
 			$( '#infoContent input' ).click( function() {
 				if ( infoVal() !== 'restore' ) {
-					$( '#infoFilename' ).addClass( 'hide' );
+					$( '#infoFilename' ).empty()
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
 					$( '#infoOk' )
-						.html( '<i class="fa fa-reset"></i>Reset' )
+						.html( 'Reset' )
 						.css( 'background-color', orange )
 						.removeClass( 'hide' );
 				} else {
 					$( '#infoOk' )
-						.html( '<i class="fa fa-restore"></i>Restore' )
+						.html( 'Restore' )
 						.css( 'background-color', '' )
 						.addClass( 'hide' );
 					$( '#infoFileLabel' ).removeClass( 'hide' );
@@ -792,7 +792,7 @@ $( '#restore' ).click( function() {
 						if ( data == -1 ) {
 							info( {
 								  icon    : icon
-								, title   : title
+								, title   : 'Restore Settings'
 								, message : 'File upload failed.'
 							} );
 							bannerHide();

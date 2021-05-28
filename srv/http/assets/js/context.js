@@ -73,14 +73,14 @@ function bookmarkIcon( path ) {
 						+'<br>'
 						+'<br><w>'+ path +'</w>'
 						+'<br>As:'
-		, textvalue    : path.split( '/' ).pop()
-		, textrequired : 0
+		, values       : path.split( '/' ).pop()
+		, checkblank   : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
 			$.post( cmdphp, {
 				  cmd  : 'bookmark'
 				, path : path
-				, name : $( '#infoTextBox' ).val()
+				, name : infoVal()
 			} );
 			banner( 'Bookmark Added', path, 'bookmark' );
 		}
@@ -176,10 +176,10 @@ function playlistNew() {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
-		, textrequired : 0
+		, checkblank   : [ 0 ]
 		, boxwidth     : 'max'
 		, ok           : function() {
-			playlistSave( $( '#infoTextBox' ).val() );
+			playlistSave( infoVal() );
 		}
 	} );
 }
@@ -191,18 +191,13 @@ function playlistRename() {
 		, message      : 'Rename:'
 						+'<br><w>'+ name +'</w>'
 						+'<br>To:'
-		, textvalue    : name
-		, textrequired : 0
 		, boxwidth     : 'max'
-		, preshow      : function() {
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoTextBox' ).keyup( function() {
-				$( '#infoOk' ).toggleClass( 'disabled', $( '#infoTextBox' ).val() === name );
-			} );
-		}
+		, values       : name
+		, checkchanged : 1
+		, checkblank   : [ 0 ]
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
-			var newname = $( '#infoTextBox' ).val();
+			var newname = infoVal();
 			playlistSave( newname, name );
 			G.list.li.find( '.plname' ).text( newname );
 		}
@@ -212,6 +207,7 @@ function tagEditor() {
 	var file = G.list.path;
 	var cue = file.slice( -4 ) === '.cue';
 	var format = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
+	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var fL = format.length;
 	if ( !G.list.licover ) {
 		if ( !cue ) {
@@ -227,45 +223,54 @@ function tagEditor() {
 	}
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
-	list( query, function( value ) {
-		var src = G.playlist ? value.pop() : $( '.licoverimg img' ).attr( 'src' );
-		var label = [];
+	list( query, function( values ) {
+		if ( G.playlist ) {
+			values.forEach( function( v, i ) {
+				if ( v === '' ) {
+					format.splice( i, 1 );
+					name.splice( i, 1 );
+					values.splice( i, 1 );
+				}
+			} );
+		}
+		var mode, label = [];
 		format.forEach( function( el, i ) {
-			label.push( '<i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			mode = el
+			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
-		var message = '<img src="'+ src +'"><br>'
+		if ( G.library ) {
+			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
+		} else {
+			var $img =  G.list.li.find( 'img' );
+		}
+		var message = '<img src="'+ ( $img.length ? $img.attr( 'src' ) : G.coverdefault ) +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
-		var footer = 'Tap icons: Browse by that mode - value';
-		if ( G.list.licover ) footer += '<br>* Various values';
+		var footer = '';
+		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
+		footer += 'Tap icons: Browse by that mode - value';
+		footer += '<br><span id="tagname"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag names</span>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
 			, width        : 500
 			, message      : message
-			, msgalign     : 'left'
+			, messagealign : 'left'
 			, footer       : footer
 			, textlabel    : label
-			, textvalue    : value
 			, boxwidth     : 'max'
-			, preshow      : function() {
-				$( '#infoMessage' )
+			, values       : values
+			, checkchanged : 1
+			, beforeshow   : function() {
+				$( '.tagname' ).removeClass( 'hide' ); // hide = 0 width
+				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
+				$( '.tagname' ).addClass( 'hide' );
+				var $text = $( '#infoContent input' );
+				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
-				$( '.infoinput' ).each( function( i, $el ) {
-					var $el = $( this );
-					if ( G.playlist && !$el.val() ) $( '.infolabel:eq( '+ i +' ), .infoinput:eq( '+ i +' )' ).hide();
-				} );
-				if ( cue ) $( '.infolabel:eq( 2 ), .infoinput:eq( 2 )' ).hide();
-				var plcue = !$( '.infoinput' ).filter( function() {
-					return $( this ).val() !== '';
-				} ).length
-				if ( plcue ) {
-					$( 'ib:last').remove();
-					$( '#infoFooter' ).text( 'Tap coverart to browse this album' );
-				}
-				$( '#infoMessage' ).click( function() {
+				$( '.infomessage' ).click( function() {
 					if ( G.library ) return
 					
 					G.mode = 'file';
@@ -284,10 +289,38 @@ function tagEditor() {
 						renderLibraryList( data );
 					}, 'json' );
 				} );
-				$( '.infolabel' ).click( function() {
+				setTimeout( function() {
+					var boxW = parseInt( $text.css( 'width' ) );
+					var boxS = boxW - labelW - 6;
+					$( '#tagname' ).click( function() {
+						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
+							$( '.tagname' ).removeClass( 'hide' );
+							$text.css( 'width', boxS );
+						} else {
+							$( '.tagname' ).addClass( 'hide' );
+							$text.css( 'width', boxW );
+						}
+					} );
+				}, 600 );
+				var $td = $( '#infoContent td:first-child' );
+				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
-					var path = $( '.infoinput' ).eq( $( this ).index() ).val();
-					if ( !path || mode === 'title' || mode === 'track' || ( G.library && mode === 'album' ) ) return
+					if ( [ 'title', 'track' ].indexOf( mode ) !== -1 ) {
+						if ( G.library ) {
+							banner( 'Browse Mode', 'Already here', 'library' );
+							$( '#infoX' ).click();
+						} else {
+							$td.find( '.fa-album' ).click();
+						}
+						return
+					}
+					
+					var path = $text.eq( $( this ).parents( 'tr' ).index() ).val();
+					if ( !path || ( G.library && mode === 'album' ) ) {
+						banner( 'Browse Mode', 'Already here', 'library' );
+						$( '#infoX' ).click();
+						return
+					}
 					
 					if ( mode !== 'album' ) {
 						var query = {
@@ -302,8 +335,8 @@ function tagEditor() {
 							return
 						}
 						
-						var albumartist = $( '.infoinput' ).eq( 1 ).val();
-						var artist = $( '.infoinput' ).eq( 2 ).val();
+						var albumartist = $text.eq( 1 ).val();
+						var artist = $text.eq( 2 ).val();
 						var query = {
 							  query  : 'find'
 							, mode   : [ 'album', albumartist ? 'albumartist' : 'artist' ]
@@ -334,31 +367,18 @@ function tagEditor() {
 			}
 			, nobutton     : G.playlist
 			, nofocus      : 1
-			, preshow      : function() {
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '.infoinput' ).keyup( function() {
-					var changed = 0;
-					for ( i = 0; i < fL; i++ ) {
-						if ( $( '.infoinput:eq( '+ i +' )' ).val() !== value[ i ] ) {
-							changed = 1;
-							break;
-						}
-					}
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				} );
-			}
 			, ok           : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
-				for ( i = 0; i < fL; i++ ) {
-					var val = $( '.infoinput:eq( '+ i +' )' ).val();
-					if ( val === value[ i ] ) {
-						val = '';
-					} else {
-						if ( !val ) val = -1;
-					}
+				var values = infoVal();
+				var val;
+				values.forEach( function( v, i ) {
+					val = v === value[ i ] ? '' : ( v || -1 );
 					tag.push( val );
-				}
-				banner( 'Tag Editor', 'Change ...', 'tag blink', -1 );
+				} );
+				banner( 'Tag Editor', 'Change tags ...', 'tag blink', -1 );
+				setTimeout( function() {
+					banner( 'Tag Editor', 'Update Library ...', 'tag blink' );
+				}, 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
 			}
 		} );
@@ -369,31 +389,27 @@ function webRadioCoverart() {
 	var path = G.library ? G.list.path : G.status.file;
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
 	var imagefile = '/srv/http'+ radiopath; //no ext
-	var infojson = {
-		  icon        : 'coverart'
-		, title       : 'WebRadio CoverArt'
-		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-		, filetype    : 'image/*'
-		, ok          : function() {
-			imageReplace( imagefile, 'webradio' );
-		}
-	}
-	if ( ( G.playback && $( '#vu' ).hasClass( 'hide' ) )
-		|| ( G.library && !G.list.li.find( '.lib-icon' ).hasClass( 'fa' ) )
-	) {
-		infojson.buttonlabel = '<i class="fa fa-webradio"></i>Default';
-		infojson.buttonwidth = 1;
-		infojson.buttoncolor = orange;
-		infojson.button      = function() {
-			bash( [ 'coverartradioreset', imagefile ] );
-		}
-	}
 	var coverart = G.playback
 					? G.status.coverartradio || G.coverdefault
 					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
-	infojson.message = '<img class="imgold" src="'+ coverart +'" >';
-	infojson.message += '<p class="imgname"><w>'+ name +'</w></p>';
-	info( infojson );
+	var radioicon = coverart === G.coverdefault;
+	info( {
+		  icon        : 'coverart'
+		, title       : 'WebRadio CoverArt'
+		, message     : '<img class="imgold" src="'+ coverart +'" >'
+						+'<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>'
+		, filelabel   : '<i class="fa fa-folder-open"></i>File'
+		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filetype    : 'image/*'
+		, buttonlabel : radioicon ? '' : '<i class="fa fa-webradio"></i>Default'
+		, buttoncolor : radioicon ? '' : orange
+		, button      : radioicon ? '' : function() {
+			bash( [ 'coverartradioreset', imagefile ] );
+		}
+		, ok          : function() {
+			imageReplace( imagefile, 'webradio' );
+		}
+	} );
 }
 function webRadioDelete() {
 	var name = G.list.name;
@@ -427,22 +443,15 @@ function webRadioEdit() {
 		, width        : 500
 		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
-		, textvalue    : [ name, url ]
-		, textrequired : [ 0, 1 ]
+		, values       : [ name, url ]
+		, checkchanged : 1
+		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
-		, preshow      : function() {
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoTextBox, #infoTextBox1' ).keyup( function() {
-				var changed = ( $( '#infoTextBox' ).val() !== name || $( '#infoTextBox1' ).val() !== url )
-								&& $( '#infoTextBox' ).val()
-								&& $( '#infoTextBox1' ).val();
-				$( '#infoOk' ).toggleClass( 'disabled', !changed );
-			} );
-		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
-			var newname = $( '#infoTextBox' ).val();
-			var newurl = $( '#infoTextBox1' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var values = infoVal();
+			var newname = values[ 0 ];
+			var newurl = values[ 1 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioedit', url, newname, newurl ], function( data ) {
 				data ? webRadioExists( data, url ) : $( '#mode-webradio' ).click();
 			} );
@@ -471,13 +480,14 @@ function webRadioNew( name, url ) {
 		, width        : 500
 		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
-		, textvalue    : [ ( name || '' ), ( url || '' ) ]
-		, textrequired : [ 0, 1 ]
+		, values       : [ ( name || '' ), ( url || '' ) ]
+		, checkblank   : [ 0, 1 ]
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
-			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			var url = $( '#infoTextBox1' ).val();
+			var values = infoVal();
+			var newname = values[ 0 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var url = values[ 1 ];
 			bash( [ 'webradioadd', newname, url ], function( data ) {
 				if ( data == -1 ) {
 					info( {
@@ -503,10 +513,10 @@ function webRadioSave( url ) {
 		, title        : 'Save WebRadio'
 		, message      : url
 		, textlabel    : 'Name'
-		, textrequired : 1
+		, checkblank   : [ 0 ]
 		, ok           : function() {
 			G.local = 1;
-			var newname = $( '#infoTextBox' ).val().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', newname, url ], function() {
 				G.list.li.find( '.liname, .radioname' ).text( newname );
 				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
@@ -542,7 +552,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			bash( [ 'plcurrent', G.list.index + 1 ] );
 			return
 		case 'exclude':
-			info ( {
+			info( {
 				  icon    : 'folder-forbid'
 				, title   : 'Exclude Directory'
 				, message : 'Exclude from Library:'
@@ -623,17 +633,20 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var time = G.list.li.find( '.time' ).data( 'time' );
 			var track = G.list.li.find( '.track' ).text() ;
 			var src = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
+			var values = [ artist, album, title ];
 			info( {
-				  icon      : 'audiocd'
-				, title     : 'Audio CD Tag Editor'
-				, message   : '<img src="'+ src +'">'
-							 +'<br># '+ track +' &bull; '+ second2HMS( time )
-				, msgalign  : 'left'
-				, textlabel : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
-				, textvalue : [ artist, album, title ]
-				, boxwidth  : 'max'
-				, ok        : function() {
-					var data = $( '#infoTextBox' ).val() +'^'+ $( '#infoTextBox1' ).val() +'^'+ $( '#infoTextBox2' ).val() +'^'+ time;
+				  icon         : 'audiocd'
+				, title        : 'Audio CD Tag Editor'
+				, message      : '<img src="'+ src +'">'
+								+'<br># '+ track +' &bull; '+ second2HMS( time )
+				, messagealign : 'left'
+				, textlabel    : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
+				, boxwidth     : 'max'
+				, values       : values
+				, checkchanged : 1
+				, ok           : function() {
+					var values = infoVal();
+					var data = values.join( '^' ) +'^'+ time;
 					data = data.replace( /'/g, "\\'" );
 					bash( [ 'audiocdtag', track, data, discid ] );
 					banner( 'Audio CD', 'Tag Changed', 'audiocd' );
@@ -642,11 +655,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'thumb':
 			info( {
-				  icon     : 'coverart'
-				, title    : 'Album Thumbnails'
-				, message  : 'Update album thumbnails in:'
+				  icon    : 'coverart'
+				, title   : 'Album Thumbnails'
+				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'
-				, ok       : function() {
+				, ok      : function() {
 					thumbUpdate( G.list.path );
 				}
 			} );

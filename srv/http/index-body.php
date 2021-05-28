@@ -188,10 +188,10 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 $menu.= '</div>';
 $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 ?>
-<pre id="data" class="hide"></pre>
 <div id="loader" class="splash">
 	<?=$logo?>
 </div>
+<div id="reload"></div>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
@@ -210,7 +210,6 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
 	<a id="power"><i class="fa fa-power"></i>Power</a>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
-		<i id="displaylibrary2" class="hide"></i>
 		<i id="update" class="fa fa-refresh-library submenu"></i>
 	<a id="displayplayback" class="sub"><i class="fa fa-play-circle"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></i>
@@ -219,11 +218,10 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 </div>
 
 <div id="page-playback" class="page">
-	<i id="button-data" class="fa fa-redo transparent"></i>
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<i id="guide-bio" class="map guide fa fa-bio"></i>
 	<i id="guide-lyrics" class="map guide fa fa-lyrics"></i>
-	<i id="guide-album" class="map guide fa fa-album"></i>
+	<i id="guide-album" class="map guide fa fa-lastfm"></i>
 	<div id="info">
 		<div id="divartist">
 			<span id="artist"></span>

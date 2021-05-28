@@ -8,11 +8,16 @@ filereboot=/srv/http/data/shm/reboot
 # convert each line to each args
 readarray -t args <<< "$1"
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
 pushRefresh() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "features" }'
+	data=$( /srv/http/bash/features-data.sh )
+	pushstream refresh "$data"
 }
 pushRefreshNetworks() {
-	curl -s -X POST http://127.0.0.1/pub?id=refresh -d '{ "page": "networks" }'
+	data=$( /srv/http/bash/networks-data.sh )
+	pushstream refresh "$data"
 }
 featureDisable() {
 	systemctl disable --now $@
@@ -79,10 +84,10 @@ localbrowserdisable )
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	;;
 localbrowserset )
-	rotate=${args[1]}
-	screenoff=${args[2]}
-	cursor=${args[3]}
-	zoom=${args[4]}
+	screenoff=${args[1]}
+	zoom=${args[2]}
+	rotate=${args[3]}
+	cursor=${args[4]}
 	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
 	rotateset=${conf[0]}
 	screenoffset=${conf[1]}
@@ -172,9 +177,7 @@ snapclientdisable )
 	;;
 snapclientset )
 	latency=${args[1]}
-	password=${args[2]}
 	sed -i '/OPTS=/ s/".*"/"--latency='$latency'"/' /etc/default/snapclient
-	[[ -n $password ]] && echo $pwd > $dirsystem/snapclientpw
 	touch $dirsystem/snapclient
 	pushRefresh
 	;;

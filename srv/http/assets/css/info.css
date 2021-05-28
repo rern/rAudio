@@ -12,7 +12,6 @@ input::-moz-focus-inner { /* dotted outline */
 	border: 0;
 }
 .infobtn,
-.filebtn,
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
@@ -29,8 +28,7 @@ input::-moz-focus-inner { /* dotted outline */
 #infoOverlay input[type=checkbox]:focus {
 	outline: none;
 }
-.infobtn,
-.filebtn {
+.infobtn {
 	display: inline-block;
 	margin: 0 5px 10px;
 	min-width: 70px;
@@ -57,8 +55,7 @@ input::-moz-focus-inner { /* dotted outline */
 .infobtn-default {
 	background-color: var( --cg );
 }
-.infobtn.disabled,
-.filebtn.disabled {
+.infobtn.disabled {
 	color: var( --cg60 ) !important;
 	background-color: var( --cg ) !important;
 	pointer-events: none;
@@ -68,12 +65,7 @@ input::-moz-focus-inner { /* dotted outline */
 }
 hr {
 	border: none;
-    border-bottom: 1px solid var( --cg );}
-#infoContent hr {
-	margin: 10px 30px;
-}
-#infoCheckBox hr {
-	margin: 10px -10px;
+	border-bottom: 1px solid var( --cg );
 }
 #infoOverlay {
 	position: absolute;
@@ -93,12 +85,7 @@ hr {
 	height: 100%;
 }
 #infoOverlay .fa {
-	vertical-align: -2px;
-}
-#infoMessage .fa {
-	width: 25px;
-	vertical-align: 0;
-	font-size: 20px;
+	vertical-align: -1px;
 }
 #infoButtons .fa {
 	font-size: 18px;
@@ -163,6 +150,7 @@ hr {
 }
 #infoTop .imgicon img {
 	width: 30px;
+	vertical-align: -1px;
 }
 #infoX {
 	float: right;
@@ -179,129 +167,132 @@ hr {
 	width: calc( 100% - 45px );
 	margin-left: 10px;
 	font-size: 18px;
-	font-weight: 300;
 	line-height: 40px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	letter-spacing: 2px;
 }
 #infoArrow {
 	position: absolute;
 	width: 400px;
 	max-width: 98%;
 }
-#infoContent {
-	padding: 25px 10px 10px 10px;
-	font-size: 16px;
-}
-#infoContent label {
-	display: inline-block;
-	margin: 0;
-	font-weight: normal;
-}
-.infoarrowleft,
-.infoarrowright {
+#infoArrow i {
+	float: left;
 	width: 40px;
 	height: 40px;
 	font-size: 24px;
 	color: var( --cm );
 }
-.infoarrowleft {
-	float: left;
+.fa-arrow-right {
+	float: right !important;
 }
-.infoarrowright {
-	float: right;
+#infoContent {
+	padding: 25px 10px 10px 10px;
+	font-size: 16px;
+}
+#infoContent table {
+	margin: 0 auto;
+}
+#infoContent td {
+	height: 32px;
+	padding: 0;
+	text-align: left;
+	white-space: nowrap;
+}
+#infoContent td:first-child {
+	padding-right: 5px;
+	text-align: right;
+}
+#infoContent td.chk {
+	padding-right: 10px;
+	text-align: left !important;
+}
+#infoContent label i {
+	text-align: center;
+	width: 22px;
+	color: var( --cg60 );
+	font-size: 20px;
+	margin-right: 5px;
+}
+#infoContent td:first-child i {
+	font-size: 20px;
+	width: 24px;
+	text-align: center;
+}
+#infoContent pre {
+	margin: 0;
+	padding: 0 10px;
+	text-align: left;
+	color: var( --cg60 );
+	background: none;
 }
 .infomessage,
-#infoMessage {
-	display: inline-block;
+.infofooter {
 	width: fit-content;
-	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
-	padding: 0 15px;
 	word-wrap: break-word;
 	overflow: hidden;
 	color: var( --cg60 );
 }
-#infoFooter {
-	display: block;
-	margin-bottom: 0;
-	color: var( --cg60 );
+.infomessage .fa {
+	width: 25px;
+	vertical-align: 0;
+	font-size: 20px;
 }
-#infoMessage .colL,
-#infoMessage .colR {
+.infomessage .fa-bookmark {
+	font-size: 48px;
+	width: 48px;
+}
+.infomessage img {
+	width: auto;
+	height: 100px;
+	margin-bottom: 10px;
+}
+.infoimgnew {
+	margin-left: 10px;
+}
+.infoimgwh {
+	font-size: 14px;
+}
+.infoimgwh span {
+	float: right;
 	display: inline-block;
-	margin-bottom: 5px;
-	width: fit-content !important;
 	text-align: right;
+	font-size: 14px;
 }
-#infoMessage .colL {
-	padding-right: 10px;
+.infoimgwh i {
+	font-size: 18px;
+	margin: 0;
 }
-.infotextlabel,
-#infotextlabel,
-#infoSelectLabel {
-	display: inline-block;
-	margin-right: 5px;
-	line-height: 40px;
-	text-align: right;
-}
-.infotextbox,
-.infotextsuffix,
-#infotextsuffix,
-#infotextbox {
-	display: inline-block;
-	width: min-content;
-	line-height: 35px;
-	text-align: left;
-}
-.infotextlabel,
-.infotextbox {
-	vertical-align: top;
-}
-.infotextbox {
-	margin-top: 4px;
-}
-.infotextsuffix,
-#infotextsuffix {
-	width: fit-content;
-	margin-left: 5px;
-	line-height: 40px;
-}
-.infotextsuffix gr,
-#infotextsuffix gr {
-	display: block;
+#infoContent .imgicon {
+	width: 30px;
+	vertical-align: -10px;
 }
 #infoContent textarea {
 	width: 100%;
 	height: 100px;
 	margin: 0 !important;
-	padding: 5px 10px;
+	padding: 0 10px;
 	border-radius: 4px;
 	border: none;
 	outline: none;
 	font-family: Inconsolata;
-	font-size: 16px;
+	font-size: 15px;
 	line-height: 20px;
 	tab-size: 4;
 	color: var( --cw );
 	background: var( --cgd );
+	resize: none;
 	overflow: hidden;
-}
-.infolabel {
-	display: block;
-	text-align: right;
-	color: var( --cw );
-}
-.infolabel:hover {
-	color: var( --cw );
 }
 #infoContent input[type=text],
 #infoContent input[type=number],
 #infoContent input[type=password] {
-	display: block;
-	margin: 4px 0 !important;
+	display: inline-block;
+	margin: 0 !important;
 	width: 230px;
 	height: 36px !important;
 	padding: 10px;
@@ -313,52 +304,32 @@ hr {
 	font-family: "Lato";
 }
 #infoContent input[type=text]:disabled {
-	border: none !important;
 	background: none !important;
-	opacity: 1;
+	outline: none;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
-}
-.infoinput:focus {
 	outline: none;
-}
-#infoFilename {
-	display: inline-block;
-	width: 100%;
-	margin-bottom: 10px;
-}
-#infoFilename code {
-	max-width: 90%;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .eyeactive {
 	color: var( --cm );
-}
-.infohtml {
-	display: table;
-	margin: 5px auto 0;
-	height: 34px;
-	text-align: left;
-}
-.infotextbox .infohtml {
-	margin-left: 0;
 }
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
-	margin: 3px 0;
+	margin: 3px 6px 3px 0;
 	vertical-align: -10px;
 	border: none;
 	border-radius: 3px;
 	background-color: var( --cg );
 }
 #infoOverlay input[type=radio] {
+	width: 26px;
+	height: 26px;
 	border-radius: 50%;
+	margin: 2px 7px 2px 0;
 }
 #infoOverlay input:checked {
 	background-color: var( --cm );
@@ -371,28 +342,24 @@ hr {
 #infoOverlay input[type=radio]:disabled {
 	background-color: var( --cgd );
 }
-#infoSelect button {
+#infoContent button {
 	height: 40px;
 	margin-left: 5px;
 	padding-right: 25px;
 	font-size: 16px;
 }
-#infoFile {
-	display: block;
+#infoFilename {
+	margin-bottom: 10px;
 }
 #infoButtons {
 	padding: 10px 0 20px 0;
 }
 #infoContent .selectric-wrapper {
-	margin: 2px 0;
-}
-#infoSelect .selectric-wrapper {
-	width: auto;
-	max-width: 100%;
+	margin: 0;
 }
 #infoOverlay white,
 #infoOverlay code,
-#infoSelect .selectric-items ul {
+#infoContent .selectric-items ul {
 	color: var( --cw );
 }
 #infoContent .selectric {
@@ -404,13 +371,13 @@ hr {
 	height: 34px;
 	text-align: left;
 }
+#infoContent .selectric-items {
+	min-width: 100%;
+}
 #infoContent .selectric .label {
 	margin: 1px 0;
 	padding: 0 10px;
 	line-height: 34px;
-}
-#infoRadio i {
-	vertical-align: baseline !important;
 }
 #infoRange input {
 	height: 40px;
@@ -527,8 +494,6 @@ px100 { width: 100px }
 	}
 	input[type=checkbox],
 	input[type=radio],
-	.infocheckbox label,
-	.inforadio label,
 	.fa-eye {
 		cursor: pointer;
 	}
@@ -547,6 +512,7 @@ px100 { width: 100px }
 	input[type=checkbox].active,
 	input[type=radio].active,
 	.infobtn.active {
-		border: 2px solid var( --cw ) !important;
+		box-shadow: 0 0 2px 2px var( --cg60 );
+
 	}
 }
