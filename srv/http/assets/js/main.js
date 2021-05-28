@@ -941,11 +941,8 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
-		, preshow      : function() {
-			$( '#infoIcon' ).replaceWith( '<div class="imgicon">'+ $( '#button-coverart' ).html() +'</div>' );
-		}
 		, ok           : function() {
-			thumbUpdate( '' );
+			thumbUpdate();
 		}
 	} );
 } );

@@ -233,7 +233,7 @@ function tagEditor() {
 				}
 			} );
 		}
-		var mode, labelW, label = [];
+		var mode, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
 			label.push( '<span class="tagname gr">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );

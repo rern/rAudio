@@ -375,23 +375,21 @@ $( '#setting-soxr' ).click( function() {
 	} );
 } );
 var custominfo = heredoc( function() { /*
-	<p class="infomessage msg">
-			<code>/etc/mpd.conf</code>
-		<br>...
-		<br>user<px style="width: 153px"></px>"mpd"
-	</p>
-	<textarea></textarea>
-	<p class="infomessage msg">
-			...
-		<br>
-		<br>audio_output {
-		<br><px30/>...
-		<br><px30/>mixer_device<px style="width: 24px"></px>"hw:N"
-	</p>
-	<textarea style="padding-left: 39px"></textarea>
-	<p class="infomessage msg">
-		}
-	</p>
+<table>
+	<tr><td style="text-align: left"><code>/etc/mpd.conf</code>
+	<tr><td><pre>
+...
+user                   "mpd"</pre></td></tr>
+	<tr><td><textarea></textarea></td></tr>
+	<tr><td><pre>
+...
+audio_output {
+	...
+	mixer_device   "hw:N"</pre></td></tr>
+	<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+	<tr><td><pre style="margin-top: -20px">
+}</pre></td></tr>
+</table>
 */ } );
 $( '#setting-custom' ).click( function() {
 	var valglobal = G.userglobal.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
@@ -400,19 +398,9 @@ $( '#setting-custom' ).click( function() {
 		  icon         : 'mpd'
 		, title        : "User's Configurations"
 		, content      : custominfo
-		, messagealign : 'left'
 		, boxwidth     : 320
 		, values       : [ valglobal, valoutput ]
 		, checkchanged : ( G.custom ? 1 : 0 )
-		, preshow      : function() {
-			$( '.msg' ).css( {
-				  width          : '100%'
-				, margin         : 0
-				, 'text-align'   : 'left'
-				, 'padding-left' : '35px'
-				, 'font-family'  : 'Inconsolata'
-			} );
-		}
 		, cancel       : function() {
 			$( '#custom' ).prop( 'checked', G.custom );
 		}

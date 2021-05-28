@@ -281,12 +281,10 @@ function info( json ) {
 				if ( !noreset ) infoReset();
 			} );
 		}
-		if ( typeof O.ok === 'function' ) {
-			$( '#infoOk' ).click( function() {
-				O.ok();
-				if ( !noreset ) infoReset();
-			} );
-		}
+		$( '#infoOk' ).click( function() {
+			if ( typeof O.ok === 'function' ) O.ok();
+			if ( !noreset ) infoReset();
+		} );
 	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'

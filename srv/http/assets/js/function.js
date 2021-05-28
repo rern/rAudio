@@ -155,6 +155,9 @@ function coverartChange() {
 					   +'<p class="infoimgname">'+ album
 					   +'<br>'+ artist +'</p>'
 		, footer      : footer
+		, postshow     : function() { // fix direct replace src
+			$( '.imgold' ).attr( 'src', src );
+		}
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
@@ -171,9 +174,6 @@ function coverartChange() {
 					$( '.licoverimg img' ).attr( 'src', url || G.coverdefault );
 				}
 			} );
-		}
-		, preshow     : function() { // fix direct replace src
-			$( '.imgold' ).attr( 'src', src );
 		}
 		, ok          : function() {
 			imageReplace( imagefile, type );
@@ -722,7 +722,7 @@ function infoPlayback() {
 		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
-		, preshow      : function() {
+		, postshow      : function() {
 			$( '#infoContent tr' ).last().toggleClass( 'hide', !G.display.cover );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
@@ -738,8 +738,6 @@ function infoPlayback() {
 				window[ '$'+ k ] = $chk.eq( i );
 				window[ k ] = i;
 			} );
-		}
-		, postshow     : function() {
 			$time.add( $volume ).change( function() {
 				var t = $time.prop( 'checked' );
 				var v = $volume.prop( 'checked' );
@@ -1846,7 +1844,7 @@ function thumbUpdate( path ) {
 					+'<input type="hidden" name="sh[]" value="cove">'
 					+'<input type="hidden" name="sh[]" value="Update">'
 					+'<input type="hidden" name="sh[]" value="main">'
-					+'<input type="hidden" name="sh[]" value="'+ path +'">'
+					+'<input type="hidden" name="sh[]" value="'+ ( path || '' ) +'">'
 			  +'</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();

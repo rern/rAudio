@@ -80,8 +80,8 @@ $( '#close' ).click( function() {
 	} );
 } );
 var scroll = setInterval( function() {
-	$( 'pre' ).scrollTop( 10000 );
-}, 200 );
+	$( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
+}, 500 );
 // js for '<pre>' must be here before start stdout
 // php 'flush' loop waits for all outputs before going to next lines
 // but must 'setTimeout()' for '<pre>' to load to fix 'undefined'
@@ -202,16 +202,14 @@ pclose( $popencmd );
 </div>
 
 <script>
+clearInterval( scroll );
+$( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
+$( '#wait' ).remove();
 info( {
 	  icon    : 'jigsaw'
 	, title   : '<?=$title?>'
 	, message : '<?=$postinfo?>'
-	, ok      : function() {
-		$( 'pre' ).scrollTop( 10000 );
-	}
 } );
-$( '#wait' ).remove();
-clearInterval( scroll );
 </script>
 
 </body>

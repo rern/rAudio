@@ -420,7 +420,7 @@ var infolcdchar = heredoc( function() { /*
 		<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
 		<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
 	</tr>
-	<tr id="i2caddress" class="i2c"></tr>
+	<tr id="i2caddress" class="i2c">RADIO</tr>
 	<tr class="i2c"><td>I&#178;C Chip</td>
 		<td colspan="2">
 		<select id="i2cchip">
@@ -463,26 +463,22 @@ $( '#setting-lcdchar' ).click( function() {
 	}
 	var lcdcharaddr = G.lcdcharaddr || '0x27 0x3F';
 	var addr = lcdcharaddr.split( ' ' );
-	var opt = '<td>Address</td>';
+	var option = '<td>Address</td>';
 	addr.forEach( function( el ) {
-		opt += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
+		option += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
 	} );
+	infolcdchar = infolcdchar.replace( 'RADIO', option );
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
 		, nofocus       : 1
-		, preshow       : function() {
-			$( '#i2caddress' ).html( opt );
-			$( '#tbllcdchar' ).find( 'td:eq( 1 ), td:eq( 2 )' ).css( 'width', '80px' );
-			$( '.lcdradio' ).width( 230 );
-			$( '.lcd label' ).width( 75 );
-			$( '.i2c' ).toggleClass( 'hide', !i2c );
-			$( '.gpio' ).toggleClass( 'hide', i2c );
-		}
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, postshow      : function() {
+			$( '#tbllcdchar' ).find( 'td' ).css( 'width', '78px' );
+			$( '.i2c' ).toggleClass( 'hide', !i2c );
+			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
 				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
 				$( '.i2c' ).toggleClass( 'hide', !i2c );
@@ -533,21 +529,19 @@ $( '#setting-powerbutton' ).click( function() {
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
-		<td><select id="swpin"></select></td>
+		<td><select id="swpin">OPTION</select></td>
 	</tr>
 	<tr><td>LED</td>
-		<td><select id="ledpin"></select></td>
+		<td><select id="ledpin">OPTION</select></td>
 	</tr>
 	</table>
 */ } );
+infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
-		, preshow      : function() {
-			$( '#swpin, #ledpin' ).html( optionpin );
-		}
 		, values       : [ 5, swpin, ledpin ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
