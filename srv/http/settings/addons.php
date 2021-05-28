@@ -93,7 +93,6 @@ foreach( $arrayalias as $alias ) {
 	
 	// addon list ---------------------------------------------------------------
 	$title = $addon[ 'title' ];
-	if ( $update ) $title = '<i class="fa fa-update"></i>'.$title;
 	$list.= '<li alias="'.$alias.'"'.$installed.'>'.$title.'</li>';
 	// addon blocks -------------------------------------------------------------
 	$revisionclass = $version ? 'revision' : 'revisionnone';
