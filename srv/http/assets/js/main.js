@@ -315,7 +315,7 @@ $( '#tab-playback' ).click( function() {
 					volumePushstream();
 				} );
 			}
-			, nobutton   : 1
+			, nook       : 1
 		} );
 	} else {
 		getPlaybackStatus();

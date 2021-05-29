@@ -11,6 +11,9 @@ info( {                                     // default
 	nox           : 1                       // (show)         (no top 'X' close button)
 	autoclose     : N                       // (disabled)     (auto close in ms)
 	
+	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
+	arrowleft     : FUNCTION                // (none)
+	
 	content       : 'HTML'                  // ***            (custom inputs content)
 	message       : 'MESSAGE'               // (blank)        (message under title)
 	messagealign  : 'CSS'                   // 'center'
@@ -34,14 +37,14 @@ info( {                                     // default
 	select        : { LABEL: 'VALUE', ... } // ***
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
-	order         : [ TYPE, ... ]           // (sequence)     (order of inputs)
+	order         : [ TYPE, ... ]           // (sequence)     (order of *** inputs)
 	
 	filelabel     : 'LABEL'                 // ***            (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
 	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
-	filetypecheck : 1                       // (no)           (check matched filetype)
-	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
-	nobutton      : 1                       // (show)         (no button)
+	filetypecheck : 1                       // (no)           (check matched filetype - file = $( '#infoFileBox' )[ 0 ].files[ 0 ];)
+	
+	nook          : 1                       // (show)         (no ok button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
@@ -54,7 +57,7 @@ info( {                                     // default
 	button        : [ FUNCTION, ... ]       // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
 	buttonfit     : 1                       // (none)         (fit buttons width to label)
-	buttonnoreset : 1                       // (none)         (do not hide on button clicked)
+	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
 	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
@@ -63,11 +66,13 @@ info( {                                     // default
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
+
 Note:
 - Single value/function - no need to be array
 - select requires Selectric.js
 - Get values - infoVal()
 */
+
 function heredoc( fn ) {
 	return fn.toString().match( /\/\*\s*([\s\S]*?)\s*\*\//m )[ 1 ];
 };
@@ -75,7 +80,10 @@ var containerhtml = heredoc( function() { /*
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop"></div><i id="infoX" class="fa fa-times hide"></i>
+			<div id="infoTop">
+				<i id="infoIcon"></i><a id="infoTitle"></a>
+			</div>
+			<i id="infoX" class="fa fa-times"></i>
 		</div>
 		<div id="infoContent"></div>
 		<div id="infoButtons"></div>
@@ -177,7 +185,8 @@ function infoReset() {
 		, width      : ''
 		, visibility : 'hidden'
 	} );
-	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
+	$( '#infoIcon' ).removeAttr( 'class' );
+	$( '#infoTitle' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '#infoArrow i' ).off( 'click' );
 	$( '#infoArrow' ).remove();
@@ -199,9 +208,9 @@ function info( json ) {
 	O = json;
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
-	setTimeout( function() { // fix: wait for infoReset() on 2nd info
-	///////////////////////////////////////////////////////////////////
 	// simple use as info( 'message' )
+	setTimeout( function() { // allow consecutive infos
+	//////////////////////////////////////////////////////////////////////////
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
@@ -215,7 +224,7 @@ function info( json ) {
 	}
 	
 	$( '#infoOverlay' ).toggleClass( 'noscroll', 'noscroll' in O ); // for volume input range
-	$( '#infoX, #infoCancel' ).click( function() {
+	$( '#infoX' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
 		infoReset();
 	} );
@@ -244,7 +253,6 @@ function info( json ) {
 	}
 	
 	// buttons
-	if ( !( 'nobutton' in O ) || !O.nobutton ) {
 		var htmlbutton = ''
 		if ( 'button' in O && O.button ) {
 			var button = 'button' in O ? O.button : '';
@@ -257,16 +265,18 @@ function info( json ) {
 			for ( i = 0; i < iL; i++ ) {
 				var iid = i || '';
 				var color = buttoncolor[ i ] ? ' style="background-color:'+ buttoncolor[ i ] +'"' : '';
-				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-default">'+ buttonlabel[ i ] +'</a>';
+				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ buttonlabel[ i ] +'</a>';
 			}
 		}
-		if ( 'cancel' in O && O.cancel ) {
+		if ( 'cancelshow' in O && O.cancelshow ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 			var hide = O.cancelshow ? '' : ' hide';
 			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
 		}
-		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
-		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+		if ( !( 'nook' in O ) || !O.nook ) {
+			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
+			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+		}
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( 'button' in O && O.button ) {
 			if ( typeof button !== 'object' ) button = [ button ];
@@ -276,17 +286,14 @@ function info( json ) {
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		if ( typeof O.cancel === 'function' ) {
-			$( '#infoCancel' ).click( function() {
-				O.cancel();
-				if ( !O.buttonnoreset ) infoReset();
-			} );
-		}
+		$( '#infoCancel' ).click( function() {
+			if ( typeof O.cancel === 'function' ) O.cancel();
+			infoReset();
+		} );
 		$( '#infoOk' ).click( function() {
 			if ( typeof O.ok === 'function' ) O.ok();
-			if ( !O.buttonnoreset ) infoReset();
+			infoReset();
 		} );
-	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
 				+'<code id="infoFilename" class="hide"></code>'
@@ -322,7 +329,7 @@ function info( json ) {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( O.filetype === 'image/*' ) fileImage( file );
+				if ( O.filetype === 'image/*' ) setFileImage( file );
 			}
 		} );
 	}
@@ -446,7 +453,7 @@ function info( json ) {
 		alignVertical();
 		// apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
-		// set button width
+		// set width: button
 		if ( !( 'buttonfit' in O ) ) {
 			var widest = 0;
 			var $this, w, btnhide;
@@ -460,6 +467,7 @@ function info( json ) {
 			} );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
+		// set width: text / password / textarea
 		if ( 'boxwidth' in O && O.boxwidth ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width();
@@ -467,6 +475,10 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
+		// set width: radio / checkbox
+/*		if ( $( '#infoContent td' ).length > 2 ) {
+			$( '#infoContent' ).find( 'td:eq( 2 ), td:eq( 3 )' ).css( 'padding-right', '10px' );
+		}*/
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
@@ -515,9 +527,9 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( 'beforeshow' in O && O.beforeshow ) O.beforeshow();
-		/////////////////////////////////////////////////////////////////////////////
-		}, 0 );
 	} );
+	//////////////////////////////////////////////////////////////////////////
+	}, 0 );
 }
 
 function alignVertical() { // make infoBox scrollable
@@ -525,11 +537,11 @@ function alignVertical() { // make infoBox scrollable
 		var boxH = $( '#infoBox' ).height();
 		var wH = window.innerHeight;
 		var top = boxH < wH ? ( wH - boxH ) / 2 : 20;
+		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoBox' ).css( {
 			  'margin-top' : top +'px'
 			, 'visibility' : 'visible'
 		} );
-		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoOverlay' ).removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		$input0 = $( O.inputs[ 0 ] );
@@ -573,31 +585,7 @@ function infoVal() {
 		return values[ 0 ]
 	}
 }
-function setValues() {
-	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
-	var $this, type, val;
-	O.inputs.each( function( i, e ) {
-		$this = $( e );
-		type = $this.prop( 'type' );
-		val = O.values[ i ];
-		if ( type === 'radio' ) { // reselect radio by name
-			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
-		} else if ( type === 'checkbox' ) {
-			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select
-			$this.val( val );
-		}
-	} );
-	if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
-}
-function switchRL( rl, fn ) {
-	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' ).click( function() {
-		fn();
-		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
-	} );
-}
-function fileImage( file ) {
+function setFileImage( file ) {
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
 	}, 1000 );
@@ -655,6 +643,31 @@ function fileImage( file ) {
 		} );
 	} );
 }
+function setValues() {
+	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
+	var $this, type, val;
+	O.inputs.each( function( i, e ) {
+		$this = $( e );
+		type = $this.prop( 'type' );
+		val = O.values[ i ];
+		if ( type === 'radio' ) { // reselect radio by name
+			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
+		} else if ( type === 'checkbox' ) {
+			$this.prop( 'checked',  val );
+		} else { // text, password, textarea, select
+			$this.val( val );
+		}
+	} );
+	if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
+}
+function switchRL( rl, fn ) {
+	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
+	$( '#infoArrow i' ).click( function() {
+		fn();
+		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
+	} );
+}
+
 $( '#infoContent' ).on( 'click', '.infoimgnew', function() {
 	G.rotate += 90;
 	if ( G.rotate === 360 ) G.rotate = 0;

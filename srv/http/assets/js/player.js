@@ -143,33 +143,37 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
+	bash( [ 'volumeget' ], function( voldb ) {
+		var voldb = voldb.split( '^^' );
+		var db = voldb[ 1 ];
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : device.hwmixer
-			, rangevalue    : level
-			, footer        : ( novolume ? '<br>( Control: None / 0dB )' : '' )
+			, rangevalue    : voldb[ 0 ]
+			, footer        : ( novolume ? '0dB (No Volume)' : db +' dB' )
 			, beforeshow    : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
+					$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
 						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
 					} ).on( 'mouseup touchend', function() {
-						bash( '/srv/http/bash/cmd.sh volumepushstream' );
+						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
 			}
 			, buttonnoreset : 1
-			, oklabel       : novolume ? '' : '<i class="fa fa-undo"></i>0dB'
-			, ok            : novolume ? '' : function() {
+			, buttonlabel   : novolume ? '' : '<i class="fa fa-set0"></i>0dB'
+			, button        : novolume ? '' : function() {
 				bash( [ 'volume0db', device.hwmixer ] );
 			}
+			, nook          : 1
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#mixertype' ).change( function() {
 	var mixertype = $( this ).val();

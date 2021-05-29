@@ -258,6 +258,7 @@ function tagEditor() {
 			, message      : message
 			, messagealign : 'left'
 			, footer       : footer
+			, footeralign  : 'right'
 			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
@@ -365,9 +366,9 @@ function tagEditor() {
 					}, 'json' );
 				} );
 			}
-			, nobutton     : G.playlist
+			, nook         : G.playlist
 			, nofocus      : 1
-			, ok           : function() {
+			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				var values = infoVal();
 				var val;
