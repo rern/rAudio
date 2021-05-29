@@ -30,18 +30,18 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
-.fa-airplay:before { content: "\f58A" }
+.fa-airplay:before { content: "\f580" }
 .fa-album:before { content: "\f555" }
 .fa-albumartist:before { content: "\f557" }
 .fa-arrow-left:before { content: "\f602" }
 .fa-arrow-right:before { content: "\f603" }
 .fa-artist:before { content: "\f556" }
-.fa-audiocd:before { content: "\f53A" }
+.fa-audiocd:before { content: "\f538" }
 .fa-bars:before { content: "\f51C" }
 .fa-bio:before { content: "\f515" }
 .fa-bookmark:before { content: "\f550" }
-.fa-bluetooth:before { content: "\f580" }
-.fa-bluetooth-client:before { content: "\f581" }
+.fa-bluetooth:before { content: "\f595" }
+.fa-bluetooth-client:before { content: "\f596" }
 .fa-brush:before { content: "\f536" }
 .fa-check:before { content: "\f51B" }
 .fa-composer:before { content: "\f558" }
@@ -55,11 +55,11 @@
 .fa-edit:before { content: "\f565" }
 .fa-edit-circle:before { content: "\f566" }
 .fa-eye:before { content: "\f56B" }
-.fa-file-music:before { content: "\f54A" }
-.fa-file-playlist:before { content: "\f549" }
+.fa-file-music:before { content: "\f549" }
+.fa-file-playlist:before { content: "\f548" }
 .fa-flash:before { content: "\f567" }
 .fa-folder:before { content: "\f540" }
-.fa-folder-cascade:before { content: "\f538" }
+.fa-folder-cascade:before { content: "\f54A" }
 .fa-folder-forbid:before { content: "\f537" }
 .fa-folder-open:before { content: "\f541" }
 .fa-gear:before { content: "\f509" }
@@ -73,12 +73,12 @@
 .fa-library:before { content: "\f506" }
 .fa-list-ul:before { content: "\f508"; }
 .fa-lock:before { content: "\f574"; }
-.fa-lyrics:before { content: "\f539" }
+.fa-lyrics:before { content: "\f54B" }
 .fa-microsd:before { content: "\f543" }
 .fa-minus:before { content: "\f518" }
 .fa-minus-circle:before { content: "\f563" }
 .fa-mpd:before { content: "\f507" } /* fa-play-circle */
-.fa-music:before { content: "\f538" }
+.fa-music:before { content: "\f54A" }
 .fa-mute:before { content: "\f517" }
 .fa-nas:before { content: "\f551" }
 .fa-network:before { content: "\f551" }
@@ -100,8 +100,8 @@
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
 .fa-radiofrance:before { content: "\f589" }
-.fa-radioparadise:before {content: "\f595"; position: absolute; color: var( --cgl ); }
-.fa-radioparadise:after {content: "\f596"; position: relative; } /* position: relative - fix order */
+.fa-radioparadise:before {content: "\f59C"; position: absolute; color: var( --cgl ); }
+.fa-radioparadise:after {content: "\f59D"; position: relative; } /* position: relative - fix order */
 .fa-random:before { content: "\f512" }
 .fa-reboot:before { content: "\f521" }
 .fa-redo:before { content: "\f524" }
@@ -115,7 +115,7 @@
 .fa-right:before { content: "\f607" }
 .fa-save:before { content: "\f542"}
 .fa-save-plus:before { content: "\f545"}
-.fa-screenoff:before { content: "\f548" }
+.fa-screenoff:before { content: "\f547" }
 .fa-scale-dn:before { content: "\f591" }
 .fa-scale-up:before { content: "\f592" }
 .fa-sd:before { content: "\f543" }
@@ -131,10 +131,10 @@
 .fa-stop:before { content: "\f502" }
 .fa-tag:before { content: "\f55B" }
 .fa-times:before { content: "\f51A" }
-.fa-title:before { content: "\f538" }
-.fa-track:before { content: "\f50D" }
+.fa-title:before { content: "\f54A" }
+.fa-track:before { content: "\f54C" }
 .fa-undo:before { content: "\f523" }
-.fa-upnp:before { content: "\f58B" }
+.fa-upnp:before { content: "\f581" }
 .fa-usb:before { content: "\f553" }
 .fa-usbdrive:before { content: "\f553" }
 .fa-volume:before { content: "\f516" }
