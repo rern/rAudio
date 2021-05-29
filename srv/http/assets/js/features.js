@@ -115,8 +115,8 @@ $( '.enable' ).click( function() {
 } );
 $( '.enablenoset' ).click( function() {
 	var idname = {
-		  autoplay         : [ 'Play on Startup',                  'refresh-play' ]
-		, autoplaycd       : [ 'Play on Insert CD',                'audiocdplay' ]
+		  autoplay         : [ 'Play on Startup',                  'play-power' ]
+		, autoplaycd       : [ 'Play on Insert CD',                'play-cd' ]
 		, localbrowser     : [ 'Chromium - Browser on RPi',        'chromium' ]
 		, 'shairport-sync' : [ 'AirPlay Renderer',                 'airplay' ]
 		, snapserver       : [ 'Snapcast - Sync Streaming Server', 'snapcast' ]

@@ -11,6 +11,9 @@ info( {                                     // default
 	nox           : 1                       // (show)         (no top 'X' close button)
 	autoclose     : N                       // (disabled)     (auto close in ms)
 	
+	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
+	arrowleft     : FUNCTION                // (none)
+	
 	content       : 'HTML'                  // ***            (custom inputs content)
 	message       : 'MESSAGE'               // (blank)        (message under title)
 	messagealign  : 'CSS'                   // 'center'
@@ -54,7 +57,7 @@ info( {                                     // default
 	button        : [ FUNCTION, ... ]       // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
 	buttonfit     : 1                       // (none)         (fit buttons width to label)
-	buttonnoreset : 1                       // (none)         (do not hide on button clicked)
+	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
 	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
@@ -63,11 +66,13 @@ info( {                                     // default
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
+
 Note:
 - Single value/function - no need to be array
 - select requires Selectric.js
 - Get values - infoVal()
 */
+
 function heredoc( fn ) {
 	return fn.toString().match( /\/\*\s*([\s\S]*?)\s*\*\//m )[ 1 ];
 };
@@ -279,12 +284,12 @@ function info( json ) {
 		if ( typeof O.cancel === 'function' ) {
 			$( '#infoCancel' ).click( function() {
 				O.cancel();
-				if ( !O.buttonnoreset ) infoReset();
+				infoReset();
 			} );
 		}
 		$( '#infoOk' ).click( function() {
 			if ( typeof O.ok === 'function' ) O.ok();
-			if ( !O.buttonnoreset ) infoReset();
+			infoReset();
 		} );
 	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
@@ -446,7 +451,7 @@ function info( json ) {
 		alignVertical();
 		// apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
-		// set button width
+		// set width: button
 		if ( !( 'buttonfit' in O ) ) {
 			var widest = 0;
 			var $this, w, btnhide;
@@ -460,6 +465,7 @@ function info( json ) {
 			} );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
+		// set width: text / password / textarea
 		if ( 'boxwidth' in O && O.boxwidth ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width();
@@ -467,6 +473,10 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
+		// set width: radio / checkbox
+/*		if ( $( '#infoContent td' ).length > 2 ) {
+			$( '#infoContent' ).find( 'td:eq( 2 ), td:eq( 3 )' ).css( 'padding-right', '10px' );
+		}*/
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );

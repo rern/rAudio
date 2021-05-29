@@ -333,7 +333,7 @@ $( '.back' ).click( function() {
 	$( '#divinterface, #divaccesspoint' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
-	nicsStatus();
+	refreshData();
 } );
 $( '#btscan' ).click( function() {
 	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );

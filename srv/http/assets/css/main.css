@@ -30,7 +30,7 @@
 	font-style: normal;
 }
 .fa-lg { font-size: 22px }
-.fa-airplay:before { content: "\f590" }
+.fa-airplay:before { content: "\f58A" }
 .fa-album:before { content: "\f555" }
 .fa-albumartist:before { content: "\f557" }
 .fa-arrow-left:before { content: "\f602" }
@@ -44,18 +44,17 @@
 .fa-bluetooth-client:before { content: "\f581" }
 .fa-brush:before { content: "\f536" }
 .fa-check:before { content: "\f51B" }
-.fa-code:before { content: "\f50C" }
 .fa-composer:before { content: "\f558" }
 .fa-conductor:before { content: "\f559" }
-.fa-coverart:before { content: "\f59C"; position: absolute; color: var( --cw ); }
-.fa-coverart:after { content: "\f59D"; color: #000000; opacity: 0.75; text-shadow: none; }
+.fa-coverart:before { content: "\f593"; position: absolute; color: var( --cw ); }
+.fa-coverart:after { content: "\f594"; color: #000000; opacity: 0.75; text-shadow: none; }
 .fa-coverart-refresh:before { content: "\f53D" }
 .fa-crop:before { content: "\f568" }
 .fa-date:before { content: "\f55C" }
 .fa-dice:before { content: "\f569" }
 .fa-edit:before { content: "\f565" }
 .fa-edit-circle:before { content: "\f566" }
-.fa-eye:before { content: "\f576" }
+.fa-eye:before { content: "\f56B" }
 .fa-file-music:before { content: "\f54A" }
 .fa-file-playlist:before { content: "\f549" }
 .fa-flash:before { content: "\f567" }
@@ -67,7 +66,7 @@
 .fa-genre:before { content: "\f55A" }
 .fa-guide:before { content: "\f579" }
 .fa-info-circle:before { content: "\f561" }
-.fa-jigsaw:before { content: "\f50E" }
+.fa-jigsaw:before { content: "\f50C" }
 .fa-lan:before { content: "\f552" }
 .fa-lastfm:before { content: "\f585" }
 .fa-left:before { content: "\f606" }
@@ -85,7 +84,7 @@
 .fa-network:before { content: "\f551" }
 .fa-networks:before { content: "\f551" }
 .fa-next:before { content: "\f505" }
-.fa-output:before { content: "\f52B" }
+.fa-output:before { content: "\f52A" }
 .fa-pause:before { content: "\f504" }
 .fa-play:before { content: "\f503" }
 .fa-play-circle:before { content: "\f507" }
@@ -95,12 +94,12 @@
 .fa-plus:before { content: "\f519" }
 .fa-plus-circle:before { content: "\f564" }
 .fa-plus-o:before { content: "\f530" }
-.fa-plus-r:before { content: "\f588" }
+.fa-plus-r:before { content: "\f590" }
 .fa-plus-r-nobox:before { content: "\f500" }
 .fa-power:before { content: "\f520" }
 .fa-previous:before { content: "\f501" }
 .fa-question-circle:before { content: "\f560" }
-.fa-radiofrance:before { content: "\f594" }
+.fa-radiofrance:before { content: "\f589" }
 .fa-radioparadise:before {content: "\f595"; position: absolute; color: var( --cgl ); }
 .fa-radioparadise:after {content: "\f596"; position: relative; } /* position: relative - fix order */
 .fa-random:before { content: "\f512" }
@@ -117,17 +116,17 @@
 .fa-save:before { content: "\f542"}
 .fa-save-plus:before { content: "\f545"}
 .fa-screenoff:before { content: "\f548" }
-.fa-scale-dn:before { content: "\f577" }
-.fa-scale-up:before { content: "\f578" }
+.fa-scale-dn:before { content: "\f591" }
+.fa-scale-up:before { content: "\f592" }
 .fa-sd:before { content: "\f543" }
 .fa-search:before { content: "\f56A" }
-.fa-shuffle:before { content: "\f51D" }
+.fa-shuffle:before { content: "\f514" }
 .fa-single:before { content: "\f513" }
 .fa-sliders:before { content: "\f50B" }
-.fa-snapcast:before { content: "\f592" }
-.fa-snapclient:before { content: "\f592" }
-.fa-source:before { content: "\f52A" }
-.fa-spotify:before { content: "\f593" }
+.fa-snapcast:before { content: "\f587" }
+.fa-snapclient:before { content: "\f587" }
+.fa-source:before { content: "\f529" }
+.fa-spotify:before { content: "\f588" }
 .fa-star:before { content: "\f550" }
 .fa-stop:before { content: "\f502" }
 .fa-tag:before { content: "\f55B" }
@@ -135,7 +134,7 @@
 .fa-title:before { content: "\f538" }
 .fa-track:before { content: "\f50D" }
 .fa-undo:before { content: "\f523" }
-.fa-upnp:before { content: "\f591" }
+.fa-upnp:before { content: "\f58B" }
 .fa-usb:before { content: "\f553" }
 .fa-usbdrive:before { content: "\f553" }
 .fa-volume:before { content: "\f516" }
