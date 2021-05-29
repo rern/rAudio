@@ -164,10 +164,11 @@ $( '#setting-hwmixer' ).click( function() {
 				}
 			}
 			, buttonnoreset : 1
-			, oklabel       : novolume ? '' : '<i class="fa fa-undo"></i>0dB'
-			, ok            : novolume ? '' : function() {
+			, buttonlabel   : novolume ? '' : '<i class="fa fa-undo"></i>0dB'
+			, button        : novolume ? '' : function() {
 				bash( [ 'volume0db', device.hwmixer ] );
 			}
+			, nook          : 1
 		} );
 	}, 'json' );
 } );

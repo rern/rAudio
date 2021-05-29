@@ -466,7 +466,7 @@ function psRelays( response ) { // on receive broadcast
 				, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
 				, message  : stopwatch
 				, footer   : devices
-				, nobutton : 1
+				, nook     : 1
 			} );
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );

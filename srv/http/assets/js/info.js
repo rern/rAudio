@@ -37,14 +37,14 @@ info( {                                     // default
 	select        : { LABEL: 'VALUE', ... } // ***
 	selectlabel   : 'LABEL'                 // (blank)        (select input label)
 	
-	order         : [ TYPE, ... ]           // (sequence)     (order of inputs)
+	order         : [ TYPE, ... ]           // (sequence)     (order of *** inputs)
 	
 	filelabel     : 'LABEL'                 // ***            (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
 	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
-	filetypecheck : 1                       // (no)           (check matched filetype)
-	                                                          ( var file = $( '#infoFileBox' )[ 0 ].files[ 0 ]; )
-	nobutton      : 1                       // (show)         (no button)
+	filetypecheck : 1                       // (no)           (check matched filetype - file = $( '#infoFileBox' )[ 0 ].files[ 0 ];)
+	
+	nook          : 1                       // (show)         (no ok button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
@@ -220,7 +220,7 @@ function info( json ) {
 	}
 	
 	$( '#infoOverlay' ).toggleClass( 'noscroll', 'noscroll' in O ); // for volume input range
-	$( '#infoX, #infoCancel' ).click( function() {
+	$( '#infoX' ).click( function() {
 		if ( 'cancel' in O && O.cancel ) O.cancel();
 		infoReset();
 	} );
@@ -249,7 +249,6 @@ function info( json ) {
 	}
 	
 	// buttons
-	if ( !( 'nobutton' in O ) || !O.nobutton ) {
 		var htmlbutton = ''
 		if ( 'button' in O && O.button ) {
 			var button = 'button' in O ? O.button : '';
@@ -262,16 +261,18 @@ function info( json ) {
 			for ( i = 0; i < iL; i++ ) {
 				var iid = i || '';
 				var color = buttoncolor[ i ] ? ' style="background-color:'+ buttoncolor[ i ] +'"' : '';
-				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-default">'+ buttonlabel[ i ] +'</a>';
+				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ buttonlabel[ i ] +'</a>';
 			}
 		}
-		if ( 'cancel' in O && O.cancel ) {
+		if ( 'cancelshow' in O && O.cancelshow ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 			var hide = O.cancelshow ? '' : ' hide';
 			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
 		}
-		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
-		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+		if ( !( 'nook' in O ) || !O.nook ) {
+			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
+			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+		}
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( 'button' in O && O.button ) {
 			if ( typeof button !== 'object' ) button = [ button ];
@@ -281,17 +282,14 @@ function info( json ) {
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		if ( typeof O.cancel === 'function' ) {
-			$( '#infoCancel' ).click( function() {
-				O.cancel();
-				infoReset();
-			} );
-		}
+		$( '#infoCancel' ).click( function() {
+			if ( typeof O.cancel === 'function' ) O.cancel();
+			infoReset();
+		} );
 		$( '#infoOk' ).click( function() {
 			if ( typeof O.ok === 'function' ) O.ok();
 			infoReset();
 		} );
-	}
 	if ( 'fileoklabel' in O && O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
 				+'<code id="infoFilename" class="hide"></code>'
