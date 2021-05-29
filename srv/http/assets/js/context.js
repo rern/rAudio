@@ -258,6 +258,7 @@ function tagEditor() {
 			, message      : message
 			, messagealign : 'left'
 			, footer       : footer
+			, footeralign  : 'right'
 			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
