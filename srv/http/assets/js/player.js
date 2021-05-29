@@ -143,34 +143,39 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
+	bash( [ 'volumeget' ], function( voldb ) {
+		var voldb = voldb.split( '^^' );
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : device.hwmixer
-			, rangevalue    : level
+			, rangevalue    : voldb[ 0 ]
 			, footer        : ( novolume ? '<br>( Control: None / 0dB )' : '' )
 			, beforeshow    : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
+					$( '#infoButtons a' ).toggleClass( 'hide', voldb[ 1 ] === '0.00' );
 					$( '#infoRange input' ).on( 'click input', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
 						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
 					} ).on( 'mouseup touchend', function() {
 						bash( '/srv/http/bash/cmd.sh volumepushstream' );
+						$( '#infoButtons a' ).removeClass( 'hide' );
 					} );
 				}
 			}
 			, buttonnoreset : 1
 			, buttonlabel   : novolume ? '' : '<i class="fa fa-undo"></i>0dB'
 			, button        : novolume ? '' : function() {
-				bash( [ 'volume0db', device.hwmixer ] );
+				bash( [ 'volume0db', device.hwmixer ], function() {
+					$( '#infoButtons a' ).addClass( 'hide' );
+				} );
 			}
 			, nook          : 1
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#mixertype' ).change( function() {
 	var mixertype = $( this ).val();

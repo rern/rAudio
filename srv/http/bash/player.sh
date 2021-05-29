@@ -298,5 +298,10 @@ volume0db )
 	level=$( /srv/http/bash/cmd.sh volumeget )
 	pushstream volume '{"type":"0dB","val":'$level'}'
 	;;
+volumeget )
+	db=$( amixer | grep dB] | sed 's/.* \[\(.*\)dB.*/\1/' )
+	vol=$( /srv/http/bash/cmd.sh volumeget )
+	echo $vol^^$db
+	;;
 	
 esac
