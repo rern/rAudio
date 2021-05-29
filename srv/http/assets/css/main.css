@@ -38,7 +38,7 @@
 .fa-artist:before { content: "\f556" }
 .fa-audiocd:before { content: "\f538" }
 .fa-bars:before { content: "\f51C" }
-.fa-bio:before { content: "\f515" }
+.fa-bio:before { content: "\f51D" }
 .fa-bookmark:before { content: "\f550" }
 .fa-bluetooth:before { content: "\f595" }
 .fa-bluetooth-client:before { content: "\f596" }
@@ -120,8 +120,8 @@
 .fa-scale-up:before { content: "\f592" }
 .fa-sd:before { content: "\f543" }
 .fa-search:before { content: "\f56A" }
-.fa-shuffle:before { content: "\f514" }
-.fa-single:before { content: "\f513" }
+.fa-shuffle:before { content: "\f513" }
+.fa-single:before { content: "\f514" }
 .fa-sliders:before { content: "\f50B" }
 .fa-snapcast:before { content: "\f587" }
 .fa-snapclient:before { content: "\f587" }

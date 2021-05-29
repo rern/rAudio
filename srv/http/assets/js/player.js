@@ -167,7 +167,7 @@ $( '#setting-hwmixer' ).click( function() {
 				}
 			}
 			, buttonnoreset : 1
-			, buttonlabel   : novolume ? '' : '<i class="fa fa-undo"></i>0dB'
+			, buttonlabel   : novolume ? '' : '<i class="fa fa-set0"></i>0dB'
 			, button        : novolume ? '' : function() {
 				bash( [ 'volume0db', device.hwmixer ] );
 			}
