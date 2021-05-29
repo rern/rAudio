@@ -174,7 +174,9 @@ $( '#setting-hwmixer' ).click( function() {
 			, button        : novolume ? '' : function() {
 				bash( [ 'volume0db', device.hwmixer ], function() {
 					$( '#infoButtons a' ).addClass( 'hide' );
-					$( '.infofooter' ).removeClass( 'hide' );
+					$( '.infofooter' )
+						.text( '0dB' )
+						.removeClass( 'hide' );
 				} );
 			}
 			, nook          : 1
