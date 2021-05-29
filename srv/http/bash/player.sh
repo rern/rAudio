@@ -296,12 +296,13 @@ soxrset )
 volume0db )
 	amixer sset "${args[1]}" 0dB
 	level=$( /srv/http/bash/cmd.sh volumeget )
-	pushstream volume '{"type":"0dB","val":'$level'}'
+	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
 volumeget )
 	db=$( amixer | grep dB] | sed 's/.* \[\(.*\)dB.*/\1/' )
-	vol=$( /srv/http/bash/cmd.sh volumeget )
-	echo $vol^^$db
+	level=$( /srv/http/bash/cmd.sh volumeget )
+	echo $level^^$db
+	[[ -n ${args[1]} ]] && pushstream volume '{"val":'$level',"db":"'$db'"}'
 	;;
 	
 esac

@@ -183,15 +183,13 @@ function psReload() {
 function psVolume( data ) {
 	if ( G.local || !$( '#infoRange .value' ).text() ) return
 	
-	if ( data.type === '0dB' ) {
-		var changed = $( '#infoRange .value' ).text() != data.val;
-		banner( 'Volume', changed ? 'Reset to 0dB at '+ data.val : 'Already at 0dB', 'volume' );
-	}
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
+		$( '.infofooter' ).text( data.db +' dB' );
+		$( '#infoButtons a' ).toggleClass( 'hide', data.db === '0.00' );
 	}, 300 );
 }
 function psWifi( data ) {
