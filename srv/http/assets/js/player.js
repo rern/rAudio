@@ -145,19 +145,19 @@ $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
 	bash( [ 'volumeget' ], function( voldb ) {
 		var voldb = voldb.split( '^^' );
-		var db = voldb[ 1 ];
+		var db0 = voldb[ 1 ] === '0.00';
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : device.hwmixer
 			, rangevalue    : voldb[ 0 ]
-			, footer        : ( novolume ? '0dB (No Volume)' : ( db === '0.00' ? '0dB' : '&nbsp;' ) )
+			, footer        : ( novolume ? '0dB (No Volume)' : ( db0 ? '0dB' : 'n' ) )
 			, beforeshow    : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
-					$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
-					$( '.infofooter' ).toggleClass( 'hide', $( '.infofooter' ).html() === '&nbsp;' );
+					$( '#infoButtons a' ).toggleClass( 'hide', db0 );
+					$( '.infofooter' ).toggleClass( 'hide', $( '.infofooter' ).text() === 'n' );
 					$( '#infoRange input' ).on( 'click input', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
@@ -174,9 +174,7 @@ $( '#setting-hwmixer' ).click( function() {
 			, button        : novolume ? '' : function() {
 				bash( [ 'volume0db', device.hwmixer ], function() {
 					$( '#infoButtons a' ).addClass( 'hide' );
-					$( '.infofooter' )
-						.text( '( 0dB )' )
-						.removeClass( 'hide' );
+					$( '.infofooter' ).removeClass( 'hide' );
 				} );
 			}
 			, nook          : 1
