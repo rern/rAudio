@@ -151,7 +151,7 @@ $( '#setting-hwmixer' ).click( function() {
 			, title         : 'Mixer Device Volume'
 			, message       : device.hwmixer
 			, rangevalue    : voldb[ 0 ]
-			, footer        : ( novolume ? '( No Volume / 0dB )' : ( db === '0.00' ? '( 0dB )' : '&nbsp;' ) )
+			, footer        : ( novolume ? '0dB (No Volume)' : ( db === '0.00' ? '0dB' : '&nbsp;' ) )
 			, beforeshow    : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
