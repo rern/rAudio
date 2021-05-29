@@ -80,7 +80,10 @@ var containerhtml = heredoc( function() { /*
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop"></div><i id="infoX" class="fa fa-times hide"></i>
+			<div id="infoTop">
+				<i id="infoIcon"></i><a id="infoTitle"></a>
+			</div>
+			<i id="infoX" class="fa fa-times"></i>
 		</div>
 		<div id="infoContent"></div>
 		<div id="infoButtons"></div>
@@ -182,7 +185,8 @@ function infoReset() {
 		, width      : ''
 		, visibility : 'hidden'
 	} );
-	$( '#infoTop' ).html( '<i id="infoIcon"></i><a id="infoTitle"></a>' );
+	$( '#infoIcon' ).removeAttr( 'class' );
+	$( '#infoTitle' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '#infoArrow i' ).off( 'click' );
 	$( '#infoArrow' ).remove();
@@ -204,8 +208,6 @@ function info( json ) {
 	O = json;
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
-	setTimeout( function() { // fix: wait for infoReset() on 2nd info
-	///////////////////////////////////////////////////////////////////
 	// simple use as info( 'message' )
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
@@ -325,7 +327,7 @@ function info( json ) {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( O.filetype === 'image/*' ) fileImage( file );
+				if ( O.filetype === 'image/*' ) setFileImage( file );
 			}
 		} );
 	}
@@ -523,8 +525,6 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( 'beforeshow' in O && O.beforeshow ) O.beforeshow();
-		/////////////////////////////////////////////////////////////////////////////
-		}, 0 );
 	} );
 }
 
@@ -533,11 +533,11 @@ function alignVertical() { // make infoBox scrollable
 		var boxH = $( '#infoBox' ).height();
 		var wH = window.innerHeight;
 		var top = boxH < wH ? ( wH - boxH ) / 2 : 20;
+		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoBox' ).css( {
 			  'margin-top' : top +'px'
 			, 'visibility' : 'visible'
 		} );
-		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoOverlay' ).removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		$input0 = $( O.inputs[ 0 ] );
@@ -581,31 +581,7 @@ function infoVal() {
 		return values[ 0 ]
 	}
 }
-function setValues() {
-	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
-	var $this, type, val;
-	O.inputs.each( function( i, e ) {
-		$this = $( e );
-		type = $this.prop( 'type' );
-		val = O.values[ i ];
-		if ( type === 'radio' ) { // reselect radio by name
-			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
-		} else if ( type === 'checkbox' ) {
-			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select
-			$this.val( val );
-		}
-	} );
-	if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
-}
-function switchRL( rl, fn ) {
-	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' ).click( function() {
-		fn();
-		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
-	} );
-}
-function fileImage( file ) {
+function setFileImage( file ) {
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
 	}, 1000 );
@@ -663,6 +639,31 @@ function fileImage( file ) {
 		} );
 	} );
 }
+function setValues() {
+	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
+	var $this, type, val;
+	O.inputs.each( function( i, e ) {
+		$this = $( e );
+		type = $this.prop( 'type' );
+		val = O.values[ i ];
+		if ( type === 'radio' ) { // reselect radio by name
+			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
+		} else if ( type === 'checkbox' ) {
+			$this.prop( 'checked',  val );
+		} else { // text, password, textarea, select
+			$this.val( val );
+		}
+	} );
+	if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
+}
+function switchRL( rl, fn ) {
+	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
+	$( '#infoArrow i' ).click( function() {
+		fn();
+		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
+	} );
+}
+
 $( '#infoContent' ).on( 'click', '.infoimgnew', function() {
 	G.rotate += 90;
 	if ( G.rotate === 360 ) G.rotate = 0;
