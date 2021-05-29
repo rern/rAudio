@@ -209,6 +209,8 @@ function info( json ) {
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
+	setTimeout( function() { // allow consecutive infos
+	//////////////////////////////////////////////////////////////////////////
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
@@ -526,6 +528,8 @@ function info( json ) {
 		// custom function before show
 		if ( 'beforeshow' in O && O.beforeshow ) O.beforeshow();
 	} );
+	//////////////////////////////////////////////////////////////////////////
+	}, 0 );
 }
 
 function alignVertical() { // make infoBox scrollable
