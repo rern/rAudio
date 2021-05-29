@@ -369,9 +369,6 @@ heading i.fa-question-circle {
 	height: 40px;
 	cursor: pointer;
 }
-.active {
-	background: var( --cm );
-}
 #bar-bottom div.active a {
 	color: var( --cw ) !important;
 }
