@@ -181,12 +181,13 @@ function coverartChange() {
 	} );
 }
 function coverartDefault() {
-	if ( !G.status.webradio || G.display.novu ) {
-		$( this ).attr( 'src', G.coverdefault );
-		$( '#coverart' ).removeClass( 'hide' );
+	if ( G.display.novu ) {
+		$( '#coverart' ).attr( 'src', G.coverdefault );
 		$( '#vu' ).addClass( 'hide' );
 	} else {
-		$( '#coverart' ).addClass( 'hide' );
+		$( '#coverart' )
+			.addClass( 'hide' )
+			.attr( 'src', G.coverdefault );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}

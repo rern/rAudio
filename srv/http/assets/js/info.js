@@ -281,7 +281,7 @@ function info( json ) {
 			if ( typeof button !== 'object' ) button = [ button ];
 			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
 				var fn = button[ $( this ).index( '.extrabtn' ) ];
-				fn();
+				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
