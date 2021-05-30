@@ -676,6 +676,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, checkchanged : 1
 		, checkblank   : [ 0, 1, 2, 3 ]
 		, beforeshow   : function() {
+			for ( i = 4; i < 9; i++ ) $( '#infoContent tr:eq( '+ i +') td:first-child' ).remove();
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );

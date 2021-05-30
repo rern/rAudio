@@ -213,8 +213,8 @@ $( '#setting-localbrowser' ).click( function() {
 		, footer       : ( G.lcd ? '<gr>(Rotate TFT LCD: Reboot required)</gr>' : '' )
 		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
 		, selectlabel  : 'Screen rotation'
-		, boxwidth     : 120
-		, select       : { '0° Normal': 'NORMAL', '90° CW': 'CW', '90° CCW': 'CCW', '180° UD': 'UD' } 
+		, boxwidth     : 80
+		, select       : { 'Normal': 'NORMAL', '90°&ensp;&#xf524;': 'CW', '90°&ensp;&#xf523;': 'CCW', '180°': 'UD' } 
 		, checkbox     : [ 'Mouse pointer' ]
 		, order        : [ 'text', 'select', 'checkbox' ]
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
