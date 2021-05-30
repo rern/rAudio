@@ -628,7 +628,7 @@ function infoLibrary( page2 ) {
 		, beforeshow   : function() {
 			$( '#infoContent' ).css( 'height', '340px' );
 			if ( page2 ) {
-				$( '#infoContent td:eq( 1 )' ).attr( 'width', '292' );
+				$( '.infomessage, #infoContent td' ).css( 'width', '286' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );

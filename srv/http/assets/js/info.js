@@ -393,11 +393,11 @@ function info( json ) {
 					line = '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
 				}
 				if ( !O.radiocolumn ) {
-					htmls.radio += '<tr><td class="chk">'+ line +'</td></tr>';
+					htmls.radio += '<tr><td>'+ line +'</td></tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.radio += '<tr><td class="chk">'+ line +'</td>';
+						htmls.radio += '<tr><td>'+ line +'</td>';
 						return
 					} else {
 						htmls.radio += '<td>'+ line +'</td></tr>';
@@ -417,11 +417,11 @@ function info( json ) {
 					line = '<label><input type="checkbox">'+ lbl +'</label>';
 				}
 				if ( !O.checkcolumn ) {
-					htmls.checkbox += '<tr><td></td><td class="chk">'+ line +'</td></tr>';
+					htmls.checkbox += '<tr><td>'+ line +'</td></tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.checkbox += '<tr><td class="chk">'+ line +'</td>';
+						htmls.checkbox += '<tr><td>'+ line +'</td>';
 						return
 					} else {
 						htmls.checkbox += '<td>'+ line +'</td></tr>';
@@ -490,8 +490,15 @@ function info( json ) {
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
 		// set width: radio / checkbox
-		if ( $( '#infoContent input:radio' ).length && $( '#infoContent tr:eq( 0 ) td' ).length > 2 ) {
-			$( '#infoContent' ).find( 'td:not( :eq( 0 ) )' ).css( 'padding-right', '10px' );
+		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) {
+			$( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
+		}
+		// set width: label
+		if ( O.textlabel || O.passwordlabel || O.selectlabel ) {
+			$( '#infoContent td:eq( 0 )' ).css( {
+				  'padding-right' : '5px'
+				, 'text-align'    : 'right'
+			} );
 		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
