@@ -310,8 +310,6 @@ function psMpdUpdate( data ) {
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
 		G.status.updating_db = true;
-		if ( G.localhost ) return
-		
 		if ( G.bars ) {
 			if ( !G.localhost ) $( '#tab-library, #button-library' ).addClass( 'blink' );
 		} else {
