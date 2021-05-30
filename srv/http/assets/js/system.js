@@ -57,7 +57,7 @@ function infoMount( values ) {
 		, ok         : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
 			notify( 'Network Mount', 'Mount ...', 'network' );
-			bash( [ 'mount', values ], function( std ) {
+			bash( [ 'mount', ...values ], function( std ) {
 				if ( std ) {
 					info( {
 						  icon    : 'network'
