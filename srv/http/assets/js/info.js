@@ -485,11 +485,11 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
-		// set width: radio / checkbox
+		// set padding-right: radio / checkbox
 		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) {
 			$( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
 		}
-		// set width: label
+		// set padding-right, align right: label
 		if ( !$( '#infoContent td:first-child input' ).length ) {
 			$( '#infoContent td:first-child' ).css( {
 				  'padding-right' : '5px'
