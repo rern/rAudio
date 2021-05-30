@@ -387,20 +387,18 @@ function info( json ) {
 			var i = 0;
 			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
-				if ( lbl === '' || lbl === '<hr>' ) {
-					line = lbl;
-				} else {
-					line = '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
-				}
+				line = '<td>';
+				line += lbl === '' || lbl === '<hr>' ? lbl : '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
+				line += '</td>';
 				if ( !O.radiocolumn ) {
-					htmls.radio += '<tr><td>'+ line +'</td></tr>';
+					htmls.radio += '<tr>'+ line +'</tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.radio += '<tr><td>'+ line +'</td>';
+						htmls.radio += '<tr>'+ line;
 						return
 					} else {
-						htmls.radio += '<td>'+ line +'</td></tr>';
+						htmls.radio += line +'</tr>';
 					}
 				}
 			} );
@@ -411,20 +409,18 @@ function info( json ) {
 			var i = 0;
 			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
-				if ( lbl === '' || lbl === '<hr>' ) {
-					line = lbl;
-				} else {
-					line = '<label><input type="checkbox">'+ lbl +'</label>';
-				}
+				line = '<td>';
+				line += lbl === '' || lbl === '<hr>' ? lbl : '<label><input type="checkbox">'+ lbl +'</label>';
+				line += '</td>';
 				if ( !O.checkcolumn ) {
-					htmls.checkbox += '<tr><td>'+ line +'</td></tr>';
+					htmls.checkbox += '<tr>'+ line +'</tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.checkbox += '<tr><td>'+ line +'</td>';
+						htmls.checkbox += '<tr>'+ line;
 						return
 					} else {
-						htmls.checkbox += '<td>'+ line +'</td></tr>';
+						htmls.checkbox += line +'</tr>';
 					}
 				}
 			} );
@@ -494,8 +490,8 @@ function info( json ) {
 			$( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
 		}
 		// set width: label
-		if ( O.textlabel || O.passwordlabel || O.selectlabel ) {
-			$( '#infoContent td:eq( 0 )' ).css( {
+		if ( !$( '#infoContent td:first-child input' ).length ) {
+			$( '#infoContent td:first-child' ).css( {
 				  'padding-right' : '5px'
 				, 'text-align'    : 'right'
 			} );
