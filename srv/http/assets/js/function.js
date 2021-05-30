@@ -835,11 +835,7 @@ function infoUpdate( path ) {
 		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
 		, values  : [ 1 ]
 		, ok      : function() {
-			if ( path || infoVal() == 1 ) {
-				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-			} else {
-				path = 'rescan';
-			}
+			if ( infoVal() == 1 ) path = 'rescan';
 			bash( [ 'mpcupdate', path ] );
 		}
 	} );
