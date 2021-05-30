@@ -489,8 +489,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, cancel        : function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
-		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-power"></i>Off' ]
-		, buttoncolor   : [ '#448822', red ]
+		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-screenoff"></i>Sleep' ]
+		, buttoncolor   : [ '', orange ]
 		, button        : !G.lcdchar ? '' : [ 
 			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
