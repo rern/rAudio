@@ -4,29 +4,29 @@ var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<table id="tblinfomount">
 	<tr><td>Type</td>
-		<td width="100"><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label></td>
-		<td><label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+		<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
+		<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 	</tr>
 	<tr><td>Name</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr><td>IP</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr id="sharename"><td>Share name</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>User</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>Password</td>
-		<td colspan="2"><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
+		<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
 	</tr>
 	<tr><td>Options</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan=2><label><input type="checkbox" checked>Update Library on mount</label></td>
+		<td><label><input type="checkbox" checked>Update Library on mount</label></td>
 	</tr>
 	</table>
 */ } );
@@ -37,6 +37,8 @@ function infoMount( values ) {
 		, content    : htmlmount
 		, values     : values
 		, beforeshow : function() {
+			$( '#infoContent td:eq( 0 )' ).css( 'width', '90px' );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', '267px' );
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
