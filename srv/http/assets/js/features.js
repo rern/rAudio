@@ -220,7 +220,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]
-		, buttonlabel  : '<i class="fa fa-refresh"></i>Refresh'
+		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
