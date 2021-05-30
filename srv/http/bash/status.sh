@@ -421,7 +421,7 @@ fi
 if [[ $fileheader != cdda && $fileheader != http ]]; then
 	args="\
 $Artist$Album
-$( dirname "$file0")"
+$file0"
 	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
 fi
 ########
