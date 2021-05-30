@@ -835,7 +835,7 @@ function infoUpdate( path ) {
 		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
 		, values  : [ 1 ]
 		, ok      : function() {
-			if ( infoVal() == 1 ) path = 'rescan';
+			if ( infoVal() == 2 ) path = 'rescan';
 			bash( [ 'mpcupdate', path ] );
 		}
 	} );
