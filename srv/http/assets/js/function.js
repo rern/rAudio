@@ -589,8 +589,6 @@ var chklibrary = {
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
 	, '-'            : ''
-	, '-1'           : '<hr>'
-	, '-2'           : '<hr>'
 	, count          : 'Count'
 	, label          : 'Label'
 }
@@ -646,6 +644,8 @@ function infoLibrary( page2 ) {
 					}
 				} );
 				$fixedcover.prop( 'disabled', G.display.hidecover );
+			} else {
+				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
 			}
 		}
 		, ok           : function () {
@@ -714,7 +714,6 @@ function infoPlayback() {
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
-		, checkhr      : 1
 		, radio        : {
 			  '<img class="imgicon" src="/assets/img/vu.png">&ensp;<gr>No cover</gr>'       : false
 			, '<img class="imgicon" src="/assets/img/coverart.svg">&ensp;<gr>No cover</gr>' : true
@@ -724,7 +723,8 @@ function infoPlayback() {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent tr' ).last().toggleClass( 'hide', !G.display.cover );
+			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
+			$( '#infoContent' ).find( 'tr:eq(5 ), tr:eq( 6 )' ).toggleClass( 'hide', !G.display.cover );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover

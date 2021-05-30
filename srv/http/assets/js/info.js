@@ -388,9 +388,7 @@ function info( json ) {
 			var i = 0;
 			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
-				line = '<td>';
-				line += lbl === '' || lbl === '<hr>' ? lbl : '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
-				line += '</td>';
+				line = '<td>'+ ( lbl ? '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>' : '' ) +'</td>';
 				if ( !O.radiocolumn ) {
 					htmls.radio += '<tr>'+ td0 + line +'</tr>';
 				} else {
@@ -403,16 +401,13 @@ function info( json ) {
 					}
 				}
 			} );
-			if ( 'radiohr' in O ) htmls.checkbox += O.radiocolumn ? '<tr><td colspan="2"><hr></td></tr>' : '<hr>';
 		}
 		if ( 'checkbox' in O && O.checkbox ) {
 			var line;
 			var i = 0;
 			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
-				line = '<td>';
-				line += lbl === '' || lbl === '<hr>' ? lbl : '<label><input type="checkbox">'+ lbl +'</label>';
-				line += '</td>';
+				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
 				if ( !O.checkcolumn ) {
 					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
 				} else {
@@ -425,7 +420,6 @@ function info( json ) {
 					}
 				}
 			} );
-			if ( 'checkhr' in O ) htmls.checkbox += O.checkcolumn ? '<tr><td colspan="2"><hr></td></tr>' : '<hr>';
 		}
 		if ( 'select' in O && O.select ) {
 			htmls.select = '';
