@@ -833,6 +833,7 @@ function infoUpdate( path ) {
 		, title   : 'Library Database'
 		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
 		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
+		, values  : [ 1 ]
 		, ok      : function() {
 			if ( path || infoVal() == 1 ) {
 				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
