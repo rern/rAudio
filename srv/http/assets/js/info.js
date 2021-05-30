@@ -418,10 +418,10 @@ function info( json ) {
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.checkbox += '<tr>'+ line;
+						htmls.checkbox += '<tr>'+ td0 + line;
 						return
 					} else {
-						htmls.checkbox += td0 + line +'</tr>';
+						htmls.checkbox += line +'</tr>';
 					}
 				}
 			} );
