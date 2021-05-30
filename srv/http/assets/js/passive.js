@@ -216,28 +216,26 @@ function psCoverart( data ) {
 					.attr( 'src', src )
 					.css( 'opacity', '' )
 					.removeClass( 'hide' );
-			} else if ( G.library ) {
-				if ( G.mode === 'webradio' ) {
-					var srcnoext = src.slice( 0, -15 );
-					var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
-					var $el = webradioIcon( srcnoext );
-					$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
-				}
-			} else {
+			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
+			}
+			if ( G.librarylist && G.mode === 'webradio' ) {
+				var srcnoext = src.slice( 0, -15 );
+				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
+				var $el = webradioIcon( srcnoext );
+				$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
 			}
 			break;
 		case 'webradioreset':
 			G.status.coverartradio = '';
 			if ( G.playback ) {
 				coverartDefault();
-			} else if ( G.library ) {
-				if ( G.mode === 'webradio' ) {
-					var $el = webradioIcon( src );
-					$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
-				}
-			} else {
+			} else if ( G.playlist ) {
 				$( '#tab-playlist' ).click();
+			}
+			if ( G.mode === 'webradio' ) {
+				var $el = webradioIcon( src );
+				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
 			}
 			break;
 	}
