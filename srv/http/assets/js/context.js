@@ -370,10 +370,10 @@ function tagEditor() {
 			, nofocus      : 1
 			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
-				var values = infoVal();
+				var newvalues = infoVal();
 				var val;
-				values.forEach( function( v, i ) {
-					val = v === value[ i ] ? '' : ( v || -1 );
+				newvalues.forEach( function( v, i ) {
+					val = v === values[ i ] ? '' : ( v || -1 );
 					tag.push( val );
 				} );
 				banner( 'Tag Editor', 'Change tags ...', 'tag blink', -1 );
