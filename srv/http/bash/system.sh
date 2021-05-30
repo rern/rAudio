@@ -348,16 +348,16 @@ i2c-dev
 	pushRefresh
 	;;
 mount )
-	data=${args[1]}
-	protocol=$( jq -r .protocol <<< $data )
-	ip=$( jq -r .ip <<< $data )
-	directory=$( jq -r .directory <<< $data )
-	mountpoint="/mnt/MPD/NAS/$( jq -r .mountpoint <<< $data )"
-	user=$( jq -r .user <<< $data )
-	password=$( jq -r .password <<< $data )
-	extraoptions=$( jq -r .options <<< $data )
+	protocol=${args[1]}
+	mountpoint="/mnt/MPD/NAS/${args[2]}"
+	ip=${args[3]}
+	directory=${args[4]}
+	user=${args[5]}
+	password=${args[6]}
+	extraoptions=${args[7]}
+	update=${args[8]}
 
-	! ping -c 1 -w 1 $ip &> /dev/null && echo 'IP <code>$ip</code> not found.' && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
 
 	if [[ -e $mountpoint ]]; then
 		find "$mountpoint" -mindepth 1 | read && echo "Mount name <code>$mountpoint</code> not empty." && exit
@@ -381,12 +381,12 @@ mount )
 	[[ -n $extraoptions ]] && options+=,$extraoptions
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount "$mountpoint" 2>&1 )
-	if mountpoint -q "$mountpoint"; then
-		[[ $( jq -r .update <<< $data ) == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+	if [[ $? == 0 ]]; then
+		[[ $update == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		pushRefresh
 	else
-		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "/${mountpoint// /\\040}/ d" /etc/fstab
+		echo "Mount <code>$source</code> failed.<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
 	;;

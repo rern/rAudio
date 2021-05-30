@@ -4,29 +4,29 @@ var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<table id="tblinfomount">
 	<tr><td>Type</td>
-		<td width="100"><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label></td>
-		<td><label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+		<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
+		<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 	</tr>
 	<tr><td>Name</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr><td>IP</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr id="sharename"><td>Share name</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>User</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr class="guest"><td>Password</td>
-		<td colspan="2"><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
+		<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
 	</tr>
 	<tr><td>Options</td>
-		<td colspan="2"><input type="text"></td>
+		<td><input type="text"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan=2><label><input type="checkbox" checked>Update Library on mount</label></td>
+		<td><label><input type="checkbox" checked>Update Library on mount</label></td>
 	</tr>
 	</table>
 */ } );
@@ -37,6 +37,8 @@ function infoMount( values ) {
 		, content    : htmlmount
 		, values     : values
 		, beforeshow : function() {
+			$( '#infoContent td:eq( 0 )' ).css( 'width', '90px' );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', '267px' );
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
@@ -55,7 +57,7 @@ function infoMount( values ) {
 		, ok         : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
 			notify( 'Network Mount', 'Mount ...', 'network' );
-			bash( [ 'mount', values ], function( std ) {
+			bash( [ 'mount', ...values ], function( std ) {
 				if ( std ) {
 					info( {
 						  icon    : 'network'
@@ -443,7 +445,7 @@ var infolcdchar = heredoc( function() { /*
 		<td colspan="3"><input type="text" id="pins_data"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(>1 min. stop)</gr></label></td>
+		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop >60s)</gr></label></td>
 	</tr>
 	</table>
 */ } );
@@ -476,7 +478,6 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#tbllcdchar' ).find( 'td' ).css( 'width', '78px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -488,8 +489,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, cancel        : function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
-		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-power"></i>Off' ]
-		, buttoncolor   : [ '#448822', red ]
+		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-screenoff"></i>Sleep' ]
+		, buttoncolor   : [ '', orange ]
 		, button        : !G.lcdchar ? '' : [ 
 			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
@@ -675,6 +676,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, checkchanged : 1
 		, checkblank   : [ 0, 1, 2, 3 ]
 		, beforeshow   : function() {
+			for ( i = 4; i < 9; i++ ) $( '#infoContent tr:eq( '+ i +') td:first-child' ).remove();
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );

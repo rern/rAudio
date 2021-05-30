@@ -86,6 +86,7 @@
 .fa-right:before { content: "\f607" }
 .fa-save:before { content: "\f542"}
 .fa-save-circle:before { content: "\f546"}
+.fa-screenoff:before { content: "\f547" }
 .fa-sd:before { content: "\f543" }
 .fa-search:before { content: "\f56A" }
 .fa-set0:before { content: "\f515" }
@@ -199,6 +200,9 @@ body {
 head,
 #bar-bottom {
 	box-shadow: 0 0 10px 4px #000000;
+}
+#bar-bottom .active {
+	background: var( --cm );
 }
 .hide{ display: none !important; }
 a,
@@ -368,9 +372,6 @@ heading i.fa-question-circle {
 	max-width: 165px;
 	height: 40px;
 	cursor: pointer;
-}
-.active {
-	background: var( --cm );
 }
 #bar-bottom div.active a {
 	color: var( --cw ) !important;

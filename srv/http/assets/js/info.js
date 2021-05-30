@@ -41,8 +41,7 @@ info( {                                     // default
 	
 	filelabel     : 'LABEL'                 // ***            (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
-	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
-	filetypecheck : 1                       // (no)           (check matched filetype - file = $( '#infoFileBox' )[ 0 ].files[ 0 ];)
+	filetype      : '.EXT, ...'             // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
 	nook          : 1                       // (show)         (no ok button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
@@ -282,7 +281,7 @@ function info( json ) {
 			if ( typeof button !== 'object' ) button = [ button ];
 			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
 				var fn = button[ $( this ).index( '.extrabtn' ) ];
-				fn();
+				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
@@ -310,24 +309,39 @@ function info( json ) {
 			$( '#infoFileBox' ).click();
 		} );
 		$( '#infoFileBox' ).change( function() {
+			if ( !this.files.length ) return
+			
 			var file = this.files[ 0 ];
 			var filename = file.name;
-			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
-			if ( O.filetype && O.filetype.indexOf( ext ) === -1 ) {
+			O.filechecked = 1;
+			if ( 'filetype' in O && O.filetype ) {
+				if ( O.filetype === 'image/*' ) {
+					O.filechecked = file.type.slice( 0, 5 ) === 'image';
+				} else {
+					var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
+					O.filechecked = O.filetype.indexOf( ext ) !== -1;
+				}
+			}
+			if ( !O.filechecked ) {
 				var htmlprev = $( '#infoContent' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
 				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
 										 +'<tr><td>File not :</td><td><code>'+ O.filetype +'</code></td></tr></table>' );
+				$( '#infoOk' ).addClass( 'hide' );
+				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButtons' ).on( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					setValues();
 					$( this ).remove();
 					$( '#infoFileLabel' ).removeClass( 'hide' );
+					$( '.infoimgnew, .infoimgwh' ).remove();
+					$( '.infoimgname' ).removeClass( 'hide' );
 				} );
 			} else {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
+				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
 				if ( O.filetype === 'image/*' ) setFileImage( file );
 			}
@@ -368,53 +382,44 @@ function info( json ) {
 		if ( 'textarea' in O && O.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
 		}
+		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
 		if ( 'radio' in O && O.radio ) { // single set only
 			var line;
 			var i = 0;
 			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
-				if ( lbl === '' || lbl === '<hr>' ) {
-					line = lbl;
-				} else {
-					line = '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>';
-				}
+				line = '<td>'+ ( lbl ? '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>' : '' ) +'</td>';
 				if ( !O.radiocolumn ) {
-					htmls.radio += '<tr><td class="chk">'+ line +'</td></tr>';
+					htmls.radio += '<tr>'+ td0 + line +'</tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.radio += '<tr><td class="chk">'+ line +'</td>';
+						htmls.radio += '<tr>'+ td0 + line;
 						return
 					} else {
-						htmls.radio += '<td>'+ line +'</td></tr>';
+						htmls.radio += line +'</tr>';
 					}
 				}
 			} );
-			if ( 'radiohr' in O ) htmls.checkbox += O.radiocolumn ? '<tr><td colspan="2"><hr></td></tr>' : '<hr>';
 		}
 		if ( 'checkbox' in O && O.checkbox ) {
-			var line, colspan;
+			var line;
 			var i = 0;
 			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
-				if ( lbl === '' || lbl === '<hr>' ) {
-					line = lbl;
-				} else {
-					line = '<label><input type="checkbox">'+ lbl +'</label>';
-				}
+				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
 				if ( !O.checkcolumn ) {
-					htmls.checkbox += '<tr><td></td><td class="chk">'+ line +'</td></tr>';
+					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.checkbox += '<tr><td class="chk">'+ line +'</td>';
+						htmls.checkbox += '<tr>'+ td0 + line;
 						return
 					} else {
-						htmls.checkbox += '<td>'+ line +'</td></tr>';
+						htmls.checkbox += line +'</tr>';
 					}
 				}
 			} );
-			if ( 'checkhr' in O ) htmls.checkbox += O.checkcolumn ? '<tr><td colspan="2"><hr></td></tr>' : '<hr>';
 		}
 		if ( 'select' in O && O.select ) {
 			htmls.select = '';
@@ -475,10 +480,17 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
-		// set width: radio / checkbox
-/*		if ( $( '#infoContent td' ).length > 2 ) {
-			$( '#infoContent' ).find( 'td:eq( 2 ), td:eq( 3 )' ).css( 'padding-right', '10px' );
-		}*/
+		// set padding-right: radio / checkbox
+		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) {
+			$( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
+		}
+		// set padding-right, align right: label
+		if ( !$( '#infoContent td:first-child input' ).length ) {
+			$( '#infoContent td:first-child' ).css( {
+				  'padding-right' : '5px'
+				, 'text-align'    : 'right'
+			} );
+		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
@@ -590,8 +602,8 @@ function setFileImage( file ) {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
 	}, 1000 );
 	G.rotate = 0;
-	$( '#infoButton' ).hide();
-	$( '.infoimgnew, .infoimgwh, .infoimgname' ).remove();
+	$( '.infoimgname' ).addClass( 'hide' );
+	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( file.name.slice( -3 ) === 'gif' ) {
 		var img = new Image();
 		img.onload = function() {

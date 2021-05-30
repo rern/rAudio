@@ -206,38 +206,17 @@ $( '#setting-hostapd' ).click( function() {
 		}
 	} );
 } );
-var localbrowserinfo = heredoc( function() { /*
-	<table>
-		<tr><td>Screen off</td>
-			<td><input type="text">&ensp;<gr>min</gr></td>
-		</tr>
-		<tr><td>Zoom</td>
-			<td><input type="text">&ensp;<gr>0.5-2.0</gr></td>
-		</tr>
-	</table>
-	<hr>
-	Screen rotation<br>
-	<table>
-		<tr><td></td><td style="text-align: center;">0°</td><td></td></tr>
-		<tr><td></td><td><label><input type="radio" name="inforadio" value="NORMAL"></label></td><td></td></tr>
-		<tr>
-			<td><label>90° <i class="fa fa-undo"></i> <input type="radio" name="inforadio" value="CCW"></label></td>
-			<td></td>
-			<td><input type="radio" name="inforadio" value="CW"> <i class="fa fa-redo gr" style="font-size: 22px"></i>&nbsp; 90°</label></td>
-		</tr>
-		<tr><td></td><td><input type="radio" name="inforadio" value="UD"></label></td><td></td></tr>
-		<tr><td></td><td>180°</td><td></td></tr>
-	</table>
-	<hr>
-	<label><input type="checkbox">Mouse pointer</label><br>
-*/ } );
-if ( G.lcd ) localbrowserinfo += '<br><gr>(Rotate TFT LCD: Reboot required.)</gr>';
 $( '#setting-localbrowser' ).click( function() {
 	info( {
 		  icon         : 'chromium'
 		, title        : 'Browser on RPi'
-		, content      : localbrowserinfo
-		, boxwidth     : 60
+		, footer       : ( G.lcd ? '<gr>(Rotate TFT LCD: Reboot required)</gr>' : '' )
+		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
+		, selectlabel  : 'Screen rotation'
+		, boxwidth     : 80
+		, select       : { 'Normal': 'NORMAL', '90°&ensp;&#xf524;': 'CW', '90°&ensp;&#xf523;': 'CCW', '180°': 'UD' } 
+		, checkbox     : [ 'Mouse pointer' ]
+		, order        : [ 'text', 'select', 'checkbox' ]
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]

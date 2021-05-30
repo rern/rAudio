@@ -101,7 +101,7 @@ function contextmenuLibrary( $li, $target ) {
 	
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && G.mode !== 'file' && G.mode !== 'album' );
+	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';
@@ -181,12 +181,13 @@ function coverartChange() {
 	} );
 }
 function coverartDefault() {
-	if ( !G.status.webradio || G.display.novu ) {
-		$( this ).attr( 'src', G.coverdefault );
-		$( '#coverart' ).removeClass( 'hide' );
+	if ( G.display.novu ) {
+		$( '#coverart' ).attr( 'src', G.coverdefault );
 		$( '#vu' ).addClass( 'hide' );
 	} else {
-		$( '#coverart' ).addClass( 'hide' );
+		$( '#coverart' )
+			.addClass( 'hide' )
+			.attr( 'src', G.coverdefault );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 	}
@@ -588,8 +589,6 @@ var chklibrary = {
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
 	, '-'            : ''
-	, '-1'           : '<hr>'
-	, '-2'           : '<hr>'
 	, count          : 'Count'
 	, label          : 'Label'
 }
@@ -627,7 +626,7 @@ function infoLibrary( page2 ) {
 		, beforeshow   : function() {
 			$( '#infoContent' ).css( 'height', '340px' );
 			if ( page2 ) {
-				$( '#infoContent td:eq( 1 )' ).attr( 'width', '292' );
+				$( '.infomessage, #infoContent td' ).css( 'width', '286' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
@@ -645,6 +644,8 @@ function infoLibrary( page2 ) {
 					}
 				} );
 				$fixedcover.prop( 'disabled', G.display.hidecover );
+			} else {
+				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
 			}
 		}
 		, ok           : function () {
@@ -713,7 +714,6 @@ function infoPlayback() {
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
-		, checkhr      : 1
 		, radio        : {
 			  '<img class="imgicon" src="/assets/img/vu.png">&ensp;<gr>No cover</gr>'       : false
 			, '<img class="imgicon" src="/assets/img/coverart.svg">&ensp;<gr>No cover</gr>' : true
@@ -723,7 +723,8 @@ function infoPlayback() {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent tr' ).last().toggleClass( 'hide', !G.display.cover );
+			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
+			$( '#infoContent' ).find( 'tr:eq(5 ), tr:eq( 6 )' ).toggleClass( 'hide', !G.display.cover );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover

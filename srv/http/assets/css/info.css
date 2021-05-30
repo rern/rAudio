@@ -201,14 +201,6 @@ hr {
 	text-align: left;
 	white-space: nowrap;
 }
-#infoContent td:first-child {
-	padding-right: 5px;
-	text-align: right;
-}
-#infoContent td.chk {
-	padding-right: 10px;
-	text-align: left !important;
-}
 #infoContent label i {
 	text-align: center;
 	width: 22px;
