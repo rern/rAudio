@@ -476,7 +476,6 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#tbllcdchar' ).find( 'td' ).css( 'width', '78px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {

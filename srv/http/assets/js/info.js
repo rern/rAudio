@@ -41,8 +41,7 @@ info( {                                     // default
 	
 	filelabel     : 'LABEL'                 // ***            (browse button label)
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
-	filetype      : 'TYPE'                  // (none)         (filter and verify filetype)
-	filetypecheck : 1                       // (no)           (check matched filetype - file = $( '#infoFileBox' )[ 0 ].files[ 0 ];)
+	filetype      : '.EXT, ...'             // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
 	nook          : 1                       // (show)         (no ok button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
@@ -310,24 +309,39 @@ function info( json ) {
 			$( '#infoFileBox' ).click();
 		} );
 		$( '#infoFileBox' ).change( function() {
+			if ( !this.files.length ) return
+			
 			var file = this.files[ 0 ];
 			var filename = file.name;
-			var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
-			if ( O.filetype && O.filetype.indexOf( ext ) === -1 ) {
+			O.filechecked = 1;
+			if ( 'filetype' in O && O.filetype ) {
+				if ( O.filetype === 'image/*' ) {
+					O.filechecked = file.type.slice( 0, 5 ) === 'image';
+				} else {
+					var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
+					O.filechecked = O.filetype.indexOf( ext ) !== -1;
+				}
+			}
+			if ( !O.filechecked ) {
 				var htmlprev = $( '#infoContent' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
 				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
 										 +'<tr><td>File not :</td><td><code>'+ O.filetype +'</code></td></tr></table>' );
+				$( '#infoOk' ).addClass( 'hide' );
+				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButtons' ).on( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					setValues();
 					$( this ).remove();
 					$( '#infoFileLabel' ).removeClass( 'hide' );
+					$( '.infoimgnew, .infoimgwh' ).remove();
+					$( '.infoimgname' ).removeClass( 'hide' );
 				} );
 			} else {
 				$( '#infoFilename' ).text( filename );
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
+				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
 				if ( O.filetype === 'image/*' ) setFileImage( file );
 			}
@@ -476,9 +490,9 @@ function info( json ) {
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
 		// set width: radio / checkbox
-/*		if ( $( '#infoContent td' ).length > 2 ) {
-			$( '#infoContent' ).find( 'td:eq( 2 ), td:eq( 3 )' ).css( 'padding-right', '10px' );
-		}*/
+		if ( $( '#infoContent input:radio' ).length && $( '#infoContent tr:eq( 0 ) td' ).length > 2 ) {
+			$( '#infoContent' ).find( 'td:not( :eq( 0 ) )' ).css( 'padding-right', '10px' );
+		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
@@ -590,8 +604,8 @@ function setFileImage( file ) {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
 	}, 1000 );
 	G.rotate = 0;
-	$( '#infoButton' ).hide();
-	$( '.infoimgnew, .infoimgwh, .infoimgname' ).remove();
+	$( '.infoimgname' ).addClass( 'hide' );
+	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( file.name.slice( -3 ) === 'gif' ) {
 		var img = new Image();
 		img.onload = function() {
