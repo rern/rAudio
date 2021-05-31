@@ -15,7 +15,6 @@ pushstreamNotify() { # double quote "$1" needed
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-	rm -f $dirtmp/flagpladd
 }
 
 [[ -n $1 ]] && pushstreamNotify "USB CD $1"

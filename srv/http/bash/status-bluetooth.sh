@@ -45,4 +45,4 @@ data='
 
 echo $data
 
-[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh pushstatus lcdchar
+[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd-pushstatus.sh lcdchar

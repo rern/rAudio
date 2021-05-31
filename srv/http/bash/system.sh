@@ -282,36 +282,34 @@ lcdchardisable )
 	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
-	val=( ${args[1]} )
-	reboot=${args[2]}
 	conf="\
 [var]
-cols=${val[0]}
-charmap=${val[1]}"
-	if [[ ${val[2]} == i2c ]]; then
+cols=${args[1]}
+charmap=${args[2]}"
+	if [[ ${args[3]} == i2c ]]; then
 		conf+="
-address=${val[3]}
-chip=${val[4]}"
+address=${args[4]}
+chip=${args[5]}"
 		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
 			sed -i '$ a\dtparam=i2c_arm=on' $fileconfig
 			echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-			echo "$reboot" > $filereboot
+			echo ${args[11]} > $filereboot
 		fi
 	else
 		conf+="
-pin_rs=${val[5]}
-pin_rw=${val[6]}
-pin_e=${val[7]}
-pins_data=${val[8]}"
+pin_rs=${args[6]}
+pin_rw=${args[7]}
+pin_e=${args[8]}
+pins_data=${args[9]}"
 		if ! grep -q tft35a $fileconfig; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
 	conf+="
-backlight=${val[9]^}"
+backlight=${args[10]^}"
 	echo "$conf" > /etc/lcdchar.conf
 	touch $dirsystem/lcdchar
 	pushRefresh

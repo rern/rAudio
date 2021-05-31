@@ -81,9 +81,6 @@ hr {
 	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
 }
-#infoOverlay.noscroll {
-	height: 100%;
-}
 #infoOverlay .fa {
 	vertical-align: -1px;
 }

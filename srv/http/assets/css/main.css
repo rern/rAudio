@@ -580,6 +580,9 @@ i.map.disabled, .map.disabled i {
 .capitalize {
 	text-transform: capitalize;
 }
+#infoOverlay.noscroll { /* for volume input range */
+	height: 100%;
+}
 #infoicon {
 	height: 25px;
 	font-size: 0;

@@ -5,7 +5,7 @@ if [[ $1 == stop ]]; then
 	rm -f /srv/http/data/shm/spotify-start
 	mv /srv/http/data/shm/player-{*,mpd}
 	/srv/http/bash/cmd.sh volumereset
-	/srv/http/bash/cmd.sh pushstatus
+	/srv/http/bash/cmd-pushstatus.sh
 	exit
 fi
 
@@ -103,4 +103,4 @@ fi
 
 curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
 
-[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh pushstatus lcdchar
+[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd-pushstatus.sh lcdchar

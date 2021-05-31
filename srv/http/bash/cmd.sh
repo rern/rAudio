@@ -8,8 +8,6 @@ dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
 dirwebradios=$dirdata/webradios
-flag=$dirtmp/flag
-flagpladd=$dirtmp/flagpladd
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -88,16 +86,13 @@ jpgThumbnail() {
 }
 pladdPlay() {
 	pushstreamPlaylist
-	rm -f $flagpladd
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
-		touch $flag
 		mpc play $pos
 	fi
 	pushstreamStatus
 }
 pladdPosition() {
-	touch $flagpladd
 	if [[ ${1:0:7} == replace ]]; then
 		mpc clear
 		pos=1
@@ -113,12 +108,10 @@ pushstreamAudiocd() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-	rm -f $flagpladd
 }
 pushstreamStatus() {
 	status=$( $dirbash/status.sh )
 	[[ -z $1 ]] && pushstream mpdplayer "$status" # $1=lcdchar - airplay bluetooth spotify
-	rm -f $flag
 	if [[ -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
@@ -137,19 +130,6 @@ pushstreamStatus() {
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
-}
-randomfile() {
-	dir=$( cat $dirmpd/album | shuf -n 1 | cut -d^ -f7 )
-	mpcls=$( mpc ls "$dir" )
-	file=$( echo "$mpcls" | shuf -n 1 )
-	echo $mpcls | grep -q .cue$ && file="${file%.*}.cue"
-	if [[ ${file: -4} == .cue ]]; then
-		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$file" | wc -l ) - 1 ))
-		range=$( shuf -i 0-$plL -n 1 )
-		mpc --range=$range load "$file"
-	else
-		mpc add "$file"
-	fi
 }
 rotateSplash() {
 	case $1 in
@@ -292,7 +272,7 @@ bluetoothplayer )
 		echo $val > $dirtmp/player-bluetooth
 		sleep 1
 		volume0dB
-		status=$( /srv/http/bash/status.sh )
+		status=$( $dirbash/status.sh )
 		pushstream mpdplayer "$status"
 	fi
 	;;
@@ -301,7 +281,7 @@ bluetoothplayerstop )
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
 	volumeReset
-	status=$( /srv/http/bash/status.sh )
+	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
 bookmarkreset )
@@ -438,9 +418,7 @@ librandom )
 	else
 		mpc random 0
 		plL=$( mpc playlist | wc -l )
-		randomfile # 1st track
-		randomfile # 2nd track
-		randomfile # 3rd track
+		$dirbash/cmd-librandom.sh start
 		touch $dirsystem/librandom
 		sleep 1
 		mpc play $(( plL + 1 ))
@@ -488,7 +466,6 @@ mpcoption )
 	pushstream option '{"'$option'":'$onoff'}'
 	;;
 mpcplayback )
-	touch $flag
 	command=${args[1]}
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
@@ -512,7 +489,6 @@ mpcplayback )
 	fi
 	;;
 mpcprevnext )
-	touch $flag
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
@@ -528,7 +504,7 @@ mpcprevnext )
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc play $(( current + 1 )) || mpc play 1
 			mpc | grep -q 'consume: on' && mpc del $current
-			[[ -e $dirsystem/librandom ]] && /srv/http/bash/cmd.sh randomfile
+			[[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
 		else
 			(( $current != 1 )) && mpc play $(( current - 1 )) || mpc play $length
 		fi
@@ -547,7 +523,6 @@ mpcprevnext )
 	pushstreamStatus
 	;;
 mpcseek )
-	touch $flag
 	seek=${args[1]}
 	pause=${args[2]}
 	if [[ -n $pause ]]; then
@@ -594,7 +569,6 @@ pladd )
 	pladdPlay $cmd $delay
 	;;
 plcrop )
-	touch $flag
 	if mpc | grep -q playing; then
 		mpc crop
 	else
@@ -602,8 +576,7 @@ plcrop )
 		mpc crop
 		mpc stop
 	fi
-	touch $flagpladd
-	systemctl -q is-active libraryrandom && randomfile
+	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
 	pushstreamStatus
 	pushstreamPlaylist
 	;;
@@ -663,15 +636,12 @@ plls )
 	pladdPlay $cmd $delay
 	;;
 plorder )
-	touch $flagpladd
 	mpc move ${args[1]} ${args[2]}
 	pushstreamPlaylist
 	;;
 plremove )
 	pos=${args[1]}
 	activenext=${args[2]}
-	touch $flagpladd
-	touch $flag
 	if [[ -n $pos ]]; then
 		mpc del $pos
 		[[ -n $activenext ]] && mpc play $activenext && mpc stop
@@ -682,12 +652,10 @@ plremove )
 	pushstreamPlaylist
 	;;
 plrename )
-	touch $flagpladd
 	mv "$dirdata/playlists/${args[1]}" "$dirdata/playlists/${args[2]}"
 	pushstreamPlaylist
 	;;
 plshuffle )
-	touch $flagpladd
 	mpc shuffle
 	pushstreamPlaylist
 	;;
@@ -707,12 +675,10 @@ plsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	touch $flagpladd
 	echo "$list" | awk 'NF' | mpc add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	if [[ -n $pos ]]; then
-		touch $flag
 		mpc -q play $pos
 		pushstreamStatus
 	fi
@@ -739,9 +705,6 @@ power )
 	;;
 pushstatus )
 	pushstreamStatus ${args[1]}
-	;;
-randomfile )
-	randomfile
 	;;
 refreshbrowser )
 	pushstream reload 1

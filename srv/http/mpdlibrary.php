@@ -455,7 +455,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		}
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
-		$script.= ' "'.escape( implode( "\n", [ $artist.$album, $mpdpath, 'licover' ] ) ).'"';
+		$script.= ' "'.escape( implode( "\n", [ $artist.$album, $file0, 'licover' ] ) ).'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) {
 			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';

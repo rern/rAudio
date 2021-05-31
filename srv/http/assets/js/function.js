@@ -285,7 +285,6 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
-	var wide = window.innerWidth > 613;
 	var iplayer;
 	if ( 'file' in G.status ) {
 		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
@@ -308,7 +307,6 @@ function displayPlayback() {
 	} else {
 		$( '#playericon' ).addClass( 'hide' );
 	}
-	$( '#i-'+ iplayer ).removeClass( 'hide' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
@@ -333,7 +331,7 @@ function displayPlayback() {
 		$( '#volume-knob' ).css( 'margin-left', '' );
 	}
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	if ( G.display.time && wide ) {
+	if ( G.display.time && window.innerWidth > 613 ) {
 		$( '#time' ).roundSlider( G.status.webradio || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 		$( '#progress' ).empty();
 	}
@@ -833,12 +831,9 @@ function infoUpdate( path ) {
 		, title   : 'Library Database'
 		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
 		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
+		, values  : [ 1 ]
 		, ok      : function() {
-			if ( path || infoVal() == 1 ) {
-				if ( path && !G.localhost ) G.list.li.find( '.lib-icon' ).addClass( 'blink' );
-			} else {
-				path = 'rescan';
-			}
+			if ( infoVal() == 2 ) path = 'rescan';
 			bash( [ 'mpcupdate', path ] );
 		}
 	} );

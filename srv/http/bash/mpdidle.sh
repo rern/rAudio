@@ -12,58 +12,27 @@ pushstream() {
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
-flag=$dirtmp/flag
-flagpl=$dirtmp/flagpl
-flagpladd=$dirtmp/flagpladd
 
 mpc idleloop | while read changed; do
 	case $changed in
 		player )
-			if [[ ! -e $flag ]]; then # track change only
-				touch $flag
-				currentprev=$current
-				current=$( mpc current )
-				if [[ -z $current || $current != $currentprev ]]; then
-					killall status-coverartonline.sh &> /dev/null # kill if still running
-					$dirbash/cmd.sh pushstatus                    # status
-					if [[ -e $dirsystem/librandom ]]; then
-						counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
-						pos=${counts/\/*}
-						total=${counts/*\/}
-						left=$(( total - pos ))
-						if (( $left < 2 )); then
-							$dirbash/cmd.sh randomfile
-							(( $left == 0 )) && $dirbash/cmd.sh randomfile
-							touch $flagpl
-						fi
-					fi
-					if [[ -e $dirtmp/snapclientip ]]; then
-						status=$( $dirbash/status.sh snapserverstatus | sed 's/,.*"single" : false , //' )
-						readarray -t clientip < $dirtmp/snapclientip
-						for ip in "${clientip[@]}"; do
-							[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-						done
-					fi
-					[[ -e $flagpl ]] && pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-				fi
-				rm -f $flag $flagpl
+			currentprev=$current
+			current=$( mpc current )
+			if [[ -n $current && $current != $currentprev ]]; then
+				killall cmd-pushstatus.sh &> /dev/null # mutiple firing - kill previous
+				$dirbash/cmd-pushstatus.sh
 			fi
 			;;
-		playlist ) # consume mode: playlist+player at once - run player fisrt
+		playlist )
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
 				pllength0=$( cat $dirtmp/playlistlength 2> /dev/null || echo 0 )
 				pllength=$( mpc playlist | wc -l )
 				pldiff=$(( $pllength - $pllength0 ))
 				(( $pldiff > 0 )) && echo $pllength > $dirtmp/playlistlength || continue
 			fi
-			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]] || (( $pldiff > 0 )); then
-				( sleep 0.05
-					if [[ -e $flag ]]; then
-						touch $flagpl
-					else
-						rm -f $flagpl
-						pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-					fi
+			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || $pldiff > 0 ]]; then
+				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
+					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 				) &> /dev/null &
 			fi
 			;;

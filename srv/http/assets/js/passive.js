@@ -280,38 +280,39 @@ function psDisplay( data ) {
 	displayBars();
 }
 function psMpdPlayer( data ) {
-	var playlistlength = G.status.playlistlength;
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
-	if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
-	setButtonControl();
-	if ( G.playlist ) {
-		setPlaylistScroll();
-	} else if ( G.playback ) {
-		displayPlayback();
-		if ( 'radio' in data ) {
-			$( '#artist' ).html( G.status.Artist );
-			$( '#song' ).html( G.status.Title || blinkdot );
-			$( '#album' ).html( G.status.Album );
-			$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-			setRadioAlbum();
-			scrollLongText();
-			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-		} else {
-			renderPlayback();
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		var playlistlength = G.status.playlistlength;
+		$.each( data, function( key, value ) {
+			G.status[ key ] = value;
+		} );
+		if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+		setButtonControl();
+		if ( G.playlist ) {
+			setPlaylistScroll();
+		} else if ( G.playback ) {
+			displayPlayback();
+			if ( 'radio' in data ) {
+				$( '#artist' ).html( G.status.Artist );
+				$( '#song' ).html( G.status.Title || blinkdot );
+				$( '#album' ).html( G.status.Album );
+				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+				setRadioAlbum();
+				scrollLongText();
+				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+			} else {
+				renderPlayback();
+			}
+			if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 		}
-		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
-	}
-	bannerHide();
+		bannerHide();
+	}, G.debouncems );
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
 		G.status.updating_db = true;
-		if ( G.localhost ) return
-		
 		if ( G.bars ) {
 			if ( !G.localhost ) $( '#tab-library, #button-library' ).addClass( 'blink' );
 		} else {
@@ -377,27 +378,30 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( G.local ) return
 	
-	if ( data == -1 ) {
-		if ( G.playback ) {
-			getPlaybackStatus();
-		} else if ( G.playlist ) {
-			renderPlaylist( -1 );
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		if ( data == -1 ) {
+			if ( G.playback ) {
+				getPlaybackStatus();
+			} else if ( G.playlist ) {
+				renderPlaylist( -1 );
+			}
+		} else if ( 'autoplaycd' in data ) {
+			G.autoplaycd = 1;
+			setTimeout( function() { delete G.autoplaycd }, 5000 );
+		} else if ( 'html' in data ) {
+			if ( G.playback ) {
+				getPlaybackStatus();
+			} else if ( G.playlist ) {
+				if ( !G.plremove ) renderPlaylist( data );
+			}
+		} else if ( data.playlist === 'save' ) {
+			if ( G.savedlist ) $( '#button-pl-open' ).click();
+		} else {
+			var name = $( '#pl-path .lipath' ).text();
+			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
-	} else if ( 'autoplaycd' in data ) {
-		G.autoplaycd = 1;
-		setTimeout( function() { delete G.autoplaycd }, 5000 );
-	} else if ( 'html' in data ) {
-		if ( G.playback ) {
-			getPlaybackStatus();
-		} else if ( G.playlist ) {
-			if ( !G.plremove ) renderPlaylist( data );
-		}
-	} else if ( data.playlist === 'save' ) {
-		if ( G.savedlist ) $( '#button-pl-open' ).click();
-	} else {
-		var name = $( '#pl-path .lipath' ).text();
-		if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
-	}
+	}, G.debouncems );
 }
 function psRelays( response ) { // on receive broadcast
 	var stopwatch = '<img class="stopwatch" src="/assets/img/stopwatch.'+ hash +'.svg">';
@@ -418,8 +422,6 @@ function psRelays( response ) { // on receive broadcast
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
 	} else if ( state === 'IDLE' ) {
-//		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
-		
 		var delay = response.delay;
 		info( {
 			  icon        : 'relays'
@@ -522,7 +524,7 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		if ( $( '#volume-knob' ).is( ':visible' ) ) {
+		if ( !$( '#volume-knob' ).hasClass( 'hide' ) ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
