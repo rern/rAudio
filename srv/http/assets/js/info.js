@@ -165,7 +165,6 @@ function info( json ) {
 		return;
 	}
 	
-	$( '#infoOverlay' ).toggleClass( 'noscroll', 'noscroll' in O ); // for volume input range
 	$( '#infoX' ).click( function() {
 		if ( O.cancel ) O.cancel();
 		infoReset();
