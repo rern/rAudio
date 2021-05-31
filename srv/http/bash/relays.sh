@@ -38,7 +38,7 @@ if [[ $1 == true ]]; then
 	fi
 else
 	mpc -q stop
-	rm -f $relaysfile
+	rm -f $relaysfile /srv/http/data/system/volumemute
 	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
