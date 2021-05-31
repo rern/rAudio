@@ -78,6 +78,7 @@ function infoMount( values ) {
 function rebootText( enable, device ) {
 	var exist = 0;
 	if ( G.reboot.length ) {
+		if ( typeof G.reboot === 'string' ) G.reboot = [ G.reboot ];
 		exist = G.reboot.some( function( line ) {
 			return line.indexOf( device ) !== -1
 		} );
@@ -498,13 +499,12 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			var values = infoVal();
-			var lcdcharconf = values.join( ' ' );
-			var cmd = [ 'lcdcharset', lcdcharconf ];
+			values[ 9 ] = values[ 9 ] === true ? 'True' : 'False';
 			if ( values[ 2 ] === 'i2c' ) {
 				rebootText( 1, 'Character LCD' );
-				cmd.push( G.reboot.join( '\n' ) );
+				values.push( G.reboot.join( '\n' ) );
 			}
-			bash( cmd );
+			bash( [ 'lcdcharset', ...values ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
@@ -573,8 +573,8 @@ $( '#setting-lcd' ).click( function() {
 		, values       : G.lcdmodel
 		, checkchanged : ( G.lcd ? 1 : 0 )
 		, boxwidth     : 190
-		, buttonlabel  : 'Calibrate'
-		, button       : function() {
+		, buttonlabel  : ( !G.lcd ? '' : 'Calibrate' )
+		, button       : ( !G.lcd ? '' : function() {
 			info( {
 				  icon    : 'lcd'
 				, title   : 'TFT LCD'
@@ -585,7 +585,7 @@ $( '#setting-lcd' ).click( function() {
 					bash( [ 'lcdcalibrate' ] );
 				}
 			} );
-		}
+		} )
 		, cancel    : function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}

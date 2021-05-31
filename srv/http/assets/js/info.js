@@ -167,16 +167,16 @@ function info( json ) {
 	
 	$( '#infoOverlay' ).toggleClass( 'noscroll', 'noscroll' in O ); // for volume input range
 	$( '#infoX' ).click( function() {
-		if ( 'cancel' in O && O.cancel ) O.cancel();
+		if ( O.cancel ) O.cancel();
 		infoReset();
 	} );
 	// switch arrows
-	if ( 'arrowright' in O && O.arrowright ) switchRL( 'right', O.arrowright )
-	if ( 'arrowleft' in O && O.arrowleft ) switchRL( 'left', O.arrowleft )
+	if ( O.arrowright ) switchRL( 'right', O.arrowright )
+	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )
 	// title
-	if ( 'width' in O && O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
-	if ( 'height' in O && O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
-	if ( 'icon' in O && O.icon ) {
+	if ( O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
+	if ( O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
+	if ( O.icon ) {
 		if ( O.icon.charAt( 0 ) !== '<' ) {
 			$( '#infoIcon' ).addClass( 'fa fa-'+ O.icon );
 		} else {
@@ -185,10 +185,10 @@ function info( json ) {
 	} else {
 		$( '#infoIcon' ).addClass( 'fa fa-question-circle' );
 	}
-	var title = 'title' in O ? O.title : 'Information';
+	var title = O.title || 'Information';
 	$( '#infoTitle' ).html( title );
-	if ( 'nox' in O && O.nox ) $( '#infoX' ).addClass( 'hide' );
-	if ( 'autoclose' in O && O.autoclose ) {
+	if ( O.nox ) $( '#infoX' ).addClass( 'hide' );
+	if ( O.autoclose ) {
 		setTimeout( function() {
 			$( '#infoCancel' ).click();
 		}, O.autoclose );
@@ -196,47 +196,43 @@ function info( json ) {
 	
 	// buttons
 		var htmlbutton = ''
-		if ( 'button' in O && O.button ) {
-			var button = 'button' in O ? O.button : '';
-			var buttonlabel = 'buttonlabel' in O ? O.buttonlabel : '';
-			var buttoncolor = 'buttoncolor' in O ? O.buttoncolor : '';
-			if ( typeof button !== 'object' ) button = [ button ];
-			if ( typeof buttonlabel !== 'object' ) buttonlabel = [ buttonlabel ];
-			if ( typeof buttoncolor !== 'object' ) buttoncolor = [ buttoncolor ];
-			var iL = buttonlabel.length;
+		if ( O.button ) {
+			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
+			if ( typeof O.buttonlabel !== 'object' ) O.buttonlabel = [ O.buttonlabel ];
+			if ( typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
+			var iL = O.buttonlabel.length;
 			for ( i = 0; i < iL; i++ ) {
-				var iid = i || '';
-				var color = buttoncolor[ i ] ? ' style="background-color:'+ buttoncolor[ i ] +'"' : '';
-				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ buttonlabel[ i ] +'</a>';
+				var color = O.buttoncolor ? ' style="background-color:'+ O.buttoncolor[ i ] +'"' : '';
+				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
 			}
 		}
-		if ( 'cancelshow' in O && O.cancelshow ) {
+		if ( O.cancelshow ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 			var hide = O.cancelshow ? '' : ' hide';
 			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
+			$( '#infoButtons' ).on( 'click', '#infoCancel', function() {
+				if ( typeof O.cancel === 'function' ) O.cancel();
+				infoReset();
+			} );
 		}
-		if ( !( 'nook' in O ) || !O.nook ) {
+		if ( !O.nook ) {
 			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+			$( '#infoButtons' ).on( 'click', '#infoOk', function() {
+				if ( typeof O.ok === 'function' ) O.ok();
+				infoReset();
+			} );
 		}
 		$( '#infoButtons' ).html( htmlbutton );
-		if ( 'button' in O && O.button ) {
-			if ( typeof button !== 'object' ) button = [ button ];
+		if ( O.button ) {
+			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
-				var fn = button[ $( this ).index( '.extrabtn' ) ];
+				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		$( '#infoCancel' ).click( function() {
-			if ( typeof O.cancel === 'function' ) O.cancel();
-			infoReset();
-		} );
-		$( '#infoOk' ).click( function() {
-			if ( typeof O.ok === 'function' ) O.ok();
-			infoReset();
-		} );
-	if ( 'fileoklabel' in O && O.fileoklabel ) {
+	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
 				+'<code id="infoFilename" class="hide"></code>'
 				+'<input type="file" class="hide" id="infoFileBox"'
@@ -257,7 +253,7 @@ function info( json ) {
 			var file = this.files[ 0 ];
 			var filename = file.name;
 			O.filechecked = 1;
-			if ( 'filetype' in O && O.filetype ) {
+			if ( O.filetype ) {
 				if ( O.filetype === 'image/*' ) {
 					O.filechecked = file.type.slice( 0, 5 ) === 'image';
 				} else {
@@ -291,42 +287,41 @@ function info( json ) {
 		} );
 	}
 	
-	if ( 'content' in O && O.content ) {
+	if ( O.content ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
 		var htmls = {}
-		if ( 'message' in O && O.message ) {
+		if ( O.message ) {
 			htmls.message = '<div class="infomessage"';
-			if ( 'messagealign' in O ) htmls.message += ' style="text-align:'+ O.messagealign +'"';
+			if ( O.messagealign ) htmls.message += ' style="text-align:'+ O.messagealign +'"';
 			htmls.message += '>'+ O.message +'</div>';
-			if ( 'msghr' in O ) htmls.message += '<hr>';
 		}
-		if ( 'footer' in O && O.footer ) {
+		if ( O.footer ) {
 			htmls.footer = '<div class="infofooter"';
-			if ( 'footeralign' in O ) htmls.footer += ' style="text-align:'+ O.footeralign +'"';
+			if ( O.footeralign ) htmls.footer += ' style="text-align:'+ O.footeralign +'"';
 			htmls.footer += '>'+ O.footer +'</div>';
 		}
 		// inputs html ///////////////////////////////////////////////////////////
-		if ( 'textlabel' in O && O.textlabel ) {
+		if ( O.textlabel ) {
 			if ( typeof O.textlabel !== 'object' ) O.textlabel = [ O.textlabel ];
 			htmls.text = '';
 			O.textlabel.forEach( function( lbl ) {
 				htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
 			} );
 		}
-		if ( 'passwordlabel' in O && O.passwordlabel ) {
+		if ( O.passwordlabel ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
 			htmls.password = '';
 			O.passwordlabel.forEach( function( lbl ) {
 				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password">&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 		}
-		if ( 'textarea' in O && O.textarea ) {
+		if ( O.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
 		}
 		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
-		if ( 'radio' in O && O.radio ) { // single set only
+		if ( O.radio ) { // single set only
 			var line;
 			var i = 0;
 			htmls.radio = '';
@@ -345,7 +340,7 @@ function info( json ) {
 				}
 			} );
 		}
-		if ( 'checkbox' in O && O.checkbox ) {
+		if ( O.checkbox ) {
 			var line;
 			var i = 0;
 			htmls.checkbox = '';
@@ -364,7 +359,7 @@ function info( json ) {
 				}
 			} );
 		}
-		if ( 'select' in O && O.select ) {
+		if ( O.select ) {
 			htmls.select = '';
 			if ( typeof O.select !== 'object' ) {
 				htmls.select += O.select;
@@ -376,20 +371,19 @@ function info( json ) {
 				htmls.select += '</select></td></tr>';
 			}
 		}
-		if ( 'rangevalue' in O && O.rangevalue ) {
+		if ( O.rangevalue ) {
 			htmls.range = '<div id="infoRange">'
 					+'<div class="value">'+ O.rangevalue +'</div>'
 					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
 		}
-		var htmlcontent = ''; 
-		if ( 'message' in htmls ) htmlcontent += htmls.message;
-		if ( !( 'order' in O ) || !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
+		var htmlcontent = htmls.message || '';
+		if ( !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
 		var htmlinputs = '';
 		O.order.forEach( function( type ) {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
-		if ( 'footer' in htmls ) htmlcontent += htmls.footer;
+		htmlcontent += htmls.footer || '';
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
@@ -402,7 +396,7 @@ function info( json ) {
 		// apply selectric
 		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
 		// set width: button
-		if ( !( 'buttonfit' in O ) ) {
+		if ( !O.buttonfit ) {
 			var widest = 0;
 			var $this, w, btnhide;
 			$.each( $( '#infoButtons a' ), function() {
@@ -416,7 +410,7 @@ function info( json ) {
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
 		// set width: text / password / textarea
-		if ( 'boxwidth' in O && O.boxwidth ) {
+		if ( O.boxwidth ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width();
 			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - ( allW > 399 ? 50 : 20 ) - labelW;
@@ -451,9 +445,9 @@ function info( json ) {
 			}
 		} );
 		// assign values
-		if ( 'values' in O && O.values ) setValues();
+		if ( O.values ) setValues();
 		// check text input length
-		if ( 'checklength' in O && O.checklength ) {
+		if ( O.checklength ) {
 			$.each( O.checklength, function( i, L ) {
 				O.short = O.inputs.eq( i ).val().length < L;
 				$( '#infoOk' ).toggleClass( 'disabled', O.short );
@@ -464,7 +458,7 @@ function info( json ) {
 			} );
 		}
 		// check text input not blank
-		if ( 'checkblank' in O && O.checkblank ) {
+		if ( O.checkblank ) {
 			O.checkblank.forEach( function( i ) {
 				O.blank = O.inputs.eq( i ).val().trim() === '';
 				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
@@ -475,13 +469,13 @@ function info( json ) {
 			} );
 		}
 		// check changed values
-		if ( 'values' in O && O.checkchanged ) {
+		if ( O.values && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChanged );
 		}
 		// custom function before show
-		if ( 'beforeshow' in O && O.beforeshow ) O.beforeshow();
+		if ( O.beforeshow ) O.beforeshow();
 	} );
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
@@ -500,7 +494,7 @@ function alignVertical() { // make infoBox scrollable
 		$( '#infoOverlay' ).removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		$input0 = $( O.inputs[ 0 ] );
-		if ( !( 'nofocus' in O ) && [ 'text', 'password' ].indexOf( $input0.prop( 'type' ) ) !== -1 ) $input0.focus();
+		if ( !O.nofocus && [ 'text', 'password' ].indexOf( $input0.prop( 'type' ) ) !== -1 ) $input0.focus();
 	}, 200 );
 }
 function checkChanged() {
