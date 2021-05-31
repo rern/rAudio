@@ -8,7 +8,6 @@ dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
 dirwebradios=$dirdata/webradios
-flag=$dirtmp/flag
 flagpladd=$dirtmp/flagpladd
 
 # convert each line to each args
@@ -91,7 +90,6 @@ pladdPlay() {
 	rm -f $flagpladd
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
-		touch $flag
 		mpc play $pos
 	fi
 	pushstreamStatus
@@ -118,7 +116,6 @@ pushstreamPlaylist() {
 pushstreamStatus() {
 	status=$( $dirbash/status.sh )
 	[[ -z $1 ]] && pushstream mpdplayer "$status" # $1=lcdchar - airplay bluetooth spotify
-	rm -f $flag
 	if [[ -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
@@ -473,7 +470,6 @@ mpcoption )
 	pushstream option '{"'$option'":'$onoff'}'
 	;;
 mpcplayback )
-	touch $flag
 	command=${args[1]}
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
@@ -497,7 +493,6 @@ mpcplayback )
 	fi
 	;;
 mpcprevnext )
-	touch $flag
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
@@ -532,7 +527,6 @@ mpcprevnext )
 	pushstreamStatus
 	;;
 mpcseek )
-	touch $flag
 	seek=${args[1]}
 	pause=${args[2]}
 	if [[ -n $pause ]]; then
@@ -579,7 +573,6 @@ pladd )
 	pladdPlay $cmd $delay
 	;;
 plcrop )
-	touch $flag
 	if mpc | grep -q playing; then
 		mpc crop
 	else
@@ -656,7 +649,6 @@ plremove )
 	pos=${args[1]}
 	activenext=${args[2]}
 	touch $flagpladd
-	touch $flag
 	if [[ -n $pos ]]; then
 		mpc del $pos
 		[[ -n $activenext ]] && mpc play $activenext && mpc stop
@@ -697,7 +689,6 @@ plsimilar )
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	if [[ -n $pos ]]; then
-		touch $flag
 		mpc -q play $pos
 		pushstreamStatus
 	fi

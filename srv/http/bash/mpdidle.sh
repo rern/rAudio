@@ -12,7 +12,6 @@ pushstream() {
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
-flag=$dirtmp/flag
 flagpl=$dirtmp/flagpl
 flagpladd=$dirtmp/flagpladd
 
@@ -22,22 +21,8 @@ mpc idleloop | while read changed; do
 			currentprev=$current
 			current=$( mpc current )
 			if [[ -n $current && $current != $currentprev ]]; then
-				killall status.sh &> /dev/null                # mutiple firing - kill previous
-				killall status-coverartonline.sh &> /dev/null # kill if still running
-				$dirbash/cmd.sh pushstatus                    # status
-				if [[ -e $dirsystem/librandom ]]; then
-					touch $flagpl # suppress playlist broadcast
-					$dirbash/cmd-librandom.sh
-					sleep 1
-					rm -f $flagpl
-				fi
-				if [[ -e $dirtmp/snapclientip ]]; then
-					status=$( $dirbash/status.sh snapserverstatus | sed 's/,.*"single" : false , //' )
-					readarray -t clientip < $dirtmp/snapclientip
-					for ip in "${clientip[@]}"; do
-						[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-					done
-				fi
+				killall cmd-pushstatus.sh &> /dev/null # mutiple firing - kill previous
+				$dirbash/cmd-pushstatus.sh
 			fi
 			;;
 		playlist ) # consume mode: playlist+player at once - run player fisrt
@@ -49,9 +34,7 @@ mpc idleloop | while read changed; do
 			fi
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]] || (( $pldiff > 0 )); then
 				( sleep 0.05
-					if [[ -e $flag ]]; then
-						touch $flagpl
-					else
+					if [[ ! -e $flagpl ]]; then
 						rm -f $flagpl
 						pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 					fi
