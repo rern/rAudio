@@ -280,30 +280,33 @@ function psDisplay( data ) {
 	displayBars();
 }
 function psMpdPlayer( data ) {
-	var playlistlength = G.status.playlistlength;
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
-	if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
-	setButtonControl();
-	if ( G.playlist ) {
-		setPlaylistScroll();
-	} else if ( G.playback ) {
-		displayPlayback();
-		if ( 'radio' in data ) {
-			$( '#artist' ).html( G.status.Artist );
-			$( '#song' ).html( G.status.Title || blinkdot );
-			$( '#album' ).html( G.status.Album );
-			$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-			setRadioAlbum();
-			scrollLongText();
-			renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-		} else {
-			renderPlayback();
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		var playlistlength = G.status.playlistlength;
+		$.each( data, function( key, value ) {
+			G.status[ key ] = value;
+		} );
+		if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+		setButtonControl();
+		if ( G.playlist ) {
+			setPlaylistScroll();
+		} else if ( G.playback ) {
+			displayPlayback();
+			if ( 'radio' in data ) {
+				$( '#artist' ).html( G.status.Artist );
+				$( '#song' ).html( G.status.Title || blinkdot );
+				$( '#album' ).html( G.status.Album );
+				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+				setRadioAlbum();
+				scrollLongText();
+				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+			} else {
+				renderPlayback();
+			}
+			if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 		}
-		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
-	}
-	bannerHide();
+		bannerHide();
+	}, G.debouncems );
 }
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
