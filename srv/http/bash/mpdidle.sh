@@ -12,8 +12,6 @@ pushstream() {
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
-flagpl=$dirtmp/flagpl
-flagpladd=$dirtmp/flagpladd
 
 mpc idleloop | while read changed; do
 	case $changed in
@@ -25,19 +23,16 @@ mpc idleloop | while read changed; do
 				$dirbash/cmd-pushstatus.sh
 			fi
 			;;
-		playlist ) # consume mode: playlist+player at once - run player fisrt
+		playlist )
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
 				pllength0=$( cat $dirtmp/playlistlength 2> /dev/null || echo 0 )
 				pllength=$( mpc playlist | wc -l )
 				pldiff=$(( $pllength - $pllength0 ))
 				(( $pldiff > 0 )) && echo $pllength > $dirtmp/playlistlength || continue
 			fi
-			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on && ! -e $flagpladd ]] || (( $pldiff > 0 )); then
-				( sleep 0.05
-					if [[ ! -e $flagpl ]]; then
-						rm -f $flagpl
-						pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-					fi
+			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || (( $pldiff > 0 )); then
+				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
+					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 				) &> /dev/null &
 			fi
 			;;

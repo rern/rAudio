@@ -378,27 +378,30 @@ function psOrder( data ) {
 function psPlaylist( data ) {
 	if ( G.local ) return
 	
-	if ( data == -1 ) {
-		if ( G.playback ) {
-			getPlaybackStatus();
-		} else if ( G.playlist ) {
-			renderPlaylist( -1 );
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		if ( data == -1 ) {
+			if ( G.playback ) {
+				getPlaybackStatus();
+			} else if ( G.playlist ) {
+				renderPlaylist( -1 );
+			}
+		} else if ( 'autoplaycd' in data ) {
+			G.autoplaycd = 1;
+			setTimeout( function() { delete G.autoplaycd }, 5000 );
+		} else if ( 'html' in data ) {
+			if ( G.playback ) {
+				getPlaybackStatus();
+			} else if ( G.playlist ) {
+				if ( !G.plremove ) renderPlaylist( data );
+			}
+		} else if ( data.playlist === 'save' ) {
+			if ( G.savedlist ) $( '#button-pl-open' ).click();
+		} else {
+			var name = $( '#pl-path .lipath' ).text();
+			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
-	} else if ( 'autoplaycd' in data ) {
-		G.autoplaycd = 1;
-		setTimeout( function() { delete G.autoplaycd }, 5000 );
-	} else if ( 'html' in data ) {
-		if ( G.playback ) {
-			getPlaybackStatus();
-		} else if ( G.playlist ) {
-			if ( !G.plremove ) renderPlaylist( data );
-		}
-	} else if ( data.playlist === 'save' ) {
-		if ( G.savedlist ) $( '#button-pl-open' ).click();
-	} else {
-		var name = $( '#pl-path .lipath' ).text();
-		if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
-	}
+	}, G.debouncems );
 }
 function psRelays( response ) { // on receive broadcast
 	var stopwatch = '<img class="stopwatch" src="/assets/img/stopwatch.'+ hash +'.svg">';

@@ -8,7 +8,6 @@ dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
 dirwebradios=$dirdata/webradios
-flagpladd=$dirtmp/flagpladd
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -87,7 +86,6 @@ jpgThumbnail() {
 }
 pladdPlay() {
 	pushstreamPlaylist
-	rm -f $flagpladd
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc play $pos
@@ -95,7 +93,6 @@ pladdPlay() {
 	pushstreamStatus
 }
 pladdPosition() {
-	touch $flagpladd
 	if [[ ${1:0:7} == replace ]]; then
 		mpc clear
 		pos=1
@@ -111,7 +108,6 @@ pushstreamAudiocd() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-	rm -f $flagpladd
 }
 pushstreamStatus() {
 	status=$( $dirbash/status.sh )
@@ -580,7 +576,6 @@ plcrop )
 		mpc crop
 		mpc stop
 	fi
-	touch $flagpladd
 	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
 	pushstreamStatus
 	pushstreamPlaylist
@@ -641,14 +636,12 @@ plls )
 	pladdPlay $cmd $delay
 	;;
 plorder )
-	touch $flagpladd
 	mpc move ${args[1]} ${args[2]}
 	pushstreamPlaylist
 	;;
 plremove )
 	pos=${args[1]}
 	activenext=${args[2]}
-	touch $flagpladd
 	if [[ -n $pos ]]; then
 		mpc del $pos
 		[[ -n $activenext ]] && mpc play $activenext && mpc stop
@@ -659,12 +652,10 @@ plremove )
 	pushstreamPlaylist
 	;;
 plrename )
-	touch $flagpladd
 	mv "$dirdata/playlists/${args[1]}" "$dirdata/playlists/${args[2]}"
 	pushstreamPlaylist
 	;;
 plshuffle )
-	touch $flagpladd
 	mpc shuffle
 	pushstreamPlaylist
 	;;
@@ -684,7 +675,6 @@ plsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	touch $flagpladd
 	echo "$list" | awk 'NF' | mpc add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
