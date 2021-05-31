@@ -138,19 +138,6 @@ pushstreamStatus() {
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
-randomfile() {
-	dir=$( cat $dirmpd/album | shuf -n 1 | cut -d^ -f7 )
-	mpcls=$( mpc ls "$dir" )
-	file=$( echo "$mpcls" | shuf -n 1 )
-	echo $mpcls | grep -q .cue$ && file="${file%.*}.cue"
-	if [[ ${file: -4} == .cue ]]; then
-		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$file" | wc -l ) - 1 ))
-		range=$( shuf -i 0-$plL -n 1 )
-		mpc --range=$range load "$file"
-	else
-		mpc add "$file"
-	fi
-}
 rotateSplash() {
 	case $1 in
 		NORMAL ) degree=0;;
@@ -438,9 +425,7 @@ librandom )
 	else
 		mpc random 0
 		plL=$( mpc playlist | wc -l )
-		randomfile # 1st track
-		randomfile # 2nd track
-		randomfile # 3rd track
+		$dirbash/cmd-librandom.sh start
 		touch $dirsystem/librandom
 		sleep 1
 		mpc play $(( plL + 1 ))
@@ -528,7 +513,7 @@ mpcprevnext )
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc play $(( current + 1 )) || mpc play 1
 			mpc | grep -q 'consume: on' && mpc del $current
-			[[ -e $dirsystem/librandom ]] && /srv/http/bash/cmd.sh randomfile
+			[[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
 		else
 			(( $current != 1 )) && mpc play $(( current - 1 )) || mpc play $length
 		fi
@@ -603,7 +588,7 @@ plcrop )
 		mpc stop
 	fi
 	touch $flagpladd
-	systemctl -q is-active libraryrandom && randomfile
+	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
 	pushstreamStatus
 	pushstreamPlaylist
 	;;
@@ -739,9 +724,6 @@ power )
 	;;
 pushstatus )
 	pushstreamStatus ${args[1]}
-	;;
-randomfile )
-	randomfile
 	;;
 refreshbrowser )
 	pushstream reload 1

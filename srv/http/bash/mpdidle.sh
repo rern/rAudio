@@ -19,34 +19,25 @@ flagpladd=$dirtmp/flagpladd
 mpc idleloop | while read changed; do
 	case $changed in
 		player )
-			if [[ ! -e $flag ]]; then # track change only
-				touch $flag
-				currentprev=$current
-				current=$( mpc current )
-				if [[ -z $current || $current != $currentprev ]]; then
-					killall status-coverartonline.sh &> /dev/null # kill if still running
-					$dirbash/cmd.sh pushstatus                    # status
-					if [[ -e $dirsystem/librandom ]]; then
-						counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )
-						pos=${counts/\/*}
-						total=${counts/*\/}
-						left=$(( total - pos ))
-						if (( $left < 2 )); then
-							$dirbash/cmd.sh randomfile
-							(( $left == 0 )) && $dirbash/cmd.sh randomfile
-							touch $flagpl
-						fi
-					fi
-					if [[ -e $dirtmp/snapclientip ]]; then
-						status=$( $dirbash/status.sh snapserverstatus | sed 's/,.*"single" : false , //' )
-						readarray -t clientip < $dirtmp/snapclientip
-						for ip in "${clientip[@]}"; do
-							[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-						done
-					fi
-					[[ -e $flagpl ]] && pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+			currentprev=$current
+			current=$( mpc current )
+			if [[ -n $current && $current != $currentprev ]]; then
+				killall status.sh &> /dev/null                # mutiple firing - kill previous
+				killall status-coverartonline.sh &> /dev/null # kill if still running
+				$dirbash/cmd.sh pushstatus                    # status
+				if [[ -e $dirsystem/librandom ]]; then
+					touch $flagpl # suppress playlist broadcast
+					$dirbash/cmd-librandom.sh
+					sleep 1
+					rm -f $flagpl
 				fi
-				rm -f $flag $flagpl
+				if [[ -e $dirtmp/snapclientip ]]; then
+					status=$( $dirbash/status.sh snapserverstatus | sed 's/,.*"single" : false , //' )
+					readarray -t clientip < $dirtmp/snapclientip
+					for ip in "${clientip[@]}"; do
+						[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+					done
+				fi
 			fi
 			;;
 		playlist ) # consume mode: playlist+player at once - run player fisrt
