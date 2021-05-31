@@ -417,14 +417,13 @@ function info( json ) {
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
 		// set padding-right: radio / checkbox
-		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) {
-			$( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
-		}
+		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
+		if ( tdL > 1 ) $( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
 		// set padding-right, align right: label
 		if ( !$( '#infoContent td:first-child input' ).length ) {
 			$( '#infoContent td:first-child' ).css( {
-				  'padding-right' : '5px'
-				, 'text-align'    : 'right'
+				  'padding-right' : ( tdL > 1 ? '5px' : 0 )
+				, 'text-align'    : ( tdL > 1 ? 'right' : 'left' )
 			} );
 		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {

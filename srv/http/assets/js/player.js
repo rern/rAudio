@@ -349,11 +349,10 @@ $( '#setting-soxr' ).click( function() {
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : [ 1, 2, 3, 4 ]
 		, beforeshow    : function() {
-			setTimeout( function() {
-				var $extra = $( '#infoContent tr:eq( 5 )' );
-				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );
-				$extra.find( '.selectric-items' ).css( 'min-width', '185px' );
-			}, 0 );
+			$( '#infoContent td:nth-child( 2 )' ).css( 'padding-right', 0 );
+			var $extra = $( '#infoContent tr:eq( 5 )' );
+			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );
+			$extra.find( '.selectric-items' ).css( 'min-width', '185px' );
 		}
 		, boxwidth      : 90
 		, cancel        : function() {
@@ -368,7 +367,7 @@ $( '#setting-soxr' ).click( function() {
 } );
 var custominfo = heredoc( function() { /*
 <table>
-	<tr><td style="text-align: left"><code>/etc/mpd.conf</code>
+	<tr><td><code>/etc/mpd.conf</code></td></tr>
 	<tr><td><pre>
 ...
 user                   "mpd"</pre></td></tr>
