@@ -422,8 +422,6 @@ function psRelays( response ) { // on receive broadcast
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
 	} else if ( state === 'IDLE' ) {
-//		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
-		
 		var delay = response.delay;
 		info( {
 			  icon        : 'relays'
@@ -526,7 +524,7 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		if ( $( '#volume-knob' ).is( ':visible' ) ) {
+		if ( !$( '#volume-knob' ).hasClass( 'hide' ) ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
