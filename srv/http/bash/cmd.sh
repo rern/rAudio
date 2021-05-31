@@ -279,7 +279,7 @@ bluetoothplayer )
 		echo $val > $dirtmp/player-bluetooth
 		sleep 1
 		volume0dB
-		status=$( /srv/http/bash/status.sh )
+		status=$( $dirbash/status.sh )
 		pushstream mpdplayer "$status"
 	fi
 	;;
@@ -288,7 +288,7 @@ bluetoothplayerstop )
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
 	volumeReset
-	status=$( /srv/http/bash/status.sh )
+	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
 bookmarkreset )
