@@ -1,7 +1,7 @@
 #!/bin/bash
 
 randomfileAdd() {
-	dir=$( cat $dirmpd/album | shuf -n 1 | cut -d^ -f7 )
+	dir=$( cat /srv/http/data/mpd/album | shuf -n 1 | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
 	file=$( echo "$mpcls" | shuf -n 1 )
 	echo $mpcls | grep -q .cue$ && file="${file%.*}.cue"
