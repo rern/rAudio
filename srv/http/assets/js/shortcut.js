@@ -58,9 +58,6 @@ $( document ).keydown( function( e ) {
 			var href = $menu.prop( 'href' );
 			href ? location.href = href : $menu.click();
 			return
-		} else if ( $( '.indexed.bgr' ).length ) {
-			$( '.indexed.bgr' ).click();
-			return
 		}
 	}
 	
@@ -95,6 +92,8 @@ $( document ).keydown( function( e ) {
 		return
 		
 	} else if ( key === 'Tab' ) {
+		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+		
 		e.preventDefault();
 		if ( G.library ) {
 			$( '#tab-playback' ).click();

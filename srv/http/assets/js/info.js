@@ -92,70 +92,13 @@ var containerhtml = heredoc( function() { /*
 $( 'body' ).prepend( containerhtml );
 
 $( '#infoOverlay' ).keydown( function( e ) {
-	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) return
-	
 	var key = e.key;
-	if ( key == 'Enter' && !$( 'textarea' ).is( ':focus' ) ) {
-		if ( $( '.infobtn.active' ).length ) {
-			$( '.infobtn.active' ).click();
-		} else {
-			$( '#infoOk' ).click();
-		}
-	} else if ( e.keyCode === 32 ) { // spacebar
-		e.preventDefault();
-		$( '#infoContent input:checkbox.active' ).click();
-		$( '#infoContent input:radio.active' ).click();
+	if ( key == 'Enter' ) {
+		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 	} else if ( key === 'Escape' ) {
 		G.local = 1; // no local() in settings
 		setTimeout( function() { G.local = 0 }, 300 );
 		$( '#infoX' ).click();
-	} else if ( [ 'ArrowUp', 'ArrowDown' ].indexOf( key ) !== -1 ) {
-		e.preventDefault();
-		var $el = $( '#infoContent input' );
-		if ( $el.length === 1 ) return
-		
-		var $elactive = $( '#infoContent input.active' );
-		if ( !$elactive.length ) {
-			$el.eq( 0 ).addClass( 'active' );
-		} else {
-			var ellast = $el.length - 1;
-			var elindex;
-			$.each( $el, function( i, el ) {
-				if ( $( el ).hasClass( 'active' ) ) {
-					elindex = i;
-					return false
-				}
-			} );
-			if ( key === 'ArrowUp' ) {
-				var i = elindex !== 0 ? elindex - 1 : ellast;
-				var $next = $el.eq( i );
-			} else {
-				var i = elindex !== ellast ? elindex + 1 : 0;
-				var $next = $el.eq( i );
-			}
-			$elactive.removeClass( 'active' );
-			$next.addClass( 'active' );
-		}
-	} else if ( [ 'ArrowLeft', 'ArrowRight' ].indexOf( key ) !== -1 ) {
-		if ( $( '#infoContent input:focus' ).length ) return
-		
-		var $btn = $( '.infobtn:not( .hide )' );
-		if ( $btn.length === 1 ) return
-		
-		var $btnactive = $( '.infobtn.active' );
-		if ( !$btnactive.length ) {
-			$btn.eq( 0 ).addClass( 'active' );
-		} else {
-			if ( key === 'ArrowLeft' ) {
-				var $next = $btnactive.prev( '.infobtn:not( .hide )' );
-			} else {
-				var $next = $btnactive.next( '.infobtn:not( .hide )' );
-			}
-			if ( $next.length ) {
-				$btnactive.removeClass( 'active' );
-				$next.eq( 0 ).addClass( 'active' );
-			}
-		}
 	}
 } );
 $( '#infoContent' ).click( function() {
