@@ -1,7 +1,5 @@
 #!/bin/bash
 
-dirtmp=/srv/http/data/shm
-
 status=$( /srv/http/bash/status.sh )
 
 if [[ $1 == lcdchar ]]; then
