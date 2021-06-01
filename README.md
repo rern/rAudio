@@ -139,7 +139,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Settings > MPD > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
-	Settings > System > Features
+	Settings > Features
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
 - Hide top and bottom bars
