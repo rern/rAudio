@@ -269,7 +269,6 @@ function displayBars() {
 		$( '.emptyadd' ).css( 'top', '' );
 		displayBottom();
 	}
-	$( '.menu' ).addClass( 'hide' );
 }
 function displayBottom() {
 	$( '#tab-playback' )

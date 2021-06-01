@@ -122,8 +122,8 @@ $( '#coverart' ).on( 'load', function() {
 	loader( 'hide' );
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#bar-top' ).on( 'click', '#button-settings, #badge', function() {
-//$( '#button-settings' ).click( function() {
+//$( '#bar-top' ).on( 'click', '#button-settings', function() {
+$( '#button-settings' ).click( function() {
 	var $settings = $( '#settings' );
 	if ( $settings.hasClass( 'hide' ) ) {
 		setTimeout( function() {
@@ -377,7 +377,7 @@ $( '#bar-top, #bar-bottom' ).click( function() {
 	$( '.indexed' ).removeClass( 'bgr' );
 } );
 $( '#settings' ).click( function() {
-	$( this ).addClass( 'hide' )
+	$( this ).addClass( 'hide' );
 } );
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
