@@ -41,7 +41,7 @@ function clearIntervalAll() {
 	} );
 }
 function colorSet() {
-	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
+	$( '.licover' ).toggleClass( 'hide', document.body.clientHeight < 590 );
 	colorpicker = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
@@ -113,7 +113,7 @@ function contextmenuLibrary( $li, $target ) {
 		.removeClass( 'hide' );
 	$menu.toggleClass( 'fixed', G.list.licover && $li.css( 'position' ) === 'fixed' );
 	var targetB = $menu.offset().top + $menu.height();
-	var wH = window.innerHeight;
+	var wH = document.body.clientHeight;
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function coverartChange() {

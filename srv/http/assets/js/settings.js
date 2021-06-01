@@ -245,7 +245,7 @@ var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var reboot = '';
 var red = '#bb2828';
-var short = window.innerHeight < 570;
+var short = document.body.clientHeight < 570;
 var timer;
 document.title = page;
 $( '#'+ page ).addClass( 'active' );

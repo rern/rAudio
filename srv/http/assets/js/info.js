@@ -482,7 +482,7 @@ function info( json ) {
 function alignVertical() { // make infoBox scrollable
 	setTimeout( function() {
 		var boxH = $( '#infoBox' ).height();
-		var wH = window.innerHeight;
+		var wH = document.body.clientHeight;
 		var top = boxH < wH ? ( wH - boxH ) / 2 : 20;
 		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoBox' ).css( {
