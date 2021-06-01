@@ -39,7 +39,7 @@ if [[ -n $ipwlan ]]; then
 	netctl=$( cat "/etc/netctl/$ssid" )
 	security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
 	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
-	hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
+	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ -z $dbm ]] && dbm=0
 	listwlan='{
@@ -60,7 +60,7 @@ if [[ -n $notconnected ]]; then
 	for ssid in "${notconnected[@]}"; do
 		netctl=$( cat "/etc/netctl/$ssid" )
 		dhcp=$( echo "$netctl" | grep ^IP | cut -d= -f2 )
-		hidden=$( echo "$netctl" | grep ^Hidden && echo true || echo false )
+		hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
 		password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
 		security=$( echo "$netctl" | grep ^Security | cut -d= -f2 )
 		if [[ $dhcp == static ]]; then
