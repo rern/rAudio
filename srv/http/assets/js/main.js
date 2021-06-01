@@ -122,8 +122,8 @@ $( '#coverart' ).on( 'load', function() {
 	loader( 'hide' );
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#bar-top' ).on( 'click', '#button-settings, #badge', function() {
-//$( '#button-settings' ).click( function() {
+//$( '#bar-top' ).on( 'click', '#button-settings', function() {
+$( '#button-settings' ).click( function() {
 	var $settings = $( '#settings' );
 	if ( $settings.hasClass( 'hide' ) ) {
 		setTimeout( function() {
@@ -377,7 +377,7 @@ $( '#bar-top, #bar-bottom' ).click( function() {
 	$( '.indexed' ).removeClass( 'bgr' );
 } );
 $( '#settings' ).click( function() {
-	$( this ).addClass( 'hide' )
+	$( this ).addClass( 'hide' );
 } );
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
@@ -529,7 +529,7 @@ $( '#volup, #voldn' ).click( function() {
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
-	if ( G.status.player === 'mpd' && !G.status.playlistlength || document.body.clientHeight < 461 ) return
+	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 	
 	if ( document.body.clientWidth < 614 ) {
 		$( '#tab-playback' ).click();
@@ -581,7 +581,7 @@ $( '#coverT, #timeT' ).tap( function() {
 	$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
 	$( '#guide-bio, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
 	$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.webradio && G.status.state === 'stop' );
-	$( '#guide-album' ).toggleClass( 'hide', G.status.webradio );
+	$( '#guide-album' ).toggleClass( 'hide', G.iplayer === 'webradio' );
 	$( '#volume-text' ).addClass( 'hide' );
 	$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 	$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
@@ -1705,7 +1705,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		.removeClass( 'hide' )
 		.css( 'top', menutop );
 	var targetB = $menu.offset().top + menuH;
-	var wH = document.body.clientHeight;
+	var wH = window.innerHeight;
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	plRemove( $( this ).parent() );
@@ -1757,7 +1757,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				.removeClass( 'hide' )
 				.css( 'top', ( $this.position().top + 48 ) +'px' );
 			var targetB = $menu.offset().top + $menu.height();
-			var wH = document.body.clientHeight;
+			var wH = window.innerHeight;
 			if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 		} else {
 			playlistInsertSelect( $this );
