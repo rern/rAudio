@@ -489,11 +489,13 @@ function alignVertical() { // make infoBox scrollable
 			  'margin-top' : top +'px'
 			, 'visibility' : 'visible'
 		} );
-		$( '#infoOverlay' ).removeClass( 'noclick' );
+		$( '#infoOverlay' )
+			.css( 'height', document.body.clientHeight )
+			.removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		$input0 = $( O.inputs[ 0 ] );
 		if ( !O.nofocus && [ 'text', 'password' ].indexOf( $input0.prop( 'type' ) ) !== -1 ) $input0.focus();
-	}, 600 );
+	}, 200 );
 }
 function checkChanged() {
 	if ( O.short || O.blank ) return // shorter - already disabled
