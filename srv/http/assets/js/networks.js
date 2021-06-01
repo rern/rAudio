@@ -105,7 +105,7 @@ function editWiFi( $el ) {
 		gateway = $el.data( 'gateway' ) || '';
 		password = $el.data( 'password' );
 		static = $el.data( 'dhcp' ) === 'static';
-		hidden = $el.data( 'hidden' ) === 'true';
+		hidden = $el.data( 'hidden' );
 		security = $el.data( 'security' ) === 'wep';
 	}
 	info( {
@@ -184,12 +184,6 @@ renderPage = function( list ) {
 		$( '#listbt' ).html( htmlbt );
 		$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
 	}
-	if ( G.listeth ) {
-		var val = G.listeth;
-		htmllan += '<li class="eth0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
-		htmllan += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'">';
-		htmllan += '<i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ val.ip +'</li>';
-	}
 	if ( G.listwlan ) {
 		var val = G.listwlan;
 		htmlwl += '<li class="wlan0" data-dhcp="'+ val.dhcp +'" data-hostname="'+ val.hostname +'" ';
@@ -214,6 +208,12 @@ renderPage = function( list ) {
 			htmlwl += '<i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ val.ssid +'</li>';
 		} );
 	}
+	if ( G.listeth ) {
+		var val = G.listeth;
+		htmllan += '<li class="eth0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
+		htmllan += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'">';
+		htmllan += '<i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ val.ip +'</li>';
+	}
 	if ( G.activebt ) {
 		var active = $( '#listbt grn' ).length > 0;
 		$( '#headbt' )
@@ -225,6 +225,13 @@ renderPage = function( list ) {
 	} else {
 		$( '#divbt' ).addClass( 'hide' );
 	}
+	if ( G.activewlan ) {
+		$( '#listwl' ).html( htmlwl );
+		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+		$( '#divwl' ).removeClass( 'hide' );
+	} else {
+		$( '#divwl' ).addClass( 'hide' );
+	}
 	if ( G.activeeth ) {
 		$( '#listlan' ).html( htmllan );
 		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
@@ -232,13 +239,6 @@ renderPage = function( list ) {
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
 		$( '#divlan' ).addClass( 'hide' );
-	}
-	if ( G.activewlan ) {
-		$( '#listwl' ).html( htmlwl );
-		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
-		$( '#divwl' ).removeClass( 'hide' );
-	} else {
-		$( '#divwl' ).addClass( 'hide' );
 	}
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
 	if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
