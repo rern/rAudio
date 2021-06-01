@@ -285,24 +285,24 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
-	var iplayer;
+	G.iplayer;
 	if ( 'file' in G.status ) {
 		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
-			iplayer = 'radiofrance';
+			G.iplayer = 'radiofrance';
 		} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
-			iplayer = 'radioparadise';
+			G.iplayer = 'radioparadise';
 		} else if ( G.status.webradio ) {
-			iplayer = 'webradio';
+			G.iplayer = 'webradio';
 		} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
-			iplayer = 'audiocd';
+			G.iplayer = 'audiocd';
 		}
 	} else {
-		iplayer = G.status.player === 'mpd' ? '' : G.status.player;
+		G.iplayer = G.status.player === 'mpd' ? '' : G.status.player;
 	}
-	if ( iplayer ) {
+	if ( G.iplayer ) {
 		$( '#playericon' )
 			.removeAttr( 'class' )
-			.addClass( 'fa fa-'+ iplayer )
+			.addClass( 'fa fa-'+ G.iplayer )
 			.removeClass( 'hide' );
 	} else {
 		$( '#playericon' ).addClass( 'hide' );
