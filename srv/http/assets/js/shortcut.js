@@ -340,7 +340,7 @@ function scrollUpDown( $list, key ) {
 	$linext.addClass( classactive );
 	var litop = $linext[ 0 ].getBoundingClientRect().top;
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
-	var wH = document.body.clientHeight;
+	var wH = window.innerHeight;
 	if ( key === 'ArrowUp' ) {
 		if ( libottom > wH - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - wH + 89 );
 	} else {

@@ -482,7 +482,7 @@ function info( json ) {
 function alignVertical() { // make infoBox scrollable
 	setTimeout( function() {
 		var boxH = $( '#infoBox' ).height();
-		var wH = document.body.clientHeight;
+		var wH = window.innerHeight;
 		var top = boxH < wH ? ( wH - boxH ) / 2 : 20;
 		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoBox' ).css( {
@@ -493,7 +493,7 @@ function alignVertical() { // make infoBox scrollable
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		$input0 = $( O.inputs[ 0 ] );
 		if ( !O.nofocus && [ 'text', 'password' ].indexOf( $input0.prop( 'type' ) ) !== -1 ) $input0.focus();
-	}, 200 );
+	}, 600 );
 }
 function checkChanged() {
 	if ( O.short || O.blank ) return // shorter - already disabled
