@@ -331,7 +331,7 @@ function displayPlayback() {
 		$( '#volume-knob' ).css( 'margin-left', '' );
 	}
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	if ( G.display.time && document.body.clientWidth > 613 ) {
+	if ( G.display.time ) {
 		$( '#time' ).roundSlider( G.status.webradio || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 		$( '#progress' ).empty();
 	}
@@ -1853,7 +1853,7 @@ function volColorMute() {
 	$( '#volmute' )
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
-	var prefix = G.display.time && document.body.clientWidth > 613 ? 'ti' : 'i';
+	var prefix = G.display.time ? 'ti' : 'i';
 	if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function volColorUnmute() {
