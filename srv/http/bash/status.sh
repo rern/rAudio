@@ -201,8 +201,8 @@ if (( $playlistlength  == 0 )); then
 	echo {$status}
 	exit
 fi
-
 fileheader=${file:0:4}
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -224,7 +224,7 @@ if [[ $fileheader == cdda ]]; then
 , "discid"    : "'$discid'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
-elif [[ $fileheader == http ]]; then
+elif [[ -n $radioheader ]]; then
 	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
 	urlnet=$( echo $file | sed 's|.*//\(.*\):.*|\1|' | cut -d. -f1-2 )
 	if systemctl -q is-active upmpdcli && [[ $gatewaynet == $urlnet ]]; then # internal ip
@@ -418,7 +418,7 @@ if grep -q '"cover": false,' /srv/http/data/system/display; then
 	exit
 fi
 
-if [[ $fileheader != cdda && $fileheader != http ]]; then
+if [[ $fileheader != cdda && -z $radioheader ]]; then
 	args="\
 $Artist$Album
 $file0"

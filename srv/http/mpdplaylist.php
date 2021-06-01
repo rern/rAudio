@@ -4,6 +4,7 @@ include '/srv/http/indexbar.php';
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $dirplaylists = '/srv/http/data/playlists/';
 $dirtmp = '/srv/http/data/shm';
+$headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current, delete, edit, get, list, load, save
 switch( $cmd ) {
@@ -174,6 +175,7 @@ case 'save':
 
 //-------------------------------------------------------------------------------------
 function htmlPlaylist( $lists, $plname = '' ) {
+	global $headers;
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
@@ -190,7 +192,8 @@ function htmlPlaylist( $lists, $plname = '' ) {
 		$sec = 0;
 		$i++;
 		$file = $list->file;
-		if ( substr( $file, 0, 4 ) !== 'http' || substr( $file, 7, 3 ) === '192' ) {
+		$fileheader = strtolower( substr( $file, 0, 4 ) );
+		if ( !in_array( $fileheader, $headers ) || substr( $file, 7, 3 ) === '192' ) {
 			$sec = HMS2Second( $list->Time );
 			$track = preg_replace( '/^#*0*/', '', $list->Track );
 			$li2 = $i.' • ';
@@ -270,6 +273,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	return [ 'html' => $html, 'counthtml' => $counthtml, 'playlistlength' => $count ];
 }
 function playlist() { // current playlist
+	global $headers;
 	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
@@ -306,7 +310,8 @@ function playlist() { // current playlist
 			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
 			$each->$key = $val;
 		}
-		if ( substr( $each->file, 0, 4 ) === 'http' ) {
+		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
+		if ( in_array( $fileheader, $headers ) ) {
 			$radiofile = '/srv/http/data/webradios/'.str_replace( '/', '|', $each->file );
 			$name = file( $radiofile, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$each->Name = explode( '^^', $name )[ 0 ];
@@ -326,12 +331,14 @@ function playlistInfo( $index = '' ) { // mpd protocol
 		, $lists );
 	if ( !count( $lists ) ) exit( '-1' );
 	
+	global $headers;
 	array_shift( $lists ); // remove 1st track delimiter
 	$lists[] = '---';      // append last track delimiter
 	$each = ( object )[];
 	foreach( $lists as $line ) {
 		if ( $line === '---' ) {
-			if ( substr( $each->file, 0, 4 ) === 'http' ) {
+			$fileheader = strtolower( substr( $each->file, 0, 4 ) );
+			if ( in_array( $fileheader, $headers ) ) {
 				$urlname = str_replace( '/', '|', $each->file );
 				$name = file( '/srv/http/data/webradios/'.$urlname, FILE_IGNORE_NEW_LINES )[ 0 ];
 				$each->Name = explode( '^^', $name )[ 0 ];
