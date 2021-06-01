@@ -27,5 +27,8 @@ urlname=/data/embedded/$covername
 coverfile=/srv/http$urlname.jpg
 [[ -e $coverfile ]] && echo $urlname.$date.jpg && exit
 
-kid3-cli -c "select \"/mnt/MPD/$file\"" -c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
+path="/mnt/MPD/$file"
+dir=$( dirname "$path" )
+filename=$( basename "$path" )
+kid3-cli -c "cd \"$dir\"" -c "select \"$filename\"" -c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 [[ -e $coverfile ]] && echo $urlname.$date.jpg
