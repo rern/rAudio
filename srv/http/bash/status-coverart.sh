@@ -30,5 +30,7 @@ coverfile=/srv/http$urlname.jpg
 path="/mnt/MPD/$file"
 dir=$( dirname "$path" )
 filename=$( basename "$path" )
-kid3-cli -c "cd \"$dir\"" -c "select \"$filename\"" -c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
+kid3-cli -c "cd \"$dir\"" \
+		-c "select \"$filename\"" \
+		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 [[ -e $coverfile ]] && echo $urlname.$date.jpg
