@@ -20,6 +20,7 @@ mpc idleloop | while read changed; do
 			current=$( mpc current )
 			if [[ -n $current && $current != $currentprev ]]; then
 				killall cmd-pushstatus.sh &> /dev/null # mutiple firing - kill previous
+				killall kid3-cli &> /dev/null
 				$dirbash/cmd-pushstatus.sh
 			fi
 			;;
