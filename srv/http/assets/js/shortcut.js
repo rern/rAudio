@@ -340,9 +340,10 @@ function scrollUpDown( $list, key ) {
 	$linext.addClass( classactive );
 	var litop = $linext[ 0 ].getBoundingClientRect().top;
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
+	var wH = document.body.clientHeight;
 	if ( key === 'ArrowUp' ) {
-		if ( libottom > window.innerHeight - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - window.innerHeight + 89 );
+		if ( libottom > wH - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - wH + 89 );
 	} else {
-		if ( libottom > window.innerHeight - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
+		if ( libottom > wH - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
 	}
 }

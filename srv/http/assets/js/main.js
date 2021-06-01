@@ -299,7 +299,7 @@ $( '#logo' ).click( function() {
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
-		if ( G.display.volumenone || window.innerWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
+		if ( G.display.volumenone || document.body.clientWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
 		
 		info( {
 			  icon       : 'volume'
@@ -529,9 +529,9 @@ $( '#volup, #voldn' ).click( function() {
 } );
 $( '#coverTL, #timeTL' ).tap( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
-	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
+	if ( G.status.player === 'mpd' && !G.status.playlistlength || document.body.clientHeight < 461 ) return
 	
-	if ( window.innerWidth < 614 ) {
+	if ( document.body.clientWidth < 614 ) {
 		$( '#tab-playback' ).click();
 		return
 	}
@@ -586,7 +586,7 @@ $( '#coverT, #timeT' ).tap( function() {
 	$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 	$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
 	if ( !G.bars ) $( '#bar-bottom' ).addClass( 'translucent' );
-	if ( window.innerWidth < 614 && !G.display.volume ) {
+	if ( document.body.clientWidth < 614 && !G.display.volume ) {
 		$( '#coverTL' )
 				.removeClass( 'fa-scale-dn' )
 				.addClass( 'fa-volume' );
@@ -1705,7 +1705,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		.removeClass( 'hide' )
 		.css( 'top', menutop );
 	var targetB = $menu.offset().top + menuH;
-	var wH = window.innerHeight;
+	var wH = document.body.clientHeight;
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	plRemove( $( this ).parent() );
@@ -1757,7 +1757,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				.removeClass( 'hide' )
 				.css( 'top', ( $this.position().top + 48 ) +'px' );
 			var targetB = $menu.offset().top + $menu.height();
-			var wH = window.innerHeight;
+			var wH = document.body.clientHeight;
 			if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 		} else {
 			playlistInsertSelect( $this );

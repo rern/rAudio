@@ -41,7 +41,7 @@ function clearIntervalAll() {
 	} );
 }
 function colorSet() {
-	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
+	$( '.licover' ).toggleClass( 'hide', document.body.clientHeight < 590 );
 	colorpicker = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
@@ -113,7 +113,7 @@ function contextmenuLibrary( $li, $target ) {
 		.removeClass( 'hide' );
 	$menu.toggleClass( 'fixed', G.list.licover && $li.css( 'position' ) === 'fixed' );
 	var targetB = $menu.offset().top + $menu.height();
-	var wH = window.innerHeight;
+	var wH = document.body.clientHeight;
 	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function coverartChange() {
@@ -245,8 +245,8 @@ function curlPackage( pkg, active, enabled ) {
 function displayBars() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
-	var wH = window.innerHeight;
-	var wW = window.innerWidth;
+	var wH = document.body.clientHeight;
+	var wW = document.body.clientWidth;
 	var smallscreen = wH < 590 ||wW < 500;
 	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
 	if ( !G.display.bars || ( smallscreen && !G.display.barsalways ) || lcd ) {
@@ -331,7 +331,7 @@ function displayPlayback() {
 		$( '#volume-knob' ).css( 'margin-left', '' );
 	}
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	if ( G.display.time && window.innerWidth > 613 ) {
+	if ( G.display.time && document.body.clientWidth > 613 ) {
 		$( '#time' ).roundSlider( G.status.webradio || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 		$( '#progress' ).empty();
 	}
@@ -1580,7 +1580,7 @@ function resetOrientation( file, ori, callback ) {
 }
 function scrollLongText() {
 	var $el = $( '#artist, #song, #album' );
-	var wW = window.innerWidth;
+	var wW = document.body.clientWidth;
 	var tWmax = 0;
 	$( '#song' ).removeClass( 'gr' );
 	$el.removeClass( 'scrollellipse' )
@@ -1720,7 +1720,7 @@ function setPlaylistScroll() {
 		|| !G.status.playlistlength
 		|| G.sortable ) return // skip if empty or Sortable
 	
-	var wW = window.innerWidth;
+	var wW = document.body.clientWidth;
 	$.each( $( '#pl-list .name' ), function() {
 		var $name = $( this );
 		var $dur =  $name.next();
@@ -1766,7 +1766,7 @@ function setTitleWidth() {
 	var $duration = $liactive.find( '.duration' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
 	var iWdW = 40 + 10 + $duration.width() + 10;
-	var wW = window.innerWidth;
+	var wW = document.body.clientWidth;
 	if ( iWdW + G.titleW < wW ) {
 		$title.css(  'max-width', '' );
 		$duration.removeClass( 'duration-right' );
@@ -1780,7 +1780,7 @@ function setTrackCoverart() {
 	if ( G.display.hidecover ) return
 	
 	$( '#liimg' ).on( 'load', function() { // not exist on initial page load
-		$( '.liinfo' ).css( 'width', ( window.innerWidth - $( this ).width() - 50 ) +'px' );
+		$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( this ).width() - 50 ) +'px' );
 		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
 			$( '#liimg' ).after( '<i class="coveredit fa fa-save cover-save"></i>' );
 		}
@@ -1853,7 +1853,7 @@ function volColorMute() {
 	$( '#volmute' )
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
-	var prefix = G.display.time && window.innerWidth > 613 ? 'ti' : 'i';
+	var prefix = G.display.time && document.body.clientWidth > 613 ? 'ti' : 'i';
 	if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function volColorUnmute() {
