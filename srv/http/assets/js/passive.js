@@ -44,7 +44,7 @@ window.addEventListener( 'orientationchange', function() {
 			if ( G.librarylist || G.savedlist ) {
 				if ( $( '.licover' ).length ) {
 					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-					$( '.liinfo' ).css( 'width', ( window.innerWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
 				} else {
 					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
 				}
