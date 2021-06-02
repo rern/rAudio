@@ -464,9 +464,9 @@ function webRadioExists( existing, newname, url ) {
 		  icon    : 'webradio'
 		, title   : 'Add WebRadio'
 		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
+				   +'<br><w>'+ url +'</w>'
+				   +'<br>Already exists as:'
 				   +'<br><w>'+ existing +'</w>'
-				   +'<br>'+ url
-				   +'<br><w>Already exists.</w>'
 		, ok      : function() {
 			webRadioNew( newname, url );
 		}
