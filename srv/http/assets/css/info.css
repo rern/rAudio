@@ -5,11 +5,14 @@
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
-:focus,
-:active,
+*:focus,
+*:active,
 input::-moz-focus-inner { /* dotted outline */
 	outline: 0;
 	border: 0;
+}
+input:focus-visible {
+	outline: none;
 }
 .infobtn,
 #infoOverlay input[type=radio],
