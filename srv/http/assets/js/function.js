@@ -295,15 +295,17 @@ function displayPlayback() {
 			G.iplayer = 'webradio';
 		} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
 			G.iplayer = 'audiocd';
+		} else {
+			G.iplayer = '';
 		}
 	}
-	$( '#playericon' ).removeAttr( 'class' );
+	$( '#playericon' )
+		.removeAttr( 'class' )
+		.addClass( 'hide' );
 	if ( G.iplayer ) {
 		$( '#playericon' )
 			.addClass( 'fa fa-'+ G.iplayer )
 			.removeClass( 'hide' );
-	} else {
-		$( '#playericon' ).addClass( 'hide' );
 	}
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
@@ -517,8 +519,6 @@ function getPlaybackStatus( render ) {
 		}
 		setButtonUpdating();
 		G.getstatus = 0;
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
-		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
 }
 function getPlaylist() {
