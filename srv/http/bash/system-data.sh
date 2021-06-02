@@ -65,16 +65,18 @@ else
 		3 ) soc=BCM2711;;
 	esac
 fi
-if [[ -e /etc/soundprofile.conf ]]; then
-	soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
-else
-	val=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
-	val+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
-	if ifconfig | grep -q ^eth0; then
-		val+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-		val+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+if grep ifconfig | grep -q eth0; then
+	if [[ -e /etc/soundprofile.conf ]]; then
+		soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
+	else
+		soundprofileval=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
+		soundprofileval+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
+		soundprofileval+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
+		soundprofileval+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
 	fi
-	soundprofileval=$val
+	data+='
+, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
+, "soundprofileval" : "'$soundprofileval'"'
 fi
 version=$( cat $dirsystem/version )
 
@@ -142,11 +144,9 @@ data+='
 , "soccpu"          : "'$soccpu'"
 , "socram"          : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 , "socspeed"        : "'$socspeed'"
-, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
 , "version"         : "'$version'"
 , "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 , "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )'
-, "wlanconnected"   : '$( ifconfig wlan0 2> /dev/null | grep -q 'inet.*broadcast' && echo true || echo false )'
-, "soundprofileval" : "'$soundprofileval'"'
+, "wlanconnected"   : '$( ifconfig wlan0 2> /dev/null | grep -q 'inet.*broadcast' && echo true || echo false )
 
 echo {$data}

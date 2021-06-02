@@ -208,6 +208,8 @@ $selecttimezone.= '</select>';
 		</p>
 	</span>
 </div>
+
+<div id="divsoundprofile">
 <div data-status="soundprofile" class="col-l icon double status">
 	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
@@ -218,6 +220,7 @@ $selecttimezone.= '</select>';
 	<span <?=$classhelp?>>Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.</span>
 </div>
 <pre id="codesoundprofile" class="hide"></pre>
+</div>
 </div>
 
 <div>

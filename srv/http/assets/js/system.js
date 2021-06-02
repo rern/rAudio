@@ -192,8 +192,12 @@ renderPage = function( list ) {
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-	$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-	$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+	if ( 'soundprofile' in G ) {
+		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+	} else {
+		$( '#divsoundprofile' ).addClass( 'hide' );
+	}
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' )
 		.val( G.timezone )
@@ -656,12 +660,10 @@ $( '#setting-soundprofile' ).click( function() {
 		, Custom   : '0'
 	}
 	var values = G.soundprofileval.split( ' ' );
-	if ( values.length < 3 ) { // no eth0
-		textlabel = textlabel.slice( 0, 2 );
-		$.each( radio, function( k, v ) {
-			radio[ k ] = v.split( ' ' ).splice( 0, 2 ).join( ' ' );
-		} );
-	}
+	textlabel = textlabel.slice( 0, 2 );
+	$.each( radio, function( k, v ) {
+		radio[ k ] = v.split( ' ' ).splice( 0, 2 ).join( ' ' );
+	} );
 	var radioval = Object.values( radio );
 	var rchecked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
 	values.push( rchecked );
