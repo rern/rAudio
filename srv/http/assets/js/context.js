@@ -452,22 +452,19 @@ function webRadioEdit() {
 		, ok           : function() {
 			var values = infoVal();
 			var newname = values[ 0 ];
-			var newurl = values[ 1 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioedit', url, newname, newurl ], function( data ) {
-				data ? webRadioExists( data, url ) : $( '#mode-webradio' ).click();
+			var newurl = values[ 1 ];
+			bash( [ 'webradioedit', name, newname, url, newurl ], function( std ) {
+				std == -1 ? webRadioExists( newname, newurl ) : $( '#mode-webradio' ).click();
 			} );
 		}
 	} );
 }
-function webRadioExists( data, url ) {
-	var nameimg = data.split( "\n" );
-	var newname = nameimg[ 0 ].split( '^^' )[ 0 ];
+function webRadioExists( newname, url ) {
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add WebRadio'
-		, message : ( nameimg[ 2 ] ? '<img src="'+ nameimg[ 2 ] +'">' : '<i class="fa fa-webradio bookmark"></i>' )
-				   +'<br>'+ newname
-				   +'<br><br>URL: <w>'+ url +'</w>'
+		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
+				   +'<br><w>'+ url +'</w>'
 				   +'<br>Already exists.'
 		, ok      : function() {
 			webRadioNew( newname, url );
@@ -475,14 +472,15 @@ function webRadioExists( data, url ) {
 	} );
 }
 function webRadioNew( name, url ) {
+	var values = name || url ? [ name, url ] : '';
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
 		, width        : 500
 		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
-		, values       : [ ( name || '' ), ( url || '' ) ]
-		, checkblank   : [ 0, 1 ]
+		, values       : values
+		, checkblank   : ( values ? [ 0, 1 ] : '' )
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {

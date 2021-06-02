@@ -130,17 +130,14 @@ function infoReset() {
 	$( '#infoIcon' ).removeAttr( 'class' );
 	$( '#infoTitle' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '#infoArrow i' ).off( 'click' );
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
-	$( '#infoContent' ).find( 'td' ).off( 'click' );
+	$( '#infoContent' ).find( 'input, select, textarea, td' ).off( 'click' ).prop( 'disabled', 0 );
 	$( '#infoContent' ).empty().css( 'height', '' );
 	$( '.infobtn' )
 		.removeClass( 'active' )
-		.css( 'background-color', '' )
-		.off( 'click' );
+		.css( 'background-color', '' );
 	$( '#infoButtons' ).empty();
 }
 
@@ -209,7 +206,9 @@ function info( json ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 			var hide = O.cancelshow ? '' : ' hide';
 			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
-			$( '#infoButtons' ).on( 'click', '#infoCancel', function() {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '#infoCancel', function() {
 				if ( typeof O.cancel === 'function' ) O.cancel();
 				infoReset();
 			} );
@@ -217,7 +216,9 @@ function info( json ) {
 		if ( !O.nook ) {
 			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
-			$( '#infoButtons' ).on( 'click', '#infoOk', function() {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '#infoOk', function() {
 				if ( typeof O.ok === 'function' ) O.ok();
 				infoReset();
 			} );
@@ -225,7 +226,9 @@ function info( json ) {
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( O.button ) {
 			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '.infobtn.extrabtn', function() {
 				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
@@ -469,8 +472,8 @@ function info( json ) {
 		// check changed values
 		if ( O.values && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChanged );
-			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChanged );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).off( 'keyup' ).on( 'keyup', checkChanged );
+			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).off( 'change' ).on( 'change', checkChanged );
 		}
 		// custom function before show
 		if ( O.beforeshow ) O.beforeshow();
@@ -611,7 +614,9 @@ function setValues() {
 }
 function switchRL( rl, fn ) {
 	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' ).click( function() {
+	$( '#infoArrow i' )
+		.off( 'click' )
+		.on( 'click', function() {
 		fn();
 		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
 	} );
