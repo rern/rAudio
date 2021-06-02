@@ -8,8 +8,14 @@ for pid in $( pgrep upmpdcli ); do
 	renice -n -19 -p $pid &> /dev/null
 done
 
-urlnet=$( mpc playlist -f %file% | head -1 | sed 's|.*//\(.*\):.*|\1|' | cut -d. -f1-2 )
-gatewaynet=$( ip route | awk '/default/ {print $3}' | head -1 | cut -d. -f1-2 )
+urlnet=$( mpc playlist -f %file% \
+			| head -1 \
+			| sed 's|.*//\(.*\):.*|\1|' \
+			| cut -d. -f1-2 )
+gatewaynet=$( ip route \
+				| awk '/default/ {print $3}' \
+				| head -1 \
+				| cut -d. -f1-2 )
 echo $gatewaynet == $urlnet
 if [[ $gatewaynet == $urlnet ]]; then
 	mv $playerfile-{*,upnp}
