@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/systemd/system/upmpdcli.service.d/override.conf
+if [[ -e $file ]] && ! grep -q User=http $file ; then
+	sed -i '1 a\User=http' $file
+	systemctl try-restart upmpdcli &&
+fi
 if [[ -e /srv/http/data/system/soxrset ]]; then
 	rm -f /srv/http/data/system/soxr
 	mv /srv/http/data/system/soxr{set,}
