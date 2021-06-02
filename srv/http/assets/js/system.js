@@ -649,21 +649,17 @@ $( '#setting-soundprofile' ).click( function() {
 		, 'eth0 txqueuelen'
 	];
 	var radio = {
-		  Default  : '18000000 60 1500 1000'
+		  Default   : '18000000 60 1500 1000'
 		, RuneAudio : '1500000 0 1500 1000'
-		, ACX      : '850000 0 1500 4000'
+		, ACX       : '850000 0 1500 4000'
 		, Orion     : '500000 20 1000 4000'
-		, OrionV2  : '120000 0 1000 4000'
+		, OrionV2   : '120000 0 1000 4000'
 		, OrionV3   : '1500000 0 1000 4000'
-		, OrionV4  : '145655 60 1000 4000'
+		, OrionV4   : '145655 60 1000 4000'
 		, Um3ggh1U  : '500000 0 1500 1000'
-		, Custom   : '0'
+		, Custom    : '0'
 	}
 	var values = G.soundprofileval.split( ' ' );
-	textlabel = textlabel.slice( 0, 2 );
-	$.each( radio, function( k, v ) {
-		radio[ k ] = v.split( ' ' ).splice( 0, 2 ).join( ' ' );
-	} );
 	var radioval = Object.values( radio );
 	var rchecked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
 	values.push( rchecked );

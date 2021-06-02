@@ -65,7 +65,7 @@ else
 		3 ) soc=BCM2711;;
 	esac
 fi
-if grep ifconfig | grep -q eth0; then
+if ifconfig | grep -q eth0; then
 	if [[ -e /etc/soundprofile.conf ]]; then
 		soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
 	else
