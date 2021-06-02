@@ -519,8 +519,6 @@ function getPlaybackStatus( render ) {
 		}
 		setButtonUpdating();
 		G.getstatus = 0;
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
-		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
 }
 function getPlaylist() {
