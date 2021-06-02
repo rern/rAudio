@@ -837,7 +837,7 @@ webradioedit ) # name, newname, url, newurl
 	filewebradio=$dirwebradios/$urlname
 	filewebradionew=$dirwebradios/$urlnamenew
 	if [[ -e $filewebradionew && $filewebradionew != $filewebradio ]]; then
-		echo -1
+		head -1 $filewebradionew
 	else
 		if [[ $name != $namenew ]]; then
 			if [[ -s $filewebradio ]]; then

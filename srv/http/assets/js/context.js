@@ -453,19 +453,20 @@ function webRadioEdit() {
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
-			bash( [ 'webradioedit', name, newname, url, newurl ], function( std ) {
-				std == -1 ? webRadioExists( newname, newurl ) : $( '#mode-webradio' ).click();
+			bash( [ 'webradioedit', name, newname, url, newurl ], function( existing ) {
+				existing ? webRadioExists( existing, newname, url ) : $( '#mode-webradio' ).click();
 			} );
 		}
 	} );
 }
-function webRadioExists( newname, url ) {
+function webRadioExists( existing, newname, url ) {
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add WebRadio'
 		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
-				   +'<br><w>'+ url +'</w>'
-				   +'<br>Already exists.'
+				   +'<br><w>'+ existing +'</w>'
+				   +'<br>'+ url
+				   +'<br><w>Already exists.</w>'
 		, ok      : function() {
 			webRadioNew( newname, url );
 		}
