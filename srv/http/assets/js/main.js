@@ -272,6 +272,8 @@ $( '#addons' ).click( function () {
 	} );
 } );
 $( '#tab-library, #button-library' ).click( function() {
+	if ( G.status.player === 'upnp' ) return
+	
 	$( '.menu' ).addClass( 'hide' );
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -324,6 +326,8 @@ $( '#tab-playback' ).click( function() {
 	}
 } )
 $( '#tab-playlist' ).click( function() {
+	if ( G.status.player === 'upnp' ) return
+	
 	G.pladd = {};
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) {
