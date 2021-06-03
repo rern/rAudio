@@ -218,23 +218,23 @@ function info( json ) {
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( O.button ) {
 			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
+			$( '#infoButtons .extrabtn' ).off( 'click' );
 			$( '#infoButtons' )
-				.off( 'click' )
 				.on( 'click', '.infobtn.extrabtn', function() {
 				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		$( '#infoButtons' )
+		$( '#infoCancel' )
 			.off( 'click' )
-			.on( 'click', '#infoCancel', function() {
+			.click( function() {
 			if ( typeof O.cancel === 'function' ) O.cancel();
 			infoReset();
 		} );
-		$( '#infoButtons' )
+		$( '#infoOk' )
 			.off( 'click' )
-			.on( 'click', '#infoOk', function() {
+			.click( function() {
 			if ( typeof O.ok === 'function' ) O.ok();
 			infoReset();
 		} );
