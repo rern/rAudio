@@ -802,8 +802,6 @@ webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
 	filewebradio=$dirwebradios/${url//\//|}
-	[[ -e $filewebradio ]] && cat $filewebradio && exit
-	
 	ext=${url/*.}
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s $url | grep ^http | head -1 )
@@ -827,31 +825,27 @@ webradiodelete )
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 	;;
-webradioedit )
-	url=${args[1]}
+webradioedit ) # name, newname, url, newurl
+	name=${args[1]}
+	namenew=${args[2]}
+	url=${args[3]}
+	urlnew=$( urldecode ${args[4]} )
 	urlname=${url//\//|}
-	newname=${args[2]}
-	newurl=$( urldecode ${args[3]} )
-	newurlname=${newurl//\//|}
-	filewebradionew=$dirwebradios/$newurlname
-	[[ $url != $newurl && -e $filewebradionew ]] && cat $filewebradionew && exit
-	
+	urlnamenew=${urlnew//\//|}
 	filewebradio=$dirwebradios/$urlname
-	dirwebradioimg=${dirwebradios}img
-	oldname=$( cat $filewebradio | head -1 )
-	if [[ $oldname != $newname && $filewebradio == $filewebradionew ]]; then
-		sed -i "1 c$newname" $filewebradio
-		exit
+	filewebradionew=$dirwebradios/$urlnamenew
+	if [[ $name != $namenew ]]; then
+		if [[ -s $filewebradio ]]; then
+			sed -i "1 c$namenew" $filewebradio
+		else
+			echo $namenew > $filewebradio
+		fi
 	fi
-	
-	if [[ $oldname != $newname && $filewebradio != $filewebradionew ]]; then
-		sed -e "1 c$newname" $filewebradio > $filewebradionew
-		rm $filewebradio
-	else
+	if [[ $url != $urlnew ]]; then
 		mv $filewebradio $filewebradionew
+		mv $dirwebradioimg/{$urlname,$urlnamenew}.jpg 
+		mv $dirwebradioimg/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
-	mv $dirwebradioimg/{$urlname,$newurlname}.jpg 
-	mv $dirwebradioimg/{$urlname,$newurlname}-thumb.jpg 
 	;;
 	
 esac

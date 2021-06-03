@@ -192,8 +192,12 @@ renderPage = function( list ) {
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-	$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-	$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+	if ( 'soundprofile' in G ) {
+		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+	} else {
+		$( '#divsoundprofile' ).addClass( 'hide' );
+	}
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' )
 		.val( G.timezone )
@@ -645,23 +649,17 @@ $( '#setting-soundprofile' ).click( function() {
 		, 'eth0 txqueuelen'
 	];
 	var radio = {
-		  Default  : '18000000 60 1500 1000'
+		  Default   : '18000000 60 1500 1000'
 		, RuneAudio : '1500000 0 1500 1000'
-		, ACX      : '850000 0 1500 4000'
+		, ACX       : '850000 0 1500 4000'
 		, Orion     : '500000 20 1000 4000'
-		, OrionV2  : '120000 0 1000 4000'
+		, OrionV2   : '120000 0 1000 4000'
 		, OrionV3   : '1500000 0 1000 4000'
-		, OrionV4  : '145655 60 1000 4000'
+		, OrionV4   : '145655 60 1000 4000'
 		, Um3ggh1U  : '500000 0 1500 1000'
-		, Custom   : '0'
+		, Custom    : '0'
 	}
 	var values = G.soundprofileval.split( ' ' );
-	if ( values.length < 3 ) { // no eth0
-		textlabel = textlabel.slice( 0, 2 );
-		$.each( radio, function( k, v ) {
-			radio[ k ] = v.split( ' ' ).splice( 0, 2 ).join( ' ' );
-		} );
-	}
 	var radioval = Object.values( radio );
 	var rchecked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
 	values.push( rchecked );

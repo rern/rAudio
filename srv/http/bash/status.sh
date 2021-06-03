@@ -122,7 +122,7 @@ spotify )
 esac
 
 killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd ]] && rm -f $dirtmp/radiometa && exit
+[[ $player != mpd && $player != upnp ]] && rm -f $dirtmp/radiometa && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -225,9 +225,7 @@ if [[ $fileheader == cdda ]]; then
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
 elif [[ -n $radioheader ]]; then
-	gatewaynet=$( ip route | awk '/default/ {print $3}' | cut -d. -f1-2 )
-	urlnet=$( echo $file | sed 's|.*//\(.*\):.*|\1|' | cut -d. -f1-2 )
-	if systemctl -q is-active upmpdcli && [[ $gatewaynet == $urlnet ]]; then # internal ip
+	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
 		duration=$( printf '%.0f\n' $duration )
 ########

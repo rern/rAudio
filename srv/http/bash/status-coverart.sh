@@ -1,12 +1,12 @@
 #!/bin/bash
 
 readarray -t args <<< "$1"
-artistslbum=${args[0]}
+artistalbum=${args[0]}
 file=${args[1]}
 [[ ${args[2]} == licover ]] && prefix=licover || prefix=online
 
 date=$( date +%s )
-covername=$( echo $artistslbum | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
+covername=$( echo $artistalbum | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
 urlname=/data/shm/$prefix-$covername
 
 ### 1 - already fetched online-file #########################
@@ -27,5 +27,10 @@ urlname=/data/embedded/$covername
 coverfile=/srv/http$urlname.jpg
 [[ -e $coverfile ]] && echo $urlname.$date.jpg && exit
 
-kid3-cli -c "select \"/mnt/MPD/$file\"" -c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
+path="/mnt/MPD/$file"
+dir=$( dirname "$path" )
+filename=$( basename "$path" )
+kid3-cli -c "cd \"$dir\"" \
+		-c "select \"$filename\"" \
+		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 [[ -e $coverfile ]] && echo $urlname.$date.jpg

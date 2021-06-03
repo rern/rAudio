@@ -462,11 +462,11 @@ function psRelays( response ) { // on receive broadcast
 		} );
 		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 			info( {
-				  icon     : 'relays'
-				, title    : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message  : stopwatch
-				, footer   : devices
-				, nook     : 1
+				  icon    : 'relays'
+				, title   : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
+				, message : stopwatch
+				, footer  : devices
+				, okno    : 1
 			} );
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );

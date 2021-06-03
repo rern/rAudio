@@ -5,11 +5,14 @@
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
 }
-:focus,
-:active,
+*:focus,
+*:active,
 input::-moz-focus-inner { /* dotted outline */
 	outline: 0;
 	border: 0;
+}
+input:focus-visible {
+	outline: none;
 }
 .infobtn,
 #infoOverlay input[type=radio],
@@ -220,6 +223,7 @@ hr {
 .infomessage,
 .infofooter {
 	width: fit-content;
+	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
 	word-wrap: break-word;

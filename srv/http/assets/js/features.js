@@ -4,7 +4,6 @@ function passwordWrong() {
 	info( {
 		  icon    : 'lock-circle'
 		, title   : 'Password Login'
-		, nox     : 1
 		, message : 'Wrong existing password.'
 	} );
 	$( '#login' ).prop( 'checked', G.login );

@@ -284,8 +284,9 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
-	G.iplayer;
-	if ( 'file' in G.status ) {
+	if ( G.status.player !== 'mpd' ) {
+		G.iplayer = G.status.player;
+	} else if ( 'file' in G.status ) {
 		if ( G.status.file.indexOf( 'radiofrance.fr' ) !== -1 ) {
 			G.iplayer = 'radiofrance';
 		} else if ( G.status.file.indexOf( 'radioparadise.com' ) !== -1 ) {
@@ -294,17 +295,17 @@ function displayPlayback() {
 			G.iplayer = 'webradio';
 		} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
 			G.iplayer = 'audiocd';
+		} else {
+			G.iplayer = '';
 		}
-	} else {
-		G.iplayer = G.status.player === 'mpd' ? '' : G.status.player;
 	}
+	$( '#playericon' )
+		.removeAttr( 'class' )
+		.addClass( 'hide' );
 	if ( G.iplayer ) {
 		$( '#playericon' )
-			.removeAttr( 'class' )
 			.addClass( 'fa fa-'+ G.iplayer )
 			.removeClass( 'hide' );
-	} else {
-		$( '#playericon' ).addClass( 'hide' );
 	}
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
@@ -518,8 +519,6 @@ function getPlaybackStatus( render ) {
 		}
 		setButtonUpdating();
 		G.getstatus = 0;
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
-		if ( G.status.relayson ) bash( [ 'relayscountdown' ] );
 	} );
 }
 function getPlaylist() {

@@ -366,7 +366,7 @@ function tagEditor() {
 					}, 'json' );
 				} );
 			}
-			, nook         : G.playlist
+			, okno         : G.playlist
 			, nofocus      : 1
 			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
@@ -452,25 +452,30 @@ function webRadioEdit() {
 		, ok           : function() {
 			var values = infoVal();
 			var newname = values[ 0 ];
-			var newurl = values[ 1 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioedit', url, newname, newurl ], function( data ) {
-				data ? webRadioExists( data, url ) : $( '#mode-webradio' ).click();
+			var newurl = values[ 1 ];
+			var $exist = $( '#lib-list .lipath:not( :eq( '+ G.list.li.index() +' ) )' ).filter( function() {
+				return $( this ).text() === newurl
 			} );
+			if ( $exist.length ) {
+				webRadioExists( $exist.next().text(), newurl );
+			} else {
+				bash( [ 'webradioedit', name, newname, url, newurl ], function() {
+					$( '#mode-webradio' ).click();
+				} );
+			}
 		}
 	} );
 }
-function webRadioExists( data, url ) {
-	var nameimg = data.split( "\n" );
-	var newname = nameimg[ 0 ].split( '^^' )[ 0 ];
+function webRadioExists( existname, existurl, name ) {
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add WebRadio'
-		, message : ( nameimg[ 2 ] ? '<img src="'+ nameimg[ 2 ] +'">' : '<i class="fa fa-webradio bookmark"></i>' )
-				   +'<br>'+ newname
-				   +'<br><br>URL: <w>'+ url +'</w>'
-				   +'<br>Already exists.'
+		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
+				   +'<br><w>'+ existurl +'</w>'
+				   +'<br>Already exists as:'
+				   +'<br><w>'+ existname +'</w>'
 		, ok      : function() {
-			webRadioNew( newname, url );
+			name ? webRadioNew( name, existurl ) : webRadioEdit();
 		}
 	} );
 }
@@ -481,30 +486,35 @@ function webRadioNew( name, url ) {
 		, width        : 500
 		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
-		, values       : [ ( name || '' ), ( url || '' ) ]
+		, values       : ( name || url ? [ name, url ] : '' )
 		, checkblank   : [ 0, 1 ]
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
 			var values = infoVal();
-			var newname = values[ 0 ].toString().replace( /\/\s*$/, '' ); // omit trailling / and space
+			var name = values[ 0 ];
 			var url = values[ 1 ];
-			bash( [ 'webradioadd', newname, url ], function( data ) {
-				if ( data == -1 ) {
-					info( {
-						  icon    : 'webradio'
-						, title   : 'Add WebRadio'
-						, message : '<wh>'+ url +'</wh><br>contains no valid URL.'
-						, ok      : function() {
-							webRadioNew( newname, url );
-						}
-					} );
-				} else if ( data ) {
-					webRadioExists( data, url );
-				}
-				bannerHide();
+			var $exist = $( '#lib-list .lipath' ).filter( function() {
+				return $( this ).text() === url
 			} );
-			if ( [ 'm3u', 'pls' ].indexOf( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
+			if ( $exist.length ) {
+				webRadioExists( $exist.next().text(), url, name );
+			} else {
+				if ( [ 'm3u', 'pls' ].indexOf( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
+				bash( [ 'webradioadd', name, url ], function( data ) {
+					if ( data == -1 ) {
+						info( {
+							  icon    : 'webradio'
+							, title   : 'Add WebRadio'
+							, message : '<wh>'+ url +'</wh><br>contains no valid URL.'
+							, ok      : function() {
+								webRadioNew( name, url );
+							}
+						} );
+					}
+					bannerHide();
+				} );
+			}
 		}
 	} );
 }

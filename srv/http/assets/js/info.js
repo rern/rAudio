@@ -1,20 +1,28 @@
 /*
+===========================
+icon - title              X
+---------------------------
+          message
+        input/select
+           footer
+           
+file - button - cancel - ok
+===========================
 simple usage: 
 info( 'message' );
 
 normal usage:
 info( {                                     // default
-	width         : N                       // 400            (infocontent width)
-	height        : N                       // (fit)          (infocontent height)
 	icon          : 'NAME'                  // 'question'     (top icon)
 	title         : 'TITLE'                 // 'Information'  (top title)
-	nox           : 1                       // (show)         (no top 'X' close button)
-	autoclose     : N                       // (disabled)     (auto close in ms)
+	width         : N                       // 400            (info width)
 	
 	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
 	arrowleft     : FUNCTION                // (none)
 	
-	content       : 'HTML'                  // ***            (custom inputs content)
+	content       : 'HTML'                  // ***            (custom html <table> input content)
+	height        : N                       // (fit)          (infocontent height)
+	
 	message       : 'MESSAGE'               // (blank)        (message under title)
 	messagealign  : 'CSS'                   // 'center'
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
@@ -43,25 +51,26 @@ info( {                                     // default
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
 	filetype      : '.EXT, ...'             // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
-	nook          : 1                       // (show)         (no ok button)
+	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
+	button        : [ FUNCTION, ... ]       // (none)         (function array)
+	buttoncolor   : [ 'COLOR', ... ]        // 'var( --cm )'  (color array)
+	buttonfit     : 1                       // (none)         (fit buttons width to label)
+	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
+	
+	okno          : 1                       // (show)         (no ok button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
+	
 	cancellabel   : 'LABEL'                 // ***            (cancel button label)
 	cancelcolor   : 'COLOR'                 // var( --cg )    (cancel button color)
 	cancelshow    : 1                       // (hide)         (show cancel button)
 	cancel        : FUNCTION                // (reset)        (cancel click function)
 	
-	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
-	button        : [ FUNCTION, ... ]       // (none)         (function array)
-	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
-	buttonfit     : 1                       // (none)         (fit buttons width to label)
-	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
-	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
+	checkchanged  : 1                       // (none)         (check values changed)
 	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
 	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
-	checkchanged  : 1              .        // (none)         (check values changed)
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
@@ -70,6 +79,7 @@ Note:
 - Single value/function - no need to be array
 - select requires Selectric.js
 - Get values - infoVal()
+- For html without quotes: heredoc( function() { /*
 */
 
 function heredoc( fn ) {
@@ -79,10 +89,7 @@ var containerhtml = heredoc( function() { /*
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop">
-				<i id="infoIcon"></i><a id="infoTitle"></a>
-			</div>
-			<i id="infoX" class="fa fa-times"></i>
+			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
 		</div>
 		<div id="infoContent"></div>
 		<div id="infoButtons"></div>
@@ -130,17 +137,17 @@ function infoReset() {
 	$( '#infoIcon' ).removeAttr( 'class' );
 	$( '#infoTitle' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
-	$( '#infoArrow i' ).off( 'click' );
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input, select, textarea' ).off( 'keyup change' ).prop( 'disabled', 0 );
-	$( '#infoContent' ).find( 'td' ).off( 'click' );
-	$( '#infoContent' ).empty().css( 'height', '' );
+	$( '#infoContent' ).find( 'input, select' ).prop( 'disabled', 0 );
+	$( '#infoContent' )
+		.off( 'click' )
+		.empty()
+		.css( { width: '', height: '' } );
 	$( '.infobtn' )
 		.removeClass( 'active' )
-		.css( 'background-color', '' )
-		.off( 'click' );
+		.css( 'background-color', '' );
 	$( '#infoButtons' ).empty();
 }
 
@@ -186,12 +193,6 @@ function info( json ) {
 	}
 	var title = O.title || 'Information';
 	$( '#infoTitle' ).html( title );
-	if ( O.nox ) $( '#infoX' ).addClass( 'hide' );
-	if ( O.autoclose ) {
-		setTimeout( function() {
-			$( '#infoCancel' ).click();
-		}, O.autoclose );
-	}
 	
 	// buttons
 		var htmlbutton = ''
@@ -209,15 +210,19 @@ function info( json ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 			var hide = O.cancelshow ? '' : ' hide';
 			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
-			$( '#infoButtons' ).on( 'click', '#infoCancel', function() {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '#infoCancel', function() {
 				if ( typeof O.cancel === 'function' ) O.cancel();
 				infoReset();
 			} );
 		}
-		if ( !O.nook ) {
+		if ( !O.okno ) {
 			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
-			$( '#infoButtons' ).on( 'click', '#infoOk', function() {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '#infoOk', function() {
 				if ( typeof O.ok === 'function' ) O.ok();
 				infoReset();
 			} );
@@ -225,7 +230,9 @@ function info( json ) {
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( O.button ) {
 			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-			$( '#infoButtons' ).on( 'click', '.infobtn.extrabtn', function() {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '.infobtn.extrabtn', function() {
 				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
@@ -268,7 +275,7 @@ function info( json ) {
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
-				$( '#infoButtons' ).on( 'click', '.btntemp', function() {
+				$( '#infoButtons' ).off( 'click' ).on( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					setValues();
 					$( this ).remove();
@@ -458,10 +465,15 @@ function info( json ) {
 		// check text input not blank
 		if ( O.checkblank ) {
 			O.checkblank.forEach( function( i ) {
-				O.blank = O.inputs.eq( i ).val().trim() === '';
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				var $blank = O.inputs.filter( function() {
+					return $( this ).val().trim() === ''
+				} );
+				$( '#infoOk' ).toggleClass( 'disabled', $blank.length > 0 );
 				O.inputs.eq( i ).on( 'input', function() {
-					O.blank = $( this ).val().trim() === '';
+					$blank = O.inputs.filter( function() {
+						return $( this ).val().trim() === ''
+					} );
+					O.blank = $blank.length > 0;
 					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 				} );
 			} );
@@ -469,8 +481,8 @@ function info( json ) {
 		// check changed values
 		if ( O.values && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).keyup( checkChanged );
-			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).change( checkChanged );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).off( 'keyup' ).on( 'keyup', checkChanged );
+			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).off( 'change' ).on( 'change', checkChanged );
 		}
 		// custom function before show
 		if ( O.beforeshow ) O.beforeshow();
@@ -591,6 +603,28 @@ function setFileImage( file ) {
 			}
 		} );
 	} );
+	$( '#infoContent' ).off( 'click' ).on( 'click', '.infoimgnew', function() {
+		G.rotate += 90;
+		if ( G.rotate === 360 ) G.rotate = 0;
+		var canvas = document.createElement( 'canvas' );
+		var ctx = canvas.getContext( '2d' );
+		var image = $( this )[ 0 ];
+		var img = new Image();
+		img.onload = function() {
+			ctx.drawImage( image, 0, 0 );
+		}
+		img.src = image.src;
+		var w = img.width;
+		var h = img.height;
+		var cw = Math.round( w / 2 );
+		var ch = Math.round( h / 2 );
+		canvas.width = h;
+		canvas.height = w;
+		ctx.translate( ch, cw );
+		ctx.rotate( Math.PI / 2 );
+		ctx.drawImage( img, -cw, -ch );
+		image.src = canvas.toDataURL( 'image/jpeg' );
+	} );
 }
 function setValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
@@ -611,34 +645,13 @@ function setValues() {
 }
 function switchRL( rl, fn ) {
 	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' ).click( function() {
+	$( '#infoArrow i' )
+		.off( 'click' )
+		.on( 'click', function() {
 		fn();
 		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
 	} );
 }
-
-$( '#infoContent' ).on( 'click', '.infoimgnew', function() {
-	G.rotate += 90;
-	if ( G.rotate === 360 ) G.rotate = 0;
-	var canvas = document.createElement( 'canvas' );
-	var ctx = canvas.getContext( '2d' );
-	var image = $( this )[ 0 ];
-	var img = new Image();
-	img.onload = function() {
-		ctx.drawImage( image, 0, 0 );
-	}
-	img.src = image.src;
-	var w = img.width;
-	var h = img.height;
-	var cw = Math.round( w / 2 );
-	var ch = Math.round( h / 2 );
-	canvas.width = h;
-	canvas.height = w;
-	ctx.translate( ch, cw );
-	ctx.rotate( Math.PI / 2 );
-	ctx.drawImage( img, -cw, -ch );
-	image.src = canvas.toDataURL( 'image/jpeg' );
-} );
 
 // verify password - called from addons.js ///////////////////////////////////////
 function verifyPassword( title, pwd, fn ) {

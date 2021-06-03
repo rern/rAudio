@@ -91,7 +91,7 @@ var scroll = setInterval( function() {
 <!-- ...................................................................................... -->
 <?php
 $getinstall = <<<cmd
-wget -q $installurl 
+curl -LO $installurl 
 if [[ $? != 0 ]]; then 
 	echo -e '\e[38;5;7m\e[48;5;1m ! \e[0m Install file download failed.'
 	echo 'Please try again.'
@@ -116,7 +116,7 @@ $uninstall
 /usr/bin/sudo ./$installfile "$opt"
 cmd;
 	$commandtxt = <<<cmd
-wget -q $installurl
+curl -LO $installurl
 chmod 755 $installfile
 uninstall_$alias.sh
 ./$installfile $opttxt
@@ -127,7 +127,7 @@ $getinstall
 /usr/bin/sudo ./$installfile "$opt"
 cmd;
 	$commandtxt = <<<cmd
-wget -q $installurl
+curl -LO $installurl
 chmod 755 $installfile
 ./$installfile $opttxt
 cmd;
