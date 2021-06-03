@@ -465,10 +465,15 @@ function info( json ) {
 		// check text input not blank
 		if ( O.checkblank ) {
 			O.checkblank.forEach( function( i ) {
-				O.blank = O.inputs.eq( i ).val().trim() === '';
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				var $blank = O.inputs.filter( function() {
+					return $( this ).val().trim() === ''
+				} );
+				$( '#infoOk' ).toggleClass( 'disabled', $blank.length > 0 );
 				O.inputs.eq( i ).on( 'input', function() {
-					O.blank = $( this ).val().trim() === '';
+					$blank = O.inputs.filter( function() {
+						return $( this ).val().trim() === ''
+					} );
+					O.blank = $blank.length > 0;
 					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 				} );
 			} );

@@ -457,7 +457,7 @@ function webRadioEdit() {
 				return $( this ).text() === newurl
 			} );
 			if ( $exist.length ) {
-				webRadioExists( $exist.next().text(), newurl, '' );
+				webRadioExists( $exist.next().text(), newurl );
 			} else {
 				bash( [ 'webradioedit', name, newname, url, newurl ], function() {
 					$( '#mode-webradio' ).click();
