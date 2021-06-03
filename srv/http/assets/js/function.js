@@ -544,8 +544,7 @@ function HMS2Second( HMS ) {
 	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
 function imageReplace( imagefile, type ) {
-	var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
-	var ext = '.'+ file.name.split( '.' ).pop();
+	var ext = '.'+ G.infofile.name.split( '.' ).pop();
 	var formData = new FormData();
 	formData.append( 'cmd', 'imagereplace' );
 	if ( ext !== '.gif' ) {
@@ -556,7 +555,7 @@ function imageReplace( imagefile, type ) {
 						.pop();
 		formData.append( 'base64', base64 );
 	} else { // gif - upload file
-		formData.append( 'file', file );
+		formData.append( 'file', G.infofile );
 	}
 	formData.append( 'imagefile', imagefile + ext );
 	formData.append( 'type', type );

@@ -256,12 +256,12 @@ function info( json ) {
 		$( '#infoFileBox' ).change( function() {
 			if ( !this.files.length ) return
 			
-			var file = this.files[ 0 ];
-			var filename = file.name;
+			G.infofile = this.files[ 0 ];
+			var filename = G.infofile.name;
 			O.filechecked = 1;
 			if ( O.filetype ) {
 				if ( O.filetype === 'image/*' ) {
-					O.filechecked = file.type.slice( 0, 5 ) === 'image';
+					O.filechecked = G.infofile.type.slice( 0, 5 ) === 'image';
 				} else {
 					var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
 					O.filechecked = O.filetype.indexOf( ext ) !== -1;
@@ -288,7 +288,7 @@ function info( json ) {
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( O.filetype === 'image/*' ) setFileImage( file );
+				if ( O.filetype === 'image/*' ) setFileImage( G.infofile );
 			}
 		} );
 	}
