@@ -15,8 +15,6 @@ normal usage:
 info( {                                     // default
 	icon          : 'NAME'                  // 'question'     (top icon)
 	title         : 'TITLE'                 // 'Information'  (top title)
-	nox           : 1                       // (show)         (no top 'X' close button)
-	autoclose     : N                       // (disabled)     (auto close in ms)
 	width         : N                       // 400            (info width)
 	
 	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
@@ -195,12 +193,6 @@ function info( json ) {
 	}
 	var title = O.title || 'Information';
 	$( '#infoTitle' ).html( title );
-	if ( O.nox ) $( '#infoX' ).addClass( 'hide' );
-	if ( O.autoclose ) {
-		setTimeout( function() {
-			$( '#infoCancel' ).click();
-		}, O.autoclose );
-	}
 	
 	// buttons
 		var htmlbutton = ''
