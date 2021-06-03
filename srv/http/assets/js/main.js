@@ -807,8 +807,10 @@ $( '.btn-cmd' ).click( function() {
 		setButtonOptions();
 		local( 600 );
 	} else {
-		if ( $( '#divcover .fa-coverart' ).length ) return
-		
+		if ( G.status.webradio ) {
+			$( '#divcover .fa-coverart' ).remove();
+			$( '#coverart' ).css( 'opacity', '' );
+		}
 		if ( cmd !== 'play' ) clearIntervalAll();
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
