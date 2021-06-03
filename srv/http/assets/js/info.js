@@ -17,12 +17,12 @@ info( {                                     // default
 	title         : 'TITLE'                 // 'Information'  (top title)
 	nox           : 1                       // (show)         (no top 'X' close button)
 	autoclose     : N                       // (disabled)     (auto close in ms)
+	width         : N                       // 400            (info width)
 	
 	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
 	arrowleft     : FUNCTION                // (none)
 	
-	content       : 'HTML'                  // ***            (custom inputs content)
-	width         : N                       // 400            (info width)
+	content       : 'HTML'                  // ***            (custom html <table> input content)
 	height        : N                       // (fit)          (infocontent height)
 	
 	message       : 'MESSAGE'               // (blank)        (message under title)
@@ -81,6 +81,7 @@ Note:
 - Single value/function - no need to be array
 - select requires Selectric.js
 - Get values - infoVal()
+- For html without quotes: heredoc( function() { /*
 */
 
 function heredoc( fn ) {
@@ -90,10 +91,7 @@ var containerhtml = heredoc( function() { /*
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop">
-				<i id="infoIcon"></i><a id="infoTitle"></a>
-			</div>
-			<i id="infoX" class="fa fa-times"></i>
+			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
 		</div>
 		<div id="infoContent"></div>
 		<div id="infoButtons"></div>
@@ -144,8 +142,11 @@ function infoReset() {
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input, select, textarea, td' ).off( 'click' ).prop( 'disabled', 0 );
-	$( '#infoContent' ).empty().css( 'height', '' );
+	$( '#infoContent' ).find( 'input, select' ).prop( 'disabled', 0 );
+	$( '#infoContent' )
+		.off( 'click' )
+		.empty()
+		.css( { width: '', height: '' } );
 	$( '.infobtn' )
 		.removeClass( 'active' )
 		.css( 'background-color', '' );
@@ -282,7 +283,7 @@ function info( json ) {
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
-				$( '#infoButtons' ).on( 'click', '.btntemp', function() {
+				$( '#infoButtons' ).off( 'click' ).on( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					setValues();
 					$( this ).remove();
@@ -605,6 +606,28 @@ function setFileImage( file ) {
 			}
 		} );
 	} );
+	$( '#infoContent' ).off( 'click' ).on( 'click', '.infoimgnew', function() {
+		G.rotate += 90;
+		if ( G.rotate === 360 ) G.rotate = 0;
+		var canvas = document.createElement( 'canvas' );
+		var ctx = canvas.getContext( '2d' );
+		var image = $( this )[ 0 ];
+		var img = new Image();
+		img.onload = function() {
+			ctx.drawImage( image, 0, 0 );
+		}
+		img.src = image.src;
+		var w = img.width;
+		var h = img.height;
+		var cw = Math.round( w / 2 );
+		var ch = Math.round( h / 2 );
+		canvas.width = h;
+		canvas.height = w;
+		ctx.translate( ch, cw );
+		ctx.rotate( Math.PI / 2 );
+		ctx.drawImage( img, -cw, -ch );
+		image.src = canvas.toDataURL( 'image/jpeg' );
+	} );
 }
 function setValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
@@ -632,29 +655,6 @@ function switchRL( rl, fn ) {
 		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
 	} );
 }
-
-$( '#infoContent' ).on( 'click', '.infoimgnew', function() {
-	G.rotate += 90;
-	if ( G.rotate === 360 ) G.rotate = 0;
-	var canvas = document.createElement( 'canvas' );
-	var ctx = canvas.getContext( '2d' );
-	var image = $( this )[ 0 ];
-	var img = new Image();
-	img.onload = function() {
-		ctx.drawImage( image, 0, 0 );
-	}
-	img.src = image.src;
-	var w = img.width;
-	var h = img.height;
-	var cw = Math.round( w / 2 );
-	var ch = Math.round( h / 2 );
-	canvas.width = h;
-	canvas.height = w;
-	ctx.translate( ch, cw );
-	ctx.rotate( Math.PI / 2 );
-	ctx.drawImage( img, -cw, -ch );
-	image.src = canvas.toDataURL( 'image/jpeg' );
-} );
 
 // verify password - called from addons.js ///////////////////////////////////////
 function verifyPassword( title, pwd, fn ) {
