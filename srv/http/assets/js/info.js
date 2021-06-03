@@ -148,7 +148,9 @@ function infoReset() {
 	$( '.infobtn' )
 		.removeClass( 'active' )
 		.css( 'background-color', '' );
-	$( '#infoButtons' ).empty();
+	$( '#infoButtons' )
+		.off( 'click' )
+		.empty();
 }
 
 O = {}
@@ -218,7 +220,6 @@ function info( json ) {
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( O.button ) {
 			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-			$( '#infoButtons' ).off( 'click', '.infobtn.extrabtn' );
 			$( '#infoButtons' )
 				.on( 'click', '.infobtn.extrabtn', function() {
 				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
