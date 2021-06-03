@@ -344,9 +344,10 @@ function scrollUpDown( $list, key ) {
 	var litop = $linext[ 0 ].getBoundingClientRect().top;
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
 	var wH = window.innerHeight;
+	var liH = $( '.licover' ).length ? 230 : 0;
 	if ( key === 'ArrowUp' ) {
-		if ( libottom > wH - 40 || litop < 80 ) $( 'html, body' ).scrollTop( $linext.offset().top - wH + 89 );
+		if ( libottom > wH - 40 || litop < 80 + liH ) $( 'html, body' ).scrollTop( $linext.offset().top - wH + 89 );
 	} else {
-		if ( libottom > wH - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 );
+		if ( libottom > wH - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 - liH );
 	}
 }
