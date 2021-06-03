@@ -234,14 +234,12 @@ function info( json ) {
 				infoReset();
 			} );
 		}
-		if ( O.ok ) {
-			$( '#infoButtons' )
-				.off( 'click' )
-				.on( 'click', '#infoOk', function() {
-				if ( typeof O.ok === 'function' ) O.ok();
-				infoReset();
-			} );
-		}
+		$( '#infoButtons' )
+			.off( 'click' )
+			.on( 'click', '#infoOk', function() {
+			if ( typeof O.ok === 'function' ) O.ok();
+			infoReset();
+		} );
 	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
 				+'<code id="infoFilename" class="hide"></code>'
