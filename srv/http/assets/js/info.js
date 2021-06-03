@@ -218,7 +218,7 @@ function info( json ) {
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( O.button ) {
 			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-			$( '#infoButtons .extrabtn' ).off( 'click' );
+			$( '#infoButtons' ).off( 'click', '.infobtn.extrabtn' );
 			$( '#infoButtons' )
 				.on( 'click', '.infobtn.extrabtn', function() {
 				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
@@ -226,15 +226,11 @@ function info( json ) {
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		$( '#infoCancel' )
-			.off( 'click' )
-			.click( function() {
+		$( '#infoCancel' ).one( 'click', function() {
 			if ( typeof O.cancel === 'function' ) O.cancel();
 			infoReset();
 		} );
-		$( '#infoOk' )
-			.off( 'click' )
-			.click( function() {
+		$( '#infoOk' ).one( 'click', function() {
 			if ( typeof O.ok === 'function' ) O.ok();
 			infoReset();
 		} );

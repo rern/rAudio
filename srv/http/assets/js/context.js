@@ -66,17 +66,16 @@ function bookmarkNew() {
 }
 function bookmarkIcon( path ) {
 	info( {
-		  icon         : 'bookmark'
-		, title        : 'Add Bookmark'
-		, width        : 500
-		, message      : '<i class="fa fa-bookmark bookmark"></i>'
-						+'<br>'
+		  icon       : 'bookmark'
+		, title      : 'Add Bookmark'
+		, width      : 500
+		, message    : '<i class="fa fa-bookmark bookmark"></i>'
 						+'<br><w>'+ path +'</w>'
-						+'<br>As:'
-		, values       : path.split( '/' ).pop()
-		, checkblank   : [ 0 ]
-		, boxwidth     : 'max'
-		, ok           : function() {
+		, textlabel  : 'As:'
+		, values     : path.split( '/' ).pop()
+		, checkblank : [ 0 ]
+		, boxwidth   : 'max'
+		, ok         : function() {
 			$.post( cmdphp, {
 				  cmd  : 'bookmark'
 				, path : path
