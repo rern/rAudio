@@ -144,6 +144,7 @@ $( document ).keydown( function( e ) {
 				$next.addClass( 'active' );
 			}
 		} else if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
+			e.preventDefault();
 			if ( $( '.submenu.active' ).length ) {
 				$menuactive = $( '.submenu.active' );
 				if ( key === 'ArrowDown' ) {
@@ -308,6 +309,8 @@ $( document ).keydown( function( e ) {
 	}
 } );
 function scrollUpDown( $list, key ) {
+	if ( $( '.contextmenu' ).not( '.hide' ).length ) return
+	
 	var $li = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
 	if ( !$liactive.length ) {
