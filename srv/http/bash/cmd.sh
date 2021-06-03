@@ -802,8 +802,6 @@ webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
 	filewebradio=$dirwebradios/${url//\//|}
-	[[ -e $filewebradio ]] && cat $filewebradio && exit
-	
 	ext=${url/*.}
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s $url | grep ^http | head -1 )
@@ -836,21 +834,17 @@ webradioedit ) # name, newname, url, newurl
 	urlnamenew=${urlnew//\//|}
 	filewebradio=$dirwebradios/$urlname
 	filewebradionew=$dirwebradios/$urlnamenew
-	if [[ -e $filewebradionew && $filewebradionew != $filewebradio ]]; then
-		head -1 $filewebradionew
-	else
-		if [[ $name != $namenew ]]; then
-			if [[ -s $filewebradio ]]; then
-				sed -i "1 c$namenew" $filewebradio
-			else
-				echo $namenew > $filewebradio
-			fi
+	if [[ $name != $namenew ]]; then
+		if [[ -s $filewebradio ]]; then
+			sed -i "1 c$namenew" $filewebradio
+		else
+			echo $namenew > $filewebradio
 		fi
-		if [[ $url != $urlnew ]]; then
-			mv $filewebradio $filewebradionew
-			mv $dirwebradioimg/{$urlname,$urlnamenew}.jpg 
-			mv $dirwebradioimg/{$urlname,$urlnamenew}-thumb.jpg 
-		fi
+	fi
+	if [[ $url != $urlnew ]]; then
+		mv $filewebradio $filewebradionew
+		mv $dirwebradioimg/{$urlname,$urlnamenew}.jpg 
+		mv $dirwebradioimg/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
 	;;
 	
