@@ -317,7 +317,7 @@ $( '#tab-playback' ).click( function() {
 					volumePushstream();
 				} );
 			}
-			, nook       : 1
+			, okno       : 1
 		} );
 	} else {
 		getPlaybackStatus();
@@ -1111,17 +1111,17 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
 	if ( $target.hasClass( 'bk-rename' ) ) {
 		info( {
-			  icon         : 'bookmark'
-			, title        : 'Rename Bookmark'
-			, width        : 500
-			, message      : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
+			  icon       : 'bookmark'
+			, title      : 'Rename Bookmark'
+			, width      : 500
+			, message    : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
 							+'<br><span class="bklabel">'+ name +'</span></div>'
-			, textlabel    : 'To:'
-			, values       : name
-			, checkblank   : [ 0 ]
-			, boxwidth     : 'max'
-			, oklabel      : '<i class="fa fa-flash"></i>Rename'
-			, ok           : function() {
+			, textlabel  : 'To:'
+			, values     : name
+			, checkblank : [ 0 ]
+			, boxwidth   : 'max'
+			, oklabel    : '<i class="fa fa-flash"></i>Rename'
+			, ok         : function() {
 				var newname = infoVal();
 				$.post( cmdphp, {
 					  cmd    : 'bookmarkrename'

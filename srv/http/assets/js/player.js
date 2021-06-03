@@ -171,7 +171,7 @@ $( '#setting-hwmixer' ).click( function() {
 			, button        : novolume ? '' : function() {
 				bash( [ 'volume0db', device.hwmixer ] );
 			}
-			, nook          : 1
+			, okno          : 1
 		} );
 	} );
 } );

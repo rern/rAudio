@@ -366,7 +366,7 @@ function tagEditor() {
 					}, 'json' );
 				} );
 			}
-			, nook         : G.playlist
+			, okno         : G.playlist
 			, nofocus      : 1
 			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];

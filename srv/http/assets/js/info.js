@@ -1,11 +1,18 @@
 /*
+===========================
+icon - title              X
+---------------------------
+          message
+        input/select
+           footer
+           
+file - button - cancel - ok
+===========================
 simple usage: 
 info( 'message' );
 
 normal usage:
 info( {                                     // default
-	width         : N                       // 400            (infocontent width)
-	height        : N                       // (fit)          (infocontent height)
 	icon          : 'NAME'                  // 'question'     (top icon)
 	title         : 'TITLE'                 // 'Information'  (top title)
 	nox           : 1                       // (show)         (no top 'X' close button)
@@ -15,6 +22,9 @@ info( {                                     // default
 	arrowleft     : FUNCTION                // (none)
 	
 	content       : 'HTML'                  // ***            (custom inputs content)
+	width         : N                       // 400            (info width)
+	height        : N                       // (fit)          (infocontent height)
+	
 	message       : 'MESSAGE'               // (blank)        (message under title)
 	messagealign  : 'CSS'                   // 'center'
 	footer        : 'FOOTER'                // (blank)        (footer above buttons)
@@ -43,25 +53,26 @@ info( {                                     // default
 	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
 	filetype      : '.EXT, ...'             // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
-	nook          : 1                       // (show)         (no ok button)
+	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
+	button        : [ FUNCTION, ... ]       // (none)         (function array)
+	buttoncolor   : [ 'COLOR', ... ]        // 'var( --cm )'  (color array)
+	buttonfit     : 1                       // (none)         (fit buttons width to label)
+	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
+	
+	okno          : 1                       // (show)         (no ok button)
 	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
 	ok            : FUNCTION                // (reset)        (ok click function)
+	
 	cancellabel   : 'LABEL'                 // ***            (cancel button label)
 	cancelcolor   : 'COLOR'                 // var( --cg )    (cancel button color)
 	cancelshow    : 1                       // (hide)         (show cancel button)
 	cancel        : FUNCTION                // (reset)        (cancel click function)
 	
-	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
-	button        : [ FUNCTION, ... ]       // (none)         (function array)
-	buttoncolor   : [ 'COLOR', ... ]        // '#34495e'      (color array)
-	buttonfit     : 1                       // (none)         (fit buttons width to label)
-	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
-	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
 	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
-	checkchanged  : 1              .        // (none)         (check values changed)
+	checkchanged  : 1                       // (none)         (check values changed)
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
@@ -213,7 +224,7 @@ function info( json ) {
 				infoReset();
 			} );
 		}
-		if ( !O.nook ) {
+		if ( !O.okno ) {
 			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
 			$( '#infoButtons' )
