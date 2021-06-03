@@ -68,9 +68,9 @@ info( {                                     // default
 	cancel        : FUNCTION                // (reset)        (cancel click function)
 	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
+	checkchanged  : 1                       // (none)         (check values changed)
 	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
 	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
-	checkchanged  : 1                       // (none)         (check values changed)
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
