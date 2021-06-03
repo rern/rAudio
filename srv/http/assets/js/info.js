@@ -210,22 +210,10 @@ function info( json ) {
 			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 			var hide = O.cancelshow ? '' : ' hide';
 			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
-			$( '#infoButtons' )
-				.off( 'click' )
-				.on( 'click', '#infoCancel', function() {
-				if ( typeof O.cancel === 'function' ) O.cancel();
-				infoReset();
-			} );
 		}
 		if ( !O.okno ) {
 			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
-			$( '#infoButtons' )
-				.off( 'click' )
-				.on( 'click', '#infoOk', function() {
-				if ( typeof O.ok === 'function' ) O.ok();
-				infoReset();
-			} );
 		}
 		$( '#infoButtons' ).html( htmlbutton );
 		if ( O.button ) {
@@ -236,6 +224,22 @@ function info( json ) {
 				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 				if ( fn ) fn();
 				if ( !O.buttonnoreset ) infoReset();
+			} );
+		}
+		if ( O.cancel ) {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '#infoCancel', function() {
+				if ( typeof O.cancel === 'function' ) O.cancel();
+				infoReset();
+			} );
+		}
+		if ( O.ok ) {
+			$( '#infoButtons' )
+				.off( 'click' )
+				.on( 'click', '#infoOk', function() {
+				if ( typeof O.ok === 'function' ) O.ok();
+				infoReset();
 			} );
 		}
 	if ( O.fileoklabel ) {
