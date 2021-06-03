@@ -226,14 +226,12 @@ function info( json ) {
 				if ( !O.buttonnoreset ) infoReset();
 			} );
 		}
-		if ( O.cancel ) {
-			$( '#infoButtons' )
-				.off( 'click' )
-				.on( 'click', '#infoCancel', function() {
-				if ( typeof O.cancel === 'function' ) O.cancel();
-				infoReset();
-			} );
-		}
+		$( '#infoButtons' )
+			.off( 'click' )
+			.on( 'click', '#infoCancel', function() {
+			if ( typeof O.cancel === 'function' ) O.cancel();
+			infoReset();
+		} );
 		$( '#infoButtons' )
 			.off( 'click' )
 			.on( 'click', '#infoOk', function() {
