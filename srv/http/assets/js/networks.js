@@ -54,6 +54,7 @@ function editLAN( $el ) {
 		var gateway = '';
 		var dhcp = '';
 	}
+	var btndhcp = $el && dhcp;
 	info( {
 		  icon         : 'lan'
 		, title        : ( ip ? 'LAN' : 'Add LAN' )
@@ -61,8 +62,8 @@ function editLAN( $el ) {
 		, values       : ( ip ? [ ip, gateway ] : '' )
 		, checkchanged : ( ip ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]
-		, buttonlabel  : ( ip && dhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
-		, button       : ( ip && dhcp ? '' : function() {
+		, buttonlabel  : ( !btndhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
+		, button       : ( !btndhcp ? '' : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
