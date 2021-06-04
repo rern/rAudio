@@ -21,16 +21,19 @@ input:focus-visible {
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 									  /* x   y   w    h */
-	box-shadow: 2px 2px 3px 1px #000000;  /* x, y, blurw, shadoww, color */
+	box-shadow: -1px 1px 2px 1px #000000;  /* x, y, blurw, shadoww, color */
 }
-#infoOverlay input[type=radio],
-#infoOverlay input[type=checkbox] {
-	box-shadow: 1px 1px 2px 1px #000000;
+.infobtn {
+	box-shadow: -2px 2px 3px 1px #000000;
 }
 #infoOverlay input[type=radio]:focus,
 #infoOverlay input[type=checkbox]:focus {
 	outline: none;
 }
+#infoOverlay input:focus {
+	box-shadow: 0 0 2px 1px #ffffff;
+}
+
 .infobtn {
 	display: inline-block;
 	margin: 0 5px 10px;
