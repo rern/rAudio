@@ -1,13 +1,15 @@
 /*
-===========================
-icon - title              X
----------------------------
-          message
-        input/select
-           footer
-           
-file - button - cancel - ok
-===========================
+===============================
+| icon - title              X |
+|-----------------------------|
+| <-                       -> |
+|           message           |
+|         input/select        |
+|            footer           |
+|                             |
+| file - button - cancel - ok |
+===============================
+
 simple usage: 
 info( 'message' );
 
@@ -197,44 +199,44 @@ function info( json ) {
 	$( '#infoTitle' ).html( title );
 	
 	// buttons
-		var htmlbutton = ''
-		if ( O.button ) {
-			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-			if ( typeof O.buttonlabel !== 'object' ) O.buttonlabel = [ O.buttonlabel ];
-			if ( typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
-			var iL = O.buttonlabel.length;
-			for ( i = 0; i < iL; i++ ) {
-				var color = O.buttoncolor ? ' style="background-color:'+ O.buttoncolor[ i ] +'"' : '';
-				htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
-			}
+	var htmlbutton = ''
+	if ( O.button ) {
+		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
+		if ( typeof O.buttonlabel !== 'object' ) O.buttonlabel = [ O.buttonlabel ];
+		if ( typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
+		var iL = O.buttonlabel.length;
+		for ( i = 0; i < iL; i++ ) {
+			var color = O.buttoncolor ? ' style="background-color:'+ O.buttoncolor[ i ] +'"' : '';
+			htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
 		}
-		if ( O.cancelshow ) {
-			var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
-			var hide = O.cancelshow ? '' : ' hide';
-			htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
-		}
-		if ( !O.okno ) {
-			var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
-			htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
-		}
-		$( '#infoButtons' ).html( htmlbutton );
-		if ( O.button ) {
-			if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-			$( '#infoButtons' )
-				.on( 'click', '.infobtn.extrabtn', function() {
-				var fn = O.button[ $( this ).index( '.extrabtn' ) ];
-				if ( fn ) fn();
-				if ( !O.buttonnoreset ) infoReset();
-			} );
-		}
-		$( '#infoCancel' ).one( 'click', function() {
-			if ( typeof O.cancel === 'function' ) O.cancel();
-			infoReset();
+	}
+	if ( O.cancelshow ) {
+		var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
+		var hide = O.cancelshow ? '' : ' hide';
+		htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
+	}
+	if ( !O.okno ) {
+		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
+		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+	}
+	$( '#infoButtons' ).html( htmlbutton );
+	if ( O.button ) {
+		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
+		$( '#infoButtons' )
+			.on( 'click', '.infobtn.extrabtn', function() {
+			var fn = O.button[ $( this ).index( '.extrabtn' ) ];
+			if ( fn ) fn();
+			if ( !O.buttonnoreset ) infoReset();
 		} );
-		$( '#infoOk' ).one( 'click', function() {
-			if ( typeof O.ok === 'function' ) O.ok();
-			infoReset();
-		} );
+	}
+	$( '#infoCancel' ).one( 'click', function() {
+		if ( typeof O.cancel === 'function' ) O.cancel();
+		infoReset();
+	} );
+	$( '#infoOk' ).one( 'click', function() {
+		if ( typeof O.ok === 'function' ) O.ok();
+		infoReset();
+	} );
 	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
 				+'<code id="infoFilename" class="hide"></code>'
