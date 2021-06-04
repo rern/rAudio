@@ -48,29 +48,26 @@ function editLAN( $el ) {
 	if ( $el ) {
 		var ip = $el.data( 'ip' );
 		var gateway = $el.data( 'gateway' );
-		var dhcp = $el.data( 'dhcp' );
-		var message = 'Current: <wh>'+ ( dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh>';
+		var dhcp = $el.data( 'dhcp' ) === 'dhcp';
 	} else {
-		var ip = false;
+		var ip = '';
 		var gateway = '';
 		var dhcp = '';
-		var message = '';
 	}
 	info( {
 		  icon         : 'lan'
 		, title        : ( ip ? 'LAN' : 'Add LAN' )
-		, message      : message
-		, textlabel    : [ 'IP', 'Gateway' ]
+		, textlabel    : [ ( dhcp ? '<gr>DHCP</gr> IP' : '<gr>Static</gr> IP' ), 'Gateway' ]
 		, values       : ( ip ? [ ip, gateway ] : '' )
 		, checkchanged : ( ip ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]
-		, buttonlabel  : ( ip && dhcp === 'dhcp' ? '<i class="fa fa-undo"></i>DHCP' : '' )
-		, button       : ( ip && dhcp === 'dhcp' ? function() {
+		, buttonlabel  : ( ip && dhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
+		, button       : ( ip && dhcp ? '' : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
-		} : '' )
+		} )
 		, ok           : function() {
 			var values = infoVal();
 			var data1 = {}
