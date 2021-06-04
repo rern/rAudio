@@ -142,6 +142,9 @@ function infoReset() {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
 	}
+	$( '#infoContent, #infoArrow i, #infoButtons, #infoFileLabel' ).off( 'click' );
+	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
+	
 	$( '#infoOverlay' ).addClass( 'hide noclick' ) // prevent click OK on consecutive info
 	$( '#infoBox' ).css( {
 		  margin     : ''
@@ -156,15 +159,12 @@ function infoReset() {
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent' ).find( 'input, select' ).prop( 'disabled', 0 );
 	$( '#infoContent' )
-		.off( 'click' )
 		.empty()
 		.css( { width: '', height: '' } );
 	$( '.infobtn' )
 		.removeClass( 'active' )
 		.css( 'background-color', '' );
-	$( '#infoButtons' )
-		.off( 'click' )
-		.empty();
+	$( '#infoButtons' ).empty();
 }
 
 O = {}
@@ -286,7 +286,7 @@ function info( json ) {
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
-				$( '#infoButtons' ).off( 'click' ).on( 'click', '.btntemp', function() {
+				$( '#infoButtons' ).one( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					setValues();
 					$( this ).remove();
@@ -467,7 +467,7 @@ function info( json ) {
 			$.each( O.checklength, function( i, L ) {
 				O.short = O.inputs.eq( i ).val().length < L;
 				$( '#infoOk' ).toggleClass( 'disabled', O.short );
-				O.inputs.eq( i ).on( 'input', function() {
+				O.inputs.eq( i ).on( 'keyup', function() {
 					O.short = $( this ).val().length < L;
 					$( '#infoOk' ).toggleClass( 'disabled', O.short );
 				} );
@@ -480,7 +480,7 @@ function info( json ) {
 					return $( this ).val().trim() === ''
 				} );
 				$( '#infoOk' ).toggleClass( 'disabled', $blank.length > 0 );
-				O.inputs.eq( i ).on( 'input', function() {
+				O.inputs.eq( i ).on( 'keyup', function() {
 					$blank = O.inputs.filter( function() {
 						return $( this ).val().trim() === ''
 					} );
@@ -492,8 +492,8 @@ function info( json ) {
 		// check changed values
 		if ( O.values && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).off( 'keyup' ).on( 'keyup', checkChanged );
-			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).off( 'change' ).on( 'change', checkChanged );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup', checkChanged );
+			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
 		}
 		// custom function before show
 		if ( O.beforeshow ) O.beforeshow();
@@ -614,7 +614,8 @@ function setFileImage( file ) {
 			}
 		} );
 	} );
-	$( '#infoContent' ).off( 'click' ).on( 'click', '.infoimgnew', function() {
+	$( '#infoContent' ).off( 'click', '.infoimgnew' );
+	$( '#infoContent' ).on( 'click', '.infoimgnew', function() {
 		G.rotate += 90;
 		if ( G.rotate === 360 ) G.rotate = 0;
 		var canvas = document.createElement( 'canvas' );
@@ -656,9 +657,7 @@ function setValues() {
 }
 function switchRL( rl, fn ) {
 	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' )
-		.off( 'click' )
-		.on( 'click', function() {
+	$( '#infoArrow i' ).on( 'click', function() {
 		fn();
 		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
 	} );
