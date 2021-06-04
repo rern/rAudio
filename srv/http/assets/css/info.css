@@ -96,7 +96,6 @@ hr {
 }
 #infoOverlay a {
 	height: 40px;
-	text-shadow: 1px 1px 2px #000000;
 	text-decoration: none;
 }
 #infoBox {
@@ -106,8 +105,9 @@ hr {
 	background: var( --cga );
 	border-radius: 10px;
 }
+#infoOverlay a,
 #infoBox i {
-	text-shadow: 1px 1px 2px #000000;
+	text-shadow: -1px 1px 2px #000000;
 }
 #infoTopBg {
 	width: 100%;
