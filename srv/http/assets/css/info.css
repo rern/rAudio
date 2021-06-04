@@ -30,10 +30,6 @@ input:focus-visible {
 #infoOverlay input[type=checkbox]:focus {
 	outline: none;
 }
-#infoOverlay input:focus {
-	box-shadow: 0 0 2px 1px #ffffff;
-}
-
 .infobtn {
 	display: inline-block;
 	margin: 0 5px 10px;
@@ -504,10 +500,10 @@ px100 { width: 100px }
 	#infoX:active {
 		color: var( --cma );
 	}
-	input[type=checkbox].active,
-	input[type=radio].active,
+	input[type=checkbox]:focus,
+	input[type=radio]:focus,
 	.infobtn.active {
-		box-shadow: 0 0 2px 2px var( --cg60 );
+		box-shadow: 0 0 2px 1px var( --cg60 ) !important;
 
 	}
 }

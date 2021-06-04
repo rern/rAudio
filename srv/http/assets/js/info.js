@@ -108,6 +108,19 @@ $( '#infoOverlay' ).keydown( function( e ) {
 		G.local = 1; // no local() in settings
 		setTimeout( function() { G.local = 0 }, 300 );
 		$( '#infoX' ).click();
+	} else if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
+		e.preventDefault();
+		var $input = $( '#infoContent input:not(:disabled)' );
+		var i = $input.index( $( '#infoContent input:focus' ) );
+		var next;
+		if ( i === 0 && key === 'ArrowUp' ) {
+			next = $input.last().focus();
+		} else if ( i === $input.length - 1 && key === 'ArrowDown' ) {
+			next = 0;
+		} else {
+			next = key === 'ArrowDown' ? i + 1 : i - 1;
+		}
+		$input.eq( next ).focus()
 	}
 } );
 $( '#infoContent' ).click( function() {
@@ -505,7 +518,7 @@ function alignVertical() { // make infoBox scrollable
 			.removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		$input0 = $( O.inputs[ 0 ] );
-		if ( !O.nofocus && [ 'text', 'password' ].indexOf( $input0.prop( 'type' ) ) !== -1 ) $input0.focus();
+		if ( !O.nofocus ) $input0.focus();
 	}, 200 );
 }
 function checkChanged() {
