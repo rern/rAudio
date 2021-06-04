@@ -115,6 +115,10 @@ function list2JSON( list ) {
 function loader( toggle ) {
 	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
 }
+function local( delay ) {
+	G.local = 1;
+	setTimeout( function() { G.local = 0 }, delay || 300 );
+}
 function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( title, message, icon +' blink', -1 );

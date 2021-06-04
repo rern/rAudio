@@ -105,8 +105,7 @@ $( '#infoOverlay' ).keydown( function( e ) {
 	if ( key == 'Enter' ) {
 		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 	} else if ( key === 'Escape' ) {
-		G.local = 1; // no local() in settings
-		setTimeout( function() { G.local = 0 }, 300 );
+		local(); // prevent toggle setting menu
 		$( '#infoX' ).click();
 	} else if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
 		e.preventDefault();
