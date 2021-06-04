@@ -45,30 +45,30 @@ function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 	} );
 }
 function editLAN( $el ) {
-	var ip = '';
-	var gateway = '';
-	var dhcp = '';
 	if ( $el ) {
-		ip = $el.data( 'ip' );
-		gateway = $el.data( 'gateway' );
-		dhcp = $el.data( 'dhcp' );
+		var ip = $el.data( 'ip' );
+		var gateway = $el.data( 'gateway' );
+		var dhcp = $el.data( 'dhcp' ) === 'dhcp';
+	} else {
+		var ip = '';
+		var gateway = '';
+		var dhcp = '';
 	}
-	var message = ip ? 'Current: <wh>'+ ( dhcp === 'dhcp' ? 'DHCP' : 'Static IP' ) +'</wh>' : '';
+	var btndhcp = $el && dhcp;
 	info( {
 		  icon         : 'lan'
 		, title        : ( ip ? 'LAN' : 'Add LAN' )
-		, message      : message
-		, textlabel    : [ 'IP', 'Gateway' ]
-		, values       : [ ip, gateway ]
+		, textlabel    : [ ( dhcp ? '<gr>DHCP</gr> IP' : '<gr>Static</gr> IP' ), 'Gateway' ]
+		, values       : ( ip ? [ ip, gateway ] : '' )
 		, checkchanged : ( ip ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]
-		, buttonlabel  : dhcp === 'dhcp' ? '' : '<i class="fa fa-undo"></i>DHCP'
-		, button       : dhcp === 'dhcp' ? '' : function() {
+		, buttonlabel  : ( !btndhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
+		, button       : ( !btndhcp ? '' : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
-		}
+		} )
 		, ok           : function() {
 			var values = infoVal();
 			var data1 = {}

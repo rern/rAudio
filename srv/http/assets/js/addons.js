@@ -175,8 +175,8 @@ function getoptions() {
 				  icon        : 'jigsaw'
 				, title       : title
 				, message     : option[ oj ]
-				, cancellabel : 'No'
-				, cancel      : sendcommand
+				, buttonlabel : 'No'
+				, button      : sendcommand
 				, oklabel     : 'Yes'
 				, ok          : postcmd
 			} );
