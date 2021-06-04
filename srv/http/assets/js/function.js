@@ -1160,14 +1160,15 @@ function renderLibraryList( data ) {
 		} else {
 			G.albumlist = 0;
 		}
-		$( '#liimg' ).on( 'load', function() {
+		$( '#liimg' ).off( 'load' ).on( 'load', function() {
 			$( 'html, body' ).scrollTop( 0 );
-		} ).on( 'error', function() {
+		} ).off( 'error' ).on( 'error', function() {
 			$( this ).attr( 'src', G.coverdefault );
 		} );
-		$( '#lib-list .lazy' ).on( 'error', function() {
+		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
+				.off( 'error' )
 				.on( 'error', function() {
 					if ( G.mode === 'album' ) {
 						$( this ).attr( 'src', G.coverdefault );
@@ -1194,7 +1195,7 @@ function renderLibraryList( data ) {
 			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
 		}
 		if ( $( '#liimg' ).length ) {
-			$( '#liimg' ).on( 'load', function() {
+			$( '#liimg' ).off( 'load' ).on( 'load', function() {
 				loader( 'hide' );
 			} );
 		} else {
@@ -1493,9 +1494,10 @@ renderPlaylist = function( data ) {
 		$( '#pl-list li .song' ).css( 'max-width', '' );
 		setPlaylistScroll();
 		loader( 'hide' );
-		$( '#pl-list .lazy' ).on( 'error', function() {
+		$( '#pl-list .lazy' ).off( 'error' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
+				.off( 'error' )
 				.on( 'error', function() {
 					$( this ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
 				} );
@@ -1776,7 +1778,7 @@ function setTitleWidth() {
 function setTrackCoverart() {
 	if ( G.display.hidecover ) return
 	
-	$( '#liimg' ).on( 'load', function() { // not exist on initial page load
+	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
 		$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( this ).width() - 50 ) +'px' );
 		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
 			$( '#liimg' ).after( '<i class="coveredit fa fa-save cover-save"></i>' );
