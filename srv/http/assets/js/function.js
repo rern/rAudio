@@ -1160,11 +1160,6 @@ function renderLibraryList( data ) {
 		} else {
 			G.albumlist = 0;
 		}
-		$( '#liimg' ).off( 'load' ).on( 'load', function() {
-			$( 'html, body' ).scrollTop( 0 );
-		} ).off( 'error' ).on( 'error', function() {
-			$( this ).attr( 'src', G.coverdefault );
-		} );
 		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
@@ -1194,13 +1189,6 @@ function renderLibraryList( data ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
 		}
-		if ( $( '#liimg' ).length ) {
-			$( '#liimg' ).off( 'load' ).on( 'load', function() {
-				loader( 'hide' );
-			} );
-		} else {
-			loader( 'hide' );
-		}
 		$( '#lib-list' ).removeClass( 'hide' );
 		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 		if ( G.iactive && G.albumlist ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
@@ -1224,6 +1212,7 @@ function renderLibraryList( data ) {
 	} else {
 		$( '.liinfo .lialbum' ).removeClass( 'hide' );
 	}
+	loader( 'hide' );
 }
 function renderPlayback() {
 	clearIntervalAll();
@@ -1776,13 +1765,16 @@ function setTitleWidth() {
 	$( '.duration-right' ).css( 'right', '' );
 }
 function setTrackCoverart() {
-	if ( G.display.hidecover ) return
+	if ( G.display.hidecover || !$( '#liimg' ).length ) return
 	
 	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
+		$( 'html, body' ).scrollTop( 0 );
 		$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( this ).width() - 50 ) +'px' );
 		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
 			$( '#liimg' ).after( '<i class="coveredit fa fa-save cover-save"></i>' );
 		}
+	} ).off( 'error' ).on( 'error', function() {
+		$( this ).attr( 'src', G.coverdefault );
 	} );
 	if ( !G.display.fixedcover ) {
 		$( '.licover' ).addClass( 'nofixed' );
