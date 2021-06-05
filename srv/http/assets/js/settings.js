@@ -260,7 +260,7 @@ document.title = page;
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
-	if ( e.keyCode === 88 ) {
+	if ( e.keyCode === 88 ) { // ctrl + x
 		$( '#close' ).click();
 		return
 	}
