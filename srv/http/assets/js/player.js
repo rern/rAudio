@@ -344,7 +344,6 @@ $( '#setting-soxr' ).click( function() {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
-		, nofocus       : 1
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : [ 1, 2, 3, 4 ]

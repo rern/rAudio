@@ -499,7 +499,6 @@ $( '#setting-lcdchar' ).click( function() {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
-		, nofocus       : 1
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {

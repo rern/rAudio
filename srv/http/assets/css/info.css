@@ -503,7 +503,7 @@ px100 { width: 100px }
 	input[type=checkbox]:focus,
 	input[type=radio]:focus,
 	.infobtn.active {
-		box-shadow: 0 0 2px 1px var( --cg60 ) !important;
+		box-shadow: 0 0 2px 2px var( --cg75 ) !important;
 
 	}
 }

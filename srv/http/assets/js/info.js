@@ -38,7 +38,6 @@ info( {                                     // default
 	textarea      : 1                       // ***
 	
 	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
-	nofocus       : 1                       // (input box)    (no focus at input box)
 	
 	radio         : { LABEL: 'VALUE', ... } // ***
 	
@@ -101,25 +100,23 @@ var containerhtml = heredoc( function() { /*
 $( 'body' ).prepend( containerhtml );
 
 $( '#infoOverlay' ).keydown( function( e ) {
+/*
+all:      [Tab]       - focus / next input
+          [Shift+Tab] - previous input
+radio:    [L] [R]     - check
+checkbox: [space]     - check
+select:   [U] [D]     - check
+*/
 	var key = e.key;
 	if ( key == 'Enter' ) {
 		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 	} else if ( key === 'Escape' ) {
-		local(); // prevent toggle setting menu
+		G.local = 1; // prevent toggle setting menu
+		setTimeout( function() { G.local = 0 }, 300 );
 		$( '#infoX' ).click();
-	} else if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-		e.preventDefault();
-		var $input = $( '#infoContent input:not(:disabled)' );
-		var i = $input.index( $( '#infoContent input:focus' ) );
-		var next;
-		if ( i === 0 && key === 'ArrowUp' ) {
-			next = $input.last().focus();
-		} else if ( i === $input.length - 1 && key === 'ArrowDown' ) {
-			next = 0;
-		} else {
-			next = key === 'ArrowDown' ? i + 1 : i - 1;
-		}
-		$input.eq( next ).focus()
+	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
+		var rl = key === 'ArrowLeft' ? 'left' : 'right';
+		$( '#infoArrow .fa-arrow-'+ rl ).click();
 	}
 } );
 $( '#infoContent' ).click( function() {
@@ -516,8 +513,6 @@ function alignVertical() { // make infoBox scrollable
 			.css( 'height', document.body.clientHeight )
 			.removeClass( 'noclick' );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
-		$input0 = $( O.inputs[ 0 ] );
-		if ( !O.nofocus ) $input0.focus();
 	}, 200 );
 }
 function checkChanged() {

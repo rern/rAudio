@@ -366,7 +366,6 @@ function tagEditor() {
 				} );
 			}
 			, okno         : G.playlist
-			, nofocus      : 1
 			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				var newvalues = infoVal();
