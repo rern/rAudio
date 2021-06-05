@@ -148,6 +148,6 @@ data+='
 , "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 , "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "wlannoap"        : '$( [[ -e $dirsystem/wlannoap ]] && echo true || echo false )'
-, "wlanconnected"   : '$( ifconfig wlan0 2> /dev/null | grep -q 'inet.*broadcast' && echo true || echo false )
+, "wlanconnected"   : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
 
 echo {$data}

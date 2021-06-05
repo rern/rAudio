@@ -25,7 +25,7 @@ featureDisable() {
 }
 featureSet() {
 	systemctl restart $@
-	systemctl enable $@
+	systemctl -q is-active $@ && systemctl enable $@
 	pushRefresh
 }
 
