@@ -190,8 +190,8 @@ function psVolume( data ) {
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
 		$( '#infoContent' ).removeClass( 'hide' );
-		$( '.infomessage:eq( 1 ), #infoButtons a:eq( 0 )' ).addClass( 'hide' );
-		$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '.warning, #infoButtons a:eq( 0 )' ).addClass( 'hide' );              // ok
+		$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
 	}, 300 );
 }
 function psWifi( data ) {

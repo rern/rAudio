@@ -401,12 +401,13 @@ function info( json ) {
 					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
 		}
 		var htmlcontent = htmls.message || '';
-		if ( !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
+		if ( !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
 		var htmlinputs = '';
 		O.order.forEach( function( type ) {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
+		htmlcontent += htmls.range || '';
 		htmlcontent += htmls.footer || '';
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
