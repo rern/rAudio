@@ -511,5 +511,13 @@ wlan )
 	fi
 	pushRefresh
 	;;
+wlanset )
+	if [[ ${args[1]} == false ]]; then
+		touch $dirsystem/wlannoap
+	else
+		rm -f $dirsystem/wlannoap
+	fi
+	pushRefresh
+	;;
 	
 esac

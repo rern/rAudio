@@ -128,10 +128,11 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
-if [[ -z $connected ]]; then
-	pushNotify 'Network not connected.<br>Enable access point ...'
+if [[ -z $connected]]; then
+	[[ -e $dirsystem/wlannoap ]] && exit
+	
 	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-	systemctl -q disable hostapd 
+	systemctl -q disable hostapd
 	exit
 fi
 

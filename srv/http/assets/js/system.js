@@ -159,12 +159,14 @@ renderPage = function( list ) {
 	$( '#wlan' ).prop( 'checked', G.wlan );
 	if ( G.wlan ) {
 		$( '#wlan' ).prop( 'checked', true );
+		$( '#setting-wlan' ).toggleClass( 'hide', false );
 		$( '#wl' )
 			.removeAttr( 'class' )
 			.addClass( 'col-l double status' )
 			.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
 	} else {
 		$( '#wlan' ).prop( 'checked', false );
+		$( '#setting-wlan' ).toggleClass( 'hide', true );
 		$( '#wl' )
 			.removeAttr( 'class' )
 			.addClass( 'col-l single' )
@@ -217,11 +219,12 @@ refreshData();
 //---------------------------------------------------------------------------------------
 $( '.enable' ).click( function() {
 	var idname = {
-		  bluetooth    : 'On-board Bluetooth'
+		  bluetooth    : 'Bluetooth'
 		, lcd          : 'TFT LCD'
 		, lcdchar      : 'Character LCD'
 		, powerbutton  : 'Power Button'
 		, soundprofile : 'Kernel Sound Profile'
+		, wlan         : 'Wi-Fi'
 	}
 	var id = this.id;
 	if ( $( this ).prop( 'checked' ) ) {
@@ -367,6 +370,23 @@ $( '#wlan' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'Wi-Fi', checked, 'wifi' );
 	bash( [ 'wlan', checked ] );
+} );
+$( '#setting-wlan' ).click( function() {
+	info( {
+		  icon         : 'wifi'
+		, title        : 'Wi-Fi'
+		, checkbox     : [ 'Auto start <wh>Access Point:</wh>' ]
+		, footer       : '(On connection failed or no router)'
+		, values       : [ !G.wlannoap ]
+		, checkchanged : ( G.wlan ? 1 : 0 )
+		, cancel       : function() {
+			$( '#wlan' ).prop( 'checked', G.wlan );
+		}
+		, ok           : function() {
+			notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
+			bash( [ 'wlanset', infoVal() ] );
+		}
+	} );
 } );
 $( '#i2smodulesw' ).click( function() {
 	// delay to show switch sliding

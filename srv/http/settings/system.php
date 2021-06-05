@@ -105,8 +105,9 @@ $selecttimezone.= '</select>';
 <pre id="codebluetoothctl" class="hide"></pre>
 <div id="wl" data-status="iw"></div>
 <div class="col-r">
-	<input id="wlan" type="checkbox">
+	<input id="wlan" <?=$chkenable?>>
 	<div class="switchlabel" for="onboardwlan"></div>
+	<i id="setting-wlan" <?=$classsetting?>></i>
 </div>
 <pre id="codeiw" class="hide"></pre>
 </div>
