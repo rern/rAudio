@@ -189,7 +189,9 @@ function psVolume( data ) {
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
-		$( '#infoButtons a' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoContent' ).removeClass( 'hide' );
+		$( '.infomessage:eq( 1 ), #infoButtons a:eq( 0 )' ).addClass( 'hide' );
+		$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', data.db === '0.00' );
 	}, 300 );
 }
 function psWifi( data ) {
@@ -277,8 +279,6 @@ $( document ).keyup( function( e ) {
 		}, 0 );
 	} else if ( key === 'Escape' ) {
 		$focus = $( '.switchlabel.focus' );
-		if ( !$focus.length ) $( '#close' ).click();
-		
 		setTimeout( function() {
 			if ( $focus.length ) $focus.prev().focus();
 		}, 300 );

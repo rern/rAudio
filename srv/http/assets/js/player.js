@@ -156,7 +156,9 @@ $( '#setting-hwmixer' ).click( function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
-					$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
+					$( '#infoContent' ).after( '<div class="infomessage hide">'+ warning +'</div>' );
+					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
+					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
@@ -167,17 +169,15 @@ $( '#setting-hwmixer' ).click( function() {
 				}
 			}
 			, buttonnoreset : 1
-			, buttonlabel   : novolume ? '' : '<i class="fa fa-set0"></i>0dB'
-			, button        : novolume ? '' : function() {
-				info( {
-					  icon    : 'volume'
-					, title   : 'Mixer Device Volume'
-					, message : warning
-					, ok      : function() {
-						bash( [ 'volume0db', device.hwmixer ] );
-					}
-				} );
-			}
+			, buttonlabel   : novolume ? '' : [ 'OK', '<i class="fa fa-set0"></i>0dB' ]
+			, button        : novolume ? '' : [ 
+				  function() { bash( [ 'volume0db', device.hwmixer ] ) }
+				, function() {
+					$( '#infoContent' ).addClass( 'hide' );
+					$( '.infomessage:eq( 1 ), #infoButtons a:eq( 0 )' ).removeClass( 'hide' );
+					$( '#infoButtons a:eq( 1 )' ).addClass( 'hide' );
+				}
+			]
 			, okno          : 1
 		} );
 	} );
