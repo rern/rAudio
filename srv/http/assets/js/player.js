@@ -143,7 +143,7 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( [ 'volumeget' ], function( voldb ) {
+	bash( [ 'volumeget', device.hwmixer ], function( voldb ) {
 		var voldb = voldb.split( '^^' );
 		var db = voldb[ 1 ];
 		info( {

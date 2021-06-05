@@ -299,7 +299,10 @@ volume0db )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
 volumeget )
-	db=$( amixer | grep dB] | sed 's/.* \[\(.*\)dB.*/\1/' )
+	db=$( amixer get "${args[1]}" \
+			| grep dB] \
+			| head -1 \
+			| sed 's/.* \[\(.*\)dB.*/\1/' )
 	level=$( /srv/http/bash/cmd.sh volumeget )
 	echo $level^^$db
 	[[ -n ${args[1]} ]] && pushstream volume '{"val":'$level',"db":"'$db'"}'
