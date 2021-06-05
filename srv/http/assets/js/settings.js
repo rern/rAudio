@@ -276,19 +276,19 @@ $( document ).keyup( function( e ) {
 			}
 		}, 0 );
 	} else if ( key === 'Escape' ) {
+		$focus = $( '.switchlabel.focus' );
+		if ( !$focus.length ) $( '#close' ).click();
+		
 		setTimeout( function() {
-			if ( $( '.switchlabel.focus' ).length ) $( '.switchlabel.focus' ).prev().focus();
+			if ( $focus.length ) $focus.prev().focus();
 		}, 300 );
 		if ( $( '.setting.focus' ).length ) {
 			$( '.setting' ).removeClass( 'focus' );
 			return
 		}
 		
-		$focus = $( '.switchlabel.focus' );
 		if ( $focus.length && $focus.prev().prop( 'checked' ) && $focus.next().hasClass( 'setting' ) ) {
 			$( '.switchlabel.focus' ).next().addClass( 'focus' );
-		} else {
-			$focus.focus();
 		}
 	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
 		var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
