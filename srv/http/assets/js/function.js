@@ -1107,7 +1107,6 @@ function renderLibraryList( data ) {
 	}
 	
 	G.librarylist = 1;
-	loader( 'show' );
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
@@ -1211,7 +1210,6 @@ function renderLibraryList( data ) {
 	} else {
 		$( '.liinfo .lialbum' ).removeClass( 'hide' );
 	}
-	loader( 'hide' );
 }
 function renderPlayback() {
 	clearIntervalAll();
