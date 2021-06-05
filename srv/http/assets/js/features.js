@@ -198,8 +198,8 @@ $( '#setting-hostapd' ).click( function() {
 		}
 		, ok           : function() {
 			var values = infoVal();
-			var pwd = values[ 0 ];
-			var ip = values[ 1 ];
+			var ip = values[ 0 ];
+			var pwd = values[ 1 ];
 			var ips = ip.split( '.' );
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );
