@@ -162,14 +162,21 @@ $( '#setting-hwmixer' ).click( function() {
 						$( '#infoRange .value' ).text( val );
 						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
 					} ).on( 'mouseup touchend', function() {
-						bash( [ 'volumeget', 'push' ] );
+						bash( [ 'volumeget', device.hwmixer, 'push' ] );
 					} );
 				}
 			}
 			, buttonnoreset : 1
 			, buttonlabel   : novolume ? '' : '<i class="fa fa-set0"></i>0dB'
 			, button        : novolume ? '' : function() {
-				bash( [ 'volume0db', device.hwmixer ] );
+				info( {
+					  icon    : 'volume'
+					, title   : 'Mixer Device Volume'
+					, message : warning
+					, ok      : function() {
+						bash( [ 'volume0db', device.hwmixer ] );
+					}
+				} );
 			}
 			, okno          : 1
 		} );

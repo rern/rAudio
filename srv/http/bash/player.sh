@@ -305,7 +305,7 @@ volumeget )
 			| sed 's/.* \[\(.*\)dB.*/\1/' )
 	level=$( /srv/http/bash/cmd.sh volumeget )
 	echo $level^^$db
-	[[ -n ${args[1]} ]] && pushstream volume '{"val":'$level',"db":"'$db'"}'
+	[[ ${args[2]} == push ]] && pushstream volume '{"val":'$level',"db":"'$db'"}'
 	;;
 	
 esac
