@@ -150,6 +150,7 @@ function infoReset() {
 	}
 	$( '#infoContent, #infoArrow i, #infoButtons, #infoFileLabel' ).off( 'click' );
 	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
+	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
 	$( '#infoOverlay' ).addClass( 'hide noclick' ) // prevent click OK on consecutive info
 	$( '#infoBox' ).css( {
