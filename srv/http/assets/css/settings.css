@@ -833,4 +833,7 @@ input:checked + .switchlabel.disabled:after {
 	input:disabled {
 		cursor: not-allowed !important;
 	}
+	.switchlabel.focus {
+		box-shadow: 0 0 2px 2px var( --cg75 ) !important;
+	}
 }

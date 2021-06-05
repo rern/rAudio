@@ -248,6 +248,19 @@ var red = '#bb2828';
 var short = window.innerHeight < 570;
 var timer;
 document.title = page;
+
+$( document ).keydown( function( e ) {
+	$( '.switchlabel' ).removeClass( 'focus' );
+	var key = e.key;
+	if ( key !== 'Tab' && !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	
+	setTimeout( function() {
+		var $focus = $( 'input:checkbox:focus' );
+		if ( $focus.length ) {
+			$focus.next().addClass( 'focus' );
+		}
+	}, 0 );
+} );
 $( '#'+ page ).addClass( 'active' );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 

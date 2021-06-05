@@ -92,8 +92,6 @@ $( document ).keydown( function( e ) {
 		return
 		
 	} else if ( key === 'Tab' ) {
-		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
-		
 		e.preventDefault();
 		if ( G.library ) {
 			$( '#tab-playback' ).click();

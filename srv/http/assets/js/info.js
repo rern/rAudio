@@ -117,6 +117,15 @@ select:   [U] [D]     - check
 	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
 		var rl = key === 'ArrowLeft' ? 'left' : 'right';
 		$( '#infoArrow .fa-arrow-'+ rl ).click();
+	} else if ( key === 'Tab' ) {
+		var indexlast = O.inputs.length - 1;
+		var $focus = $( document.activeElement );
+		var indexfocus = O.inputs.index( $focus );
+		if ( $focus.hasClass( 'selectric-input' ) ) indexfocus = O.inputs.index( $focus.parent().find( 'select' ) );
+		if ( indexfocus === indexlast ) {
+			e.preventDefault();
+			$( O.inputs[ 0 ] ).focus();
+		}
 	}
 } );
 $( '#infoContent' ).click( function() {
