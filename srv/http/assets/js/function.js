@@ -1163,8 +1163,7 @@ function renderLibraryList( data ) {
 		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
-				.off( 'error' )
-				.on( 'error', function() {
+				.off( 'error' ).on( 'error', function() {
 					if ( G.mode === 'album' ) {
 						$( this ).attr( 'src', G.coverdefault );
 					} else {
@@ -1486,8 +1485,7 @@ renderPlaylist = function( data ) {
 		$( '#pl-list .lazy' ).off( 'error' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
-				.off( 'error' )
-				.on( 'error', function() {
+				.off( 'error' ).on( 'error', function() {
 					$( this ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
 				} );
 		} );
