@@ -91,8 +91,7 @@
 	<a>Access Point<br><gr>hostapd<?=$istatus?></gr></a><i class="fa fa-accesspoint"></i>
 </div>
 <div class="col-r">
-	<input id="hostapd" class="enable hidden" type="checkbox">
-	<input id="hostapdchk" type="checkbox">
+	<input id="hostapd" type="checkbox">
 	<div class="switchlabel" for="hostapd"></div>
 	<i id="setting-hostapd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>><a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.

@@ -99,7 +99,7 @@ var containerhtml = heredoc( function() { /*
 */ } );
 $( 'body' ).prepend( containerhtml );
 
-$( '#infoOverlay' ).keydown( function( e ) {
+$( '#infoOverlay' ).keyup( function( e ) {
 /*
 all:      [Tab]       - focus / next input
           [Shift+Tab] - previous input

@@ -1,5 +1,5 @@
 // keyboard controls
-$( document ).keydown( function( e ) {
+$( document ).keyup( function( e ) {
 	if ( G.local || !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;

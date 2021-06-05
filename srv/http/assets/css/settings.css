@@ -261,6 +261,7 @@ gr, .gr, grl { color: var( --cg60 ) !important; }
 red, .red { color: #f00; }
 grn, .green { color: #0f0; }
 .clear { clear: both; }
+.bgr { background: var( --cgd ); }
 whl,
 grl,
 heading {
@@ -555,6 +556,9 @@ input:checked + .switchlabel.disabled:after {
 }
 .setting {
 	position: absolute;
+}
+.setting.focus {
+	color: var( --cm );
 }
 .cg {
 	background: var( --cg );

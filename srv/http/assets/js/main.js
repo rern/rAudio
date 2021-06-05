@@ -1011,7 +1011,7 @@ $( '#lib-search-close' ).click( function() {
 		$( '#button-library' ).click();
 	}
 } );
-$( '#lib-search-input' ).keydown( function( e ) {
+$( '#lib-search-input' ).keyup( function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).click();
 } );
 $( '#button-lib-back' ).click( function() {
