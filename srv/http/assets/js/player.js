@@ -162,7 +162,7 @@ $( '#setting-hwmixer' ).click( function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
-					$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
+					$( '#infoContent' ).after( '<div class="infomessage warning hide"><br>'+ warning +'</div>' );
 					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
 					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input', function() {
