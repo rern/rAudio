@@ -6,7 +6,6 @@ alias=r1
 
 file=/etc/upmpdcli.conf
 if ! grep -q upmpdcli.sh $file; then
-	rm -f /srv/http/data/shm/player-*
 	sed -i '/^on/ d' $file
 	echo -n "\
 onstart = /srv/http/bash/upmpdcli.sh

@@ -16,6 +16,6 @@ else
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
-	mv $playerfile-{*,upnp}
+	sudo mv $playerfile-{*,upnp} # sudo - fix permission on start
 	systemctl try-restart shairport-sync snapclient spotifyd &> /dev/null
 fi

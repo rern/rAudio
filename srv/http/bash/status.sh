@@ -4,20 +4,14 @@ dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
 
-player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
-if [[ -z $player ]]; then
-	player=mpd
-	fileplayer=$dirtmp/player-mpd
-	touch $fileplayer
-	chown http:http $fileplayer # allow upmpdcli to write
-	chmod 777 $fileplayer
-fi
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 [[ -z $counts ]] && counts=false # fix - sometime blank on startup
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
+player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
+[[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 playlistlength=$( mpc playlist | wc -l | tee $dirtmp/playlistlength ) # save for add webradio by other apps
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
