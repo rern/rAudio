@@ -1734,7 +1734,7 @@ function setPlaylistScroll() {
 		var scrollpos = $liactive.offset().top - ( G.bars ? 80 : 40 ) - ( 49 * 3 );
 		$( 'html, body' ).scrollTop( scrollpos );
 	}
-	playlistProgress();
+	if ( G.status.state !== 'stop' ) playlistProgress();
 }
 function setRadioAlbum() {
 	var playing = G.status.state === 'play';

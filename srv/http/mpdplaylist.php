@@ -238,6 +238,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countsong++;
 			$counttime += $sec;
 		} else if ( file_exists( '/srv/http/data/shm/player-upnp' ) ) {
+			$upnp = 1;
 			$html.= '<li class="upnp">'
 						.'<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>'
 						.'<span class="li1"><span class="name">'.$list->Title.'</span>'
@@ -275,7 +276,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	$countradiohtml = $countradio ? '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>' : '';
 	if ( $countsong ) {
 		$counthtml.= '<whl id="pl-trackcount">'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
-					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>'.$countradiohtml;
+					.( isset( $upnp ) ? '' : '<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>' ).$countradiohtml;
 		if ( !$countradio ) str_replace( 'grl', 'whl', $counthtml );
 	} else if ( $countradio ) {
 		$counthtml.= $countradiohtml;
