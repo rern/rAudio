@@ -108,32 +108,6 @@ function infoReplace( callback ) {
 		, ok      : callback
 	} );
 }
-function playlistSave( name, oldname ) {
-	if ( oldname ) {
-		bash( [ 'plrename', oldname, name ] );
-	} else {
-		list( { cmd: 'save', name: name }, function( data ) {
-			if ( data == -1 ) {
-				info( {
-					  icon        : 'list-ul'
-					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
-					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
-								   +'<br>Already exists.'
-					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
-					, button      : playlistNew
-					, oklabel     : '<i class="fa fa-flash"></i>Replace'
-					, ok          : function() {
-						oldname ? playlistSave( name, oldname ) : playlistSave( name );
-					}
-				} );
-			} else {
-				G.status.playlists++;
-				banner( 'Playlist Saved', name, 'list-ul' );
-				$( '#button-pl-open' ).removeClass( 'disable' );
-			}
-		} );
-	}
-}
 function playlistDelete() {
 	info( {
 		  icon    : 'list-ul'
@@ -201,6 +175,32 @@ function playlistRename() {
 			G.list.li.find( '.plname' ).text( newname );
 		}
 	} );
+}
+function playlistSave( name, oldname ) {
+	if ( oldname ) {
+		bash( [ 'plrename', oldname, name ] );
+	} else {
+		list( { cmd: 'save', name: name }, function( data ) {
+			if ( data == -1 ) {
+				info( {
+					  icon        : 'list-ul'
+					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
+					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
+								   +'<br>Already exists.'
+					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
+					, button      : playlistNew
+					, oklabel     : '<i class="fa fa-flash"></i>Replace'
+					, ok          : function() {
+						oldname ? playlistSave( name, oldname ) : playlistSave( name );
+					}
+				} );
+			} else {
+				G.status.playlists++;
+				banner( 'Playlist Saved', name, 'list-ul' );
+				$( '#button-pl-open' ).removeClass( 'disable' );
+			}
+		} );
+	}
 }
 function tagEditor() {
 	var file = G.list.path;
