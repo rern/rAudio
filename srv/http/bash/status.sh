@@ -227,7 +227,7 @@ if [[ $fileheader == cdda ]]; then
 elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
-		duration=$( printf '%.0f\n' $duration )
+		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
 , "Album"  : "'$Album'"
