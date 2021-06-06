@@ -307,7 +307,6 @@ function displayPlayback() {
 			.addClass( 'fa fa-'+ G.iplayer )
 			.removeClass( 'hide' );
 	}
-	$( '#tab-playlist' ).toggleClass( 'gr', G.iplayer === 'upnp' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
@@ -338,7 +337,7 @@ function displayPlayback() {
 	}
 	$( '#time-bar, #time-band' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
-	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
+	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
 	$( '.volumeband' )
 		.toggleClass( 'hide', G.display.volume )
 		.toggleClass( 'disabled', G.status.volume == -1 );
@@ -985,6 +984,7 @@ function playlistProgress() {
 	var slash = G.status.webradio ? '' : ' <gr>/</gr>';
 	$( '.li1 .radioname' ).removeClass( 'hide' );
 	$( '.li2 .radioname' ).addClass( 'hide' );
+	if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
 	if ( G.status.state === 'pause' ) {
 		elapsedtxt = second2HMS( G.status.elapsed );
 		$elapsed.html( '<i class="fa fa-pause"></i>'+ elapsedtxt + slash );
@@ -1620,8 +1620,9 @@ function second2HMS( second ) {
 }
 function setButtonControl() {
 	if ( G.bars ) {
-		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && G.status.player === 'mpd' );
-		$( '#previous, #next' ).toggleClass( 'hide', G.status.playlistlength < 2 || G.status.player !== 'mpd' );
+		var mpd_upnp = [ 'mpd', 'upnp' ].indexOf( G.status.player ) !== -1;
+		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
+		$( '#previous, #next' ).toggleClass( 'hide', G.status.playlistlength < 2 || !mpd_upnp );
 		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 		$( '#pause' ).toggleClass( 'hide', G.status.webradio || G.status.player === 'airplay' );
 		$( '#playback-controls .btn' ).removeClass( 'active' );
@@ -1699,7 +1700,7 @@ function setButtonUpdating() {
 function setPlaylistScroll() {
 	if ( !G.playlist
 		|| G.plremove
-		|| G.status.player !== 'mpd'
+		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| !G.status.playlistlength
 		|| G.sortable ) return // skip if empty or Sortable

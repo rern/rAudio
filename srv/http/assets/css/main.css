@@ -29,7 +29,7 @@
 	font-family: rern;
 	font-style: normal;
 }
-.fa-lg { font-size: 22px }
+.fa-lg { font-size: 22px !important }
 .fa-airplay:before { content: "\f580" }
 .fa-album:before { content: "\f555" }
 .fa-albumartist:before { content: "\f557" }

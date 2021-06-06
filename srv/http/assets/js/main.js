@@ -323,8 +323,6 @@ $( '#tab-playback' ).click( function() {
 	}
 } )
 $( '#tab-playlist' ).click( function() {
-	if ( G.status.player === 'upnp' ) return
-	
 	G.pladd = {};
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) {
@@ -1630,7 +1628,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
 	
 	var $this = $( this );
-	if ( G.status.player !== 'mpd' ) {
+	if ( [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 ) {
 		$this.find( '.pl-icon' ).click();
 		return
 	}
