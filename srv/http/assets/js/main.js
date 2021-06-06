@@ -122,7 +122,12 @@ $( '#coverart' ).on( 'load', function() {
 	loader( 'hide' );
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-//$( '#bar-top' ).on( 'click', '#button-settings', function() {
+$( '#logo, #reload, #button-library, #button-playlist' ).taphold( function() {
+	location.reload();
+} );
+$( '#logo' ).click( function() {
+	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+} );
 $( '#button-settings' ).click( function() {
 	var $settings = $( '#settings' );
 	if ( $settings.hasClass( 'hide' ) ) {
@@ -272,8 +277,6 @@ $( '#addons' ).click( function () {
 	} );
 } );
 $( '#tab-library, #button-library' ).click( function() {
-	if ( G.status.player === 'upnp' ) return
-	
 	$( '.menu' ).addClass( 'hide' );
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -292,12 +295,6 @@ $( '#tab-library, #button-library' ).click( function() {
 		switchPage( 'library' );
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
-} );
-$( '#logo, #reload, #button-library, #button-playlist' ).taphold( function() {
-	location.reload();
-} );
-$( '#logo' ).click( function() {
-	window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
 $( '#tab-playback' ).click( function() {
 	if ( G.playback ) {
@@ -373,12 +370,10 @@ $( '#page-library' ).tap( function( e ) {
 } );
 $( '#page-library, #page-playback, #page-playlist' ).click( function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-	$( '.indexed' ).removeClass( 'bgr' );
 } );
 $( '#bar-top, #bar-bottom' ).click( function() {
 	if ( G.guide ) hideGuide();
 	if ( !$( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
-	$( '.indexed' ).removeClass( 'bgr' );
 } );
 $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
