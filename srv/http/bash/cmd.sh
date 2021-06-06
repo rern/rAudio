@@ -155,8 +155,6 @@ volume0dB(){
 	volumeGet
 	if [[ $db != 0.00 ]]; then
 		echo $volume > $dirtmp/mpdvolume
-		chown http:http $dirtmp/mpdvolume
-		chmod 777 $dirtmp/mpdvolume
 		amixer -c $card -Mq sset "$control" 0dB
 	fi
 }
