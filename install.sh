@@ -5,6 +5,18 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 chown http:http /srv/http/data/shm/player-*
+chmod 777 /srv/http/data/shm/player-*
+
+file=/etc/upmpdcli.conf
+if ! grep -q pushstatus $file; then
+	sed -i '/^on/ d' $file
+	echo "\
+onstart = /srv/http/bash/upnp-active.sh
+onplay = /srv/http/bash/cmd-pushstatus.sh
+onpause = /srv/http/bash/cmd-pushstatus.sh
+onstop = /srv/http/bash/upnp-stop.sh
+" >> $file
+fi
 
 file=/etc/systemd/system/upmpdcli.service.d/override.conf
 if [[ -e $file ]] && ! grep -q User=http $file; then
