@@ -221,9 +221,9 @@ mixertype )
 		mpc stop
 		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		if [[ $mixertype == hardware ]];then
-			amixer -M sset "$hwmixer" $vol%
+			amixer -Mq sset "$hwmixer" $vol%
 		else
-			amixer sset "$hwmixer" 0dB
+			amixer -Mq sset "$hwmixer" 0dB
 		fi
 	fi
 	if [[ $mixertype == hardware ]]; then
@@ -251,7 +251,7 @@ novolume )
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
 	mpc crossfade 0
-	amixer sset "$hwmixer" 0dB
+	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
@@ -294,7 +294,7 @@ soxrset )
 	restartMPD
 	;;
 volume0db )
-	amixer sset "${args[1]}" 0dB
+	amixer -Mq sset "${args[1]}" 0dB
 	level=$( /srv/http/bash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
