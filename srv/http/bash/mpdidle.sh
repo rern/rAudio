@@ -23,6 +23,9 @@ mpc idleloop | while read changed; do
 				$dirbash/cmd-pushstatus.sh
 			fi
 			;;
+		mixer )
+			[[ -e $dirtmp/player-upnp ]] && pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
+			;;
 		playlist )
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
 				pllength0=$( cat $dirtmp/playlistlength 2> /dev/null || echo 0 )

@@ -307,6 +307,7 @@ function displayPlayback() {
 			.addClass( 'fa fa-'+ G.iplayer )
 			.removeClass( 'hide' );
 	}
+	$( '#tab-playlist' ).toggleClass( 'gr', G.iplayer === 'upnp' );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
@@ -1298,7 +1299,6 @@ function renderPlayback() {
 	$( '#total' ).text( timehms );
 	// stop ////////////////////
 	if ( G.status.state === 'stop' ) {
-		if ( G.status.player === 'upnp' ) $( '#sampling' ).empty();
 		$( '#song' ).removeClass( 'gr' );
 		if ( displaytime ) {
 			$( '#time' ).roundSlider( 'setValue', 0 );
