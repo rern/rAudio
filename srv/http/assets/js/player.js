@@ -80,11 +80,16 @@ renderPage = function( list ) {
 	[ 'crossfade', 'mpdconf', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
-	if ( $( '#infoRange .value' ).text() ) {
-		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
-			$( '#infoRange .value' ).text( level );
-			$( '#infoRange input' ).val( level );
-		}, 'json' );
+	if ( $( '#infoRange' ).length ) {
+		bash( [ 'volumeget', 'db' ], function( voldb ) {
+			var voldb = voldb.split( ' ' );
+			var vol = voldb[ 0 ];
+			var db = voldb[ 1 ];
+			$( '#infoRange .value' ).text( vol );
+			$( '#infoRange input' ).val( vol );
+			$( '.infofooter' ).text( db +' dB' );
+			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+		} );
 	}
 	resetLocal();
 	showContent();
@@ -143,14 +148,15 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( [ 'volumeget', device.hwmixer ], function( voldb ) {
-		var voldb = voldb.split( '^^' );
+	bash( [ 'volumeget', 'db' ], function( voldb ) {
+		var voldb = voldb.split( ' ' );
+		var vol = voldb[ 0 ];
 		var db = voldb[ 1 ];
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : device.hwmixer
-			, rangevalue    : voldb[ 0 ]
+			, rangevalue    : vol
 			, footer        : ( novolume ? '0dB (No Volume)' : db +' dB' )
 			, beforeshow    : function() {
 				if ( novolume ) {
@@ -164,7 +170,7 @@ $( '#setting-hwmixer' ).click( function() {
 						$( '#infoRange .value' ).text( val );
 						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
 					} ).on( 'mouseup touchend', function() {
-						bash( [ 'volumeget', device.hwmixer, 'push' ] );
+						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
 			}

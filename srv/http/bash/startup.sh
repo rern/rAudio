@@ -73,6 +73,7 @@ fi
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 
 touch $dirdata/shm/player-mpd
+chown http:http $dirdata/shm/player-mpd # allow upmpdcli to write
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 

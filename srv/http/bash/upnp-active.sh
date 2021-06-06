@@ -16,7 +16,6 @@ gatewaynet=$( ip route \
 				| awk '/default/ {print $3}' \
 				| head -1 \
 				| cut -d. -f1-2 )
-echo $gatewaynet == $urlnet
 if [[ $gatewaynet == $urlnet ]]; then
 	mv $playerfile-{*,upnp}
 	/srv/http/bash/cmd.sh volume0db

@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+chown http:http /srv/http/data/shm/player-*
+
 file=/etc/systemd/system/upmpdcli.service.d/override.conf
 if [[ -e $file ]] && ! grep -q User=http $file; then
 	sed -i '1 a\User=http' $file
