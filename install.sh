@@ -10,7 +10,7 @@ chmod 777 /srv/http/data/shm/player-*
 file=/etc/upmpdcli.conf
 if ! grep -q upmpdcli.sh $file; then
 	sed -i '/^on/ d' $file
-	echo "\
+	echo -n "\
 onstart = /srv/http/bash/upmpdcli.sh
 onplay = /srv/http/bash/cmd-pushstatus.sh
 onpause = /srv/http/bash/cmd-pushstatus.sh
