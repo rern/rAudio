@@ -237,11 +237,19 @@ function htmlPlaylist( $lists, $plname = '' ) {
 					.'</li>';
 			$countsong++;
 			$counttime += $sec;
+		} else if ( file_exists( '/srv/http/data/shm/player-upnp' ) ) {
+			$html.= '<li class="upnp">'
+						.'<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>'
+						.'<span class="li1"><span class="name">'.$list->Title.'</span>'
+						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span>'
+						.'</span>'
+						.'<span class="li2">'.$i.' • '.$list->Artist.' - '.$list->Album.'</span></span>'
+					.'</li>';
+			$countsong++;
 		} else {
-			$upnp = file_exists( '/srv/http/data/shm/player-upnp' );
-			$stationname = !$upnp ? $list->Name : $list->Title;
-			$notsaved = $stationname === '' && !$upnp;
-			$file = !$upnp ? preg_replace( '/\?.*$/', '', $file ) : $list->Artist.' - '.$list->Album;
+			$stationname = $list->Name;
+			$notsaved = $stationname === '';
+			$file = preg_replace( '/\?.*$/', '', $file );
 			$urlname = str_replace( '/', '|', $file );
 			$pathnoext = '/data/webradiosimg/'.$urlname.'-thumb.';
 			$coverfile = glob( '/srv/http'.$pathnoext.'*' );
@@ -250,7 +258,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
 				$icon = $notsaved ? '<i class="fa fa-save savewr"></i>' : '';
-				$icon.= '<i class="fa fa-'.( $upnp ? 'upnp fa-lg' : 'webradio' ).' pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon.= '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li'.( $notsaved ? ' class="notsaved"' : '' ).'>'
 						.$icon

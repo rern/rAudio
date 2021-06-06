@@ -1685,6 +1685,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var active = $thisli.hasClass( 'active' );
 	var audiocd = G.list.path.slice( 0, 4 ) === 'cdda';
 	var mpd = G.status.player === 'mpd';
+	var upnp = $thisli.hasClass( 'upnp' );
 	$thisli.addClass( 'updn' );
 	$( '#menu-plaction a' ).removeClass( 'hide' );
 	if ( active ) {
@@ -1696,8 +1697,8 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	}
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', !$thisli.hasClass( 'notsaved' ) );
-	$menu.find( '.similar, .submenu, .tag' ).toggleClass( 'hide', radio );
-	$menu.find( '.savedpladd, .tag' ).toggleClass( 'hide', audiocd );
+	$menu.find( '.similar, .submenu, .tag' ).toggleClass( 'hide', radio || upnp );
+	$menu.find( '.savedpladd, .tag' ).toggleClass( 'hide', audiocd || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
 	var menuH = $menu.height();
 	$menu
