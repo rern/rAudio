@@ -14,7 +14,7 @@ if ! grep -q upmpdcli.sh $file; then
 onstart = /srv/http/bash/upmpdcli.sh
 onplay = /srv/http/bash/cmd-pushstatus.sh
 onpause = /srv/http/bash/cmd-pushstatus.sh
-onstop = /srv/http/bash/upmpdcli.sh stop
+onstop = /srv/http/bash/cmd-pushstatus.sh
 " >> $file
 fi
 
