@@ -198,8 +198,9 @@ volumeGet() {
 		else
 			control=$( echo "$controls" | sort -u | head -1 )
 			voldb=$( amixer -M sget "$control" \
-				| awk '/%/ {print $4" "$5}' | tr -d []%dB \
-				| head -1 )
+				| grep '%.*dB' \
+				| head -1 \
+				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 			if [[ -n $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
