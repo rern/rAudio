@@ -72,10 +72,6 @@ fi
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 
-touch $dirdata/shm/player-mpd
-chown http:http $dirdata/shm/player-mpd # allow upmpdcli to write
-chmod 777 $dirdata/shm/player-mpd
-
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 
 $dirbash/mpd-conf.sh # mpd.service start by this script

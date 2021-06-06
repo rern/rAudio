@@ -4,11 +4,9 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-chown http:http /srv/http/data/shm/player-*
-chmod 777 /srv/http/data/shm/player-*
-
 file=/etc/upmpdcli.conf
 if ! grep -q upmpdcli.sh $file; then
+	rm -f /srv/http/data/shm/player-*
 	sed -i '/^on/ d' $file
 	echo -n "\
 onstart = /srv/http/bash/upmpdcli.sh
