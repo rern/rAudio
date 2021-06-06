@@ -8,13 +8,13 @@ chown http:http /srv/http/data/shm/player-*
 chmod 777 /srv/http/data/shm/player-*
 
 file=/etc/upmpdcli.conf
-if ! grep -q pushstatus $file; then
+if ! grep -q upmpdcli.sh $file; then
 	sed -i '/^on/ d' $file
 	echo "\
-onstart = /srv/http/bash/upnp-active.sh
+onstart = /srv/http/bash/upmpdcli.sh
 onplay = /srv/http/bash/cmd-pushstatus.sh
 onpause = /srv/http/bash/cmd-pushstatus.sh
-onstop = /srv/http/bash/upnp-stop.sh
+onstop = /srv/http/bash/upmpdcli.sh stop
 " >> $file
 fi
 
