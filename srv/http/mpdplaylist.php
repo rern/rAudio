@@ -276,7 +276,8 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	$countradiohtml = $countradio ? '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>' : '';
 	if ( $countsong ) {
 		$counthtml.= '<whl id="pl-trackcount">'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
-					.( isset( $upnp ) ? '' : '<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>' ).$countradiohtml;
+					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>'.$countradiohtml;
+		if ( isset( $upnp ) ) $counthtml.= ' <i class="fa fa-upnp"></i>';
 		if ( !$countradio ) str_replace( 'grl', 'whl', $counthtml );
 	} else if ( $countradio ) {
 		$counthtml.= $countradiohtml;
