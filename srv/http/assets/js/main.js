@@ -834,7 +834,7 @@ $( '.btn-cmd' ).click( function() {
 			} else if ( G.status.player === 'spotify' ) {
 				bash( '/srv/http/bash/spotifyd.sh stop' );
 			} else if ( G.status.player === 'upnp' ) {
-				bash( '/srv/http/bash/upnp-stop.sh' );
+				bash( '/srv/http/bash/upmpdcli.sh stop' );
 			}
 			if ( G.status.player !== 'mpd' ) {
 				banner( nameplayer[ G.status.player ], 'Stop ...', G.status.player +' blink', -1 );
