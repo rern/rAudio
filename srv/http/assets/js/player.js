@@ -168,7 +168,7 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoRange input' ).on( 'click input', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
-						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
+						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ val +'%' );
 					} ).on( 'mouseup touchend', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );

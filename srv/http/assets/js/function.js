@@ -1884,7 +1884,7 @@ function volumeBarTimeout() {
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {
-		bash( 'amixer -M sset "'+ G.status.control +'" '+ vol +'%' );
+		bash( 'amixer -Mq sset "'+ G.status.control +'" '+ vol +'%' );
 	} else {
 		bash( 'mpc volume '+ vol );
 	}
