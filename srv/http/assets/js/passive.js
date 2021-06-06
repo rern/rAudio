@@ -283,7 +283,7 @@ function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
-		if ( !data.control ) { // fix - upmpdcli missing values on stop/pause
+		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control
 			delete data.volume
 		}
