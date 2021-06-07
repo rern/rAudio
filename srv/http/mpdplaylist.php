@@ -212,32 +212,29 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$title = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
 			$ext = '';
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
+				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
 				$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
 				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
 				$coverfile = glob( $pathglob.'*' );
 				if ( count( $coverfile ) ) {
-					$coverfile = $coverfile[ 0 ];
+					$thumbsrc = rawurlencode( $pathnoext.$time.substr( $coverfile[ 0 ], -4 ) );
 				} else {
 					$artistalbum = preg_replace( '/[\n "`?\/#&\']/', '', $artist.$album );
 					$pathnoext = '/data/embedded/'.$artistalbum.'.';
-					if ( file_exists( '/srv/http'.$pathnoext.'jpg' ) ) {
-						$coverfile = $pathnoext.'jpg';
-					} else {
-						$coverfile = '';
-					}
+					$thumbsrc = file_exists( '/srv/http'.$pathnoext.'jpg' ) ? $pathnoext.$time.'.jpg' : '';
 				}
 			} else {
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-				$pathnoext = '/data/audiocd/'.$discid.'.';
-				$coverfile = glob( '/srv/http'.$pathnoext.'*' );
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
+				$pathnoext = '/data/audiocd/'.$discid.'.';
+				$coverfile = glob( '/srv/http'.$pathnoext.'jpg' );
+				$thumbsrc = count( $coverfile ) ? $pathnoext.$time.substr( $coverfile[ 0 ], -4 ) : '';
 			}
-			if ( $coverfile ) {
-				$thumbsrc = $pathnoext.$time.substr( $coverfile, -4 );
-				$icon = '<img class="lazy iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">';
+			if ( $thumbsrc ) {
+				$icon = '<img class="lazy iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = '<i class="fa fa-'.( substr( $file, 0, 4 ) === 'cdda' ? 'audiocd' : 'music' ).' pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon = '<i class="fa fa-'.( $discid ? 'audiocd' : 'music' ).' pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li class="file" '.$datatrack.'>'
 						.$icon
