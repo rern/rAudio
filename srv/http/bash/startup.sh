@@ -126,11 +126,11 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 
-if [[ -z $connected]]; then
-	[[ -e $dirsystem/wlannoap ]] && exit
-	
-	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-	systemctl -q disable hostapd
+if [[ -z $connected ]]; then
+	if [[ ! -e $dirsystem/wlannoap ]]; then
+		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+		systemctl -q disable hostapd
+	fi
 	exit
 fi
 
