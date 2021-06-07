@@ -206,16 +206,9 @@ case 'webradio':
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$name = str_replace( '/', '|', $each->url );
-		$pathnoext = '/data/webradiosimg/'.$name.'-thumb.';
-		$coverfile = glob( '/srv/http'.$pathnoext.'*' );
-		if ( count( $coverfile ) ) {
-			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
-			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">';
-		} else {
-			$icon = '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>';
-		}
+		$thumbsrc = '/data/webradiosimg/'.$name.'-thumb.'.$time.'.jpg';
 		$html.= '<li class="file" data-index="'.$index.'">'
-					.$icon
+					.'<img class="lazy iconthumb lib-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-webradio">'
 					.'<a class="lipath">'.$each->url.'</a>'
 					.'<a class="liname">'.$each->name.'</a>'
 					.'<span class="li1">'.$each->name.'</span>'
@@ -244,24 +237,15 @@ function directoryList( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$nas100 = count( $lists ) > 100 && substr( $list, 0, 3 ) === 'NAS'; // slow on NAS - limit search <100 dirs
 	$time = time();
 	$html = '';
 	foreach( $array as $each ) {
 		$path = $each->path;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
-		$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
-		$coverfile = $nas100 ? [ '.jpg' ] : glob( $pathglob.'*' );
-		if ( count( $coverfile ) ) {
-			$thumbsrc = rawurlencode( $pathnoext.$time.substr( $coverfile[ 0 ], -4 ) ); // rawurlencode special characters in path
-			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
-		} else {
-			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';
-		}
+		$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
 		$html.=  '<li data-mode="file" data-index="'.$index.'">'
-				.$icon
+				.'<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">'
 				.'<a class="lipath">'.$path.'</a>'
 				.'<span class="single">'.$each->dir.'</span>'
 				.'</li>';
@@ -416,6 +400,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	} else {
 		$cue = false;
 	}
+	$time = time();
 	$i = 0;
 	$html = '';
 	foreach( $array as $each ) {
@@ -462,7 +447,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
 			$script.= ' "'.escape( implode( "\n", [ $artist, $album, 'licover' ] ) ).'" &> /dev/null &';
 			$coverart = exec( $script );
-			$coverart = '/assets/img/coverart.'.time().'.svg';
+			$coverart = '/assets/img/coverart.'.$time.'.svg';
 		}
 		$hidealbum = $album && $gmode !== 'album' ? '' : ' hide';
 		$hideartist = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';

@@ -174,19 +174,11 @@ case 'save':
 }
 
 //-------------------------------------------------------------------------------------
-function globCoverfile( $pathnoext ) {
-	$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
-	$coverfile = glob( $pathglob.'.*' );
-	return count( $coverfile ) ? rawurlencode( $pathnoext.'.'.$time.substr( $coverfile[ 0 ], -3 ) ) : '';
-}
 function htmlPlaylist( $lists, $plname = '' ) {
 	global $headers;
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
-	$nas = array_filter( $lists, function( $list ) {
-		return substr( $list->file, 0, 3 ) === 'NAS';
-	} );
 	$time = time();
 	$countradio = 0;
 	$countsong = 0;
@@ -219,24 +211,14 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = globCoverfile( '/mnt/MPD/'.$path.'/thumb' );
-				if ( !$thumbsrc ) {
-					$artistalbum = preg_replace( '/[\n "`?\/#&\']/', '', $artist.$album );
-					$pathnoext = '/data/embedded/'.$artistalbum;
-					$thumbsrc = file_exists( '/srv/http'.$pathnoext.'.jpg' ) ? $pathnoext.'.'.$time.'.jpg' : '';
-				}
+				$thumbsrc = '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg';
 			} else {
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-				$thumbsrc = globCoverfile( '/data/audiocd/'.$discid );
-			}
-			if ( $thumbsrc ) {
-				$icon = '<img class="lazy iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
-			} else {
-				$icon = '<i class="fa fa-'.( $discid ? 'audiocd' : 'music' ).' pl-icon" data-target="#menu-filesavedpl"></i>';
+				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
 			}
 			$html.= '<li class="file" '.$datatrack.'>'
-						.$icon
+						.'<img class="lazy iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
 						.'<span class="li1"><a class="name">'.$list->Title.'</a>'
 						.'<span class="duration"><a class="elapsed"></a>'
@@ -261,14 +243,11 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$notsaved = $stationname === '';
 			$file = preg_replace( '/\?.*$/', '', $file );
 			$urlname = str_replace( '/', '|', $file );
-			$pathnoext = '/data/webradiosimg/'.$urlname.'-thumb.';
-			$coverfile = glob( '/srv/http'.$pathnoext.'*' );
-			if ( count( $coverfile ) ) {
-				$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
+			if ( !$notsaved ) {
+				$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
 				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = $notsaved ? '<i class="fa fa-save savewr"></i>' : '';
-				$icon.= '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li'.( $notsaved ? ' class="notsaved"' : '' ).'>'
 						.$icon
