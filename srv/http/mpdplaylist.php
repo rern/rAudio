@@ -186,6 +186,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	$countradio = 0;
 	$countsong = 0;
 	$counttime = 0;
+	$countupnp = 0;
 	$i = 0;
 	$html = '';
 	foreach( $lists as $list ) {
@@ -199,9 +200,10 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$li2 = $i.' • ';
 			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
 			$artist = $list->Artist ?: $list->Albumartist;
+			$album = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-			if ( $list->Album ) $li2.= '<a class="album">'.$list->Album.'</a>';
-			if ( !$artist && !$list->Album ) $li2.= $file;
+			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
+			if ( !$artist && !$album ) $li2.= $file;
 			$datatrack = '';
 			if ( strpos( $file, '.cue/track' ) ) {
 				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
@@ -214,14 +216,25 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
 				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
 				$coverfile = glob( $pathglob.'*' );
+				if ( count( $coverfile ) ) {
+					$coverfile = $coverfile[ 0 ];
+				} else {
+					$artistalbum = preg_replace( '/[\n "`?\/#&\']/', '', $artist.$album );
+					$pathnoext = '/data/embedded/'.$artistalbum.'.';
+					if ( file_exists( '/srv/http'.$pathnoext.'jpg' ) ) {
+						$coverfile = $pathnoext.'jpg';
+					} else {
+						$coverfile = '';
+					}
+				}
 			} else {
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$pathnoext = '/data/audiocd/'.$discid.'.';
 				$coverfile = glob( '/srv/http'.$pathnoext.'*' );
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 			}
-			if ( count( $coverfile ) ) {
-				$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
+			if ( $coverfile ) {
+				$thumbsrc = $pathnoext.$time.substr( $coverfile, -4 );
 				$icon = '<img class="lazy iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
 				$icon = '<i class="fa fa-'.( substr( $file, 0, 4 ) === 'cdda' ? 'audiocd' : 'music' ).' pl-icon" data-target="#menu-filesavedpl"></i>';
@@ -229,7 +242,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$html.= '<li class="file" '.$datatrack.'>'
 						.$icon
 						.'<a class="lipath">'.$file.'</a>'
-						.'<span class="li1"><a class="name">'.$title.'</a>'
+						.'<span class="li1"><a class="name">'.$artistalbum.'</a>'
 						.'<span class="duration"><a class="elapsed"></a>'
 						.'<a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span>'
 						.'</span>'
@@ -246,7 +259,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 						.'</span>'
 						.'<span class="li2">'.$i.' • '.$list->Artist.' - '.$list->Album.'</span></span>'
 					.'</li>';
-			$countsong++;
+			$countupnp++;
 		} else {
 			$stationname = $list->Name;
 			$notsaved = $stationname === '';
@@ -277,7 +290,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	if ( $countsong ) {
 		$counthtml.= '<whl id="pl-trackcount">'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
 					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>'.$countradiohtml;
-		if ( isset( $upnp ) ) $counthtml.= ' <i class="fa fa-upnp"></i>';
+		if ( isset( $upnp ) ) $counthtml.= ' <i class="fa fa-upnp"></i> '.$countupnp;
 		if ( !$countradio ) str_replace( 'grl', 'whl', $counthtml );
 	} else if ( $countradio ) {
 		$counthtml.= $countradiohtml;

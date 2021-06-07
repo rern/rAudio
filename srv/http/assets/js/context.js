@@ -235,7 +235,7 @@ function tagEditor() {
 		var mode, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
-			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
@@ -249,7 +249,7 @@ function tagEditor() {
 		var footer = '';
 		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
 		footer += 'Tap icons: Browse by that mode - value';
-		footer += '<br><span id="tagname"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag names</span>';
+		footer += '<br><span id="taglabel"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag label</span>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
@@ -263,9 +263,9 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				$( '.tagname' ).removeClass( 'hide' ); // hide = 0 width
+				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
-				$( '.tagname' ).addClass( 'hide' );
+				$( '.taglabel' ).addClass( 'hide' );
 				var $text = $( '#infoContent input' );
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
@@ -292,12 +292,12 @@ function tagEditor() {
 				setTimeout( function() {
 					var boxW = parseInt( $text.css( 'width' ) );
 					var boxS = boxW - labelW - 6;
-					$( '#tagname' ).click( function() {
-						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
-							$( '.tagname' ).removeClass( 'hide' );
+					$( '#taglabel' ).click( function() {
+						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+							$( '.taglabel' ).removeClass( 'hide' );
 							$text.css( 'width', boxS );
 						} else {
-							$( '.tagname' ).addClass( 'hide' );
+							$( '.taglabel' ).addClass( 'hide' );
 							$text.css( 'width', boxW );
 						}
 					} );
