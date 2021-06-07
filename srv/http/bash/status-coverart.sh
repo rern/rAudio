@@ -20,7 +20,10 @@ coverfile=$( ls -1 "$path" \
 				| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 				| grep -i '.gif$\|.jpg$\|.png$' \
 				| head -1 )
-[[ -n $coverfile ]] && echo $path/${coverfile/.*}.$date.${coverfile/*.} && exit
+if [[ -n $coverfile ]]; then
+	jq -Rr @uri <<< "$path/${coverfile/.*}.$date.${coverfile/*.}" # urlencode
+	exit
+fi
 
 ### 3 - embedded ################################################
 urlname=/data/embedded/$covername
@@ -33,4 +36,4 @@ filename=$( basename "$path" )
 kid3-cli -c "cd \"$dir\"" \
 		-c "select \"$filename\"" \
 		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
-[[ -e $coverfile ]] && echo $urlname.$date.jpg
+[[ -e $coverfile ]] && jq -Rr @uri <<< "$urlname.$date.jpg"
