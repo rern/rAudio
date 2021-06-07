@@ -197,14 +197,12 @@ function coverartDefault() {
 function coverartSave() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
-		var tmppath = '/srv/http/data/shm/';
 		var file = G.status.file;
 		var path = '/mnt/MPD/'+ file.substr( 0, file.lastIndexOf( '/' ) );
 		var artist = G.status.Artist;
 		var album = G.status.Album;
 	} else {
 		var src = $( '.licover img' ).attr( 'src' );
-		var tmppath = '/srv/http/data/tmp/';
 		var path = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
 		if ( path.slice( -4 ) === '.cue' ) path = path.substr( 0, path.lastIndexOf( '/' ) );
 		var artist = $( '.licover .liartist' ).text();
@@ -214,12 +212,10 @@ function coverartSave() {
 		  icon    : 'coverart'
 		, title   : 'Save Album CoverArt'
 		, message : '<img src="'+ src +'">'
-					   +'<p class="infoimgname">'+ album
-					   +'<br>'+ artist +'</p>'
+					+'<p class="infoimgname">'+ album
+					+'<br>'+ artist +'</p>'
 		, ok      : function() {
-			var ext = src.slice( -4 );
-			var tmpfile = '/srv/http'+ src.slice( 0, -15 ) + ext;
-			bash( [ 'coversave', tmpfile, path ] );
+			bash( [ 'coversave', '/srv/http'+ src.slice( 0, -15 ) + src.slice( -4 ), path ] );
 		}
 	} );
 }
