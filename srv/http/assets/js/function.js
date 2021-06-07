@@ -1479,7 +1479,6 @@ renderPlaylist = function( data ) {
 		$( '#pl-list li .name' ).removeClass( 'hide' );
 		$( '#pl-list li .song' ).css( 'max-width', '' );
 		setPlaylistScroll();
-		loader( 'hide' );
 		$( '#pl-list .lazy' ).off( 'error' ).on( 'error', function() {
 			$( this )
 				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
@@ -1487,6 +1486,9 @@ renderPlaylist = function( data ) {
 					$( this ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
 				} );
 		} );
+		setTimeout( function() {
+			loader( 'hide' );
+		}, 300 );
 	} );
 }
 function renderPlaylistList() {
@@ -1820,6 +1822,7 @@ function switchPage( page ) {
 			renderLibrary();
 		}
 	} else if ( G.playlist ) {
+		loader();
 		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
 	}
 }

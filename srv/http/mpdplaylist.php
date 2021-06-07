@@ -78,7 +78,7 @@ case 'list':
 			 	.'</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$counthtml = '&emsp;<span class="pl-title">PLAYLISTS</span> &emsp; '
+	$counthtml = '&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; '
 				.'<whl id="pl-savedlist-count">'.number_format( $count ).'</whl>'
 				.'<i class="fa fa-file-playlist"></i>';
 	echo json_encode( [
