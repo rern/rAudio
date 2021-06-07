@@ -208,7 +208,7 @@ case 'webradio':
 		$name = str_replace( '/', '|', $each->url );
 		$thumbsrc = '/data/webradiosimg/'.$name.'-thumb.'.$time.'.jpg';
 		$html.= '<li class="file" data-index="'.$index.'">'
-					.'<img class="lazy iconthumb lib-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-webradio">'
+					.'<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
 					.'<a class="lipath">'.$each->url.'</a>'
 					.'<a class="liname">'.$each->name.'</a>'
 					.'<span class="li1">'.$each->name.'</span>'
@@ -349,8 +349,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
-			$pathnoext = '/mnt/MPD/'.$path.'/coverart.';
-			$coverfile = file_exists( '/srv/http'.$pathnoext.'jpg' ) ? rawurlencode( $pathnoext.$time.'.jpg' ) : '/assets/img/coverart.svg';
+			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' );
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
 						<div><img class="lazy" data-src="'.$coverfile.'"></div> 

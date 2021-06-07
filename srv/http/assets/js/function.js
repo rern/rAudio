@@ -1159,7 +1159,12 @@ function renderLibraryList( data ) {
 		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
 			var $this = $( this );
 			if ( G.mode === 'album' ) {
-				$this.attr( 'src', '/assets/img/coverart.svg' );
+				if ( $this.attr( 'src' ).slice( -3 ) === 'jpg' ) {
+					var src = $this.attr( 'src' ).slice( 0, -3 ) + 'gif';
+				} else {
+					var src = '/assets/img/coverart.svg';
+				}
+				$this.attr( 'src', src );
 			} else {
 				var icon = G.mode === 'webradio' ? 'webradio' : 'folder';
 				$this.replaceWith( '<i class="fa fa-'+ icon +' lib-icon" data-target="#menu-folder"></i>' );
