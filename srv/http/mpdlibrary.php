@@ -255,8 +255,8 @@ function directoryList( $lists ) {
 		$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
 		$coverfile = $nas100 ? [ '.jpg' ] : glob( $pathglob.'*' );
 		if ( count( $coverfile ) ) {
-			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
-			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-folder">';
+			$thumbsrc = rawurlencode( $pathnoext.$time.substr( $coverfile[ 0 ], -4 ) ); // rawurlencode special characters in path
+			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
 		} else {
 			$icon = '<i class="fa fa-'.( is_dir( '/mnt/MPD/'.$path ) ? 'folder' : 'music' ).' lib-icon" data-target="#menu-folder"></i>';
 		}
@@ -365,10 +365,11 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
-			$coverfile = '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg';
+			$pathnoext = '/mnt/MPD/'.$path.'/coverart.';
+			$coverfile = file_exists( '/srv/http'.$pathnoext.'jpg' ) ? rawurlencode( $pathnoext.$time.'.jpg' ) : '/assets/img/coverart.svg';
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
-						<div><img class="lazy" data-src="'.rawurlencode( $coverfile ).'"></div>
+						<div><img class="lazy" data-src="'.$coverfile.'"></div> 
 						<span class="coverart1">'.$data[ 1 ].'</span>
 						<gr class="coverart2">'.( $data[ 2 ] ?: '&nbsp;' ).'</gr>
 					</div>';
@@ -472,7 +473,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
-					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>' // rawurlencoded already
+					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo '.$mode.'">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
 					.'<div class="liartist'.$hideartist.'"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>'
