@@ -472,7 +472,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
-					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
+					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>' // rawurlencoded already
 					.'<div class="liinfo '.$mode.'">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'
 					.'<div class="liartist'.$hideartist.'"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>'
