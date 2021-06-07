@@ -210,7 +210,7 @@ case 'webradio':
 		$coverfile = glob( '/srv/http'.$pathnoext.'*' );
 		if ( count( $coverfile ) ) {
 			$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
-			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-webradio">';
+			$icon = '<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">';
 		} else {
 			$icon = '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>';
 		}
@@ -365,7 +365,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
-			$coverfile = '/mnt/MPD/'.rawrawurlencode( $path ).'/coverart.'.$time.'.jpg';
+			$coverfile = '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg';
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
 						<div><img class="lazy" data-src="'.rawurlencode( $coverfile ).'"></div>

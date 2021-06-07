@@ -1157,15 +1157,13 @@ function renderLibraryList( data ) {
 			G.albumlist = 0;
 		}
 		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
-			$( this )
-				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
-				.off( 'error' ).on( 'error', function() {
-					if ( G.mode === 'album' ) {
-						$( this ).attr( 'src', G.coverdefault );
-					} else {
-						$( this ).replaceWith( '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>' );
-					}
-				} );
+			var $this = $( this );
+			var src = $this.attr( 'src' );
+			if ( src.slice( -3 ) === 'jpg' ) {
+				$this.attr( 'src', src.slice( 0, -3 ) +'gif' )
+			} else {
+				$this.replaceWith( '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>' );
+			}
 		} );
 		if ( $( '.licover' ).length ) {
 			setTrackCoverart();
@@ -1476,11 +1474,13 @@ renderPlaylist = function( data ) {
 		$( '#pl-list li .song' ).css( 'max-width', '' );
 		setPlaylistScroll();
 		$( '#pl-list .lazy' ).off( 'error' ).on( 'error', function() {
-			$( this )
-				.attr( 'src', $( this ).attr( 'src' ).slice( 0, -3 ) +'gif' )
-				.off( 'error' ).on( 'error', function() {
-					$( this ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
-				} );
+			var $this = $( this );
+			var src = $this.attr( 'src' );
+			if ( src.slice( -3 ) === 'jpg' ) {
+				$this.attr( 'src', src.slice( 0, -3 ) +'gif' )
+			} else {
+				$this.replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
+			}
 		} );
 		setTimeout( function() {
 			loader( 'hide' );

@@ -269,7 +269,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$coverfile = glob( '/srv/http'.$pathnoext.'*' );
 			if ( count( $coverfile ) ) {
 				$thumbsrc = $pathnoext.$time.substr( $coverfile[ 0 ], -4 );
-				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">';
+				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
 				$icon = $notsaved ? '<i class="fa fa-save savewr"></i>' : '';
 				$icon.= '<i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
