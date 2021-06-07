@@ -242,7 +242,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$html.= '<li class="file" '.$datatrack.'>'
 						.$icon
 						.'<a class="lipath">'.$file.'</a>'
-						.'<span class="li1"><a class="name">'.$artistalbum.'</a>'
+						.'<span class="li1"><a class="name">'.$list->Title.'</a>'
 						.'<span class="duration"><a class="elapsed"></a>'
 						.'<a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span>'
 						.'</span>'
