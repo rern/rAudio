@@ -174,6 +174,11 @@ case 'save':
 }
 
 //-------------------------------------------------------------------------------------
+function globCoverfile( $pathnoext ) {
+	$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
+	$coverfile = glob( $pathglob.'.*' );
+	return count( $coverfile ) ? rawurlencode( $pathnoext.'.'.$time.substr( $coverfile[ 0 ], -3 ) ) : '';
+}
 function htmlPlaylist( $lists, $plname = '' ) {
 	global $headers;
 	$count = count( $lists );
@@ -214,22 +219,16 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$pathnoext = '/mnt/MPD/'.$path.'/thumb.';
-				$pathglob = str_replace( [ '[', ']' ], [ '\[', '\]' ], $pathnoext );
-				$coverfile = glob( $pathglob.'*' );
-				if ( count( $coverfile ) ) {
-					$thumbsrc = rawurlencode( $pathnoext.$time.substr( $coverfile[ 0 ], -4 ) );
-				} else {
+				$thumbsrc = globCoverfile( '/mnt/MPD/'.$path.'/thumb' );
+				if ( !$thumbsrc ) {
 					$artistalbum = preg_replace( '/[\n "`?\/#&\']/', '', $artist.$album );
-					$pathnoext = '/data/embedded/'.$artistalbum.'.';
-					$thumbsrc = file_exists( '/srv/http'.$pathnoext.'jpg' ) ? $pathnoext.$time.'.jpg' : '';
+					$pathnoext = '/data/embedded/'.$artistalbum;
+					$thumbsrc = file_exists( '/srv/http'.$pathnoext.'.jpg' ) ? $pathnoext.'.'.$time.'.jpg' : '';
 				}
 			} else {
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-				$pathnoext = '/data/audiocd/'.$discid.'.';
-				$coverfile = glob( '/srv/http'.$pathnoext.'jpg' );
-				$thumbsrc = count( $coverfile ) ? $pathnoext.$time.substr( $coverfile[ 0 ], -4 ) : '';
+				$thumbsrc = globCoverfile( '/data/audiocd/'.$discid );
 			}
 			if ( $thumbsrc ) {
 				$icon = '<img class="lazy iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
