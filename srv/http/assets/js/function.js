@@ -1158,11 +1158,11 @@ function renderLibraryList( data ) {
 		}
 		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			var src = $this.attr( 'src' );
-			if ( src.slice( -3 ) === 'jpg' ) {
-				$this.attr( 'src', src.slice( 0, -3 ) +'gif' )
+			if ( G.mode === 'album' ) {
+				$this.attr( 'src', '/assets/img/coverart.svg' );
 			} else {
-				$this.replaceWith( '<i class="fa fa-folder lib-icon" data-target="#menu-folder"></i>' );
+				var icon = G.mode === 'webradio' ? 'webradio' : 'folder';
+				$this.replaceWith( '<i class="fa fa-'+ icon +' lib-icon" data-target="#menu-folder"></i>' );
 			}
 		} );
 		if ( $( '.licover' ).length ) {
@@ -1465,21 +1465,13 @@ renderPlaylist = function( data ) {
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		if ( $( '#pl-list img.lazy' ).length ) G.lazyload.update();
 		$( '.list p' ).toggleClass( 'bars-on', G.bars );
-//		$( '#pl-list li' )
-//			.removeClass( 'active activeplay' )
-//			.find( '.elapsed, .song' )
-//			.empty();
 		$( '#pl-list li .name' ).removeClass( 'hide' );
 		$( '#pl-list li .song' ).css( 'max-width', '' );
 		setPlaylistScroll();
 		$( '#pl-list .lazy' ).off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			var src = $this.attr( 'src' );
-			if ( src.slice( -3 ) === 'jpg' ) {
-				$this.attr( 'src', src.slice( 0, -3 ) +'gif' )
-			} else {
-				$this.replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
-			}
+			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
+			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	} );
 }
