@@ -1683,9 +1683,10 @@ function setLazyload( $list ) {
 		  elements_selector : '.lazy'
 		, use_native        : true
 	} );
+	var liblist = $list[ 0 ].id === 'lib-list';
 	G.lazyload._settings.callback_error = function( el ) {
 		var $this = $( el );
-		if ( $list[ 0 ].id === 'lib-list' ) {
+		if ( liblist ) {
 			var icon = G.mode === 'webradio' ? 'webradio' : 'folder';
 			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-folder"></i>' );
 		} else {
