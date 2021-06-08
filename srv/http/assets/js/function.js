@@ -1239,7 +1239,7 @@ function renderPlayback() {
 	$( '#sampling' ).html( sampling );
 	var displaytime = $( '#time-knob' ).is( ':visible' );
 	// webradio ////////////////////////////////////////
-	if ( G.status.webradio ) {
+	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) !== -1 ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();

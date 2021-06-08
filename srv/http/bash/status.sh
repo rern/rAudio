@@ -408,6 +408,7 @@ fi
 ########
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
+, "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
 if grep -q '"cover": false,' /srv/http/data/system/display; then
 # >>>>>>>>>>
