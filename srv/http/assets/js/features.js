@@ -304,7 +304,7 @@ $( '#setting-login' ).click( function() {
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : escapeUsrPwd( values[ 0 ] )
-				, pwdnew   : escapeUsrPwd( values[ 1 ] )
+				, pwdnew   : escapeUsrPwd( G.login ? values[ 1 ] : values )
 			}, function( std ) {
 				if ( !std ) passwordWrong();
 				bannerHide();
