@@ -97,7 +97,7 @@ $( '.enable' ).click( function() {
 				, ok            : function() {
 					$.post( 'cmd.php', {
 						  cmd      : 'login'
-						, password : $( '#infoPasswordBox' ).val()
+						, password : infoVal()
 					}, function( std ) {
 						if ( std ) {
 							notify( 'Password Login', 'Disable ...', 'lock-circle' );
