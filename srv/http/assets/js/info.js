@@ -144,6 +144,7 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
+	console.log(9)
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
@@ -167,7 +168,9 @@ function infoReset() {
 	$( '#infoContent' ).find( 'input, select' ).prop( 'disabled', 0 );
 	$( '#infoContent' )
 		.empty()
-		.css( { width: '', height: '' } );
+		.css( { width: '', height: '' } )
+		.removeClass( 'hide' );   // extra appended message toggle
+	$( '.infomessage' ).remove(); // extra appended message toggle
 	$( '.infobtn' )
 		.removeClass( 'active' )
 		.css( 'background-color', '' );
