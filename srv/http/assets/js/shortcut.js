@@ -1,5 +1,5 @@
 // keyboard controls
-$( document ).keydown( function( e ) {
+$( document ).keyup( function( e ) {
 	if ( G.local || !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
@@ -92,8 +92,6 @@ $( document ).keydown( function( e ) {
 		return
 		
 	} else if ( key === 'Tab' ) {
-		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
-		
 		e.preventDefault();
 		if ( G.library ) {
 			$( '#tab-playback' ).click();

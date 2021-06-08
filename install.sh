@@ -4,6 +4,17 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/upmpdcli.conf
+if ! grep -q upmpdcli.sh $file; then
+	sed -i '/^on/ d' $file
+	echo -n "\
+onstart = /srv/http/bash/upmpdcli.sh
+onplay = /srv/http/bash/cmd-pushstatus.sh
+onpause = /srv/http/bash/cmd-pushstatus.sh
+onstop = /srv/http/bash/cmd-pushstatus.sh
+" >> $file
+fi
+
 file=/etc/systemd/system/upmpdcli.service.d/override.conf
 if [[ -e $file ]] && ! grep -q User=http $file; then
 	sed -i '1 a\User=http' $file

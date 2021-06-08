@@ -153,8 +153,10 @@ urldecode() { # for webradio url to filename
 }
 volume0dB(){
 	volumeGet
-	echo $volume > $dirtmp/mpdvolume
-	amixer -c $card sset "$control" 0dB
+	if [[ $db != 0.00 ]]; then
+		echo $volume > $dirtmp/mpdvolume
+		amixer -c $card -Mq sset "$control" 0dB
+	fi
 }
 volumeControls() {
 	! aplay -l 2> /dev/null | grep -q '^card' && return
@@ -195,16 +197,25 @@ volumeGet() {
 			volume=100
 		else
 			control=$( echo "$controls" | sort -u | head -1 )
-			volume=$( amixer -M sget "$control" \
-				| awk -F'[%[]' '/%/ {print $2}' \
-				| head -1 )
-			[[ -z $volume ]] && volume=100
+			voldb=$( amixer -M sget "$control" \
+				| grep '%.*dB' \
+				| head -1 \
+				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
+			if [[ -n $voldb ]]; then
+				volume=${voldb/ *}
+				db=${voldb/* }
+			else
+				volume=100
+			fi
 		fi
 	fi
 }
 volumeReset() {
-	volumeGet
-	volumeSet $volume $( cat $dirtmp/mpdvolume ) $control
+	if [[ -e $dirtmp/mpdvolume ]]; then
+		volumeGet
+		volumeSet $volume $( cat $dirtmp/mpdvolume ) $control
+		rm -f $dirtmp/mpdvolume
+	fi
 }
 volumeSet() {
 	current=$1
@@ -212,16 +223,16 @@ volumeSet() {
 	control=$3
 	diff=$(( $target - $current ))
 	if (( -5 < $diff && $diff < 5 )); then
-		[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
+		[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
 	else # increment
 		pushstreamVolume enable true
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			[[ -z $control ]] && mpc volume $i || amixer -M sset "$control" $i%
+			[[ -z $control ]] && mpc volume $i || amixer -Mq sset "$control" $i%
 			sleep 0.2
 		done
 		if (( $i != $target )); then
-			[[ -z $control ]] && mpc volume $target || amixer -M sset "$control" $target%
+			[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
 		fi
 		pushstreamVolume enable false
 	fi
@@ -781,7 +792,7 @@ volumecontrolget )
 	;;
 volumeget )
 	volumeGet
-	echo $volume
+	[[ -z ${args[1]} ]] && echo $volume || echo $volume $db
 	;;
 volumepushstream )
 	volumeGet
@@ -794,7 +805,7 @@ volumereset )
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	[[ -z $control ]] && mpc volume ${updn}1 || amixer -M sset "$control" 1%$updn
+	[[ -z $control ]] && mpc volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
 	volumeGet
 	pushstreamVolume updn $volume
 	;;

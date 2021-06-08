@@ -189,7 +189,9 @@ function psVolume( data ) {
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
-		$( '#infoButtons a' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoContent' ).removeClass( 'hide' );
+		$( '.warning, #infoButtons a:eq( 0 )' ).addClass( 'hide' );              // ok
+		$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
 	}, 300 );
 }
 function psWifi( data ) {
@@ -247,7 +249,62 @@ var reboot = '';
 var red = '#bb2828';
 var short = window.innerHeight < 570;
 var timer;
+var nextpage = {
+	  features : [ 'system', 'player' ]
+	, player   : [ 'features', 'networks' ]
+	, networks : [ 'player', 'system' ]
+	, system   : [ 'networks', 'features' ]
+}
+var $focus;
+
 document.title = page;
+
+$( document ).keyup( function( e ) {
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	
+	if ( e.keyCode === 88 ) { // ctrl + x
+		$( '#close' ).click();
+		return
+	}
+	
+	var key = e.key;
+	if ( key === 'Tab'  ) {
+		$( '#bar-bottom div' ).removeClass( 'bgr' );
+		$( '.switchlabel, .setting' ).removeClass( 'focus' );
+		setTimeout( function() {
+			$focus = $( 'input:checkbox:focus' );
+			if ( $focus.length ) {
+				$focus.next().addClass( 'focus' );
+			}
+		}, 0 );
+	} else if ( key === 'Escape' ) {
+		$focus = $( '.switchlabel.focus' );
+		setTimeout( function() {
+			if ( $focus.length ) $focus.prev().focus();
+		}, 300 );
+		if ( $( '.setting.focus' ).length ) {
+			$( '.setting' ).removeClass( 'focus' );
+			return
+		}
+		
+		if ( $focus.length && $focus.prev().prop( 'checked' ) && $focus.next().hasClass( 'setting' ) ) {
+			$( '.switchlabel.focus' ).next().addClass( 'focus' );
+		}
+	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
+		var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
+		var id = $current[ 0 ].id;
+		var $next = key === 'ArrowLeft' ? $( '#'+ nextpage[ id ][ 0 ] ) : $( '#'+ nextpage[ id ][ 1 ] );
+		$( '#bar-bottom div' ).removeClass( 'bgr' );
+		if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
+	} else if ( key === 'Enter' ) {
+		if ( $( '#bar-bottom .bgr' ).length ) {
+			$( '#bar-bottom .bgr' ).click();
+		} else {
+			$focus = $( '.setting.focus' );
+			if ( $focus.length ) $focus.click();
+		}
+	}
+} );
 $( '#'+ page ).addClass( 'active' );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 

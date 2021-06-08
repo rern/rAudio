@@ -128,7 +128,7 @@ $html.= menuli( 'pause',      'pause',        'Pause' );
 $html.= menuli( 'stop',       'stop',         'Stop' );
 $html.= menuli( 'current',    'check',        'Current' );
 $html.= menuli( 'wrsave',     'save',         'Save to WebRadio' );
-$html.= menuli( 'savedpladd', 'save-plus',    'Add to a playlist' );
+$html.= menuli( 'savedpladd', 'save-plus',    'Add to saved <i class="fa fa-playlist gr"></i>' );
 $html.= menuli( 'remove',     'minus-circle', 'Remove' );
 $html.= $menulisimilar;
 $html.= menuli( 'tag',        'info-circle',  'Track Info' );
@@ -211,7 +211,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<a id="power"><i class="fa fa-power"></i>Power</a>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
 		<i id="update" class="fa fa-refresh-library submenu"></i>
-	<a id="displayplayback" class="sub"><i class="fa fa-play-circle"></i>Playback</a>
+	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></i>
 	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
 		<i id="guide" class="fa fa-question-circle submenu"></i>
@@ -392,7 +392,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<div class="content-top">
 		<span id="pl-path"></span>
-		<i id="button-playlist" class="fa fa-list-ul active"></i>
+		<i id="button-playlist" class="fa fa-playlist active"></i>
 		<i id="button-pl-back" class="fa fa-arrow-left hide"></i>
 		<i id="button-pl-search" class="fa fa-search pllength"></i>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
@@ -459,5 +459,5 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<div id="lyricsfade"></div>
 </div>
 <div id="bar-bottom"> <!-- keep single line to suppress spaces -->
-	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-mpd"></i><i id="tab-playlist" class="fa fa-list-ul"></i>
+	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-playback"></i><i id="tab-playlist" class="fa fa-playlist"></i>
 </div>

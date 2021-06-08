@@ -13,7 +13,7 @@ function addReplace( command, title ) {
 	} else {
 		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
-	banner( title, msg, 'list-ul' );
+	banner( title, msg, 'playlist' );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -102,41 +102,15 @@ function bookmarkThumb( path, coverart ) {
 }
 function infoReplace( callback ) {
 	info( {
-		  icon    : 'list-ul'
+		  icon    : 'playlist'
 		, title   : 'Playlist Replace'
 		, message : 'Replace current playlist?'
 		, ok      : callback
 	} );
 }
-function playlistSave( name, oldname ) {
-	if ( oldname ) {
-		bash( [ 'plrename', oldname, name ] );
-	} else {
-		list( { cmd: 'save', name: name }, function( data ) {
-			if ( data == -1 ) {
-				info( {
-					  icon        : 'list-ul'
-					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
-					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
-								   +'<br>Already exists.'
-					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
-					, button      : playlistNew
-					, oklabel     : '<i class="fa fa-flash"></i>Replace'
-					, ok          : function() {
-						oldname ? playlistSave( name, oldname ) : playlistSave( name );
-					}
-				} );
-			} else {
-				G.status.playlists++;
-				banner( 'Playlist Saved', name, 'list-ul' );
-				$( '#button-pl-open' ).removeClass( 'disable' );
-			}
-		} );
-	}
-}
 function playlistDelete() {
 	info( {
-		  icon    : 'list-ul'
+		  icon    : 'playlist'
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><w>'+ G.list.name +'</w>'
@@ -156,7 +130,7 @@ function playlistDelete() {
 }
 function playlistLoad( path, play, replace ) {
 	G.local = 1;
-	banner( 'Saved Playlist', 'Load ...', 'list-ul blink', -1 );
+	banner( 'Saved Playlist', 'Load ...', 'playlist blink', -1 );
 	list( {
 		  cmd     : 'load'
 		, name    : path
@@ -166,12 +140,12 @@ function playlistLoad( path, play, replace ) {
 		G.local = 0;
 		G.status.playlistlength = +data;
 		G.savedlist = 0;
-		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'list-ul' );
+		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
 	} );
 }
 function playlistNew() {
 	info( {
-		  icon         : 'list-ul'
+		  icon         : 'playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
@@ -185,7 +159,7 @@ function playlistNew() {
 function playlistRename() {
 	var name = G.list.name;
 	info( {
-		  icon         : 'list-ul'
+		  icon         : 'playlist'
 		, title        : 'Rename Playlist'
 		, message      : 'Rename:'
 						+'<br><w>'+ name +'</w>'
@@ -201,6 +175,32 @@ function playlistRename() {
 			G.list.li.find( '.plname' ).text( newname );
 		}
 	} );
+}
+function playlistSave( name, oldname ) {
+	if ( oldname ) {
+		bash( [ 'plrename', oldname, name ] );
+	} else {
+		list( { cmd: 'save', name: name }, function( data ) {
+			if ( data == -1 ) {
+				info( {
+					  icon        : 'playlist'
+					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
+					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
+								   +'<br>Already exists.'
+					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
+					, button      : playlistNew
+					, oklabel     : '<i class="fa fa-flash"></i>Replace'
+					, ok          : function() {
+						oldname ? playlistSave( name, oldname ) : playlistSave( name );
+					}
+				} );
+			} else {
+				G.status.playlists++;
+				banner( 'Playlist Saved', name, 'playlist' );
+				$( '#button-pl-open' ).removeClass( 'disable' );
+			}
+		} );
+	}
 }
 function tagEditor() {
 	var file = G.list.path;
@@ -235,7 +235,7 @@ function tagEditor() {
 		var mode, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
-			label.push( '<span class="tagname gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
@@ -249,7 +249,7 @@ function tagEditor() {
 		var footer = '';
 		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
 		footer += 'Tap icons: Browse by that mode - value';
-		footer += '<br><span id="tagname"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag names</span>';
+		footer += '<br><span id="taglabel"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag label</span>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
@@ -263,9 +263,9 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				$( '.tagname' ).removeClass( 'hide' ); // hide = 0 width
+				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
-				$( '.tagname' ).addClass( 'hide' );
+				$( '.taglabel' ).addClass( 'hide' );
 				var $text = $( '#infoContent input' );
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
@@ -292,12 +292,12 @@ function tagEditor() {
 				setTimeout( function() {
 					var boxW = parseInt( $text.css( 'width' ) );
 					var boxS = boxW - labelW - 6;
-					$( '#tagname' ).click( function() {
-						if ( $( '.tagname' ).hasClass( 'hide' ) ) {
-							$( '.tagname' ).removeClass( 'hide' );
+					$( '#taglabel' ).click( function() {
+						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+							$( '.taglabel' ).removeClass( 'hide' );
 							$text.css( 'width', boxS );
 						} else {
-							$( '.tagname' ).addClass( 'hide' );
+							$( '.taglabel' ).addClass( 'hide' );
 							$text.css( 'width', boxW );
 						}
 					} );
@@ -366,7 +366,6 @@ function tagEditor() {
 				} );
 			}
 			, okno         : G.playlist
-			, nofocus      : 1
 			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				var newvalues = infoVal();
@@ -582,7 +581,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'savedpladd':
 			info( {
-				  icon    : 'list-ul'
+				  icon    : 'playlist'
 				, title   : 'Add to playlist'
 				, message : 'Open target playlist to add:'
 						   +'<br><w>'+ G.list.name +'</w>'

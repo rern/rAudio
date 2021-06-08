@@ -19,8 +19,24 @@ mpc idleloop | while read changed; do
 			currentprev=$current
 			current=$( mpc current )
 			if [[ -n $current && $current != $currentprev ]]; then
-				killall cmd-pushstatus.sh &> /dev/null # mutiple firing - kill previous
+				killall cmd-pushstatus.sh &> /dev/null # debounce double firings - kill previous
 				$dirbash/cmd-pushstatus.sh
+			fi
+			;;
+		mixer ) # for upmpdcli
+			if [[ -e $dirtmp/player-upnp ]]; then
+				echo 5 > $dirtmp/vol
+				( for (( i=0; i < 5; i++ )); do
+					sleep 0.1
+					s=$(( $( cat $dirtmp/vol ) - 1 )) # debounce volume long-press on client
+					(( $s == 4 )) && i=0
+					if (( $s > 0 )); then
+						echo $s > $dirtmp/vol
+					else
+						rm -f $dirtmp/vol
+						pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
+					fi
+				done ) &> /dev/null &
 			fi
 			;;
 		playlist )

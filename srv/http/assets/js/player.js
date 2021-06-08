@@ -80,11 +80,16 @@ renderPage = function( list ) {
 	[ 'crossfade', 'mpdconf', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
-	if ( $( '#infoRange .value' ).text() ) {
-		bash( '/srv/http/bash/cmd.sh volumeget', function( level ) {
-			$( '#infoRange .value' ).text( level );
-			$( '#infoRange input' ).val( level );
-		}, 'json' );
+	if ( $( '#infoRange' ).length ) {
+		bash( [ 'volumeget', 'db' ], function( voldb ) {
+			var voldb = voldb.split( ' ' );
+			var vol = voldb[ 0 ];
+			var db = voldb[ 1 ];
+			$( '#infoRange .value' ).text( vol );
+			$( '#infoRange input' ).val( vol );
+			$( '.infofooter' ).text( db +' dB' );
+			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+		} );
 	}
 	resetLocal();
 	showContent();
@@ -143,34 +148,42 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( [ 'volumeget' ], function( voldb ) {
-		var voldb = voldb.split( '^^' );
+	bash( [ 'volumeget', 'db' ], function( voldb ) {
+		var voldb = voldb.split( ' ' );
+		var vol = voldb[ 0 ];
 		var db = voldb[ 1 ];
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : device.hwmixer
-			, rangevalue    : voldb[ 0 ]
+			, rangevalue    : vol
 			, footer        : ( novolume ? '0dB (No Volume)' : db +' dB' )
 			, beforeshow    : function() {
 				if ( novolume ) {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
-					$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
+					$( '#infoContent' ).after( '<div class="infomessage warning hide"><br>'+ warning +'</div>' );
+					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
+					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
-						bash( 'amixer -M sset "'+ device.hwmixer +'" '+ val +'%' );
+						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ val +'%' );
 					} ).on( 'mouseup touchend', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
 			}
 			, buttonnoreset : 1
-			, buttonlabel   : novolume ? '' : '<i class="fa fa-set0"></i>0dB'
-			, button        : novolume ? '' : function() {
-				bash( [ 'volume0db', device.hwmixer ] );
-			}
+			, buttonlabel   : novolume ? '' : [ 'OK', '<i class="fa fa-set0"></i>0dB' ]
+			, button        : novolume ? '' : [ 
+				  function() { bash( [ 'volume0db', device.hwmixer ] ) }
+				, function() {
+					$( '#infoContent' ).addClass( 'hide' );
+					$( '.warning, #infoButtons a:eq( 0 )' ).removeClass( 'hide' ); // ok
+					$( '#infoButtons a:eq( 1 )' ).addClass( 'hide' );              // 0dB
+				}
+			]
 			, okno          : 1
 		} );
 	} );
@@ -344,7 +357,6 @@ $( '#setting-soxr' ).click( function() {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
-		, nofocus       : 1
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : [ 1, 2, 3, 4 ]

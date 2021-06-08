@@ -28,12 +28,11 @@ if [[ -n $ipeth ]]; then
 fi
 
 ifconfig wlan0 up &> /dev/null # force up
-ipwlan=$( ifconfig wlan0 | awk '/^\s*inet/ {print $2}' )
-if [[ -n $ipwlan ]]; then
-	ipr=$( ip r | grep "^default.*wlan0" )
-	dhcp=$( [[ $ipr == *"dhcp src $ipwlan "* ]] && echo dhcp || echo static )
+ipr=$( ip r | grep "^default.*wlan0" )
+if [[ -n $ipr ]]; then
 	gateway=$( echo $ipr | cut -d' ' -f3 )
-	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet/ {print $2}' )
+	dhcp=$( [[ $ipr == *"dhcp src $ipwlan "* ]] && echo dhcp || echo static )
 	[[ -n $ipwlan ]] && hostname=$( avahi-resolve -a4 $ipwlan | awk '{print $NF}' )
 	ssid=$( iwgetid wlan0 -r )
 	netctl=$( cat "/etc/netctl/$ssid" )

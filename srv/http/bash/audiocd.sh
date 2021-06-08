@@ -20,11 +20,12 @@ pushstreamPlaylist() {
 [[ -n $1 ]] && pushstreamNotify "USB CD $1"
 
 if [[ $1 == on ]]; then
-	sed -i '/plugin.*"curl"/ {n;a\
-input {\
+	sed -i '/^decoder/ i\
+input { #cdio0\
 	plugin         "cdio_paranoia"\
-}
-}' /etc/mpd.conf
+	speed          "12" \
+} \
+' /etc/mpd.conf
 	systemctl restart mpd
 	pushstream refresh '{ "page": "player" }'
 	exit
@@ -43,10 +44,7 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 		pushstreamPlaylist
 	fi
 	if [[ $1 == off ]]; then
-		line=$( grep -n cdio_paranoia /etc/mpd.conf | cut -d: -f1 )
-		from=$(( line - 1 ))
-		to=$(( line + 1 ))
-		sed -i "$from,$to d" /etc/mpd.conf
+		sed -i '/#cdio/,/^$/ d' /etc/mpd.conf
 		systemctl restart mpd
 		pushstream refresh '{ "page": "player" }'
 	fi
@@ -55,7 +53,6 @@ fi
 
 [[ -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
-eject -x 0 /dev/sr0 # set max speed if supported by device
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 [[ -z $cddiscid ]] && exit
 
@@ -106,7 +103,6 @@ for i in $( seq 1 $trackL ); do
 done
 echo $discid > $dirtmp/audiocd
 pushstreamPlaylist
-eject -x 12 /dev/sr0 # set 12x speed if supported by device
 
 if [[ -n $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))

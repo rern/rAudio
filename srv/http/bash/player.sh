@@ -221,9 +221,10 @@ mixertype )
 		mpc stop
 		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		if [[ $mixertype == hardware ]];then
-			amixer -M sset "$hwmixer" $vol%
+			amixer -Mq sset "$hwmixer" $vol%
 		else
-			amixer sset "$hwmixer" 0dB
+			amixer -Mq sset "$hwmixer" 0dB
+			rm -f /srv/http/data/shm/mpdvolume
 		fi
 	fi
 	if [[ $mixertype == hardware ]]; then
@@ -251,7 +252,8 @@ novolume )
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
 	mpc crossfade 0
-	amixer sset "$hwmixer" 0dB
+	amixer -Mq sset "$hwmixer" 0dB
+	rm -f /srv/http/data/shm/mpdvolume
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{crossfade,replaygain,normalization}
 	restartMPD
@@ -294,15 +296,15 @@ soxrset )
 	restartMPD
 	;;
 volume0db )
-	amixer sset "${args[1]}" 0dB
+	amixer -Mq sset "${args[1]}" 0dB
 	level=$( /srv/http/bash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
+	rm -f /srv/http/data/shm/mpdvolume
 	;;
 volumeget )
-	db=$( amixer | grep dB] | sed 's/.* \[\(.*\)dB.*/\1/' )
-	level=$( /srv/http/bash/cmd.sh volumeget )
-	echo $level^^$db
-	[[ -n ${args[1]} ]] && pushstream volume '{"val":'$level',"db":"'$db'"}'
+	voldb=$( /srv/http/bash/cmd.sh volumeget$'\n'db )
+	echo $voldb
+	[[ ${args[1]} == push ]] && pushstream volume '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 	
 esac

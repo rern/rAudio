@@ -25,7 +25,7 @@ renderPage = function( list ) {
 	$( '#streaming' ).prop( 'checked', G.streaming );
 	$( '#snapserver' ).prop( 'checked', G.snapserver );
 	disableSwitch( '#snapserver', G.snapclient );
-	$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
+	$( '#hostapd' ).prop( 'checked', G.hostapd );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#transmission' ).prop( 'checked', G.transmission );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
@@ -72,8 +72,7 @@ $( '.enable' ).click( function() {
 	}
 	
 	var idname = {
-		  hostapd      : [ 'RPi Access Point',     'wifi' ]
-		, localbrowser : [ 'Browser on RPi',       'chromium' ]
+		  localbrowser : [ 'Browser on RPi',       'chromium' ]
 		, login        : [ 'Password Login',       'lock-circle' ]
 		, mpdscribble  : [ 'Last.fm Scrobbler',    'lastfm' ]
 		, smb          : [ 'Samba - File Sharing', 'networks' ]
@@ -150,7 +149,7 @@ $( '#setting-snapclient' ).click( function() {
 		}
 	} );
 } );
-$( '#hostapdchk' ).click( function() {
+$( '#hostapd' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( !G.hostapd && G.wlanconnect && checked ) {
 		info( {
@@ -163,7 +162,7 @@ $( '#hostapdchk' ).click( function() {
 					loader();
 					location.href = '/settings.php?p=networks';
 				} else {
-					$( '#hostapd, #hostapdchk' ).prop( 'checked', 0 );
+					$( '#hostapd' ).prop( 'checked', 0 );
 				}
 			}
 			, ok      : function() {
@@ -171,13 +170,18 @@ $( '#hostapdchk' ).click( function() {
 			}
 		} );
 	} else {
-		$( '#hostapd' ).click();
+		if ( checked ) {
+			$( '#setting-hostapd' ).click();
+		} else {
+			notify( 'Access Point', 'Disable ...', 'accesspoint' );
+			bash( [ 'hostapddisable' ] );
+		}
 	}
 } );
 $( '#setting-hostapd' ).click( function() {
 	info( {
-		  icon         : 'network'
-		, title        : 'RPi Access Point Settings'
+		  icon         : 'accesspoint'
+		, title        : 'Access Point Settings'
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : [ G.hostapdip, G.hostapdpwd ]
@@ -189,13 +193,13 @@ $( '#setting-hostapd' ).click( function() {
 				loader();
 				location.href = '/settings.php?p=networks';
 			} else {
-				$( '#hostapd, #hostapdchk' ).prop( 'checked', G.hostapd );
+				$( '#hostapd' ).prop( 'checked', G.hostapd );
 			}
 		}
 		, ok           : function() {
 			var values = infoVal();
-			var pwd = values[ 0 ];
-			var ip = values[ 1 ];
+			var ip = values[ 0 ];
+			var pwd = values[ 1 ];
 			var ips = ip.split( '.' );
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );

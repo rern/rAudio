@@ -33,8 +33,8 @@ include 'logosvg.php';
 <div id="guide">
 	<p><a class="gr" href="https://github.com/rern/rAudio-1" target="_blank"><i class="fa fa-github fa-lg blue"></i> Source</a><span id="count" style="float: right"></span></p>
 	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
-	<div id="playback" class="btn btn-default active"><i class="fa fa-play-circle"></i><span>Playback</span></div>
-	<div id="playlist" class="btn btn-default"><i class="fa fa-list-ul"></i><span>Playlist</span></div>
+	<div id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></div>
+	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
 	<div id="settings" class="btn btn-default"><i id="settings" class="fa fa-gear"></i></div>
 	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">

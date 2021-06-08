@@ -72,8 +72,6 @@ fi
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 
-touch $dirdata/shm/player-mpd
-
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 
 $dirbash/mpd-conf.sh # mpd.service start by this script
@@ -129,9 +127,10 @@ fi
 [[ -e $dirsystem/autoplay ]] && mpc play
 
 if [[ -z $connected ]]; then
-	pushNotify 'Network not connected.<br>Enable access point ...'
-	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-	systemctl -q disable hostapd 
+	if [[ ! -e $dirsystem/wlannoap ]]; then
+		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+		systemctl -q disable hostapd
+	fi
 	exit
 fi
 

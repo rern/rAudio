@@ -11,6 +11,7 @@ counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
+[[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 playlistlength=$( mpc playlist | wc -l | tee $dirtmp/playlistlength ) # save for add webradio by other apps
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
@@ -23,8 +24,6 @@ else
 	control=$( echo $controlvolume | cut -d^ -f1 )
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
-
-[[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 
 if [[ $1 == snapserverstatus ]]; then
 ########
@@ -227,7 +226,7 @@ if [[ $fileheader == cdda ]]; then
 elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
-		duration=$( printf '%.0f\n' $duration )
+		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
 , "Album"  : "'$Album'"
@@ -409,6 +408,7 @@ fi
 ########
 sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
 status+='
+, "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
 if grep -q '"cover": false,' /srv/http/data/system/display; then
 # >>>>>>>>>>

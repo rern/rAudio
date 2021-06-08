@@ -29,7 +29,7 @@
 	font-family: rern;
 	font-style: normal;
 }
-.fa-lg { font-size: 22px }
+.fa-lg { font-size: 22px !important }
 .fa-airplay:before { content: "\f580" }
 .fa-album:before { content: "\f555" }
 .fa-albumartist:before { content: "\f557" }
@@ -71,13 +71,12 @@
 .fa-lastfm:before { content: "\f585" }
 .fa-left:before { content: "\f606" }
 .fa-library:before { content: "\f506" }
-.fa-list-ul:before { content: "\f508"; }
 .fa-lock:before { content: "\f574"; }
 .fa-lyrics:before { content: "\f54B" }
 .fa-microsd:before { content: "\f543" }
 .fa-minus:before { content: "\f518" }
 .fa-minus-circle:before { content: "\f563" }
-.fa-mpd:before { content: "\f507" } /* fa-play-circle */
+.fa-mpd:before { content: "\f507" } /* bottom bar - fa-playback */
 .fa-music:before { content: "\f54A" }
 .fa-mute:before { content: "\f517" }
 .fa-nas:before { content: "\f551" }
@@ -87,8 +86,9 @@
 .fa-output:before { content: "\f52A" }
 .fa-pause:before { content: "\f504" }
 .fa-play:before { content: "\f503" }
-.fa-play-circle:before { content: "\f507" }
-.fa-player:before { content: "\f582" }
+.fa-playback:before { content: "\f507" }
+.fa-playlist:before { content: "\f508"; }
+.fa-player:before { content: "\f582" } /* settings - mpd */
 .fa-play-plus:before { content: "\f532" }
 .fa-play-replace:before { content: "\f533" }
 .fa-plus:before { content: "\f519" }
