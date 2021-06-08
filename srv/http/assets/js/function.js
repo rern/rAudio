@@ -1671,7 +1671,7 @@ function setLazyload( list ) {
 		  elements_selector : '.lazy'
 		, use_native        : true
 	} );
-	if ( G.mode === 'album' ) { // jpg+gif twice error checks cannot use callback_error
+	if ( liblist && G.mode === 'album' ) { // jpg+gif twice error checks cannot use callback_error
 		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
 			var $this = $( this );
 			var src = $this.attr( 'src' );
