@@ -28,7 +28,8 @@ $( '#divlogin i' ).click( function() {
 	}
 } );
 $( '#login' ).click( function() {
-	$.post( 'cmd.php', { cmd: 'login', password: $( '#pwd' ).val() }, function( data ) {
+	var pwd = $( '#pwd' ).val().replace( /(["&()\\])/g, '\$1' );
+	$.post( 'cmd.php', { cmd: 'login', password: pwd }, function( data ) {
 		if ( data != -1 ) {
 			location.reload();
 		} else {

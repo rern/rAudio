@@ -97,7 +97,7 @@ $( '.enable' ).click( function() {
 				, ok            : function() {
 					$.post( 'cmd.php', {
 						  cmd      : 'login'
-						, password : $( '#infoPasswordBox' ).val()
+						, password : infoVal()
 					}, function( std ) {
 						if ( std ) {
 							notify( 'Password Login', 'Disable ...', 'lock-circle' );
@@ -294,7 +294,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, checkblank    : [ 0 ]
+		, checkblank    : ( G.login ? [ 0, 1 ] : [ 0 ] )
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}
@@ -304,7 +304,7 @@ $( '#setting-login' ).click( function() {
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : escapeUsrPwd( values[ 0 ] )
-				, pwdnew   : escapeUsrPwd( values[ 1 ] )
+				, pwdnew   : escapeUsrPwd( G.login ? values[ 1 ] : values )
 			}, function( std ) {
 				if ( !std ) passwordWrong();
 				bannerHide();
