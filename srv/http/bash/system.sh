@@ -498,20 +498,16 @@ usbremove )
 	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
 	update
 	;;
-wlan )
-	enable=${args[1]}
-	if [[ $enable == true ]]; then
-		rfkill | grep -q wlan || modprobe brcmfmac
-		iw wlan0 set power_save off
-	else
-		if systemctl -q is-active hostapd; then
-			/srv/http/bash/features.sh hostapddisable
-		fi
-		rmmod brcmfmac &> /dev/null
+wlandisable )
+	if systemctl -q is-active hostapd; then
+		/srv/http/bash/features.sh hostapddisable
 	fi
+	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;
 wlanset )
+	rfkill | grep -q wlan || modprobe brcmfmac
+	iw wlan0 set power_save off
 	if [[ ${args[1]} == false ]]; then
 		touch $dirsystem/wlannoap
 	else
