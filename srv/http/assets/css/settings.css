@@ -67,7 +67,7 @@
 .fa-output:before { content: "\f52A" }
 .fa-play:before { content: "\f503" }
 .fa-playback:before { content: "\f507" }
-.fa-player:before { content: "\f582" }
+.fa-player:before { content: "\f582" } /* mpd - bottom bar */
 .fa-playlist:before { content: "\f508"; }
 .fa-play-cd:before { content: "\f539" }
 .fa-play-power:before { content: "\f53A" }
