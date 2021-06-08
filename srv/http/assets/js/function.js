@@ -1139,20 +1139,7 @@ function renderLibraryList( data ) {
 		.html( htmlpath )
 		.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		if ( $( '#lib-list .lazy' ).length ) {
-			if ( G.mode === 'album' ) { // for jpg+gif twice error checks
-				if ( 'lazyload' in G ) G.lazyload.destroy();
-				G.lazyload = new LazyLoad( { elements_selector: '.lazy', use_native: true } );
-				$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
-					var $this = $( this );
-					var src = $this.attr( 'src' );
-					var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
-					$this.attr( 'src', src );
-				} );
-			} else {
-				setLazyload( 'lib-list' );
-			}
-		}
+		setLazyload( 'lib-list' );
 		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
@@ -1677,13 +1664,22 @@ function setButtonUpdating() {
 }
 function setLazyload( list ) {
 	if ( 'lazyload' in G ) G.lazyload.destroy();
-	if ( !$( '#'+ list ).find( '.lazy' ).length ) return
+	if ( !$( '#'+ list +' .lazy' ).length ) return
 	
 	var liblist = list === 'lib-list';
 	G.lazyload = new LazyLoad( {
 		  elements_selector : '.lazy'
 		, use_native        : true
-		, callback_error    : function( el ) {
+	} );
+	if ( G.mode === 'album' ) { // jpg+gif twice error checks cannot use callback_error
+		$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() {
+			var $this = $( this );
+			var src = $this.attr( 'src' );
+			var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
+			$this.attr( 'src', src );
+		} );
+	} else {
+		G.lazyload._settings.callback_error = function( el ) {
 			var $this = $( el );
 			if ( liblist ) {
 				var icon = G.mode === 'webradio' ? 'webradio' : 'folder';
@@ -1693,7 +1689,7 @@ function setLazyload( list ) {
 				$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
 			}
 		}
-	} );
+	}
 }
 function setPlaylistScroll() {
 	if ( !G.playlist
