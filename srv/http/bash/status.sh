@@ -302,6 +302,7 @@ elif [[ -n $radioheader ]]; then
 		elif [[ -e $pathnoext.jpg ]]; then
 			coverartradio=$filenoext.$date.jpg
 		fi
+		[[ -z $albumname ]] && Album=$file
 ########
 		status+='
 , "Album"         : "'$albumname'"
