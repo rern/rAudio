@@ -227,7 +227,6 @@ elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
-		[[ -z $Album ]] && Album=$file
 ########
 		status+='
 , "Album"  : "'$Album'"
