@@ -102,7 +102,6 @@ bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on 
 		}
 	} );
 }, 'json' );
-G.lazyload = new LazyLoad( { elements_selector: '.lazy' } );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
