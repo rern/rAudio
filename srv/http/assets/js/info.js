@@ -144,7 +144,6 @@ $( '#infoContent' ).on( 'click', '.fa-eye', function() {
 } );
 
 function infoReset() {
-	console.log(9)
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
