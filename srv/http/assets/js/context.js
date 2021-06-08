@@ -13,7 +13,7 @@ function addReplace( command, title ) {
 	} else {
 		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
-	banner( title, msg, 'list-ul' );
+	banner( title, msg, 'playlist' );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -102,7 +102,7 @@ function bookmarkThumb( path, coverart ) {
 }
 function infoReplace( callback ) {
 	info( {
-		  icon    : 'list-ul'
+		  icon    : 'playlist'
 		, title   : 'Playlist Replace'
 		, message : 'Replace current playlist?'
 		, ok      : callback
@@ -110,7 +110,7 @@ function infoReplace( callback ) {
 }
 function playlistDelete() {
 	info( {
-		  icon    : 'list-ul'
+		  icon    : 'playlist'
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><w>'+ G.list.name +'</w>'
@@ -130,7 +130,7 @@ function playlistDelete() {
 }
 function playlistLoad( path, play, replace ) {
 	G.local = 1;
-	banner( 'Saved Playlist', 'Load ...', 'list-ul blink', -1 );
+	banner( 'Saved Playlist', 'Load ...', 'playlist blink', -1 );
 	list( {
 		  cmd     : 'load'
 		, name    : path
@@ -140,12 +140,12 @@ function playlistLoad( path, play, replace ) {
 		G.local = 0;
 		G.status.playlistlength = +data;
 		G.savedlist = 0;
-		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'list-ul' );
+		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
 	} );
 }
 function playlistNew() {
 	info( {
-		  icon         : 'list-ul'
+		  icon         : 'playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
@@ -159,7 +159,7 @@ function playlistNew() {
 function playlistRename() {
 	var name = G.list.name;
 	info( {
-		  icon         : 'list-ul'
+		  icon         : 'playlist'
 		, title        : 'Rename Playlist'
 		, message      : 'Rename:'
 						+'<br><w>'+ name +'</w>'
@@ -183,7 +183,7 @@ function playlistSave( name, oldname ) {
 		list( { cmd: 'save', name: name }, function( data ) {
 			if ( data == -1 ) {
 				info( {
-					  icon        : 'list-ul'
+					  icon        : 'playlist'
 					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
 					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
 								   +'<br>Already exists.'
@@ -196,7 +196,7 @@ function playlistSave( name, oldname ) {
 				} );
 			} else {
 				G.status.playlists++;
-				banner( 'Playlist Saved', name, 'list-ul' );
+				banner( 'Playlist Saved', name, 'playlist' );
 				$( '#button-pl-open' ).removeClass( 'disable' );
 			}
 		} );
@@ -581,7 +581,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'savedpladd':
 			info( {
-				  icon    : 'list-ul'
+				  icon    : 'playlist'
 				, title   : 'Add to playlist'
 				, message : 'Open target playlist to add:'
 						   +'<br><w>'+ G.list.name +'</w>'

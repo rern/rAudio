@@ -699,7 +699,7 @@ function infoPlayback() {
 		values.push( G.display[ k ] );
 	} );
 	info( {
-		  icon         : 'play-circle'
+		  icon         : 'playback'
 		, title        : 'Playback Display'
 		, message      : 'Show selected items:'
 		, messagealign : 'left'
@@ -911,7 +911,7 @@ function playlistInsert( indextarget ) {
 }
 function playlistInsertSelect( $this ) {
 	info( {
-		  icon        : 'list-ul'
+		  icon        : 'playlist'
 		, title       : 'Add to playlist'
 		, message     : 'Insert'
 				   +'<br><w>'+ G.pladd.name +'</w>'
@@ -931,7 +931,7 @@ function playlistInsertSelect( $this ) {
 }
 function playlistInsertTarget() {
 	info( {
-		  icon    : 'list-ul'
+		  icon    : 'playlist'
 		, title   : 'Add to playlist'
 		, message : 'Select where to add:'
 				   +'<br><w>'+ G.list.name +'</w>'

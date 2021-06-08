@@ -71,7 +71,7 @@ case 'list':
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$html.= '<li class="pl-folder" data-index="'.$index.'">'
-					.'<i class="fa fa-list-ul pl-icon" data-target="#menu-playlist">'
+					.'<i class="fa fa-playlist pl-icon" data-target="#menu-playlist">'
 					.'<a class="liname">'.$each->name.'</a></i>'
 					.'<a class="lipath">'.$each->name.'</a></i>'
 					.'<span class="plname">'.$each->name.'</span>'

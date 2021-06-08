@@ -1455,7 +1455,7 @@ $( '#button-pl-save' ).click( function() {
 	var notsavedL = $( '#pl-list .notsaved' ).length;
 	if ( audiocdL || upnpL ) {
 		info( {
-			  icon    : 'list-ul'
+			  icon    : 'playlist'
 			, title   : 'Save Playlist'
 			, message : '<i class="fa fa-warning wh"></i> Saved playlist cannot contain:<br>'
 						+ audiocdL ? audiocdL +'<i class="fa fa-audiocd wh"></i>' : ''
@@ -1469,10 +1469,10 @@ $( '#button-pl-save' ).click( function() {
 $( '#button-pl-consume' ).click( function() {
 	if ( G.status.consume ) {
 		$( this ).removeClass( 'bl' );
-		banner( 'Consume Mode', 'Off', 'list-ul' );
+		banner( 'Consume Mode', 'Off', 'playlist' );
 	} else {
 		$( this ).addClass( 'bl' );
-		banner( 'Consume Mode', 'On - Remove each song after played.', 'list-ul' );
+		banner( 'Consume Mode', 'On - Remove each song after played.', 'playlist' );
 	}
 	G.status.consume = !G.status.consume;
 	bash( [ 'mpcoption', 'consume', G.status.consume ] );
@@ -1517,7 +1517,7 @@ $( '#button-pl-clear' ).click( function() {
 	
 	if ( G.status.playlistlength === 1 ) {
 		info( {
-			  icon        : 'list-ul'
+			  icon        : 'playlist'
 			, title       : 'Clear Playlist'
 			, oklabel     : '<i class="fa fa-minus-circle"></i>Clear'
 			, okcolor     : red
@@ -1528,9 +1528,9 @@ $( '#button-pl-clear' ).click( function() {
 		} );
 	} else {
 		info( {
-			  icon        : 'list-ul'
+			  icon        : 'playlist'
 			, title       : 'Remove From Playlist'
-			, buttonlabel : [ '<i class="fa fa-list-ul"></i>Select', '<i class="fa fa-crop"></i>Crop' ]
+			, buttonlabel : [ '<i class="fa fa-playlist"></i>Select', '<i class="fa fa-crop"></i>Crop' ]
 			, buttoncolor : [ orange ]
 			, button      : [
 				  function() {

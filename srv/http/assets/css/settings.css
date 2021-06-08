@@ -56,7 +56,6 @@
 .fa-lcdchar:before { content: "\f578" }
 .fa-left:before { content: "\f606" }
 .fa-library:before { content: "\f506" }
-.fa-list-ul:before { content: "\f508"; }
 .fa-lock:before { content: "\f573" }
 .fa-lock-circle:before { content: "\f574" }
 .fa-microsd:before { content: "\f543" }
@@ -67,9 +66,10 @@
 .fa-networks:before { content: "\f551" }
 .fa-output:before { content: "\f52A" }
 .fa-play:before { content: "\f503" }
+.fa-playback:before { content: "\f507" }
 .fa-player:before { content: "\f582" }
+.fa-playlist:before { content: "\f508"; }
 .fa-play-cd:before { content: "\f539" }
-.fa-play-circle:before { content: "\f507" }
 .fa-play-power:before { content: "\f53A" }
 .fa-plus:before { content: "\f519" }
 .fa-plus-circle:before { content: "\f564" }
