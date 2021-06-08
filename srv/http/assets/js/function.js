@@ -1673,7 +1673,7 @@ function setLazyload( list ) {
 		, use_native        : true
 	} );
 	if ( list === 'lib-list' ) {
-		if ( G.mode === 'album' ) { // jpg+gif twice error checks cannot use callback_error
+		if ( G.mode === 'album' ) {
 			$ellazy.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
 				var src = $this.attr( 'src' );
