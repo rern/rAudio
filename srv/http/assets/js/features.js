@@ -294,7 +294,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, checkblank    : [ 0 ]
+		, checkblank    : ( G.login ? [ 0, 1 ] : [ 0 ] )
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}

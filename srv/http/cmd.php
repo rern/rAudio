@@ -145,7 +145,6 @@ case 'login':
 		session_start();
 		$_SESSION[ 'login' ] = 1;
 	}
-	pushstream( 'refresh', [ 'page' => 'features' ] );
 	break;
 case 'logout':
 	session_start();
