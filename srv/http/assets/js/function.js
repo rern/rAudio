@@ -1142,7 +1142,7 @@ function renderLibraryList( data ) {
 		if ( $( '#lib-list .lazy' ).length ) {
 			if ( 'lazyload' in G ) G.lazyload.destroy();
 			if ( G.mode === 'album' ) {
-				G.lazyload = new LazyLoad( { elements_selector : '.lazy' } );
+				G.lazyload = new LazyLoad( { elements_selector: '.lazy', use_native: true } );
 				$( '#lib-list .lazy' ).off( 'error' ).on( 'error', function() { // for jpg+gif twice error checks
 					var $this = $( this );
 					var src = $this.attr( 'src' );
@@ -1152,6 +1152,7 @@ function renderLibraryList( data ) {
 			} else {
 				G.lazyload = new LazyLoad( {
 					  elements_selector : '.lazy'
+					, use_native        : true
 					, callback_error    : function( el ) {
 						$( el ).replaceWith( '<i class="fa fa-'+ ( G.mode === 'webradio' ? 'webradio' : 'folder' ) +' lib-icon" data-target="#menu-folder"></i>' );
 					}
@@ -1175,11 +1176,7 @@ function renderLibraryList( data ) {
 		} else {
 			G.albumlist = 0;
 		}
-		if ( $( '.licover' ).length ) {
-			setTrackCoverart();
-		} else if ( $( '#lib-list img.lazy' ).length ) {
-			G.lazyload.update();
-		}
+		if ( $( '.licover' ).length ) setTrackCoverart();
 		$( '#lib-list p' )
 			.toggleClass( 'fixedcover', $( '#lib-list li:eq( 1 )' ).hasClass( 'track1' ) )
 			.toggleClass( 'bars-on', G.bars );
@@ -1477,6 +1474,7 @@ renderPlaylist = function( data ) {
 			if ( 'lazyload' in G ) G.lazyload.destroy();
 			G.lazyload = new LazyLoad( {
 				  elements_selector : '.lazy'
+				, use_native        : true
 				, callback_error    : function( el ) {
 					var $this = $( el );
 					var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
@@ -1505,9 +1503,6 @@ function renderPlaylistList() {
 			$( '#pl-index' ).html( data.index[ 0 ] );
 			$( '#pl-index1' ).html( data.index[ 1 ] );
 			$( 'html, body' ).scrollTop( 0 );
-			$( 'body' ).on( 'DOMSubtreeModified', '#pl-savedlist', function() {
-				if ( $( '#pl-savedlist img.lazy' ).length ) G.lazyload.update();
-			} );
 		} );
 	}, 'json' );
 }
@@ -1522,6 +1517,7 @@ function renderSavedPlaylist( name ) {
 				if ( 'lazyload' in G ) G.lazyload.destroy();
 				G.lazyload = new LazyLoad( {
 					  elements_selector : '.lazy'
+					, use_native        : true
 					, callback_error    : function( el ) {
 						var $this = $( el );
 						var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
