@@ -366,11 +366,6 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 	} );
 } );
-$( '#wlan' ).click( function() {
-	var checked = $( this ).prop( 'checked' );
-	notify( 'Wi-Fi', checked, 'wifi' );
-	bash( [ 'wlan', checked ] );
-} );
 $( '#setting-wlan' ).click( function() {
 	info( {
 		  icon         : 'wifi'
