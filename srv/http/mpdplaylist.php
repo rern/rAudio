@@ -231,12 +231,18 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countsong++;
 			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
+			$li2 = $i.' • ';
+			$artist = $list->Artist;
+			$album = $list->Album;
+			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
+			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
+			if ( !$artist && !$album ) $li2.= $file;
 			$html.= '<li class="upnp">'
 						.'<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>'
 						.'<span class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span>'
 						.'</span>'
-						.'<span class="li2">'.$i.' • '.$list->Artist.' - '.$list->Album.'</span></span>'
+						.'<span class="li2">'.$li2.'</span></span>'
 					.'</li>';
 			$countupnp++;
 		} else {
@@ -268,7 +274,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>';
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>';
-	if ( $countupnp ) $counthtml.= ' <i class="fa fa-upnp"></i> '.$countupnp;
+	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
 	return [ 'html' => $html, 'counthtml' => $counthtml, 'playlistlength' => $count ];
 }
 function playlist() { // current playlist
