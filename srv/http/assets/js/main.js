@@ -1450,12 +1450,17 @@ $( '#button-pl-open' ).click( function() {
 	renderPlaylistList();
 } );
 $( '#button-pl-save' ).click( function() {
-	if ( $( '#pl-list .pl-icon.fa-audiocd' ).length ) {
+	var audiocdL = $( '#pl-list .fa-audiocd' ).length;
+	var upnpL = $( '#pl-list .fa-upnp' ).length;
+	var notsavedL = $( '#pl-list .notsaved' ).length;
+	if ( audiocdL || upnpL ) {
 		info( {
 			  icon    : 'list-ul'
 			, title   : 'Save Playlist'
-			, message : 'Playlist contains <wh><i class="fa fa-audiocd"></i> audio CD</wh> tracks'
-						+'<br>which will be orphans once CD removed.'
+			, message : '<i class="fa fa-warning wh"></i> Saved playlist cannot contain:<br>'
+						+ audiocdL ? audiocdL +'<i class="fa fa-audiocd wh"></i>' : ''
+						+ upnpL ? upnpL +'&emsp;<i class="fa fa-upnp wh"></i>' : ''
+						+ notsavedL ? notsavedL +'&emsp;<i class="fa fa-save wh"></i>' : ''
 		} );
 	} else {
 		playlistNew();
@@ -1665,7 +1670,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.pl-icon', function() {
 	var $this = $( this );
 	var $thisli = $this.parent();
-	var radio = $this.hasClass( 'fa-webradio' ) || $this.hasClass( 'webradio' );
 	G.list = {};
 	G.list.li = $thisli;
 	G.list.path = $thisli.find( '.lipath' ).text();
@@ -1683,23 +1687,28 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var state = G.status.state;
 	var play = state === 'play';
 	var active = $thisli.hasClass( 'active' );
-	var audiocd = G.list.path.slice( 0, 4 ) === 'cdda';
-	var mpd = G.status.player === 'mpd';
+	var audiocd = $thisli.hasClass( 'audiocd' );
+	var notsaved = $thisli.hasClass( 'notsaved' );
+	var radio = $thisli.hasClass( 'webradio' );
 	var upnp = $thisli.hasClass( 'upnp' );
-	$thisli.addClass( 'updn' );
 	$( '#menu-plaction a' ).removeClass( 'hide' );
-	if ( active ) {
-		$menu.find( '.play' ).toggleClass( 'hide', play );
-		$menu.find( '.pause' ).toggleClass( 'hide', !play || radio );
-		$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
-	} else {
-		$menu.find( '.pause, .stop' ).addClass( 'hide' );
-	}
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
-	$menu.find( '.wrsave' ).toggleClass( 'hide', !$thisli.hasClass( 'notsaved' ) );
-	$menu.find( '.similar, .submenu, .tag' ).toggleClass( 'hide', radio || upnp );
-	$menu.find( '.savedpladd, .tag' ).toggleClass( 'hide', audiocd || upnp );
+	if ( G.status.player === 'mpd' || G.status.player === 'upnp' ) {
+		if ( active ) {
+			$menu.find( '.play' ).toggleClass( 'hide', play );
+			$menu.find( '.pause' ).toggleClass( 'hide', !play || radio );
+			$menu.find( '.stop' ).toggleClass( 'hide', state === 'stop' );
+		} else {
+			$menu.find( '.pause, .stop' ).addClass( 'hide' );
+		}
+	} else {
+		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
+	}
+	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp );
+	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
+	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
+	$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
 	var menuH = $menu.height();
 	$menu
 		.removeClass( 'hide' )
