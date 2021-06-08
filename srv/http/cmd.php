@@ -132,7 +132,7 @@ case 'imagereplace':
 case 'login':
 	$passwordfile = $dirsystem.'loginset';
 	if ( file_exists( $passwordfile ) ) {
-		$hash = rtrim( file_get_contents( $passwordfile ) );
+		$hash = file_get_contents( $passwordfile );
 		if ( !password_verify( $_POST[ 'password' ], $hash ) ) die();
 	}
 	
