@@ -209,15 +209,17 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$title = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
 			$ext = '';
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
+				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
 				$thumbsrc = '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg';
 			} else {
+				$class = 'audiocd';
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
 			}
-			$html.= '<li class="file" '.$datatrack.'>'
+			$html.= '<li class="'.$class.'" '.$datatrack.'>'
 						.'<img class="lazy iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
 						.'<span class="li1"><a class="name">'.$list->Title.'</a>'
@@ -228,8 +230,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 					.'</li>';
 			$countsong++;
 			$counttime += $sec;
-		} else if ( file_exists( '/srv/http/data/shm/player-upnp' ) ) {
-			$upnp = 1;
+		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
 			$html.= '<li class="upnp">'
 						.'<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>'
 						.'<span class="li1"><span class="name">'.$list->Title.'</span>'
@@ -249,7 +250,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			} else {
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
-			$html.= '<li'.( $notsaved ? ' class="notsaved"' : '' ).'>'
+			$html.= '<li class="webradio'.( $notsaved ? ' notsaved' : '' ).'">'
 						.$icon
 						.'<a class="lipath">'.$file.'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
@@ -260,16 +261,14 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countradio++;
 		}
 	}
-	$counthtml = $plname ? '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'&ensp;<gr> · </gr></span>' : '';
-	$countradiohtml = $countradio ? '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>' : '';
+	$counthtml = '';
+	if ( $plname ) $counthtml.= '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'&ensp;<gr> · </gr></span>';
 	if ( $countsong ) {
 		$counthtml.= '<whl id="pl-trackcount">'.number_format( $countsong ).'</whl><i class="fa fa-music"></i>'
-					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>'.$countradiohtml;
-		if ( isset( $upnp ) ) $counthtml.= ' <i class="fa fa-upnp"></i> '.$countupnp;
-		if ( !$countradio ) str_replace( 'grl', 'whl', $counthtml );
-	} else if ( $countradio ) {
-		$counthtml.= $countradiohtml;
+					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>';
 	}
+	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><whl id="pl-radiocount">'.$countradio.'</whl>';
+	if ( $countupnp ) $counthtml.= ' <i class="fa fa-upnp"></i> '.$countupnp;
 	return [ 'html' => $html, 'counthtml' => $counthtml, 'playlistlength' => $count ];
 }
 function playlist() { // current playlist
