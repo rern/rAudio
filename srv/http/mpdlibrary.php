@@ -349,7 +349,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
-			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' );
+			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' ); // replaced with icon on load error(faster than existing check)
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
 						<div><img class="lazy" data-src="'.$coverfile.'"></div> 
