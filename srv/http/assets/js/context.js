@@ -267,6 +267,19 @@ function tagEditor() {
 				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
 				var $text = $( '#infoContent input' );
+				setTimeout( function() {
+					var boxW = parseInt( $text.css( 'width' ) );
+					var boxS = boxW - labelW - 6;
+					$( '#infoContent' ).on( 'click', '#taglabel', function() {
+						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+							$( '.taglabel' ).removeClass( 'hide' );
+							$text.css( 'width', boxS );
+						} else {
+							$( '.taglabel' ).addClass( 'hide' );
+							$text.css( 'width', boxW );
+						}
+					} );
+				}, 600 );
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
@@ -289,19 +302,6 @@ function tagEditor() {
 						renderLibraryList( data );
 					}, 'json' );
 				} );
-				setTimeout( function() {
-					var boxW = parseInt( $text.css( 'width' ) );
-					var boxS = boxW - labelW - 6;
-					$( '#taglabel' ).click( function() {
-						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-							$( '.taglabel' ).removeClass( 'hide' );
-							$text.css( 'width', boxS );
-						} else {
-							$( '.taglabel' ).addClass( 'hide' );
-							$text.css( 'width', boxW );
-						}
-					} );
-				}, 600 );
 				var $td = $( '#infoContent td:first-child' );
 				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
@@ -634,7 +634,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'tag':
 			tagEditor();
 			return
-		case 'tagcd':
+		case 'tag':
 			var discid = G.list.li.data( 'discid' );
 			var artist = G.list.li.find( '.artist' ).text();
 			var album = G.list.li.find( '.album' ).text();
@@ -645,14 +645,40 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var values = [ artist, album, title ];
 			info( {
 				  icon         : 'audiocd'
-				, title        : 'Audio CD Tag Editor'
+				, title        : 'Tag Editor'
+				, width        : 500
 				, message      : '<img src="'+ src +'">'
 								+'<br># '+ track +' &bull; '+ second2HMS( time )
 				, messagealign : 'left'
-				, textlabel    : [ '<i class="fa fa-artist"></i>', '<i class="fa fa-album"></i>', '<i class="fa fa-music"></i>' ]
+				, footer       : '<br><span id="taglabel"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag label</span>'
+				, footeralign  : 'right'
+				, textlabel    : [
+					  '<span class="taglabel gr hide">Artist</span> <i class="fa fa-artist"></i>'
+					, '<span class="taglabel gr hide">Album</span> <i class="fa fa-album"></i>'
+					, '<span class="taglabel gr hide">Title</span> <i class="fa fa-music"></i>'
+				]
 				, boxwidth     : 'max'
 				, values       : values
 				, checkchanged : 1
+				, beforeshow   : function() {
+					$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
+					labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
+					$( '.taglabel' ).addClass( 'hide' );
+					var $text = $( '#infoContent input' );
+					setTimeout( function() {
+						var boxW = parseInt( $text.css( 'width' ) );
+						var boxS = boxW - labelW - 6;
+						$( '#infoContent' ).on( 'click', '#taglabel', function() {
+							if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+								$( '.taglabel' ).removeClass( 'hide' );
+								$text.css( 'width', boxS );
+							} else {
+								$( '.taglabel' ).addClass( 'hide' );
+								$text.css( 'width', boxW );
+							}
+						} );
+					}, 600 );
+				}
 				, ok           : function() {
 					var values = infoVal();
 					var data = values.join( '^' ) +'^'+ time;
