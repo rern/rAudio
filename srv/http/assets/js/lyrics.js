@@ -61,7 +61,6 @@ $( '#song, #guide-lyrics' ).tap( function() {
 				} else {
 					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 					$( '#bio' ).removeClass( 'hide' );
-					loader( 'hide' );
 				}
 			}
 			, oklabel     : '<i class="fa fa-lyrics wh"></i>Lyrics'

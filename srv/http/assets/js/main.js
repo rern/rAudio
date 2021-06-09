@@ -264,7 +264,7 @@ $( '#addons' ).click( function () {
 	bash( [ 'addonslist' ], function( std ) {
 		addonsdl( std )
 	} );
-	loader( 'show' );
+	loader();
 } ).taphold( function() {
 	info( {
 		  icon      : 'jigsaw'
@@ -408,7 +408,6 @@ $( '#artist, #guide-bio' ).click( function() {
 	} else {
 		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 		$( '#bio' ).removeClass( 'hide' );
-		loader( 'hide' );
 	}
 } );
 $( '#album, #guide-album' ).click( function() {

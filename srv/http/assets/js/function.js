@@ -361,9 +361,7 @@ function getBio( artist ) {
 		return
 	}
 	
-	setTimeout( function() { // suppress hide by info
-		loader( 'show' );
-	}, 0 );
+	loader();
 	var url = 'http://ws.audioscrobbler.com/2.0/'
 			+'?autocorrect=1'
 			+'&format=json'
@@ -821,7 +819,6 @@ function infoPlayback() {
 	} );
 }
 function infoNoData() {
-	loader( 'hide' );
 	if ( G.mode === 'nas' ) {
 		var message = 'Network storage not available.'
 					 +'<br>To setup:'

@@ -381,7 +381,6 @@ function tagEditor() {
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
 			}
 		} );
-		loader( 'hide' );
 	}, 'json' );
 }
 function webRadioCoverart() {

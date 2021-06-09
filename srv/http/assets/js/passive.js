@@ -487,7 +487,7 @@ function psRestore( data ) {
 			location.href = '/';
 		}, 2000 );
 	} else {
-		loader( 'show' );
+		loader();
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
 }
