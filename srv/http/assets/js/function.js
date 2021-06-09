@@ -1681,9 +1681,9 @@ function setLazyload( list ) {
 				$this.attr( 'src', src );
 			} );
 		} else {
+			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
 			$ellazy.off( 'error' ).on( 'error', function() {
-				var icon = G.mode === 'webradio' ? 'webradio' : 'folder';
-				$( this ).replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-folder"></i>' );
+				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
 			} );
 		}
 	} else {
