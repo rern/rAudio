@@ -416,12 +416,22 @@ if grep -q '"cover": false,' /srv/http/data/system/display; then
 	exit
 fi
 
-if [[ $fileheader != cdda && -z $radioheader ]]; then
-	args="\
+if [[ $ext != CD && -z $radioheader ]]; then
+	coverart=$( /srv/http/bash/status-coverart.sh "\
 $Artist
 $Album
-$file0"
-	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
+$file0" )
+elif [[ $state == play && -n $Artist ]]; then
+	if [[ -n $radioheader ]]; then
+		[[ -n $Title ]] && args="\
+$Artist
+$Title
+title"
+	else
+		[[ -n $Album ]] && args="\
+$Artist
+$Album"
+	fi
 fi
 ########
 status+='
@@ -429,21 +439,7 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $coverart || $ext == CD || -z $Artist ]] && exit
+[[ -z $args ]] && exit
 
-if [[ $ext == Radio ]]; then
-	[[ $state != play || -z $Title ]] && exit
-	
-	args="\
-$Artist
-$Title
-title"
-else
-	[[ -z $Album ]] && exit
-	
-	args="\
-$Artist
-$Album"
-fi
 killall status-coverartonline.sh &> /dev/null # new track - kill if still running
 /srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &

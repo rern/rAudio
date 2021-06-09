@@ -378,7 +378,8 @@ coverartreset )
 	url=$( $dirbash/status-coverart.sh "\
 $artist
 $album
-$mpdpath" )
+$mpdpath
+reset" )
 	echo $url
 	;;
 coverartradioreset )

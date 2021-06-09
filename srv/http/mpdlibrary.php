@@ -438,23 +438,18 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$artist = $each0->artist;
 			$icon = 'artist';
 		}
-		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$args = escape( implode( "\n", [ $artist, $album, $file0, 'licover' ] ) );
-		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
-		$coverart = exec( $script );
-		if ( !$coverart ) {
-			$args = escape( implode( "\n", [ $artist, $album, 'licover' ] ) );
-			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh "'.$args.'" &> /dev/null &';
-			$coverart = exec( $script );
-			$coverart = '/assets/img/coverart.'.$time.'.svg';
-		}
 		$hidealbum = $album && $gmode !== 'album' ? '' : ' hide';
 		$hideartist = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';
 		$hidecomposer = $each0->composer && $gmode !== 'composer' ? '' : ' hide';
 		$hideconductor = $each0->conductor && $gmode !== 'conductor' ? '' : ' hide';
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
+		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
+		$args = escape( implode( "\n", [ $artist, $album, $file0, 'licover' ] ) );
+		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
+		$coverart = exec( $script );
+		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
