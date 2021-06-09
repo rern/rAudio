@@ -1,12 +1,13 @@
 #!/bin/bash
 
 readarray -t args <<< "$1"
-artistalbum=${args[0]}
-file=${args[1]}
-[[ ${args[2]} == licover ]] && prefix=licover || prefix=online
+artist=${args[0]}
+album=${args[1]}
+file=${args[2]}
+[[ ${args[3]} == licover ]] && prefix=licover || prefix=online
 
 date=$( date +%s )
-covername=$( echo $artistalbum | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
+covername=$( echo $artis$talbum | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
 urlname=/data/shm/$prefix-$covername
 
 ### 1 - coverfile in directory ##################################

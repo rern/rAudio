@@ -439,12 +439,12 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$icon = 'artist';
 		}
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
-		$script.= ' "'.escape( implode( "\n", [ $artist.$album, $file0, 'licover' ] ) ).'"';
+		$args = escape( implode( "\n", [ $artist, $album, $file0, 'licover' ] ) );
+		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) {
-			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
-			$script.= ' "'.escape( implode( "\n", [ $artist, $album, 'licover' ] ) ).'" &> /dev/null &';
+			$args = escape( implode( "\n", [ $artist, $album, 'licover' ] ) );
+			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh "'.$args.'" &> /dev/null &';
 			$coverart = exec( $script );
 			$coverart = '/assets/img/coverart.'.$time.'.svg';
 		}

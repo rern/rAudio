@@ -376,7 +376,8 @@ coverartreset )
 		rm "$backupfile"
 	fi
 	url=$( $dirbash/status-coverart.sh "\
-$artist$album
+$artist
+$album
 $mpdpath" )
 	echo $url
 	;;

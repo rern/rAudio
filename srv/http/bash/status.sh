@@ -418,7 +418,8 @@ fi
 
 if [[ $fileheader != cdda && -z $radioheader ]]; then
 	args="\
-$Artist$Album
+$Artist
+$Album
 $file0"
 	coverart=$( /srv/http/bash/status-coverart.sh "$args" )
 fi
