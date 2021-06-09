@@ -212,7 +212,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg';
+				$thumbsrc = '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg'; // replaced with icon on load error(faster than existing check)
 			} else {
 				$class = 'audiocd';
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];

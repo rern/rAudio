@@ -102,6 +102,7 @@ function contextmenuLibrary( $li, $target ) {
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
+	$( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
 		var menutop = G.bars ? '310px' : '270px';
@@ -691,6 +692,33 @@ var chkplayback = {
 	, buttons      : 'Buttons'
 	, novu         : ''
 }
+function imgLoadError( list ) { // on img load error
+	lazyload.update();
+	var $ellazy = $( '#'+ list +' .lazy' );
+	if ( !$ellazy.length ) return
+	
+	if ( list === 'lib-list' ) {
+		if ( G.mode === 'album' ) {
+			$ellazy.off( 'error' ).on( 'error', function() {
+				var $this = $( this );
+				var src = $this.attr( 'src' );
+				var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
+				$this.attr( 'src', src );
+			} );
+		} else {
+			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
+			$ellazy.off( 'error' ).on( 'error', function() {
+				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
+			} );
+		}
+	} else {
+		$ellazy.off( 'error' ).on( 'error', function() {
+			var $this = $( this );
+			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
+			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
+		} );
+	}
+}
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
 	var keys = Object.keys( chkplayback );
@@ -1139,7 +1167,7 @@ function renderLibraryList( data ) {
 		.html( htmlpath )
 		.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		setLazyload( 'lib-list' );
+		imgLoadError( 'lib-list' );
 		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
@@ -1451,7 +1479,7 @@ renderPlaylist = function( data ) {
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		setLazyload( 'pl-list' );
+		imgLoadError( 'pl-list' );
 		$( '.list p' ).toggleClass( 'bars-on', G.bars );
 		$( '#pl-list li .name' ).removeClass( 'hide' );
 		$( '#pl-list li .song' ).css( 'max-width', '' );
@@ -1483,7 +1511,7 @@ function renderSavedPlaylist( name ) {
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
-			setLazyload( 'pl-savedlist' );
+			imgLoadError( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', G.bars );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
 			$( '#pl-index, #pl-index1' ).addClass( 'hide' );
@@ -1660,38 +1688,6 @@ function setButtonUpdating() {
 		if ( G.localhost ) $( '#tab-library, #button-library' )
 							.removeClass( 'fa-refresh-library' )
 							.addClass( 'fa-library' );
-	}
-}
-function setLazyload( list ) {
-	if ( 'lazyload' in G ) G.lazyload.destroy();
-	var ellazy = '#'+ list +' .lazy';
-	var $ellazy = $( ellazy );
-	if ( !$ellazy.length ) return
-	
-	G.lazyload = new LazyLoad( {
-		  elements_selector : ellazy
-		, use_native        : true
-	} );
-	if ( list === 'lib-list' ) {
-		if ( G.mode === 'album' ) {
-			$ellazy.off( 'error' ).on( 'error', function() {
-				var $this = $( this );
-				var src = $this.attr( 'src' );
-				var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
-				$this.attr( 'src', src );
-			} );
-		} else {
-			$ellazy.off( 'error' ).on( 'error', function() {
-				var icon = G.mode === 'webradio' ? 'webradio' : 'folder';
-				$( this ).replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-folder"></i>' );
-			} );
-		}
-	} else {
-		$ellazy.off( 'error' ).on( 'error', function() {
-			var $this = $( this );
-			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
-			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
-		} );
 	}
 }
 function setPlaylistScroll() {

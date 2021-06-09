@@ -1,13 +1,11 @@
 #!/bin/bash
 
 readarray -t args <<< "$1"
-artistalbum=${args[0]}
-file=${args[1]}
-[[ ${args[2]} == licover ]] && prefix=licover || prefix=online
-
+artist=${args[0]}
+album=${args[1]}
+file=${args[2]}
+type=${args[3]}
 date=$( date +%s )
-covername=$( echo $artistalbum | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
-urlname=/data/shm/$prefix-$covername
 
 ### 1 - coverfile in directory ##################################
 path="/mnt/MPD/$file"
@@ -21,14 +19,11 @@ if [[ -n $coverfile ]]; then
 	exit
 fi
 
-### 2 - already fetched online-file #########################
-coverfile=$( ls /srv/http$urlname.* 2> /dev/null )
-[[ -n $coverfile ]] && echo $urlname.$date.${coverfile/*.} && exit
-
-### 3 - embedded ################################################
-urlname=/data/embedded/$covername
-coverfile=/srv/http$urlname.jpg
-[[ -e $coverfile ]] && echo $urlname.$date.jpg && exit
+covername=$( echo $artist$album | tr -d '\n "`?/#&'"'" ) # Artist Album file > ArtistAlbum
+### 2 - embedded ################################################
+embeddedname=/data/embedded/$covername
+coverfile=/srv/http$embeddedname.jpg
+[[ -e $coverfile ]] && echo $embeddedname.$date.jpg && exit
 
 path="/mnt/MPD/$file"
 dir=$( dirname "$path" )
@@ -36,4 +31,15 @@ filename=$( basename "$path" )
 kid3-cli -c "cd \"$dir\"" \
 		-c "select \"$filename\"" \
 		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
-[[ -e $coverfile ]] && echo $urlname.$date.jpg
+[[ -e $coverfile ]] && echo $embeddedname.$date.jpg && exit
+
+[[ $type == reset ]] && exit
+
+### 3 - already fetched online-file #########################
+[[ $type == licover ]] && prefix=licover || prefix=online
+urlname=/data/shm/$prefix-$covername
+coverfile=$( ls /srv/http$urlname.* 2> /dev/null )
+[[ -n $coverfile ]] && echo $urlname.$date.${coverfile/*.} && exit
+
+/srv/http/bash/status-coverartonline.sh "$artist
+$album" &> /dev/null &

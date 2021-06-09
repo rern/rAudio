@@ -72,6 +72,10 @@ var nameplayer = {
 	, spotify    : 'Spotify Connect'
 	, upnp       : 'UPnP'
 }
+var lazyload = new LazyLoad( {
+	  elements_selector : '.lazy'
+	, use_native        : true
+} );
 
 bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;

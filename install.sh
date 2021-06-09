@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+sed -i '/TotalDownload/ d' /etc/pacman.conf
+
 file=/etc/upmpdcli.conf
 if ! grep -q upmpdcli.sh $file; then
 	sed -i '/^on/ d' $file

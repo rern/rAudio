@@ -376,8 +376,10 @@ coverartreset )
 		rm "$backupfile"
 	fi
 	url=$( $dirbash/status-coverart.sh "\
-$artist$album
-$mpdpath" )
+$artist
+$album
+$mpdpath
+reset" )
 	echo $url
 	;;
 coverartradioreset )

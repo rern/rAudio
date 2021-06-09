@@ -349,7 +349,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
-			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' );
+			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' ); // replaced with icon on load error(faster than existing check)
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
 						<div><img class="lazy" data-src="'.$coverfile.'"></div> 
@@ -438,23 +438,18 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$artist = $each0->artist;
 			$icon = 'artist';
 		}
-		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh';
-		$script.= ' "'.escape( implode( "\n", [ $artist.$album, $file0, 'licover' ] ) ).'"';
-		$coverart = exec( $script );
-		if ( !$coverart ) {
-			$script = '/usr/bin/sudo /srv/http/bash/status-coverartonline.sh';
-			$script.= ' "'.escape( implode( "\n", [ $artist, $album, 'licover' ] ) ).'" &> /dev/null &';
-			$coverart = exec( $script );
-			$coverart = '/assets/img/coverart.'.$time.'.svg';
-		}
 		$hidealbum = $album && $gmode !== 'album' ? '' : ' hide';
 		$hideartist = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';
 		$hidecomposer = $each0->composer && $gmode !== 'composer' ? '' : ' hide';
 		$hideconductor = $each0->conductor && $gmode !== 'conductor' ? '' : ' hide';
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
+		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
+		$args = escape( implode( "\n", [ $artist, $album, $file0, 'licover' ] ) );
+		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
+		$coverart = exec( $script );
+		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
 		$coverhtml = '<li data-mode="file" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
