@@ -1252,7 +1252,6 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	}
 } );
 $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
-	loader( 'show' );
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
