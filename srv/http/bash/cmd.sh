@@ -211,10 +211,12 @@ volumeGet() {
 	fi
 }
 volumeReset() {
+	volumeGet
 	if [[ -e $dirtmp/mpdvolume ]]; then
-		volumeGet
 		volumeSet $volume $( cat $dirtmp/mpdvolume ) $control
 		rm -f $dirtmp/mpdvolume
+	else
+		amixer -c $card -Mq sset "$control" 0dB
 	fi
 }
 volumeSet() {
