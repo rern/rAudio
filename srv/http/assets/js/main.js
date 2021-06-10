@@ -1448,7 +1448,7 @@ $( '#button-pl-back' ).click( function() {
 	if ( G.savedplaylist ) {
 		$( '#button-pl-open' ).click();
 	} else {
-		list( { cmd: 'current' }, renderPlaylist, 'json' );
+		getPlaylist();
 	}
 } );
 $( '#button-pl-open' ).click( function() {

@@ -509,8 +509,6 @@ function getPlaybackStatus( render ) {
 					$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
 				} );
 			}
-		} else {
-			if ( !G.plremove && !G.savedlist && !G.savedplaylist && !G.sortable && !$( '#pl-search-close' ).text() ) getPlaylist();
 		}
 		setButtonUpdating();
 		G.getstatus = 0;
