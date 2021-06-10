@@ -1728,7 +1728,7 @@ function setTitleWidth() {
 	var $duration = $liactive.find( '.duration' );
 	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
 	var titleW = $title.scrollWidth;
-	var iWdW = 40 + 10 + $duration.width() + 10;
+	var iWdW = 40 + 10 + $duration.width() + 9;
 	var wW = document.body.clientWidth;
 	if ( iWdW + titleW < wW ) {
 		$title.css(  'max-width', '' );
