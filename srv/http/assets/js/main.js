@@ -866,8 +866,9 @@ $( '.btn-cmd' ).click( function() {
 					if ( !G.display.novu ) vuStop();
 				}
 			} else if ( G.playlist ) {
-					$( '#pl-list' ).find( '.song, .li2 .radioname' ).addClass( 'hide' );
-					$( '#pl-list .li1 .radioname' ).removeClass( 'hide' );
+				$( '#pl-list .song' ).empty();
+				$( '#pl-list .li2 .radioname' ).addClass( 'hide' );
+				$( '#pl-list .li1 .radioname' ).removeClass( 'hide' );
 			}
 		} else if ( cmd === 'pause' ) {
 			if ( G.status.state === 'stop' ) return

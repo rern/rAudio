@@ -1477,10 +1477,8 @@ renderPlaylist = function( data ) {
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		imgLoadError( 'pl-list' );
-		$( '.list p' ).toggleClass( 'bars-on', G.bars );
-		$( '#pl-list li .name' ).removeClass( 'hide' );
-		$( '#pl-list li .song' ).css( 'max-width', '' );
 		setPlaylistScroll();
+		$( '.list p' ).toggleClass( 'bars-on', G.bars );
 	} );
 }
 function renderPlaylistList() {
