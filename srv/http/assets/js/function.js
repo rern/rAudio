@@ -510,7 +510,8 @@ function getPlaybackStatus( render ) {
 				} );
 			}
 		} else if ( G.playlist ) {
-			$( '.li1 .elapsed' ).empty();
+			$( '#pl-list .elapsed' ).empty();
+			$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
 			getPlaylist();
 		}
 		setButtonUpdating();
