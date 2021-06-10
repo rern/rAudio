@@ -867,6 +867,7 @@ $( '.btn-cmd' ).click( function() {
 				}
 			} else if ( G.playlist ) {
 				$( '#pl-list .song' ).empty();
+				$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
 				$( '#pl-list .li2 .radioname' ).addClass( 'hide' );
 				$( '#pl-list .li1 .radioname' ).removeClass( 'hide' );
 			}
