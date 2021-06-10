@@ -510,6 +510,7 @@ function getPlaybackStatus( render ) {
 				} );
 			}
 		} else if ( G.playlist ) {
+			$( '.li1 .elapsed' ).empty();
 			getPlaylist();
 		}
 		setButtonUpdating();
