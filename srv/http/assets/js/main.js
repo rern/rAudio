@@ -846,23 +846,28 @@ $( '.btn-cmd' ).click( function() {
 			
 			bash( [ 'mpcplayback', 'stop' ] );
 			$( '#pl-list .elapsed' ).empty();
-			$( '#total' ).empty();
-			if ( !G.status.webradio ) {
-				var timehms = second2HMS( G.status.Time );
-				if ( G.display.time ) {
-					$( '#time' ).roundSlider( 'setValue', 0 );
-					$( '#elapsed' )
-						.text( timehms )
-						.addClass( 'gr' );
-					$( '#total, #progress' ).empty();
+			if ( G.playback ) {
+				$( '#total' ).empty();
+				if ( !G.status.webradio ) {
+					var timehms = second2HMS( G.status.Time );
+					if ( G.display.time ) {
+						$( '#time' ).roundSlider( 'setValue', 0 );
+						$( '#elapsed' )
+							.text( timehms )
+							.addClass( 'gr' );
+						$( '#total, #progress' ).empty();
+					} else {
+						$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
+						$( '#time-bar' ).css( 'width', 0 );
+					}
 				} else {
-					$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
-					$( '#time-bar' ).css( 'width', 0 );
+					$( '#song' ).html( '·&ensp;·&ensp;·' );
+					$( '#elapsed, #progress' ).empty();
+					if ( !G.display.novu ) vuStop();
 				}
-			} else {
-				$( '#song' ).html( '·&ensp;·&ensp;·' );
-				$( '#elapsed, #progress' ).empty();
-				vuStop();
+			} else if ( G.playlist ) {
+					$( '#pl-list' ).find( '.song, .li2 .radioname' ).addClass( 'hide' );
+					$( '#pl-list .li1 .radioname' ).removeClass( 'hide' );
 			}
 		} else if ( cmd === 'pause' ) {
 			if ( G.status.state === 'stop' ) return
