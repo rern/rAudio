@@ -566,6 +566,33 @@ function imageReplace( imagefile, type ) {
 		}
 	} );
 }
+function imgLoadError( list ) { // on img load error
+	lazyload.update();
+	var $ellazy = $( '#'+ list +' .lazy' );
+	if ( !$ellazy.length ) return
+	
+	if ( list === 'lib-list' ) {
+		if ( G.mode === 'album' ) {
+			$ellazy.off( 'error' ).on( 'error', function() {
+				var $this = $( this );
+				var src = $this.attr( 'src' );
+				var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
+				$this.attr( 'src', src );
+			} );
+		} else {
+			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
+			$ellazy.off( 'error' ).on( 'error', function() {
+				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
+			} );
+		}
+	} else {
+		$ellazy.off( 'error' ).on( 'error', function() {
+			var $this = $( this );
+			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
+			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
+		} );
+	}
+}
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
 	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
@@ -689,33 +716,6 @@ var chkplayback = {
 	, radioelapsed : 'WebRadio time'
 	, buttons      : 'Buttons'
 	, novu         : ''
-}
-function imgLoadError( list ) { // on img load error
-	lazyload.update();
-	var $ellazy = $( '#'+ list +' .lazy' );
-	if ( !$ellazy.length ) return
-	
-	if ( list === 'lib-list' ) {
-		if ( G.mode === 'album' ) {
-			$ellazy.off( 'error' ).on( 'error', function() {
-				var $this = $( this );
-				var src = $this.attr( 'src' );
-				var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
-				$this.attr( 'src', src );
-			} );
-		} else {
-			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
-			$ellazy.off( 'error' ).on( 'error', function() {
-				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
-			} );
-		}
-	} else {
-		$ellazy.off( 'error' ).on( 'error', function() {
-			var $this = $( this );
-			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
-			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
-		} );
-	}
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
