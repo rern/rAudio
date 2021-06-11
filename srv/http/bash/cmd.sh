@@ -213,7 +213,7 @@ volumeReset() {
 		volumeGet
 		vol_db=( $( cat $file ) )
 		vol=${vol_db[0]}
-		db= ${vol_db[1]}
+		db=${vol_db[1]}
 		volumeSet $volume $vol $control
 		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
 		rm -f $file
