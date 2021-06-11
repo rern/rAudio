@@ -178,7 +178,6 @@ renderPage = function( list ) {
 		var $this = $( this );
 		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
 	} ).prop( 'selected', true );
-	$( '#i2smodule' ).selectric( 'refresh' );
 	var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
 	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
@@ -201,9 +200,8 @@ renderPage = function( list ) {
 		$( '#divsoundprofile' ).addClass( 'hide' );
 	}
 	$( '#hostname' ).val( G.hostname );
-	$( '#timezone' )
-		.val( G.timezone )
-		.selectric( 'refresh' );
+	$( '#timezone' ).val( G.timezone );
+	$( '#i2smodule, #timezone' ).selectric( { nativeOnMobile: false } );
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );

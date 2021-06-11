@@ -56,7 +56,7 @@ renderPage = function( list ) {
 		$( '#mixertype' )
 			.html( htmlmixertype )
 			.val( device.mixertype );
-		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( 'refresh' );
+		$( '#audiooutput, #hwmixer, #mixertype' ).selectric( { nativeOnMobile: false } );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
