@@ -797,7 +797,7 @@ volumecontrolget )
 	;;
 volumeget )
 	volumeGet
-	[[ -z ${args[1]} ]] && echo $volume || echo $volume $db
+	[[ ${args[1]} == db ]] && echo $volume $db || echo $volume
 	;;
 volumepushstream )
 	volumeGet
