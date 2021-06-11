@@ -41,7 +41,7 @@ renderPage = function( list ) {
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.prop( 'disabled', G.devices.length < 2 );
-		$( '#audiooutput option' ).eq( G.asoundcard ).prop( 'selected', 1 );
+		$( '#audiooutput' ).val( G.asoundcard );
 		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 		device.mixerdevices.forEach( function( mixer ) {
 			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';

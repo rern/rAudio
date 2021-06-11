@@ -83,7 +83,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/settings.<?=$time?>.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
-	<?php	if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?>
+	<?php	if ( in_array( $page, [ 'player', 'system' ] ) ) { ?>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
 	<?php	} else if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
