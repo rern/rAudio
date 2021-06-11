@@ -29,7 +29,7 @@ if [[ ! -e $file-start ]]; then
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
 	(( $elapsed > 0 )) && echo pause > $file-state
-	/srv/http/bash/cmd.sh volume0db
+	/srv/http/bash/cmd.sh volume0db$'\n'spotifyd
 fi
 
 if [[ $PLAYER_EVENT != stop ]]; then
