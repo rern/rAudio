@@ -201,7 +201,7 @@ renderPage = function( list ) {
 	}
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' ).val( G.timezone );
-	$( '#i2smodule, #timezone' ).selectric( { nativeOnMobile: false } );
+	$( 'select' ).selectric( { nativeOnMobile: false } );
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
