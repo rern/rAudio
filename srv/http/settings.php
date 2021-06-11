@@ -42,7 +42,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
 		<?php }
-			  if ( in_array( $page, [ 'player', 'system' ] ) ) { ?> 
+			  if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?> 
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 		<?php } ?>
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
@@ -84,7 +84,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
 	<?php }
-		  if ( in_array( $page, [ 'player', 'system' ] ) ) { ?>
+		  if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
 	<?php }
 		  if ( $page === 'networks' ) { ?>
