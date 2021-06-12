@@ -414,7 +414,7 @@ function info( json ) {
 		// apply selectric
 		if ( $( '#infoContent select' ).length ) {
 			$( '#infoContent select' ).selectric( { nativeOnMobile: false } );
-			$( '.selectric-input' ).prop( 'readonly', 1 );
+			$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 		}
 		// set width: button
 		if ( !O.buttonfit ) {
