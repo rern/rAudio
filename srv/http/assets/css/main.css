@@ -403,7 +403,7 @@ i.map.disabled, .map.disabled i {
 	width: 160px;
 	padding: 0;
 	box-shadow: -4px 4px 10px #000000;
-	z-index: 104;
+	z-index: 105;
 }
 #power, #screenoff {
 	background: var( --cga );
