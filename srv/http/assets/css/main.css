@@ -1645,7 +1645,7 @@ i.map.disabled, .map.disabled i {
 	background: var( --cga );
 	top: 0;
 	padding-right: 10px;
-	z-index: 90;
+	z-index: 104;
 }
 .content-top a {
 	font-size: 18px;
