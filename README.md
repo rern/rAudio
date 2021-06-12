@@ -106,10 +106,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- GPIO 3.5" LCD display (Not for Zero and 1)
 			- Create a blank file in `BOOT` named as:
 				- Generic display - `lcd`
-				- Waveshare 35a   - `lcd35a'
-				- Waveshare 35b   - `lcd35b'
-				- Waveshare 35b v2   - `lcd35b-v2'
-				- Waveshare 35c   - `lcd35c'
+				- Waveshare 35a   - `lcd35a`
+				- Waveshare 35b   - `lcd35b`
+				- Waveshare 35b v2   - `lcd35b-v2`
+				- Waveshare 35c   - `lcd35c`
 		- Custom startup script
 			- Copy custom script named `startup` to `BOOT`
 - Boot duration
