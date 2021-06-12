@@ -264,7 +264,7 @@ $( '#addons' ).click( function () {
 	bash( [ 'addonslist' ], function( std ) {
 		addonsdl( std )
 	} );
-	loader( 'show' );
+	loader();
 } ).taphold( function() {
 	info( {
 		  icon      : 'jigsaw'
@@ -408,7 +408,6 @@ $( '#artist, #guide-bio' ).click( function() {
 	} else {
 		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 		$( '#bio' ).removeClass( 'hide' );
-		loader( 'hide' );
 	}
 } );
 $( '#album, #guide-album' ).click( function() {
@@ -847,23 +846,30 @@ $( '.btn-cmd' ).click( function() {
 			
 			bash( [ 'mpcplayback', 'stop' ] );
 			$( '#pl-list .elapsed' ).empty();
-			$( '#total' ).empty();
-			if ( !G.status.webradio ) {
-				var timehms = second2HMS( G.status.Time );
-				if ( G.display.time ) {
-					$( '#time' ).roundSlider( 'setValue', 0 );
-					$( '#elapsed' )
-						.text( timehms )
-						.addClass( 'gr' );
-					$( '#total, #progress' ).empty();
+			if ( G.playback ) {
+				$( '#total' ).empty();
+				if ( !G.status.webradio ) {
+					var timehms = second2HMS( G.status.Time );
+					if ( G.display.time ) {
+						$( '#time' ).roundSlider( 'setValue', 0 );
+						$( '#elapsed' )
+							.text( timehms )
+							.addClass( 'gr' );
+						$( '#total, #progress' ).empty();
+					} else {
+						$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
+						$( '#time-bar' ).css( 'width', 0 );
+					}
 				} else {
-					$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
-					$( '#time-bar' ).css( 'width', 0 );
+					$( '#song' ).html( '·&ensp;·&ensp;·' );
+					$( '#elapsed, #progress' ).empty();
+					if ( !G.display.novu ) vuStop();
 				}
-			} else {
-				$( '#song' ).html( '·&ensp;·&ensp;·' );
-				$( '#elapsed, #progress' ).empty();
-				vuStop();
+			} else if ( G.playlist ) {
+				$( '#pl-list .song' ).empty();
+				$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
+				$( '#pl-list .li2 .radioname' ).addClass( 'hide' );
+				$( '#pl-list .li1 .radioname' ).removeClass( 'hide' );
 			}
 		} else if ( cmd === 'pause' ) {
 			if ( G.status.state === 'stop' ) return
@@ -1252,7 +1258,6 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	}
 } );
 $( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
-	loader( 'show' );
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
@@ -1444,7 +1449,7 @@ $( '#button-pl-back' ).click( function() {
 	if ( G.savedplaylist ) {
 		$( '#button-pl-open' ).click();
 	} else {
-		list( { cmd: 'current' }, renderPlaylist, 'json' );
+		getPlaylist();
 	}
 } );
 $( '#button-pl-open' ).click( function() {

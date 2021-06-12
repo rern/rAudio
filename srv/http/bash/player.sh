@@ -302,9 +302,11 @@ volume0db )
 	rm -f /srv/http/data/shm/mpdvolume
 	;;
 volumeget )
-	voldb=$( /srv/http/bash/cmd.sh volumeget$'\n'db )
-	echo $voldb
-	[[ ${args[1]} == push ]] && pushstream volume '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
+	vol_db=( $( /srv/http/bash/cmd.sh volumeget$'\n'db ) )
+	vol=${vol_db[0]}
+	db=${vol_db[1]}
+	echo $vol $db
+	[[ ${args[1]} == push ]] && pushstream volume '{"val":'$vol',"db":"'$db'"}'
 	;;
 	
 esac

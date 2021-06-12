@@ -117,7 +117,7 @@ function renderOptions( json ) {
 			$( '#offd'+ i +' option[value='+ r.off[ 'offd'+ i ] +']' ).prop( 'selected', 1 );
 		}
 	}
-	$( 'select' ).selectric();
+	$( 'select' ).selectric( { nativeOnMobile: false } );
 	setColorNone();
 }
 function setColorNone() {

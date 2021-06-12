@@ -153,10 +153,7 @@ urldecode() { # for webradio url to filename
 }
 volume0dB(){
 	volumeGet
-	if [[ $db != 0.00 ]]; then
-		echo $volume > $dirtmp/mpdvolume
-		amixer -c $card -Mq sset "$control" 0dB
-	fi
+	amixer -c $card -Mq sset "$control" 0dB
 }
 volumeControls() {
 	! aplay -l 2> /dev/null | grep -q '^card' && return
@@ -211,10 +208,15 @@ volumeGet() {
 	fi
 }
 volumeReset() {
-	if [[ -e $dirtmp/mpdvolume ]]; then
+	file=$dirtmp/mpdvolume
+	if [[ -e $file ]]; then
 		volumeGet
-		volumeSet $volume $( cat $dirtmp/mpdvolume ) $control
-		rm -f $dirtmp/mpdvolume
+		vol_db=( $( cat $file ) )
+		vol=${vol_db[0]}
+		db=${vol_db[1]}
+		volumeSet $volume $vol $control
+		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
+		rm -f $file
 	fi
 }
 volumeSet() {
@@ -783,6 +785,7 @@ volume )
 	;;
 volume0db )
 	volume0dB
+	[[ ${args[1]} == spotifyd ]] && echo $volume $db  > $dirtmp/mpdvolume
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -794,7 +797,7 @@ volumecontrolget )
 	;;
 volumeget )
 	volumeGet
-	[[ -z ${args[1]} ]] && echo $volume || echo $volume $db
+	[[ ${args[1]} == db ]] && echo $volume $db || echo $volume
 	;;
 volumepushstream )
 	volumeGet

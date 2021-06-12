@@ -15,6 +15,8 @@ $chknoset = 'class="enablenoset" type="checkbox"';
 $classhelp = 'class="help-block hide"';
 $classstatus = 'class="col-l double status"';
 $classsetting = 'class="setting fa fa-gear"';
+$page = $_GET[ 'p' ];
+$sudo = '/usr/bin/sudo /usr/bin';
 ?>
 <!DOCTYPE html>
 <html>
@@ -39,17 +41,15 @@ $classsetting = 'class="setting fa fa-gear"';
 		<?php if ( $localhost ) { ?> 
 	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
-		<?php } ?>
+		<?php }
+			  if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?> 
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+		<?php } ?>
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/banner.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
 <body>
-<?php
-$page = $_GET[ 'p' ];
-$sudo = '/usr/bin/sudo /usr/bin';
-?>
 <i id="button-data"></i>
 <pre id="data" class="hide"></pre>
 <div id="loader">
@@ -83,13 +83,14 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/settings.<?=$time?>.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
-	<?php	if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?>
+	<?php }
+		  if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
-	<?php	} else if ( $page === 'networks' ) { ?>
+	<?php }
+		  if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
-	<?php	}
-		  } ?>
-	<?php if ( $localhost ) { ?>
+	<?php }
+		  if ( $localhost ) { ?>
 <script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
 <script src="/assets/js/keyboard.<?=$time?>.js"></script>
 	<?php } ?>

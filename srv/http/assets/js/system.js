@@ -178,7 +178,6 @@ renderPage = function( list ) {
 		var $this = $( this );
 		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
 	} ).prop( 'selected', true );
-	$( '#i2smodule' ).selectric( 'refresh' );
 	var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
 	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
@@ -201,9 +200,9 @@ renderPage = function( list ) {
 		$( '#divsoundprofile' ).addClass( 'hide' );
 	}
 	$( '#hostname' ).val( G.hostname );
-	$( '#timezone' )
-		.val( G.timezone )
-		.selectric( 'refresh' );
+	$( '#timezone' ).val( G.timezone );
+	$( 'select' ).selectric( { nativeOnMobile: false, maxHeight: 400 } );
+	$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
@@ -245,10 +244,6 @@ $( '.enablenoset' ).click( function() {
 	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
 	bash( [ id, checked, G.reboot.join( '\n' ) ] );
 } );
-
-$( '#timezone, #i2smodule' ).selectric( { maxHeight: 400 } );
-$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
-
 $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
 } );

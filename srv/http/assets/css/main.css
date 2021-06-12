@@ -1981,7 +1981,7 @@ input[type=text] {
 	max-width: calc( 100% - 190px );
 }
 #pl-list .song {
-	max-width: calc( 100% - 60px );
+	max-width: calc( 100% - 105px );
 }
 #lib-list .single {
 	line-height: 48px;
@@ -2130,15 +2130,11 @@ li.active .li1 bl {
 }
 #pl-list .li1 a {
 	display: inline-block;
+	max-width: calc( 100% - 105px );
 	vertical-align: middle;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-}
-.duration-right {
-	position: absolute;
-	float: right;
-	right: 10px;
 }
 .time {
 	margin-left: 10px;

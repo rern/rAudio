@@ -360,8 +360,6 @@ function psNotify( data ) {
 	if ( data.title === 'Power' ) {
 		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
 		loader();
-	} else if ( data.title === 'AirPlay' && data.text === 'Stop ...' ) {
-		loader();
 	} else if ( data.text === 'Change track ...' ) {
 		clearIntervalAll();
 	}
@@ -489,7 +487,7 @@ function psRestore( data ) {
 			location.href = '/';
 		}, 2000 );
 	} else {
-		loader( 'show' );
+		loader();
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
 }

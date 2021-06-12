@@ -18,41 +18,29 @@
 }
 .selectric .label {
 	display: block;
+	height: 39px;
+	margin: 0 30px 0 10px;
+	line-height: 40px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	margin: 0 40px 0 10px;
-	line-height: 40px;
-	height: 39px;
 }
 .selectric .label,
 .selectric-items ul, .selectric-items li {
 	font-size: 15px;
 }
 .selectric .button {
-	display: block;
 	position: absolute;
 	right: 0;
 	top: 0;
-	width: 38px;
-	height: 38px;
-	text-align: center;
-	font-size: 32px;
-	line-height: 38px;
-}
-.selectric .button:after {
-	content: " ";
-	position: absolute;
-	top: 0;
-	right: 0;
 	bottom: 0;
-	left: 0;
-	margin: auto;
-	width: 0;
-	height: 0;
-	border: 4px solid transparent;
-	border-top-color: var( --cw );
-	border-bottom: none;
+	width: 30px;
+	font-size: 20px;
+	line-height: 40px;
+	text-align: center;
+}
+.selectric .button:before {
+	content: '\25BE';
 }
 .selectric-disabled {
 	cursor: default;
@@ -86,23 +74,6 @@ select,
 .selectric-hide-select select {
 	position: absolute;
 	left: -300%;
-}
-.selectric-hide-select.selectric-is-native {
-	position: absolute;
-	height: 100%;
-	z-index: 10;
-}
-.selectric-hide-select.selectric-is-native select {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 100%;
-	width: 100%;
-	border: none;
-	z-index: 1;
-	box-sizing: border-box;
-	opacity: 0;
 }
 .selectric-input {
 	position: absolute !important;

@@ -412,7 +412,10 @@ function info( json ) {
 		// set vertical position
 		alignVertical();
 		// apply selectric
-		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric();
+		if ( $( '#infoContent select' ).length ) {
+			$( '#infoContent select' ).selectric( { nativeOnMobile: false } );
+			$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
+		}
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
