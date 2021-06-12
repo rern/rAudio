@@ -435,10 +435,10 @@ i.map.disabled, .map.disabled i {
 }
 /* ---------------------- bars ----------------------*/
 #reload {
-	position: fixed;
+	position: absolute;
+	top: 0;
 	width: 40px;
 	height: 40px;
-	z-index: 104;
 }
 #bar-top,
 #bar-bottom {
