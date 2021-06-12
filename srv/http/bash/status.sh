@@ -421,7 +421,7 @@ if [[ $ext != CD && -z $radioheader ]]; then
 $Artist
 $Album
 $file0" )
-elif [[ $state == play && -n $Artist ]]; then
+elif [[ $state == play && -z $coverart && -n $Artist ]]; then
 	if [[ -n $radioheader ]]; then
 		[[ -n $Title ]] && args="\
 $Artist
