@@ -61,6 +61,7 @@ renderPage = function( list ) {
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', device.dop == 1 );
 		$( 'select' ).selectric( { nativeOnMobile: false } );
+		$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 	}
 	$( '#crossfade' ).prop( 'checked', G.crossfade );
 	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
@@ -130,7 +131,6 @@ $( '.enablenoset' ).click( function() {
 	notify( idname[ id ], checked, 'mpd' );
 	bash( [ id, checked ] );
 } );
-$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
 			 +'<br><br>Signal will be set to original level (0dB).'

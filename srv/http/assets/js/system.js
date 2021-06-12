@@ -201,7 +201,8 @@ renderPage = function( list ) {
 	}
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' ).val( G.timezone );
-	$( 'select' ).selectric( { nativeOnMobile: false } );
+	$( 'select' ).selectric( { nativeOnMobile: false, maxHeight: 400 } );
+	$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
@@ -243,10 +244,6 @@ $( '.enablenoset' ).click( function() {
 	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
 	bash( [ id, checked, G.reboot.join( '\n' ) ] );
 } );
-
-$( '#timezone, #i2smodule' ).selectric( { maxHeight: 400 } );
-$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
-
 $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
 } );
