@@ -50,14 +50,15 @@ if [[ -e /boot/backup.gz ]]; then
 	$dirbash/system.sh datarestore
 	reboot=1
 fi
-if [[ -e /boot/lcd ]]; then
-	rm /boot/lcd
-	if [[ ! -e $dirsystem/lcd ]]; then
-		$dirbash/system.sh lcd$'\n'true
-		reboot=1
-	fi
+lcd=$( ls /boot/lcd* 2> /dev/null )
+if [[ -n $lcd ]]; then
+	model=${lcd/*lcd}
+	[[ -z $model ]] && model=tft35a
+	rm /boot/lcd*
+	$dirbash/system.sh lcdset$'\n'$model
+	systemctl enable localbrowser
+	reboot=1
 fi
-[[ -n $reboot ]] && reboot
 
 if [[ -e /boot/wifi ]]; then
 	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
