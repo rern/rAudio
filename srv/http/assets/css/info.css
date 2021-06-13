@@ -362,6 +362,7 @@ hr {
 #infoContent .selectric-items li {
 	height: 34px;
 	text-align: left;
+	line-height: 16px;
 }
 #infoContent .selectric-items {
 	min-width: 100%;
@@ -369,6 +370,9 @@ hr {
 #infoContent .selectric .label {
 	margin: 1px 0;
 	padding: 0 10px;
+}
+#infoContent .selectric .label,
+#infoContent .selectric .button {
 	line-height: 34px;
 }
 #infoRange input {
