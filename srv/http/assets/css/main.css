@@ -1766,15 +1766,6 @@ i.map.disabled, .map.disabled i {
 	margin-top: 4px;
 	z-index: 96;
 }
-input[type=text] {
-	display: inline-block;
-	height: 32px;
-	margin: 0;
-	padding: 0 5px;
-	border: 1px solid var( --cg );
-	border-radius: 5px;
-	background-color: #000000;
-}
 #lib-search-close,
 #pl-search-close {
 	float: right;
