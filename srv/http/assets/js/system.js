@@ -349,7 +349,7 @@ $( '#setting-bluetooth' ).click( function() {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, values       : [ G.btdiscoverable, G.btformat ]
+		, values       : [ ( G.bluetooth ? G.btdiscoverable : G.btdiscoverable || true ), G.btformat ]
 		, checkchanged : ( G.bluetooth ? 1 : 0 )
 		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
