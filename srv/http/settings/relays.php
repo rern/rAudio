@@ -46,7 +46,8 @@ for ( $i = 1; $i < 5; $i++ ) {
 
 <body>
 <div class="head">
-	<i class="page-icon fa fa-relays"></i><span class="title">RELAYS</span><a href="/"><i id="close" class="fa fa-times"></i></a><i id="help" class="fa fa-question-circle"></i>
+	<i class="page-icon fa fa-relays"></i><span class="title">RELAYS</span><a href="/settings.php?p=system"><i id="close" class="fa fa-times"></i></a>
+	<i id="help" class="fa fa-question-circle"></i>
 </div>
 
 <div class="container">
@@ -54,6 +55,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 <br>
 <span class="help-block hide">
 	Control <wh>GPIO</wh> connected relay module for power on /off equipments in sequence.
+	<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 	<br>&nbsp
 </span>
 

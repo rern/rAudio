@@ -161,9 +161,6 @@ $.post( '/cmd.php', { cmd: 'bash', bash : 'cat /etc/relays.conf 2> /dev/null || 
 	}
 	renderOptions( relaysset );
 }, 'json' );
-$( '.close-root' ).click( function() {
-	location.href = '/';
-} );
 $( '#help' ).click( function() {
 	$( this ).toggleClass( 'blue' );
 	$( '.help-block' ).toggleClass( 'hide' );

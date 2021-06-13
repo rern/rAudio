@@ -169,6 +169,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		Control GPIO-connected relay module for power on / off equipments with <a href="http://wiringpi.com/">WiringPi</a>
+		<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
