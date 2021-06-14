@@ -51,8 +51,8 @@ function colorSet() {
 				var hex = e.getCurColorHex();
 				var h = Math.round( 360 * e.getCurColorHsv().h );
 				var hsg = 'hsl('+ h +',3%,';
-				$( '#bar-top, #playback-controls i, #tab-playlist, .menu a, .submenu, #colorcancel' ).css( 'background-color', hsg +'30%)' );
-				$( '.content-top, #tab-playback' ).css( 'background', hsg +'20%)' );
+				$( '#bar-top, #playback-controls i, #tab-playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
+				$( '.content-top, #tab-playback, #colorcancel' ).css( 'background', hsg +'20%)' );
 				$( '.lib-icon, gr' ).css( 'cssText', 'color: '+ hsg +'60%) !important;' );
 				$( '#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', hsg +'30%)' );
 				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );

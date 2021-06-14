@@ -140,12 +140,11 @@ whl, grl,
 	height: 100px;
 	margin: 10px;
 }
-i.bookmark,
 .infobookmark i {
 	width: 100px;
 	font-size: 3em;
 	color: var( --cm );
-	text-shadow: 2px 2px 4px #000000;
+	text-shadow: -2px 2px 4px #000000;
 }
 .disable {
 	color: var( --cg60 );
@@ -2143,7 +2142,8 @@ li.active .li2 bl {
 	font-size: 28px;
 	line-height: 36px;
 	border-radius: 50%;
-	text-shadow: 2px 2px 4px #000000;
+	color: var( --cm );
+	text-shadow: -2px 2px 4px #000000;
 	box-shadow: 0 0 6px 5px #000000;
 }
 #divlogin {
