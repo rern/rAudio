@@ -1,5 +1,4 @@
-.message .fa-wifi:before { font-size: 20px }
-#listwlscan .fa-lock { font-size: 16px }
+#listwlscan .fa-lock { font-size: 16px; vertical-align: 1px; }
 
 .menu {
 	position: absolute;
@@ -329,9 +328,6 @@ grw,
 	vertical-align: -2px;
 	text-align: center;
 	color: var( --cg60 );
-}
-#listwlscan i {
-	vertical-align: 0;
 }
 .entries .fa-save {
 	width: 20px;
