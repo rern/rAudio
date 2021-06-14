@@ -5,7 +5,6 @@
 	--cma:  hsl(200,100%,30%); /* main-active */
 	--cmd:  hsl(200,100%,20%); /* main-dark */
 	--cg75: hsl(200,3%,75%);   /* gray-75% */
-	--cg70: hsl(200,3%,70%);   /* gray-70% */
 	--cg60: hsl(200,3%,60%);   /* gray-60% */
 	--cgl:  hsl(200,3%,40%);   /* gray-light */
 	--cg:   hsl(200,3%,30%);   /* gray */

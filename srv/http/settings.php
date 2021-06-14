@@ -38,6 +38,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/fonts.<?=$time?>.css">
 		<?php if ( $localhost ) { ?> 
 	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">

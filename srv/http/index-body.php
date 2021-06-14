@@ -204,7 +204,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	</div>
 </div>
 <div id="settings" class="menu hide">
-	<a id="features" class="settings"><i class="fa fa-sliders"></i>Features</a>
+	<a id="features" class="settings"><i class="fa fa-features"></i>Features</a>
 	<a id="player" class="settings"><i class="fa fa-player"></i>Player</a>
 	<a id="networks" class="settings"><i class="fa fa-networks"></i>Networks</a>
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>

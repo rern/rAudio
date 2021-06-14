@@ -31,7 +31,7 @@ var htmlmount = heredoc( function() { /*
 */ } );
 function infoMount( values ) {
 	info( {
-		  icon       : 'network'
+		  icon       : 'networks'
 		, title      : 'Add Network Share'
 		, content    : htmlmount
 		, values     : values
@@ -55,11 +55,11 @@ function infoMount( values ) {
 		}
 		, ok         : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			notify( 'Network Mount', 'Mount ...', 'network' );
+			notify( 'Network Mount', 'Mount ...', 'networks' );
 			bash( [ 'mount', ...values ], function( std ) {
 				if ( std ) {
 					info( {
-						  icon    : 'network'
+						  icon    : 'networks'
 						, title   : 'Mount Share'
 						, message : std
 						, ok      : function() {
@@ -293,7 +293,7 @@ $( '#list' ).on( 'click', 'li', function() {
 	if ( mountpoint === '/' ) return
 	
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon = 'network';
+		var icon = 'networks';
 		var title = 'Network Mount';
 	} else {
 		var icon = 'usbdrive';
