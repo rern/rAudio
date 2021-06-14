@@ -213,7 +213,6 @@ $( '#setting-localbrowser' ).click( function() {
 	info( {
 		  icon         : 'chromium'
 		, title        : 'Browser on RPi'
-		, footer       : ( G.lcd ? '<gr>(Rotate TFT LCD: Reboot required)</gr>' : '' )
 		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
 		, selectlabel  : 'Screen rotation'
 		, boxwidth     : 80
