@@ -451,7 +451,7 @@ $( '#volume' ).roundSlider( {
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
 		$volumehandle = $( '#volume .rs-handle' );   // not available for self events
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
+		$volumehandlerotate = $( '#volume .rs-transition, #volume .rs-handle' );
 	}
 	// drag: start > beforeValueChange > drag > valueChange > change > stop
 	// tap: beforeValueChange > change > valueChange
@@ -460,7 +460,7 @@ $( '#volume' ).roundSlider( {
 		// restore handle color immediately on start drag
 		if ( e.value === 0 ) volColorUnmute();
 		$( '.map' ).removeClass( 'mapshow' );
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', '0s' );
+		$volumehandlerotate.css( 'transition-duration', '0s' );
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
@@ -481,8 +481,9 @@ $( '#volume' ).roundSlider( {
 			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
 			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', '' );
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
+		$volumehandlerotate
+			.css( 'transition-property', '' )
+			.css( 'transition-duration', speed +'s' );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return

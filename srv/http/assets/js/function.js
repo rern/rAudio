@@ -1182,6 +1182,7 @@ function renderPlayback() {
 	// volume
 	if ( !G.display.volumenone &&  G.display.volume ) {
 		$volumeRS.setValue( G.status.volume );
+		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	}
 	// empty queue
