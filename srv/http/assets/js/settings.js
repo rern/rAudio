@@ -109,7 +109,7 @@ function list2JSON( list ) {
 	}
 	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
-	if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
+	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
 function loader( toggle ) {
@@ -245,7 +245,6 @@ var local = 0;
 var localhost = [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1;
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var reboot = '';
 var red = '#bb2828';
 var short = window.innerHeight < 570;
 var timer;
