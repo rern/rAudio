@@ -180,7 +180,11 @@ done
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
-mpc | grep -q ^Updating && updating_db=true || updating_db=false
+if [[ -e $dirsystem/updating ]] || mpc | grep -q ^Updating; then 
+	updating_db=true
+else
+	updating_db=false
+fi
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
