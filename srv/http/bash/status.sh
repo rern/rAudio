@@ -351,15 +351,14 @@ samplingLine() {
 	if [[ $bitdepth == dsd ]]; then
 		sampling="${samplerate^^} &bull; $rate"
 	else
-		if [[ $bitdepth == 'N/A' ]]; then
-			[[ $ext == WAV || $ext == AIFF ]] && bit="$(( bitrate / samplerate / 2 )) bit"
-		elif [[ $ext == Radio && ${file/*.} != flac ]]; then # only flac has bitdepth
-			bit=
-		elif [[ -n $bitdepth && $ext != MP3 && $ext != aac ]]; then # lossy has no bitdepth
-			bit="$bitdepth bit"
-		fi
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
-		sampling="$bit $sample $rate"
+		if [[ $bitdepth == 'N/A' ]]; then
+			[[ $ext == WAV || $ext == AIFF ]] && sampling="$(( bitrate / samplerate / 2 )) bit $sample $rate"
+		elif [[ $ext == Radio && ${file/*.} != flac ]]; then # only flac has bitdepth
+			sampling="$sample $rate"
+		elif [[ -n $bitdepth && $ext != MP3 && $ext != aac ]]; then # lossy has no bitdepth
+			sampling="$bit $sample $rate"
+		fi
 	fi
 	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
