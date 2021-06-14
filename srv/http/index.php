@@ -33,8 +33,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 			font-style : normal;
 		}
 	</style>
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/fonts.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 		<?php if ( $localhost ) { ?> 
 	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">

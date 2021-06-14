@@ -54,8 +54,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 			font-style : normal;
 		}
 	</style>
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/fonts.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/addons.<?=$time?>.css">
 </head>

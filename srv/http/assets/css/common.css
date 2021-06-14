@@ -1,3 +1,16 @@
+:root {
+	--cw:   hsl(0,0%,90%);     /* white */
+	--cml:  hsl(200,100%,40%); /* main-light */
+	--cm:   hsl(200,100%,35%); /* main */
+	--cma:  hsl(200,100%,30%); /* main-active */
+	--cmd:  hsl(200,100%,20%); /* main-dark */
+	--cg75: hsl(200,3%,75%);   /* gray-75% */
+	--cg60: hsl(200,3%,60%);   /* gray-60% */
+	--cgl:  hsl(200,3%,40%);   /* gray-light */
+	--cg:   hsl(200,3%,30%);   /* gray */
+	--cga:  hsl(200,3%,20%);   /* gray-active */
+	--cgd:  hsl(200,3%,10%);   /* gray-dark */
+}
 @font-face {
 	font-family: Lato;
 	src: url( '/assets/fonts/lato-regular-webfont.woff' ) format( 'woff' ),
