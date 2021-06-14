@@ -331,7 +331,7 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
   s|\(--cg: *hsl\).*;|\1(${hsg}30%);|
  s|\(--cga: *hsl\).*;|\1(${hsg}20%);|
  s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
-" /srv/http/assets/css/colors.css
+" /srv/http/assets/css/common.css
 	sed -i "
  s|\(.box{fill:hsl\).*|\1($hsl);|
 s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
