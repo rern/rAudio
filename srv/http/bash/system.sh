@@ -237,7 +237,7 @@ i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
 	reboot=${args[3]}
-	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|dtoverlay=tft35a\|hdmi_force_hotplug=1' $fileconfig )
+	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -303,7 +303,7 @@ pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
 pins_data=${args[9]}"
-		if ! grep -q tft35a $fileconfig; then
+		if ! grep -q 'waveshare\|tft35a' $fileconfig; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi

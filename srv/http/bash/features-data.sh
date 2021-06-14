@@ -7,7 +7,7 @@ data+='
 , "autoplay"        : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
 , "autoplaycd"      : '$( [[ -e $dirsystem/autoplaycd ]] && echo true || echo false )'
 , "hostname"        : "'$( hostname )'"
-, "lcd"             : '$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )'
+, "lcd"             : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true || echo false )'
 , "login"           : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "mpdscribble"     : '$( systemctl -q is-active mpdscribble@mpd && echo true || echo false )'
 , "mpdscribbleval"  : "'$( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- | tr '\n' ^ )'"

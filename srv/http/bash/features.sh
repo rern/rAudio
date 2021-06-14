@@ -91,18 +91,16 @@ localbrowserset )
 	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
 	rotateset=${conf[0]}
 	screenoffset=${conf[1]}
-	cursorset=${conf[2]}
-	zoomset=${conf[3]}
 	ply-image /srv/http/assets/img/splash.png
 	if [[ $rotate != $rotateset ]]; then
-		if grep -q tft35a /boot/config.txt; then
+		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			case $rotate in
 				CW )     degree=0;;
 				NORMAL ) degree=90;;
 				CCW )    degree=180;;
 				UD )     degree=270;;
 			esac
-			sed -i "s/\(tft35a\).*/\1:rotate=$degree/" /boot/config.txt
+			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
 		else
