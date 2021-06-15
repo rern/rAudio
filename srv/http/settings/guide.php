@@ -31,7 +31,7 @@ include 'logosvg.php';
 	<a href="/"><i id="close" class="fa fa-times"></i></a>
 </div>
 <div id="guide">
-	<p><a class="gr" href="https://github.com/rern/rAudio-1" target="_blank"><i class="fa fa-github fa-lg blue"></i> Source</a><span id="count" style="float: right"></span></p>
+	<p><a class="gr" href="https://github.com/rern/rAudio-1" target="_blank"><i class="fa fa-github fa-lg bl"></i> Source</a><span id="count" style="float: right"></span></p>
 	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
 	<div id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></div>
 	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
