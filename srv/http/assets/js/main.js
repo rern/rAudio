@@ -231,14 +231,10 @@ $( '#colorok' ).click( function() {
 		var l = L * 100;
 	}
 	var hsl = h +' '+ s +' '+ l;
-	if ( hsl === G.display.color ) {
-		$( '#colorcancel' ).click();
-	} else {
-		bash( [ 'color', hsl ] );
-		var hsl = h +','+ s +'%,'+ l +'%';
-		$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
-		banner( 'Color', 'Change ...', 'brush blink' );
-	}
+	bash( [ 'color', hsl ] );
+	var hsl = h +','+ s +'%,'+ l +'%';
+	$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
+	banner( 'Color', 'Change ...', 'brush blink' );
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
