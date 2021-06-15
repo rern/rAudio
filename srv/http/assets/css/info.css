@@ -102,7 +102,8 @@ hr {
 	border-radius: 10px;
 }
 #infoOverlay a,
-#infoBox i {
+#infoBox i,
+.infobtn {
 	text-shadow: -1px 1px 2px #000000;
 }
 #infoTopBg {

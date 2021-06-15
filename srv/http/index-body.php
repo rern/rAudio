@@ -427,9 +427,9 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<i id="colorcancel" class="fa fa-times"></i>
 	<canvas id="canvascolor"></canvas><br>
 <?php if ( file_exists( $dirsystem.'color' ) ) { ?>
-	<a id="colorreset" class="btn"><i class="fa fa-undo"></i> Default</a>&ensp;
+	<a id="colorreset" class="infobtn"><i class="fa fa-undo"></i> Default</a>&ensp;
 <?php } ?>
-	<a id="colorok" class="btn btn-primary"><i class="fa fa-check"></i> Set</a>
+	<a id="colorok" class="infobtn infobtn-primary"><i class="fa fa-check"></i> Set</a>
 	</div>
 </div>
 <div id="bio" class="hide">
