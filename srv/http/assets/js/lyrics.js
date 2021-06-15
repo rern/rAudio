@@ -1,10 +1,34 @@
+lyricsShow = function( data ) {
+	currentlyrics = data;
+	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
+	$( '#lyricstitle' ).text( lyricsTitle );
+	$( '#lyricsartist' ).text( lyricsArtist );
+	$( '#lyricstext' ).html( lyricshtml );
+	var bars = G.status ? G.bars : !$( '#bar-top' ).hasClass( 'hide' );
+	$( '#lyrics' )
+		.css( {
+			  top    : ( bars ? '' : 0 )
+			, height : ( bars ? '' : '100vh' )
+		} )
+		.removeClass( 'hide' );
+	$( '#lyricstext' ).scrollTop( 0 );
+	if ( bars ) $( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
+	bannerHide();
+}
+lyricsHide = function() {
+	currentlyrics = '';
+	$( '#lyricstext' ).empty();
+	$( '#lyricstextarea' ).val( '' );
+	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+	$( '#lyricseditbtngroup' ).addClass( 'hide' );
+	$( '#lyrics' ).addClass( 'hide' );
+	if ( G.bars || !$( '#bar-top' ).hasClass( 'hide' ) ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
+}
+
 var currentlyrics = '';
 var lyricsArtist = '';
 var lyricsTitle = '';
 var lyricshtml = '';
-
-$( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 $( '#lyricsartist' ).click( function() {
 	getBio( $( this ).text() );
 } );
@@ -18,16 +42,6 @@ $( '#song, #guide-lyrics' ).tap( function() {
 		return
 	}
 	
-/*	var file = G.status.file;
-	if ( G.status.player === 'mpd' && file.slice( 0, 4 ) === 'http' ) {
-		if ( title.indexOf( ': ' ) !== -1 ) {
-			var artist_title = title.split( ': ' );
-		} else {
-			var artist_title = title.split( ' - ' );
-		}
-		var artist = artist_title[ 0 ].trim();
-		var title = artist_title[ 1 ].trim();
-	}*/
 	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
 	title = title.replace( /(["`])/g, '\\$1' );
 	bash( [ 'lyrics', artist, title, 'local' ], function( data ) {
@@ -68,7 +82,10 @@ $( '#song, #guide-lyrics' ).tap( function() {
 				var values = infoVal();
 				lyricsArtist = values[ 0 ];
 				lyricsTitle = values[ 1 ];
-				getLyrics();
+				bash( [ 'lyrics', lyricsArtist, lyricsTitle ], function( data ) {
+					lyricsShow( data );
+				} );
+				banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
 			}
 		} );
 	} );
@@ -148,43 +165,3 @@ $( '#lyricsdelete' ).click( function() {
 		}
 	} );
 } );
-
-} ); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-htmlEscape = function( str ) {
-	return str
-		.trim()
-		.replace( /'|"/g, '' );
-}
-getLyrics = function() {
-	bash( [ 'lyrics', lyricsArtist, lyricsTitle ], function( data ) {
-		lyricsShow( data );
-	} );
-	banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
-}
-lyricsShow = function( data ) {
-	currentlyrics = data;
-	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-	$( '#lyricstitle' ).text( lyricsTitle );
-	$( '#lyricsartist' ).text( lyricsArtist );
-	$( '#lyricstext' ).html( lyricshtml );
-	var bars = G.status ? G.bars : !$( '#bar-top' ).hasClass( 'hide' );
-	$( '#lyrics' )
-		.css( {
-			  top    : ( bars ? '' : 0 )
-			, height : ( bars ? '' : '100vh' )
-		} )
-		.removeClass( 'hide' );
-	$( '#lyricstext' ).scrollTop( 0 );
-	if ( bars ) $( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
-	bannerHide();
-}
-lyricsHide = function() {
-	currentlyrics = '';
-	$( '#lyricstext' ).empty();
-	$( '#lyricstextarea' ).val( '' );
-	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
-	$( '#lyricseditbtngroup' ).addClass( 'hide' );
-	$( '#lyrics' ).addClass( 'hide' );
-	if ( G.bars || !$( '#bar-top' ).hasClass( 'hide' ) ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
-}
