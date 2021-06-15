@@ -1216,7 +1216,8 @@ function renderPlayback() {
 	} );
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
-		if ( G.status.state === 'play' && G.iplayer !== 'webradio' ) {
+		G.albumradio = G.status.state === 'play' && G.iplayer !== 'webradio'; // radioparadise or radiofrance
+		if ( G.albumradio ) {
 			sampling += ' &bull; '+ G.status.station;
 		} else {
 			sampling += sampling ? ' &bull; Radio' : 'Radio';
@@ -1721,11 +1722,10 @@ function setPlaylistScroll() {
 
 }
 function setRadioAlbum() {
-	var albumradio = G.status.state === 'play' && G.iplayer !== 'webradio';
-	$( '#artist, #song' ).toggleClass( 'capitalize', albumradio );
+	$( '#artist, #song' ).toggleClass( 'capitalize', G.albumradio );
 	$( '#album' )
-		.toggleClass( 'albumgray', !albumradio ) // gray text
-		.toggleClass( 'capitalize', albumradio );
+		.toggleClass( 'albumgray', !G.albumradio ) // gray text
+		.toggleClass( 'capitalize', G.albumradio );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
