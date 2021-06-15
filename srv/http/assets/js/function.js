@@ -1721,11 +1721,11 @@ function setPlaylistScroll() {
 
 }
 function setRadioAlbum() {
-	var playing = G.status.state === 'play';
-	$( '#artist, #song' ).toggleClass( 'capitalize', playing );
+	var albumradio = G.status.state === 'play' && G.iplayer !== 'webradio';
+	$( '#artist, #song' ).toggleClass( 'capitalize', albumradio );
 	$( '#album' )
-		.toggleClass( 'albumgray', !playing || G.iplayer === 'webradio' ) // gray text
-		.toggleClass( 'capitalize', playing && G.iplayer !== 'webradio' );
+		.toggleClass( 'albumgray', !albumradio ) // gray text
+		.toggleClass( 'capitalize', albumradio );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
