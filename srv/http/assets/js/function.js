@@ -1216,7 +1216,7 @@ function renderPlayback() {
 	} );
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
-		if ( G.status.state === 'play' && G.status.station ) {
+		if ( G.status.state === 'play' && G.iplayer !== 'webradio' ) {
 			sampling += ' &bull; '+ G.status.station;
 		} else {
 			sampling += sampling ? ' &bull; Radio' : 'Radio';
@@ -1722,12 +1722,10 @@ function setPlaylistScroll() {
 }
 function setRadioAlbum() {
 	var playing = G.status.state === 'play';
-	var radioalbum = false;
-	if ( 'file' in G.status ) radioalbum = [ 'radioparadise', 'radiofrance' ].indexOf( G.status.file.split( '.' )[ 1 ] ) !== -1;
 	$( '#artist, #song' ).toggleClass( 'capitalize', playing );
 	$( '#album' )
-		.toggleClass( 'albumgray', !playing || !radioalbum ) // gray text
-		.toggleClass( 'capitalize', playing && G.status.Album.slice( 0, 4 ) !== 'http' );
+		.toggleClass( 'albumgray', !playing || G.iplayer === 'webradio' ) // gray text
+		.toggleClass( 'capitalize', playing && G.iplayer !== 'webradio' );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin

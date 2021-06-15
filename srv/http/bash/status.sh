@@ -290,12 +290,10 @@ elif [[ -n $radioheader ]]; then
 				[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 			else
 				artistname=$stationname
-				titlename=
 				albumname=$file
 			fi
 		else
 			[[ -e "$radiofile" ]] && artistname=$stationname
-			titlename=
 			albumname=$file
 		fi
 		filenoext=/data/webradiosimg/$urlname
