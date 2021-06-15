@@ -269,9 +269,9 @@ elif [[ -n $radioheader ]]; then
 					station=${stationname/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
-					/srv/http/bash/status-radioparadise.sh $file "$stationname" &> /dev/null &
+					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
 				elif [[ -n $radiofrance ]]; then
-					/srv/http/bash/status-radiofrance.sh $file "$stationname" &> /dev/null &
+					/srv/http/bash/status-radiofrance.sh $file "$station" &> /dev/null &
 				fi
 			elif [[ -n $Title ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
