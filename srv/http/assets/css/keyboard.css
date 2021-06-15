@@ -30,9 +30,9 @@
 	padding: 0 !important;
 	font-family: Lato;
 	font-size: 22px;
-	text-shadow: 1px 1px 2px #000000;
+	text-shadow: -1px 1px 2px #000000;
 	background: var( --cg ) !important;
-	box-shadow: 2px 2px 2px #000000 !important;
+	box-shadow: -2px 2px 2px #000000 !important;
 	border-radius: 4px !important;
 	border-bottom: none !important;
 	border-top: 1px solid var( --cg60 );
