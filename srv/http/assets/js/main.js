@@ -252,7 +252,6 @@ $( '#colorcancel' ).click( function() {
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
 	G.colorpicker.destroy();
-	$( '#colorok' ).before( '<canvas id="canvascolor"></canvas>' ); // fix: removed by destroy()
 } );
 $( '#colorpicker' ).click( function( e ) {
 	if ( e.target.id === 'colorpicker' ) $( '#colorcancel' ).click();
