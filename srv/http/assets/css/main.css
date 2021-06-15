@@ -1237,7 +1237,7 @@ i.map.disabled, .map.disabled i {
 	height: calc(100vh - 50px);
 	background: var( --cgd );
 	box-shadow: 4px 4px 10px #000000;
-	z-index: 102;
+	z-index: 106;
 	-webkit-overflow-scrolling: touch;
 }
 #lyrics i {
