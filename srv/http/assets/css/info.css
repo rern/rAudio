@@ -488,10 +488,9 @@ px100 { width: 100px }
 	#infoX:active {
 		color: var( --cma );
 	}
-	input[type=checkbox]:focus,
-	input[type=radio]:focus,
+	input:focus,
 	.infobtn.active {
-		box-shadow: 0 0 2px 2px var( --cg75 ) !important;
+		box-shadow: 0 0 3px 1px var( --cg75 ) !important;
 
 	}
 }
