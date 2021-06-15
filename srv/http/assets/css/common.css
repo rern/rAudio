@@ -1,3 +1,38 @@
+*,
+*:before,
+*:after {
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing:border-box;
+	box-sizing:border-box;
+}
+*:focus,
+*:active,
+input:focus-visible {
+	outline: none;
+}
+input::-moz-focus-inner {
+	outline: 0 !important;
+	border: 0;
+}
+html {
+	height: 100%;
+	padding: env( safe-area-inset ); /* disable iPhone X rounded corner padding */
+}
+body {
+	height: 100%;
+	margin: 0;
+	font-family: "Lato";
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: var( --cw );
+	background-color: #000;
+	overflow-x: hidden;
+	overscroll-behavior: none; /* disable android pull-down refresh */
+	-webkit-tap-highlight-color: transparent;
+}
+.hide { display: none !important }
+.hidden { visibility: hidden }
+
 :root {
 	--cd:   hsl(200,100%,35%); /* default main */
 	--cw:   hsl(0,0%,90%);     /* white */
@@ -12,6 +47,43 @@
 	--cga:  hsl(200,3%,20%);   /* gray-active */
 	--cgd:  hsl(200,3%,10%);   /* gray-dark */
 }
+
+w, wh, whl, .wh { color: var( --cw ) !important }
+bl, blb, .bl { color: var( --cm ) !important }
+bll { color: var( --cml ) !important; }
+gr, grl, .gr, .grl { color: var( --cg60 ) !important }
+grn { color: #0f0 }
+red, .red { color: #f00 }
+.yl { color: yellow }
+.bgr { background: var( --cgd ) }
+.bgr60 { background-color: var( --cg60 ) !important }
+
+@keyframes blinkopaque { 50% { opacity: 0 } }
+.blink { animation: blinkopaque 1.5s linear infinite }
+#loader {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 110; /* #banner > #loader > # #keyboard > #infoOverlay */
+	background: rgba(0, 0, 0, 0.8);
+}
+#loader svg {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	width: 50px;
+	animation: blinkopaque 1.5s linear infinite;
+}
+#loader rect {
+	fill: var( --cm );
+}
+#loader path {
+	fill: var( --cg75 );
+}
+
 @font-face {
 	font-family: Lato;
 	src: url( '/assets/fonts/lato-regular-webfont.woff' ) format( 'woff' ),

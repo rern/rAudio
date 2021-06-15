@@ -429,7 +429,7 @@ function psRelays( response ) { // on receive broadcast
 			  icon        : 'relays'
 			, title       : 'GPIO Relays Countdown'
 			, message     : stopwatch
-			, footer      : '<white>'+ delay +'</white>'
+			, footer      : '<wh>'+ delay +'</wh>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
@@ -443,7 +443,7 @@ function psRelays( response ) { // on receive broadcast
 		delay--
 		G.intRelaysTimer = setInterval( function() {
 			if ( delay ) {
-				$( '.infofooter white' ).text( delay-- );
+				$( '.infofooter wh' ).text( delay-- );
 			} else {
 				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
@@ -473,7 +473,7 @@ function psRelays( response ) { // on receive broadcast
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
 			$( '.infobtn' ).addClass( 'hide' );
-			$( '.infofooter white' ).html( devices );
+			$( '.infofooter wh' ).html( devices );
 		}
 	}
 }

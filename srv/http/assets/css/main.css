@@ -1,29 +1,3 @@
-*,
-*:before,
-*:after {
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
-}
-*:focus {
-	outline: none;
-}
-html {
-	height: 100%;
-	padding: env( safe-area-inset ); /* disable iPhone X rounded corner padding */
-}
-body {
-	height: 100%;
-	margin: 0;
-	font-family: "Lato";
-	font-size: 14px;
-	line-height: 1.42857143;
-	color: var( --cw );
-	background-color: #000;
-	overflow-x: hidden;
-	overscroll-behavior: none; /* disable android pull-down refresh */
-	-webkit-tap-highlight-color: transparent;
-}
 a {
 	color: var( --cw );
 	text-decoration: none !important;
@@ -90,42 +64,24 @@ ul {
 	border: solid 1px var( --cg );
 }
 
-.hide { 
-	display: none !important;
-}
-.hidden { 
-	visibility: hidden;
-}
 ib {
 	display: inline-block;
 }
-w, wh, whl,
-.wh { color: var( --cw ) !important; }
-bl,
-.bl { color: var( --cm ) !important; }
-blb {
-	font-weight: bolder;
-	color: var( --cm );
-}
-gr, grl,
-.gr, .grl { color: var( --cg60 ) !important; }
-red, .red { color: #f00; }
-whl, grl,
-.whl, .grl,
-#elapsed,
-#volume,
-.rs-tooltip,
 #biocontent .artist,
-.biosimilar p,
+#elapsed,
 #lib-mode-list wh,
-.label,
+#volume,
+.biosimilar p,
 .bklabel,
-.title,
-.liinfo {
+.content-top grl,
+.content-top whl,
+.label,
+.liinfo,
+.lib-mode grl,
+.rs-tooltip,
+.title {
 	font-weight: 300;
 }
-.bgr { background-color: var( --cg ) !important; }
-.bgr60 { background-color: var( --cg60 ) !important; }
 
 #progress wh {
 	width: 25px;
@@ -171,12 +127,8 @@ whl, grl,
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
-@keyframes blinkopaque { 50% { opacity: 0; } }
 @keyframes blinkcg     { 50% { color: var( --cg ); text-shadow: none; } }
 @keyframes blinkcm     { 50% { color: var( --cm ); text-shadow: none; } }
-.blink {
-	animation: blinkopaque 1.5s linear infinite;
-}
 #tab-library.blink {
 	animation: blinkcg 1.5s linear infinite;
 }
@@ -190,29 +142,6 @@ i.map.disabled, .map.disabled i {
 	width: 45px !important;
 	font-size: 48px;
 	color: var( --cg ) !important;
-}
-#loader {
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	z-index: 110; /* #banner > #loader > # #keyboard > #infoOverlay */
-	background: rgba(0, 0, 0, 0.8);
-}
-#loader svg {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	margin: auto;
-	width: 50px;
-	animation: blinkopaque 1.5s linear infinite;
-}
-#loader rect {
-	fill: var( --cm );
-}
-#loader path {
-	fill: var( --cg75 );
 }
 .splash {
 	background: #000000 !important;

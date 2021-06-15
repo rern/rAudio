@@ -1,31 +1,5 @@
-body {
-	margin: 0;
-	font-family: "Lato";
-	font-size: 14px;
-	font-weight: normal;
-	color: var( --cw );
-	background-color: #000;
-}
-:focus,
-:active,
-input::-moz-focus-inner { /* dotted outline */
-	outline: 0;
-	border: 0;
-}
-.hide {
-	display: none !important;
-}
-wh, .wh { color: var( --cw ) !important; }
-gr, .gr { color: var( --cg60 ) !important; }
-grn { color: #0f0; }
 img {
 	border: 0
-}
-.blink {
-	animation: blinkopaque 1.5s linear infinite;
-}
-@keyframes blinkopaque {
-	50% { opacity: 0; }
 }
 hr {
 	margin-top: 20px;
@@ -244,22 +218,14 @@ strike {
 }
 li i,
 .revision,
-.boxed-group legend i,
-.bl,
-blue {
+.boxed-group legend i {
 	color: var( --cm );
 }
 span,
 pre,
-white,
-w,
 code,
 code i {
 	color: var( --cw );
-}
-gray,
-g {
-	color: var( --cg60 );
 }
 .flushdot {
 	height: 0;

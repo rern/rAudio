@@ -65,7 +65,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 		<div class="column" id="gpio-num">
 			<span class="gpio-text"><i class="fa fa-gpiopins bl"></i> &nbsp; Pin</span>
 			<?=$htmlpin?>
-			<span class="gpio-text"><i class="fa fa-stopwatch yellow"></i> &nbsp; Idle</span>
+			<span class="gpio-text"><i class="fa fa-stopwatch yl"></i> &nbsp; Idle</span>
 			<select id="timer" name="timer" class="timer"></select>
 		</div>
 		<div class="column" id="gpio-name">
@@ -79,7 +79,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 	</div>
 	<div class="gpio-float-r">
 		<div class="column">
-			<span class="gpio-text"><i class="fa fa-power green"></i> &nbsp; On Sequence</span>
+			<span class="gpio-text"><i class="fa fa-power grn"></i> &nbsp; On Sequence</span>
 			<div id="on"></div>
 		</div>
 		<div class="column">

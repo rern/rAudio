@@ -89,9 +89,6 @@ input {
 	background-color: #000000 !important;
 	border: 1px solid var( --cg ) !important;
 }
-input: focus {
-	outline: none;
-}
 #undo {
 	margin-left: 0;
 	background-color: #de810e;
@@ -101,10 +98,4 @@ input: focus {
 }
 .column span i {
 	font-size: 20px;
-}
-.green {
-	color: #0f0;
-}
-.yellow {
-	color: yellow;
 }
