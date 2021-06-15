@@ -2138,7 +2138,7 @@ li.active .li2 bl {
 }
 #colorcancel {
 	position: absolute;
-	margin-left: 200px;
+	right: 0;
 	width: 36px;
 	height: 36px;
 	font-size: 28px;

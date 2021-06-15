@@ -43,7 +43,8 @@ function clearIntervalAll() {
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
-	$( '#colorok' ).before( '<canvas id="canvascolor"></canvas>' );
+	$( '#colorcancel' ).after( '<canvas id="canvascolor"></canvas>' );
+	$( '#colorreset' ).toggleClass( 'hide', G.display.color === '' );
 	G.colorpicker = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
