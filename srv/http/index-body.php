@@ -447,7 +447,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<i id="lyricsundo" class="fa fa-undo hide"></i>
 			<i id="lyricssave" class="fa fa-save hide"></i>
 			<i id="lyricsdelete" class="fa fa-minus-circle"></i>
-			<i id="lyricsback" class="fa fa-arrow-left"></i>
+			<i id="lyricsback" class="fa fa-arrow-left bl"></i>
 		</div>
 	</div>
 	<div id="lyricstextoverlay">
