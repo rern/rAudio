@@ -217,43 +217,9 @@ a:active,
 a:hover {
 	outline: 0
 }
-.btn,
-.btn:hover,
-.btn:visited,
-.btn:focus,
-.btn:active {	color: var( --cw );
+.infobtn {
+	min-width: 90px;
 }
-.btn {
-	display: inline-block;
-	min-width: 95px;
-	margin-bottom: 5px;
-	line-height: 34px;
-	text-align: center;
-	color: var( --cw );
-									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x   y   w    h */
-	box-shadow: -2px 2px 3px 1px #000000;
-	text-shadow: -1px 1px 2px #000000;
-	border-radius: 4px;
-	border: none;
-	user-select: none;
-}
-.btn-primary {
-	background-color: var( --cm );
-}
-.btn-default,
-.btn-default.disabled {
-	background-color: var( --cg );
-}
-.red {
-	background-color: #bb2828;
-}
-.btn i {
-	margin-right: 5px;
-}
-
 #bottom {
 	min-height: calc( 100vh - 250px );
 }

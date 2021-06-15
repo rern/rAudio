@@ -53,7 +53,7 @@ foreach( $arrayalias as $alias ) {
 		if ( $addonhide === 1 || exec( $addonhide ) ) continue;
 	}
 	
-	$buttonlabel = $addon[ 'buttonlabel' ] ?? '<i class="fa fa-plus-circle"></i>Install';
+	$buttonlabel = $addon[ 'buttonlabel' ] ?? '<i class="fa fa-plus-circle"></i> Install';
 	$uninstallfile = file_exists( "/usr/local/bin/uninstall_$alias.sh" );
 	if ( $nouninstall || $uninstallfile ) {
 		$installed = ' class="installed"';
@@ -74,21 +74,21 @@ foreach( $arrayalias as $alias ) {
 		} else if ( !$version || $version == $versioninstalled ) {
 			$icon = $nouninstall ? '<i class="fa fa-update"></i>' : '';
 			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
-			$btnin = '<a class="btn btn-default disabled"'.$taphold.'>'.$icon.$buttonlabel.'</a>';
+			$btnin = '<a class="infobtn infobtn-default disabled"'.$taphold.'>'.$icon.' '.$buttonlabel.'</a>';
 		} else {
 			$updates = 1;
 			$update = 1;
 			$installed = ' class="installed update"';
 			$check = '<grn class="blink">&bull;</grn> ';
-			$btnin = '<a class="btn btn-primary"><i class="fa fa-update"></i>Update</a>';
+			$btnin = '<a class="infobtn infobtn-primary"><i class="fa fa-update"></i> Update</a>';
 		}
 		$btnunattr = isset( $addon[ 'rollback' ] ) ? ' rollback="'.$addon[ 'rollback' ].'"' : '';
-		$btnun = '<a class="btn btn-primary red'.$hide.'" '.$btnunattr.'><i class="fa fa-minus-circle"></i>Uninstall</a>';
+		$btnun = '<a class="infobtn infobtn-primary red'.$hide.'" '.$btnunattr.'><i class="fa fa-minus-circle"></i> Uninstall</a>';
 	} else {
 		$installed = '';
 		$check = '';
-		$btnin = '<a class="btn btn-primary">'.$buttonlabel.'</a>';
-		$btnun = '<a class="btn btn-default disabled"><i class="fa fa-minus-circle"></i>Uninstall</a>';
+		$btnin = '<a class="infobtn infobtn-primary">'.$buttonlabel.'</a>';
+		$btnun = '<a class="infobtn disabled"><i class="fa fa-minus-circle"></i> Uninstall</a>';
 	}
 	
 	// addon list ---------------------------------------------------------------
