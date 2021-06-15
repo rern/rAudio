@@ -280,13 +280,12 @@ i.map.disabled, .map.disabled i {
 #settings .gr {
 	font-size: 22px;
 }
-#iconrainbow,
-#iconcolor {
+#iconrainbow {
 	width: 20px;
 	height: 20px;
 	vertical-align: -2px;
 	border-radius: 50%;
-	box-shadow: 1px 1px 2px #000000;
+	box-shadow: -1px 1px 2px #000000;
 /*	background-image: linear-gradient( to right, #ff0000, #ff8800, #ffff00, #00ff88, #0000ff, #8800ff, #ff00ff );*/
 }
 #menu-file {
@@ -1470,7 +1469,7 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: #000000 !important;
 	background: var( --cw );
-	box-shadow: 1px 1px 2px #000000;
+	box-shadow: -1px 1px 2px #000000;
 }
 .coveredit.fa-coverart {
 	position: absolute;
