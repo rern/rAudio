@@ -1216,7 +1216,7 @@ function renderPlayback() {
 	} );
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
-		G.albumradio = G.status.state === 'play' && G.iplayer !== 'webradio'; // radioparadise or radiofrance
+		G.albumradio = G.status.state === 'play' && G.status.station !== ''; // radioparadise or radiofrance
 		if ( G.albumradio ) {
 			sampling += ' &bull; '+ G.status.station;
 		} else {
