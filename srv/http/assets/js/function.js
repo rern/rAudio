@@ -41,8 +41,9 @@ function clearIntervalAll() {
 	} );
 }
 function colorSet() {
+	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
-	colorpicker = new KellyColorPicker( {
+	G.colorpicker = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
 		, color  : $( '#button-library' ).css( 'background-color' )
@@ -51,6 +52,7 @@ function colorSet() {
 				var hex = e.getCurColorHex();
 				var h = Math.round( 360 * e.getCurColorHsv().h );
 				var hsg = 'hsl('+ h +',3%,';
+				var rgb = Object.values( e.getCurColorRgb() ).join( ' ' );
 				$( '#bar-top, #playback-controls i, #tab-playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
 				$( '.content-top, #tab-playback, #colorcancel' ).css( 'background', hsg +'20%)' );
 				$( '.lib-icon, gr' ).css( 'cssText', 'color: '+ hsg +'60%) !important;' );
@@ -58,7 +60,8 @@ function colorSet() {
 				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );
 				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
 				$( '#playback-controls .active, #tab-library, #button-library, #lib-list li.active, #colorok' ).css( 'background-color', hex );
-				$( '#button-lib-back, .lialbum' ).css( 'color', hex );
+				$( '#button-lib-back, .lialbum, #colorcancel' ).css( 'color', hex );
+				$( '#colorok' ).toggleClass( 'disabled', rgb === rgb0 );
 			}
 		}
 	} );

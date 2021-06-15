@@ -153,6 +153,10 @@ whl, grl,
 .disabled {
 	pointer-events: none;
 }
+#divcolor .btn.disabled {
+	color: var( --cg60 );
+	background-color: var( --cg ) !important;
+}
 .submenu.disabled {
 	color: var( --cgl ) !important;
 }
@@ -2129,10 +2133,12 @@ li.active .li2 bl {
 #colorreset {
 	display: inline-block;
 	margin: 5px auto;
-	width: 70px;
+	width: 80px;
 	height: 36px;
 	line-height: 36px;
+	background-color: hsl(200,100%,35%);
 	box-shadow: 0 0 6px 5px #000000;
+	text-shadow: -1px 1px 2px #000000;
 }
 #colorcancel {
 	position: absolute;

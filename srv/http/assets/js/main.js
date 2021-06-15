@@ -216,7 +216,7 @@ $( '#displayplayback' ).click( function() {
 } );
 $( '#colorok' ).click( function() {
 	G.color = 0;
-	var hsv = colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
+	var hsv = G.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
 	var s = hsv.s;
 	var v = hsv.v;
 	var L = ( 2 - s ) * v / 2;
@@ -249,7 +249,7 @@ $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
 	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
 		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
-	$( '#mode-title, #button-lib-back, .lib-icon, gr, grl, \
+	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, grl, \
 		#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', '' );
 	$( '.menu a' ).css( 'border-top', '' );
 	$( '#lib-list li' ).css( 'border-bottom', '' );
