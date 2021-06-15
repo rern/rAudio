@@ -153,9 +153,16 @@ whl, grl,
 .disabled {
 	pointer-events: none;
 }
+#divcolor .infobtn {
+	margin: 0;
+	width: 85px;
+}
 #divcolor .btn.disabled {
 	color: var( --cg60 );
 	background-color: var( --cg ) !important;
+}
+#colorreset {
+	background-color: var( --cd );
 }
 .submenu.disabled {
 	color: var( --cgl ) !important;

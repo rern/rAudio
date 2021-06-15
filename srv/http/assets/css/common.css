@@ -1,4 +1,5 @@
 :root {
+	--cd:   hsl(200,100%,35%); /* default main */
 	--cw:   hsl(0,0%,90%);     /* white */
 	--cml:  hsl(200,100%,40%); /* main-light */
 	--cm:   hsl(200,100%,35%); /* main */
