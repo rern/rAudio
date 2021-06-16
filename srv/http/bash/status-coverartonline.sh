@@ -62,10 +62,11 @@ else
 	[[ $type == licover ]] && prefix=licover || prefix=online
 	urlname=/data/shm/$prefix-$name
 	# limit fetched files: 10
-	fetchedfiles=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
+	fetchedfiles=$( ls -1t $dirtmp/$prefix-* )
 	if (( $( echo "$fetchedfiles" | wc -l ) > 10 )); then
-		rm $( echo $fetchedfiles | tail -1 )
-		rm -f $( ls -lt $dirtmp/radioalbum-* | awk '{print $NF}' | tail -1 )
+		file=$( echo "$fetchedfiles" | tail -1 )
+		rm $file
+		[[ $prefix == online ]] && rm -f $( echo ${file/online/radioalbum} | head -c -5 )
 	fi
 fi
 coverfile=/srv/http$urlname.$ext
