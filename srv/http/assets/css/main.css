@@ -639,6 +639,7 @@ i.map.disabled, .map.disabled i {
 	border: 1px solid hsl(0,0%,15%);
 }
 /* vu */
+#vu { width: 230px }
 .cls-8,.cls-9,.cls-10,.cls-11,.cls-12,.cls-15,.cls-16 { font-family: Arial; }
 .cls-8,.cls-9,.cls-10,.cls-11,.cls-12 { font-size:12px; }
 .cls-15,.cls-16 { font-size: 9px; }
