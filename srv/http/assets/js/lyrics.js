@@ -32,7 +32,7 @@ var lyricshtml = '';
 $( '#lyricsartist' ).click( function() {
 	getBio( $( this ).text() );
 } );
-$( '#song, #guide-lyrics' ).tap( function() {
+$( '#title, #guide-lyrics' ).tap( function() {
 	var artist = G.status.Artist;
 	var title = G.status.Title;
 	if ( !artist || !title ) return;

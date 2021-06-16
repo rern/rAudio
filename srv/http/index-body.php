@@ -227,8 +227,8 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="divartist">
 			<span id="artist"></span>
 		</div>
-		<div id="divsong">
-			<span id="song"></i></span>
+		<div id="divtitle">
+			<span id="title"></i></span>
 		</div>
 		<div id="divalbum">
 			<span id="album"></span>

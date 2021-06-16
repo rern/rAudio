@@ -808,7 +808,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
-			$( '#song' ).removeClass( 'gr' );
+			$( '#title' ).removeClass( 'gr' );
 			if ( G.display.time ) {
 				$( '#elapsed' ).removeClass( 'bl' );
 				$( '#total' ).removeClass( 'wh' );
@@ -819,7 +819,7 @@ $( '.btn-cmd' ).click( function() {
 					$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w> / '+ timehms );
 				}
 			}
-			if ( G.status.webradio ) $( '#song, #elapsed' ).html( blinkdot );
+			if ( G.status.webradio ) $( '#title, #elapsed' ).html( blinkdot );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
@@ -839,7 +839,7 @@ $( '.btn-cmd' ).click( function() {
 				return
 			}
 			
-			$( '#song' ).removeClass( 'gr' );
+			$( '#title' ).removeClass( 'gr' );
 			if ( !G.status.playlistlength ) return
 			
 			bash( [ 'mpcplayback', 'stop' ] );
@@ -859,7 +859,7 @@ $( '.btn-cmd' ).click( function() {
 						$( '#time-bar' ).css( 'width', 0 );
 					}
 				} else {
-					$( '#song' ).html( '·&ensp;·&ensp;·' );
+					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
 					if ( !G.display.novu ) vuStop();
 				}
@@ -874,7 +874,7 @@ $( '.btn-cmd' ).click( function() {
 			
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
-			$( '#song' ).addClass( 'gr' );
+			$( '#title' ).addClass( 'gr' );
 			if ( G.display.time && $( '#time-knob' ).is( ':visible' ) ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
@@ -888,7 +888,7 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			$( '#artist, #song, #album' )
+			$( '#artist, #title, #album' )
 				.removeClass( 'scrollleft' )
 				.empty();
 			bash( [ 'mpcprevnext', cmd, song, pllength ] );

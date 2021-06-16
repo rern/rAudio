@@ -298,7 +298,7 @@ function psMpdPlayer( data ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
 				$( '#artist' ).html( G.status.Artist );
-				$( '#song' ).html( G.status.Title || blinkdot );
+				$( '#title' ).html( G.status.Title || blinkdot );
 				$( '#album' ).html( G.status.Album );
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				setRadioClass();

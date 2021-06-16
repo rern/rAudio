@@ -897,7 +897,7 @@ function mpcSeek( seekto ) {
 		if ( G.bars ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#pause' ).addClass( 'active' );
-			$( '#song' ).addClass( 'gr' );
+			$( '#title' ).addClass( 'gr' );
 		}
 		local( 600 );
 		bash( [ 'mpcseek', seektime, 'stop' ] );
@@ -1181,9 +1181,9 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	// song and album before update for song/album change detection
+	// artist-title-album before update for change detection
 	var previousartist = $( '#artist' ).text();
-	var prevtitle = $( '#song' ).text();
+	var prevtitle = $( '#title' ).text();
 	var previousalbum = $( '#album' ).text();
 	// volume
 	if ( !G.display.volumenone &&  G.display.volume ) {
@@ -1199,7 +1199,7 @@ function renderPlayback() {
 	
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '.emptyadd' ).addClass( 'hide' );
-	$( '#artist, #song, #album' )
+	$( '#artist, #title, #album' )
 		.css( 'width', '' )
 		.removeClass( 'capitalize albumgray' );
 	$( '#coverart' ).css( 'opacity', '' );
@@ -1207,7 +1207,7 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	$( '#artist' ).html( G.status.Artist );
-	$( '#song' )
+	$( '#title' )
 		.html( G.status.Title )
 		.toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).html( G.status.Album ).promise().done( function() {
@@ -1230,13 +1230,13 @@ function renderPlayback() {
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state !== 'play' ) {
 			$( '#artist' ).text( G.status.station );
-			$( '#song' ).html( '·&ensp;·&ensp;·' );
+			$( '#title' ).html( '·&ensp;·&ensp;·' );
 			$( '#album' ).text( G.status.file );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Artist ) $( '#artist' ).text( G.status.station );
-			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
+			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
 			if ( !G.status.Album ) $( '#album' ).text( G.status.file );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
@@ -1270,7 +1270,7 @@ function renderPlayback() {
 	$( '#total' ).text( timehms );
 	// stop ////////////////////
 	if ( G.status.state === 'stop' ) {
-		$( '#song' ).removeClass( 'gr' );
+		$( '#title' ).removeClass( 'gr' );
 		if ( displaytime ) {
 			$( '#time' ).roundSlider( 'setValue', 0 );
 			$( '#elapsed' )
@@ -1285,7 +1285,7 @@ function renderPlayback() {
 	}
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-	$( '#song' ).toggleClass( 'gr', G.status.state === 'pause' );
+	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	if ( !( 'elapsed' in G.status ) || G.status.elapsed > G.status.Time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 		return
@@ -1363,8 +1363,8 @@ function renderPlayback() {
 function renderPlaybackBlank() {
 	$( '#page-playback .emptyadd' ).toggleClass( 'hide', G.status.player !== 'mpd' );
 	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
-	$( '#divartist, #divsong, #divalbum' ).removeClass( 'scroll-left' );
-	$( '#artist, #song, #album, #progress, #elapsed, #total' ).empty();
+	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
+	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '#divcover .coveredit' ).remove();
@@ -1515,10 +1515,10 @@ function resetOrientation( file, ori, callback ) {
 	reader.readAsDataURL( file );
 }
 function scrollLongText() {
-	var $el = $( '#artist, #song, #album' );
+	var $el = $( '#artist, #title, #album' );
 	var wW = document.body.clientWidth;
 	var tWmax = 0;
-	$( '#song' ).removeClass( 'gr' );
+	$( '#title' ).removeClass( 'gr' );
 	$el.removeClass( 'scrollellipse' )
 		.each( function() {
 		var $this = $( this );
@@ -1724,7 +1724,7 @@ function setPlaylistScroll() {
 
 }
 function setRadioClass() {
-	$( '#artist, #song' ).toggleClass( 'capitalize', G.status.artist !== '' );
+	$( '#artist, #title' ).toggleClass( 'capitalize', G.status.artist !== '' );
 	$( '#album' )
 		.toggleClass( 'albumgray', G.status.Album === '' ) // gray text
 		.toggleClass( 'capitalize', G.status.Album !== '' );
