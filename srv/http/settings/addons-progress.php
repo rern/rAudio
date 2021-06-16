@@ -47,11 +47,11 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: rern;
-			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
-			font-weight: normal;
-			font-style : normal;
+			font-family  : rern;
+			src          : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ), url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
+			font-weight  : normal;
+			font-style   : normal;
+			font-display : block;
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
