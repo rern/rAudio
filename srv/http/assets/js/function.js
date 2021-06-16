@@ -1237,7 +1237,7 @@ function renderPlayback() {
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Artist ) $( '#artist' ).text( G.status.station );
 			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
-			if ( !G.status.Album ) $( '#album' ).text( G.status.file );
+			if ( !G.status.Album ) $( '#album' ).text( G.status.station );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			if ( G.display.radioelapsed || G.localhost ) {
@@ -1724,7 +1724,7 @@ function setPlaylistScroll() {
 
 }
 function setRadioClass() {
-	$( '#artist, #title' ).toggleClass( 'capitalize', G.status.artist !== '' );
+	$( '#artist, #title' ).toggleClass( 'capitalize', G.status.Artist !== '' );
 	$( '#album' )
 		.toggleClass( 'albumgray', G.status.Album === '' ) // gray text
 		.toggleClass( 'capitalize', G.status.Album !== '' );
