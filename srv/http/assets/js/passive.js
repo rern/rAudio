@@ -75,7 +75,7 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
-		if ( 'poweroff' in G ) setTimeout( bannerHide, 5000 );
+		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
