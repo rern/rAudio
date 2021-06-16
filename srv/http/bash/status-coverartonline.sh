@@ -63,13 +63,15 @@ else
 	urlname=/data/shm/$prefix-$name
 	# limit fetched files: 10
 	fetchedfiles=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
-	(( $( echo "$fetchedfiles" | wc -l ) > 10 )) && rm $( echo $fetchedfiles | tail -1 )
+	if (( $( echo "$fetchedfiles" | wc -l ) > 10 )); then
+		rm $( echo $fetchedfiles | tail -1 )
+		rm -f $( ls -lt $dirtmp/radioalbum-* | awk '{print $NF}' | tail -1 )
+	fi
 fi
 coverfile=/srv/http$urlname.$ext
 curl -s $url -o $coverfile
 if [[ -e $coverfile ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	rm -f $dirtmp/radioalbum-*
 	echo $Album > $dirtmp/radioalbum-$name
 	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart", "Album": "'$Album'" }'
 	curl -s -X POST http://127.0.0.1/pub?id=coverart -d "$data"
