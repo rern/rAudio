@@ -173,6 +173,17 @@ function psCoverart( data ) {
 					$( '#divcover .coveredit' ).remove();
 					$( '#coverart' ).css( 'opacity', '' );
 				}
+				var sampling = G.status.sampling;
+				if ( 'Album' in data && data.Album ) {
+					G.status.Album = data.Album;
+					sampling += ' &bull; '+ G.status.station;
+				} else {
+					G.status.Album = '';
+					sampling += sampling ? ' &bull; Radio' : 'Radio';
+				}
+				$( '#album' ).text( G.status.Album );
+				$( '#sampling' ).html( sampling );
+				setRadioClass();
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
 					currentpath = $( '.licover .lipath' ).text();

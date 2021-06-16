@@ -488,7 +488,7 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
-	rm -f $dirtmp/radiometa
+	rm -f $dirtmp/{radiometa,radioalbum}
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		fileheadder=$( mpc | head -c 4 )
@@ -511,7 +511,7 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/radiometa
+	rm -f $dirtmp/{radiometa,radioalbum}
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop

@@ -285,7 +285,10 @@ elif [[ -n $radioheader ]]; then
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
 				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-				[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
+				if [[ -n $fetchedfile ]]; then
+					coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
+					Album=$( cat $dirtmp/radioalbum 2> /dev/null )
+				fi
 			fi
 		fi
 		filenoext=/data/webradiosimg/$urlname
