@@ -147,10 +147,8 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
-		if ( !$.isEmptyObject( G ) ) {
-			bannerHide();
-			refreshData();
-		}
+		bannerHide();
+		if ( !$.isEmptyObject( G ) ) refreshData();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
