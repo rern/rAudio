@@ -251,7 +251,9 @@ elif [[ -n $radioheader ]]; then
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
-		if [[ $state == play ]]; then
+		if [[ $state != play ]]; then # fix - previous Title still exists on stop
+			Title=
+		else
 			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
 			[[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]] && radiofrance=1
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
