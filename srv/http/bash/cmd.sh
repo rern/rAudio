@@ -710,9 +710,9 @@ power )
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
 	if [[ -n $poweroff ]]; then
 		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
-		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
+		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	else
-		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'
+		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then

@@ -74,8 +74,9 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
-	} else if ( status === 0 ) { // disconnected
 		bannerHide();
+	} else if ( status === 0 ) { // disconnected
+		if ( 'poweroff' in G ) bannerHide();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -357,8 +358,11 @@ function psMpdUpdate( data ) {
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( data.title === 'Power' ) {
-		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
+	if ( 'power' in data ) {
+		if ( data.power === 'off' ) {
+			G.poweroff = 1;
+			$( '#loader' ).addClass( 'splash' );
+		}
 		loader();
 	} else if ( data.text === 'Change track ...' ) {
 		clearIntervalAll();
