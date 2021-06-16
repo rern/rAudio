@@ -9,10 +9,10 @@
 *:active {
 	outline: none !important;
 }
-input:focus-visible {
+input:focus { /* focus - cannot combine with others */
 	outline: none !important;
 }
-input:focus {
+input:focus-visible {
 	outline: none !important;
 }
 input::-moz-focus-inner {
