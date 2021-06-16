@@ -66,7 +66,7 @@ else
 	if (( $( echo "$fetchedfiles" | wc -l ) > 10 )); then
 		file=$( echo "$fetchedfiles" | tail -1 )
 		rm $file
-		[[ $prefix == online ]] && rm -f $( echo ${file/online/radioalbum} | head -c -5 )
+		[[ $prefix == online ]] && rm -f $( echo ${file/\/online-/\/radioalbum-} | head -c -5 )
 	fi
 fi
 coverfile=/srv/http$urlname.$ext
