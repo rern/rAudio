@@ -154,7 +154,7 @@ heading i.fa-question-circle {
 	line-height: 38px;
 	text-align: center;
 	font-size: 24px;
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: -1px 0 2px #000000;
 }
 .page-icon {
 	float: left;
@@ -211,7 +211,7 @@ heading i.fa-question-circle {
 	vertical-align: -3px;
 	font-size: 24px;
 	color: var( --cw );
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: -1px 0 2px #000000;
 }
 #bar-bottom a {
 	font-size: 16px;
