@@ -6,9 +6,14 @@
 	box-sizing:border-box;
 }
 *:focus,
-*:active,
+*:active {
+	outline: none !important;
+}
 input:focus-visible {
-	outline: none;
+	outline: none !important;
+}
+input:focus {
+	outline: none !important;
 }
 input::-moz-focus-inner {
 	outline: 0 !important;
