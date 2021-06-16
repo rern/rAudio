@@ -1,8 +1,8 @@
 #!/bin/bash
 
-[[ $( cat /sys/class/net/eth0/carrier 2> /dev/null ) == 1 ]] && online=1
-[[ $( cat /sys/class/net/wlan0/carrier 2> /dev/null ) == 1 ]] && online=1
-[[ -z $online ]] && exit
+# online check
+[[ $( cat /sys/class/net/eth0/carrier 2> /dev/null ) != 1 \
+	&& $( cat /sys/class/net/wlan0/carrier 2> /dev/null ) != 1 ]] && exit
 
 readarray -t args <<< "$1"
 
