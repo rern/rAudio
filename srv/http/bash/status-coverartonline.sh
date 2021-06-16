@@ -69,7 +69,8 @@ coverfile=/srv/http$urlname.$ext
 curl -s $url -o $coverfile
 if [[ -e $coverfile ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > /srv/http/data/shm/radioalbum
+	rm -f $dirtmp/radioalbum-*
+	echo $Album > $dirtmp/radioalbum-$name
 	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart", "Album": "'$Album'" }'
 	curl -s -X POST http://127.0.0.1/pub?id=coverart -d "$data"
 fi

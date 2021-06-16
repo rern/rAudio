@@ -287,7 +287,7 @@ elif [[ -n $radioheader ]]; then
 				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
 				if [[ -n $fetchedfile ]]; then
 					coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
-					Album=$( cat $dirtmp/radioalbum 2> /dev/null )
+					Album=$( cat $dirtmp/radioalbum-$covername 2> /dev/null )
 				fi
 			fi
 		fi
