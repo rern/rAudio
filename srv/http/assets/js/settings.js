@@ -148,12 +148,9 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		if ( !$.isEmptyObject( G ) ) {
-			loader( 'hide' );
+			bannerHide();
 			refreshData();
 		}
-	} else {
-		loader();
-		bannerHide();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -167,8 +164,9 @@ pushstream.onmessage = function( data, id, channel ) {
 }
 function psNotify( data ) {
 	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
-
+	
 	banner( data.title, data.text, data.icon, data.delay );
+	if ( 'power' in data ) loader();
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {

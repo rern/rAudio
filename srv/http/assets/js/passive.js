@@ -364,7 +364,7 @@ function psNotify( data ) {
 			$( '#loader' ).addClass( 'splash' );
 		}
 		loader();
-	} else if ( data.text === 'Change track ...' ) {
+	} else if ( data.text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	}
 }
