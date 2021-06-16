@@ -42,7 +42,6 @@
 #loader {
 	background: #000000;
 }
-body { font-size: 15px }
 head,
 #bar-bottom {
 	box-shadow: 0 0 10px 4px #000000;
@@ -239,20 +238,6 @@ code {
 	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: 3px;
-}
-.bl {
-	margin: 20px 0 10px 0;
-}
-.brhalf {
-	display: block;
-	margin: 15px 0;
-}
-grw,
-.gr {
-	color: var( --cg60 );
-}
-.grd {
-	color: var( --cgl ) !important;
 }
 .entries {
 	display: block;

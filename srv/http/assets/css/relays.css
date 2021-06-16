@@ -75,6 +75,10 @@ span.timer i {
 	line-height: 40px;
 	color: var( --cw );
 }
+.gpio-text i {
+	width: 25px;
+	text-align: center;
+}
 #gpio-name {
 	margin: 0 0 5px 0 !important;
 	width: 130px !important;

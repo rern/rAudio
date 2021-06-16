@@ -22,7 +22,7 @@ body {
 	height: 100%;
 	margin: 0;
 	font-family: "Lato";
-	font-size: 14px;
+	font-size: 15px;
 	line-height: 1.42857143;
 	color: var( --cw );
 	background-color: #000;
@@ -48,13 +48,13 @@ body {
 	--cgd:  hsl(200,3%,10%);   /* gray-dark */
 }
 
-w, wh, whl, .wh { color: var( --cw ) !important }
 bl, blb, .bl { color: var( --cm ) !important }
 bll { color: var( --cml ) !important; }
-gr, grl, .gr, .grl { color: var( --cg60 ) !important }
-grn { color: #0f0 }
+gr, grl, grw, .gr, .grl { color: var( --cg60 ) !important }
+grn, .grn { color: #0f0 }
 red, .red { color: #f00 }
 .yl { color: yellow }
+w, wh, whl, .wh { color: var( --cw ) !important }
 .bgr { background: var( --cgd ) }
 .bgr60 { background-color: var( --cg60 ) !important }
 
