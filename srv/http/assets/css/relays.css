@@ -93,8 +93,11 @@ input {
 	background-color: #000000 !important;
 	border: 1px solid var( --cg ) !important;
 }
-#undo {
+.infobtn {
+	width: 80px;
 	margin-left: 0;
+}
+#undo {
 	background-color: #de810e;
 }
 #gpioimgtxt {
