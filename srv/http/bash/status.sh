@@ -248,10 +248,8 @@ elif [[ -n $radioheader ]]; then
 		radiofile=/srv/http/data/webradios/$urlname
 		if [[ -e "$radiofile" ]]; then
 			radiodata=$( cat $radiofile )
-			stationname=$( sed -n 1p <<< "$radiodata" )
+			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
-		else
-			stationname=$file
 		fi
 		if [[ $state == play ]]; then
 			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
@@ -263,10 +261,7 @@ elif [[ -n $radioheader ]]; then
 					Title=${radiometa[1]}
 					Album=${radiometa[2]}
 					coverart=${radiometa[3]}
-					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
-					artistname=$Artist
-					titlename=$Title
-					station=${stationname/* - }
+					station=${station/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
 					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
@@ -280,21 +275,12 @@ elif [[ -n $radioheader ]]; then
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/g' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
-				artistname=$Artist
-				titlename=$Title
-				albumname=$stationname
 				# fetched coverart
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
 				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
 				[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
-			else
-				artistname=$stationname
-				albumname=$file
 			fi
-		else
-			[[ -e "$radiofile" ]] && artistname=$stationname
-			albumname=$file
 		fi
 		filenoext=/data/webradiosimg/$urlname
 		pathnoext=/srv/http$filenoext
@@ -305,13 +291,13 @@ elif [[ -n $radioheader ]]; then
 		fi
 ########
 		status+='
-, "Album"         : "'$albumname'"
-, "Artist"        : "'$artistname'"
+, "Album"         : "'$Album'"
+, "Artist"        : "'$Artist'"
 , "coverartradio" : "'$coverartradio'"
 , "Name"          : "'$Name'"
 , "station"       : "'$station'"
 , "Time"          : false
-, "Title"         : "'$titlename'"
+, "Title"         : "'$Title'"
 , "webradio"      : true'
 	fi
 else
@@ -374,7 +360,7 @@ elif [[ $state != stop ]]; then
 	else
 		if [[ -n $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && echo $stationname$'\n'$sampling > $radiofile
+			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
 		else
 			sampling=$radiosampling
 		fi

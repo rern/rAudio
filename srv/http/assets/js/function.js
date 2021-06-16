@@ -1206,7 +1206,6 @@ function renderPlayback() {
 	$( '#divcover .fa-coverart' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
-	
 	$( '#artist' ).html( G.status.Artist );
 	$( '#song' )
 		.html( G.status.Title )
@@ -1216,8 +1215,7 @@ function renderPlayback() {
 	} );
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
-		G.albumradio = G.status.state === 'play' && G.status.station !== ''; // radioparadise or radiofrance
-		if ( G.albumradio ) {
+		if ( G.status.state === 'play' && G.status.Album !== '' ) { // radioparadise or radiofrance
 			sampling += ' &bull; '+ G.status.station;
 		} else {
 			sampling += sampling ? ' &bull; Radio' : 'Radio';
@@ -1231,11 +1229,15 @@ function renderPlayback() {
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state !== 'play' ) {
+			$( '#artist' ).text( G.status.station );
 			$( '#song' ).html( '·&ensp;·&ensp;·' );
+			$( '#album' ).text( G.status.file );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
 			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+			if ( !G.status.Artist ) $( '#artist' ).text( G.status.station );
 			if ( !G.status.Title ) $( '#song' ).html( blinkdot );
+			if ( !G.status.Album ) $( '#album' ).text( G.status.file );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			if ( G.display.radioelapsed || G.localhost ) {
@@ -1254,7 +1256,7 @@ function renderPlayback() {
 				}
 			}
 		}
-		setRadioAlbum();
+		setRadioClass();
 		return
 	}
 	
@@ -1721,11 +1723,11 @@ function setPlaylistScroll() {
 	}
 
 }
-function setRadioAlbum() {
-	$( '#artist, #song' ).toggleClass( 'capitalize', G.albumradio );
+function setRadioClass() {
+	$( '#artist, #song' ).toggleClass( 'capitalize', G.status.artist !== '' );
 	$( '#album' )
-		.toggleClass( 'albumgray', !G.albumradio ) // gray text
-		.toggleClass( 'capitalize', G.albumradio );
+		.toggleClass( 'albumgray', G.status.Album === '' ) // gray text
+		.toggleClass( 'capitalize', G.status.Album !== '' );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
