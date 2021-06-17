@@ -489,7 +489,7 @@ mpcplayback )
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
 	rm -f $dirtmp/radiometa
-	[[ $command == stop ]] && touch $dirtmp/radiostop
+	[[ $command == stop ]] && touch $dirtmp/stop
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		fileheadder=$( mpc | head -c 4 )
@@ -517,7 +517,7 @@ mpcprevnext )
 		playing=1
 		mpc stop
 		rm -f $dirtmp/radiometa
-		touch $dirtmp/radiostop
+		touch $dirtmp/stop
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )

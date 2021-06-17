@@ -259,8 +259,8 @@ elif [[ -n $radioheader ]]; then
 		fi
 		if [[ $state != play ]]; then
 			Title=
-		elif [[ -e $dirtmp/radiostop ]]; then # on start - previous Title still exists
-			rm $dirtmp/radiostop
+		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
+			rm $dirtmp/stop
 			Title=
 		else
 			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
