@@ -243,6 +243,12 @@ elif [[ -n $radioheader ]]; then
 		[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 	else
 		ext=Radio
+		# limit fetched files: 10
+		onlinefiles=$( ls -1t $dirtmp/$prefix-* )
+		if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
+			file=$( echo "$onlinefiles" | tail -1 )
+			rm -f $file ${file: -4}
+		fi
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
@@ -286,8 +292,8 @@ elif [[ -n $radioheader ]]; then
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
 				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
 				if [[ -n $fetchedfile ]]; then
-					coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
-					Album=$( cat $dirtmp/radioalbum-$covername 2> /dev/null )
+					coverart=/data/shm/online-$covername.$date.${fetchedfile: -3}
+					Album=$( cat $dirtmp/online-$covername 2> /dev/null )
 				fi
 			fi
 		fi
@@ -421,7 +427,7 @@ elif [[ $state == play && -z $coverart && -n $Artist ]]; then
 		[[ -n $Title ]] && args="\
 $Artist
 $Title
-title"
+webradio"
 	else
 		[[ -n $Album ]] && args="\
 $Artist

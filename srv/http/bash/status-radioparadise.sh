@@ -21,7 +21,6 @@ album=${metadata[2]}
 url=${metadata[3]}
 name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 coverfile=$dirtmp/online-$name.jpg
-[[ ! -e $coverfile ]] && rm -f $dirtmp/online-*
 [[ -n $url ]] && curl -s $url -o $coverfile
 [[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
 artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )

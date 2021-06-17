@@ -16,12 +16,12 @@ name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 date=$( date +%s )
 
 ### 1 - lastfm ##################################################
-if [[ $type != title ]]; then
-	param="album=$arg1"
-	method='method=album.getInfo'
-else
+if [[ $type == webradio ]]; then
 	param="track=$arg1"
 	method='method=track.getInfo'
+else
+	param="album=$arg1"
+	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -s -m 5 -G \
@@ -35,7 +35,7 @@ data=$( curl -s -m 5 -G \
 error=$( jq -r .error <<< "$data" )
 [[ $error != null ]] && exit
 
-if [[ $type == title ]]; then
+if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< "$data" )
 else
 	album=$( jq -r .album <<< "$data" )
@@ -61,19 +61,16 @@ if [[ $type == audiocd ]]; then
 else
 	[[ $type == licover ]] && prefix=licover || prefix=online
 	urlname=/data/shm/$prefix-$name
-	# limit fetched files: 10
-	fetchedfiles=$( ls -1t $dirtmp/$prefix-* )
-	if (( $( echo "$fetchedfiles" | wc -l ) > 10 )); then
-		file=$( echo "$fetchedfiles" | tail -1 )
-		rm $file
-		[[ $prefix == online ]] && rm -f $( echo ${file/\/online-/\/radioalbum-} | head -c -5 )
-	fi
 fi
 coverfile=/srv/http$urlname.$ext
 curl -s $url -o $coverfile
-if [[ -e $coverfile ]]; then
+[[ ! -e $coverfile ]] && exit
+
+if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > $dirtmp/radioalbum-$name
+	echo $Album > $dirtmp/online-$name
 	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart", "Album": "'$Album'" }'
-	curl -s -X POST http://127.0.0.1/pub?id=coverart -d "$data"
+else
+	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'
 fi
+curl -s -X POST http://127.0.0.1/pub?id=coverart -d "$data"
