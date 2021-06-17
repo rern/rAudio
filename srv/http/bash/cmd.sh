@@ -515,6 +515,7 @@ mpcprevnext )
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
+		touch $dirtmp/radiostop
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
