@@ -257,9 +257,8 @@ elif [[ -n $radioheader ]]; then
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
-		if [[ $state != play ]]; then # on stop - previous Title still exists
+		if [[ $state != play ]]; then
 			Title=
-			touch $dirtmp/radiostop
 		elif [[ -e $dirtmp/radiostop ]]; then # on start - previous Title still exists
 			rm $dirtmp/radiostop
 			Title=
