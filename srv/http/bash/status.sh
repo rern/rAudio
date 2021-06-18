@@ -239,8 +239,8 @@ elif [[ -n $radioheader ]]; then
 , "Title"  : "'$Title'"'
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-		fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
+		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+		[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -287,9 +287,9 @@ elif [[ -n $radioheader ]]; then
 				# fetched coverart
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				fetchedfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
-				if [[ -n $fetchedfile ]]; then
-					coverart=/data/shm/webradio-$covername.$date.${fetchedfile: -3}
+				webradiofile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
+				if [[ -n $webradiofile ]]; then
+					coverart=/data/shm/webradio-$covername.$date.${webradiofile: -3}
 					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
 			fi
