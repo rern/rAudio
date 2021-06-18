@@ -64,7 +64,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 		<i class="fa fa-gear blink"></i>&ensp;Please wait until finished ...
 	</p>
 	
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
 <script>

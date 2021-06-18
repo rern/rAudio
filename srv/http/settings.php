@@ -73,7 +73,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <input class="input hide">
 <div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
 	<?php } ?>
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>

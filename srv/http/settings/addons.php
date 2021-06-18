@@ -164,7 +164,7 @@ if ( file_exists( $restartfile ) ) {
 	$restart = '';
 }
 ?>
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>

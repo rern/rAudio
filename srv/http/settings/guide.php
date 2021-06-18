@@ -36,7 +36,7 @@ include 'logosvg.php';
 	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
 <script>
 var nlibrary = 22;
