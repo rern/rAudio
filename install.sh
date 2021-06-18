@@ -101,9 +101,6 @@ installstart "$1"
 
 getinstallzip
 
-file=/srv/http/data/system/color
-[[ -e $file ]] && /srv/http/bash/cmd.sh color$'\n'"$( cat $file )"
-
 systemctl restart mpd
 
 installfinish

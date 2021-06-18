@@ -317,7 +317,7 @@ color )
 	if [[ -e $file ]]; then
 		hsl=( $( cat $file ) )
 	else
-		hsl=( $( grep '\-\-cd:' /srv/http/assets/css/common.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
+		hsl=( $( grep '\-\-cd:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
