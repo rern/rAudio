@@ -72,7 +72,7 @@ $artist
 $title
 $album
 $coverart
-" > $dirtmp/radiometa
+" > $dirtmp/webradiodata
 	localtime=$( date +%s )
 	diff=$(( $localtime - $servertime )) # local time fetched after server time
 	sec2change=$(( $endtime - $servertime - $diff + 10 )) # seconds with 10s delay

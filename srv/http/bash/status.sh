@@ -121,7 +121,7 @@ spotify )
 esac
 
 killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd && $player != upnp ]] && rm -f $dirtmp/radiometa && exit
+[[ $player != mpd && $player != upnp ]] && rm -f $dirtmp/webradiodata && exit
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -275,12 +275,12 @@ elif [[ -n $radioheader ]]; then
 			Title=
 		else
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
-				if [[ -e $dirtmp/radiometa ]]; then
-					readarray -t radiometa <<< $( cat $dirtmp/radiometa )
-					Artist=${radiometa[0]}
-					Title=${radiometa[1]}
-					Album=${radiometa[2]}
-					coverart=${radiometa[3]}
+				if [[ -e $dirtmp/webradiodata ]]; then
+					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
+					Artist=${radiodata[0]}
+					Title=${radiodata[1]}
+					Album=${radiodata[2]}
+					coverart=${radiodata[3]}
 					station=${station/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
@@ -344,7 +344,7 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/radiometa
+[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/webradiodata
 
 samplingLine() {
 	bitdepth=$1

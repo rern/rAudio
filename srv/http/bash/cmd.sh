@@ -488,7 +488,7 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
-	rm -f $dirtmp/radiometa
+	rm -f $dirtmp/webradiodata
 	[[ $command == stop ]] && touch $dirtmp/stop
 	mpc $command $pos
 	if [[ $command == play ]]; then
@@ -512,11 +512,11 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/radiometa
+	rm -f $dirtmp/webradiodata
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
-		rm -f $dirtmp/radiometa
+		rm -f $dirtmp/webradiodata
 		touch $dirtmp/stop
 	fi
 	if mpc | grep -q 'random: on'; then

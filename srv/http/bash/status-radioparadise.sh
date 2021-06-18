@@ -41,4 +41,4 @@ $artist
 $title
 $album
 $coverart
-" > $dirtmp/radiometa
+" > $dirtmp/webradiodata
