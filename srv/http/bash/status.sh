@@ -120,8 +120,12 @@ spotify )
 	
 esac
 
-killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd && $player != upnp ]] && rm -f $dirtmp/webradiodata && exit
+if [[ $player != mpd && $player != upnp ]]; then
+	rm -f $dirtmp/{webradiodata,radiofrance}
+	systemctl stop radiofrance
+	touch $dirtmp/stop
+	exit
+fi
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'

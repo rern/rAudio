@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Radio France metadata
-# status-radiofrance.sh FILENAME
 dirtmp=/srv/http/data/shm/
 file=$( cat /srv/http/data/shm/radiofrance )
 name=$( basename "$file" )
