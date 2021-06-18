@@ -20,9 +20,9 @@ title=${metadata[1]}
 album=${metadata[2]}
 url=${metadata[3]}
 name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
-coverfile=$dirtmp/online-$name.jpg
+coverfile=$dirtmp/webradio-$name.jpg
 [[ -n $url ]] && curl -s $url -o $coverfile
-[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
+[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
 title=$( echo $title | sed 's/"/\\"/g; s/null//' )
 album=$( echo $album | sed 's/"/\\"/g; s/null//' )

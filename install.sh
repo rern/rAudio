@@ -4,6 +4,19 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/systemd/system/radiofrance.service
+if [[ ! -e $file ]]; then
+	echo -n "\
+[Unit]
+Description=radiofrance metadata
+
+[Service]
+Type=simple
+ExecStart=/srv/http/bash/status-radiofrance.sh
+" > $file
+	systemctl daemon-reload
+fi
+
 sed -i '/TotalDownload/ d' /etc/pacman.conf
 
 file=/etc/upmpdcli.conf

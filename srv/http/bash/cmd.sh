@@ -488,8 +488,11 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
-	rm -f $dirtmp/webradiodata
-	[[ $command == stop ]] && touch $dirtmp/stop
+	rm -f $dirtmp/{webradiodata,radiofrance}
+	if [[ $command == stop ]]; then
+		systemctl stop radiofrance
+		touch $dirtmp/stop
+	fi
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		fileheadder=$( mpc | head -c 4 )
@@ -512,11 +515,12 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/webradiodata
+	rm -f $dirtmp/{webradiodata,radiofrance}
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
 		rm -f $dirtmp/webradiodata
+		systemctl stop radiofrance
 		touch $dirtmp/stop
 	fi
 	if mpc | grep -q 'random: on'; then
@@ -576,6 +580,11 @@ nicespotify )
 	;;
 onlinefileslimit )
 	onlinefiles=$( ls -1t $dirtmp/online-*.* )
+	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
+		file=$( echo "$onlinefiles" | tail -1 )
+		rm -f "$file" "${file:0:-4}"
+	fi
+	onlinefiles=$( ls -1t $dirtmp/webradio-*.* )
 	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
 		file=$( echo "$onlinefiles" | tail -1 )
 		rm -f "$file" "${file:0:-4}"

@@ -280,7 +280,8 @@ elif [[ -n $radioheader ]]; then
 				if [[ -n $radioparadise ]]; then
 					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
 				elif [[ -n $radiofrance ]]; then
-					/srv/http/bash/status-radiofrance.sh $file "$station" &> /dev/null &
+					echo $file > $dirtmp/radiofrance
+					systemctl restart radiofrance
 				fi
 			elif [[ -n $Title ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
@@ -292,10 +293,9 @@ elif [[ -n $radioheader ]]; then
 				# fetched coverart
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-				if [[ -n $fetchedfile ]]; then
-					coverart=/data/shm/online-$covername.$date.${fetchedfile: -3}
-					Album=$( cat $dirtmp/online-$covername 2> /dev/null )
+				if [[ -e $dirtmp/webradio-$covername ]]; then
+					coverart=/data/shm/webradio-$covername.$date.${fetchedfile: -3}
+					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
 			fi
 		fi

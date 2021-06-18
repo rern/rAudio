@@ -59,7 +59,7 @@ ext=${url/*.}
 if [[ $type == audiocd ]]; then
 	urlname=/data/audiocd/$discid
 else
-	[[ $type == licover ]] && prefix=licover || prefix=online
+	[[ -n $type ]] && prefix=$type || prefix=online
 	urlname=/data/shm/$prefix-$name
 fi
 coverfile=/srv/http$urlname.$ext
@@ -68,7 +68,7 @@ curl -s $url -o $coverfile
 
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > $dirtmp/online-$name
+	echo $Album > $dirtmp/webradio-$name
 	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart", "Album": "'$Album'" }'
 else
 	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'
