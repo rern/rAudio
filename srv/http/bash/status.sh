@@ -275,7 +275,7 @@ elif [[ -n $radioheader ]]; then
 					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
 				elif [[ -n $radiofrance ]]; then
 					echo $file > $dirtmp/radiofrance
-					systemctl restart radiofrance
+					systemctl start radiofrance
 				fi
 			elif [[ -n $Title ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
