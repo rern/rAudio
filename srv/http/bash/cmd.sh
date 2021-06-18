@@ -574,6 +574,13 @@ nicespotify )
 		renice -n -19 -p $pid &> /dev/null
 	done
 	;;
+onlinefileslimit )
+	onlinefiles=$( ls -1t $dirtmp/online-*.* )
+	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
+		file=$( echo "$onlinefiles" | tail -1 )
+		rm -f "$file" "${file:0:-4}"
+	fi
+	;;
 partexpand )
 	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
 	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then

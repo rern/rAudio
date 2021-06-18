@@ -243,12 +243,6 @@ elif [[ -n $radioheader ]]; then
 		[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
 	else
 		ext=Radio
-		# limit fetched files: 10
-		onlinefiles=$( ls -1t $dirtmp/$prefix-* )
-		if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
-			file=$( echo "$onlinefiles" | tail -1 )
-			rm -f $file ${file: -4}
-		fi
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
