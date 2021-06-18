@@ -582,7 +582,7 @@ onlinefileslimit )
 	onlinefiles=$( ls -1t $dirtmp/online-*.* )
 	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
 		file=$( echo "$onlinefiles" | tail -1 )
-		rm -f "$file" "${file:0:-4}"
+		rm -f "$file"
 	fi
 	onlinefiles=$( ls -1t $dirtmp/webradio-*.* )
 	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
