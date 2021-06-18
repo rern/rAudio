@@ -72,7 +72,6 @@ $selecttimezone.= '</select>';
 <div>
 <heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle wh"></i><?=$ihelp?></heading>
 <ul id="list" class="entries"></ul>
-<p class="brhalf"></p>
 <span <?=$classhelp?>>
 	Available sources, local USB and NAS mounts, for Library.
 	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.

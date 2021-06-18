@@ -30,11 +30,8 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family  : rern;
-			src          : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ), url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
-			font-weight  : normal;
-			font-style   : normal;
-			font-display : block;
+			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
+			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
