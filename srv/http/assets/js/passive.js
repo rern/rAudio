@@ -147,7 +147,7 @@ function psCoverart( data ) {
 				$( '.mode-bookmark img' ).css( 'opacity', '' );
 			}
 			break;
-		case 'coverart': // change coverart
+		case 'coverart':
 			var urlhead = url.slice( 0, 9 );
 			var coverpath, covername, currentpath, currentname, cd, name;
 			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
@@ -164,15 +164,13 @@ function psCoverart( data ) {
 				name = G.status.Artist
 				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
 				currentname = name.replace( /[ "`?/#&'"']/g, '' );
-				if ( coverpath === currentpath || covername === currentname || cd ) {
-					G.status.coverart = url;
-					$( '#vu' ).addClass( 'hide' );
-					$( '#coverart' )
-						.attr( 'src', url )
-						.removeClass( 'hide' );
-					$( '#divcover .coveredit' ).remove();
-					$( '#coverart' ).css( 'opacity', '' );
-				}
+				G.status.coverart = url;
+				$( '#vu' ).addClass( 'hide' );
+				$( '#coverart' )
+					.attr( 'src', url )
+					.removeClass( 'hide' );
+				$( '#divcover .coveredit' ).remove();
+				$( '#coverart' ).css( 'opacity', '' );
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
 					var sampling = G.status.sampling;
