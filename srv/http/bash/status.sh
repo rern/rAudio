@@ -287,7 +287,8 @@ elif [[ -n $radioheader ]]; then
 				# fetched coverart
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				if [[ -e $dirtmp/webradio-$covername ]]; then
+				fetchedfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
+				if [[ -n $fetchedfile ]]; then
 					coverart=/data/shm/webradio-$covername.$date.${fetchedfile: -3}
 					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
