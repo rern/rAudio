@@ -273,7 +273,7 @@ elif [[ -n $radioheader ]]; then
 				fi
 				if [[ -n $radioparadise ]]; then
 					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
-				elif [[ -n $radiofrance ]]; then
+				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
 					echo $file > $dirtmp/radiofrance
 					systemctl start radiofrance
 				fi
