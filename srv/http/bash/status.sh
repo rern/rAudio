@@ -251,23 +251,17 @@ elif [[ -n $radioheader ]]; then
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
-		if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
-			radioparadise=1
-########
-			status+='
-, "radioparadise" : true'
-		elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
-			radiofrance=1
-########
-			status+='
-, "radiofrance"   : true'
-		fi
 		if [[ $state != play ]]; then
 			Title=
 		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
 			rm $dirtmp/stop
 			Title=
 		else
+			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
+				radioparadise=1
+			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
+				radiofrance=1
+			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
 				if [[ -e $dirtmp/webradiodata ]]; then
 					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )

@@ -289,14 +289,16 @@ function displayCheckboxSet( i, enable, check ) {
 function displayPlayback() {
 	if ( G.status.player !== 'mpd' ) {
 		G.iplayer = G.status.player;
-	} else if ( 'radiofrance' in G.status ) {
-		G.iplayer = 'radiofrance';
-	} else if ( 'radioparadise' in G.status ) {
-		G.iplayer = 'radioparadise';
-	} else if ( G.status.webradio ) {
-		G.iplayer = 'webradio';
-	} else if ( 'file' in G.status && G.status.file.slice( 0, 4 ) === 'cdda' ) {
-		G.iplayer = 'audiocd';
+	} else if ( 'file' in G.status ) {
+		if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
+			G.iplayer = 'audiocd';
+		} else if ( G.status.file.indexOf( 'http://stream.radioparadise.com' ) !== -1 ) {
+			G.iplayer = 'radioparadise';
+		} else if ( G.status.file.indexOf( 'https://icecast.radiofrance.fr' ) !== -1 ) {
+			G.iplayer = 'radiofrance';
+		} else if ( G.status.webradio ) {
+			G.iplayer = 'webradio';
+		}
 	} else {
 		G.iplayer = '';
 	}
