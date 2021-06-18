@@ -159,18 +159,15 @@ function psCoverart( data ) {
 				cd = 1;
 			}
 			if ( G.playback ) {
-				// path/filename.ext > path
-				if ( 'file' in G.status ) currentpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
-				name = G.status.Artist
-				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
-				currentname = name.replace( /[ "`?/#&'"']/g, '' );
+				if ( G.status.coverart === url ) break;
+				
 				G.status.coverart = url;
 				$( '#vu' ).addClass( 'hide' );
+				$( '#divcover .coveredit' ).remove();
+				$( '#coverart' ).css( 'opacity', '' );
 				$( '#coverart' )
 					.attr( 'src', url )
 					.removeClass( 'hide' );
-				$( '#divcover .coveredit' ).remove();
-				$( '#coverart' ).css( 'opacity', '' );
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
 					var sampling = G.status.sampling;
@@ -179,7 +176,7 @@ function psCoverart( data ) {
 					} else {
 						sampling += sampling ? ' &bull; Radio' : 'Radio';
 					}
-					$( '#album' ).text( G.status.Album );
+					$( '#album' ).text( data.Album );
 					$( '#sampling' ).html( sampling );
 					setRadioClass();
 				}
