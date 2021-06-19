@@ -1,3 +1,19 @@
+html {
+	height: 100%;
+	padding: env( safe-area-inset ); /* disable iPhone X rounded corner padding */
+}
+body {
+	height: 100%;
+	margin: 0;
+	font-family: "Lato";
+	font-size: 15px;
+	line-height: 1.42857143;
+	color: var( --cw );
+	background-color: #000;
+	overflow-x: hidden;
+	overscroll-behavior: none; /* disable android pull-down refresh */
+	-webkit-tap-highlight-color: transparent;
+}
 *,
 *:before,
 *:after {
@@ -19,35 +35,8 @@ input::-moz-focus-inner {
 	outline: 0 !important;
 	border: 0;
 }
-html {
-	height: 100%;
-	padding: env( safe-area-inset ); /* disable iPhone X rounded corner padding */
-}
-body {
-	height: 100%;
-	margin: 0;
-	font-family: "Lato";
-	font-size: 15px;
-	line-height: 1.42857143;
-	color: var( --cw );
-	background-color: #000;
-	overflow-x: hidden;
-	overscroll-behavior: none; /* disable android pull-down refresh */
-	-webkit-tap-highlight-color: transparent;
-}
 .hide { display: none !important }
 .hidden { visibility: hidden }
-
-bl, blb, .bl { color: var( --cm ) !important }
-bll { color: var( --cml ) !important; }
-gr, grl, grw, .gr, .grl { color: var( --cg60 ) !important }
-grn, .grn { color: #0f0 }
-red, .red { color: #f00 }
-.yl { color: yellow }
-w, wh, whl, .wh { color: var( --cw ) !important }
-.bgr { background: var( --cgd ) }
-.bgr60 { background-color: var( --cg60 ) !important }
-
 @keyframes blinkopaque { 50% { opacity: 0 } }
 .blink { animation: blinkopaque 1.5s linear infinite }
 #loader {
@@ -73,7 +62,6 @@ w, wh, whl, .wh { color: var( --cw ) !important }
 #loader path {
 	fill: var( --cg75 );
 }
-
 @font-face {
 	font-family: Lato;
 	src: url( '/assets/fonts/lato-regular-webfont.woff' ) format( 'woff' ),
@@ -91,11 +79,11 @@ w, wh, whl, .wh { color: var( --cw ) !important }
 @font-face {
 	font-family: Inconsolata;
 	src: url('/assets/fonts/Inconsolata.woff') format('woff'),
-		url( '/assets/fonts/Inconsolata.ttf' ) format( 'truetype' );
+	     url( '/assets/fonts/Inconsolata.ttf' ) format( 'truetype' );
 	font-weight: normal;
 	font-style: normal;
 }
-/* 'rern' declared in <head> for cache busting */
+/* @font-face 'rern' declared in <head> for cache busting */
 .fa {
 	display: inline-block;
 	font-family: rern;
