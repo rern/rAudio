@@ -129,6 +129,7 @@ fi
 
 if [[ -z $connected ]]; then
 	if [[ ! -e $dirsystem/wlannoap ]]; then
+		modprobe brcmfmac &> /dev/null 
 		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
 		systemctl -q disable hostapd
 	fi
