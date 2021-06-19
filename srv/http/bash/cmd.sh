@@ -307,12 +307,10 @@ bookmarkthumb )
 	echo ${coverartfile: -3} # ext
 	;;
 color )
-	cmd=${args[1]}
+	hsl=${args[1]}
 	file=$dirsystem/color
-	if [[ $cmd == reset ]]; then
-		rm $file
-	elif [[ -n $cmd && $cmd != color ]]; then # omit call from addons-functions.sh / backup-restore.sh
-		echo $cmd > $file
+	if [[ -n $hsl ]]; then # omit call from addons.sh / datarestore
+		[[ $hsl == reset ]] && rm $file || echo $hsl > $file
 	fi
 	if [[ -e $file ]]; then
 		hsl=( $( cat $file ) )

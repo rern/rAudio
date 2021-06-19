@@ -132,7 +132,6 @@ databackup )
 /etc/relays.conf
 /etc/soundprofile.conf
 /etc/upmpdcli.conf
-/srv/http/assets/css/common.css
 /var/lib/alsa/asound.state
 )
 	for file in ${files[@]}; do
@@ -212,6 +211,7 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
+	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
 	/srv/http/bash/cmd.sh power
 	;;
 getjournalctl )
