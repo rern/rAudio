@@ -298,9 +298,9 @@ function displayPlayback() {
 			G.iplayer = 'radiofrance';
 		} else if ( G.status.webradio ) {
 			G.iplayer = 'webradio';
+		} else {
+			G.iplayer = '';
 		}
-	} else {
-		G.iplayer = '';
 	}
 	$( '#playericon' )
 		.removeAttr( 'class' )
