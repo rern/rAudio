@@ -310,7 +310,7 @@ color )
 	hsl=${args[1]}
 	file=$dirsystem/color
 	if [[ -n $hsl ]]; then # omit call from addons.sh / datarestore
-		[[ $hsl == reset ]] && rm $file || echo $hsl > $file
+		[[ $hsl == reset ]] && rm -f $file || echo $hsl > $file
 	fi
 	if [[ -e $file ]]; then
 		hsl=( $( cat $file ) )
@@ -333,7 +333,7 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
   s|\(--cg: *hsl\).*;|\1(${hsg}30%);|
  s|\(--cga: *hsl\).*;|\1(${hsg}20%);|
  s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
-" /srv/http/assets/css/common.css
+" /srv/http/assets/css/colors.css
 	sed -i "
  s|\(.box{fill:hsl\).*|\1($hsl);|
 s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
@@ -344,7 +344,7 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 " $dirimg/icon.svg
 	sed "s|\(path{fill:hsl\).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
-	rotate=$( cat /etc/localbrowser.conf 2> /dev/null | head -1 )
+	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ -z $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
 	pushstream reload 1
