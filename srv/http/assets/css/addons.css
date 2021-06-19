@@ -1,84 +1,5 @@
-@font-face {
-	font-family: Lato;
-	src: url( '/assets/fonts/lato-regular-webfont.woff' ) format( 'woff' ),
-		url( '/assets/fonts/lato-regular-webfont.ttf' ) format( 'truetype' );
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: Lato;
-	src: url( '/assets/fonts/lato-light-webfont.woff' ) format( 'woff' ),
-		url( '/assets/fonts/lato-light-webfont.ttf' ) format( 'truetype' );
-	font-weight: 300;
-	font-style: normal;
-}
-@font-face {
-	font-family: Inconsolata;
-	src: url('/assets/fonts/Inconsolata.woff') format('woff'),
-		url( '/assets/fonts/Inconsolata.ttf' ) format( 'truetype' );
-	font-weight: normal;
-	font-style: normal;
-}
-/* 'addons' declared in <head> for cache busting */
-.fa {
-	display: inline-block;
-	font-family: rern;
-	font-style: normal;
-}
-.fa-lg { font-size: 22px }
-.fa-arrow-down:before { content: "\f601" }
-.fa-arrow-up:before { content: "\f600" }
-.fa-bars:before { content: "\f51C" }
-.fa-check:before { content: "\f51B" }
-.fa-chevron-down:before { content: "\f605" }
-.fa-eye:before { content: "\f56B" }
-.fa-gear:before { content: "\f509" }
-.fa-github:before { content: "\f583" }
-.fa-info-circle:before { content: "\f561" }
-.fa-input:before { content: "\f529" }
-.fa-jigsaw:before { content: "\f50C" }
-.fa-minus-circle:before { content: "\f563" }
-.fa-plus-circle:before { content: "\f564" }
-.fa-plus-o:before { content: "\f530" }
-.fa-plus-r:before { content: "\f590" }
-.fa-question-circle:before { content: "\f560" }
-.fa-refresh:before { content: "\f526" }
-.fa-reset:before { content: "\f527" }
-.fa-output:before { content: "\f52A" }
-.fa-source:before { content: "\f529" }
-.fa-times:before { content: "\f51A" }
-.fa-undo:before { content: "\f523" }
-.fa-update:before { content: "\f526" }
-.fa-warning:before { content: "\f562" }
-
-body {
-	margin: 0;
-	font-family: "Lato";
-	font-size: 14px;
-	font-weight: normal;
-	color: var( --cw );
-	background-color: #000;
-}
-:focus,
-:active,
-input::-moz-focus-inner { /* dotted outline */
-	outline: 0;
-	border: 0;
-}
-.hide {
-	display: none !important;
-}
-wh, .wh { color: var( --cw ) !important; }
-gr, .gr { color: var( --cg60 ) !important; }
-grn { color: #0f0; }
 img {
 	border: 0
-}
-.blink {
-	animation: blinkopaque 1.5s linear infinite;
-}
-@keyframes blinkopaque {
-	50% { opacity: 0; }
 }
 hr {
 	margin-top: 20px;
@@ -121,7 +42,7 @@ hr {
     line-height: 38px;
     text-align: center;
     font-size: 24px;
-    text-shadow: 1px 1px 2px #000000;
+    text-shadow: -1px 1px 2px #000000;
 }
 .title {
 	margin-left: 15px;
@@ -270,43 +191,9 @@ a:active,
 a:hover {
 	outline: 0
 }
-.btn,
-.btn:hover,
-.btn:visited,
-.btn:focus,
-.btn:active {	color: var( --cw );
+.infobtn {
+	min-width: 90px;
 }
-.btn {
-	display: inline-block;
-	min-width: 95px;
-	margin-bottom: 5px;
-	line-height: 34px;
-	text-align: center;
-	color: var( --cw );
-									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x   y   w    h */
-	box-shadow: 2px 2px 3px 1px #000000;
-	text-shadow: 1px 1px 2px #000000;
-	border-radius: 4px;
-	border: none;
-	user-select: none;
-}
-.btn-primary {
-	background-color: var( --cm );
-}
-.btn-default,
-.btn-default.disabled {
-	background-color: var( --cg );
-}
-.red {
-	background-color: #bb2828;
-}
-.btn i {
-	margin-right: 5px;
-}
-
 #bottom {
 	min-height: calc( 100vh - 250px );
 }
@@ -331,22 +218,14 @@ strike {
 }
 li i,
 .revision,
-.boxed-group legend i,
-.bl,
-blue {
+.boxed-group legend i {
 	color: var( --cm );
 }
 span,
 pre,
-white,
-w,
 code,
 code i {
 	color: var( --cw );
-}
-gray,
-g {
-	color: var( --cg60 );
 }
 .flushdot {
 	height: 0;

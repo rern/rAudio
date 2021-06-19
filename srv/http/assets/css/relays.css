@@ -1,13 +1,3 @@
-.fa-check:before { content: "\f51B" }
-.fa-chevron-down:before { content: "\f605" }
-.fa-chevron-up:before { content: "\f604" }
-.fa-gpiopins:before { content: "\f572" }
-.fa-info-circle:before { content: "\f560" }
-.fa-power:before { content: "\f520" }
-.fa-relays:before { content: "\f522" }
-.fa-stopwatch:before { content: "\f570" }
-.fa-tag:before { content: "\f55B" }
-
 .selectric-on,
 .selectric-off {
 	width: 170px;
@@ -85,6 +75,10 @@ span.timer i {
 	line-height: 40px;
 	color: var( --cw );
 }
+.gpio-text i {
+	width: 25px;
+	text-align: center;
+}
 #gpio-name {
 	margin: 0 0 5px 0 !important;
 	width: 130px !important;
@@ -99,66 +93,16 @@ input {
 	background-color: #000000 !important;
 	border: 1px solid var( --cg ) !important;
 }
-input: focus {
-	outline: none;
+.infobtn {
+	width: 80px;
+	margin-left: 0;
 }
 #undo {
 	background-color: #de810e;
 }
-.btn,
-.btn:hover,
-.btn:visited,
-.btn:focus,
-.btn:active {	color: var( --cw );
-}
-.btn {
-	display: inline-block;
-	width: 83px;
-	height: 35px;
-	margin-top: 20px;
-	font-size: 14px;
-	line-height: 34px;
-	text-align: center;
-	color: var( --cw );
-									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x   y   w    h */
-	box-shadow: 2px 2px 3px 1px #000000;
-	text-shadow: 1px 1px 2px #000000;
-	border-radius: 4px;
-	border: none;
-	user-select: none;
-	cursor: pointer;
-}
-.btn-primary {
-	background-color: var( --cm );
-}
-.btn-primary:hover {
-	background-color: var( --cml )
-}
-.btn i {
-	font-size: 14px !important;
-	line-height: 30px;
-}
-.btn:focus,
-.btn:active {
-	color: var( --cw );
-}
-.disabled {
-	color: var( --cg60 ) !important;
-	background-color: var( --cg ) !important;
-	pointer-events: none;
-}
 #gpioimgtxt {
 	color: var( --cml );
 }
-#relaysform i {
+.column span i {
 	font-size: 20px;
-}
-.green {
-	color: #0f0;
-}
-.yellow {
-	color: yellow;
 }

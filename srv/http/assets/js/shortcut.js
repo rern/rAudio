@@ -66,7 +66,7 @@ $( document ).keyup( function( e ) {
 	if ( key === 'Escape' ) {
 		if ( $( '.menu:not(.hide)' ).length ) {
 			$( '.menu' ).addClass( 'hide' );
-			if ( typeof colorpicker !== 'undefined' ) $( '#colorcancel' ).click();
+			if ( 'colorpicker' in G ) $( '#colorcancel' ).click();
 		} else {
 			$( '#button-settings' ).click();
 		}

@@ -15,14 +15,12 @@ include 'logosvg.php';
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: rern;
-			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
-			font-weight: normal;
-			font-style : normal;
+			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
+			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
 <body style="height: 100%">
@@ -31,7 +29,7 @@ include 'logosvg.php';
 	<a href="/"><i id="close" class="fa fa-times"></i></a>
 </div>
 <div id="guide">
-	<p><a class="gr" href="https://github.com/rern/rAudio-1" target="_blank"><i class="fa fa-github fa-lg blue"></i> Source</a><span id="count" style="float: right"></span></p>
+	<p><a class="gr" href="https://github.com/rern/rAudio-1" target="_blank"><i class="fa fa-github fa-lg bl"></i> Source</a><span id="count" style="float: right"></span></p>
 	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
 	<div id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></div>
 	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
@@ -39,7 +37,7 @@ include 'logosvg.php';
 	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
 <script>
 var nlibrary = 22;

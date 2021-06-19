@@ -72,7 +72,6 @@ $selecttimezone.= '</select>';
 <div>
 <heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle wh"></i><?=$ihelp?></heading>
 <ul id="list" class="entries"></ul>
-<p class="brhalf"></p>
 <span <?=$classhelp?>>
 	Available sources, local USB and NAS mounts, for Library.
 	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.
@@ -169,6 +168,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		Control GPIO-connected relay module for power on / off equipments with <a href="http://wiringpi.com/">WiringPi</a>
+		<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>

@@ -1,6 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var formdata = {}
 var htmlmount = heredoc( function() { /*
 	<table id="tblinfomount">
 	<tr><td>Type</td>
@@ -32,7 +31,7 @@ var htmlmount = heredoc( function() { /*
 */ } );
 function infoMount( values ) {
 	info( {
-		  icon       : 'network'
+		  icon       : 'networks'
 		, title      : 'Add Network Share'
 		, content    : htmlmount
 		, values     : values
@@ -56,11 +55,11 @@ function infoMount( values ) {
 		}
 		, ok         : function() {
 			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			notify( 'Network Mount', 'Mount ...', 'network' );
+			notify( 'Network Mount', 'Mount ...', 'networks' );
 			bash( [ 'mount', ...values ], function( std ) {
 				if ( std ) {
 					info( {
-						  icon    : 'network'
+						  icon    : 'networks'
 						, title   : 'Mount Share'
 						, message : std
 						, ok      : function() {
@@ -294,7 +293,7 @@ $( '#list' ).on( 'click', 'li', function() {
 	if ( mountpoint === '/' ) return
 	
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon = 'network';
+		var icon = 'networks';
 		var title = 'Network Mount';
 	} else {
 		var icon = 'usbdrive';
@@ -349,7 +348,7 @@ $( '#setting-bluetooth' ).click( function() {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, values       : [ G.btdiscoverable, G.btformat ]
+		, values       : [ ( G.bluetooth ? G.btdiscoverable : G.btdiscoverable || true ), G.btformat ]
 		, checkchanged : ( G.bluetooth ? 1 : 0 )
 		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );

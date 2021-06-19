@@ -1,8 +1,8 @@
 #!/bin/bash
 
-[[ $( cat /sys/class/net/eth0/carrier 2> /dev/null ) == 1 ]] && online=1
-[[ $( cat /sys/class/net/wlan0/carrier 2> /dev/null ) == 1 ]] && online=1
-[[ -z $online ]] && exit
+# online check
+[[ $( cat /sys/class/net/eth0/carrier 2> /dev/null ) != 1 \
+	&& $( cat /sys/class/net/wlan0/carrier 2> /dev/null ) != 1 ]] && exit
 
 readarray -t args <<< "$1"
 
@@ -16,12 +16,12 @@ name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 date=$( date +%s )
 
 ### 1 - lastfm ##################################################
-if [[ $type != title ]]; then
-	param="album=$arg1"
-	method='method=album.getInfo'
-else
+if [[ $type == webradio ]]; then
 	param="track=$arg1"
 	method='method=track.getInfo'
+else
+	param="album=$arg1"
+	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -s -m 5 -G \
@@ -35,7 +35,7 @@ data=$( curl -s -m 5 -G \
 error=$( jq -r .error <<< "$data" )
 [[ $error != null ]] && exit
 
-if [[ $type == title ]]; then
+if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< "$data" )
 else
 	album=$( jq -r .album <<< "$data" )
@@ -59,12 +59,19 @@ ext=${url/*.}
 if [[ $type == audiocd ]]; then
 	urlname=/data/audiocd/$discid
 else
-	[[ $type == licover ]] && prefix=licover || prefix=online
+	[[ -n $type ]] && prefix=$type || prefix=online
 	urlname=/data/shm/$prefix-$name
-	# limit fetched files: 10
-	fetchedfiles=$( ls -lt $dirtmp/$prefix-* | awk '{print $NF}' )
-	(( $( echo "$fetchedfiles" | wc -l ) > 10 )) && rm $( echo $fetchedfiles | tail -1 )
 fi
 coverfile=/srv/http$urlname.$ext
 curl -s $url -o $coverfile
-[[ -e $coverfile ]] && curl -s -X POST http://127.0.0.1/pub?id=coverart -d '{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'
+[[ ! -e $coverfile ]] && exit
+
+if [[ $type == webradio ]]; then
+	Album=$( jq -r .title <<< "$album" )
+	echo $Album > $dirtmp/webradio-$name
+	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart", "Album": "'$Album'" }'
+else
+	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'
+fi
+curl -s -X POST http://127.0.0.1/pub?id=coverart -d "$data"
+/srv/http/bash/cmd.sh onlinefileslimit

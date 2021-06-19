@@ -20,10 +20,9 @@ title=${metadata[1]}
 album=${metadata[2]}
 url=${metadata[3]}
 name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
-coverfile=$dirtmp/online-$name.jpg
-[[ ! -e $coverfile ]] && rm -f $dirtmp/online-*
+coverfile=$dirtmp/webradio-$name.jpg
 [[ -n $url ]] && curl -s $url -o $coverfile
-[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
+[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
 title=$( echo $title | sed 's/"/\\"/g; s/null//' )
 album=$( echo $album | sed 's/"/\\"/g; s/null//' )
@@ -36,10 +35,10 @@ data='{
 , "radio"    : 1
 }'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-
 echo "\
 $artist
 $title
 $album
 $coverart
-" > $dirtmp/radiometa
+" > $dirtmp/webradiodata
+/srv/http/bash/cmd.sh onlinefileslimit

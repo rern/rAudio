@@ -44,7 +44,7 @@ function dataDiff() {
 	var json1 = relaysset;
 	var json2 = data2json();
 	if ( json1.timer !== json2.timer ) {
-		$( '.btn' ).removeClass( 'disabled' );
+		$( '.infobtn' ).removeClass( 'disabled' );
 		return
 	}
 	var on1 = json1.on;
@@ -53,13 +53,13 @@ function dataDiff() {
 	var off2 = json2.off;
 	for ( i = 1; i < 4; i++ ) {
 		if ( on1[ 'ond' + i ] !== on2[ 'ond' + i ] || off1[ 'offd' + i ] !== off2[ 'offd' + i ] ) {
-			$( '.btn' ).removeClass( 'disabled' );
+			$( '.infobtn' ).removeClass( 'disabled' );
 			return
 		}
 	}
 	for ( i = 1; i < 5; i++ ) {
 		if ( on1[ 'on' + i ] !== on2[ 'on' + i ] || off1[ 'off' + i ] !== off2[ 'off' + i ] ) {
-			$( '.btn' ).removeClass( 'disabled' );
+			$( '.infobtn' ).removeClass( 'disabled' );
 			return
 		}
 	}
@@ -69,11 +69,11 @@ function dataDiff() {
 	var names2 = Object.values( json2.name );
 	for ( i = 0; i < 4; i++ ) {
 		if ( pins1[ i ] !== pins2[ i ] || names1[ i ] !== names2[ i ] ) {
-			$( '.btn' ).removeClass( 'disabled' );
+			$( '.infobtn' ).removeClass( 'disabled' );
 			return
 		}
 	}
-	$( '.btn' ).addClass( 'disabled' );
+	$( '.infobtn' ).addClass( 'disabled' );
 }
 function renderOptions( json ) {
 	var r = json;
@@ -161,9 +161,6 @@ $.post( '/cmd.php', { cmd: 'bash', bash : 'cat /etc/relays.conf 2> /dev/null || 
 	}
 	renderOptions( relaysset );
 }, 'json' );
-$( '.close-root' ).click( function() {
-	location.href = '/';
-} );
 $( '#help' ).click( function() {
 	$( this ).toggleClass( 'blue' );
 	$( '.help-block' ).toggleClass( 'hide' );
@@ -218,7 +215,7 @@ $( '#on, #off' ).change( function( e ) {
 } );
 $( '#undo' ).click( function() {
 	renderOptions( relaysset );
-	$( '.btn' ).addClass( 'disabled' );
+	$( '.infobtn' ).addClass( 'disabled' );
 } );
 $( '#save' ).click( function() {
 	if ( !pinmatch ) {
@@ -234,7 +231,7 @@ $( '#save' ).click( function() {
 		, { cmd: 'sh' , sh: [ 'system.sh', 'relayssave', JSON.stringify( newvalues ) ] }
 		, function() {
 			relaysset = newvalues;
-			$( '.btn' ).addClass( 'disabled' );
+			$( '.infobtn' ).addClass( 'disabled' );
 			$( '#bannerMessage' ).text( 'Done' );
 			setTimeout( bannerHide, 2000 );
 		}

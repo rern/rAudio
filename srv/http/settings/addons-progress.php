@@ -47,14 +47,12 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: rern;
-			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
-			font-weight: normal;
-			font-style : normal;
+			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
+			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/addons.<?=$time?>.css">
 </head>
@@ -67,7 +65,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 		<i class="fa fa-gear blink"></i>&ensp;Please wait until finished ...
 	</p>
 	
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
 <script>

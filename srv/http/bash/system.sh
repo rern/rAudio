@@ -132,7 +132,6 @@ databackup )
 /etc/relays.conf
 /etc/soundprofile.conf
 /etc/upmpdcli.conf
-/srv/http/assets/css/colors.css
 /var/lib/alsa/asound.state
 )
 	for file in ${files[@]}; do
@@ -212,6 +211,7 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
+	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
 	/srv/http/bash/cmd.sh power
 	;;
 getjournalctl )
@@ -237,7 +237,7 @@ i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
 	reboot=${args[3]}
-	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|dtoverlay=tft35a\|hdmi_force_hotplug=1' $fileconfig )
+	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -303,7 +303,7 @@ pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
 pins_data=${args[9]}"
-		if ! grep -q tft35a $fileconfig; then
+		if ! grep -q 'waveshare\|tft35a' $fileconfig; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
@@ -343,6 +343,8 @@ i2c-dev
 " >> $filemodule
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+	systemctl enable localbrower
+	[[ -n $rebbot ]] && echo "$reboot" > $filereboot
 	pushRefresh
 	;;
 mount )

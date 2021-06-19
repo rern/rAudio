@@ -1,4 +1,5 @@
 :root {
+	--cd:   hsl(200,100%,35%); /* default main */
 	--cw:   hsl(0,0%,90%);     /* white */
 	--cml:  hsl(200,100%,40%); /* main-light */
 	--cm:   hsl(200,100%,35%); /* main */
@@ -11,4 +12,32 @@
 	--cg:   hsl(200,3%,30%);   /* gray */
 	--cga:  hsl(200,3%,20%);   /* gray-active */
 	--cgd:  hsl(200,3%,10%);   /* gray-dark */
+}
+
+bl, blb, .bl {
+	color: var( --cm ) !important
+}
+bll {
+	color: var( --cml ) !important;
+}
+gr, grl, grw, .gr, .grl {
+	color: var( --cg60 ) !important
+}
+grn, .grn {
+	color: #0f0
+}
+red, .red {
+	color: #f00
+}
+.yl {
+	color: yellow
+}
+w, wh, whl, .wh {
+	color: var( --cw ) !important
+}
+.bgr {
+	background: var( --cgd ) !important
+}
+.bgr60 {
+	background-color: var( --cg60 ) !important
 }

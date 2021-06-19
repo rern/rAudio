@@ -105,7 +105,7 @@ select,
 	min-width: 230px;
 	background: var( --cga );
 	z-index: -1;
-	box-shadow: 4px 4px 10px #000000;
+	box-shadow: -4px 4px 10px #000000;
 }
 .selectric-items .selectric-scroll {
 	height: 100%;

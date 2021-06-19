@@ -114,8 +114,8 @@ $( '#loader' ).click( function() {
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
-		&& G.status.file.slice( 0, 4 ) !== 'http'
 		&& G.status.player !== 'bluetooth'
+		&& 'file' in G.status && G.status.file.slice( 0, 4 ) !== 'http'
 	) {
 		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
 	} else {
@@ -216,7 +216,7 @@ $( '#displayplayback' ).click( function() {
 } );
 $( '#colorok' ).click( function() {
 	G.color = 0;
-	var hsv = colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
+	var hsv = G.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
 	var s = hsv.s;
 	var v = hsv.v;
 	var L = ( 2 - s ) * v / 2;
@@ -231,14 +231,10 @@ $( '#colorok' ).click( function() {
 		var l = L * 100;
 	}
 	var hsl = h +' '+ s +' '+ l;
-	if ( hsl === G.display.color ) {
-		$( '#colorcancel' ).click();
-	} else {
-		bash( [ 'color', hsl ] );
-		var hsl = h +','+ s +'%,'+ l +'%';
-		$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
-		banner( 'Color', 'Change ...', 'brush blink' );
-	}
+	bash( [ 'color', hsl ] );
+	var hsl = h +','+ s +'%,'+ l +'%';
+	$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
+	banner( 'Color', 'Change ...', 'brush blink' );
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
@@ -249,12 +245,13 @@ $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
 	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
 		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
-	$( '#mode-title, #button-lib-back, .lib-icon, gr, grl, \
+	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, grl, \
 		#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', '' );
 	$( '.menu a' ).css( 'border-top', '' );
 	$( '#lib-list li' ).css( 'border-bottom', '' );
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
+	G.colorpicker.destroy();
 } );
 $( '#colorpicker' ).click( function( e ) {
 	if ( e.target.id === 'colorpicker' ) $( '#colorcancel' ).click();
@@ -451,7 +448,7 @@ $( '#volume' ).roundSlider( {
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
 		$volumehandle = $( '#volume .rs-handle' );   // not available for self events
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', 'none' ); // disable animation on load
+		$volumehandlerotate = $( '#volume .rs-transition, #volume .rs-handle' );
 	}
 	// drag: start > beforeValueChange > drag > valueChange > change > stop
 	// tap: beforeValueChange > change > valueChange
@@ -460,7 +457,7 @@ $( '#volume' ).roundSlider( {
 		// restore handle color immediately on start drag
 		if ( e.value === 0 ) volColorUnmute();
 		$( '.map' ).removeClass( 'mapshow' );
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', '0s' );
+		$volumehandlerotate.css( 'transition-duration', '0s' );
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
@@ -481,8 +478,9 @@ $( '#volume' ).roundSlider( {
 			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
 			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-property', '' );
-		$( '#volume .rs-transition, #volume .rs-handle' ).css( 'transition-duration', speed +'s' );
+		$volumehandlerotate
+			.css( 'transition-property', '' )
+			.css( 'transition-duration', speed +'s' );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
@@ -810,7 +808,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
-			$( '#song' ).removeClass( 'gr' );
+			$( '#title' ).removeClass( 'gr' );
 			if ( G.display.time ) {
 				$( '#elapsed' ).removeClass( 'bl' );
 				$( '#total' ).removeClass( 'wh' );
@@ -821,7 +819,7 @@ $( '.btn-cmd' ).click( function() {
 					$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w> / '+ timehms );
 				}
 			}
-			if ( G.status.webradio ) $( '#song, #elapsed' ).html( blinkdot );
+			if ( G.status.webradio ) $( '#title, #elapsed' ).html( blinkdot );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
@@ -841,7 +839,7 @@ $( '.btn-cmd' ).click( function() {
 				return
 			}
 			
-			$( '#song' ).removeClass( 'gr' );
+			$( '#title' ).removeClass( 'gr' );
 			if ( !G.status.playlistlength ) return
 			
 			bash( [ 'mpcplayback', 'stop' ] );
@@ -861,7 +859,7 @@ $( '.btn-cmd' ).click( function() {
 						$( '#time-bar' ).css( 'width', 0 );
 					}
 				} else {
-					$( '#song' ).html( '·&ensp;·&ensp;·' );
+					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
 					if ( !G.display.novu ) vuStop();
 				}
@@ -876,7 +874,7 @@ $( '.btn-cmd' ).click( function() {
 			
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
-			$( '#song' ).addClass( 'gr' );
+			$( '#title' ).addClass( 'gr' );
 			if ( G.display.time && $( '#time-knob' ).is( ':visible' ) ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
@@ -890,7 +888,7 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			$( '#artist, #song, #album' )
+			$( '#artist, #title, #album' )
 				.removeClass( 'scrollleft' )
 				.empty();
 			bash( [ 'mpcprevnext', cmd, song, pllength ] );

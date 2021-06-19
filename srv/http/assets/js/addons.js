@@ -60,7 +60,7 @@ function branchtest( alias, type, message, install ) {
 		}
 	} );
 }
-$( '.boxed-group .btn' ).on( 'taphold', function () {
+$( '.boxed-group .infobtn' ).on( 'taphold', function () {
 	$this = $( this );
 	alias = $this.parent().attr( 'alias' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );

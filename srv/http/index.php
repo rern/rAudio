@@ -26,14 +26,12 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: rern;
-			src        : url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ),
-						 url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
-			font-weight: normal;
-			font-style : normal;
+			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
+			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 		<?php if ( $localhost ) { ?> 
 	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
@@ -50,7 +48,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 
 <?php include 'index-body.php';?>
 
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/Sortable.min.<?=$time?>.js"></script>

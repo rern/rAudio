@@ -8,7 +8,7 @@ btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 [[ -z $counts ]] && counts=false # fix - sometime blank on startup
-lcd=$( grep -q dtoverlay=tft35a /boot/config.txt 2> /dev/null && echo true || echo false )
+lcd=$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
@@ -120,8 +120,12 @@ spotify )
 	
 esac
 
-killall status-radiofrance.sh &> /dev/null
-[[ $player != mpd && $player != upnp ]] && rm -f $dirtmp/radiometa && exit
+if [[ $player != mpd && $player != upnp ]]; then
+	rm -f $dirtmp/{webradiodata,radiofrance}
+	systemctl stop radiofrance
+	touch $dirtmp/stop
+	exit
+fi
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
@@ -180,7 +184,11 @@ done
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
-mpc | grep -q ^Updating && updating_db=true || updating_db=false
+if [[ -e $dirsystem/updating ]] || mpc | grep -q ^Updating; then 
+	updating_db=true
+else
+	updating_db=false
+fi
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
@@ -235,8 +243,8 @@ elif [[ -n $radioheader ]]; then
 , "Title"  : "'$Title'"'
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-		fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
+		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+		[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -244,30 +252,34 @@ elif [[ -n $radioheader ]]; then
 		radiofile=/srv/http/data/webradios/$urlname
 		if [[ -e "$radiofile" ]]; then
 			radiodata=$( cat $radiofile )
-			stationname=$( sed -n 1p <<< "$radiodata" )
+			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
-		else
-			stationname=$file
 		fi
-		if [[ $state == play ]]; then
-			[[ $( dirname $file ) == 'http://stream.radioparadise.com' ]] && radioparadise=1
-			[[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]] && radiofrance=1
+		if [[ $state != play ]]; then
+			Title=
+		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
+			rm $dirtmp/stop
+			Title=
+		else
+			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
+				radioparadise=1
+			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
+				radiofrance=1
+			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
-				if [[ -e $dirtmp/radiometa ]]; then
-					readarray -t radiometa <<< $( cat $dirtmp/radiometa )
-					Artist=${radiometa[0]}
-					Title=${radiometa[1]}
-					Album=${radiometa[2]}
-					coverart=${radiometa[3]}
-					[[ -n $Album ]] && albumname=$Album || albumname=$stationname
-					artistname=$Artist
-					titlename=$Title
-					station=${stationname/* - }
+				if [[ -e $dirtmp/webradiodata ]]; then
+					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
+					Artist=${radiodata[0]}
+					Title=${radiodata[1]}
+					Album=${radiodata[2]}
+					coverart=${radiodata[3]}
+					station=${station/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
-					/srv/http/bash/status-radioparadise.sh $file "$stationname" &> /dev/null &
-				elif [[ -n $radiofrance ]]; then
-					/srv/http/bash/status-radiofrance.sh $file "$stationname" &> /dev/null &
+					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
+				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
+					echo $file > $dirtmp/radiofrance
+					systemctl start radiofrance
 				fi
 			elif [[ -n $Title ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
@@ -276,23 +288,15 @@ elif [[ -n $radioheader ]]; then
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/g' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
-				artistname=$Artist
-				titlename=$Title
-				albumname=$stationname
 				# fetched coverart
 				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
 				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				fetchedfile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-				[[ -n $fetchedfile ]] && coverart=/data/shm/online-$covername.$date.${fetchedfile/*.}
-			else
-				artistname=$stationname
-				titlename=
-				albumname=$file
+				webradiofile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
+				if [[ -n $webradiofile ]]; then
+					coverart=/data/shm/webradio-$covername.$date.${webradiofile: -3}
+					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
+				fi
 			fi
-		else
-			[[ -e "$radiofile" ]] && artistname=$stationname
-			titlename=
-			albumname=$file
 		fi
 		filenoext=/data/webradiosimg/$urlname
 		pathnoext=/srv/http$filenoext
@@ -303,13 +307,13 @@ elif [[ -n $radioheader ]]; then
 		fi
 ########
 		status+='
-, "Album"         : "'$albumname'"
-, "Artist"        : "'$artistname'"
+, "Album"         : "'$Album'"
+, "Artist"        : "'$Artist'"
 , "coverartradio" : "'$coverartradio'"
 , "Name"          : "'$Name'"
 , "station"       : "'$station'"
 , "Time"          : false
-, "Title"         : "'$titlename'"
+, "Title"         : "'$Title'"
 , "webradio"      : true'
 	fi
 else
@@ -333,7 +337,7 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/radiometa
+[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/webradiodata
 
 samplingLine() {
 	bitdepth=$1
@@ -351,15 +355,13 @@ samplingLine() {
 	if [[ $bitdepth == dsd ]]; then
 		sampling="${samplerate^^} &bull; $rate"
 	else
-		if [[ $bitdepth == 'N/A' ]]; then
-			[[ $ext == WAV || $ext == AIFF ]] && bit="$(( bitrate / samplerate / 2 )) bit"
-		elif [[ $ext == Radio && ${file/*.} != flac ]]; then # only flac has bitdepth
-			bit=
-		elif [[ -n $bitdepth && $ext != MP3 && $ext != aac ]]; then # lossy has no bitdepth
-			bit="$bitdepth bit"
-		fi
+		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
-		sampling="$bit $sample $rate"
+		if [[ -n $bitdepth && $ext != Radio && $ext != MP3 && $ext != AAC ]]; then
+			sampling="$bitdepth bit $sample $rate"
+		else # lossy has no bitdepth
+			sampling="$sample $rate"
+		fi
 	fi
 	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
 }
@@ -374,7 +376,7 @@ elif [[ $state != stop ]]; then
 	else
 		if [[ -n $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && echo $stationname$'\n'$sampling > $radiofile
+			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
 		else
 			sampling=$radiosampling
 		fi
@@ -421,12 +423,12 @@ if [[ $ext != CD && -z $radioheader ]]; then
 $Artist
 $Album
 $file0" )
-elif [[ $state == play && -n $Artist ]]; then
+elif [[ $state == play && -z $coverart && -n $Artist ]]; then
 	if [[ -n $radioheader ]]; then
 		[[ -n $Title ]] && args="\
 $Artist
 $Title
-title"
+webradio"
 	else
 		[[ -n $Album ]] && args="\
 $Artist

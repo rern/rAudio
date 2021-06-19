@@ -109,7 +109,7 @@ function list2JSON( list ) {
 	}
 	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
-	if ( 'reboot' in G ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
+	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
 function loader( toggle ) {
@@ -147,13 +147,8 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
-		if ( !$.isEmptyObject( G ) ) {
-			loader( 'hide' );
-			refreshData();
-		}
-	} else {
-		loader();
 		bannerHide();
+		if ( !$.isEmptyObject( G ) ) refreshData();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -167,8 +162,9 @@ pushstream.onmessage = function( data, id, channel ) {
 }
 function psNotify( data ) {
 	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
-
+	
 	banner( data.title, data.text, data.icon, data.delay );
+	if ( 'power' in data ) loader();
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
@@ -245,7 +241,6 @@ var local = 0;
 var localhost = [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1;
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var reboot = '';
 var red = '#bb2828';
 var short = window.innerHeight < 570;
 var timer;

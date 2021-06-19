@@ -75,7 +75,7 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
-		bannerHide();
+		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -147,7 +147,7 @@ function psCoverart( data ) {
 				$( '.mode-bookmark img' ).css( 'opacity', '' );
 			}
 			break;
-		case 'coverart': // change coverart
+		case 'coverart':
 			var urlhead = url.slice( 0, 9 );
 			var coverpath, covername, currentpath, currentname, cd, name;
 			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
@@ -159,19 +159,26 @@ function psCoverart( data ) {
 				cd = 1;
 			}
 			if ( G.playback ) {
-				// path/filename.ext > path
-				if ( 'file' in G.status ) currentpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
-				name = G.status.Artist
-				name += G.status.webradio ? G.status.Title.replace( / \(.*$/, '' ) : G.status.Album;
-				currentname = name.replace( /[ "`?/#&'"']/g, '' );
-				if ( coverpath === currentpath || covername === currentname || cd ) {
-					G.status.coverart = url;
-					$( '#vu' ).addClass( 'hide' );
-					$( '#coverart' )
-						.attr( 'src', url )
-						.removeClass( 'hide' );
-					$( '#divcover .coveredit' ).remove();
-					$( '#coverart' ).css( 'opacity', '' );
+				if ( G.status.coverart === url ) break;
+				
+				G.status.coverart = url;
+				$( '#vu' ).addClass( 'hide' );
+				$( '#divcover .coveredit' ).remove();
+				$( '#coverart' ).css( 'opacity', '' );
+				$( '#coverart' )
+					.attr( 'src', url )
+					.removeClass( 'hide' );
+				if ( 'Album' in data ) {
+					G.status.Album = data.Album;
+					var sampling = G.status.sampling;
+					if ( data.Album ) {
+						sampling += ' &bull; '+ G.status.station;
+					} else {
+						sampling += sampling ? ' &bull; Radio' : 'Radio';
+					}
+					$( '#album' ).text( data.Album );
+					$( '#sampling' ).html( sampling );
+					setRadioClass();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -298,10 +305,10 @@ function psMpdPlayer( data ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
 				$( '#artist' ).html( G.status.Artist );
-				$( '#song' ).html( G.status.Title || blinkdot );
+				$( '#title' ).html( G.status.Title || blinkdot );
 				$( '#album' ).html( G.status.Album );
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-				setRadioAlbum();
+				setRadioClass();
 				scrollLongText();
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			} else {
@@ -357,10 +364,13 @@ function psMpdUpdate( data ) {
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( data.title === 'Power' ) {
-		if ( data.text === 'Off ...' ) $( '#loader' ).addClass( 'splash' );
+	if ( 'power' in data ) {
+		if ( data.power === 'off' ) {
+			G.poweroff = 1;
+			$( '#loader' ).addClass( 'splash' );
+		}
 		loader();
-	} else if ( data.text === 'Change track ...' ) {
+	} else if ( data.text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	}
 }
@@ -429,7 +439,7 @@ function psRelays( response ) { // on receive broadcast
 			  icon        : 'relays'
 			, title       : 'GPIO Relays Countdown'
 			, message     : stopwatch
-			, footer      : '<white>'+ delay +'</white>'
+			, footer      : '<wh>'+ delay +'</wh>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
@@ -443,7 +453,7 @@ function psRelays( response ) { // on receive broadcast
 		delay--
 		G.intRelaysTimer = setInterval( function() {
 			if ( delay ) {
-				$( '.infofooter white' ).text( delay-- );
+				$( '.infofooter wh' ).text( delay-- );
 			} else {
 				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
@@ -473,7 +483,7 @@ function psRelays( response ) { // on receive broadcast
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
 			$( '.infobtn' ).addClass( 'hide' );
-			$( '.infofooter white' ).html( devices );
+			$( '.infofooter wh' ).html( devices );
 		}
 	}
 }

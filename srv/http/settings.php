@@ -30,14 +30,12 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<style>
 		@font-face {
-			font-family: rern;
-			src        : url( '/assets/fonts/rern.<?=$time?>.woff' ) format( 'woff' ),
-			             url( '/assets/fonts/rern.<?=$time?>.ttf' ) format( 'truetype' );
-			font-weight: normal;
-			font-style : normal;
+			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
+			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 		<?php if ( $localhost ) { ?> 
 	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
@@ -76,7 +74,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <input class="input hide">
 <div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
 	<?php } ?>
-<script src="/assets/js/plugin/jquery-2.2.4.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>

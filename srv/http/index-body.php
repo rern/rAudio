@@ -204,7 +204,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	</div>
 </div>
 <div id="settings" class="menu hide">
-	<a id="features" class="settings"><i class="fa fa-sliders"></i>Features</a>
+	<a id="features" class="settings"><i class="fa fa-features"></i>Features</a>
 	<a id="player" class="settings"><i class="fa fa-player"></i>Player</a>
 	<a id="networks" class="settings"><i class="fa fa-networks"></i>Networks</a>
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
@@ -227,8 +227,8 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="divartist">
 			<span id="artist"></span>
 		</div>
-		<div id="divsong">
-			<span id="song"></i></span>
+		<div id="divtitle">
+			<span id="title"></i></span>
 		</div>
 		<div id="divalbum">
 			<span id="album"></span>
@@ -425,11 +425,8 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
 	<i id="colorcancel" class="fa fa-times"></i>
-	<canvas id="canvascolor"></canvas><br>
-<?php if ( file_exists( $dirsystem.'color' ) ) { ?>
-	<a id="colorreset" class="btn">Default</a>&ensp;
-<?php } ?>
-	<a id="colorok" class="btn btn-primary">Set</a>
+	<a id="colorreset" class="infobtn"><i class="fa fa-undo"></i> Default</a>&ensp;
+	<a id="colorok" class="infobtn infobtn-primary"><i class="fa fa-check"></i> Set</a>
 	</div>
 </div>
 <div id="bio" class="hide">
@@ -450,7 +447,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<i id="lyricsundo" class="fa fa-undo hide"></i>
 			<i id="lyricssave" class="fa fa-save hide"></i>
 			<i id="lyricsdelete" class="fa fa-minus-circle"></i>
-			<i id="lyricsback" class="fa fa-arrow-left"></i>
+			<i id="lyricsback" class="fa fa-arrow-left bl"></i>
 		</div>
 	</div>
 	<div id="lyricstextoverlay">

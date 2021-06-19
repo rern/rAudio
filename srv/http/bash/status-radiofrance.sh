@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # Radio France metadata
-# status-radiofrance.sh FILENAME
 dirtmp=/srv/http/data/shm/
-station=$2
-name=$( basename "$1" )
+file=$( cat /srv/http/data/shm/radiofrance )
+name=$( basename "$file" )
 name=${name/-*}
 [[ $name != fip && $name != francemusique ]] && name=$( echo $name | sed 's/fip\|francemusique//' )
 case ${name/-*} in
@@ -52,12 +51,12 @@ metadataGet() {
 	
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 	coverfile=$dirtmp/online-$name.jpg
-	[[ ! -e $coverfile ]] && rm -f $dirtmp/online-*
 	[[ -n $url ]] && curl -s $url -o $coverfile
 	[[ -e $coverfile ]] && coverart=/data/shm/online-$name.$( date +%s ).jpg
 	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
 	data='{
   "Artist"   : "'$artist'"
 , "Title"    : "'$title'"
@@ -73,7 +72,8 @@ $artist
 $title
 $album
 $coverart
-" > $dirtmp/radiometa
+" > $dirtmp/webradiodata
+	/srv/http/bash/cmd.sh onlinefileslimit
 	localtime=$( date +%s )
 	diff=$(( $localtime - $servertime )) # local time fetched after server time
 	sec2change=$(( $endtime - $servertime - $diff + 10 )) # seconds with 10s delay

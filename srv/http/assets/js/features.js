@@ -2,7 +2,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 function passwordWrong() {
 	info( {
-		  icon    : 'lock-circle'
+		  icon    : 'lock'
 		, title   : 'Password Login'
 		, message : 'Wrong existing password.'
 	} );
@@ -73,7 +73,7 @@ $( '.enable' ).click( function() {
 	
 	var idname = {
 		  localbrowser : [ 'Browser on RPi',       'chromium' ]
-		, login        : [ 'Password Login',       'lock-circle' ]
+		, login        : [ 'Password Login',       'lock' ]
 		, mpdscribble  : [ 'Last.fm Scrobbler',    'lastfm' ]
 		, smb          : [ 'Samba - File Sharing', 'networks' ]
 		, snapclient   : [ 'SnapClient Renderer',  'snapcast' ]
@@ -89,7 +89,7 @@ $( '.enable' ).click( function() {
 		} else {
 			$( '#login' ).prop( 'checked', G.login );
 			info( {
-				  icon          : 'lock-circle'
+				  icon          : 'lock'
 				, title         : 'Password Login'
 				, message       : 'Disable:'
 				, passwordlabel : 'Password'
@@ -100,7 +100,7 @@ $( '.enable' ).click( function() {
 						, password : infoVal()
 					}, function( std ) {
 						if ( std ) {
-							notify( 'Password Login', 'Disable ...', 'lock-circle' );
+							notify( 'Password Login', 'Disable ...', 'lock' );
 							bash( [ id +'disable' ] );
 						} else {
 							passwordWrong();
@@ -153,7 +153,7 @@ $( '#hostapd' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( !G.hostapd && G.wlanconnect && checked ) {
 		info( {
-			  icon    : 'network'
+			  icon    : 'networks'
 			, title   : 'RPi Access Point'
 			, message : '<wh>Wi-Fi is currently connected.</wh>'
 						 +'<br>Disconnect and continue?'
@@ -213,7 +213,6 @@ $( '#setting-localbrowser' ).click( function() {
 	info( {
 		  icon         : 'chromium'
 		, title        : 'Browser on RPi'
-		, footer       : ( G.lcd ? '<gr>(Rotate TFT LCD: Reboot required)</gr>' : '' )
 		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
 		, selectlabel  : 'Screen rotation'
 		, boxwidth     : 80
@@ -244,7 +243,7 @@ $( '#setting-localbrowser' ).click( function() {
 } );
 $( '#setting-smb' ).click( function() {
 	info( {
-		  icon         : 'network'
+		  icon         : 'networks'
 		, title        : 'Samba File Sharing'
 		, message      : '<wh>Write</wh> permission:</gr>'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
@@ -256,7 +255,7 @@ $( '#setting-smb' ).click( function() {
 		, ok           : function() {
 			var values = infoVal();
 			bash( [ 'smbset', values[ 0 ], values[ 1 ] ] );
-			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'network' );
+			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'networks' );
 		}
 	} );
 } );
@@ -290,7 +289,7 @@ $( '#setting-mpdscribble' ).click( function() {
 } );
 $( '#setting-login' ).click( function() {
 	info( {
-		  icon          : 'lock-circle'
+		  icon          : 'lock'
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
@@ -300,7 +299,7 @@ $( '#setting-login' ).click( function() {
 		}
 		, ok            : function() {
 			var values = infoVal();
-			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock-circle' );
+			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : escapeUsrPwd( values[ 0 ] )

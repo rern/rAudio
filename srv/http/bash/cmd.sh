@@ -307,14 +307,16 @@ bookmarkthumb )
 	echo ${coverartfile: -3} # ext
 	;;
 color )
-	cmd=${args[1]}
+	hsl=${args[1]}
 	file=$dirsystem/color
-	if [[ $cmd == reset ]]; then
-		rm $file
-	elif [[ -n $cmd && $cmd != color ]]; then # omit call from addons-functions.sh / backup-restore.sh
-		echo $cmd > $file
+	if [[ -n $hsl ]]; then # omit call from addons.sh / datarestore
+		[[ $hsl == reset ]] && rm $file || echo $hsl > $file
 	fi
-	[[ -e $file ]] && hsl=( $( cat $file ) ) || hsl=( $( grep colorreset.*background /srv/http/assets/css/main.css | sed 's/.*(\(.*\)).*/\1/; s/%//g; s/,/ /g' ) )
+	if [[ -e $file ]]; then
+		hsl=( $( cat $file ) )
+	else
+		hsl=( $( grep '\-\-cd:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
+	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
 	hsg="$h,3%,"
@@ -331,7 +333,7 @@ s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
   s|\(--cg: *hsl\).*;|\1(${hsg}30%);|
  s|\(--cga: *hsl\).*;|\1(${hsg}20%);|
  s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
-" /srv/http/assets/css/colors.css
+" /srv/http/assets/css/common.css
 	sed -i "
  s|\(.box{fill:hsl\).*|\1($hsl);|
 s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
@@ -407,7 +409,7 @@ displayget )
 	data=$( sed '$ d' $dirsystem/display )
 	data+='
 , "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
-, "color"      : "'$( cat $dirsystem/color 2> /dev/null || echo '200 100 35' )'"
+, "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
@@ -484,7 +486,11 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
 	mpc | grep -q '^\[paused\]' && pause=1
-	rm -f $dirtmp/radiometa
+	rm -f $dirtmp/{webradiodata,radiofrance}
+	if [[ $command == stop ]]; then
+		systemctl stop radiofrance
+		touch $dirtmp/stop
+	fi
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		fileheadder=$( mpc | head -c 4 )
@@ -507,10 +513,13 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/radiometa
+	rm -f $dirtmp/{webradiodata,radiofrance}
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
+		rm -f $dirtmp/webradiodata
+		systemctl stop radiofrance
+		touch $dirtmp/stop
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -566,6 +575,18 @@ nicespotify )
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
+	;;
+onlinefileslimit )
+	onlinefiles=$( ls -1t $dirtmp/online-*.* )
+	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
+		file=$( echo "$onlinefiles" | tail -1 )
+		rm -f "$file"
+	fi
+	onlinefiles=$( ls -1t $dirtmp/webradio-*.* )
+	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
+		file=$( echo "$onlinefiles" | tail -1 )
+		rm -f "$file" "${file:0:-4}"
+	fi
 	;;
 partexpand )
 	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
@@ -706,9 +727,9 @@ power )
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
 	if [[ -n $poweroff ]]; then
 		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
-		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1}'
+		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	else
-		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1}'
+		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then

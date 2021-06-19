@@ -175,7 +175,7 @@
 </div>
 <pre id="codempdscribble" class="hide"></pre>
 <div class="col-l double">
-	<a>Password Login<br><gr>password_hash</gr></a><i class="fa fa-lock-circle"></i>
+	<a>Password Login<br><gr>password_hash</gr></a><i class="fa fa-lock"></i>
 </div>
 <div class="col-r">
 	<input id="login" <?=$chkenable?>>
