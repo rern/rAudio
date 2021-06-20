@@ -1206,6 +1206,9 @@ function renderPlayback() {
 	$( '#divcover .fa-coverart' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
+	$( '#artist, #title, #album' )
+		.removeClass( 'scrollleft' )
+		.removeAttr( 'style' ); // fix - iOS needs whole style removed
 	$( '#artist' ).html( G.status.Artist );
 	$( '#title' )
 		.html( G.status.Title )
@@ -1526,10 +1529,6 @@ function scrollLongText() {
 		if ( tW > wW * 0.98 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 			$this.addClass( 'scrollleft' );
-		} else {
-			$this
-				.removeClass( 'scrollleft' )
-				.removeAttr( 'style' ); // fix - iOS needs whole style removed
 		}
 	} );
 	$el.css( 'visibility', 'visible' ); // from initial hidden
