@@ -103,4 +103,4 @@ fi
 
 curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
 
-[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd-pushstatus.sh lcdchar
+[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd.sh pushstatuslcdchar
