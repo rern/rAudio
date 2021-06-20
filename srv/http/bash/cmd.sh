@@ -758,13 +758,6 @@ power )
 pushstatus )
 	pushstreamStatus ${args[1]}
 	;;
-pushstatuslcdchar )
-	killall lcdchar.py &> /dev/null
-	readarray -t data <<< $( /srv/http/bash/status.sh \
-								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
-								| sed 's/^$\|null/false/' )
-	/srv/http/bash/lcdchar.py "${data[@]}" &
-	;;
 refreshbrowser )
 	pushstream reload 1
 	;;
