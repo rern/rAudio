@@ -1532,7 +1532,7 @@ function scrollLongText() {
 		}
 	} );
 	$el.css( 'visibility', 'visible' ); // from initial hidden
-	if ( !$( '.scrollleft' ).length ) return
+	if ( !tWmax ) return
 	
 	// varied width only when scaled
 	var cssanimate = ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
