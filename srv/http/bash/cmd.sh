@@ -759,9 +759,8 @@ pushstatus )
 	pushstreamStatus ${args[1]}
 	;;
 pushstatuslcdchar )
-	status=$( /srv/http/bash/status.sh )
 	killall lcdchar.py &> /dev/null
-	readarray -t data <<< $( echo $status \
+	readarray -t data <<< $( /srv/http/bash/status.sh \
 								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
 								| sed 's/^$\|null/false/' )
 	/srv/http/bash/lcdchar.py "${data[@]}" &
