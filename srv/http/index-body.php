@@ -404,7 +404,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				</span>
 			</div>
 		</form>
-		<a id="pl-search-close" class="hide"></a>
+		<div id="pl-search-close" class="hide"></div>
 		<div id="pl-manage" class="playlist">
 			<i id="button-pl-open" class="fa fa-folder-open"></i>
 			<i id="button-pl-save" class="fa fa-save pllength"></i>
