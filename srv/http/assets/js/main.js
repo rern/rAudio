@@ -378,12 +378,18 @@ $( '#settings' ).click( function() {
 } );
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
-	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
-	$( '#pl-list li' ).removeClass( 'updn' );
-	$( '#pl-list .name' ).css( 'max-width', '' );
-	if ( G.plremove ) {
-		G.plremove = 0;
-		getPlaybackStatus();
+	if ( G.library ) {
+		$( '#lib-list li' ).removeClass( 'active' );
+		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
+	} else if ( G.playlist ) {
+		$( '#pl-savedlist li' ).removeClass( 'active' );
+		$( '#pl-list li' ).removeClass( 'updn' );
+		$( '#pl-list .name' ).css( 'max-width', '' );
+		if ( !$( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
+		if ( G.plremove ) {
+			G.plremove = 0;
+			getPlaybackStatus();
+		}
 	}
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
@@ -1225,6 +1231,8 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		.css( 'background', 'hsl(0,0%,15%)' )
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', 0.33 );
+} ).on( 'tap', function() {
+	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 } );
 var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
