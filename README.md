@@ -47,9 +47,9 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### Image files:
 - GitHub server:
-	- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210330/rAudio-1-RPi4.img.xz)
-	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210330/rAudio-1-RPi2-3.img.xz)
-	- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210330/rAudio-1-RPi0-1.img.xz)
+	- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210612/rAudio-1-RPi4.img.xz)
+	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210612/rAudio-1-RPi2-3.img.xz)
+	- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210612/rAudio-1-RPi0-1.img.xz)
 - Mirror server:
 	- RPi 4: [rAudio-1-RPi4.img.xz](https://cloud.s-t-franz.de/s/yP5jMwC6YkHmiiJ)
 	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://cloud.s-t-franz.de/s/CxoqeZ3zjAjKsJd)
@@ -103,10 +103,19 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- Expand `root` partition:
 			- By default, `root` partition will be expaned on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
-		- GPIO 3.5" LCD display
-			- Create a blank file `lcd` in `BOOT`
+		- GPIO 3.5" LCD display (Not for Zero and 1)
+			- Create a blank file in `BOOT` named as:
+				- Generic display - `lcd`
+				- Waveshare 35a   - `lcd35a`
+				- Waveshare 35b   - `lcd35b`
+				- Waveshare 35b v2   - `lcd35b-v2`
+				- Waveshare 35c   - `lcd35c`
 		- Custom startup script
 			- Copy custom script named `startup` to `BOOT`
+- Boot duration
+	- RPi4: 20+ seconds
+	- RPi3: 50+ seconds
+	- RPi1, Zero: 80+ seconds
 - After initial boot:
 	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
@@ -135,7 +144,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Settings > MPD > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
-	Settings > System > Features
+	Settings > Features
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
 - Hide top and bottom bars

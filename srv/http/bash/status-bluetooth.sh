@@ -31,18 +31,25 @@ if [[ -e $onlinefile ]]; then
 else
 	/srv/http/bash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
+elapsed=$( [[ -z $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
+Time=$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )
+timestamp=$( date +%s%3N )
 
 data='
 	, "Artist"     : "'$( [[ -n $Artist ]] && echo $Artist || echo '&nbsp;' )'"
 	, "Title"      : "'$( [[ -n $Title ]] && echo $Title || echo '&nbsp;' )'"
 	, "Album"      : "'$( [[ -n $Album ]] && echo $Album || echo '&nbsp;' )'"
 	, "coverart"   : "'$coverart'"
-	, "elapsed"    : '$( [[ -z $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )'
+	, "elapsed"    : '$elapsed'
 	, "sampling"   : "Bluetooth"
 	, "state"      : "'$state'"
-	, "Time"       : '$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )'
-	, "timestamp"  : '$( date +%s%3N )
+	, "Time"       : '$Time'
+	, "timestamp"  : '$timestamp
 
 echo $data
 
-[[ -e /srv/http/data/system/lcdchar ]] && /srv/http/bash/cmd-pushstatus.sh lcdchar
+if [[ -e /srv/http/data/system/lcdchar ]]; then
+	data=( "$Artist" "$Title" "$Album" "$state" "$Time" "$elapsed" "$timestamp" )
+	killall lcdchar.py &> /dev/null
+	/srv/http/bash/lcdchar.py "${data[@]}" &
+fi
