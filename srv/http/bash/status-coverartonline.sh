@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# online check
-[[ $( cat /sys/class/net/eth0/carrier 2> /dev/null ) != 1 \
-	&& $( cat /sys/class/net/wlan0/carrier 2> /dev/null ) != 1 ]] && exit
+: >/dev/tcp/8.8.8.8/53 || exit # online check
 
 readarray -t args <<< "$1"
 

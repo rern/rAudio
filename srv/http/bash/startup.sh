@@ -114,6 +114,8 @@ if [[ -n $nas ]]; then
 	done
 fi
 
+[[ -e /boot/startup.sh ]] && /boot/startup.sh
+
 # after all sources connected
 if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
 	echo rescan > $dirsystem/updating
@@ -138,19 +140,4 @@ fi
 
 rfkill | grep -q wlan && iw wlan0 set power_save off
 
-wget https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-if [[ $? == 0 ]]; then
-	installed=$( ls "$diraddons" | grep -v addons-list )
-	for addon in $installed; do
-		verinstalled=$( cat $diraddons/$addon )
-		if (( ${#verinstalled} > 1 )); then
-			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-			[[ $verinstalled != $verlist ]] && count=1 && break
-		fi
-	done
-	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
-fi
-
-if [[ -e /boot/startup.sh ]]; then
-	/boot/startup.sh
-fi
+$dirbash/cmd.sh addonsupdates

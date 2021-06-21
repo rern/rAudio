@@ -251,7 +251,7 @@ addonsclose )
 	;;
 addonslist )
 	[[ -z ${args[1]} ]] && branch=main || branch=${args[1]}
-	wget https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
+	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
@@ -262,6 +262,22 @@ addonslist )
 	
 	url=$( jq -r .push.url $diraddons/addons-list.json )
 	[[ -n $url ]] && bash <( curl -sL $url )
+	;;
+addonsupdates )
+	: >/dev/tcp/8.8.8.8/53 || exit # online check
+	
+	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
+	[[ $? != 0 ]] && exit
+
+	installed=$( ls "$diraddons" | grep -v addons-list )
+	for addon in $installed; do
+		verinstalled=$( cat $diraddons/$addon )
+		if (( ${#verinstalled} > 1 )); then
+			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
+			[[ $verinstalled != $verlist ]] && count=1 && break
+		fi
+	done
+	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
 	;;
 audiocdtag )
 	track=${args[1]}
