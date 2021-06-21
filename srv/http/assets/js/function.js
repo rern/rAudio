@@ -298,9 +298,9 @@ function displayPlayback() {
 			G.iplayer = 'radiofrance';
 		} else if ( G.status.webradio ) {
 			G.iplayer = 'webradio';
+		} else {
+			G.iplayer = '';
 		}
-	} else {
-		G.iplayer = '';
 	}
 	$( '#playericon' )
 		.removeAttr( 'class' )
@@ -1095,7 +1095,7 @@ function renderLibraryList( data ) {
 	if ( 'count' in data ) {
 		$( '#lib-path' ).css( 'max-width', '40px' );
 		$( '#lib-list' ).css( 'width', '100%' );
-		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <grl>of</grl></span>&ensp;' );
+		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <grl>of</grl></span>' );
 		var htmlpath = '';
 	} else if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
@@ -1206,6 +1206,9 @@ function renderPlayback() {
 	$( '#divcover .fa-coverart' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
+	$( '#artist, #title, #album' )
+		.removeClass( 'scrollleft' )
+		.removeAttr( 'style' ); // fix - iOS needs whole style removed
 	$( '#artist' ).html( G.status.Artist );
 	$( '#title' )
 		.html( G.status.Title )
@@ -1418,6 +1421,7 @@ function renderPlaybackCoverart( coverart ) {
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
+	$( '#pl-search-close' ).empty();
 	$( '#pl-search-input' ).val( '' );
 	$( '#button-pl-back, #pl-savedlist, #pl-index, #pl-search' ).addClass( 'hide' );
 	$( '#lib-path>span, #button-pl-search' ).removeClass( 'hide' );
@@ -1526,14 +1530,10 @@ function scrollLongText() {
 		if ( tW > wW * 0.98 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 			$this.addClass( 'scrollleft' );
-		} else {
-			$this
-				.removeClass( 'scrollleft' )
-				.removeAttr( 'style' ); // fix - iOS needs whole style removed
 		}
 	} );
 	$el.css( 'visibility', 'visible' ); // from initial hidden
-	if ( !$( '.scrollleft' ).length ) return
+	if ( !tWmax ) return
 	
 	// varied width only when scaled
 	var cssanimate = ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed

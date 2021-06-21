@@ -368,7 +368,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<i id="button-lib-search" class="fa fa-search"></i>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
-				<input id="lib-search-input" class="form-control input" type="text">
+				<input id="lib-search-input" type="text">
 				<span class="input-group-btn">
 					<button id="lib-search-btn" class="btn btn-default"><i class="fa fa-search"></i></button>
 				</span>
@@ -398,13 +398,13 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<i id="button-pl-search" class="fa fa-search pllength"></i>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
-				<input id="pl-search-input" class="form-control input" type="text">
+				<input id="pl-search-input" type="text">
 				<span class="input-group-btn">
 					<button id="pl-search-btn" class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
 				</span>
 			</div>
 		</form>
-		<button id="pl-search-close" class="btn hide" type="button"></button>
+		<a id="pl-search-close" class="hide"></a>
 		<div id="pl-manage" class="playlist">
 			<i id="button-pl-open" class="fa fa-folder-open"></i>
 			<i id="button-pl-save" class="fa fa-save pllength"></i>
