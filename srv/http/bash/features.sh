@@ -69,7 +69,6 @@ hostapdset )
 " /etc/hostapd/hostapd.conf
 	else
 		router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-		sed -i -e '/^wpa\|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
 	fi
 	ifconfig wlan0 &> /dev/null || /srv/http/bash/system.sh wlan$'\n'true
 	netctl stop-all
