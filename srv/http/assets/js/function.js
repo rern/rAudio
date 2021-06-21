@@ -1421,15 +1421,14 @@ function renderPlaybackCoverart( coverart ) {
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
-	$( '#pl-search-close' ).empty();
-	$( '#pl-search-input' ).val( '' );
-	$( '#button-pl-back, #pl-savedlist, #pl-index, #pl-search' ).addClass( 'hide' );
-	$( '#lib-path>span, #button-pl-search' ).removeClass( 'hide' );
+	$( '#pl-search-close' ).click();
+	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-open' ).toggleClass( 'disable', G.status.playlists === 0 );
 	if ( data == -1 ) {
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disable' );
+		$( '#pl-search-close' ).click();
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
 		$( 'html, body' ).scrollTop( 0 );
@@ -1785,7 +1784,6 @@ function switchPage( page ) {
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
-	$( '#pl-search-close, #pl-search-close' ).addClass( 'hide' );
 	G.library = G.playback = G.playlist = G.plremove = 0;
 	G[ page ] = 1;
 	G.page = page;
