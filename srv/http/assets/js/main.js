@@ -231,9 +231,11 @@ $( '#colorok' ).click( function() {
 		var l = L * 100;
 	}
 	bash( [ 'color', h +' '+ s +' '+ l ] );
+	loader();
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
+	loader();
 } );
 $( '#colorcancel' ).click( function() {
 	G.color = 0;
