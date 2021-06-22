@@ -28,7 +28,7 @@ function bookmarkNew() {
 		} );
 		if ( $exist.length ) {
 			if ( $exist.find( '.fa-bookmark' ).length ) {
-				var msghtml = '<i class="fa fa-bookmark bookmark"></i>'
+				var msghtml = '<i class="fa fa-bookmark bookmark bl"></i>'
 							  +'<br><a class="bklabel">'+ $exist.find( '.bklabel' ).text() +'</a>'
 							  +'<br>'+ path;
 			} else {
@@ -69,7 +69,7 @@ function bookmarkIcon( path ) {
 		  icon       : 'bookmark'
 		, title      : 'Add Bookmark'
 		, width      : 500
-		, message    : '<i class="fa fa-bookmark bookmark"></i>'
+		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
 						+'<br><w>'+ path +'</w>'
 		, textlabel  : 'As:'
 		, values     : path.split( '/' ).pop()
