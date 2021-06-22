@@ -445,7 +445,7 @@ function psRelays( response ) { // on receive broadcast
 			, button      : function() {
 				bash( '/srv/http/bash/relays.sh false' );
 			}
-			, oklabel     : '<i class="fa fa-refresh"></i>Reset'
+			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
 			}
