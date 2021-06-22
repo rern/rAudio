@@ -223,7 +223,7 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
-		if ( cue && G.list.licover && values[ 1 ] ) values[ 2 ] = '*'; // cue - omit artist if album artist
+		if ( cue && G.list.licover && values[ 1 ] ) values[ 2 ] = '*'; // cue - if album artist > various artists
 		if ( G.playlist ) {
 			values.forEach( function( v, i ) {
 				if ( v === '' ) {
@@ -233,7 +233,6 @@ function tagEditor() {
 				}
 			} );
 		}
-		if ( cue && !G.list.licover ) format = [ 'artist', 'title' ]; // cue - omit track number from rdit
 		var mode, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
@@ -265,13 +264,17 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				if ( cue && G.list.licover ) {
-					$( '#infoContent input:eq( 1 )' ).keyup( function() {
-						if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '*' );
-					} );
-					$( '#infoContent input:eq( 2 )' ).keyup( function() {
-						if ( $( this ).val() ) $( '#infoContent input:eq( 1 )' ).val( '' );
-					} );
+				if ( cue ) {
+					if ( G.list.licover ) {
+						$( '#infoContent input:eq( 1 )' ).keyup( function() {
+							if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '' );
+						} );
+						$( '#infoContent input:eq( 2 )' ).keyup( function() {
+							if ( $( this ).val() ) $( '#infoContent input:eq( 1 )' ).val( '' );
+						} );
+					} else {
+						$( '#infoContent input:eq( 2 )' ).prop( 'disabled', 1 );
+					}
 				}
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
