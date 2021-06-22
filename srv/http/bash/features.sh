@@ -31,7 +31,7 @@ featureSet() {
 
 case ${args[0]} in
 
-aria2 | shairport-sync | spotifyd | transmission | upmpdcli )
+shairport-sync | spotifyd | upmpdcli )
 	service=${args[0]}
 	enable=${args[1]}
 	[[ $enable == true ]] && enable=enable || enable=disable
