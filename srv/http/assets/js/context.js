@@ -265,6 +265,14 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
+				if ( cue && G.list.licover ) {
+					$( '#infoContent input:eq( 1 )' ).keyup( function() {
+						if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '' );
+					} );
+					$( '#infoContent input:eq( 2 )' ).keyup( function() {
+						if ( $( this ).val() ) $( '#infoContent input:eq( 1 )' ).val( '' );
+					} );
+				}
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
