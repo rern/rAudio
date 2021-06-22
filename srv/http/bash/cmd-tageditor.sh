@@ -38,6 +38,7 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 ' "$path"
 	else
 		lines=( 'TITLE' 'PERFORMER' '' 'REM COMPOSER' 'REM CONDUCTOR' 'REM DATE' 'REM GENRE' )
+		[[ ${args[1]} == ${args[2]} ]] && args[1]=
 		for i in {0..6}; do
 			val=${args[$i]}
 			[[ -z $val ]] && continue
