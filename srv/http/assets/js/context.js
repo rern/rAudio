@@ -223,7 +223,7 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
-		if ( cue && G.list.licover && values[ 1 ] ) values[ 2 ] = ''; // cue - omit artist if album artist
+		if ( cue && G.list.licover && values[ 1 ] ) values[ 2 ] = '*'; // cue - omit artist if album artist
 		if ( G.playlist ) {
 			values.forEach( function( v, i ) {
 				if ( v === '' ) {
@@ -267,7 +267,7 @@ function tagEditor() {
 			, beforeshow   : function() {
 				if ( cue && G.list.licover ) {
 					$( '#infoContent input:eq( 1 )' ).keyup( function() {
-						if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '' );
+						if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '*' );
 					} );
 					$( '#infoContent input:eq( 2 )' ).keyup( function() {
 						if ( $( this ).val() ) $( '#infoContent input:eq( 1 )' ).val( '' );
@@ -381,7 +381,7 @@ function tagEditor() {
 				var newvalues = infoVal();
 				var val;
 				newvalues.forEach( function( v, i ) {
-					val = v === values[ i ] ? '' : ( v || -1 );
+					val = ( v === values[ i ] || v === '*' ) ? '' : ( v || -1 );
 					tag.push( val );
 				} );
 				banner( 'Tag Editor', 'Change tags ...', 'tag blink', -1 );
