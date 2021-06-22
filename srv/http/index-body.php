@@ -425,7 +425,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
 	<i id="colorcancel" class="fa fa-times"></i>
-	<a id="colorreset" class="infobtn"><i class="fa fa-undo"></i> Default</a>&ensp;
+	<a id="colorreset" class="infobtn"><i class="fa fa-set0"></i> Default</a>&ensp;
 	<a id="colorok" class="infobtn infobtn-primary"><i class="fa fa-check"></i> Set</a>
 	</div>
 </div>
