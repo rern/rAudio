@@ -148,6 +148,7 @@ case 'track': // for tag editor
 		}
 		$lists = exec( 'mpc playlist -f "'.$format.'" "'.$file.'" | '.$filter );
 		$array = explode( '^^', $lists );
+		if ( $array[ 1 ] ) $array [ 2 ] = '*'; // if album artist > various artists
 	} else {
 		if ( is_dir( '/mnt/MPD/'.$file ) ) {
 			$wav = exec( 'mpc ls "'.$file.'" | grep .wav$ | head -1' ); // MPD not read albumartist in *.wav

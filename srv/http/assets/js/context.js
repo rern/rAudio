@@ -223,7 +223,6 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
-		if ( cue && G.list.licover && values[ 1 ] ) values[ 2 ] = '*'; // cue - if album artist > various artists
 		if ( G.playlist ) {
 			values.forEach( function( v, i ) {
 				if ( v === '' ) {
