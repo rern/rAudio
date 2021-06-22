@@ -267,7 +267,7 @@ function tagEditor() {
 				if ( cue ) {
 					if ( G.list.licover ) {
 						$( '#infoContent input:eq( 1 )' ).keyup( function() {
-							if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '' );
+							if ( $( this ).val() ) $( '#infoContent input:eq( 2 )' ).val( '*' );
 						} );
 						$( '#infoContent input:eq( 2 )' ).keyup( function() {
 							if ( $( this ).val() ) $( '#infoContent input:eq( 1 )' ).val( '' );
