@@ -680,11 +680,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		volumeBarSet( pageX );
 	}
 } );
-$( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
-	if ( G.status.volumenone ) return
-	
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-} ).click( function() {
+$( '#volume-band-dn, #volume-band-up' ).click( function() {
 	hideGuide();
 	if ( G.status.volumenone ) return
 	
@@ -697,13 +693,13 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	} else {
 		if ( vol < 100 ) vol++;
 	}
+	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#vol'+ updn ).click();
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).taphold( function() {
 	if ( G.status.volumenone ) return
 	
-	G.hold = 1;
 	clearTimeout( G.volumebar );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var voldn = this.id === 'volume-band-dn';
@@ -720,12 +716,9 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 		volumeDrag( vol );
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
-	if ( G.hold ) {
-		G.hold = 0;
-		volumePushstream();
-		clearTimeout( G.intVolume );
-		volumeBarTimeout();
-	}
+	volumePushstream();
+	clearTimeout( G.intVolume );
+	volumeBarTimeout();
 } );
 $( '#volume-text' ).tap( function() {
 	$( '#volmute' ).click();
