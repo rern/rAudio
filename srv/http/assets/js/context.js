@@ -223,6 +223,7 @@ function tagEditor() {
 	if ( cue ) query.track = G.list.track || 'cover';
 	if ( G.playlist ) query.coverart = 1;
 	list( query, function( values ) {
+		if ( cue && G.list.licover && values[ 1 ] ) values[ 2 ] = ''; // cue - omit artist if album artist
 		if ( G.playlist ) {
 			values.forEach( function( v, i ) {
 				if ( v === '' ) {
@@ -232,6 +233,7 @@ function tagEditor() {
 				}
 			} );
 		}
+		if ( cue && !G.list.licover ) format = [ 'artist', 'title' ]; // cue - omit track number from rdit
 		var mode, label = [];
 		format.forEach( function( el, i ) {
 			mode = el
