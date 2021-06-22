@@ -546,7 +546,7 @@ i.map.disabled, .map.disabled i {
 	opacity: 0 !important;
 }
 .translucent {
-	opacity: 0.8 !important;
+	opacity: 0.6 !important;
 }
 #divcover {
 	margin: 0 auto;
