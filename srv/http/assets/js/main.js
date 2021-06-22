@@ -230,10 +230,7 @@ $( '#colorok' ).click( function() {
 		var s = 0;
 		var l = L * 100;
 	}
-	var hsl = h +' '+ s +' '+ l;
-	bash( [ 'color', hsl ] );
-	var hsl = h +','+ s +'%,'+ l +'%';
-	$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
+	bash( [ 'color', h +' '+ s +' '+ l ] );
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
