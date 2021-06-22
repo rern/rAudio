@@ -234,11 +234,9 @@ $( '#colorok' ).click( function() {
 	bash( [ 'color', hsl ] );
 	var hsl = h +','+ s +'%,'+ l +'%';
 	$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
-	banner( 'Color', 'Change ...', 'brush blink' );
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
-	banner( 'Color', 'Reset to default ...', 'brush blink' );
 } );
 $( '#colorcancel' ).click( function() {
 	G.color = 0;
