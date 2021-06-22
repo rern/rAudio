@@ -370,7 +370,6 @@ function tagEditor() {
 			, ok           : G.playlist ? '' : function() {
 				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				var newvalues = infoVal();
-				if ( newvalues[ 1 ] === newvalues[ 2 ] ) newvalues[ 1 ] = '';
 				var val;
 				newvalues.forEach( function( v, i ) {
 					val = ( v === values[ i ] ) ? '' : ( v || -1 );
