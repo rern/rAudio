@@ -156,7 +156,7 @@ function coverartChange() {
 						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault );
 	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
 	info( {
-		  icon        : 'coverart'
+		  icon        : '<i class="iconcover"></i>'
 		, title       : 'Change Album CoverArt'
 		, message     : '<img class="imgold">'
 					   +'<p class="infoimgname">'+ album
@@ -216,7 +216,7 @@ function coverartSave() {
 		var album = $( '.licover .lialbum' ).text();
 	}
 	info( {
-		  icon    : 'coverart'
+		  icon    : '<i class="iconcover"></i>'
 		, title   : 'Save Album CoverArt'
 		, message : '<img src="'+ src +'">'
 					+'<p class="infoimgname">'+ album
@@ -621,7 +621,7 @@ var chklibrary = {
 	, label          : 'Label'
 }
 var chklibrary2 = {
-	  albumbyartist  : '<i class="fa fa-coverart wh"></i>Sort Album by artists'
+	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'
 	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
@@ -1130,15 +1130,10 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
-			var html = '<span id="button-coverart"><i class="fa ';
-			if ( $img0.length ) {
-				html += 'fa-refresh albumrefresh"></i><img src="'+ $img0.data( 'src' ) +'" class="albumimg"></span>';
-				var defaultcover = 0;
-			} else {
-				html += 'fa-search albumrefresh"></i><i class="fa fa-coverart"></i>';
-				defaultcover = 1;
-			}
-			$( '#lib-breadcrumbs' ).append( html );
+			$( '#lib-breadcrumbs' ).append(
+				'<span id="button-coverart"><img src="'+ $img0.data( 'src' ) +'" class="albumimg">'
+				+'<i class="fa fa-'+ ( $img0.length ? 'refresh' : 'search' ) +'"></i></span>'
+			);
 		} else {
 			G.albumlist = 0;
 		}
@@ -1203,7 +1198,7 @@ function renderPlayback() {
 		.css( 'width', '' )
 		.removeClass( 'capitalize albumgray' );
 	$( '#coverart' ).css( 'opacity', '' );
-	$( '#divcover .fa-coverart' ).remove();
+	$( '#divcover .coveredit.coverart' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	$( '#artist, #title, #album' )

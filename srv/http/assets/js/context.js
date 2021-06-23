@@ -393,7 +393,7 @@ function webRadioCoverart() {
 					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
 	var radioicon = coverart === G.coverdefault;
 	info( {
-		  icon        : 'coverart'
+		  icon        : '<i class="iconcover"></i>'
 		, title       : 'WebRadio CoverArt'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 						+'<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>'
@@ -690,7 +690,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'thumb':
 			info( {
-				  icon    : 'coverart'
+				  icon    : '<i class="iconcover"></i>'
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'

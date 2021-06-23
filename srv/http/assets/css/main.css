@@ -158,6 +158,9 @@ i.map.disabled, .map.disabled i {
 .submenu.active {
 	background: var( --cgl );
 }
+.menu .iconcover {
+	margin: -4px 8px !important;
+}
 #settings .gr {
 	font-size: 22px;
 }
@@ -1378,14 +1381,19 @@ i.map.disabled, .map.disabled i {
 	background: var( --cw );
 	box-shadow: -1px 1px 2px #000000;
 }
-.coveredit.fa-coverart {
+.coveredit.coverart {
 	position: absolute;
 	width: 40px;
 	height: 40px;
 	bottom: 0;
 	right: 0;
-	font-size: 28px !important;
-	line-height: 40px;
+	padding: 8px;
+}
+.iconcover {
+	content: url( '/assets/img/coverart.svg' );
+	width: 24px !important;
+	margin: 0 !important;
+	border: 1px solid hsl(0,0%,30%);
 }
 .bkedit.fa-coverart {
 	position: absolute;
@@ -1395,11 +1403,9 @@ i.map.disabled, .map.disabled i {
 .contextmenu .fa-coverart {
 	position: relative;
 }
-#infoTop .fa-coverart {
-	position: static;
-}
-#infoTop .imgicon .fa-coverart {
-	top: 3px;
+#infoTop .iconcover {
+	margin-top: 5px !important;
+	width: 28px !important;
 }
 .infoimgname {
 	clear: both;
@@ -1481,22 +1487,16 @@ i.map.disabled, .map.disabled i {
 #button-coverart {
 	margin-left: 15px;
 }
-#button-coverart .fa-coverart {
-	position: relative;
-	vertical-align: -1px;
-}
-#button-coverart .fa-search {
-	width: 44px !important;
-	z-index: 18;
-}
-.albumrefresh {
+#button-coverart .albumimg {
 	position: absolute;
-	text-shadow: 0 0 4px #000000 !important;
+	top: 8px;
+	width: 28px !important;
+	border: 1px solid hsl(0,0%,30%);
 }
-.albumimg {
-	width: 30px;
-	margin-left: 5px;
-	vertical-align: -6px;
+#button-coverart i {
+	position: relative;
+	width: 30px !important;
+	text-shadow: 0 0 4px #000000 !important;
 }
 #mode-title,
 .pl-title {
