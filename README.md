@@ -104,8 +104,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 				- Waveshare 35b   - `lcd35b`
 				- Waveshare 35b v2   - `lcd35b-v2`
 				- Waveshare 35c   - `lcd35c`
-		- Custom startup script
-			- Copy custom script named `startup` to `BOOT`
+		- Custom startup / shutdown script
+			- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds
