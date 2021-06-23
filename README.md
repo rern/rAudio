@@ -39,7 +39,6 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Audio CD
 		- With metadata and coverarts
 		- Editable existing/missing metadata
-		- (separate power supply needed)
 	
 ### Default root password: `ros`
 
