@@ -43,6 +43,9 @@ ib {
 	color: var( --cm );
 	text-shadow: -2px 2px 4px #000000;
 }
+#infoIcon.fa-bookmark {
+	line-height: 32px;
+}
 .disable {
 	color: var( --cg60 );
 	pointer-events: none;
