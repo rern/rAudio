@@ -19,7 +19,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - USB DAC plug ang play
 - Supported GPIO devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
-	- Character LCD: 16x2, 20x4 and 40x4
+	- Character LCD (16x2, 20x4 and 40x4)
 	- TFT 3.5" LCD (320x420)
 	- Power on/off button
 	- Relay module (GPIO)
@@ -31,14 +31,14 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- UPnP
 - Streamers
 	- Bluetooth audio
-	- simple HTTP (no metadata)
-	- Snapcast
+	- HTTP (no metadata)
+	- Snapcast (multiroom)
 - Support boot from USB drive without SD card
 - USB drive
-	- plug ang play
+	- Plug and play
 	- Audio CD (with external power supply)
-		- with metadata and coverarts
-		- editable existing/missing metadata
+		- With metadata and coverarts
+		- Editable existing/missing metadata
 	
 ### Default root password: `ros`
 
