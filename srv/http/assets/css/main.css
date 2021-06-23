@@ -252,7 +252,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom i.active {
 	background: var( --cm );
 }
-#bar-bottom .fa-mpd:before {
+#bar-bottom .fa-mpd::before {
 	content: "\f507";
 }
 .renderer {
@@ -611,7 +611,7 @@ i.map.disabled, .map.disabled i {
 	transform-origin: 115px 220px;
 	transition-duration: 750ms;
 }
-#vu:before { /* glossy overlay */
+#vu::before { /* glossy overlay */
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -875,7 +875,7 @@ i.map.disabled, .map.disabled i {
 #page-playback .btn-group {
 	position: relative;
 }
-#page-playback .btn-group:before {
+#page-playback .btn-group::before {
 	position: absolute;
 	content: '';
 	top: 0;
@@ -970,15 +970,15 @@ i.map.disabled, .map.disabled i {
 .rs-outer {
 	position: relative; /* overlay */
 }
-.rs-outer:before {
+.rs-outer::before {
 	width: 220px;
 	height: 220px;
 }
 .rs-readonly {
 	z-index: 10;
 }
-.rs-outer:before,
-#time .rs-inner:before {
+.rs-outer::before,
+#time .rs-inner::before {
 	position: absolute;
 	content: '';
 	top: 5px;
@@ -987,10 +987,10 @@ i.map.disabled, .map.disabled i {
 	border-radius: 50%;
 	z-index: 5;
 }
-#time .rs-outer:before {
+#time .rs-outer::before {
 	background: none;
 }
-.rs-outer:after { /* glossy overlay */
+.rs-outer::after { /* glossy overlay */
 	position: absolute;
 	content: '';
 	border-radius: 50%;
@@ -1000,13 +1000,13 @@ i.map.disabled, .map.disabled i {
 									  /* x   y   w    h */
 	z-index: 6;
 }
-#time .rs-outer:after {
+#time .rs-outer::after {
 	top: 20px;
 	left: 20px;
 	width: 190px;
 	height: 190px;
 }
-#time .rs-inner:before { /* inner circle */
+#time .rs-inner::before { /* inner circle */
 	top: 4px;
 	left: 4px;
 	width: 182px;
@@ -1016,7 +1016,7 @@ i.map.disabled, .map.disabled i {
 	position: relative;
 	background: linear-gradient( var( --cg ), #000000 );
 }
-#volume .rs-outer:after {
+#volume .rs-outer::after {
 	top: 0;
 	left: 0;
 	width: 230px;
@@ -1254,7 +1254,7 @@ i.map.disabled, .map.disabled i {
 #lib-mode-list.barshidden {
 	padding: 50px 7px 7px 7px;
 }
-#lib-mode-list:after { /* fix 0 height */
+#lib-mode-list::after { /* fix 0 height */
 	content: " "; 
 	display: block;
 	clear: both;
@@ -1269,7 +1269,7 @@ i.map.disabled, .map.disabled i {
 #lib-mode-list.bars-off {
 	padding-top: 50px !important;
 }
-#lib-mode-list.bars-off:after {
+#lib-mode-list.bars-off::after {
 	height: 10px;
 }
 .lib-mode {
@@ -1830,7 +1830,7 @@ i.map.disabled, .map.disabled i {
 }
 .lib-icon,
 .pl-icon,
-#pl-savedlist span:before,
+#pl-savedlist span::before,
 #pl-savedlist i,
 #lib-list i {
 	width: 40px;
@@ -1897,7 +1897,7 @@ li.active .iconthumb {
 #countradio {
 	vertical-align: 5%;
 }
-#pl-list li:before {
+#pl-list li::before {
 	margin-top: 9px;
 }
 #lib-list li,
@@ -1986,7 +1986,7 @@ li.active .name bl {
 li.active .li2 bl {
 	color: var( --cw ) !important;
 }
-.lib-sortable-ghost .mode:after {
+.lib-sortable-ghost .mode::after {
 	position: absolute;
 	content: "\f609";
 	font-family: rern;
@@ -2013,7 +2013,7 @@ li.active .li2 bl {
 .pl-sortable-ghost .li2 {
 	color: var( --cg ) !important;
 }
-.pl-sortable-ghost:before {
+.pl-sortable-ghost::before {
 	position: absolute;
 	content: "\f608";
 	font-family: rern;
@@ -2346,7 +2346,7 @@ li.active .li2 bl {
 		margin: 0 5px;
 	}
 	#lib-list li span .fa,
-	#pl-savedlist span:before {
+	#pl-savedlist span::before {
 		display: none;
 	}
 	#lib-list li,
