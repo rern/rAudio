@@ -104,8 +104,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 				- Waveshare 35b   - `lcd35b`
 				- Waveshare 35b v2   - `lcd35b-v2`
 				- Waveshare 35c   - `lcd35c`
-		- Custom startup / shutdown script
-			- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
+
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds
@@ -172,5 +171,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- On Linux: `bash <( wget -qO - https://github.com/rern/rOS/raw/main/imagecreate.sh )`
 		- Shrink ROOT partition to minimum
 		- Create and compress image file
+- Custom startup / shutdown script
+	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
 - App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
