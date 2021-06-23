@@ -408,7 +408,8 @@ else
 fi
 
 ########
-sampling="$(( song + 1 ))/$playlistlength &bull; $sampling"
+pos="$(( song + 1 ))/$playlistlength"
+[[ -n $sampling ]] && sampling="$pos &bull; $sampling" || sampling=$pos
 status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
