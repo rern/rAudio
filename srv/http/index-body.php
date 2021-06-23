@@ -270,7 +270,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="timemap">
-				<i id="timeTL" class="map timemap fa fa-scale-dn"></i>
+				<i id="timeTL" class="map timemap"></i>
 				<i id="timeT" class="map timemap fa fa-guide"></i>
 				<i id="timeTR" class="map timemap fa fa-gear"></i>
 				<i id="timeL" class="map timemap fa fa-previous"></i>
