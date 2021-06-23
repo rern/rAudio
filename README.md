@@ -25,20 +25,21 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Relay module (GPIO)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
-	- Bluetooth audio
+	- Bluetooth audio (receiver)
 	- Snapcast
 	- Spotify Connect
 	- UPnP
 - Streamers
-	- Bluetooth audio
+	- Bluetooth audio (sender)
 	- HTTP (no metadata)
 	- Snapcast (multiroom)
 - Support boot from USB drive without SD card
 - USB drive
 	- Plug and play
-	- Audio CD (with external power supply)
+	- Audio CD
 		- With metadata and coverarts
 		- Editable existing/missing metadata
+		- (separate power supply needed)
 	
 ### Default root password: `ros`
 
