@@ -723,7 +723,7 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'click', '.coveredit', function( e ) {
+$( '#divcover' ).on( 'tap', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
@@ -1214,7 +1214,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		$this = $( this );
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+		buttonhtml += '<i class="bkedit bk-cover iconcover"></i>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )

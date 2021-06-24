@@ -44,7 +44,7 @@ ib {
 	text-shadow: -2px 2px 4px #000000;
 }
 #infoIcon.fa-bookmark {
-	line-height: 32px;
+	line-height: 34px;
 }
 .disable {
 	color: var( --cg60 );
@@ -1395,13 +1395,8 @@ i.map.disabled, .map.disabled i {
 	margin: 0 !important;
 	border: 1px solid hsl(0,0%,30%);
 }
-.bkedit.fa-coverart {
-	position: absolute;
-	height: 35px;
-	font-size: 24px !important;
-}
-.contextmenu .fa-coverart {
-	position: relative;
+.bkedit.iconcover {
+	margin: 0 5px 5px 0 !important;
 }
 #infoTop .iconcover {
 	margin-top: 5px !important;
@@ -2457,6 +2452,6 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .fa-coverart,
+	#divcover .iconcover,
 	#divcover .fa-save { top: 5px; }
 }
