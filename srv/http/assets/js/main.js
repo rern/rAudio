@@ -1080,8 +1080,12 @@ $( '.mode' ).click( function() {
 	G.query.push( query );
 } );
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
+	var bkedit = $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' );
 	$( '#lib-search-close' ).click();
-	if ( $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' )  ) {
+	if ( $( '.bkedit' ).length
+		&& !$( e.target ).hasClass( 'bkedit' )
+		&& !$( e.target ).hasClass( 'iconcover' )
+	) {
 		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
 		return
@@ -1114,7 +1118,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 				$this.find( '.bklabel' ).text( newname );
 			}
 		} );
-	} else if ( $target.hasClass( 'bk-cover' ) ) {
+	} else if ( $target.hasClass( 'bk-cover' ) || $target.hasClass( 'iconcover' ) ) {
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
@@ -1201,7 +1205,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		$this = $( this );
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<i class="bkedit bk-cover iconcover"></i>';
+		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
