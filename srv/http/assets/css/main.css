@@ -1485,18 +1485,20 @@ i.map.disabled, .map.disabled i {
 	text-overflow: ellipsis;
 }
 #button-coverart {
+	position:relative;
+	display: inline-block;
 	margin-left: 15px;
 }
-#button-coverart .albumimg {
+#button-coverart img {
 	position: absolute;
-	top: 8px;
-	width: 28px !important;
+	left: 12px;
+	top: 12px;
+	width: 16px;
 	border: 1px solid hsl(0,0%,30%);
 }
 #button-coverart i {
 	position: relative;
-	width: 30px !important;
-	text-shadow: 0 0 4px #000000 !important;
+	font-size: 26px !important;
 }
 #mode-title,
 .pl-title {

@@ -1130,10 +1130,7 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
-			$( '#lib-breadcrumbs' ).append(
-				'<span id="button-coverart"><img src="'+ $img0.data( 'src' ) +'" class="albumimg">'
-				+'<i class="fa fa-'+ ( $img0.length ? 'refresh' : 'search' ) +'"></i></span>'
-			);
+			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $img0.data( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
 		} else {
 			G.albumlist = 0;
 		}

@@ -183,6 +183,7 @@ input::-moz-focus-inner {
 .fa-reboot::before { content: "\f521" }
 .fa-redo::before { content: "\f524" }
 .fa-refresh::before { content: "\f526" }
+.fa-refresh-l::before { content: "\f52B" }
 .fa-refresh-library::before { content: "\f536" }
 .fa-relays::before { content: "\f522" }
 .fa-reload::before { content: "\f525" }
