@@ -593,12 +593,12 @@ nicespotify )
 	done
 	;;
 onlinefileslimit )
-	onlinefiles=$( ls -1t $dirtmp/online-*.* )
+	onlinefiles=$( ls -1t $dirtmp/online-*.* 2> /dev/null )
 	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
 		file=$( echo "$onlinefiles" | tail -1 )
 		rm -f "$file"
 	fi
-	onlinefiles=$( ls -1t $dirtmp/webradio-*.* )
+	onlinefiles=$( ls -1t $dirtmp/webradio-*.* 2> /dev/null )
 	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
 		file=$( echo "$onlinefiles" | tail -1 )
 		rm -f "$file" "${file:0:-4}"
