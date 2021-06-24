@@ -1082,13 +1082,12 @@ $( '.mode' ).click( function() {
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var bkedit = $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' );
 	$( '#lib-search-close' ).click();
-	if ( $( '.bkedit' ).length
-		&& !$( e.target ).hasClass( 'bkedit' )
-		&& !$( e.target ).hasClass( 'iconcover' )
-	) {
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
-		return
+	if ( G.bookmarkedit ) {
+		if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
+			$( '.bkedit' ).remove();
+			$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
+			return
+		}
 	}
 	
 	var $target = $( e.target );
@@ -1213,6 +1212,8 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', 0.33 );
 } ).on( 'tap', function( e ) {
+	if ( $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' ) ) return
+		
 	if ( G.bookmarkedit ) {
 		G.bookmarkedit = 0;
 		$( '.bkedit' ).remove();
