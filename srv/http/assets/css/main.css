@@ -1491,14 +1491,10 @@ i.map.disabled, .map.disabled i {
 }
 #button-coverart img {
 	position: absolute;
-	left: 12px;
-	top: 12px;
-	width: 16px;
+	left: 13px;
+	top: 13px;
+	width: 14px;
 	border: 1px solid hsl(0,0%,30%);
-}
-#button-coverart i {
-	position: relative;
-	font-size: 26px !important;
 }
 #mode-title,
 .pl-title {
