@@ -77,35 +77,33 @@ var keyboard = new Keyboard( {
 	}
 	, buttonTheme: narrowbuttontheme
 } );
-$( 'body' ).on( 'click', '.input', function() {
+$( 'body' ).on( 'click', 'input', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
 	$( '#infoContent input:text' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
-	$( '.hg-button-enter' ).toggleClass( 'disabled', $( '#infoOk' ).hasClass( 'disabled' ) );
 } );
 $( 'body' ).on( 'click touchstart', function( e ) {
 	if ( !$( '#keyboard' ).hasClass( 'hide' )
 		&& $( '#infoOverlay' ).hasClass( 'hide' )
 		&& !$( e.target ).parents( '#keyboard' ).length
 		&& e.target.id !== 'keyboard'
-		&& !$( e.target ).hasClass( 'input' )
+		&& !$( e.target ).is( 'input' )
 	) {
 		hideKeyboard( e.target.id );
 	}
 } );
 
 function onChange( value ) {
-	$( '.input.active' ).val( value );
-	if ( $( '.input.active' ).prop( 'id' ) === 'pl-search-input' ) {
+	$( 'input.active' ).val( value );
+	if ( $( 'input.active' ).prop( 'id' ) === 'pl-search-input' ) {
 		playlistFilter();
 	} else {
-		$( '#infotextbox input' ).trigger( 'input' );
+		$( '#infoContent input' ).trigger( 'keyup' );
 	}
-	$( '.hg-button-enter' ).toggleClass( 'disabled', $( '#infoOk' ).hasClass( 'disabled' ) );
 }
 function onKeyPress( key ) { // input value not yet changed until onChange
-	var id = $( '.input.active' ).prop( 'id' );
+	var id = $( 'input.active' ).prop( 'id' );
 	var layout = keyboard.options.layoutName;
 	if ( key === '{shift}' ) {
 		current = layout !== 'shift' ? 'shift' : 'alpha';
