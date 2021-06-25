@@ -388,9 +388,12 @@ function webRadioCoverart() {
 	var path = G.library ? G.list.path : G.status.file;
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
 	var imagefile = '/srv/http'+ radiopath; //no ext
-	var coverart = G.playback
-					? G.status.coverartradio || G.coverdefault
-					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
+	if ( G.playback ) {
+		var coverart = G.status.coverartradio || G.coverdefault;
+	} else {
+		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
+		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
+	}
 	var radioicon = coverart === G.coverdefault;
 	info( {
 		  icon        : '<i class="iconcover"></i>'
