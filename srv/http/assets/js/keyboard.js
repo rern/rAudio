@@ -79,7 +79,7 @@ var keyboard = new Keyboard( {
 } );
 $( 'body' ).on( 'click', 'input', function() {
 	$( '#keyboard' ).removeClass( 'hide' );
-	$( '#infoContent input:text' ).removeClass( 'active' );
+	$( '#infoContent input' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
 } );
