@@ -339,13 +339,12 @@ $( '#tab-playlist' ).click( function() {
 $( '#page-playback' ).tap( function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
+	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
 		if ( !$( e.target ).hasClass( '.coveredit.coverart' ) ) {
 			$( '#divcover .coveredit.coverart' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
-	} else if ( G.guide ) {
-		hideGuide();
 	}
 } );
 $( '#page-library, #page-playback, #page-playlist' ).click( function( e ) {
