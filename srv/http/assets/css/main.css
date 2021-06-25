@@ -1395,7 +1395,7 @@ i.map.disabled, .map.disabled i {
 	padding: 8px;
 }
 .iconcover {
-	content: url( '/assets/img/coverart.svg' );
+	content: url( '/assets/img/iconcover.svg' );
 	width: 24px !important;
 	margin: 0 !important;
 	border: 1px solid hsl(0,0%,30%);
