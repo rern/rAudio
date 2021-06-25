@@ -346,6 +346,7 @@ function displayPlayback() {
 		.toggleClass( 'disabled', G.status.volume == -1 );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
+	$( '#play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.webradio );
 	displayBars();
 }
 function displaySave( keys ) {

@@ -46,12 +46,16 @@ ib {
 #infoIcon.fa-bookmark {
 	line-height: 34px;
 }
-.disable {
-	color: var( --cg60 );
-	pointer-events: none;
-}
+.disable,
 .disabled {
 	pointer-events: none;
+}
+.disable {
+	color: var( --cg60 );
+}
+#play-group .disabled {
+	color: var( --cg60 ) !important;
+	background-color: var( --cga ) !important;
 }
 #divcolor .infobtn {
 	margin: 0;
@@ -889,11 +893,12 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 0 0 1px 1px var( --cga );
 	z-index: -10;
 }
-#repeat.btn-default.active,
-#random.btn-default.active,
-#single.btn-default.active,
+#play-group .btn.active,
 #volmute.btn-default.active {
 	background-color: var( --cm ) !important;
+}
+#play-group .active.disabled {
+	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
 #repeat, 

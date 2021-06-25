@@ -777,6 +777,8 @@ $( '.btn-cmd' ).click( function() {
 	var $this = $( this );
 	var cmd = this.id;
 	if ( $this.hasClass( 'btn-toggle' ) ) {
+		if ( G.status.webradio ) return
+		
 		var onoff = !G.status[ cmd ];
 		G.status[ cmd ] = onoff;
 		bash( [ 'mpcoption', cmd, onoff ] );
