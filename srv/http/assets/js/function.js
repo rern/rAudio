@@ -346,7 +346,6 @@ function displayPlayback() {
 		.toggleClass( 'disabled', G.status.volume == -1 );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
-	$( '#play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.webradio || !G.status.mpd );
 	displayBars();
 }
 function displaySave( keys ) {
@@ -1565,8 +1564,10 @@ function second2HMS( second ) {
 function setButtonControl() {
 	if ( G.bars ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].indexOf( G.status.player ) !== -1;
+		var noprevnext = G.status.playlistlength < 2 || !mpd_upnp;
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
-		$( '#previous, #next' ).toggleClass( 'hide', G.status.playlistlength < 2 || !mpd_upnp );
+		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
+		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 		$( '#pause' ).toggleClass( 'hide', G.status.webradio || G.status.player === 'airplay' );
 		$( '#playback-controls .btn' ).removeClass( 'active' );
@@ -1606,6 +1607,7 @@ function setButtonOptions() {
 	setButtonUpdateAddons();
 	setButtonUpdating();
 	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	$( '#play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.webradio || !G.status.mpd );
 }
 function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
