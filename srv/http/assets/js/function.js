@@ -1715,7 +1715,6 @@ function setPlaylistScroll() {
 			setTitleWidth();
 		}
 	}
-
 }
 function setRadioClass() {
 	$( '#artist, #title' ).toggleClass( 'capitalize', G.status.Artist !== '' );
