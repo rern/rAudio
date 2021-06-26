@@ -1717,7 +1717,6 @@ function setPlaylistScroll() {
 				.empty()
 				.css( 'max-width', '' );
 			$elapsed.empty();
-			setTitleWidth();
 		}
 	}
 }
