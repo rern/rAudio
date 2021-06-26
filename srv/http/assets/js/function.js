@@ -1690,6 +1690,8 @@ function setPlaylistScroll() {
 				$song.empty();
 				$( '.elapsed, .song' ).empty();
 			}
+			var elapsedL0 = 0;
+			var elapsedL = 0;
 			var time = $this.find( '.time' ).data( 'time' );
 			G.intElapsedPl = setInterval( function() {
 				G.status.elapsed++;
@@ -1704,7 +1706,11 @@ function setPlaylistScroll() {
 				} else {
 					elapsedtxt = second2HMS( G.status.elapsed );
 					$elapsed.html( '<i class="fa fa-play"></i>'+ elapsedtxt + slash );
-					setTitleWidth();
+					elapsedL = elapsedtxt.length;
+					if ( elapsedL > elapsedL0 ) {
+						elapsedL0 = elapsedL;
+						setTitleWidth();
+					}
 				}
 			}, 1000 );
 		} else { // stop
