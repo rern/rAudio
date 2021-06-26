@@ -314,7 +314,6 @@ i.map.disabled, .map.disabled i {
 #artist,
 #title,
 #album {
-	visibility: hidden; /* fix - flashed by scrollLongText() */
 	overflow: hidden;
 	position: relative;
 }

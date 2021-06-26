@@ -1514,8 +1514,7 @@ function scrollLongText() {
 	var wW = document.body.clientWidth;
 	var tWmax = 0;
 	$( '#title' ).removeClass( 'gr' );
-	$el.removeClass( 'scrollellipse' )
-		.each( function() {
+	$el.each( function() {
 		var $this = $( this );
 		var tW = $this.width() * G.scale;
 		if ( tW > wW * 0.98 ) {
@@ -1523,7 +1522,6 @@ function scrollLongText() {
 			$this.addClass( 'scrollleft' );
 		}
 	} );
-	$el.css( 'visibility', 'visible' ); // from initial hidden
 	if ( !tWmax ) return
 	
 	// varied width only when scaled
@@ -1536,6 +1534,7 @@ function scrollLongText() {
 	} );
 	if ( !G.localhost ) return
 	
+	$el.removeClass( 'scrollellipse' );
 	$( '.scrollleft' )
 		.css( 'animation-iteration-count', 1 )
 		.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
@@ -1651,7 +1650,6 @@ function setPlaylistScroll() {
 		|| !G.status.playlistlength
 		|| G.sortable ) return // skip if empty or Sortable
 	
-	if ( G.status.state !== 'stop' ) setTitleWidth();
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	if ( $( '#pl-list li' ).length < G.status.song + 1 ) return // on eject cd G.status.song not yet refreshed
 	
@@ -1712,8 +1710,6 @@ function setPlaylistScroll() {
 					}
 				}
 			}, 1000 );
-		} else { // stop
-			$this.find( '.elapsed, .song' ).empty();
 		}
 	}
 }
