@@ -16,9 +16,7 @@ onVisibilityChange( function( visible ) {
 	if ( visible ) {
 		pushstream.connect();
 	} else {
-		clearIntervalAll();
 		pushstream.disconnect();
-		if ( G.playback ) $( '.scrollleft' ).removeAttr( 'class style' ).css( 'transform', 'translateX( calc( 100vW + 15px ) )' );
 	}
 } );
 window.addEventListener( 'orientationchange', function() {
@@ -77,6 +75,8 @@ pushstream.onstatuschange = function( status ) {
 		bannerHide();
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
+		clearIntervalAll();
+		if ( G.playback ) $( '.scrollleft' ).removeAttr( 'class style' ).css( 'transform', 'translateX( calc( 100vW + 15px ) )' );
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
