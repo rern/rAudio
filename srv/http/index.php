@@ -32,17 +32,10 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-		<?php if ( $localhost ) { ?> 
-	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
-		<?php } ?>
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/roundslider.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/banner.<?=$time?>.css">
-		<?php if ( $desktop ) { ?> 
-	<link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
-		<?php } ?>
 </head>
 <body>
 
@@ -65,12 +58,13 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/lyrics.<?=$time?>.js"></script>
 	<?php if ( $desktop ) { ?>
+<link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
 <script src="/assets/js/shortcut.<?=$time?>.js"></script>
 	<?php } ?>
 	<?php if ( $localhost ) { ?>
-<input class="input hide">
+<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
+<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
 <div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
-
 <script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
 <script src="/assets/js/keyboard.<?=$time?>.js"></script>
 	<?php } ?>
