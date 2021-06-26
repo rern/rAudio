@@ -18,6 +18,7 @@ onVisibilityChange( function( visible ) {
 	} else {
 		clearIntervalAll();
 		pushstream.disconnect();
+		if ( G.playback ) $( '.scrollleft' ).removeAttr( 'class style' ).css( 'transform', 'translateX( calc( 100vW + 15px ) )' );
 	}
 } );
 window.addEventListener( 'orientationchange', function() {
