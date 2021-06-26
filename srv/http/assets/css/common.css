@@ -100,12 +100,14 @@ input::-moz-focus-inner {
 .fa-arrow-up::before { content: "\f600" }
 .fa-artist::before { content: "\f556" }
 .fa-audiocd::before { content: "\f538" }
+.fa-backspace:before { content: "\f60C" }
 .fa-bars::before { content: "\f51C" }
 .fa-bio::before { content: "\f51D" }
 .fa-bookmark::before { content: "\f550" }
 .fa-bluetooth::before { content: "\f595" }
 .fa-bluetooth-client::before { content: "\f596" }
 .fa-brush::before { content: "\f536" }
+.fa-capslock:before { content: "\f60B" }
 .fa-check::before { content: "\f51B" }
 .fa-chevron-down::before { content: "\f605" }
 .fa-chevron-up::before { content: "\f604" }
@@ -137,6 +139,7 @@ input::-moz-focus-inner {
 .fa-globe::before { content: "\f575" }
 .fa-gpiopins::before { content: "\f572" }
 .fa-guide::before { content: "\f579" }
+.fa-hide:before { content: "\f575" }
 .fa-i2saudio::before { content: "\f571" }
 .fa-info-circle::before { content: "\f561" }
 .fa-input::before { content: "\f529" }
@@ -202,6 +205,7 @@ input::-moz-focus-inner {
 .fa-sd::before { content: "\f543" }
 .fa-search::before { content: "\f56A" }
 .fa-set0::before { content: "\f515" }
+.fa-shift:before { content: "\f60A" }
 .fa-shuffle::before { content: "\f513" }
 .fa-single::before { content: "\f514" }
 .fa-sliders::before { content: "\f50B" }
