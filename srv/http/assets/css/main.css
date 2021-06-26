@@ -1029,9 +1029,6 @@ i.map.disabled, .map.disabled i {
 @keyframes blinkdot {
 	50% { opacity: 0 }
 }
-@-webkit-keyframes blinkdot { /* midori */
-	50% { opacity: 0 }
-}
 .dot {
 	animation: 1s blinkdot infinite;
 	-webkit-animation: 1s blinkdot infinite;
