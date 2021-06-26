@@ -1765,7 +1765,9 @@ function switchPage( page ) {
 		} else {
 			G.modescrolltop = $( window ).scrollTop();
 		}
-	} else if ( G.playlist ) {
+	} else if ( G.playback ) {
+		$( '.scrollleft' ).removeAttr( 'class style' ).css( 'transform', 'translateX( calc( 100vW + 15px ) )' );
+	} else {
 		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
