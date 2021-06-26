@@ -1688,7 +1688,6 @@ function setPlaylistScroll() {
 			} else {
 				$name.removeClass( 'hide' );
 				$song.empty();
-				$( '.elapsed, .song' ).empty();
 			}
 			var elapsedL0 = 0;
 			var elapsedL = 0;
