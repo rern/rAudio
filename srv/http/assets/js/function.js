@@ -1195,7 +1195,7 @@ function renderPlayback() {
 		.css( 'width', '' )
 		.removeClass( 'capitalize albumgray' );
 	$( '#coverart' ).css( 'opacity', '' );
-	$( '#divcover .coveredit.coverart' ).remove();
+	$( '#divcover .coveredit.cover' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	$( '#artist, #title, #album' )

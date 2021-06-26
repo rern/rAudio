@@ -1374,7 +1374,7 @@ i.map.disabled, .map.disabled i {
 	background: var( --cw );
 	box-shadow: -1px 1px 2px #000000;
 }
-.coveredit.coverart {
+.coveredit.cover {
 	position: absolute;
 	width: 40px;
 	height: 40px;

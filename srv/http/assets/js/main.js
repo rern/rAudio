@@ -341,8 +341,8 @@ $( '#page-playback' ).tap( function( e ) {
 	
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
-		if ( !$( e.target ).hasClass( '.coveredit.coverart' ) ) {
-			$( '#divcover .coveredit.coverart' ).remove();
+		if ( !$( e.target ).hasClass( '.coveredit.cover' ) ) {
+			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 	}
@@ -360,7 +360,7 @@ $( '#settings' ).click( function() {
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.library ) {
-		$( '.licover .coveredit.coverart' ).remove();
+		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		$( '#lib-list li' ).removeClass( 'active' );
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
@@ -605,7 +605,7 @@ $( '.covermap' ).taphold( function( e ) {
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<div class="coveredit coverart"><i class="iconcover"></i></div>' );
+		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -783,7 +783,7 @@ $( '.btn-cmd' ).click( function() {
 		local( 600 );
 	} else {
 		if ( G.status.webradio ) {
-			$( '#divcover .coveredit.coverart' ).remove();
+			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd !== 'play' ) clearIntervalAll();
@@ -1250,7 +1250,7 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 		} );
 	}
 } );
-$( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
+$( '#lib-list' ).on( 'tap', '.coverart', function() {
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
@@ -1289,14 +1289,14 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<div class="coveredit coverart"><i class="iconcover"></i></div>' );
+		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
 	var $target = $( e.target );
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( '.coverart' ) ) return
 	
-	$( '.licover .coveredit.coverart' ).remove();
+	$( '.licover .coveredit.cover' ).remove();
 	$( '.licover img' ).css( 'opacity', '' );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
