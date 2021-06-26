@@ -1713,10 +1713,7 @@ function setPlaylistScroll() {
 				}
 			}, 1000 );
 		} else { // stop
-			$song
-				.empty()
-				.css( 'max-width', '' );
-			$elapsed.empty();
+			$this.find( '.elapsed, .song' ).empty();
 		}
 	}
 }
@@ -1734,11 +1731,7 @@ function setTitleWidth() {
 	var titleW = $title.scrollWidth;
 	var iWdW = 40 + 10 + $duration.width() + 9;
 	var wW = document.body.clientWidth;
-	if ( iWdW + titleW < wW ) {
-		$title.css(  'max-width', '' );
-	} else {
-		$title.css( 'max-width', wW - iWdW +'px' );
-	}
+	$title.css(  'max-width', iWdW + titleW < wW ? '' : wW - iWdW +'px' );
 }
 function setTrackCoverart() {
 	if ( G.display.hidecover || !$( '#liimg' ).length ) return
