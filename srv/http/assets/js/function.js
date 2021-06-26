@@ -1205,9 +1205,8 @@ function renderPlayback() {
 	$( '#title' )
 		.html( G.status.Title )
 		.toggleClass( 'gr', G.status.state === 'pause' );
-	$( '#album' ).html( G.status.Album ).promise().done( function() {
-		scrollLongText();
-	} );
+	$( '#album' ).html( G.status.Album );
+	scrollLongText();
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
 		if ( G.status.state === 'play' && G.status.Album !== '' ) { // radioparadise or radiofrance
