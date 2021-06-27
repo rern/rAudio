@@ -1617,7 +1617,7 @@ function setPlaybackTitles( orientationchange ) {
 	} );
 	if ( !tWmax ) return
 	
-	$( '.scrollleft' ).css( { // same with and speed
+	$( '.scrollleft' ).css( { // same width and speed
 		  width     : tWmax +'px'
 		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'
 	} );
