@@ -1618,13 +1618,9 @@ function setPlaybackTitles( orientationchange ) {
 	} );
 	if ( !tWmax ) return
 	
-	// varied width only when scaled
-	var cssanimate = ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
 	$( '.scrollleft' ).css( {
 		  'width '              : tWmax +'px'
-		, 'animation'           : cssanimate
-		, '-moz-animation'      : cssanimate
-		, '-webkit-animation'   : cssanimate
+		, 'animation'           : ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear' // calculate to same speed
 	} );
 	if ( !G.localhost ) return
 	
