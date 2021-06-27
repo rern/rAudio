@@ -1215,7 +1215,7 @@ function renderPlayback() {
 			if ( !G.status.Artist && !G.status.Title ) $( '#artist' ).text( G.status.station );
 			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
 			if ( !G.status.Album ) $( '#album' ).text( G.status.Artist ? G.status.station : G.status.file );
-			if ( !G.status.Title || G.status.Title !== G.prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+			if ( !G.status.Title || G.status.Title.toLowerCase() !== G.prevtitle.toLowerCase() ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			if ( G.display.radioelapsed || G.localhost ) {
@@ -1590,22 +1590,22 @@ function setPlaybackTitles( orientationchange ) {
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
+	if ( G.status.Artist.toLowerCase() === G.prevartist.toLowerCase()
+		&& G.status.Title.toLowerCase() === G.prevtitle.toLowerCase()
+		&& G.status.Album.toLowerCase() === G.prevalbum.toLowerCase()
+		&& !orientationchange
+		&& !G.localhost
+	) return
+	
 	$( '#artist' ).html( G.status.Artist );
 	$( '#title' )
 		.html( G.status.Title )
 		.toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).html( G.status.Album );
-	if ( G.status.Artist === G.prevartist
-		&& G.status.Title === G.prevtitle
-		&& G.status.Album === G.prevalbum
-		&& !orientationchange
-		&& !G.localhost
-	) return
-	
 	$( '.scrollleft' ).removeAttr( 'class style' );
+	if ( G.status.webradio ) setRadioTitles();
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	var $el = $( '#artist, #title, #album' );
-	$el.removeClass( 'capitalize albumgray' );
 	var wW = document.body.clientWidth;
 	var tWmax = 0;
 	$el.each( function() {
@@ -1709,7 +1709,8 @@ function setPlaylistScroll() {
 	}
 }
 function setRadioTitles() {
-	$( '#artist, #title' ).toggleClass( 'capitalize', G.status.Artist !== '' );
+	$( '#artist' ).toggleClass( 'capitalize', G.status.Artist !== '' );
+	$( '#title' ).toggleClass( 'capitalize', G.status.Title !== '' );
 	$( '#album' )
 		.toggleClass( 'albumgray', G.status.Album === '' ) // gray text
 		.toggleClass( 'capitalize', G.status.Album !== '' );
