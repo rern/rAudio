@@ -306,8 +306,8 @@ function psMpdPlayer( data ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
 				setPlaybackTitles();
-				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				setRadioTitles();
+				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			} else {
 				renderPlayback();
