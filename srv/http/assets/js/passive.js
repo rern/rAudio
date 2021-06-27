@@ -23,7 +23,9 @@ window.addEventListener( 'orientationchange', function() {
 	if ( G.playback ) $( '#page-playback' ).addClass( 'hide' );
 	setTimeout( function() {
 		if ( G.playback ) {
-			setTimeout( setPlaybackTitles, 300 );
+			setTimeout( function() {
+				setPlaybackTitles( 'orientationchange' );
+			}, 300 );
 			$( '#page-playback' ).removeClass( 'hide' );
 			if ( G.status.state === 'play' ) {
 				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {

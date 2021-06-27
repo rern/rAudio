@@ -1587,11 +1587,10 @@ function setButtonUpdating() {
 							.addClass( 'fa-library' );
 	}
 }
-function setPlaybackTitles() {
+function setPlaybackTitles( orientationchange ) {
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
-	$( '#artist, #title, #album' ).removeClass( 'capitalize albumgray' );
 	$( '#artist' ).html( G.status.Artist );
 	$( '#title' )
 		.html( G.status.Title )
@@ -1600,14 +1599,16 @@ function setPlaybackTitles() {
 	if ( G.status.Artist === G.prevartist
 		&& G.status.Title === G.prevtitle
 		&& G.status.Album === G.prevalbum
+		&& !orientationchange
 		&& !G.localhost
 	) return
 	
 	$( '.scrollleft' ).removeAttr( 'class style' );
+	$( '#title' ).removeClass( 'gr' );
 	var $el = $( '#artist, #title, #album' );
+	$el.removeClass( 'capitalize albumgray' );
 	var wW = document.body.clientWidth;
 	var tWmax = 0;
-	$( '#title' ).removeClass( 'gr' );
 	$el.each( function() {
 		var $this = $( this );
 		var tW = $this.width() * G.scale;
