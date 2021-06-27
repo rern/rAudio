@@ -1183,7 +1183,6 @@ function renderPlayback() {
 		return
 	}
 	
-	// artist-title-album before update for change detection
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	setPlaybackTitles();
