@@ -1618,8 +1618,8 @@ function setPlaybackTitles( orientationchange ) {
 	if ( !tWmax ) return
 	
 	$( '.scrollleft' ).css( { // same with and speed
-		  'width '              : tWmax +'px'
-		, 'animation'           : ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'
+		  width     : tWmax +'px'
+		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'
 	} );
 	if ( !G.localhost ) return
 	
@@ -1628,8 +1628,8 @@ function setPlaybackTitles( orientationchange ) {
 		.css( 'animation-iteration-count', 1 )
 		.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
 		$( this ).css( {
-			  width               : ''
-			, animation           : ''
+			  width     : ''
+			, animation : ''
 		} ).removeClass( 'scrollleft' ).addClass( 'scrollellipse' );
 			
 	} );
