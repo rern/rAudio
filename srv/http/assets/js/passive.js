@@ -23,7 +23,7 @@ window.addEventListener( 'orientationchange', function() {
 	if ( G.playback ) $( '#page-playback' ).addClass( 'hide' );
 	setTimeout( function() {
 		if ( G.playback ) {
-			setTimeout( scrollLongText, 300 );
+			setTimeout( setPlaybackTitles, 300 );
 			$( '#page-playback' ).removeClass( 'hide' );
 			if ( G.status.state === 'play' ) {
 				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
@@ -76,7 +76,6 @@ pushstream.onstatuschange = function( status ) {
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
-		if ( G.playback ) $( '.scrollleft' ).removeAttr( 'class style' ).css( 'transform', 'translateX( calc( 100vW + 15px ) )' );
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
@@ -180,7 +179,7 @@ function psCoverart( data ) {
 					}
 					$( '#album' ).text( data.Album );
 					$( '#sampling' ).html( sampling );
-					setRadioClass();
+					setRadioTitles();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -306,12 +305,9 @@ function psMpdPlayer( data ) {
 		} else if ( G.playback ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
-				$( '#artist' ).html( G.status.Artist );
-				$( '#title' ).html( G.status.Title || blinkdot );
-				$( '#album' ).html( G.status.Album );
+				setPlaybackTitles();
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-				setRadioClass();
-				scrollLongText();
+				setRadioTitles();
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			} else {
 				renderPlayback();

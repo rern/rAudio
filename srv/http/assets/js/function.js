@@ -1173,40 +1173,20 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	// artist-title-album before update for change detection
-	var previousartist = $( '#artist' ).text();
-	var prevtitle = $( '#title' ).text();
-	var previousalbum = $( '#album' ).text();
-	// volume
 	if ( !G.display.volumenone &&  G.display.volume ) {
 		$volumeRS.setValue( G.status.volume );
 		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	}
-	// empty queue
-	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) {
+	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		renderPlaybackBlank();
 		return
 	}
 	
+	// artist-title-album before update for change detection
 	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '.emptyadd' ).addClass( 'hide' );
-	$( '#artist, #title, #album' )
-		.css( 'width', '' )
-		.removeClass( 'capitalize albumgray' );
-	$( '#coverart' ).css( 'opacity', '' );
-	$( '#divcover .coveredit.cover' ).remove();
-	$( '#coverTR' ).removeClass( 'empty' );
-	$( '#qrwebui, #qrip' ).empty();
-	$( '#artist, #title, #album' )
-		.removeClass( 'scrollleft' )
-		.removeAttr( 'style' ); // fix - iOS needs whole style removed
-	$( '#artist' ).html( G.status.Artist );
-	$( '#title' )
-		.html( G.status.Title )
-		.toggleClass( 'gr', G.status.state === 'pause' );
-	$( '#album' ).html( G.status.Album );
-	scrollLongText();
+	setPlaybackTitles();
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
 		if ( G.status.state === 'play' && G.status.Album !== '' ) { // radioparadise or radiofrance
@@ -1216,6 +1196,10 @@ function renderPlayback() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
+	$( '#coverart' ).css( 'opacity', '' );
+	$( '#divcover .coveredit.cover' ).remove();
+	$( '#coverTR' ).removeClass( 'empty' );
+	$( '#qrwebui, #qrip' ).empty();
 	var displaytime = $( '#time-knob' ).is( ':visible' );
 	// webradio ////////////////////////////////////////
 	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) !== -1 ) {
@@ -1228,7 +1212,7 @@ function renderPlayback() {
 			$( '#album' ).text( G.status.file );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
-			if ( !G.status.Title || G.status.Title !== prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+			if ( !G.status.Title || G.status.Title !== G.prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !G.status.Artist ) $( '#artist' ).text( G.status.station );
 			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
 			if ( !G.status.Album ) $( '#album' ).text( G.status.Artist ? G.status.station : G.status.file );
@@ -1250,13 +1234,13 @@ function renderPlayback() {
 				}
 			}
 		}
-		setRadioClass();
+		setRadioTitles();
 		return
 	}
 	
 	// others ////////////////////////////////////////
-	if ( G.status.Artist !== previousartist
-		|| G.status.Album !== previousalbum
+	if ( G.status.Artist !== G.prevartist
+		|| G.status.Album !== G.prevalbum
 		|| G.status.player === 'airplay' ) renderPlaybackCoverart( G.status.coverart );
 	// time
 	time = 'Time' in G.status ? G.status.Time : '';
@@ -1508,44 +1492,6 @@ function resetOrientation( file, ori, callback ) {
 	}
 	reader.readAsDataURL( file );
 }
-function scrollLongText() {
-	var $el = $( '#artist, #title, #album' );
-	var wW = document.body.clientWidth;
-	var tWmax = 0;
-	$( '#title' ).removeClass( 'gr' );
-	$el.each( function() {
-		var $this = $( this );
-		var tW = $this.width() * G.scale;
-		if ( tW > wW * 0.98 ) {
-			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
-			$this.addClass( 'scrollleft' );
-		}
-	} );
-	if ( !tWmax ) return
-	
-	// varied width only when scaled
-	var cssanimate = ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
-	$( '.scrollleft' ).css( {
-		  'width '            : tWmax +'px'
-		, 'animation'         : cssanimate
-		, '-moz-animation'    : cssanimate
-		, '-webkit-animation' : cssanimate
-	} );
-	if ( !G.localhost ) return
-	
-	$el.removeClass( 'scrollellipse' );
-	$( '.scrollleft' )
-		.css( 'animation-iteration-count', 1 )
-		.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
-		$( this ).css( {
-			  width               : ''
-			, animation           : ''
-			, '-moz-animation'    : ''
-			, '-webkit-animation' : ''
-		} ).removeClass( 'scrollleft' ).addClass( 'scrollellipse' );
-			
-	} );
-}
 function second2HMS( second ) {
 	if ( second <= 0 ) return 0;
 	
@@ -1641,6 +1587,60 @@ function setButtonUpdating() {
 							.addClass( 'fa-library' );
 	}
 }
+function setPlaybackTitles() {
+	G.prevartist = $( '#artist' ).text();
+	G.prevtitle = $( '#title' ).text();
+	G.prevalbum = $( '#album' ).text();
+	$( '#artist, #title, #album' ).removeClass( 'capitalize albumgray' );
+	$( '#artist' ).html( G.status.Artist );
+	$( '#title' )
+		.html( G.status.Title )
+		.toggleClass( 'gr', G.status.state === 'pause' );
+	$( '#album' ).html( G.status.Album );
+	if ( G.status.Artist === G.prevartist
+		&& G.status.Title === G.prevtitle
+		&& G.status.Album === G.prevalbum
+		&& !G.localhost
+	) return
+	
+	$( '.scrollleft' ).removeAttr( 'class style' );
+	var $el = $( '#artist, #title, #album' );
+	var wW = document.body.clientWidth;
+	var tWmax = 0;
+	$( '#title' ).removeClass( 'gr' );
+	$el.each( function() {
+		var $this = $( this );
+		var tW = $this.width() * G.scale;
+		if ( tW > wW * 0.98 ) {
+			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
+			$this.addClass( 'scrollleft' );
+		}
+	} );
+	if ( !tWmax ) return
+	
+	// varied width only when scaled
+	var cssanimate = ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
+	$( '.scrollleft' ).css( {
+		  'width '            : tWmax +'px'
+		, 'animation'         : cssanimate
+		, '-moz-animation'    : cssanimate
+		, '-webkit-animation' : cssanimate
+	} );
+	if ( !G.localhost ) return
+	
+	$el.removeClass( 'scrollellipse' );
+	$( '.scrollleft' )
+		.css( 'animation-iteration-count', 1 )
+		.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
+		$( this ).css( {
+			  width               : ''
+			, animation           : ''
+			, '-moz-animation'    : ''
+			, '-webkit-animation' : ''
+		} ).removeClass( 'scrollleft' ).addClass( 'scrollellipse' );
+			
+	} );
+}
 function setPlaylistScroll() {
 	if ( !G.playlist
 		|| G.plremove
@@ -1712,7 +1712,7 @@ function setPlaylistScroll() {
 		}
 	}
 }
-function setRadioClass() {
+function setRadioTitles() {
 	$( '#artist, #title' ).toggleClass( 'capitalize', G.status.Artist !== '' );
 	$( '#album' )
 		.toggleClass( 'albumgray', G.status.Album === '' ) // gray text
@@ -1765,9 +1765,7 @@ function switchPage( page ) {
 		} else {
 			G.modescrolltop = $( window ).scrollTop();
 		}
-	} else if ( G.playback ) {
-		$( '.scrollleft' ).removeAttr( 'class style' ).css( 'transform', 'translateX( calc( 100vW + 15px ) )' );
-	} else {
+	} else if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
 	}
 	$( '.page, .menu' ).addClass( 'hide' );

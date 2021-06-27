@@ -377,7 +377,7 @@ $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).click( function() {
-	if ( G.localhost ) scrollLongText();
+	if ( G.localhost ) setPlaybackTitles();
 } );
 $( '.emptyadd' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'fa-plus-circle' ) ) {
