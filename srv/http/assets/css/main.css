@@ -380,9 +380,6 @@ i.map.disabled, .map.disabled i {
 	text-overflow: ellipsis;
 	visibility: visible !important;
 }
-.scrollleft {
-	backface-visibility : hidden; /* for less flickering */
-}
 @keyframes scrollleft {
 	0%   { transform : translateX( 100vW ) } /* move to right 100vw */
 	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */

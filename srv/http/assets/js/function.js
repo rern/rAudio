@@ -1263,7 +1263,6 @@ function renderPlayback() {
 	}
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	if ( !( 'elapsed' in G.status ) || G.status.elapsed > G.status.Time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 		return
@@ -1604,7 +1603,7 @@ function setPlaybackTitles( orientationchange ) {
 	) return
 	
 	$( '.scrollleft' ).removeAttr( 'class style' );
-	$( '#title' ).removeClass( 'gr' );
+	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	var $el = $( '#artist, #title, #album' );
 	$el.removeClass( 'capitalize albumgray' );
 	var wW = document.body.clientWidth;
@@ -1622,10 +1621,10 @@ function setPlaybackTitles( orientationchange ) {
 	// varied width only when scaled
 	var cssanimate = ( wW + G.tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
 	$( '.scrollleft' ).css( {
-		  'width '            : G.tWmax +'px'
-		, 'animation'         : cssanimate
-		, '-moz-animation'    : cssanimate
-		, '-webkit-animation' : cssanimate
+		  'width '              : G.tWmax +'px'
+		, 'animation'           : cssanimate
+		, '-moz-animation'      : cssanimate
+		, '-webkit-animation'   : cssanimate
 	} );
 	if ( !G.localhost ) return
 	
