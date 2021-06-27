@@ -1630,8 +1630,6 @@ function setPlaybackTitles( orientationchange ) {
 		$( this ).css( {
 			  width               : ''
 			, animation           : ''
-			, '-moz-animation'    : ''
-			, '-webkit-animation' : ''
 		} ).removeClass( 'scrollleft' ).addClass( 'scrollellipse' );
 			
 	} );
