@@ -1672,7 +1672,7 @@ function setPlaylistScroll() {
 			if ( G.status.webradio ) {
 				$name.addClass( 'hide' );
 				$this.find( '.li2 .radioname' ).removeClass( 'hide' );
-				$song.html( G.status.Title || blinkdot );
+				$song.html( G.status.Title || '·&ensp;·&ensp;·' );
 			} else {
 				$name.removeClass( 'hide' );
 				$song.empty();
