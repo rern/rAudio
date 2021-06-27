@@ -1627,12 +1627,10 @@ function setPlaybackTitles( orientationchange ) {
 	$( '.scrollleft' )
 		.css( 'animation-iteration-count', 1 )
 		.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
-		$( this ).css( {
-			  width     : ''
-			, animation : ''
-		} ).removeClass( 'scrollleft' ).addClass( 'scrollellipse' );
-			
-	} );
+			$( this )
+				.removeAttr( 'class style' )
+				.addClass( 'scrollellipse' );
+		} );
 }
 function setPlaylistScroll() {
 	if ( !G.playlist
