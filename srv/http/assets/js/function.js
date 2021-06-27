@@ -1608,21 +1608,21 @@ function setPlaybackTitles( orientationchange ) {
 	var $el = $( '#artist, #title, #album' );
 	$el.removeClass( 'capitalize albumgray' );
 	var wW = document.body.clientWidth;
-	var tWmax = 0;
+	G.tWmax = 0;
 	$el.each( function() {
 		var $this = $( this );
 		var tW = $this.width() * G.scale;
 		if ( tW > wW * 0.98 ) {
-			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
+			if ( tW > G.tWmax ) G.tWmax = tW; // same width > scroll together (same speed)
 			$this.addClass( 'scrollleft' );
 		}
 	} );
-	if ( !tWmax ) return
+	if ( !G.tWmax ) return
 	
 	// varied width only when scaled
-	var cssanimate = ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
+	var cssanimate = ( wW + G.tWmax ) / G.scrollspeed +'s infinite scrollleft linear'; // calculate to same speed
 	$( '.scrollleft' ).css( {
-		  'width '            : tWmax +'px'
+		  'width '            : G.tWmax +'px'
 		, 'animation'         : cssanimate
 		, '-moz-animation'    : cssanimate
 		, '-webkit-animation' : cssanimate

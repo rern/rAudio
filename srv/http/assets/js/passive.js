@@ -24,7 +24,7 @@ window.addEventListener( 'orientationchange', function() {
 	setTimeout( function() {
 		if ( G.playback ) {
 			setTimeout( function() {
-				setPlaybackTitles( 'orientationchange' );
+				if ( G.tWmax > document.body.clientWidth * 0.98 ) setPlaybackTitles( 'orientationchange' );
 			}, 300 );
 			$( '#page-playback' ).removeClass( 'hide' );
 			if ( G.status.state === 'play' ) {
