@@ -61,7 +61,7 @@ else
 	urlname=/data/shm/$prefix-$name
 fi
 coverfile=/srv/http$urlname.$ext
-curl -s $url -o $coverfile
+curl -sL $url -o $coverfile
 [[ ! -e $coverfile ]] && exit
 
 if [[ $type == webradio ]]; then

@@ -28,7 +28,7 @@ function bookmarkNew() {
 		} );
 		if ( $exist.length ) {
 			if ( $exist.find( '.fa-bookmark' ).length ) {
-				var msghtml = '<i class="fa fa-bookmark bookmark"></i>'
+				var msghtml = '<i class="fa fa-bookmark bookmark bl"></i>'
 							  +'<br><a class="bklabel">'+ $exist.find( '.bklabel' ).text() +'</a>'
 							  +'<br>'+ path;
 			} else {
@@ -69,7 +69,7 @@ function bookmarkIcon( path ) {
 		  icon       : 'bookmark'
 		, title      : 'Add Bookmark'
 		, width      : 500
-		, message    : '<i class="fa fa-bookmark bookmark"></i>'
+		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
 						+'<br><w>'+ path +'</w>'
 		, textlabel  : 'As:'
 		, values     : path.split( '/' ).pop()
@@ -263,6 +263,7 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
+				if ( cue && !G.list.licover ) $( '#infoContent input:eq( 2 )' ).prop( 'disabled', 1 );
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
@@ -371,7 +372,7 @@ function tagEditor() {
 				var newvalues = infoVal();
 				var val;
 				newvalues.forEach( function( v, i ) {
-					val = v === values[ i ] ? '' : ( v || -1 );
+					val = ( v === values[ i ] ) ? '' : ( v || -1 );
 					tag.push( val );
 				} );
 				banner( 'Tag Editor', 'Change tags ...', 'tag blink', -1 );
@@ -387,12 +388,15 @@ function webRadioCoverart() {
 	var path = G.library ? G.list.path : G.status.file;
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
 	var imagefile = '/srv/http'+ radiopath; //no ext
-	var coverart = G.playback
-					? G.status.coverartradio || G.coverdefault
-					: G.list.li.find( '.lib-icon' ).attr( 'src' ) || G.coverdefault;
+	if ( G.playback ) {
+		var coverart = G.status.coverartradio || G.coverdefault;
+	} else {
+		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
+		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
+	}
 	var radioicon = coverart === G.coverdefault;
 	info( {
-		  icon        : 'coverart'
+		  icon        : '<i class="iconcover"></i>'
 		, title       : 'WebRadio CoverArt'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 						+'<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>'
@@ -689,7 +693,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'thumb':
 			info( {
-				  icon    : 'coverart'
+				  icon    : '<i class="iconcover"></i>'
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'

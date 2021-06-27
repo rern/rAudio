@@ -98,20 +98,6 @@
 		<br>This should be used only when necessary.</span>
 </div>
 <pre id="codehostapd" class="hide"></pre>
-	<?php } ?>
-	<?php if ( file_exists( '/usr/bin/transmission-cli' ) ) { ?>
-<div data-status="transmission" <?=$classstatus?>>
-	<a>BitTorrent<br><gr>transmission<?=$istatus?></gr></a><i class="fa fa-transmission"></i>
-</div>
-<div class="col-r">
-	<input id="transmission" <?=$chkenable?>>
-	<div class="switchlabel" for="transmission"></div>
-	<span <?=$classhelp?>>
-		<a href="https://transmissionbt.com/">Transmission</a> - BitTorrent client
-		<br>URL: <span id="urltran"></span>
-	</span>
-</div>
-<pre id="codetransmission" class="hide"></pre>
 	<?php }
 		  if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div data-status="localbrowser" <?=$classstatus?>>
@@ -129,20 +115,6 @@
 </div>
 <pre id="codelocalbrowser" class="hide"></pre>
 	<?php } 
-		  if ( file_exists( '/usr/bin/aria2' ) ) { ?>
-<div data-status="aria2" <?=$classstatus?>>
-	<a>Downloader<br><gr>aria2<?=$istatus?></gr></a><i class="fa fa-download"></i>
-</div>
-<div class="col-r">
-	<input id="aria2" <?=$chkenable?>>
-	<div class="switchlabel" for="aria2"></div>
-	<span <?=$classhelp?>>
-		<a href="https://aria2.github.io/">Aria2</a> - Multi-protocol & multi-source command-line download utility.
-		<br>URL: <span id="urlaria"></span>
-	</span>
-</div>
-<pre id="codearia2" class="hide"></pre>
-	<?php }
 		  if ( file_exists( '/usr/bin/smbd' ) ) { 
 			$hostname = getHostName();
 			$ip = getHostByName( $hostname );

@@ -230,15 +230,12 @@ $( '#colorok' ).click( function() {
 		var s = 0;
 		var l = L * 100;
 	}
-	var hsl = h +' '+ s +' '+ l;
-	bash( [ 'color', hsl ] );
-	var hsl = h +','+ s +'%,'+ l +'%';
-	$( '#banner' ).css( 'background', 'linear-gradient( to right, hsl( '+ hsl +' ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% )' );
-	banner( 'Color', 'Change ...', 'brush blink' );
+	bash( [ 'color', h +' '+ s +' '+ l ] );
+	loader();
 } );
 $( '#colorreset' ).click( function() {
 	bash( [ 'color', 'reset' ] );
-	banner( 'Color', 'Reset to default ...', 'brush blink' );
+	loader();
 } );
 $( '#colorcancel' ).click( function() {
 	G.color = 0;
@@ -342,28 +339,12 @@ $( '#tab-playlist' ).click( function() {
 $( '#page-playback' ).tap( function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
+	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
-		if ( !$( e.target ).hasClass( 'fa-coverart' ) ) {
-			$( '#divcover .fa-coverart' ).remove();
+		if ( !$( e.target ).hasClass( '.coveredit.cover' ) ) {
+			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
-	} else if ( G.guide ) {
-		hideGuide();
-	}
-} );
-$( '#page-library' ).tap( function( e ) {
-	var $target = $( e.target );
-	if ( G.bookmarkedit
-		&& !$target.closest( '.mode-bookmark' ).length
-		&& !$target.closest( '.coverart' ).length
-	) {
-		G.bookmarkedit = 0;
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' )
-			.css( 'background', '' )
-			.find( '.fa-bookmark, .bklabel, img' )
-			.css( 'opacity', '' );
-		$( '.coverart img' ).css( 'opacity', '' );
 	}
 } );
 $( '#page-library, #page-playback, #page-playlist' ).click( function( e ) {
@@ -379,6 +360,8 @@ $( '#settings' ).click( function() {
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.library ) {
+		$( '.licover .coveredit.cover' ).remove();
+		$( '.licover img' ).css( 'opacity', '' );
 		$( '#lib-list li' ).removeClass( 'active' );
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 	} else if ( G.playlist ) {
@@ -394,7 +377,7 @@ $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).click( function() {
-	if ( G.localhost ) scrollLongText();
+	if ( G.localhost ) setPlaybackTitles();
 } );
 $( '.emptyadd' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'fa-plus-circle' ) ) {
@@ -530,7 +513,7 @@ $( '#volup, #voldn' ).click( function() {
 		volumePushstream();
 	}
 } );
-$( '#coverTL, #timeTL' ).tap( function() {
+$( '#coverTL, #timeTL' ).click( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
 	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 	
@@ -622,7 +605,7 @@ $( '.covermap' ).taphold( function( e ) {
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<i class="coveredit fa fa-coverart"></i>' );
+		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
 } );
 $( '#time-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -680,11 +663,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		volumeBarSet( pageX );
 	}
 } );
-$( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
-	if ( G.status.volumenone ) return
-	
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-} ).click( function() {
+$( '#volume-band-dn, #volume-band-up' ).click( function() {
 	hideGuide();
 	if ( G.status.volumenone ) return
 	
@@ -697,13 +676,13 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 	} else {
 		if ( vol < 100 ) vol++;
 	}
+	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	$( '#vol'+ updn ).click();
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).taphold( function() {
 	if ( G.status.volumenone ) return
 	
-	G.hold = 1;
 	clearTimeout( G.volumebar );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var voldn = this.id === 'volume-band-dn';
@@ -720,12 +699,9 @@ $( '#volume-band-dn, #volume-band-up' ).on( 'mousedown touchstart', function() {
 		volumeDrag( vol );
 	}, 100 );
 } ).on( 'mouseup touchend', function() {
-	if ( G.hold ) {
-		G.hold = 0;
-		volumePushstream();
-		clearTimeout( G.intVolume );
-		volumeBarTimeout();
-	}
+	volumePushstream();
+	clearTimeout( G.intVolume );
+	volumeBarTimeout();
 } );
 $( '#volume-text' ).tap( function() {
 	$( '#volmute' ).click();
@@ -733,7 +709,7 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'click', '.coveredit', function( e ) {
+$( '#divcover' ).on( 'tap', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
@@ -807,7 +783,7 @@ $( '.btn-cmd' ).click( function() {
 		local( 600 );
 	} else {
 		if ( G.status.webradio ) {
-			$( '#divcover .fa-coverart' ).remove();
+			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd !== 'play' ) clearIntervalAll();
@@ -946,7 +922,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					+'<br><px30/>&bull; Create directory icons'
 	}
 	info( {
-		  icon         : 'coverart'
+		  icon         : '<i class="iconcover"></i>'
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
@@ -1103,11 +1079,14 @@ $( '.mode' ).click( function() {
 	G.query.push( query );
 } );
 $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
+	var bkedit = $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' );
 	$( '#lib-search-close' ).click();
-	if ( $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' )  ) {
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
-		return
+	if ( G.bookmarkedit ) {
+		if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
+			$( '.bkedit' ).remove();
+			$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
+			return
+		}
 	}
 	
 	var $target = $( e.target );
@@ -1137,7 +1116,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 				$this.find( '.bklabel' ).text( newname );
 			}
 		} );
-	} else if ( $target.hasClass( 'bk-cover' ) ) {
+	} else if ( $target.hasClass( 'bk-cover' ) || $target.hasClass( 'iconcover' ) ) {
 		var thumbnail = $this.find( 'img' ).length;
 		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
@@ -1224,15 +1203,26 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		$this = $( this );
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<i class="bkedit bk-cover fa fa-coverart"></i>';
+		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', 0.33 );
-} ).on( 'tap', function() {
-	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
+} ).on( 'tap', function( e ) {
+	if ( $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' ) ) return
+		
+	if ( G.bookmarkedit ) {
+		G.bookmarkedit = 0;
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' )
+			.css( 'background', '' )
+			.find( '.fa-bookmark, .bklabel, img' )
+			.css( 'opacity', '' );
+	} else {
+		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
+	}
 } );
 var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
@@ -1260,7 +1250,7 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 		} );
 	}
 } );
-$( '#lib-list' ).on( 'tap', '.coverart', function( e ) {
+$( '#lib-list' ).on( 'tap', '.coverart', function() {
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
@@ -1299,14 +1289,14 @@ $( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<i class="coveredit fa fa-coverart"></i>' );
+		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
 	var $target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'fa-coverart' ) ) return
+	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( '.coverart' ) ) return
 	
-	$( '.licover .fa-coverart' ).remove();
+	$( '.licover .coveredit.cover' ).remove();
 	$( '.licover img' ).css( 'opacity', '' );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {

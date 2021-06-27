@@ -15,8 +15,8 @@ body {
 	-webkit-tap-highlight-color: transparent;
 }
 *,
-*:before,
-*:after {
+*::before,
+*::after {
 	-webkit-box-sizing:border-box;
 	-moz-box-sizing:border-box;
 	box-sizing:border-box;
@@ -90,147 +90,151 @@ input::-moz-focus-inner {
 	font-style: normal;
 }
 .fa-lg { font-size: 22px !important }
-.fa-accesspoint:before { content: "\f554" }
-.fa-airplay:before { content: "\f580" }
-.fa-album:before { content: "\f555" }
-.fa-albumartist:before { content: "\f557" }
-.fa-arrow-down:before { content: "\f601" }
-.fa-arrow-left:before { content: "\f602" }
-.fa-arrow-right:before { content: "\f603" }
-.fa-arrow-up:before { content: "\f600" }
-.fa-artist:before { content: "\f556" }
-.fa-audiocd:before { content: "\f538" }
-.fa-bars:before { content: "\f51C" }
-.fa-bio:before { content: "\f51D" }
-.fa-bookmark:before { content: "\f550" }
-.fa-bluetooth:before { content: "\f595" }
-.fa-bluetooth-client:before { content: "\f596" }
-.fa-brush:before { content: "\f536" }
-.fa-check:before { content: "\f51B" }
-.fa-chevron-down:before { content: "\f605" }
-.fa-chevron-up:before { content: "\f604" }
-.fa-chromium:before { content: "\f584" }
-.fa-composer:before { content: "\f558" }
-.fa-conductor:before { content: "\f559" }
-.fa-coverart:before { content: "\f593"; position: absolute; color: var( --cw ); }
-.fa-coverart:after { content: "\f594"; color: #000000; opacity: 0.75; text-shadow: none; }
-.fa-coverart-refresh:before { content: "\f53D" }
-.fa-crop:before { content: "\f568" }
-.fa-date:before { content: "\f55C" }
-.fa-dice:before { content: "\f569" }
-.fa-download:before { content: "\f528" }
-.fa-edit:before { content: "\f565" }
-.fa-edit-circle:before { content: "\f566" }
-.fa-eye:before { content: "\f56B" }
-.fa-features:before { content: "\f50B" }
-.fa-file-music:before { content: "\f549" }
-.fa-file-playlist:before { content: "\f548" }
-.fa-flash:before { content: "\f567" }
-.fa-folder:before { content: "\f540" }
-.fa-folder-cascade:before { content: "\f54A" }
-.fa-folder-forbid:before { content: "\f537" }
-.fa-folder-open:before { content: "\f541" }
-.fa-gear:before { content: "\f509" }
-.fa-gears:before { content: "\f50A" }
-.fa-genre:before { content: "\f55A" }
-.fa-github:before { content: "\f583" }
-.fa-globe:before { content: "\f575" }
-.fa-gpiopins:before { content: "\f572" }
-.fa-guide:before { content: "\f579" }
-.fa-i2saudio:before { content: "\f571" }
-.fa-info-circle:before { content: "\f561" }
-.fa-input:before { content: "\f529" }
-.fa-jigsaw:before { content: "\f50C" }
-.fa-lan:before { content: "\f552" }
-.fa-lastfm:before { content: "\f585" }
-.fa-lcd:before { content: "\f577" }
-.fa-lcdchar:before { content: "\f578" }
-.fa-left:before { content: "\f606" }
-.fa-library:before { content: "\f506" }
-.fa-lock:before { content: "\f574"; }
-.fa-lyrics:before { content: "\f54B" }
-.fa-microsd:before { content: "\f543" }
-.fa-minus:before { content: "\f518" }
-.fa-minus-circle:before { content: "\f563" }
-.fa-mpd:before { content: "\f582" }
-.fa-music:before { content: "\f54A" }
-.fa-mute:before { content: "\f517" }
-.fa-nas:before { content: "\f551" }
-.fa-networks:before { content: "\f551" }
-.fa-next:before { content: "\f505" }
-.fa-output:before { content: "\f52A" }
-.fa-pause:before { content: "\f504" }
-.fa-play:before { content: "\f503" }
-.fa-playback:before { content: "\f507" }
-.fa-playlist:before { content: "\f508"; }
-.fa-player:before { content: "\f582" }
-.fa-play-cd:before { content: "\f539" }
-.fa-play-plus:before { content: "\f532" }
-.fa-play-power:before { content: "\f53A" }
-.fa-play-replace:before { content: "\f533" }
-.fa-plus:before { content: "\f519" }
-.fa-plus-circle:before { content: "\f564" }
-.fa-plus-o:before { content: "\f530" }
-.fa-plus-r:before { content: "\f590" }
-.fa-plus-r-nobox:before { content: "\f500" }
-.fa-power:before { content: "\f520" }
-.fa-previous:before { content: "\f501" }
-.fa-question-circle:before { content: "\f560" }
-.fa-radiofrance:before { content: "\f589" }
-.fa-radioparadise:before {content: "\f59C"; position: absolute; color: var( --cgl ); }
-.fa-radioparadise:after {content: "\f59D"; position: relative; } /* position: relative - fix order */
-.fa-random:before { content: "\f512" }
-.fa-reboot:before { content: "\f521" }
-.fa-redo:before { content: "\f524" }
-.fa-refresh:before { content: "\f526" }
-.fa-refresh-library:before { content: "\f536" }
-.fa-relays:before { content: "\f522" }
-.fa-reload:before { content: "\f525" }
-.fa-repeat:before { content: "\f511" }
-.fa-repeat-single:before { content: "\f510" }
-.fa-replace:before { content: "\f531" }
-.fa-reset:before { content: "\f527" }
-.fa-restore:before { content: "\f544" }
-.fa-right:before { content: "\f607" }
-.fa-save:before { content: "\f542"}
-.fa-save-circle:before { content: "\f546"}
-.fa-save-plus:before { content: "\f545"}
-.fa-screenoff:before { content: "\f547" }
-.fa-scale-dn:before { content: "\f591" }
-.fa-scale-up:before { content: "\f592" }
-.fa-sd:before { content: "\f543" }
-.fa-search:before { content: "\f56A" }
-.fa-set0:before { content: "\f515" }
-.fa-shuffle:before { content: "\f513" }
-.fa-single:before { content: "\f514" }
-.fa-sliders:before { content: "\f50B" }
-.fa-snapcast:before { content: "\f587" }
-.fa-snapclient:before { content: "\f587" }
-.fa-soundprofile:before { content: "\f576" }
-.fa-source:before { content: "\f529" }
-.fa-spotify:before { content: "\f588" }
-.fa-star:before { content: "\f550" }
-.fa-status:before { content: "\f50A" }
-.fa-stop:before { content: "\f502" }
-.fa-stopwatch:before { content: "\f570" }
-.fa-system:before { content: "\f590" }
-.fa-tag:before { content: "\f55B" }
-.fa-times:before { content: "\f51A" }
-.fa-title:before { content: "\f54A" }
-.fa-track:before { content: "\f54C" }
-.fa-transmission:before { content: "\f586" }
-.fa-undo:before { content: "\f523" }
-.fa-update:before { content: "\f526" }
-.fa-upnp:before { content: "\f581" }
-.fa-usb:before { content: "\f553" }
-.fa-usbdrive:before { content: "\f553" }
-.fa-volume:before { content: "\f516" }
-.fa-warning:before { content: "\f562" }
-.fa-webradio:before { content: "\f55D" }
+.fa-accesspoint::before { content: "\f554" }
+.fa-airplay::before { content: "\f580" }
+.fa-album::before { content: "\f555" }
+.fa-albumartist::before { content: "\f557" }
+.fa-arrow-down::before { content: "\f601" }
+.fa-arrow-left::before { content: "\f602" }
+.fa-arrow-right::before { content: "\f603" }
+.fa-arrow-up::before { content: "\f600" }
+.fa-artist::before { content: "\f556" }
+.fa-audiocd::before { content: "\f538" }
+.fa-backspace:before { content: "\f60C" }
+.fa-bars::before { content: "\f51C" }
+.fa-bio::before { content: "\f51D" }
+.fa-bookmark::before { content: "\f550" }
+.fa-bluetooth::before { content: "\f595" }
+.fa-bluetooth-client::before { content: "\f596" }
+.fa-brush::before { content: "\f536" }
+.fa-capslock:before { content: "\f60B" }
+.fa-check::before { content: "\f51B" }
+.fa-chevron-down::before { content: "\f605" }
+.fa-chevron-up::before { content: "\f604" }
+.fa-chromium::before { content: "\f584" }
+.fa-composer::before { content: "\f558" }
+.fa-conductor::before { content: "\f559" }
+.fa-coverart::before { content: "\f593"; position: absolute; color: var( --cw ); }
+.fa-coverart::after { content: "\f594"; color: #000000; opacity: 0.75; text-shadow: none; }
+.fa-coverart-refresh::before { content: "\f53D" }
+.fa-crop::before { content: "\f568" }
+.fa-date::before { content: "\f55C" }
+.fa-dice::before { content: "\f569" }
+.fa-download::before { content: "\f528" }
+.fa-edit::before { content: "\f565" }
+.fa-edit-circle::before { content: "\f566" }
+.fa-eye::before { content: "\f56B" }
+.fa-features::before { content: "\f50B" }
+.fa-file-music::before { content: "\f549" }
+.fa-file-playlist::before { content: "\f548" }
+.fa-flash::before { content: "\f567" }
+.fa-folder::before { content: "\f540" }
+.fa-folder-cascade::before { content: "\f54A" }
+.fa-folder-forbid::before { content: "\f537" }
+.fa-folder-open::before { content: "\f541" }
+.fa-gear::before { content: "\f509" }
+.fa-gears::before { content: "\f50A" }
+.fa-genre::before { content: "\f55A" }
+.fa-github::before { content: "\f583" }
+.fa-globe::before { content: "\f575" }
+.fa-gpiopins::before { content: "\f572" }
+.fa-guide::before { content: "\f579" }
+.fa-hide:before { content: "\f575" }
+.fa-i2saudio::before { content: "\f571" }
+.fa-info-circle::before { content: "\f561" }
+.fa-input::before { content: "\f529" }
+.fa-jigsaw::before { content: "\f50C" }
+.fa-lan::before { content: "\f552" }
+.fa-lastfm::before { content: "\f585" }
+.fa-lcd::before { content: "\f577" }
+.fa-lcdchar::before { content: "\f578" }
+.fa-left::before { content: "\f606" }
+.fa-library::before { content: "\f506" }
+.fa-lock::before { content: "\f574"; }
+.fa-lyrics::before { content: "\f54B" }
+.fa-microsd::before { content: "\f543" }
+.fa-minus::before { content: "\f518" }
+.fa-minus-circle::before { content: "\f563" }
+.fa-mpd::before { content: "\f582" }
+.fa-music::before { content: "\f54A" }
+.fa-mute::before { content: "\f517" }
+.fa-nas::before { content: "\f551" }
+.fa-networks::before { content: "\f551" }
+.fa-next::before { content: "\f505" }
+.fa-output::before { content: "\f52A" }
+.fa-pause::before { content: "\f504" }
+.fa-play::before { content: "\f503" }
+.fa-playback::before { content: "\f507" }
+.fa-playlist::before { content: "\f508"; }
+.fa-player::before { content: "\f582" }
+.fa-play-cd::before { content: "\f539" }
+.fa-play-plus::before { content: "\f532" }
+.fa-play-power::before { content: "\f53A" }
+.fa-play-replace::before { content: "\f533" }
+.fa-plus::before { content: "\f519" }
+.fa-plus-circle::before { content: "\f564" }
+.fa-plus-o::before { content: "\f530" }
+.fa-plus-r::before { content: "\f590" }
+.fa-plus-r-nobox::before { content: "\f500" }
+.fa-power::before { content: "\f520" }
+.fa-previous::before { content: "\f501" }
+.fa-question-circle::before { content: "\f560" }
+.fa-radiofrance::before { content: "\f589" }
+.fa-radioparadise::before {content: "\f59C"; position: absolute; color: var( --cgl ); }
+.fa-radioparadise::after {content: "\f59D"; position: relative; } /* position: relative - fix order */
+.fa-random::before { content: "\f512" }
+.fa-reboot::before { content: "\f521" }
+.fa-redo::before { content: "\f524" }
+.fa-refresh::before { content: "\f526" }
+.fa-refresh-l::before { content: "\f52B" }
+.fa-refresh-library::before { content: "\f536" }
+.fa-relays::before { content: "\f522" }
+.fa-reload::before { content: "\f525" }
+.fa-repeat::before { content: "\f511" }
+.fa-repeat-single::before { content: "\f510" }
+.fa-replace::before { content: "\f531" }
+.fa-reset::before { content: "\f527" }
+.fa-restore::before { content: "\f544" }
+.fa-right::before { content: "\f607" }
+.fa-save::before { content: "\f542"}
+.fa-save-circle::before { content: "\f546"}
+.fa-save-plus::before { content: "\f545"}
+.fa-screenoff::before { content: "\f547" }
+.fa-scale-dn::before { content: "\f591" }
+.fa-scale-up::before { content: "\f592" }
+.fa-sd::before { content: "\f543" }
+.fa-search::before { content: "\f56A" }
+.fa-set0::before { content: "\f515" }
+.fa-shift:before { content: "\f60A" }
+.fa-shuffle::before { content: "\f513" }
+.fa-single::before { content: "\f514" }
+.fa-sliders::before { content: "\f50B" }
+.fa-snapcast::before { content: "\f587" }
+.fa-snapclient::before { content: "\f587" }
+.fa-soundprofile::before { content: "\f576" }
+.fa-source::before { content: "\f529" }
+.fa-spotify::before { content: "\f588" }
+.fa-star::before { content: "\f550" }
+.fa-status::before { content: "\f50A" }
+.fa-stop::before { content: "\f502" }
+.fa-stopwatch::before { content: "\f570" }
+.fa-system::before { content: "\f590" }
+.fa-tag::before { content: "\f55B" }
+.fa-times::before { content: "\f51A" }
+.fa-title::before { content: "\f54A" }
+.fa-track::before { content: "\f54C" }
+.fa-undo::before { content: "\f523" }
+.fa-update::before { content: "\f526" }
+.fa-upnp::before { content: "\f581" }
+.fa-usb::before { content: "\f553" }
+.fa-usbdrive::before { content: "\f553" }
+.fa-volume::before { content: "\f516" }
+.fa-warning::before { content: "\f562" }
+.fa-webradio::before { content: "\f55D" }
 .fa-layer { position: absolute }
 .fa-layerlast { position: relative }
-.fa-wifi:before { content: "\f597" }
-.fa-wifi1:before { content: "\f598"; position: absolute; }
-.fa-wifi1:after { content: "\f599"; color: var( --cga ); }
-.fa-wifi2:before { content: "\f59A"; position: absolute; }
-.fa-wifi2:after { content: "\f59B"; color: var( --cga ); }
+.fa-wifi::before { content: "\f597" }
+.fa-wifi1::before { content: "\f598"; position: absolute; }
+.fa-wifi1::after { content: "\f599"; color: var( --cga ); }
+.fa-wifi2::before { content: "\f59A"; position: absolute; }
+.fa-wifi2::after { content: "\f59B"; color: var( --cga ); }

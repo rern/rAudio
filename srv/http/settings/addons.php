@@ -120,7 +120,7 @@ foreach( $arrayalias as $alias ) {
 			<legend>
 				<span>'.$check.preg_replace( '/\**$/', '', $title ).'</span>
 				&emsp;<p><a class="'.$revisionclass.'">'.$version.( $version ? '&ensp;<i class="fa fa-chevron-down"></i>' : '' ).'</a>
-				</p><i class="fa fa-arrow-up"></i>
+				</p>
 			</legend>
 			'.$revision.'
 			<form class="form-horizontal" alias="'.$alias.'" version="'.$version.'">

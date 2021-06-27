@@ -16,7 +16,6 @@ onVisibilityChange( function( visible ) {
 	if ( visible ) {
 		pushstream.connect();
 	} else {
-		clearIntervalAll();
 		pushstream.disconnect();
 	}
 } );
@@ -24,7 +23,9 @@ window.addEventListener( 'orientationchange', function() {
 	if ( G.playback ) $( '#page-playback' ).addClass( 'hide' );
 	setTimeout( function() {
 		if ( G.playback ) {
-			setTimeout( scrollLongText, 300 );
+			setTimeout( function() {
+				setPlaybackTitles( 'orientationchange' );
+			}, 300 );
 			$( '#page-playback' ).removeClass( 'hide' );
 			if ( G.status.state === 'play' ) {
 				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
@@ -73,8 +74,10 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
+		bannerHide();
 		getPlaybackStatus();
 	} else if ( status === 0 ) { // disconnected
+		clearIntervalAll();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
@@ -178,7 +181,7 @@ function psCoverart( data ) {
 					}
 					$( '#album' ).text( data.Album );
 					$( '#sampling' ).html( sampling );
-					setRadioClass();
+					setRadioTitles();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -304,12 +307,9 @@ function psMpdPlayer( data ) {
 		} else if ( G.playback ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
-				$( '#artist' ).html( G.status.Artist );
-				$( '#title' ).html( G.status.Title || blinkdot );
-				$( '#album' ).html( G.status.Album );
+				setPlaybackTitles();
+				setRadioTitles();
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-				setRadioClass();
-				scrollLongText();
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			} else {
 				renderPlayback();
@@ -445,7 +445,7 @@ function psRelays( response ) { // on receive broadcast
 			, button      : function() {
 				bash( '/srv/http/bash/relays.sh false' );
 			}
-			, oklabel     : '<i class="fa fa-refresh"></i>Reset'
+			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
 			}

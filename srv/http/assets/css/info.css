@@ -43,7 +43,7 @@
 }
 .infobtn.disabled {
 	color: var( --cg60 ) !important;
-	background-color: var( --cg ) !important;
+	background-color: var( --cga ) !important;
 	pointer-events: none;
 }
 .noclick {

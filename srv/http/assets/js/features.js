@@ -27,10 +27,8 @@ renderPage = function( list ) {
 	disableSwitch( '#snapserver', G.snapclient );
 	$( '#hostapd' ).prop( 'checked', G.hostapd );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
-	$( '#transmission' ).prop( 'checked', G.transmission );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
-	$( '#aria2' ).prop( 'checked', G.aria2 );
 	$( '#smb' ).prop( 'checked', G.smb );
 	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
 	$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
@@ -55,14 +53,6 @@ refreshData();
 if ( set ) setTimeout( function() { $( '#'+ set ).click() }, 900 );
 
 $( '#ip' ).html( 'http://'+ location.host +':8000' );
-if ( $( '#transmission' ).length ) {
-	var url = location.host +':9091';
-	$( '#urltran' ).html( '<a href="http://'+ url +'">'+ url +'</a>' );
-}
-if ( $( '#aria2' ).length ) {
-	var url = location.host +'/aria2/index.html';
-	$( '#urlaria' ).html( '<a href="http://'+ url +'">'+ url +'</a>' );
-}
 //---------------------------------------------------------------------------------------
 $( '.enable' ).click( function() {
 	var checked = $( this ).prop( 'checked' );

@@ -43,12 +43,19 @@ ib {
 	color: var( --cm );
 	text-shadow: -2px 2px 4px #000000;
 }
-.disable {
-	color: var( --cg60 );
-	pointer-events: none;
+#infoIcon.fa-bookmark {
+	line-height: 34px;
 }
+.disable,
 .disabled {
 	pointer-events: none;
+}
+.disable {
+	color: var( --cg60 );
+}
+#play-group .disabled {
+	color: var( --cg60 ) !important;
+	background-color: var( --cga ) !important;
 }
 #divcolor .infobtn {
 	margin: 0;
@@ -96,7 +103,7 @@ i.map.disabled, .map.disabled i {
 	width: 190px;
 	padding: 0;
 	background: var( --cg );
-	box-shadow: -4px 4px 10px #000000;
+	box-shadow: 4px 4px 10px #000000;
 	z-index: 11;
 }
 .menu.fixed {
@@ -155,6 +162,9 @@ i.map.disabled, .map.disabled i {
 .submenu.active {
 	background: var( --cgl );
 }
+.menu .iconcover {
+	margin: -4px 8px !important;
+}
 #settings .gr {
 	font-size: 22px;
 }
@@ -182,7 +192,7 @@ i.map.disabled, .map.disabled i {
 	width: 100%;
 	height: 40px;
 	background: linear-gradient( to left, var( --cg ) calc( 100% - 50px ), var( --cgd ) 100% );
-	z-index: 105;
+	z-index: 106;
 }
 #bar-bottom {
 	bottom: 0;
@@ -249,7 +259,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom i.active {
 	background: var( --cm );
 }
-#bar-bottom .fa-mpd:before {
+#bar-bottom .fa-mpd::before {
 	content: "\f507";
 }
 .renderer {
@@ -304,7 +314,6 @@ i.map.disabled, .map.disabled i {
 #artist,
 #title,
 #album {
-	visibility: hidden; /* fix - flashed by scrollLongText() */
 	overflow: hidden;
 	position: relative;
 }
@@ -371,20 +380,9 @@ i.map.disabled, .map.disabled i {
 	text-overflow: ellipsis;
 	visibility: visible !important;
 }
-.scrollleft {
-	backface-visibility : hidden; /* for less flickering */
-}
-@-moz-keyframes scrollleft {
-	0%   { -moz-transform    : translateX( 100vw ) } /* move right 100vw = viewport = visible text width */
-	100% { -moz-transform    : translateX( -100% ) } /* move left  100%  = window   = full text width */
-}
-@-webkit-keyframes scrollleft {
-	0%   { -webkit-transform : translateX( 100vw ) }
-	100% { -webkit-transform : translateX( -100% ) }
-}
 @keyframes scrollleft {
-	0%   { transform         : translateX( 100vw ) }
-	100% { transform         : translateX( -100% ) }
+	0%   { transform : translateX( 100vW ) } /* move to right 100vw */
+	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
 }
 /* ---------------------- knobs, buttons ----------------------*/
 #playback-row {
@@ -546,7 +544,7 @@ i.map.disabled, .map.disabled i {
 	opacity: 0 !important;
 }
 .translucent {
-	opacity: 0.8 !important;
+	opacity: 0.6 !important;
 }
 #divcover {
 	margin: 0 auto;
@@ -608,7 +606,7 @@ i.map.disabled, .map.disabled i {
 	transform-origin: 115px 220px;
 	transition-duration: 750ms;
 }
-#vu:before { /* glossy overlay */
+#vu::before { /* glossy overlay */
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -872,7 +870,7 @@ i.map.disabled, .map.disabled i {
 #page-playback .btn-group {
 	position: relative;
 }
-#page-playback .btn-group:before {
+#page-playback .btn-group::before {
 	position: absolute;
 	content: '';
 	top: 0;
@@ -883,11 +881,12 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 0 0 1px 1px var( --cga );
 	z-index: -10;
 }
-#repeat.btn-default.active,
-#random.btn-default.active,
-#single.btn-default.active,
+#play-group .btn.active,
 #volmute.btn-default.active {
 	background-color: var( --cm ) !important;
+}
+#play-group .active.disabled {
+	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
 #repeat, 
@@ -967,15 +966,15 @@ i.map.disabled, .map.disabled i {
 .rs-outer {
 	position: relative; /* overlay */
 }
-.rs-outer:before {
+.rs-outer::before {
 	width: 220px;
 	height: 220px;
 }
 .rs-readonly {
 	z-index: 10;
 }
-.rs-outer:before,
-#time .rs-inner:before {
+.rs-outer::before,
+#time .rs-inner::before {
 	position: absolute;
 	content: '';
 	top: 5px;
@@ -984,10 +983,10 @@ i.map.disabled, .map.disabled i {
 	border-radius: 50%;
 	z-index: 5;
 }
-#time .rs-outer:before {
+#time .rs-outer::before {
 	background: none;
 }
-.rs-outer:after { /* glossy overlay */
+.rs-outer::after { /* glossy overlay */
 	position: absolute;
 	content: '';
 	border-radius: 50%;
@@ -997,13 +996,13 @@ i.map.disabled, .map.disabled i {
 									  /* x   y   w    h */
 	z-index: 6;
 }
-#time .rs-outer:after {
+#time .rs-outer::after {
 	top: 20px;
 	left: 20px;
 	width: 190px;
 	height: 190px;
 }
-#time .rs-inner:before { /* inner circle */
+#time .rs-inner::before { /* inner circle */
 	top: 4px;
 	left: 4px;
 	width: 182px;
@@ -1013,7 +1012,7 @@ i.map.disabled, .map.disabled i {
 	position: relative;
 	background: linear-gradient( var( --cg ), #000000 );
 }
-#volume .rs-outer:after {
+#volume .rs-outer::after {
 	top: 0;
 	left: 0;
 	width: 230px;
@@ -1025,9 +1024,6 @@ i.map.disabled, .map.disabled i {
 }
 
 @keyframes blinkdot {
-	50% { opacity: 0 }
-}
-@-webkit-keyframes blinkdot { /* midori */
 	50% { opacity: 0 }
 }
 .dot {
@@ -1251,7 +1247,7 @@ i.map.disabled, .map.disabled i {
 #lib-mode-list.barshidden {
 	padding: 50px 7px 7px 7px;
 }
-#lib-mode-list:after { /* fix 0 height */
+#lib-mode-list::after { /* fix 0 height */
 	content: " "; 
 	display: block;
 	clear: both;
@@ -1266,7 +1262,7 @@ i.map.disabled, .map.disabled i {
 #lib-mode-list.bars-off {
 	padding-top: 50px !important;
 }
-#lib-mode-list.bars-off:after {
+#lib-mode-list.bars-off::after {
 	height: 10px;
 }
 .lib-mode {
@@ -1375,28 +1371,27 @@ i.map.disabled, .map.disabled i {
 	background: var( --cw );
 	box-shadow: -1px 1px 2px #000000;
 }
-.coveredit.fa-coverart {
+.coveredit.cover {
 	position: absolute;
 	width: 40px;
 	height: 40px;
 	bottom: 0;
 	right: 0;
-	font-size: 28px !important;
-	line-height: 40px;
+	padding: 8px;
 }
-.bkedit.fa-coverart {
-	position: absolute;
-	height: 35px;
-	font-size: 24px !important;
+.iconcover {
+	content: url( '/assets/img/iconcover.svg' );
+	width: 24px !important;
+	margin: 0 !important;
+	border: 1px solid hsl(0,0%,30%);
 }
-.contextmenu .fa-coverart {
+.bkedit .iconcover {
+	top: 5px;
 	position: relative;
 }
-#infoTop .fa-coverart {
-	position: static;
-}
-#infoTop .imgicon .fa-coverart {
-	top: 3px;
+#infoTop .iconcover {
+	margin-top: 5px !important;
+	width: 28px !important;
 }
 .infoimgname {
 	clear: both;
@@ -1476,24 +1471,16 @@ i.map.disabled, .map.disabled i {
 	text-overflow: ellipsis;
 }
 #button-coverart {
+	position:relative;
+	display: inline-block;
 	margin-left: 15px;
 }
-#button-coverart .fa-coverart {
-	position: relative;
-	vertical-align: -1px;
-}
-#button-coverart .fa-search {
-	width: 44px !important;
-	z-index: 18;
-}
-.albumrefresh {
+#button-coverart img {
 	position: absolute;
-	text-shadow: 0 0 4px #000000 !important;
-}
-.albumimg {
-	width: 30px;
-	margin-left: 5px;
-	vertical-align: -6px;
+	left: 13px;
+	top: 13px;
+	width: 14px;
+	border: 1px solid hsl(0,0%,30%);
 }
 #mode-title,
 .pl-title {
@@ -1631,7 +1618,6 @@ i.map.disabled, .map.disabled i {
 	max-width: 100%;
 	max-height: 100%;
 	border-right: 1px solid hsl(0,0%,15%);
-/*	border-top: 1px solid hsl(0,0%,15%);*/
 	pointer-events: none;
 }
 .coverart1,
@@ -1827,7 +1813,7 @@ i.map.disabled, .map.disabled i {
 }
 .lib-icon,
 .pl-icon,
-#pl-savedlist span:before,
+#pl-savedlist span::before,
 #pl-savedlist i,
 #lib-list i {
 	width: 40px;
@@ -1894,7 +1880,7 @@ li.active .iconthumb {
 #countradio {
 	vertical-align: 5%;
 }
-#pl-list li:before {
+#pl-list li::before {
 	margin-top: 9px;
 }
 #lib-list li,
@@ -1983,7 +1969,7 @@ li.active .name bl {
 li.active .li2 bl {
 	color: var( --cw ) !important;
 }
-.lib-sortable-ghost .mode:after {
+.lib-sortable-ghost .mode::after {
 	position: absolute;
 	content: "\f609";
 	font-family: rern;
@@ -2010,7 +1996,7 @@ li.active .li2 bl {
 .pl-sortable-ghost .li2 {
 	color: var( --cg ) !important;
 }
-.pl-sortable-ghost:before {
+.pl-sortable-ghost::before {
 	position: absolute;
 	content: "\f608";
 	font-family: rern;
@@ -2343,7 +2329,7 @@ li.active .li2 bl {
 		margin: 0 5px;
 	}
 	#lib-list li span .fa,
-	#pl-savedlist span:before {
+	#pl-savedlist span::before {
 		display: none;
 	}
 	#lib-list li,
@@ -2456,6 +2442,6 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .fa-coverart,
+	#divcover .iconcover,
 	#divcover .fa-save { top: 5px; }
 }

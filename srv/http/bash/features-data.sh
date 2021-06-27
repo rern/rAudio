@@ -49,9 +49,5 @@ fi
 , "smb"             : '$( systemctl -q is-active smb && echo true || echo false )'
 , "smbwritesd"      : '$( grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )'
 , "smbwriteusb"     : '$( grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )
-[[ -e /usr/bin/aria2 ]] && data+='
-, "aria2"           : '$( systemctl -q is-active aria2 && echo true || echo false )
-[[ -e /usr/bin/transmission-cli ]] && data+='
-, "transmission"    : '$( systemctl -q is-active transmission && echo true || echo false )
 	
 echo {$data}

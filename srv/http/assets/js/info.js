@@ -139,7 +139,7 @@ function infoReset() {
 		, visibility : 'hidden'
 	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
-	$( '#infoTitle' ).empty();
+	$( '#infoIcon, #infoTitle' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );

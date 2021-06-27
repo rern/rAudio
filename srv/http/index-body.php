@@ -107,7 +107,8 @@ if ( count( $files ) ) {
 }
 // context menus
 function menuli( $command, $icon, $label ) {
-	return '<a data-cmd="'.$command.'" class="'.$command.'"><i class="fa fa-'.$icon.'"></i>'.$label.'</a>';
+	if ( $icon !== 'iconcover' ) $icon = 'fa fa-'.$icon;
+	return '<a data-cmd="'.$command.'" class="'.$command.'"><i class="'.$icon.'"></i>'.$label.'</a>';
 }
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
@@ -141,7 +142,7 @@ $html = $htmlcommon;
 $html.= menuli( 'bookmark',  'star',            'Bookmark' );
 $html.= menuli( 'exclude',   'folder-forbid',   'Exclude directory' );
 $html.= menuli( 'update',    'refresh-library', 'Update database' );
-$html.= menuli( 'thumb',     'coverart',        'Update thumbnails' );
+$html.= menuli( 'thumb',     'iconcover',       'Update thumbnails' );
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'folder', $html );
 
@@ -170,7 +171,7 @@ $menu.= menudiv( 'radio', $html );
 $menudiv = '';
 $html = menucommon( 'wradd', 'wrreplace' );
 $html.= menuli( 'wredit',     'edit-circle',  'Edit' );
-$html.= menuli( 'wrcoverart', 'coverart',     'Change coverart' );
+$html.= menuli( 'wrcoverart', 'iconcover',    'Change coverart' );
 $html.= menuli( 'wrdelete',   'minus-circle', 'Delete' );
 $menu.= menudiv( 'webradio', $html );
 
@@ -269,7 +270,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="timemap">
-				<i id="timeTL" class="map timemap fa fa-coverart"></i>
+				<i id="timeTL" class="map timemap"></i>
 				<i id="timeT" class="map timemap fa fa-guide"></i>
 				<i id="timeTR" class="map timemap fa fa-gear"></i>
 				<i id="timeL" class="map timemap fa fa-previous"></i>
@@ -425,7 +426,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
 	<i id="colorcancel" class="fa fa-times"></i>
-	<a id="colorreset" class="infobtn"><i class="fa fa-undo"></i> Default</a>&ensp;
+	<a id="colorreset" class="infobtn"><i class="fa fa-set0"></i> Default</a>&ensp;
 	<a id="colorok" class="infobtn infobtn-primary"><i class="fa fa-check"></i> Set</a>
 	</div>
 </div>
