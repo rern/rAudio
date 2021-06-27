@@ -513,7 +513,7 @@ $( '#volup, #voldn' ).click( function() {
 		volumePushstream();
 	}
 } );
-$( '#coverTL, #timeTL' ).tap( function() {
+$( '#coverTL, #timeTL' ).click( function() {
 	$( '#bar-bottom' ).removeClass( 'translucent' );
 	if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 	
@@ -554,7 +554,7 @@ $( '#coverTL, #timeTL' ).tap( function() {
 	renderPlayback();
 	if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 } );
-$( '#coverT, #timeT' ).tap( function() {
+$( '#coverT, #timeT' ).click( function() {
 	clearTimeout( G.volumebar );
 	if ( G.guide ) {
 		hideGuide();
