@@ -554,7 +554,7 @@ $( '#coverTL, #timeTL' ).click( function() {
 	renderPlayback();
 	if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 } );
-$( '#coverT, #timeT' ).click( function() {
+$( '#coverT, #timeT' ).tap( function() {
 	clearTimeout( G.volumebar );
 	if ( G.guide ) {
 		hideGuide();
