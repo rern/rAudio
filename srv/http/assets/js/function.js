@@ -1212,10 +1212,10 @@ function renderPlayback() {
 			$( '#album' ).text( G.status.file );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
-			if ( !G.status.Title || G.status.Title !== G.prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-			if ( !G.status.Artist ) $( '#artist' ).text( G.status.station );
+			if ( !G.status.Artist && !G.status.Title ) $( '#artist' ).text( G.status.station );
 			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
 			if ( !G.status.Album ) $( '#album' ).text( G.status.Artist ? G.status.station : G.status.file );
+			if ( !G.status.Title || G.status.Title !== G.prevtitle ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			if ( G.display.radioelapsed || G.localhost ) {
