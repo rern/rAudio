@@ -1201,15 +1201,14 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	var displaytime = $( '#time-knob' ).is( ':visible' );
+	$( '#artist' ).text( G.status.Artist );
+	$( '#title' )
+		.text( G.status.Title )
+		.toggleClass( 'gr', G.status.state === 'pause' );
+	$( '#album' ).text( G.status.Album );
+	setPlaybackTitles();
 	// webradio ////////////////////////////////////////
-	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) === -1 ) {
-		$( '#artist' ).html( G.status.Artist );
-		$( '#title' )
-			.html( G.status.Title )
-			.toggleClass( 'gr', G.status.state === 'pause' );
-		$( '#album' ).html( G.status.Album );
-		setPlaybackTitles();
-	} else {
+	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) !== -1 ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
@@ -1217,13 +1216,11 @@ function renderPlayback() {
 			$( '#artist' ).text( G.status.station );
 			$( '#title' ).html( '·&ensp;·&ensp;·' );
 			$( '#album' ).text( G.status.file );
-			setPlaybackTitles();
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
 			if ( !G.status.Artist && !G.status.Title ) $( '#artist' ).text( G.status.station );
 			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
 			if ( !G.status.Album ) $( '#album' ).text( G.status.Artist ? G.status.station : G.status.file );
-			setPlaybackTitles();
 			if ( !G.status.Title || G.status.Title.toLowerCase() !== G.prevtitle.toLowerCase() ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
@@ -1243,6 +1240,7 @@ function renderPlayback() {
 				}
 			}
 		}
+		setPlaybackTitles();
 		return
 	}
 	
@@ -1595,8 +1593,11 @@ function setButtonUpdating() {
 	}
 }
 function setPlaybackTitles( orientationchange ) {
+	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	var $el = $( '#artist, #title, #album' );
-	$el.removeAttr( 'class style' );
+	$el
+		.removeClass( 'scrollleft' )
+		.removeAttr( 'style' );
 	var wW = document.body.clientWidth;
 	var tWmax = 0;
 	$el.each( function() {
@@ -1607,8 +1608,6 @@ function setPlaybackTitles( orientationchange ) {
 			$this.addClass( 'scrollleft' );
 		}
 	} );
-	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
-	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	if ( !tWmax ) return
 	
 	$( '.scrollleft' ).css( { // same width and speed
