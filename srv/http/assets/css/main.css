@@ -380,7 +380,7 @@ i.map.disabled, .map.disabled i {
 	text-overflow: ellipsis;
 }
 @keyframes scrollleft {
-	0%   { transform : translateX( 100vW ) } /* move to right 100vw */
+	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
 	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
 }
 /* ---------------------- knobs, buttons ----------------------*/
