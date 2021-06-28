@@ -1607,7 +1607,7 @@ function setPlaybackTitles( orientationchange ) {
 	var tWmax = 0;
 	$el.each( function() {
 		var $this = $( this );
-		var tW = $this.width() * G.scale;
+		var tW = $this.width();
 		if ( tW > wW * 0.98 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 			$this.addClass( 'scrollleft' );
