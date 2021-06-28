@@ -1202,11 +1202,8 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	var displaytime = $( '#time-knob' ).is( ':visible' );
 	$( '#artist' ).text( G.status.Artist );
-	$( '#title' )
-		.text( G.status.Title )
-		.toggleClass( 'gr', G.status.state === 'pause' );
+	$( '#title' ).text( G.status.Title );
 	$( '#album' ).text( G.status.Album );
-	setPlaybackTitles();
 	// webradio ////////////////////////////////////////
 	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) !== -1 ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
@@ -1244,6 +1241,7 @@ function renderPlayback() {
 		return
 	}
 	
+	setPlaybackTitles();
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== G.prevartist
 		|| G.status.Album !== G.prevalbum
@@ -1593,6 +1591,7 @@ function setButtonUpdating() {
 	}
 }
 function setPlaybackTitles( orientationchange ) {
+	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	var $el = $( '#artist, #title, #album' );
 	$el
