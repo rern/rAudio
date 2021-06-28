@@ -1621,16 +1621,15 @@ function setPlaybackTitles( orientationchange ) {
 		  width     : tWmax +'px'
 		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'
 	} );
-	if ( !G.localhost ) return
-	
-	$el.removeClass( 'scrollellipse' );
-	$( '.scrollleft' )
-		.css( 'animation-iteration-count', 1 )
-		.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
-			$( this )
-				.removeAttr( 'class style' )
-				.addClass( 'scrollellipse' );
-		} );
+	if ( G.localhost ) {
+		$( '.scrollleft' )
+			.css( 'animation-iteration-count', 1 )
+			.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
+				$( this )
+					.removeAttr( 'class style' )
+					.addClass( 'scrollellipse' );
+			} );
+	}
 }
 function setPlaylistScroll() {
 	if ( !G.playlist
