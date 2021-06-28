@@ -179,9 +179,10 @@ function psCoverart( data ) {
 					} else {
 						sampling += sampling ? ' &bull; Radio' : 'Radio';
 					}
-					$( '#album' ).text( data.Album );
+					$( '#album' )
+						.text( data.Album )
+						.toggleClass( 'albumgray', G.status.Album === '' );
 					$( '#sampling' ).html( sampling );
-					setRadioTitles();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -308,7 +309,7 @@ function psMpdPlayer( data ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
 				setPlaybackTitles();
-				setRadioTitles();
+				$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			} else {

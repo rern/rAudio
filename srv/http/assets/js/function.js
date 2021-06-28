@@ -1243,7 +1243,6 @@ function renderPlayback() {
 				}
 			}
 		}
-//		setRadioTitles();
 		return
 	}
 	
@@ -1609,7 +1608,7 @@ function setPlaybackTitles( orientationchange ) {
 		}
 	} );
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
-	if ( G.status.webradio ) setRadioTitles();
+	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	if ( !tWmax ) return
 	
 	$( '.scrollleft' ).css( { // same width and speed
@@ -1696,13 +1695,6 @@ function setPlaylistScroll() {
 			}, 1000 );
 		}
 	}
-}
-function setRadioTitles() {
-	$( '#artist' ).toggleClass( 'capitalize', G.status.Artist !== '' );
-	$( '#title' ).toggleClass( 'capitalize', G.status.Title !== '' );
-	$( '#album' )
-		.toggleClass( 'albumgray', G.status.Album === '' ) // gray text
-		.toggleClass( 'capitalize', G.status.Album !== '' );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
