@@ -24,7 +24,6 @@ var G = {
 	, rotate        : 0
 	, savedlist     : 0
 	, savedplaylist : 0
-	, scale         : 1
 	, scrollspeed   : 80 // pixel/s
 	, scrolltop     : {}
 	, similarpl     : -1
