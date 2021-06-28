@@ -23,9 +23,6 @@ window.addEventListener( 'orientationchange', function() {
 	if ( G.playback ) $( '#page-playback' ).addClass( 'hide' );
 	setTimeout( function() {
 		if ( G.playback ) {
-			setTimeout( function() {
-				setPlaybackTitles( 'orientationchange' );
-			}, 300 );
 			$( '#page-playback' ).removeClass( 'hide' );
 			if ( G.status.state === 'play' ) {
 				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
@@ -41,6 +38,9 @@ window.addEventListener( 'orientationchange', function() {
 				renderPlayback();
 				setButtonControl()
 			}
+			setTimeout( function() {
+				setPlaybackTitles( 'orientationchange' );
+			}, 0 );
 		} else if ( G.library ) {
 			if ( G.librarylist || G.savedlist ) {
 				if ( $( '.licover' ).length ) {
