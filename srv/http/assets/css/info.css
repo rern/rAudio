@@ -245,7 +245,7 @@ hr {
 	margin: 0;
 }
 #infoContent .imgicon {
-	width: 30px;
+	width: 30px !important;
 	vertical-align: -10px;
 }
 #infoContent textarea {
