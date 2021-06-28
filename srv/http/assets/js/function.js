@@ -1047,7 +1047,6 @@ function plRemove( $li ) {
 function renderLibrary() {
 	G.query = [];
 	$( '#lib-path' ).css( 'max-width', '' );
-	$( '#button-coverart' ).addClass( 'hidden' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
 	$( '#button-lib-back' ).toggleClass( 'back-left', G.display.backonleft );
