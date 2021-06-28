@@ -1183,7 +1183,6 @@ function renderPlayback() {
 		return
 	}
 	
-	$( '.playback-controls' ).css( 'visibility', 'visible' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	setPlaybackTitles();
 	var sampling = G.status.sampling;
@@ -1619,7 +1618,7 @@ function setPlaybackTitles( orientationchange ) {
 	
 	$( '.scrollleft' ).css( { // same width and speed
 		  width     : tWmax +'px'
-		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite scrollleft linear'
+		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite linear scrollleft'
 	} );
 	if ( G.localhost ) {
 		$( '.scrollleft' )

@@ -78,11 +78,11 @@ i.map.disabled, .map.disabled i {
 @keyframes blinkcg     { 50% { color: var( --cg ); text-shadow: none; } }
 @keyframes blinkcm     { 50% { color: var( --cm ); text-shadow: none; } }
 #tab-library.blink {
-	animation: blinkcg 1.5s linear infinite;
+	animation: 1.5s infinite linear blinkcg;
 }
 #tab-library.active.blink,
 #button-library.active.blink {
-	animation: blinkcm 1.5s linear infinite;
+	animation: 1.5s infinite linear blinkcm;
 }
 #logo {
 	position: absolute;
@@ -378,7 +378,6 @@ i.map.disabled, .map.disabled i {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	visibility: visible !important;
 }
 @keyframes scrollleft {
 	0%   { transform : translateX( 100vW ) } /* move to right 100vw */
@@ -1027,16 +1026,13 @@ i.map.disabled, .map.disabled i {
 	50% { opacity: 0 }
 }
 .dot {
-	animation: 1s blinkdot infinite;
-	-webkit-animation: 1s blinkdot infinite;
+	animation: 1s infinite blinkdot;
 }
 .dot2 {
 	animation-delay: 250ms;
-	-webkit-animation-delay: 250ms;
 }
 .dot3 {
 	animation-delay: 500ms;
-	-webkit-animation-delay: 500ms;
 }
 #dot0 {
 	display: none;
