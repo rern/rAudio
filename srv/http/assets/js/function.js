@@ -1241,7 +1241,7 @@ function renderPlayback() {
 		return
 	}
 	
-	setPlaybackTitles();
+	setTimeout( setPlaybackTitles, 0 );
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== G.prevartist
 		|| G.status.Album !== G.prevalbum
@@ -1590,7 +1590,7 @@ function setButtonUpdating() {
 							.addClass( 'fa-library' );
 	}
 }
-function setPlaybackTitles( orientationchange ) {
+function setPlaybackTitles() {
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	var $el = $( '#artist, #title, #album' );
