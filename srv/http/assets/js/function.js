@@ -1593,7 +1593,7 @@ function setButtonUpdating() {
 							.addClass( 'fa-library' );
 	}
 }
-function setPlaybackTitles() {
+function setPlaybackTitles() { // suppress multiple fires, skip if same width and same data
 	var wW = document.body.clientWidth;
 	var nochange = G.prevartist === G.status.Artist && G.prevtitle === G.status.Title && G.prevalbum === G.status.Album;
 	if ( G.local || ( wW === G.wW && nochange ) ) return
