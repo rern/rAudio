@@ -1593,31 +1593,32 @@ function setButtonUpdating() {
 function setPlaybackTitles( orientationchange ) {
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
+	var $el = $( '#artist, #title, #album' );
+	$el
+		.removeClass( 'scrollleft' )
+		.removeAttr( 'style' );
 	var wW = document.body.clientWidth;
-	var tWmax = G.tWmax;
-	G.tWmax = 0;
-	$( '#artist, #title, #album' ).each( function() {
+	var tWmax = 0;
+	$el.each( function() {
 		var $this = $( this );
-		$this.removeClass( 'scrollleft' );
 		var tW = $this.width();
 		if ( tW > wW * 0.98 ) {
-			if ( tW > G.tWmax ) G.tWmax = tW; // same width > scroll together (same speed)
+			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 			$this.addClass( 'scrollleft' );
 		}
 	} );
-	if ( G.tWmax ) {
-		document.documentElement.style.setProperty( '--wd', G.tWmax +'px' );
-		document.documentElement.style.setProperty( '--an', ( wW + G.tWmax ) / G.scrollspeed +'s infinite linear scrollleft' );
-	} else {
-		document.documentElement.style.setProperty( '--wd', '' );
-		document.documentElement.style.setProperty( '--an', '' );
-	}
+	if ( !tWmax ) return
+	
+	$( '.scrollleft' ).css( { // same width and speed
+		  width     : tWmax +'px'
+		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite linear scrollleft'
+	} );
 	if ( G.localhost ) {
 		$( '.scrollleft' )
-			.addClass( 'scrollonce' )
-			.on( 'animationend', function() {
+			.css( 'animation-iteration-count', 1 )
+			.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
 				$( this )
-					.removeClass( 'scrollleft scrollonce' )
+					.removeAttr( 'class style' )
 					.addClass( 'scrollellipse' );
 			} );
 	}

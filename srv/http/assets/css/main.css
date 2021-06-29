@@ -372,27 +372,16 @@ i.map.disabled, .map.disabled i {
 	position: relative;
 	overflow: hidden;
 }
-:root {
-	--wd: auto;
-	--an: none;
-}
-.scrollleft {
-	width: var( --wd );
-	animation: var( --an );
-}
-@keyframes scrollleft {
-	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
-	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
-}
-.scrollonce {
-	animation-iteration-count: 1;
-}
-.scrollellipse { /* localbrowser */
+.scrollellipse {
 	display: block !important;
 	padding: 0 10px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+@keyframes scrollleft {
+	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
+	100% { transform : translateX( -100% ) } /* scroll to left 100% text width */
 }
 /* ---------------------- knobs, buttons ----------------------*/
 #playback-row {
