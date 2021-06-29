@@ -1618,7 +1618,8 @@ function setPlaybackTitles( orientationchange ) {
 			.css( 'animation-iteration-count', 1 )
 			.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
 				$( this )
-					.removeAttr( 'class style' )
+					.removeClass( 'scrollleft' )
+					.removeAttr( 'style' )
 					.addClass( 'scrollellipse' );
 			} );
 	}
