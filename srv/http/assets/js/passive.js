@@ -28,7 +28,7 @@ $( window ).on( 'resize', function() {
 		}, 0 );
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-		setTimeout( function() {
+			setTimeout( function() {
 				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
