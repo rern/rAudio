@@ -1,6 +1,5 @@
 $( window ).on( 'resize', function() {
 	if ( G.playback ) {
-		$( '#page-playback' ).removeClass( 'hide' );
 		if ( G.status.state === 'play' ) {
 			bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
 				if ( HMS ) {
