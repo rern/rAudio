@@ -1,3 +1,43 @@
+$( window ).on( 'resize', function() {
+	if ( G.playback ) {
+		$( '#page-playback' ).removeClass( 'hide' );
+		if ( G.status.state === 'play' ) {
+			bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
+				if ( HMS ) {
+					G.status.elapsed = HMS2Second( HMS );
+					displayPlayback();
+					renderPlayback();
+					setButtonControl()
+				}
+			} );
+		} else {
+			displayPlayback();
+			renderPlayback();
+			setButtonControl()
+		}
+	} else if ( G.library ) {
+		setTimeout( function() {
+			if ( G.librarylist || G.savedlist ) {
+				if ( $( '.licover' ).length ) {
+					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+					console.log( document.body.clientWidth, window.innerWidth )
+					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+				} else {
+					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+				}
+			}
+		}, 0 );
+	} else {
+		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
+		setTimeout( function() {
+				getTitleWidth();
+				setTitleWidth();
+				setPlaylistScroll()
+				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+			}, 0 );
+		}
+	}
+} );
 function onVisibilityChange( callback ) {
 	var visible = 1;
 	function focused() {
@@ -18,49 +58,6 @@ onVisibilityChange( function( visible ) {
 	} else {
 		pushstream.disconnect();
 	}
-} );
-$( window ).on( 'orientationchange', function() {
-	$( window ).one( 'resize', function() {
-		if ( G.playback ) {
-			$( '#page-playback' ).removeClass( 'hide' );
-			if ( G.status.state === 'play' ) {
-				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
-					if ( HMS ) {
-						G.status.elapsed = HMS2Second( HMS );
-						displayPlayback();
-						renderPlayback();
-						setButtonControl()
-					}
-				} );
-			} else {
-				displayPlayback();
-				renderPlayback();
-				setButtonControl()
-			}
-			setPlaybackTitles();
-		} else if ( G.library ) {
-			setTimeout( function() {
-				if ( G.librarylist || G.savedlist ) {
-					if ( $( '.licover' ).length ) {
-						$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-						console.log( document.body.clientWidth, window.innerWidth )
-						$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
-					} else {
-						$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
-					}
-				}
-			}, 0 );
-		} else {
-			if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			setTimeout( function() {
-					getTitleWidth();
-					setTitleWidth();
-					setPlaylistScroll()
-					$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
-				}, 0 );
-			}
-		}
-	} );
 } );
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
