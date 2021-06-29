@@ -1595,18 +1595,21 @@ function setButtonUpdating() {
 }
 function setPlaybackTitles() { // suppress multiple fires, skip if same width and same data
 	var wW = document.body.clientWidth;
-	var nochange = G.prevartist === G.status.Artist && G.prevtitle === G.status.Title && G.prevalbum === G.status.Album;
-	if ( G.local || ( wW === G.wW && nochange ) ) return
+	var nochange = wW === G.wW
+				&& $( '#artist' ).text() === G.prevartist
+				&& $( '#title' ).text() === G.prevtitle
+				&& $( '#album' ).text() === G.prevalbum;
+	if ( G.local || nochange ) return
 	
 	local();
+	G.wW = wW;
+	var tWmax = 0;
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	var $el = $( '#artist, #title, #album' );
 	$el
 		.removeClass( 'scrollleft' )
 		.removeAttr( 'style' );
-	G.wW = wW;
-	var tWmax = 0;
 	$el.each( function() {
 		var $this = $( this );
 		var tW = $this.width();
