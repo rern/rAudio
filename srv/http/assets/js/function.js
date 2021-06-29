@@ -1241,7 +1241,7 @@ function renderPlayback() {
 		return
 	}
 	
-	setTimeout( setPlaybackTitles, 0 );
+	setPlaybackTitles();
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== G.prevartist
 		|| G.status.Album !== G.prevalbum
@@ -1591,6 +1591,9 @@ function setButtonUpdating() {
 	}
 }
 function setPlaybackTitles() {
+	if ( G.local ) return
+	
+	local();
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	var $el = $( '#artist, #title, #album' );

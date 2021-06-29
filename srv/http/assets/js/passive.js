@@ -1,16 +1,16 @@
 function onVisibilityChange( callback ) {
-    var visible = 1;
-    function focused() {
-        if ( !visible ) callback( visible = 1 );
-    }
-    function unfocused() {
-        if ( visible ) callback( visible = 0 );
-    }
-    document.addEventListener( 'visibilitychange', function() {
+	var visible = 1;
+	function focused() {
+		if ( !visible ) callback( visible = 1 );
+	}
+	function unfocused() {
+		if ( visible ) callback( visible = 0 );
+	}
+	document.addEventListener( 'visibilitychange', function() {
 		document.hidden ? unfocused() : focused();
 	} );
-    window.onpageshow = window.onfocus = focused;
-    window.onpagehide = window.onblur = unfocused;
+	window.onpageshow = window.onfocus = focused;
+	window.onpagehide = window.onblur = unfocused;
 };
 onVisibilityChange( function( visible ) {
 	if ( visible ) {
@@ -37,21 +37,22 @@ $( window ).on( 'orientationchange', function() {
 				renderPlayback();
 				setButtonControl()
 			}
-			setPlaybackTitles( 'orientationchange' );
+			setPlaybackTitles();
 		} else if ( G.library ) {
-			if ( G.librarylist || G.savedlist ) {
-				setTimeout( function() {
+			setTimeout( function() {
+				if ( G.librarylist || G.savedlist ) {
 					if ( $( '.licover' ).length ) {
 						$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+						console.log( document.body.clientWidth, window.innerWidth )
 						$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
 					} else {
 						$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
 					}
-				}, 0 );
-			}
+				}
+			}, 0 );
 		} else {
 			if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-				setTimeout( function() {
+			setTimeout( function() {
 					getTitleWidth();
 					setTitleWidth();
 					setPlaylistScroll()
