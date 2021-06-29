@@ -305,9 +305,7 @@ function psMpdPlayer( data ) {
 		} else if ( G.playback ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
-				$( '#artist' ).text( G.status.Artist );
-				$( '#title' ).text( G.status.Title )
-				$( '#album' ).text( G.status.Album );
+				renderPlaybackTitles();
 				setPlaybackTitles();
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );

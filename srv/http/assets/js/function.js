@@ -1183,9 +1183,6 @@ function renderPlayback() {
 		return
 	}
 	
-	G.prevartist = $( '#artist' ).text();
-	G.prevtitle = $( '#title' ).text();
-	G.prevalbum = $( '#album' ).text();
 	$( '.emptyadd' ).addClass( 'hide' );
 	var sampling = G.status.sampling;
 	if ( G.status.webradio ) {
@@ -1201,9 +1198,7 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	var displaytime = $( '#time-knob' ).is( ':visible' );
-	$( '#artist' ).text( G.status.Artist );
-	$( '#title' ).text( G.status.Title );
-	$( '#album' ).text( G.status.Album );
+	renderPlaybackTitles();
 	// webradio ////////////////////////////////////////
 	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) !== -1 ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
@@ -1395,6 +1390,14 @@ function renderPlaybackCoverart( coverart ) {
 		if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 		loader( 'hide' );
 	}
+}
+function renderPlaybackTitles() {
+	G.prevartist = $( '#artist' ).text();
+	G.prevtitle = $( '#title' ).text();
+	G.prevalbum = $( '#album' ).text();
+	$( '#artist' ).text( G.status.Artist );
+	$( '#title' ).text( G.status.Title );
+	$( '#album' ).text( G.status.Album );
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
@@ -1591,7 +1594,9 @@ function setButtonUpdating() {
 	}
 }
 function setPlaybackTitles() {
-	if ( G.local ) return
+	var wW = document.body.clientWidth;
+	var nochange = G.prevartist === G.status.Artist && G.prevtitle === G.status.Title && G.prevalbum === G.status.Album;
+	if ( G.local || ( wW === G.wW && nochange ) ) return
 	
 	local();
 	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
@@ -1600,12 +1605,12 @@ function setPlaybackTitles() {
 	$el
 		.removeClass( 'scrollleft' )
 		.removeAttr( 'style' );
-	var wW = document.body.clientWidth;
+	G.wW = wW;
 	var tWmax = 0;
 	$el.each( function() {
 		var $this = $( this );
 		var tW = $this.width();
-		if ( tW > wW * 0.98 ) {
+		if ( tW > G.wW * 0.98 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 			$this.addClass( 'scrollleft' );
 		}
@@ -1614,7 +1619,7 @@ function setPlaybackTitles() {
 	
 	$( '.scrollleft' ).css( { // same width and speed
 		  width     : tWmax +'px'
-		, animation : ( wW + tWmax ) / G.scrollspeed +'s infinite linear scrollleft'
+		, animation : ( G.wW + tWmax ) / G.scrollspeed +'s infinite linear scrollleft'
 	} );
 	if ( G.localhost ) {
 		$( '.scrollleft' )
