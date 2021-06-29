@@ -1593,13 +1593,13 @@ function setButtonUpdating() {
 							.addClass( 'fa-library' );
 	}
 }
-function setPlaybackTitles() { // suppress multiple fires, skip if same width and same data
+function setPlaybackTitles() {
 	var wW = document.body.clientWidth;
 	var nochange = wW === G.wW
 				&& $( '#artist' ).text() === G.prevartist
 				&& $( '#title' ).text() === G.prevtitle
 				&& $( '#album' ).text() === G.prevalbum;
-	if ( G.local || nochange ) return
+	if ( G.local || nochange ) return // suppress multiple fires, skip if same width and same data
 	
 	local();
 	G.wW = wW;
