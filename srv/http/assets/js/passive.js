@@ -38,20 +38,19 @@ function afterOrientationChange() {
 		}
 		setPlaybackTitles( 'orientationchange' );
 	} else if ( G.library ) {
-		setTimeout( function() {
-			if ( G.librarylist || G.savedlist ) {
+		if ( G.librarylist || G.savedlist ) {
+			setTimeout( function() {
 				if ( $( '.licover' ).length ) {
 					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-					console.log( document.body.clientWidth, window.innerWidth )
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
 				} else {
 					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
 				}
-			}
-		}, 0 );
+			}, 0 );
+		}
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-		setTimeout( function() {
+			setTimeout( function() {
 				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
