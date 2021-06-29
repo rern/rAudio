@@ -1,19 +1,8 @@
 $( window ).on( 'resize', function() {
 	if ( G.playback ) {
-		if ( G.status.state === 'play' ) {
-			bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
-				if ( HMS ) {
-					G.status.elapsed = HMS2Second( HMS );
-					displayPlayback();
-					renderPlayback();
-					setButtonControl()
-				}
-			} );
-		} else {
-			displayPlayback();
-			renderPlayback();
-			setButtonControl()
-		}
+		displayPlayback();
+		renderPlayback();
+		setButtonControl()
 	} else if ( G.library ) {
 		setTimeout( function() {
 			if ( G.librarylist || G.savedlist ) {
