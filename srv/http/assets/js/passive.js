@@ -19,7 +19,7 @@ onVisibilityChange( function( visible ) {
 		pushstream.disconnect();
 	}
 } );
-window.addEventListener( 'orientationchange', function() {
+function afterOrientationChange() {
 	if ( G.playback ) {
 		$( '#page-playback' ).removeClass( 'hide' );
 		if ( G.status.state === 'play' ) {
@@ -36,28 +36,33 @@ window.addEventListener( 'orientationchange', function() {
 			renderPlayback();
 			setButtonControl()
 		}
-		var afterOrientationChange = function() {
-			setPlaybackTitles( 'orientationchange' );
-			window.removeEventListener( 'resize', afterOrientationChange );
-		}
-		window.addEventListener( 'resize', afterOrientationChange );
+		setPlaybackTitles( 'orientationchange' );
 	} else if ( G.library ) {
-		if ( G.librarylist || G.savedlist ) {
-			if ( $( '.licover' ).length ) {
-				$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-				$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
-			} else {
-				$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+		setTimeout( function() {
+			if ( G.librarylist || G.savedlist ) {
+				if ( $( '.licover' ).length ) {
+					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+					console.log( document.body.clientWidth, window.innerWidth )
+					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+				} else {
+					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+				}
 			}
-		}
+		}, 0 );
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			getTitleWidth();
-			setTitleWidth();
-			setPlaylistScroll()
-			$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+		setTimeout( function() {
+				getTitleWidth();
+				setTitleWidth();
+				setPlaylistScroll()
+				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+			}, 0 );
 		}
 	}
+}
+window.addEventListener( 'orientationchange', function() {
+	window.removeEventListener( 'resize', afterOrientationChange );
+	window.addEventListener( 'resize', afterOrientationChange );
 } );
 
 var pushstream = new PushStream( {
