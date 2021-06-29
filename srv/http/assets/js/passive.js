@@ -20,45 +20,44 @@ onVisibilityChange( function( visible ) {
 	}
 } );
 window.addEventListener( 'orientationchange', function() {
-	if ( G.playback ) $( '#page-playback' ).addClass( 'hide' );
-	setTimeout( function() {
-		if ( G.playback ) {
-			$( '#page-playback' ).removeClass( 'hide' );
-			if ( G.status.state === 'play' ) {
-				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
-					if ( HMS ) {
-						G.status.elapsed = HMS2Second( HMS );
-						displayPlayback();
-						renderPlayback();
-						setButtonControl()
-					}
-				} );
-			} else {
-				displayPlayback();
-				renderPlayback();
-				setButtonControl()
-			}
-			setTimeout( function() {
-				setPlaybackTitles( 'orientationchange' );
-			}, 0 );
-		} else if ( G.library ) {
-			if ( G.librarylist || G.savedlist ) {
-				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
-				} else {
-					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+	if ( G.playback ) {
+		$( '#page-playback' ).removeClass( 'hide' );
+		if ( G.status.state === 'play' ) {
+			bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
+				if ( HMS ) {
+					G.status.elapsed = HMS2Second( HMS );
+					displayPlayback();
+					renderPlayback();
+					setButtonControl()
 				}
-			}
+			} );
 		} else {
-			if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-				getTitleWidth();
-				setTitleWidth();
-				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+			displayPlayback();
+			renderPlayback();
+			setButtonControl()
+		}
+		var afterOrientationChange = function() {
+			setPlaybackTitles( 'orientationchange' );
+			window.removeEventListener( 'resize', afterOrientationChange );
+		}
+		window.addEventListener( 'resize', afterOrientationChange );
+	} else if ( G.library ) {
+		if ( G.librarylist || G.savedlist ) {
+			if ( $( '.licover' ).length ) {
+				$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+				$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+			} else {
+				$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
 			}
 		}
-	}, 100 );
+	} else {
+		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
+			getTitleWidth();
+			setTitleWidth();
+			setPlaylistScroll()
+			$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+		}
+	}
 } );
 
 var pushstream = new PushStream( {
