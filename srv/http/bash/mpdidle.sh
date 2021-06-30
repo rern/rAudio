@@ -18,7 +18,7 @@ mpc idleloop | while read changed; do
 		player )
 			currentprev=$current
 			current=$( mpc current )
-			if [[ -n $current && $current != $currentprev ]]; then
+			if [[ $current != $currentprev ]]; then
 				killall cmd-pushstatus.sh &> /dev/null # debounce double firings - kill previous
 				$dirbash/cmd-pushstatus.sh
 			fi
