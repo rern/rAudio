@@ -331,6 +331,12 @@ i.map.disabled, .map.disabled i {
 #infoOverlay.noscroll { /* for volume input range */
 	height: 100%;
 }
+#infoContent .imgicon {
+	width: 30px !important;
+	margin-right: 5px !important;
+	vertical-align: -10px;
+	border: none;
+}
 #infoicon {
 	height: 25px;
 	font-size: 0;

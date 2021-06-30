@@ -744,8 +744,8 @@ function infoPlayback() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, radio        : {
-			  '<img class="imgicon" src="/assets/img/vu.png">&ensp;<gr>No cover</gr>' : false
-			, '<i class="imgicon iconcover"">&ensp;<gr>No cover</gr>'                 : true
+			  '<img class="imgicon" src="/assets/img/vu.png"><gr>No cover</gr>' : false
+			, '<i class="imgicon iconcover""></i><gr>No cover</gr>'                 : true
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
