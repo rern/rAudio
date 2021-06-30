@@ -1345,38 +1345,31 @@ function renderPlaybackBlank() {
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
-	bash( "ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}'", function( ip ) {
-		if ( ip ) {
-			var ips = ip.split( '\n' );
-			var htmlip = '';
-			ips.forEach( function( each ) {
-				if ( each ) htmlip += '<br><gr>http://</gr>'+ each
+	if ( G.status.ip ) {
+		$( '#qrip' ).html( '<br><gr>http://</gr>'+ G.status.ip );
+		var qr = new QRCode( {
+			  msg : 'http://'+ G.status.ip
+			, dim : 230
+			, pad : 10
+		} );
+		$( '#qrwebui' ).html( qr );
+		$( '#coverTR' ).toggleClass( 'empty', !G.bars );
+		$( '#coverart' )
+			.attr( 'src', G.coverdefault )
+			.addClass( 'hide' );
+		$( '#sampling' ).empty();
+	} else {
+		$( '#coverart' )
+			.attr( 'src', G.coverdefault )
+			.removeClass( 'hide' );
+		$( '#page-playback .emptyadd' ).empty();
+		$( '#sampling' )
+			.css( 'display', 'block' )
+			.html( 'Network not connected:&emsp; <i class="fa fa-networks fa-lg wh"></i>&ensp;Setup' )
+			.on( 'click', '.fa-networks', function() {
+				location.href = 'settings.php?p=networks';
 			} );
-			$( '#qrip' ).html( htmlip );
-			var qr = new QRCode( {
-				  msg : 'http://'+ ips[ 0 ]
-				, dim : 230
-				, pad : 10
-			} );
-			$( '#qrwebui' ).html( qr );
-			$( '#coverTR' ).toggleClass( 'empty', !G.bars );
-			$( '#coverart' )
-				.attr( 'src', G.coverdefault )
-				.addClass( 'hide' );
-			$( '#sampling' ).empty();
-		} else {
-			$( '#coverart' )
-				.attr( 'src', G.coverdefault )
-				.removeClass( 'hide' );
-			$( '#page-playback .emptyadd' ).empty();
-			$( '#sampling' )
-				.css( 'display', 'block' )
-				.html( 'Network not connected:&emsp; <i class="fa fa-networks fa-lg wh"></i>&ensp;Setup' )
-				.on( 'click', '.fa-networks', function() {
-					location.href = 'settings.php?p=networks';
-				} );
-		}
-	} );
+	}
 }
 function renderPlaybackCoverart( coverart ) {
 	if ( coverart || G.display.novu ) {

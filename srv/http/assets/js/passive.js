@@ -59,8 +59,9 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
-		bannerHide();
 		getPlaybackStatus();
+		bannerHide();
+		loader( 'hide' );
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );

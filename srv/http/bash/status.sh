@@ -201,8 +201,10 @@ status+='
 , "volumemute"  : '$volumemute
 
 if (( $playlistlength  == 0 )); then
+	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 ########
 	status+='
+, "ip"       : "'$ip'"
 , "coverart" : ""'
 # >>>>>>>>>>
 	echo {$status}
