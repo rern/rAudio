@@ -1385,7 +1385,7 @@ i.map.disabled, .map.disabled i {
 	content: url( '/assets/img/iconcover.svg' );
 	width: 24px !important;
 	margin: 0 !important;
-	border: 1px solid hsl(0,0%,30%);
+	border: 1px solid hsl(0,0%,20%);
 }
 .bkedit .iconcover {
 	top: 5px;
