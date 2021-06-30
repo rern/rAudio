@@ -1396,8 +1396,12 @@ function renderPlaybackTitles() {
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
 	$( '#artist' ).text( G.status.Artist );
-	$( '#title' ).text( G.status.Title );
-	$( '#album' ).text( G.status.Album );
+	$( '#title' )
+		.text( G.status.Title )
+		.toggleClass( 'gr', G.status.state === 'pause' );
+	$( '#album' )
+		.text( G.status.Album )
+		.toggleClass( 'albumgray', G.status.Album === '' );
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
@@ -1604,8 +1608,6 @@ function setPlaybackTitles() {
 	local();
 	G.wW = wW;
 	var tWmax = 0;
-	$( '#title' ).toggleClass( 'gr', G.status.state === 'pause' );
-	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 	var $el = $( '#artist, #title, #album' );
 	$el
 		.removeClass( 'scrollleft' )
