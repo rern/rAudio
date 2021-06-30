@@ -60,8 +60,8 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		getPlaybackStatus();
+		if ( $( '#bannerTitle' ).text() === 'Power' ) loader( 'hide' );
 		bannerHide();
-		loader( 'hide' );
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
