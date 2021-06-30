@@ -1606,7 +1606,7 @@ function setPlaybackTitles() {
 		.removeClass( 'scrollleft' )
 		.removeAttr( 'style' );
 	$el.each( function() {
-		var tW = Math.round( this.getBoundingClientRect().width );
+		var tW = Math.ceil( this.getBoundingClientRect().width );
 		if ( tW > G.wW - 20 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
 			$( this ).addClass( 'scrollleft' );
