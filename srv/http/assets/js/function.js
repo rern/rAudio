@@ -1636,6 +1636,7 @@ function setPlaybackTitles() {
 	}
 }
 function setPlaylistScroll() {
+	clearIntervalAll();
 	if ( !G.playlist
 		|| G.plremove
 		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
@@ -1655,26 +1656,31 @@ function setPlaylistScroll() {
 		var scrollpos = $liactive.offset().top - ( G.bars ? 80 : 40 ) - ( 49 * 3 );
 		$( 'html, body' ).scrollTop( scrollpos );
 	}
-	if ( G.status.state !== 'stop' ) {
-		clearIntervalAll();
-		var $this = $( '#pl-list li' ).eq( G.status.song );
-		var $elapsed = $this.find( '.elapsed' );
-		var $name = $this.find( '.name' );
-		var $song = $this.find( '.song' );
+	var $this = $( '#pl-list li' ).eq( G.status.song );
+	var $elapsed = $this.find( '.elapsed' );
+	var $name = $this.find( '.name' );
+	var $song = $this.find( '.song' );
+	var $radioname1 = $this.find( '.li1 .radioname' );
+	var $radioname2 = $this.find( '.li2 .radioname' );
+	$radioname1.removeClass( 'hide' );
+	$radioname2.addClass( 'hide' );
+	if ( G.status.state === 'stop' ) {
+		$elapsed.empty();
+		$song.empty();
+		$name.removeClass( 'hide' );
+	} else {
 		var slash = G.status.webradio ? '' : ' <gr>/</gr>';
-		$( '.li1 .radioname' ).removeClass( 'hide' );
-		$( '.li2 .radioname' ).addClass( 'hide' );
 		if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
 		if ( G.status.state === 'pause' ) {
 			elapsedtxt = second2HMS( G.status.elapsed );
 			$elapsed.html( '<i class="fa fa-pause"></i>'+ elapsedtxt + slash );
 			setTitleWidth();
 		} else if ( G.status.state === 'play' ) {
-			$this.find( '.li1 .radioname' ).addClass( 'hide' );
-			$this.find( '.li2 .radioname' ).removeClass( 'hide' );
+			$radioname1.addClass( 'hide' );
+			$radioname2.removeClass( 'hide' );
 			if ( G.status.webradio ) {
 				$name.addClass( 'hide' );
-				$this.find( '.li2 .radioname' ).removeClass( 'hide' );
+				$radioname2.removeClass( 'hide' );
 				$song.html( G.status.Title || '·&ensp;·&ensp;·' );
 			} else {
 				$name.removeClass( 'hide' );
