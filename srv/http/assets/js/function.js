@@ -1613,11 +1613,10 @@ function setPlaybackTitles() {
 		.removeClass( 'scrollleft' )
 		.removeAttr( 'style' );
 	$el.each( function() {
-		var $this = $( this );
-		var tW = $this.width();
+		var tW = Math.round( this.getBoundingClientRect().width );
 		if ( tW > G.wW * 0.98 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
-			$this.addClass( 'scrollleft' );
+			$( this ).addClass( 'scrollleft' );
 		}
 	} );
 	if ( !tWmax ) return

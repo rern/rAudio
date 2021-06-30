@@ -1,18 +1,17 @@
 $( window ).on( 'resize', function() {
 	if ( G.playback ) {
 		displayPlayback();
-		renderPlayback();
+		setTimeout( renderPlayback, 50 );
 		setButtonControl()
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			setTimeout( function() {
-					if ( $( '.licover' ).length ) {
-						$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-						console.log( document.body.clientWidth, window.innerWidth )
-						$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
-					} else {
-						$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
-					}
+				if ( $( '.licover' ).length ) {
+					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+				} else {
+					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+				}
 			}, 0 );
 		}
 	} else {
