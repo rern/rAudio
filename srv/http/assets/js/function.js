@@ -1637,6 +1637,7 @@ function setPlaybackTitles() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
+	$( '#pl-list .elapsed' ).empty();
 	if ( !G.playlist
 		|| G.plremove
 		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
@@ -1665,7 +1666,6 @@ function setPlaylistScroll() {
 	$radioname1.removeClass( 'hide' );
 	$radioname2.addClass( 'hide' );
 	if ( G.status.state === 'stop' ) {
-		$elapsed.empty();
 		$song.empty();
 		$name.removeClass( 'hide' );
 	} else {
