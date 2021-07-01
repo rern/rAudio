@@ -614,7 +614,13 @@ $( '#volume-text' ).tap( function() {
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).on( 'tap', '.coveredit', function( e ) {
+$( '#divcover' ).taphold( function( e ) {
+	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
+	
+	$( '#coverart' )
+		.css( 'opacity', 0.33 )
+		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
+} ).on( 'tap', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
 		coverartSave();
@@ -762,13 +768,6 @@ $( '.map' ).tap( function() {
 		if ( cmd === 'play' && G.status.state === 'play' ) cmd = !G.status.webradio ? 'pause' : 'stop';
 		$( '#'+ cmd ).click();
 	}
-} );
-$( '.covermap' ).taphold( function( e ) {
-	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
-	
-	$( '#coverart' )
-		.css( 'opacity', 0.33 )
-		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
 } );
 $( '.btn-cmd' ).click( function() {
 	var $this = $( this );
