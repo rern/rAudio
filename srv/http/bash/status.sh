@@ -202,10 +202,12 @@ status+='
 
 if (( $playlistlength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	[[ -n $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
-, "ip"       : "'$ip'"
-, "coverart" : ""'
+, "coverart" : ""
+, "hostname" : "'$hostname'"
+, "ip"       : "'$ip'"'
 # >>>>>>>>>>
 	echo {$status}
 	exit
