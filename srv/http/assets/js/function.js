@@ -1346,7 +1346,7 @@ function renderPlaybackBlank() {
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 	if ( G.status.ip ) {
-		$( '#qrip' ).html( '<br><gr>http://</gr>'+ G.status.ip );
+		$( '#qrip' ).html( '<gr>http://</gr>'+ G.status.ip +'<br><gr>http://</gr>'+ G.status.hostname );
 		var qr = new QRCode( {
 			  msg : 'http://'+ G.status.ip
 			, dim : 230
