@@ -1902,7 +1902,6 @@ li.active .li1 bl {
 #lib-list .li1,
 #pl-list .li1,
 #pl-savedlist .li1 {
-	display: block;
 	padding: 5px 10px 0 0;
 }
 #pl-list .li1 a {

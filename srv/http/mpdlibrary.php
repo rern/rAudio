@@ -212,8 +212,8 @@ case 'webradio':
 					.'<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
 					.'<a class="lipath">'.$each->url.'</a>'
 					.'<a class="liname">'.$each->name.'</a>'
-					.'<span class="li1">'.$each->name.'</span>'
-					.'<span class="li2">'.$each->url.'</span>'
+					.'<div class="li1">'.$each->name.'</div>'
+					.'<div class="li2">'.$each->url.'</div>'
 				.'</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -421,8 +421,8 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$html.= '<li data-mode="file" '.$datatrack.$li0.'>'
 					.'<a class="lipath">'.$path.'</a>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-file"></i>'
-					.'<span class="li1">'.$title.'<span class="time">'.$each->time.'</span></span>'
-					.'<span class="li2">'.$i.' • '.$trackname.'</span>'
+					.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>'
+					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
 	if ( $searchmode ) return [ 'html' => $html, 'count' => count( $array ) ];
