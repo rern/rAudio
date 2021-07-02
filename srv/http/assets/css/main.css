@@ -1900,7 +1900,8 @@ li.active .li1 bl {
 #pl-savedlist .li1 {
 	padding: 5px 10px 0 0;
 }
-#pl-list .li1 a {
+#pl-list .li1 span {
+	display: inline-block;
 	max-width: calc( 100% - 105px );
 	white-space: nowrap;
 	overflow: hidden;
@@ -1930,6 +1931,7 @@ li.active .li1 bl {
 	display: block;
 	max-width: calc( 100vw - 60px );
 	font-size: 14px;
+	line-height: 14px;
 	color: var( --cg60 )
 }
 #pl-savedlist .li2 {

@@ -222,7 +222,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
 						.'<img class="lazy iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
-						.'<div class="li1"><a class="name">'.$list->Title.'</a>'
+						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>'
 						.'<div class="li2">'.$li2.'</div>'
 					.'</li>';
