@@ -374,7 +374,7 @@ function getBio( artist ) {
 			+'&format=json'
 			+'&method=artist.getinfo'
 			+'&api_key='+ G.apikeylastfm
-			+'&artist='+ encodeURI( artist )
+			+'&artist='+ encodeURI( artist.replace( '&', 'and' ) );
 	$.post( url, function( data ) {
 		if ( 'error' in data || ( !data.artist.bio.content ) ) {
 			info( {
