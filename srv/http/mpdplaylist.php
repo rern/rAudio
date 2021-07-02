@@ -222,11 +222,11 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
 						.'<img class="lazy iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
-						.'<span class="li1"><a class="name">'.$list->Title.'</a>'
+						.'<div class="li1"><a class="name">'.$list->Title.'</a>'
 						.'<span class="duration"><a class="elapsed"></a>'
 						.'<a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span>'
-						.'</span>'
-						.'<span class="li2">'.$li2.'</span>'
+						.'</div>'
+						.'<div class="li2">'.$li2.'</div>'
 					.'</li>';
 			$countsong++;
 			$counttime += $sec;
@@ -239,10 +239,10 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( !$artist && !$album ) $li2.= $file;
 			$html.= '<li class="upnp">'
 						.'<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>'
-						.'<span class="li1"><span class="name">'.$list->Title.'</span>'
+						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span>'
-						.'</span>'
-						.'<span class="li2">'.$li2.'</span></span>'
+						.'</div>'
+						.'<div class="li2">'.$li2.'</div>'
 					.'</li>';
 			$countupnp++;
 		} else {
@@ -260,9 +260,10 @@ function htmlPlaylist( $lists, $plname = '' ) {
 						.$icon
 						.'<a class="lipath">'.$file.'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
-						.'<span class="li1"><span class="radioname name">'.$stationname.'</span>'
-						.'<a class="song"></a><span class="duration"><a class="elapsed"></a><a class="time"></a></span></span>'
-						.'<span class="li2">'.$i.' • <span class="radioname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.$file.'</span>'
+						.'<div class="li1"><span class="radioname name">'.$stationname.'</span>'
+						.'<a class="song"></a><span class="duration"><a class="elapsed"></a><a class="time"></a></span>'
+						.'</div>'
+						.'<div class="li2">'.$i.' • <span class="radioname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.$file.'</div>'
 					.'</li>';
 			$countradio++;
 		}
