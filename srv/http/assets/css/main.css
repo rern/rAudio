@@ -1921,10 +1921,9 @@ li.active .li1 bl {
 #pl-list .elapsed i {
 	margin-right: 5px;
 	width: 20px;
-	line-height: 18px;
 }
 #pl-list .elapsed {
-	margin: 0 3px 0 7px;
+	margin: -4px 3px 0 7px;
 }
 #lib-list .li2,
 #pl-list .li2,
