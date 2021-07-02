@@ -2346,6 +2346,7 @@ li.active .li2 bl {
 	#lib-list .li2,
 	#pl-list .li2 {
 		font-size: 12px;
+		line-height: 16px;
 	}
 	#pl-savedlist span {
 		line-height: 47px;
