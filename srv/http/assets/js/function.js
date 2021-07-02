@@ -516,7 +516,7 @@ function getPlaybackStatus( render ) {
 					$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
 				} );
 			}
-		} else if ( G.playlist ) {
+		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			$( '#pl-list .elapsed' ).empty();
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();

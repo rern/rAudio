@@ -364,13 +364,15 @@ $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 		$( '#lib-list li' ).removeClass( 'active' );
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 	} else if ( G.playlist ) {
-		$( '#pl-savedlist li' ).removeClass( 'active' );
-		$( '#pl-list li' ).removeClass( 'updn' );
-		$( '#pl-list .name' ).css( 'max-width', '' );
-		if ( !$( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
-		if ( G.plremove ) {
-			G.plremove = 0;
-			getPlaybackStatus();
+		if ( !G.savedlist && !G.savedplaylist ) {
+			$( '#pl-savedlist li' ).removeClass( 'active' );
+			$( '#pl-list li' ).removeClass( 'updn' );
+			$( '#pl-list .name' ).css( 'max-width', '' );
+			if ( !$( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
+			if ( G.plremove ) {
+				G.plremove = 0;
+				getPlaybackStatus();
+			}
 		}
 	}
 } );
