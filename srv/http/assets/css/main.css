@@ -1900,7 +1900,8 @@ li.active .li1 bl {
 #pl-savedlist .li1 {
 	padding: 5px 10px 0 0;
 }
-#pl-list .li1 span {
+#pl-list .li1 span,
+#pl-savedlist .li1 span {
 	display: inline-block;
 	max-width: calc( 100% - 105px );
 	white-space: nowrap;
@@ -2328,8 +2329,7 @@ li.active .li2 bl {
 	#pl-savedlist span::before {
 		display: none;
 	}
-	#lib-list li,
-	#pl-savedlist li {
+	#lib-list li {
 		line-height: 52px;
 	}
 	#lib-list .li1,
@@ -2344,12 +2344,13 @@ li.active .li2 bl {
 		padding-left: 0;
 	}
 	#lib-list .li2,
-	#pl-list .li2 {
+	#pl-list .li2,
+	#pl-savedlist .li2	{
 		font-size: 12px;
-		line-height: 16px;
+		line-height: 14px;
 	}
-	#pl-savedlist span {
-		line-height: 47px;
+	#lib-list .li2 {
+		line-height: 20px;
 	}
 	#biocontent img {
 		width: 33vw;
