@@ -72,7 +72,7 @@ span.timer i {
 .gpio-text {
 	display: block;
 	padding: 0 0 0 5px;
-	line-height: 40px;
+	line-height: 2.1;
 	color: var( --cw );
 }
 .gpio-text i {
