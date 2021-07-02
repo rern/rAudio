@@ -37,16 +37,16 @@ hr {
 	background: var( --cm );
 }
 .page-icon, #close {
-    width: 40px;
-    height: 40px;
-    line-height: 38px;
-    text-align: center;
-    font-size: 24px;
-    text-shadow: -1px 1px 2px #000000;
+	width: 40px;
+	height: 40px;
+	line-height: 1.6;
+	text-align: center;
+	font-size: 24px;
+	text-shadow: -1px 1px 2px #000000;
 }
 .title {
 	margin-left: 15px;
-	line-height: 40px;
+	line-height: 1.55;
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 5px;
@@ -54,18 +54,9 @@ hr {
 #close {
 	float: right;
 	font-size: 28px;
+	line-height: 1.36;
 	color: var( --cm );
 	cursor: pointer;
-}
-heading {
-	display: inline-block;
-	margin: 20px 0 10px 0;
-	padding-bottom: 5px;
-	width: 100%;
-	line-height: 35px;
-	font-size: 24px;
-	font-weight: 300;
-	border-bottom: 1px solid var( --cg );
 }
 #list {
 	padding-left: 25px;
@@ -93,7 +84,6 @@ heading {
 .revisiontext {
 	display:none;
 	padding-left: 20px;
-	    line-height: 20px;
 }
 .detailtext i {
 	color: var( --cg60 );
@@ -113,7 +103,6 @@ heading {
 legend {
 	width: 100%;
 	margin-bottom: 5px;
-	font-size: 14px;
 	color: var( --cg60 );
 	border-bottom: 1px solid var( --cg );
 }
@@ -123,7 +112,7 @@ legend span {
 legend p,
 legend a {
 	display: inline-block;
-	line-height: 1em;
+	line-height: 1;
 }
 legend > i:last-child {
 	float: right;
@@ -137,7 +126,7 @@ legend .status {
 	overflow: hidden;
 }
 .detailtext {
-	line-height: 18px;
+	line-height: 1.2;
 }
 .detailtext code {
 	padding: 3px;
@@ -157,7 +146,7 @@ pre {
 	background-color: var( --cgd );
 	font-family: 'Inconsolata';
 	font-size: 15px;
-	line-height: 20px;
+	line-height: 1.33;
 	white-space: pre-wrap;
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -193,7 +182,6 @@ a:hover {
 #list li {
 	width: fit-content;
 	width: -moz-fit-content;
-	line-height: 22px;
 	color: var( --cw );
 }
 #list a {
