@@ -5,7 +5,7 @@
 	min-height: 47px;
 	bottom: 50px;
 	padding: 6px 130px 5px 35px;
-	line-height: 1;
+	line-height: 18px;
 	z-index: 112; /* #banner > #loader > # #keyboard > #infoOverlay */
 	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
 }
@@ -31,7 +31,7 @@
 	width: 30px;
 	height: 100%;
 	font-size: 20px;
-	line-height: 1.4;
+	line-height: 28px;
 	text-align: center;
 	background-color: var( --cg );
 }
