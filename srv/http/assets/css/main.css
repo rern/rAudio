@@ -1747,7 +1747,6 @@ i.map.disabled, .map.disabled i {
 .liinfo .licomposer,
 .liinfo .liinfopath,
 #pl-list .liname,
-#pl-list .song,
 #pl-list .li2,
 #pl-savedlist span {
 	white-space: nowrap;
@@ -1756,9 +1755,6 @@ i.map.disabled, .map.disabled i {
 }
 #pl-list .liname {
 	max-width: calc( 100% - 190px );
-}
-#pl-list .song {
-	max-width: calc( 100% - 105px );
 }
 #lib-list .single {
 	line-height: 48px;

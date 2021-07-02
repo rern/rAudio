@@ -518,7 +518,7 @@ function getPlaybackStatus( render ) {
 			}
 		} else if ( G.playlist ) {
 			$( '#pl-list .elapsed' ).empty();
-			$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
+			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
 		setButtonUpdating();
@@ -1654,14 +1654,11 @@ function setPlaylistScroll() {
 	var $this = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed = $this.find( '.elapsed' );
 	var $name = $this.find( '.name' );
-	var $song = $this.find( '.song' );
-	var $radioname1 = $this.find( '.li1 .radioname' );
-	var $radioname2 = $this.find( '.li2 .radioname' );
-	$radioname1.removeClass( 'hide' );
-	$radioname2.addClass( 'hide' );
+	var $stationname = $this.find( '.li2 .stationname' );
+	$stationname.addClass( 'hide' );
 	if ( G.status.state === 'stop' ) {
-		$song.empty();
-		$name.removeClass( 'hide' );
+		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
+		$stationname.addClass( 'hide' );
 	} else {
 		var slash = G.status.webradio ? '' : ' <gr>/</gr>';
 		if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
@@ -1670,15 +1667,10 @@ function setPlaylistScroll() {
 			$elapsed.html( '<i class="fa fa-pause"></i>'+ elapsedtxt + slash );
 			setTitleWidth();
 		} else if ( G.status.state === 'play' ) {
-			$radioname1.addClass( 'hide' );
-			$radioname2.removeClass( 'hide' );
+			$stationname.removeClass( 'hide' );
 			if ( G.status.webradio ) {
-				$name.addClass( 'hide' );
-				$radioname2.removeClass( 'hide' );
-				$song.html( G.status.Title || '·&ensp;·&ensp;·' );
-			} else {
-				$name.removeClass( 'hide' );
-				$song.empty();
+				$stationname.removeClass( 'hide' );
+				$name.html( G.status.Title || '·&ensp;·&ensp;·' );
 			}
 			var elapsedL0 = 0;
 			var elapsedL = 0;
@@ -1710,7 +1702,7 @@ function setTitleWidth() {
 	// pl-icon + margin + duration + margin
 	var $liactive = $( '#pl-list li.active' );
 	var $duration = $liactive.find( '.duration' );
-	var $title = G.status.webradio ? $liactive.find( '.song' ) : $liactive.find( '.name' );
+	var $title = $liactive.find( '.name' );
 	var titleW = $title.scrollWidth;
 	var iWdW = 40 + 10 + $duration.width() + 9;
 	var wW = document.body.clientWidth;
