@@ -656,6 +656,8 @@ var btnctrl = {
 $( '.map' ).tap( function() {
 	var cmd = btnctrl[ this.id ];
 	if ( cmd === 'guide' ) {
+		if ( G.local ) return
+		
 		clearTimeout( G.volumebar );
 		if ( G.guide ) {
 			hideGuide();
@@ -705,6 +707,7 @@ $( '.map' ).tap( function() {
 	
 	hideGuide();
 	if ( cmd === 'cover' ) {
+		local(); // fix - guide fired
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 		
@@ -742,7 +745,7 @@ $( '.map' ).tap( function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		setTimeout( renderPlayback, 50 ); // fix: guide fired on showed
+		renderPlayback
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		setTimeout( function() { // fix: settings fired on showed
