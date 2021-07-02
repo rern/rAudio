@@ -20,7 +20,7 @@
 	min-width: 70px;
 	height: 34px !important;
 	padding: 0 10px;
-	line-height: 34px;
+	line-height: 2.43;
 	border: none;
 	border-radius: 4px;
 	white-space: nowrap;
@@ -102,7 +102,6 @@ hr {
 	float: left;
 	width: calc( 100% - 40px );
 	color: var( --cw );
-	line-height: 40px;
 	padding: 0 0 0 5px;
 	text-align: left;
 }
@@ -112,7 +111,7 @@ hr {
 	margin-left: 5px;
 	text-align: center;
 	font-size: 28px;
-	line-height: 40px;
+	line-height: 1.43;
 	color: var( --cg60 );
 }
 #infoTop a {
@@ -130,7 +129,7 @@ hr {
 }
 #infoTop .imgicon i {
 	position: absolute;
-	line-height: 32px;
+	line-height: 1.43;
 }
 #infoTop .imgicon img {
 	width: 30px;
@@ -139,7 +138,7 @@ hr {
 #infoX {
 	float: right;
 	width: 40px;
-	line-height: 40px;
+	line-height: 1.43;
 	border-radius: 0 10px 0 0;
 	padding: 0;
 	font-size: 28px;
@@ -151,7 +150,7 @@ hr {
 	width: calc( 100% - 45px );
 	margin-left: 10px;
 	font-size: 18px;
-	line-height: 40px;
+	line-height: 2.3;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -254,7 +253,7 @@ hr {
 	outline: none;
 	font-family: Inconsolata;
 	font-size: 15px;
-	line-height: 20px;
+	line-height: 1.33;
 	tab-size: 4;
 	color: var( --cw );
 	background: var( --cgd );
@@ -342,7 +341,7 @@ hr {
 #infoContent .selectric-items li {
 	height: 34px;
 	text-align: left;
-	line-height: 16px;
+	line-height: 1;
 }
 #infoContent .selectric-items {
 	min-width: 100%;
@@ -350,10 +349,10 @@ hr {
 #infoContent .selectric .label {
 	margin: 1px 0;
 	padding: 0 10px;
+	line-height: 2.43;
 }
-#infoContent .selectric .label,
 #infoContent .selectric .button {
-	line-height: 34px;
+	line-height: 1.7;
 }
 #infoRange input {
 	height: 40px;
@@ -436,7 +435,7 @@ hr {
 #infoOverlay code {
 	display: inline-block;
 	padding: 3px;
-	line-height: 14px;
+	line-height: 0.875;
 	border-radius: 3px;
 	background: #000000;
 	font-family: Inconsolata;
