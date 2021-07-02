@@ -1973,7 +1973,7 @@ li.active .li2 bl {
 }
 .lib-sortable-ghost .mode::after {
 	position: absolute;
-	content: "\f609";
+	content: "\f600";
 	font-family: rern;
 	left: 0;
 	top: 0;
@@ -2000,7 +2000,7 @@ li.active .li2 bl {
 }
 .pl-sortable-ghost::before {
 	position: absolute;
-	content: "\f608";
+	content: "\f601";
 	font-family: rern;
 	width: 40px;
 	font-size: 22px;

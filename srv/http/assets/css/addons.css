@@ -131,14 +131,6 @@ legend > i:last-child {
 legend .status {
 	font-size: 24px;
 }
-legend .fa-arrow-up {
-	float: right;
-}
-@media(max-width: 480px) {
-	legend .fa-arrow-up {
-		display: none;
-	}
-}
 #hidescrollv {
 	max-height: calc( 100vh - 110px );
 	margin-top: 10px;
