@@ -1935,8 +1935,12 @@ li.active .li1 bl {
 	line-height: 14px;
 	color: var( --cg60 )
 }
+#lib-list .li2 {
+	line-height: 20px;
+}
 #pl-savedlist .li2 {
 	max-width: 100%;
+	line-height: 10px;
 }
 #pl-list .li2 a {
 	color: var( --cg60 );
