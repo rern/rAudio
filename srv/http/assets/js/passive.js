@@ -52,7 +52,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'vumeter', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -71,22 +71,23 @@ pushstream.onstatuschange = function( status ) {
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
-		case 'airplay':    psAirplay( data );    break;
-		case 'bookmark':   psBookmark( data );   break;
-		case 'coverart':   psCoverart( data );   break;
-		case 'display':    psDisplay( data );    break;
-		case 'relays':     psRelays( data );     break;
-		case 'mpdplayer':  psMpdPlayer( data );  break;
-		case 'mpdupdate' : psMpdUpdate( data );  break;
-		case 'notify':     psNotify( data );     break;
-		case 'option':     psOption( data );     break;
-		case 'order':      psOrder( data );      break;
-		case 'playlist':   psPlaylist( data );   break;
-		case 'reload':     psReload( data );     break;
-		case 'restore':    psRestore( data );    break;
-		case 'spotify':    psSpotify( data );    break;
-		case 'volume':     psVolume( data );     break;
-		case 'webradio':   psWebradio( data );   break;
+		case 'airplay':   psAirplay( data );   break;
+		case 'bookmark':  psBookmark( data );  break;
+		case 'coverart':  psCoverart( data );  break;
+		case 'display':   psDisplay( data );   break;
+		case 'relays':    psRelays( data );    break;
+		case 'mpdplayer': psMpdPlayer( data ); break;
+		case 'mpdupdate': psMpdUpdate( data ); break;
+		case 'notify':    psNotify( data );    break;
+		case 'option':    psOption( data );    break;
+		case 'order':     psOrder( data );     break;
+		case 'playlist':  psPlaylist( data );  break;
+		case 'reload':    psReload( data );    break;
+		case 'restore':   psRestore( data );   break;
+		case 'spotify':   psSpotify( data );   break;
+		case 'volume':    psVolume( data );    break;
+		case 'vumeter':   psVUmeter( data );   break;
+		case 'webradio':  psWebradio( data );  break;
 	}
 }
 function psAirplay( data ) {
@@ -539,6 +540,9 @@ function psVolume( data ) {
 			}
 		}
 	}, G.debouncems );
+}
+function psVUmeter( data ) {
+	vuMeter( data.val );
 }
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )
