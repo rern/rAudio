@@ -755,7 +755,8 @@ function infoPlayback() {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
-			$( '#infoContent' ).find( 'tr:eq(5 ), tr:eq( 6 )' ).toggleClass( 'hide', !G.display.cover || G.display.vumeter );
+			var $coverdefault = $( '#infoContent' ).find( 'tr:eq( 5 ), tr:eq(6 )' );
+			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
@@ -803,16 +804,21 @@ function infoPlayback() {
 				if ( $( this ).prop( 'checked' ) ) {
 					if ( !$time.prop( 'checked' ) ) displayCheckboxSet( progressbar, true, true );
 					displayCheckboxSet( coversmall, true );
+					displayCheckboxSet( vumeter, true, false );
 					$( '#divnovu' ).removeClass( 'hide' );
+					$vumeter.prop( 'disabled', false );
+					$coverdefault.toggleClass( 'hide', false );
 				} else {
 					displayCheckboxSet( progressbar, false, false );
 					displayCheckboxSet( coversmall, false, false );
+					displayCheckboxSet( vumeter, false, false );
 					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( time, true, true );
 					$( '#divnovu' ).addClass( 'hide' );
+					$coverdefault.toggleClass( 'hide', true );
 				}
 			} );
 			$vumeter.change( function() {
-				$( '#infoContent' ).find( 'tr:eq( 5 ), tr:eq(6 )' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
+				$coverdefault.toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
 		}
 		, ok           : function () {
