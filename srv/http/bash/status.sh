@@ -125,7 +125,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-	[[ -e $dirsystem/vumeter ]] && $dirbash/cmd.sh vumeter
+	[[ -e $dirsystem/vumeter && $state == play ]] && $dirbash/cmd.sh vumeter
 	exit
 fi
 
@@ -425,7 +425,7 @@ if grep -q '"cover": false' $dirsystem/display; then
 	exit
 elif [[ -e $dirsystem/vumeter ]]; then
 	echo {$status}
-	$dirbash/cmd.sh vumeter
+	[[ $state == play ]] && $dirbash/cmd.sh vumeter
 	exit
 fi
 
