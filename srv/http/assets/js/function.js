@@ -1847,7 +1847,7 @@ function vuMeter( val ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ val +'deg )' );
 }
 function vu() {
-	var range = 12; // -/+
+	var range = 8; // -/+
 	var deg = 0;
 	var inc;
 	clearInterval( G.intVu );

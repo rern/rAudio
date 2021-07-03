@@ -609,7 +609,7 @@ i.map.disabled, .map.disabled i {
 #vuneedle {
 	transform: rotate( -29.4deg);
 	transform-origin: 115px 220px;
-	transition-duration: 750ms;
+	transition-duration: 500ms;
 }
 #vu::before { /* glossy overlay */
 	position: absolute;
