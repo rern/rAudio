@@ -115,23 +115,39 @@ spotify )
 , "elapsed"   : '$elapsed'
 , "state"     : "'$state'"
 , "timestamp" : '$now
-# >>>>>>>>>>
-	echo {$status}
 	;;
 	
 esac
 
+vumeter() {
+# >>>>>>>>>>
+	echo {$status}
+	
+	grep -q '"cover": false' $dirsystem/display && exit
+	
+	if [[ -e $dirsystem/vumeter ]]; then
+		if [[ $state == play ]]; then
+			if ! pgrep cava &> /dev/null; then
+				killall cava &> /dev/null
+				cava -p /etc/cava.conf | $dirbash/vumeter.sh 2> /dev/null &
+			fi
+		else
+			killall cava &> /dev/null
+			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+		fi
+		exit
+	fi
+}
 if [[ $player != mpd && $player != upnp ]]; then
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-	[[ -e $dirsystem/vumeter && $state == play ]] && $dirbash/cmd.sh vumeter
+	vumeter
 	exit
 fi
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
-
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -419,15 +435,8 @@ pos="$(( song + 1 ))/$playlistlength"
 status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
-if grep -q '"cover": false' $dirsystem/display; then
-# >>>>>>>>>>
-	echo {$status}
-	exit
-elif [[ -e $dirsystem/vumeter ]]; then
-	echo {$status}
-	[[ $state == play ]] && $dirbash/cmd.sh vumeter
-	exit
-fi
+
+vumeter
 
 if [[ $ext != CD && -z $radioheader ]]; then
 	coverart=$( $dirbash/status-coverart.sh "\

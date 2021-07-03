@@ -240,16 +240,6 @@ volumeSet() {
 	fi
 	[[ -n $control ]] && alsactl store
 }
-vumeter() {
-	if [[ -e $dirsystem/vumeter ]]; then
-		if ! pgrep cava &> /dev/null; then
-			killall cava &> /dev/null
-			cava -p /etc/cava.conf | $dirbash/vumeter.sh 2> /dev/null &
-		fi
-	else
-		killall cava &> /dev/null
-	fi
-}
 
 case ${args[0]} in
 
@@ -443,7 +433,6 @@ displayget )
 , "volumenone" : '$volumenone'
 }'
 echo "$data"
-	mpc | grep -q '^\[playing\]' && vumeter
 	;;
 ignoredir )
 	touch $dirsystem/updating
@@ -528,7 +517,6 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
-		vumeter
 	else
 		killall cava &> /dev/null
 	fi
@@ -875,7 +863,6 @@ vumeter )
 		fi
 		$dirbash/mpd-conf.sh
 	fi
-	vumeter
 	;;
 webradioadd )
 	name=${args[1]}
