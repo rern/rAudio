@@ -755,7 +755,7 @@ function infoPlayback() {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
-			var $coverdefault = $( '#infoContent' ).find( 'tr:eq( 5 ), tr:eq(6 )' );
+			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
 			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
