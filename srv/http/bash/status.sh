@@ -113,27 +113,12 @@ spotify )
 	
 esac
 
-vuMeter() {
-	if [[ -e $dirsystem/vumeter ]]; then
-		if [[ $state == play ]]; then
-			if ! pgrep cava &> /dev/null; then
-				killall cava &> /dev/null
-				cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
-			fi
-		else
-			killall cava &> /dev/null
-			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-		fi
-		exit
-	fi
-}
 if [[ $player != mpd && $player != upnp ]]; then
+# >>>>>>>>>>
+	echo {$status}
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-# >>>>>>>>>>
-	echo {$status}
-	vuMeter
 	exit
 fi
 
@@ -433,7 +418,15 @@ if grep -q '"cover": false' $dirsystem/display; then
 	exit
 fi
 
-vuMeter
+if [[ -e $dirsystem/vumeter ]]; then
+	if [[ $state == play ]]; then
+		pgrep cava &> /dev/null || cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+	else
+		killall cava &> /dev/null
+		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+	fi
+	exit
+fi
 
 if [[ $ext != CD && -z $radioheader ]]; then
 	coverart=$( $dirbash/status-coverart.sh "\
