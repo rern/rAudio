@@ -114,14 +114,14 @@ audio_output {
 	path           "/tmp/mpd_fifo"
 }'
 fi
-if [[ -e /usr/bin/mpd_oled ]]; then
+if [[ -e $dirsystem/vumeter ]]; then
 ########
 	mpdconf+='
 
 audio_output {
-	name           "mpd_oled_FIFO"
+	name           "VU meter"
 	type           "fifo"
-	path           "/tmp/mpd_oled_fifo"
+	path           "/tmp/mpd.fifo"
 	format         "44100:16:2"
 }'
 fi

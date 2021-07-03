@@ -352,6 +352,7 @@ function displayPlayback() {
 function displaySave( keys ) {
 	var values = infoVal();
 	keys.forEach( function( k, i ) {
+		if ( k === 'vumeter' && values[ i ] !== G.display.vumeter ) bash( [ 'vumeter', values[ i ] ] );
 		G.display[ k ] = values[ i ];
 	} );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
@@ -754,7 +755,7 @@ function infoPlayback() {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
-			$( '#infoContent' ).find( 'tr:eq(5 ), tr:eq( 6 )' ).toggleClass( 'hide', !G.display.cover );
+			$( '#infoContent' ).find( 'tr:eq(5 ), tr:eq( 6 )' ).toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
@@ -813,7 +814,6 @@ function infoPlayback() {
 			$vumeter.change( function() {
 				$( '#infoContent' ).find( 'tr:eq( 5 ), tr:eq(6 )' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
-			$vumeter.parent().addClass( 'hide' );
 		}
 		, ok           : function () {
 			displaySave( keys );
@@ -1849,7 +1849,7 @@ function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
 function vuMeter( val ) {
-	$( '#vuneedle' ).css( 'transform', 'rotate( '+ val +'deg )' );
+	$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( val - 29 ) +'deg )' ); // 0-40 : -29-11 degree
 }
 function vu() {
 	var range = 8; // -/+

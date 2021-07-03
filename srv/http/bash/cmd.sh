@@ -241,10 +241,10 @@ volumeSet() {
 	[[ -n $control ]] && alsactl store
 }
 vumeter() {
-	if grep -q 'vumeter.*true' $dirsystem/display; then
+	if [[ -e $dirsystem/vumeter ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
-			cava | $dirbash/vumeter.sh &> /dev/null &
+			cava -p /etc/cava.conf | $dirbash/vumeter.sh 2> /dev/null &
 		fi
 	else
 		killall cava &> /dev/null
@@ -866,6 +866,15 @@ volumeupdown )
 	pushstreamVolume updn $volume
 	;;
 vumeter )
+	enable=${args[1]}
+	if [[ -n $enable ]]; then
+		if [[ ${args[1]} == true ]]; then
+			touch $dirsystem/vumeter
+		else
+			rm -f $dirsystem/vumeter
+		fi
+		$dirbash/mpd-conf.sh
+	fi
 	vumeter
 	;;
 webradioadd )
