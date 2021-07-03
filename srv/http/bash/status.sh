@@ -119,7 +119,7 @@ spotify )
 	
 esac
 
-vumeter() {
+outputStatus() {
 # >>>>>>>>>>
 	echo {$status}
 	
@@ -142,7 +142,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-	vumeter
+	outputStatus
 	exit
 fi
 
@@ -436,7 +436,7 @@ status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
 
-vumeter
+outputStatus
 
 if [[ $ext != CD && -z $radioheader ]]; then
 	coverart=$( $dirbash/status-coverart.sh "\
