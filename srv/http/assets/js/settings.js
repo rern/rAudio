@@ -359,9 +359,11 @@ $( '#help' ).click( function() {
 	if ( $( '.help-block:not(.hide)' ).length > 0 ) {
 		$( this ).removeClass( 'blue' );
 		$( '.help-block' ).addClass( 'hide' );
+		$( '#bar-bottom' ).css( 'opacity', 0 );
 	} else {
 		$( this ).addClass( 'blue' );
 		$( '.help-block' ).removeClass( 'hide' );
+		$( '#bar-bottom' ).css( 'opacity', 1 );
 	}
 	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
 } );
