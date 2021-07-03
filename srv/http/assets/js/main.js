@@ -802,7 +802,7 @@ $( '.btn-cmd' ).click( function() {
 				}
 			}
 			if ( G.status.webradio ) $( '#title, #elapsed' ).html( blinkdot );
-			if ( !$( '#vu' ).hasClass( 'hide' ) ) vu();
+			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			if ( G.status.player === 'airplay' ) {
