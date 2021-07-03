@@ -75,14 +75,10 @@ airplay )
 , "state"          : "play"
 , "Time"           : '$Time'
 , "timestamp"      : '$now
-# >>>>>>>>>>
-	echo {$status}
 	;;
 bluetooth )
 ########
 	status+=$( $dirbash/status-bluetooth.sh )
-# >>>>>>>>>>
-	echo {$status}
 	;;
 snapclient )
 	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
@@ -91,8 +87,6 @@ snapclient )
 							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 ########
 	status+=${snapserverstatus:1:-1}
-# >>>>>>>>>>
-	echo {$status}
 	;;
 spotify )
 	file=$dirtmp/spotify
@@ -119,12 +113,7 @@ spotify )
 	
 esac
 
-outputStatus() {
-# >>>>>>>>>>
-	echo {$status}
-	
-	grep -q '"cover": false' $dirsystem/display && exit
-	
+vuMeter() {
 	if [[ -e $dirsystem/vumeter ]]; then
 		if [[ $state == play ]]; then
 			if ! pgrep cava &> /dev/null; then
@@ -142,7 +131,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-	outputStatus
+# >>>>>>>>>>
+	echo {$status}
+	vuMeter
 	exit
 fi
 
@@ -436,7 +427,13 @@ status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
 
-outputStatus
+if grep -q '"cover": false' $dirsystem/display; then
+# >>>>>>>>>>
+	echo {$status}
+	exit
+fi
+
+vuMeter
 
 if [[ $ext != CD && -z $radioheader ]]; then
 	coverart=$( $dirbash/status-coverart.sh "\
