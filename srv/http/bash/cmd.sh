@@ -240,6 +240,16 @@ volumeSet() {
 	fi
 	[[ -n $control ]] && alsactl store
 }
+vumeter() {
+	if grep -q 'vumeter.*true' $dirsystem/display; then
+		if ! pgrep cava &> /dev/null; then
+			killall cava &> /dev/null
+			cava | $dirbash/vumeter.sh &> /dev/null &
+		fi
+	else
+		killall cava &> /dev/null
+	fi
+}
 
 case ${args[0]} in
 
@@ -433,6 +443,7 @@ displayget )
 , "volumenone" : '$volumenone'
 }'
 echo "$data"
+	mpc | grep -q '^\[playing\]' && vumeter
 	;;
 ignoredir )
 	touch $dirsystem/updating
@@ -517,6 +528,9 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
+		vumeter
+	else
+		killall cava &> /dev/null
 	fi
 	pushstreamStatus
 	# fix webradio fast stop - start
@@ -850,6 +864,9 @@ volumeupdown )
 	[[ -z $control ]] && mpc volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
 	volumeGet
 	pushstreamVolume updn $volume
+	;;
+vumeter )
+	vumeter
 	;;
 webradioadd )
 	name=${args[1]}

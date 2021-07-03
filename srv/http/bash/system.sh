@@ -173,7 +173,7 @@ databackup )
 		data \
 		2> /dev/null && echo 1
 	
-	rm -rf $dirdata/{config,enable}
+	rm -rf $dirdata/{config,disable,enable}
 	;;
 datarestore )
 	backupfile=$dirdata/tmp/backup.gz

@@ -43,7 +43,8 @@
 }
 .infobtn.disabled {
 	color: var( --cg60 ) !important;
-	background-color: var( --cga ) !important;
+	background-color: var( --cgd ) !important;
+	box-shadow: none;
 	pointer-events: none;
 }
 .noclick {
@@ -244,10 +245,6 @@ hr {
 	font-size: 18px;
 	margin: 0;
 }
-#infoContent .imgicon {
-	width: 30px;
-	vertical-align: -10px;
-}
 #infoContent textarea {
 	width: 100%;
 	height: 100px;
@@ -314,10 +311,12 @@ hr {
 #infoOverlay input[type=checkbox]:checked:disabled,
 #infoOverlay input[type=radio]:checked:disabled {
 	background-color: var( --cmd );
+	box-shadow: none;
 }
 #infoOverlay input[type=checkbox]:disabled,
 #infoOverlay input[type=radio]:disabled {
 	background-color: var( --cgd );
+	box-shadow: none;
 }
 #infoContent button {
 	height: 40px;

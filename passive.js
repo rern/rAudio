@@ -1,50 +1,66 @@
-$( window ).on( 'resize', function() {
-	if ( G.playback ) {
-		displayPlayback();
-		setTimeout( renderPlayback, 50 );
-		setButtonControl()
-	} else if ( G.library ) {
-		if ( G.librarylist ) {
-			setTimeout( function() {
-				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
-					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
-				} else {
-					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
-				}
-			}, 0 );
-		}
-	} else {
-		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			setTimeout( function() {
-				getTitleWidth();
-				setTitleWidth();
-				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
-			}, 0 );
-		}
-	}
-} );
 function onVisibilityChange( callback ) {
-	var visible = 1;
-	function focused() {
-		if ( !visible ) callback( visible = 1 );
-	}
-	function unfocused() {
-		if ( visible ) callback( visible = 0 );
-	}
-	document.addEventListener( 'visibilitychange', function() {
+    var visible = 1;
+    function focused() {
+        if ( !visible ) callback( visible = 1 );
+    }
+    function unfocused() {
+        if ( visible ) callback( visible = 0 );
+    }
+    document.addEventListener( 'visibilitychange', function() {
 		document.hidden ? unfocused() : focused();
 	} );
-	window.onpageshow = window.onfocus = focused;
-	window.onpagehide = window.onblur = unfocused;
+    window.onpageshow = window.onfocus = focused;
+    window.onpagehide = window.onblur = unfocused;
 };
 onVisibilityChange( function( visible ) {
 	if ( visible ) {
 		pushstream.connect();
+		setPlaybackTitles();
 	} else {
 		pushstream.disconnect();
 	}
+} );
+$( window ).on( 'orientationchange', function() {
+	$( window ).one( 'resize', function() {
+		if ( G.playback ) {
+			$( '#page-playback' ).removeClass( 'hide' );
+			if ( G.status.state === 'play' ) {
+				bash( "mpc | awk '/^.playing/ {print $3}' | cut -d/ -f1", function( HMS ) {
+					if ( HMS ) {
+						G.status.elapsed = HMS2Second( HMS );
+						displayPlayback();
+						renderPlayback();
+						setButtonControl()
+					}
+				} );
+			} else {
+				displayPlayback();
+				renderPlayback();
+				setButtonControl()
+			}
+			setPlaybackTitles();
+		} else if ( G.library ) {
+			if ( G.librarylist || G.savedlist ) {
+				setTimeout( function() {
+					if ( $( '.licover' ).length ) {
+						$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+						$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+					} else {
+						$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+					}
+				}, 0 );
+			}
+		} else {
+			if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
+				setTimeout( function() {
+					getTitleWidth();
+					setTitleWidth();
+					setPlaylistScroll()
+					$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+				}, 0 );
+			}
+		}
+	} );
 } );
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
@@ -52,18 +68,15 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'vumeter', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
+		bannerHide();
 		getPlaybackStatus();
-		if ( $( '#bannerTitle' ).text() === 'Power' ) {
-			loader( 'hide' );
-			bannerHide();
-		}
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
@@ -71,23 +84,22 @@ pushstream.onstatuschange = function( status ) {
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
-		case 'airplay':   psAirplay( data );   break;
-		case 'bookmark':  psBookmark( data );  break;
-		case 'coverart':  psCoverart( data );  break;
-		case 'display':   psDisplay( data );   break;
-		case 'relays':    psRelays( data );    break;
-		case 'mpdplayer': psMpdPlayer( data ); break;
-		case 'mpdupdate': psMpdUpdate( data ); break;
-		case 'notify':    psNotify( data );    break;
-		case 'option':    psOption( data );    break;
-		case 'order':     psOrder( data );     break;
-		case 'playlist':  psPlaylist( data );  break;
-		case 'reload':    psReload( data );    break;
-		case 'restore':   psRestore( data );   break;
-		case 'spotify':   psSpotify( data );   break;
-		case 'volume':    psVolume( data );    break;
-		case 'vumeter':   psVUmeter( data );   break;
-		case 'webradio':  psWebradio( data );  break;
+		case 'airplay':    psAirplay( data );    break;
+		case 'bookmark':   psBookmark( data );   break;
+		case 'coverart':   psCoverart( data );   break;
+		case 'display':    psDisplay( data );    break;
+		case 'relays':     psRelays( data );     break;
+		case 'mpdplayer':  psMpdPlayer( data );  break;
+		case 'mpdupdate' : psMpdUpdate( data );  break;
+		case 'notify':     psNotify( data );     break;
+		case 'option':     psOption( data );     break;
+		case 'order':      psOrder( data );      break;
+		case 'playlist':   psPlaylist( data );   break;
+		case 'reload':     psReload( data );     break;
+		case 'restore':    psRestore( data );    break;
+		case 'spotify':    psSpotify( data );    break;
+		case 'volume':     psVolume( data );     break;
+		case 'webradio':   psWebradio( data );   break;
 	}
 }
 function psAirplay( data ) {
@@ -297,14 +309,16 @@ function psMpdPlayer( data ) {
 		} else if ( G.playback ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
-				renderPlaybackTitles();
+				$( '#artist' ).text( G.status.Artist );
+				$( '#title' ).text( G.status.Title )
+				$( '#album' ).text( G.status.Album );
 				setPlaybackTitles();
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			} else {
 				renderPlayback();
 			}
-			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+			if ( !$( '#vu' ).hasClass( 'hide' ) ) G.status.state === 'play' ? vu() : vuStop();
 		}
 		bannerHide();
 	}, G.debouncems );
@@ -540,9 +554,6 @@ function psVolume( data ) {
 			}
 		}
 	}, G.debouncems );
-}
-function psVUmeter( data ) {
-	vuMeter( data.val );
 }
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )

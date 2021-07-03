@@ -55,7 +55,7 @@ ib {
 }
 #play-group .disabled {
 	color: var( --cg60 ) !important;
-	background-color: var( --cga ) !important;
+	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {
 	margin: 0;
@@ -331,6 +331,12 @@ i.map.disabled, .map.disabled i {
 #infoOverlay.noscroll { /* for volume input range */
 	height: 100%;
 }
+#infoContent .imgicon {
+	width: 30px !important;
+	margin-right: 5px !important;
+	vertical-align: -10px;
+	border: none;
+}
 #infoicon {
 	height: 25px;
 	font-size: 0;
@@ -603,7 +609,7 @@ i.map.disabled, .map.disabled i {
 #vuneedle {
 	transform: rotate( -29.4deg);
 	transform-origin: 115px 220px;
-	transition-duration: 750ms;
+	transition-duration: 500ms;
 }
 #vu::before { /* glossy overlay */
 	position: absolute;
@@ -1379,7 +1385,7 @@ i.map.disabled, .map.disabled i {
 	content: url( '/assets/img/iconcover.svg' );
 	width: 24px !important;
 	margin: 0 !important;
-	border: 1px solid hsl(0,0%,30%);
+	border: 1px solid hsl(0,0%,20%);
 }
 .bkedit .iconcover {
 	top: 5px;
@@ -1741,7 +1747,6 @@ i.map.disabled, .map.disabled i {
 .liinfo .licomposer,
 .liinfo .liinfopath,
 #pl-list .liname,
-#pl-list .song,
 #pl-list .li2,
 #pl-savedlist span {
 	white-space: nowrap;
@@ -1750,9 +1755,6 @@ i.map.disabled, .map.disabled i {
 }
 #pl-list .liname {
 	max-width: calc( 100% - 190px );
-}
-#pl-list .song {
-	max-width: calc( 100% - 105px );
 }
 #lib-list .single {
 	line-height: 48px;
@@ -1896,13 +1898,12 @@ li.active .li1 bl {
 #lib-list .li1,
 #pl-list .li1,
 #pl-savedlist .li1 {
-	display: block;
 	padding: 5px 10px 0 0;
 }
-#pl-list .li1 a {
+#pl-list .li1 span,
+#pl-savedlist .li1 span {
 	display: inline-block;
 	max-width: calc( 100% - 105px );
-	vertical-align: middle;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1920,8 +1921,7 @@ li.active .li1 bl {
 #pl-list .elapsed i {
 	margin-right: 5px;
 	width: 20px;
-	font-size: 18px;
-	line-height: 12px;
+	line-height: 17px; /* for ios */
 }
 #pl-list .elapsed {
 	margin: 0 3px 0 7px;
@@ -1932,10 +1932,15 @@ li.active .li1 bl {
 	display: block;
 	max-width: calc( 100vw - 60px );
 	font-size: 14px;
+	line-height: 14px;
 	color: var( --cg60 )
+}
+#lib-list .li2 {
+	line-height: 24px;
 }
 #pl-savedlist .li2 {
 	max-width: 100%;
+	line-height: 10px;
 }
 #pl-list .li2 a {
 	color: var( --cg60 );
@@ -1967,7 +1972,7 @@ li.active .li2 bl {
 }
 .lib-sortable-ghost .mode::after {
 	position: absolute;
-	content: "\f609";
+	content: "\f600";
 	font-family: rern;
 	left: 0;
 	top: 0;
@@ -1994,7 +1999,7 @@ li.active .li2 bl {
 }
 .pl-sortable-ghost::before {
 	position: absolute;
-	content: "\f608";
+	content: "\f601";
 	font-family: rern;
 	width: 40px;
 	font-size: 22px;
@@ -2328,16 +2333,11 @@ li.active .li2 bl {
 	#pl-savedlist span::before {
 		display: none;
 	}
-	#lib-list li,
-	#pl-savedlist li {
+	#lib-list li {
 		line-height: 52px;
 	}
-	#lib-list span,
 	#lib-list .li1,
-	#lib-list .li2,
-	#pl-list span,
 	#pl-list .li1,
-	#pl-list .li2,
 	#pl-savedlist span,
 	.time {
 		font-size: 16px;
@@ -2348,11 +2348,13 @@ li.active .li2 bl {
 		padding-left: 0;
 	}
 	#lib-list .li2,
-	#pl-list .li2 {
+	#pl-list .li2,
+	#pl-savedlist .li2	{
 		font-size: 12px;
+		line-height: 14px;
 	}
-	#pl-savedlist span {
-		line-height: 47px;
+	#lib-list .li2 {
+		line-height: 20px;
 	}
 	#biocontent img {
 		width: 33vw;

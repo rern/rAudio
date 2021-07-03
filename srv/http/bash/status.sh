@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
@@ -20,7 +21,7 @@ updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 else
-	controlvolume=$( /srv/http/bash/cmd.sh volumecontrolget )
+	controlvolume=$( $dirbash/cmd.sh volumecontrolget )
 	control=$( echo $controlvolume | cut -d^ -f1 )
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
@@ -79,14 +80,14 @@ airplay )
 	;;
 bluetooth )
 ########
-	status+=$( /srv/http/bash/status-bluetooth.sh )
+	status+=$( $dirbash/status-bluetooth.sh )
 # >>>>>>>>>>
 	echo {$status}
 	;;
 snapclient )
 	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 	snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
-	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip /srv/http/bash/status.sh snapserverstatus \
+	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
 							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 ########
 	status+=${snapserverstatus:1:-1}
@@ -124,6 +125,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
+	grep -q '"vumeter": true' $dirsystem/display && $dirbash/cmd.sh vumeter
 	exit
 fi
 
@@ -201,9 +203,13 @@ status+='
 , "volumemute"  : '$volumemute
 
 if (( $playlistlength  == 0 )); then
+	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	[[ -n $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
-, "coverart" : ""'
+, "coverart" : ""
+, "hostname" : "'$hostname'"
+, "ip"       : "'$ip'"'
 # >>>>>>>>>>
 	echo {$status}
 	exit
@@ -276,7 +282,7 @@ elif [[ -n $radioheader ]]; then
 					station=${station/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
-					/srv/http/bash/status-radioparadise.sh $file "$station" &> /dev/null &
+					$dirbash/status-radioparadise.sh $file "$station" &> /dev/null &
 				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
 					echo $file > $dirtmp/radiofrance
 					systemctl start radiofrance
@@ -413,14 +419,18 @@ pos="$(( song + 1 ))/$playlistlength"
 status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
-if grep -q '"cover": false,' /srv/http/data/system/display; then
+if grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
 	echo {$status}
+	exit
+elif grep -q '"vumeter": true' $dirsystem/display; then
+	echo {$status}
+	$dirbash/cmd.sh vumeter
 	exit
 fi
 
 if [[ $ext != CD && -z $radioheader ]]; then
-	coverart=$( /srv/http/bash/status-coverart.sh "\
+	coverart=$( $dirbash/status-coverart.sh "\
 $Artist
 $Album
 $file0" )
@@ -445,4 +455,4 @@ echo {$status}
 [[ -z $args ]] && exit
 
 killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
+$dirbash/status-coverartonline.sh "$args" &> /dev/null &
