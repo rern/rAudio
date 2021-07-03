@@ -241,7 +241,7 @@ volumeSet() {
 	[[ -n $control ]] && alsactl store
 }
 vumeter() {
-	if [[ ! -e $dirsystem/vumeter ]]; then
+	if grep -q 'vumeter.*true' $dirsystem/display; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
 			cava | $dirbash/vumeter.sh &> /dev/null &

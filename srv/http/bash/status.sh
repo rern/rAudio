@@ -125,7 +125,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-	$dirbash/cmd.sh vumeter
+	grep -q '"vumeter": true' $dirsystem/display && $dirbash/cmd.sh vumeter
 	exit
 fi
 
@@ -322,8 +322,6 @@ elif [[ -n $radioheader ]]; then
 , "Title"         : "'$Title'"
 , "webradio"      : true'
 	fi
-#	killall cava &> /dev/null
-#	cava | $dirbash/vumeter.sh &
 else
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
@@ -421,8 +419,11 @@ pos="$(( song + 1 ))/$playlistlength"
 status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
-if grep -q '"cover": false,' /srv/http/data/system/display || [[ -e $dirsystem/vumeter ]]; then
+if grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
+	echo {$status}
+	exit
+elif grep -q '"vumeter": true' $dirsystem/display; then
 	echo {$status}
 	$dirbash/cmd.sh vumeter
 	exit
