@@ -129,7 +129,7 @@ outputStatus() {
 		if [[ $state == play ]]; then
 			if ! pgrep cava &> /dev/null; then
 				killall cava &> /dev/null
-				cava -p /etc/cava.conf | $dirbash/vumeter.sh 2> /dev/null &
+				cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
 			fi
 		else
 			killall cava &> /dev/null
