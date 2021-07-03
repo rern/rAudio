@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/srv/http/data/system/display
+if ! grep -q vumeter $file; then
+	sed -i '/novu/ i\    "vumeter": false,' $file
+fi
+
 file=/etc/systemd/system/radiofrance.service
 if [[ ! -e $file ]]; then
 	echo -n "\

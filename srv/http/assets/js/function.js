@@ -727,7 +727,7 @@ var chkplayback = {
 	, volume       : 'Volume'
 	, radioelapsed : 'WebRadio time'
 	, buttons      : 'Buttons'
-	, novu         : ''
+	, vumeter      : 'VU meter'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
@@ -736,6 +736,7 @@ function infoPlayback() {
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );
 	} );
+	values.push( G.display.novu )
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback Display'
@@ -809,6 +810,10 @@ function infoPlayback() {
 					$( '#divnovu' ).addClass( 'hide' );
 				}
 			} );
+			$vumeter.change( function() {
+				$( '#infoContent' ).find( 'tr:eq( 5 ), tr:eq(6 )' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
+			} );
+			$vumeter.parent().addClass( 'hide' );
 		}
 		, ok           : function () {
 			displaySave( keys );
