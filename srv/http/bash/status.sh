@@ -412,19 +412,19 @@ status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"'
 
-if grep -q '"cover": false' $dirsystem/display; then
+if [[ -e $dirsystem/vumeter ]]; then
 # >>>>>>>>>>
 	echo {$status}
-	exit
-fi
-
-if [[ -e $dirsystem/vumeter ]]; then
 	if [[ $state == play ]]; then
 		pgrep cava &> /dev/null || cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
 	fi
+	exit
+elif  grep -q '"cover": false' $dirsystem/display; then
+# >>>>>>>>>>
+	echo {$status}
 	exit
 fi
 
