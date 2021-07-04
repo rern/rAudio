@@ -423,7 +423,7 @@ if [[ -e $dirsystem/vumeter ]]; then
 		fi
 	else
 		killall cava &> /dev/null
-		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":-0.4}'
 	fi
 	exit
 elif grep -q '"cover": false' $dirsystem/display; then
