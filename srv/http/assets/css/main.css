@@ -607,7 +607,6 @@ i.map.disabled, .map.disabled i {
 .cls-14,.cls-17 { stroke-linecap: round; }
 .cls-23 { fill:var(--cg60); }
 #vuneedle {
-	transform: rotate( -31deg);
 	transform-origin: 115px 220px;
 	transition-duration: 500ms;
 }

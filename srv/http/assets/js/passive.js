@@ -539,7 +539,7 @@ function psVolume( data ) {
 	}, G.debouncems );
 }
 function psVUmeter( data ) {
-	if ( !G.localhost ) $( '#vuneedle' ).css( 'transform', 'rotate( '+ ( data.val - 31 ) +'deg )' ); // 0-42 : -31-11 degree
+	if ( !G.localhost ) $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )

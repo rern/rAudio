@@ -1811,7 +1811,7 @@ function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
 function vu() {
-	var range = 8; // -/+
+	var range = 11; // -/+
 	var deg = 0;
 	var inc;
 	clearInterval( G.intVu );
@@ -1824,7 +1824,7 @@ function vu() {
 		} else if ( deg > range ) {
 			deg = range - inc;
 		}
-		$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
+		$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
 	}, 500 );
 }
 function vuStop() {
