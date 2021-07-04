@@ -40,11 +40,7 @@ function onVisibilityChange( callback ) {
 	window.onpagehide = window.onblur = unfocused;
 };
 onVisibilityChange( function( visible ) {
-	if ( visible ) {
-		pushstream.connect();
-	} else {
-		pushstream.disconnect();
-	}
+	visible ? pushstream.connect() : pushstream.disconnect();
 } );
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
@@ -66,6 +62,7 @@ pushstream.onstatuschange = function( status ) {
 		}
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
+		vuStop();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
