@@ -410,7 +410,8 @@ pos="$(( song + 1 ))/$playlistlength"
 [[ -n $sampling ]] && sampling="$pos &bull; $sampling" || sampling=$pos
 status+='
 , "ext"      : "'$ext'"
-, "sampling" : "'$sampling'"'
+, "sampling" : "'$sampling'"
+, "coverart" : ""'
 
 if [[ -e $dirsystem/vumeter ]]; then
 # >>>>>>>>>>
