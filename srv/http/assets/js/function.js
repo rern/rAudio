@@ -737,6 +737,7 @@ function infoPlayback() {
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );
 	} );
+	keys.push( 'novu' );
 	values.push( G.display.novu )
 	info( {
 		  icon         : 'playback'
