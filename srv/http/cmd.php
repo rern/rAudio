@@ -101,7 +101,6 @@ case 'datarestore':
 	break;
 case 'displayset':
 	$data = json_decode( $_POST[ 'displayset' ] );
-	if ( !$data->vumeter ) exec( $sudobin.'killall cava &> /dev/null' );
 	$remove = [ 'update', 'updating_db' ];
 	foreach( $remove as $key ) unset( $data->$key );
 	pushstream( 'display', $data );

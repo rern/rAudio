@@ -860,6 +860,7 @@ vumeter )
 			touch $dirsystem/vumeter
 		else
 			rm -f $dirsystem/vumeter
+			killall cava &> /dev/null
 		fi
 		$dirbash/mpd-conf.sh
 	fi
