@@ -680,41 +680,6 @@ function infoLibrary( page2 ) {
 		}
 		, ok           : function () {
 			displaySave( keys );
-			$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-			if ( G.library ) {
-				if ( G.librarylist ) {
-					if ( $( '.lib-index' ).length ) return
-					
-					if ( G.display.hidecover ) {
-						$( '.licover' ).addClass( 'hide' );
-					} else {
-						if ( !$( '.licover' ).length ) {
-							var query = G.query[ G.query.length - 1 ];
-							list( query, function( data ) {
-								data.path = query.path;
-								data.modetitle = query.modetitle;
-								renderLibraryList( data );
-							}, 'json' );
-							return
-						}
-						
-						var pH = G.bars ? 130 : 90;
-						if ( G.display.fixedcover ) {
-							pH += 230;
-							$( '.licover' ).removeClass( 'nofixed' );
-							$( '#lib-list li:eq( 1 )' ).addClass( 'track1' );
-							$( '#lib-list p' ).addClass( 'fixedcover' )
-						} else {
-							$( '.licover' ).addClass( 'nofixed' );
-							$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
-							$( '#lib-list p' ).removeClass( 'fixedcover' )
-						}
-						$( '.licover' ).removeClass( 'hide' );
-					}
-				} else {
-					renderLibrary();
-				}
-			}
 		}
 	} );
 }
@@ -824,21 +789,6 @@ function infoPlayback() {
 		}
 		, ok           : function () {
 			displaySave( keys );
-			G.bars = G.display.bars;
-			G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
-			displayBars();
-			if ( G.playback ) {
-				displayPlayback();
-				setButtonControl();
-				renderPlayback();
-				$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
-			} else if ( G.library ) {
-				$( '.list p' ).toggleClass( 'bars-on', G.bars );
-				if ( bars !== G.bars && $( '.coverart' ).length ) {
-					G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
-					$( '#mode-album' ).click();
-				}
-			}
 		}
 	} );
 }
@@ -1643,16 +1593,21 @@ function setPlaybackTitles() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
-	$( '#pl-list .elapsed' ).empty();
 	if ( !G.playlist
 		|| G.plremove
 		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| !G.status.playlistlength
-		|| G.sortable ) return // skip if empty or Sortable
+		|| G.sortable ) {
+		$( '#pl-list .elapsed' ).empty();
+		return
+	}
 	
 	$( '#pl-list li' ).removeClass( 'active updn' );
-	if ( $( '#pl-list li' ).length < G.status.song + 1 ) return // on eject cd G.status.song not yet refreshed
+	if ( $( '#pl-list li' ).length < G.status.song + 1 ) { // on eject cd G.status.song not yet refreshed
+		$( '#pl-list .elapsed' ).empty();
+		return
+	}
 	
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
