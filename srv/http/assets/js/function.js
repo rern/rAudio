@@ -1810,9 +1810,6 @@ function volumeKnobSet( vol ) {
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
-function vuMeter( val ) {
-	$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( val - 29 ) +'deg )' ); // 0-40 : -29-11 degree
-}
 function vu() {
 	var range = 8; // -/+
 	var deg = 0;
