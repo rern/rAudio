@@ -724,11 +724,11 @@ var chkplayback = {
 	, time         : 'Time'
 	, progressbar  : 'Progress bar'
 	, cover        : 'Coverart'
-	, coversmall   : 'Small coverart'
-	, volume       : 'Volume'
-	, radioelapsed : 'WebRadio time'
-	, buttons      : 'Buttons'
 	, vumeter      : 'VU meter'
+	, volume       : 'Volume'
+	, coversmall   : 'Small coverart'
+	, buttons      : 'Buttons'
+	, radioelapsed : 'WebRadio time'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
