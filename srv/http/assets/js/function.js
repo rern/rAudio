@@ -806,7 +806,6 @@ function infoPlayback() {
 					if ( !$time.prop( 'checked' ) ) displayCheckboxSet( progressbar, true, true );
 					displayCheckboxSet( coversmall, true );
 					displayCheckboxSet( vumeter, true, false );
-					$( '#divnovu' ).removeClass( 'hide' );
 					$vumeter.prop( 'disabled', false );
 					$coverdefault.toggleClass( 'hide', false );
 				} else {
@@ -814,12 +813,13 @@ function infoPlayback() {
 					displayCheckboxSet( coversmall, false, false );
 					displayCheckboxSet( vumeter, false, false );
 					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( time, true, true );
-					$( '#divnovu' ).addClass( 'hide' );
 					$coverdefault.toggleClass( 'hide', true );
 				}
 			} );
 			$vumeter.change( function() {
-				$coverdefault.toggleClass( 'hide', $( this ).prop( 'checked' ) );
+				var checked = $( this ).prop( 'checked' );
+				$coverdefault.toggleClass( 'hide', checked );
+				if ( checked ) $novu.val( [ false ] );
 			} );
 		}
 		, ok           : function () {
