@@ -275,7 +275,7 @@ elif [[ -n $radioheader ]]; then
 				fi
 				if [[ -n $radioparadise ]]; then
 					$dirbash/status-radioparadise.sh $file "$station" &> /dev/null &
-				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
+				elif [[ -n $radiofrance && ! -e $dirtmp/radiofrance ]]; then
 					echo $file > $dirtmp/radiofrance
 					systemctl start radiofrance
 				fi
@@ -426,7 +426,7 @@ if [[ -e $dirsystem/vumeter ]]; then
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
 	fi
 	exit
-elif  grep -q '"cover": false' $dirsystem/display; then
+elif grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
 	echo {$status}
 	exit

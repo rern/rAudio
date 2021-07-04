@@ -1384,7 +1384,7 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( coverart || G.display.novu ) {
+	if ( !G.display.vumeter && ( coverart || G.display.novu ) ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
 			.attr( 'src', coverart || G.coverdefault )
