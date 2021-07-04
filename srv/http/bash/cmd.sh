@@ -854,16 +854,13 @@ volumeupdown )
 	pushstreamVolume updn $volume
 	;;
 vumeter )
-	enable=${args[1]}
-	if [[ -n $enable ]]; then
-		if [[ ${args[1]} == true ]]; then
-			touch $dirsystem/vumeter
-		else
-			rm -f $dirsystem/vumeter
-			killall cava &> /dev/null
-		fi
-		$dirbash/mpd-conf.sh
+	if [[ ${args[1]} == true ]]; then
+		touch $dirsystem/vumeter
+	else
+		rm -f $dirsystem/vumeter
+		killall cava &> /dev/null
 	fi
+	$dirbash/mpd-conf.sh
 	;;
 webradioadd )
 	name=${args[1]}
