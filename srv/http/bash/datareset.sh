@@ -89,7 +89,8 @@ echo '{
 	"progressbar": false,
 	"radioelapsed": false,
 	"time": true,
-	"volume": true
+	"volume": true,
+	"vumeter": false
 }' > $dirsystem/display
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
