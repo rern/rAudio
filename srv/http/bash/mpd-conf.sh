@@ -39,7 +39,6 @@ if [[ $1 == bt ]]; then
 		
 		aplaydevice="bluealsa:DEV=$mac,PROFILE=a2dp"
 		btoutput='
-
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
 	device         "'$aplaydevice'"
@@ -58,11 +57,9 @@ audio_output {
 fi
 pushstream refresh '{"page":"network"}'
 
-mpdfile=/etc/mpd.conf
-mpdconf=$( sed '/audio_output/,/}/ d' $mpdfile ) # remove all outputs
-
 . /srv/http/bash/mpd-devices.sh
 
+output=
 if [[ $i != -1 ]]; then
 	[[ $1 == add ]] && i=-1
 	aplayname=${Aaplayname[$i]}
@@ -73,8 +70,7 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 ########
-	mpdconf+='
-
+	output+='
 audio_output {
 	name           "'$name'"
 	device         "'$hw'"
@@ -85,50 +81,30 @@ audio_output {
 	if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 		mixercontrol=$hwmixer
 ########
-		mpdconf+='
+		output+='
 	mixer_control  "'$mixercontrol'"
 	mixer_device   "hw:'$card'"'
 	fi
 	if [[ $dop == 1 ]]; then
 ########
-		mpdconf+='
+		output+='
 	dop            "yes"'
 	fi
 	mpdcustom=$dirsystem/custom
 	customfile="$mpdcustom-output-$aplayname"
 	if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
-		mpdconf+="
+		output+="
 $( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
 	fi
 ########
-	mpdconf+='
-}'
-elif ! systemctl -q is-active snapserver && [[ ! -e /usr/bin/mpd_oled ]]; then
-########
-		mpdconf+='
-
-audio_output {
-	name           "(No sound device)"
-	type           "fifo"
-	path           "/tmp/mpd_fifo"
-}'
-fi
-if [[ -e $dirsystem/vumeter ]]; then
-########
-	mpdconf+='
-
-audio_output {
-	name           "VU meter"
-	type           "fifo"
-	path           "/tmp/mpd.fifo"
+	output+='
 }'
 fi
 
 if systemctl -q is-active snapserver; then
 ########
-	mpdconf+='
-
+	output+='
 audio_output {
 	name           "Snapcast"
 	type           "fifo"
@@ -137,11 +113,9 @@ audio_output {
 	mixer_type     "software"
 }'
 fi
-
 if [[ -e $dirsystem/streaming ]]; then
 ########
-	mpdconf+='
-
+	output+='
 audio_output {
 	type           "httpd"
 	name           "Streaming"
@@ -152,10 +126,20 @@ audio_output {
 	always_on      "yes"
 }'
 fi
+if [[ -z $output || -e $dirsystem/vumeter ]]; then
+########
+		output+='
+audio_output {
+	name           "'$( [[ -z $output ]] && echo '(No sound device)' || echo '(VU meter)' )'"
+	type           "fifo"
+	path           "/tmp/mpd.fifo"
+}'
+fi
 
-mpdconf+=$btoutput
-
-echo "$mpdconf" > $mpdfile
+mpdfile=/etc/mpd.conf
+echo "$( sed '/audio_output/,/}/ d' $mpdfile )
+$output
+$btoutput" > $mpdfile
 
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then

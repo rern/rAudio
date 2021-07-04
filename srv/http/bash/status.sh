@@ -417,7 +417,10 @@ if [[ -e $dirsystem/vumeter ]]; then
 # >>>>>>>>>>
 	echo {$status}
 	if [[ $state == play ]]; then
-		pgrep cava &> /dev/null || cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+		if ! pgrep cava &> /dev/null; then
+			killall cava &> /dev/null
+			cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+		fi
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
