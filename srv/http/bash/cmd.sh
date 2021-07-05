@@ -853,15 +853,6 @@ volumeupdown )
 	volumeGet
 	pushstreamVolume updn $volume
 	;;
-vumeter )
-	if [[ ${args[1]} == true ]]; then
-		touch $dirsystem/vumeter
-	else
-		rm -f $dirsystem/vumeter
-		killall cava &> /dev/null
-	fi
-	$dirbash/mpd-conf.sh
-	;;
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
