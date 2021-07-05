@@ -352,7 +352,10 @@ function displayPlayback() {
 function displaySave( keys ) {
 	var values = infoVal();
 	keys.forEach( function( k, i ) {
-		if ( k === 'vumeter' && values[ i ] !== G.display.vumeter ) bash( [ 'vumeter', values[ i ] ] );
+		if ( k === 'vumeter' && values[ i ] !== G.display.vumeter ) {
+			G.status.Artist = ''; // force renderPlaybackCoverart()
+			bash( [ 'vumeter', values[ i ] ] );
+		}
 		G.display[ k ] = values[ i ];
 	} );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
