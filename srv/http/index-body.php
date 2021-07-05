@@ -294,43 +294,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" class="cover hide">
 				<div id="vu" class="hide">
-					<svg viewBox="0 0 230 230">
-					<filter id="vushadow"><feDropShadow dx="-3" dy="3" stdDeviation="4"/></filter>
-					<rect class="cls-1" width="230" height="125"/>
-					
-					<path class="cls-3" d="M147.19,53.55a168.5,168.5,0,0,1,50.93,18.7" transform="translate(0 0)"/>
-					
-					<line class="cls-7" x1="32.97" y1="73.93" x2="28.32" y2="65.64"/><line class="cls-7" x1="58.68" y1="62.2" x2="55.49" y2="53.25"/><line class="cls-7" x1="74.94" y1="57.32" x2="72.67" y2="48.09"/><line class="cls-2" x1="81.98" y1="55.75" x2="80.6" y2="48.89"/><line class="cls-7" x1="89.81" y1="54.38" x2="88.38" y2="44.99"/><line class="cls-2" x1="98.71" y1="53.19" x2="98.04" y2="46.31"/><line class="cls-7" x1="108.81" y1="52.66" x2="108.46" y2="43.12"/><line class="cls-7" x1="120.11" y1="52.58" x2="120.4" y2="43.08"/><line class="cls-7" x1="132.7" y1="53.42" x2="133.71" y2="43.98"/><line class="cls-2" x1="139.63" y1="54.3" x2="140.66" y2="47.37"/><line class="cls-7" x1="146.81" y1="55.52" x2="148.62" y2="46.19"/>
-					<line class="cls-4" x1="154.41" y1="57.16" x2="156.09" y2="50.37"/><line class="cls-5" x1="162.44" y1="59.31" x2="165.13" y2="50.2"/><line class="cls-5" x1="179.48" y1="65.36" x2="183" y2="56.53"/><line class="cls-5" x1="197.04" y1="73.93" x2="201.7" y2="65.65"/>
-					
-					<path class="cls-14" d="M30,80h0" transform="translate(0 0)"/>
-					<path class="cls-17" d="M39,75h0" transform="translate(0 0)"/>
-					<path class="cls-14" d="M49,71h0" transform="translate(0 0)"/>
-					<path class="cls-17" d="M59,67h0" transform="translate(0 0)"/>
-					<path class="cls-14" d="M70.26,63.06h0" transform="translate(0 0)"/>
-					<path class="cls-17" d="M82.65,60.09h0" transform="translate(0 0)"/>
-					<path class="cls-14" d="M95.2,58.1h0" transform="translate(0 0)"/>
-					<path class="cls-17" d="M107.89,57.13h0" transform="translate(0 0)"/>
-					<path class="cls-14" d="M120.63,57.13h0" transform="translate(0 0)"/>
-					<path class="cls-17" d="M133.32,58.1h0" transform="translate(0 0)"/>
-					<path class="cls-14" d="M145.92,60.09h0" transform="translate(0 0)"/>
-					
-					<text class="cls-8" transform="translate(20.51 65.27) rotate(-29.25)">20</text><text class="cls-8" transform="translate(45.98 52.11) rotate(-19.52)">10</text><text class="cls-9" transform="matrix(0.97, -0.24, 0.24, 0.97, 68.42, 44.79)">7</text><text class="cls-8" transform="translate(84.2 41.37) rotate(-8.62)">5</text><text class="cls-10" transform="matrix(1, -0.03, 0.03, 1, 104.8, 39.21)">3</text><text class="cls-8" transform="translate(117.42 38.94) rotate(1.99)">2</text><text class="cls-8" transform="translate(130.78 39.64) rotate(6.36)">1</text><text class="cls-8" transform="translate(146.12 41.64) rotate(11.25)">0</text>
-					<text class="cls-11" transform="matrix(0.96, 0.29, -0.29, 0.96, 163.17, 45.63)">1</text><text class="cls-12" transform="translate(181.98 52.11) rotate(22.97)">2</text><text class="cls-12" transform="translate(201.02 61.25) rotate(29.82)">3</text>
-					<text class="cls-15" transform="translate(49.5 82.2) rotate(-24.78)">20</text><text class="cls-16" transform="matrix(0.96, -0.27, 0.27, 0.96, 68.42, 74.4)">40</text><text class="cls-15" transform="translate(91.85 68.91) rotate(-6.75)">60</text><text class="cls-15" transform="translate(115.33 67.27) rotate(2.25)">80</text><text class="cls-15" transform="translate(135.59 68.61) rotate(11.25)">100</text>
-					
-					<path class="cls-23" d="M108.3,85.9h13.5c0.4,0,0.8,0.3,0.8,0.8v13.5c0,0.4-0.3,0.8-0.8,0.8h-13.5c-0.4,0-0.8-0.3-0.8-0.8V86.7C107.5,86.3,107.8,85.9,108.3,85.9z"/>
-					<path class="cls-1" d="M116.5,93.9c2.1-0.8,3.1-3.2,2.3-5.4c-0.6-1.6-2.1-2.6-3.8-2.6v6.8h-3v-3h-1.5v3h-3v1.5h3v3h1.5v-3h3v6.8h1.5V96l4.9,4.9h0.3c0.4,0,0.8-0.3,0.8-0.8v-0.3L116.5,93.9z M116.5,87.9c1.2,0.8,1.5,2.5,0.7,3.7c-0.2,0.3-0.4,0.5-0.7,0.7V87.9z"/>
-					
-					<g id="vuneedle"><line class="cls-18" x1="114.3" y1="221" x2="22.3" y2="69"/><line class="cls-19" x1="115" y1="220" x2="23" y2="68"/></g>
-					
-					<rect x="10" y="10" class="cls-20" width="210" height="105"/>
-					<polygon class="cls-21" points="220.06 115.02 10 115.02 10 9.99 14.03 14 14.03 111 216.03 111 220.06 115.02"/><polygon class="cls-22" points="220.06 115.02 216.03 111 216.03 14 14.03 14 10 9.99 220.06 9.99 220.06 115.02"/>
-					
-					<line class="cls-24" x1="216" y1="14" x2="220" y2="10"/><line class="cls-24" x1="10" y1="115" x2="14" y2="111"/>
-					
-					<path d="M0,0V230H230V0ZM220,115H10V10H220Z"/>
-					</svg>
+					<?php include 'assets/img/vu.svg';?>
 				</div>
 				<div id="qrwebui"></div>
 				<div id="qrip"></div>
