@@ -351,13 +351,15 @@ function displayPlayback() {
 }
 function displaySave( keys ) {
 	var values = infoVal();
+	var vumeter = G.display.vumeter;
 	keys.forEach( function( k, i ) {
-		if ( k === 'vumeter' && values[ i ] !== G.display.vumeter ) {
-			G.status.Album = ''; // force renderPlaybackCoverart()
-			bash( [ 'vumeter', values[ i ] ] );
-		}
 		G.display[ k ] = values[ i ];
 	} );
+	if ( vumeter !== G.display.vumeter ) {
+		banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' )
+		G.status.Album = ''; // force renderPlaybackCoverart()
+		bash( [ 'vumeter', G.display.vumeter ] );
+	}
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
@@ -1346,8 +1348,8 @@ function renderPlaybackCoverart( coverart ) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
-		loader( 'hide' );
 	}
+	loader( 'hide' );
 }
 function renderPlaybackTitles() {
 	G.prevartist = $( '#artist' ).text();
