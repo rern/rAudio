@@ -353,7 +353,7 @@ function displaySave( keys ) {
 	var values = infoVal();
 	keys.forEach( function( k, i ) {
 		if ( k === 'vumeter' && values[ i ] !== G.display.vumeter ) {
-			G.status.Artist = ''; // force renderPlaybackCoverart()
+			G.status.Album = ''; // force renderPlaybackCoverart()
 			bash( [ 'vumeter', values[ i ] ] );
 		}
 		G.display[ k ] = values[ i ];

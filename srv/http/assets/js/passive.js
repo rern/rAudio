@@ -48,7 +48,8 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'vumeter', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
+if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -539,7 +540,7 @@ function psVolume( data ) {
 	}, G.debouncems );
 }
 function psVUmeter( data ) {
-	if ( !G.localhost ) $( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
+	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )

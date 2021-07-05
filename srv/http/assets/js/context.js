@@ -389,12 +389,12 @@ function webRadioCoverart() {
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
 	var imagefile = '/srv/http'+ radiopath; //no ext
 	if ( G.playback ) {
-		var coverart = G.status.coverartradio || G.coverdefault;
+		var coverart = G.status.coverartradio || G.covervu;
 	} else {
 		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
-		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
+		var coverart = src ? src.replace( '-thumb.', '.' ) : G.covervu;
 	}
-	var radioicon = coverart === G.coverdefault;
+	var radioicon = coverart === G.covervu;
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : 'WebRadio CoverArt'
@@ -415,7 +415,7 @@ function webRadioCoverart() {
 }
 function webRadioDelete() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.covervu;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
@@ -436,7 +436,7 @@ function webRadioDelete() {
 }
 function webRadioEdit() {
 	var name = G.list.name;
-	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
+	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.covervu;
 	var url = G.list.path;
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {

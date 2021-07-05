@@ -79,7 +79,8 @@ var lazyload = new LazyLoad( {
 bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
 	G.bars = data.bars;
-	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
+	G.coverdefault = '/assets/img/coverart.'+ hash +'.svg';
+	G.covervu = '/assets/img/vu.'+ hash +'.png';
 	$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 	$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
 	$.event.special.tap.tapholdThreshold = 1000;
