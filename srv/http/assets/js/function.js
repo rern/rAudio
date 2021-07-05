@@ -1816,7 +1816,7 @@ function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
 function vu() {
-	var range = 11; // -/+
+	var range = 8; // -/+
 	var deg = 0;
 	var inc;
 	clearInterval( G.intVu );
