@@ -357,7 +357,7 @@ function displaySave( keys ) {
 	} );
 	if ( vumeter !== G.display.vumeter ) {
 		banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' )
-		G.status.Album = ''; // force renderPlaybackCoverart()
+		G.status.Album += ' '; // force renderPlaybackCoverart()
 		bash( [ 'vumeter', G.display.vumeter ] );
 	}
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
