@@ -77,13 +77,9 @@ var lazyload = new LazyLoad( {
 	  elements_selector : '.lazy'
 	, use_native        : true
 } );
-
 bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
 	G.bars = data.bars;
-	$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
-	$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
-	$.event.special.tap.tapholdThreshold = 1000;
 	$( '.page' ).on( 'swipeleft swiperight', function( e ) {
 		if ( G.bars || G.swipepl || G.drag ) return
 		
@@ -109,6 +105,9 @@ bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on 
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
+$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
+$.event.special.tap.tapholdThreshold = 1000;
 $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
