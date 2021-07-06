@@ -351,14 +351,11 @@ function displayPlayback() {
 }
 function displaySave( keys ) {
 	var values = infoVal();
-	var vumeter = G.display.vumeter;
+	G.vumeter = G.display.vumeter;
 	keys.forEach( function( k, i ) {
 		G.display[ k ] = values[ i ];
 	} );
-	if ( vumeter !== G.display.vumeter ) {
-		banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' )
-		$( '#album' ).text( G.status.Album +' ' ); // force renderPlaybackCoverart()
-	}
+	if ( G.vumeter !== G.display.vumeter ) banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
@@ -1206,7 +1203,14 @@ function renderPlayback() {
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== G.prevartist
 		|| G.status.Album !== G.prevalbum
-		|| G.status.player === 'airplay' ) renderPlaybackCoverart( G.status.coverart );
+		|| G.status.player === 'airplay'
+		|| G.display.vumeterchanged
+	) {
+		setTimeout( function() {
+			delete G.display.vumeterchanged;
+		}, 5000 );
+		renderPlaybackCoverart( G.status.coverart );
+	}
 	// time
 	time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
@@ -1561,7 +1565,8 @@ function setPlaybackTitles() {
 	var nochange = wW === G.wW
 				&& $( '#artist' ).text() === G.prevartist
 				&& $( '#title' ).text() === G.prevtitle
-				&& $( '#album' ).text() === G.prevalbum;
+				&& $( '#album' ).text() === G.prevalbum
+				&& !( 'vumeterchanged' in G );
 	if ( G.local || nochange ) return // suppress multiple fires, skip if same width and same data
 	
 	local();

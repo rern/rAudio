@@ -111,10 +111,13 @@ case 'displayset':
 		} else {
 			touch( $dirsystem.'vumeter' );
 		}
+		$data->vumeterchanged = true;
+		pushstream( 'display', $data );
 		exec( $sudo.'/srv/http/bash/mpd-conf.sh' );
+	} else {
+		pushstream( 'display', $data );
 	}
-	pushstream( 'display', $data );
-	$remove = [ 'color', 'order', 'volumenone' ];
+	$remove = [ 'color', 'order', 'volumenone', 'vumeterchanged' ];
 	foreach( $remove as $key ) unset( $data->$key );
 	file_put_contents( $dirsystem.'display', json_encode( $data, JSON_PRETTY_PRINT ) );
 	break;
