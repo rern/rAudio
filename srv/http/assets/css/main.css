@@ -608,7 +608,7 @@ i.map.disabled, .map.disabled i {
 .cls-23 { fill:var(--cg60); }
 #vuneedle {
 	transform-origin: 115px 220px;
-	transition-duration: 250ms;
+	transition-duration: 300ms;
 }
 #vu::before { /* glossy overlay */
 	position: absolute;
