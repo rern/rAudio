@@ -1,16 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="230px" height="230px" viewBox="0 0 230 230">
 <style type="text/css">
-.cls-11,.cls-12,.cls-13 { font-family: Arial; }
-.cls-11,.cls-12 { font-size:12px; }
-.cls-13 { font-size: 9px; }
 .cls-3,.cls-4,.cls-15,.cls-16,.cls-17,.cls-18 { fill: none; }
 .cls-1 { fill: hsl(0,0%,90%); }
 .cls-12 { fill: #ff0000; }
 .cls-17 { fill: hsl(200,3%,20%); }
 .cls-18 { fill: hsl(200,3%,10%); }
+.cls-19 { fill:hsl(200,3%,60%) }
 .cls-3,.cls-4,.cls-5 { stroke: #ff0000; }
 .cls-7,.cls-6,.cls-8,.cls-9,.cls-14,.cls-15,.cls-16,.cls-17,.cls-18,.cls-20 { stroke: #000000; }
-.cls-14 { opacity: 0.3; }
 .cls-16 { fill: none; stroke-width: 5px; filter:url(#vushadow); }
 .cls-3 { stroke-width: 4px; }
 .cls-8 { stroke-width: 3px; }
@@ -20,7 +17,10 @@
 .cls-7,.cls-4 { stroke-width: 0.5px; }
 .cls-17,.cls-18,.cls-20 { stroke-width: 0.2px; }
 .cls-8,.cls-9 { stroke-linecap: round; }
-.cls-19 { fill:hsl(200,3%,60%) }
+.cls-14 { opacity: 0.3; }
+.cls-11,.cls-12,.cls-13 { font-family: Arial; }
+.cls-11,.cls-12 { font-size:12px; }
+.cls-13 { font-size: 9px; }
 #vuneedle {
 	transform-origin: 115px 220px;
 	transition-duration: 300ms;
