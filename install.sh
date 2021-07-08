@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if [[ ! -e /usr/bin/cava ]]; then
+	pacman -Sy --noconfirm cava
+	wget -q https://github.com/rern/rOS/raw/main/etc/cava.conf -P /etc
+fi
+
 file=/srv/http/data/system/display
 if ! grep -q vumeter $file; then
 	sed -i '/novu/ i\    "vumeter": false,' $file

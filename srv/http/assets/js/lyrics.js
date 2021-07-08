@@ -1,9 +1,11 @@
 lyricsShow = function( data ) {
-	currentlyrics = data;
-	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-	$( '#lyricstitle' ).text( lyricsTitle );
-	$( '#lyricsartist' ).text( lyricsArtist );
-	$( '#lyricstext' ).html( lyricshtml );
+	if ( data !== 'current' ) {
+		currentlyrics = data;
+		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
+		$( '#lyricstitle' ).text( lyricsTitle );
+		$( '#lyricsartist' ).text( lyricsArtist );
+		$( '#lyricstext' ).html( lyricshtml );
+	}
 	var bars = G.status ? G.bars : !$( '#bar-top' ).hasClass( 'hide' );
 	$( '#lyrics' )
 		.css( {
@@ -16,9 +18,13 @@ lyricsShow = function( data ) {
 	bannerHide();
 }
 lyricsHide = function() {
-	currentlyrics = '';
-	$( '#lyricstext' ).empty();
-	$( '#lyricstextarea' ).val( '' );
+	if ( $( '#artist' ).text() !== lyricsArtist || $( '#title' ).text() !== lyricsTitle ) {
+		currentlyrics = '';
+		lyricsArtist = '';
+		lyricsTitle = '';
+		$( '#lyricstext' ).empty();
+		$( '#lyricstextarea' ).val( '' );
+	}
 	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
@@ -33,23 +39,23 @@ $( '#lyricsartist' ).click( function() {
 	getBio( $( this ).text() );
 } );
 $( '#title, #guide-lyrics' ).tap( function() {
-	var artist = G.status.Artist;
-	var title = G.status.Title;
+	var artist = $( '#artist' ).text();
+	var title = $( '#title' ).text();
 	if ( !artist || !title ) return;
 	
-	if ( artist === lyricsArtist && title === lyricsTitle && currentlyrics ) {
-		lyricsShow();
+	if ( artist === $( '#lyricsartist' ).text() && title === $( '#lyricstitle' ).text() && currentlyrics ) {
+		lyricsShow( 'current' );
 		return
 	}
 	
 	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
 	title = title.replace( /(["`])/g, '\\$1' );
-	bash( [ 'lyrics', artist, title, 'local' ], function( data ) {
+	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
+	bash( [ 'lyrics', artist, title, 'local', file ], function( data ) {
 		if ( data ) {
-			var lyrics_title = data.split( '^^' );
-			lyricsTitle = lyrics_title[ 0 ];
+			lyricsTitle = title;
 			lyricsArtist = artist;
-			lyricsShow( lyrics_title[ 1 ] );
+			lyricsShow( data );
 			return
 		}
 		

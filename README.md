@@ -14,6 +14,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - `*.jpg`, `*.png` and animated `*.gif` applicable
 - `*.wav` - album artists and sort tracks
 - `*.cue` - virtually as individual tracks in all modes and user playlists
+- VU meter as coverart (for remote screen)
 - Live display update across multiple clients
 - Wi-Fi connection can be pre-configured for headless mode.
 - USB DAC plug ang play

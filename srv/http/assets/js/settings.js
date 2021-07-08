@@ -242,7 +242,6 @@ var localhost = [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var red = '#bb2828';
-var short = window.innerHeight < 570;
 var timer;
 var nextpage = {
 	  features : [ 'system', 'player' ]
@@ -360,11 +359,11 @@ $( '#help' ).click( function() {
 	if ( $( '.help-block:not(.hide)' ).length > 0 ) {
 		$( this ).removeClass( 'blue' );
 		$( '.help-block' ).addClass( 'hide' );
-		if ( short ) $( '#bar-bottom' ).addClass( 'transparent' );
+		$( '#bar-bottom' ).css( 'opacity', 0 );
 	} else {
 		$( this ).addClass( 'blue' );
 		$( '.help-block' ).removeClass( 'hide' );
-		if ( short ) $( '#bar-bottom' ).removeClass( 'transparent' );
+		$( '#bar-bottom' ).css( 'opacity', 1 );
 	}
 	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
 } );
@@ -378,8 +377,7 @@ $( 'body' ).on( 'click', '.status', function( e ) {
 	codeToggle( $( this ).data( 'status' ), e.target );
 } );
 // bar-bottom
-if ( short ) {
-	$( '#bar-bottom' ).addClass( 'transparent' );
+if ( window.innerHeight < 570 ) {
 	$( '.container, #data' ).click( function() {
 		$( '#bar-bottom' ).addClass( 'transparent' );
 	} );

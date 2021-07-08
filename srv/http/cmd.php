@@ -103,8 +103,21 @@ case 'displayset':
 	$data = json_decode( $_POST[ 'displayset' ] );
 	$remove = [ 'update', 'updating_db' ];
 	foreach( $remove as $key ) unset( $data->$key );
-	pushstream( 'display', $data );
-	$remove = [ 'color', 'order', 'volumenone' ];
+	$vumeter = file_exists( $dirsystem.'vumeter' );
+	if ( $data->vumeter !== $vumeter ) {
+		if ( $vumeter ) {
+			@unlink( $dirsystem.'vumeter' );
+			exec( $sudobin.'killall cava &> /dev/null' );
+		} else {
+			touch( $dirsystem.'vumeter' );
+		}
+		$data->vumeterchanged = true;
+		pushstream( 'display', $data );
+		exec( $sudo.'/srv/http/bash/mpd-conf.sh' );
+	} else {
+		pushstream( 'display', $data );
+	}
+	$remove = [ 'color', 'order', 'volumenone', 'vumeterchanged' ];
 	foreach( $remove as $key ) unset( $data->$key );
 	file_put_contents( $dirsystem.'display', json_encode( $data, JSON_PRETTY_PRINT ) );
 	break;

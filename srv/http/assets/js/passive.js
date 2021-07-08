@@ -40,11 +40,7 @@ function onVisibilityChange( callback ) {
 	window.onpagehide = window.onblur = unfocused;
 };
 onVisibilityChange( function( visible ) {
-	if ( visible ) {
-		pushstream.connect();
-	} else {
-		pushstream.disconnect();
-	}
+	visible ? pushstream.connect() : pushstream.disconnect();
 } );
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
@@ -52,7 +48,8 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'vumeter', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
+if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -66,6 +63,7 @@ pushstream.onstatuschange = function( status ) {
 		}
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
+		vuStop();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
@@ -542,7 +540,7 @@ function psVolume( data ) {
 	}, G.debouncems );
 }
 function psVUmeter( data ) {
-	vuMeter( data.val );
+	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )

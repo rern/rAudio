@@ -1,8 +1,11 @@
+var hash = Math.ceil( Date.now() / 1000 );
 var G = {
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
+	, coverart      : '/assets/img/coverart.'+ hash +'.svg'
 	, coversave     : 0
+	, covervu       : '/assets/img/vu.'+ hash +'.svg'
 	, librarylist   : 0
 	, debounce      : ''
 	, debouncems    : 300
@@ -39,7 +42,6 @@ var picaOption = { // pica.js
 //	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
 //	, alpha            : true // Default = false (black crop background)
 };
-var hash = Math.ceil( Date.now() / 1000 );
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 } else {
@@ -75,14 +77,10 @@ var lazyload = new LazyLoad( {
 	  elements_selector : '.lazy'
 	, use_native        : true
 } );
-
 bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
+	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 	G.bars = data.bars;
-	G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
-	$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
-	$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
-	$.event.special.tap.tapholdThreshold = 1000;
 	$( '.page' ).on( 'swipeleft swiperight', function( e ) {
 		if ( G.bars || G.swipepl || G.drag ) return
 		
@@ -108,6 +106,9 @@ bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on 
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
+$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
+$.event.special.tap.tapholdThreshold = 1000;
 $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );

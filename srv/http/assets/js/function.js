@@ -108,7 +108,7 @@ function contextmenuLibrary( $li, $target ) {
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
-	$( '.contextmenu' ).find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', G.mode !== 'file' );
+	$( '.contextmenu' ).find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
 	$( '.contextmenu .tag' ).toggleClass( 'hide', !$( '.licover' ).length || G.mode !== 'file' );
 	$li.addClass( 'active' );
 	if ( G.list.licover ) {
@@ -351,9 +351,12 @@ function displayPlayback() {
 }
 function displaySave( keys ) {
 	var values = infoVal();
+	G.vumeter = G.display.vumeter;
 	keys.forEach( function( k, i ) {
 		G.display[ k ] = values[ i ];
 	} );
+	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
+	if ( G.vumeter !== G.display.vumeter ) banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
@@ -679,41 +682,6 @@ function infoLibrary( page2 ) {
 		}
 		, ok           : function () {
 			displaySave( keys );
-			$( '#button-lib-back, #button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-			if ( G.library ) {
-				if ( G.librarylist ) {
-					if ( $( '.lib-index' ).length ) return
-					
-					if ( G.display.hidecover ) {
-						$( '.licover' ).addClass( 'hide' );
-					} else {
-						if ( !$( '.licover' ).length ) {
-							var query = G.query[ G.query.length - 1 ];
-							list( query, function( data ) {
-								data.path = query.path;
-								data.modetitle = query.modetitle;
-								renderLibraryList( data );
-							}, 'json' );
-							return
-						}
-						
-						var pH = G.bars ? 130 : 90;
-						if ( G.display.fixedcover ) {
-							pH += 230;
-							$( '.licover' ).removeClass( 'nofixed' );
-							$( '#lib-list li:eq( 1 )' ).addClass( 'track1' );
-							$( '#lib-list p' ).addClass( 'fixedcover' )
-						} else {
-							$( '.licover' ).addClass( 'nofixed' );
-							$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
-							$( '#lib-list p' ).removeClass( 'fixedcover' )
-						}
-						$( '.licover' ).removeClass( 'hide' );
-					}
-				} else {
-					renderLibrary();
-				}
-			}
 		}
 	} );
 }
@@ -723,11 +691,11 @@ var chkplayback = {
 	, time         : 'Time'
 	, progressbar  : 'Progress bar'
 	, cover        : 'Coverart'
-	, coversmall   : 'Small coverart'
-	, volume       : 'Volume'
-	, radioelapsed : 'WebRadio time'
-	, buttons      : 'Buttons'
 	, vumeter      : 'VU meter'
+	, volume       : 'Volume'
+	, coversmall   : 'Small coverart'
+	, buttons      : 'Buttons'
+	, radioelapsed : 'WebRadio time'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
@@ -736,6 +704,7 @@ function infoPlayback() {
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );
 	} );
+	keys.push( 'novu' );
 	values.push( G.display.novu )
 	info( {
 		  icon         : 'playback'
@@ -745,8 +714,8 @@ function infoPlayback() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, radio        : {
-			  '<img class="imgicon" src="/assets/img/vu.png"><gr>No cover</gr>' : false
-			, '<i class="imgicon iconcover""></i><gr>No cover</gr>'                 : true
+			  '<img class="imgicon" src="/assets/img/vu.svg"><gr>No cover</gr>' : false
+			, '<i class="imgicon iconcover""></i><gr>No cover</gr>'             : true
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
@@ -754,7 +723,8 @@ function infoPlayback() {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
-			$( '#infoContent' ).find( 'tr:eq(5 ), tr:eq( 6 )' ).toggleClass( 'hide', !G.display.cover );
+			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
+			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
 			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
@@ -802,36 +772,25 @@ function infoPlayback() {
 				if ( $( this ).prop( 'checked' ) ) {
 					if ( !$time.prop( 'checked' ) ) displayCheckboxSet( progressbar, true, true );
 					displayCheckboxSet( coversmall, true );
-					$( '#divnovu' ).removeClass( 'hide' );
+					displayCheckboxSet( vumeter, true, false );
+					$vumeter.prop( 'disabled', false );
+					$coverdefault.toggleClass( 'hide', false );
 				} else {
 					displayCheckboxSet( progressbar, false, false );
 					displayCheckboxSet( coversmall, false, false );
+					displayCheckboxSet( vumeter, false, false );
 					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( time, true, true );
-					$( '#divnovu' ).addClass( 'hide' );
+					$coverdefault.toggleClass( 'hide', true );
 				}
 			} );
 			$vumeter.change( function() {
-				$( '#infoContent' ).find( 'tr:eq( 5 ), tr:eq(6 )' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
+				var checked = $( this ).prop( 'checked' );
+				$coverdefault.toggleClass( 'hide', checked );
+				if ( checked ) $novu.val( [ false ] );
 			} );
-			$vumeter.parent().addClass( 'hide' );
 		}
 		, ok           : function () {
 			displaySave( keys );
-			G.bars = G.display.bars;
-			G.coverdefault = '/assets/img/'+ ( G.display.novu ? 'coverart.'+ hash +'.svg' : 'vu.'+ hash +'.png' );
-			displayBars();
-			if ( G.playback ) {
-				displayPlayback();
-				setButtonControl();
-				renderPlayback();
-				$( '#ti-relays, #i-relays' ).toggleClass( 'hide', !G.status.relayson );
-			} else if ( G.library ) {
-				$( '.list p' ).toggleClass( 'bars-on', G.bars );
-				if ( bars !== G.bars && $( '.coverart' ).length ) {
-					G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
-					$( '#mode-album' ).click();
-				}
-			}
 		}
 	} );
 }
@@ -1245,7 +1204,14 @@ function renderPlayback() {
 	// others ////////////////////////////////////////
 	if ( G.status.Artist !== G.prevartist
 		|| G.status.Album !== G.prevalbum
-		|| G.status.player === 'airplay' ) renderPlaybackCoverart( G.status.coverart );
+		|| G.status.player === 'airplay'
+		|| G.display.vumeterchanged
+	) {
+		setTimeout( function() {
+			delete G.display.vumeterchanged;
+		}, 5000 );
+		renderPlaybackCoverart( G.status.coverart );
+	}
 	// time
 	time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
@@ -1377,7 +1343,7 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( coverart || G.display.novu ) {
+	if ( !G.display.vumeter && ( coverart || G.display.novu ) ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
 			.attr( 'src', coverart || G.coverdefault )
@@ -1386,8 +1352,8 @@ function renderPlaybackCoverart( coverart ) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
-		loader( 'hide' );
 	}
+	loader( 'hide' );
 }
 function renderPlaybackTitles() {
 	G.prevartist = $( '#artist' ).text();
@@ -1600,7 +1566,8 @@ function setPlaybackTitles() {
 	var nochange = wW === G.wW
 				&& $( '#artist' ).text() === G.prevartist
 				&& $( '#title' ).text() === G.prevtitle
-				&& $( '#album' ).text() === G.prevalbum;
+				&& $( '#album' ).text() === G.prevalbum
+				&& !( 'vumeterchanged' in G );
 	if ( G.local || nochange ) return // suppress multiple fires, skip if same width and same data
 	
 	local();
@@ -1636,16 +1603,21 @@ function setPlaybackTitles() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
-	$( '#pl-list .elapsed' ).empty();
 	if ( !G.playlist
 		|| G.plremove
 		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| !G.status.playlistlength
-		|| G.sortable ) return // skip if empty or Sortable
+		|| G.sortable ) {
+		$( '#pl-list .elapsed' ).empty();
+		return
+	}
 	
 	$( '#pl-list li' ).removeClass( 'active updn' );
-	if ( $( '#pl-list li' ).length < G.status.song + 1 ) return // on eject cd G.status.song not yet refreshed
+	if ( $( '#pl-list li' ).length < G.status.song + 1 ) { // on eject cd G.status.song not yet refreshed
+		$( '#pl-list .elapsed' ).empty();
+		return
+	}
 	
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
@@ -1848,9 +1820,6 @@ function volumeKnobSet( vol ) {
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
-function vuMeter( val ) {
-	$( '#vuneedle' ).css( 'transform', 'rotate( '+ val +'deg )' );
-}
 function vu() {
 	var range = 8; // -/+
 	var deg = 0;
@@ -1865,7 +1834,7 @@ function vu() {
 		} else if ( deg > range ) {
 			deg = range - inc;
 		}
-		$( '#vuneedle' ).css( 'transform', 'rotate( '+ deg +'deg )' );
+		$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
 	}, 500 );
 }
 function vuStop() {

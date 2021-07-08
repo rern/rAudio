@@ -533,7 +533,7 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-height: 570px) {
 	#bar-bottom {
-		opacity: 0.8;
+		opacity: 0;
 	}
 }
 @media (min-width: 768px) {

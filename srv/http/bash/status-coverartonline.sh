@@ -30,8 +30,7 @@ data=$( curl -s -m 5 -G \
 	--data-urlencode "autocorrect=1" \
 	--data-urlencode "format=json" \
 	http://ws.audioscrobbler.com/2.0/ )
-error=$( jq -r .error <<< "$data" )
-[[ $error != null ]] && exit
+[[ $( jq -r .error <<< "$data" ) != null ]] && exit
 
 if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< "$data" )

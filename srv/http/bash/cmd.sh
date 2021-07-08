@@ -240,16 +240,6 @@ volumeSet() {
 	fi
 	[[ -n $control ]] && alsactl store
 }
-vumeter() {
-	if grep -q 'vumeter.*true' $dirsystem/display; then
-		if ! pgrep cava &> /dev/null; then
-			killall cava &> /dev/null
-			cava | $dirbash/vumeter.sh &> /dev/null &
-		fi
-	else
-		killall cava &> /dev/null
-	fi
-}
 
 case ${args[0]} in
 
@@ -443,7 +433,6 @@ displayget )
 , "volumenone" : '$volumenone'
 }'
 echo "$data"
-	mpc | grep -q '^\[playing\]' && vumeter
 	;;
 ignoredir )
 	touch $dirsystem/updating
@@ -477,15 +466,20 @@ lyrics )
 	artist=${args[1]}
 	title=${args[2]}
 	cmd=${args[3]}
-	lyrics=${args[4]}
+	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
 	
 	lyricsfile="$dirdata/lyrics/${name,,}.txt"
 	if [[ $cmd == local ]]; then
-		[[ -e $lyricsfile ]] && echo "$title^^$( cat "$lyricsfile" )" # return with title for display
+		if [[ -e "$lyricsfile" ]]; then
+			cat "$lyricsfile"
+		else
+			kid3-cli -c "select \"$data\"" \
+					 -c "get lyrics"
+		fi
 	elif [[ $cmd == save ]]; then
-		echo -e "${lyrics//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
+		echo -e "${data//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
 	elif [[ $cmd == delete ]]; then
 		rm "$lyricsfile"
 	else
@@ -528,7 +522,6 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
-		vumeter
 	else
 		killall cava &> /dev/null
 	fi
@@ -864,9 +857,6 @@ volumeupdown )
 	[[ -z $control ]] && mpc volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
 	volumeGet
 	pushstreamVolume updn $volume
-	;;
-vumeter )
-	vumeter
 	;;
 webradioadd )
 	name=${args[1]}

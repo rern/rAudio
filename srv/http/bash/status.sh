@@ -75,14 +75,10 @@ airplay )
 , "state"          : "play"
 , "Time"           : '$Time'
 , "timestamp"      : '$now
-# >>>>>>>>>>
-	echo {$status}
 	;;
 bluetooth )
 ########
 	status+=$( $dirbash/status-bluetooth.sh )
-# >>>>>>>>>>
-	echo {$status}
 	;;
 snapclient )
 	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
@@ -91,8 +87,6 @@ snapclient )
 							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 ########
 	status+=${snapserverstatus:1:-1}
-# >>>>>>>>>>
-	echo {$status}
 	;;
 spotify )
 	file=$dirtmp/spotify
@@ -115,23 +109,21 @@ spotify )
 , "elapsed"   : '$elapsed'
 , "state"     : "'$state'"
 , "timestamp" : '$now
-# >>>>>>>>>>
-	echo {$status}
 	;;
 	
 esac
 
 if [[ $player != mpd && $player != upnp ]]; then
+# >>>>>>>>>>
+	echo {$status}
 	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
-	grep -q '"vumeter": true' $dirsystem/display && $dirbash/cmd.sh vumeter
 	exit
 fi
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
 filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
-
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -283,7 +275,7 @@ elif [[ -n $radioheader ]]; then
 				fi
 				if [[ -n $radioparadise ]]; then
 					$dirbash/status-radioparadise.sh $file "$station" &> /dev/null &
-				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
+				elif [[ -n $radiofrance && ! -e $dirtmp/radiofrance ]]; then
 					echo $file > $dirtmp/radiofrance
 					systemctl start radiofrance
 				fi
@@ -418,14 +410,25 @@ pos="$(( song + 1 ))/$playlistlength"
 [[ -n $sampling ]] && sampling="$pos &bull; $sampling" || sampling=$pos
 status+='
 , "ext"      : "'$ext'"
-, "sampling" : "'$sampling'"'
-if grep -q '"cover": false' $dirsystem/display; then
+, "sampling" : "'$sampling'"
+, "coverart" : ""'
+
+if [[ -e $dirsystem/vumeter ]]; then
 # >>>>>>>>>>
 	echo {$status}
+	if [[ $state == play ]]; then
+		if ! pgrep cava &> /dev/null; then
+			killall cava &> /dev/null
+			cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+		fi
+	else
+		killall cava &> /dev/null
+		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+	fi
 	exit
-elif grep -q '"vumeter": true' $dirsystem/display; then
+elif grep -q '"cover": false' $dirsystem/display; then
+# >>>>>>>>>>
 	echo {$status}
-	$dirbash/cmd.sh vumeter
 	exit
 fi
 

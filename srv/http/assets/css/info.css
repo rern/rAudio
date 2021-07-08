@@ -470,6 +470,7 @@ px100 { width: 100px }
 	#infoX:hover {
 		color: var( --cml );
 	}
+	#infoContent label,
 	input[type=checkbox],
 	input[type=radio],
 	.fa-eye {
