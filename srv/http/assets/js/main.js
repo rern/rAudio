@@ -3,9 +3,9 @@ var G = {
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
-	, coverdefault  : '/assets/img/coverart.'+ hash +'.svg'
-	, covervu       : '/assets/img/vu.'+ hash +'.svg'
+	, coverart      : '/assets/img/coverart.'+ hash +'.svg'
 	, coversave     : 0
+	, covervu       : '/assets/img/vu.'+ hash +'.svg'
 	, librarylist   : 0
 	, debounce      : ''
 	, debouncems    : 300
@@ -79,6 +79,7 @@ var lazyload = new LazyLoad( {
 } );
 bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
 	G.display = data;
+	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 	G.bars = data.bars;
 	$( '.page' ).on( 'swipeleft swiperight', function( e ) {
 		if ( G.bars || G.swipepl || G.drag ) return

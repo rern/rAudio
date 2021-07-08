@@ -355,6 +355,7 @@ function displaySave( keys ) {
 	keys.forEach( function( k, i ) {
 		G.display[ k ] = values[ i ];
 	} );
+	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 	if ( G.vumeter !== G.display.vumeter ) banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
 	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
 }
