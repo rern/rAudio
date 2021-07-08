@@ -466,15 +466,20 @@ lyrics )
 	artist=${args[1]}
 	title=${args[2]}
 	cmd=${args[3]}
-	lyrics=${args[4]}
+	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
 	
 	lyricsfile="$dirdata/lyrics/${name,,}.txt"
 	if [[ $cmd == local ]]; then
-		[[ -e $lyricsfile ]] && echo "$title^^$( cat "$lyricsfile" )" # return with title for display
+		if [[ -e "$lyricsfile" ]]; then
+			cat "$lyricsfile"
+		else
+			kid3-cli -c "select \"$data\"" \
+					 -c "get lyrics"
+		fi
 	elif [[ $cmd == save ]]; then
-		echo -e "${lyrics//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
+		echo -e "${data//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
 	elif [[ $cmd == delete ]]; then
 		rm "$lyricsfile"
 	else
