@@ -583,33 +583,7 @@ i.map.disabled, .map.disabled i {
 .licover img {
 	border: 1px solid hsl(0,0%,15%);
 }
-/* vu */
 #vu { width: 230px }
-.cls-8,.cls-9,.cls-10,.cls-11,.cls-12,.cls-15,.cls-16 { font-family: Arial; }
-.cls-8,.cls-9,.cls-10,.cls-11,.cls-12 { font-size:12px; }
-.cls-15,.cls-16 { font-size: 9px; }
-.cls-3,.cls-4,.cls-19,.cls-20,.cls-21,.cls-22 { fill: none; }
-.cls-1 { fill: var(--cw); }
-.cls-11,.cls-12 { fill: #ff0000; }
-.cls-21 { fill: var(--cga); }
-.cls-22 { fill: var(--cgd); }
-.cls-3,.cls-4,.cls-5,.cls-6 { stroke: #ff0000; }
-.cls-2,.cls-7,.cls-14,.cls-17,.cls-18,.cls-19,.cls-20,.cls-21,.cls-22,.cls-24 { stroke: #000000; }
-.cls-18 { opacity: 0.3; }
-.cls-20 { fill: none; stroke-width: 5px; filter:url(#vushadow); }
-.cls-3 { stroke-width: 4px; }
-.cls-14 { stroke-width: 3px; }
-.cls-17 { stroke-width: 2px; }
-.cls-5,.cls-7 { stroke-width: 1.3px; }
-.cls-18,.cls-19 { stroke-width: 1px; }
-.cls-2,.cls-4 { stroke-width: 0.5px; }
-.cls-21,.cls-22,.cls-24 { stroke-width: 0.2px; }
-.cls-14,.cls-17 { stroke-linecap: round; }
-.cls-23 { fill:var(--cg60); }
-#vuneedle {
-	transform-origin: 115px 220px;
-	transition-duration: 300ms;
-}
 #vu::before { /* glossy overlay */
 	position: absolute;
 	top: 0;
