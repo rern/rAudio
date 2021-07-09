@@ -413,17 +413,22 @@ status+='
 , "sampling" : "'$sampling'"
 , "coverart" : ""'
 
-if [[ -e $dirsystem/vumeter ]]; then
+if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 # >>>>>>>>>>
 	echo {$status}
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
-			cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+			[[ -e $dirsystem/vumeter ]] && cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+			[[ -e $dirsystem/vuled ]] && cava -p /etc/cavaled.conf | $dirbash/vuled.sh &> /dev/null &
 		fi
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+		p=$( cat /srv/http/data/system/vuledpins )
+		for i in $p; do
+			echo 0 > /sys/class/gpio/gpio$p/value
+		done
 	fi
 	exit
 elif grep -q '"cover": false' $dirsystem/display; then

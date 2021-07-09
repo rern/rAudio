@@ -500,6 +500,19 @@ usbremove )
 	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
 	update
 	;;
+vuleddisable )
+	rm -f $dirsystem/vuled
+	pushRefresh
+	;;
+vuledset )
+	pins=${args[1]}
+	touch $dirsystem/vuled
+	echo $pins > $dirsystem/vuledpins
+	for i in $pins; do
+		gpio -1 mode $i out
+	done
+	pushRefresh
+	;;
 wlandisable )
 	if systemctl -q is-active hostapd; then
 		/srv/http/bash/features.sh hostapddisable

@@ -198,6 +198,8 @@ renderPage = function( list ) {
 	} else {
 		$( '#divsoundprofile' ).addClass( 'hide' );
 	}
+	$( '#vuled' ).prop( 'checked', G.vuled );
+	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' ).val( G.timezone );
 	$( 'select' ).selectric( { nativeOnMobile: false, maxHeight: 400 } );
@@ -222,6 +224,7 @@ $( '.enable' ).click( function() {
 		, lcdchar      : 'Character LCD'
 		, powerbutton  : 'Power Button'
 		, soundprofile : 'Kernel Sound Profile'
+		, vuled        : 'VU LED'
 		, wlan         : 'Wi-Fi'
 	}
 	var id = this.id;
@@ -606,6 +609,38 @@ $( '#setting-lcd' ).click( function() {
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
+		}
+	} );
+} );
+$( '#setting-vuled' ).click( function() {
+	var p = { 3:2, 5:3, 7:4, 8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9, 22:25, 23:11, 24:8, 26:7, 29:5, 31:6, 32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21 }
+	var htmlselect = '<select>';
+	$.each( p, function( k, v ) {
+		htmlselect += '<option value="'+ v +'">'+ k +'</option>';
+	} );
+	htmlselect += '</select>';
+	var htmlpins = '';
+	[ '-1dB', '-2dB', '-3dB', '-5dB', '-7dB', '-10dB', '-20dB' ].forEach( function( label ) {
+		htmlpins += '<tr><td>'+ label +'</td><td>'+ htmlselect +'</td></tr>';
+	} );
+	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 2, 3, 4, 14, 15, 17, 18 ];
+	info( {
+		  icon         : 'gpiopins'
+		, title        : 'VU LED'
+		, message      : 'GPIO pins:'
+		, select       : htmlpins
+		, values       : vuledval
+		, checkchanged : ( G.vuled ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent td' ).css( 'width', '70px' );
+		}
+		, cancel        : function() {
+			$( '#vuled' ).prop( 'checked', G.vuled );
+		}
+		, ok           : function() {
+			var pins = infoVal().join( ' ' );
+			notify( 'VU LED', 'Change ...', 'gpiopins' );
+			bash( [ 'vuledset', pins ] );
 		}
 	} );
 } );

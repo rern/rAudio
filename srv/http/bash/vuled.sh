@@ -1,6 +1,6 @@
 #!/bin/bash
 
-p=( $( cat /srv/http/data/system/vuled ) )
+p=( $( cat /srv/http/data/system/vuledpins ) )
 readarray -t off <<< "\
 ${p[@]}
 ${p[@]:1}

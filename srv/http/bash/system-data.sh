@@ -146,6 +146,8 @@ data+='
 , "socspeed"        : "'$socspeed'"
 , "version"         : "'$version'"
 , "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
+, "vuled"           : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
+, "vuledval"        : "'$( cat /srv/http/data/system/vuledpins 2> /dev/null )'"
 , "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "wlannoap"        : '$( [[ -e $dirsystem/wlannoap ]] && echo true || echo false )'
 , "wlanconnected"   : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )

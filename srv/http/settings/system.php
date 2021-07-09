@@ -185,6 +185,16 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 	<?php } ?>
+<div class="col-l single">Volume level LED<i class="fa fa-gpiopins"></i></div>
+<div class="col-r">
+	<input id="vuled" class="enable" type="checkbox">
+	<div class="switchlabel" for="vuled"></div>
+	<i id="setting-vuled" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		7 LEDs connected to GPIO pins to display live volume level.
+		<br>(Serial &plusmn;330ohm resisters needed to limit GPIO current.)
+	</span>
+</div>
 </div>
 
 <div>
