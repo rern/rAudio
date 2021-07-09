@@ -132,7 +132,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### Tips
 - Best sound quality:
-	- Settings > MPD > Bit-perfect - Enable
+	- Settings > Player > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
 	Settings > Features
