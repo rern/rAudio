@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if [[ ! -e /etc/cavaled.conf ]]; then
+	wget -q https://github.com/rern/rOS/raw/main/etc/cavaled.conf -P /etc
+fi
 if [[ ! -e /usr/bin/cava ]]; then
 	pacman -Sy --noconfirm cava
 	wget -q https://github.com/rern/rOS/raw/main/etc/cava.conf -P /etc
