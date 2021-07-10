@@ -502,12 +502,25 @@ usbremove )
 	;;
 vuleddisable )
 	rm -f $dirsystem/vuled
+	killall cava &> /dev/null
+	p=$( cat /srv/http/data/system/vuledpins )
+	for i in $p; do
+		echo 0 > /sys/class/gpio/gpio$i/value
+	done
+	if [[ -e $dirsystem/vumeter ]]; then
+		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+	else
+		$dirbash/mpd-conf.sh
+	fi
 	pushRefresh
 	;;
 vuledset )
 	pins=${args[1]}
 	touch $dirsystem/vuled
 	echo $pins > $dirsystem/vuledpins
+	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
+	killall cava &> /dev/null
+	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh
 	;;
 wlandisable )
