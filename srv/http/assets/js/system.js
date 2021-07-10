@@ -632,10 +632,10 @@ $( '#setting-vuled' ).click( function() {
 		, values       : vuledval
 		, beforeshow   : function() {
 			$( '#infoContent tr td:eq( 1 )' ).css( 'width', '70px' );
-			$( '#infoOk' ).addClass( 'disabled', G.vuled );
+			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
 			$( '#infoContent select' ).on( 'change', function() {
 				var v = infoVal();
-				var changed = v.join( ' ' ) === vuledval.join( ' ' );
+				var changed = G.vuled && v.join( ' ' ) === vuledval.join( ' ' );
 				var duplicate = new Set( v ).size !== v.length;
 				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
 				if ( duplicate ) banner( 'Volume Level LED', 'Duplicate pins', 'gpiopins' );
