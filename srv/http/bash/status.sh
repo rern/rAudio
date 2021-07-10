@@ -431,7 +431,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 			done
 		fi
 	fi
-	exit
+	[[ -e $dirsystem/vumeter ]] && exit
 fi
 
 if grep -q '"cover": false' $dirsystem/display; then
