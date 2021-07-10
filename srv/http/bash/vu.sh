@@ -28,14 +28,14 @@ fi
 
 while read vu; do
 	v=${vu:0:-1}
-	[[ -n $vumeter ]] && curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'
 	if [[ -n $vuled ]]; then
-		v=$(( v / 6 ))
-		for i in ${off[$v]}; do
+		l=$(( v / 6 ))
+		for i in ${off[$l]}; do
 			[[ -n $i ]] && echo 0 > /sys/class/gpio/gpio$i/value
 		done
-		for i in ${on[$v]}; do
+		for i in ${on[$l]}; do
 			[[ -n $i ]] && echo 1 > /sys/class/gpio/gpio$i/value
 		done
 	fi
+	[[ -n $vumeter ]] && curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'
 done
