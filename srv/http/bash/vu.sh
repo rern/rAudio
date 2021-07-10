@@ -26,6 +26,7 @@ ${p[@]:0:5}
 ${p[@]}"
 fi
 
+j=0
 while read vu; do
 	v=${vu:0:-1}
 	if [[ -n $vuled ]]; then
@@ -37,5 +38,11 @@ while read vu; do
 			[[ -n $i ]] && echo 1 > /sys/class/gpio/gpio$i/value
 		done
 	fi
-	[[ -n $vumeter ]] && curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'
+	if [[ -n $vumeter ]]; then
+		(( j++ ))
+		if (( $j == 10 )); then # framerate throttle - 60 to 6
+			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'
+			j=0
+		fi
+	fi
 done
