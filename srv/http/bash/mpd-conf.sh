@@ -126,7 +126,7 @@ audio_output {
 	always_on      "yes"
 }'
 fi
-if [[ -z $output || -e $dirsystem/vumeter ]]; then
+if [[ -z $output || -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 ########
 		output+='
 audio_output {

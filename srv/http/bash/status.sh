@@ -419,8 +419,9 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
-			[[ -e $dirsystem/vumeter ]] && cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
-			[[ -e $dirsystem/vuled ]] && cava -p /etc/cavaled.conf | $dirbash/vuled.sh &> /dev/null &
+			[[ -e $dirsystem/vuled ]] && led=$led
+			cava -p /etc/cava$led.conf | $dirbash/vu.sh &> /dev/null &
+#			[[ -e $dirsystem/vuled ]] && cava -p /etc/cavaled.conf | $dirbash/vuled.sh &> /dev/null &
 		fi
 	else
 		killall cava &> /dev/null

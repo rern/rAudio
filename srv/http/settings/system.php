@@ -191,8 +191,8 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="vuled"></div>
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		7 LEDs connected to GPIO pins to display live volume level.
-		<br>(Serial &plusmn;330ohm resisters needed to limit GPIO current.)
+		7 LEDs for live volume level.
+		<br>(Serial &plusmn;330ohm resisters needed for GPIO current limiting.)
 	</span>
 </div>
 </div>

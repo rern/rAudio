@@ -508,9 +508,6 @@ vuledset )
 	pins=${args[1]}
 	touch $dirsystem/vuled
 	echo $pins > $dirsystem/vuledpins
-	for i in $pins; do
-		gpio -1 mode $i out
-	done
 	pushRefresh
 	;;
 wlandisable )
