@@ -626,13 +626,20 @@ $( '#setting-vuled' ).click( function() {
 	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 2, 3, 4, 14, 15, 17, 18 ];
 	info( {
 		  icon         : 'gpiopins'
-		, title        : 'VU LED'
+		, title        : 'Volume Level LED'
 		, message      : 'GPIO pins (J8 - low to high):'
 		, select       : htmlpins
 		, values       : vuledval
-		, checkchanged : ( G.vuled ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#infoContent tr td:eq( 1 )' ).css( 'width', '70px' );
+			$( '#infoOk' ).addClass( 'disabled', G.vuled );
+			$( '#infoContent select' ).on( 'change', function() {
+				var v = infoVal();
+				var changed = v.join( ' ' ) === vuledval.join( ' ' );
+				var duplicate = new Set( v ).size !== v.length;
+				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
+				if ( duplicate ) banner( 'Volume Level LED', 'Duplicate pins', 'gpiopins' );
+			} );
 		}
 		, cancel        : function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
