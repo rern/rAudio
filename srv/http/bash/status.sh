@@ -417,7 +417,7 @@ status+='
 [[ -e $dirsystem/vuled ]] && vuled=1
 if [[ -n $vumeter || -n $vuled ]]; then
 # >>>>>>>>>>
-	echo {$status}
+	[[ -n $vumeter ]] && echo {$status}
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
