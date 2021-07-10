@@ -443,6 +443,7 @@ displaysave )
 		! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
 		killall cava &> /dev/null
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		pushstreamStatus
 	fi
 	echo "$data" > $dirsystem/display
 	;;
