@@ -434,6 +434,17 @@ displayget )
 }'
 echo "$data"
 	;;
+displaysave )
+	data=$( jq . <<< ${args[1]} )
+	pushstream display "$data"
+	vumeterchanged=${args[2]}
+	if [[ $vumeterchanged == true ]]; then
+		killall cava &> /dev/null
+		[[ $( jq .vumeter <<< $data ) == true ]] && touch $dirsystem/vumeter || rm $dirsystem/vumeter
+		$dirbash/mpd-conf.sh
+	fi
+	echo "$data" > $dirsystem/display
+	;;
 ignoredir )
 	touch $dirsystem/updating
 	path=${args[1]}
@@ -610,6 +621,11 @@ onlinefileslimit )
 		file=$( echo "$onlinefiles" | tail -1 )
 		rm -f "$file" "${file:0:-4}"
 	fi
+	;;
+ordersave )
+	data=$( jq . <<< ${args[1]} )
+	pushstream order "$data"
+	echo "$data" > $dirsystem/order
 	;;
 partexpand )
 	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )

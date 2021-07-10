@@ -30,6 +30,7 @@ while read vu; do
 	v=${vu:0:-1}
 	[[ -n $vumeter ]] && curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'
 	if [[ -n $vuled ]]; then
+		v=$(( v / 6 ))
 		for i in ${off[$v]}; do
 			[[ -n $i ]] && echo 0 > /sys/class/gpio/gpio$i/value
 		done

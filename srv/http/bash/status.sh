@@ -419,20 +419,22 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
-			[[ -e $dirsystem/vuled ]] && led=$led
-			cava -p /etc/cava$led.conf | $dirbash/vu.sh &> /dev/null &
-#			[[ -e $dirsystem/vuled ]] && cava -p /etc/cavaled.conf | $dirbash/vuled.sh &> /dev/null &
+			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		fi
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-		p=$( cat /srv/http/data/system/vuledpins )
-		for i in $p; do
-			echo 0 > /sys/class/gpio/gpio$p/value
-		done
+		if [[ -e $dirsystem/vuled ]]; then
+			p=$( cat /srv/http/data/system/vuledpins )
+			for i in $p; do
+				echo 0 > /sys/class/gpio/gpio$i/value
+			done
+		fi
 	fi
 	exit
-elif grep -q '"cover": false' $dirsystem/display; then
+fi
+
+if grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
 	echo {$status}
 	exit

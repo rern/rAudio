@@ -99,28 +99,6 @@ case 'datarestore':
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirdata.'tmp/backup.gz' );
 	exec( $sudo.'/srv/http/bash/system.sh datarestore' );
 	break;
-case 'displayset':
-	$data = json_decode( $_POST[ 'displayset' ] );
-	$remove = [ 'update', 'updating_db' ];
-	foreach( $remove as $key ) unset( $data->$key );
-	$vumeter = file_exists( $dirsystem.'vumeter' );
-	if ( $data->vumeter !== $vumeter ) {
-		if ( $vumeter ) {
-			@unlink( $dirsystem.'vumeter' );
-			exec( $sudobin.'killall cava &> /dev/null' );
-		} else {
-			touch( $dirsystem.'vumeter' );
-		}
-		$data->vumeterchanged = true;
-		pushstream( 'display', $data );
-		exec( $sudo.'/srv/http/bash/mpd-conf.sh' );
-	} else {
-		pushstream( 'display', $data );
-	}
-	$remove = [ 'color', 'order', 'volumenone', 'vumeterchanged' ];
-	foreach( $remove as $key ) unset( $data->$key );
-	file_put_contents( $dirsystem.'display', json_encode( $data, JSON_PRETTY_PRINT ) );
-	break;
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type = $_POST[ 'type' ];
@@ -162,11 +140,6 @@ case 'login':
 case 'logout':
 	session_start();
 	session_destroy();
-	break;
-case 'order':
-	$order = $_POST[ 'order' ]; 
-	file_put_contents( $dirsystem.'order', json_encode( $order, JSON_PRETTY_PRINT ) );
-	pushstream( 'order', $order );
 	break;
 }
 

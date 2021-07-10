@@ -1304,11 +1304,7 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 		$blocks.each( function() {
 			order.push( $( this ).find( '.lipath' ).text() );
 		} );
-		G.display.order = order;
-		$.post( cmdphp, {
-			  cmd   : 'order'
-			, order : order
-		} );
+		bash( [ 'ordersave', JSON.stringify( order ) ] );
 	}
 } );
 $( '#lib-list' ).on( 'tap', '.coverart', function() {
