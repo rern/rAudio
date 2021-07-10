@@ -311,18 +311,6 @@ function wlanStatus() {
 	wlanScan();
 }
 
-refreshData = function() {
-	if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
-		wlanStatus();
-	} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
-		btScan();
-	} else {
-		bash( '/srv/http/bash/networks-data.sh', function( list ) {
-			renderPage( list );
-		} );
-	}
-	resetLocal();
-}
 refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;

@@ -60,8 +60,7 @@ renderPage = function( list ) {
 		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', device.dop == 1 );
-		$( 'select' ).selectric( { nativeOnMobile: false } );
-		$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
+		selectricRender();
 	}
 	$( '#crossfade' ).prop( 'checked', G.crossfade );
 	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
@@ -95,11 +94,7 @@ renderPage = function( list ) {
 	resetLocal();
 	showContent();
 }
-refreshData = function() {
-	bash( '/srv/http/bash/player-data.sh', function( list ) {
-		renderPage( list );
-	} );
-}
+
 refreshData();
 //---------------------------------------------------------------------------------------
 var device;

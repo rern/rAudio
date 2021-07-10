@@ -119,6 +119,24 @@ function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( title, message, icon +' blink', -1 );
 }
+refreshData = function() {
+	if ( page === 'networks' ) {
+		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
+			wlanStatus();
+		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
+			btScan();
+		} else {
+			bash( '/srv/http/bash/networks-data.sh', function( list ) {
+				renderPage( list );
+			} );
+		}
+		resetLocal();
+	} else {
+		bash( '/srv/http/bash/'+ page +'-data.sh', function( list ) {
+			renderPage( list );
+		} );
+	}
+}
 function resetLocal( ms ) {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
 	
@@ -127,6 +145,12 @@ function resetLocal( ms ) {
 		$( '#bannerMessage' ).text( 'Done' );
 	}, ms ? ms - 2000 : 0 );
 	setTimeout( bannerHide, ms || 2000 );
+}
+function selectricRender() {
+	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
+		$( 'select' ).selectric( { nativeOnMobile: false } );
+		$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
+	}
 }
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {

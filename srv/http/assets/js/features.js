@@ -43,11 +43,7 @@ renderPage = function( list ) {
 	resetLocal();
 	showContent();
 }
-refreshData = function() {
-	bash( '/srv/http/bash/features-data.sh', function( list ) {
-		renderPage( list );
-	} );
-}
+
 refreshData();
 // hostapd
 if ( set ) setTimeout( function() { $( '#'+ set ).click() }, 900 );

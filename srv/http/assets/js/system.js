@@ -202,19 +202,14 @@ renderPage = function( list ) {
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' ).val( G.timezone );
-	$( 'select' ).selectric( { nativeOnMobile: false, maxHeight: 400 } );
-	$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
+	selectricRender();
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	resetLocal();
 	showContent();
 }
-refreshData = function() {
-	bash( '/srv/http/bash/system-data.sh', function( list ) {
-		renderPage( list );
-	} );
-}
+
 refreshData();
 //---------------------------------------------------------------------------------------
 $( '.enable' ).click( function() {
@@ -630,8 +625,8 @@ $( '#setting-vuled' ).click( function() {
 		, message      : 'GPIO pins (J8 - low to high):'
 		, select       : htmlpins
 		, values       : vuledval
+		, boxwidth     : 60
 		, beforeshow   : function() {
-			$( '#infoContent tr td:eq( 1 )' ).css( 'width', '70px' );
 			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
 			$( '#infoContent select' ).on( 'change', function() {
 				var v = infoVal();
