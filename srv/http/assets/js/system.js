@@ -621,13 +621,13 @@ $( '#setting-vuled' ).click( function() {
 	htmlselect += '</select>';
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>LED '+ i +'</td><td>'+ htmlselect +'</td></tr>';
+		htmlpins += '<tr><td># '+ i +'</td><td>'+ htmlselect +'</td></tr>';
 	}
 	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 2, 3, 4, 14, 15, 17, 18 ];
 	info( {
 		  icon         : 'gpiopins'
 		, title        : 'VU LED'
-		, message      : 'GPIO pins (J8):'
+		, message      : 'GPIO pins (J8 - low to high):'
 		, select       : htmlpins
 		, values       : vuledval
 		, checkchanged : ( G.vuled ? 1 : 0 )
