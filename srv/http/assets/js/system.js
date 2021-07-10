@@ -882,7 +882,7 @@ $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
 	var pkg = $( this ).text();
-	if ( [ 'bluez-alsa', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
+	if ( [ 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
 		pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
 		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
 	} else {
