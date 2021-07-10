@@ -94,8 +94,6 @@ renderPage = function( list ) {
 	resetLocal();
 	showContent();
 }
-
-refreshData();
 //---------------------------------------------------------------------------------------
 var device;
 $( '.enable' ).click( function() {

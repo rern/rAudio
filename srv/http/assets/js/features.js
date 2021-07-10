@@ -44,7 +44,6 @@ renderPage = function( list ) {
 	showContent();
 }
 
-refreshData();
 // hostapd
 if ( set ) setTimeout( function() { $( '#'+ set ).click() }, 900 );
 

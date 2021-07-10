@@ -310,8 +310,6 @@ function wlanStatus() {
 	$( '#divwifi' ).removeClass( 'hide' );
 	wlanScan();
 }
-
-refreshData();
 //---------------------------------------------------------------------------------------
 var accesspoint = $( '#accesspoint' ).length;
 var good = -60;

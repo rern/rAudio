@@ -209,8 +209,6 @@ renderPage = function( list ) {
 	resetLocal();
 	showContent();
 }
-
-refreshData();
 //---------------------------------------------------------------------------------------
 $( '.enable' ).click( function() {
 	var idname = {

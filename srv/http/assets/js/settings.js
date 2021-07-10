@@ -119,7 +119,7 @@ function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( title, message, icon +' blink', -1 );
 }
-refreshData = function() {
+function refreshData() {
 	if ( page === 'networks' ) {
 		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
 			wlanStatus();
@@ -276,6 +276,8 @@ var nextpage = {
 var $focus;
 
 document.title = page;
+
+refreshData();
 
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
