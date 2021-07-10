@@ -413,7 +413,9 @@ status+='
 , "sampling" : "'$sampling'"
 , "coverart" : ""'
 
-if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
+[[ -e $dirsystem/vumeter ]] && vumeter=1
+[[ -e $dirsystem/vuled ]] && vuled=1
+if [[ -n $vumeter || -n $vuled ]]; then
 # >>>>>>>>>>
 	echo {$status}
 	if [[ $state == play ]]; then
@@ -424,14 +426,14 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-		if [[ -e $dirsystem/vuled ]]; then
+		if [[ -n $vuled ]]; then
 			p=$( cat /srv/http/data/system/vuledpins )
 			for i in $p; do
 				echo 0 > /sys/class/gpio/gpio$i/value
 			done
 		fi
 	fi
-	[[ -e $dirsystem/vumeter ]] && exit
+	[[ -n $vumeter ]] && exit
 fi
 
 if grep -q '"cover": false' $dirsystem/display; then
