@@ -8,7 +8,7 @@ if [[ ! -e /usr/bin/cava ]]; then
 	pacman -Sy --noconfirm cava
 	wget -q https://github.com/rern/rOS/raw/main/etc/cava.conf -P /etc
 fi
-! grep -q 'framerate = 30' /etc/cava.conf && sed -i 's/\(framerate = \).*/\130/' /etc/cava.conf
+sed -i '/framerate/ d' /etc/cava.conf
 
 file=/srv/http/data/system/display
 if ! grep -q vumeter $file; then
