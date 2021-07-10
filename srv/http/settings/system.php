@@ -172,6 +172,16 @@ $selecttimezone.= '</select>';
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
+<div class="col-l single">Signal level LED<i class="fa fa-led"></i></div>
+<div class="col-r">
+	<input id="vuled" class="enable" type="checkbox">
+	<div class="switchlabel" for="vuled"></div>
+	<i id="setting-vuled" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		7 LEDs for signal level display.
+		<br>(Serial &plusmn;330ohm resisters needed for GPIO current limiting.)
+	</span>
+</div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
 	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
@@ -185,16 +195,6 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 	<?php } ?>
-<div class="col-l single">Volume level LED<i class="fa fa-gpiopins"></i></div>
-<div class="col-r">
-	<input id="vuled" class="enable" type="checkbox">
-	<div class="switchlabel" for="vuled"></div>
-	<i id="setting-vuled" <?=$classsetting?>></i>
-	<span <?=$classhelp?>>
-		7 LEDs for live volume level.
-		<br>(Serial &plusmn;330ohm resisters needed for GPIO current limiting.)
-	</span>
-</div>
 </div>
 
 <div>
