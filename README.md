@@ -21,9 +21,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Supported GPIO devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
 	- Character LCD: 16x2, 20x4 and 40x4
-	- TFT 3.5" LCD (320x420)
 	- Power on/off button
-	- Relay module (GPIO)
+	- Relay module
+	- TFT 3.5" LCD (320x420)
+	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
 	- Bluetooth audio
