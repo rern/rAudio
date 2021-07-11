@@ -437,13 +437,18 @@ echo "$data"
 displaysave )
 	data=$( jq . <<< ${args[1]} )
 	pushstream display "$data"
-	vumeterchanged=${args[2]}
-	if [[ $vumeterchanged == true ]]; then
-		[[ $( jq .vumeter <<< $data ) == true ]] && touch $dirsystem/vumeter || rm $dirsystem/vumeter
-		! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
+	grep -q 'vumeter.*true' <<< "$data" && vumeter=true || vumeter=false
+	[[ -e $dirsystem/vumeter ]] && vumeter0=true || vumeter0=false
+	if [[ $vumeter != $vumeter0 ]]; then
 		killall cava &> /dev/null
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		if [[ $vumeter == true ]]; then
+			touch $dirsystem/vumeter
+			! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
+		else
+			rm $dirsystem/vumeter
+		fi
 		pushstreamStatus
+		[[ $vumeter == true || -e $dirsystem/vuled ]] && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	fi
 	echo "$data" > $dirsystem/display
 	;;

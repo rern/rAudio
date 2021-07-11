@@ -356,16 +356,11 @@ function displaySave( keys ) {
 		G.display[ k ] = values[ i ];
 	} );
 	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
-	if ( G.vumeter !== G.display.vumeter ) {
-		var vumeterchanged = true;
-		banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
-	} else {
-		var vumeterchanged = false;
-	}
-	[ 'color', 'order', 'update', 'updating_db', 'volumenone', 'vumeterchanged' ].forEach( function( item ) {
+	if ( G.vumeter !== G.display.vumeter ) banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
+	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
 		delete G.display[ item ];
 	} );
-	bash( [ 'displaysave', JSON.stringify( G.display ), vumeterchanged ] );
+	bash( [ 'displaysave', JSON.stringify( G.display ) ] );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
