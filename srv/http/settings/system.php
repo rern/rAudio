@@ -72,7 +72,7 @@ $selecttimezone.= '</select>';
 <div>
 <heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle wh"></i><?=$ihelp?></heading>
 <ul id="list" class="entries"></ul>
-<span <?=$classhelp?>>
+<div <?=$classhelp?>>
 	Available sources, local USB and NAS mounts, for Library.
 	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.
 	<br>
@@ -86,7 +86,7 @@ $selecttimezone.= '</select>';
 	NFS:
 	<pre>mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
 	(Append more options if required.)
-</span>
+</div>
 <pre id="codemount" class="hide"></pre>
 </div>
 

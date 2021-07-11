@@ -97,6 +97,9 @@ pre {
 .help-block p {
 	margin: 0 0 0 10px;
 }
+div.help-block {
+	margin-left: 0;
+}
 .clear { clear: both; }
 heading {
 	display: inline-block;
