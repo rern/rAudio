@@ -14,6 +14,7 @@ ${p[@]:2}
 ${p[@]:3}
 ${p[@]:4}
 ${p[@]:5}
+${p[@]:6}
 "
 		readarray -t on <<< "\
 
@@ -22,6 +23,7 @@ ${p[@]:0:2}
 ${p[@]:0:3}
 ${p[@]:0:4}
 ${p[@]:0:5}
+${p[@]:0:6}
 ${p[@]}"
 fi
 
@@ -30,7 +32,7 @@ while read vu; do
 	v=${vu:0:-1}
 	if [[ -n $vuled ]]; then
 		l=$(( v / 6 ))
-		if (( $l < 6 )); then
+		if (( $l < 7 )); then
 			for i in ${off[$l]}; do
 				echo 0 > /sys/class/gpio/gpio$i/value
 			done
