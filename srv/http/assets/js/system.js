@@ -566,45 +566,6 @@ infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
 } );
-$( '#setting-vuled' ).click( function() {
-	var p = { 3:2, 5:3, 7:4, 8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9, 22:25, 23:11, 24:8, 26:7, 29:5, 31:6, 32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21 }
-	var htmlselect = '<select>';
-	$.each( p, function( k, v ) {
-		htmlselect += '<option value="'+ v +'">'+ k +'</option>';
-	} );
-	htmlselect += '</select>';
-	var htmlpins = '';
-	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td># '+ i +'</td><td>'+ htmlselect +'</td></tr>';
-	}
-	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 2, 3, 4, 14, 15, 17, 18 ];
-	info( {
-		  icon         : 'led'
-		, title        : 'Signal Level LED'
-		, message      : 'GPIO pins (J8 - low to high):'
-		, select       : htmlpins
-		, values       : vuledval
-		, boxwidth     : 60
-		, beforeshow   : function() {
-			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
-			$( '#infoContent select' ).on( 'change', function() {
-				var v = infoVal();
-				var changed = G.vuled && v.join( ' ' ) === vuledval.join( ' ' );
-				var duplicate = new Set( v ).size !== v.length;
-				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
-				if ( duplicate ) banner( 'Volume Level LED', 'Duplicate pins', 'gpiopins' );
-			} );
-		}
-		, cancel        : function() {
-			$( '#vuled' ).prop( 'checked', G.vuled );
-		}
-		, ok           : function() {
-			var pins = infoVal().join( ' ' );
-			notify( 'VU LED', 'Change ...', 'gpiopins' );
-			bash( [ 'vuledset', pins ] );
-		}
-	} );
-} );
 $( '#setting-lcd' ).click( function() {
 	info( {
 		  icon         : 'lcd'
@@ -642,6 +603,69 @@ $( '#setting-lcd' ).click( function() {
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
 		}
+	} );
+} );
+$( '#setting-vuled' ).click( function() {
+	var p = { 3:2, 5:3, 7:4, 8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9, 22:25, 23:11, 24:8, 26:7, 29:5, 31:6, 32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21 }
+	var htmlselect = '<select>';
+	$.each( p, function( k, v ) {
+		htmlselect += '<option value="'+ v +'">'+ k +'</option>';
+	} );
+	htmlselect += '</select>';
+	var htmlpins = '';
+	for ( i = 7; i > 0; i-- ) {
+		htmlpins += '<tr><td># '+ i +'</td><td>'+ htmlselect +'</td></tr>';
+	}
+	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 18, 17, 15, 14, 4, 3, 2 ];
+	info( {
+		  icon         : 'led'
+		, title        : 'VU LED'
+		, message      : 'GPIO pins (J8 - high to low):'
+		, select       : htmlpins
+		, values       : vuledval
+		, boxwidth     : 60
+		, beforeshow   : function() {
+			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
+			$( '#infoContent select' ).on( 'change', function() {
+				var v = infoVal();
+				var changed = G.vuled && v.join( ' ' ) === vuledval.join( ' ' );
+				var duplicate = new Set( v ).size !== v.length;
+				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
+				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
+			} );
+		}
+		, cancel        : function() {
+			$( '#vuled' ).prop( 'checked', G.vuled );
+		}
+		, ok           : function() {
+			var pins = infoVal().join( ' ' );
+			notify( 'VU LED', 'Change ...', 'led' );
+			bash( [ 'vuledset', pins ] );
+		}
+	} );
+} );
+$( '#ledcalc' ).click( function() {
+	info( {
+		  icon       : 'led'
+		, title      : 'LED Resister Calculator'
+		, textlabel  : [ 'GPIO <gr>(V)</gr>', 'Current <gr>(mA)</gr>', 'LED forward voltage <gr>(V)</gr>', 'Resister <gr>(&#8486;)</gr>' ]
+		, values     : [ 3.3, 5 ]
+		, boxwidth   : 70
+		, beforeshow : function() {
+			$( '#infoContent input' ).prop( 'disabled', 1 );
+			$( '#infoContent input:eq( 2 )' )
+				.prop( 'disabled', 0 )
+				.keyup( function() {
+					var fv = $( this ).val();
+					if ( fv > 3.3 ) {
+						var ohm = '( > 3.3V)';
+					} else {
+						var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
+					}
+					$( '#infoContent input:eq( 3 )' ).val( ohm );
+				} );
+		}
+		, okno       : 1
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
