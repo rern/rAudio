@@ -133,7 +133,7 @@ audio_output {
 	name           "'$( [[ -z $output ]] && echo '(No sound device)' || echo '(VU meter)' )'"
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
-	buffer_time    "500000"
+	buffer_time    "1000000"
 }'
 fi
 
