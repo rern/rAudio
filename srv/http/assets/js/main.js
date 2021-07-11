@@ -79,33 +79,8 @@ var lazyload = new LazyLoad( {
 	  elements_selector : '.lazy'
 	, use_native        : true
 } );
-bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
-	G.display = data;
-	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
-	G.bars = data.bars;
-	$( '.page' ).on( 'swipeleft swiperight', function( e ) {
-		if ( G.bars || G.swipepl || G.drag ) return
-		
-		G.swipe = 1;
-		setTimeout( function() { G.swipe = 0 }, 1000 );
-		$( '#tab-'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
-	} );
-	G.display.screenoff = G.localhost;
-	var submenu = {
-		  relays     : 'features'
-		, snapclient : 'player'
-		, lock       : 'system'
-		, screenoff  : 'power'
-	};
-	[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
-		if ( G.display[ sub ] ) {
-			$( '#'+ submenu[ sub ] )
-				.addClass( 'sub' )
-				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
-		}
-	} );
-}, 'json' );
 
+// get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
