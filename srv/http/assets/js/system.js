@@ -613,14 +613,14 @@ $( '#setting-vuled' ).click( function() {
 	} );
 	htmlselect += '</select>';
 	var htmlpins = '';
-	for ( i = 7; i > 0; i-- ) {
-		htmlpins += '<tr><td># '+ i +'</td><td>'+ htmlselect +'</td></tr>';
+	for ( i = 1; i < 8; i++ ) {
+		htmlpins += '<tr><td>'+ i +'/7</td><td>'+ htmlselect +'</td></tr>';
 	}
-	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 18, 17, 15, 14, 4, 3, 2 ];
+	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 2, 3, 4, 14, 15, 17, 18 ];
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
-		, message      : 'GPIO pins (J8 - high to low):'
+		, message      : 'GPIO pins (J8):'
 		, select       : htmlpins
 		, values       : vuledval
 		, boxwidth     : 60
