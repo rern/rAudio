@@ -17,7 +17,10 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - VU meter as coverart (for remote screen)
 - Live display update across multiple clients
 - Wi-Fi connection can be pre-configured for headless mode.
+- Access point mode when no router available.
+- File sharing
 - USB DAC plug ang play
+- Easy update and extra features with Addons
 - Supported GPIO devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
 	- Character LCD: 16x2, 20x4 and 40x4
