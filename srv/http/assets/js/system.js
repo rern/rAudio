@@ -620,7 +620,8 @@ $( '#setting-vuled' ).click( function() {
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
-		, message      : 'GPIO pins (J8):'
+		, message      : 'GPIO pins:'
+						+'<br><img src="/assets/img/gpio.svg" style="width: 380px">'
 		, select       : htmlpins
 		, values       : vuledval
 		, boxwidth     : 60
