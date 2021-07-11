@@ -14,7 +14,6 @@ ${p[@]:2}
 ${p[@]:3}
 ${p[@]:4}
 ${p[@]:5}
-
 "
 		readarray -t on <<< "\
 
@@ -31,12 +30,16 @@ while read vu; do
 	v=${vu:0:-1}
 	if [[ -n $vuled ]]; then
 		l=$(( v / 6 ))
-		for i in ${off[$l]}; do
-			[[ -n $i ]] && echo 0 > /sys/class/gpio/gpio$i/value
-		done
-		for i in ${on[$l]}; do
-			[[ -n $i ]] && echo 1 > /sys/class/gpio/gpio$i/value
-		done
+		if (( $l < 6 )); then
+			for i in ${off[$l]}; do
+				echo 0 > /sys/class/gpio/gpio$i/value
+			done
+		fi
+		if (( $l > 0 )); then
+			for i in ${on[$l]}; do
+				echo 1 > /sys/class/gpio/gpio$i/value
+			done
+		fi
 	fi
 	if [[ -n $vumeter ]]; then
 		(( j++ ))
