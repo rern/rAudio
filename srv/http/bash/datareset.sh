@@ -114,7 +114,6 @@ usermod -a -G root http # add user http to group root to allow /dev/gpiomem acce
 
 # webradio default
 curl -L https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
-[[ ! -e $dirdata/mpd/counts ]] && echo '{"webradio":'$( ls -1q $dirdata/webradios | wc -l )'}' > $dirdata/mpd/counts
 
 # services
 systemctl -q disable --now bluetooth hostapd mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli
