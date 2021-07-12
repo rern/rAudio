@@ -75,7 +75,7 @@ pushstream.onstatuschange = function( status ) {
 				, screenoff  : 'power'
 			};
 			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
-				if ( G.display[ sub ] ) {
+				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
 					$( '#'+ submenu[ sub ] )
 						.addClass( 'sub' )
 						.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
