@@ -1,63 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="595px" height="128px" viewBox="0 0 595 128">
+<svg xmlns="http://www.w3.org/2000/svg" width="380px" height="80px" viewBox="0 0 380 80">
 <style type="text/css">
-	.st0{fill:#808080;stroke:#000000;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st1{fill:#FF0000;stroke:#000000;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st2{stroke:#000000;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st3{fill:#00FF00;stroke:#000000;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st4{fill:#B5B3B3;stroke:#000000;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st5{fill:#00FF00;stroke:#231F20;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st6{fill:#FF5F00;stroke:#000000;stroke-width:0.9087;stroke-miterlimit:10;}
-	.st7{font-family:Arial;fill:#E6E6E6;}
-	.st8{font-size:20px;}
-	.st9{letter-spacing:23;}
-	.st10{letter-spacing:13;}
-	.st11{letter-spacing:2;}
-	.st12{letter-spacing:18;}
-	.st13{letter-spacing:7;}
+	.st0,.st1,.st2,.st3,.st4,.st6{stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st0{fill:#808080;}
+	.st1{fill:#FF0000;}
+	.st3{fill:#00FF00;}
+	.st4{fill:#B5B3B3;}
+	.st6{fill:#FF5F00;}
+	.st7{fill:#E6E6E6;font-family:'Arial';font-size:13px;}
+	.st10{letter-spacing:9;}
+	.st11{letter-spacing:7;}
+	.st12{letter-spacing:14;}
+	.st13{letter-spacing:11;}
+	.st14{letter-spacing:2;}
+	.st15{letter-spacing:4;}
 </style>
-<path class="st0" d="M8.5,89.8V35.7c0-4.3,3.5-7.7,7.7-7.7h562.8c4.3,0,7.7,3.5,7.7,7.7v54.1c0,4.3-3.5,7.7-7.7,7.7H16.3
-	C12.1,97.5,8.5,94,8.5,89.8z"/>
-<circle class="st1" cx="537.8" cy="76.9" r="10.3"/>
-<circle class="st2" cx="509.6" cy="76.9" r="10.3"/>
-<circle class="st3" cx="481.2" cy="76.9" r="10.3"/>
-<circle class="st3" cx="452.9" cy="76.9" r="10.3"/>
-<circle class="st3" cx="424.5" cy="76.9" r="10.3"/>
-<circle class="st2" cx="396.2" cy="76.9" r="10.3"/>
-<circle class="st3" cx="367.9" cy="76.9" r="10.3"/>
-<circle class="st3" cx="339.6" cy="76.9" r="10.3"/>
-<circle class="st2" cx="311.2" cy="76.9" r="10.3"/>
-<circle class="st3" cx="282.9" cy="76.9" r="10.3"/>
-<circle class="st3" cx="254.5" cy="76.9" r="10.3"/>
-<circle class="st3" cx="226.3" cy="76.9" r="10.3"/>
-<circle class="st4" cx="197.9" cy="76.9" r="10.3"/>
-<circle class="st2" cx="169.6" cy="76.9" r="10.3"/>
-<circle class="st3" cx="141.2" cy="76.9" r="10.3"/>
-<circle class="st2" cx="112.9" cy="76.9" r="10.3"/>
-<circle class="st3" cx="84.5" cy="76.9" r="10.3"/>
-<circle class="st3" cx="56.2" cy="76.9" r="10.3"/>
-<circle class="st3" cx="27.9" cy="76.9" r="10.3"/>
-<circle class="st3" cx="537.8" cy="48.5" r="10.3"/>
-<circle class="st3" cx="509.6" cy="48.5" r="10.3"/>
-<circle class="st5" cx="481.2" cy="48.5" r="10.3"/>
-<circle class="st2" cx="452.9" cy="48.5" r="10.3"/>
-<circle class="st3" cx="424.5" cy="48.5" r="10.3"/>
-<circle class="st3" cx="396.2" cy="48.5" r="10.3"/>
-<circle class="st3" cx="367.9" cy="48.5" r="10.3"/>
-<circle class="st6" cx="339.6" cy="48.5" r="10.3"/>
-<circle class="st3" cx="311.2" cy="48.5" r="10.3"/>
-<circle class="st3" cx="282.9" cy="48.5" r="10.3"/>
-<circle class="st3" cx="254.5" cy="48.5" r="10.3"/>
-<circle class="st2" cx="226.3" cy="48.5" r="10.3"/>
-<circle class="st4" cx="197.9" cy="48.5" r="10.3"/>
-<circle class="st5" cx="169.6" cy="48.5" r="10.3"/>
-<circle class="st5" cx="141.2" cy="48.5" r="10.3"/>
-<circle class="st3" cx="112.9" cy="48.5" r="10.3"/>
-<circle class="st3" cx="84.5" cy="48.5" r="10.3"/>
-<circle class="st3" cx="56.2" cy="48.5" r="10.3"/>
-<circle class="st2" cx="27.9" cy="48.5" r="10.3"/>
-<path class="st6" d="M555.9,56.2V40.8c0-1.5,1.2-2.5,2.5-2.5h15.4c1.5,0,2.5,1.2,2.5,2.5v15.4c0,1.5-1.2,2.5-2.5,2.5h-15.4
-	C557.1,58.9,555.9,57.7,555.9,56.2z"/>
-<circle class="st1" cx="566.2" cy="76.9" r="10.3"/>
-<text transform="matrix(1 0 0 1 0.4388 17.3645)"><tspan x="0" y="0" class="st7 st8 st9">	</tspan><tspan x="28.3" y="0" class="st7 st8 st10">	</tspan><tspan x="46.3" y="0" class="st7 st8">37</tspan><tspan x="67.1" y="0" class="st7 st8 st11">	</tspan><tspan x="74.6" y="0" class="st7 st8">35</tspan><tspan x="95.5" y="0" class="st7 st8 st11">	</tspan><tspan x="102.9" y="0" class="st7 st8">33</tspan><tspan x="123.8" y="0" class="st7 st8 st11">	</tspan><tspan x="131.3" y="0" class="st7 st8">31</tspan><tspan x="152.2" y="0" class="st7 st8 st11">	</tspan><tspan x="159.6" y="0" class="st7 st8">29</tspan><tspan x="180.5" y="0" class="st7 st8 st10">	</tspan><tspan x="198.4" y="0" class="st7 st8 st9">	</tspan><tspan x="226.8" y="0" class="st7 st8 st10">	</tspan><tspan x="244.7" y="0" class="st7 st8">23</tspan><tspan x="265.6" y="0" class="st7 st8 st11">	</tspan><tspan x="273" y="0" class="st7 st8">21</tspan><tspan x="293.9" y="0" class="st7 st8 st11">	</tspan><tspan x="301.4" y="0" class="st7 st8">19</tspan><tspan x="322.3" y="0" class="st7 st8 st10">		</tspan><tspan x="358.1" y="0" class="st7 st8">15</tspan><tspan x="378.9" y="0" class="st7 st8 st11">	</tspan><tspan x="386.4" y="0" class="st7 st8">13</tspan><tspan x="407.3" y="0" class="st7 st8 st11">	</tspan><tspan x="414.8" y="0" class="st7 st8">11</tspan><tspan x="435.6" y="0" class="st7 st8 st10">	</tspan><tspan x="453.5" y="0" class="st7 st8 st12">	</tspan><tspan x="476.7" y="0" class="st7 st8">7</tspan><tspan x="487.1" y="0" class="st7 st8 st10">	</tspan><tspan x="505" y="0" class="st7 st8">5</tspan><tspan x="515.5" y="0" class="st7 st8 st10">	</tspan><tspan x="533.4" y="0" class="st7 st8">3</tspan></text>
-<text transform="matrix(1 0 0 1 -0.1712 120.8188)"><tspan x="0" y="0" class="st7 st8 st10">	</tspan><tspan x="17.9" y="0" class="st7 st8">40</tspan><tspan x="38.8" y="0" class="st7 st8 st11">	</tspan><tspan x="46.3" y="0" class="st7 st8">38</tspan><tspan x="67.1" y="0" class="st7 st8 st11">	</tspan><tspan x="74.6" y="0" class="st7 st8">36</tspan><tspan x="95.5" y="0" class="st7 st8 st10">		</tspan><tspan x="131.3" y="0" class="st7 st8">32</tspan><tspan x="152.2" y="0" class="st7 st8 st10">	</tspan><tspan x="170.1" y="0" class="st7 st8 st9">	</tspan><tspan x="198.4" y="0" class="st7 st8 st10">	</tspan><tspan x="216.3" y="0" class="st7 st8">26</tspan><tspan x="237.2" y="0" class="st7 st8 st11">	</tspan><tspan x="244.7" y="0" class="st7 st8">24</tspan><tspan x="265.6" y="0" class="st7 st8 st11">	</tspan><tspan x="273" y="0" class="st7 st8">22</tspan><tspan x="293.9" y="0" class="st7 st8 st10">		</tspan><tspan x="329.7" y="0" class="st7 st8">18</tspan><tspan x="350.6" y="0" class="st7 st8 st11">	</tspan><tspan x="358.1" y="0" class="st7 st8">16</tspan><tspan x="378.9" y="0" class="st7 st8 st10">		</tspan><tspan x="414.8" y="0" class="st7 st8">12</tspan><tspan x="435.6" y="0" class="st7 st8 st11">	</tspan><tspan x="443.1" y="0" class="st7 st8">10</tspan><tspan x="464" y="0" class="st7 st8 st13">	</tspan><tspan x="476.7" y="0" class="st7 st8">8</tspan></text>
+<path class="st0" d="M378.7,24c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,24z"/>
+<g>
+	<circle class="st1" cx="347.2" cy="47.8" r="6.7"/>
+	<circle class="st2" cx="328.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="310.2" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="291.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="273.2" cy="47.8" r="6.7"/>
+	<circle class="st2" cx="254.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="236.2" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="217.7" cy="47.8" r="6.7"/>
+	<circle class="st2" cx="199.2" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="180.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="162.2" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="143.7" cy="47.8" r="6.7"/>
+	<circle class="st4" cx="125.2" cy="47.8" r="6.7"/>
+	<circle class="st2" cx="106.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="88.2" cy="47.8" r="6.7"/>
+	<circle class="st2" cx="69.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="51.2" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="32.7" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="14.2" cy="47.8" r="6.7"/>
+	<circle class="st3" cx="347.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="329.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="310.2" cy="29.3" r="6.7"/>
+	<circle class="st2" cx="291.7" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="273.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="254.7" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="236.2" cy="29.3" r="6.7"/>
+	<circle class="st6" cx="217.7" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="199.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="180.7" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="162.2" cy="29.3" r="6.7"/>
+	<circle class="st2" cx="143.7" cy="29.3" r="6.7"/>
+	<circle class="st4" cx="125.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="106.7" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="88.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="69.7" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="51.2" cy="29.3" r="6.7"/>
+	<circle class="st3" cx="32.7" cy="29.3" r="6.7"/>
+	<circle class="st2" cx="14.2" cy="29.3" r="6.7"/>
+	<path class="st6" d="M359.1,34.3V24.3c0-1,0.8-1.6,1.6-1.6h10.1c1,0,1.6,0.8,1.6,1.6v10.1c0,1-0.8,1.6-1.6,1.6h-10.1
+		C359.8,36.1,359.1,35.3,359.1,34.3z"/>
+	<circle class="st1" cx="365.7" cy="47.8" r="6.7"/>
+</g>
+<text transform="matrix(1 0 0 1 1.2269 11.4678)"><tspan x="0" y="0" class="st7 st10">	</tspan><tspan x="13" y="0" class="st7 st11">	</tspan><tspan x="24.3" y="0" class="st7">37</tspan><tspan x="38.7" y="0" class="st7">	</tspan><tspan x="42.8" y="0" class="st7">35</tspan><tspan x="57.2" y="0" class="st7">	</tspan><tspan x="61.3" y="0" class="st7">33</tspan><tspan x="75.7" y="0" class="st7">	</tspan><tspan x="79.8" y="0" class="st7">31</tspan><tspan x="94.2" y="0" class="st7">	</tspan><tspan x="98.3" y="0" class="st7">29</tspan><tspan x="112.7" y="0" class="st7 st11">	</tspan><tspan x="124" y="0" class="st7 st12">	</tspan><tspan x="142.5" y="0" class="st7 st11">	</tspan><tspan x="153.8" y="0" class="st7">23</tspan><tspan x="168.2" y="0" class="st7">	</tspan><tspan x="172.3" y="0" class="st7">21</tspan><tspan x="186.7" y="0" class="st7">	</tspan><tspan x="190.8" y="0" class="st7">19</tspan><tspan x="205.2" y="0" class="st7 st11">		</tspan><tspan x="227.8" y="0" class="st7">15</tspan><tspan x="242.2" y="0" class="st7">	</tspan><tspan x="246.3" y="0" class="st7">13</tspan><tspan x="260.7" y="0" class="st7">	</tspan><tspan x="264.8" y="0" class="st7">11</tspan><tspan x="279.2" y="0" class="st7 st11">	</tspan><tspan x="290.5" y="0" class="st7 st13">	</tspan><tspan x="305.4" y="0" class="st7">7</tspan><tspan x="312.6" y="0" class="st7 st11">	</tspan><tspan x="323.9" y="0" class="st7">5</tspan><tspan x="331.1" y="0" class="st7 st11">	</tspan><tspan x="342.4" y="0" class="st7">3</tspan></text>
+<g>
+	<text transform="matrix(1 0 0 1 1.2268 75.4674)"><tspan x="0" y="0" class="st7 st14">	</tspan><tspan x="5.8" y="0" class="st7">40</tspan><tspan x="20.2" y="0" class="st7">	</tspan><tspan x="24.3" y="0" class="st7">38</tspan><tspan x="38.7" y="0" class="st7">	</tspan><tspan x="42.8" y="0" class="st7">36</tspan><tspan x="57.2" y="0" class="st7 st11">		</tspan><tspan x="79.8" y="0" class="st7">32</tspan><tspan x="94.2" y="0" class="st7 st11">	</tspan><tspan x="105.5" y="0" class="st7 st12">	</tspan><tspan x="124" y="0" class="st7 st11">	</tspan><tspan x="135.3" y="0" class="st7">26</tspan><tspan x="149.7" y="0" class="st7">	</tspan><tspan x="153.8" y="0" class="st7">24</tspan><tspan x="168.2" y="0" class="st7">	</tspan><tspan x="172.3" y="0" class="st7">22</tspan><tspan x="186.7" y="0" class="st7 st11">		</tspan><tspan x="209.3" y="0" class="st7">18</tspan><tspan x="223.7" y="0" class="st7">	</tspan><tspan x="227.8" y="0" class="st7">16</tspan><tspan x="242.2" y="0" class="st7 st11">		</tspan><tspan x="264.8" y="0" class="st7">12</tspan><tspan x="279.2" y="0" class="st7">	</tspan><tspan x="283.3" y="0" class="st7">10</tspan><tspan x="297.7" y="0" class="st7 st15">	</tspan><tspan x="305.4" y="0" class="st7">8</tspan></text>
+</g>
 </svg>

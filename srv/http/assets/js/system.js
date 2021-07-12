@@ -621,7 +621,7 @@ $( '#setting-vuled' ).click( function() {
 		  icon         : 'led'
 		, title        : 'VU LED'
 		, message      : 'GPIO pins:'
-						+'<br><img src="/assets/img/gpio.svg" style="width: 380px">'
+						+'<br><img src="/assets/img/gpio.svg" style="width: 100%">'
 		, select       : htmlpins
 		, values       : vuledval
 		, boxwidth     : 60
