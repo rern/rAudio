@@ -165,19 +165,6 @@ $( '#help' ).click( function() {
 	$( this ).toggleClass( 'blue' );
 	$( '.help-block' ).toggleClass( 'hide' );
 } );
-$( '#gpioimgtxt' ).click( function() {
-	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
-		$( '#gpiopin' ).slideToggle();
-		$( '#fliptxt' ).toggle();
-		$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' );
-	} else {
-		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
-		$( '#fliptxt' ).hide();
-		$( this ).find( 'i' )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-chevron-down' );
-	}
-} );
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
