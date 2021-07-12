@@ -117,15 +117,7 @@ fi
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 # after all sources connected
-if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
-	echo rescan > $dirsystem/updating
-	mpc rescan
-elif [[ -e $dirsystem/updating ]]; then
-	path=$( cat $dirsystem/updating )
-	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
-elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
-fi
+$dirbash/cmd.sh mpcupdatecontinue
 
 [[ -e $dirsystem/autoplay ]] && mpc play
 

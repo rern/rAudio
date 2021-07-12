@@ -126,8 +126,6 @@ installstart() { # $1-'u'=update
 	fi
 	
 	title -l '=' "$bar $type $name ..."
-	
-	mpc | grep -q ^Updating && updating=1
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
@@ -135,7 +133,7 @@ installfinish() {
 	
 	title -l '=' "$bar Done."
 	
-	[[ -n $updating ]] && mpc -q update
+	$dirbash/cmd.sh mpcupdatecontinue
 }
 uninstallstart() {
 	name=$( tcolor "$( jq -r .$alias.title $addonsjson )" )
