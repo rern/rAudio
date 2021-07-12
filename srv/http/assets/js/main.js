@@ -1071,7 +1071,7 @@ $( '#lib-mode-list' ).contextmenu( function( e ) { // disable default image cont
 $( '.mode' ).click( function() {
 	G.mode = $( this ).data( 'mode' );
 	$( '#lib-search-close' ).click();
-	if ( !G.color && !G.status.counts[ G.mode ] && G.status.updating_db && G.mode !== 'webradio' ) {
+	if ( !G.color && !G.status.counts[ G.mode ] && G.status.updating_db ) {
 		infoUpdate();
 		return
 	}
