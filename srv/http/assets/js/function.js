@@ -789,7 +789,7 @@ function infoPlayback() {
 			$vumeter.change( function() {
 				var checked = $( this ).prop( 'checked' );
 				$coverdefault.toggleClass( 'hide', checked );
-				if ( checked ) $novu.val( [ false ] );
+				$( 'input[name=inforadio]' ).val( [ true ] )
 			} );
 		}
 		, ok           : function () {
