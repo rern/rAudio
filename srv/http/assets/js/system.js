@@ -442,6 +442,7 @@ var infolcdchar = heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
+	<tr class="gpio hide" height="100"><td colspan="4"><img src="/assets/img/gpio.svg" style="width: 100%"></td></tr>
 	<tr class="gpio"><td>pin_rs</td>
 		<td colspan="3"><input type="text" id="pin_rs"></td>
 	</tr>
@@ -532,7 +533,8 @@ $( '#setting-powerbutton' ).click( function() {
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
 	var infopowerbutton = heredoc( function() { /*
-	GPIO pins <gr>(J8 numbering)</gr>:
+	<img src="/assets/img/gpio.svg" style="width: 100%">
+	<br><br>
 	<table>
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
@@ -620,8 +622,7 @@ $( '#setting-vuled' ).click( function() {
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
-		, message      : 'GPIO pins:'
-						+'<br><img src="/assets/img/gpio.svg" style="width: 100%">'
+		, message      : '<img src="/assets/img/gpio.svg" style="width: 100%">'
 		, select       : htmlpins
 		, values       : vuledval
 		, boxwidth     : 60

@@ -115,11 +115,6 @@ $selecttimezone.= '</select>';
 <div>
 <heading data-status="configtxt" class="status">GPIO Devices<?=$istatus?><?=$ihelp?></heading>
 <pre id="codeconfigtxt" class="hide"></pre>
-<div <?=$classhelp?>>
-	GPIO pin reference: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a>
-	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
-	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
-</div>
 <div class="col-l single">Audio - I²S<i class="fa fa-i2saudio"></i></div>
 <div class="col-r i2s">
 	<div id="divi2smodulesw">

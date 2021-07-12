@@ -4,9 +4,9 @@
 	.st0{fill:#808080;}
 	.st1{fill:#FF0000;}
 	.st3{fill:#00FF00;}
-	.st4{fill:#B5B3B3;}
+	.st4,.st7{fill:#B5B3B3;}
 	.st6{fill:#FF5F00;}
-	.st7{fill:#E6E6E6;font-family:'Arial';font-size:13px;}
+	.st7{font-family:'Arial';font-size:13px;}
 	.st10{letter-spacing:9;}
 	.st11{letter-spacing:7;}
 	.st12{letter-spacing:14;}
