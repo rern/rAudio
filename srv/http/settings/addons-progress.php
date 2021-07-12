@@ -62,7 +62,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<heading>Addons Progress<i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<w><?=$title?></w><br>
-		<i class="fa fa-gear blink"></i>&ensp;Please wait until finished ...
+		<i class="fa fa-gear blink"></i>&ensp;Install ...
 	</p>
 	
 <script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
