@@ -385,13 +385,9 @@ $( '#help' ).click( function() {
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
-		if ( $( '.help-block:not(.hide)' ).length > 0 ) {
-			$( this ).removeClass( 'blue' );
-			$( '.help-block' ).addClass( 'hide' );
-		} else {
-			$( this ).addClass( 'blue' );
-			$( '.help-block' ).removeClass( 'hide' );
-		}
+		var visible = $( '.help-block:not(.hide)' ).length > 0;
+		$( this ).toggleClass( 'bl', !visible );
+		$( '.help-block' ).toggleClass( 'hide', visible );
 	} else {
 		$( '#bar-bottom' ).toggleClass( 'hide' );
 	}
