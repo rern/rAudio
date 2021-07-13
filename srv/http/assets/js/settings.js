@@ -280,7 +280,6 @@ document.title = page;
 
 refreshData();
 
-$( '#bar-bottom' ).toggleClass( 'hide', window.innerHeight < 571 );
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
@@ -389,7 +388,8 @@ $( '#help' ).click( function() {
 		$( this ).toggleClass( 'bl', !visible );
 		$( '.help-block' ).toggleClass( 'hide', visible );
 	} else {
-		$( '#bar-bottom' ).toggleClass( 'hide' );
+		var visible = $( '#bar-bottom' ).css( 'display' ) !== 'none';
+		$( '#bar-bottom' ).css( 'display', visible ? '' : 'block' );
 	}
 	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
 } );

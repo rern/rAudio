@@ -538,6 +538,9 @@ input:checked + .switchlabel.disabled:after {
 	#help::before {
 		content: '\f509';
 	}
+	#bar-bottom {
+		display: none;
+	}
 }
 @media (min-width: 768px) {
 	.container {
