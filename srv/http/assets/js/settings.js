@@ -268,7 +268,7 @@ var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var red = '#bb2828';
 var timer;
-var nextpage = {
+var pagenext = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
 	, networks : [ 'player', 'system' ]
@@ -280,6 +280,10 @@ document.title = page;
 
 refreshData();
 
+$.event.special.swipe.horizontalDistanceThreshold = 80;
+$( 'body' ).on ( 'swipeleft swiperight', function( e ) {
+	$( '#'+ pagenext[ page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
+} );
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
@@ -314,7 +318,7 @@ $( document ).keyup( function( e ) {
 	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
 		var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
 		var id = $current[ 0 ].id;
-		var $next = key === 'ArrowLeft' ? $( '#'+ nextpage[ id ][ 0 ] ) : $( '#'+ nextpage[ id ][ 1 ] );
+		var $next = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
 		$( '#bar-bottom div' ).removeClass( 'bgr' );
 		if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
 	} else if ( key === 'Enter' ) {
@@ -383,14 +387,15 @@ $( '#help' ).click( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
+	var wH570 = window.innerHeight < 570;
 	if ( $( '.help-block:not(.hide)' ).length > 0 ) {
 		$( this ).removeClass( 'blue' );
 		$( '.help-block' ).addClass( 'hide' );
-		$( '#bar-bottom' ).css( 'opacity', 0 );
+		if ( wH570 ) $( '#bar-bottom' ).css( 'opacity', 0 );
 	} else {
 		$( this ).addClass( 'blue' );
 		$( '.help-block' ).removeClass( 'hide' );
-		$( '#bar-bottom' ).css( 'opacity', 1 );
+		if ( wH570 ) $( '#bar-bottom' ).css( 'opacity', 1 );
 	}
 	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
 } );

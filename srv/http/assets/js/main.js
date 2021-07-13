@@ -86,6 +86,13 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 $.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
 $.event.special.tap.tapholdThreshold = 1000;
+$( '.page' ).on( 'swipeleft swiperight', function( e ) {
+	if ( G.swipepl || G.drag ) return
+	
+	G.swipe = 1;
+	setTimeout( function() { G.swipe = 0 }, 1000 );
+	$( '#tab-'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
+} );
 $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
@@ -651,7 +658,12 @@ $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
 $( '#divcover' ).taphold( function( e ) {
-	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
+	if (
+		( G.status.webradio && G.status.state === 'play' )
+		|| !G.status.playlistlength
+		|| G.guide
+		|| $( e.target ).hasClass( 'band' )
+	) return
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )

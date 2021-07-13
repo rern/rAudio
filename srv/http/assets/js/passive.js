@@ -61,13 +61,6 @@ pushstream.onstatuschange = function( status ) {
 			G.display = data;
 			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 			G.bars = data.bars;
-			$( '.page' ).on( 'swipeleft swiperight', function( e ) {
-				if ( G.bars || G.swipepl || G.drag ) return
-				
-				G.swipe = 1;
-				setTimeout( function() { G.swipe = 0 }, 1000 );
-				$( '#tab-'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
-			} );
 			G.display.screenoff = G.localhost;
 			var submenu = {
 				  relays     : 'features'
