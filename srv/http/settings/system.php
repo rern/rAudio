@@ -186,7 +186,9 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="vuled"></div>
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		7 LEDs, with current limiting resisters - <a id="ledcalc">LED resister calculator</a>
+		7 LEDs, with current limiting resisters
+		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/436">Wiring</a>
+		<br>&bull; <a id="ledcalc">LED resister calculator</a>
 	</span>
 </div>
 </div>

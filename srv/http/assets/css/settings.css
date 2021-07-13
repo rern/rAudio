@@ -645,6 +645,7 @@ input:checked + .switchlabel.disabled:after {
 	#filetype,
 	#gpioimgtxt,
 	#help,
+	#ledcalc,
 	#menu {
 		cursor: pointer;
 	}
