@@ -535,8 +535,8 @@ input:checked + .switchlabel.disabled:after {
 	color: var( --cm );
 }
 @media (max-height: 570px) {
-	#bar-bottom {
-		opacity: 0;
+	#help::before {
+		content: '\f509';
 	}
 }
 @media (min-width: 768px) {
