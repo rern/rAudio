@@ -5,9 +5,9 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 	var key = e.key;
 	if ( key === 'Home' ) {
 		if ( G.library ) {
-			$( '#tab-library' ).click();
+			$( '#library' ).click();
 		} else if ( G.playlist ) {
-			$( '#tab-playlist' ).click();
+			$( '#playlist' ).click();
 		}
 		return
 	}
@@ -94,11 +94,11 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 	} else if ( key === 'Tab' ) {
 		e.preventDefault();
 		if ( G.library ) {
-			$( '#tab-playback' ).click();
+			$( '#playback' ).click();
 		} else if ( G.playback ) {
-			$( '#tab-playlist' ).click();
+			$( '#playlist' ).click();
 		} else {
-			$( '#tab-library' ).click();
+			$( '#library' ).click();
 		}
 		return
 		

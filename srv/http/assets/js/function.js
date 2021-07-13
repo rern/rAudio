@@ -56,13 +56,13 @@ function colorSet() {
 				var h = Math.round( 360 * e.getCurColorHsv().h );
 				var hsg = 'hsl('+ h +',3%,';
 				var rgb = Object.values( e.getCurColorRgb() ).join( ' ' );
-				$( '#bar-top, #playback-controls i, #tab-playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
-				$( '.content-top, #tab-playback, #colorcancel' ).css( 'background', hsg +'20%)' );
+				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
+				$( '.content-top, #playback, #colorcancel' ).css( 'background', hsg +'20%)' );
 				$( '.lib-icon, gr' ).css( 'cssText', 'color: '+ hsg +'60%) !important;' );
 				$( '#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', hsg +'30%)' );
 				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );
 				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
-				$( '#playback-controls .active, #tab-library, #button-library, #lib-list li.active, #colorok' ).css( 'background-color', hex );
+				$( '#playback-controls .active, #library, #button-library, #lib-list li.active, #colorok' ).css( 'background-color', hex );
 				$( '#button-lib-back, .lialbum, #colorcancel' ).css( 'color', hex );
 				$( '#colorok' ).toggleClass( 'disabled', rgb === rgb0 );
 			}
@@ -275,11 +275,11 @@ function displayBars() {
 	}
 }
 function displayBottom() {
-	$( '#tab-playback' )
+	$( '#playback' )
 		.removeAttr( 'class' )
 		.addClass( 'fa fa-'+ G.status.player );
 	$( '#bar-bottom i' ).removeClass( 'active' );
-	$( '#tab-'+ G.page ).addClass( 'active' );
+	$( '#'+ G.page ).addClass( 'active' );
 }
 function displayCheckboxSet( i, enable, check ) {
 	$( '#infoContent input' ).eq( i )
@@ -1579,9 +1579,9 @@ function setButtonUpdating() {
 	if ( G.status.updating_db ) {
 		if ( G.bars ) {
 			if ( !G.localhost ) {
-				$( '#tab-library, #button-library' ).addClass( 'blink' );
+				$( '#library, #button-library' ).addClass( 'blink' );
 			} else {
-				$( '#tab-library, #button-library' )
+				$( '#library, #button-library' )
 					.removeClass( 'fa-library' )
 					.addClass( 'fa-refresh-library' );
 			}
@@ -1589,9 +1589,9 @@ function setButtonUpdating() {
 			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' )
 		}
 	} else {
-		$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+		$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 		$( '#i-update, #ti-update' ).addClass( 'hide' );
-		if ( G.localhost ) $( '#tab-library, #button-library' )
+		if ( G.localhost ) $( '#library, #button-library' )
 							.removeClass( 'fa-refresh-library' )
 							.addClass( 'fa-library' );
 	}

@@ -431,5 +431,5 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<div id="lyricsfade"></div>
 </div>
 <div id="bar-bottom"> <!-- keep single line to suppress spaces -->
-	<i id="tab-library" class="fa fa-library"></i><i id="tab-playback" class="fa fa-playback"></i><i id="tab-playlist" class="fa fa-playlist"></i>
+	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>

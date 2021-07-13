@@ -112,7 +112,7 @@ function psAirplay( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
-	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
+	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
 }
@@ -235,7 +235,7 @@ function psCoverart( data ) {
 					.css( 'opacity', '' )
 					.removeClass( 'hide' );
 			} else if ( G.playlist ) {
-				$( '#tab-playlist' ).click();
+				$( '#playlist' ).click();
 			}
 			if ( G.librarylist && G.mode === 'webradio' ) {
 				var srcnoext = src.slice( 0, -15 );
@@ -249,7 +249,7 @@ function psCoverart( data ) {
 			if ( G.playback ) {
 				coverartDefault();
 			} else if ( G.playlist ) {
-				$( '#tab-playlist' ).click();
+				$( '#playlist' ).click();
 			}
 			if ( G.mode === 'webradio' ) {
 				var $el = webradioIcon( src );
@@ -308,7 +308,7 @@ function psMpdPlayer( data ) {
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 		setButtonControl();
 		if ( G.playlist ) {
 			setPlaylistScroll();
@@ -328,12 +328,12 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdUpdate( data ) {
-	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
+	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
 		G.status.updating_db = true;
 		if ( G.bars ) {
-			if ( !G.localhost ) $( '#tab-library, #button-library' ).addClass( 'blink' );
+			if ( !G.localhost ) $( '#library, #button-library' ).addClass( 'blink' );
 		} else {
 			if ( !G.localhost ) $( '#button-library' ).addClass( 'blink' );
 			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' );
@@ -362,10 +362,10 @@ function psMpdUpdate( data ) {
 				}
 			}
 		} else if ( G.playlist && !G.savedlist ) {
-			$( '#tab-playlist' ).click();
+			$( '#playlist' ).click();
 		}
 		setTimeout( function() {
-			$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+			$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 			banner( 'Library Update', 'Done', 'library' );
 		}, 2000 );
 	}
@@ -524,7 +524,7 @@ function psSpotify( data ) {
 			G.status[ key ] = value;
 		} );
 	}
-	if ( !$( '#tab-playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
+	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	renderPlayback();
 	setButtonControl();
 }

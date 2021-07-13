@@ -91,7 +91,7 @@ $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
-	$( '#tab-'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
+	$( '#'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
 } );
 $( '#loader' ).click( function() {
 	loader( 'hide' );
@@ -163,7 +163,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'displaycolor':
 			G.color = 1;
-			if ( !G.library ) $( '#tab-library' ).click();
+			if ( !G.library ) $( '#library' ).click();
 			if ( G.mode !== 'webradio' ) {
 				$( '#mode-webradio' ).click();
 			} else {
@@ -257,7 +257,7 @@ $( '#addons' ).click( function () {
 		}
 	} );
 } );
-$( '#tab-library, #button-library' ).click( function() {
+$( '#library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -277,7 +277,7 @@ $( '#tab-library, #button-library' ).click( function() {
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
-$( '#tab-playback' ).click( function() {
+$( '#playback' ).click( function() {
 	if ( G.playback ) {
 		if ( G.display.volumenone || document.body.clientWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
 		
@@ -303,7 +303,7 @@ $( '#tab-playback' ).click( function() {
 		if ( G.color ) $( '#colorcancel' ).click();
 	}
 } )
-$( '#tab-playlist' ).click( function() {
+$( '#playlist' ).click( function() {
 	G.pladd = {};
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) {
@@ -365,7 +365,7 @@ $( '#info' ).click( function() {
 } );
 $( '.emptyadd' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'fa-plus-circle' ) ) {
-		$( '#tab-library' ).click();
+		$( '#library' ).click();
 	} else if ( $( e.target ).hasClass( 'fa-gear' ) ) {
 		$( '#button-settings' ).click();
 	}
@@ -760,7 +760,7 @@ $( '.map' ).tap( function() {
 		if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 		
 		if ( document.body.clientWidth < 614 ) {
-			$( '#tab-playback' ).click();
+			$( '#playback' ).click();
 			return
 		}
 		
@@ -1062,7 +1062,7 @@ $( '#button-lib-back' ).click( function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else if ( query === 'playlist' ) {
-			$( '#tab-playlist' ).click();
+			$( '#playlist' ).click();
 		} else {
 //			if ( query.query === 'ls' ) G.mode = 'file';
 			list( query, function( data ) {
@@ -1479,7 +1479,7 @@ $( '.index' ).on( 'click', 'a', function() {
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-playlist' ).click( function() {
-	$( '#tab-playlist' ).click();
+	$( '#playlist' ).click();
 } );
 $( '#button-pl-back' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
@@ -1655,7 +1655,7 @@ $( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
 		G.swipe = 0;
 		G.swipepl = 0;
 	}, 500 );
-	$( '#tab-library' ).click();
+	$( '#library' ).click();
 } ).on( 'swiperight', 'li', function() {
 	G.swipe = 1;
 	G.swipepl = 1;
@@ -1663,7 +1663,7 @@ $( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
 		G.swipe = 0;
 		G.swipepl = 0;
 	}, 500 );
-	$( '#tab-playback' ).click();
+	$( '#playback' ).click();
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );

@@ -1,6 +1,6 @@
 function addReplace( command, title ) {
 	bash( command, function() {
-		if ( G.playbackswitch ) $( '#tab-playback' ).click();
+		if ( G.playbackswitch ) $( '#playback' ).click();
 		G.playbackswitch = 0;
 	} );
 	if ( G.list.li.hasClass( 'licover' ) ) {
@@ -122,7 +122,7 @@ function playlistDelete() {
 				G.list.li.remove();
 				$( '#pl-savedlist-count' ).text( G.status.playlists );
 			} else {
-				$( '#tab-playlist' ).click();
+				$( '#playlist' ).click();
 			}
 			list( { cmd: 'delete', name: G.list.name } );
 		}
@@ -299,7 +299,7 @@ function tagEditor() {
 						data.path = path;
 						data.modetitle = path;
 						$( '#infoX' ).click();
-						$( '#tab-library' ).click();
+						$( '#library' ).click();
 						renderLibraryList( data );
 					}, 'json' );
 				} );
@@ -350,7 +350,7 @@ function tagEditor() {
 					if ( G.library ) {
 						G.query.push( query );
 					} else {
-						$( '#tab-library' ).click();
+						$( '#library' ).click();
 						G.query = [ 'playlist', 'playlist', query ];
 					}
 					list( query, function( data ) {
@@ -629,7 +629,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 						getPlaylist();
 						setButtonControl();
 						banner( title, count +' tracks added.', 'library' );
-						if ( addplay && G.display.playbackswitch ) $( '#tab-playback' ).click();
+						if ( addplay && G.display.playbackswitch ) $( '#playback' ).click();
 					} );
 				}
 			}, 'json' );

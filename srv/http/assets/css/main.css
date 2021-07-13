@@ -77,10 +77,10 @@ i.map.disabled, .map.disabled i {
 }
 @keyframes blinkcg     { 50% { color: var( --cg ); text-shadow: none; } }
 @keyframes blinkcm     { 50% { color: var( --cm ); text-shadow: none; } }
-#tab-library.blink {
+#library.blink {
 	animation: 1.5s infinite linear blinkcg;
 }
-#tab-library.active.blink,
+#library.active.blink,
 #button-library.active.blink {
 	animation: 1.5s infinite linear blinkcm;
 }
@@ -248,11 +248,11 @@ i.map.disabled, .map.disabled i {
 	width: calc( 100% / 3 );
 	text-align: center;
 }
-#tab-library,
-#tab-playlist {
+#library,
+#playlist {
 	background: var( --cg );
 }
-#tab-playback {
+#playback {
 	background: var( --cga );
 }
 .content-top i.active,
