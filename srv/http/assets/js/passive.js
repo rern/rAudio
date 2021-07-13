@@ -57,6 +57,7 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
 		bash( [ 'displayget' ], function( data ) {
+			delete G.coverTL;
 			G.display = data;
 			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 			G.bars = data.bars;
