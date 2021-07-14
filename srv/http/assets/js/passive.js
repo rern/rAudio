@@ -75,8 +75,8 @@ pushstream.onstatuschange = function( status ) {
 						.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
 				}
 			} );
-			getPlaybackStatus();
 		}, 'json' );
+		getPlaybackStatus();
 		if ( $( '#bannerTitle' ).text() === 'Power' ) {
 			loader( 'hide' );
 			bannerHide();
