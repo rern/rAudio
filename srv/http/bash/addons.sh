@@ -133,7 +133,7 @@ installfinish() {
 	
 	title -l '=' "$bar Done."
 	
-	$dirbash/cmd.sh mpcupdatecontinue
+	/srv/http/bash/cmd.sh mpcupdatecontinue
 }
 uninstallstart() {
 	name=$( tcolor "$( jq -r .$alias.title $addonsjson )" )
