@@ -2,8 +2,7 @@
 <style type="text/css">
 	@font-face {
 		font-family: Lato;
-		src: url( '/assets/fonts/lato-light-webfont.woff' ) format( 'woff' ),
-			 url( '/assets/fonts/lato-light-webfont.ttf' ) format( 'truetype' );
+		src: url( '/assets/fonts/lato-light-webfont.woff2' ) format( 'woff2' );
 		font-weight: 300;
 	}
 	.st0,.st2{fill:#E6E6E6;}

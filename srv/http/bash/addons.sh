@@ -151,9 +151,3 @@ uninstallfinish() {
 	rm $diraddons/$alias &> /dev/null
 	[[ $type != Update ]] && title -l '=' "$bar Done."
 }
-## restart nginx seamlessly without dropping client connections
-restartnginx() {
-	kill -s USR2 $( cat /run/nginx.pid )         # spawn new nginx master-worker set
-	kill -s WINCH $( cat /run/nginx.pid.oldbin ) # stop old worker process
-	kill -s QUIT $( cat /run/nginx.pid.oldbin )  # stop old master process
-}

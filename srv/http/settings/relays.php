@@ -31,7 +31,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
-			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
+			src: url( "/assets/fonts/rern.<?=$time?>.woff2" ) format( 'woff2' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
