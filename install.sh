@@ -115,3 +115,8 @@ getinstallzip
 systemctl restart mpd
 
 installfinish
+
+if ! grep -q woff2 /etc/nginx/nginx.conf; then
+	sed -i 's/ttf|woff/woff2/' /etc/nginx/nginx.conf
+	nginx -s reload
+fi
