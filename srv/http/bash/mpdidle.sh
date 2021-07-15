@@ -16,12 +16,8 @@ dirtmp=/srv/http/data/shm
 mpc idleloop | while read changed; do
 	case $changed in
 		player )
-			currentprev=$current
-			current=$( mpc current )
-			if [[ $current != $currentprev ]]; then
-				killall cmd-pushstatus.sh &> /dev/null # debounce double firings - kill previous
-				$dirbash/cmd-pushstatus.sh
-			fi
+			killall cmd-pushstatus.sh &> /dev/null
+			$dirbash/cmd-pushstatus.sh
 			;;
 		mixer ) # for upmpdcli
 			if [[ -e $dirtmp/player-upnp ]]; then
