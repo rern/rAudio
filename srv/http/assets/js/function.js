@@ -814,6 +814,15 @@ function infoNoData() {
 	} );
 }
 function infoUpdate( path ) {
+	if ( G.status.updating_db ) {
+		info( {
+			  icon    : 'refresh-library'
+			, title   : 'Library Database'
+			, message : 'Update in progress ...'
+		} );
+		return
+	}
+	
 	info( {
 		  icon    : 'refresh-library'
 		, title   : 'Library Database'

@@ -18,6 +18,15 @@ playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
+if [[ -e $dirsystem/updating ]]; then 
+	updating_db=true
+	if ! mpc | grep -q ^Updating; then
+		path=$( cat $dirsystem/updating )
+		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+	fi
+else
+	updating_db=false
+fi
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 else
@@ -44,6 +53,7 @@ else
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
 , "updateaddons"   : '$updateaddons'
+, "updating_db"    : '$updating_db'
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
@@ -123,7 +133,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 fi
 
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
+filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -178,11 +188,6 @@ done
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
-if [[ -e $dirsystem/updating ]] || mpc | grep -q ^Updating; then 
-	updating_db=true
-else
-	updating_db=false
-fi
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
@@ -191,7 +196,6 @@ status+='
 , "song"        : '$song'
 , "state"       : "'$state'"
 , "timestamp"   : '$( date +%s%3N )'
-, "updating_db" : '$updating_db'
 , "volumemute"  : '$volumemute
 
 if (( $playlistlength  == 0 )); then
