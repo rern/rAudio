@@ -562,7 +562,6 @@ mpcprevnext )
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
 	fi
-	$dirbash/cmd-pushstatus.sh
 	;;
 mpcseek )
 	seek=${args[1]}
@@ -575,7 +574,6 @@ mpcseek )
 	else
 		mpc seek $seek
 	fi
-	$dirbash/cmd-pushstatus.sh
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -748,10 +746,7 @@ plsimilar )
 	echo "$list" | awk 'NF' | mpc add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
-	if [[ -n $pos ]]; then
-		mpc -q play $pos
-		$dirbash/cmd-pushstatus.sh
-	fi
+	[[ -n $pos ]] && mpc -q play $pos
 	;;
 power )
 	poweroff=${args[1]}
