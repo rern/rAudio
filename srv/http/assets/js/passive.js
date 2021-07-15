@@ -272,6 +272,7 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
+	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
 		displayPlayback();
@@ -295,7 +296,6 @@ function psDisplay( data ) {
 			$( '#mode-album' ).click();
 		}
 	}
-	displayBars();
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

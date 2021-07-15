@@ -275,6 +275,8 @@ function displayBars() {
 	}
 }
 function displayBottom() {
+	if ( !G.bars ) return
+	
 	$( '#playback' )
 		.removeAttr( 'class' )
 		.addClass( 'fa fa-'+ G.status.player );
@@ -348,7 +350,6 @@ function displayPlayback() {
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
-	displayBars();
 }
 function displaySave( keys ) {
 	var values = infoVal();
@@ -507,9 +508,9 @@ function getPlaybackStatus( render ) {
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		setButtonControl();
-		displayBottom();
+		displayBars();
 		if ( G.playback || render ) { // 'render' - add to blank playlist
+			setButtonControl();
 			displayPlayback();
 			renderPlayback();
 		} else if ( G.library ) {
