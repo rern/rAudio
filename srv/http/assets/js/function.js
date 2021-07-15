@@ -515,7 +515,7 @@ function getPlaybackStatus( render ) {
 			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
-			if ( counts ) {
+			if ( G.status.counts ) {
 				var counts = G.status.counts;
 				$( '#lib-mode-list' ).data( 'count', counts.title )
 				$( '#li-count' ).html( counts.title.toLocaleString() +' <i class="fa fa-music gr"></i>' );
