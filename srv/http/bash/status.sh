@@ -57,71 +57,70 @@ else
 , "webradio"       : false'
 fi
 
-case $player in
-
-airplay )
-	path=$dirtmp/airplay
-	for item in Artist Album coverart Title; do
-		val=$( cat $path-$item 2> /dev/null )
-		[[ -z $val ]] && continue
-########
-		status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
-	done
-	start=$( cat $path-start 2> /dev/null || echo 0 )
-	Time=$( cat $path-Time 2> /dev/null || echo false )
-	now=$( date +%s%3N )
-	if [[ -n $start && -n $Time ]]; then
-		elapsed=$(( ( now - start + 500 ) / 1000 ))
-	fi
-	[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
-########
-	status+='
-, "coverart"       : "'$coverart'"
-, "elapsed"        : '$elapsed'
-, "playlistlength" : 1
-, "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
-, "state"          : "play"
-, "Time"           : '$Time'
-, "timestamp"      : '$now
-	;;
-bluetooth )
-########
-	status+=$( $dirbash/status-bluetooth.sh )
-	;;
-snapclient )
-	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
-	snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
-	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
-							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
-########
-	status+=${snapserverstatus:1:-1}
-	;;
-spotify )
-	file=$dirtmp/spotify
-	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	state=$( cat $file-state )
-	now=$( date +%s%3N )
-	if [[ $state == play ]]; then
-		start=$( cat $file-start )
-		elapsed=$(( now - start + elapsed ))
-		time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $file )
-		if (( $elapsed > $(( time * 1000 )) )); then
-			elapsed=0
-			echo 0 > $file-elapsed
-		fi
-	fi
-	elapsed=$(( ( elapsed + 500 ) / 1000 ))
-########
-	status+=$( cat $file )
-	status+='
-, "elapsed"   : '$elapsed'
-, "state"     : "'$state'"
-, "timestamp" : '$now
-	;;
-	
-esac
-
 if [[ $player != mpd && $player != upnp ]]; then
+	case $player in
+
+	airplay )
+		path=$dirtmp/airplay
+		for item in Artist Album coverart Title; do
+			val=$( cat $path-$item 2> /dev/null )
+			[[ -z $val ]] && continue
+	########
+			status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
+		done
+		start=$( cat $path-start 2> /dev/null || echo 0 )
+		Time=$( cat $path-Time 2> /dev/null || echo false )
+		now=$( date +%s%3N )
+		if [[ -n $start && -n $Time ]]; then
+			elapsed=$(( ( now - start + 500 ) / 1000 ))
+		fi
+		[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+	########
+		status+='
+	, "coverart"       : "'$coverart'"
+	, "elapsed"        : '$elapsed'
+	, "playlistlength" : 1
+	, "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
+	, "state"          : "play"
+	, "Time"           : '$Time'
+	, "timestamp"      : '$now
+		;;
+	bluetooth )
+	########
+		status+=$( $dirbash/status-bluetooth.sh )
+		;;
+	snapclient )
+		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
+		snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
+		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
+								| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
+	########
+		status+=${snapserverstatus:1:-1}
+		;;
+	spotify )
+		file=$dirtmp/spotify
+		elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
+		state=$( cat $file-state )
+		now=$( date +%s%3N )
+		if [[ $state == play ]]; then
+			start=$( cat $file-start )
+			elapsed=$(( now - start + elapsed ))
+			time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $file )
+			if (( $elapsed > $(( time * 1000 )) )); then
+				elapsed=0
+				echo 0 > $file-elapsed
+			fi
+		fi
+		elapsed=$(( ( elapsed + 500 ) / 1000 ))
+	########
+		status+=$( cat $file )
+		status+='
+	, "elapsed"   : '$elapsed'
+	, "state"     : "'$state'"
+	, "timestamp" : '$now
+		;;
+		
+	esac
 # >>>>>>>>>>
 	echo {$status}
 	rm -f $dirtmp/{webradiodata,radiofrance}
@@ -130,8 +129,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
+filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
