@@ -111,7 +111,7 @@ pushstreamPlaylist() {
 }
 pushstreamStatus() {
 	status=$( $dirbash/status.sh )
-	[[ -z $1 ]] && pushstream mpdplayer "$status" # $1=lcdchar - airplay bluetooth spotify
+	pushstream mpdplayer "$status"
 	if [[ -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( echo $status \
@@ -545,12 +545,6 @@ mpcplayback )
 	else
 		killall cava &> /dev/null
 	fi
-	pushstreamStatus
-	# fix webradio fast stop - start
-	if [[ -n $webradio && -z $( echo "$status" | jq -r .Title ) ]]; then
-		sleep 3
-		pushstreamStatus
-	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
@@ -797,9 +791,6 @@ power )
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ -n $poweroff ]] && poweroff || reboot
-	;;
-pushstatus )
-	pushstreamStatus ${args[1]}
 	;;
 refreshbrowser )
 	pushstream reload 1
