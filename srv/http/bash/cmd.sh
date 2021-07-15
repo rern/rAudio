@@ -90,7 +90,7 @@ pladdPlay() {
 		sleep $2
 		mpc play $pos
 	fi
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 }
 pladdPosition() {
 	if [[ ${1:0:7} == replace ]]; then
@@ -108,25 +108,6 @@ pushstreamAudiocd() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-}
-pushstreamStatus() {
-	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
-	if [[ -e $dirsystem/lcdchar ]]; then
-		killall lcdchar.py &> /dev/null
-		readarray -t data <<< $( echo $status \
-									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
-									| sed 's/^$\|null/false/' )
-		$dirbash/lcdchar.py "${data[@]}" &
-	fi
-	if [[ -e $dirtmp/snapclientip ]]; then
-		status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
-		echo $status
-		readarray -t clientip < $dirtmp/snapclientip
-		for ip in "${clientip[@]}"; do
-			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-		done
-	fi
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -446,7 +427,7 @@ displaysave )
 		else
 			rm $dirsystem/vumeter
 		fi
-		pushstreamStatus
+		$dirbash/cmd-pushstatus.sh
 		if [[ $vumeter == true || -e $dirsystem/vuled ]]; then
 			killall cava &> /dev/null
 			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
@@ -581,7 +562,7 @@ mpcprevnext )
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
 	fi
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	;;
 mpcseek )
 	seek=${args[1]}
@@ -594,7 +575,7 @@ mpcseek )
 	else
 		mpc seek $seek
 	fi
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -666,13 +647,13 @@ plcrop )
 		mpc stop
 	fi
 	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	pushstreamPlaylist
 	;;
 plcurrent )
 	mpc play ${args[1]}
 	mpc stop
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	;;
 plfindadd )
 	if [[ ${args[1]} != multi ]]; then
@@ -737,7 +718,7 @@ plremove )
 	else
 		mpc clear
 	fi
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	pushstreamPlaylist
 	;;
 plrename )
@@ -769,7 +750,7 @@ plsimilar )
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	if [[ -n $pos ]]; then
 		mpc -q play $pos
-		pushstreamStatus
+		$dirbash/cmd-pushstatus.sh
 	fi
 	;;
 power )
