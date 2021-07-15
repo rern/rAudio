@@ -185,10 +185,16 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psNotify( data ) {
-	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
-	
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( 'power' in data ) loader();
+	if ( 'power' in data ) {
+		if ( data.power === 'off' ) {
+			G.poweroff = 1;
+			$( '#loader' ).addClass( 'splash' );
+		}
+		loader();
+	} else if ( data.text === 'Change track ...' ) { // audiocd
+		clearIntervalAll();
+	}
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
