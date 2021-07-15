@@ -14,7 +14,7 @@ config.read( conffile )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
-backlight = bool( config.get( section, 'backlight' ) )
+backlight = config.get( section, 'backlight' )
 
 if config.has_option( section, 'address' ):
     address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
@@ -199,7 +199,7 @@ lcd.write_string( lines + rn + progress[ :cols ] )
     
 if state == 'stop' or state == 'pause':
     lcd.close()
-    if backlight == True:
+    if backlight == 'True':
         import subprocess
         subprocess.Popen( [ '/srv/http/bash/lcdchartimer.sh' ] )
     quit()
