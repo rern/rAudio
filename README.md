@@ -149,7 +149,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Settings > MPD > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
-	Settings > Features
+	- Settings > Features
+	- 64bit version - Disable `Browser on RPi` might cause audio glitches on refresh / switch page
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
 - Hide top and bottom bars
@@ -188,5 +189,3 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- Create and compress image file
 - App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
-- 64bit version:
-	- Disable `Browser on RPi` might cause audio glitches on refresh / switch page
