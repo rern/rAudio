@@ -188,3 +188,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- Create and compress image file
 - App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
+- Systemwide upgrade
+	- `pacman -Syu`
+	- For kernel - `linux-raspberrypi` upgrade
+		- If there're audio glitches on refresh / switch page: Settings > Features > Browser on RPi - enable 
