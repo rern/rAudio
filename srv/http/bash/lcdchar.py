@@ -8,7 +8,7 @@ conffile = '/etc/lcdchar.conf'
 timerfile = '/srv/http/data/shm/lcdchartimer'
 if not os.path.exists( conffile ): quit()
 
-os.system( 'killall lcdchartimer.sh' )
+os.system( 'killall lcdchartimer.sh &> /dev/null' )
 
 config.read( conffile )
 section = 'var'
