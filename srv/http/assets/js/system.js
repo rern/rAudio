@@ -418,6 +418,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
+	<img class="gpio" src="/assets/img/gpio.svg" style="margin-bottom: 20px">
 	<table id="tbllcdchar">
 	<tr id="cols"><td>Size</td>
 		<td><label><input type="radio" name="cols" value="16">16x2</label></td>
@@ -442,7 +443,6 @@ var infolcdchar = heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
-	<tr class="gpio hide" height="100"><td colspan="4"><img src="/assets/img/gpio.svg" style="width: 100%"></td></tr>
 	<tr class="gpio"><td>pin_rs</td>
 		<td colspan="3"><input type="text" id="pin_rs"></td>
 	</tr>
