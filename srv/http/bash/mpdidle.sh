@@ -17,8 +17,16 @@ mpc idleloop | while read changed; do
 	case $changed in
 		player )
 			currentprev=$current
+			stateprev=$state
 			current=$( mpc current )
-			if [[ $current != $currentprev ]] || ! mpc | grep -q '\[playing\]'; then
+			if mpc | grep '\[playing\]'; then
+				state=play
+			elif mpc | grep '\[paused\]'; then
+				state=pause
+			else
+				state=stop
+			fi
+			if [[ $current != $currentprev || $state != $stateprev ]]; then
 				killall cmd-pushstatus.sh &> /dev/null
 				$dirbash/cmd-pushstatus.sh
 			fi
