@@ -421,7 +421,8 @@ $( '#title, #guide-lyrics' ).tap( function() {
 					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			, buttonlabel : '<i class="fa fa-bio wh"></i>Bio'
+			, buttonlabel : 'Bio'
+			, buttoncolor : orange
 			, button      : function() {
 				if ( $( '#bio legend' ).text() != G.status.Artist ) {
 					getBio( infoVal()[ 0 ] );
@@ -430,7 +431,7 @@ $( '#title, #guide-lyrics' ).tap( function() {
 					$( '#bio' ).removeClass( 'hide' );
 				}
 			}
-			, oklabel     : '<i class="fa fa-lyrics wh"></i>Lyrics'
+			, oklabel     : 'Lyrics'
 			, ok          : function() {
 				var values = infoVal();
 				G.lyricsArtist = values[ 0 ];
