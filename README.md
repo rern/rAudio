@@ -152,7 +152,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Settings > Features
 	- Disable `Browser on RPi` might cause audio glitches on refresh / switch page
 		- 64bit version - Very likely
-		- Other versions - If `pacman -Syu` includes `linux-rapberrypi`, kernel upgrade.
+		- Other versions - If `pacman -Syu` includes `linux-raspberrypi`, kernel upgrade.
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
 - Hide top and bottom bars
