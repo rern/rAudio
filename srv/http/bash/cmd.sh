@@ -589,10 +589,10 @@ mpcupdate )
 mpcupdatecontinue )
 	if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
 		echo rescan > $dirsystem/updating
-		mpc rescan
+		mpc -q rescan
 	elif [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
-		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
+		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
 		$dirbash/cmd-list.sh &> dev/null &
 	fi
