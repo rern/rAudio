@@ -22,6 +22,7 @@ info=$( tcolor ' i ' 0 3 )  # [ i ]     (black on yellow)
 yn=$( tcolor ' ? ' 0 3 )  # [ i ]       (black on yellow)
 warn=$( tcolor ' ! ' 7 1 )  # [ ! ]     (white on red)
 diraddons=/srv/http/data/addons
+dirsystem=/srv/http/data/system
 addonsjson=$diraddons/addons-list.json
 
 title() {
@@ -133,7 +134,12 @@ installfinish() {
 	
 	title -l '=' "$bar Done."
 	
-	/srv/http/bash/cmd.sh mpcupdatecontinue
+	if [[ -e $dirsystem/updating ]]; then
+		path=$( cat $dirsystem/updating )
+		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+	elif [[ -e $dirsystem/listing || ! -e /srv/http/data/mpd/counts ]]; then
+		/srv/http/bash/cmd-list.sh &> dev/null &
+	fi
 }
 uninstallstart() {
 	name=$( tcolor "$( jq -r .$alias.title $addonsjson )" )
