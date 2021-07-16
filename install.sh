@@ -8,6 +8,7 @@ if [[ ! -e /usr/bin/cava ]]; then
 	pacman -Sy --noconfirm cava
 	wget -q https://github.com/rern/rOS/raw/main/etc/cava.conf -P /etc
 fi
+sed -i '/framerate/ d' /etc/cava.conf
 
 file=/srv/http/data/system/display
 if ! grep -q vumeter $file; then
@@ -114,3 +115,8 @@ getinstallzip
 systemctl restart mpd
 
 installfinish
+
+if ! grep -q woff2 /etc/nginx/nginx.conf; then
+	sed -i 's/ttf|woff/woff2/' /etc/nginx/nginx.conf
+	nginx -s reload &> /dev/null
+fi

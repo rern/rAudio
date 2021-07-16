@@ -8,13 +8,13 @@ conffile = '/etc/lcdchar.conf'
 timerfile = '/srv/http/data/shm/lcdchartimer'
 if not os.path.exists( conffile ): quit()
 
-os.system( 'killall lcdchartimer.sh' )
+os.system( 'killall lcdchartimer.sh &> /dev/null' )
 
 config.read( conffile )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
-backlight = bool( config.get( section, 'backlight' ) )
+backlight = config.get( section, 'backlight' )
 
 if config.has_option( section, 'address' ):
     address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
@@ -148,11 +148,14 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp' ] # assign variables
-for i in range( 1, 8 ):
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file' ] # assign variables
+for i in range( 1, 10 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
+if artist == 'false' and station != 'false':
+    artist = station
+    album = file
 if artist == 'false' and title == 'false' and album == 'false':
     lcd.write_string( splash )
     quit()
@@ -199,7 +202,7 @@ lcd.write_string( lines + rn + progress[ :cols ] )
     
 if state == 'stop' or state == 'pause':
     lcd.close()
-    if backlight == True:
+    if backlight == 'True':
         import subprocess
         subprocess.Popen( [ '/srv/http/bash/lcdchartimer.sh' ] )
     quit()

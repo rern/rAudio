@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="380px" height="80px" viewBox="0 0 380 80">
+<style type="text/css">
+	.st0,.st1,.st2,.st3,.st4,.st5{stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st0{fill:#808080;}
+	.st1{fill:#FF0000;}
+	.st3{fill:#00FF00;}
+	.st4,.st6{fill:#B5B3B3;}
+	.st5{fill:#FF5F00;}
+	.st6{font-family:'Arial';font-size:13px;}
+</style>
+<path class="st0" d="M378.7,24c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,24z"/>
+
+<circle class="st2" cx="14.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="32.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="51.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="69.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="88.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="106.7" cy="29.3" r="6.7"/>
+<circle class="st4" cx="125.2" cy="29.3" r="6.7"/>
+<circle class="st2" cx="143.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="162.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="180.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="199.2" cy="29.3" r="6.7"/>
+<circle class="st5" cx="217.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="236.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="254.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="273.2" cy="29.3" r="6.7"/>
+<circle class="st2" cx="291.7" cy="29.3" r="6.7"/>
+<circle class="st3" cx="310.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="329.2" cy="29.3" r="6.7"/>
+<path class="st5" d="M359.1,34.3V24.3c0-1,0.8-1.6,1.6-1.6h10.1c1,0,1.6,0.8,1.6,1.6v10.1c0,1-0.8,1.6-1.6,1.6h-10.1 C359.8,36.1,359.1,35.3,359.1,34.3z"/>
+
+<circle class="st3" cx="347.2" cy="29.3" r="6.7"/>
+<circle class="st3" cx="14.2" cy="47.8" r="6.7"/>
+<circle class="st3" cx="32.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="51.2" cy="47.8" r="6.7"/>
+<circle class="st2" cx="69.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="88.2" cy="47.8" r="6.7"/>
+<circle class="st2" cx="106.7" cy="47.8" r="6.7"/>
+<circle class="st4" cx="125.2" cy="47.8" r="6.7"/>
+<circle class="st3" cx="143.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="162.2" cy="47.8" r="6.7"/>
+<circle class="st3" cx="180.7" cy="47.8" r="6.7"/>
+<circle class="st2" cx="199.2" cy="47.8" r="6.7"/>
+<circle class="st3" cx="217.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="236.2" cy="47.8" r="6.7"/>
+<circle class="st2" cx="254.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="273.2" cy="47.8" r="6.7"/>
+<circle class="st3" cx="291.7" cy="47.8" r="6.7"/>
+<circle class="st3" cx="310.2" cy="47.8" r="6.7"/>
+<circle class="st2" cx="328.7" cy="47.8" r="6.7"/>
+<circle class="st1" cx="347.2" cy="47.8" r="6.7"/>
+<circle class="st1" cx="365.7" cy="47.8" r="6.7"/>
+
+<text class="st6" transform="matrix(1 0 0 1 1.2269 11.4678)">
+	<tspan x="24.3" y="0">37</tspan>
+	<tspan x="42.8" y="0">35</tspan>
+	<tspan x="61.3" y="0">33</tspan>
+	<tspan x="79.8" y="0">31</tspan>
+	<tspan x="98.3" y="0">29</tspan>
+	<tspan x="153.8" y="0">23</tspan>
+	<tspan x="172.3" y="0">21</tspan>
+	<tspan x="190" y="0">19</tspan>
+	<tspan x="226.5" y="0">15</tspan>
+	<tspan x="245" y="0">13</tspan>
+	<tspan x="264.5" y="0">11</tspan>
+	<tspan x="304" y="0">7</tspan>
+	<tspan x="323.9" y="0">5</tspan>
+	<tspan x="342" y="0">3</tspan>
+</text>
+<text class="st6" transform="matrix(1 0 0 1 1.2268 75.4674)">
+	<tspan x="5.8" y="0">40</tspan>
+	<tspan x="24.3" y="0">38</tspan>
+	<tspan x="42.8" y="0">36</tspan>
+	<tspan x="79.8" y="0">32</tspan>
+	<tspan x="135.3" y="0">26</tspan>
+	<tspan x="153.8" y="0">24</tspan>
+	<tspan x="172.3" y="0">22</tspan>
+	<tspan x="209.3" y="0">18</tspan>
+	<tspan x="227.8" y="0">16</tspan>
+	<tspan x="264.8" y="0">12</tspan>
+	<tspan x="283" y="0">10</tspan>
+	<tspan x="306" y="0">8</tspan>
+</text>
+</svg>

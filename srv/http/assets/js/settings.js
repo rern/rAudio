@@ -119,6 +119,24 @@ function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( title, message, icon +' blink', -1 );
 }
+function refreshData() {
+	if ( page === 'networks' ) {
+		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
+			wlanStatus();
+		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
+			btScan();
+		} else {
+			bash( '/srv/http/bash/networks-data.sh', function( list ) {
+				renderPage( list );
+			} );
+		}
+		resetLocal();
+	} else {
+		bash( '/srv/http/bash/'+ page +'-data.sh', function( list ) {
+			renderPage( list );
+		} );
+	}
+}
 function resetLocal( ms ) {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
 	
@@ -127,6 +145,12 @@ function resetLocal( ms ) {
 		$( '#bannerMessage' ).text( 'Done' );
 	}, ms ? ms - 2000 : 0 );
 	setTimeout( bannerHide, ms || 2000 );
+}
+function selectricRender() {
+	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
+		$( 'select' ).selectric( { nativeOnMobile: false } );
+		$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
+	}
 }
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
@@ -161,10 +185,16 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psNotify( data ) {
-	if ( data.title.slice( 0, 4 ) === 'Wave' ) return
-	
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( 'power' in data ) loader();
+	if ( 'power' in data ) {
+		if ( data.power === 'off' ) {
+			G.poweroff = 1;
+			$( '#loader' ).addClass( 'splash' );
+		}
+		loader();
+	} else if ( data.text === 'Change track ...' ) { // audiocd
+		clearIntervalAll();
+	}
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
@@ -231,6 +261,7 @@ onVisibilityChange( function( visible ) {
 	}
 } );
 //---------------------------------------------------------------------------------------
+var hash = Math.ceil( Date.now() / 1000 );
 G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
@@ -243,7 +274,7 @@ var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var red = '#bb2828';
 var timer;
-var nextpage = {
+var pagenext = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
 	, networks : [ 'player', 'system' ]
@@ -252,6 +283,8 @@ var nextpage = {
 var $focus;
 
 document.title = page;
+
+refreshData();
 
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
@@ -287,7 +320,7 @@ $( document ).keyup( function( e ) {
 	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
 		var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
 		var id = $current[ 0 ].id;
-		var $next = key === 'ArrowLeft' ? $( '#'+ nextpage[ id ][ 0 ] ) : $( '#'+ nextpage[ id ][ 1 ] );
+		var $next = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
 		$( '#bar-bottom div' ).removeClass( 'bgr' );
 		if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
 	} else if ( key === 'Enter' ) {
@@ -356,14 +389,13 @@ $( '#help' ).click( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
-	if ( $( '.help-block:not(.hide)' ).length > 0 ) {
-		$( this ).removeClass( 'blue' );
-		$( '.help-block' ).addClass( 'hide' );
-		$( '#bar-bottom' ).css( 'opacity', 0 );
+	if ( window.innerHeight > 570 ) {
+		var visible = $( '.help-block:not(.hide)' ).length > 0;
+		$( this ).toggleClass( 'bl', !visible );
+		$( '.help-block' ).toggleClass( 'hide', visible );
 	} else {
-		$( this ).addClass( 'blue' );
-		$( '.help-block' ).removeClass( 'hide' );
-		$( '#bar-bottom' ).css( 'opacity', 1 );
+		var visible = $( '#bar-bottom' ).css( 'display' ) !== 'none';
+		$( '#bar-bottom' ).css( 'display', visible ? '' : 'block' );
 	}
 	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
 } );
@@ -376,18 +408,7 @@ $( 'body' ).on( 'click', '.status', function( e ) {
 	
 	codeToggle( $( this ).data( 'status' ), e.target );
 } );
-// bar-bottom
-if ( window.innerHeight < 570 ) {
-	$( '.container, #data' ).click( function() {
-		$( '#bar-bottom' ).addClass( 'transparent' );
-	} );
-}
 $( '#bar-bottom div' ).click( function() {
-	if ( $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
-		$( '#bar-bottom' ).removeClass( 'transparent' );
-	} else if ( this.id !== page ) {
-		$( '.container' ).hide();
-		loader();
-		location.href = 'settings.php?p='+ this.id;
-	}
+	loader();
+	location.href = 'settings.php?p='+ this.id;
 } );

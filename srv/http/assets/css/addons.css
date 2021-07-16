@@ -37,12 +37,12 @@ hr {
 	background: var( --cm );
 }
 .page-icon, #close {
-    width: 40px;
-    height: 40px;
-    line-height: 38px;
-    text-align: center;
-    font-size: 24px;
-    text-shadow: -1px 1px 2px #000000;
+	width: 40px;
+	height: 40px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 24px;
+	text-shadow: -1px 1px 2px #000000;
 }
 .title {
 	margin-left: 15px;
@@ -93,7 +93,7 @@ heading {
 .revisiontext {
 	display:none;
 	padding-left: 20px;
-	    line-height: 20px;
+	line-height: 20px;
 }
 .detailtext i {
 	color: var( --cg60 );
@@ -106,6 +106,7 @@ heading {
 	padding: 10px 20px;
 	border-radius: 6px;
 	background: var( --cga );
+	-webkit-user-select: none;
 }
 .boxed-group img {
 	max-width: 100px;

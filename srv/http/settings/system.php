@@ -72,7 +72,7 @@ $selecttimezone.= '</select>';
 <div>
 <heading data-status="mount" class="noline status">Storage<?=$istatus?><i id="addnas" class="fa fa-plus-circle wh"></i><?=$ihelp?></heading>
 <ul id="list" class="entries"></ul>
-<span <?=$classhelp?>>
+<div <?=$classhelp?>>
 	Available sources, local USB and NAS mounts, for Library.
 	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.
 	<br>
@@ -86,7 +86,7 @@ $selecttimezone.= '</select>';
 	NFS:
 	<pre>mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
 	(Append more options if required.)
-</span>
+</div>
 <pre id="codemount" class="hide"></pre>
 </div>
 
@@ -115,11 +115,6 @@ $selecttimezone.= '</select>';
 <div>
 <heading data-status="configtxt" class="status">GPIO Devices<?=$istatus?><?=$ihelp?></heading>
 <pre id="codeconfigtxt" class="hide"></pre>
-<div <?=$classhelp?>>
-	GPIO pin reference: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a>
-	<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
-	<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
-</div>
 <div class="col-l single">Audio - I²S<i class="fa fa-i2saudio"></i></div>
 <div class="col-r i2s">
 	<div id="divi2smodulesw">
@@ -139,7 +134,7 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="lcdchar"></div>
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-			<a href="https://github.com/dbrgn/RPLCD">RPLCD</a> - Python library for Hitachi HD44780 controller.
+			Module with Hitachi HD44780 controller.
 		<br>&bull; Support 16x2, 20x4 and 40x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
 		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
@@ -153,7 +148,7 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="powerbutton"></div>
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Power button for on/off rAudio with <a href="http://wiringpi.com/">WiringPi</a>
+		Power button and LED for on/off rAudio.
 		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/181#discussion-3100261">Wiring</a>
 		<br>&bull; On pin is fixed.
 	</span>
@@ -167,7 +162,7 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="relays"></div>
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Control GPIO-connected relay module for power on / off equipments with <a href="http://wiringpi.com/">WiringPi</a>
+		Control GPIO-connected relay module for power on / off equipments.
 		<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
@@ -185,6 +180,17 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 	<?php } ?>
+<div class="col-l single">VU LED<i class="fa fa-led"></i></div>
+<div class="col-r">
+	<input id="vuled" class="enable" type="checkbox">
+	<div class="switchlabel" for="vuled"></div>
+	<i id="setting-vuled" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		7 LEDs, with current limiting resisters
+		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/436">Wiring</a>
+		<br>&bull; <a id="ledcalc">LED resister calculator</a>
+	</span>
+</div>
 </div>
 
 <div>

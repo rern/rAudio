@@ -97,6 +97,9 @@ pre {
 .help-block p {
 	margin: 0 0 0 10px;
 }
+div.help-block {
+	margin-left: 0;
+}
 .clear { clear: both; }
 heading {
 	display: inline-block;
@@ -532,8 +535,11 @@ input:checked + .switchlabel.disabled:after {
 	color: var( --cm );
 }
 @media (max-height: 570px) {
+	#help::before {
+		content: '\f509';
+	}
 	#bar-bottom {
-		opacity: 0;
+		display: none;
 	}
 }
 @media (min-width: 768px) {
@@ -642,6 +648,7 @@ input:checked + .switchlabel.disabled:after {
 	#filetype,
 	#gpioimgtxt,
 	#help,
+	#ledcalc,
 	#menu {
 		cursor: pointer;
 	}

@@ -27,7 +27,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
-			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
+			src: url( "/assets/fonts/rern.<?=$time?>.woff2" ) format( 'woff2' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
@@ -56,7 +56,6 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/passive.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
 <script src="/assets/js/context.<?=$time?>.js"></script>
-<script src="/assets/js/lyrics.<?=$time?>.js"></script>
 	<?php if ( $desktop ) { ?>
 <link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
 <script src="/assets/js/shortcut.<?=$time?>.js"></script>

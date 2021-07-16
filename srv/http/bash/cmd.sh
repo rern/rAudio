@@ -90,7 +90,7 @@ pladdPlay() {
 		sleep $2
 		mpc play $pos
 	fi
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 }
 pladdPosition() {
 	if [[ ${1:0:7} == replace ]]; then
@@ -108,25 +108,6 @@ pushstreamAudiocd() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-}
-pushstreamStatus() {
-	status=$( $dirbash/status.sh )
-	[[ -z $1 ]] && pushstream mpdplayer "$status" # $1=lcdchar - airplay bluetooth spotify
-	if [[ -e $dirsystem/lcdchar ]]; then
-		killall lcdchar.py &> /dev/null
-		readarray -t data <<< $( echo $status \
-									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
-									| sed 's/^$\|null/false/' )
-		$dirbash/lcdchar.py "${data[@]}" &
-	fi
-	if [[ -e $dirtmp/snapclientip ]]; then
-		status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
-		echo $status
-		readarray -t clientip < $dirtmp/snapclientip
-		for ip in "${clientip[@]}"; do
-			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-		done
-	fi
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -434,6 +415,26 @@ displayget )
 }'
 echo "$data"
 	;;
+displaysave )
+	data=$( jq . <<< ${args[1]} )
+	pushstream display "$data"
+	grep -q 'vumeter.*true' <<< "$data" && vumeter=true || vumeter=false
+	[[ -e $dirsystem/vumeter ]] && vumeter0=true || vumeter0=false
+	if [[ $vumeter != $vumeter0 ]]; then
+		if [[ $vumeter == true ]]; then
+			touch $dirsystem/vumeter
+			! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
+		else
+			rm $dirsystem/vumeter
+		fi
+		$dirbash/cmd-pushstatus.sh
+		if [[ $vumeter == true || -e $dirsystem/vuled ]]; then
+			killall cava &> /dev/null
+			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		fi
+	fi
+	echo "$data" > $dirsystem/display
+	;;
 ignoredir )
 	touch $dirsystem/updating
 	path=${args[1]}
@@ -525,12 +526,6 @@ mpcplayback )
 	else
 		killall cava &> /dev/null
 	fi
-	pushstreamStatus
-	# fix webradio fast stop - start
-	if [[ -n $webradio && -z $( echo "$status" | jq -r .Title ) ]]; then
-		sleep 3
-		pushstreamStatus
-	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
@@ -567,7 +562,6 @@ mpcprevnext )
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
 	fi
-	pushstreamStatus
 	;;
 mpcseek )
 	seek=${args[1]}
@@ -580,7 +574,6 @@ mpcseek )
 	else
 		mpc seek $seek
 	fi
-	pushstreamStatus
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -611,6 +604,11 @@ onlinefileslimit )
 		rm -f "$file" "${file:0:-4}"
 	fi
 	;;
+ordersave )
+	data=$( jq . <<< ${args[1]} )
+	pushstream order "$data"
+	echo "$data" > $dirsystem/order
+	;;
 partexpand )
 	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
 	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
@@ -636,13 +634,13 @@ plcrop )
 		mpc stop
 	fi
 	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	pushstreamPlaylist
 	;;
 plcurrent )
 	mpc play ${args[1]}
 	mpc stop
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	;;
 plfindadd )
 	if [[ ${args[1]} != multi ]]; then
@@ -707,7 +705,7 @@ plremove )
 	else
 		mpc clear
 	fi
-	pushstreamStatus
+	$dirbash/cmd-pushstatus.sh
 	pushstreamPlaylist
 	;;
 plrename )
@@ -737,10 +735,7 @@ plsimilar )
 	echo "$list" | awk 'NF' | mpc add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
-	if [[ -n $pos ]]; then
-		mpc -q play $pos
-		pushstreamStatus
-	fi
+	[[ -n $pos ]] && mpc -q play $pos
 	;;
 power )
 	poweroff=${args[1]}
@@ -761,9 +756,6 @@ power )
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ -n $poweroff ]] && poweroff || reboot
-	;;
-pushstatus )
-	pushstreamStatus ${args[1]}
 	;;
 refreshbrowser )
 	pushstream reload 1

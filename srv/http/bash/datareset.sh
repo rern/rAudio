@@ -85,7 +85,7 @@ echo '{
 	"buttons": true,
 	"cover": true,
 	"coversmall": false,
-	"novu": false,
+	"novu": true,
 	"progressbar": false,
 	"radioelapsed": false,
 	"time": true,

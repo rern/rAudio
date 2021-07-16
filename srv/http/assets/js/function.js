@@ -56,13 +56,13 @@ function colorSet() {
 				var h = Math.round( 360 * e.getCurColorHsv().h );
 				var hsg = 'hsl('+ h +',3%,';
 				var rgb = Object.values( e.getCurColorRgb() ).join( ' ' );
-				$( '#bar-top, #playback-controls i, #tab-playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
-				$( '.content-top, #tab-playback, #colorcancel' ).css( 'background', hsg +'20%)' );
+				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
+				$( '.content-top, #playback, #colorcancel' ).css( 'background', hsg +'20%)' );
 				$( '.lib-icon, gr' ).css( 'cssText', 'color: '+ hsg +'60%) !important;' );
 				$( '#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', hsg +'30%)' );
 				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );
 				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
-				$( '#playback-controls .active, #tab-library, #button-library, #lib-list li.active, #colorok' ).css( 'background-color', hex );
+				$( '#playback-controls .active, #library, #button-library, #lib-list li.active, #colorok' ).css( 'background-color', hex );
 				$( '#button-lib-back, .lialbum, #colorcancel' ).css( 'color', hex );
 				$( '#colorok' ).toggleClass( 'disabled', rgb === rgb0 );
 			}
@@ -275,11 +275,13 @@ function displayBars() {
 	}
 }
 function displayBottom() {
-	$( '#tab-playback' )
+	if ( !G.bars ) return
+	
+	$( '#playback' )
 		.removeAttr( 'class' )
 		.addClass( 'fa fa-'+ G.status.player );
 	$( '#bar-bottom i' ).removeClass( 'active' );
-	$( '#tab-'+ G.page ).addClass( 'active' );
+	$( '#'+ G.page ).addClass( 'active' );
 }
 function displayCheckboxSet( i, enable, check ) {
 	$( '#infoContent input' ).eq( i )
@@ -347,7 +349,7 @@ function displayPlayback() {
 		.toggleClass( 'disabled', G.status.volume == -1 );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
-	displayBars();
+	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
 }
 function displaySave( keys ) {
 	var values = infoVal();
@@ -357,7 +359,10 @@ function displaySave( keys ) {
 	} );
 	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 	if ( G.vumeter !== G.display.vumeter ) banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
-	$.post( cmdphp, { cmd: 'displayset', displayset : JSON.stringify( G.display ) } );
+	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
+		delete G.display[ item ];
+	} );
+	bash( [ 'displaysave', JSON.stringify( G.display ) ] );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
@@ -503,14 +508,14 @@ function getPlaybackStatus( render ) {
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		setButtonControl();
-		displayBottom();
+		displayBars();
 		if ( G.playback || render ) { // 'render' - add to blank playlist
+			setButtonControl();
 			displayPlayback();
 			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
-			if ( counts ) {
+			if ( G.status.counts ) {
 				var counts = G.status.counts;
 				$( '#lib-mode-list' ).data( 'count', counts.title )
 				$( '#li-count' ).html( counts.title.toLocaleString() +' <i class="fa fa-music gr"></i>' );
@@ -786,7 +791,7 @@ function infoPlayback() {
 			$vumeter.change( function() {
 				var checked = $( this ).prop( 'checked' );
 				$coverdefault.toggleClass( 'hide', checked );
-				if ( checked ) $novu.val( [ false ] );
+				$( 'input[name=inforadio]' ).val( [ true ] )
 			} );
 		}
 		, ok           : function () {
@@ -843,6 +848,38 @@ function loader( toggle ) {
 function local( delay ) {
 	G.local = 1;
 	setTimeout( function() { G.local = 0 }, delay || 300 );
+}
+function lyricsShow( data ) {
+	if ( data !== 'current' ) {
+		G.lyrics = data;
+		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
+		$( '#lyricstitle' ).text( G.lyricsTitle );
+		$( '#lyricsartist' ).text( G.lyricsArtist );
+		$( '#lyricstext' ).html( lyricshtml );
+	}
+	var bars = G.status ? G.bars : !$( '#bar-top' ).hasClass( 'hide' );
+	$( '#lyrics' )
+		.css( {
+			  top    : ( bars ? '' : 0 )
+			, height : ( bars ? '' : '100vh' )
+		} )
+		.removeClass( 'hide' );
+	$( '#lyricstext' ).scrollTop( 0 );
+	if ( bars ) $( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
+	bannerHide();
+}
+function lyricsHide() {
+	if ( $( '#artist' ).text() !== G.lyricsArtist || $( '#title' ).text() !== G.lyricsTitle ) {
+		G.lyrics = '';
+		G.lyricsArtist = '';
+		G.lyricsTitle = '';
+		$( '#lyricstext' ).empty();
+		$( '#lyricstextarea' ).val( '' );
+	}
+	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+	$( '#lyricseditbtngroup' ).addClass( 'hide' );
+	$( '#lyrics' ).addClass( 'hide' );
+	if ( G.bars || !$( '#bar-top' ).hasClass( 'hide' ) ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
 }
 function mpcSeek( seekto ) {
 	var seektime = Math.round( seekto / 1000 * G.status.Time );
@@ -1347,6 +1384,7 @@ function renderPlaybackCoverart( coverart ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
 			.attr( 'src', coverart || G.coverdefault )
+			.css( 'border', !coverart ? 'none' : '' )
 			.removeClass( 'hide' );
 	} else {
 		$( '#coverart' ).addClass( 'hide' );
@@ -1544,9 +1582,9 @@ function setButtonUpdating() {
 	if ( G.status.updating_db ) {
 		if ( G.bars ) {
 			if ( !G.localhost ) {
-				$( '#tab-library, #button-library' ).addClass( 'blink' );
+				$( '#library, #button-library' ).addClass( 'blink' );
 			} else {
-				$( '#tab-library, #button-library' )
+				$( '#library, #button-library' )
 					.removeClass( 'fa-library' )
 					.addClass( 'fa-refresh-library' );
 			}
@@ -1554,9 +1592,9 @@ function setButtonUpdating() {
 			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' )
 		}
 	} else {
-		$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+		$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 		$( '#i-update, #ti-update' ).addClass( 'hide' );
-		if ( G.localhost ) $( '#tab-library, #button-library' )
+		if ( G.localhost ) $( '#library, #button-library' )
 							.removeClass( 'fa-refresh-library' )
 							.addClass( 'fa-library' );
 	}

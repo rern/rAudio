@@ -17,13 +17,17 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - VU meter as coverart (for remote screen)
 - Live display update across multiple clients
 - Wi-Fi connection can be pre-configured for headless mode.
+- Access point mode when no router available.
+- File sharing
 - USB DAC plug ang play
+- Easy update and extra features with Addons
 - Supported GPIO devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
-	- Character LCD (16x2, 20x4 and 40x4)
-	- TFT 3.5" LCD (320x420)
+	- Character LCD: 16x2, 20x4 and 40x4
 	- Power on/off button
-	- Relay module (GPIO)
+	- Relay module
+	- TFT 3.5" LCD (320x420)
+	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
 	- Bluetooth audio (receiver)
@@ -136,6 +140,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Disable features if not use to lower CPU usage:
 	- Settings > Features
 	- Disable `Browser on RPi` might cause audio glitches on refresh / switch page
+		- 64bit version - Very likely
+		- Other versions - If `pacman -Syu` includes `linux-raspberrypi`, kernel upgrade.
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
 - Hide top and bottom bars

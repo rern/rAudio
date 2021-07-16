@@ -22,6 +22,7 @@ info=$( tcolor ' i ' 0 3 )  # [ i ]     (black on yellow)
 yn=$( tcolor ' ? ' 0 3 )  # [ i ]       (black on yellow)
 warn=$( tcolor ' ! ' 7 1 )  # [ ! ]     (white on red)
 diraddons=/srv/http/data/addons
+dirsystem=/srv/http/data/system
 addonsjson=$diraddons/addons-list.json
 
 title() {
@@ -126,8 +127,6 @@ installstart() { # $1-'u'=update
 	fi
 	
 	title -l '=' "$bar $type $name ..."
-	
-	mpc | grep -q ^Updating && updating=1
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
@@ -135,7 +134,12 @@ installfinish() {
 	
 	title -l '=' "$bar Done."
 	
-	[[ -n $updating ]] && mpc -q update
+	if [[ -e $dirsystem/updating ]]; then
+		path=$( cat $dirsystem/updating )
+		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+	elif [[ -e $dirsystem/listing || ! -e /srv/http/data/mpd/counts ]]; then
+		/srv/http/bash/cmd-list.sh &> dev/null &
+	fi
 }
 uninstallstart() {
 	name=$( tcolor "$( jq -r .$alias.title $addonsjson )" )
@@ -152,10 +156,4 @@ uninstallstart() {
 uninstallfinish() {
 	rm $diraddons/$alias &> /dev/null
 	[[ $type != Update ]] && title -l '=' "$bar Done."
-}
-## restart nginx seamlessly without dropping client connections
-restartnginx() {
-	kill -s USR2 $( cat /run/nginx.pid )         # spawn new nginx master-worker set
-	kill -s WINCH $( cat /run/nginx.pid.oldbin ) # stop old worker process
-	kill -s QUIT $( cat /run/nginx.pid.oldbin )  # stop old master process
 }

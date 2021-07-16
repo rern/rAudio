@@ -56,6 +56,26 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
+		bash( [ 'displayget' ], function( data ) {
+			delete G.coverTL;
+			G.display = data;
+			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
+			G.bars = data.bars;
+			G.display.screenoff = G.localhost;
+			var submenu = {
+				  relays     : 'features'
+				, snapclient : 'player'
+				, lock       : 'system'
+				, screenoff  : 'power'
+			};
+			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
+				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
+					$( '#'+ submenu[ sub ] )
+						.addClass( 'sub' )
+						.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
+				}
+			} );
+		}, 'json' );
 		getPlaybackStatus();
 		if ( $( '#bannerTitle' ).text() === 'Power' ) {
 			loader( 'hide' );
@@ -92,7 +112,7 @@ function psAirplay( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
-	if ( !$( '#tab-playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
+	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
 }
@@ -215,7 +235,7 @@ function psCoverart( data ) {
 					.css( 'opacity', '' )
 					.removeClass( 'hide' );
 			} else if ( G.playlist ) {
-				$( '#tab-playlist' ).click();
+				$( '#playlist' ).click();
 			}
 			if ( G.librarylist && G.mode === 'webradio' ) {
 				var srcnoext = src.slice( 0, -15 );
@@ -229,7 +249,7 @@ function psCoverart( data ) {
 			if ( G.playback ) {
 				coverartDefault();
 			} else if ( G.playlist ) {
-				$( '#tab-playlist' ).click();
+				$( '#playlist' ).click();
 			}
 			if ( G.mode === 'webradio' ) {
 				var $el = webradioIcon( src );
@@ -252,6 +272,7 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
+	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
 		displayPlayback();
@@ -275,7 +296,6 @@ function psDisplay( data ) {
 			$( '#mode-album' ).click();
 		}
 	}
-	displayBars();
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
@@ -288,7 +308,7 @@ function psMpdPlayer( data ) {
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		if ( !$( '#tab-playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 		setButtonControl();
 		if ( G.playlist ) {
 			setPlaylistScroll();
@@ -308,12 +328,12 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdUpdate( data ) {
-	var $elupdate = $( '#tab-library, #button-library, #i-update, #ti-update' );
+	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
 		G.status.updating_db = true;
 		if ( G.bars ) {
-			if ( !G.localhost ) $( '#tab-library, #button-library' ).addClass( 'blink' );
+			if ( !G.localhost ) $( '#library, #button-library' ).addClass( 'blink' );
 		} else {
 			if ( !G.localhost ) $( '#button-library' ).addClass( 'blink' );
 			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' );
@@ -342,10 +362,10 @@ function psMpdUpdate( data ) {
 				}
 			}
 		} else if ( G.playlist && !G.savedlist ) {
-			$( '#tab-playlist' ).click();
+			$( '#playlist' ).click();
 		}
 		setTimeout( function() {
-			$( '#tab-library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+			$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 			banner( 'Library Update', 'Done', 'library' );
 		}, 2000 );
 	}
@@ -462,11 +482,14 @@ function psRelays( response ) { // on receive broadcast
 		} );
 		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 			info( {
-				  icon    : 'relays'
-				, title   : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message : stopwatch
-				, footer  : devices
-				, okno    : 1
+				  icon       : 'relays'
+				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
+				, message    : stopwatch
+				, footer     : devices
+				, okno       : 1
+				, beforeshow : function() {
+					$( '#infoX' ).addClass( 'hide' );
+				}
 			} );
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
@@ -504,7 +527,7 @@ function psSpotify( data ) {
 			G.status[ key ] = value;
 		} );
 	}
-	if ( !$( '#tab-playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
+	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	renderPlayback();
 	setButtonControl();
 }

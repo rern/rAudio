@@ -126,13 +126,14 @@ audio_output {
 	always_on      "yes"
 }'
 fi
-if [[ -z $output || -e $dirsystem/vumeter ]]; then
+if [[ -z $output || -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 ########
 		output+='
 audio_output {
 	name           "'$( [[ -z $output ]] && echo '(No sound device)' || echo '(VU meter)' )'"
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
+	buffer_time    "1000000"
 }'
 fi
 

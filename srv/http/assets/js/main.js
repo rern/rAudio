@@ -1,21 +1,24 @@
 var hash = Math.ceil( Date.now() / 1000 );
 var G = {
-	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
+	  addplay       : 0
+	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
 	, coverart      : '/assets/img/coverart.'+ hash +'.svg'
 	, coversave     : 0
 	, covervu       : '/assets/img/vu.'+ hash +'.svg'
-	, librarylist   : 0
 	, debounce      : ''
 	, debouncems    : 300
 	, display       : {}
 	, guide         : 0
-	, list          : {}
-	, addplay       : 0
 	, library       : 0
+	, librarylist   : 0
+	, list          : {}
 	, local         : 0
 	, localhost     : [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1
+	, lyrics        : ''
+	, lyricsArtist  : ''
+	, lyricsTitle   : ''
 	, mode          : ''
 	, modescrolltop : 0
 	, page          : 'playback'
@@ -31,7 +34,6 @@ var G = {
 	, scrolltop     : {}
 	, similarpl     : -1
 	, status        : {}
-
 }
 var cmdphp = 'cmd.php';
 var data = {}
@@ -77,38 +79,20 @@ var lazyload = new LazyLoad( {
 	  elements_selector : '.lazy'
 	, use_native        : true
 } );
-bash( [ 'displayget' ], function( data ) { // get mpd status with passive.js on pushstream connect
-	G.display = data;
-	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
-	G.bars = data.bars;
-	$( '.page' ).on( 'swipeleft swiperight', function( e ) {
-		if ( G.bars || G.swipepl || G.drag ) return
-		
-		G.swipe = 1;
-		setTimeout( function() { G.swipe = 0 }, 1000 );
-		$( '#tab-'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
-	} );
-	G.display.screenoff = G.localhost;
-	var submenu = {
-		  relays     : 'features'
-		, snapclient : 'player'
-		, lock       : 'system'
-		, screenoff  : 'power'
-	};
-	[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
-		if ( G.display[ sub ] ) {
-			$( '#'+ submenu[ sub ] )
-				.addClass( 'sub' )
-				.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
-		}
-	} );
-}, 'json' );
 
+// get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
 $.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
 $.event.special.tap.tapholdThreshold = 1000;
+$( '.page' ).on( 'swipeleft swiperight', function( e ) {
+	if ( G.swipepl || G.drag ) return
+	
+	G.swipe = 1;
+	setTimeout( function() { G.swipe = 0 }, 1000 );
+	$( '#'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
+} );
 $( '#loader' ).click( function() {
 	loader( 'hide' );
 } );
@@ -179,7 +163,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'displaycolor':
 			G.color = 1;
-			if ( !G.library ) $( '#tab-library' ).click();
+			if ( !G.library ) $( '#library' ).click();
 			if ( G.mode !== 'webradio' ) {
 				$( '#mode-webradio' ).click();
 			} else {
@@ -273,7 +257,7 @@ $( '#addons' ).click( function () {
 		}
 	} );
 } );
-$( '#tab-library, #button-library' ).click( function() {
+$( '#library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -293,7 +277,7 @@ $( '#tab-library, #button-library' ).click( function() {
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
 	}
 } );
-$( '#tab-playback' ).click( function() {
+$( '#playback' ).click( function() {
 	if ( G.playback ) {
 		if ( G.display.volumenone || document.body.clientWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
 		
@@ -319,7 +303,7 @@ $( '#tab-playback' ).click( function() {
 		if ( G.color ) $( '#colorcancel' ).click();
 	}
 } )
-$( '#tab-playlist' ).click( function() {
+$( '#playlist' ).click( function() {
 	G.pladd = {};
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) {
@@ -381,7 +365,7 @@ $( '#info' ).click( function() {
 } );
 $( '.emptyadd' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'fa-plus-circle' ) ) {
-		$( '#tab-library' ).click();
+		$( '#library' ).click();
 	} else if ( $( e.target ).hasClass( 'fa-gear' ) ) {
 		$( '#button-settings' ).click();
 	}
@@ -400,6 +384,65 @@ $( '#album, #guide-album' ).click( function() {
 	if ( G.status.webradio && G.status.state === 'stop' ) return
 	
 	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
+} );
+$( '#title, #guide-lyrics' ).tap( function() {
+	var artist = $( '#artist' ).text();
+	var title = $( '#title' ).text();
+	if ( !artist || !title ) return;
+	
+	if ( artist === $( '#lyricsartist' ).text() && title === $( '#lyricstitle' ).text() && G.lyrics ) {
+		lyricsShow( 'current' );
+		return
+	}
+	
+	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
+	title = title.replace( /(["`])/g, '\\$1' );
+	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
+	bash( [ 'lyrics', artist, title, 'local', file ], function( data ) {
+		if ( data ) {
+			G.lyricsTitle = title;
+			G.lyricsArtist = artist;
+			lyricsShow( data );
+			return
+		}
+		
+		var noparen = title.slice( -1 ) !== ')';
+		var titlenoparen = title.replace( / $| \(.*$/, '' );
+		info( {
+			  icon        : 'lyrics'
+			, title       : 'Bio / Lyrics'
+			, width       : 500
+			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
+			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
+			, boxwidth    : 'max'
+			, checkbox    : noparen ? '' : [ 'Title with parentheses content' ]
+			, beforeshow  : noparen ? '' : function() {
+				$( '#infoContent input' ).change( function() {
+					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+				} );
+			}
+			, buttonlabel : 'Bio'
+			, buttoncolor : orange
+			, button      : function() {
+				if ( $( '#bio legend' ).text() != G.status.Artist ) {
+					getBio( infoVal()[ 0 ] );
+				} else {
+					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
+					$( '#bio' ).removeClass( 'hide' );
+				}
+			}
+			, oklabel     : 'Lyrics'
+			, ok          : function() {
+				var values = infoVal();
+				G.lyricsArtist = values[ 0 ];
+				G.lyricsTitle = values[ 1 ];
+				bash( [ 'lyrics', G.lyricsArtist, G.lyricsTitle ], function( data ) {
+					lyricsShow( data );
+				} );
+				banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
+			}
+		} );
+	} );
 } );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
@@ -616,7 +659,12 @@ $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
 $( '#divcover' ).taphold( function( e ) {
-	if ( ( G.status.webradio && G.status.state === 'play' ) || !G.status.playlistlength || G.guide ) return
+	if (
+		( G.status.webradio && G.status.state === 'play' )
+		|| !G.status.playlistlength
+		|| G.guide
+		|| $( e.target ).hasClass( 'band' )
+	) return
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
@@ -654,7 +702,7 @@ var btnctrl = {
 	, volR    : 'volup'
 	, volB    : 'voldn'
 }
-$( '.map' ).tap( function() {
+$( '.map' ).click( function() {
 	var cmd = btnctrl[ this.id ];
 	if ( cmd === 'guide' ) {
 		if ( G.local ) return
@@ -713,7 +761,7 @@ $( '.map' ).tap( function() {
 		if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
 		
 		if ( document.body.clientWidth < 614 ) {
-			$( '#tab-playback' ).click();
+			$( '#playback' ).click();
 			return
 		}
 		
@@ -1015,7 +1063,7 @@ $( '#button-lib-back' ).click( function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else if ( query === 'playlist' ) {
-			$( '#tab-playlist' ).click();
+			$( '#playlist' ).click();
 		} else {
 //			if ( query.query === 'ls' ) G.mode = 'file';
 			list( query, function( data ) {
@@ -1244,11 +1292,7 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 		$blocks.each( function() {
 			order.push( $( this ).find( '.lipath' ).text() );
 		} );
-		G.display.order = order;
-		$.post( cmdphp, {
-			  cmd   : 'order'
-			, order : order
-		} );
+		bash( [ 'ordersave', JSON.stringify( order ) ] );
 	}
 } );
 $( '#lib-list' ).on( 'tap', '.coverart', function() {
@@ -1436,7 +1480,7 @@ $( '.index' ).on( 'click', 'a', function() {
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-playlist' ).click( function() {
-	$( '#tab-playlist' ).click();
+	$( '#playlist' ).click();
 } );
 $( '#button-pl-back' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
@@ -1612,7 +1656,7 @@ $( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
 		G.swipe = 0;
 		G.swipepl = 0;
 	}, 500 );
-	$( '#tab-library' ).click();
+	$( '#library' ).click();
 } ).on( 'swiperight', 'li', function() {
 	G.swipe = 1;
 	G.swipepl = 1;
@@ -1620,7 +1664,7 @@ $( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
 		G.swipe = 0;
 		G.swipepl = 0;
 	}, 500 );
-	$( '#tab-playback' ).click();
+	$( '#playback' ).click();
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );
@@ -1783,6 +1827,84 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	G.list.li = $( this ).parent();
 	webRadioSave( $( this ).next().next().text() );
 	$( '.contextmenu' ).addClass( 'hide' );
+} );
+// lyrics /////////////////////////////////////////////////////////////////////////////////////
+$( '#lyricsartist' ).click( function() {
+	getBio( $( this ).text() );
+} );
+$( '#lyricstextarea' ).on( 'input', function() {
+	$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
+	$( '#lyricsback' ).addClass( 'hide' );
+} );
+$( '#lyricsedit' ).click( function() {
+	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
+	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
+	$( '#lyricstextarea' )
+		.val( G.lyrics )
+		.scrollTop( $( '#lyricstext' ).scrollTop() );
+} );
+$( '#lyricsclose' ).click( function() {
+	if ( $( '#lyricstextarea' ).val() === G.lyrics || $( '#lyricstextarea' ).val() === '' ) {
+		lyricsHide();
+	} else {
+		info( {
+			  icon     : 'lyrics'
+			, title    : 'Lyrics'
+			, message  : 'Discard changes made to this lyrics?'
+			, ok       : lyricsHide
+		} );
+	}
+} );
+$( '#lyricsback' ).click( function() {
+	$( '#lyricseditbtngroup' ).addClass( 'hide' );
+	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+} );
+$( '#lyricsundo' ).click( function() {
+	info( {
+		  icon     : 'lyrics'
+		, title    : 'Lyrics'
+		, message  : 'Discard changes made to this lyrics?'
+		, ok       : function() {
+			$( '#lyricstextarea' ).val( G.lyrics );
+			$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
+			$( '#lyricsback' ).removeClass( 'hide' );
+		}
+	} );
+} );
+$( '#lyricssave' ).click( function() {
+	if ( $( '#lyricstextarea' ).val() === G.lyrics ) return;
+	
+	info( {
+		  icon     : 'lyrics'
+		, title    : 'Lyrics'
+		, message  : 'Save this lyrics?'
+		, ok       : function() {
+			G.lyrics = $( '#lyricstextarea' ).val();
+			var artist = $( '#lyricsartist' ).text();
+			var title = $( '#lyricstitle' ).text();
+			bash( [ 'lyrics', artist, title, 'save', G.lyrics.replace( /\n/g, '^' ) ] ); // keep lirics single line
+			lyricstop = $( '#lyricstextarea' ).scrollTop();
+			lyricsShow( G.lyrics );
+			$( '#lyricseditbtngroup' ).addClass( 'hide' );
+			$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+		}
+	} );
+} );	
+$( '#lyricsdelete' ).click( function() {
+	info( {
+		  icon    : 'lyrics'
+		, title   : 'Lyrics'
+		, message : 'Delete this lyrics?'
+		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
+		, okcolor : red
+		, ok      : function() {
+			var artist = $( '#lyricsartist' ).text();
+			var title = $( '#lyricstitle' ).text();
+			bash( [ 'lyrics', artist, title, 'delete' ] );
+			G.lyrics = '';
+			lyricsHide();
+		}
+	} );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

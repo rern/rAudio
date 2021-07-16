@@ -9,7 +9,6 @@ btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 [[ -z $counts ]] && counts=false # fix - sometime blank on startup
-lcd=$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
@@ -18,6 +17,15 @@ playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
+if [[ -e $dirsystem/updating ]]; then 
+	updating_db=true
+	if ! mpc | grep -q ^Updating; then
+		path=$( cat $dirsystem/updating )
+		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+	fi
+else
+	updating_db=false
+fi
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 else
@@ -37,83 +45,82 @@ else
 , "consume"        : '$consume'
 , "control"        : "'$control'"
 , "counts"         : '$counts'
-, "lcd"            : '$lcd'
 , "librandom"      : '$librandom'
 , "playlistlength" : '$playlistlength'
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
 , "updateaddons"   : '$updateaddons'
+, "updating_db"    : '$updating_db'
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
 fi
 
-case $player in
-
-airplay )
-	path=$dirtmp/airplay
-	for item in Artist Album coverart Title; do
-		val=$( cat $path-$item 2> /dev/null )
-		[[ -z $val ]] && continue
-########
-		status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
-	done
-	start=$( cat $path-start 2> /dev/null || echo 0 )
-	Time=$( cat $path-Time 2> /dev/null || echo false )
-	now=$( date +%s%3N )
-	if [[ -n $start && -n $Time ]]; then
-		elapsed=$(( ( now - start + 500 ) / 1000 ))
-	fi
-	[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
-########
-	status+='
-, "coverart"       : "'$coverart'"
-, "elapsed"        : '$elapsed'
-, "playlistlength" : 1
-, "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
-, "state"          : "play"
-, "Time"           : '$Time'
-, "timestamp"      : '$now
-	;;
-bluetooth )
-########
-	status+=$( $dirbash/status-bluetooth.sh )
-	;;
-snapclient )
-	[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
-	snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
-	snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
-							| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
-########
-	status+=${snapserverstatus:1:-1}
-	;;
-spotify )
-	file=$dirtmp/spotify
-	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	state=$( cat $file-state )
-	now=$( date +%s%3N )
-	if [[ $state == play ]]; then
-		start=$( cat $file-start )
-		elapsed=$(( now - start + elapsed ))
-		time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $file )
-		if (( $elapsed > $(( time * 1000 )) )); then
-			elapsed=0
-			echo 0 > $file-elapsed
-		fi
-	fi
-	elapsed=$(( ( elapsed + 500 ) / 1000 ))
-########
-	status+=$( cat $file )
-	status+='
-, "elapsed"   : '$elapsed'
-, "state"     : "'$state'"
-, "timestamp" : '$now
-	;;
-	
-esac
-
 if [[ $player != mpd && $player != upnp ]]; then
+	case $player in
+
+	airplay )
+		path=$dirtmp/airplay
+		for item in Artist Album coverart Title; do
+			val=$( cat $path-$item 2> /dev/null )
+			[[ -z $val ]] && continue
+	########
+			status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
+		done
+		start=$( cat $path-start 2> /dev/null || echo 0 )
+		Time=$( cat $path-Time 2> /dev/null || echo false )
+		now=$( date +%s%3N )
+		if [[ -n $start && -n $Time ]]; then
+			elapsed=$(( ( now - start + 500 ) / 1000 ))
+		fi
+		[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+	########
+		status+='
+	, "coverart"       : "'$coverart'"
+	, "elapsed"        : '$elapsed'
+	, "playlistlength" : 1
+	, "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
+	, "state"          : "play"
+	, "Time"           : '$Time'
+	, "timestamp"      : '$now
+		;;
+	bluetooth )
+	########
+		status+=$( $dirbash/status-bluetooth.sh )
+		;;
+	snapclient )
+		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
+		snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
+		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
+								| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
+	########
+		status+=${snapserverstatus:1:-1}
+		;;
+	spotify )
+		file=$dirtmp/spotify
+		elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
+		state=$( cat $file-state )
+		now=$( date +%s%3N )
+		if [[ $state == play ]]; then
+			start=$( cat $file-start )
+			elapsed=$(( now - start + elapsed ))
+			time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $file )
+			if (( $elapsed > $(( time * 1000 )) )); then
+				elapsed=0
+				echo 0 > $file-elapsed
+			fi
+		fi
+		elapsed=$(( ( elapsed + 500 ) / 1000 ))
+	########
+		status+=$( cat $file )
+		status+='
+	, "elapsed"   : '$elapsed'
+	, "state"     : "'$state'"
+	, "timestamp" : '$now
+		;;
+		
+	esac
 # >>>>>>>>>>
 	echo {$status}
 	rm -f $dirtmp/{webradiodata,radiofrance}
@@ -122,8 +129,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|'
-filter+='^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title\|^updating_db'
+filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -178,11 +184,6 @@ done
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
-if [[ -e $dirsystem/updating ]] || mpc | grep -q ^Updating; then 
-	updating_db=true
-else
-	updating_db=false
-fi
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
@@ -191,7 +192,6 @@ status+='
 , "song"        : '$song'
 , "state"       : "'$state'"
 , "timestamp"   : '$( date +%s%3N )'
-, "updating_db" : '$updating_db'
 , "volumemute"  : '$volumemute
 
 if (( $playlistlength  == 0 )); then
@@ -413,20 +413,30 @@ status+='
 , "sampling" : "'$sampling'"
 , "coverart" : ""'
 
-if [[ -e $dirsystem/vumeter ]]; then
+[[ -e $dirsystem/vumeter ]] && vumeter=1
+[[ -e $dirsystem/vuled ]] && vuled=1
+if [[ -n $vumeter || -n $vuled ]]; then
 # >>>>>>>>>>
-	echo {$status}
+	[[ -n $vumeter ]] && echo {$status}
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
-			cava -p /etc/cava.conf | $dirbash/vumeter.sh &> /dev/null &
+			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		fi
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+		if [[ -n $vuled ]]; then
+			p=$( cat /srv/http/data/system/vuledpins )
+			for i in $p; do
+				echo 0 > /sys/class/gpio/gpio$i/value
+			done
+		fi
 	fi
-	exit
-elif grep -q '"cover": false' $dirsystem/display; then
+	[[ -n $vumeter ]] && exit
+fi
+
+if grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
 	echo {$status}
 	exit

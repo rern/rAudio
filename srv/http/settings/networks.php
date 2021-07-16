@@ -3,7 +3,7 @@
 	<heading id="headbt" class="status" data-status="bluetooth">Bluetooth<?=$istatus?><i id="btscan" class="fa fa-search"></i><?=$ihelp?></heading>
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="hide"></pre>
-	<span <?=$classhelp?>>
+	<div <?=$classhelp?>>
 			&bull; As sender / source - Send signal to another device.
 		<br>&ensp; - Pairing - Turn on discovery mode on receiver device.
 		<br>&ensp; - Search the device on RPi and connect.
@@ -13,7 +13,7 @@
 		<br>&emsp; - Make pairing/connecting from sender device. No authorization required.
 		<br>&emsp; - Connection from sender start renderer mode automatically.
 		<br>&emsp; - Turn off discoverable to hide from unpaired senders.
-	</span>
+	</div>
 	</div>
 	<div id="divwl">
 	<heading id="headwl" class="status" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle wh"></i><i id="wlscan" class="fa fa-search wh"></i></heading>
@@ -31,7 +31,7 @@
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>
 		<div id="qrwebui" class="qr"></div>
-		<span <?=$classhelp?>>Scan QR code or use IP address to connect with web user interface.</span>
+		<div <?=$classhelp?>>Scan QR code or use IP address to connect with web user interface.</div>
 	</div>
 	<pre id="codeavahi" class="hide"></pre>
 	</div>
@@ -44,7 +44,7 @@
 		<?=$ihelp?><i class="fa fa-arrow-left back"></i>
 	</heading>
 	<ul id="listwlscan" class="entries"></ul>
-	<span <?=$classhelp?>>Access points with less than -66dBm should not be used.</span>
+	<div <?=$classhelp?>>Access points with less than -66dBm should not be used.</div>
 	</div>
 </div>
 
@@ -71,10 +71,10 @@
 			<div id="qraccesspoint" class="qr"></div>
 		</div>
 	</div>
-	<span <?=$classhelp?>>
+	<div <?=$classhelp?>>
 			&bull; Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
-	</span>
+	</div>
 </div>
 
 <div id="menu" class="menu hide">

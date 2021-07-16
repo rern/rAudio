@@ -198,22 +198,17 @@ renderPage = function( list ) {
 	} else {
 		$( '#divsoundprofile' ).addClass( 'hide' );
 	}
+	$( '#vuled' ).prop( 'checked', G.vuled );
+	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
 	$( '#timezone' ).val( G.timezone );
-	$( 'select' ).selectric( { nativeOnMobile: false, maxHeight: 400 } );
-	$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
+	selectricRender();
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	resetLocal();
 	showContent();
 }
-refreshData = function() {
-	bash( '/srv/http/bash/system-data.sh', function( list ) {
-		renderPage( list );
-	} );
-}
-refreshData();
 //---------------------------------------------------------------------------------------
 $( '.enable' ).click( function() {
 	var idname = {
@@ -222,6 +217,7 @@ $( '.enable' ).click( function() {
 		, lcdchar      : 'Character LCD'
 		, powerbutton  : 'Power Button'
 		, soundprofile : 'Kernel Sound Profile'
+		, vuled        : 'VU LED'
 		, wlan         : 'Wi-Fi'
 	}
 	var id = this.id;
@@ -422,6 +418,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
+	<img class="gpio" src="/assets/img/gpio.svg" style="margin-bottom: 20px">
 	<table id="tbllcdchar">
 	<tr id="cols"><td>Size</td>
 		<td><label><input type="radio" name="cols" value="16">16x2</label></td>
@@ -536,7 +533,8 @@ $( '#setting-powerbutton' ).click( function() {
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
 	var infopowerbutton = heredoc( function() { /*
-	GPIO pins <gr>(J8 numbering)</gr>:
+	<img src="/assets/img/gpio.svg" style="width: 100%">
+	<br><br>
 	<table>
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
@@ -607,6 +605,69 @@ $( '#setting-lcd' ).click( function() {
 			rebootText( 1, 'TFT 3.5" LCD' );
 			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
 		}
+	} );
+} );
+$( '#setting-vuled' ).click( function() {
+	var p = { 3:2, 5:3, 7:4, 8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9, 22:25, 23:11, 24:8, 26:7, 29:5, 31:6, 32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21 }
+	var htmlselect = '<select>';
+	$.each( p, function( k, v ) {
+		htmlselect += '<option value="'+ v +'">'+ k +'</option>';
+	} );
+	htmlselect += '</select>';
+	var htmlpins = '';
+	for ( i = 1; i < 8; i++ ) {
+		htmlpins += '<tr><td>'+ i +'/7</td><td>'+ htmlselect +'</td></tr>';
+	}
+	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 14, 15, 18, 23, 24, 25, 8 ];
+	info( {
+		  icon         : 'led'
+		, title        : 'VU LED'
+		, message      : '<img src="/assets/img/gpio.svg" style="width: 100%">'
+		, select       : htmlpins
+		, values       : vuledval
+		, boxwidth     : 60
+		, beforeshow   : function() {
+			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
+			$( '#infoContent select' ).on( 'change', function() {
+				var v = infoVal();
+				var changed = G.vuled && v.join( ' ' ) === vuledval.join( ' ' );
+				var duplicate = new Set( v ).size !== v.length;
+				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
+				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
+			} );
+		}
+		, cancel        : function() {
+			$( '#vuled' ).prop( 'checked', G.vuled );
+		}
+		, ok           : function() {
+			var pins = infoVal().join( ' ' );
+			notify( 'VU LED', 'Change ...', 'led' );
+			bash( [ 'vuledset', pins ] );
+		}
+	} );
+} );
+$( '#ledcalc' ).click( function() {
+	info( {
+		  icon       : 'led'
+		, title      : 'LED Resister Calculator'
+		, textlabel  : [ 'GPIO <gr>(V)</gr>', 'Current <gr>(mA)</gr>', 'LED forward voltage <gr>(V)</gr>', 'Resister <gr>(&#8486;)</gr>' ]
+		, values     : [ 3.3, 5 ]
+		, boxwidth   : 70
+		, beforeshow : function() {
+			$( '#infoContent input' ).prop( 'disabled', 1 );
+			$( '#infoContent input:eq( 2 )' )
+				.prop( 'disabled', 0 )
+				.keyup( function() {
+					var fv = $( this ).val();
+					if ( fv > 3.3 ) {
+						var ohm = '( > 3.3V)';
+					} else {
+						var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
+					}
+					$( '#infoContent input:eq( 3 )' ).val( ohm );
+				} );
+		}
+		, okno       : 1
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
@@ -847,7 +908,7 @@ $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
 	var pkg = $( this ).text();
-	if ( [ 'bluez-alsa', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
+	if ( [ 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
 		pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
 		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
 	} else {

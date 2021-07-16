@@ -31,7 +31,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
-			src: url( "/assets/fonts/rern.<?=$time?>.woff" ) format( 'woff' ), url( "/assets/fonts/rern.<?=$time?>.ttf" ) format( 'truetype' );
+			src: url( "/assets/fonts/rern.<?=$time?>.woff2" ) format( 'woff2' );
 		}
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
@@ -48,9 +48,9 @@ for ( $i = 1; $i < 5; $i++ ) {
 	<i class="page-icon fa fa-relays"></i><span class="title">RELAYS</span><a href="/settings.php?p=system"><i id="close" class="fa fa-times"></i></a>
 	<i id="help" class="fa fa-question-circle"></i>
 </div>
-
 <div class="container">
-
+<br>
+<img src="/assets/img/gpio.<?=$time?>.svg" style="width: 100%; max-width: 400px;">
 <br>
 <span class="help-block hide">
 	Control <wh>GPIO</wh> connected relay module for power on /off equipments in sequence.
@@ -91,12 +91,6 @@ for ( $i = 1; $i < 5; $i++ ) {
 	</div>
 </div>
 </form>
-
-<heading>Pin reference</heading>
-<span class="help-block hide">Click to show RPi GPIO pin reference.</span><br>
-<span>GPIO connector: <a id="gpioimgtxt">RPi J8 &ensp;<i class="fa fa-chevron-down"></i></a><a id="fliptxt">&emsp;(Tap image to flip)</a></span>
-<img id="gpiopin" src="/assets/img/RPi3_GPIO-flip.<?=$time?>.svg">
-<img id="gpiopin1" src="/assets/img/RPi3_GPIO.<?=$time?>.svg">
 
 </div>
 
