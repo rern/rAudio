@@ -7,7 +7,7 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
 if [[ -e /srv/http/data/system/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
 	readarray -t data <<< $( echo $status \
-								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
+								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file' \
 								| sed 's/^$\|null/false/' )
 	/srv/http/bash/lcdchar.py "${data[@]}" &
 fi
