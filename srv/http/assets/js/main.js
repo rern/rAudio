@@ -701,7 +701,7 @@ var btnctrl = {
 	, volR    : 'volup'
 	, volB    : 'voldn'
 }
-$( '.map' ).tap( function() {
+$( '.map' ).click( function() {
 	var cmd = btnctrl[ this.id ];
 	if ( cmd === 'guide' ) {
 		if ( G.local ) return
