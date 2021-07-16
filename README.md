@@ -30,20 +30,18 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
-	- Bluetooth audio
+	- Bluetooth audio (receiver)
 	- Snapcast
 	- Spotify Connect
 	- UPnP
 - Streamers
-	- Bluetooth audio
-	- simple HTTP (no metadata)
-	- Snapcast
+	- Bluetooth audio (sender)
+	- HTTP (no metadata)
+	- Snapcast (multiroom)
 - Support boot from USB drive without SD card
 - USB drive
-	- plug ang play
-	- Audio CD (with external power supply)
-		- with metadata and coverarts
-		- editable existing/missing metadata
+	- Plug and play
+	- Audio CD (with metadata and coverarts)
 	
 ### Default root password: `ros`
 
@@ -51,14 +49,9 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files:
-- GitHub server:
-	- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210612/rAudio-1-RPi4.img.xz)
-	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210612/rAudio-1-RPi2-3.img.xz)
-	- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210612/rAudio-1-RPi0-1.img.xz)
-- Mirror server:
-	- RPi 4: [rAudio-1-RPi4.img.xz](https://cloud.s-t-franz.de/s/yP5jMwC6YkHmiiJ)
-	- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://cloud.s-t-franz.de/s/CxoqeZ3zjAjKsJd)
-	- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://cloud.s-t-franz.de/s/6wcrD9QwNLLjwQW)
+- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210621/rAudio-1-RPi4.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/yP5jMwC6YkHmiiJ) )
+- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210621/rAudio-1-RPi2-3.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/CxoqeZ3zjAjKsJd) )
+- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210621/rAudio-1-RPi0-1.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/6wcrD9QwNLLjwQW) )
 	
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
@@ -115,8 +108,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 				- Waveshare 35b   - `lcd35b`
 				- Waveshare 35b v2   - `lcd35b-v2`
 				- Waveshare 35c   - `lcd35c`
-		- Custom startup script
-			- Copy custom script named `startup` to `BOOT`
+
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds
@@ -134,9 +126,6 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- Library > Album > coverart icon (next to ALBUM heading)
 	- User guide
 		- Settings > last icon next to Addons
-- User's startup / shutdown scripts
-	- `/boot/startup.sh` - Run after everyting started.
-	- `/boot/shutdown.sh` - Run last right before `shutdown` command.
 
 ### Not working?
 - Power off and wait a few seconds then power on
@@ -146,7 +135,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 ### Tips
 - Best sound quality:
-	- Settings > MPD > Bit-perfect - Enable
+	- Settings > Player > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
 - Disable features if not use to lower CPU usage:
 	- Settings > Features
@@ -189,5 +178,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- On Linux: `bash <( wget -qO - https://github.com/rern/rOS/raw/main/imagecreate.sh )`
 		- Shrink ROOT partition to minimum
 		- Create and compress image file
+- Custom startup / shutdown script
+	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
 - App icon (Full screen UI) - Add to Home Screen
 	- Android Chrome / iOS Safari
