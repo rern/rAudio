@@ -2,15 +2,24 @@
 
 status=$( /srv/http/bash/status.sh )
 
+statusdata=$( echo $status \
+	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file' \
+	| sed 's/^$\|null/false/' )
+readarray -t data <<< "$statusdata"
+readarray -t dataprev <<< $( cat /srv/http/data/shm/status )
+if [[ ${data[ 7 ]} == false ]]; then
+	[[ $( echo ${data[@]:0:6} ) == $( echo ${dataprev[@]:0:6} ) ]] && exit
+else # webradio
+	[[ $( echo ${data[@]:0:3} ) == $( echo ${dataprev[@]:0:3} ) ]] && exit
+fi
+
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
 
 if [[ -e /srv/http/data/system/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
-	readarray -t data <<< $( echo $status \
-								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file' \
-								| sed 's/^$\|null/false/' )
 	/srv/http/bash/lcdchar.py "${data[@]}" &
 fi
+
 if [[ -e /srv/http/data/shm/snapclientip ]]; then
 	status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
 	readarray -t clientip < /srv/http/data/shm/snapclientip
@@ -19,3 +28,5 @@ if [[ -e /srv/http/data/shm/snapclientip ]]; then
 	done
 fi
 [[ -e /srv/http/data/system/librandom ]] && /srv/http/bash/cmd-librandom.sh
+
+echo "$statusdata" > /srv/http/data/shm/status
