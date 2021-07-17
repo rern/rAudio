@@ -99,12 +99,9 @@ dot = (
     0b00000,
     0b00000,
 )
-lcd.create_char( 0, pause )
-lcd.create_char( 1, play )
-lcd.create_char( 2, stop )
-lcd.create_char( 3, logol )
-lcd.create_char( 4, logor )
-lcd.create_char( 5, dot )
+char = [ pause, play, stop, logol, logor, dot ]
+for i in range( 6 ):
+    lcd.create_char( i, char[ i ] )
 
 ipause = '\x00 '
 iplay = '\x01 '
