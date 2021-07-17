@@ -71,8 +71,6 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
-
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 
 $dirbash/mpd-conf.sh # mpd.service start by this script
@@ -113,6 +111,8 @@ if [[ -n $nas ]]; then
 		done
 	done
 fi
+
+[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd-pushstatus.sh
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
