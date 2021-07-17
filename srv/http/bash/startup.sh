@@ -24,7 +24,7 @@ dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
 connectedCheck() {
-	for i in $( seq 1 $1 ); do
+	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
 		sleep $2
 	done
