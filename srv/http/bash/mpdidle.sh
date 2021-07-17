@@ -18,7 +18,7 @@ mpc idleloop | while read changed; do
 		player )
 			currentprev=$current
 			stateprev=$state
-			current=$( mpc current )
+			[[ ! -e $dirtmp/webradiodata ]] && current=$( mpc ) || current=$( mpc current )
 			if mpc | grep '\[playing\]'; then
 				state=play
 			elif mpc | grep '\[paused\]'; then
