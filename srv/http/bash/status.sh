@@ -213,12 +213,7 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
-	radioheader=1
-else
-	systemctl stop radiofrance
-	rm -f $dirtmp/{webradiodata,radiofrance}
-fi
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1 || systemctl stop radiofrance
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -268,7 +263,6 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 			systemctl stop radiofrance
-			rm -f $dirtmp/{webradiodata,radiofrance}
 		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
 			rm $dirtmp/stop
 			Title=
