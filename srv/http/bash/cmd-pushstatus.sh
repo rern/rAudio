@@ -6,11 +6,12 @@ statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file, .webradio' \
 	| sed 's/^$\|null/false/' )
 readarray -t data <<< "$statusdata"
-readarray -t dataprev <<< $( cat /srv/http/data/shm/status )
 if [[ ${data[ 9 ]} == false ]]; then
-	[[ $( echo ${data[@]:0:6} ) == $( echo ${dataprev[@]:0:6} ) ]] && exit
+	dataprev=$( cat /srv/http/data/shm/status | head -6 )
+	[[ $( echo ${data[@]:0:6} ) == $( echo $dataprev ) ]] && exit
 else # webradio
-	[[ ${data[3]} == play && $( echo ${data[@]:0:3} ) == $( echo ${dataprev[@]:0:3} ) ]] && exit
+	dataprev=$( cat /srv/http/data/shm/status | head -3 )
+	[[ ${data[3]} == play && $( echo ${data[@]:0:3} ) == $( echo $dataprev ) ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
