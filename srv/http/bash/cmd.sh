@@ -112,10 +112,6 @@ pushstreamPlaylist() {
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
-radiofranceStop() {
-	systemctl stop radiofrance
-	rm -f $dirtmp/radiofrance
-}
 rotateSplash() {
 	case $1 in
 		NORMAL ) degree=0;;
@@ -511,7 +507,8 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
-	radiofranceStop
+	systemctl stop radiofrance
+	rm -f $dirtmp/radiofrance
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
@@ -530,7 +527,8 @@ mpcplayback )
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
-	radiofranceStop
+	systemctl stop radiofrance
+	rm -f $dirtmp/radiofrance
 	length=${args[3]}
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
