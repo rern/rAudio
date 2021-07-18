@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Radio France metadata
-dirtmp=/srv/http/data/shm/
+dirtmp=/srv/http/data/shm
 file=$( cat /srv/http/data/shm/radiofrance )
 name=$( basename "$file" )
 name=${name/-*}
@@ -58,6 +58,9 @@ metadataGet() {
 	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	dataprev=$( cat $dirtmp/webradiodata 2> /dev/null | head -3 )
+	[[ "$artist $title $album" == $( echo $dataprev ) ]] && exit
+	
 	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
 	station=${station/* - }
 	data='{
