@@ -10,7 +10,7 @@ readarray -t dataprev <<< $( cat /srv/http/data/shm/status )
 if [[ ${data[ 9 ]} == false ]]; then
 	[[ $( echo ${data[@]:0:6} ) == $( echo ${dataprev[@]:0:6} ) ]] && exit
 else # webradio
-	[[ $( echo ${data[@]:0:3} ) == $( echo ${dataprev[@]:0:3} ) ]] && exit
+	[[ ${data[3]} == play && $( echo ${data[@]:0:3} ) == $( echo ${dataprev[@]:0:3} ) ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
