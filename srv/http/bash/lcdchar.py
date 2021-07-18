@@ -147,8 +147,8 @@ def second2hhmmss( sec ):
 
 field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
 for i in range( 1, 11 ):
-    val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
-    exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
+    val = sys.argv[ i ][ :cols ].replace( '"', '\"' ) # escape "
+    exec( field[ i ] +' = "'+ val.rstrip() +'"' )     # fix last space error - remove
     
 if artist == 'false' and webradio != 'false':
     artist = station

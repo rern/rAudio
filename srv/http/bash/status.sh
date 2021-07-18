@@ -213,7 +213,12 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1 || systemctl stop radiofrance
+if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
+	radioheader=1
+else
+	systemctl stop radiofrance
+	rm -f $dirtmp/{webradiodata,radiofrance}
+fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -239,6 +244,7 @@ elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
 		systemctl stop radiofrance
+		rm -f $dirtmp/{webradiodata,radiofrance}
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
