@@ -129,8 +129,8 @@ if [[ $player != mpd && $player != upnp ]]; then
 	esac
 # >>>>>>>>>>
 	echo {$status}
-	rm -f $dirtmp/{radiofrance,webradiodata}
 	systemctl stop radiofrance
+	rm -f $dirtmp/{radiofrance,webradiodata}
 	touch $dirtmp/stop
 	exit
 fi
@@ -269,6 +269,7 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 			systemctl stop radiofrance
+			rm -f $dirtmp/{radiofrance,webradiodata}
 		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
 			rm $dirtmp/stop
 			Title=
@@ -278,7 +279,10 @@ elif [[ -n $radioheader ]]; then
 			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
 				radiofrance=1
 			fi
-			[[ -z $radiofrance ]] && systemctl stop radiofrance
+			if [[ -z $radiofrance ]]; then
+				systemctl stop radiofrance
+				rm -f $dirtmp/radiofrance
+			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
 				if [[ -e $dirtmp/webradiodata ]]; then
 					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
