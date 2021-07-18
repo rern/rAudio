@@ -69,7 +69,12 @@ metadataGet() {
 , "radio"    : 1
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-	
+	echo "\
+$artist
+$title
+$album
+$coverart
+" > $dirtmp/webradiodata
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
 		[[ -z $artist ]] && artist=false
 		[[ -z $title ]] && title=false
@@ -81,12 +86,6 @@ metadataGet() {
 		killall lcdchar.py &> /dev/null
 		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi
-	echo "\
-$artist
-$title
-$album
-$coverart
-" > $dirtmp/webradiodata
 	/srv/http/bash/cmd.sh onlinefileslimit
 	localtime=$( date +%s )
 	diff=$(( $localtime - $servertime )) # local time fetched after server time
