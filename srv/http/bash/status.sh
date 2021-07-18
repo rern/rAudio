@@ -210,7 +210,7 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1 || systemctl stop radiofrance
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
