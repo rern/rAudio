@@ -59,16 +59,25 @@ metadataGet() {
 	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
+	station=${station/* - }
 	data='{
   "Artist"   : "'$artist'"
 , "Title"    : "'$title'"
 , "Album"    : "'$album'"
 , "coverart" : "'$coverart'"
-, "station"  : "'${station/* - }'"
+, "station"  : "'$station'"
 , "radio"    : 1
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
+	if [[ -e /srv/http/data/system/lcdchar ]]; then
+		elapsed=$( { echo clearerror; echo status; sleep 0.01; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| grep elapsed )
+		data=( "$artist" "$title" "$album" "play" false ${elapsed/* } $( date +%s%3N ) "$station" "$file" true )
+		killall lcdchar.py &> /dev/null
+		/srv/http/bash/lcdchar.py "${data[@]}" &
+	fi
 	echo "\
 $artist
 $title

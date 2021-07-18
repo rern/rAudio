@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# radioparadize update stream every 5s > compare
+# radiofrance no stream update > status-radiofrance.sh
+
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
