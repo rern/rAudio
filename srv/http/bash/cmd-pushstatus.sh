@@ -3,7 +3,7 @@
 status=$( /srv/http/bash/status.sh )
 
 statusdata=$( echo $status \
-	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file' \
+	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file, .webradio' \
 	| sed 's/^$\|null/false/' )
 readarray -t data <<< "$statusdata"
 readarray -t dataprev <<< $( cat /srv/http/data/shm/status )
@@ -21,7 +21,7 @@ if [[ -e /srv/http/data/system/lcdchar ]]; then
 fi
 
 if [[ -e /srv/http/data/shm/snapclientip ]]; then
-	status=$( echo $status | sed 's/"player" :.*"single" : false , //' )
+	status=$( echo $status | jq . | sed '/"player":\|"single":/ d' )
 	readarray -t clientip < /srv/http/data/shm/snapclientip
 	for ip in "${clientip[@]}"; do
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

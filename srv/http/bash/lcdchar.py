@@ -145,12 +145,12 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file' ] # assign variables
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
 for i in range( 1, 10 ):
     val = sys.argv[ i ][ :cols ].replace( '"', '\\"' ) # escape "
     exec( field[ i ] +' = "'+ val.rstrip() +'"' )      # fix last space error - remove
     
-if artist == 'false' and station != 'false':
+if artist == 'false' and webradio != 'false':
     artist = station
     album = file
 if artist == 'false' and title == 'false' and album == 'false':
