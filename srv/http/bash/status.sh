@@ -258,6 +258,7 @@ elif [[ -n $radioheader ]]; then
 		fi
 		if [[ $state != play ]]; then
 			Title=
+			systemctl stop radiofrance
 		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
 			rm $dirtmp/stop
 			Title=
