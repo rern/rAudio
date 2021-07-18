@@ -7,7 +7,7 @@ statusdata=$( echo $status \
 	| sed 's/^$\|null/false/' )
 readarray -t data <<< "$statusdata"
 readarray -t dataprev <<< $( cat /srv/http/data/shm/status )
-if [[ ${data[ 7 ]} == false ]]; then
+if [[ ${data[ 9 ]} == false ]]; then
 	[[ $( echo ${data[@]:0:6} ) == $( echo ${dataprev[@]:0:6} ) ]] && exit
 else # webradio
 	[[ $( echo ${data[@]:0:3} ) == $( echo ${dataprev[@]:0:3} ) ]] && exit
@@ -21,7 +21,7 @@ if [[ -e /srv/http/data/system/lcdchar ]]; then
 fi
 
 if [[ -e /srv/http/data/shm/snapclientip ]]; then
-	status=$( echo $status | jq . | sed '/"player":\|"single":/ d' )
+	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
 	readarray -t clientip < /srv/http/data/shm/snapclientip
 	for ip in "${clientip[@]}"; do
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

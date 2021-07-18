@@ -15,6 +15,9 @@ esac
 readarray -t metadata <<< $( curl -sL \
 	https://api.radioparadise.com/api/now_playing?chan=$id \
 	| jq -r .artist,.title,.album,.cover )
+readarray -t dataprev <<< $( cat /srv/http/data/shm/status )
+[[ $( echo ${metadata[@]:0:3} ) == $( echo ${dataprev[@]:0:3} ) ]] && exit
+
 artist=${metadata[0]}
 title=${metadata[1]}
 album=${metadata[2]}
