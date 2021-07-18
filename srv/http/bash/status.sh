@@ -129,7 +129,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	esac
 # >>>>>>>>>>
 	echo {$status}
-	rm -f $dirtmp/{webradiodata,radiofrance}
+	rm -f $dirtmp/{radiofrance,webradiodatae}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
 	exit
@@ -217,7 +217,7 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 	radioheader=1
 else
 	systemctl stop radiofrance
-	rm -f $dirtmp/{webradiodata,radiofrance}
+	rm -f $dirtmp/{radiofrance,webradiodata}
 fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
@@ -244,7 +244,7 @@ elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
 		systemctl stop radiofrance
-		rm -f $dirtmp/{webradiodata,radiofrance}
+		rm -f $dirtmp/{radiofrance,webradiodata}
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
@@ -350,7 +350,7 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/webradiodata
+[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/{radiofrance,webradiodata}
 
 samplingLine() {
 	bitdepth=$1
