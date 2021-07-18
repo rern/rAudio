@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# radioparadize update stream every 5s > compare
-# radiofrance no stream update > status-radiofrance.sh
+# file mode
+#    - initial page load / refresh > status.sh
+#    - changes                     > mpdidle.sh > cmd-pushstatus.sh
+# radioparadize - update stream every 5s > status-radioparadise.sh
+# radiofrance   - no stream update       > radiofrance.service > status-radiofrance.sh
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
