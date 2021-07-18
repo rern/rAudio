@@ -71,7 +71,7 @@ metadataGet() {
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
-		elapsed=$( { echo clearerror; echo status; sleep 0.01; } \
+		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
 					| grep elapsed )
 		data=( "$artist" "$title" "$album" "play" false ${elapsed/* } $( date +%s%3N ) "$station" "$file" true )
