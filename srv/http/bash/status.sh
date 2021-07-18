@@ -235,6 +235,7 @@ if [[ $fileheader == cdda ]]; then
 elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
+		systemctl stop radiofrance
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
@@ -268,6 +269,7 @@ elif [[ -n $radioheader ]]; then
 			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
 				radiofrance=1
 			fi
+			[[ -z $radiofrance ]] && systemctl stop radiofrance
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
 				if [[ -e $dirtmp/webradiodata ]]; then
 					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
