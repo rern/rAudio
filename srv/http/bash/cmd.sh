@@ -112,6 +112,10 @@ pushstreamPlaylist() {
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
+radiofranceStop() {
+	systemctl stop radiofrance
+	rm -f $dirtmp/radiofrance
+}
 rotateSplash() {
 	case $1 in
 		NORMAL ) degree=0;;
@@ -507,12 +511,8 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
+	radiofranceStop
 	mpc | grep -q '^\[paused\]' && pause=1
-	rm -f $dirtmp/{webradiodata,radiofrance}
-	if [[ $command == stop ]]; then
-		systemctl stop radiofrance
-		touch $dirtmp/stop
-	fi
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		fileheadder=$( mpc | head -c 4 )
@@ -530,14 +530,11 @@ mpcplayback )
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
+	radiofranceStop
 	length=${args[3]}
-	rm -f $dirtmp/{webradiodata,radiofrance}
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
-		rm -f $dirtmp/webradiodata
-		systemctl stop radiofrance
-		touch $dirtmp/stop
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
