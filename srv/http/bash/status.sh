@@ -129,7 +129,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	esac
 # >>>>>>>>>>
 	echo {$status}
-	rm -f $dirtmp/{radiofrance,webradiodatae}
+	rm -f $dirtmp/{radiofrance,webradiodata}
 	systemctl stop radiofrance
 	touch $dirtmp/stop
 	exit
