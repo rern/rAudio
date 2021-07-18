@@ -55,9 +55,9 @@ metadataGet() {
 		[[ -n $url ]] && curl -s $url -o $coverfile
 		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	[[ -n $artist ]] && artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' ) || artist=false
+	[[ -n $title ]] && title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' ) || title=false
+	[[ -n $album ]] && album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' ) || album=false
 	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
 	station=${station/* - }
 	data='{
