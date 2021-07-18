@@ -55,9 +55,9 @@ metadataGet() {
 		[[ -n $url ]] && curl -s $url -o $coverfile
 		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-	[[ -n $artist ]] && artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' ) || artist=false
-	[[ -n $title ]] && title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' ) || title=false
-	[[ -n $album ]] && album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' ) || album=false
+	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
 	station=${station/* - }
 	data='{
@@ -71,6 +71,9 @@ metadataGet() {
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
+		[[ -z $artist ]] && artist=false
+		[[ -z $title ]] && title=false
+		[[ -z $album ]] && album=false
 		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
 					| grep elapsed )
