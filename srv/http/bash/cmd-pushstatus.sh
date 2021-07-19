@@ -21,7 +21,6 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
 if [[ -e /srv/http/data/system/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
 	/srv/http/bash/lcdchar.py "${data[@]}" &
-	echo "${data[@]}"
 fi
 
 if [[ -e /srv/http/data/shm/snapclientip ]]; then
