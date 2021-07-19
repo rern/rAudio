@@ -16,7 +16,7 @@ readarray -t metadata <<< $( curl -sL \
 	https://api.radioparadise.com/api/now_playing?chan=$id \
 	| jq -r .artist,.title,.album,.cover )
 datanew=${metadata[@]:0:3}
-dataprev=$( head -3 /srv/http/data/shm/status )
+dataprev=$( head -3 /srv/http/data/shm/webradiodata 2> /dev/null | tr -d '\n' )
 [[ ${datanew// } == ${dataprev// } ]] && exit
 
 artist=${metadata[0]}

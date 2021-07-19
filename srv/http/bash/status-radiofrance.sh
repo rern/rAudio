@@ -42,7 +42,7 @@ metadataGet() {
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time )
 	datanew=${metadata[@]:0:3}
-	dataprev=$( head -3 $dirtmp/webradiodata 2> /dev/null )
+	dataprev=$( head -3 $dirtmp/webradiodata 2> /dev/null | tr -d '\n' )
 	[[ ${datanew// } == ${dataprev// } ]] && exit
 	
 	artist=${metadata[0]}
