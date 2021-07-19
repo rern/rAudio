@@ -258,7 +258,6 @@ elif [[ -n $radioheader ]]; then
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
-		file=${file/\?*} # remove url trailing '?...'
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
 		if [[ -e "$radiofile" ]]; then
