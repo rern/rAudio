@@ -16,11 +16,11 @@ readarray -t data <<< "$statusdata"
 if [[ ${data[ 9 ]} == false ]]; then # not webradio
 	datanew=${data[@]:0:6}
 	dataprev=$( head -6 $dirtmp/status 2> /dev/null | tr -d '\n' )
-	[[ ${datanew// } == ${dataprev// } ]] && rm $dirtmp/push && exit
+	[[ ${datanew// } == ${dataprev// } ]] && exit
 else
 	datanew=${data[@]:0:3}
 	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n' )
-	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && rm $dirtmp/push && exit
+	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
