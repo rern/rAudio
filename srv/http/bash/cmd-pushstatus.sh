@@ -7,13 +7,13 @@ statusdata=$( echo $status \
 	| sed 's/^$\|null/false/' )
 readarray -t data <<< "$statusdata"
 if [[ ${data[ 9 ]} == false ]]; then
-	data=$( echo ${data[@]:0:6} )
-	dataprev=$( cat /srv/http/data/shm/status | head -6 )
-	[[ ${data// } == ${dataprev// } ]] && exit
+	datanew=${data[@]:0:6}
+	dataprev=$( head -6 /srv/http/data/shm/status )
+	[[ ${datanew// } == ${dataprev// } ]] && exit
 else # webradio
-	data=$( echo ${data[@]:0:3} )
-	dataprev=$( cat /srv/http/data/shm/status | head -3 )
-	[[ ${data[3]} == play && ${data// } == ${dataprev// } ]] && exit
+	datanew=${data[@]:0:3}
+	dataprev=$( head -3 /srv/http/data/shm/status )
+	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
@@ -21,6 +21,7 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
 if [[ -e /srv/http/data/system/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
 	/srv/http/bash/lcdchar.py "${data[@]}" &
+	echo "${data[@]}"
 fi
 
 if [[ -e /srv/http/data/shm/snapclientip ]]; then
