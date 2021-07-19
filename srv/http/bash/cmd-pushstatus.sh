@@ -1,5 +1,7 @@
 #!/bin/bash
 
+dirtmp=/srv/http/data/shm
+
 status=$( /srv/http/bash/status.sh )
 
 statusdata=$( echo $status \
@@ -8,11 +10,11 @@ statusdata=$( echo $status \
 readarray -t data <<< "$statusdata"
 if [[ ${data[ 9 ]} == false ]]; then # not webradio
 	datanew=${data[@]:0:6}
-	dataprev=$( head -6 /srv/http/data/shm/status 2> /dev/null | tr -d '\n' )
+	dataprev=$( head -6 $dirtmp/status 2> /dev/null | tr -d '\n' )
 	[[ ${datanew// } == ${dataprev// } ]] && exit
 else
 	datanew=${data[@]:0:3}
-	dataprev=$( head -3 /srv/http/data/shm/status 2> /dev/null | tr -d '\n' )
+	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n' )
 	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && exit
 fi
 
@@ -24,13 +26,13 @@ if [[ -e /srv/http/data/system/lcdchar ]]; then
 	/srv/http/bash/lcdchar.py "${data[@]}" &
 fi
 
-if [[ -e /srv/http/data/shm/snapclientip ]]; then
+if [[ -e $dirtmp/snapclientip ]]; then
 	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
-	readarray -t clientip < /srv/http/data/shm/snapclientip
+	readarray -t clientip < $dirtmp/snapclientip
 	for ip in "${clientip[@]}"; do
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 fi
 [[ -e /srv/http/data/system/librandom ]] && /srv/http/bash/cmd-librandom.sh
 
-echo "$statusdata" > /srv/http/data/shm/status
+echo "$statusdata" > $dirtmp/status
