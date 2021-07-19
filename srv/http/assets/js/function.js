@@ -1396,20 +1396,21 @@ function renderPlaybackTitles() {
 		$( '#title' )
 			.text( G.status.Title )
 			.toggleClass( 'gr', G.status.state === 'pause' );
-		$( '#album' )
-			.text( G.status.Album )
-			.toggleClass( 'albumgray', G.status.Album === '' );
+		$( '#album' ).text( G.status.Album || G.status.file );
 	} else { // webradio
 		if ( G.status.state !== 'play' ) {
 			$( '#artist' ).text( G.status.station );
 			$( '#title' ).html( '·&ensp;·&ensp;·' );
-			$( '#album' ).text( G.status.file );
+			$( '#album' )
+				.text( G.status.file )
+				.addClass( 'albumgray' );
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : G.status.Artist ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
 			$( '#album' ).text( G.status.Album || ( G.status.Artist ? G.status.station : G.status.file ) );
 		}
 	}
+	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
