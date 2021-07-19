@@ -2,6 +2,11 @@
 
 dirtmp=/srv/http/data/shm
 
+# throttle multiple firing from mpdidle.sh
+[[ -e $dirtmp/push ]] && exit
+touch $dirtmp/push
+( sleep 1 && rm $dirtmp/push ) &> /dev/null &
+
 status=$( /srv/http/bash/status.sh )
 
 statusdata=$( echo $status \
@@ -11,11 +16,11 @@ readarray -t data <<< "$statusdata"
 if [[ ${data[ 9 ]} == false ]]; then # not webradio
 	datanew=${data[@]:0:6}
 	dataprev=$( head -6 $dirtmp/status 2> /dev/null | tr -d '\n' )
-	[[ ${datanew// } == ${dataprev// } ]] && exit
+	[[ ${datanew// } == ${dataprev// } ]] && rm $dirtmp/push && exit
 else
 	datanew=${data[@]:0:3}
 	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n' )
-	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && exit
+	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && rm $dirtmp/push && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"

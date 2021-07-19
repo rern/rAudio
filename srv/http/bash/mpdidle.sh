@@ -16,7 +16,6 @@ dirtmp=/srv/http/data/shm
 mpc idleloop | while read changed; do
 	case $changed in
 		player )
-			killall cmd-pushstatus.sh &> /dev/null
 			$dirbash/cmd-pushstatus.sh
 			;;
 		mixer ) # for upmpdcli
