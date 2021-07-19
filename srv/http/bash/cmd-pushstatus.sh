@@ -2,11 +2,6 @@
 
 dirtmp=/srv/http/data/shm
 
-# throttle multiple firing from mpdidle.sh
-[[ -e $dirtmp/push ]] && exit
-touch $dirtmp/push
-( sleep 1 && rm $dirtmp/push ) &> /dev/null &
-
 status=$( /srv/http/bash/status.sh )
 
 statusdata=$( echo $status \
