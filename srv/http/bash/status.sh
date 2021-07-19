@@ -179,11 +179,10 @@ for line in "${lines[@]}"; do
 			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
 		file )
 			file0=$val           # no escape " for coverart and ffprobe
-			file=${val//\"/\\\"} # escape " for json
-			file=${file/\?*};;   # remove url trailing '?...'
+			file=${val//\"/\\\"};; # escape " for json
 		# string
 		* ) # state | updating_db
-			printf -v $key '%s' "$val"
+			printf -v $key '%s' "$val";;
 	esac
 done
 
@@ -259,6 +258,7 @@ elif [[ -n $radioheader ]]; then
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
+		file=${file/\?*} # remove url trailing '?...'
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
 		if [[ -e "$radiofile" ]]; then
