@@ -55,12 +55,18 @@ metadataGet() {
 		[[ -n $url ]] && curl -s $url -o $coverfile
 		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	dataprev=$( cat $dirtmp/webradiodata 2> /dev/null | head -3 )
 	[[ $( echo "$artist $title $album" | tr -d ' ' ) == $( echo $dataprev | tr -d ' ' ) ]] && exit
 	
+	echo "\
+$artist
+$title
+$album
+$coverart
+" > $dirtmp/webradiodata
+	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
 	station=${station/* - }
 	data='{
@@ -72,12 +78,6 @@ metadataGet() {
 , "radio"    : 1
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-	echo "\
-$artist
-$title
-$album
-$coverart
-" > $dirtmp/webradiodata
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
 		[[ -z $artist ]] && artist=false
 		[[ -z $title ]] && title=false

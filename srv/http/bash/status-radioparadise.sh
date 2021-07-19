@@ -28,6 +28,12 @@ if [[ ! -e /srv/http/data/system/vumeter ]]; then
 	[[ -n $url ]] && curl -s $url -o $coverfile
 	[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 fi
+echo "\
+$artist
+$title
+$album
+$coverart
+" > $dirtmp/webradiodata
 artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
 title=$( echo $title | sed 's/"/\\"/g; s/null//' )
 album=$( echo $album | sed 's/"/\\"/g; s/null//' )
@@ -40,10 +46,4 @@ data='{
 , "radio"    : 1
 }'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-echo "\
-$artist
-$title
-$album
-$coverart
-" > $dirtmp/webradiodata
 /srv/http/bash/cmd.sh onlinefileslimit
