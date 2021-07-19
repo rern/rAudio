@@ -7,11 +7,13 @@ statusdata=$( echo $status \
 	| sed 's/^$\|null/false/' )
 readarray -t data <<< "$statusdata"
 if [[ ${data[ 9 ]} == false ]]; then
+	data=$( echo ${data[@]:0:6} )
 	dataprev=$( cat /srv/http/data/shm/status | head -6 )
-	[[ $( echo ${data[@]:0:6} | tr -d ' ' ) == $( echo $dataprev | tr -d ' ' ) ]] && exit
+	[[ ${data// } == ${dataprev// } ]] && exit
 else # webradio
+	data=$( echo ${data[@]:0:3} )
 	dataprev=$( cat /srv/http/data/shm/status | head -3 )
-	[[ ${data[3]} == play && $( echo ${data[@]:0:3} | tr -d ' ' ) == $( echo $dataprev | tr -d ' ' ) ]] && exit
+	[[ ${data[3]} == play && ${data// } == ${dataprev// } ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"

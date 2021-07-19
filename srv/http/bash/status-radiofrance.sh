@@ -55,8 +55,9 @@ metadataGet() {
 		[[ -n $url ]] && curl -s $url -o $coverfile
 		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
+	data="$artist $title $album"
 	dataprev=$( cat $dirtmp/webradiodata 2> /dev/null | head -3 )
-	[[ $( echo "$artist $title $album" | tr -d ' ' ) == $( echo $dataprev | tr -d ' ' ) ]] && exit
+	[[ ${data// } == ${dataprev// } ]] && exit
 	
 	echo "\
 $artist
