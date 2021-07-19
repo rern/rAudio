@@ -526,8 +526,8 @@ mpcplayback )
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
-	systemctl stop radiofrance
 	length=${args[3]}
+	systemctl stop radiofrance
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
