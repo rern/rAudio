@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-from lcdcharsetup import *
+from lcdcharconfig import *
 import sys
 import os
 
