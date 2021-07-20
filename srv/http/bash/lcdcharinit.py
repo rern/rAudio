@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from lcdcharconfig import *
+
 pause = (
     0b00000,
     0b11011,
