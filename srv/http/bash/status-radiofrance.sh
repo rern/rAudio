@@ -52,7 +52,7 @@ metadataGet() {
 	url=${metadata[3]}
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
-	[[ $endtime == null ]] && exit
+	[[ -z $endtime ]] && exit
 	
 	if [[ ! -e /srv/http/data/system/vumeter ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
