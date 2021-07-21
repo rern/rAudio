@@ -220,7 +220,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
-var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin: 0; height: auto;">';
+var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin: 0 0 10px 0; height: auto;">';
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -499,7 +499,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="4" style="padding: 15px 0;">'+ gpiosvg +'</td>' );
+			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="4" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
