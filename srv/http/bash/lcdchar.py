@@ -10,7 +10,7 @@ ipause = '\x00 '
 iplay = '\x01 '
 istop = '\x02 '
 irr = '\x03\x04'
-idots = '\x05  \x05  \x05             '[ :cols ]
+idots = '\x05  \x05  \x05'
 rn = '\r\n'
 
 spaces = '     '
@@ -48,16 +48,14 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-pads = ' ' * 20
 field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'webradio', 'station', 'file' ] # assign variables
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
-    if i < 4 or i > 8: # artist title album station file
-        if val: val += pads                     # append spaces
+    if i < 4 or i > 8:                          # artist title album station file
         val = val[ :cols ].replace( '"', '\"' ) # truncate to cols > escape "
     exec( field[ i ] +' = "'+ val +'"' )
     
-if not artist and not webradio:
+if not artist and webradio != 'false':
     artist = station
     album = file
 if not artist and not title and not album:
@@ -67,6 +65,11 @@ if not artist and not title and not album:
 if not artist: artist = idots
 if not title: title = rows == 2 and artist or idots
 if not album: album = idots
+lines = rows == 2 and title or artist + rn + title + rn + album
+# remove accents
+if charmap == 'A00':
+    import unicodedata
+    lines = ''.join( c for c in unicodedata.normalize( 'NFD', lines ) if unicodedata.category( c ) != 'Mn' )
 
 if total != 'false':
     total = round( float( total ) )
@@ -89,21 +92,11 @@ else:
         progress = elapsedhhmmss + totalhhmmss
     else:
         progress = ''
+progress = ( progress + ' ' * 20 )[ :cols - 4 ]
+istate = state == 'stop' and istop or ( state == 'pause' and ipause or iplay )
+progress = istate + progress + irr
+lcd.write_string( lines + rn + progress )
 
-istate = state == 'stop' and  istop or ( state == 'pause' and ipause or iplay )
-progress = istate + progress
-
-progl = len( progress )
-if progl <= cols - 3: progress += ' ' * ( cols - progl - 2 ) + irr
-
-lines = rows == 2 and title or artist + rn + title + rn + album
-# remove accents
-if charmap == 'A00':
-    import unicodedata
-    lines = ''.join( c for c in unicodedata.normalize( 'NFD', lines ) if unicodedata.category( c ) != 'Mn' )
-
-lcd.write_string( lines + rn + progress[ :cols ] )
-    
 if state == 'stop' or state == 'pause':
     lcd.close()
     if backlight == 'True':
