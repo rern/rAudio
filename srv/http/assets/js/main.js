@@ -771,6 +771,9 @@ $( '.map' ).tap( function() {
 				G.display[ el ] = G.coverTL[ el ];
 			} );
 			delete G.coverTL;
+			G.bars = G.display.bars;
+			$( '#bar-top' ).toggleClass( 'hide', !G.bars );
+			$( '#bar-bottom' ).toggleClass( G.bars ? 'hide' : 'transparent', !G.bars );
 		} else {
 			G.coverTL = {};
 			list.forEach( function( el ) {
@@ -780,16 +783,19 @@ $( '.map' ).tap( function() {
 				if ( G.display.time || G.display.volume ) {
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.webradio ? false : true;
+					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
+					G.bars = false;
 				} else {
 					G.display.time = G.display.volume = G.display.buttons = true;
+					$( '#playback' ).addClass( 'active' );
+					$( '#bar-top, #bar-bottom' ).removeClass( 'hide transparent' );
+					G.bars = true;
 				}
 			} else {
 				G.display.time = G.display.cover = G.display.coversmall = G.display.volume = G.display.buttons = true;
 			}
-			G.display.bars = false;
 		}
 		$( '.band' ).addClass( 'transparent' );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
