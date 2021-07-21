@@ -137,7 +137,7 @@ $selecttimezone.= '</select>';
 			Module with Hitachi HD44780 controller.
 		<br>&bull; Support 16x2, 20x4 and 40x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
-		<br><i class="fa fa-warning"></i> Precaution for LCD with I²C backpack: <a href="https://www.instructables.com/Raspberry-Pi-Using-1-I2C-LCD-Backpacks-for-1602-Sc/">5V to 3.3V I²C + 5V LCD Mod</a>
+		<br><i class="fa fa-warning"></i> LCD with I²C backpack - <a href="https://github.com/rern/rAudio-addons/raw/main/LCD_Character/i2c_backpack_mod.jpg">5V to 3.3V I²C + 5V LCD modification</a>
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
