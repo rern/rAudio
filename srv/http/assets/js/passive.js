@@ -56,7 +56,6 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
-		hideGuide();
 		bash( [ 'displayget' ], function( data ) {
 			delete G.coverTL;
 			G.display = data;
@@ -85,6 +84,7 @@ pushstream.onstatuschange = function( status ) {
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
+		hideGuide();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
