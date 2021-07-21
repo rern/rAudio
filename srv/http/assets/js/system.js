@@ -549,7 +549,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 	var infopowerbutton = gpiosvg;
 	infopowerbutton += heredoc( function() { /*
-	<table style="margin-top: 10px">
+	<table>
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
 	</tr>
