@@ -719,7 +719,7 @@ $( '.map' ).tap( function() {
 		$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
 		$( '#guide-bio, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.webradio && G.status.state === 'stop' );
-		$( '#guide-album' ).toggleClass( 'hide', G.iplayer === 'webradio' );
+		$( '#guide-album' ).toggleClass( 'hide', G.status.file.indexOf( '://' ) !== -1 );
 		$( '#volume-text' ).addClass( 'hide' );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
