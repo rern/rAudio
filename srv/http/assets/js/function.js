@@ -344,7 +344,7 @@ function displayPlayback() {
 	$( '#time-bar, #time-band' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
-	$( '.volumeband' ).toggleClass( 'hide', G.status.volumenone );
+	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
