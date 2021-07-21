@@ -34,6 +34,7 @@ metadataGet() {
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
+		| sed 's/null/""/g' \
 		| jq -r \
  .data.now.playing_item.title\
 ,.data.now.playing_item.subtitle\
