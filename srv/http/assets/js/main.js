@@ -723,7 +723,7 @@ $( '.map' ).tap( function() {
 		$( '#volume-text' ).addClass( 'hide' );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'translucent' );
+		$( '#bar-bottom' ).toggleClass( 'translucent', !G.bars );
 		if ( document.body.clientWidth < 614 && !G.display.volume ) {
 			$( '#coverTL' )
 					.removeClass( 'fa-scale-dn' )
@@ -773,7 +773,7 @@ $( '.map' ).tap( function() {
 			delete G.coverTL;
 			G.bars = G.display.bars;
 			$( '#bar-top' ).toggleClass( 'hide', !G.bars );
-			$( '#bar-bottom' ).toggleClass( G.bars ? 'hide' : 'transparent', !G.bars );
+			$( '#bar-bottom' ).toggleClass( 'transparent', !G.bars );
 		} else {
 			G.coverTL = {};
 			list.forEach( function( el ) {
@@ -783,12 +783,14 @@ $( '.map' ).tap( function() {
 				if ( G.display.time || G.display.volume ) {
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.webradio ? false : true;
-					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
+					$( '#bar-top' ).addClass( 'hide' );
+					$( '#bar-bottom' ).addClass( 'transparent' );
 					G.bars = false;
 				} else {
 					G.display.time = G.display.volume = G.display.buttons = true;
 					$( '#playback' ).addClass( 'active' );
-					$( '#bar-top, #bar-bottom' ).removeClass( 'hide transparent' );
+					$( '#bar-top' ).removeClass( 'hide' );
+					$( '#bar-bottom' ).removeClass( 'transparent' );
 					G.bars = true;
 				}
 			} else {
