@@ -794,7 +794,7 @@ $( '.map' ).tap( function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		renderPlayback
+		renderPlayback();
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		setTimeout( function() { // fix: settings fired on showed
