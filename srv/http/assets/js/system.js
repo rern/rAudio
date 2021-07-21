@@ -75,6 +75,7 @@ function infoMount( values ) {
 	} );
 }
 function infoWiring( icon, title, message, image, width ) {
+	var image = image.slice( 0, -3 ) + hash + image.slice( -4 );
 	info( {
 		  icon    : icon
 		, title   : title
