@@ -220,6 +220,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
+var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 100%">';
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -427,8 +428,8 @@ $( '#gpioimgtxt' ).click( function() {
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-var infolcdchar = heredoc( function() { /*
-	<img class="gpio" src="/assets/img/gpio.svg" style="margin-bottom: 20px">
+var infolcdchar = gpiosvg;
+infolcdchar += heredoc( function() { /*
 	<table id="tbllcdchar">
 	<tr id="cols"><td>Size</td>
 		<td><label><input type="radio" name="cols" value="16">16x2</label></td>
@@ -498,6 +499,9 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
+			$( '#infoContent img' )
+				.addClass( 'gpio' )
+				.css( 'margin-bottom', '20px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -545,10 +549,9 @@ $( '#setting-powerbutton' ).click( function() {
 	pins.forEach( function( p ) { 
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
-	var infopowerbutton = heredoc( function() { /*
-	<img src="/assets/img/gpio.svg" style="width: 100%">
-	<br><br>
-	<table>
+	var infopowerbutton = gpiosvg;
+	infopowerbutton += heredoc( function() { /*
+	<table style="margin-top: 20px">
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
 	</tr>
@@ -638,7 +641,7 @@ $( '#setting-vuled' ).click( function() {
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
-		, message      : '<img src="/assets/img/gpio.svg" style="width: 100%">'
+		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : vuledval
 		, boxwidth     : 60
