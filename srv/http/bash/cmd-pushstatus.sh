@@ -5,7 +5,7 @@ dirtmp=/srv/http/data/shm
 status=$( /srv/http/bash/status.sh )
 
 statusdata=$( echo $status \
-	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file, .webradio' \
+	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .webradio, .station, .file' \
 	| sed 's/^$\|null/false/' )
 readarray -t data <<< "$statusdata"
 if [[ ${data[ 9 ]} == false ]]; then # not webradio

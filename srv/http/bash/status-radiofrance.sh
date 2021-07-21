@@ -86,7 +86,7 @@ $coverart
 		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
 					| grep elapsed )
-		data=( "$artist" "$title" "$album" "play" false "${elapsed/* }" $( date +%s%3N ) "$station" "$file" true )
+		data=( "$artist" "$title" "$album" "play" false "${elapsed/* }" $( date +%s%3N ) true "$station" "$file" )
 		killall lcdchar.py &> /dev/null
 		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi

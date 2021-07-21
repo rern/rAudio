@@ -107,6 +107,7 @@ if [[ -e /srv/http/data/system/lcdchar ]]; then
 	readarray -t data <<< $( echo "{$status}" \
 								| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
 								| sed 's/^$\|null/false/' )
+	data+=( false '' '' )
 	killall lcdchar.py &> /dev/null
 	/srv/http/bash/lcdchar.py "${data[@]}" &
 fi

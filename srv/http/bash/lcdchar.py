@@ -10,7 +10,7 @@ ipause = '\x00 '
 iplay = '\x01 '
 istop = '\x02 '
 irr = '\x03\x04'
-idots = '\x05  \x05  \x05'
+idots = '\x05  \x05  \x05             '[ :cols ]
 rn = '\r\n'
 
 spaces = '     '
@@ -48,21 +48,25 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
+pads = ' ' * 20
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'webradio', 'station', 'file' ] # assign variables
 for i in range( 1, 11 ):
-    val = sys.argv[ i ][ :cols ].replace( '"', '\"' ) # escape "
-    exec( field[ i ] +' = "'+ val.rstrip() +'"' )     # fix last space error - remove
+    val = sys.argv[ i ].rstrip()
+    if i < 4 or i > 8: # artist title album station file
+        if val: val += pads                     # append spaces
+        val = val[ :cols ].replace( '"', '\"' ) # truncate to cols > escape "
+    exec( field[ i ] +' = "'+ val +'"' )
     
-if artist == 'false' and webradio != 'false':
+if not artist and not webradio:
     artist = station
     album = file
-if artist == 'false' and title == 'false' and album == 'false':
+if not artist and not title and not album:
     lcd.write_string( splash )
     quit()
 
-if artist == 'false': artist = idots
-if title == 'false': title = rows == 2 and artist or idots
-if album == 'false': album = idots
+if not artist: artist = idots
+if not title: title = rows == 2 and artist or idots
+if not album: album = idots
 
 if total != 'false':
     total = round( float( total ) )
@@ -79,7 +83,7 @@ else:
 if state == 'stop':
     progress = totalhhmmss
 else:
-    if totalhhmmss != '':
+    if totalhhmmss:
         slash = cols == 20 and ' / ' or '/'
         totalhhmmss = slash + totalhhmmss
         progress = elapsedhhmmss + totalhhmmss
