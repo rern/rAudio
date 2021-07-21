@@ -74,6 +74,15 @@ function infoMount( values ) {
 		}
 	} );
 }
+function infoWiring( icon, title, message, image, width ) {
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : message
+					+'<br><br><img src="/assets/img/guide/'+ image +'" style="width: '+ width +'px; height: 100%">'
+		, okno    : 1
+	} );
+}
 function rebootText( enable, device ) {
 	var exist = 0;
 	if ( G.reboot.length ) {
@@ -518,6 +527,9 @@ $( '#setting-lcdchar' ).click( function() {
 		}
 	} );
 } );
+$( '#wiringlcdchar' ).click( function() {
+	infoWiring(  'lcdchar', 'Character LCD I²C', '5V to <wh>3.3V</wh> I²C + <wh>5V</wh> LCD', 'i2c_backpack_mod.jpg', 162 );
+} );
 $( '#setting-powerbutton' ).click( function() {
 	var val = G.powerbuttonconf.split( ' ' );
 	var swpin = val[ 0 ];
@@ -564,6 +576,9 @@ infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 		}
 	} );
+} );
+$( '#wiringpowerbutton' ).click( function() {
+	infoWiring(  'power', 'Power Button', 'Wiring:', 'power_button-led.svg', 300 );
 } );
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
@@ -645,6 +660,9 @@ $( '#setting-vuled' ).click( function() {
 			bash( [ 'vuledset', pins ] );
 		}
 	} );
+} );
+$( '#wiringvuled' ).click( function() {
+	infoWiring(  'led', 'VU LED', 'Wiring:', 'vu-led.svg', 300 );
 } );
 $( '#ledcalc' ).click( function() {
 	info( {

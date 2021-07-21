@@ -137,7 +137,7 @@ $selecttimezone.= '</select>';
 			Module with Hitachi HD44780 controller.
 		<br>&bull; Support 16x2, 20x4 and 40x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
-		<br><i class="fa fa-warning"></i> LCD with I²C backpack - <a href="https://github.com/rern/rAudio-addons/raw/main/LCD_Character/i2c_backpack_mod.jpg">5V to 3.3V I²C + 5V LCD modification</a>
+		<br><i class="fa fa-warning"></i> LCD with I²C backpack - <bl id="wiringlcdchar">5V to 3.3V I²C + 5V LCD modification</bl>
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
@@ -149,7 +149,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		Power button and LED for on/off rAudio.
-		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/181#discussion-3100261">Wiring</a>
+		<br>&bull; <bl id="wiringpowerbutton">Wiring</bl>
 		<br>&bull; On pin is fixed.
 	</span>
 </div>
@@ -187,8 +187,8 @@ $selecttimezone.= '</select>';
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		7 LEDs, with current limiting resisters
-		<br>&bull; <a href="https://github.com/rern/rAudio-1/discussions/436">Wiring</a>
-		<br>&bull; <a id="ledcalc">LED resister calculator</a>
+		<br>&bull; <bl id="wiringvuled">Wiring</bl>
+		<br>&bull; <bl id="ledcalc">LED resister calculator</bl>
 	</span>
 </div>
 </div>
