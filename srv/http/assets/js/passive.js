@@ -56,6 +56,7 @@ streams.forEach( function( stream ) {
 pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
+		hideGuide();
 		bash( [ 'displayget' ], function( data ) {
 			delete G.coverTL;
 			G.display = data;
