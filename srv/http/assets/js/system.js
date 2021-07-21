@@ -74,13 +74,13 @@ function infoMount( values ) {
 		}
 	} );
 }
-function infoWiring( icon, title, message, image, width ) {
-//	var image = image.slice( 0, -3 ) + hash + image.slice( -4 );
+function infoWiring( icon, title, message, image, W ) {
+	var image = image.slice( 0, -3 ) + hash + image.slice( -4 );
 	info( {
 		  icon    : icon
 		, title   : title
 		, message : message
-					+'<br><br><img src="/assets/img/guide/'+ image +'" style="width: '+ width +'px; height: 100%">'
+					+'<br><br><img src="/assets/img/guide/'+ image +'" style="width: '+ W +'px; height: auto;">'
 		, okno    : 1
 	} );
 }
