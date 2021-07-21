@@ -8,7 +8,7 @@ statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .webradio, .station, .file' \
 	| sed 's/null//' )
 readarray -t data <<< "$statusdata"
-if [[ ${data[ 9 ]} == false ]]; then # not webradio
+if [[ ${data[ 7 ]} == false ]]; then # not webradio
 	datanew=${data[@]:0:6}
 	dataprev=$( head -6 $dirtmp/status 2> /dev/null | tr -d '\n' )
 	[[ ${datanew// } == ${dataprev// } ]] && exit
