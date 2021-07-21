@@ -220,7 +220,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
-var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin: 0 0 10px 0; height: auto;">';
+var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin-bottom: 10px; height: auto;">';
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
