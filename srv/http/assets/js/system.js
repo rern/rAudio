@@ -220,7 +220,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
-var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 100%">';
+var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin: 0; height: auto;">';
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -428,8 +428,7 @@ $( '#gpioimgtxt' ).click( function() {
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-var infolcdchar = gpiosvg;
-infolcdchar += heredoc( function() { /*
+var infolcdchar = heredoc( function() { /*
 	<table id="tbllcdchar">
 	<tr id="cols"><td>Size</td>
 		<td><label><input type="radio" name="cols" value="16">16x2</label></td>
@@ -454,6 +453,7 @@ infolcdchar += heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
+	<tr class="gpio"></tr>
 	<tr class="gpio"><td>pin_rs</td>
 		<td colspan="3"><input type="text" id="pin_rs"></td>
 	</tr>
@@ -499,9 +499,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent img' )
-				.addClass( 'gpio' )
-				.css( 'margin-bottom', '20px' );
+			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="4" style="padding: 15px 0;">'+ gpiosvg +'</td>' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -551,7 +549,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 	var infopowerbutton = gpiosvg;
 	infopowerbutton += heredoc( function() { /*
-	<table style="margin-top: 20px">
+	<table style="margin-top: 10px">
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
 	</tr>
