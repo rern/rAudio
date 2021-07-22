@@ -50,7 +50,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 </div>
 <div class="container">
 <br>
-<img src="/assets/img/gpio.<?=$time?>.svg" style="width: 100%; max-width: 400px;">
+<img id="gpiosvg" src="/assets/img/gpio.<?=$time?>.svg">
 <br>
 <span class="help-block hide">
 	Control <wh>GPIO</wh> connected relay module for power on /off equipments in sequence.
