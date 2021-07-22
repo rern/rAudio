@@ -14,7 +14,7 @@ idots = '\x05  \x05  \x05'
 rn = '\r\n'
 
 spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
-splash = rows == 4 and rn or ''
+splash = rows > 2 and rn or ''
 splash += spaces + irr + rn + spaces +'rAudio'
 
 if len( sys.argv ) == 1: # no argument = splash
@@ -62,7 +62,7 @@ if not artist and not title and not album:
 if not artist: artist = idots
 if not title: title = rows == 2 and artist or idots
 if not album: album = idots
-lines = rows == 2 and title or artist + rn + title + rn + album
+lines = rows == 2 and title or artist + rn + title + rn + album + rn
 # remove accents
 if charmap == 'A00':
     import unicodedata
@@ -84,15 +84,15 @@ if state == 'stop':
     progress = totalhhmmss
 else:
     if totalhhmmss:
-        slash = cols == 20 and ' / ' or '/'
+        slash = cols > 16 and ' / ' or '/'
         totalhhmmss = slash + totalhhmmss
         progress = elapsedhhmmss + totalhhmmss
     else:
         progress = ''
-progress = ( progress + ' ' * 20 )[ :cols - 4 ]
 istate = state == 'stop' and istop or ( state == 'pause' and ipause or iplay )
-progress = istate + progress + irr
-lcd.write_string( lines + rn + progress )
+lines += ( istate + progress + ' ' * cols )[ :cols - 2 ] + irr
+
+lcd.write_string( lines )
 
 if state == 'stop' or state == 'pause':
     lcd.close()
@@ -113,7 +113,6 @@ elapsed += round( starttime - int( timestamp ) / 1000 )
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
     progress = iplay + second2hhmmss( elapsed ) + totalhhmmss
-    if len( progress ) > ( cols - 3 ): progress += '  '
     lcd.cursor_pos = ( row, 0 )
     lcd.write_string( progress[ :cols ] )
     elapsed += 1
