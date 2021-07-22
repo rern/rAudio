@@ -13,11 +13,9 @@ irr = '\x03\x04'
 idots = '\x05  \x05  \x05'
 rn = '\r\n'
 
-spaces = cols == 20 and '        ' or '      '
-if rows == 4:
-    splash = rn + spaces + irr + rn + spaces +'rAudio'
-else:
-    splash = spaces + irr + rn + spaces +'rAudio'
+spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
+splash = rows == 4 and rn or ''
+splash += spaces + irr + rn + spaces +'rAudio'
 
 if len( sys.argv ) == 1: # no argument = splash
     lcd.write_string( splash )
