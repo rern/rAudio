@@ -13,7 +13,7 @@ irr = '\x03\x04'
 idots = '\x05  \x05  \x05'
 rn = '\r\n'
 
-spaces = '     '
+spaces = '      '
 splash = ''
 if rows == 4:
     spaces += '  '
