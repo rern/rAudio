@@ -137,7 +137,7 @@ $selecttimezone.= '</select>';
 			Module with Hitachi HD44780 controller.
 		<br>&bull; Support 16x2 and 20x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
-		<br><i class="fa fa-warning"></i> LCD with I²C backpack - <bl id="wiringlcdchar">5V to 3.3V I²C + 5V LCD modification</bl>
+		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <bl id="wiringlcdchar">5V to 3.3V I²C and 5V LCD</bl>
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
