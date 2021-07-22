@@ -430,9 +430,9 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 } );
 var infolcdchar = heredoc( function() { /*
 	<table id="tbllcdchar">
-	<tr id="cols"><td width="140">Size</td>
-		<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
-		<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
+	<tr id="cols"><td width="136">Size</td>
+		<td width="102"><label><input type="radio" name="cols" value="20">20x4</label></td>
+		<td width="102"><label><input type="radio" name="cols" value="16">16x2</label></td>
 	</tr>
 	<tr><td>Character Map</td>
 		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
