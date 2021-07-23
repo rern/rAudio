@@ -18,9 +18,9 @@
 	display: inline-block;
 	margin: 0 5px 10px;
 	min-width: 70px;
-	height: 34px !important;
 	padding: 0 10px;
-	line-height: 33px;
+	height: 34px !important;
+	line-height: 34px;
 	border: none;
 	border-radius: 4px;
 	white-space: nowrap;
@@ -47,6 +47,11 @@
 	box-shadow: none;
 	pointer-events: none;
 }
+.infobtn i {
+	font-size: 18px;
+	margin-right: 5px;
+	vertical-align: -2px !important;
+}
 .noclick {
 	pointer-events: none;
 }
@@ -70,10 +75,6 @@ hr {
 }
 #infoOverlay .fa {
 	vertical-align: -1px;
-}
-#infoButtons .fa {
-	font-size: 18px;
-	margin-right: 7px;
 }
 #infoOverlay a {
 	height: 40px;
