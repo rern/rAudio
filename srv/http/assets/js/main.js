@@ -743,7 +743,7 @@ $( '.map' ).tap( function() {
 			if ( !G.display.time && !G.status.webradio ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( $( '#progress' ).text() );
+					.text( $( '#progress w' ).text() );
 			}
 			if ( !G.display.volume && !G.display.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent' );
