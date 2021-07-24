@@ -65,10 +65,9 @@ $( '#previous' ).click( function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-$( 'body' ).swipeleft( function( e ) {
+$( 'body' ).on( 'swipeleft', function() {
 	$( '#next' ).click();
-} );
-$( 'body' ).swiperight( function( e ) {
+} ).on( 'swiperight', function() {
 	$( '#previous' ).click();
 } );
 function renderPage( n ) {
