@@ -258,7 +258,6 @@ $selecttimezone.= '</select>';
 <?php
 $listui = [
 	  'jQuery'              => 'https://jquery.com/'
-	, 'jQuery Mobile'       => 'https://jquerymobile.com/'
 	, 'HTML5-Color-Picker'  => 'https://github.com/NC22/HTML5-Color-Picker'
 	, 'Inconsolata font'    => 'https://github.com/google/fonts/tree/main/ofl/inconsolata'
 	, 'jQuery Selectric'    => 'https://github.com/lcdsantos/jQuery-Selectric'
@@ -269,6 +268,7 @@ $listui = [
 	, 'roundSlider'         => 'https://github.com/soundar24/roundSlider'
 	, 'simple-keyboard'     => 'https://github.com/hodgef/simple-keyboard/'
 	, 'Sortable'            => 'https://github.com/SortableJS/Sortable'
+	, 'Tocca'               => 'https://github.com/GianlucaGuarini/Tocca.js'
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {
