@@ -507,12 +507,8 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
+	systemctl stop radiofrance
 	mpc | grep -q '^\[paused\]' && pause=1
-	rm -f $dirtmp/{webradiodata,radiofrance}
-	if [[ $command == stop ]]; then
-		systemctl stop radiofrance
-		touch $dirtmp/stop
-	fi
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		fileheadder=$( mpc | head -c 4 )
@@ -531,13 +527,10 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/{webradiodata,radiofrance}
+	systemctl stop radiofrance
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
-		rm -f $dirtmp/webradiodata
-		systemctl stop radiofrance
-		touch $dirtmp/stop
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -743,8 +736,8 @@ power )
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $tracks ]] && mpc del $tracks
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
+	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 	if [[ -n $poweroff ]]; then
-		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	else
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'

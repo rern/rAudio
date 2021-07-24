@@ -15,6 +15,10 @@ esac
 readarray -t metadata <<< $( curl -sL \
 	https://api.radioparadise.com/api/now_playing?chan=$id \
 	| jq -r .artist,.title,.album,.cover )
+datanew=${metadata[@]:0:3}
+dataprev=$( head -3 /srv/http/data/shm/webradiodata 2> /dev/null | tr -d '\n' )
+[[ ${datanew// } == ${dataprev// } ]] && exit
+
 artist=${metadata[0]}
 title=${metadata[1]}
 album=${metadata[2]}
@@ -25,6 +29,12 @@ if [[ ! -e /srv/http/data/system/vumeter ]]; then
 	[[ -n $url ]] && curl -s $url -o $coverfile
 	[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 fi
+echo "\
+$artist
+$title
+$album
+$coverart
+" > $dirtmp/webradiodata
 artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
 title=$( echo $title | sed 's/"/\\"/g; s/null//' )
 album=$( echo $album | sed 's/"/\\"/g; s/null//' )
@@ -37,10 +47,4 @@ data='{
 , "radio"    : 1
 }'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-echo "\
-$artist
-$title
-$album
-$coverart
-" > $dirtmp/webradiodata
 /srv/http/bash/cmd.sh onlinefileslimit

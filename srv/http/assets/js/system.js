@@ -74,6 +74,16 @@ function infoMount( values ) {
 		}
 	} );
 }
+function infoWiring( icon, title, message, image, W ) {
+	var image = image.slice( 0, -3 ) + hash + image.slice( -4 );
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : message
+					+'<br><br><img src="/assets/img/guide/'+ image +'" style="width: '+ W +'px; height: auto;">'
+		, okno    : 1
+	} );
+}
 function rebootText( enable, device ) {
 	var exist = 0;
 	if ( G.reboot.length ) {
@@ -210,6 +220,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
+var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin-bottom: 10px; height: auto;">';
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -418,12 +429,10 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
-	<img class="gpio" src="/assets/img/gpio.svg" style="margin-bottom: 20px">
 	<table id="tbllcdchar">
-	<tr id="cols"><td>Size</td>
-		<td><label><input type="radio" name="cols" value="16">16x2</label></td>
-		<td><label><input type="radio" name="cols" value="20">20x4</label></td>
-		<td><label><input type="radio" name="cols" value="40">40x4</label></td>
+	<tr id="cols"><td width="136">Size</td>
+		<td width="102"><label><input type="radio" name="cols" value="20">20x4</label></td>
+		<td width="102"><label><input type="radio" name="cols" value="16">16x2</label></td>
 	</tr>
 	<tr><td>Character Map</td>
 		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
@@ -443,20 +452,21 @@ var infolcdchar = heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
+	<tr class="gpio"></tr>
 	<tr class="gpio"><td>pin_rs</td>
-		<td colspan="3"><input type="text" id="pin_rs"></td>
+		<td colspan="2"><input type="text" id="pin_rs"></td>
 	</tr>
 	<tr class="gpio"><td>pin_rw</td>
-		<td colspan="3"><input type="text" id="pin_rw"></td>
+		<td colspan="2"><input type="text" id="pin_rw"></td>
 	</tr>
 	<tr class="gpio"><td>pin_e</td>
-		<td colspan="3"><input type="text" id="pin_e"></td>
+		<td colspan="2"><input type="text" id="pin_e"></td>
 	</tr>
 	<tr class="gpio"><td>pins_data</td>
-		<td colspan="3"><input type="text" id="pins_data"></td>
+		<td colspan="2"><input type="text" id="pins_data"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan="3"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop >60s)</gr></label></td>
+		<td colspan="2"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop >60s)</gr></label></td>
 	</tr>
 	</table>
 */ } );
@@ -488,6 +498,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
+			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="4" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
+			$( '.gpio input' ).css( 'width', '200px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -518,6 +530,9 @@ $( '#setting-lcdchar' ).click( function() {
 		}
 	} );
 } );
+$( '#wiringlcdchar' ).click( function() {
+	infoWiring(  'lcdchar', 'Character LCD I²C', '5V to <wh>3.3V</wh> I²C + <wh>5V</wh> LCD', 'i2c_backpack_mod.jpg', 162 );
+} );
 $( '#setting-powerbutton' ).click( function() {
 	var val = G.powerbuttonconf.split( ' ' );
 	var swpin = val[ 0 ];
@@ -532,9 +547,8 @@ $( '#setting-powerbutton' ).click( function() {
 	pins.forEach( function( p ) { 
 		optionpin += '<option value='+ p +'>'+ p +'</option>';
 	} );
-	var infopowerbutton = heredoc( function() { /*
-	<img src="/assets/img/gpio.svg" style="width: 100%">
-	<br><br>
+	var infopowerbutton = gpiosvg;
+	infopowerbutton += heredoc( function() { /*
 	<table>
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
@@ -564,6 +578,9 @@ infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 		}
 	} );
+} );
+$( '#wiringpowerbutton' ).click( function() {
+	infoWiring(  'power', 'Power Button', 'Wiring:', 'power_button-led.svg', 300 );
 } );
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
@@ -622,7 +639,7 @@ $( '#setting-vuled' ).click( function() {
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
-		, message      : '<img src="/assets/img/gpio.svg" style="width: 100%">'
+		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : vuledval
 		, boxwidth     : 60
@@ -645,6 +662,9 @@ $( '#setting-vuled' ).click( function() {
 			bash( [ 'vuledset', pins ] );
 		}
 	} );
+} );
+$( '#wiringvuled' ).click( function() {
+	infoWiring(  'led', 'VU LED', 'Wiring:', 'vu-led.svg', 300 );
 } );
 $( '#ledcalc' ).click( function() {
 	info( {

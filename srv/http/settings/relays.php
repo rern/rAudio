@@ -45,12 +45,12 @@ for ( $i = 1; $i < 5; $i++ ) {
 
 <body>
 <div class="head">
-	<i class="page-icon fa fa-relays"></i><span class="title">RELAYS</span><a href="/settings.php?p=system"><i id="close" class="fa fa-times"></i></a>
+	<i class="page-icon fa fa-relays"></i><span class="title">GPIO RELAYS</span><a href="/settings.php?p=system"><i id="close" class="fa fa-times"></i></a>
 	<i id="help" class="fa fa-question-circle"></i>
 </div>
 <div class="container">
 <br>
-<img src="/assets/img/gpio.<?=$time?>.svg" style="width: 100%; max-width: 400px;">
+<img id="gpiosvg" src="/assets/img/gpio.<?=$time?>.svg">
 <br>
 <span class="help-block hide">
 	Control <wh>GPIO</wh> connected relay module for power on /off equipments in sequence.

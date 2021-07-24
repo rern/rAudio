@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Radio France metadata
-dirtmp=/srv/http/data/shm/
+dirtmp=/srv/http/data/shm
 file=$( cat /srv/http/data/shm/radiofrance )
 name=$( basename "$file" )
 name=${name/-*}
@@ -34,6 +34,7 @@ metadataGet() {
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
+		| sed 's/null/""/g' \
 		| jq -r \
  .data.now.playing_item.title\
 ,.data.now.playing_item.subtitle\
@@ -41,13 +42,17 @@ metadataGet() {
 ,.data.now.playing_item.cover\
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time )
+	datanew=${metadata[@]:0:3}
+	dataprev=$( head -3 $dirtmp/webradiodata 2> /dev/null | tr -d '\n' )
+	[[ ${datanew// } == ${dataprev// } ]] && exit
+	
 	artist=${metadata[0]}
 	title=${metadata[1]}
 	album=${metadata[2]}
 	url=${metadata[3]}
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
-	[[ $endtime == null ]] && exit
+	[[ -z $endtime ]] && exit
 	
 	if [[ ! -e /srv/http/data/system/vumeter ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
@@ -55,26 +60,37 @@ metadataGet() {
 		[[ -n $url ]] && curl -s $url -o $coverfile
 		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
-	data='{
-  "Artist"   : "'$artist'"
-, "Title"    : "'$title'"
-, "Album"    : "'$album'"
-, "coverart" : "'$coverart'"
-, "station"  : "'${station/* - }'"
-, "radio"    : 1
-}'
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-	
 	echo "\
 $artist
 $title
 $album
 $coverart
 " > $dirtmp/webradiodata
+	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
+	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
+	station=${station/* - }
+	data='{
+  "Artist"   : "'$artist'"
+, "Title"    : "'$title'"
+, "Album"    : "'$album'"
+, "coverart" : "'$coverart'"
+, "station"  : "'$station'"
+, "radio"    : 1
+}'
+	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
+	if [[ -e /srv/http/data/system/lcdchar ]]; then
+		[[ -z $artist ]] && artist=false
+		[[ -z $title ]] && title=false
+		[[ -z $album ]] && album=false
+		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| grep elapsed )
+		data=( "$artist" "$title" "$album" "play" false "${elapsed/* }" $( date +%s%3N ) true "$station" "$file" )
+		killall lcdchar.py &> /dev/null
+		/srv/http/bash/lcdchar.py "${data[@]}" &
+	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
 	localtime=$( date +%s )
 	diff=$(( $localtime - $servertime )) # local time fetched after server time

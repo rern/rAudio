@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# file mode
+#    - initial page load / refresh > status.sh
+#    - changes                     > mpdidle.sh > cmd-pushstatus.sh
+# radioparadize - update stream every 5s > status-radioparadise.sh
+# radiofrance   - no stream update       > radiofrance.service > status-radiofrance.sh
+
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
@@ -123,8 +129,8 @@ if [[ $player != mpd && $player != upnp ]]; then
 	esac
 # >>>>>>>>>>
 	echo {$status}
-	rm -f $dirtmp/{webradiodata,radiofrance}
 	systemctl stop radiofrance
+	rm -f $dirtmp/webradiodata
 	touch $dirtmp/stop
 	exit
 fi
@@ -173,11 +179,10 @@ for line in "${lines[@]}"; do
 			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
 		file )
 			file0=$val           # no escape " for coverart and ffprobe
-			file=${val//\"/\\\"} # escape " for json
-			file=${file/\?*};;   # remove url trailing '?...'
+			file=${val//\"/\\\"};; # escape " for json
 		# string
 		* ) # state | updating_db
-			printf -v $key '%s' "$val"
+			printf -v $key '%s' "$val";;
 	esac
 done
 
@@ -207,7 +212,12 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1
+if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
+	radioheader=1
+else
+	systemctl stop radiofrance
+	rm -f $dirtmp/webradiodata
+fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -232,6 +242,8 @@ if [[ $fileheader == cdda ]]; then
 elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
+		systemctl stop radiofrance
+		rm -f $dirtmp/webradiodata
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
@@ -255,6 +267,8 @@ elif [[ -n $radioheader ]]; then
 		fi
 		if [[ $state != play ]]; then
 			Title=
+			systemctl stop radiofrance
+			rm -f $dirtmp/webradiodata
 		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
 			rm $dirtmp/stop
 			Title=
@@ -263,6 +277,9 @@ elif [[ -n $radioheader ]]; then
 				radioparadise=1
 			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
 				radiofrance=1
+			fi
+			if [[ -z $radiofrance ]]; then
+				systemctl stop radiofrance
 			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
 				if [[ -e $dirtmp/webradiodata ]]; then

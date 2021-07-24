@@ -719,11 +719,11 @@ $( '.map' ).tap( function() {
 		$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
 		$( '#guide-bio, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.webradio && G.status.state === 'stop' );
-		$( '#guide-album' ).toggleClass( 'hide', G.iplayer === 'webradio' );
+		$( '#guide-album' ).toggleClass( 'hide', G.status.file.indexOf( '://' ) !== -1 );
 		$( '#volume-text' ).addClass( 'hide' );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'translucent' );
+		$( '#bar-bottom' ).toggleClass( 'translucent', !G.bars );
 		if ( document.body.clientWidth < 614 && !G.display.volume ) {
 			$( '#coverTL' )
 					.removeClass( 'fa-scale-dn' )
@@ -743,7 +743,7 @@ $( '.map' ).tap( function() {
 			if ( !G.display.time && !G.status.webradio ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( $( '#progress' ).text() );
+					.text( $( '#progress w' ).text() );
 			}
 			if ( !G.display.volume && !G.display.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent' );
@@ -771,6 +771,9 @@ $( '.map' ).tap( function() {
 				G.display[ el ] = G.coverTL[ el ];
 			} );
 			delete G.coverTL;
+			G.bars = G.display.bars;
+			$( '#bar-top' ).toggleClass( 'hide', !G.bars );
+			$( '#bar-bottom' ).toggleClass( 'transparent', !G.bars );
 		} else {
 			G.coverTL = {};
 			list.forEach( function( el ) {
@@ -780,21 +783,26 @@ $( '.map' ).tap( function() {
 				if ( G.display.time || G.display.volume ) {
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.webradio ? false : true;
+					$( '#bar-top' ).addClass( 'hide' );
+					$( '#bar-bottom' ).addClass( 'transparent' );
+					G.bars = false;
 				} else {
 					G.display.time = G.display.volume = G.display.buttons = true;
+					$( '#playback' ).addClass( 'active' );
+					$( '#bar-top' ).removeClass( 'hide' );
+					$( '#bar-bottom' ).removeClass( 'transparent' );
+					G.bars = true;
 				}
 			} else {
 				G.display.time = G.display.cover = G.display.coversmall = G.display.volume = G.display.buttons = true;
 			}
-			G.display.bars = false;
 		}
 		$( '.band' ).addClass( 'transparent' );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		renderPlayback
+		renderPlayback();
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		setTimeout( function() { // fix: settings fired on showed

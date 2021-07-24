@@ -31,12 +31,9 @@ span.timer {
 span.timer i {
 	vertical-align: -2px;
 }
-#gpioimgtxt {
-	cursor: pointer;
-}
-#fliptxt {
-	display: none;
-	color: var( --cw );
+#gpiosvg {
+	width: 100%;
+	max-width: 393px;
 }
 #gpiopin,
 #gpiopin1 {
@@ -99,9 +96,6 @@ input {
 }
 #undo {
 	background-color: #de810e;
-}
-#gpioimgtxt {
-	color: var( --cml );
 }
 .column span i {
 	font-size: 20px;

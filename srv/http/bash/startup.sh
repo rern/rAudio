@@ -23,6 +23,12 @@ diraddons=$dirdata/addons
 dirmpd=$dirdata/mpd
 dirsystem=$dirdata/system
 
+connectedCheck() {
+	for (( i=0; i < $1; i++ )); do
+		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
+		sleep $2
+	done
+}
 pushNotify() {
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 }
@@ -71,12 +77,14 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
-
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
 
-$dirbash/mpd-conf.sh # mpd.service start by this script
+$dirbash/mpd-conf.sh # mpd.service started by this script
 
+if [[ -e $dirsystem/lcdchar ]]; then
+	$dirbash/lcdcharinit.py
+	$dirbash/cmd-pushstatus.sh
+fi
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
@@ -88,14 +96,10 @@ if [[ -z $onboardwireless ]]; then # usb bluetooth
 	rfkill | grep -q bluetooth && systemctl enable --now bluetooth || systemctl disable --now bluetooth
 fi
 
-if ifconfig | grep -q 'inet.*broadcast'; then
-	connected=1
-elif [[ -n $profiles && -z $hostapd ]]; then # wait for wi-fi connection
-	for i in {1..30}; do
-		sleep 3
-		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
-	done
-fi
+# wait 5s max for lan connection
+connectedCheck 5 1
+# if lan not connected, wait 30s max for wi-fi connection
+[[ -z $connected && -n $profiles && -z $hostapd ]] && connectedCheck 30 3
 
 [[ -n $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
 if [[ -n $nas ]]; then

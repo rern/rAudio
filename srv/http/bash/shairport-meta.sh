@@ -77,8 +77,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		readarray -t data <<< $( /srv/http/bash/status.sh \
-									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp' \
-									| sed 's/^$\|null/false/' )
+									| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .webradio, .station, .file' \
+									| sed 's/null//' )
 		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi
 done

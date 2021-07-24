@@ -633,6 +633,7 @@ input:checked + .switchlabel.disabled:after {
 	.code,
 	.col-l.icon,
 	.entries li,
+	.help-block bl,
 	.listtitle,
 	.list,
 	.page-icon,
@@ -643,12 +644,12 @@ input:checked + .switchlabel.disabled:after {
 	.status,
 	.switchlabel,
 	.undervoltage,
+	.wiring,
 	#button-data,
 	#close,
 	#filetype,
 	#gpioimgtxt,
 	#help,
-	#ledcalc,
 	#menu {
 		cursor: pointer;
 	}

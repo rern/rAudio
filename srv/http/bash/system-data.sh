@@ -30,7 +30,7 @@ lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true ||
 lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
 if [[ $i2c == true ]]; then
 	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
-	[[ -n $dev ]] && lcdcharaddr=$( i2cdetect -y $dev \
+	[[ -n $dev ]] && lcdcharaddr=0x$( i2cdetect -y $dev \
 									| grep -v '^\s' \
 									| cut -d' ' -f2- \
 									| tr -d ' \-' \

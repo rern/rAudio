@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+file=/etc/systemd/system/radiofrance.service
+! grep -q ExecStop $file && echo 'ExecStop=/usr/bin/rm /srv/http/data/shm/radiofrance' >> $file
+
 if [[ ! -e /usr/bin/cava ]]; then
 	pacman -Sy --noconfirm cava
 	wget -q https://github.com/rern/rOS/raw/main/etc/cava.conf -P /etc

@@ -84,6 +84,7 @@ pushstream.onstatuschange = function( status ) {
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
+		hideGuide();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
@@ -310,9 +311,7 @@ function psMpdPlayer( data ) {
 		} );
 		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 		setButtonControl();
-		if ( G.playlist ) {
-			setPlaylistScroll();
-		} else if ( G.playback ) {
+		if ( G.playback ) {
 			displayPlayback();
 			if ( 'radio' in data ) {
 				renderPlaybackTitles();
@@ -323,6 +322,8 @@ function psMpdPlayer( data ) {
 				renderPlayback();
 			}
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+		} else if ( G.playlist ) {
+			setPlaylistScroll();
 		}
 		bannerHide();
 	}, G.debouncems );

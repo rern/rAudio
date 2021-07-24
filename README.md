@@ -55,7 +55,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 ) )
 - RPi 1 and Zero: [rAudio-1-RPi0-1-20210716.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi0-1-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi0-1-20210716.img.xz
 ) )
-	
+
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
 

@@ -344,9 +344,7 @@ function displayPlayback() {
 	$( '#time-bar, #time-band' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.webradio );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
-	$( '.volumeband' )
-		.toggleClass( 'hide', G.display.volume )
-		.toggleClass( 'disabled', G.status.volume == -1 );
+	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
@@ -1174,10 +1172,12 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	if ( !G.display.volumenone &&  G.display.volume ) {
+	if ( !G.display.volumenone && G.display.volume ) {
 		$volumeRS.setValue( G.status.volume );
 		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
+	} else {
+		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	}
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		renderPlaybackBlank();
@@ -1201,19 +1201,13 @@ function renderPlayback() {
 	var displaytime = $( '#time-knob' ).is( ':visible' );
 	renderPlaybackTitles();
 	// webradio ////////////////////////////////////////
-	if ( [ 'Radio', 'UPnP' ].indexOf( G.status.ext ) !== -1 ) {
+	if ( G.status.webradio || G.status.ext === 'UPnP' ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state !== 'play' ) {
-			$( '#artist' ).text( G.status.station );
-			$( '#title' ).html( '·&ensp;·&ensp;·' );
-			$( '#album' ).text( G.status.file );
 			renderPlaybackCoverart( G.status.coverartradio );
 		} else {
-			if ( !G.status.Artist && !G.status.Title ) $( '#artist' ).text( G.status.station );
-			if ( !G.status.Title ) $( '#title' ).html( blinkdot );
-			if ( !G.status.Album ) $( '#album' ).text( G.status.Artist ? G.status.station : G.status.file );
 			if ( !G.status.Title || G.status.Title.toLowerCase() !== G.prevtitle.toLowerCase() ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
@@ -1397,13 +1391,26 @@ function renderPlaybackTitles() {
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
-	$( '#artist' ).text( G.status.Artist );
-	$( '#title' )
-		.text( G.status.Title )
-		.toggleClass( 'gr', G.status.state === 'pause' );
-	$( '#album' )
-		.text( G.status.Album )
-		.toggleClass( 'albumgray', G.status.Album === '' );
+	if ( !G.status.webradio ) {
+		$( '#artist' ).text( G.status.Artist );
+		$( '#title' )
+			.text( G.status.Title )
+			.toggleClass( 'gr', G.status.state === 'pause' );
+		$( '#album' ).text( G.status.Album || G.status.file );
+	} else { // webradio
+		if ( G.status.state !== 'play' ) {
+			$( '#artist' ).text( G.status.station );
+			$( '#title' ).html( '·&ensp;·&ensp;·' );
+			$( '#album' )
+				.text( G.status.file )
+				.addClass( 'albumgray' );
+		} else {
+			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : G.status.Artist ) );
+			$( '#title' ).html( G.status.Title || blinkdot );
+			$( '#album' ).text( G.status.Album || ( G.status.Artist ? G.status.station : G.status.file ) );
+		}
+	}
+	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
