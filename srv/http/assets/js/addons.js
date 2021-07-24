@@ -192,7 +192,7 @@ $( '#list li' ).click( function() {
 	var alias = this.getAttribute( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } );
-$( '.boxed-group .infobtn' ).on( 'taphold', function () {
+$( '.boxed-group .infobtn' ).on( 'longtap', function () {
 	$this = $( this );
 	alias = $this.parent().attr( 'alias' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );
