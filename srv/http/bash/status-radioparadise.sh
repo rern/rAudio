@@ -40,8 +40,8 @@ $artist
 $title
 $album
 play
-
-
+false
+false
 true
 $station
 $file" > $dirtmp/status
