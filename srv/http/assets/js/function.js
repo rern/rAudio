@@ -444,41 +444,6 @@ function getBio( artist ) {
 		} );
 	} );
 }
-function getOrientation( file, callback ) { // return: 1 - undefined
-	var reader = new FileReader();
-	reader.onload = function( e ) {
-		var view = new DataView( e.target.result );
-		if ( view.getUint16( 0, false ) != 0xFFD8 ) return callback( 1 ); // not jpeg
-		
-		var length = view.byteLength, offset = 2;
-		while ( offset < length ) {
-			if ( view.getUint16( offset + 2, false ) <= 8 ) return callback( 1 );
-			
-			var marker = view.getUint16( offset, false );
-			offset += 2;
-			if ( marker == 0xFFE1 ) {
-				if ( view.getUint32( offset += 2, false ) != 0x45786966 ) return callback( 1 );
-				
-				var little = view.getUint16( offset += 6, false ) == 0x4949;
-				offset += view.getUint32( offset + 4, little );
-				var tags = view.getUint16( offset, little );
-				offset += 2;
-				for ( var i = 0; i < tags; i++ ) {
-					if ( view.getUint16( offset + ( i * 12 ), little ) == 0x0112 ) {
-						var ori = view.getUint16( offset + ( i * 12 ) + 8, little );
-						return callback( ori );
-					}
-				}
-			} else if ( ( marker & 0xFF00 ) != 0xFF00 ) {
-				break;
-			} else { 
-				offset += view.getUint16( offset, false );
-			}
-		}
-		return callback( 1 );
-	};
-	reader.readAsArrayBuffer( file.slice( 0, 64 * 1024 ) );
-}
 function getPlaybackStatus( render ) {
 	G.getstatus = 1;
 	local();
@@ -1474,42 +1439,6 @@ function renderSavedPlaylist( name ) {
 			$( 'html, body' ).scrollTop( 0 );
 		} );
 	}, 'json' );
-}
-function resetOrientation( file, ori, callback ) {
-	var reader = new FileReader();
-	reader.onload = function( e ) {
-		var img = new Image();
-		img.src = e.target.result;
-		img.onload = function() {
-			var imgW = img.width,
-				imgH = img.height,
-				canvas = document.createElement( 'canvas' ),
-				ctx = canvas.getContext( '2d' );
-			// set proper canvas dimensions before transform
-			if ( 4 < ori && ori < 9 ) {
-				canvas.width = imgH;
-				canvas.height = imgW;
-			} else {
-				canvas.width = imgW;
-				canvas.height = imgH;
-			}
-			// transform context before drawing image
-			switch ( ori ) {
-				// transform( Hscale, Hskew, Vscale, Vskew, Hmove, Vmove )
-				case 2: ctx.transform( -1,  0,  0,  1, imgW,    0 ); break; // mirror up
-				case 3: ctx.transform( -1,  0,  0, -1, imgW, imgH ); break; // down
-				case 4: ctx.transform(  1,  0,  0, -1,    0, imgH ); break; // mirror down
-				case 5: ctx.transform(  0,  1,  1,  0,    0,    0 ); break; // mirror on left side
-				case 6: ctx.transform(  0,  1, -1,  0, imgH,    0 ); break; // on left side
-				case 7: ctx.transform(  0, -1, -1,  0, imgH, imgW ); break; // mirror on right side
-				case 8: ctx.transform(  0, -1,  1,  0,    0, imgW ); break; // on right side
-				default: break;
-			}
-			ctx.drawImage( img, 0, 0 );
-			callback( canvas, imgW, imgH );
-		}
-	}
-	reader.readAsDataURL( file );
 }
 function second2HMS( second ) {
 	if ( second <= 0 ) return 0;
