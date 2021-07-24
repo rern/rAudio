@@ -66,6 +66,16 @@ $title
 $album
 $coverart
 " > $dirtmp/webradiodata
+echo "\
+$artist
+$title
+$album
+play
+
+
+true
+$station
+$file" > $dirtmp/status
 	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
 	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
