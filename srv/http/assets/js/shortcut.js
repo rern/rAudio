@@ -260,7 +260,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 			$( '#button-lib-back' ).click();
 			return
 		} else if ( key === 'ArrowRight' ) { // show context menu
-			$( '#lib-list li.active .lib-icon' ).tap();
+			$( '#lib-list li.active .lib-icon' ).trigger( 'tap' );
 			return
 		}
 		
@@ -276,7 +276,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 					$( menu ).find( 'a:eq( 1 )' ).click();
 				}
 			} else {
-				$liactive.tap();
+				$liactive.trigger( 'tap' );
 			}
 		}
 		$( '.contextmenu' ).addClass( 'hide' );

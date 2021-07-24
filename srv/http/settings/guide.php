@@ -38,7 +38,7 @@ include 'logosvg.php';
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
 <script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
-<script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script>
 var nlibrary = 22;
 var nplaylist = 39;

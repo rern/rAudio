@@ -42,14 +42,15 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <?php include 'index-body.php';?>
 
 <script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
-<script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/Sortable.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/roundslider.min.<?=$time?>.js"></script>
+
+<script src="/assets/js/plugin/html5kellycolorpicker.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/lazyload.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/pica.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/html5kellycolorpicker.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/roundslider.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Sortable.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>

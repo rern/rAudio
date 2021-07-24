@@ -666,7 +666,7 @@ var chkplayback = {
 	, radioelapsed : 'WebRadio time'
 }
 function infoPlayback() {
-	if ( 'coverTL' in G ) $( '#coverTL' ).tap();
+	if ( 'coverTL' in G ) $( '#coverTL' ).trigger( 'tap' );
 	var keys = Object.keys( chkplayback );
 	var values = [];
 	keys.forEach( function( k, i ) {
@@ -1123,7 +1123,7 @@ function renderLibraryList( data ) {
 		}
 	} );
 	if ( G.color ) {
-		$( '#lib-list li:eq( 0 )' ).tap();
+		$( '#lib-list li:eq( 0 )' ).trigger( 'tap' );
 		colorSet();
 	}
 	if ( G.albumlist ) return

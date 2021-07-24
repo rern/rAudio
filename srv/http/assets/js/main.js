@@ -83,9 +83,6 @@ var lazyload = new LazyLoad( {
 // get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$.event.special.tap.emitTapOnTaphold = false; // suppress tap on taphold
-$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
-$.event.special.tap.tapholdThreshold = 1000;
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	if ( G.swipepl || G.drag ) return
 	
@@ -109,7 +106,7 @@ $( '#coverart' ).on( 'load', function() {
 	loader( 'hide' );
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #reload, #button-library, #button-playlist' ).taphold( function() {
+$( '#logo, #reload, #button-library, #button-playlist' ).on( 'longtap', function() {
 	location.reload();
 } );
 $( '#logo' ).click( function() {
@@ -167,7 +164,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			if ( G.mode !== 'webradio' ) {
 				$( '#mode-webradio' ).click();
 			} else {
-				$( '#lib-list li .lib-icon:eq( 0 )' ).tap();
+				$( '#lib-list li .lib-icon:eq( 0 )' ).trigger( 'tap' );
 				colorSet();
 			}
 			break;
@@ -243,7 +240,7 @@ $( '#addons' ).click( function () {
 		addonsdl( std )
 	} );
 	loader();
-} ).taphold( function() {
+} ).on( 'longtap', function() {
 	info( {
 		  icon      : 'jigsaw'
 		, title     : 'Addons'
@@ -320,7 +317,7 @@ $( '#playlist' ).click( function() {
 		if ( G.color ) $( '#colorcancel' ).click();
 	}
 } );
-$( '#page-playback' ).tap( function( e ) {
+$( '#page-playback' ).on( 'tap', function( e ) {
 	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
 	if ( G.guide ) hideGuide();
@@ -385,7 +382,7 @@ $( '#album, #guide-album' ).click( function() {
 	
 	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
 } );
-$( '#title, #guide-lyrics' ).tap( function() {
+$( '#title, #guide-lyrics' ).on( 'tap', function() {
 	var artist = $( '#artist' ).text();
 	var title = $( '#title' ).text();
 	if ( !artist || !title ) return;
@@ -536,7 +533,7 @@ $( '#volup, #voldn' ).click( function() {
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
 	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
-} ).taphold( function() {
+} ).on( 'longtap', function() {
 	G.volhold = 1;
 	var voldn = this.id === 'voldn';
 	var vol = G.status.volume;
@@ -629,7 +626,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	$( '#vol'+ updn ).click();
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
-} ).taphold( function() {
+} ).on( 'longtap', function() {
 	if ( G.status.volumenone ) return
 	
 	clearTimeout( G.volumebar );
@@ -652,13 +649,13 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	clearTimeout( G.intVolume );
 	volumeBarTimeout();
 } );
-$( '#volume-text' ).tap( function() {
+$( '#volume-text' ).on( 'tap', function() {
 	$( '#volmute' ).click();
 } );
 $( '#i-mute' ).click( function() {
 	$( '#volmute' ).click();
 } );
-$( '#divcover' ).taphold( function( e ) {
+$( '#divcover' ).on( 'longtap', function( e ) {
 	if (
 		( G.status.webradio && G.status.state === 'play' )
 		|| !G.status.playlistlength
@@ -702,7 +699,7 @@ var btnctrl = {
 	, volR    : 'volup'
 	, volB    : 'voldn'
 }
-$( '.map' ).tap( function() {
+$( '.map' ).on( 'tap', function() {
 	var cmd = btnctrl[ this.id ];
 	if ( cmd === 'guide' ) {
 		if ( G.local ) return
@@ -1251,7 +1248,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 		query.modetitle = path;
 		G.query.push( query );
 	}
-} ).on( 'taphold', '.mode-bookmark', function() {
+} ).on( 'longtap', '.mode-bookmark', function() {
 	if ( G.drag ) return
 	
 	G.bookmarkedit = 1;
@@ -1335,7 +1332,7 @@ $( '#lib-list' ).on( 'tap', '.coveredit',  function() {
 		coverartChange();
 	}
 } );
-$( '#lib-list' ).on( 'taphold', '.licoverimg',  function() {
+$( '#lib-list' ).on( 'longtap', '.licoverimg',  function() {
 	$this = $( this );
 	$img = $this.find( 'img' );
 	$this.parent().removeClass( 'active' );
