@@ -49,11 +49,11 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files:
-- RPi 4: [rAudio-1-RPi4.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi4-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi4-20210716.img.xz
+- RPi 4: [rAudio-1-RPi4-20210716.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi4-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi4-20210716.img.xz
 ) )
-- RPi 3 and 2: [rAudio-1-RPi2-3.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi2-3-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi2-3-20210716.img.xz
+- RPi 3 and 2: [rAudio-1-RPi2-3-20210716.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi2-3-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi2-3-20210716.img.xz
 ) )
-- RPi 1 and Zero: [rAudio-1-RPi0-1.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi0-1-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi0-1-20210716.img.xz
+- RPi 1 and Zero: [rAudio-1-RPi0-1-20210716.img.xz](https://github.com/rern/rAudio-1/releases/download/i20210716/rAudio-1-RPi0-1-20210716.img.xz) ( or [mirror](https://cloud.s-t-franz.de/s/kdFZXN9Na28nfD8/download?path=%2F&files=rAudio-1-RPi0-1-20210716.img.xz
 ) )
 
 ### DIY Image file
