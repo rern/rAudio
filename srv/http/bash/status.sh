@@ -286,7 +286,7 @@ elif [[ -n $radioheader ]]; then
 				if [[ -n $radioparadise ]]; then
 					id=$( basename ${file/-*} )
 					$dirbash/status-radioparadise.sh $file "$stationname" $id &> /dev/null &
-				elif [[ -n $radiofrance && ! -e $dirtmp/radiofrance ]]; then
+				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
 					id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
 					echo "\
 $file
