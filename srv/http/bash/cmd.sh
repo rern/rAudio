@@ -521,12 +521,14 @@ mpcplayback )
 		fi
 	else
 		killall cava &> /dev/null
+		[[ $command == stop ]] && rm -f $dirtmp/status
 	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
+	rm -f $dirtmp/status
 	systemctl stop radiofrance
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
