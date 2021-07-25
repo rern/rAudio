@@ -130,7 +130,6 @@ if [[ $player != mpd && $player != upnp ]]; then
 # >>>>>>>>>>
 	echo {$status}
 	systemctl stop radiofrance
-	rm -f $dirtmp/webradiodata
 	exit
 fi
 
@@ -215,7 +214,6 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 	radioheader=1
 else
 	systemctl stop radiofrance
-	rm -f $dirtmp/webradiodata
 fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
@@ -242,7 +240,6 @@ elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
 		systemctl stop radiofrance
-		rm -f $dirtmp/webradiodata
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
@@ -267,7 +264,6 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 			systemctl stop radiofrance
-			rm -f $dirtmp/webradiodata
 		else
 			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
 				radioparadise=1
@@ -279,8 +275,8 @@ elif [[ -n $radioheader ]]; then
 			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
 				stationname=${station/* - }
-				if [[ -e $dirtmp/webradiodata ]]; then
-					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
+				if [[ -e $dirtmp/status ]]; then
+					readarray -t radiodata <<< $( cat $dirtmp/status )
 					Artist=${radiodata[0]}
 					Title=${radiodata[1]}
 					Album=${radiodata[2]}
@@ -353,8 +349,6 @@ else
 , "Time"   : '$Time'
 , "Title"  : "'$Title'"'
 fi
-
-[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/webradiodata
 
 samplingLine() {
 	bitdepth=$1

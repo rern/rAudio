@@ -18,7 +18,7 @@ readarray -t metadata <<< $( curl -sL \
 	| jq -r .artist,.title,.album,.cover \
 	| sed 's/^null$//' )
 datanew=${metadata[@]:0:3}
-dataprev=$( head -3 /srv/http/data/shm/webradiodata 2> /dev/null | tr -d '\n ' )
+dataprev=$( head -3 /srv/http/data/shm/status 2> /dev/null | tr -d '\n ' )
 [[ ${datanew// } == $dataprev ]] && exit
 
 artist=${metadata[0]}
@@ -31,11 +31,7 @@ if [[ -n $coverurl && ! -e /srv/http/data/system/vumeter ]]; then
 	curl -s $coverurl -o $coverfile
 	[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 fi
-echo "\
-$artist
-$title
-$album
-$coverart" > $dirtmp/webradiodata
+
 echo "\
 $artist
 $title
@@ -45,7 +41,9 @@ false
 false
 true
 $station
-$file" > $dirtmp/status
+$file
+$coverart" > $dirtmp/status
+
 artist=${artist//\"/\\\"}
 title=${title//\"/\\\"}
 album=${album//\"/\\\"}

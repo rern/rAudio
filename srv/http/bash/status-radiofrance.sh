@@ -43,7 +43,7 @@ metadataGet() {
 ,.data.now.server_time \
 		| sed 's/^null$//' )
 	datanew=${metadata[@]:0:3}
-	dataprev=$( head -3 $dirtmp/webradiodata 2> /dev/null | tr -d '\n ' )
+	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n ' )
 	[[ ${datanew// } == $dataprev ]] && exit
 	
 	artist=${metadata[0]}
@@ -60,12 +60,7 @@ metadataGet() {
 		curl -s $coverurl -o $coverfile
 		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-	echo "\
-$artist
-$title
-$album
-$coverart
-" > $dirtmp/webradiodata
+	
 	echo "\
 $artist
 $title
@@ -75,7 +70,9 @@ false
 false
 true
 $station
-$file" > $dirtmp/status
+$file
+$coverart" > $dirtmp/status
+
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
