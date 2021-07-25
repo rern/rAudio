@@ -48,7 +48,11 @@ metadataGet() {
 	coverurl=${metadata[3]}
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
-	[[ ( -z $artist && -z $title && -z $album ) || $endtime == 0 ]] && sleep 10
+	if [[ ( -z $artist && -z $title && -z $album ) || $endtime == 0 ]]; then
+		sleep 10
+		metadataGet
+		return
+	fi
 	
 	if [[ -n $coverurl && ! -e /srv/http/data/system/vumeter ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
