@@ -282,18 +282,24 @@ elif [[ -n $radioheader ]]; then
 				systemctl stop radiofrance
 			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then
+				stationname=${station/* - }
 				if [[ -e $dirtmp/webradiodata ]]; then
 					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
 					Artist=${radiodata[0]}
 					Title=${radiodata[1]}
 					Album=${radiodata[2]}
 					coverart=${radiodata[3]}
-					station=${station/* - }
+					station=${stationname/* - }
 				fi
 				if [[ -n $radioparadise ]]; then
-					$dirbash/status-radioparadise.sh $file "$station" &> /dev/null &
+					id=$( basename ${file/-*} )
+					$dirbash/status-radioparadise.sh $file "$stationname" $id &> /dev/null &
 				elif [[ -n $radiofrance && ! -e $dirtmp/radiofrance ]]; then
-					echo $file > $dirtmp/radiofrance
+					id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
+					echo "\
+$file
+$stationname
+$id" > $dirtmp/radiofrance
 					systemctl start radiofrance
 				fi
 			elif [[ -n $Title ]]; then
