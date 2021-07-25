@@ -289,7 +289,7 @@ elif [[ -n $radioheader ]]; then
 					Title=${radiodata[1]}
 					Album=${radiodata[2]}
 					coverart=${radiodata[3]}
-					station=${stationname/* - }
+					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
 					id=$( basename ${file/-*} )
