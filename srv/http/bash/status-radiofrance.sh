@@ -42,13 +42,11 @@ metadataGet() {
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time \
 		| sed 's/^null$//' )
-	datanew=${metadata[@]:0:3}
-	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n ' )
-	[[ ${datanew// } == $dataprev ]] && exit
-	
 	artist=${metadata[0]}
 	title=${metadata[1]}
 	album=${metadata[2]}
+	[[ -z $artist && -z $title && -z $album ]] && exit
+	
 	coverurl=${metadata[3]}
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
