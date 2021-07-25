@@ -131,7 +131,6 @@ if [[ $player != mpd && $player != upnp ]]; then
 	echo {$status}
 	systemctl stop radiofrance
 	rm -f $dirtmp/webradiodata
-	touch $dirtmp/stop
 	exit
 fi
 
@@ -269,9 +268,6 @@ elif [[ -n $radioheader ]]; then
 			Title=
 			systemctl stop radiofrance
 			rm -f $dirtmp/webradiodata
-		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
-			rm $dirtmp/stop
-			Title=
 		else
 			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
 				radioparadise=1
