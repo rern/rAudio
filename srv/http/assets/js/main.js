@@ -803,9 +803,7 @@ $( '.map' ).on( 'tap', function() {
 		renderPlayback();
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
-		setTimeout( function() { // fix: settings fired on showed
-			$( '#button-settings' ).click();
-		}, 50 );
+		$( '#button-settings' ).click();
 	} else if ( cmd === 'repeat' ) {
 		if ( G.status.repeat ) {
 			if ( G.status.single ) {
