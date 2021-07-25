@@ -95,8 +95,9 @@ $( '#loader' ).click( function() {
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
-		&& G.status.player !== 'bluetooth'
-		&& 'file' in G.status && G.status.file.slice( 0, 4 ) !== 'http'
+		&& G.status.player === 'mpd'
+		&& 'file' in G.status
+		&& [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) === -1
 	) {
 		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
 	} else {
