@@ -83,7 +83,9 @@ $coverart" > $dirtmp/status
 , "Album"    : "'$album'"
 , "coverart" : "'$coverart'"
 , "station"  : "'$station'"
-, "radio"    : 1
+, "file"     : "'$file'"
+, "rprf"     : 1
+, "webradio" : true
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
