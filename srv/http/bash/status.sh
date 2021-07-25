@@ -280,7 +280,7 @@ elif [[ -n $radioheader ]]; then
 					Artist=${radiodata[0]}
 					Title=${radiodata[1]}
 					Album=${radiodata[2]}
-					coverart=${radiodata[3]}
+					coverart=${radiodata[9]}
 					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
