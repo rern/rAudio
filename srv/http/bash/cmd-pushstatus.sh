@@ -9,8 +9,8 @@ statusdata=$( echo $status \
 	| sed 's/null//' )
 readarray -t data <<< "$statusdata"
 if [[ ${data[ 7 ]} == false ]]; then # not webradio
-	datanew=${data[@]:0:6}
-	dataprev=$( head -6 <<< $dataprev | tr -d '\n ' )
+	datanew=${data[@]:0:5}
+	dataprev=$( head -5 <<< $dataprev | tr -d '\n ' )
 	[[ ${datanew// } == $dataprev ]] && exit
 else
 	datanew=${data[@]:0:3}

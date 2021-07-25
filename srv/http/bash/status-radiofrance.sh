@@ -2,11 +2,11 @@
 
 # Radio France metadata
 dirtmp=/srv/http/data/shm
-file=$( cat /srv/http/data/shm/radiofrance )
-name=$( basename "$file" )
-name=${name/-*}
-[[ $name != fip && $name != francemusique ]] && name=$( echo $name | sed 's/fip\|francemusique//' )
-case ${name/-*} in
+readarray -t stationdata < $dirtmp/radiofrance
+file=${stationdata[0]}
+station=${stationdata[1]}
+id=${stationdata[2]}
+case $id in
 	fip )        id=7;;
 	electro )    id=74;;
 	groove )     id=66;;
@@ -34,14 +34,14 @@ metadataGet() {
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
 		https://www.fip.fr/latest/api/graphql \
-		| sed 's/null/""/g' \
 		| jq -r \
  .data.now.playing_item.title\
 ,.data.now.playing_item.subtitle\
 ,.data.now.song.album\
 ,.data.now.playing_item.cover\
 ,.data.now.playing_item.end_time\
-,.data.now.server_time )
+,.data.now.server_time \
+		| sed 's/^null$//' )
 	datanew=${metadata[@]:0:3}
 	dataprev=$( head -3 $dirtmp/webradiodata 2> /dev/null | tr -d '\n ' )
 	[[ ${datanew// } == $dataprev ]] && exit
@@ -66,7 +66,7 @@ $title
 $album
 $coverart
 " > $dirtmp/webradiodata
-echo "\
+	echo "\
 $artist
 $title
 $album
@@ -76,11 +76,10 @@ false
 true
 $station
 $file" > $dirtmp/status
-	artist=$( echo $artist | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	title=$( echo $title | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	album=$( echo $album | sed 's/""/"/g; s/"/\\"/g; s/null//' )
-	station=$( cat /srv/http/data/webradios/${file//\//|} | head -1 )
-	station=${station/* - }
+	artist=${artist//\"/\\\"}
+	title=${title//\"/\\\"}
+	album=${album//\"/\\\"}
+	station=${station//\"/\\\"}
 	data='{
   "Artist"   : "'$artist'"
 , "Title"    : "'$title'"
@@ -91,13 +90,10 @@ $file" > $dirtmp/status
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
-		[[ -z $artist ]] && artist=false
-		[[ -z $title ]] && title=false
-		[[ -z $album ]] && album=false
 		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
-					| grep elapsed )
-		data=( "$artist" "$title" "$album" "play" false "${elapsed/* }" $( date +%s%3N ) true "$station" "$file" )
+					| awk '/elapsed/ {print $NF}' )
+		data=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
 		killall lcdchar.py &> /dev/null
 		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi

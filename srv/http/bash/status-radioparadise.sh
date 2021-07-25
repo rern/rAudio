@@ -4,9 +4,9 @@
 # status-radioparadise.sh FILENAME
 dirtmp=/srv/http/data/shm/
 file=$1
-station=${2/* - }
-name=$( basename $file )
-case ${name/-*} in
+station=$2
+id=$3
+case $id in
 	flacm )  id=0;;
 	mellow ) id=1;;
 	rock )   id=2;;
@@ -15,7 +15,8 @@ esac
 
 readarray -t metadata <<< $( curl -sL \
 	https://api.radioparadise.com/api/now_playing?chan=$id \
-	| jq -r .artist,.title,.album,.cover )
+	| jq -r .artist,.title,.album,.cover \
+	| sed 's/^null$//' )
 datanew=${metadata[@]:0:3}
 dataprev=$( head -3 /srv/http/data/shm/webradiodata 2> /dev/null | tr -d '\n ' )
 [[ ${datanew// } == $dataprev ]] && exit
@@ -45,9 +46,10 @@ false
 true
 $station
 $file" > $dirtmp/status
-artist=$( echo $artist | sed 's/"/\\"/g; s/null//' )
-title=$( echo $title | sed 's/"/\\"/g; s/null//' )
-album=$( echo $album | sed 's/"/\\"/g; s/null//' )
+artist=${artist//\"/\\\"}
+title=${title//\"/\\\"}
+album=${album//\"/\\\"}
+station=${station//\"/\\\"}
 data='{
   "Artist"   : "'$artist'"
 , "Title"    : "'$title'"
@@ -57,4 +59,12 @@ data='{
 , "radio"    : 1
 }'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
+if [[ -e /srv/http/data/system/lcdchar ]]; then
+	elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| awk '/elapsed/ {print $NF}' )
+	data=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
+	killall lcdchar.py &> /dev/null
+	/srv/http/bash/lcdchar.py "${data[@]}" &
+fi
 /srv/http/bash/cmd.sh onlinefileslimit
