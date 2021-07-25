@@ -277,7 +277,7 @@ $( '#library, #button-library' ).click( function() {
 } );
 $( '#playback' ).click( function() {
 	if ( G.playback ) {
-		if ( G.display.volumenone || document.body.clientWidth > 613 || $( '#volume-knob' ).is( ':visible' ) ) return
+		if ( G.display.volumenone || document.body.clientWidth > 613 || !$( '#volume-knob' ).hasClass( 'hide' ) ) return
 		
 		info( {
 			  icon       : 'volume'
@@ -912,7 +912,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			if ( G.display.time && $( '#time-knob' ).is( ':visible' ) ) {
+			if ( G.display.time && !$( '#time-knob' ).hasClass( 'hide' ) ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
 			} else {
