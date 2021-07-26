@@ -507,8 +507,7 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
-	systemctl stop radiofrance
-	rm -f $dirtmp/radioparadise
+	systemctl stop radiofrance radioparadise
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
@@ -530,8 +529,7 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/status
-	systemctl stop radiofrance
-	rm -f $dirtmp/radioparadise
+	systemctl stop radiofrance radioparadise
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop

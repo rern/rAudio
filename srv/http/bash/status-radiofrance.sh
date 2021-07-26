@@ -29,7 +29,7 @@ case $id in
 	opera )               id=409;;
 esac
 
-metadataGet() {
+metadataGet() { # run on each 'endtime'
 	readarray -t metadata <<< $( curl -s -m 5 -G \
 		--data-urlencode 'operationName=Now' \
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \

@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # file mode
-#    - initial page load / refresh > status.sh
-#    - changes                     > mpdidle.sh > cmd-pushstatus.sh
-# radioparadize - update stream every 5s > status-radioparadise.sh
-# radiofrance   - no stream update       > radiofrance.service > status-radiofrance.sh
+# initial page load / refresh > status.sh
+# changes:
+#    - mpdidle.sh > cmd-pushstatus.sh
+#
+#    - radioparadize > radioparadise.service > status-radioparadise.sh (update stream every 5s)
+#    - radiofrance   > radiofrance.service > status-radiofrance.sh     (no stream update)
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
@@ -258,9 +260,9 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $file == http://stream.radioparadise.com* ]]; then
+			if [[ $file == *stream.radioparadise.com* ]]; then
 				radioparadise=1
-			elif [[ $file == https://icecast.radiofrance.fr* ]]; then
+			elif [[ $file == *icecast.radiofrance.fr* ]]; then
 				radiofrance=1
 			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
@@ -274,17 +276,12 @@ elif [[ -n $radioheader ]]; then
 					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
-					case $( basename ${file/-*} ) in
-						flacm )  id=0;;
-						mellow ) id=1;;
-						rock )   id=2;;
-						world )  id=3;;
-					esac
+					id=$( basename ${file/-*} )
 					echo "\
 $file
 $stationname
 $id" > $dirtmp/radioparadise
-					$dirbash/status-radioparadise.sh &> /dev/null &
+					systemctl start radioparadise
 				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
 					id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
 					echo "\
