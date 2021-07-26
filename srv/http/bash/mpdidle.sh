@@ -18,22 +18,6 @@ mpc idleloop | while read changed; do
 		player )
 			[[ -e $dirtmp/radioparadise ]] && $dirbash/status-radioparadise.sh || $dirbash/cmd-pushstatus.sh
 			;;
-		mixer ) # for upmpdcli
-			if [[ -e $dirtmp/player-upnp ]]; then
-				echo 5 > $dirtmp/vol
-				( for (( i=0; i < 5; i++ )); do
-					sleep 0.1
-					s=$(( $( cat $dirtmp/vol ) - 1 )) # debounce volume long-press on client
-					(( $s == 4 )) && i=0
-					if (( $s > 0 )); then
-						echo $s > $dirtmp/vol
-					else
-						rm -f $dirtmp/vol
-						pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
-					fi
-				done ) &> /dev/null &
-			fi
-			;;
 		playlist )
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
 				pllength0=$( cat $dirtmp/playlistlength 2> /dev/null || echo 0 )
