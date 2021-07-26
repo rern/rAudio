@@ -5,8 +5,8 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 if [[ ! -e /etc/systemd/system/radioparadise.service ]]; then
-	rm -f /srv/http/data/webradios/http:||stream.radioparadise.com*
-	rm -f /srv/http/data/webradiosimg/http:||stream.radioparadise.com*
+	rm -f "/srv/http/data/webradios/http:||stream.radioparadise.com"*
+	rm -f "/srv/http/data/webradiosimg/http:||stream.radioparadise.com"*
 	curl -L https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
 	wget -q https://github.com/rern/rOS/raw/main/etc/systemd/system/radioparadise.service -P /etc/systemd/system
 fi
