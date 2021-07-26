@@ -342,9 +342,7 @@ function psMpdUpdate( data ) {
 		}
 	} else {
 		G.status.updating_db = false;
-		$( '#lib-mode-list' ).data( 'count', data.title )
 		$( '#li-count' ).html( data.song.toLocaleString() );
-		delete data.title;
 		G.status.counts = data;
 		$.each( data, function( key, val ) {
 			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );

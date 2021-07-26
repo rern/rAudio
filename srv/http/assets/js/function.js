@@ -478,12 +478,9 @@ function getPlaybackStatus( render ) {
 			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
-			if ( G.status.counts ) {
-				var counts = G.status.counts;
-				$( '#lib-mode-list' ).data( 'count', counts.title )
-				$( '#li-count' ).html( counts.title.toLocaleString() +' <i class="fa fa-music gr"></i>' );
-				delete counts.title;
-				$.each( counts, function( key, val ) {
+			if ( !G.librarylist && G.status.counts ) {
+				$( '#li-count' ).html( G.status.counts.song.toLocaleString() +' <i class="fa fa-music gr"></i>' );
+				$.each( G.status.counts, function( key, val ) {
 					$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
 				} );
 			}
