@@ -77,6 +77,7 @@ pushstream.onstatuschange = function( status ) {
 			} );
 		}, 'json' );
 		getPlaybackStatus();
+		bannerHide();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
