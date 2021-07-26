@@ -892,8 +892,8 @@ webradioedit ) # name, newname, url, newurl
 	fi
 	if [[ $url != $urlnew ]]; then
 		mv $filewebradio $filewebradionew
-		mv $dirwebradioimg/{$urlname,$urlnamenew}.jpg 
-		mv $dirwebradioimg/{$urlname,$urlnamenew}-thumb.jpg 
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
 	;;
 	
