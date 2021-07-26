@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # Radio Paradise metadata
-# status-radioparadise.sh FILENAME
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm/
+dirtmp=/srv/http/data/shm
 readarray -t stationdata < $dirtmp/radioparadise
 file=${stationdata[0]}
 station=${stationdata[1]}
