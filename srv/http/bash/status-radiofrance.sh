@@ -89,19 +89,19 @@ $coverart" > $dirtmp/status
 , "webradio" : true
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-	if [[ -e $dirsystem/lcdchar ]]; then
-		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| awk '/elapsed/ {print $NF}' )
-		data=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
-		killall lcdchar.py &> /dev/null
-		/srv/http/bash/lcdchar.py "${data[@]}" &
-	fi
 	if [[ -e $dirtmp/snapclientip ]]; then
 		readarray -t clientip < $dirtmp/snapclientip
 		for ip in "${clientip[@]}"; do
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
 		done
+	fi
+	if [[ -e $dirsystem/lcdchar ]]; then
+		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| awk '/elapsed/ {print $NF}' )
+		status=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
+		killall lcdchar.py &> /dev/null
+		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
 	localtime=$( date +%s )
