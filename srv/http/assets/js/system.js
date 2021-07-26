@@ -430,9 +430,9 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 } );
 var infolcdchar = heredoc( function() { /*
 	<table id="tbllcdchar">
-	<tr id="cols"><td width="136">Size</td>
-		<td width="102"><label><input type="radio" name="cols" value="20">20x4</label></td>
-		<td width="102"><label><input type="radio" name="cols" value="16">16x2</label></td>
+	<tr id="cols"><td width="140">Size</td>
+		<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
+		<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
 	</tr>
 	<tr><td>Character Map</td>
 		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
@@ -498,7 +498,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="4" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
+			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="3" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
 			$( '.gpio input' ).css( 'width', '200px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
