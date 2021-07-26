@@ -258,7 +258,7 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $file == https://stream.radioparadise.com* ]]; then
+			if [[ $file == http://stream.radioparadise.com* ]]; then
 				radioparadise=1
 			elif [[ $file == https://icecast.radiofrance.fr* ]]; then
 				radiofrance=1
