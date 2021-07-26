@@ -258,9 +258,9 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
+			if [[ $file == https://stream.radioparadise.com* ]]; then
 				radioparadise=1
-			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
+			elif [[ $file == https://icecast.radiofrance.fr* ]]; then
 				radiofrance=1
 			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
