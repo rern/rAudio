@@ -2,16 +2,12 @@
 
 # Radio Paradise metadata
 # status-radioparadise.sh FILENAME
+dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm/
-file=$1
-station=$2
-id=$3
-case $id in
-	flacm )  id=0;;
-	mellow ) id=1;;
-	rock )   id=2;;
-	world )  id=3;;
-esac
+readarray -t stationdata < $dirtmp/radioparadise
+file=${stationdata[0]}
+station=${stationdata[1]}
+id=${stationdata[2]}
 
 readarray -t metadata <<< $( curl -sL \
 	https://api.radioparadise.com/api/now_playing?chan=$id \
@@ -25,7 +21,7 @@ artist=${metadata[0]}
 title=${metadata[1]}
 album=${metadata[2]}
 coverurl=${metadata[3]}
-if [[ -n $coverurl && ! -e /srv/http/data/system/vumeter ]]; then
+if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 	coverfile=$dirtmp/webradio-$name.jpg
 	curl -s $coverurl -o $coverfile
@@ -59,12 +55,18 @@ data='{
 , "webradio" : true
 }'
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-if [[ -e /srv/http/data/system/lcdchar ]]; then
+if [[ -e $dirsystem/lcdchar ]]; then
 	elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| awk '/elapsed/ {print $NF}' )
 	data=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
 	killall lcdchar.py &> /dev/null
 	/srv/http/bash/lcdchar.py "${data[@]}" &
+fi
+if [[ -e $dirtmp/snapclientip ]]; then
+	readarray -t clientip < $dirtmp/snapclientip
+	for ip in "${clientip[@]}"; do
+		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
+	done
 fi
 /srv/http/bash/cmd.sh onlinefileslimit

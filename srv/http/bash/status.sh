@@ -129,7 +129,6 @@ if [[ $player != mpd && $player != upnp ]]; then
 	esac
 # >>>>>>>>>>
 	echo {$status}
-	systemctl stop radiofrance
 	exit
 fi
 
@@ -210,11 +209,7 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
-	radioheader=1
-else
-	systemctl stop radiofrance
-fi
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -239,7 +234,6 @@ if [[ $fileheader == cdda ]]; then
 elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
-		systemctl stop radiofrance
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
@@ -263,17 +257,13 @@ elif [[ -n $radioheader ]]; then
 		fi
 		if [[ $state != play ]]; then
 			Title=
-			systemctl stop radiofrance
 		else
 			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
 				radioparadise=1
 			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
 				radiofrance=1
 			fi
-			if [[ -z $radiofrance ]]; then
-				systemctl stop radiofrance
-			fi
-			if [[ -n $radioparadise || -n $radiofrance ]]; then
+			if [[ -n $radioparadise || -n $radiofrance ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
 				if [[ -e $dirtmp/status ]]; then
 					readarray -t radiodata <<< $( cat $dirtmp/status )
@@ -284,14 +274,23 @@ elif [[ -n $radioheader ]]; then
 					station=$stationname
 				fi
 				if [[ -n $radioparadise ]]; then
-					id=$( basename ${file/-*} )
-					$dirbash/status-radioparadise.sh $file "$stationname" $id &> /dev/null &
+					case $( basename ${file/-*} ) in
+						flacm )  id=0;;
+						mellow ) id=1;;
+						rock )   id=2;;
+						world )  id=3;;
+					esac
+					echo "\
+$file
+$stationname
+$id" > $dirtmp/radioparadise
+					$dirbash/status-radioparadise.sh &> /dev/null &
 				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
 					id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
 					echo "\
 $file
 $stationname
-$id" > $dirtmp/radiofrance
+$id" > $dirtmp/radiofrance # get id code once in script
 					systemctl start radiofrance
 				fi
 			elif [[ -n $Title ]]; then

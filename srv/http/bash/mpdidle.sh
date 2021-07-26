@@ -16,7 +16,7 @@ dirtmp=/srv/http/data/shm
 mpc idleloop | while read changed; do
 	case $changed in
 		player )
-			$dirbash/cmd-pushstatus.sh
+			[[ -e $dirtmp/radioparadise ]] && $dirbash/status-radioparadise.sh || $dirbash/cmd-pushstatus.sh
 			;;
 		mixer ) # for upmpdcli
 			if [[ -e $dirtmp/player-upnp ]]; then
