@@ -4,6 +4,11 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if [[ ! -e /etc/systemd/system/radioparadise.service ]]; then
+	wget -q https://github.com/rern/rOS/raw/main/etc/systemd/system/radioparadise.service -P /etc/systemd/system
+	curl -L https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
+fi
+
 file=/etc/systemd/system/radiofrance.service
 ! grep -q ExecStop $file && echo 'ExecStop=/usr/bin/rm /srv/http/data/shm/radiofrance' >> $file
 
@@ -28,7 +33,6 @@ Description=radiofrance metadata
 Type=simple
 ExecStart=/srv/http/bash/status-radiofrance.sh
 " > $file
-	systemctl daemon-reload
 fi
 
 sed -i '/TotalDownload/ d' /etc/pacman.conf
@@ -63,7 +67,6 @@ if ! grep -q IPAddressDeny=$ $file; then
 [Service]
 IPAddressDeny=
 " > $file
-	systemctl daemon-reload
 	systemctl restart systemd-udevd
 fi
 file=/etc/udev/rules.d/cdrom.rules
@@ -98,7 +101,6 @@ fi
 file=/usr/lib/systemd/system/mpdscribble@.service
 if grep -q User=mpdscribble $file; then
 	sed -i 's/User=.*/User=mpd/' $file
-	systemctl daemon-reload
 fi
 
 connected=$( netctl list | grep ^* | sed 's/^\* //' )
@@ -115,6 +117,7 @@ installstart "$1"
 
 getinstallzip
 
+systemctl daemon-reload
 systemctl restart mpd
 
 installfinish
