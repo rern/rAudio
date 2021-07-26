@@ -59,19 +59,13 @@ metadataGet() { # run on each 'endtime'
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
-		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
+		coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
 	
 	echo "\
 $artist
 $title
 $album
-play
-false
-false
-true
-$station
-$file
 $coverart" > $dirtmp/status
 
 	artist=${artist//\"/\\\"}

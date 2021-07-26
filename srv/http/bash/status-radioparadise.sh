@@ -20,7 +20,7 @@ metadataGet() { # run every 5s
 		| jq -r .artist,.title,.album,.cover \
 		| sed 's/^null$//' )
 	datanew=${metadata[@]:0:3}
-	dataprev=$( head -3 /srv/http/data/shm/status 2> /dev/null | tr -d '\n ' )
+	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n ' )
 	if [[ ${datanew// } == $dataprev ]]; then
 		sleep 5
 		metadataGet
@@ -35,19 +35,13 @@ metadataGet() { # run every 5s
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
-		[[ -e $coverfile ]] && coverart=/data/shm/webradio-$name.$( date +%s ).jpg
+		coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
 
 	echo "\
 $artist
 $title
 $album
-play
-false
-false
-true
-$station
-$file
 $coverart" > $dirtmp/status
 
 	artist=${artist//\"/\\\"}
