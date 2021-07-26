@@ -77,10 +77,6 @@ pushstream.onstatuschange = function( status ) {
 			} );
 		}, 'json' );
 		getPlaybackStatus();
-		if ( $( '#bannerTitle' ).text() === 'Power' ) {
-			loader( 'hide' );
-			bannerHide();
-		}
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
