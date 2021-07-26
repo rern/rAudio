@@ -4,11 +4,6 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-if [[ ! -e /etc/systemd/system/radioparadise.service ]]; then
-	wget -q https://github.com/rern/rOS/raw/main/etc/systemd/system/radioparadise.service -P /etc/systemd/system
-	curl -L https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
-fi
-
 file=/etc/systemd/system/radiofrance.service
 ! grep -q ExecStop $file && echo 'ExecStop=/usr/bin/rm /srv/http/data/shm/radiofrance' >> $file
 
