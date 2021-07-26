@@ -495,11 +495,11 @@ $( '#setting-lcdchar' ).click( function() {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
+		, boxwidth      : 180
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
 			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="3" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
-			$( '.gpio input' ).css( 'width', '200px' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
