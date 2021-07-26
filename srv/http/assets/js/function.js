@@ -295,9 +295,9 @@ function displayPlayback() {
 	} else if ( 'file' in G.status ) {
 		if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
 			G.iplayer = 'audiocd';
-		} else if ( G.status.file.indexOf( 'http://stream.radioparadise.com' ) !== -1 ) {
+		} else if ( G.status.file.indexOf( 'stream.radioparadise.com' ) !== -1 ) {
 			G.iplayer = 'radioparadise';
-		} else if ( G.status.file.indexOf( 'https://icecast.radiofrance.fr' ) !== -1 ) {
+		} else if ( G.status.file.indexOf( 'icecast.radiofrance.fr' ) !== -1 ) {
 			G.iplayer = 'radiofrance';
 		} else if ( G.status.webradio ) {
 			G.iplayer = 'webradio';
