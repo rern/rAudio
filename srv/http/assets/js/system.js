@@ -466,7 +466,7 @@ var infolcdchar = heredoc( function() { /*
 		<td colspan="2"><input type="text" id="pins_data"></td>
 	</tr>
 	<tr><td></td>
-		<td colspan="2"><label><input id="backlight" type="checkbox">Backlight off <gr>(stop >60s)</gr></label></td>
+		<td colspan="2"><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td>
 	</tr>
 	</table>
 */ } );
