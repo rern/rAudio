@@ -1,0 +1,7 @@
+[Unit]
+Description=radiofrance metadata
+
+[Service]
+Type=simple
+ExecStart=/srv/http/bash/status-radiofrance.sh
+ExecStop=/usr/bin/rm /srv/http/data/shm/radiofrance
