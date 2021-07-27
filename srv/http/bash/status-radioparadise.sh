@@ -14,36 +14,28 @@ case $id in
 	world )  id=3;;
 esac
 
-metadataGet() { # run every 5s
-	readarray -t metadata <<< $( curl -sL \
-		https://api.radioparadise.com/api/now_playing?chan=$id \
-		| jq -r .artist,.title,.album,.cover \
+metadataGet() {
+	readarray -t metadata <<< $( curl -s -m 5 -G \
+		--data-urlencode "chan=$id" \
+		https://api.radioparadise.com/api/now_playing \
+		| jq -r .artist,.title,.album,.cover,.time \
 		| sed 's/^null$//' )
-	datanew=${metadata[@]:0:3}
-	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n ' )
-	if [[ ${datanew// } == $dataprev ]]; then
-		sleep 5
-		metadataGet
-		return
-	fi
-
 	artist=${metadata[0]}
 	title=${metadata[1]}
 	album=${metadata[2]}
 	coverurl=${metadata[3]}
+	time=${metadata[4]}
 	if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
 		coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-
 	echo "\
 $artist
 $title
 $album
 $coverart" > $dirtmp/status
-
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
@@ -74,7 +66,8 @@ $coverart" > $dirtmp/status
 		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
-	sleep 5
+	# next fetch
+	[[ -n $time ]] && sleep $time || sleep 5
 	metadataGet
 }
 

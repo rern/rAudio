@@ -31,9 +31,10 @@ esac
 
 metadataGet() { # run on each 'endtime'
 	readarray -t metadata <<< $( curl -s -m 5 -G \
-		--data-urlencode 'operationName=Now' \
+		--data-urlencode "operationName=Now" \
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
+		--data-urlencode "v=$( date +%s )" \
 		https://www.fip.fr/latest/api/graphql \
 		| jq -r \
  .data.now.playing_item.title\
@@ -49,25 +50,17 @@ metadataGet() { # run on each 'endtime'
 	coverurl=${metadata[3]}
 	endtime=${metadata[4]}
 	servertime=${metadata[5]}
-	if [[ ( -z $artist && -z $title && -z $album ) || $endtime == 0 ]]; then
-		sleep 10
-		metadataGet
-		return
-	fi
-	
 	if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
 		coverart=/data/shm/webradio-$name.$( date +%s ).jpg
 	fi
-	
 	echo "\
 $artist
 $title
 $album
 $coverart" > $dirtmp/status
-
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
@@ -98,10 +91,16 @@ $coverart" > $dirtmp/status
 		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
-	localtime=$( date +%s )
-	diff=$(( $localtime - $servertime )) # local time fetched after server time
-	sec2change=$(( $endtime - $servertime - $diff + 10 )) # seconds with 10s delay
-	(( $sec2change > 0 )) && sleep $sec2change
+	# next fetch
+	if [[ -n $endtime && $endtime != 0 ]]; then
+		localtime=$( date +%s )
+		diff=$(( localtime - servertime )) # local time fetched after server time
+		sec=$(( endtime - servertime - diff + 10 )) # seconds with 10s delay
+		(( $sec < 1 )) && sec=5
+	else
+		sec=5
+	fi
+	sleep $sec
 	metadataGet
 }
 
