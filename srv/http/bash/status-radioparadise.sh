@@ -61,7 +61,7 @@ $coverart" > $dirtmp/status
 		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
 					| awk '/elapsed/ {print $NF}' )
-		status=( "$artist" "$title" "$album" play false 0 $( date +%s%3N ) true "$station" "$file" )
+		status=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
 		killall lcdchar.py &> /dev/null
 		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi
