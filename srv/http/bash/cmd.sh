@@ -738,7 +738,7 @@ power )
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $tracks ]] && mpc del $tracks
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
+	[[ -e $dirsystem/lcdchar ]] && killall lcdchar.py &> /dev/null && $dirbash/lcdchar.py
 	if [[ -n $poweroff ]]; then
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	else
