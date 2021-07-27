@@ -67,7 +67,7 @@ $coverart" > $dirtmp/status
 	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
 	# next fetch
-	[[ -n $time ]] && sec=$(( time + 5 )) || sec=5 # add 5s delay
+	[[ -z $time ]] && sec=5 || sec=$(( time + 5 )) # add 5s delay
 	sleep $sec
 	metadataGet
 }

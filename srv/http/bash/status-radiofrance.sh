@@ -91,15 +91,8 @@ $coverart" > $dirtmp/status
 		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
-	# next fetch
-	if [[ -n $endtime && $endtime != 0 ]]; then
-		localtime=$( date +%s )
-		diff=$(( localtime - servertime )) # local time fetched after server time
-		sec=$(( endtime - servertime - diff + 10 )) # seconds with 10s delay
-		(( $sec < 1 )) && sec=5
-	else
-		sec=5
-	fi
+	# next fetch (sometime endtime = 0)
+	[[ -z $endtime || $endtime == 0 ]] && sec=5 || sec=$(( endtime - servertime + 10 )) # add 10s delay
 	sleep $sec
 	metadataGet
 }
