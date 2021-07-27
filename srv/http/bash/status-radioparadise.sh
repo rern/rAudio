@@ -24,7 +24,7 @@ metadataGet() {
 	title=${metadata[1]}
 	album=${metadata[2]}
 	coverurl=${metadata[3]}
-	time=${metadata[4]}
+	time=${metadata[4]} # countdown
 	if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
@@ -67,8 +67,7 @@ $coverart" > $dirtmp/status
 	fi
 	/srv/http/bash/cmd.sh onlinefileslimit
 	# next fetch
-	[[ -z $time ]] && sec=5 || sec=$(( time + 5 )) # add 5s delay
-	sleep $sec
+	[[ -z $time ]] && sleep 5 || sleep $(( time + 5 )) # add 5s delay
 	metadataGet
 }
 
