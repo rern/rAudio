@@ -36,4 +36,4 @@ fi
 
 [[ -e $dirsystem/librandom ]] && /srv/http/bash/cmd-librandom.sh
 
-[[ ! -e $dirtmp/radioparadise && ! -e $dirtmp/radiofrance ]] && echo "$statusdata" > $dirtmp/status
+echo "$statusdata" > $dirtmp/status

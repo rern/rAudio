@@ -16,7 +16,7 @@ dirtmp=/srv/http/data/shm
 mpc idleloop | while read changed; do
 	case $changed in
 		player )
-			$dirbash/cmd-pushstatus.sh
+			[[ ! -e $dirtmp/radioparadise && ! -e $dirtmp/radiofrance ]] && $dirbash/cmd-pushstatus.sh
 			;;
 		playlist )
 			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
