@@ -1206,10 +1206,10 @@ function renderPlayback() {
 		renderPlaybackCoverart( G.status.coverart );
 	}
 	// time
-	time = 'Time' in G.status ? G.status.Time : '';
+	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	$( '#total' ).text( timehms );
-	// stop ////////////////////
+// stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
 		if ( displaytime ) {
@@ -1233,7 +1233,7 @@ function renderPlayback() {
 	
 	var elapsedhms = second2HMS( G.status.elapsed );
 	var position = Math.round( G.status.elapsed / time * 1000 );
-	// pause ////////////////////
+// pause ////////////////////
 	if ( G.status.state === 'pause' ) {
 		if ( displaytime ) {
 			$( '#time' ).roundSlider( 'setValue', position );
@@ -1243,61 +1243,15 @@ function renderPlayback() {
 			$( '#time-bar' ).css( 'width', position / 10 +'%' );
 			$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / <w>'+ timehms +'</w>' );
 		}
-		return
-	}
-	
-	// play ////////////////////
-	if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
-	if ( G.status.elapsed === false ) {
-		$( '#time' ).roundSlider( 'setValue', 0 );
-		$( '#time-bar' ).css( 'width', 0 );
-		return
-	}
-	
-	if ( 'autoplaycd' in G ) return // wait for cd cache on start
-	
-	if ( displaytime ) {
-		if ( G.status.player === 'mpd' && G.status.elapsed ) $( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
-		G.intElapsed = setInterval( function() {
-			G.status.elapsed++;
-			if ( G.status.elapsed === G.status.Time ) {
-				G.status.elapsed = 0;
-				clearIntervalAll();
-				$( '#elapsed' ).empty();
-				$( '#time' ).roundSlider( 'setValue', 0 );
-			} else {
-				elapsedhms = second2HMS( G.status.elapsed );
-				$( '#elapsed' ).text( elapsedhms );
-			}
-		}, 1000 );
-		if ( G.localhost ) { // fix: high cpu - interval each 1 sec
-			G.intKnob = setInterval( function() {
-				position = Math.round( G.status.elapsed / time * 1000 );
-				$( '#time' ).roundSlider( 'setValue', position );
-			}, 1000 );
-		} else {
-			G.intKnob = setInterval( function() {
-				position++;
-				$( '#time' ).roundSlider( 'setValue', position );
-			}, time );
-		}
+// play ////////////////////
 	} else {
-		G.intElapsed = setInterval( function() {
-			G.status.elapsed++;
-			if ( G.status.elapsed === G.status.Time ) {
-				G.status.elapsed = 0;
-				clearIntervalAll();
-				$( '#time-bar' ).css( 'width', 0 );
-				$( '#progress' ).html( '<i class="fa fa-play"></i>' );
-			} else {
-				elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w> / '+ timehms );
-			}
-		}, 1000 );
-		G.intKnob = setInterval( function() {
-			position++;
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
-		}, time );
+		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
+		if ( G.status.elapsed ) {
+			renderPlaybackTime();
+		} else {
+			$( '#time' ).roundSlider( 'setValue', 0 );
+			$( '#time-bar' ).css( 'width', 0 );
+		}
 	}
 }
 function renderPlaybackBlank() {
@@ -1348,6 +1302,55 @@ function renderPlaybackCoverart( coverart ) {
 		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 	}
 	loader( 'hide' );
+}
+function renderPlaybackTime() {
+	if ( 'autoplaycd' in G ) return // wait for cd cache on start
+	
+	var time = 'Time' in G.status ? G.status.Time : '';
+	var timehms = time ? second2HMS( time ) : '';
+	var position = Math.round( G.status.elapsed / time * 1000 );
+	if ( !$( '#time-knob' ).hasClass( 'hide' ) ) {
+		if ( G.status.player === 'mpd' && G.status.elapsed ) $( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
+		G.intElapsed = setInterval( function() {
+			G.status.elapsed++;
+			if ( G.status.elapsed === G.status.Time ) {
+				G.status.elapsed = 0;
+				clearIntervalAll();
+				$( '#elapsed' ).empty();
+				$( '#time' ).roundSlider( 'setValue', 0 );
+			} else {
+				elapsedhms = second2HMS( G.status.elapsed );
+				$( '#elapsed' ).text( elapsedhms );
+			}
+		}, 1000 );
+		if ( G.localhost ) { // fix: high cpu - interval each 1 sec
+			G.intKnob = setInterval( function() {
+				$( '#time' ).roundSlider( 'setValue', position );
+			}, 1000 );
+		} else {
+			G.intKnob = setInterval( function() {
+				position++;
+				$( '#time' ).roundSlider( 'setValue', position );
+			}, time );
+		}
+	} else {
+		G.intElapsed = setInterval( function() {
+			G.status.elapsed++;
+			if ( G.status.elapsed === G.status.Time ) {
+				G.status.elapsed = 0;
+				clearIntervalAll();
+				$( '#time-bar' ).css( 'width', 0 );
+				$( '#progress' ).html( '<i class="fa fa-play"></i>' );
+			} else {
+				elapsedhms = second2HMS( G.status.elapsed );
+				$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w> / '+ timehms );
+			}
+		}, 1000 );
+		G.intKnob = setInterval( function() {
+			position++;
+			$( '#time-bar' ).css( 'width', position / 10 +'%' );
+		}, time );
+	}
 }
 function renderPlaybackTitles() {
 	G.prevartist = $( '#artist' ).text();

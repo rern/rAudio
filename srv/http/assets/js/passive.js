@@ -313,6 +313,7 @@ function psMpdPlayer( data ) {
 			if ( 'rprf' in data ) { // radioparadise / radiofrance
 				renderPlaybackTitles();
 				setPlaybackTitles();
+				renderPlaybackTime();
 				$( '#progress' ).empty();
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
