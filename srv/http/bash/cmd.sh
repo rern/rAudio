@@ -735,8 +735,8 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
-	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ -n $tracks ]] && mpc del $tracks
+	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	[[ -n $cdda ]] && mpc del $cdda
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
 	if [[ -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
