@@ -20,7 +20,7 @@ metadataGet() {
 		https://api.radioparadise.com/api/now_playing \
 		| jq -r .artist,.title,.album,.cover,.time \
 		| sed 's/^null$//' )
-	. /srv/http/bash/status-rprf.sh
+	. /srv/http/bash/status-radio.sh
 }
 
 metadataGet

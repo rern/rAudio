@@ -44,7 +44,7 @@ metadataGet() { # run on each 'endtime'
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time \
 		| sed 's/^null$//' )
-	. /srv/http/bash/status-rprf.sh
+	. /srv/http/bash/status-radio.sh
 }
 
 metadataGet
