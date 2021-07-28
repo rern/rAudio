@@ -78,12 +78,10 @@ fi
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
-
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py
 $dirbash/mpd-conf.sh # mpd.service started by this script
-if [[ -e $dirsystem/lcdchar ]]; then
-	$dirbash/lcdcharinit.py
-	$dirbash/cmd-pushstatus.sh
-fi
+$dirbash/cmd-pushstatus.sh
+
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
