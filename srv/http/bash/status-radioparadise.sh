@@ -20,11 +20,6 @@ metadataGet() {
 		https://api.radioparadise.com/api/now_playing \
 		| jq -r .artist,.title,.album,.cover,.time \
 		| sed 's/^null$//' )
-	artist=${metadata[0]}
-	title=${metadata[1]}
-	album=${metadata[2]}
-	coverurl=${metadata[3]}
-	time=${metadata[4]} # countdown
 	. /srv/http/bash/status-rprf.sh
 }
 

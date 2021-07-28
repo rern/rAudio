@@ -44,13 +44,6 @@ metadataGet() { # run on each 'endtime'
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time \
 		| sed 's/^null$//' )
-	artist=${metadata[0]}
-	title=${metadata[1]}
-	album=${metadata[2]}
-	coverurl=${metadata[3]}
-	endtime=${metadata[4]} # sometime endtime = 0
-	servertime=${metadata[5]}
-	[[ -z $endtime || $endtime == 0 ]] && time=$(( endtime - servertime )) || time=
 	. /srv/http/bash/status-rprf.sh
 }
 
