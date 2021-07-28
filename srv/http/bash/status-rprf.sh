@@ -5,11 +5,9 @@ artist=${metadata[0]}
 title=${metadata[1]}
 album=${metadata[2]}
 coverurl=${metadata[3]}
-time=${metadata[4]}
-# countdown
-if [[ ${#metadata[@]} == 6 && -n $time ]]; then # radiofrance
-	[[ $endtime == 0 ]] && time= || time=$(( time - ${metadata[5]} )) # sometime endtime = 0
-fi
+countdown=${metadata[4]} # countdown
+[[ -z $countdown ]] && countdown=0
+[[ ${#metadata[@]} == 6 && $countdown > 0 ]] && countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 
 if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
@@ -54,5 +52,5 @@ if [[ -e $dirtmp/snapclientip ]]; then
 fi
 /srv/http/bash/cmd.sh onlinefileslimit
 # next fetch
-[[ -z $time ]] && sleep 5 || sleep $(( time + 5 )) # add 5s delay
+sleep $(( countdown + 5 )) # add 5s delay
 metadataGet
