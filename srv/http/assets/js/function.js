@@ -1174,21 +1174,6 @@ function renderPlayback() {
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			renderPlaybackTime();
-/*			if ( G.display.radioelapsed || G.localhost ) {
-				if ( displaytime ) {
-					G.intElapsed = setInterval( function() {
-						G.status.elapsed++;
-						elapsedhms = second2HMS( G.status.elapsed );
-						$( '#total' ).text( elapsedhms ).addClass( 'gr' );
-					}, 1000 );
-				} else {
-					G.intElapsed = setInterval( function() {
-						G.status.elapsed++;
-						elapsedhms = second2HMS( G.status.elapsed );
-					$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w>' );
-					}, 1000 );
-				}
-			}*/
 		}
 		setPlaybackTitles();
 		return
