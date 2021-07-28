@@ -78,9 +78,8 @@ fi
 # ----------------------------------------------------------------------------
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py
+
 $dirbash/mpd-conf.sh # mpd.service started by this script
-$dirbash/cmd-pushstatus.sh
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
@@ -128,7 +127,8 @@ elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
 
-[[ -e $dirsystem/autoplay ]] && mpc play
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py
+[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
 
 if [[ -z $connected ]]; then
 	if [[ ! -e $dirsystem/wlannoap ]]; then
