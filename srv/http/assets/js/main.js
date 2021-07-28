@@ -788,7 +788,7 @@ $( '.map' ).on( 'tap', function() {
 					G.display.time = G.display.volume = G.display.buttons = true;
 					$( '#playback' ).addClass( 'active' );
 					$( '#bar-top' ).removeClass( 'hide' );
-					$( '#bar-bottom' ).removeClass( 'transparent' );
+					$( '#bar-bottom' ).removeClass( 'transparent hide' );
 					G.bars = true;
 				}
 			} else {
