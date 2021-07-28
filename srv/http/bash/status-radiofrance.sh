@@ -48,52 +48,10 @@ metadataGet() { # run on each 'endtime'
 	title=${metadata[1]}
 	album=${metadata[2]}
 	coverurl=${metadata[3]}
-	endtime=${metadata[4]}
+	endtime=${metadata[4]} # sometime endtime = 0
 	servertime=${metadata[5]}
-	if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
-		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
-		coverfile=$dirtmp/webradio-$name.jpg
-		curl -s $coverurl -o $coverfile
-		coverart=/data/shm/webradio-$name.$( date +%s ).jpg
-	fi
-	echo "\
-$artist
-$title
-$album
-$coverart" > $dirtmp/status
-	artist=${artist//\"/\\\"}
-	title=${title//\"/\\\"}
-	album=${album//\"/\\\"}
-	station=${station//\"/\\\"}
-	data='{
-  "Artist"   : "'$artist'"
-, "Title"    : "'$title'"
-, "Album"    : "'$album'"
-, "coverart" : "'$coverart'"
-, "station"  : "'$station'"
-, "file"     : "'$file'"
-, "rprf"     : 1
-, "webradio" : true
-}'
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
-	if [[ -e $dirtmp/snapclientip ]]; then
-		readarray -t clientip < $dirtmp/snapclientip
-		for ip in "${clientip[@]}"; do
-			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
-		done
-	fi
-	if [[ -e $dirsystem/lcdchar ]]; then
-		elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| awk '/elapsed/ {print $NF}' )
-		status=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
-		killall lcdchar.py &> /dev/null
-		/srv/http/bash/lcdchar.py "${status[@]}" &
-	fi
-	/srv/http/bash/cmd.sh onlinefileslimit
-	# next fetch (sometime endtime = 0)
-	[[ -z $endtime || $endtime == 0 ]] && sleep 5 || sleep $(( endtime - servertime + 5 )) # add 5s delay
-	metadataGet
+	[[ -z $endtime || $endtime == 0 ]] && time=$(( endtime - servertime )) || time=
+	. /srv/http/bash/status-rprf.sh
 }
 
 metadataGet
