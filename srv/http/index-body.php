@@ -351,7 +351,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
-			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><?=( number_format( $counts->song ) )?></span><i class="fa fa-music gr"></i></div>
+			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><?=( number_format( $counts->song ) )?><i class="fa fa-music gr"></i></span></div>
 			<div id="lib-breadcrumbs">
 			</div>
 			<span class="lipath"></span>
