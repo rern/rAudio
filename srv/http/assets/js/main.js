@@ -741,7 +741,7 @@ $( '.map' ).on( 'tap', function() {
 			if ( !G.display.time && !G.status.webradio ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( $( '#progress w' ).text() );
+					.text( $( '#progress' ).text() );
 			}
 			if ( !G.display.volume && !G.display.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent' );
@@ -851,7 +851,7 @@ $( '.btn-cmd' ).click( function() {
 				if ( !G.status.webradio ) {
 					var timehms = second2HMS( G.status.Time );
 					var elapsedhms = second2HMS( G.status.elapsed );
-					$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w> / '+ timehms );
+					$( '#progress' ).html( '<i class="fa fa-play"></i>'+ elapsedhms +' / '+ timehms );
 				}
 			}
 			if ( G.status.webradio ) $( '#title, #elapsed' ).html( blinkdot );
@@ -890,7 +890,7 @@ $( '.btn-cmd' ).click( function() {
 							.addClass( 'gr' );
 						$( '#total, #progress' ).empty();
 					} else {
-						$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
+						$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
 						$( '#time-bar' ).css( 'width', 0 );
 					}
 				} else {
@@ -916,7 +916,7 @@ $( '.btn-cmd' ).click( function() {
 			} else {
 				var timehms = second2HMS( G.status.Time );
 				var elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / <w>'+ timehms +'</w>' );
+				$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / '+ timehms );
 			}
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = G.status.playlistlength;

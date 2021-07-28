@@ -875,7 +875,7 @@ function mpcSeekBar( pageX ) {
 	var elapsedhms = second2HMS( Math.round( pos * G.status.Time ) );
 	if ( G.status.state === 'pause' ) elapsedhms = '<bl>'+ elapsedhms +'</bl>';
 	var timehms = second2HMS( Math.round( G.status.Time ) );
-	$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i><w>'+ elapsedhms +'</w> / '+ timehms );
+	$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i>'+ elapsedhms +' / '+ timehms );
 	$( '#time-bar' ).css( 'width', ( position / 10 ) +'%' );
 	if ( !G.drag ) mpcSeek( position );
 }
@@ -1206,7 +1206,7 @@ function renderPlayback() {
 			$( '#total' ).empty();
 		} else {
 			$( '#time-bar' ).css( 'width', 0 );
-			$( '#progress' ).html( '<i class="fa fa-stop"></i><w>'+ timehms +'</w>' );
+			$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
 		}
 		return
 	}
@@ -1227,7 +1227,7 @@ function renderPlayback() {
 			$( '#total' ).addClass( 'wh' );
 		} else {
 			$( '#time-bar' ).css( 'width', position / 10 +'%' );
-			$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / <w>'+ timehms +'</w>' );
+			$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / '+ timehms );
 		}
 // play ////////////////////
 	} else {
@@ -1340,7 +1340,7 @@ function renderPlaybackTime() {
 				$( '#progress' ).html( '<i class="fa fa-play"></i>' );
 			} else {
 				elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w>'+ timehms );
+				$( '#progress' ).html( '<i class="fa fa-play"></i>'+ elapsedhms + timehms );
 			}
 		}, 1000 );
 		G.intKnob = setInterval( function() {
