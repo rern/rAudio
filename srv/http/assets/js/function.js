@@ -479,7 +479,7 @@ function getPlaybackStatus( render ) {
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
 			if ( !G.librarylist && G.status.counts ) {
-				$( '#li-count' ).html( G.status.counts.song.toLocaleString() +' <i class="fa fa-music gr"></i>' );
+				$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
 				$.each( G.status.counts, function( key, val ) {
 					$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
 				} );
@@ -1707,9 +1707,7 @@ function switchPage( page ) {
 	displayBottom();
 	// restore page scroll
 	if ( G.playback ) {
-		$timeRS.setValue( 0 );
 		$( 'html, body' ).scrollTop( 0 );
-		if ( G.status.state === 'play' && !G.status.webradio ) $( '#elapsed' ).empty(); // hide flashing
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			$( 'html, body' ).scrollTop( G.liscrolltop );
