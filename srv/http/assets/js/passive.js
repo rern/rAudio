@@ -78,6 +78,7 @@ pushstream.onstatuschange = function( status ) {
 		}, 'json' );
 		getPlaybackStatus();
 		bannerHide();
+		loader( 'hide' );
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
