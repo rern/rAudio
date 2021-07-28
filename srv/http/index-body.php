@@ -253,7 +253,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="sampling"></div>
 	</div>
 	<div id="playback-row" class="row">
-		<div id="time-knob">
+		<div id="time-knob" class="hide">
 			<div id="time"></div>
 			<div id="timeicon">
 				<i id="ti-random" class="fa fa-random hide"></i>
@@ -288,7 +288,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				</div>
 			</div>
 		</div>
-		<div id="coverart-block">
+		<div id="coverart-block" class="hide">
 			<div id="divcover" class="cover">
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
@@ -316,7 +316,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
-		<div id="volume-knob">
+		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="volmap">
 				<i id="volT" class="map volmap fa fa-plus"></i>
@@ -430,6 +430,6 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>
-<div id="bar-bottom"> <!-- keep single line to suppress spaces -->
+<div id="bar-bottom" class="hide"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>
