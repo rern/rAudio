@@ -302,10 +302,8 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <heading class="sub">Data</heading>
 <dev class="gr">
 <a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
-<a href="https://webservice.fanart.tv">fanart.tv</a> - Coverarts and artist images<br>
-<a href="https://radioparadise.com">Radio Paradise</a> - Coverarts of their own (default Webradio stations)<br>
-<a href="https://www.fip.fr/">Fip</a> - Coverarts of their own<br>
-<a href="https://www.francemusique.fr/">France Musique</a> - Coverarts of their own<br>
+<a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts<br>
+<a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts by each stations<br>
 <a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 </div>
 
