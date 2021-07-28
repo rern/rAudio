@@ -497,7 +497,7 @@ function info( json ) {
 		// check changed values
 		if ( O.values && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste', checkChanged );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
 		}
 		// custom function before show
