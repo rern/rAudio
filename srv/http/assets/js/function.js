@@ -1133,7 +1133,6 @@ function renderLibraryList( data ) {
 	}
 }
 function renderPlayback() {
-	clearIntervalAll();
 	if ( !G.display.volumenone && G.display.volume ) {
 		$volumeRS.setValue( G.status.volume );
 		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
@@ -1162,8 +1161,9 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	var displaytime = !$( '#time-knob' ).hasClass( 'hide' );
 	renderPlaybackTitles();
+	G.radioheader = [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1;
 	// webradio ////////////////////////////////////////
-	if ( G.status.webradio || G.status.ext === 'UPnP' ) {
+	if ( G.radioheader ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
@@ -1173,7 +1173,8 @@ function renderPlayback() {
 			if ( !G.status.Title || G.status.Title.toLowerCase() !== G.prevtitle.toLowerCase() ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			if ( G.display.radioelapsed || G.localhost ) {
+			renderPlaybackTime();
+/*			if ( G.display.radioelapsed || G.localhost ) {
 				if ( displaytime ) {
 					G.intElapsed = setInterval( function() {
 						G.status.elapsed++;
@@ -1187,7 +1188,7 @@ function renderPlayback() {
 					$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w>' );
 					}, 1000 );
 				}
-			}
+			}*/
 		}
 		setPlaybackTitles();
 		return
@@ -1306,34 +1307,45 @@ function renderPlaybackCoverart( coverart ) {
 function renderPlaybackTime() {
 	if ( 'autoplaycd' in G ) return // wait for cd cache on start
 	
+	clearIntervalAll();
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	var position = Math.round( G.status.elapsed / time * 1000 );
 	if ( !$( '#time-knob' ).hasClass( 'hide' ) ) {
-		if ( G.status.player === 'mpd' && G.status.elapsed ) $( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
+		if ( G.radioheader ) {
+			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+		} else if ( G.status.player === 'mpd' && G.status.elapsed ) {
+			$( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
+		}
+		var $elapsed = !G.status.webradio ? $( '#elapsed' ) : $( '#total' )
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
 				G.status.elapsed = 0;
 				clearIntervalAll();
-				$( '#elapsed' ).empty();
+				$elapsed.empty();
 				$( '#time' ).roundSlider( 'setValue', 0 );
 			} else {
 				elapsedhms = second2HMS( G.status.elapsed );
-				$( '#elapsed' ).text( elapsedhms );
+				$elapsed.text( elapsedhms );
 			}
 		}, 1000 );
-		if ( G.localhost ) { // fix: high cpu - interval each 1 sec
-			G.intKnob = setInterval( function() {
-				$( '#time' ).roundSlider( 'setValue', position );
-			}, 1000 );
+		if ( !G.radioheader ) {
+			if ( G.localhost ) { // fix: high cpu - interval each 1 sec
+				G.intKnob = setInterval( function() {
+					$( '#time' ).roundSlider( 'setValue', position );
+				}, 1000 );
+			} else {
+				G.intKnob = setInterval( function() {
+					position++;
+					$( '#time' ).roundSlider( 'setValue', position );
+				}, time );
+			}
 		} else {
-			G.intKnob = setInterval( function() {
-				position++;
-				$( '#time' ).roundSlider( 'setValue', position );
-			}, time );
+			$( '#time' ).roundSlider( 'setValue', 0 );
 		}
-	} else {
+	} else if ( G.display.radioelapsed ) {
+		timehms = time ? ' / '+ timehms : '';
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
@@ -1343,7 +1355,7 @@ function renderPlaybackTime() {
 				$( '#progress' ).html( '<i class="fa fa-play"></i>' );
 			} else {
 				elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w> / '+ timehms );
+				$( '#progress' ).html( '<i class="fa fa-play"></i><w>'+ elapsedhms +'</w>'+ timehms );
 			}
 		}, 1000 );
 		G.intKnob = setInterval( function() {
@@ -1707,7 +1719,9 @@ function switchPage( page ) {
 	displayBottom();
 	// restore page scroll
 	if ( G.playback ) {
+		$timeRS.setValue( 0 );
 		$( 'html, body' ).scrollTop( 0 );
+		if ( G.status.state === 'play' && !G.status.webradio ) $( '#elapsed' ).empty(); // hide flashing
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			$( 'html, body' ).scrollTop( G.liscrolltop );

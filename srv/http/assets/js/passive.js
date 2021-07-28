@@ -311,6 +311,7 @@ function psMpdPlayer( data ) {
 		if ( G.playback ) {
 			displayPlayback();
 			if ( 'rprf' in data ) { // radioparadise / radiofrance
+				G.radioheader = true;
 				renderPlaybackTitles();
 				setPlaybackTitles();
 				renderPlaybackTime();
