@@ -5,15 +5,12 @@ artist=${metadata[0]}
 title=${metadata[1]}
 album=${metadata[2]}
 coverurl=${metadata[3]}
+time=${metadata[4]}
 # countdown
-if (( ${#metadata[@]} == 5 )); then # radioparadise
-	time=${metadata[4]}
-else
-	endtime=${metadata[4]} # sometime endtime = 0
-	servertime=${metadata[5]}
-	[[ -z $endtime || $endtime == 0 ]] && time= || time=$(( endtime - servertime ))
+if [[ ${#metadata[@]} == 6 && -n $time ]]; then # radiofrance
+	[[ $endtime == 0 ]] && time= || time=$(( time - ${metadata[5]} )) # sometime endtime = 0
 fi
-	
+
 if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
 	name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 	coverfile=$dirtmp/webradio-$name.jpg
