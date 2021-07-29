@@ -20,13 +20,14 @@ $artist
 $title
 $album
 $coverart" > $dirtmp/status
-elapsed=$( { echo clearerror; echo status; sleep 0.01; } \
-			| telnet 127.0.0.1 6600 2> /dev/null \
-			| awk '/elapsed/ {print $NF}' )
 artist=${artist//\"/\\\"}
 title=${title//\"/\\\"}
 album=${album//\"/\\\"}
 station=${station//\"/\\\"}
+elapsed=$( { echo clearerror; echo status; sleep 0.01; } \
+			| telnet 127.0.0.1 6600 2> /dev/null \
+			| awk '/elapsed/ {print $NF}' )
+[[ -z $elapsed ]] && elapsed=0
 data='{
 "Artist"   : "'$artist'"
 , "Title"    : "'$title'"
