@@ -817,15 +817,14 @@ function lyricsShow( data ) {
 		$( '#lyricsartist' ).text( G.lyricsArtist );
 		$( '#lyricstext' ).html( lyricshtml );
 	}
-	var bars = G.status ? G.bars : !$( '#bar-top' ).hasClass( 'hide' );
 	$( '#lyrics' )
 		.css( {
-			  top    : ( bars ? '' : 0 )
-			, height : ( bars ? '' : '100vh' )
+			  top    : ( G.bars ? '' : 0 )
+			, height : ( G.bars ? '' : '100vh' )
 		} )
 		.removeClass( 'hide' );
 	$( '#lyricstext' ).scrollTop( 0 );
-	if ( bars ) $( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
+	if ( G.bars ) $( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
 	bannerHide();
 }
 function lyricsHide() {
@@ -839,7 +838,7 @@ function lyricsHide() {
 	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
-	if ( G.bars || !$( '#bar-top' ).hasClass( 'hide' ) ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
+	if ( G.bars ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
 }
 function mpcSeek( seekto ) {
 	var seektime = Math.round( seekto / 1000 * G.status.Time );

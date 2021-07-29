@@ -277,7 +277,7 @@ $( '#library, #button-library' ).click( function() {
 } );
 $( '#playback' ).click( function() {
 	if ( G.playback ) {
-		if ( G.display.volumenone || document.body.clientWidth > 613 || !$( '#volume-knob' ).hasClass( 'hide' ) ) return
+		if ( G.display.volumenone || document.body.clientWidth > 613 || G.display.volume ) return
 		
 		info( {
 			  icon       : 'volume'
