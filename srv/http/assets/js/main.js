@@ -848,11 +848,7 @@ $( '.btn-cmd' ).click( function() {
 				$( '#elapsed' ).removeClass( 'bl' );
 				$( '#total' ).removeClass( 'wh' );
 			} else {
-				if ( !G.status.webradio ) {
-					var timehms = second2HMS( G.status.Time );
-					var elapsedhms = second2HMS( G.status.elapsed );
-					$( '#progress' ).html( '<i class="fa fa-play"></i>'+ elapsedhms +' / '+ timehms );
-				}
+				$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-play' );
 			}
 			if ( G.status.webradio ) $( '#title, #elapsed' ).html( blinkdot );
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
@@ -910,7 +906,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			if ( G.display.time && !$( '#time-knob' ).hasClass( 'hide' ) ) {
+			if ( G.display.time ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
 			} else {
