@@ -1,6 +1,6 @@
 function addReplace( command, title ) {
+	if ( G.playbackswitch ) $( '#playback' ).click();
 	bash( command, function() {
-		if ( G.playbackswitch ) $( '#playback' ).click();
 		G.playbackswitch = 0;
 	} );
 	if ( G.list.li.hasClass( 'licover' ) ) {
