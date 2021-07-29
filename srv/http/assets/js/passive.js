@@ -315,7 +315,6 @@ function psMpdPlayer( data ) {
 				G.radioheader = true;
 				renderPlaybackTitles();
 				setPlaybackTitles();
-				renderPlaybackTime();
 				$( '#progress' ).empty();
 				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );

@@ -1133,6 +1133,7 @@ function renderLibraryList( data ) {
 	}
 }
 function renderPlayback() {
+	clearIntervalAll();
 	if ( !G.display.volumenone && G.display.volume ) {
 		$volumeRS.setValue( G.status.volume );
 		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
@@ -1290,9 +1291,9 @@ function renderPlaybackCoverart( coverart ) {
 	loader( 'hide' );
 }
 function renderPlaybackTime() {
-	if ( 'autoplaycd' in G ) return // wait for cd cache on start
-	
 	clearIntervalAll();
+	if ( G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
+	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	var position = Math.round( G.status.elapsed / time * 1000 );
@@ -1375,6 +1376,7 @@ function renderPlaybackTitles() {
 		}
 	}
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
+	if ( $( '#time-knob' ).hasClass( 'hide' ) ) renderPlaybackTime();
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;
