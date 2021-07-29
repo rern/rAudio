@@ -24,7 +24,7 @@ artist=${artist//\"/\\\"}
 title=${title//\"/\\\"}
 album=${album//\"/\\\"}
 station=${station//\"/\\\"}
-elapsed=$( { echo clearerror; echo status; sleep 0.01; } \
+elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 			| telnet 127.0.0.1 6600 2> /dev/null \
 			| awk '/elapsed/ {print $NF}' )
 [[ -z $elapsed ]] && elapsed=0
