@@ -1295,13 +1295,16 @@ function renderPlaybackTime() {
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	var position = Math.round( G.status.elapsed / time * 1000 );
+	var $elapsed = $( '#elapsed' );
 	if ( G.display.time ) {
 		if ( G.radioheader ) {
-			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-		} else if ( G.status.player === 'mpd' && G.status.elapsed ) {
-			$( '#elapsed' ).text( second2HMS( G.status.elapsed ) );
+			$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
+			$( '#time' ).roundSlider( 'setValue', 0 );
+			if ( !G.display.radioelapsed ) return
+			
+			$elapsed = $( '#total' );
 		}
-		var $elapsed = !G.status.webradio ? $( '#elapsed' ) : $( '#total' )
+		if ( G.status.player === 'mpd' && G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
@@ -1310,28 +1313,26 @@ function renderPlaybackTime() {
 				$elapsed.empty();
 				$( '#time' ).roundSlider( 'setValue', 0 );
 			} else {
-				elapsedhms = second2HMS( G.status.elapsed );
-				$elapsed.text( elapsedhms );
+				$elapsed.text( second2HMS( G.status.elapsed ) );
 			}
 		}, 1000 );
-		if ( !G.radioheader ) {
-			if ( G.localhost ) { // fix: high cpu - interval each 1 sec
-				G.intKnob = setInterval( function() {
-					$( '#time' ).roundSlider( 'setValue', position );
-				}, 1000 );
-			} else {
-				G.intKnob = setInterval( function() {
-					position++;
-					$( '#time' ).roundSlider( 'setValue', position );
-				}, time );
-			}
+		if ( G.radioheader ) return
+		
+		if ( G.localhost ) { // fix: high cpu - interval each 1 sec
+			G.intKnob = setInterval( function() {
+				$( '#time' ).roundSlider( 'setValue', position );
+			}, 1000 );
 		} else {
-			$( '#time' ).roundSlider( 'setValue', 0 );
+			G.intKnob = setInterval( function() {
+				position++;
+				$( '#time' ).roundSlider( 'setValue', position );
+			}, time );
 		}
 	} else {
-		if ( G.status.webradio && !G.display.radioelapsed ) return
+		if ( G.radioheader && !G.display.radioelapsed ) return
 		
 		timehms = time ? ' / '+ timehms : '';
+		$( '#progress' ).html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + timehms );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
@@ -1340,8 +1341,7 @@ function renderPlaybackTime() {
 				$( '#time-bar' ).css( 'width', 0 );
 				$( '#progress' ).html( '<i class="fa fa-play"></i>' );
 			} else {
-				elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-play"></i>'+ elapsedhms + timehms );
+				$( '#progress' ).html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + timehms );
 			}
 		}, 1000 );
 		G.intKnob = setInterval( function() {
