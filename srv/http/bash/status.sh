@@ -267,28 +267,23 @@ elif [[ -n $radioheader ]]; then
 			fi
 			if [[ -n $radioparadise || -n $radiofrance ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
-				if [[ -e $dirtmp/status ]]; then
-					readarray -t radiodata <<< $( cat $dirtmp/status )
-					Artist=${radiodata[0]}
-					Title=${radiodata[1]}
-					Album=${radiodata[2]}
-					coverart=${radiodata[3]}
+				readarray -t tmpstatus <<< $( cat $dirtmp/status )
+				if [[ ${tmpstatus[3]} != stop ]]; then # skip on start - line 4 == stop
+					Artist=${tmpstatus[0]}
+					Title=${tmpstatus[1]}
+					Album=${tmpstatus[2]}
+					coverart=${tmpstatus[3]}
 					station=$stationname
-				fi
-				if [[ -n $radioparadise ]]; then
-					id=$( basename ${file/-*} )
-					echo "\
-$file
-$stationname
-$id" > $dirtmp/radioparadise
-					systemctl start radioparadise
-				elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
-					id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
-					echo "\
-$file
-$stationname
-$id" > $dirtmp/radiofrance # get id code once in script
-					systemctl start radiofrance
+				else
+					if [[ -n $radioparadise ]]; then
+						id=$( basename ${file/-*} )
+						echo $file$'\n'$stationname$'\n'$id > $dirtmp/radioparadise
+						systemctl start radioparadise
+					elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
+						id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
+						echo $file$'\n'$stationname$'\n'$id > $dirtmp/radiofrance
+						systemctl start radiofrance
+					fi
 				fi
 			elif [[ -n $Title ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
