@@ -1293,7 +1293,6 @@ function renderPlaybackTime() {
 	if ( G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
-	var timehms = time ? second2HMS( time ) : '';
 	var position = Math.round( G.status.elapsed / time * 1000 );
 	var $elapsed = $( '#elapsed' );
 	if ( G.display.time ) {
@@ -1316,38 +1315,37 @@ function renderPlaybackTime() {
 				$elapsed.text( second2HMS( G.status.elapsed ) );
 			}
 		}, 1000 );
-		if ( G.radioheader ) return
-		
-		if ( G.localhost ) { // fix: high cpu - interval each 1 sec
-			G.intKnob = setInterval( function() {
-				$( '#time' ).roundSlider( 'setValue', position );
-			}, 1000 );
-		} else {
+		if ( !G.radioheader ) {
+			var interval = G.localhost ? 1000 : time;
 			G.intKnob = setInterval( function() {
 				position++;
 				$( '#time' ).roundSlider( 'setValue', position );
-			}, time );
+			}, interval );
 		}
 	} else {
 		if ( G.radioheader && !G.display.radioelapsed ) return
 		
-		timehms = time ? ' / '+ timehms : '';
-		$( '#progress' ).html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + timehms );
+		var iplay = '<i class="fa fa-play"></i>';
+		var timehms = time ? ' / '+ second2HMS( time ) : '';
+		$( '#progress' ).html(  iplay + second2HMS( G.status.elapsed ) + timehms );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
 				G.status.elapsed = 0;
 				clearIntervalAll();
 				$( '#time-bar' ).css( 'width', 0 );
-				$( '#progress' ).html( '<i class="fa fa-play"></i>' );
+				$( '#progress' ).html( iplay );
 			} else {
-				$( '#progress' ).html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + timehms );
+				$( '#progress' ).html( iplay + second2HMS( G.status.elapsed ) + timehms );
 			}
 		}, 1000 );
-		G.intKnob = setInterval( function() {
-			position++;
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
-		}, time );
+		if ( !G.radioheader ) {
+			var interval = G.localhost ? 1000 : time;
+			G.intKnob = setInterval( function() {
+				position++;
+				$( '#time-bar' ).css( 'width', position / 10 +'%' );
+			}, interval );
+		}
 	}
 }
 function renderPlaybackTitles() {
