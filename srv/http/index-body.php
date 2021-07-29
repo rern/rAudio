@@ -430,6 +430,6 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>
-<div id="bar-bottom" class="hide"> <!-- keep single line to suppress spaces -->
+<div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>
