@@ -1329,7 +1329,9 @@ function renderPlaybackTime() {
 		} else {
 			$( '#time' ).roundSlider( 'setValue', 0 );
 		}
-	} else if ( G.display.radioelapsed ) {
+	} else {
+		if ( G.status.webradio && !G.display.radioelapsed ) return
+		
 		timehms = time ? ' / '+ timehms : '';
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
