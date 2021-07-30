@@ -312,6 +312,12 @@ elif [[ -n $radioheader ]]; then
 , "Time"          : false
 , "Title"         : "'$Title'"
 , "webradio"      : true'
+	if [[ -n $id ]]; then
+# >>>>>>>>>>
+		echo {$status}
+		exit
+	fi
+	
 	fi
 else
 	ext=${file/*.}
