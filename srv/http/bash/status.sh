@@ -262,16 +262,17 @@ elif [[ -n $radioheader ]]; then
 		else
 			if [[ $file == *stream.radioparadise.com* ]]; then
 				id=$( basename ${file/-*} )
+				radioparadise=1
 			elif [[ $file == *icecast.radiofrance.fr* ]]; then
 				id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
 			fi
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
-				readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null )
-				if [[ -z $tmpstatus || ${#tmpstatus[@]} > 4 ]]; then # start: > 4
-					echo $file$'\n'$stationname$'\n'$id > $dirtmp/radio
+				if [[ ! -e $dirtmp/radio ]]; then # start: > 4
+					echo $file$'\n'$stationname$'\n'$id$'\n'$radiosampling > $dirtmp/radio
 					systemctl start radio
 				else                                                 # playing: == 4
+					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null )
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
@@ -311,9 +312,13 @@ elif [[ -n $radioheader ]]; then
 , "Title"         : "'$Title'"
 , "webradio"      : true'
 	if [[ -n $id ]]; then
+		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
 ########
 		status+='
-, "coverart"      : "'$coverart'"'
+, "coverart"      : "'$coverart'"
+, "elapsed"       : '$elapsed'
+, "sampling"      : "'$sampling'"
+, "song"          : '$song
 # >>>>>>>>>>
 		echo {$status}
 		exit
@@ -376,7 +381,7 @@ elif [[ $state != stop ]]; then
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
 	else
-		if [[ -n $bitrate && $bitrate != 0 ]]; then
+		if [[ -n $bitrate && $bitrate != 0  && -z $radioparadise ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
 		else

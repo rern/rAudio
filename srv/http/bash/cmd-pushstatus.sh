@@ -19,8 +19,10 @@ else
 	[[ ${data[3]} == play && ${datanew// } == $dataprev ]] && exit
 fi
 
-curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-
+if [[ ! -e $dirtmp/radio ]]; then
+	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
+	echo "$statusdata" > $dirtmp/status
+fi
 if [[ -e $dirsystem/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
 	readarray -t data <<< "${statusdata//\"/\\\"}"
@@ -33,7 +35,4 @@ if [[ -e $dirtmp/snapclientip ]]; then
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 fi
-
 [[ -e $dirsystem/librandom ]] && /srv/http/bash/cmd-librandom.sh
-
-[[ ! -e $dirtmp/radio ]] && echo "$statusdata" > $dirtmp/status

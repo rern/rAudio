@@ -297,6 +297,19 @@ function psDisplay( data ) {
 	}
 }
 function psMpdPlayer( data ) {
+	if ( 'rprf' in data ) { // radioparadise / radiofrance
+		$.each( data, function( key, value ) {
+			G.status[ key ] = value;
+		} );
+		G.radioheader = true;
+		renderPlaybackTitles();
+		setPlaybackTitles();
+		$( '#progress' ).empty();
+		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+		renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+		return
+	}
+	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
@@ -311,16 +324,7 @@ function psMpdPlayer( data ) {
 		setButtonControl();
 		if ( G.playback ) {
 			displayPlayback();
-			if ( 'rprf' in data ) { // radioparadise / radiofrance
-				G.radioheader = true;
-				renderPlaybackTitles();
-				setPlaybackTitles();
-				$( '#progress' ).empty();
-				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-			} else {
-				renderPlayback();
-			}
+			renderPlayback();
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 		} else if ( G.playlist ) {
 			setPlaylistScroll();

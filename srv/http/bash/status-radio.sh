@@ -12,6 +12,9 @@ readarray -t tmpradio < $dirtmp/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]}
 id=${tmpradio[2]}
+pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
+sampling="$pos &bull; ${tmpradio[3]}"
+song=$(( ${pos/\/*} - 1 ))
 case $id in
 	flac )   id=0;;
 	mellow ) id=1;;
@@ -98,6 +101,8 @@ $coverart" > $dirtmp/status
 , "station"  : "'$station'"
 , "file"     : "'$file'"
 , "elapsed"  : '$elapsed'
+, "sampling" : "'$sampling'"
+, "song"     : '$song'
 , "rprf"     : 1
 , "webradio" : true
 }'
