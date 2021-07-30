@@ -1304,7 +1304,7 @@ function renderPlaybackTime() {
 			
 			$elapsed = $( '#total' );
 		}
-		if ( G.status.player === 'mpd' && G.status.elapsed ) $elapsed.text( elapsed );
+		if ( G.status.player === 'mpd' && elapsed ) $elapsed.text( elapsed );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
@@ -1328,7 +1328,7 @@ function renderPlaybackTime() {
 		
 		var iplay = '<i class="fa fa-play"></i>';
 		var timehms = time ? ' / '+ second2HMS( time ) : '';
-		$( '#progress' ).html(  iplay + elapsed + timehms );
+		if ( G.status.player === 'mpd' && elapsed ) $( '#progress' ).html(  iplay + elapsed + timehms );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
