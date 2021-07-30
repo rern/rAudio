@@ -321,19 +321,24 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
-	$( '#playericon' )
-		.removeAttr( 'class' )
-		.addClass( 'fa fa-'+ data.iplayer );
+	var iplayer = data.iplayer;
 	delete data.iplayer;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
-	G.radioheader = true;
-	renderPlaybackTitles();
-	setPlaybackTitles();
-	$( '#progress' ).empty();
-	$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-	renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+	if ( G.playback ) {
+		$( '#playericon' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-'+ iplayer );
+		G.radioheader = true;
+		renderPlaybackTitles();
+		setPlaybackTitles();
+		$( '#progress' ).empty();
+		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+		renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+	} else if ( G.playlist ) {
+		setPlaylistScroll();
+	}
 }	
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
