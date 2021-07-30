@@ -113,7 +113,7 @@ sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 
 # webradio default
-curl -L https://github.com/rern/rOS/raw/main/radioparadise.tar.xz | bsdtar xvf - -C /
+curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
 [[ ! -e $dirdata/mpd/counts ]] && echo '{"webradio":'$( ls -1q $dirdata/webradios | wc -l )'}' > $dirdata/mpd/counts
 
 # services
