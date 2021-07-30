@@ -2,6 +2,12 @@
 
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
+if [[ ! -e $dirtmp/radio ]]; then
+	sleep 5
+	$dirsystem/status-radio.sh
+	exit
+fi
+
 readarray -t tmpradio < $dirtmp/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]}
