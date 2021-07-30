@@ -1606,6 +1606,7 @@ function setPlaylistScroll() {
 	var $stationname = $this.find( '.li2 .stationname' );
 	$stationname.addClass( 'hide' );
 	if ( G.status.state === 'stop' ) {
+		$( '#pl-list li .elapsed' ).empty();
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
