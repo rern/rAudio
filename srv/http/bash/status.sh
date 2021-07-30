@@ -282,7 +282,7 @@ elif [[ -n $radioheader ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
 				#  - Artist - Title (extra tag)
 				#  - Artist: Title (extra tag)
-				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/g' )
+				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				# fetched coverart
