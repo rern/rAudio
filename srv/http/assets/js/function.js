@@ -1340,7 +1340,9 @@ function renderPlaybackTime() {
 				$( '#progress' ).html( iplay + second2HMS( G.status.elapsed ) + timehms );
 			}
 		}, 1000 );
-		if ( !G.radioheader ) {
+		if ( G.radioheader ) {
+			$( '#time-bar' ).css( 'width', 0 );
+		} else {
 			var interval = G.localhost ? 1000 : time;
 			G.intKnob = setInterval( function() {
 				position++;

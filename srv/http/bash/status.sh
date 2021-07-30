@@ -267,33 +267,16 @@ elif [[ -n $radioheader ]]; then
 			fi
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
-				readarray -t tmpstatus <<< $( cat $dirtmp/status )
-<<<<<<< Updated upstream
-				if [[ ${tmpstatus[3]} != stop ]]; then # skip on start - line 4 == stop
-=======
-				if (( ${#tmpstatus[@]} > 4 )); then # start: > 4
+				readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null )
+				if [[ -z $tmpstatus || ${#tmpstatus[@]} > 4 ]]; then # start: > 4
 					echo $file$'\n'$stationname$'\n'$id > $dirtmp/radio
 					systemctl start radio
-				else                                # playing: == 4
->>>>>>> Stashed changes
+				else                                                 # playing: == 4
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
 					coverart=${tmpstatus[3]}
 					station=$stationname
-<<<<<<< Updated upstream
-				else
-					if [[ -n $radioparadise ]]; then
-						id=$( basename ${file/-*} )
-						echo $file$'\n'$stationname$'\n'$id > $dirtmp/radioparadise
-						systemctl start radioparadise
-					elif [[ -n $radiofrance ]] && ! systemctl -q is-active radiofrance; then
-						id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
-						echo $file$'\n'$stationname$'\n'$id > $dirtmp/radiofrance
-						systemctl start radiofrance
-					fi
-=======
->>>>>>> Stashed changes
 				fi
 			elif [[ -n $Title ]]; then
 				# $Title - 's/ - \|: /\n/' split Artist - Title
