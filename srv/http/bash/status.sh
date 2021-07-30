@@ -262,9 +262,9 @@ elif [[ -n $radioheader ]]; then
 		else
 			if [[ $file == *stream.radioparadise.com* ]]; then
 				id=$( basename ${file/-*} )
-				radioparadise=1
 			elif [[ $file == *icecast.radiofrance.fr* ]]; then
-				id=$( basename ${file/-*} | sed 's/fip\(.\+\)\|francemusique\(.\+\)/\1/' )
+				id=$( basename ${file/-*} )
+				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
 			fi
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
@@ -381,7 +381,7 @@ elif [[ $state != stop ]]; then
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
 	else
-		if [[ -n $bitrate && $bitrate != 0  && -z $radioparadise ]]; then
+		if [[ -n $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
 		else
