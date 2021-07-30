@@ -260,9 +260,7 @@ elif [[ -n $radioheader ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $file == *stream.radioparadise.com* ]]; then
-				id=$( basename ${file/-*} )
-			elif [[ $file == *icecast.radiofrance.fr* ]]; then
+			if [[ $file == *stream.radioparadise.com* || $file == *icecast.radiofrance.fr* ]]; then
 				id=$( basename ${file/-*} )
 				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
 			fi
