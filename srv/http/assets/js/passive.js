@@ -47,7 +47,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
+var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( function( stream ) {
@@ -94,6 +94,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'display':   psDisplay( data );   break;
 		case 'relays':    psRelays( data );    break;
 		case 'mpdplayer': psMpdPlayer( data ); break;
+		case 'mpdradio':  psMpdRadio( data );  break;
 		case 'mpdupdate': psMpdUpdate( data ); break;
 		case 'notify':    psNotify( data );    break;
 		case 'option':    psOption( data );    break;
@@ -297,25 +298,12 @@ function psDisplay( data ) {
 	}
 }
 function psMpdPlayer( data ) {
-	if ( 'rprf' in data ) { // radioparadise / radiofrance
-		$.each( data, function( key, value ) {
-			G.status[ key ] = value;
-		} );
-		G.radioheader = true;
-		renderPlaybackTitles();
-		setPlaybackTitles();
-		$( '#progress' ).empty();
-		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-		renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-		return
-	}
-	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
-			delete data.control
-			delete data.volume
+			delete data.control;
+			delete data.volume;
 		}
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
@@ -332,6 +320,21 @@ function psMpdPlayer( data ) {
 		bannerHide();
 	}, G.debouncems );
 }
+function psMpdRadio( data ) {
+	$( '#playericon' )
+		.removeAttr( 'class' )
+		.addClass( 'fa fa-'+ data.iplayer );
+	delete data.iplayer;
+	$.each( data, function( key, value ) {
+		G.status[ key ] = value;
+	} );
+	G.radioheader = true;
+	renderPlaybackTitles();
+	setPlaybackTitles();
+	$( '#progress' ).empty();
+	$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+	renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+}	
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
 	$( '#i-update, #ti-update' ).addClass( 'hide' );

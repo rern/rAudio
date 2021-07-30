@@ -40,6 +40,7 @@ case $id in
 	ocoramonde )          id=404;;
 	opera )               id=409;;
 esac
+[[ $id < 4 ]] && iplayer=radioparadise || iplayer=radiofrance
 
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -s -m 5 -G \
@@ -103,10 +104,11 @@ $coverart" > $dirtmp/status
 , "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
 , "song"     : '$song'
-, "rprf"     : 1
+, "state"    : "play"
+, "iplayer"  : "'$iplayer'"
 , "webradio" : true
 }'
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$data"
+	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then
 		status=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
 		killall lcdchar.py &> /dev/null
