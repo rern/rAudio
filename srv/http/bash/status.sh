@@ -279,18 +279,16 @@ elif [[ -n $radioheader ]]; then
 					station=$stationname
 				fi
 			elif [[ -n $Title ]]; then
-				# $Title - 's/ - \|: /\n/' split Artist - Title
-				#  - Artist - Title (extra tag)
-				#  - Artist: Title (extra tag)
+				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				# fetched coverart
-				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
-				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				webradiofile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
-				if [[ -n $webradiofile ]]; then
-					coverart=/data/shm/webradio-$covername.$date.${webradiofile: -3}
+				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
+				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
+				coverfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
+				if [[ -n $coverfile ]]; then
+					coverart=/data/shm/webradio-$covername.$date.${coverfile: -3}
 					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
 			fi
