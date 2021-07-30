@@ -1295,6 +1295,7 @@ function renderPlaybackTime() {
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var position = Math.round( G.status.elapsed / time * 1000 );
 	var $elapsed = $( '#elapsed' );
+	var elapsed = G.status.elapsed ? second2HMS( G.status.elapsed ) : '';
 	if ( G.display.time ) {
 		if ( G.radioheader ) {
 			$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
@@ -1303,7 +1304,7 @@ function renderPlaybackTime() {
 			
 			$elapsed = $( '#total' );
 		}
-		if ( G.status.player === 'mpd' && G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );
+		if ( G.status.player === 'mpd' && G.status.elapsed ) $elapsed.text( elapsed );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
@@ -1327,7 +1328,7 @@ function renderPlaybackTime() {
 		
 		var iplay = '<i class="fa fa-play"></i>';
 		var timehms = time ? ' / '+ second2HMS( time ) : '';
-		$( '#progress' ).html(  iplay + second2HMS( G.status.elapsed ) + timehms );
+		$( '#progress' ).html(  iplay + elapsed + timehms );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
