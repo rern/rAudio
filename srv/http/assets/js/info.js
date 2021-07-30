@@ -437,7 +437,6 @@ function info( json ) {
 			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - ( allW > 399 ? 50 : 20 ) - labelW;
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
-			console.log(boxW)
 		}
 		// set padding-right: radio / checkbox
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
