@@ -1303,6 +1303,12 @@ function renderPlaybackTime() {
 			if ( !G.display.radioelapsed ) return
 			
 			$elapsed = $( '#total' );
+		} else {
+			var interval = G.localhost ? 1000 : time;
+			G.intKnob = setInterval( function() {
+				position++;
+				$( '#time' ).roundSlider( 'setValue', position );
+			}, interval );
 		}
 		if ( G.status.player === 'mpd' && elapsed ) $elapsed.text( elapsed );
 		G.intElapsed = setInterval( function() {
@@ -1316,18 +1322,20 @@ function renderPlaybackTime() {
 				$elapsed.text( second2HMS( G.status.elapsed ) );
 			}
 		}, 1000 );
-		if ( !G.radioheader ) {
+	} else {
+		if ( G.radioheader ) {
+			$( '#time-bar' ).css( 'width', 0 );
+			if ( !G.display.radioelapsed ) return
+			
+		} else {
 			var interval = G.localhost ? 1000 : time;
 			G.intKnob = setInterval( function() {
 				position++;
-				$( '#time' ).roundSlider( 'setValue', position );
+				$( '#time-bar' ).css( 'width', position / 10 +'%' );
 			}, interval );
 		}
-	} else {
-		if ( G.radioheader && !G.display.radioelapsed ) return
-		
 		var iplay = '<i class="fa fa-play"></i>';
-		var timehms = time ? ' / '+ second2HMS( time ) : '';
+		var timehms = G.radioheader ? '' : ' / '+ second2HMS( time );
 		if ( G.status.player === 'mpd' && elapsed ) $( '#progress' ).html(  iplay + elapsed + timehms );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
@@ -1340,15 +1348,6 @@ function renderPlaybackTime() {
 				$( '#progress' ).html( iplay + second2HMS( G.status.elapsed ) + timehms );
 			}
 		}, 1000 );
-		if ( G.radioheader ) {
-			$( '#time-bar' ).css( 'width', 0 );
-		} else {
-			var interval = G.localhost ? 1000 : time;
-			G.intKnob = setInterval( function() {
-				position++;
-				$( '#time-bar' ).css( 'width', position / 10 +'%' );
-			}, interval );
-		}
 	}
 }
 function renderPlaybackTitles() {
