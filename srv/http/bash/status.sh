@@ -313,6 +313,9 @@ elif [[ -n $radioheader ]]; then
 , "Title"         : "'$Title'"
 , "webradio"      : true'
 	if [[ -n $id ]]; then
+########
+		status+='
+, "coverart"      : "'$coverart'"'
 # >>>>>>>>>>
 		echo {$status}
 		exit
