@@ -19,10 +19,9 @@ else
 	[[ ${data[3]} == play && ${datanew// } == $dataprev ]] && exit
 fi
 
-if [[ ! -e $dirtmp/radio ]]; then
-	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-	echo "$statusdata" > $dirtmp/status
-fi
+curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
+echo "$statusdata" > $dirtmp/status
+
 if [[ -e $dirsystem/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
 	readarray -t data <<< "${statusdata//\"/\\\"}"
