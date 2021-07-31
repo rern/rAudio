@@ -1625,6 +1625,7 @@ function setPlaylistScroll() {
 			var elapsedL0 = 0;
 			var elapsedL = 0;
 			var time = $this.find( '.time' ).data( 'time' );
+			$elapsed.html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + slash );
 			G.intElapsedPl = setInterval( function() {
 				G.status.elapsed++;
 				if ( G.status.elapsed === time ) {
