@@ -1443,14 +1443,16 @@ function second2HMS( second ) {
 	if ( second <= 0 ) return 0;
 	
 	var second = Math.round( second );
-	var hh = Math.floor( second / 3600 );
-	var mm = Math.floor( ( second % 3600 ) / 60 );
-	var ss = second % 60;
+	if ( second < 60 ) return second;
 	
-	hh = hh ? hh +':' : '';
-	mm = hh ? ( mm > 9 ? mm +':' : '0'+ mm +':' ) : ( mm ? mm +':' : '' );
-	ss = mm ? ( ss > 9 ? ss : '0'+ ss ) : ss;
-	return hh + mm + ss;
+	var ss = second % 60;
+	var mm = Math.floor( ( second % 3600 ) / 60 );
+	if ( ss < 10 ) ss = '0'+ ss;
+	if ( second < 3600 ) return mm +':'+ ss;
+	
+	if ( mm < 10 ) mm = '0'+ mm;
+	var hh = Math.floor( second / 3600 );
+	return hh  +':'+ mm +':'+ ss;
 }
 function setButtonControl() {
 	if ( G.bars ) {
