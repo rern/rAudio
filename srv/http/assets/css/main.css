@@ -349,7 +349,7 @@ i.map.disabled, .map.disabled i {
 	vertical-align: -1px;
 }
 #modeicon {
-	color: var( --cg60 );
+	color: var( --cgl );
 }
 #progress {
 	margin: 0 5px;
