@@ -18,14 +18,6 @@ pushstream() {
 restartMPD() {
 	systemctl restart mpd
 	status=$( /srv/http/bash/status.sh )
-	if systemctl -q is-active radio; then
-		systemctl restart radio
-	else
-		pushstream mpdplayer "$status"
-		echo $status \
-			| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .webradio, .station, .file' \
-			| sed 's/null//' > /srv/http/data/shm/status
-	fi
 	pushstream refresh "$( /srv/http/bash/player-data.sh )"
 	mpc playlist | wc -l > /srv/http/data/shm/playlistlength  # for add tracks by other apps
 	if [[ -e $dirsystem/updating ]]; then
