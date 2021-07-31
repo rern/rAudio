@@ -1,31 +1,32 @@
 #!/bin/bash
 
+dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
 status=$( /srv/http/bash/status.sh )
-
 statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .webradio, .station, .file' \
 	| sed 's/null//' )
 readarray -t data <<< "$statusdata"
+dataprev=$( cat $dirtmp/status )
 if [[ ${data[ 7 ]} == false ]]; then # not webradio
 	datanew=${data[@]:0:6}
-	dataprev=$( head -6 $dirtmp/status 2> /dev/null | tr -d '\n' )
-	[[ ${datanew// } == ${dataprev// } ]] && exit
+	dataprev=$( head -6 <<< $dataprev | tr -d '\n ' )
+	[[ ${datanew// } == $dataprev ]] && exit
 else
 	datanew=${data[@]:0:3}
-	dataprev=$( head -3 $dirtmp/status 2> /dev/null | tr -d '\n' )
-	[[ ${data[3]} == play && ${datanew// } == ${dataprev// } ]] && exit
+	dataprev=$( head -3 <<< $dataprev | tr -d '\n ' )
+	[[ ${data[3]} == play && ${datanew// } == $dataprev ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
+echo "$statusdata" > $dirtmp/status
 
-if [[ -e /srv/http/data/system/lcdchar ]]; then
+if [[ -e $dirsystem/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
-	readarray -t data <<< $( echo "$statusdata" | sed 's/""/"/g; s/"/\\"/g' )
+	readarray -t data <<< "${statusdata//\"/\\\"}"
 	/srv/http/bash/lcdchar.py "${data[@]}" &
 fi
-
 if [[ -e $dirtmp/snapclientip ]]; then
 	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
 	readarray -t clientip < $dirtmp/snapclientip
@@ -33,6 +34,4 @@ if [[ -e $dirtmp/snapclientip ]]; then
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 fi
-[[ -e /srv/http/data/system/librandom ]] && /srv/http/bash/cmd-librandom.sh
-
-echo "$statusdata" > $dirtmp/status
+[[ -e $dirsystem/librandom ]] && /srv/http/bash/cmd-librandom.sh

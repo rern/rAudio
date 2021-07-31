@@ -37,15 +37,14 @@ include 'logosvg.php';
 	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
-<script src="/assets/js/plugin/jquery-2.2.4.min.js"></script>
-<script src="/assets/js/plugin/jquery.mobile.custom.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script>
 var nlibrary = 22;
 var nplaylist = 39;
 var nsettings = 46;
 var ntotal = 57;
 var n = 1;
-$.event.special.swipe.horizontalDistanceThreshold = 80; // pixel to swipe
 $( '#count' ).text( n +' / '+ ntotal );
 
 $( '.btn' ).click( function() {
@@ -66,10 +65,9 @@ $( '#previous' ).click( function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-$( 'body' ).swipeleft( function( e ) {
+$( 'body' ).on( 'swipeleft', function() {
 	$( '#next' ).click();
-} );
-$( 'body' ).swiperight( function( e ) {
+} ).on( 'swiperight', function() {
 	$( '#previous' ).click();
 } );
 function renderPage( n ) {

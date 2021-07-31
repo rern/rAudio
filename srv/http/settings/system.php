@@ -258,7 +258,6 @@ $selecttimezone.= '</select>';
 <?php
 $listui = [
 	  'jQuery'              => 'https://jquery.com/'
-	, 'jQuery Mobile'       => 'https://jquerymobile.com/'
 	, 'HTML5-Color-Picker'  => 'https://github.com/NC22/HTML5-Color-Picker'
 	, 'Inconsolata font'    => 'https://github.com/google/fonts/tree/main/ofl/inconsolata'
 	, 'jQuery Selectric'    => 'https://github.com/lcdsantos/jQuery-Selectric'
@@ -269,6 +268,7 @@ $listui = [
 	, 'roundSlider'         => 'https://github.com/soundar24/roundSlider'
 	, 'simple-keyboard'     => 'https://github.com/hodgef/simple-keyboard/'
 	, 'Sortable'            => 'https://github.com/SortableJS/Sortable'
+	, 'Tocca'               => 'https://github.com/GianlucaGuarini/Tocca.js'
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {
@@ -302,10 +302,8 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <heading class="sub">Data</heading>
 <dev class="gr">
 <a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
-<a href="https://webservice.fanart.tv">fanart.tv</a> - Coverarts and artist images<br>
-<a href="https://radioparadise.com">Radio Paradise</a> - Coverarts of their own (default Webradio stations)<br>
-<a href="https://www.fip.fr/">Fip</a> - Coverarts of their own<br>
-<a href="https://www.francemusique.fr/">France Musique</a> - Coverarts of their own<br>
+<a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts<br>
+<a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations<br>
 <a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 </div>
 

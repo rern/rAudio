@@ -15,9 +15,6 @@ dirtmp=/srv/http/data/shm
 
 mpc idleloop | while read changed; do
 	case $changed in
-		player )
-			$dirbash/cmd-pushstatus.sh
-			;;
 		mixer ) # for upmpdcli
 			if [[ -e $dirtmp/player-upnp ]]; then
 				echo 5 > $dirtmp/vol
@@ -46,6 +43,9 @@ mpc idleloop | while read changed; do
 					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 				) &> /dev/null &
 			fi
+			;;
+		player )
+			[[ ! -e $dirtmp/radio ]] && $dirbash/cmd-pushstatus.sh
 			;;
 		update )
 			sleep 1

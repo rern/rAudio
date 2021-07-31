@@ -507,7 +507,7 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
-	systemctl stop radiofrance
+	systemctl stop radio
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
@@ -521,13 +521,15 @@ mpcplayback )
 		fi
 	else
 		killall cava &> /dev/null
+		[[ $command == stop ]] && rm -f $dirtmp/status
 	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	systemctl stop radiofrance
+	rm -f $dirtmp/status
+	systemctl stop radio
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
@@ -733,10 +735,13 @@ plsimilar )
 power )
 	poweroff=${args[1]}
 	mpc stop
-	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ -n $tracks ]] && mpc del $tracks
+	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
+	[[ -n $cdda ]] && mpc del $cdda
 	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
+	if [[ -e $dirsystem/lcdchar ]]; then
+		killall lcdchar.py &> /dev/null
+		$dirbash/lcdchar.py
+	fi
 	if [[ -n $poweroff ]]; then
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	else
@@ -888,8 +893,8 @@ webradioedit ) # name, newname, url, newurl
 	fi
 	if [[ $url != $urlnew ]]; then
 		mv $filewebradio $filewebradionew
-		mv $dirwebradioimg/{$urlname,$urlnamenew}.jpg 
-		mv $dirwebradioimg/{$urlname,$urlnamenew}-thumb.jpg 
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
 	;;
 	

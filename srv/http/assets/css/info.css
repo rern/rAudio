@@ -326,6 +326,7 @@ hr {
 	font-size: 16px;
 }
 #infoFilename {
+	max-width: 95%;
 	margin-bottom: 10px;
 }
 #infoButtons {

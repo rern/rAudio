@@ -1,10 +1,12 @@
 #!/bin/bash
 
 # file mode
-#    - initial page load / refresh > status.sh
-#    - changes                     > mpdidle.sh > cmd-pushstatus.sh
-# radioparadize - update stream every 5s > status-radioparadise.sh
-# radiofrance   - no stream update       > radiofrance.service > status-radiofrance.sh
+# initial page load / refresh > status.sh
+# changes:
+#    - mpdidle.sh > cmd-pushstatus.sh
+#    - radioparadize / radiofrance - no stream update
+#        - radioparadize > radioparadise.service > status-radioparadise.sh
+#        - radiofrance   > radiofrance.service > status-radiofrance.sh
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
@@ -129,9 +131,6 @@ if [[ $player != mpd && $player != upnp ]]; then
 	esac
 # >>>>>>>>>>
 	echo {$status}
-	systemctl stop radiofrance
-	rm -f $dirtmp/webradiodata
-	touch $dirtmp/stop
 	exit
 fi
 
@@ -212,12 +211,7 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
-	radioheader=1
-else
-	systemctl stop radiofrance
-	rm -f $dirtmp/webradiodata
-fi
+[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -242,8 +236,6 @@ if [[ $fileheader == cdda ]]; then
 elif [[ -n $radioheader ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
-		systemctl stop radiofrance
-		rm -f $dirtmp/webradiodata
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
@@ -267,48 +259,35 @@ elif [[ -n $radioheader ]]; then
 		fi
 		if [[ $state != play ]]; then
 			Title=
-			systemctl stop radiofrance
-			rm -f $dirtmp/webradiodata
-		elif [[ -e $dirtmp/stop ]]; then # on start - previous Title still exists
-			rm $dirtmp/stop
-			Title=
 		else
-			if [[ $( dirname $file ) == 'http://stream.radioparadise.com' ]]; then
-				radioparadise=1
-			elif [[ $( dirname $file ) == 'https://icecast.radiofrance.fr' ]]; then
-				radiofrance=1
+			if [[ $file == *stream.radioparadise.com* || $file == *icecast.radiofrance.fr* ]]; then
+				id=$( basename ${file/-*} )
+				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
 			fi
-			if [[ -z $radiofrance ]]; then
-				systemctl stop radiofrance
-			fi
-			if [[ -n $radioparadise || -n $radiofrance ]]; then
-				if [[ -e $dirtmp/webradiodata ]]; then
-					readarray -t radiodata <<< $( cat $dirtmp/webradiodata )
-					Artist=${radiodata[0]}
-					Title=${radiodata[1]}
-					Album=${radiodata[2]}
-					coverart=${radiodata[3]}
-					station=${station/* - }
-				fi
-				if [[ -n $radioparadise ]]; then
-					$dirbash/status-radioparadise.sh $file "$station" &> /dev/null &
-				elif [[ -n $radiofrance && ! -e $dirtmp/radiofrance ]]; then
-					echo $file > $dirtmp/radiofrance
-					systemctl start radiofrance
+			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
+				stationname=${station/* - }
+				if [[ ! -e $dirtmp/radio ]]; then # start: > 4
+					echo $file$'\n'$stationname$'\n'$id$'\n'$radiosampling > $dirtmp/radio
+					systemctl start radio
+				else                                                 # playing: == 4
+					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null )
+					Artist=${tmpstatus[0]}
+					Title=${tmpstatus[1]}
+					Album=${tmpstatus[2]}
+					coverart=${tmpstatus[3]}
+					station=$stationname
 				fi
 			elif [[ -n $Title ]]; then
-				# $Title - 's/ - \|: /\n/' split Artist - Title
-				#  - Artist - Title (extra tag)
-				#  - Artist: Title (extra tag)
-				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/g' )
+				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
+				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				# fetched coverart
-				Title=$( echo $Title | sed 's/ (.*$//' ) # remove ' (extra tag)' for coverart search
-				covername=$( echo $Artist$Title | tr -d ' "`?/#&'"'" )
-				webradiofile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
-				if [[ -n $webradiofile ]]; then
-					coverart=/data/shm/webradio-$covername.$date.${webradiofile: -3}
+				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
+				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
+				coverfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
+				if [[ -n $coverfile ]]; then
+					coverart=/data/shm/webradio-$covername.$date.${coverfile: -3}
 					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
 			fi
@@ -330,6 +309,19 @@ elif [[ -n $radioheader ]]; then
 , "Time"          : false
 , "Title"         : "'$Title'"
 , "webradio"      : true'
+	if [[ -n $id ]]; then
+		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
+########
+		status+='
+, "coverart"      : "'$coverart'"
+, "elapsed"       : '$elapsed'
+, "sampling"      : "'$sampling'"
+, "song"          : '$song
+# >>>>>>>>>>
+		echo {$status}
+		exit
+	fi
+	
 	fi
 else
 	ext=${file/*.}
@@ -351,8 +343,6 @@ else
 , "Time"   : '$Time'
 , "Title"  : "'$Title'"'
 fi
-
-[[ -z $radioparadise && -z $radiofrance ]] && rm -f $dirtmp/webradiodata
 
 samplingLine() {
 	bitdepth=$1

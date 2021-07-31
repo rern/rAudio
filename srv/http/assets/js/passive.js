@@ -47,7 +47,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdupdate',
+var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( function( stream ) {
@@ -77,10 +77,8 @@ pushstream.onstatuschange = function( status ) {
 			} );
 		}, 'json' );
 		getPlaybackStatus();
-		if ( $( '#bannerTitle' ).text() === 'Power' ) {
-			loader( 'hide' );
-			bannerHide();
-		}
+		bannerHide();
+		loader( 'hide' );
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
@@ -96,6 +94,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'display':   psDisplay( data );   break;
 		case 'relays':    psRelays( data );    break;
 		case 'mpdplayer': psMpdPlayer( data ); break;
+		case 'mpdradio':  psMpdRadio( data );  break;
 		case 'mpdupdate': psMpdUpdate( data ); break;
 		case 'notify':    psNotify( data );    break;
 		case 'option':    psOption( data );    break;
@@ -303,8 +302,8 @@ function psMpdPlayer( data ) {
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
-			delete data.control
-			delete data.volume
+			delete data.control;
+			delete data.volume;
 		}
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
@@ -313,14 +312,7 @@ function psMpdPlayer( data ) {
 		setButtonControl();
 		if ( G.playback ) {
 			displayPlayback();
-			if ( 'radio' in data ) {
-				renderPlaybackTitles();
-				setPlaybackTitles();
-				$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-				renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
-			} else {
-				renderPlayback();
-			}
+			renderPlayback();
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 		} else if ( G.playlist ) {
 			setPlaylistScroll();
@@ -328,6 +320,26 @@ function psMpdPlayer( data ) {
 		bannerHide();
 	}, G.debouncems );
 }
+function psMpdRadio( data ) {
+	var iplayer = data.iplayer;
+	delete data.iplayer;
+	$.each( data, function( key, value ) {
+		G.status[ key ] = value;
+	} );
+	if ( G.playback ) {
+		$( '#playericon' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-'+ iplayer );
+		G.radioheader = true;
+		renderPlaybackTitles();
+		setPlaybackTitles();
+		$( '#progress' ).empty();
+		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+		renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+	} else if ( G.playlist ) {
+		setPlaylistScroll();
+	}
+}	
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
@@ -341,9 +353,7 @@ function psMpdUpdate( data ) {
 		}
 	} else {
 		G.status.updating_db = false;
-		$( '#lib-mode-list' ).data( 'count', data.title )
 		$( '#li-count' ).html( data.song.toLocaleString() );
-		delete data.title;
 		G.status.counts = data;
 		$.each( data, function( key, val ) {
 			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
@@ -425,7 +435,6 @@ function psPlaylist( data ) {
 	}, G.debouncems );
 }
 function psRelays( response ) { // on receive broadcast
-	var stopwatch = '<img class="stopwatch" src="/assets/img/stopwatch.'+ hash +'.svg">';
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
@@ -447,7 +456,7 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon        : 'relays'
 			, title       : 'GPIO Relays Countdown'
-			, message     : stopwatch
+			, message     : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
 			, footer      : '<wh>'+ delay +'</wh>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
@@ -485,7 +494,7 @@ function psRelays( response ) { // on receive broadcast
 			info( {
 				  icon       : 'relays'
 				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : stopwatch
+				, message    : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
 				, footer     : devices
 				, okno       : 1
 				, beforeshow : function() {

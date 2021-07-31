@@ -12,7 +12,7 @@ if ( $login && !$_SESSION[ 'login' ] ) { ?>
 	<input type="password" id="pwd"><i class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
-<script src="assets/js/plugin/jquery-2.2.4.min.js"></script>
+<script src="assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="assets/js/info.<?=$time?>.js"></script>
 <script>
 $( '#pwd' ).focus();
@@ -253,7 +253,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="sampling"></div>
 	</div>
 	<div id="playback-row" class="row">
-		<div id="time-knob">
+		<div id="time-knob" class="hide">
 			<div id="time"></div>
 			<div id="timeicon">
 				<i id="ti-random" class="fa fa-random hide"></i>
@@ -288,7 +288,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				</div>
 			</div>
 		</div>
-		<div id="coverart-block">
+		<div id="coverart-block" class="hide">
 			<div id="divcover" class="cover">
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
@@ -316,7 +316,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
-		<div id="volume-knob">
+		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="volmap">
 				<i id="volT" class="map volmap fa fa-plus"></i>
@@ -351,7 +351,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
-			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><?=( number_format( $counts->song ) )?></span><i class="fa fa-music gr"></i></div>
+			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><?=( number_format( $counts->song ) )?><i class="fa fa-music gr"></i></span></div>
 			<div id="lib-breadcrumbs">
 			</div>
 			<span class="lipath"></span>
@@ -430,6 +430,6 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>
-<div id="bar-bottom"> <!-- keep single line to suppress spaces -->
+<div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>

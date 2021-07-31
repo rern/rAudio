@@ -362,6 +362,7 @@ i.map.disabled, .map.disabled i {
 #progress i {
 	width: auto;
 	margin-right: 8px;
+	color: var( --cgl );
 }
 #sampling {
 	font-size: 14px;
