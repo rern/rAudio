@@ -12,6 +12,8 @@ dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
+[[ -e $dirsystem/vumeter ]] && vumeter=1
+[[ -e $dirsystem/vuled ]] && vuled=1
 
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
@@ -82,7 +84,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$(( ( now - start + 500 ) / 1000 ))
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirtmp/airplay-coverart.jpg && -z $vumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"       : "'$coverart'"
@@ -223,7 +225,7 @@ if [[ $fileheader == cdda ]]; then
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
 		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
-		[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		[[ -n $coverfile && -z $vumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	else
 		[[ $state == stop ]] && Time=0
 	fi
@@ -246,7 +248,7 @@ elif [[ -n $radioheader ]]; then
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		[[ -n $onlinefile && -z $vumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -277,7 +279,7 @@ elif [[ -n $radioheader ]]; then
 					coverart=${tmpstatus[3]}
 					station=$stationname
 				fi
-			elif [[ -n $Title ]]; then
+			elif [[ -n $Title && -z $vumeter ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
@@ -420,8 +422,6 @@ status+='
 , "sampling" : "'$sampling'"
 , "coverart" : ""'
 
-[[ -e $dirsystem/vumeter ]] && vumeter=1
-[[ -e $dirsystem/vuled ]] && vuled=1
 if [[ -n $vumeter || -n $vuled ]]; then
 # >>>>>>>>>>
 	[[ -n $vumeter ]] && echo {$status}
@@ -443,7 +443,7 @@ if [[ -n $vumeter || -n $vuled ]]; then
 	[[ -n $vumeter ]] && exit
 fi
 
-if grep -q '"cover": false' $dirsystem/display; then
+if grep -q '"cover": false' $dirsystem/display || [[ -n $vumeter ]]; then
 # >>>>>>>>>>
 	echo {$status}
 	exit

@@ -1264,7 +1264,8 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( coverart.slice( 0, -15 ) === $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) return
+	if ( !G.display.vumeter
+		&& coverart.slice( 0, -15 ) === $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) return
 	
 	if ( !G.display.vumeter && ( coverart || G.display.novu ) ) {
 		$( '#vu' ).addClass( 'hide' );
