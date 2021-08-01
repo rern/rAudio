@@ -1180,15 +1180,13 @@ function renderPlayback() {
 	
 	setPlaybackTitles();
 	// others ////////////////////////////////////////
-	if ( G.status.Artist !== G.prevartist
-		|| G.status.Album !== G.prevalbum
-		|| G.status.player === 'airplay'
-		|| G.display.vumeterchanged
-	) {
+	var prevcover = $( '#coverart' ).attr( 'src' ).slice( 0, -15 );
+	var cover = G.status.coverart.slice( 0, -15 );
+	if ( prevcover !== cover || G.display.vumeterchanged ) {
+		renderPlaybackCoverart( G.status.coverart );
 		setTimeout( function() {
 			delete G.display.vumeterchanged;
 		}, 5000 );
-		renderPlaybackCoverart( G.status.coverart );
 	}
 	// time
 	var time = 'Time' in G.status ? G.status.Time : '';

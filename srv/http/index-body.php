@@ -292,7 +292,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<div id="divcover" class="cover">
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
-				<img id="coverart" class="cover hide">
+				<img id="coverart" src="" class="cover hide">
 				<div id="vu" class="hide">
 					<?php include 'assets/img/vu.svg';?>
 				</div>
