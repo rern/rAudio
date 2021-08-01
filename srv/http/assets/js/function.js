@@ -1179,16 +1179,7 @@ function renderPlayback() {
 	}
 	
 	setPlaybackTitles();
-	// others ////////////////////////////////////////
-	var prevcover = $( '#coverart' ).attr( 'src' ).slice( 0, -15 );
-	var cover = G.status.coverart.slice( 0, -15 );
-	if ( prevcover !== cover || G.display.vumeterchanged ) {
-		renderPlaybackCoverart( G.status.coverart );
-		setTimeout( function() {
-			delete G.display.vumeterchanged;
-		}, 5000 );
-	}
-	// time
+	renderPlaybackCoverart( G.status.coverart );
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	$( '#total' ).text( timehms );
@@ -1273,6 +1264,8 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart( coverart ) {
+	if ( coverart.slice( 0, -15 ) === $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) return
+	
 	if ( !G.display.vumeter && ( coverart || G.display.novu ) ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
@@ -1538,8 +1531,7 @@ function setPlaybackTitles() {
 	var nochange = wW === G.wW
 				&& $( '#artist' ).text() === G.prevartist
 				&& $( '#title' ).text() === G.prevtitle
-				&& $( '#album' ).text() === G.prevalbum
-				&& !( 'vumeterchanged' in G );
+				&& $( '#album' ).text() === G.prevalbum;
 	if ( G.local || nochange ) return // suppress multiple fires, skip if same width and same data
 	
 	local();
