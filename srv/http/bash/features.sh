@@ -94,11 +94,12 @@ localbrowserset )
 	ply-image /srv/http/assets/img/splash.png
 	if [[ $rotate != $rotateset ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
+			reboot=1
 			case $rotate in
-				CW )     degree=0;;
-				NORMAL ) degree=90;;
-				CCW )    degree=180;;
-				UD )     degree=270;;
+				NORMAL) degree=0;;
+				CW )    degree=270;;
+				CCW )   degree=90;;
+				UD )    degree=180;;
 			esac
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
@@ -128,7 +129,11 @@ cursor=$cursor
 zoom=$zoom
 " > /etc/localbrowser.conf
 	systemctl disable --now getty@tty1
-	featureSet bootsplash localbrowser
+	if [[ -z $reboot ]]; then
+		featureSet bootsplash localbrowser
+	else
+		pushstream notify '{"title":"TFT 3.5\" LCD","text":"Reboot needed for rotate.","icon":"chromium"}'
+	fi
 	;;
 logindisable )
 	rm -f $dirsystem/login*

@@ -110,7 +110,7 @@
 	<span <?=$classhelp?>>
 		<a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
 		<br> &bull; HDMI/LCD display must be connected before boot.
-		<br> &bull; Overscan change needs reboot.
+		<br> &bull; TFT 3.5" LCD - rotate needs reboot.
 	</span>
 </div>
 <pre id="codelocalbrowser" class="hide"></pre>
