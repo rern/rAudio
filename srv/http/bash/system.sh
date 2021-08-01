@@ -344,7 +344,7 @@ i2c-dev
 " >> $filemodule
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	systemctl enable localbrower
+	systemctl enable localbrowser
 	[[ -n $reboot ]] && echo "$reboot" > $filereboot
 	pushRefresh
 	;;
