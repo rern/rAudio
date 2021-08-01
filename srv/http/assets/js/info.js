@@ -204,7 +204,7 @@ function info( json ) {
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		if ( typeof O.buttonlabel !== 'object' ) O.buttonlabel = [ O.buttonlabel ];
-		if ( typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
+		if ( 'buttoncolor' in O && typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
 		var iL = O.buttonlabel.length;
 		for ( i = 0; i < iL; i++ ) {
 			var color = O.buttoncolor ? ' style="background-color:'+ O.buttoncolor[ i ] +'"' : '';
