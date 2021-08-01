@@ -177,6 +177,8 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
+	} else if ( status === 0 ) { // disconnected
+		if ( page === 'system' ) clearInterval( intervalcputime );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
