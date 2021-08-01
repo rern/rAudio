@@ -85,14 +85,18 @@ function infoWiring( icon, title, message, image, W ) {
 	} );
 }
 function rebootText( enable, device ) {
-	var exist = 0;
-	if ( G.reboot.length ) {
+	var listed = 0;
+	if ( G.reboot ) {
 		if ( typeof G.reboot === 'string' ) G.reboot = [ G.reboot ];
-		exist = G.reboot.some( function( line ) {
+	} else {
+		G.reboot = [];
+	}
+	if ( G.reboot.length ) {
+		listed = G.reboot.some( function( line ) {
 			return line.indexOf( device ) !== -1
 		} );
 	}
-	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
+	if ( !listed ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
