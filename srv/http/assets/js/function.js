@@ -1549,7 +1549,7 @@ function setPlaybackTitles() {
 	var tWmax = 0;
 	var $el = $( '#artist, #title, #album' );
 	$el
-		.removeClass( 'scrollleft' )
+		.removeClass( 'scrollleft scrollellipse' )
 		.removeAttr( 'style' );
 	$el.each( function() {
 		var tW = Math.ceil( this.getBoundingClientRect().width );
