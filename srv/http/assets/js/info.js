@@ -200,15 +200,15 @@ function info( json ) {
 	$( '#infoTitle' ).html( title );
 	
 	// buttons
-	var htmlbutton = ''
+	var htmlbutton = '';
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		if ( typeof O.buttonlabel !== 'object' ) O.buttonlabel = [ O.buttonlabel ];
 		if ( 'buttoncolor' in O && typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
-		var iL = O.buttonlabel.length;
+		var iL = O.button.length;
 		for ( i = 0; i < iL; i++ ) {
-			var color = O.buttoncolor ? ' style="background-color:'+ O.buttoncolor[ i ] +'"' : '';
-			htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
+			htmlbutton += O.buttoncolor ? '<a style="background-color:'+ O.buttoncolor[ i ] +'"' : '<a';
+			htmlbutton += ' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
 		}
 	}
 	if ( O.cancelshow ) {
