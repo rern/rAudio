@@ -163,7 +163,11 @@ function showContent() {
 	}
 }
 
-var pushstream = new PushStream( { modes: 'websocket' } );
+var pushstream = new PushStream( {
+	  modes                                 : 'websocket'
+	, timeout                               : 5000
+	, reconnectOnChannelUnavailableInterval : 5000
+} );
 var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
