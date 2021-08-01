@@ -610,6 +610,11 @@ input:checked + .switchlabel.disabled:after {
 		letter-spacing: 0;
 	}
 }
+@media (max-width: 320px) {
+	.title {
+		letter-spacing: 3px;
+	}
+}
 @media (hover: hover) {
 	#bar-bottom div:hover {
 		background-color: var( --cgd );
