@@ -46,6 +46,16 @@ var picaOption = { // pica.js
 };
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
+/*	var drag = false, pY; // drag scroll vertically
+	$( 'body' ).css( { 'user-select': 'none'
+	} ).on( 'mousemove', function( e ) {
+		if ( drag ) $( window ).scrollTop( $( window ).scrollTop() + ( pY - e.pageY ) );
+	} ).on( 'mousedown', function( e ) {
+		drag = true;
+		pY = e.pageY;
+	} ).on( 'mouseup', function() {
+		drag = false;
+	} );*/
 } else {
 	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 }

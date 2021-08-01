@@ -292,6 +292,7 @@ document.title = page;
 
 refreshData();
 
+if ( localhost ) $( 'a' ).removeAttr( 'href' );
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
@@ -339,8 +340,6 @@ $( document ).keyup( function( e ) {
 	}
 } );
 $( '#'+ page ).addClass( 'active' );
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
-
 $( '#close' ).click( function() {
 	if ( page === 'system' || page === 'features' ) {
 		bash( 'cat '+ filereboot, function( lines ) {

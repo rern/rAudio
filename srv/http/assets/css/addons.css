@@ -32,11 +32,11 @@ hr {
 	box-shadow: 0px 4px 10px #000000;
 	z-index: 95;
 }
-.page-icon {
+#page-icon {
 	float: left;
 	background: var( --cm );
 }
-.page-icon, #close {
+#page-icon, #close {
 	width: 40px;
 	height: 40px;
 	line-height: 38px;

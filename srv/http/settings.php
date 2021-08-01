@@ -36,16 +36,12 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-		<?php if ( $localhost ) { ?> 
-	<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
-		<?php }
-			  if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?> 
-	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-		<?php } ?>
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/banner.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
+		<?php if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?> 
+	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+		<?php } ?>
 </head>
 <body>
 <i id="button-data"></i>
@@ -70,10 +66,6 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <div id="bar-bottom">
 	<?=$htmlbar?>
 </div>
-	<?php if ( $localhost ) { ?>
-<input class="input hide">
-<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
-	<?php } ?>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
@@ -89,8 +81,12 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
 	<?php }
 		  if ( $localhost ) { ?>
+<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
+<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
+<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
 <script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
 <script src="/assets/js/keyboard.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 	<?php } ?>
 	
 </body>

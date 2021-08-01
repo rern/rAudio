@@ -30,7 +30,7 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 </head>
 <body>
 <div class="head">
-	<i class="page-icon fa fa-jigsaw"></i><span class="title">ADDONS</span><a href="/"><i id="close" class="fa fa-times"></i></a>
+	<i id="page-icon" class="fa fa-jigsaw"></i><span class="title">ADDONS</span><i id="close" class="fa fa-times"></i>
 </div>
 <div class="container">
 <?php
