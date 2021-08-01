@@ -157,6 +157,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'screenoff':
 			bash( [ 'screenoff' ] );
+			G.screenoff = 1;
 			break;
 		case 'displaycolor':
 			G.color = 1;
@@ -700,6 +701,11 @@ var btnctrl = {
 	, volB    : 'voldn'
 }
 $( '.map' ).on( 'tap', function() {
+	if ( 'screenoff' in G ) {
+		delete G.screenoff;
+		return
+	}
+	
 	var cmd = btnctrl[ this.id ];
 	if ( cmd === 'guide' ) {
 		if ( G.local ) return
