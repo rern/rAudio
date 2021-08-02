@@ -1526,13 +1526,12 @@ function setButtonUpdating() {
 }
 function setPlaybackTitles() {
 	var wW = document.body.clientWidth;
-	var nochange = wW === G.wW
-				&& $( '#artist' ).text() === G.prevartist
-				&& $( '#title' ).text() === G.prevtitle
-				&& $( '#album' ).text() === G.prevalbum;
-	if ( G.local || nochange ) return // suppress multiple fires, skip if same width and same data
+	if ( wW === G.wW
+		&& $( '#artist' ).text() === G.prevartist
+		&& $( '#title' ).text() === G.prevtitle
+		&& $( '#album' ).text() === G.prevalbum
+	) return // suppress multiple fires, skip if same width and same data
 	
-	local();
 	G.wW = wW;
 	var tWmax = 0;
 	var $el = $( '#artist, #title, #album' );
