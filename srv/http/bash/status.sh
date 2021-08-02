@@ -54,6 +54,7 @@ else
 , "consume"        : '$consume'
 , "control"        : "'$control'"
 , "counts"         : '$counts'
+, "file"           : ""
 , "librandom"      : '$librandom'
 , "playlistlength" : '$playlistlength'
 , "playlists"      : '$playlists'
@@ -126,6 +127,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		status+='
 	, "elapsed"   : '$elapsed'
 	, "state"     : "'$state'"
+	, "sampling"  : "48 kHz 320 kbit/s &bull; Spotify"
 	, "timestamp" : '$now
 		;;
 		
@@ -235,7 +237,12 @@ if (( $playlistlength  == 0 )); then
 	exit
 fi
 fileheader=${file:0:4}
-[[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]] && radioheader=1
+if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
+	stream=1
+########
+	status+='
+, "stream" : true'
+fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
@@ -251,13 +258,14 @@ if [[ $fileheader == cdda ]]; then
 	else
 		[[ $state == stop ]] && Time=0
 	fi
+########
 		status+='
 , "Album"     : "'$Album'"
 , "Artist"    : "'$Artist'"
 , "discid"    : "'$discid'"
 , "Time"      : '$Time'
 , "Title"     : "'$Title'"'
-elif [[ -n $radioheader ]]; then
+elif [[ -n $stream ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
 		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
@@ -453,13 +461,13 @@ if grep -q '"cover": false' $dirsystem/display; then
 	exit
 fi
 
-if [[ $ext != CD && -z $radioheader ]]; then
+if [[ $ext != CD && -z $stream ]]; then
 	coverart=$( $dirbash/status-coverart.sh "\
 $Artist
 $Album
 $file0" )
 elif [[ $state == play && -z $coverart && -n $Artist ]]; then
-	if [[ -n $radioheader ]]; then
+	if [[ -n $stream ]]; then
 		[[ -n $Title ]] && args="\
 $Artist
 $Title

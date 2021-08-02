@@ -330,7 +330,6 @@ function psMpdRadio( data ) {
 		$( '#playericon' )
 			.removeAttr( 'class' )
 			.addClass( 'fa fa-'+ iplayer );
-		G.radioheader = true;
 		renderPlaybackTitles();
 		renderPlaybackCoverart();
 		$( '#progress' ).empty();

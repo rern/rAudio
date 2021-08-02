@@ -91,9 +91,7 @@ else
 , "Artist"     : '$( jq .album.artists[0].name <<< $data )'
 , "coverart"   : '$( jq .album.images[0].url <<< $data )'
 , "Time"       : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
-, "Title"      : '$( jq .name <<< $data )'
-, "sampling"   : "48 kHz 320 kbit/s &bull; Spotify"
-, "volumemute" : 0'
+, "Title"      : '$( jq .name <<< $data )
 	echo $metadata > $file
 ########
 	status+=$metadata

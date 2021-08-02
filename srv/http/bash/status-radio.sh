@@ -91,18 +91,16 @@ $coverart" > $dirtmp/status
 	[[ -z $elapsed ]] && elapsed=0
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
-"Artist"   : "'$artist'"
-, "Title"    : "'$title'"
-, "Album"    : "'$album'"
+  "Album"    : "'$album'"
+, "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
-, "station"  : "'$station'"
 , "file"     : "'$file'"
+, "iplayer"  : "'$iplayer'"
 , "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
 , "song"     : '$song'
-, "state"    : "play"
-, "iplayer"  : "'$iplayer'"
-, "webradio" : true
+, "station"  : "'$station'"
+, "Title"    : "'$title'"
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then
