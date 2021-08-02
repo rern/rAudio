@@ -42,7 +42,7 @@ disconnect = () => {
 document.addEventListener( 'visibilitychange', () => {
 	document.hidden ? disconnect : connect;
 } );
-window.onpageshow = window.onfocus = connect;   // ios
+window.onpageshow = window.onfocus = connect;
 window.onpagehide = window.onblur = disconnect;
 ////////////////////////////////////
 var pushstream = new PushStream( {
