@@ -1,11 +1,11 @@
-$( window ).on( 'resize', function() {
+$( window ).on( 'resize', () => { // portrait / landscape
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
 		setButtonControl()
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
 					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
@@ -16,7 +16,7 @@ $( window ).on( 'resize', function() {
 		}
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
@@ -25,23 +25,26 @@ $( window ).on( 'resize', function() {
 		}
 	}
 } );
-function onVisibilityChange( callback ) {
-	var visible = 1;
-	function focused() {
-		if ( !visible ) callback( visible = 1 );
+// active / inactive window /////////
+var active = 1;
+connect = () => {
+	if ( !active ) {
+		active = 1;
+		pushstream.connect();
 	}
-	function unfocused() {
-		if ( visible ) callback( visible = 0 );
+}
+disconnect = () => {
+	if ( active ) {
+		active = 0;
+		pushstream.disconnect();
 	}
-	document.addEventListener( 'visibilitychange', function() {
-		document.hidden ? unfocused() : focused();
-	} );
-	window.onpageshow = window.onfocus = focused;
-	window.onpagehide = window.onblur = unfocused;
-};
-onVisibilityChange( function( visible ) {
-	visible ? pushstream.connect() : pushstream.disconnect();
+}
+document.addEventListener( 'visibilitychange', () => {
+	document.hidden ? disconnect : connect;
 } );
+window.onpageshow = window.onfocus = connect;   // ios
+window.onpagehide = window.onblur = disconnect;
+////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
 	, timeout                               : 5000
@@ -50,13 +53,13 @@ var pushstream = new PushStream( {
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
-streams.forEach( function( stream ) {
+streams.forEach( stream => {
 	pushstream.addChannel( stream );
 } );
 pushstream.connect();
-pushstream.onstatuschange = function( status ) {
+pushstream.onstatuschange = status => {
 	if ( status === 2 ) {        // connected
-		bash( [ 'displayget' ], function( data ) {
+		bash( [ 'displayget' ], data => {
 			delete G.coverTL;
 			G.display = data;
 			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
@@ -68,7 +71,7 @@ pushstream.onstatuschange = function( status ) {
 				, lock       : 'system'
 				, screenoff  : 'power'
 			};
-			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
+			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
 				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
 					$( '#'+ submenu[ sub ] )
 						.addClass( 'sub' )
@@ -86,7 +89,7 @@ pushstream.onstatuschange = function( status ) {
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
-pushstream.onmessage = function( data, id, channel ) {
+pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
 		case 'airplay':   psAirplay( data );   break;
 		case 'bookmark':  psBookmark( data );  break;
