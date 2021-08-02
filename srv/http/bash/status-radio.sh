@@ -70,7 +70,7 @@ metadataGet() {
 	[[ -z $countdown ]] && countdown=0
 	[[ ${#metadata[@]} == 6 && $countdown > 0 ]] && countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 
-	if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
+	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile

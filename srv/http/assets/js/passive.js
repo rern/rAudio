@@ -260,19 +260,20 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
-	if ( G.local ) return
-	
 	if ( 'updateaddons' in data ) {
 		G.status.updateaddons = data.updateaddons ? true : false;
 		setButtonUpdateAddons();
 		return
 	}
 	
+	if ( data.vumeter !== G.vumeter ) {
+		if ( G.status.webradio && G.status.state === 'play' ) location.reload();
+		$( '#coverart' ).attr( 'src', '' );
+	}
 	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
-	if ( !G.display.vumeter ) $( '#coverart' ).attr( 'src', '' );
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
