@@ -39,11 +39,9 @@ disconnect = () => {
 		pushstream.disconnect();
 	}
 }
-document.addEventListener( 'visibilitychange', () => {
-	document.hidden ? disconnect : connect;
-} );
+document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
 window.onpageshow = window.onfocus = connect;
-window.onpagehide = window.onblur = disconnect;
 ////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
