@@ -5,7 +5,6 @@ $( 'body' ).prepend(
 	<div id="bannerMessage"></div>\
 </div>'
 );
-$( '#banner' ).click( bannerHide );
 var bannertimeout;
 banner = ( title, message, icon, delay ) => {
 	clearTimeout( bannertimeout );
@@ -24,3 +23,4 @@ bannerHide = () => {
 		.removeAttr( 'style' );
 	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
 }
+$( '#banner' ).click( bannerHide );
