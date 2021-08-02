@@ -184,7 +184,7 @@ a:active,
 a:hover {
 	outline: 0
 }
-.infobtn {
+.container .infobtn {
 	min-width: 90px;
 }
 #bottom {
