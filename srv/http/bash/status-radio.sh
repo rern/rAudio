@@ -89,6 +89,7 @@ $coverart" > $dirtmp/status
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| awk '/elapsed/ {print $NF}' )
 	[[ -z $elapsed ]] && elapsed=0
+	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
 "Artist"   : "'$artist'"
 , "Title"    : "'$title'"
