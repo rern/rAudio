@@ -276,7 +276,7 @@ elif [[ -n $radioheader ]]; then
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
-					coverart=${tmpstatus[3]}
+					[[ -z $vumeter ]] && coverart=${tmpstatus[3]}
 					station=$stationname
 				fi
 			elif [[ -n $Title && -z $vumeter ]]; then

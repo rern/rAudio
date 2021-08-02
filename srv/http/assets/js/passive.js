@@ -272,6 +272,7 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
+	if ( !G.display.vumeter ) $( '#coverart' ).attr( 'src', '' );
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();

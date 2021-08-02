@@ -356,7 +356,6 @@ function displaySave( keys ) {
 		G.display[ k ] = values[ i ];
 	} );
 	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
-	if ( G.vumeter !== G.display.vumeter ) banner( 'VU Meter', G.display.vumeter ? 'Enable ...' : 'Disable ...', 'playback' );
 	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
 		delete G.display[ item ];
 	} );
@@ -1264,21 +1263,19 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( !G.display.vumeter
-		&& coverart.slice( 0, -15 ) === $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) return
-	
-	if ( !G.display.vumeter && ( coverart || G.display.novu ) ) {
+	if ( G.display.vumeter || ( !coverart && G.display.novu ) ) {
+		$( '#coverart' ).addClass( 'hide' );
+		$( '#vu' ).removeClass( 'hide' );
+		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+		loader( 'hide' );
+	} else if ( coverart.slice( 0, -15 ) !== $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) {
 		$( '#vu' ).addClass( 'hide' );
 		$( '#coverart' )
 			.attr( 'src', coverart || G.coverdefault )
 			.css( 'border', !coverart ? 'none' : '' )
 			.removeClass( 'hide' );
-	} else {
-		$( '#coverart' ).addClass( 'hide' );
-		$( '#vu' ).removeClass( 'hide' );
-		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+		loader( 'hide' );
 	}
-	loader( 'hide' );
 }
 function renderPlaybackTime() {
 	clearIntervalAll();
