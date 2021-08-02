@@ -1159,16 +1159,8 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	renderPlaybackTitles();
-	setPlaybackTitles();
+	renderPlaybackCoverart();
 	G.radioheader = [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1;
-	if ( [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1 ) {
-		G.radioheader = true;
-		var coverart = G.status.coverart || G.status.coverartradio;
-	} else {
-		G.radioheader = false;
-		var coverart = G.status.coverart;
-	}
-	renderPlaybackCoverart( coverart );
 	// webradio ////////////////////////////////////////
 	if ( G.radioheader ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
@@ -1264,20 +1256,23 @@ function renderPlaybackBlank() {
 			} );
 	}
 }
-function renderPlaybackCoverart( coverart ) {
+function renderPlaybackCoverart() {
 	if ( G.display.vumeter || ( !coverart && !G.display.novu ) ) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
-		loader( 'hide' );
-	} else if ( coverart.slice( 0, -15 ) !== $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) {
-		$( '#vu' ).addClass( 'hide' );
-		$( '#coverart' )
-			.attr( 'src', coverart || G.coverdefault )
-			.css( 'border', !coverart ? 'none' : '' )
-			.removeClass( 'hide' );
-		loader( 'hide' );
+	} else {
+		var prevcover = $( '#coverart' ).attr( 'src' );
+		if ( !prevcover || prevcover.slice( 0, -15 ) !== G.status.coverart.slice( 0, -15 ) ) {
+			var coverart = G.radioheader ? ( G.status.coverart || G.status.coverartradio ) : G.status.coverart;
+			$( '#vu' ).addClass( 'hide' );
+			$( '#coverart' )
+				.attr( 'src', coverart || G.coverdefault )
+				.css( 'border', !coverart ? 'none' : '' )
+				.removeClass( 'hide' );
+		}
 	}
+	loader( 'hide' );
 }
 function renderPlaybackTime() {
 	clearIntervalAll();
@@ -1366,6 +1361,7 @@ function renderPlaybackTitles() {
 		}
 	}
 	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
+	setPlaybackTitles();
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;

@@ -331,10 +331,9 @@ function psMpdRadio( data ) {
 			.addClass( 'fa fa-'+ iplayer );
 		G.radioheader = true;
 		renderPlaybackTitles();
-		setPlaybackTitles();
+		renderPlaybackCoverart();
 		$( '#progress' ).empty();
 		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-		renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
