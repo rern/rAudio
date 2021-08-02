@@ -7,7 +7,7 @@ $( 'body' ).prepend(
 );
 $( '#banner' ).click( bannerHide );
 var bannertimeout;
-banner = ( title, message, icon, delay ) => {
+function banner( title, message, icon, delay ) {
 	clearTimeout( bannertimeout );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
@@ -18,7 +18,7 @@ banner = ( title, message, icon, delay ) => {
 	$( '#banner' ).removeClass( 'hide' );
 	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
 }
-bannerHide = () => {
+function bannerHide() {
 	$( '#banner' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' );
