@@ -1166,13 +1166,14 @@ function renderPlayback() {
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state !== 'play' ) {
-			renderPlaybackCoverart( G.status.coverartradio );
+			var coverart = G.status.coverartradio;
 		} else {
-			if ( !G.status.Title || G.status.Title.toLowerCase() !== G.prevtitle.toLowerCase() ) renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
+			var coverart = G.status.coverart || G.status.coverartradio;
 			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			renderPlaybackTime();
 		}
+		renderPlaybackCoverart( coverart );
 		setPlaybackTitles();
 		return
 	}

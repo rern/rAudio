@@ -266,10 +266,7 @@ function psDisplay( data ) {
 		return
 	}
 	
-	if ( data.vumeter !== G.vumeter ) {
-		if ( G.status.webradio && G.status.state === 'play' ) location.reload();
-		$( '#coverart' ).attr( 'src', '' );
-	}
+	if ( data.vumeter !== G.vumeter ) $( '#coverart' ).attr( 'src', '' );
 	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
