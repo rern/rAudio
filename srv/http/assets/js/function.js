@@ -1144,8 +1144,8 @@ function renderPlayback() {
 		return
 	}
 	
-	$( '.emptyadd' ).addClass( 'hide' );
 	var sampling = G.status.sampling;
+	$( '.emptyadd' ).addClass( 'hide' );
 	if ( G.status.webradio ) {
 		if ( G.status.state === 'play' && G.status.Album !== '' ) { // radioparadise or radiofrance
 			sampling += ' &bull; '+ G.status.station;
@@ -1158,9 +1158,9 @@ function renderPlayback() {
 	$( '#divcover .coveredit.cover' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
+	G.radioheader = [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1;
 	renderPlaybackTitles();
 	renderPlaybackCoverart();
-	G.radioheader = [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1;
 	// webradio ////////////////////////////////////////
 	if ( G.radioheader ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
