@@ -950,7 +950,7 @@ function playlistFilter() {
 	var count = 0;
 	$( '#pl-list li' ).each( function() {
 		var $this = $( this );
-		var match = ( $this.text().search( regex ) !== -1 ) ? 1 : 0;
+		var match = ( $this.text().search( regex ) !== -1 ) ? true : false;
 		count = match ? ( count + 1 ) : count;
 		$this.toggleClass( 'hide', !match );
 		if ( !$this.hasClass( 'hide' ) ) {
@@ -1159,27 +1159,28 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	renderPlaybackTitles();
+	setPlaybackTitles();
 	G.radioheader = [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1;
+	if ( [ 'http', 'rtmp', 'rtp:', 'rtsp' ].indexOf( G.status.file.slice( 0, 4 ) ) !== -1 ) {
+		G.radioheader = true;
+		var coverart = G.status.coverart || G.status.coverartradio;
+	} else {
+		G.radioheader = false;
+		var coverart = G.status.coverart;
+	}
+	renderPlaybackCoverart( coverart );
 	// webradio ////////////////////////////////////////
 	if ( G.radioheader ) {
 		$( '#time' ).roundSlider( 'setValue', 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
-		if ( G.status.state !== 'play' ) {
-			var coverart = G.status.coverartradio;
-		} else {
-			var coverart = G.status.coverart || G.status.coverartradio;
-			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
+		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			renderPlaybackTime();
 		}
-		renderPlaybackCoverart( coverart );
-		setPlaybackTitles();
 		return
 	}
 	
-	setPlaybackTitles();
-	renderPlaybackCoverart( G.status.coverart );
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	$( '#total' ).text( timehms );
