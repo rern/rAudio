@@ -12,8 +12,7 @@ dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
-[[ -e $dirsystem/vumeter ]] && vumeter=1
-[[ -e $dirsystem/vuled ]] && vuled=1
+[[ ! -e $dirsystem/novumeter ]] && novumeter=1
 
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
@@ -84,7 +83,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$(( ( now - start + 500 ) / 1000 ))
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg && -z $vumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirtmp/airplay-coverart.jpg && $novumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"       : "'$coverart'"
@@ -225,7 +224,7 @@ if [[ $fileheader == cdda ]]; then
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
 		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
-		[[ -n $coverfile && -z $vumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		[[ -n $coverfile && $novumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	else
 		[[ $state == stop ]] && Time=0
 	fi
@@ -248,7 +247,7 @@ elif [[ -n $radioheader ]]; then
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $onlinefile && -z $vumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		[[ -n $onlinefile && $novumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
 		# before webradios play: no 'Name:' - use station name from file instead
@@ -276,10 +275,10 @@ elif [[ -n $radioheader ]]; then
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
-					[[ -z $vumeter ]] && coverart=${tmpstatus[3]}
+					[[ $novumeter ]] && coverart=${tmpstatus[3]}
 					station=$stationname
 				fi
-			elif [[ -n $Title && -z $vumeter ]]; then
+			elif [[ -n $Title && $novumeter ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
@@ -422,9 +421,11 @@ status+='
 , "sampling" : "'$sampling'"
 , "coverart" : ""'
 
-if [[ -n $vumeter || -n $vuled ]]; then
+[[ -e $dirsystem/vumeter ]] && vumeter=1
+[[ -e $dirsystem/vuled ]] && vuled=1
+if [[ $vumeter || $vuled ]]; then
 # >>>>>>>>>>
-	[[ -n $vumeter ]] && echo {$status}
+	[[ $vumeter ]] && echo {$status}
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			killall cava &> /dev/null
@@ -433,17 +434,17 @@ if [[ -n $vumeter || -n $vuled ]]; then
 	else
 		killall cava &> /dev/null
 		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-		if [[ -n $vuled ]]; then
+		if [[ $vuled ]]; then
 			p=$( cat /srv/http/data/system/vuledpins )
 			for i in $p; do
 				echo 0 > /sys/class/gpio/gpio$i/value
 			done
 		fi
 	fi
-	[[ -n $vumeter ]] && exit
+	[[ $vumeter ]] && exit
 fi
 
-if grep -q '"cover": false' $dirsystem/display || [[ -n $vumeter ]]; then
+if grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
 	echo {$status}
 	exit
