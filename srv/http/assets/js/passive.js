@@ -1,11 +1,11 @@
-$( window ).on( 'resize', function() {
+$( window ).on( 'resize', () => { // portrait / landscape
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
 		setButtonControl()
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
 					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
@@ -16,7 +16,7 @@ $( window ).on( 'resize', function() {
 		}
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
@@ -25,23 +25,26 @@ $( window ).on( 'resize', function() {
 		}
 	}
 } );
-function onVisibilityChange( callback ) {
-	var visible = 1;
-	function focused() {
-		if ( !visible ) callback( visible = 1 );
+// active / inactive window /////////
+var active = 1;
+connect = () => {
+	if ( !active ) {
+		active = 1;
+		pushstream.connect();
 	}
-	function unfocused() {
-		if ( visible ) callback( visible = 0 );
+}
+disconnect = () => {
+	if ( active ) {
+		active = 0;
+		pushstream.disconnect();
 	}
-	document.addEventListener( 'visibilitychange', function() {
-		document.hidden ? unfocused() : focused();
-	} );
-	window.onpageshow = window.onfocus = focused;
-	window.onpagehide = window.onblur = unfocused;
-};
-onVisibilityChange( function( visible ) {
-	visible ? pushstream.connect() : pushstream.disconnect();
+}
+document.addEventListener( 'visibilitychange', () => {
+	document.hidden ? disconnect : connect;
 } );
+window.onpageshow = window.onfocus = connect;   // ios
+window.onpagehide = window.onblur = disconnect;
+////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
 	, timeout                               : 5000
@@ -50,13 +53,13 @@ var pushstream = new PushStream( {
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
-streams.forEach( function( stream ) {
+streams.forEach( stream => {
 	pushstream.addChannel( stream );
 } );
 pushstream.connect();
-pushstream.onstatuschange = function( status ) {
+pushstream.onstatuschange = status => {
 	if ( status === 2 ) {        // connected
-		bash( [ 'displayget' ], function( data ) {
+		bash( [ 'displayget' ], data => {
 			delete G.coverTL;
 			G.display = data;
 			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
@@ -68,7 +71,7 @@ pushstream.onstatuschange = function( status ) {
 				, lock       : 'system'
 				, screenoff  : 'power'
 			};
-			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
+			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
 				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
 					$( '#'+ submenu[ sub ] )
 						.addClass( 'sub' )
@@ -86,7 +89,7 @@ pushstream.onstatuschange = function( status ) {
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
-pushstream.onmessage = function( data, id, channel ) {
+pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
 		case 'airplay':   psAirplay( data );   break;
 		case 'bookmark':  psBookmark( data );  break;
@@ -108,23 +111,23 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'webradio':  psWebradio( data );  break;
 	}
 }
-function psAirplay( data ) {
-	$.each( data, function( key, value ) {
+psAirplay = data => {
+	$.each( data, ( key, value ) => {
 		G.status[ key ] = value;
 	} );
 	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
 }
-function psBookmark( data ) {
+psBookmark = data => {
 	if ( G.bookmarkedit ) return
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		if ( 'html' in data ) {
 			$( '#lib-mode-list' ).append( data.html );
 		} else {
-			var $bookmark = $( '.lib-mode' ).filter( function() {
+			var $bookmark = $( '.lib-mode' ).filter( () => {
 				return $( this ).find( '.lipath' ) === data.path;
 			} );
 			if ( data.type === 'delete' ) {
@@ -136,14 +139,14 @@ function psBookmark( data ) {
 		if ( 'order' in data ) G.display.order = data.order;
 	}, G.debouncems );
 }
-function psCoverart( data ) {
+psCoverart = data => {
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
 	var path = url.substr( 0, url.lastIndexOf( '/' ) );
 	switch( data.type ) {
 		case 'bookmark':
-			var $this = $( '.bookmark' ).filter( function() {
+			var $this = $( '.bookmark' ).filter( () => {
 				return $( this ).find( '.lipath' ).text() === path;
 			} );
 			var $img = $this.find( 'img' );
@@ -202,7 +205,7 @@ function psCoverart( data ) {
 						$( '.licoverimg ' ).css( 'opacity', '' );
 					}
 				} else {
-					$( '#lib-list li' ).filter( function() {
+					$( '#lib-list li' ).filter( () => {
 						return $( this ).find( '.lipath' ).text() === coverpath
 					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
 				}
@@ -212,16 +215,16 @@ function psCoverart( data ) {
 				if ( !cd ) {
 					var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
 					var lipath;
-					var $litarget = $li.filter( function() {
+					var $litarget = $li.filter( () => {
 						lipath = $( this ).find( '.lipath' ).text()
 						return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath;
 					} );
 				} else {
-					var $litarget = $( '#pl-list li' ).filter( function() {
+					var $litarget = $( '#pl-list li' ).filter( () => {
 						return $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda';
 					} );
 				}
-				$litarget.each( function() {
+				$litarget.each( () => {
 					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
 				} );
 			}
@@ -259,7 +262,7 @@ function psCoverart( data ) {
 	}
 	bannerHide();
 }
-function psDisplay( data ) {
+psDisplay = data => {
 	if ( 'updateaddons' in data ) {
 		G.status.updateaddons = data.updateaddons ? true : false;
 		setButtonUpdateAddons();
@@ -268,7 +271,7 @@ function psDisplay( data ) {
 	
 	if ( data.vumeter !== G.vumeter ) $( '#coverart' ).attr( 'src', '' );
 	var hidecover = G.display.hidecover;
-	$.each( data, function( key, val ) {
+	$.each( data, ( key, val ) => {
 		G.display[ key ] = val;
 	} );
 	displayBars();
@@ -282,7 +285,7 @@ function psDisplay( data ) {
 		} else if ( $( '.licover' ).length ) {
 			if ( hidecover && !G.display.hidecover ) {
 				var query = G.query[ G.query.length - 1 ];
-				list( query, function( data ) {
+				list( query, data => {
 					data.path = query.path;
 					data.modetitle = query.modetitle;
 					renderLibraryList( data );
@@ -296,15 +299,15 @@ function psDisplay( data ) {
 		}
 	}
 }
-function psMpdPlayer( data ) {
+psMpdPlayer = data => {
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;
 		}
-		$.each( data, function( key, value ) {
+		$.each( data, ( key, value ) => {
 			G.status[ key ] = value;
 		} );
 		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
@@ -319,10 +322,10 @@ function psMpdPlayer( data ) {
 		bannerHide();
 	}, G.debouncems );
 }
-function psMpdRadio( data ) {
+psMpdRadio = data => {
 	var iplayer = data.iplayer;
 	delete data.iplayer;
-	$.each( data, function( key, value ) {
+	$.each( data, ( key, value ) => {
 		G.status[ key ] = value;
 	} );
 	if ( G.playback ) {
@@ -338,7 +341,7 @@ function psMpdRadio( data ) {
 		setPlaylistScroll();
 	}
 }	
-function psMpdUpdate( data ) {
+psMpdUpdate = data => {
 	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
@@ -353,7 +356,7 @@ function psMpdUpdate( data ) {
 		G.status.updating_db = false;
 		$( '#li-count' ).html( data.song.toLocaleString() );
 		G.status.counts = data;
-		$.each( data, function( key, val ) {
+		$.each( data, ( key, val ) => {
 			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
 		} );
 		if ( G.library ) {
@@ -363,7 +366,7 @@ function psMpdUpdate( data ) {
 				$( '.lib-icon.blink' ).removeClass( 'blink' );
 				var query = G.query[ G.query.length - 1 ];
 				if ( query ) {
-					list( query, function( data ) {
+					list( query, data => {
 						data.path = query.path;
 						data.modetitle = query.modetitle;
 						renderLibraryList( data );
@@ -373,13 +376,13 @@ function psMpdUpdate( data ) {
 		} else if ( G.playlist && !G.savedlist ) {
 			$( '#playlist' ).click();
 		}
-		setTimeout( function() {
+		setTimeout( () => {
 			$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
 			banner( 'Library Update', 'Done', 'library' );
 		}, 2000 );
 	}
 }
-function psNotify( data ) {
+psNotify = data => {
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {
@@ -391,24 +394,24 @@ function psNotify( data ) {
 		clearIntervalAll();
 	}
 }
-function psOption( data ) {
+psOption = data => {
 	if ( G.local ) return
 	
 	var option = Object.keys( data )[ 0 ];
 	G.status[ option ] = Object.values( data )[ 0 ];
 	setButtonOptions();
 }
-function psOrder( data ) {
+psOrder = data => {
 	if ( G.local ) return
 	
 	G.display.order = data;
 	orderLibrary();
 }
-function psPlaylist( data ) {
+psPlaylist = data => {
 	if ( G.local ) return
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		if ( data == -1 ) {
 			if ( G.playback ) {
 				getPlaybackStatus();
@@ -417,7 +420,7 @@ function psPlaylist( data ) {
 			}
 		} else if ( 'autoplaycd' in data ) {
 			G.autoplaycd = 1;
-			setTimeout( function() { delete G.autoplaycd }, 5000 );
+			setTimeout( () => { delete G.autoplaycd }, 5000 );
 		} else if ( 'html' in data ) {
 			if ( G.playback ) {
 				getPlaybackStatus();
@@ -432,7 +435,7 @@ function psPlaylist( data ) {
 		}
 	}, G.debouncems );
 }
-function psRelays( response ) { // on receive broadcast
+psRelays = response => { // on receive broadcast
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
@@ -458,16 +461,16 @@ function psRelays( response ) { // on receive broadcast
 			, footer      : '<wh>'+ delay +'</wh>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
-			, button      : function() {
+			, button      : () => {
 				bash( '/srv/http/bash/relays.sh false' );
 			}
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
-			, ok          : function() {
+			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );
 			}
 		} );
 		delay--
-		G.intRelaysTimer = setInterval( function() {
+		G.intRelaysTimer = setInterval( () => {
 			if ( delay ) {
 				$( '.infofooter wh' ).text( delay-- );
 			} else {
@@ -479,7 +482,7 @@ function psRelays( response ) { // on receive broadcast
 		}, 1000 );
 	} else {
 		var devices = '';
-		$.each( response.order, function( i, val ) {
+		$.each( response.order, ( i, val ) => {
 			if ( i === 0 ) {
 				var color = state ? '' : 'class="gr"';
 			} else {
@@ -495,7 +498,7 @@ function psRelays( response ) { // on receive broadcast
 				, message    : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
 				, footer     : devices
 				, okno       : 1
-				, beforeshow : function() {
+				, beforeshow : () => {
 					$( '#infoX' ).addClass( 'hide' );
 				}
 			} );
@@ -506,13 +509,13 @@ function psRelays( response ) { // on receive broadcast
 		}
 	}
 }
-function psReload( data ) {
+psReload = data => {
 	location.href = '/';
 }
-function psRestore( data ) {
+psRestore = data => {
 	if ( data.restore === 'done' ) {
 		banner( 'Restore Settings', 'Done', 'sd' );
-		setTimeout( function() {
+		setTimeout( () => {
 			location.href = '/';
 		}, 2000 );
 	} else {
@@ -520,7 +523,7 @@ function psRestore( data ) {
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
 }
-function psSpotify( data ) {
+psSpotify = data => {
 	if ( G.status.player !== 'spotify' ) {
 		G.status.player = 'spotify';
 		displayBottom();
@@ -531,7 +534,7 @@ function psSpotify( data ) {
 		G.status.state = 'pause'
 		G.status.elapsed = data.pause;
 	} else {
-		$.each( data, function( key, value ) {
+		$.each( data, ( key, value ) => {
 			G.status[ key ] = value;
 		} );
 	}
@@ -539,14 +542,14 @@ function psSpotify( data ) {
 	renderPlayback();
 	setButtonControl();
 }
-function psVolume( data ) {
+psVolume = data => {
 	if ( data.type === 'enable' ) {
 		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
 		return
 	}
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		var vol = data.val;
 		var mute = data.type === 'mute';
 		if ( mute ) {
@@ -570,19 +573,19 @@ function psVolume( data ) {
 		}
 	}, G.debouncems );
 }
-function psVUmeter( data ) {
+psVUmeter = data => {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
-function psWebradio( data ) {
+psWebradio = data => {
 	$( '#mode-webradio grl' ).text( data )
 	if ( G.librarylist ) $( '#mode-webradio grl' ).click();
 	if ( G.playlist && !G.local ) getPlaylist();
 }
-function webradioIcon( srcnoext ) {
+webradioIcon = srcnoext => {
 	var radiourl = decodeURIComponent( srcnoext )
 					.split( '/' ).pop()
 					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( function() {
+	return $( '#lib-list li' ).filter( () => {
 		return $( this ).find( '.lipath' ).text() === radiourl;
 	} ).find( '.lib-icon' );
 }
