@@ -1263,10 +1263,10 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart( coverart ) {
-	if ( G.display.vumeter || ( !coverart && G.display.novu ) ) {
+	if ( G.display.vumeter || ( !coverart && !G.display.novu ) ) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
-		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 		loader( 'hide' );
 	} else if ( coverart.slice( 0, -15 ) !== $( '#coverart' ).attr( 'src' ).slice( 0, -15 ) ) {
 		$( '#vu' ).addClass( 'hide' );
