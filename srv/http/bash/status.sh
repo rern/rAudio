@@ -135,6 +135,29 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
+vu() {
+	[[ -e $dirsystem/vumeter ]] && vumeter=1
+	[[ -e $dirsystem/vuled ]] && vuled=1
+	if [[ $vumeter || $vuled ]]; then
+		[[ $vumeter ]] && echo {$status}
+		if [[ $state == play ]]; then
+			if ! pgrep cava &> /dev/null; then
+				killall cava &> /dev/null
+				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+			fi
+		else
+			killall cava &> /dev/null
+			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+			if [[ $vuled ]]; then
+				p=$( cat /srv/http/data/system/vuledpins )
+				for i in $p; do
+					echo 0 > /sys/class/gpio/gpio$i/value
+				done
+			fi
+		fi
+		[[ $vumeter ]] && exit
+	fi
+}
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
@@ -319,6 +342,7 @@ elif [[ -n $radioheader ]]; then
 , "sampling"      : "'$sampling'"
 , "song"          : '$song
 # >>>>>>>>>>
+		vu
 		echo {$status}
 		exit
 	fi
@@ -421,28 +445,7 @@ status+='
 , "sampling" : "'$sampling'"
 , "coverart" : ""'
 
-[[ -e $dirsystem/vumeter ]] && vumeter=1
-[[ -e $dirsystem/vuled ]] && vuled=1
-if [[ $vumeter || $vuled ]]; then
-# >>>>>>>>>>
-	[[ $vumeter ]] && echo {$status}
-	if [[ $state == play ]]; then
-		if ! pgrep cava &> /dev/null; then
-			killall cava &> /dev/null
-			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		fi
-	else
-		killall cava &> /dev/null
-		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-		if [[ $vuled ]]; then
-			p=$( cat /srv/http/data/system/vuledpins )
-			for i in $p; do
-				echo 0 > /sys/class/gpio/gpio$i/value
-			done
-		fi
-	fi
-	[[ $vumeter ]] && exit
-fi
+vu
 
 if grep -q '"cover": false' $dirsystem/display; then
 # >>>>>>>>>>
