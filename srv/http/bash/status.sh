@@ -58,6 +58,7 @@ else
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
+, "stream"         : false
 , "updateaddons"   : '$updateaddons'
 , "updating_db"    : '$updating_db'
 , "volume"         : '$volume'
