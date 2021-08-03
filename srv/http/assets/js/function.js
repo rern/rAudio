@@ -306,12 +306,14 @@ function displayPlayback() {
 	$( '#playericon' ).removeAttr( 'class' );
 	if ( G.iplayer ) $( '#playericon' ).addClass( 'fa fa-'+ G.iplayer );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
+	$( '#volume-knob' ).toggleClass( 'hide', !G.display.volume || G.display.volumenone );
+	if ( $( '#time-knob' ).is( ':hidden' ) ) G.display.time = false;    // hidden: by display / css
+	if ( $( '#volume-knob' ).is( ':hidden' ) ) G.display.volume = false;
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
 	var volume = ( G.display.volumenone || !G.display.volume ) ? 0 : 1;
-	$( '#volume-knob' ).toggleClass( 'hide', volume === 0 );
 	var column = ( G.display.time ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + volume;
 	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
 	if ( column === 2 ) {
@@ -1271,6 +1273,13 @@ function renderPlaybackTime() {
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var position = Math.round( G.status.elapsed / time * 1000 );
+	if ( G.localhost ) {
+		var interval = 1000;
+		var each = Math.round( 1000 / time );
+	} else {
+		var interval = time;
+		var each = 1;
+	}
 	var $elapsed = $( '#elapsed' );
 	var elapsed = G.status.elapsed ? second2HMS( G.status.elapsed ) : '';
 	if ( G.display.time ) {
@@ -1281,13 +1290,12 @@ function renderPlaybackTime() {
 			
 			$elapsed = $( '#total' );
 		} else {
-			var interval = !G.localhost ? 1000 : time;
 			G.intKnob = setInterval( function() {
-				position++;
+				position += each;
 				$( '#time' ).roundSlider( 'setValue', position );
 			}, interval );
 		}
-		if ( G.status.player === 'mpd' && elapsed ) $elapsed.text( elapsed );
+		$elapsed.text( elapsed );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
@@ -1305,9 +1313,8 @@ function renderPlaybackTime() {
 			if ( !G.display.radioelapsed ) return
 			
 		} else {
-			var interval = G.localhost ? 1000 : time;
 			G.intKnob = setInterval( function() {
-				position++;
+				position += each;
 				$( '#time-bar' ).css( 'width', position / 10 +'%' );
 			}, interval );
 		}
