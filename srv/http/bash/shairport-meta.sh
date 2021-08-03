@@ -44,7 +44,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirtmp/airplay-coverart.jpg
 		data=/data/shm/airplay-coverart.$( date +%s ).jpg
-		curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"coverart":"'$data'"}'
+		curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"coverart":"'$data'","file":""}'
 	else
 		data=$( echo $base64 | base64 --decode 2> /dev/null )
 		if [[ $code == Time ]]; then # format: start/elapsed/end @44100
