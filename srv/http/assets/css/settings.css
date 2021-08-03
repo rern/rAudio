@@ -554,7 +554,7 @@ input:checked + .switchlabel.disabled:after {
 	.head {
 		padding-right: 0 !important;
 	}
-	.wide {
+	wide {
 		display: none;
 	}
 }
@@ -609,13 +609,17 @@ input:checked + .switchlabel.disabled:after {
 	heading {
 		letter-spacing: 0;
 	}
-	.col-l.text {
+	#systemlabel,
+	#statuslabel {
 		width: 120px;
 	}
 }
 @media (max-width: 320px) {
 	.title {
 		letter-spacing: 3px;
+	}
+	#mpd .help {
+		display: none;
 	}
 }
 @media (hover: hover) {
