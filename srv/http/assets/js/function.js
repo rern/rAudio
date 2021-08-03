@@ -290,6 +290,8 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
+	if ( $( '#time-knob' ).css( 'display' ) === 'none' ) G.display.time = false;
+	if ( $( '#volume-knob' ).css( 'display' ) === 'none' ) G.display.volume = false;
 	if ( G.status.player !== 'mpd' ) {
 		G.iplayer = G.status.player;
 	} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
@@ -303,14 +305,8 @@ function displayPlayback() {
 	} else {
 		G.iplayer = '';
 	}
-	$( '#playericon' )
-		.removeAttr( 'class' )
-		.addClass( 'hide' );
-	if ( G.iplayer ) {
-		$( '#playericon' )
-			.addClass( 'fa fa-'+ G.iplayer )
-			.removeClass( 'hide' );
-	}
+	$( '#playericon' ).removeAttr( 'class' );
+	if ( G.iplayer ) $( '#playericon' ).addClass( 'fa fa-'+ G.iplayer );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
