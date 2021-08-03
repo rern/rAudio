@@ -290,8 +290,6 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
-	if ( $( '#time-knob' ).css( 'display' ) === 'none' ) G.display.time = false;
-	if ( $( '#volume-knob' ).css( 'display' ) === 'none' ) G.display.volume = false;
 	if ( G.status.player !== 'mpd' ) {
 		G.iplayer = G.status.player;
 	} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
@@ -1283,7 +1281,7 @@ function renderPlaybackTime() {
 			
 			$elapsed = $( '#total' );
 		} else {
-			var interval = G.localhost ? 1000 : time;
+			var interval = !G.localhost ? 1000 : time;
 			G.intKnob = setInterval( function() {
 				position++;
 				$( '#time' ).roundSlider( 'setValue', position );
