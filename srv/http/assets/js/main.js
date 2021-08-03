@@ -105,7 +105,6 @@ $( '#loader' ).click( function() {
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
-		&& 'file' in G.status
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
 		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
