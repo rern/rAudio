@@ -98,6 +98,7 @@ $coverart" > $dirtmp/status
 , "iplayer"  : "'$iplayer'"
 , "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
+, "state"    : "play"
 , "song"     : '$song'
 , "station"  : "'$station'"
 , "Title"    : "'$title'"
