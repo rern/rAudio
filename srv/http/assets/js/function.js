@@ -341,7 +341,7 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || G.display.volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
-	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
+//	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
 }
 function displaySave( keys ) {
 	var values = infoVal();
