@@ -32,12 +32,6 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		playlist )
-			if [[ $( mpc current -f %file% | cut -c1-4 ) == http ]]; then
-				pllength0=$( cat $dirtmp/playlistlength 2> /dev/null || echo 0 )
-				pllength=$( mpc playlist | wc -l )
-				pldiff=$(( $pllength - $pllength0 ))
-				(( $pldiff > 0 )) && echo $pllength > $dirtmp/playlistlength || continue
-			fi
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || $pldiff > 0 ]]; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
 					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"

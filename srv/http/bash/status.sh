@@ -207,7 +207,6 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-echo $playlistlength > $dirtmp/playlistlength # save for add webradio by other apps
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
