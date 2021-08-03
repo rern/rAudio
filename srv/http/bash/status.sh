@@ -21,7 +21,6 @@ counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
-playlistlength=$( mpc playlist | wc -l | tee $dirtmp/playlistlength ) # save for add webradio by other apps
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
@@ -56,7 +55,6 @@ else
 , "counts"         : '$counts'
 , "file"           : ""
 , "librandom"      : '$librandom'
-, "playlistlength" : '$playlistlength'
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
@@ -87,13 +85,12 @@ if [[ $player != mpd && $player != upnp ]]; then
 		[[ -e $dirtmp/airplay-coverart.jpg && $novumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
-	, "coverart"       : "'$coverart'"
-	, "elapsed"        : '$elapsed'
-	, "playlistlength" : 1
-	, "sampling"       : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
-	, "state"          : "play"
-	, "Time"           : '$Time'
-	, "timestamp"      : '$now
+	, "coverart"  : "'$coverart'"
+	, "elapsed"   : '$elapsed'
+	, "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
+	, "state"     : "play"
+	, "Time"      : '$Time'
+	, "timestamp" : '$now
 		;;
 	bluetooth )
 	########
@@ -108,26 +105,25 @@ if [[ $player != mpd && $player != upnp ]]; then
 		status+=${snapserverstatus:1:-1}
 		;;
 	spotify )
-		file=$dirtmp/spotify
-		elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
-		state=$( cat $file-state )
+		path=$dirtmp/spotify
+		elapsed=$( cat $path-elapsed 2> /dev/null || echo 0 )
+		state=$( cat $path-state )
 		now=$( date +%s%3N )
 		if [[ $state == play ]]; then
-			start=$( cat $file-start )
+			start=$( cat $path-start )
 			elapsed=$(( now - start + elapsed ))
-			time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $file )
+			time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $path )
 			if (( $elapsed > $(( time * 1000 )) )); then
 				elapsed=0
-				echo 0 > $file-elapsed
+				echo 0 > $path-elapsed
 			fi
 		fi
 		elapsed=$(( ( elapsed + 500 ) / 1000 ))
 	########
-		status+=$( cat $file )
+		status+=$( cat $path )
 		status+='
 	, "elapsed"   : '$elapsed'
 	, "state"     : "'$state'"
-	, "sampling"  : "48 kHz 320 kbit/s &bull; Spotify"
 	, "timestamp" : '$now
 		;;
 		
@@ -160,7 +156,7 @@ vu() {
 		[[ $vumeter ]] && exit
 	fi
 }
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
+filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -197,7 +193,7 @@ for line in "${lines[@]}"; do
 , "'$key'" : '$tf
 			;;
 		# number
-		duration | elapsed | song | Time )
+		duration | elapsed | playlistlength | song | Time )
 			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
 		# string - escaped name
 		Album | AlbumArtist | Artist | Name | Title )
@@ -211,18 +207,20 @@ for line in "${lines[@]}"; do
 	esac
 done
 
+echo $playlistlength > $dirtmp/playlistlength # save for add webradio by other apps
 [[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
-, "elapsed"     : '$elapsed'
-, "file"        : "'$file'"
-, "song"        : '$song'
-, "state"       : "'$state'"
-, "timestamp"   : '$( date +%s%3N )'
-, "volumemute"  : '$volumemute
+, "elapsed"        : '$elapsed'
+, "file"           : "'$file'"
+, "playlistlength" : '$playlistlength'
+, "song"           : '$song'
+, "state"          : "'$state'"
+, "timestamp"      : '$( date +%s%3N )'
+, "volumemute"     : '$volumemute
 
 if (( $playlistlength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
@@ -260,11 +258,11 @@ if [[ $fileheader == cdda ]]; then
 	fi
 ########
 		status+='
-, "Album"     : "'$Album'"
-, "Artist"    : "'$Artist'"
-, "discid"    : "'$discid'"
-, "Time"      : '$Time'
-, "Title"     : "'$Title'"'
+, "Album"  : "'$Album'"
+, "Artist" : "'$Artist'"
+, "discid" : "'$discid'"
+, "Time"   : '$Time'
+, "Title"  : "'$Title'"'
 elif [[ -n $stream ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
@@ -327,15 +325,15 @@ elif [[ -n $stream ]]; then
 		filenoext=/data/webradiosimg/$urlname
 		pathnoext=/srv/http$filenoext
 		if [[ -e $pathnoext.gif ]]; then
-			coverartradio=$filenoext.$date.gif
+			stationcover=$filenoext.$date.gif
 		elif [[ -e $pathnoext.jpg ]]; then
-			coverartradio=$filenoext.$date.jpg
+			stationcover=$filenoext.$date.jpg
 		fi
 ########
 		status+='
 , "Album"         : "'$Album'"
 , "Artist"        : "'$Artist'"
-, "coverartradio" : "'$coverartradio'"
+, "stationcover" : "'$stationcover'"
 , "Name"          : "'$Name'"
 , "station"       : "'$station'"
 , "Time"          : false

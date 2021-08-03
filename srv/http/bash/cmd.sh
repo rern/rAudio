@@ -383,11 +383,6 @@ $mpdpath
 reset" )
 	echo $url
 	;;
-coverartradioreset )
-	coverfile=${args[1]}
-	rm -f "$coverfile".* "$coverfile-thumb".*
-	pushstream coverart '{"url":"'$coverfile'","type":"webradioreset"}'
-	;;
 coversave )
 	source=${args[1]}
 	path=${args[2]}
@@ -777,6 +772,11 @@ rotateSplash )
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
+	;;
+stationcoverreset )
+	coverfile=${args[1]}
+	rm -f "$coverfile".* "$coverfile-thumb".*
+	pushstream coverart '{"url":"'$coverfile'","type":"webradioreset"}'
 	;;
 statuspkg )
 	echo "$( pacman -Q ${args[1]} )

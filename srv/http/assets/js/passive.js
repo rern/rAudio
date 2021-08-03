@@ -228,7 +228,7 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'webradio':
-			G.status.coverartradio = src;
+			G.status.stationcover = src;
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
@@ -246,7 +246,7 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'webradioreset':
-			G.status.coverartradio = '';
+			G.status.stationcover = '';
 			if ( G.playback ) {
 				coverartDefault();
 			} else if ( G.playlist ) {

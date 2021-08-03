@@ -1261,7 +1261,7 @@ function renderPlaybackCoverart() {
 	} else {
 		var prevcover = $( '#coverart' ).attr( 'src' );
 		if ( !prevcover || prevcover.slice( 0, -15 ) !== G.status.coverart.slice( 0, -15 ) ) {
-			var coverart = G.status.stream ? ( G.status.coverart || G.status.coverartradio ) : G.status.coverart;
+			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
 				.attr( 'src', coverart || G.coverdefault )

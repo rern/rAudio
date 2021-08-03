@@ -389,7 +389,7 @@ function webRadioCoverart() {
 	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
 	var imagefile = '/srv/http'+ radiopath; //no ext
 	if ( G.playback ) {
-		var coverart = G.status.coverartradio || G.coverdefault;
+		var coverart = G.status.stationcover || G.coverdefault;
 	} else {
 		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
 		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
@@ -406,7 +406,7 @@ function webRadioCoverart() {
 		, buttonlabel : radioicon ? '' : '<i class="fa fa-webradio"></i>Default'
 		, buttoncolor : radioicon ? '' : orange
 		, button      : radioicon ? '' : function() {
-			bash( [ 'coverartradioreset', imagefile ] );
+			bash( [ 'stationcoverreset', imagefile ] );
 		}
 		, ok          : function() {
 			imageReplace( imagefile, 'webradio' );
