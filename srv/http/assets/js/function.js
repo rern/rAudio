@@ -1691,11 +1691,7 @@ function switchPage( page ) {
 	G.page = page;
 	displayBottom();
 	// restore page scroll
-	if ( G.playback ) {
-		$timeRS.setValue( 0 );
-		$( 'html, body' ).scrollTop( 0 );
-		if ( G.status.state === 'play' && !G.status.webradio ) $( '#elapsed' ).empty(); // hide flashing
-	} else if ( G.library ) {
+	if ( G.library ) {
 		if ( G.librarylist ) {
 			$( 'html, body' ).scrollTop( G.liscrolltop );
 		} else {
