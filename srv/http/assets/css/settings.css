@@ -609,6 +609,9 @@ input:checked + .switchlabel.disabled:after {
 	heading {
 		letter-spacing: 0;
 	}
+	.col-l.text {
+		width: 120px;
+	}
 }
 @media (max-width: 320px) {
 	.title {
