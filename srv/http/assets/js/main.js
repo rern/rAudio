@@ -736,20 +736,14 @@ $( '.map' ).on( 'tap', function() {
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', !G.bars );
-		if ( document.body.clientWidth < 614 && !G.display.volume ) {
+		if ( G.display.time || ( G.display.volume && !G.display.volumenone ) ) {
 			$( '#coverTL' )
-					.removeClass( 'fa-scale-dn' )
-					.addClass( 'fa-volume' );
+				.removeClass( 'fa-scale-dn' )
+				.addClass( 'fa-scale-up' );
 		} else {
-			if ( G.display.time || ( G.display.volume && !G.display.volumenone ) ) {
-				$( '#coverTL' )
-					.removeClass( 'fa-scale-dn fa-volume' )
-					.addClass( 'fa-scale-up' );
-			} else {
-				$( '#coverTL' )
-					.removeClass( 'fa-scale-up' )
-					.addClass( 'fa-scale-dn' );
-			}
+			$( '#coverTL' )
+				.removeClass( 'fa-scale-up' )
+				.addClass( 'fa-scale-dn' );
 		}
 		if ( G.status.player === 'mpd' ) {
 			if ( !G.display.time && !G.status.stream ) {
@@ -770,12 +764,9 @@ $( '.map' ).on( 'tap', function() {
 	if ( cmd === 'cover' ) {
 		local(); // fix - guide fired
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( G.status.player === 'mpd' && !G.status.playlistlength || window.innerHeight < 461 ) return
-		
-		if ( document.body.clientWidth < 614 ) {
-			$( '#playback' ).click();
-			return
-		}
+		if ( ( G.status.player === 'mpd' && !G.status.playlistlength )
+			|| window.innerHeight < 461
+			|| document.body.clientWidth < 614 ) return
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
