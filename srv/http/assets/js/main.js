@@ -764,9 +764,7 @@ $( '.map' ).on( 'tap', function() {
 	if ( cmd === 'cover' ) {
 		local(); // fix - guide fired
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( ( G.status.player === 'mpd' && !G.status.playlistlength )
-			|| window.innerHeight < 461
-			|| document.body.clientWidth < 614 ) return
+		if ( ( G.status.player === 'mpd' && !G.status.playlistlength ) || $( this ).hasClass( 'disabled' ) ) return
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
