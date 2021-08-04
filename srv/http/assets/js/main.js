@@ -394,8 +394,7 @@ $( '#album, #guide-album' ).click( function() {
 } );
 $( '#title, #guide-lyrics' ).on( 'tap', function() {
 	var artist = $( '#artist' ).text();
-	var title = $( '#title' ).text();
-	if ( !artist || !title ) return;
+	if ( !artist || !G.status.title ) return;
 	
 	if ( artist === $( '#lyricsartist' ).text() && title === $( '#lyricstitle' ).text() && G.lyrics ) {
 		lyricsShow( 'current' );
@@ -403,7 +402,7 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 	}
 	
 	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
-	title = title.replace( /(["`])/g, '\\$1' );
+	var title = G.status.title.replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
 	bash( [ 'lyrics', artist, title, 'local', file ], function( data ) {
 		if ( data ) {
