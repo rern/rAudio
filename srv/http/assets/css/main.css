@@ -321,7 +321,7 @@ i.map.disabled, .map.disabled i {
 #album {
 	font-size: 18px
 }
-.albumgray {
+#album.disabled {
 	font-weight: 300;
 	color: var( --cgl );
 }

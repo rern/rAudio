@@ -1352,14 +1352,14 @@ function renderPlaybackTitles() {
 			$( '#title' ).html( '·&ensp;·&ensp;·' );
 			$( '#album' )
 				.text( G.status.file )
-				.addClass( 'albumgray' );
+				.addClass( 'disabled' );
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : '' ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
 			$( '#album' ).text( G.status.Album || G.status.station || G.status.file );
 		}
 	}
-	$( '#album' ).toggleClass( 'albumgray', G.status.Album === '' );
+	$( '#album' ).toggleClass( 'disabled', G.status.Album === '' );
 	setPlaybackTitles();
 }
 renderPlaylist = function( data ) {

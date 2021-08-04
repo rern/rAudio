@@ -387,11 +387,6 @@ $( '#artist, #guide-bio' ).click( function() {
 		$( '#bio' ).removeClass( 'hide' );
 	}
 } );
-$( '#album, #guide-album' ).click( function() {
-	if ( G.status.stream && G.status.state === 'stop' ) return
-	
-	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
-} );
 $( '#title, #guide-lyrics' ).on( 'tap', function() {
 	var artist = $( '#artist' ).text();
 	if ( !artist || !G.status.title ) return;
@@ -449,6 +444,9 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 			}
 		} );
 	} );
+} );
+$( '#album, #guide-album' ).click( function() {
+	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
 } );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
