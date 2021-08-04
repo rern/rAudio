@@ -344,18 +344,17 @@ function displayPlayback() {
 //	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
 }
 function displaySave( keys ) {
-	var values = infoVal();
 	G.vumeter = G.display.vumeter;
-	var volumenone = G.display.volumenone;
+	var values = infoVal();
+	var display = JSON.parse( JSON.stringify( G.display ) );
 	keys.forEach( function( k, i ) {
-		G.display[ k ] = values[ i ];
+		display[ k ] = values[ i ];
 	} );
-	G.coverdefault = G.display.novu ? G.coverart : G.covervu;
+	G.coverdefault = display.novu ? G.coverart : G.covervu;
 	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
-		delete G.display[ item ];
+		delete display[ item ];
 	} );
-	bash( [ 'displaysave', JSON.stringify( G.display ) ] );
-	G.display.volumenone = volumenone;
+	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
@@ -674,8 +673,8 @@ function infoPlayback() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, radio        : {
-			  '<img class="imgicon" src="/assets/img/vu.svg"><gr>No cover</gr>' : false
-			, '<i class="imgicon iconcover""></i><gr>No cover</gr>'             : true
+			  '<i class="imgicon iconcover""></i><gr>No cover</gr>'             : true
+			, '<img class="imgicon" src="/assets/img/vu.svg"><gr>No cover</gr>' : false
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
