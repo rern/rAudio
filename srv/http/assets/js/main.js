@@ -286,24 +286,14 @@ $( '#library, #button-library' ).click( function() {
 } );
 $( '#playback' ).click( function() {
 	if ( G.playback ) {
-		if ( G.display.volumenone || document.body.clientWidth > 613 || G.display.volume ) return
+		if ( G.display.volumenone || G.display.volume || document.body.clientHeight > 555 ) return
 		
-		info( {
-			  icon       : 'volume'
-			, title      : 'Volume'
-			, rangevalue : G.status.volume
-			, beforeshow : function() {
-				$( '#infoOverlay' ).addClass( 'noscroll' );
-				$( '#infoRange input' ).on( 'click input', function() {
-					var vol = $( this ).val();
-					$( '#infoRange .value' ).text( vol );
-					volumeDrag( vol );
-				} ).on( 'mouseup touchend', function() {
-					volumePushstream();
-				} );
-			}
-			, okno       : 1
-		} );
+		if ( $( '#info' ).hasClass( 'hide' ) ) {
+			$( '#info' ).removeClass( 'hide' );
+		} else {
+			$( '#info' ).addClass( 'hide' );
+			$( '#volume-band' ).mouseup();
+		}
 	} else {
 		getPlaybackStatus();
 		switchPage( 'playback' );

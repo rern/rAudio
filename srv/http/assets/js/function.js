@@ -1757,6 +1757,7 @@ function volumeBarSet( pageX ) {
 }
 function volumeBarTimeout() {
 	G.volumebar = setTimeout( function() {
+		$( '#info' ).removeClass( 'hide' ); // 320 x 480
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
 		$( '.volumeband' ).addClass( 'transparent' );
