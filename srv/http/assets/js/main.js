@@ -710,8 +710,6 @@ var btnctrl = {
 	, volB    : 'voldn'
 }
 $( '.map' ).on( 'tap', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
 	if ( 'screenoff' in G ) {
 		delete G.screenoff;
 		return
