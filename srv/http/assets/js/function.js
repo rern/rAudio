@@ -1350,15 +1350,15 @@ function renderPlaybackTitles() {
 		if ( G.status.state !== 'play' ) {
 			$( '#artist' ).text( G.status.station );
 			$( '#title' ).html( '·&ensp;·&ensp;·' );
-			$( '#album' )
-				.text( G.status.file )
-				.addClass( 'disabled' );
+			$( '#album' ).text( G.status.file );
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : '' ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
 			$( '#album' ).text( G.status.Album || G.status.station || G.status.file );
 		}
 	}
+	$( '#artist' ).toggleClass( 'disabled', G.status.Artist === '' );
+	$( '#title' ).toggleClass( 'disabled', G.status.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', G.status.Album === '' );
 	setPlaybackTitles();
 }

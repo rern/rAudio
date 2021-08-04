@@ -378,8 +378,6 @@ $( '.emptyadd' ).click( function( e ) {
 	}
 } );
 $( '#artist, #guide-bio' ).click( function() {
-	if ( G.status.stream && G.status.state === 'stop' ) return
-	
 	if ( $( '#bio legend' ).text() != G.status.Artist ) {
 		getBio( $( '#artist' ).text() );
 	} else {
@@ -389,8 +387,6 @@ $( '#artist, #guide-bio' ).click( function() {
 } );
 $( '#title, #guide-lyrics' ).on( 'tap', function() {
 	var artist = $( '#artist' ).text();
-	if ( !artist || !G.status.title ) return;
-	
 	if ( artist === $( '#lyricsartist' ).text() && title === $( '#lyricstitle' ).text() && G.lyrics ) {
 		lyricsShow( 'current' );
 		return
