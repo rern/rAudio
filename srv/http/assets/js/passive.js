@@ -1,4 +1,5 @@
 $( window ).on( 'resize', () => { // portrait / landscape
+	displayBars();
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
