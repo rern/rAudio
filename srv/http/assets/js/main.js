@@ -710,6 +710,8 @@ var btnctrl = {
 	, volB    : 'voldn'
 }
 $( '.map' ).on( 'tap', function() {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
 	if ( 'screenoff' in G ) {
 		delete G.screenoff;
 		return
@@ -764,7 +766,7 @@ $( '.map' ).on( 'tap', function() {
 	if ( cmd === 'cover' ) {
 		local(); // fix - guide fired
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( ( G.status.player === 'mpd' && !G.status.playlistlength ) || $( this ).hasClass( 'disabled' ) ) return
+		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
