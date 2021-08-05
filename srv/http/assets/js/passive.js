@@ -556,18 +556,24 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		if ( !$( '#volume-knob' ).hasClass( 'hide' ) ) {
+		if ( G.display.volume ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
+			clearTimeout( G.volumebar );
 			G.status.volume = vol;
-			if ( $( '#infoRange .value' ).text() ) { // mpd setting
-				$( '#infoRange .value' ).text( vol );
-				$( '#infoRange input' ).val( vol );
-			} else {
-				$( '#volume-bar' ).css( 'width', vol +'%' );
-				$( '#volume-text' ).html( mute ? '<i class="fa fa-mute"></i>' : vol );
-			}
+			var ms = Math.ceil( Math.abs( G.status.volumemute - G.status.volume ) / 5 ) * 0.2 * 1000;
+			$( '#volume-bar' ).animate(
+				  { width: vol +'%' }
+				, { duration: ms, easing: 'linear', complete: volumeBarTimeout }
+			);
+			$( '#volume-text' )
+				.text( mute ? data.val : vol )
+				.toggleClass( 'bl', mute );
+		}
+		if ( !G.display.buttons ) {
+			var prefix = G.display.time ? 'ti' : 'i';
+			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 		}
 	}, G.debouncems );
 }
