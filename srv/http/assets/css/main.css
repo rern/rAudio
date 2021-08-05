@@ -2296,12 +2296,6 @@ li.active .li2 bl {
 	#dot0 {
 		display: inline;
 	}
-	#volume-band-dn {
-		left: 0;
-	}
-	#volume-band-up {
-		right: 0;
-	}
 }
 @media( orientation: portrait ) and ( max-width: 480px ) {
 	#playback-controls i {

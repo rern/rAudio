@@ -112,6 +112,13 @@ $( '#coverart' ).on( 'load', function() {
 		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 	}
+	if ( ( window.innerWidth - $( '#divcover' ).width() ) < 80 ) {
+		$( '#volume-band-dn' ).css( 'left', 0 );
+		$( '#volume-band-up' ).css( 'right', 0 );
+	} else {
+		$( '#volume-band-dn' ).css( 'left', '' );
+		$( '#volume-band-up' ).css( 'right', '' );
+	}
 	loader( 'hide' );
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
