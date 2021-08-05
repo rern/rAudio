@@ -188,7 +188,21 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 }
 
 $menu.= '</div>';
-$libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
+$modeicon = '
+	<i id="i-random" class="fa fa-random hide"></i>
+	<i id="i-repeat" class="fa fa-repeat hide"></i>
+	<i id="i-single" class="fa fa-single hide"></i>
+	<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
+	<i id="i-consume" class="fa fa-flash hide"></i>
+	<i id="i-librandom" class="fa fa-dice hide"></i>
+	<i id="i-mute" class="fa fa-mute hide"></i>
+	<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
+	<i id="i-update" class="fa fa-library blink hide"></i>
+	<i id="i-addons" class="fa fa-jigsaw hide"></i>
+	<i id="i-relays" class="fa fa-relays hide"></i>
+';
+if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
+$timeicon = str_replace( 'i-', 'ti-', $modeicon );
 ?>
 <div id="loader" class="splash">
 	<?=$logo?>
@@ -237,37 +251,14 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="infoicon">
 			<i id="playericon"></i>
 			<span id="progress"></span>
-			<span id="modeicon">
-				<i id="i-random" class="fa fa-random hide"></i>
-				<i id="i-repeat" class="fa fa-repeat hide"></i>
-				<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
-				<i id="i-single" class="fa fa-single hide"></i>
-				<i id="i-consume" class="fa fa-flash hide"></i>
-				<i id="i-librandom" class="fa fa-dice hide"></i>
-				<i id="i-mute" class="fa fa-mute hide"></i>
-				<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="i-update" class="fa <?=$libraryicon?> hide"></i>
-				<i id="i-addons" class="fa fa-jigsaw hide"></i>
-				<i id="i-relays" class="fa fa-relays hide"></i>
-			</span>
+			<span id="modeicon"><?=$modeicon?></span>
 		</div>
 		<div id="sampling"></div>
 	</div>
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
 			<div id="time"></div>
-			<div id="timeicon">
-				<i id="ti-random" class="fa fa-random hide"></i>
-				<i id="ti-repeat" class="fa fa-repeat hide"></i>
-				<i id="ti-repeat1" class="fa fa-repeat-single hide"></i>
-				<i id="ti-consume" class="fa fa-flash hide"></i>
-				<i id="ti-librandom" class="fa fa-dice hide"></i>
-				<i id="ti-mute" class="fa fa-mute hide"></i>
-				<i id="ti-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="ti-update" class="fa <?=$libraryicon?> hide"></i>
-				<i id="ti-addons" class="fa fa-jigsaw hide"></i>
-				<i id="ti-relays" class="fa fa-relays hide"></i>
-			</div>
+			<div id="timeicon"><?=$timeicon?></div>
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="timemap">
