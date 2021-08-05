@@ -241,6 +241,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 				<i id="i-random" class="fa fa-random hide"></i>
 				<i id="i-repeat" class="fa fa-repeat hide"></i>
 				<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
+				<i id="i-single" class="fa fa-single hide"></i>
 				<i id="i-consume" class="fa fa-flash hide"></i>
 				<i id="i-librandom" class="fa fa-dice hide"></i>
 				<i id="i-mute" class="fa fa-mute hide"></i>
