@@ -39,7 +39,4 @@ kid3-cli -c "cd \"$dir\"" \
 [[ $type == licover ]] && prefix=licover || prefix=online
 urlname=/data/shm/$prefix-$covername
 coverfile=$( ls /srv/http$urlname.* 2> /dev/null )
-[[ -n $coverfile ]] && echo $urlname.$date.${coverfile/*.} && exit
-
-/srv/http/bash/status-coverartonline.sh "$artist
-$album" &> /dev/null &
+[[ -n $coverfile ]] && echo $urlname.$date.${coverfile/*.}

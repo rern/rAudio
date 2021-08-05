@@ -297,7 +297,11 @@ elif [[ -n $stream ]]; then
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
 				if [[ ! -e $dirtmp/radio ]]; then # start: > 4
-					echo $file$'\n'$stationname$'\n'$id$'\n'$radiosampling > $dirtmp/radio
+					echo "\
+$file
+$stationname
+$id
+$radiosampling" > $dirtmp/radio
 					systemctl start radio
 				else                                                 # playing: == 4
 					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null )
@@ -464,17 +468,6 @@ if [[ $ext != CD && -z $stream ]]; then
 $Artist
 $Album
 $file0" )
-elif [[ $state == play && -z $coverart && -n $Artist ]]; then
-	if [[ -n $stream ]]; then
-		[[ -n $Title ]] && args="\
-$Artist
-$Title
-webradio"
-	else
-		[[ -n $Album ]] && args="\
-$Artist
-$Album"
-	fi
 fi
 ########
 status+='
@@ -482,7 +475,19 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -z $args ]] && exit
-
-killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+if [[ -z $coverart && -n $Artist ]]; then
+	if [[ -n $stream && $state == play && -n $Title ]]; then
+		args="\
+$Artist
+${Title/ (*}
+webradio"
+	elif [[ -n $Album ]]; then
+		args="\
+$Artist
+$Album"
+	fi
+	if [[ -n $args ]]; then
+		killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+		$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+	fi
+fi
