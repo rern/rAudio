@@ -680,6 +680,13 @@ var btnctrl = {
 	, volB    : 'voldn'
 }
 $( '.map' ).on( 'tap', function() {
+	if ( $( '#info' ).hasClass( 'hide' ) ) {
+		$( '#info' ).removeClass( 'hide' );
+		clearTimeout( G.volumebar );
+		volumeBarHide();
+		return
+	}
+	
 	if ( 'screenoff' in G ) {
 		delete G.screenoff;
 		return
