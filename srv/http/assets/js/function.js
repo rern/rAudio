@@ -271,12 +271,10 @@ function displayBars() {
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '40px' );
 		$( '.emptyadd' ).css( 'top', '' );
-		displayBottom();
 	}
+	displayBottom();
 }
 function displayBottom() {
-	if ( !G.bars ) return
-	
 	$( '#playback' )
 		.removeAttr( 'class' )
 		.addClass( 'fa fa-'+ G.status.player );
