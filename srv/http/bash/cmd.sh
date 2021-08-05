@@ -205,10 +205,10 @@ volumeSet() {
 	target=$2
 	control=$3
 	diff=$(( $target - $current ))
+	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
 		[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
 	else # increment
-		pushstreamVolume enable true
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
 			[[ -z $control ]] && mpc volume $i || amixer -Mq sset "$control" $i%
@@ -217,8 +217,8 @@ volumeSet() {
 		if (( $i != $target )); then
 			[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
 		fi
-		pushstreamVolume enable false
 	fi
+	pushstreamVolume disable false
 	[[ -n $control ]] && alsactl store
 }
 

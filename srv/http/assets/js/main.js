@@ -513,7 +513,6 @@ $( '#volume' ).roundSlider( {
 		
 		G.status.volume = e.value;
 		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
-		$( '#volume-knob, #vol-group i' ).removeClass( 'disable' );
 	}
 } );
 $( '#volmute' ).click( function() {

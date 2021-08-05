@@ -541,7 +541,7 @@ function psSpotify( data ) {
 	setButtonControl();
 }
 function psVolume( data ) {
-	if ( data.type === 'enable' ) {
+	if ( data.type === 'disable' ) {
 		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
 		return
 	}
