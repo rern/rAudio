@@ -1770,8 +1770,13 @@ function volumeDrag( vol ) {
 	}
 }
 function volumeKnobSet( vol ) {
+	if ( G.local ) return
+	
+	G.local = 1;
 	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
-	bash( [ 'volume', G.status.volume, vol, G.status.control ] );
+	bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		G.local = 0;
+	} );
 }
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
