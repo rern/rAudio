@@ -285,7 +285,7 @@ $( '#library, #button-library' ).click( function() {
 	}
 } );
 $( '#playback' ).click( function() {
-	if ( G.playback && ( window.innerHeight - $( '#volume-band' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
+	if ( G.playback && ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
 		$( '#stop' ).click();
 	} else {
 		getPlaybackStatus();
