@@ -423,7 +423,7 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 	} );
 } );
 $( '#album, #guide-album' ).click( function() {
-	window.open( 'https://www.last.fm/music/'+ G.status.Artist +'/'+ G.status.Album, '_blank' );
+	window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
 } );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
