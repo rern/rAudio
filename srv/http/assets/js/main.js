@@ -643,9 +643,6 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 $( '#volume-text' ).on( 'tap', function() {
 	$( '#volmute' ).click();
 } );
-$( '#i-mute' ).click( function() {
-	$( '#volmute' ).click();
-} );
 $( '#divcover' ).on( 'longtap', function( e ) {
 	if (
 		( G.status.stream && G.status.state === 'play' )
