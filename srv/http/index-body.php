@@ -274,9 +274,9 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 			</div>
 			<div id="play-group">
 				<div class="btn-group">
-					<i id="repeat" class="btn btn-default btn-cmd btn-toggle fa fa-repeat"></i>
 					<i id="random" class="btn btn-default btn-cmd btn-toggle fa fa-random"></i>
 					<i id="single" class="btn btn-default btn-cmd btn-toggle fa fa-single"></i>
+					<i id="repeat" class="btn btn-default btn-cmd btn-toggle fa fa-repeat"></i>
 				</div>
 			</div>
 		</div>

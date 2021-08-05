@@ -868,7 +868,7 @@ i.map.disabled, .map.disabled i {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
-#repeat, 
+#random, 
 #voldn {
 									  /* w    h      x    y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -876,7 +876,7 @@ i.map.disabled, .map.disabled i {
 									  /* x    y   w    h */
 	background-color: var( --cg );
 }
-#random,
+#single,
 #volmute {
 	background: -webkit-linear-gradient(
 		top,
@@ -893,7 +893,7 @@ i.map.disabled, .map.disabled i {
 	background-color: var( --cg );
 	border-left: 1px solid var( --cga );
 }
-#single,
+#repeat,
 #volup {
 									  /* w    h      x  y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
