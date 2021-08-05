@@ -285,8 +285,12 @@ $( '#library, #button-library' ).click( function() {
 	}
 } );
 $( '#playback' ).click( function() {
-	getPlaybackStatus();
-	switchPage( 'playback' );
+	if ( G.playback && ( window.innerHeight - $( '#volume-band' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
+		$( '#stop' ).click();
+	} else {
+		getPlaybackStatus();
+		switchPage( 'playback' );
+	}
 } );
 $( '#playlist' ).click( function() {
 	G.pladd = {};
