@@ -1464,7 +1464,7 @@ function setButtonOptions() {
 		$( '#random' ).toggleClass( 'active', G.status.random );
 		$( '#repeat' ).toggleClass( 'active', G.status.repeat );
 		$( '#single' ).toggleClass( 'active', G.status.single );
-	} else {
+	} else if ( !G.status.stream ) {
 		$( '#'+ prefix +'-random' ).toggleClass( 'hide', !G.status.random );
 		$( '#'+ prefix +'-repeat' ).toggleClass( 'hide', !G.status.repeat || G.status.single );
 		$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', !( G.status.repeat && G.status.single ) );
