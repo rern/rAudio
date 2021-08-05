@@ -2128,6 +2128,10 @@ li.active .li2 bl {
 	.emptyadd.barsalways {
 		top: 90px;
 	}
+	#bar-bottom {
+		height: 30px !important;
+		font-size: 21px;
+	}
 	.index0 {
 		display: none !important;
 	}
@@ -2388,10 +2392,6 @@ li.active .li2 bl {
 	#info {
 		transform: scale( 1.25 );
 	}
-	#bar-bottom {
-		height: 30px !important;
-		font-size: 21px;
-	}
 	#sampling,
 	#guide-lyrics { display: none; }
 	#coverart-block,
@@ -2403,10 +2403,6 @@ li.active .li2 bl {
 	#page-playback {
 		padding-top: 30px !important;
 		overflow: hidden;
-	}
-	#bar-bottom {
-		height: 30px;
-		font-size: 21px;
 	}
 	#sampling,
 	#time-knob,

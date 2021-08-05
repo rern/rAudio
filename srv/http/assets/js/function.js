@@ -341,7 +341,7 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || G.display.volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
-	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
+//	$( '#coverTL' ).toggleClass( 'disabled', window.innerHeight < 461 || document.body.clientWidth < 614 );
 }
 function displaySave( keys ) {
 	G.vumeter = G.display.vumeter;
@@ -1701,6 +1701,7 @@ function switchPage( page ) {
 	} else if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
 	}
+	if ( G.color ) $( '#colorcancel' ).click();
 }
 function thumbUpdate( path ) {
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">'
@@ -1731,6 +1732,11 @@ function volColorUnmute() {
 		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
+function volumeBarHide() {
+	$( '#info' ).removeClass( 'hide' ); // 320 x 480
+	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+	$( '.volumeband' ).addClass( 'transparent' );
+}
 function volumeBarSet( pageX ) {
 	var $volumeband = $( '#volume-band' );
 	var posX = pageX - $volumeband.offset().left;
@@ -1756,12 +1762,7 @@ function volumeBarSet( pageX ) {
 	G.status.volume = vol;
 }
 function volumeBarTimeout() {
-	G.volumebar = setTimeout( function() {
-		$( '#info' ).removeClass( 'hide' ); // 320 x 480
-		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '#page-playback' ).css( { height: '', 'margin-top': '' } );
-		$( '.volumeband' ).addClass( 'transparent' );
-	}, 3000 );
+	G.volumebar = setTimeout( volumeBarHide, 3000 );
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {

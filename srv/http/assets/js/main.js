@@ -285,21 +285,9 @@ $( '#library, #button-library' ).click( function() {
 	}
 } );
 $( '#playback' ).click( function() {
-	if ( G.playback ) {
-		if ( G.display.volumenone || G.display.volume || document.body.clientHeight > 555 ) return
-		
-		if ( $( '#info' ).hasClass( 'hide' ) ) {
-			$( '#info' ).removeClass( 'hide' );
-		} else {
-			$( '#info' ).addClass( 'hide' );
-			$( '#volume-band' ).mouseup();
-		}
-	} else {
-		getPlaybackStatus();
-		switchPage( 'playback' );
-		if ( G.color ) $( '#colorcancel' ).click();
-	}
-} )
+	getPlaybackStatus();
+	switchPage( 'playback' );
+} );
 $( '#playlist' ).click( function() {
 	G.pladd = {};
 	if ( G.playlist ) {
@@ -314,7 +302,6 @@ $( '#playlist' ).click( function() {
 		if ( !G.savedlist && !G.savedplaylist ) {
 			G.status.playlistlength ? getPlaylist() : renderPlaylist( -1 );
 		}
-		if ( G.color ) $( '#colorcancel' ).click();
 	}
 } );
 $( '#page-playback' ).on( 'tap', function( e ) {
@@ -700,8 +687,6 @@ $( '.map' ).on( 'tap', function() {
 	
 	var cmd = btnctrl[ this.id ];
 	if ( cmd === 'guide' ) {
-		if ( G.local ) return
-		
 		clearTimeout( G.volumebar );
 		if ( G.guide ) {
 			hideGuide();
@@ -745,9 +730,28 @@ $( '.map' ).on( 'tap', function() {
 	
 	hideGuide();
 	if ( cmd === 'cover' ) {
-		local(); // fix - guide fired
+		if ( $( '#info' ).hasClass( 'hide' ) ) {
+			$( '#info' ).removeClass( 'hide' );
+			clearTimeout( G.volumebar );
+			volumeBarHide();
+			return
+		}
+		
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
+		
+		if ( !G.display.volumenone
+			&& !G.display.volume
+			&& ( window.innerHeight - $( '#volume-band' )[ 0 ].getBoundingClientRect().bottom ) < 40
+		) {
+			if ( $( '#info' ).hasClass( 'hide' ) ) {
+				$( '#info' ).removeClass( 'hide' );
+			} else {
+				$( '#info' ).addClass( 'hide' );
+				$( '#volume-band' ).mouseup();
+			}
+			return
+		}
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
