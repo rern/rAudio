@@ -565,14 +565,16 @@ function psVolume( data ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
-			if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
-			
-			clearTimeout( G.volumebar );
-			var ms = Math.ceil( Math.abs( G.status.volumemute - G.status.volume ) / 5 ) * 0.2 * 1000;
-			$( '#volume-bar' ).animate(
-				  { width: vol +'%' }
-				, { duration: ms, easing: 'linear', complete: volumeBarTimeout }
-			);
+			if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
+				$( '#volume-bar' ).css( 'width',  vol +'%' )
+			} else {
+				clearTimeout( G.volumebar );
+				var ms = Math.ceil( Math.abs( G.status.volumemute - G.status.volume ) / 5 ) * 0.2 * 1000;
+				$( '#volume-bar' ).animate(
+					  { width: vol +'%' }
+					, { duration: ms, easing: 'linear', complete: volumeBarTimeout }
+				);
+			}
 			$( '#volume-text' )
 				.text( mute ? data.val : vol )
 				.toggleClass( 'bl', mute );
