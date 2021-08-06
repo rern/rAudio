@@ -589,7 +589,9 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	}
 	
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-		$( '#volume-text' ).html( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute );
+		$( '#volume-text' )
+			.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
+			.toggleClass( 'bl', G.status.volumemute !== 0 );
 		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
@@ -647,6 +649,7 @@ $( '#volume-text' ).click( function() { // mute /unmute
 		var pageX = offL + barW;
 	} else {
 		var pageX = 0
+		G.status.volumemute = G.status.volume;
 	}
 	volumeBarSet( pageX );
 } );

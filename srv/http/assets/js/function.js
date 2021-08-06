@@ -1759,7 +1759,7 @@ function volumeBarSet( pageX ) {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}
-	$( '#volume-text' ).text( vol );
+	$( '#volume-text' ).text( G.status.volumemute || vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 	G.status.volume = vol;
 }
