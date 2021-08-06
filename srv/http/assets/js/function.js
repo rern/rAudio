@@ -1262,7 +1262,7 @@ function renderPlaybackCoverart() {
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
 				.attr( 'src', coverart || G.coverdefault )
-				.css( 'border', !coverart ? 'none' : '' )
+				.css( 'border', coverart ? '' : 'none' )
 				.removeClass( 'hide' );
 		}
 	}

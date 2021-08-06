@@ -176,7 +176,7 @@ function psCoverart( data ) {
 				G.status.coverart = url;
 				$( '#vu' ).addClass( 'hide' );
 				$( '#divcover .coveredit' ).remove();
-				$( '#coverart' ).css( 'opacity', '' );
+				$( '#coverart' ).css( { opacity: '', border: '' } );
 				$( '#coverart' )
 					.attr( 'src', url )
 					.removeClass( 'hide' );
