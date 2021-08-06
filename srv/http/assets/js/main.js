@@ -639,8 +639,16 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	clearTimeout( G.intVolume );
 	volumeBarTimeout();
 } );
-$( '#volume-text' ).on( 'tap', function() {
-	$( '#volmute' ).click();
+$( '#volume-text' ).click( function() { // mute /unmute
+	clearTimeout( G.volumebar );
+	if ( G.status.volumemute ) {
+		var offL = $( '#volume-band' ).offset().left;
+		var barW = G.status.volumemute ? $( '#volume-band' ).width() * G.status.volumemute / 100 : 0;
+		var pageX = offL + barW;
+	} else {
+		var pageX = 0
+	}
+	volumeBarSet( pageX );
 } );
 $( '#divcover' ).on( 'longtap', function( e ) {
 	if (

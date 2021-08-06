@@ -557,27 +557,18 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		G.status.volume = vol;
-		if ( !G.display.buttons ) {
-			var prefix = G.display.time ? 'ti' : 'i';
-			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
-		}
 		if ( G.display.volume ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
-			if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-				$( '#volume-bar' ).css( 'width',  vol +'%' )
-			} else {
-				clearTimeout( G.volumebar );
-				var ms = Math.ceil( Math.abs( G.status.volumemute - G.status.volume ) / 5 ) * 0.2 * 1000;
-				$( '#volume-bar' ).animate(
-					  { width: vol +'%' }
-					, { duration: ms, easing: 'linear', complete: volumeBarTimeout }
-				);
-			}
+			$( '#volume-bar' ).css( 'width',  vol +'%' )
 			$( '#volume-text' )
 				.text( mute ? data.val : vol )
 				.toggleClass( 'bl', mute );
+		}
+		if ( !G.display.buttons ) {
+			var prefix = G.display.time ? 'ti' : 'i';
+			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 		}
 	}, G.debouncems );
 }

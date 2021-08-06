@@ -1736,9 +1736,9 @@ function volumeBarHide() {
 	$( '.volumeband' ).addClass( 'transparent' );
 }
 function volumeBarSet( pageX ) {
-	var $volumeband = $( '#volume-band' );
-	var posX = pageX - $volumeband.offset().left;
-	var bandW = $volumeband.width();
+	clearTimeout( G.volumebar );
+	var posX = pageX - $( '#volume-band' ).offset().left;
+	var bandW = $( '#volume-band' ).width();
 	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
@@ -1748,7 +1748,11 @@ function volumeBarSet( pageX ) {
 		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
-			, { duration: ms, easing: 'linear' }
+			, {
+				  duration: ms
+				, easing: 'linear'
+				, complete: volumeBarTimeout
+			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
