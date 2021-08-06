@@ -112,8 +112,11 @@ function list2JSON( list ) {
 	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
-function loader( toggle ) {
-	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
 }
 function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
