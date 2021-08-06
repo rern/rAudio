@@ -790,14 +790,14 @@ function infoUpdate( path ) {
 }
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
 	if ( !G.load ) {
 		G.load = 1;
 		$( '#loader' ).removeClass( 'splash' );
 		$( '#volume .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	}
-}
-function loaderHide {
-	$( '#loader' ).addClass( 'hide' );
 }
 function local( delay ) {
 	G.local = 1;
