@@ -1,5 +1,8 @@
 function addReplace( command, title ) {
-	if ( G.playbackswitch ) $( '#playback' ).click();
+	if ( G.playbackswitch ) {
+		getPlaybackStatus();
+		switchPage( 'playback' );
+	}
 	bash( command, function() {
 		G.playbackswitch = 0;
 	} );
