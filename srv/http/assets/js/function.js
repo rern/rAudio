@@ -435,7 +435,7 @@ function getBio( artist ) {
 		} );
 	} );
 }
-function getPlaybackStatus( render ) {
+function getPlaybackStatus() {
 	G.getstatus = 1;
 	local();
 	bash( '/srv/http/bash/status.sh', function( list ) {
@@ -463,7 +463,7 @@ function getPlaybackStatus( render ) {
 			G.status[ key ] = value;
 		} );
 		displayBars();
-		if ( G.playback || render ) { // 'render' - add to blank playlist
+		if ( G.playback ) {
 			setButtonControl();
 			displayPlayback();
 			renderPlayback();
