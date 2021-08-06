@@ -176,9 +176,9 @@ function psCoverart( data ) {
 				G.status.coverart = url;
 				$( '#vu' ).addClass( 'hide' );
 				$( '#divcover .coveredit' ).remove();
-				$( '#coverart' ).css( { opacity: '', border: '' } );
 				$( '#coverart' )
 					.attr( 'src', url )
+					.css( { opacity: '', border: '' } )
 					.removeClass( 'hide' );
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
@@ -334,6 +334,7 @@ function psMpdRadio( data ) {
 		setButtonControl();
 		renderPlaybackTitles();
 		renderPlaybackCoverart();
+		renderPlaybackTime();
 		$( '#progress' ).empty();
 		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 	} else if ( G.playlist ) {

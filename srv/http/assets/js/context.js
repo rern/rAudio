@@ -1,23 +1,3 @@
-function addReplace( command, title ) {
-	if ( G.playbackswitch ) {
-		getPlaybackStatus();
-		switchPage( 'playback' );
-	}
-	bash( command, function() {
-		G.playbackswitch = 0;
-	} );
-	if ( G.list.li.hasClass( 'licover' ) ) {
-		var msg = G.list.li.find( '.lialbum' ).text()
-				+'<a class="li2">'+ G.list.li.find( '.liartist' ).text() +'</a>';
-	} else if ( G.list.li.find( '.li1' ).length ) {
-		var msg = G.list.li.find( '.li1' )[ 0 ].outerHTML
-				+ G.list.li.find( '.li2' )[ 0 ].outerHTML;
-		msg = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
-	} else {
-		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
-	}
-	banner( title, msg, 'playlist' );
-}
 function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from server
@@ -791,22 +771,34 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	cmd = cmd.replace( /albumartist|album|artist|composer|conductor|genre|date/, '' );
 	var command = contextCommand[ cmd ];
 	var addreplaceplay = cmd === 'addplay' || cmd === 'replaceplay';
-	if ( G.status.player !== 'mpd' && addreplaceplay ) {
+	if ( addreplaceplay ) {
 		$( '#stop' ).click();
-		G.status.player = 'mpd';
+		if ( G.display.playbackswitch ) $( '#playback' ).click();
 	}
-	if ( G.display.playbackswitch && addreplaceplay ) G.playbackswitch = 1;
 	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
 		var title = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
-		addReplace( command, title );
 	} else {
 		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
-		if ( G.display.plclear && G.status.playlistlength ) {
-			infoReplace( function() {
-				addReplace( command, title );
-			} );
-		} else {
-			addReplace( command, title );
-		}
 	}
+	if ( G.display.plclear && G.status.playlistlength ) {
+		infoReplace( function() {
+			bash( command );
+		} );
+	} else {
+		var radioplay = G.mode === 'webradio' && G.status.state === 'play';
+		setTimeout( function() {
+			bash( command );
+		}, radioplay ? 1000 : 0 );
+	}
+	if ( G.list.li.hasClass( 'licover' ) ) {
+		var msg = G.list.li.find( '.lialbum' ).text()
+				+'<a class="li2">'+ G.list.li.find( '.liartist' ).text() +'</a>';
+	} else if ( G.list.li.find( '.li1' ).length ) {
+		var msg = G.list.li.find( '.li1' )[ 0 ].outerHTML
+				+ G.list.li.find( '.li2' )[ 0 ].outerHTML;
+		msg = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
+	} else {
+		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
+	}
+	banner( title, msg, 'playlist' );
 } );
