@@ -889,7 +889,7 @@ $( '#restore' ).click( function() {
 								, message : 'File upload failed.'
 							} );
 							bannerHide();
-							loader( 'hide' );
+							loaderHide();
 						}
 					}
 				} );

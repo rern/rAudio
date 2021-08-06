@@ -155,7 +155,7 @@ function selectricRender() {
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {
-			loader( 'hide' );
+			loaderHide();
 			$( '.head, .container' ).removeClass( 'hide' );
 		}, 300 );
 	} else {

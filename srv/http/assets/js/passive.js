@@ -80,7 +80,7 @@ pushstream.onstatuschange = status => {
 		}, 'json' );
 		getPlaybackStatus();
 		bannerHide();
-		loader( 'hide' );
+		loaderHide();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();

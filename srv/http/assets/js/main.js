@@ -101,7 +101,7 @@ $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	$( '#'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
 } );
 $( '#loader' ).click( function() {
-	loader( 'hide' );
+	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
@@ -119,7 +119,7 @@ $( '#coverart' ).on( 'load', function() {
 		$( '#volume-band-dn' ).css( 'left', '' );
 		$( '#volume-band-up' ).css( 'right', '' );
 	}
-	loader( 'hide' );
+	loaderHide();
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #reload, #button-library, #button-playlist' ).on( 'longtap', function() {

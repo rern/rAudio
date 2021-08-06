@@ -28,7 +28,7 @@ function addonsdl( std ) {
 			, message : 'Download from Addons server failed.'
 					   +'<br>Please try again later.'
 			, ok      : function() {
-				loader( 'hide' );
+				loaderHide();
 			}
 		} );
 	} else {
@@ -379,7 +379,7 @@ function getBio( artist ) {
 				, title   : 'Bio'
 				, message : 'No data available.'
 			} );
-			loader( 'hide' );
+			loaderHide();
 			return
 		}
 		
@@ -410,7 +410,7 @@ function getBio( artist ) {
 				.removeClass( 'hide' )
 				.scrollTop( 0 );
 			$( '#biobanner, #bioimg' ).addClass( 'hide' );
-			loader( 'hide' );
+			loaderHide();
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
 				if ( 'error message' in data ) return
@@ -788,13 +788,16 @@ function infoUpdate( path ) {
 		}
 	} );
 }
-function loader( toggle ) {
-	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
 	if ( !G.load ) {
 		G.load = 1;
 		$( '#loader' ).removeClass( 'splash' );
 		$( '#volume .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
 	}
+}
+function loaderHide {
+	$( '#loader' ).addClass( 'hide' );
 }
 function local( delay ) {
 	G.local = 1;
@@ -1263,7 +1266,7 @@ function renderPlaybackCoverart() {
 				.removeClass( 'hide' );
 		}
 	}
-	loader( 'hide' );
+	loaderHide();
 }
 function renderPlaybackTime() {
 	clearIntervalAll();
