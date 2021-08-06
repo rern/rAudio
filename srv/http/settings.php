@@ -46,9 +46,6 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <body>
 <i id="button-data"></i>
 <pre id="data" class="hide"></pre>
-<div id="loader">
-	<?=$logo?>
-</div>
 <div class="head hide">
 	<i class="page-icon fa fa-<?=$page?>"></i><span class='title'><?=( strtoupper( $page ) )?></span>
 	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-question-circle"></i>
@@ -66,6 +63,10 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <div id="bar-bottom">
 	<?=$htmlbar?>
 </div>
+<div id="loader">
+	<?=$logo?>
+</div>
+
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>

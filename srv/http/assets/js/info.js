@@ -97,7 +97,7 @@ var containerhtml = heredoc( function() { /*
 	</div>
 </div>
 */ } );
-$( 'body' ).prepend( containerhtml );
+$( 'body' ).append( containerhtml );
 
 $( '#infoOverlay' ).keyup( function( e ) {
 /*
@@ -165,22 +165,20 @@ function info( json ) {
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos
 	//////////////////////////////////////////////////////////////////////////
-	if ( typeof O !== 'object' ) {
-		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
-		$( '#infoTitle' ).text( 'Info' );
-		$( '#infoX' ).addClass( 'hide' );
-		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
-		$( '#infoOk' ).removeClass( 'hide' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoOk' ).html( 'OK' ).click( infoReset );
-		alignVertical();
-		return;
-	}
-	
 	$( '#infoX' ).click( function() {
 		if ( O.cancel ) O.cancel();
 		infoReset();
 	} );
+	if ( typeof O !== 'object' ) {
+		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
+		$( '#infoTitle' ).text( 'Info' );
+		$( '#infoX' ).removeClass( 'hide' );
+		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		alignVertical();
+		return;
+	}
+	
 	// switch arrows
 	if ( O.arrowright ) switchRL( 'right', O.arrowright )
 	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )

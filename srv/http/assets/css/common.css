@@ -41,6 +41,7 @@ input::-moz-focus-inner {
 .blink { animation: blinkopaque 1.5s linear infinite }
 #loader {
 	position: fixed;
+	top: 0;
 	width: 100%;
 	height: 100%;
 	z-index: 110; /* #banner > #loader > # #keyboard > #infoOverlay */

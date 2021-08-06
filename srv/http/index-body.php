@@ -204,9 +204,6 @@ $modeicon = '
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 ?>
-<div id="loader" class="splash">
-	<?=$logo?>
-</div>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
@@ -424,4 +421,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 </div>
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
+</div>
+<div id="loader" class="splash">
+	<?=$logo?>
 </div>
