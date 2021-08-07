@@ -49,7 +49,7 @@ def second2hhmmss( sec ):
 field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
-    if val and ( i < 4 or i > 7 ):                          # artist title album station file
+    if val and ( i < 4 or i > 7 ):              # artist title album station file
         val = val[ :cols ].replace( '"', '\"' ) # truncate to cols > escape "
     exec( field[ i ] +' = "'+ val +'"' )
     
