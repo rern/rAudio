@@ -780,7 +780,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else {
 		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
 	}
-	if ( G.display.plclear && G.status.playlistlength ) {
+	if ( G.display.plclear && G.status.playlistlength && cmd === 'replaceplay' ) {
 		infoReplace( function() {
 			bash( command );
 		} );
