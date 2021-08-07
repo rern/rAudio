@@ -89,7 +89,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/keyboard.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script>
-	$( '.container input[type=checkbox]' ).click( function() {
+	$( '.container input[type=checkbox]' ).click( function() { // fix: suppress keyboard on checkbox
 		var $kb = $( '#keyboard' );
 		$kb.css( 'opacity', 0 );
 		setTimeout( function() {
