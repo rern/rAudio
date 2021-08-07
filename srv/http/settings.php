@@ -88,6 +88,16 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
 <script src="/assets/js/keyboard.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
+<script>
+	$( '.container input[type=checkbox]' ).click( function() {
+		var $kb = $( '#keyboard' );
+		$kb.css( 'opacity', 0 );
+		setTimeout( function() {
+			$kb.addClass( 'hide' );
+			$kb.css( 'opacity', '' );
+		}, 0 );
+	} );
+</script>
 	<?php } ?>
 	
 </body>

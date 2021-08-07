@@ -150,10 +150,7 @@ function resetLocal( ms ) {
 	setTimeout( bannerHide, ms || 2000 );
 }
 function selectricRender() {
-	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
-		$( 'select' ).selectric( { nativeOnMobile: false } );
-		$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
-	}
+	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) $( 'select' ).selectric( { nativeOnMobile: false } );
 }
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
