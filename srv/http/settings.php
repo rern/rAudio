@@ -68,6 +68,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 </div>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
@@ -81,24 +82,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 		  if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
 	<?php }
-		  if ( $localhost ) { ?>
-<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
-<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
-<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
-<script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
-<script src="/assets/js/keyboard.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
-<script>
-	$( '.container input[type=checkbox]' ).click( function() { // fix: suppress keyboard on checkbox
-		var $kb = $( '#keyboard' );
-		$kb.css( 'opacity', 0 );
-		setTimeout( function() {
-			$kb.addClass( 'hide' );
-			$kb.css( 'opacity', '' );
-		}, 0 );
-	} );
-</script>
-	<?php } ?>
+		  include 'keyboard.php';?>
 	
 </body>
 </html>

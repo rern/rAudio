@@ -15,6 +15,7 @@ $htmlname = '';
 for ( $i = 1; $i < 5; $i++ ) {
 	$htmlpin.= '<select id="pin'.$i.'" name="pin'.$i.'" class="pin">'.$optionpin.'</select>';
 	$htmlname.= '<input id="name'.$i.'" name="name'.$i.'" type="text" class="name" placeholder="(no name)">';
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 }
 ?>
 <!DOCTYPE html>
@@ -99,6 +100,7 @@ for ( $i = 1; $i < 5; $i++ ) {
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
 <script src="/assets/js/relays.<?=$time?>.js"></script>
+<?php include '../keyboard.php';?>
 
 </body>
 </html>

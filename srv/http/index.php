@@ -59,14 +59,8 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<?php if ( $desktop ) { ?>
 <link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
 <script src="/assets/js/shortcut.<?=$time?>.js"></script>
-	<?php } ?>
-	<?php if ( $localhost ) { ?>
-<link rel="stylesheet" href="/assets/css/simple-keyboard.min.<?=$time?>.css">
-<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
-<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
-<script src="/assets/js/plugin/simple-keyboard.min.<?=$time?>.js"></script>
-<script src="/assets/js/keyboard.<?=$time?>.js"></script>
-	<?php } ?>
+	<?php }
+		  include 'keyboard.php';?>
 	
 </body>
 </html>

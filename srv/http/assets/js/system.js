@@ -438,7 +438,7 @@ var infolcdchar = heredoc( function() { /*
 		<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
 		<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
 	</tr>
-	<tr><td>Character Map</td>
+	<tr><td>Char<wide>acter</wide> Map</td>
 		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
 		<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
 	</tr>
