@@ -23,6 +23,6 @@ else
 fi
 matchbox-window-manager -use_cursor $cursor &
 
-chromium --app=http://localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
+chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
 #midori -e Fullscreen -a http://localhost
 #firefox -kiosk http://localhost

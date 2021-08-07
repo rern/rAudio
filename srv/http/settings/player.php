@@ -1,4 +1,4 @@
-<div>
+<div id="mpd">
 <heading data-status="mpd" class="status">Music Player Daemon<?=$istatus?><?=$ihelp?></heading>
 <div class="col-l text gr">
 	Version

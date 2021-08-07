@@ -135,7 +135,7 @@ data+='
 , "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
 , "powerbuttonconf" : "'$powerbuttonconf'"
-, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
+, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
 , "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "relayspins"      : '$relayspins'

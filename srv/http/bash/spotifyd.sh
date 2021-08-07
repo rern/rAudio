@@ -87,13 +87,13 @@ else
 	
 	data=$( curl -s -X GET "https://api.spotify.com/v1/tracks/$TRACK_ID" -H "Authorization: Bearer $token" )
 	metadata='
-, "Album"      : '$( jq .album.name <<< $data )'
-, "Artist"     : '$( jq .album.artists[0].name <<< $data )'
-, "coverart"   : '$( jq .album.images[0].url <<< $data )'
-, "Time"       : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
-, "Title"      : '$( jq .name <<< $data )'
-, "sampling"   : "48 kHz 320 kbit/s &bull; Spotify"
-, "volumemute" : 0'
+, "Album"    : '$( jq .album.name <<< $data )'
+, "Artist"   : '$( jq .album.artists[0].name <<< $data )'
+, "coverart" : '$( jq .album.images[0].url <<< $data )'
+, "file"     : ""
+, "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
+, "Time"     : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
+, "Title"    : '$( jq .name <<< $data )
 	echo $metadata > $file
 ########
 	status+=$metadata

@@ -188,11 +188,22 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 }
 
 $menu.= '</div>';
-$libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
+$modeicon = '
+	<i id="i-random" class="fa fa-random hide"></i>
+	<i id="i-repeat" class="fa fa-repeat hide"></i>
+	<i id="i-single" class="fa fa-single hide"></i>
+	<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
+	<i id="i-consume" class="fa fa-flash hide"></i>
+	<i id="i-librandom" class="fa fa-dice hide"></i>
+	<i id="i-mute" class="fa fa-mute hide"></i>
+	<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
+	<i id="i-update" class="fa fa-library blink hide"></i>
+	<i id="i-addons" class="fa fa-jigsaw hide"></i>
+	<i id="i-relays" class="fa fa-relays hide"></i>
+';
+if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
+$timeicon = str_replace( 'i-', 'ti-', $modeicon );
 ?>
-<div id="loader" class="splash">
-	<?=$logo?>
-</div>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
@@ -221,9 +232,9 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 <div id="page-playback" class="page">
 	<div id="reload"></div>
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
-	<i id="guide-bio" class="map guide fa fa-bio"></i>
-	<i id="guide-lyrics" class="map guide fa fa-lyrics"></i>
-	<i id="guide-album" class="map guide fa fa-lastfm"></i>
+	<i id="guide-bio" class="map guide fa fa-bio hide"></i>
+	<i id="guide-lyrics" class="map guide fa fa-lyrics hide"></i>
+	<i id="guide-album" class="map guide fa fa-lastfm hide"></i>
 	<div id="info">
 		<div id="divartist">
 			<span id="artist"></span>
@@ -237,36 +248,14 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 		<div id="infoicon">
 			<i id="playericon"></i>
 			<span id="progress"></span>
-			<span id="modeicon">
-				<i id="i-random" class="fa fa-random hide"></i>
-				<i id="i-repeat" class="fa fa-repeat hide"></i>
-				<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
-				<i id="i-consume" class="fa fa-flash hide"></i>
-				<i id="i-librandom" class="fa fa-dice hide"></i>
-				<i id="i-mute" class="fa fa-mute hide"></i>
-				<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="i-update" class="fa <?=$libraryicon?> hide"></i>
-				<i id="i-addons" class="fa fa-jigsaw hide"></i>
-				<i id="i-relays" class="fa fa-relays hide"></i>
-			</span>
+			<span id="modeicon"><?=$modeicon?></span>
 		</div>
 		<div id="sampling"></div>
 	</div>
 	<div id="playback-row" class="row">
 		<div id="time-knob" class="hide">
 			<div id="time"></div>
-			<div id="timeicon">
-				<i id="ti-random" class="fa fa-random hide"></i>
-				<i id="ti-repeat" class="fa fa-repeat hide"></i>
-				<i id="ti-repeat1" class="fa fa-repeat-single hide"></i>
-				<i id="ti-consume" class="fa fa-flash hide"></i>
-				<i id="ti-librandom" class="fa fa-dice hide"></i>
-				<i id="ti-mute" class="fa fa-mute hide"></i>
-				<i id="ti-btclient" class="fa fa-bluetooth-client hide"></i>
-				<i id="ti-update" class="fa <?=$libraryicon?> hide"></i>
-				<i id="ti-addons" class="fa fa-jigsaw hide"></i>
-				<i id="ti-relays" class="fa fa-relays hide"></i>
-			</div>
+			<div id="timeicon"><?=$timeicon?></div>
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
 			<div id="timemap">
@@ -282,9 +271,9 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			</div>
 			<div id="play-group">
 				<div class="btn-group">
-					<i id="repeat" class="btn btn-default btn-cmd btn-toggle fa fa-repeat"></i>
 					<i id="random" class="btn btn-default btn-cmd btn-toggle fa fa-random"></i>
 					<i id="single" class="btn btn-default btn-cmd btn-toggle fa fa-single"></i>
+					<i id="repeat" class="btn btn-default btn-cmd btn-toggle fa fa-repeat"></i>
 				</div>
 			</div>
 		</div>
@@ -292,7 +281,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 			<div id="divcover" class="cover">
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
-				<img id="coverart" class="cover hide">
+				<img id="coverart" src="" class="cover hide">
 				<div id="vu" class="hide">
 					<?php include 'assets/img/vu.svg';?>
 				</div>
@@ -432,4 +421,7 @@ $libraryicon = $localhost ? 'fa-refresh-library' : 'fa-library blink';
 </div>
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
+</div>
+<div id="loader" class="splash">
+	<?=$logo?>
 </div>

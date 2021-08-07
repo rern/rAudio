@@ -97,7 +97,7 @@ var containerhtml = heredoc( function() { /*
 	</div>
 </div>
 */ } );
-$( 'body' ).prepend( containerhtml );
+$( 'body' ).append( containerhtml );
 
 $( '#infoOverlay' ).keyup( function( e ) {
 /*
@@ -165,22 +165,20 @@ function info( json ) {
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos
 	//////////////////////////////////////////////////////////////////////////
-	if ( typeof O !== 'object' ) {
-		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
-		$( '#infoTitle' ).text( 'Info' );
-		$( '#infoX' ).addClass( 'hide' );
-		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
-		$( '#infoOk' ).removeClass( 'hide' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoOk' ).html( 'OK' ).click( infoReset );
-		alignVertical();
-		return;
-	}
-	
 	$( '#infoX' ).click( function() {
 		if ( O.cancel ) O.cancel();
 		infoReset();
 	} );
+	if ( typeof O !== 'object' ) {
+		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
+		$( '#infoTitle' ).text( 'Info' );
+		$( '#infoX' ).removeClass( 'hide' );
+		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		alignVertical();
+		return;
+	}
+	
 	// switch arrows
 	if ( O.arrowright ) switchRL( 'right', O.arrowright )
 	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )
@@ -200,15 +198,15 @@ function info( json ) {
 	$( '#infoTitle' ).html( title );
 	
 	// buttons
-	var htmlbutton = ''
+	var htmlbutton = '';
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		if ( typeof O.buttonlabel !== 'object' ) O.buttonlabel = [ O.buttonlabel ];
-		if ( typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
-		var iL = O.buttonlabel.length;
+		if ( 'buttoncolor' in O && typeof O.buttoncolor !== 'object' ) O.buttoncolor = [ O.buttoncolor ];
+		var iL = O.button.length;
 		for ( i = 0; i < iL; i++ ) {
-			var color = O.buttoncolor ? ' style="background-color:'+ O.buttoncolor[ i ] +'"' : '';
-			htmlbutton += '<a'+ color +' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
+			htmlbutton += O.buttoncolor ? '<a style="background-color:'+ O.buttoncolor[ i ] +'"' : '<a';
+			htmlbutton += ' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
 		}
 	}
 	if ( O.cancelshow ) {

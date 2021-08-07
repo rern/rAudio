@@ -17,7 +17,7 @@ hr {
 }
 @media(max-width: 540px) {
 	.container {
-		padding: 0 10px 15px 10px;
+		padding: 40px 10px 15px 10px;
 	}
 	.boxed-group {
 		padding: 10px !important;
@@ -32,11 +32,11 @@ hr {
 	box-shadow: 0px 4px 10px #000000;
 	z-index: 95;
 }
-.page-icon {
+#page-icon {
 	float: left;
 	background: var( --cm );
 }
-.page-icon, #close {
+#page-icon, #close {
 	width: 40px;
 	height: 40px;
 	line-height: 38px;
@@ -184,7 +184,7 @@ a:active,
 a:hover {
 	outline: 0
 }
-.infobtn {
+.container .infobtn {
 	min-width: 90px;
 }
 #bottom {

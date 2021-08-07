@@ -321,7 +321,7 @@ i.map.disabled, .map.disabled i {
 #album {
 	font-size: 18px
 }
-.albumgray {
+#album.disabled {
 	font-weight: 300;
 	color: var( --cgl );
 }
@@ -349,7 +349,7 @@ i.map.disabled, .map.disabled i {
 	vertical-align: -1px;
 }
 #modeicon {
-	color: var( --cg60 );
+	color: var( --cgl );
 }
 #progress {
 	margin: 0 5px;
@@ -868,7 +868,7 @@ i.map.disabled, .map.disabled i {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
-#repeat, 
+#random, 
 #voldn {
 									  /* w    h      x    y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -876,7 +876,7 @@ i.map.disabled, .map.disabled i {
 									  /* x    y   w    h */
 	background-color: var( --cg );
 }
-#random,
+#single,
 #volmute {
 	background: -webkit-linear-gradient(
 		top,
@@ -893,7 +893,7 @@ i.map.disabled, .map.disabled i {
 	background-color: var( --cg );
 	border-left: 1px solid var( --cga );
 }
-#single,
+#repeat,
 #volup {
 									  /* w    h      x  y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -2128,6 +2128,10 @@ li.active .li2 bl {
 	.emptyadd.barsalways {
 		top: 90px;
 	}
+	#bar-bottom {
+		height: 30px !important;
+		font-size: 21px;
+	}
 	.index0 {
 		display: none !important;
 	}
@@ -2292,12 +2296,6 @@ li.active .li2 bl {
 	#dot0 {
 		display: inline;
 	}
-	#volume-band-dn {
-		left: 0;
-	}
-	#volume-band-up {
-		right: 0;
-	}
 }
 @media( orientation: portrait ) and ( max-width: 480px ) {
 	#playback-controls i {
@@ -2388,11 +2386,6 @@ li.active .li2 bl {
 	#info {
 		transform: scale( 1.25 );
 	}
-	#bar-bottom {
-		height: 30px !important;
-		font-size: 21px;
-	}
-	#infoicon,
 	#sampling,
 	#guide-lyrics { display: none; }
 	#coverart-block,
@@ -2404,10 +2397,6 @@ li.active .li2 bl {
 	#page-playback {
 		padding-top: 30px !important;
 		overflow: hidden;
-	}
-	#bar-bottom {
-		height: 30px;
-		font-size: 21px;
 	}
 	#sampling,
 	#time-knob,

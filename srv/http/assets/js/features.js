@@ -207,6 +207,9 @@ $( '#setting-localbrowser' ).click( function() {
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]
+		, beforeshow   : function() {
+			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
+		}
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {

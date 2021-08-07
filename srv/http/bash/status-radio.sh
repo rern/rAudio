@@ -70,7 +70,7 @@ metadataGet() {
 	[[ -z $countdown ]] && countdown=0
 	[[ ${#metadata[@]} == 6 && $countdown > 0 ]] && countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 
-	if [[ -n $coverurl && ! -e $dirsystem/vumeter ]]; then
+	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
@@ -89,19 +89,19 @@ $coverart" > $dirtmp/status
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| awk '/elapsed/ {print $NF}' )
 	[[ -z $elapsed ]] && elapsed=0
+	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
-"Artist"   : "'$artist'"
-, "Title"    : "'$title'"
-, "Album"    : "'$album'"
+  "Album"    : "'$album'"
+, "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
-, "station"  : "'$station'"
 , "file"     : "'$file'"
+, "iplayer"  : "'$iplayer'"
 , "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
-, "song"     : '$song'
 , "state"    : "play"
-, "iplayer"  : "'$iplayer'"
-, "webradio" : true
+, "song"     : '$song'
+, "station"  : "'$station'"
+, "Title"    : "'$title'"
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then

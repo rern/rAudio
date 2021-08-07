@@ -205,10 +205,10 @@ volumeSet() {
 	target=$2
 	control=$3
 	diff=$(( $target - $current ))
+	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
 		[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
 	else # increment
-		pushstreamVolume enable true
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
 			[[ -z $control ]] && mpc volume $i || amixer -Mq sset "$control" $i%
@@ -217,8 +217,8 @@ volumeSet() {
 		if (( $i != $target )); then
 			[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
 		fi
-		pushstreamVolume enable false
 	fi
+	pushstreamVolume disable false
 	[[ -n $control ]] && alsactl store
 }
 
@@ -383,11 +383,6 @@ $mpdpath
 reset" )
 	echo $url
 	;;
-coverartradioreset )
-	coverfile=${args[1]}
-	rm -f "$coverfile".* "$coverfile-thumb".*
-	pushstream coverart '{"url":"'$coverfile'","type":"webradioreset"}'
-	;;
 coversave )
 	source=${args[1]}
 	path=${args[2]}
@@ -417,7 +412,6 @@ echo "$data"
 	;;
 displaysave )
 	data=$( jq . <<< ${args[1]} )
-	pushstream display "$data"
 	grep -q 'vumeter.*true' <<< "$data" && vumeter=true || vumeter=false
 	[[ -e $dirsystem/vumeter ]] && vumeter0=true || vumeter0=false
 	if [[ $vumeter != $vumeter0 ]]; then
@@ -427,12 +421,14 @@ displaysave )
 		else
 			rm $dirsystem/vumeter
 		fi
-		$dirbash/cmd-pushstatus.sh
+		status=$( $dirbash/status.sh )
+		pushstream mpdplayer "$status"
 		if [[ $vumeter == true || -e $dirsystem/vuled ]]; then
 			killall cava &> /dev/null
 			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		fi
 	fi
+	pushstream display "$data"
 	echo "$data" > $dirsystem/display
 	;;
 ignoredir )
@@ -776,6 +772,11 @@ rotateSplash )
 	;;
 screenoff )
 	DISPLAY=:0 xset dpms force off
+	;;
+stationcoverreset )
+	coverfile=${args[1]}
+	rm -f "$coverfile".* "$coverfile-thumb".*
+	pushstream coverart '{"url":"'$coverfile'","type":"webradioreset"}'
 	;;
 statuspkg )
 	echo "$( pacman -Q ${args[1]} )

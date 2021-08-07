@@ -1,11 +1,12 @@
-$( window ).on( 'resize', function() {
+$( window ).on( 'resize', () => { // portrait / landscape
+	displayBars();
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
 		setButtonControl()
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
 					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
@@ -16,7 +17,7 @@ $( window ).on( 'resize', function() {
 		}
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
@@ -25,23 +26,24 @@ $( window ).on( 'resize', function() {
 		}
 	}
 } );
-function onVisibilityChange( callback ) {
-	var visible = 1;
-	function focused() {
-		if ( !visible ) callback( visible = 1 );
+// active / inactive window /////////
+var active = 1;
+connect = () => {
+	if ( !active ) {
+		active = 1;
+		pushstream.connect();
 	}
-	function unfocused() {
-		if ( visible ) callback( visible = 0 );
+}
+disconnect = () => {
+	if ( active ) {
+		active = 0;
+		pushstream.disconnect();
 	}
-	document.addEventListener( 'visibilitychange', function() {
-		document.hidden ? unfocused() : focused();
-	} );
-	window.onpageshow = window.onfocus = focused;
-	window.onpagehide = window.onblur = unfocused;
-};
-onVisibilityChange( function( visible ) {
-	visible ? pushstream.connect() : pushstream.disconnect();
-} );
+}
+document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+window.onpageshow = window.onfocus = connect;
+////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
 	, timeout                               : 5000
@@ -50,13 +52,13 @@ var pushstream = new PushStream( {
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
-streams.forEach( function( stream ) {
+streams.forEach( stream => {
 	pushstream.addChannel( stream );
 } );
 pushstream.connect();
-pushstream.onstatuschange = function( status ) {
+pushstream.onstatuschange = status => {
 	if ( status === 2 ) {        // connected
-		bash( [ 'displayget' ], function( data ) {
+		bash( [ 'displayget' ], data => {
 			delete G.coverTL;
 			G.display = data;
 			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
@@ -68,7 +70,7 @@ pushstream.onstatuschange = function( status ) {
 				, lock       : 'system'
 				, screenoff  : 'power'
 			};
-			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( function( sub ) {
+			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
 				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
 					$( '#'+ submenu[ sub ] )
 						.addClass( 'sub' )
@@ -78,7 +80,7 @@ pushstream.onstatuschange = function( status ) {
 		}, 'json' );
 		getPlaybackStatus();
 		bannerHide();
-		loader( 'hide' );
+		loaderHide();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		vuStop();
@@ -86,7 +88,7 @@ pushstream.onstatuschange = function( status ) {
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
-pushstream.onmessage = function( data, id, channel ) {
+pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
 		case 'airplay':   psAirplay( data );   break;
 		case 'bookmark':  psBookmark( data );  break;
@@ -174,9 +176,9 @@ function psCoverart( data ) {
 				G.status.coverart = url;
 				$( '#vu' ).addClass( 'hide' );
 				$( '#divcover .coveredit' ).remove();
-				$( '#coverart' ).css( 'opacity', '' );
 				$( '#coverart' )
 					.attr( 'src', url )
+					.css( { opacity: '', border: '' } )
 					.removeClass( 'hide' );
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
@@ -227,7 +229,7 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'webradio':
-			G.status.coverartradio = src;
+			G.status.stationcover = src;
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
 				$( '#coverart' )
@@ -245,7 +247,7 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'webradioreset':
-			G.status.coverartradio = '';
+			G.status.stationcover = '';
 			if ( G.playback ) {
 				coverartDefault();
 			} else if ( G.playlist ) {
@@ -260,14 +262,13 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
-	if ( G.local ) return
-	
 	if ( 'updateaddons' in data ) {
 		G.status.updateaddons = data.updateaddons ? true : false;
 		setButtonUpdateAddons();
 		return
 	}
 	
+	if ( data.vumeter !== G.vumeter ) $( '#coverart' ).attr( 'src', '' );
 	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
@@ -330,12 +331,12 @@ function psMpdRadio( data ) {
 		$( '#playericon' )
 			.removeAttr( 'class' )
 			.addClass( 'fa fa-'+ iplayer );
-		G.radioheader = true;
+		setButtonControl();
 		renderPlaybackTitles();
-		setPlaybackTitles();
+		renderPlaybackCoverart();
+		renderPlaybackTime();
 		$( '#progress' ).empty();
 		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
-		renderPlaybackCoverart( G.status.coverart || G.status.coverartradio );
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
@@ -542,7 +543,7 @@ function psSpotify( data ) {
 	setButtonControl();
 }
 function psVolume( data ) {
-	if ( data.type === 'enable' ) {
+	if ( data.type === 'disable' ) {
 		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
 		return
 	}
@@ -557,18 +558,19 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		if ( !$( '#volume-knob' ).hasClass( 'hide' ) ) {
+		G.status.volume = vol;
+		if ( G.display.volume ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
-			G.status.volume = vol;
-			if ( $( '#infoRange .value' ).text() ) { // mpd setting
-				$( '#infoRange .value' ).text( vol );
-				$( '#infoRange input' ).val( vol );
-			} else {
-				$( '#volume-bar' ).css( 'width', vol +'%' );
-				$( '#volume-text' ).html( mute ? '<i class="fa fa-mute"></i>' : vol );
-			}
+			$( '#volume-bar' ).css( 'width',  vol +'%' )
+			$( '#volume-text' )
+				.text( mute ? data.val : vol )
+				.toggleClass( 'bl', mute );
+		}
+		if ( !G.display.buttons ) {
+			var prefix = G.display.time ? 'ti' : 'i';
+			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 		}
 	}, G.debouncems );
 }

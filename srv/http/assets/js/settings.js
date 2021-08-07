@@ -112,8 +112,11 @@ function list2JSON( list ) {
 	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
-function loader( toggle ) {
-	$( '#loader' ).toggleClass( 'hide', toggle === 'hide' );
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
 }
 function notify( title, message, icon ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
@@ -155,7 +158,7 @@ function selectricRender() {
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {
-			loader( 'hide' );
+			loaderHide();
 			$( '.head, .container' ).removeClass( 'hide' );
 		}, 300 );
 	} else {
@@ -163,7 +166,11 @@ function showContent() {
 	}
 }
 
-var pushstream = new PushStream( { modes: 'websocket' } );
+var pushstream = new PushStream( {
+	  modes                                 : 'websocket'
+	, timeout                               : 5000
+	, reconnectOnChannelUnavailableInterval : 5000
+} );
 var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
@@ -173,6 +180,8 @@ pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
+	} else if ( status === 0 ) { // disconnected
+		if ( $( '#refresh' ).hasClass( 'blink' ) ) $( '#refresh' ).click();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -286,6 +295,7 @@ document.title = page;
 
 refreshData();
 
+if ( localhost ) $( 'a' ).removeAttr( 'href' );
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
@@ -333,8 +343,6 @@ $( document ).keyup( function( e ) {
 	}
 } );
 $( '#'+ page ).addClass( 'active' );
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
-
 $( '#close' ).click( function() {
 	if ( page === 'system' || page === 'features' ) {
 		bash( 'cat '+ filereboot, function( lines ) {

@@ -85,14 +85,18 @@ function infoWiring( icon, title, message, image, W ) {
 	} );
 }
 function rebootText( enable, device ) {
-	var exist = 0;
-	if ( G.reboot.length ) {
+	var listed = 0;
+	if ( G.reboot ) {
 		if ( typeof G.reboot === 'string' ) G.reboot = [ G.reboot ];
-		exist = G.reboot.some( function( line ) {
+	} else {
+		G.reboot = [];
+	}
+	if ( G.reboot.length ) {
+		listed = G.reboot.some( function( line ) {
 			return line.indexOf( device ) !== -1
 		} );
 	}
-	if ( !exist ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
+	if ( !listed ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
 }
 function renderStatus() {
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
@@ -102,7 +106,7 @@ function renderStatus() {
 		$( '#cputemp' ).hide();
 	}
 	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
-			+'<br>'+ G.uptime +'<span class="wide">&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></span>'
+			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		status += '<br><span class="undervoltage"><i class="fa fa-warning';
@@ -263,12 +267,12 @@ $( '#refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	
 	var $this = $( this );
-	var active = $this.hasClass( 'blink' );
-	$this.toggleClass( 'blink', !active );
-	if ( active ) {
+	if ( $this.hasClass( 'blink' ) ) {
 		clearInterval( intervalcputime );
 		bannerHide();
+		$this.removeClass( 'blink' );
 	} else {
+		$this.addClass( 'blink' );
 		intervalcputime = setInterval( function() {
 			bash( '/srv/http/bash/system-data.sh status', function( status ) {
 				$.each( status, function( key, val ) {
@@ -885,7 +889,7 @@ $( '#restore' ).click( function() {
 								, message : 'File upload failed.'
 							} );
 							bannerHide();
-							loader( 'hide' );
+							loaderHide();
 						}
 					}
 				} );
