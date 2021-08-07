@@ -68,7 +68,6 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 </div>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
