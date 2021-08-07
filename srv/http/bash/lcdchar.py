@@ -46,7 +46,7 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
 
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'webradio', 'station', 'file' ] # assign variables
+field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
     if i < 4 or i > 8:                          # artist title album station file

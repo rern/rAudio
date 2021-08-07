@@ -5,10 +5,8 @@ dirtmp=/srv/http/data/shm
 
 status=$( /srv/http/bash/status.sh )
 statusdata=$( echo $status \
-	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .webradio, .station, .file' \
+	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file, .webradio' \
 	| sed 's/null//' )
-(( $( echo "$statusdata" | wc -l ) < 10 )) && statusdata+=$'\n' # jq not include trailing blank lines
-(( $( echo "$statusdata" | wc -l ) < 10 )) && statusdata+=$'\n'
 readarray -t data <<< "$statusdata"
 if [[ -e $dirtmp/status ]]; then
 	dataprev=$( cat $dirtmp/status )
