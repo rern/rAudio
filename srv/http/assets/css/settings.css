@@ -476,6 +476,12 @@ input:checked + .switchlabel.disabled:after {
 	display: none;
 	color: var( --cw );
 }
+#gpiosvg {
+	width: 340px;
+	max-width: 100%;
+	height: auto;
+	margin-bottom: 10px;
+}
 #gpiopin,
 #gpiopin1 {
 	display: none;
