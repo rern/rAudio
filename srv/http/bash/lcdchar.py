@@ -18,7 +18,7 @@ splash = rows > 2 and rn or ''
 splash += spaces + irr + rn + spaces +'rAudio'
 
 argvL = len( sys.argv )
-if argvL == 1 or ''.join( sys.argv[1:4] ) == '': # no argument / blank info
+if argvL == 1: # no argument
     lcd.write_string( splash )
     lcd.close()
     quit()
@@ -49,7 +49,7 @@ def second2hhmmss( sec ):
 field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
-    if i < 4 or i > 8:                          # artist title album station file
+    if val and ( i < 4 or i > 7 ):                          # artist title album station file
         val = val[ :cols ].replace( '"', '\"' ) # truncate to cols > escape "
     exec( field[ i ] +' = "'+ val +'"' )
     
