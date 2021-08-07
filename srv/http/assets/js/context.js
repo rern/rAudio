@@ -783,12 +783,14 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	if ( G.display.plclear && G.status.playlistlength && cmd === 'replaceplay' ) {
 		infoReplace( function() {
 			bash( command );
+			banner( title, msg, 'playlist' );
 		} );
 	} else {
 		var radioplay = G.mode === 'webradio' && G.status.state === 'play';
 		setTimeout( function() {
 			bash( command );
 		}, radioplay ? 1000 : 0 );
+		banner( title, msg, 'playlist' );
 	}
 	if ( G.list.li.hasClass( 'licover' ) ) {
 		var msg = G.list.li.find( '.lialbum' ).text()
@@ -800,5 +802,4 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else {
 		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
-	banner( title, msg, 'playlist' );
 } );
