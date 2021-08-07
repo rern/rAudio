@@ -17,12 +17,13 @@ spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
 splash = rows > 2 and rn or ''
 splash += spaces + irr + rn + spaces +'rAudio'
 
-if len( sys.argv ) == 1: # no argument = splash
+argvL = len( sys.argv )
+if argvL == 1 or ''.join( sys.argv[1:4] ) == '': # no argument / blank info
     lcd.write_string( splash )
     lcd.close()
     quit()
 
-if len( sys.argv ) == 2: # 1 argument
+if argvL == 2: # 1 argument
     argv1 = sys.argv[ 1 ]
     if argv1 == 'off':   # backlight off
         lcd.backlight_enabled = False
@@ -55,9 +56,6 @@ for i in range( 1, 11 ):
 if not artist and webradio != 'false':
     artist = station
     album = file
-if not artist and not title and not album:
-    lcd.write_string( splash )
-    quit()
 
 if not artist: artist = idots
 if not title: title = rows == 2 and artist or idots
