@@ -267,12 +267,12 @@ $( '#refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	
 	var $this = $( this );
-	var active = $this.hasClass( 'blink' );
-	$this.toggleClass( 'blink', !active );
-	if ( active ) {
+	if ( $this.hasClass( 'blink' ) ) {
 		clearInterval( intervalcputime );
 		bannerHide();
+		$this.removeClass( 'blink' );
 	} else {
+		$this.addClass( 'blink' );
 		intervalcputime = setInterval( function() {
 			bash( '/srv/http/bash/system-data.sh status', function( status ) {
 				$.each( status, function( key, val ) {

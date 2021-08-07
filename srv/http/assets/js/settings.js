@@ -181,7 +181,7 @@ pushstream.onstatuschange = function( status ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
-		if ( page === 'system' ) clearInterval( intervalcputime );
+		if ( $( '#refresh' ).hasClass( 'blink' ) ) $( '#refresh' ).click();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
