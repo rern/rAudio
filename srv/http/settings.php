@@ -69,8 +69,6 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
-<script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/banner.<?=$time?>.js"></script>
 <script src="/assets/js/settings.<?=$time?>.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
@@ -82,6 +80,8 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
 	<?php }
 		  include 'keyboard.php';?>
+<script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/banner.<?=$time?>.js"></script>
 	
 </body>
 </html>

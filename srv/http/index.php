@@ -50,17 +50,17 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/roundslider.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/Sortable.min.<?=$time?>.js"></script>
-<script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>
 <script src="/assets/js/passive.<?=$time?>.js"></script>
-<script src="/assets/js/banner.<?=$time?>.js"></script>
-<script src="/assets/js/context.<?=$time?>.js"></script>
 	<?php if ( $desktop ) { ?>
 <link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
 <script src="/assets/js/shortcut.<?=$time?>.js"></script>
 	<?php }
 		  include 'keyboard.php';?>
+<script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/banner.<?=$time?>.js"></script>
 	
 </body>
 </html>

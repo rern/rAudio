@@ -157,28 +157,16 @@ $keepkey = [ 'title', 'installurl', 'rollback', 'option', 'postinfo' ];
 foreach( $arrayalias as $alias ) {
 	$addonslist[ $alias ] = array_intersect_key( $addons[ $alias ], array_flip( $keepkey ) );
 }
-$restartfile = '/srv/http/data/shm/restart';
-if ( file_exists( $restartfile ) ) {
-	$restart = trim( file_get_contents( $restartfile ) );
-	@unlink( $restartfile );
-} else {
-	$restart = '';
-}
 ?>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
+<script src="/assets/js/addons.<?=$time?>.js"></script>
+	<?php include 'keyboard.php';?>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/banner.<?=$time?>.js"></script>
-<script src="/assets/js/addons.<?=$time?>.js"></script>
 <script>
 var addons = <?=json_encode( $addonslist )?>;
-var restart = '<?=$restart?>';
-if ( restart ) {
-	setTimeout( function() {
-		$.post( 'cmd.php', { cmd: 'bash', bash: 'systemctl restart '+ restart } );
-	}, 1000 );
-}
 </script>
 
 </body>
