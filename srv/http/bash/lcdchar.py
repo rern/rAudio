@@ -71,7 +71,16 @@ if webradio == 'true':
 if not artist: artist = idots
 if not title: title = rows == 2 and artist or idots
 if not album: album = idots
-lines = rows == 2 and title or artist + rn + title + rn + album + rn
+if rows == 2:
+    if state == 'stop':
+        lcd.write_string( artist + rn + title )
+        lcd.close()
+        quit()
+        
+    else:
+        lines = title
+else:
+    lines = artist + rn + title + rn + album + rn
 
 if total != 'false':
     total = round( float( total ) )
