@@ -1344,7 +1344,7 @@ function renderPlaybackTitles() {
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : '' ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
-			$( '#album' ).text( G.status.Album || G.status.station || G.status.file );
+			$( '#album' ).text( G.status.Album || G.status.file );
 		}
 	}
 	$( '#artist' ).toggleClass( 'disabled', G.status.Artist === '' );
