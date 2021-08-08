@@ -53,7 +53,10 @@ field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', '
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
     if val and i < 6:
-        if noaccented: val = ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
+        if noaccented:
+            val = val.replace( 'º', '°' )
+            val = ''.join( c for c in unicodedata.normalize( 'NFD', val )
+                           if unicodedata.category( c ) != 'Mn' )
         val = val[ :cols ].replace( '"', '\"' )
     exec( field[ i ] +' = "'+ val +'"' )
     
