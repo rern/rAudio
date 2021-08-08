@@ -6,9 +6,10 @@ dirtmp=/srv/http/data/shm
 readarray -t tmpradio < $dirtmp/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]}
+station=${station//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos &bull; ${tmpradio[3]}"
+sampling="$pos &bull; ${tmpradio[3]} &bull; $station"
 song=$(( ${pos/\/*} - 1 ))
 case $id in
 	flac )   id=0;;
@@ -84,7 +85,6 @@ $coverart" > $dirtmp/status
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
-	station=${station//\"/\\\"}
 	elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| awk '/elapsed/ {print $NF}' )

@@ -1139,16 +1139,7 @@ function renderPlayback() {
 		return
 	}
 	
-	var sampling = G.status.sampling;
 	$( '.emptyadd' ).addClass( 'hide' );
-	if ( G.status.stream ) {
-		if ( G.status.state === 'play' && G.status.Album !== '' ) { // radioparadise or radiofrance
-			sampling += ' &bull; '+ G.status.station;
-		} else {
-			sampling += sampling ? ' &bull; Radio' : 'Radio';
-		}
-	}
-	$( '#sampling' ).html( sampling );
 	$( '#coverart' ).css( 'opacity', '' );
 	$( '#divcover .coveredit.cover' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
@@ -1336,7 +1327,6 @@ function renderPlaybackTime() {
 	}
 }
 function renderPlaybackTitles() {
-	if ( !G.display.time ) renderPlaybackTime();
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
@@ -1361,6 +1351,8 @@ function renderPlaybackTitles() {
 	$( '#title' ).toggleClass( 'disabled', G.status.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', G.status.Album === '' );
 	setPlaybackTitles();
+	$( '#sampling' ).html( G.status.sampling );
+	if ( !G.display.time ) renderPlaybackTime();
 }
 renderPlaylist = function( data ) {
 	G.savedlist = 0;

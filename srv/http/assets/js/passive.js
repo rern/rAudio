@@ -336,7 +336,7 @@ function psMpdRadio( data ) {
 		renderPlaybackCoverart();
 		renderPlaybackTime();
 		$( '#progress' ).empty();
-		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
+		$( '#sampling' ).html( G.status.sampling );
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
