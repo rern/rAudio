@@ -535,14 +535,20 @@ $( '#setting-lcdchar' ).click( function() {
 	} );
 } );
 $( '.img' ).click( function() {
+	var name = $( this ).data( 'name' );
+	var title = {
+		  lcdchar : 'Character LCD'
+		, relays  : 'Relays Module'
+		, lcd     : 'TFT 3.5" LCD'
+	}
 	info( {
-		  icon    : 'lcdchar'
-		, title   : 'Character LCD'
-		, message : '<img src="/assets/img/'+ $( this ).data( 'name' ) +'.'+ hash +'.jpg" style="height: 100%">'
+		  icon    : name
+		, title   : title[ name ]
+		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.jpg" style="height: 100%">'
 		, okno    : 1
 	} );
 } );
-$( '#wiringlcdchar' ).click( function() {
+$( '#wiring-i2c' ).click( function() {
 	infoWiring(  'lcdchar', 'Character LCD I²C', '5V to <wh>3.3V</wh> I²C + <wh>5V</wh> LCD', 'i2c_backpack_mod.jpg', 162 );
 } );
 $( '#setting-powerbutton' ).click( function() {

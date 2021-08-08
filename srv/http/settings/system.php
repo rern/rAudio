@@ -134,10 +134,10 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="lcdchar"></div>
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-			<a class="img" data-name="character_lcd">Module</a> with Hitachi HD44780 controller.
+			<a class="img" data-name="lcdchar">Module</a> with Hitachi HD44780 controller.
 		<br>&bull; Support 16x2 and 20x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
-		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <bl id="wiringlcdchar">5V to 3.3V I²C and 5V LCD</bl>
+		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <bl id="wiring-i2c">5V to 3.3V I²C and 5V LCD</bl>
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
@@ -162,7 +162,7 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="relays"></div>
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a class="img" data-name="relay">Module</a> for power on / off equipments.
+		<a class="img" data-name="relays">Module</a> for power on / off equipments.
 		<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
@@ -176,7 +176,7 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a class="img" data-name="tft_lcd">Module</a> with resistive touchscreen.
+		<a class="img" data-name="lcd">Module</a> with resistive touchscreen.
 	</span>
 </div>
 	<?php } ?>
