@@ -652,6 +652,7 @@ input:checked + .switchlabel.disabled:after {
 	.col-l.icon,
 	.entries li,
 	.help-block bl,
+	.img,
 	.listtitle,
 	.list,
 	.page-icon,

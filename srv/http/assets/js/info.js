@@ -153,7 +153,9 @@ function infoReset() {
 	$( '.infobtn' )
 		.removeClass( 'active' )
 		.css( 'background-color', '' );
-	$( '#infoButtons' ).empty();
+	$( '#infoButtons' )
+		.addClass( 'hide' )
+		.empty();
 }
 
 O = {}
@@ -217,8 +219,10 @@ function info( json ) {
 	if ( !O.okno ) {
 		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
+		$( '#infoButtons' )
+			.html( htmlbutton )
+			.removeClass( 'hide' );
 	}
-	$( '#infoButtons' ).html( htmlbutton );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		$( '#infoButtons' )
