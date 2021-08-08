@@ -5,7 +5,7 @@ dirtmp=/srv/http/data/shm
 
 status=$( /srv/http/bash/status.sh )
 statusdata=$( echo $status \
-	| jq -r '.Artist, .Title, .Album, .state, .Time, .elapsed, .timestamp, .station, .file, .webradio' \
+	| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
 	| sed 's/null//' )
 readarray -t data <<< "$statusdata"
 if [[ -e $dirtmp/status ]]; then

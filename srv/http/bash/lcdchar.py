@@ -25,9 +25,9 @@ if argvL == 1: # no argument
 
 if argvL == 2: # 1 argument
     argv1 = sys.argv[ 1 ]
-    if argv1 == 'off':   # backlight off
+    if argv1 == 'off': # backlight off
         lcd.backlight_enabled = False
-    else:                # string
+    else:              # string
         lcd.auto_linebreaks = True
         lcd.write_string( argv1.replace( '\n', rn ) )
         lcd.close()
@@ -45,17 +45,21 @@ def second2hhmmss( sec ):
     sst = str( ss )
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
-
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'station', 'file', 'webradio' ] # assign variables
+def unicode_truncate( s, cols, encoding='utf-8' ):
+    encoded = s.encode( encoding )[ :cols ]
+    return encoded.decode( encoding, 'ignore' )
+    
+field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', 'elapsed', 'timestamp', 'webradio' ]
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
-    if val and ( i < 4 or i > 7 ):              # artist title album station file
-        val = val[ :cols ].replace( '"', '\"' ) # truncate to cols > escape "
-    exec( field[ i ] +' = "'+ val +'"' )
+    if val and i < 6:
+        val = unicode_truncate( val, cols )
+    exec( field[ i ] +' = "'+ val.replace( '"', '\"' ) +'"' )
     
-if not artist and webradio != 'false':
-    artist = station
-    album = file
+if webradio == 'true':
+    if not artist and not album: artist = station
+    if not album: album = station
+    if not album: album = file
 
 if not artist: artist = idots
 if not title: title = rows == 2 and artist or idots

@@ -105,7 +105,7 @@ $coverart" > $dirtmp/status
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then
-		status=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) "$station" "$file" true )
+		status=( "$artist" "$title" "$album" "$station" "$file" play false "$elapsed" $( date +%s%3N ) true )
 		killall lcdchar.py &> /dev/null
 		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi
