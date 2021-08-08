@@ -23,21 +23,11 @@ if argvL == 1: # no argument
     lcd.close()
     quit()
 
-if charmap == 'A00':
-    import unicodedata
-    accented = True
-    
-def accentstrip( val ):
-    if accented:
-        val = ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
-    return val
-    
 if argvL == 2: # 1 argument
     val = sys.argv[ 1 ]
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
     else:              # string
-        val = accentstrip( val )
         lcd.write_string( val.replace( '\n', rn ) )
         lcd.close()
     quit()
@@ -55,11 +45,15 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
     
+if charmap == 'A00':
+    import unicodedata
+    accented = True
+    
 field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', 'elapsed', 'timestamp', 'webradio' ]
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
     if val and i < 6:
-        val = accentstrip( val )
+        if accented: val = ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
         val = val[ :cols ].replace( '"', '\"' )
     exec( field[ i ] +' = "'+ val +'"' )
     
