@@ -29,18 +29,17 @@ if charmap == 'A00':
     
 def accentstrip( val ):
     if accented:
-        return ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
-    else:
-        return val
+        val = ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
+    return val
     
 if argvL == 2: # 1 argument
-    argv1 = sys.argv[ 1 ]
-    if argv1 == 'off': # backlight off
+    val = sys.argv[ 1 ]
+    if val == 'off': # backlight off
         lcd.backlight_enabled = False
     else:              # string
         lcd.auto_linebreaks = True
         val = accentstrip( val )
-        lcd.write_string( argv1.replace( '\n', rn ) )
+        lcd.write_string( val.replace( '\n', rn ) )
         lcd.close()
     quit()
     
