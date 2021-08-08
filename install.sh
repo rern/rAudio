@@ -4,6 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+rm -f /srv/http/data/shm/status
+
 if [[ ! -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flac' ]]; then
 	rm -f "/srv/http/data/webradios/http:||stream.radioparadise.com"*
 	rm -f "/srv/http/data/webradiosimg/http:||stream.radioparadise.com"*
