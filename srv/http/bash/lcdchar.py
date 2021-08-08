@@ -23,12 +23,23 @@ if argvL == 1: # no argument
     lcd.close()
     quit()
 
+if charmap == 'A00':
+    import unicodedata
+    accented = True
+    
+def accentstrip( val ):
+    if accented:
+        return ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
+    else:
+        return val
+    
 if argvL == 2: # 1 argument
     argv1 = sys.argv[ 1 ]
     if argv1 == 'off': # backlight off
         lcd.backlight_enabled = False
     else:              # string
         lcd.auto_linebreaks = True
+        val = accentstrip( val )
         lcd.write_string( argv1.replace( '\n', rn ) )
         lcd.close()
     quit()
@@ -45,30 +56,27 @@ def second2hhmmss( sec ):
     sst = str( ss )
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
-def unicode_truncate( s, cols, encoding='utf-8' ):
-    encoded = s.encode( encoding )[ :cols ]
-    return encoded.decode( encoding, 'ignore' )
     
 field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', 'elapsed', 'timestamp', 'webradio' ]
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
     if val and i < 6:
-        val = unicode_truncate( val, cols )
-    exec( field[ i ] +' = "'+ val.replace( '"', '\"' ) +'"' )
+        val = accentstrip( val )
+        val = val[ :cols ].replace( '"', '\"' )
+    exec( field[ i ] +' = "'+ val +'"' )
     
 if webradio == 'true':
-    if not artist and not album: artist = station
-    if not album: album = station
-    if not album: album = file
-
+    if state != 'play':
+        artist = station
+        album = file
+    else:
+        if not artist and not title: artist = station
+        if not album: album = station or file
+        
 if not artist: artist = idots
 if not title: title = rows == 2 and artist or idots
 if not album: album = idots
 lines = rows == 2 and title or artist + rn + title + rn + album + rn
-# remove accents
-if charmap == 'A00':
-    import unicodedata
-    lines = ''.join( c for c in unicodedata.normalize( 'NFD', lines ) if unicodedata.category( c ) != 'Mn' )
 
 if total != 'false':
     total = round( float( total ) )
