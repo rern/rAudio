@@ -37,7 +37,6 @@ if argvL == 2: # 1 argument
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
     else:              # string
-        lcd.auto_linebreaks = True
         val = accentstrip( val )
         lcd.write_string( val.replace( '\n', rn ) )
         lcd.close()
