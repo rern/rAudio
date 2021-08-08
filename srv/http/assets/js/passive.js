@@ -568,7 +568,7 @@ function psVolume( data ) {
 				.text( mute ? data.val : vol )
 				.toggleClass( 'bl', mute );
 		}
-		if ( !G.display.buttons ) {
+		if ( !G.display.volume || !G.display.buttons ) {
 			var prefix = G.display.time ? 'ti' : 'i';
 			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 		}
