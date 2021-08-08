@@ -47,13 +47,13 @@ def second2hhmmss( sec ):
     
 if charmap == 'A00':
     import unicodedata
-    accented = True
+    noaccented = True
     
 field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', 'elapsed', 'timestamp', 'webradio' ]
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
     if val and i < 6:
-        if accented: val = ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
+        if noaccented: val = ''.join( c for c in unicodedata.normalize( 'NFD', val ) if unicodedata.category( c ) != 'Mn' )
         val = val[ :cols ].replace( '"', '\"' )
     exec( field[ i ] +' = "'+ val +'"' )
     
