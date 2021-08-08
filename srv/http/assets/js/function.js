@@ -1251,7 +1251,7 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart() {
-	if ( G.display.vumeter || ( !coverart && !G.display.novu ) ) {
+	if ( G.display.vumeter || ( !G.status.coverart && !G.display.novu ) ) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
