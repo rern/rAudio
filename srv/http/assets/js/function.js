@@ -1554,21 +1554,16 @@ function setPlaybackTitles() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
+	if ( !G.status.elapsed ) $( '#pl-list li .elapsed' ).empty();
+	$( '#pl-list li' ).removeClass( 'active updn' );
 	if ( !G.playlist
+		|| !G.status.playlistlength
 		|| G.plremove
+		|| G.sortable
 		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
-		|| !G.status.playlistlength
-		|| G.sortable ) {
-		$( '#pl-list .elapsed' ).empty();
-		return
-	}
-	
-	$( '#pl-list li' ).removeClass( 'active updn' );
-	if ( $( '#pl-list li' ).length < G.status.song + 1 ) { // on eject cd G.status.song not yet refreshed
-		$( '#pl-list .elapsed' ).empty();
-		return
-	}
+		|| $( '#pl-list li' ).length < G.status.song + 1 // on eject cd G.status.song not yet refreshed
+	) return
 	
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
@@ -1585,7 +1580,6 @@ function setPlaylistScroll() {
 	var $stationname = $this.find( '.li2 .stationname' );
 	$stationname.addClass( 'hide' );
 	if ( G.status.state === 'stop' ) {
-		$( '#pl-list li .elapsed' ).empty();
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
@@ -1604,17 +1598,14 @@ function setPlaylistScroll() {
 			var elapsedL0 = 0;
 			var elapsedL = 0;
 			var time = $this.find( '.time' ).data( 'time' );
-			$elapsed.html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + slash );
+			if ( G.status.elapsed ) $elapsed.html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + slash );
 			G.intElapsedPl = setInterval( function() {
 				G.status.elapsed++;
 				if ( G.status.elapsed === time ) {
 					clearIntervalAll();
-					$elapsed.empty();
 					G.status.elapsed = 0;
-					if ( G.status.state === 'play' ) {
-						$( '#pl-list li .elapsed' ).empty();
-						setPlaylistScroll();
-					}
+					$elapsed.empty();
+					setPlaylistScroll();
 				} else {
 					elapsedtxt = second2HMS( G.status.elapsed );
 					$elapsed.html( '<i class="fa fa-play"></i>'+ elapsedtxt + slash );
