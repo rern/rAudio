@@ -59,7 +59,7 @@ radiofranceData() {
 ,.data.now.playing_item.cover\
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time \
-		| sed 's/""/"/g; s/^null$//' )
+		| sed 's/""/"/g; s/^null$//' ) # trim 2 x doublequotes and null(jq empty value)
 }
 metadataGet() {
 	[[ $id < 4 ]] && radioparadiseData || radiofranceData
