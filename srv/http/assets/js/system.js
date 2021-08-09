@@ -247,25 +247,18 @@ $( '.enablenoset' ).click( function() {
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var title = {
-		  i2cbackpack : [ 'lcdchar', 'Character LCD I²C', 'jpg', 162 ]
-		, lcdchar     : 'Character LCD'
-		, relays      : 'Relays Module'
-		, lcd         : 'TFT 3.5" LCD'
-		, powerbutton : [ 'power', 'Power Button', 'svg', 300 ]
-		, vuled       : [ 'led', 'VU LED', 'svg', 300 ]
+		  i2cbackpack : [ 'lcdchar', 'Character LCD I²C', '162px' ]
+		, lcdchar     : [ '', 'Character LCD' ]
+		, relays      : [ '', 'Relays Module' ]
+		, lcd         : [ '', 'TFT 3.5" LCD' ]
+		, powerbutton : [ 'power', 'Power Button', '300px', 'svg' ]
+		, vuled       : [ 'led', 'VU LED', '300px', 'svg' ]
 	}
-	if ( typeof title[ name ] !== 'object' ) {
-		var icon = name;
-		var title = title[ name ];
-		var ext = 'jpg';
-		var height = '100%';
-	} else {
-		var data = title[ name ];
-		var icon = data[ 0 ];
-		var title = data[ 1 ];
-		var ext = data[ 2 ];
-		var height = data[ 3 ] +'px';
-	}
+	var data = title[ name ];
+	var icon = data[ 0 ] || name;
+	var title = data[ 1 ];
+	var height = data[ 2 ] || '100%';
+	var ext = data[ 3 ] || 'jpg';
 	info( {
 		  icon    : name
 		, title   : title
