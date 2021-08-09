@@ -6,9 +6,11 @@ import os
 
 os.system( 'killall lcdchartimer.sh &> /dev/null' )
 
-ipause = '\x00 '
-iplay = '\x01 '
-istop = '\x02 '
+icon = {
+      'pause' : '\x00 '
+    , 'play'  : '\x01 '
+    , 'stop'  : '\x02 '
+}
 irr = '\x03\x04'
 idots = '\x05  \x05  \x05'
 rn = '\r\n'
@@ -27,7 +29,7 @@ if argvL == 2: # 1 argument
     val = sys.argv[ 1 ]
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
-    else:              # string
+    else:            # string
         lcd.write_string( val.replace( '\n', rn ) )
         lcd.close()
     quit()
@@ -69,44 +71,36 @@ if webradio == 'true':
         if not album: album = station or file
         
 if not artist: artist = idots
-if not title: title = rows == 2 and artist or idots
+if not title: title = idots
 if not album: album = idots
 if rows == 2:
     if state == 'stop':
-        lcd.write_string( artist + rn + title )
+        lcd.write_string( artist + rn + album )
         lcd.close()
         quit()
         
     else:
         lines = title
 else:
-    lines = artist + rn + title + rn + album + rn
+    lines = artist + rn + title + rn + album
 
-if total != 'false':
-    total = round( float( total ) )
-    totalhhmmss = second2hhmmss( total )
-else:
-    totalhhmmss = ''
-    
 if elapsed != 'false':
     elapsed = round( float( elapsed ) )
     elapsedhhmmss = second2hhmmss( elapsed )
 else:
     elapsedhhmmss = ''
 
-if state == 'stop':
-    progress = totalhhmmss
+if total != 'false':
+    totalhhmmss = cols > 16 and ' / ' or '/'
+    total = round( float( total ) )
+    totalhhmmss += second2hhmmss( total )
 else:
-    if totalhhmmss:
-        slash = cols > 16 and ' / ' or '/'
-        totalhhmmss = slash + totalhhmmss
-        progress = elapsedhhmmss + totalhhmmss
-    else:
-        progress = ''
-istate = state == 'stop' and istop or ( state == 'pause' and ipause or iplay )
-lines += ( istate + progress + ' ' * cols )[ :cols - 2 ] + irr
+    totalhhmmss = ''
+    
+progress = state == 'stop' and totalhhmmss or elapsedhhmmss + totalhhmmss
+progress = ( progress + ' ' * cols )[ :cols - 4 ]
 
-lcd.write_string( lines )
+lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
     lcd.close()
@@ -126,7 +120,7 @@ elapsed += round( starttime - int( timestamp ) / 1000 )
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
-    progress = iplay + second2hhmmss( elapsed ) + totalhhmmss
+    progress = icon[ 'play' ] + second2hhmmss( elapsed ) + totalhhmmss
     lcd.cursor_pos = ( row, 0 )
     lcd.write_string( progress[ :cols ] )
     elapsed += 1
