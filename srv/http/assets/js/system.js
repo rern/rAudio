@@ -247,22 +247,18 @@ $( '.enablenoset' ).click( function() {
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var title = {
-		  i2cbackpack : [ 'lcdchar', 'Character LCD I²C', '162px' ]
-		, lcdchar     : [ '', 'Character LCD' ]
-		, relays      : [ '', 'Relays Module' ]
-		, lcd         : [ '', 'TFT 3.5" LCD' ]
-		, powerbutton : [ 'power', 'Power Button', '300px', 'svg' ]
-		, vuled       : [ 'led', 'VU LED', '300px', 'svg' ]
+		  i2cbackpack : [ 'Character LCD I²C', 'lcdchar' ]
+		, lcdchar     : [ 'Character LCD' ]
+		, relays      : [ 'Relays Module' ]
+		, lcd         : [ 'TFT 3.5" LCD' ]
+		, powerbutton : [ 'Power Button', 'power', '300px', 'svg' ]
+		, vuled       : [ 'VU LED', 'led', '300px', 'svg' ]
 	}
-	var data = title[ name ];
-	var icon = data[ 0 ] || name;
-	var title = data[ 1 ];
-	var height = data[ 2 ] || '100%';
-	var ext = data[ 3 ] || 'jpg';
+	var d = title[ name ];
 	info( {
-		  icon    : name
-		, title   : title
-		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ ext +'" style="height: '+ height +'">'
+		  icon    : d[ 1 ] || name
+		, title   : d[ 0 ]
+		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' ) +'" style="height: '+ ( d[ 2 ] || '100%' ) +'">'
 		, okno    : 1
 	} );
 } );
