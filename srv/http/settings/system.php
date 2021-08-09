@@ -137,7 +137,7 @@ $selecttimezone.= '</select>';
 			<a class="img" data-name="lcdchar">Module</a> with Hitachi HD44780 controller.
 		<br>&bull; Support 16x2 and 20x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
-		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <bl id="wiring-i2c">5V to 3.3V I²C and 5V LCD</bl>
+		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
@@ -149,7 +149,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		Power button and LED for on/off rAudio.
-		<br>&bull; <bl id="wiringpowerbutton">Wiring</bl>
+		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
 		<br>&bull; On pin is fixed.
 	</span>
 </div>
@@ -187,7 +187,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		7 LEDs, with current limiting resisters
-		<br>&bull; <bl id="wiringvuled">Wiring</bl>
+		<br>&bull; <a class="img" data-name="vuled">Wiring</a>
 		<br>&bull; <bl id="ledcalc">LED resister calculator</bl>
 	</span>
 </div>
