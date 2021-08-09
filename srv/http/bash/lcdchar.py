@@ -117,12 +117,12 @@ import time
 row = rows - 1
 starttime = time.time()
 elapsed += round( starttime - int( timestamp ) / 1000 )
+iplay = icon[ 'play' ]
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
-    progress = icon[ 'play' ] + second2hhmmss( elapsed ) + totalhhmmss
     lcd.cursor_pos = ( row, 0 )
-    lcd.write_string( progress[ :cols ] )
+    lcd.write_string( iplay + second2hhmmss( elapsed ) + totalhhmmss )
     elapsed += 1
     time.sleep( sl )
     
