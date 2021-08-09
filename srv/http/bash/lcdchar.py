@@ -59,8 +59,8 @@ for i in range( 1, 11 ):
             val = val.replace( 'º', '°' )
             val = ''.join( c for c in unicodedata.normalize( 'NFD', val )
                            if unicodedata.category( c ) != 'Mn' )
-        val = val[ :cols ].replace( '""', '"' ).replace( "'", "\\'" )
-    exec( field[ i ] +" = '"+ val +"'" )
+        val = val.replace( '""', '"' )[ :cols ] # trim 2 double-quotes
+    exec( field[ i ] +" = '"+ val.replace( "'", "\\'" ) +"'" )
     
 if webradio == 'true':
     if state != 'play':
