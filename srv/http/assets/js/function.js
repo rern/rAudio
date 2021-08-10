@@ -670,15 +670,15 @@ function infoPlayback() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, radio        : {
-			  '<i class="imgicon iconcover""></i><gr>No cover</gr>'             : true
-			, '<img class="imgicon" src="/assets/img/vu.svg"><gr>No cover</gr>' : false
+			  '<i class="imgicon iconcover""></i><gr>rAudio</gr>'             : true
+			, '<img class="imgicon" src="/assets/img/vu.svg"><gr>VU meter</gr>' : false
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
+			$( '#infoContent tr' ).last().before( '<tr><td colspan="2" class="gr">Default for no coverart:</td></tr>' );
 			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
 			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
@@ -1243,7 +1243,7 @@ function renderPlaybackBlank() {
 }
 function renderPlaybackCoverart() {
 	if ( G.display.vumeter
-		|| ( !G.display.novu && !G.status.coverart )
+		|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 	) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
