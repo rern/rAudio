@@ -176,14 +176,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			G.screenoff = 1;
 			break;
 		case 'displaycolor':
-			G.color = 1;
 			if ( !G.library ) $( '#library' ).click();
 			if ( G.mode !== 'webradio' ) {
 				$( '#mode-webradio' ).click();
 			} else {
-				$( '#lib-list li .lib-icon:eq( 0 )' ).trigger( 'tap' );
 				colorSet();
 			}
+			G.color = 1;
 			break;
 		case 'guide':
 			location.href = 'settings/guide.php';
@@ -213,7 +212,6 @@ $( '#displayplayback' ).click( function() {
 	infoPlayback();
 } );
 $( '#colorok' ).click( function() {
-	G.color = 0;
 	var hsv = G.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
 	var s = hsv.s;
 	var v = hsv.v;
@@ -236,7 +234,6 @@ $( '#colorreset' ).click( function() {
 	loader();
 } );
 $( '#colorcancel' ).click( function() {
-	G.color = 0;
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
 	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
 		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
@@ -282,10 +279,8 @@ $( '#library, #button-library' ).click( function() {
 			G.librarylist = 0;
 			G.bookmarkedit = 0;
 			G.query = [];
-			renderLibrary();
-		} else {
-			renderLibrary();
 		}
+		renderLibrary();
 	} else {
 		switchPage( 'library' );
 		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
@@ -329,7 +324,7 @@ $( '#page-playback' ).on( 'tap', function( e ) {
 $( '#page-library, #page-playback, #page-playlist' ).click( function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
 } );
-$( '#bar-top, #bar-bottom' ).click( function() {
+$( '#bar-top, #bar-bottom, #button-library' ).click( function() {
 	if ( G.guide ) hideGuide();
 	if ( !$( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
 } );

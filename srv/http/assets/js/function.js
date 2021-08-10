@@ -41,7 +41,9 @@ function clearIntervalAll() {
 	} );
 }
 function colorSet() {
+	G.color = 0;
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
+	$( '#lib-list li:eq( 0 )' ).trigger( 'tap' );
 	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
@@ -1112,10 +1114,6 @@ function renderLibraryList( data ) {
 				.css( 'height', pH + 49 - coverH );
 		}
 	} );
-	if ( G.color ) {
-		$( '#lib-list li:eq( 0 )' ).trigger( 'tap' );
-		colorSet();
-	}
 	if ( G.albumlist ) return
 	
 	if ( G.mode === 'album' ) {
@@ -1124,6 +1122,7 @@ function renderLibraryList( data ) {
 	} else {
 		$( '.liinfo .lialbum' ).removeClass( 'hide' );
 	}
+	if ( G.color ) colorSet();
 }
 function renderPlayback() {
 	clearIntervalAll();
