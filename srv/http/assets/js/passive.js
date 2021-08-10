@@ -178,16 +178,8 @@ function psCoverart( data ) {
 				renderPlaybackCoverart();
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
-					var sampling = G.status.sampling;
-					if ( data.Album ) {
-						sampling += ' &bull; '+ G.status.station;
-					} else {
-						sampling += sampling ? ' &bull; Radio' : 'Radio';
-					}
-					$( '#album' )
-						.text( data.Album )
-						.toggleClass( 'albumgray', G.status.Album === '' );
-					$( '#sampling' ).html( sampling );
+					G.status.sampling += ' &bull; '+ G.status.station
+					renderPlaybackTitles();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
