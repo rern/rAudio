@@ -36,7 +36,7 @@ case $id in
 	ocoramonde )          id=404;;
 	opera )               id=409;;
 esac
-[[ $id < 4 ]] && iplayer=radioparadise || iplayer=radiofrance
+[[ $id < 4 ]] && icon=radioparadise || icon=radiofrance
 
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -s -m 5 -G \
@@ -98,7 +98,7 @@ $coverart" > $dirtmp/status
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
 , "file"     : "'$file'"
-, "iplayer"  : "'$iplayer'"
+, "icon"     : "'$icon'"
 , "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
 , "state"    : "play"

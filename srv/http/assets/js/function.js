@@ -1338,11 +1338,10 @@ function renderPlaybackTitles() {
 	var sampling = G.status.sampling;
 	if ( G.status.stream ) sampling += ' &bull; '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
 	$( '#sampling' ).html( sampling );
-	var iplayer = G.status.player === 'mpd' ? ( G.status.iplayer || '' ) : G.status.player;
-	if ( 'fa fa-'+ iplayer !== $( '#playericon' ).prop( 'class' ) ) {
-		$( '#playericon' )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-'+ iplayer );
+	var icon = G.status.icon === 'mpd' ? '' : G.status.icon;
+	if ( icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa fa-', '' ) ) {
+		$( '#playericon' ).removeAttr( 'class' );
+		if ( icon ) $( '#playericon' ).addClass( 'fa fa-'+ icon );
 	}
 	if ( !G.display.time ) renderPlaybackTime();
 }

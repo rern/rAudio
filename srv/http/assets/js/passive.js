@@ -308,21 +308,14 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
-	var iplayer = data.iplayer;
-	delete data.iplayer;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	if ( G.playback ) {
-		$( '#playericon' )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-'+ iplayer );
 		setButtonControl();
 		renderPlaybackTitles();
 		renderPlaybackCoverart();
 		renderPlaybackTime();
-		$( '#progress' ).empty();
-		$( '#sampling' ).html( G.status.sampling );
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}

@@ -46,6 +46,7 @@ if [[ $1 == snapserverstatus ]]; then
 ########
 	status=
 else
+	[[ $player != mpd ]] && icon=$player
 ########
 	status='
   "player"         : "'$player'"
@@ -54,6 +55,7 @@ else
 , "control"        : "'$control'"
 , "counts"         : '$counts'
 , "file"           : ""
+, "icon"           : "'$icon'"
 , "librandom"      : '$librandom'
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
@@ -243,7 +245,7 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
-	iplayer=audiocd
+	icon=audiocd
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
 	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
 		track=${file/*\/}
@@ -280,7 +282,7 @@ elif [[ -n $stream ]]; then
 		[[ -n $onlinefile && $novumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
-		iplayer=webradio
+		icon=webradio
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
@@ -289,12 +291,12 @@ elif [[ -n $stream ]]; then
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
-		[[ $file == *icecast.radiofrance.fr* ]] && iplayer=radiofrance
-		[[ $file == *stream.radioparadise.com* ]] && iplayer=radioparadise
+		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
+		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $iplayer == radiofrance || $iplayer == radioparadise ]]; then
+			if [[ $icon == radiofrance || $icon == radioparadise ]]; then
 				id=$( basename ${file/-*} )
 				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
 			fi
@@ -353,7 +355,7 @@ $radiosampling" > $dirtmp/radio
 		status+='
 , "coverart"      : "'$coverart'"
 , "elapsed"       : '$elapsed'
-, "iplayer"       : "'$iplayer'"
+, "icon"          : "'$icon'"
 , "sampling"      : "'$sampling'"
 , "song"          : '$song
 # >>>>>>>>>>
@@ -458,7 +460,7 @@ sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"
 , "coverart" : ""
-, "iplayer"  : "'$iplayer'"
+, "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
 vu
