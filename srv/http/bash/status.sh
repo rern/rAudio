@@ -21,6 +21,7 @@ counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
+[[ $player != mpd ]] && icon=$player
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
@@ -42,11 +43,6 @@ else
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
 
-if [[ $1 == snapserverstatus ]]; then
-########
-	status=
-else
-	[[ $player != mpd ]] && icon=$player
 ########
 	status='
   "player"         : "'$player'"
@@ -66,7 +62,6 @@ else
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
-fi
 
 if [[ $player != mpd && $player != upnp ]]; then
 	case $player in
@@ -102,7 +97,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	snapclient )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 		snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
-		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
+		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh \
 								| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 	########
 		status+=${snapserverstatus:1:-1}
