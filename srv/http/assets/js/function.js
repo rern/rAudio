@@ -1246,7 +1246,9 @@ function renderPlaybackCoverart() {
 	if ( G.display.vumeter
 		|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 	) {
-		$( '#coverart' ).addClass( 'hide' );
+		$( '#coverart' )
+			.addClass( 'hide' )
+			.attr( 'src', G.coverdefault );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !G.display.vumeter && G.status.state === 'play' ) vu();
 	} else {
