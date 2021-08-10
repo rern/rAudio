@@ -1242,13 +1242,17 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart() {
-	if ( G.display.vumeter || ( !G.status.coverart && !G.display.novu ) ) {
+	if ( G.display.vumeter
+		|| ( !G.display.novu && !G.status.coverart )
+	) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
 		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 	} else {
 		var prevcover = $( '#coverart' ).attr( 'src' );
-		if ( !prevcover || prevcover.slice( 0, -15 ) !== G.status.coverart.slice( 0, -15 ) ) {
+		if ( !prevcover
+			|| prevcover.slice( 0, -15 ) !== G.status.coverart.slice( 0, -15 )
+		) {
 			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
