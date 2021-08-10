@@ -1,4 +1,8 @@
 .infobtn,
+#infoOverlay:not( input textarea ) {
+	user-select: none;
+}
+.infobtn,
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
@@ -28,11 +32,6 @@
 	text-align: center;
 	color: var( --cw ) !important;
 	background-color: var( --cg );
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none;   /* Safari */
-	-moz-user-select: none;      /* Firefox */
-	-ms-user-select: none;       /* Internet Explorer and Edge */
-	user-select: none;           /* Non-prefixed version, currently supported by Chrome and Opera */
 	cursor: pointer;
 }
 .infobtn-primary {
@@ -436,7 +435,6 @@ hr {
 }
 #infoRange {
 	text-align: center;
-	user-select: none;
 }
 #infoOverlay code {
 	display: inline-block;
