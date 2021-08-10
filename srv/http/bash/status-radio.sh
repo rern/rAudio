@@ -68,8 +68,11 @@ metadataGet() {
 	album=${metadata[2]}
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
-	[[ -z $countdown ]] && countdown=0
-	[[ ${#metadata[@]} == 6 && $countdown > 0 ]] && countdown=$(( countdown - ${metadata[5]} )) # radiofrance
+	if [[ -z $countdown ]]; then
+		countdown=5
+	elif [[ ${#metadata[@]} == 6 ]]; then
+		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
+	fi
 
 	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
