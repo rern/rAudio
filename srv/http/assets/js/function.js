@@ -1243,7 +1243,7 @@ function renderPlaybackBlank() {
 }
 function renderPlaybackCoverart() {
 	if ( G.display.vumeter
-		|| ( !G.display.novu && !G.status.coverart )
+		|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 	) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
