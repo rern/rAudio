@@ -312,11 +312,6 @@ function displayPlayback() {
 		.toggleClass( 'hide', !G.display.cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
-	setTimeout( function() { // by display and css (delay for ios page visible)
-		G.display.time = $( '#time-knob' ).is( ':visible' );
-		G.display.cover = $( '#coverart-block' ).is( ':visible' );
-		G.display.volume = $( '#volume-knob' ).is( ':visible' );
-	}, 900 );
 	var volume = ( G.display.volumenone || !G.display.volume ) ? 0 : 1;
 	var column = ( G.display.time ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + volume;
 	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
