@@ -1784,7 +1784,7 @@ function vu() {
 			deg = range - inc;
 		}
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
-	}, 500 );
+	}, 300 );
 }
 function vuStop() {
 	clearIntervalAll();
