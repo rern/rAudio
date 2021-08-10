@@ -39,6 +39,7 @@ function clearIntervalAll() {
 	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
+	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
 	G.color = 0;
@@ -1241,26 +1242,21 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart() {
+	vuStop();
 	if ( G.display.vumeter
 		|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 	) {
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#vu' ).removeClass( 'hide' );
-		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+		if ( !G.display.vumeter && G.status.state === 'play' ) vu();
 	} else {
-		var prevcover = $( '#coverart' ).attr( 'src' );
-		if ( !prevcover
-			|| prevcover.slice( 0, -15 ) !== G.status.coverart.slice( 0, -15 )
-		) {
-			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
-			$( '#vu' ).addClass( 'hide' );
-			$( '#coverart' )
-				.attr( 'src', coverart || G.coverdefault )
-				.css( 'border', coverart ? '' : 'none' )
-				.removeClass( 'hide' );
-		}
+		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
+		$( '#vu' ).addClass( 'hide' );
+		$( '#coverart' )
+			.attr( 'src', coverart || G.coverdefault )
+			.css( 'border', coverart ? '' : 'none' )
+			.removeClass( 'hide' );
 	}
-	loaderHide();
 }
 function renderPlaybackTime() {
 	clearIntervalAll();
@@ -1788,5 +1784,4 @@ function vu() {
 }
 function vuStop() {
 	clearIntervalAll();
-	$( '#vuneedle' ).css( 'transform', '' );
 }
