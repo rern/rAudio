@@ -83,7 +83,6 @@ pushstream.onstatuschange = status => {
 		loaderHide();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
-		vuStop();
 		hideGuide();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
