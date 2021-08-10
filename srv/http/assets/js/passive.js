@@ -176,9 +176,8 @@ function psCoverart( data ) {
 				
 				G.status.coverart = url;
 				renderPlaybackCoverart();
-				if ( 'Album' in data ) {
+				if ( 'Album' in data ) { // with webradio
 					G.status.Album = data.Album;
-					G.status.sampling += ' &bull; '+ G.status.station
 					renderPlaybackTitles();
 				}
 			} else if ( G.library ) {

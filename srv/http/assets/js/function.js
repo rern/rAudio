@@ -1352,7 +1352,9 @@ function renderPlaybackTitles() {
 	$( '#title' ).toggleClass( 'disabled', G.status.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', G.status.Album === '' );
 	setPlaybackTitles();
-	$( '#sampling' ).html( G.status.sampling );
+	var sampling = G.status.sampling;
+	if ( G.status.stream ) sampling += ' &bull; '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
+	$( '#sampling' ).html( sampling );
 	if ( !G.display.time ) renderPlaybackTime();
 }
 renderPlaylist = function( data ) {

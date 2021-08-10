@@ -403,7 +403,7 @@ samplingLine() {
 			sampling="$sample $rate"
 		fi
 	fi
-	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
+	[[ $ext != Radio ]] && sampling+=" &bull; $ext"
 }
 
 if [[ $ext == CD ]]; then
@@ -443,13 +443,13 @@ else
 			samplingLine $bitdepth $samplerate $bitrate $ext
 		fi
 	else
-		sampling="$radiosampling &bull; Radio"
+		sampling="$radiosampling"
 	fi
 fi
 
 ########
 pos="$(( song + 1 ))/$playlistlength"
-[[ -n $sampling ]] && sampling="$pos &bull; $sampling" || sampling=$pos
+sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"
 , "sampling" : "'$sampling'"
