@@ -321,7 +321,8 @@ $radiosampling" > $dirtmp/radio
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
 				coverfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
 				if [[ -n $coverfile ]]; then
-					coverart=/data/shm/webradio-$covername.$date.${coverfile: -3}
+					#coverart=/data/shm/webradio-$covername.$date.${coverfile: -3}
+					coverart=${coverfile:9} # no hash - suppress reload by multiple events
 					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
 			fi

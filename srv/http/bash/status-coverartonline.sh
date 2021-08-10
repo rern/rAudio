@@ -66,7 +66,7 @@ curl -sL $url -o $coverfile
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
 	echo $Album > $dirtmp/webradio-$name
-	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart", "Album": "'$Album'" }'
+	data='{ "url": "'$urlname.$ext'", "type": "coverart", "Album": "'$Album'" }' # no hash - suppress reload by multiple events
 else
 	data='{ "url": "'$urlname.$date.$ext'", "type": "coverart" }'
 fi
