@@ -308,12 +308,15 @@ function displayPlayback() {
 	if ( G.iplayer ) $( '#playericon' ).addClass( 'fa fa-'+ G.iplayer );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#volume-knob' ).toggleClass( 'hide', !G.display.volume || G.display.volumenone );
-	if ( $( '#time-knob' ).is( ':hidden' ) ) G.display.time = false;    // hidden: by display / css
-	if ( $( '#volume-knob' ).is( ':hidden' ) ) G.display.volume = false;
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
+	setTimeout( function() { // by display and css (delay for ios page visible)
+		G.display.time = $( '#time-knob' ).is( ':visible' );
+		G.display.cover = $( '#coverart-block' ).is( ':visible' );
+		G.display.volume = $( '#volume-knob' ).is( ':visible' );
+	}, 900 );
 	var volume = ( G.display.volumenone || !G.display.volume ) ? 0 : 1;
 	var column = ( G.display.time ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + volume;
 	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
