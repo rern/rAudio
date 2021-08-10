@@ -304,7 +304,7 @@ $id
 $radiosampling" > $dirtmp/radio
 					systemctl start radio
 				else
-					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/""/"/g; s/"/\\"/g' )
+					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/"/\\"/g' )
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
