@@ -243,6 +243,7 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
+	iplayer=audiocd
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
 	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
 		track=${file/*\/}
@@ -279,6 +280,7 @@ elif [[ -n $stream ]]; then
 		[[ -n $onlinefile && $novumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
+		iplayer=webradio
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
@@ -287,10 +289,12 @@ elif [[ -n $stream ]]; then
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
+		[[ $file == *icecast.radiofrance.fr* ]] && iplayer=radiofrance
+		[[ $file == *stream.radioparadise.com* ]] && iplayer=radioparadise
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $file == *stream.radioparadise.com* || $file == *icecast.radiofrance.fr* ]]; then
+			if [[ $iplayer == radiofrance || $iplayer == radioparadise ]]; then
 				id=$( basename ${file/-*} )
 				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
 			fi
@@ -349,6 +353,7 @@ $radiosampling" > $dirtmp/radio
 		status+='
 , "coverart"      : "'$coverart'"
 , "elapsed"       : '$elapsed'
+, "iplayer"       : "'$iplayer'"
 , "sampling"      : "'$sampling'"
 , "song"          : '$song
 # >>>>>>>>>>
@@ -452,8 +457,9 @@ pos="$(( song + 1 ))/$playlistlength"
 sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"
-, "sampling" : "'$sampling'"
-, "coverart" : ""'
+, "coverart" : ""
+, "iplayer"  : "'$iplayer'"
+, "sampling" : "'$sampling'"'
 
 vu
 

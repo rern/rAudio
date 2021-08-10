@@ -291,21 +291,6 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
-	if ( G.status.player !== 'mpd' ) {
-		G.iplayer = G.status.player;
-	} else if ( G.status.file.slice( 0, 4 ) === 'cdda' ) {
-		G.iplayer = 'audiocd';
-	} else if ( G.status.file.indexOf( 'stream.radioparadise.com' ) !== -1 ) {
-		G.iplayer = 'radioparadise';
-	} else if ( G.status.file.indexOf( 'icecast.radiofrance.fr' ) !== -1 ) {
-		G.iplayer = 'radiofrance';
-	} else if ( G.status.webradio ) {
-		G.iplayer = 'webradio';
-	} else {
-		G.iplayer = '';
-	}
-	$( '#playericon' ).removeAttr( 'class' );
-	if ( G.iplayer ) $( '#playericon' ).addClass( 'fa fa-'+ G.iplayer );
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
 	$( '#volume-knob' ).toggleClass( 'hide', !G.display.volume || G.display.volumenone );
 	$( '#coverart-block' )
@@ -1353,6 +1338,12 @@ function renderPlaybackTitles() {
 	var sampling = G.status.sampling;
 	if ( G.status.stream ) sampling += ' &bull; '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
 	$( '#sampling' ).html( sampling );
+	var iplayer = G.status.player === 'mpd' ? ( G.status.iplayer || '' ) : G.status.player;
+	if ( 'fa fa-'+ iplayer !== $( '#playericon' ).prop( 'class' ) ) {
+		$( '#playericon' )
+			.removeAttr( 'class' )
+			.addClass( 'fa fa-'+ iplayer );
+	}
 	if ( !G.display.time ) renderPlaybackTime();
 }
 renderPlaylist = function( data ) {
