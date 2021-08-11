@@ -96,9 +96,9 @@ foreach( $arrayalias as $alias ) {
 	$revisionclass = $version ? 'revision' : 'revisionnone';
 	$addonrevision = $addon[ 'revision' ] ?? '';
 	if ( $addonrevision ) {
-		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br>', $addonrevision );
+		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br><gr>&bull;</gr> ', $addonrevision );
 		$revision = str_replace( '\\', '', $addonrevision ); // remove escaped [ \" ] to [ " ]
-		$revision = '<p class="revisiontext">'.$revision.'</p>';
+		$revision = '<p class="revisiontext"><gr>&bull;</gr> '.$revision.'</p>';
 	} else {
 		$revision = '';
 	}
