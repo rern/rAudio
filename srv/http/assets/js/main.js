@@ -600,8 +600,6 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	hideGuide();
 	if ( G.status.volumenone ) return
 	
-	clearTimeout( G.volumebar );
-	volumeBarTimeout();
 	var updn = this.id.slice( -2 );
 	var vol = G.status.volume;
 	if ( updn === 'dn' ) {
@@ -634,6 +632,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 } ).on( 'mouseup touchend', function() {
 	volumePushstream();
 	clearTimeout( G.intVolume );
+	clearTimeout( G.volumebar );
 	volumeBarTimeout();
 } );
 $( '#volume-text' ).click( function() { // mute /unmute
