@@ -861,7 +861,7 @@ $( '.btn-cmd' ).click( function() {
 				$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-play' );
 			}
 			if ( G.status.stream ) $( '#title, #elapsed' ).html( blinkdot );
-			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
+			vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			if ( G.status.player === 'airplay' ) {
@@ -902,7 +902,7 @@ $( '.btn-cmd' ).click( function() {
 				} else {
 					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
-					if ( !G.display.novu ) vuStop();
+					vu();
 				}
 			} else if ( G.playlist ) {
 				$( '#pl-list .song' ).empty();

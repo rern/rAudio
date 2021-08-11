@@ -161,7 +161,6 @@ function psCoverart( data ) {
 		case 'coverart':
 			var urlhead = url.slice( 0, 9 );
 			var coverpath, covername, currentpath, currentname, cd, name;
-			vuStop();
 			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
 				coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
 			} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
@@ -300,7 +299,6 @@ function psMpdPlayer( data ) {
 		if ( G.playback ) {
 			displayPlayback();
 			renderPlayback();
-			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 		} else if ( G.playlist ) {
 			setPlaylistScroll();
 		}

@@ -200,7 +200,7 @@ function coverartDefault() {
 			.addClass( 'hide' )
 			.attr( 'src', G.coverdefault );
 		$( '#vu' ).removeClass( 'hide' );
-		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
+		vu();
 	}
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
@@ -1222,6 +1222,7 @@ function renderPlaybackBlank() {
 				location.href = 'settings.php?p=networks';
 			} );
 	}
+	vu();
 }
 function renderPlaybackCoverart() {
 	if ( G.display.vumeter
@@ -1231,7 +1232,6 @@ function renderPlaybackCoverart() {
 			.addClass( 'hide' )
 			.attr( 'src', G.coverdefault );
 		$( '#vu' ).removeClass( 'hide' );
-		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 	} else {
 		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
 		$( '#vu' ).addClass( 'hide' );
@@ -1239,8 +1239,8 @@ function renderPlaybackCoverart() {
 			.attr( 'src', coverart || G.coverdefault )
 			.css( 'border', coverart ? '' : 'none' )
 			.removeClass( 'hide' );
-		vuStop();
 	}
+	vu();
 }
 function renderPlaybackTime() {
 	clearIntervalAll();
@@ -1655,6 +1655,7 @@ function switchPage( page ) {
 		} else {
 			G.modescrolltop = $( window ).scrollTop();
 		}
+		if ( G.color ) $( '#colorcancel' ).click();
 	} else if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
 	}
@@ -1673,8 +1674,10 @@ function switchPage( page ) {
 		}
 	} else if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
+	} else {
+		$( 'html, body' ).scrollTop( 0 );
+		vu();
 	}
-	if ( G.color ) $( '#colorcancel' ).click();
 }
 function thumbUpdate( path ) {
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">'
@@ -1756,23 +1759,27 @@ function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
 function vu() {
-	var range = 8; // -/+
-	var deg = 0;
-	var inc;
-	clearInterval( G.intVu );
-	$( '#vuneedle' ).css( 'transform', 'rotate( '+ Math.random() * range +'deg )' );
-	G.intVu = setInterval( function() {
-		inc = Math.random() * range * 2;
-		deg += inc;
-		if ( deg < -range ) {
-			deg = -range + inc;
-		} else if ( deg > range ) {
-			deg = range - inc;
-		}
-		$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
+	if ( $( '#vu' ).hasClass( 'hide' ) || G.status.state !== 'play' || G.display.vumeter ) {
+		clearInterval( G.intVu );
+		$( '#vuneedle' ).css( 'transform', '' );
+		return
+	}
+	
+	setTimeout( function() {
+		var range = 8; // -/+
+		var deg = 0;
+		var inc;
+		clearInterval( G.intVu );
+		$( '#vuneedle' ).css( 'transform', 'rotate( '+ Math.random() * range +'deg )' );
+		G.intVu = setInterval( function() {
+			inc = Math.random() * range * 2;
+			deg += inc;
+			if ( deg < -range ) {
+				deg = -range + inc;
+			} else if ( deg > range ) {
+				deg = range - inc;
+			}
+			$( '#vuneedle' ).css( 'transform', 'rotate( '+ ( deg + 31 ) +'deg )' );
+		}, 300 );
 	}, 300 );
-}
-function vuStop() {
-	clearInterval( G.intVu );
-	$( '#vuneedle' ).css( 'transform', '' );
 }
