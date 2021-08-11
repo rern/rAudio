@@ -1225,10 +1225,10 @@ function renderPlaybackBlank() {
 	vu();
 }
 function renderPlaybackCoverart() {
-	clearTimeout( G.timeoutover );
+/*	clearTimeout( G.timeoutover );
 	var coverdefault = $( '#coverart' ).attr( 'src' ).slice( 0, 5 ) !== '/data';
 	var delay = !G.status.webradio || G.status.coverart || coverdefault || G.status.state !== 'play' ? 0 : 8000;
-	G.timeoutover = setTimeout( function() {
+	G.timeoutover = setTimeout( function() {*/
 		if ( G.display.vumeter
 			|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 		) {
@@ -1245,7 +1245,7 @@ function renderPlaybackCoverart() {
 				.removeClass( 'hide' );
 		}
 		vu();
-	}, delay );
+//	}, delay );
 }
 function renderPlaybackTime() {
 	clearIntervalAll();
