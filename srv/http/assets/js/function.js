@@ -1180,7 +1180,6 @@ function renderPlayback() {
 		}
 // play ////////////////////
 	} else {
-		if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) vu();
 		if ( G.status.elapsed ) {
 			renderPlaybackTime();
 		} else {
@@ -1225,7 +1224,6 @@ function renderPlaybackBlank() {
 	}
 }
 function renderPlaybackCoverart() {
-	vuStop();
 	if ( G.display.vumeter
 		|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 	) {
@@ -1233,7 +1231,7 @@ function renderPlaybackCoverart() {
 			.addClass( 'hide' )
 			.attr( 'src', G.coverdefault );
 		$( '#vu' ).removeClass( 'hide' );
-		if ( !G.display.vumeter && G.status.state === 'play' ) vu();
+		if ( !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 	} else {
 		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
 		$( '#vu' ).addClass( 'hide' );
@@ -1241,6 +1239,7 @@ function renderPlaybackCoverart() {
 			.attr( 'src', coverart || G.coverdefault )
 			.css( 'border', coverart ? '' : 'none' )
 			.removeClass( 'hide' );
+		vuStop();
 	}
 }
 function renderPlaybackTime() {
@@ -1338,10 +1337,9 @@ function renderPlaybackTitles() {
 	var sampling = G.status.sampling;
 	if ( G.status.stream ) sampling += ' &bull; '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
 	$( '#sampling' ).html( sampling );
-	var icon = G.status.icon === 'mpd' ? '' : G.status.icon;
-	if ( icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa fa-', '' ) ) {
+	if ( G.status.icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa fa-', '' ) ) {
 		$( '#playericon' ).removeAttr( 'class' );
-		if ( icon ) $( '#playericon' ).addClass( 'fa fa-'+ icon );
+		if ( G.status.icon ) $( '#playericon' ).addClass( 'fa fa-'+ G.status.icon );
 	}
 	if ( !G.display.time ) renderPlaybackTime();
 }
@@ -1775,5 +1773,6 @@ function vu() {
 	}, 300 );
 }
 function vuStop() {
-	clearIntervalAll();
+	clearInterval( G.intVu );
+	$( '#vuneedle' ).css( 'transform', '' );
 }
