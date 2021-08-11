@@ -1226,8 +1226,7 @@ function renderPlaybackBlank() {
 }
 function renderPlaybackCoverart() {
 	clearTimeout( G.timeoutover );
-	var src = $( '#coverart' ).attr( 'src' ).slice( 0, 7 );
-	var coverdefault = src === '/assets' || !src;
+	var coverdefault = $( '#coverart' ).attr( 'src' ).slice( 0, 5 ) !== '/data';
 	var delay = !G.status.webradio || G.status.coverart || coverdefault || G.status.state !== 'play' ? 0 : 8000;
 	G.timeoutover = setTimeout( function() {
 		if ( G.display.vumeter
