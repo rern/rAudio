@@ -149,9 +149,6 @@ function resetLocal( ms ) {
 	}, ms ? ms - 2000 : 0 );
 	setTimeout( bannerHide, ms || 2000 );
 }
-function selectricRender() {
-	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) $( 'select' ).selectric( { nativeOnMobile: false } );
-}
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {

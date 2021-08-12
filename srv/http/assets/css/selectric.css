@@ -8,6 +8,12 @@
 	cursor: pointer;
 	font-family: Lato, rern;
 }
+.selectric-wrapper.disabled {
+	pointer-events: none;
+}
+.selectric-wrapper.disabled .button {
+	display: none;
+}
 .selectric-responsive {
 	width: 100%;
 }

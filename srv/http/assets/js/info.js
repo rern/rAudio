@@ -144,7 +144,7 @@ function infoReset() {
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input, select' ).prop( 'disabled', 0 );
+	$( '#infoContent' ).find( 'input' ).prop( 'disabled', 0 );
 	$( '#infoContent' )
 		.empty()
 		.css( { width: '', height: '' } )
@@ -414,7 +414,7 @@ function info( json ) {
 		// set vertical position
 		alignVertical();
 		// apply selectric
-		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( { nativeOnMobile: false } );
+		selectricRender();
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
@@ -628,6 +628,18 @@ function orientationReset( file, ori, callback ) {
 		}
 	}
 	reader.readAsDataURL( file );
+}
+function selectricRender() {
+	if ( !$( 'select' ).length ) return
+	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
+	$select
+		.selectric( { nativeOnMobile: false } )
+		.each( function() {
+			var $this = $( this );
+			var option1 = $this.find( 'option' ).length === 1;
+			var $selectric = $this.parent().parent();
+			$selectric.toggleClass( 'disabled', option1 );
+		} );
 }
 function setFileImage( file ) {
 	var timeout = setTimeout( function() {
