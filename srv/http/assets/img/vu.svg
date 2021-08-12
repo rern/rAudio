@@ -10,13 +10,10 @@
 .cls-7,.cls-6,.cls-8,.cls-9,.cls-14,.cls-15,.cls-16,.cls-17,.cls-18,.cls-20 { stroke: #000000; }
 .cls-16 { fill: none; stroke-width: 5px; filter:url(#vushadow); }
 .cls-3 { stroke-width: 4px; }
-.cls-8 { stroke-width: 3px; }
-.cls-9 { stroke-width: 2px; }
 .cls-5,.cls-6 { stroke-width: 1.3px; }
 .cls-14,.cls-15 { stroke-width: 1px; }
 .cls-7,.cls-4 { stroke-width: 0.5px; }
 .cls-17,.cls-18,.cls-20 { stroke-width: 0.2px; }
-.cls-8,.cls-9 { stroke-linecap: round; }
 .cls-14 { opacity: 0.3; }
 .cls-11,.cls-12,.cls-13 { font-family: Arial; }
 .cls-11,.cls-12 { font-size:12px; }
@@ -47,17 +44,17 @@
 <line class="cls-5" x1="179.48" y1="65.36" x2="183" y2="56.53"/>
 <line class="cls-5" x1="197.04" y1="73.93" x2="201.7" y2="65.65"/>
 
-<path class="cls-8" d="M31,81h0"/>
-<path class="cls-9" d="M38,77h0"/>
-<path class="cls-8" d="M46,72h0"/>
-<path class="cls-9" d="M58,67h0"/>
-<path class="cls-8" d="M70,63h0"/>
-<path class="cls-9" d="M83,60h0"/>
-<path class="cls-8" d="M95,58h0"/>
-<path class="cls-9" d="M108,57h0"/>
-<path class="cls-8" d="M121,57h0"/>
-<path class="cls-9" d="M133,58h0"/>
-<path class="cls-8" d="M146,60h0"/>
+<circle cx="31" cy="81" r="1.5"/>
+<circle cx="38" cy="77" r="1"/>
+<circle cx="46" cy="72" r="1.5"/>
+<circle cx="58" cy="67" r="1"/>
+<circle cx="70" cy="63" r="1.5"/>
+<circle cx="83" cy="60" r="1"/>
+<circle cx="95" cy="58" r="1.5"/>
+<circle cx="108" cy="57" r="1"/>
+<circle cx="121" cy="57" r="1.5"/>
+<circle cx="133" cy="58" r="1"/>
+<circle cx="146" cy="60" r="1.5"/>
 
 <text class="cls-11" transform="translate(21 65) rotate(-29)">20</text>
 <text class="cls-11" transform="translate(46 52) rotate(-20)">10</text>
