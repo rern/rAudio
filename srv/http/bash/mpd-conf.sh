@@ -10,6 +10,7 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
+dirtmp=/srv/http/data/shm
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
@@ -63,8 +64,9 @@ output=
 if [[ $i != -1 ]]; then
 	if [[ $1 == add ]]; then
 		i=-1
+		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirtmp/asound
 	elif [[ $1 == remove ]]; then
-		[[ -e $dirsystem/asound ]] && i=$( cat $dirsystem/asound ) || i=0
+		i=$( cat $dirtmp/asound )
 	fi
 	aplayname=${Aaplayname[$i]}
 	card=${Acard[$i]}
