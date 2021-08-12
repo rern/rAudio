@@ -59,6 +59,7 @@ audiooutput )
 	sed -i -e '/output_device = / s/".*"/"hw:'$card'"/
 	' -e '/mixer_control_name = / s/".*"/"'$mixer'"/
 	' /etc/shairport-sync.conf
+	echo $card > $dirsystem/asound
 	restartMPD
 	systemctl try-restart shairport-sync shairport-meta
 	;;

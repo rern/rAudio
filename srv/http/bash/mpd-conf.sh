@@ -8,6 +8,7 @@
 # - mixer_device  - card index
 # - dop           - if set
 
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
@@ -17,8 +18,8 @@ pushstream() {
 }
 restartMPD() {
 	systemctl restart mpd
-	status=$( /srv/http/bash/status.sh )
-	pushstream refresh "$( /srv/http/bash/player-data.sh )"
+	status=$( $dirbash/status.sh )
+	pushstream refresh "$( $dirbash/player-data.sh )"
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
@@ -56,11 +57,15 @@ audio_output {
 fi
 pushstream refresh '{"page":"network"}'
 
-. /srv/http/bash/mpd-devices.sh
+. $dirbash/mpd-devices.sh
 
 output=
 if [[ $i != -1 ]]; then
-	[[ $1 == add ]] && i=-1
+	if [[ $1 == add ]]; then
+		i=-1
+	elif [[ $1 == remove ]]; then
+		[[ -e $dirsystem/asound ]] && i=$( cat $dirsystem/asound ) || i=0
+	fi
 	aplayname=${Aaplayname[$i]}
 	card=${Acard[$i]}
 	dop=${Adop[$i]}
@@ -144,19 +149,13 @@ $btoutput" > $mpdfile
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
-	if [[ $1 == add ]]; then
-		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirsystem/asound
-		[[ $mixertype == hardware ]] && alsactl restore
-	else
-		card=$( cat $dirsystem/asound 2> /dev/null )
-		rm -f $dirsystem/asound
-	fi
+	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	[[ -z $name ]] && name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
-	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
+	pushstream display "$( $dirbash/cmd.sh displayget )"
 fi
 
-if [[ -n $Acard && -n $card ]]; then
+if [[ -n $Acard ]]; then
 	sed -i "s/.$/$card/" /etc/asound.conf
 else
 	echo -n "\
@@ -170,7 +169,7 @@ fi
 wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
 if [[ -n $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
-	/srv/http/bash/mpd-wm5102.sh $wm5102card $output
+	$dirbash/mpd-wm5102.sh $wm5102card $output
 fi
 
 restartMPD
