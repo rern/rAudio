@@ -144,13 +144,19 @@ $btoutput" > $mpdfile
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
-	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
+	if [[ $1 == add ]]; then
+		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirsystem/asound
+		[[ $mixertype == hardware ]] && alsactl restore
+	else
+		card=$( cat $dirsystem/asound 2> /dev/null )
+		rm -f $dirsystem/asound
+	fi
 	[[ -z $name ]] && name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 	pushstream display "$( /srv/http/bash/cmd.sh displayget )"
 fi
 
-if [[ -n $Acard ]]; then
+if [[ -n $Acard && -n $card ]]; then
 	sed -i "s/.$/$card/" /etc/asound.conf
 else
 	echo -n "\
