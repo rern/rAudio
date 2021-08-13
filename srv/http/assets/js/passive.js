@@ -257,11 +257,6 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
-	if ( G.display.vumeter ) {
-		G.status.coverart = '';
-		G.status.stationcover = '';
-		G.coverdefault = G.covervu;
-	}
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
