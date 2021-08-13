@@ -12,8 +12,8 @@ dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
-[[ ! -e $dirsystem/novumeter ]] && novumeter=1
 
+[[ -e $dirsystem/vumeter ]] && vumeter=1
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
@@ -80,7 +80,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$(( ( now - start + 500 ) / 1000 ))
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg && $novumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirtmp/airplay-coverart.jpg && -z $vumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"  : "'$coverart'"
@@ -132,10 +132,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 fi
 
 vu() {
-	[[ -e $dirsystem/vumeter ]] && vumeter=1
 	[[ -e $dirsystem/vuled ]] && vuled=1
-	if [[ $vumeter || $vuled ]]; then
-		[[ $vumeter ]] && echo {$status}
+	if [[ -n $vumeter || -n $vuled ]]; then
+		[[ -n $vumeter ]] && echo {$status}
 		if [[ $state == play ]]; then
 			if ! pgrep cava &> /dev/null; then
 				killall cava &> /dev/null
@@ -144,14 +143,14 @@ vu() {
 		else
 			killall cava &> /dev/null
 			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-			if [[ $vuled ]]; then
+			if [[ -n $vuled ]]; then
 				p=$( cat /srv/http/data/system/vuledpins )
 				for i in $p; do
 					echo 0 > /sys/class/gpio/gpio$i/value
 				done
 			fi
 		fi
-		[[ $vumeter ]] && exit
+		[[ -n $vumeter ]] && exit
 	fi
 }
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
@@ -250,7 +249,7 @@ if [[ $fileheader == cdda ]]; then
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
 		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
-		[[ -n $coverfile && $novumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		[[ -n $coverfile && -z $vumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	else
 		[[ $state == stop ]] && Time=0
 	fi
@@ -274,7 +273,7 @@ elif [[ -n $stream ]]; then
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $onlinefile && $novumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		[[ -n $onlinefile && -z $vumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
 		icon=webradio
@@ -309,10 +308,10 @@ $radiosampling" > $dirtmp/radio
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
-					[[ $novumeter ]] && coverart=${tmpstatus[3]}
+					[[ -z $vumeter ]] && coverart=${tmpstatus[3]}
 					station=$stationname
 				fi
-			elif [[ -n $Title && $novumeter ]]; then
+			elif [[ -n $Title && -z $vumeter ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
@@ -327,12 +326,14 @@ $radiosampling" > $dirtmp/radio
 				fi
 			fi
 		fi
-		filenoext=/data/webradiosimg/$urlname
-		pathnoext=/srv/http$filenoext
-		if [[ -e $pathnoext.gif ]]; then
-			stationcover=$filenoext.$date.gif
-		elif [[ -e $pathnoext.jpg ]]; then
-			stationcover=$filenoext.$date.jpg
+		if [[ -z $vumeter ]]; then
+			filenoext=/data/webradiosimg/$urlname
+			pathnoext=/srv/http$filenoext
+			if [[ -e $pathnoext.gif ]]; then
+				stationcover=$filenoext.$date.gif
+			elif [[ -e $pathnoext.jpg ]]; then
+				stationcover=$filenoext.$date.jpg
+			fi
 		fi
 ########
 		status+='

@@ -1234,14 +1234,15 @@ function renderPlaybackCoverart() {
 		) {
 			$( '#coverart' )
 				.addClass( 'hide' )
-				.attr( 'src', G.coverdefault );
+				.attr( 'src', G.coverdefault )
+				.css( 'border', '' );
 			$( '#vu' ).removeClass( 'hide' );
 		} else {
 			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
 				.attr( 'src', coverart || G.coverdefault )
-				.css( 'border', coverart ? '' : 'none' )
+				.css( 'border', coverart.slice( 12, 14 ) === 'vu' ? '' : 'none' )
 				.removeClass( 'hide' );
 		}
 		vu();

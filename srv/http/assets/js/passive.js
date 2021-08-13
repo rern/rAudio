@@ -61,7 +61,7 @@ pushstream.onstatuschange = status => {
 		bash( [ 'displayget' ], data => {
 			delete G.coverTL;
 			G.display = data;
-			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
+			G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 			G.bars = data.bars;
 			G.display.screenoff = G.localhost;
 			var submenu = {
@@ -258,6 +258,11 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
+	if ( G.display.vumeter ) {
+		G.status.coverart = '';
+		G.status.stationcover = '';
+		G.coverdefault = G.covervu;
+	}
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
