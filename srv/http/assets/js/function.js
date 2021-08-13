@@ -193,7 +193,10 @@ function coverartChange() {
 }
 function coverartDefault() {
 	if ( G.display.novu ) {
-		$( '#coverart' ).attr( 'src', G.coverdefault );
+		$( '#coverart' )
+			.attr( 'src', G.coverdefault )
+			.css( 'border', G.coverdefault === G.coverart ? 'none' : '' )
+			.removeClass( 'hide' );
 		$( '#vu' ).addClass( 'hide' );
 	} else {
 		$( '#coverart' )
@@ -1229,21 +1232,19 @@ function renderPlaybackCoverart() {
 	var coverdefault = $( '#coverart' ).attr( 'src' ).slice( 0, 5 ) !== '/data';
 	var delay = !G.status.webradio || G.status.coverart || coverdefault || G.status.state !== 'play' ? 0 : 8000;
 	G.timeoutover = setTimeout( function() {*/
+		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 		if ( G.display.vumeter
 			|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 		) {
 			$( '#coverart' )
 				.addClass( 'hide' )
-				.attr( 'src', G.coverdefault )
-				.css( 'border', '' );
+				.attr( 'src', '' );
 			$( '#vu' ).removeClass( 'hide' );
 		} else {
 			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
-			if ( !coverart ) coverart = G.coverdefault;
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
 				.attr( 'src', coverart )
-				.css( 'border', coverart === G.coverart ? 'none' : '' )
 				.removeClass( 'hide' );
 		}
 		vu();

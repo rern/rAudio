@@ -61,7 +61,6 @@ pushstream.onstatuschange = status => {
 		bash( [ 'displayget' ], data => {
 			delete G.coverTL;
 			G.display = data;
-			G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 			G.bars = data.bars;
 			G.display.screenoff = G.localhost;
 			var submenu = {
