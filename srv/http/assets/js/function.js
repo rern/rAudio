@@ -656,15 +656,15 @@ function infoPlayback() {
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
 		, radio        : {
-			  '<i class="imgicon iconcover""></i>rAudio'               : true
-			, '<img class="imgicon" src="/assets/img/vu.svg">VU meter' : false
+			  '<i class="imgicon iconcover"></i>'              : true
+			, '<img class="imgicon" src="/assets/img/vu.svg">' : false
 		}
 		, radiocolumn  : 1
 		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent tr:last' ).before( '<tr><td colspan="2" class="gr">Default for no coverart:</td></tr>' );
+			$( '#infoContent tr:last' ).before( '<tr><td colspan="2" class="gr">Default if no coverart found:</td></tr>' );
 			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
 			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
