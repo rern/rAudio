@@ -96,9 +96,15 @@ var containerhtml = heredoc( function() { /*
 		<div id="infoButtons"></div>
 	</div>
 </div>
+<div id="banner" class="hide">
+	<div id="bannerIcon"></div>
+	<div id="bannerTitle"></div>
+	<div id="bannerMessage"></div>
+</div>
 */ } );
-$( 'body' ).append( containerhtml );
+$( 'body' ).prepend( containerhtml );
 
+$( '#banner' ).click( bannerHide );
 $( '#infoOverlay' ).keyup( function( e ) {
 /*
 all:      [Tab]       - focus / next input
@@ -123,6 +129,24 @@ $( '#infoContent' ).click( function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
 
+var bannertimeout;
+function banner( title, message, icon, delay ) {
+	clearTimeout( bannertimeout );
+	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
+					? icon 
+					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
+	$( '#bannerIcon' ).html( iconhtml );
+	$( '#bannerTitle' ).html( title );
+	$( '#bannerMessage' ).html( message );
+	$( '#banner' ).removeClass( 'hide' );
+	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
+}
+function bannerHide() {
+	$( '#banner' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' );
+	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
+}
 function infoReset() {
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
@@ -144,7 +168,7 @@ function infoReset() {
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input' ).prop( 'disabled', 0 );
+	$( '#infoContent' ).find( 'input, select' ).prop( 'disabled', 0 );
 	$( '#infoContent' )
 		.empty()
 		.css( { width: '', height: '' } )
@@ -414,7 +438,7 @@ function info( json ) {
 		// set vertical position
 		alignVertical();
 		// apply selectric
-		selectricRender();
+		if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( { nativeOnMobile: false } );
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
@@ -628,18 +652,6 @@ function orientationReset( file, ori, callback ) {
 		}
 	}
 	reader.readAsDataURL( file );
-}
-function selectricRender() {
-	if ( !$( 'select' ).length ) return
-	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
-	$select
-		.selectric( { nativeOnMobile: false } )
-		.each( function() {
-			var $this = $( this );
-			var option1 = $this.find( 'option' ).length === 1;
-			var $selectric = $this.parent().parent();
-			$selectric.toggleClass( 'disabled', option1 );
-		} );
 }
 function setFileImage( file ) {
 	var timeout = setTimeout( function() {

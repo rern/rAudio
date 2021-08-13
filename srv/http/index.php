@@ -35,7 +35,6 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/roundslider.min.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/banner.<?=$time?>.css">
 </head>
 <body>
 
@@ -50,6 +49,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/roundslider.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/Sortable.min.<?=$time?>.js"></script>
+<script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>
@@ -58,9 +58,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
 <script src="/assets/js/shortcut.<?=$time?>.js"></script>
 	<?php }
-		  include 'keyboard.php';?>
-<script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/banner.<?=$time?>.js"></script>
+		  if ( $localhost ) include 'keyboard.php';?>
 	
 </body>
 </html>

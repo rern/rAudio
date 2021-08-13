@@ -39,7 +39,6 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/banner.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
 </head>
@@ -97,10 +96,9 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
-<script src="/assets/js/relays.<?=$time?>.js"></script>
-	<?php include '../keyboard.php';?>
 <script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/banner.<?=$time?>.js"></script>
+<script src="/assets/js/relays.<?=$time?>.js"></script>
+	<?php if ( $localhost ) include '../keyboard.php';?>
 
 </body>
 </html>

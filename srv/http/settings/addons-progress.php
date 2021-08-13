@@ -67,7 +67,6 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/banner.<?=$time?>.js"></script>
 <script>
 $( '#close' ).click( function() {
 	$.post( '../cmd.php', {
