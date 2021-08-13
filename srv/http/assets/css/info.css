@@ -112,9 +112,6 @@
 	margin-right: 5px;
 	vertical-align: -2px !important;
 }
-.noclick {
-	pointer-events: none;
-}
 hr {
 	border: none;
 	border-bottom: 1px solid var( --cg );

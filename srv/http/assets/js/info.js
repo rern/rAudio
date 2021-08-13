@@ -156,7 +156,9 @@ function infoReset() {
 	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
-	$( '#infoOverlay' ).addClass( 'hide noclick' ) // prevent click OK on consecutive info
+	$( '#infoOverlay' )
+		.addClass( 'hide' )
+		.css( 'pointer-events', 'none' ); // prevent click OK on consecutive info
 	$( '#infoBox' ).css( {
 		  margin     : ''
 		, width      : ''
@@ -539,9 +541,10 @@ function alignVertical() { // make infoBox scrollable
 			  'margin-top' : top +'px'
 			, 'visibility' : 'visible'
 		} );
-		$( '#infoOverlay' )
-			.css( 'height', document.body.clientHeight )
-			.removeClass( 'noclick' );
+		$( '#infoOverlay' ).css( {
+			  'height'         : document.body.clientHeight
+			, 'pointer-events' : ''
+		} );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 	}, 200 );
 }
