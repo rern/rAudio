@@ -77,23 +77,21 @@ var keyboard = new Keyboard( {
 	}
 	, buttonTheme: narrowbuttontheme
 } );
-$( 'body' ).on( 'click', 'input', function() {
-	$( '#keyboard' ).removeClass( 'hide' );
+var $kb = $( '#keyboard' );
+var inputs = 'input[type=text], input[type=textarea], input[type=passowrd]';
+$( 'body' ).on( 'click', inputs, function() {
+	$kb.removeClass( 'hide' );
 	$( '#infoContent input' ).removeClass( 'active' );
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
-} );
-$( 'body' ).on( 'click touchstart', function( e ) {
-	if ( !$( '#keyboard' ).hasClass( 'hide' )
-		&& $( '#infoOverlay' ).hasClass( 'hide' )
-		&& !$( e.target ).parents( '#keyboard' ).length
-		&& e.target.id !== 'keyboard'
-		&& !$( e.target ).is( 'input' )
-	) {
-		hideKeyboard( e.target.id );
-	}
+} ).on( 'click touchstart', function( e ) {
+	if ( !$kb.hasClass( 'hide' ) && !$( e.target ).is( inputs ) )  hideKeyboard();
 } );
 
+function hideKeyboard() {
+	keyboard.clearInput();
+	$kb.addClass( 'hide' );
+}
 function onChange( value ) {
 	$( 'input.active' ).val( value );
 	if ( $( 'input.active' ).prop( 'id' ) === 'pl-search-input' ) {
@@ -139,7 +137,7 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 			var button = id === 'lib-search-input' ? '#lib-search-btn' : '#pl-search-btn';
 			$( button ).click();
 		}
-		hideKeyboard()
+		hideKeyboard();
 	} else {
 		if ( ( layout === 'shift' && !capslock ) ) {
 			current = 'alpha';
@@ -150,10 +148,6 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 	keyboard.setOptions( { layoutName: current } );
 	$( '.hg-button-lock' ).toggleClass( 'bgbl', capslock );
 	$( '.hg-button-numlock' ).toggleClass( 'bgbl', numslock );
-}
-function hideKeyboard( id ) {
-	keyboard.clearInput();
-	$( '#keyboard' ).addClass( 'hide' );
 }
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

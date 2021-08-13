@@ -74,16 +74,6 @@ function infoMount( values ) {
 		}
 	} );
 }
-function infoWiring( icon, title, message, image, W ) {
-	var image = image.slice( 0, -3 ) + hash + image.slice( -4 );
-	info( {
-		  icon    : icon
-		, title   : title
-		, message : message
-					+'<br><br><img src="/assets/img/guide/'+ image +'" style="width: '+ W +'px; height: auto;">'
-		, okno    : 1
-	} );
-}
 function rebootText( enable, device ) {
 	var listed = 0;
 	if ( G.reboot ) {
@@ -224,7 +214,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
-var gpiosvg = '<img src="/assets/img/gpio.'+ hash +'.svg" style="width: 340px; margin-bottom: 10px; height: auto;">';
+var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -253,6 +243,24 @@ $( '.enablenoset' ).click( function() {
 	notify( idname[ id ], checked, id );
 	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
 	bash( [ id, checked, G.reboot.join( '\n' ) ] );
+} );
+$( '.img' ).click( function() {
+	var name = $( this ).data( 'name' );
+	var title = {
+		  i2cbackpack : [ 'Character LCD I²C', 'lcdchar' ]
+		, lcdchar     : [ 'Character LCD' ]
+		, relays      : [ 'Relays Module' ]
+		, lcd         : [ 'TFT 3.5" LCD' ]
+		, powerbutton : [ 'Power Button', 'power', '300px', 'svg' ]
+		, vuled       : [ 'VU LED', 'led', '300px', 'svg' ]
+	}
+	var d = title[ name ];
+	info( {
+		  icon    : d[ 1 ] || name
+		, title   : d[ 0 ]
+		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' ) +'" style="height: '+ ( d[ 2 ] || '100%' ) +'">'
+		, okno    : 1
+	} );
 } );
 $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
@@ -438,7 +446,7 @@ var infolcdchar = heredoc( function() { /*
 		<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
 		<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
 	</tr>
-	<tr><td>Character Map</td>
+	<tr><td>Char<wide>acter</wide> Map</td>
 		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
 		<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
 	</tr>
@@ -534,9 +542,6 @@ $( '#setting-lcdchar' ).click( function() {
 		}
 	} );
 } );
-$( '#wiringlcdchar' ).click( function() {
-	infoWiring(  'lcdchar', 'Character LCD I²C', '5V to <wh>3.3V</wh> I²C + <wh>5V</wh> LCD', 'i2c_backpack_mod.jpg', 162 );
-} );
 $( '#setting-powerbutton' ).click( function() {
 	var val = G.powerbuttonconf.split( ' ' );
 	var swpin = val[ 0 ];
@@ -582,9 +587,6 @@ infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 		}
 	} );
-} );
-$( '#wiringpowerbutton' ).click( function() {
-	infoWiring(  'power', 'Power Button', 'Wiring:', 'power_button-led.svg', 300 );
 } );
 $( '#setting-relays' ).click( function() {
 	location.href = '/settings/relays.php';
@@ -666,9 +668,6 @@ $( '#setting-vuled' ).click( function() {
 			bash( [ 'vuledset', pins ] );
 		}
 	} );
-} );
-$( '#wiringvuled' ).click( function() {
-	infoWiring(  'led', 'VU LED', 'Wiring:', 'vu-led.svg', 300 );
 } );
 $( '#ledcalc' ).click( function() {
 	info( {

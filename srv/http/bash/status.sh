@@ -12,8 +12,8 @@ dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
-[[ ! -e $dirsystem/novumeter ]] && novumeter=1
 
+[[ -e $dirsystem/vumeter ]] && vumeter=1
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
@@ -21,6 +21,7 @@ counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
+[[ $player != mpd ]] && icon=$player
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
@@ -42,10 +43,6 @@ else
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
 
-if [[ $1 == snapserverstatus ]]; then
-########
-	status=
-else
 ########
 	status='
   "player"         : "'$player'"
@@ -54,6 +51,7 @@ else
 , "control"        : "'$control'"
 , "counts"         : '$counts'
 , "file"           : ""
+, "icon"           : "'$icon'"
 , "librandom"      : '$librandom'
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
@@ -64,7 +62,6 @@ else
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
-fi
 
 if [[ $player != mpd && $player != upnp ]]; then
 	case $player in
@@ -83,7 +80,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$(( ( now - start + 500 ) / 1000 ))
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg && $novumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirtmp/airplay-coverart.jpg && -z $vumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"  : "'$coverart'"
@@ -100,7 +97,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	snapclient )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 		snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
-		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapserverstatus \
+		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh \
 								| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 	########
 		status+=${snapserverstatus:1:-1}
@@ -135,10 +132,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 fi
 
 vu() {
-	[[ -e $dirsystem/vumeter ]] && vumeter=1
 	[[ -e $dirsystem/vuled ]] && vuled=1
-	if [[ $vumeter || $vuled ]]; then
-		[[ $vumeter ]] && echo {$status}
+	if [[ -n $vumeter || -n $vuled ]]; then
+		[[ -n $vumeter ]] && echo {$status}
 		if [[ $state == play ]]; then
 			if ! pgrep cava &> /dev/null; then
 				killall cava &> /dev/null
@@ -147,14 +143,14 @@ vu() {
 		else
 			killall cava &> /dev/null
 			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-			if [[ $vuled ]]; then
+			if [[ -n $vuled ]]; then
 				p=$( cat /srv/http/data/system/vuledpins )
 				for i in $p; do
 					echo 0 > /sys/class/gpio/gpio$i/value
 				done
 			fi
 		fi
-		[[ $vumeter ]] && exit
+		[[ -n $vumeter ]] && exit
 	fi
 }
 filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
@@ -243,6 +239,7 @@ if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
 fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
+	icon=audiocd
 	discid=$( cat $dirtmp/audiocd 2> /dev/null )
 	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
 		track=${file/*\/}
@@ -252,7 +249,7 @@ if [[ $fileheader == cdda ]]; then
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
 		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
-		[[ -n $coverfile && $novumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		[[ -n $coverfile && -z $vumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 	else
 		[[ $state == stop ]] && Time=0
 	fi
@@ -276,9 +273,10 @@ elif [[ -n $stream ]]; then
 		# fetched coverart
 		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $onlinefile && $novumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		[[ -n $onlinefile && -z $vumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 	else
 		ext=Radio
+		icon=webradio
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=/srv/http/data/webradios/$urlname
@@ -287,10 +285,12 @@ elif [[ -n $stream ]]; then
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
+		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
+		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $file == *stream.radioparadise.com* || $file == *icecast.radiofrance.fr* ]]; then
+			if [[ $icon == radiofrance || $icon == radioparadise ]]; then
 				id=$( basename ${file/-*} )
 				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
 			fi
@@ -303,15 +303,15 @@ $stationname
 $id
 $radiosampling" > $dirtmp/radio
 					systemctl start radio
-				else                                                 # playing: == 4
-					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null )
+				else
+					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/"/\\"/g' )
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
-					[[ $novumeter ]] && coverart=${tmpstatus[3]}
+					[[ -z $vumeter ]] && coverart=${tmpstatus[3]}
 					station=$stationname
 				fi
-			elif [[ -n $Title && $novumeter ]]; then
+			elif [[ -n $Title && -z $vumeter ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
@@ -321,17 +321,19 @@ $radiosampling" > $dirtmp/radio
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
 				coverfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
 				if [[ -n $coverfile ]]; then
-					coverart=/data/shm/webradio-$covername.$date.${coverfile: -3}
+					coverart=/data/shm/$( basename $coverfile )
 					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
 				fi
 			fi
 		fi
-		filenoext=/data/webradiosimg/$urlname
-		pathnoext=/srv/http$filenoext
-		if [[ -e $pathnoext.gif ]]; then
-			stationcover=$filenoext.$date.gif
-		elif [[ -e $pathnoext.jpg ]]; then
-			stationcover=$filenoext.$date.jpg
+		if [[ -z $vumeter ]]; then
+			filenoext=/data/webradiosimg/$urlname
+			pathnoext=/srv/http$filenoext
+			if [[ -e $pathnoext.gif ]]; then
+				stationcover=$filenoext.$date.gif
+			elif [[ -e $pathnoext.jpg ]]; then
+				stationcover=$filenoext.$date.jpg
+			fi
 		fi
 ########
 		status+='
@@ -344,11 +346,12 @@ $radiosampling" > $dirtmp/radio
 , "Title"         : "'$Title'"
 , "webradio"      : true'
 	if [[ -n $id ]]; then
-		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
+		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling &bull; $stationname"
 ########
 		status+='
 , "coverart"      : "'$coverart'"
 , "elapsed"       : '$elapsed'
+, "icon"          : "'$icon'"
 , "sampling"      : "'$sampling'"
 , "song"          : '$song
 # >>>>>>>>>>
@@ -403,7 +406,7 @@ samplingLine() {
 			sampling="$sample $rate"
 		fi
 	fi
-	[[ $ext != Radio && $ext != UPnP ]] && sampling+=" &bull; $ext"
+	[[ $ext != Radio ]] && sampling+=" &bull; $ext"
 }
 
 if [[ $ext == CD ]]; then
@@ -443,17 +446,18 @@ else
 			samplingLine $bitdepth $samplerate $bitrate $ext
 		fi
 	else
-		sampling=$radiosampling
+		sampling="$radiosampling"
 	fi
 fi
 
 ########
 pos="$(( song + 1 ))/$playlistlength"
-[[ -n $sampling ]] && sampling="$pos &bull; $sampling" || sampling=$pos
+sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"
-, "sampling" : "'$sampling'"
-, "coverart" : ""'
+, "coverart" : ""
+, "icon"     : "'$icon'"
+, "sampling" : "'$sampling'"'
 
 vu
 

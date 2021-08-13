@@ -61,9 +61,9 @@ pushstream.onstatuschange = status => {
 		bash( [ 'displayget' ], data => {
 			delete G.coverTL;
 			G.display = data;
-			G.coverdefault = G.display.novu ? G.coverart : G.covervu;
 			G.bars = data.bars;
 			G.display.screenoff = G.localhost;
+			G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 			var submenu = {
 				  relays     : 'features'
 				, snapclient : 'player'
@@ -83,7 +83,6 @@ pushstream.onstatuschange = status => {
 		loaderHide();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
-		vuStop();
 		hideGuide();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
@@ -174,24 +173,10 @@ function psCoverart( data ) {
 				if ( G.status.coverart === url ) break;
 				
 				G.status.coverart = url;
-				$( '#vu' ).addClass( 'hide' );
-				$( '#divcover .coveredit' ).remove();
-				$( '#coverart' )
-					.attr( 'src', url )
-					.css( { opacity: '', border: '' } )
-					.removeClass( 'hide' );
-				if ( 'Album' in data ) {
+				renderPlaybackCoverart();
+				if ( 'Album' in data ) { // with webradio
 					G.status.Album = data.Album;
-					var sampling = G.status.sampling;
-					if ( data.Album ) {
-						sampling += ' &bull; '+ G.status.station;
-					} else {
-						sampling += sampling ? ' &bull; Radio' : 'Radio';
-					}
-					$( '#album' )
-						.text( data.Album )
-						.toggleClass( 'albumgray', G.status.Album === '' );
-					$( '#sampling' ).html( sampling );
+					renderPlaybackTitles();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -268,11 +253,11 @@ function psDisplay( data ) {
 		return
 	}
 	
-	if ( data.vumeter !== G.vumeter ) $( '#coverart' ).attr( 'src', '' );
 	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
+	G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
@@ -314,7 +299,6 @@ function psMpdPlayer( data ) {
 		if ( G.playback ) {
 			displayPlayback();
 			renderPlayback();
-			if ( !$( '#vu' ).hasClass( 'hide' ) && !G.display.vumeter ) G.status.state === 'play' ? vu() : vuStop();
 		} else if ( G.playlist ) {
 			setPlaylistScroll();
 		}
@@ -322,21 +306,14 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
-	var iplayer = data.iplayer;
-	delete data.iplayer;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	if ( G.playback ) {
-		$( '#playericon' )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-'+ iplayer );
 		setButtonControl();
 		renderPlaybackTitles();
 		renderPlaybackCoverart();
 		renderPlaybackTime();
-		$( '#progress' ).empty();
-		$( '#sampling' ).html( G.status.sampling +' &bull; '+ G.status.station || 'Radio' );
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
@@ -568,7 +545,7 @@ function psVolume( data ) {
 				.text( mute ? data.val : vol )
 				.toggleClass( 'bl', mute );
 		}
-		if ( !G.display.buttons ) {
+		if ( !G.display.volume || !G.display.buttons ) {
 			var prefix = G.display.time ? 'ti' : 'i';
 			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 		}

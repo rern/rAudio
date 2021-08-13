@@ -1,22 +1,5 @@
 #!/bin/bash
 
-# reset player, tmp files
-# set and connect wi-fi if pre-configured (once)
-# expand root partition (once)
-# enable/disable wlan
-# set sound profile if enabled
-# set mpd-conf.sh
-#   - list sound devices
-#   - populate mpd.conf
-#   - start mpd, mpdidle
-# mount fstab
-#   - verify ip
-#   - verify source ip
-# start hostapd if enable
-# autoplay if enabled
-# check addons updates
-# continue mpd update if pending
-
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
 diraddons=$dirdata/addons
@@ -127,18 +110,19 @@ elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
 
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py
+if [[ -e $dirsystem/lcdchar ]]; then
+	$dirbash/lcdcharinit.py
+	$dirbash/lcdchar.py
+fi
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
 
-if [[ -z $connected ]]; then
+if [[ -n $connected ]]; then
+	rfkill | grep -q wlan && iw wlan0 set power_save off
+	$dirbash/cmd.sh addonsupdates
+else
 	if [[ ! -e $dirsystem/wlannoap ]]; then
 		modprobe brcmfmac &> /dev/null 
 		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
 		systemctl -q disable hostapd
 	fi
-	exit
 fi
-
-rfkill | grep -q wlan && iw wlan0 set power_save off
-
-$dirbash/cmd.sh addonsupdates

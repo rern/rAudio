@@ -4,6 +4,7 @@
 	width: 100%;
 	bottom: 0;
 	background: var( --cga ) !important;
+	box-shadow: 0 0 10px 4px #000000;
 	z-index: 108; /* #banner > #loader > # #keyboard > #infoOverlay */
 	-webkit-touch-callout: none; /* iOS Safari */
 	-webkit-user-select: none;   /* Safari */

@@ -36,9 +36,9 @@ Time=$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Dur
 timestamp=$( date +%s%3N )
 
 data='
-	, "Artist"    : "'$( [[ -n $Artist ]] && echo $Artist || echo '&nbsp;' )'"
-	, "Title"     : "'$( [[ -n $Title ]] && echo $Title || echo '&nbsp;' )'"
-	, "Album"     : "'$( [[ -n $Album ]] && echo $Album || echo '&nbsp;' )'"
+	, "Artist"    : "'$Artist'"
+	, "Title"     : "'$Title'"
+	, "Album"     : "'$Album'"
 	, "coverart"  : "'$coverart'"
 	, "elapsed"   : '$elapsed'
 	, "sampling"  : "Bluetooth"
@@ -49,7 +49,7 @@ data='
 echo $data
 
 if [[ -e /srv/http/data/system/lcdchar ]]; then
-	data=( "$Artist" "$Title" "$Album" $state $Time $elapsed $timestamp false '' '' )
+	data=( "$Artist" "$Title" "$Album" '' '' $state $Time $elapsed $timestamp false )
 	killall lcdchar.py &> /dev/null
 	/srv/http/bash/lcdchar.py "${data[@]}" &
 fi

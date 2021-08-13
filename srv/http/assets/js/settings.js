@@ -149,12 +149,6 @@ function resetLocal( ms ) {
 	}, ms ? ms - 2000 : 0 );
 	setTimeout( bannerHide, ms || 2000 );
 }
-function selectricRender() {
-	if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
-		$( 'select' ).selectric( { nativeOnMobile: false } );
-		$( '.selectric-input' ).prop( 'readonly', 1 ); // fix - suppress screen keyboard
-	}
-}
 function showContent() {
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {

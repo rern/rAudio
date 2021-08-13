@@ -6,9 +6,11 @@ import os
 
 os.system( 'killall lcdchartimer.sh &> /dev/null' )
 
-ipause = '\x00 '
-iplay = '\x01 '
-istop = '\x02 '
+icon = {
+      'pause' : '\x00 '
+    , 'play'  : '\x01 '
+    , 'stop'  : '\x02 '
+}
 irr = '\x03\x04'
 idots = '\x05  \x05  \x05'
 rn = '\r\n'
@@ -17,18 +19,18 @@ spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
 splash = rows > 2 and rn or ''
 splash += spaces + irr + rn + spaces +'rAudio'
 
-if len( sys.argv ) == 1: # no argument = splash
+argvL = len( sys.argv )
+if argvL == 1: # no argument
     lcd.write_string( splash )
     lcd.close()
     quit()
 
-if len( sys.argv ) == 2: # 1 argument
-    argv1 = sys.argv[ 1 ]
-    if argv1 == 'off':   # backlight off
+if argvL == 2: # 1 argument
+    val = sys.argv[ 1 ]
+    if val == 'off': # backlight off
         lcd.backlight_enabled = False
-    else:                # string
-        lcd.auto_linebreaks = True
-        lcd.write_string( argv1.replace( '\n', rn ) )
+    else:            # string
+        lcd.write_string( val.replace( '\n', rn ) )
         lcd.close()
     quit()
     
@@ -44,55 +46,60 @@ def second2hhmmss( sec ):
     sst = str( ss )
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
-
-field = [ '', 'artist', 'title', 'album', 'state', 'total', 'elapsed', 'timestamp', 'webradio', 'station', 'file' ] # assign variables
-for i in range( 1, 11 ):
-    val = sys.argv[ i ].rstrip()
-    if i < 4 or i > 8:                          # artist title album station file
-        val = val[ :cols ].replace( '"', '\"' ) # truncate to cols > escape "
-    exec( field[ i ] +' = "'+ val +'"' )
     
-if not artist and webradio != 'false':
-    artist = station
-    album = file
-if not artist and not title and not album:
-    lcd.write_string( splash )
-    quit()
-
-if not artist: artist = idots
-if not title: title = rows == 2 and artist or idots
-if not album: album = idots
-lines = rows == 2 and title or artist + rn + title + rn + album + rn
-# remove accents
 if charmap == 'A00':
     import unicodedata
-    lines = ''.join( c for c in unicodedata.normalize( 'NFD', lines ) if unicodedata.category( c ) != 'Mn' )
-
-if total != 'false':
-    total = round( float( total ) )
-    totalhhmmss = second2hhmmss( total )
-else:
-    totalhhmmss = ''
+    noaccented = True
     
+field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', 'elapsed', 'timestamp', 'webradio' ]
+for i in range( 1, 11 ):
+    val = sys.argv[ i ].rstrip()
+    if val and i < 6:
+        if noaccented:
+            val = ''.join( c for c in unicodedata.normalize( 'NFD', val )
+                           if unicodedata.category( c ) != 'Mn' )
+        val = val[ :cols ].replace( 'º', '°' ).replace( "'", "\\'" )
+    exec( field[ i ] +" = '"+ val +"'" )
+    
+if webradio == 'true':
+    if state != 'play':
+        artist = station
+        album = file
+    else:
+        if not artist and not title: artist = station
+        if not album: album = station or file
+        
+if not artist: artist = idots
+if not title: title = idots
+if not album: album = idots
+if rows == 2:
+    if state == 'stop':
+        lcd.write_string( artist + rn + album )
+        lcd.close()
+        quit()
+        
+    else:
+        lines = title
+else:
+    lines = artist + rn + title + rn + album
+
 if elapsed != 'false':
     elapsed = round( float( elapsed ) )
     elapsedhhmmss = second2hhmmss( elapsed )
 else:
     elapsedhhmmss = ''
 
-if state == 'stop':
-    progress = totalhhmmss
+if total != 'false':
+    totalhhmmss = cols > 16 and ' / ' or '/'
+    total = round( float( total ) )
+    totalhhmmss += second2hhmmss( total )
 else:
-    if totalhhmmss:
-        slash = cols > 16 and ' / ' or '/'
-        totalhhmmss = slash + totalhhmmss
-        progress = elapsedhhmmss + totalhhmmss
-    else:
-        progress = ''
-istate = state == 'stop' and istop or ( state == 'pause' and ipause or iplay )
-lines += ( istate + progress + ' ' * cols )[ :cols - 2 ] + irr
+    totalhhmmss = ''
+    
+progress = state == 'stop' and totalhhmmss or elapsedhhmmss + totalhhmmss
+progress = ( progress + ' ' * cols )[ :cols - 4 ]
 
-lcd.write_string( lines )
+lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
     lcd.close()
@@ -109,12 +116,12 @@ import time
 row = rows - 1
 starttime = time.time()
 elapsed += round( starttime - int( timestamp ) / 1000 )
+iplay = icon[ 'play' ]
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
-    progress = iplay + second2hhmmss( elapsed ) + totalhhmmss
     lcd.cursor_pos = ( row, 0 )
-    lcd.write_string( progress[ :cols ] )
+    lcd.write_string( iplay + second2hhmmss( elapsed ) + totalhhmmss )
     elapsed += 1
     time.sleep( sl )
     

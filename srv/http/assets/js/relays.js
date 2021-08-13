@@ -161,6 +161,13 @@ $.post( '/cmd.php', { cmd: 'bash', bash : 'cat /etc/relays.conf 2> /dev/null || 
 	}
 	renderOptions( relaysset );
 }, 'json' );
+$( '.page-icon' ).on( 'mousedown touchdown', function() {
+	timer = setTimeout( function() {
+		location.reload();
+	}, 1000 );
+} ).on( 'mouseup mouseleave touchup touchleave', function() {
+	clearTimeout( timer );
+} );
 $( '#help' ).click( function() {
 	$( this ).toggleClass( 'blue' );
 	$( '.help-block' ).toggleClass( 'hide' );

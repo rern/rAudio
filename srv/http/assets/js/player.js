@@ -40,16 +40,14 @@ renderPage = function( list ) {
 		} );
 		$( '#audiooutput' )
 			.html( htmldevices )
-			.prop( 'disabled', G.devices.length < 2 );
-		$( '#audiooutput' ).val( G.asoundcard );
+			.val( G.asoundcard );
 		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 		device.mixerdevices.forEach( function( mixer ) {
 			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
 		} );
 		$( '#hwmixer' )
 			.html( htmlhwmixer )
-			.val( device.hwmixer )
-			.prop( 'disabled', device.mixers < 2 );
+			.val( device.hwmixer );
 		var htmlmixertype = '<option value="none">None / 0dB</option>';
 		if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
 		htmlmixertype += '<option value="software">MPD software</option>';
@@ -77,7 +75,7 @@ renderPage = function( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'crossfade', 'mpdconf', 'mount' ].forEach( function( id ) {
+	[ 'asound', 'crossfade', 'mpdconf', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	if ( $( '#infoRange' ).length ) {

@@ -6,9 +6,10 @@ dirtmp=/srv/http/data/shm
 readarray -t tmpradio < $dirtmp/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]}
+station=${station//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos &bull; ${tmpradio[3]}"
+sampling="$pos &bull; ${tmpradio[3]} &bull; $station"
 song=$(( ${pos/\/*} - 1 ))
 case $id in
 	flac )   id=0;;
@@ -35,7 +36,7 @@ case $id in
 	ocoramonde )          id=404;;
 	opera )               id=409;;
 esac
-[[ $id < 4 ]] && iplayer=radioparadise || iplayer=radiofrance
+[[ $id < 4 ]] && icon=radioparadise || icon=radiofrance
 
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -s -m 5 -G \
@@ -58,7 +59,7 @@ radiofranceData() {
 ,.data.now.playing_item.cover\
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time \
-		| sed 's/^null$//' )
+		| sed 's/""/"/g; s/^null$//' ) # trim 2 x doublequotes and null(jq empty value)
 }
 metadataGet() {
 	[[ $id < 4 ]] && radioparadiseData || radiofranceData
@@ -67,8 +68,11 @@ metadataGet() {
 	album=${metadata[2]}
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
-	[[ -z $countdown ]] && countdown=0
-	[[ ${#metadata[@]} == 6 && $countdown > 0 ]] && countdown=$(( countdown - ${metadata[5]} )) # radiofrance
+	if [[ -z $countdown ]]; then
+		countdown=5
+	elif [[ ${#metadata[@]} == 6 ]]; then
+		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
+	fi
 
 	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
@@ -84,7 +88,6 @@ $coverart" > $dirtmp/status
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
-	station=${station//\"/\\\"}
 	elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| awk '/elapsed/ {print $NF}' )
@@ -95,7 +98,7 @@ $coverart" > $dirtmp/status
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
 , "file"     : "'$file'"
-, "iplayer"  : "'$iplayer'"
+, "icon"     : "'$icon'"
 , "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
 , "state"    : "play"
@@ -105,7 +108,7 @@ $coverart" > $dirtmp/status
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then
-		status=( "$artist" "$title" "$album" play false "$elapsed" $( date +%s%3N ) true "$station" "$file" )
+		status=( "$artist" "$title" "$album" "$station" "$file" play false "$elapsed" $( date +%s%3N ) true )
 		killall lcdchar.py &> /dev/null
 		/srv/http/bash/lcdchar.py "${status[@]}" &
 	fi

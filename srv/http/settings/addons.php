@@ -24,7 +24,6 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/banner.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/addons.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 </head>
@@ -96,9 +95,9 @@ foreach( $arrayalias as $alias ) {
 	$revisionclass = $version ? 'revision' : 'revisionnone';
 	$addonrevision = $addon[ 'revision' ] ?? '';
 	if ( $addonrevision ) {
-		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br>', $addonrevision );
+		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br><gr>&bull;</gr> ', $addonrevision );
 		$revision = str_replace( '\\', '', $addonrevision ); // remove escaped [ \" ] to [ " ]
-		$revision = '<p class="revisiontext">'.$revision.'</p>';
+		$revision = '<p class="revisiontext"><gr>&bull;</gr> '.$revision.'</p>';
 	} else {
 		$revision = '';
 	}
@@ -157,28 +156,15 @@ $keepkey = [ 'title', 'installurl', 'rollback', 'option', 'postinfo' ];
 foreach( $arrayalias as $alias ) {
 	$addonslist[ $alias ] = array_intersect_key( $addons[ $alias ], array_flip( $keepkey ) );
 }
-$restartfile = '/srv/http/data/shm/restart';
-if ( file_exists( $restartfile ) ) {
-	$restart = trim( file_get_contents( $restartfile ) );
-	@unlink( $restartfile );
-} else {
-	$restart = '';
-}
 ?>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/banner.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>
+	<?php if ( $localhost ) include 'keyboard.php';?>
 <script>
 var addons = <?=json_encode( $addonslist )?>;
-var restart = '<?=$restart?>';
-if ( restart ) {
-	setTimeout( function() {
-		$.post( 'cmd.php', { cmd: 'bash', bash: 'systemctl restart '+ restart } );
-	}, 1000 );
-}
 </script>
 
 </body>
