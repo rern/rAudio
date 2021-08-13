@@ -1239,10 +1239,11 @@ function renderPlaybackCoverart() {
 			$( '#vu' ).removeClass( 'hide' );
 		} else {
 			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
+			if ( !coverart ) coverart = G.coverdefault;
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
-				.attr( 'src', coverart || G.coverdefault )
-				.css( 'border', coverart.slice( 12, 14 ) === 'vu' ? '' : 'none' )
+				.attr( 'src', coverart )
+				.css( 'border', coverart === G.coverart ? 'none' : '' )
 				.removeClass( 'hide' );
 		}
 		vu();
