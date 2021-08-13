@@ -23,7 +23,9 @@ ib {
 .title {
 	font-weight: 300;
 }
-
+#loader pre {
+	white-space: pre-wrap;
+}
 #progress wh {
 	width: 25px;
 	margin-right: 5px;
