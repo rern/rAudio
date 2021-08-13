@@ -63,6 +63,7 @@ pushstream.onstatuschange = status => {
 			G.display = data;
 			G.bars = data.bars;
 			G.display.screenoff = G.localhost;
+			G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 			var submenu = {
 				  relays     : 'features'
 				, snapclient : 'player'
@@ -257,6 +258,7 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
+	G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();

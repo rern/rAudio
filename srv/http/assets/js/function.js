@@ -1232,7 +1232,6 @@ function renderPlaybackCoverart() {
 	var coverdefault = $( '#coverart' ).attr( 'src' ).slice( 0, 5 ) !== '/data';
 	var delay = !G.status.webradio || G.status.coverart || coverdefault || G.status.state !== 'play' ? 0 : 8000;
 	G.timeoutover = setTimeout( function() {*/
-		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 		if ( G.display.vumeter
 			|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
 		) {
