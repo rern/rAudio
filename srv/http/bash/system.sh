@@ -238,6 +238,10 @@ i2smodule )
 	output=${args[2]}
 	reboot=${args[3]}
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
+	if systemctl -q is-enabled powerbutton && ! grep -q dtoverlay=gpio-shutdown; then
+		dtoverlay+="
+dtoverlay=gpio-shutdown,gpio_pin=5"
+	fi
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -394,12 +398,14 @@ mount )
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	sed -i '/dtoverlay=gpio-shutdown,gpio_pin=5/ d' /boot/config.txt
 	pushRefresh
 	;;
 powerbuttonset )
 	echo "\
 sw=${args[1]}
 led=${args[2]}" > /etc/powerbutton.conf
+	grep -q dtparam=i2s=on /boot/config.txt && sed -i '/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=5' /boot/config.txt
 	systemctl restart powerbutton
 	systemctl enable powerbutton
 	pushRefresh
