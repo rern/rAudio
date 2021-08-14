@@ -1,5 +1,8 @@
 #!/bin/bash
 
+dirsystem=/srv/http/data/system
+dirtmp=/srv/http/data/shm
+
 # prevent powerbutton wfi false rising/falling
 systemctl -q is-active powerbutton && powerbuttonactive=1
 [[ $1 == powerbutton ]] && powerbutton=1
@@ -8,13 +11,13 @@ if [[ -n $powerbuttonactive && -z $powerbutton ]]; then
 	systemctl stop powerbutton
 fi
 	
-. /srv/http/data/system/relays
+. $dirsystem/relays
 
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"
 }
 
-relaysfile='/srv/http/data/shm/relaystimer'
+relaysfile=$dirtmp/relaystimer
 
 killall relaystimer.sh &> /dev/null &
 
@@ -37,8 +40,9 @@ if [[ $1 == true ]]; then
 		/srv/http/bash/relaystimer.sh &> /dev/null &
 	fi
 else
+	rm -f $dirtmp/radio
 	mpc -q stop
-	rm -f $relaysfile /srv/http/data/system/volumemute
+	rm -f $relaysfile $dirsystem/volumemute
 	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
@@ -49,7 +53,6 @@ else
 		sleep ${offd[$i]} &> /dev/null
 	done
 	sleep 1
-	/srv/http/bash/cmd-pushstatus.sh
 	pushstream '{"done": false}'
 fi
 
