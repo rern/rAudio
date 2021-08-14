@@ -101,7 +101,7 @@ audio_output {
 	if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
 		output+="
-$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
+$( sed 's/$/ #custom/' "$customfile" )"
 	fi
 ########
 	output+='
@@ -144,7 +144,14 @@ audio_output {
 fi
 
 mpdfile=/etc/mpd.conf
-echo "$( sed '/audio_output/,/}/ d' $mpdfile )
+line=$( awk '/resampler/,/}/ {print NR}' $mpdfile | tail -1 )
+global=$( sed -n "1,$line p" $mpdfile | sed '/ #custom$/ d' )
+if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
+	custom=$( sed 's/$/ #custom/' $dirsystem/custom-global | sed '$!s/$/\\/' )
+	global=$( echo "$global" | sed "/^user/ a$custom" )
+fi
+echo "\
+$global
 $output
 $btoutput" > $mpdfile
 

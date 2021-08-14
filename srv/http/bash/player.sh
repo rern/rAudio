@@ -139,24 +139,22 @@ customdisable )
 	rm -f $dirsystem/custom
 	restartMPD
 	;;
+customget )
+	global=$( cat $dirsystem/custom-global 2> /dev/null )
+	output=$( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )
+	echo "\
+$global
+^^
+$output"
+	;;
 customset )
 	file=$dirsystem/custom
-	if [[ ${args[1]} == customset ]]; then
-		global=$( cat $file-global 2> /dev/null )
-		[[ -n $global ]] && touch $file
-	else
-		global=${args[1]}
-		output=${args[2]}
-		aplayname=${args[3]}
-		[[ -n $global ]] && echo "$global" > $file-global || rm -f $file-global
-		[[ -n $output ]] && echo "$output" > "$file-output-$aplayname" || rm -f "$file-output-$aplayname"
-		[[ -n $global || -n $output ]] && touch $file
-	fi
-	sed -i '/ #custom$/ d' /etc/mpd.conf
-	if [[ -n $global ]]; then
-		global=$( echo "$global" | tr ^ '\n' | sed 's/$/ #custom/' )
-		sed -i "/^user/ a$global" /etc/mpd.conf
-	fi
+	global=${args[1]//^^/\\n}
+	output=${args[2]//^^/\\n}
+	aplayname=${args[3]}
+	[[ -n $global ]] && echo -e "$global" > $file-global || rm -f $file-global
+	[[ -n $output ]] && echo -e "$output" | sed 's/^/\t/' > "$file-output-$aplayname" || rm -f "$file-output-$aplayname"
+	[[ -n $global || -n $output ]] && touch $file
 	restartMPD
 	if ! systemctl -q is-active mpd; then
 		sed -i '/ #custom$/ d' /etc/mpd.conf

@@ -29,8 +29,6 @@ data='
 , "replaygainval"   : "'$( cat $dirsystem/replaygainset 2> /dev/null )'"
 , "soxr"            : '$( grep -q "quality.*custom" /etc/mpd.conf && echo true || echo false )'
 , "soxrval"         : "'$( grep -v 'quality\|}' $dirsystem/soxr 2> /dev/null | cut -d'"' -f2 )'"
-, "userglobal"      : "'$( cat $dirsystem/custom-global 2> /dev/null | tr '\t' ^ | tr '\n' '|' )'"
-, "useroutput"      : "'$( cat "$dirsystem/custom-output-${Aaplayname[$i]}" 2> /dev/null | tr '\t' ^ | tr '\n' '|' )'"
 , "version"         : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 echo {$data}
