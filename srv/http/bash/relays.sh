@@ -38,7 +38,6 @@ if [[ $1 == true ]]; then
 	fi
 else
 	mpc -q stop
-	/srv/http/bash/cmd-pushstatus.sh
 	rm -f $relaysfile /srv/http/data/system/volumemute
 	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
@@ -50,6 +49,7 @@ else
 		sleep ${offd[$i]} &> /dev/null
 	done
 	sleep 1
+	/srv/http/bash/cmd-pushstatus.sh
 	pushstream '{"done": false}'
 fi
 
