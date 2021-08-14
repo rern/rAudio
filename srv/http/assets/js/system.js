@@ -181,7 +181,7 @@ renderPage = function( list ) {
 		var $this = $( this );
 		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
 	} ).prop( 'selected', true );
-	var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
+	var i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
