@@ -81,7 +81,7 @@
 }
 .infobtn {
 	display: inline-block;
-	margin: 0 5px 10px;
+	margin: 0 5px;
 	min-width: 70px;
 	padding: 0 10px;
 	height: 34px !important;
@@ -140,7 +140,8 @@ hr {
 #infoBox {
 	width: 400px;
 	max-width: 98%;
-	margin: 20px auto 200px; /* 200px for on-screen keyboard */
+	margin: 20px auto;
+	padding-bottom: 20px;
 	background: var( --cga );
 	border-radius: 10px;
 }
@@ -387,7 +388,7 @@ hr {
 	margin-bottom: 10px;
 }
 #infoButtons {
-	padding: 10px 0 20px 0;
+	padding-top: 10px;
 }
 #infoContent .selectric-wrapper {
 	margin: 0;
