@@ -270,6 +270,7 @@ hr {
 	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
+	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow: hidden;
 	color: var( --cg60 );
@@ -503,19 +504,6 @@ hr {
 	background: #000000;
 	font-family: Inconsolata;
 }
-px, px10, px20, px30, px40, px50, px60, px70, px80, px90, px100 {
-	display: inline-block;
-}
-px10 { width: 10px }
-px20 { width: 20px }
-px30 { width: 30px }
-px40 { width: 40px }
-px50 { width: 50px }
-px60 { width: 60px }
-px70 { width: 70px }
-px80 { width: 80px }
-px90 { width: 90px }
-px100 { width: 100px }
 /* iOS */
 @media not all and ( min-resolution:.001dpcm ) {
 	@supports (-webkit-appearance:none) and (stroke-color:transparent) {
