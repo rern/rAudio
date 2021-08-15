@@ -27,7 +27,7 @@ data='
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
 , "replaygain"      : '$( grep -q '^replaygain.*off' /etc/mpd.conf && echo false || echo true )'
 , "replaygainval"   : "'$( cat $dirsystem/replaygainset 2> /dev/null )'"
-, "soxr"            : '$( grep -q "quality.*custom" /etc/mpd.conf && echo true || echo false )'
+, "soxr"            : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true || echo false )'
 , "soxrval"         : "'$( grep -v 'quality\|}' $dirsystem/soxr 2> /dev/null | cut -d'"' -f2 )'"
 , "version"         : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
