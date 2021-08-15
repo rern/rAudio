@@ -56,11 +56,7 @@ audiooutput )
 	output=${args[3]}
 	mixer=${args[4]}
 	sed -i "s/.$/$card/" /etc/asound.conf
-	sed -i -e '/output_device = / s/".*"/"hw:'$card'"/
-	' -e '/mixer_control_name = / s/".*"/"'$mixer'"/
-	' /etc/shairport-sync.conf
 	restartMPD
-	systemctl try-restart shairport-sync shairport-meta
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
