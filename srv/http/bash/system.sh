@@ -412,7 +412,7 @@ led=${args[2]}" > /etc/powerbutton.conf
 	;;
 regional )
 	ntp=${args[1]}
-	regom=${args[2]}
+	regdom=${args[2]}
 	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
 	sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
 	iw reg set $regdom
