@@ -100,6 +100,13 @@ $selecttimezone.= '</select>';
 	<input id="bluetooth" <?=$chkenable?>>
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+			As a sender:
+		<br> &emsp; &bull; Power on Bluetooth speakers/headphones > enable pairing
+		<br> &emsp; &bull; Networks > Bluetooth > search > pair
+		<br>As a receiver:
+		<br> &emsp; &bull; Sender device > search > pair
+	</span>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
 <div id="wl" data-status="iw"></div>
