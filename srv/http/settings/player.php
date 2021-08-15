@@ -83,9 +83,7 @@
 
 <div>
 <heading>Volume<?=$ihelp?></heading>
-<div data-status="crossfade" <?=$classstatus?>>
-	<a>Crossfade<br><gr>mpc<?=$istatus?></gr></a>
-</div>
+<div class="col-l">Crossfade</div>
 <div class="col-r">
 	<input id="crossfade" <?=$chkenable?>>
 	<div class="switchlabel" for="crossfade"></div>
@@ -95,7 +93,6 @@
 		<br>Fade-out to fade-in between songs.
 	</span>
 </div>
-<pre id="codecrossfade" class="hide"></pre>
 <div class="col-l">Normalization</div>
 <div class="col-r">
 	<input id="normalization" <?=$chknoset?>>
@@ -170,7 +167,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>SoXR resampler<br><gr>Custom settings</gr></a>
+	<a>SoXR resampler<br><gr>custom settings</gr></a>
 </div>
 <div class="col-r">
 	<input id="soxr" <?=$chkenable?>>
