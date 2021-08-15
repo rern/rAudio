@@ -320,7 +320,6 @@ hr {
 	color: var( --cw );
 	background: var( --cgd );
 	resize: none;
-	overflow: hidden;
 }
 #infoContent input[type=text],
 #infoContent input[type=number],
