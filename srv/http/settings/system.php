@@ -93,7 +93,7 @@ $selecttimezone.= '</select>';
 	<?php $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 		  if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 <div>
-<heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
+<heading data-status="rfkill" class="status">Wireless<?=$istatus?><?=$ihelp?></heading>
 <pre id="coderfkill" class="hide"></pre>
 <div id="bt" data-status="bluetoothctl"></div>
 <div class="col-r">
@@ -107,6 +107,15 @@ $selecttimezone.= '</select>';
 	<input id="wlan" <?=$chkenable?>>
 	<div class="switchlabel" for="onboardwlan"></div>
 	<i id="setting-wlan" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+			Auto start Access Point - On failed connection or no router
+		<br>Wi-Fi regulatory domain:
+		<p>
+			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+		<br>&bull; <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">Contry code list</a>
+		<br>&bull; Active regulatory domian may be reassigned by connected router.
+		</p>
+	</span>
 </div>
 <pre id="codeiw" class="hide"></pre>
 </div>
@@ -127,7 +136,8 @@ $selecttimezone.= '</select>';
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
 <div class="col-l double">
-	<a>Character LCD<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
+	<a>Character LCD
+	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" <?=$chkenable?>>
@@ -141,7 +151,8 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
-	<a>Power Button<br><gr>powerbutton<?=$istatus?></gr></a><i class="fa fa-power"></i>
+	<a>Power Button
+	<br><gr>powerbutton<?=$istatus?></gr></a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" class="enable" type="checkbox">
@@ -169,7 +180,8 @@ $selecttimezone.= '</select>';
 </div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
-	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+	<a>TFT 3.5" LCD
+	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" class="enable" type="checkbox">
@@ -196,30 +208,22 @@ $selecttimezone.= '</select>';
 <div>
 <heading>Environment<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
+	<a>Name
+	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
 	<span <?=$classhelp?>>Name for Renderers, Streamers, Access point, Bluetooth and system Hostname.</span>
 </div>
-<div class="col-l double">
-	<a>Timezone<br>NTP, regdomain</a><i class="fa fa-globe"></i>
-</div>
+<div class="col-l single">Timezone<i class="fa fa-globe"></i></div>
 <div class="col-r">
-	<?=$selecttimezone?><i id="setting-regional" class="settingedit fa fa-gear"></i>
-	<span <?=$classhelp?>>
-		Wi-Fi regulatory domain:
-		<p>
-			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-		<br>&bull; <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">Contry code list</a>
-		<br>&bull; Active regulatory domian may be reassigned by connected router.
-		</p>
-	</span>
+	<?=$selecttimezone?><i id="setting-timezone" class="settingedit fa fa-gear"></i>
 </div>
 
 <div id="divsoundprofile">
 <div data-status="soundprofile" class="col-l icon double status">
-	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+	<a>Sound Profile
+	<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>

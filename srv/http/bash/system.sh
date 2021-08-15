@@ -395,6 +395,11 @@ mount )
 		rmdir "$mountpoint"
 	fi
 	;;
+ntp )
+	ntp=${args[1]}
+	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
+	pushRefresh
+	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
@@ -408,14 +413,6 @@ led=${args[2]}" > /etc/powerbutton.conf
 	grep -q dtparam=i2s=on /boot/config.txt && sed -i '/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=5' /boot/config.txt
 	systemctl restart powerbutton
 	systemctl enable powerbutton
-	pushRefresh
-	;;
-regional )
-	ntp=${args[1]}
-	regdom=${args[2]}
-	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
-	sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
-	iw reg set $regdom
 	pushRefresh
 	;;
 relays )
@@ -538,12 +535,18 @@ wlandisable )
 	pushRefresh
 	;;
 wlanset )
+	apauto=${args[1]}
+	regdom=${args[2]}
 	rfkill | grep -q wlan || modprobe brcmfmac
 	iw wlan0 set power_save off
-	if [[ ${args[1]} == false ]]; then
+	if [[ $apauto == false ]]; then
 		touch $dirsystem/wlannoap
 	else
 		rm -f $dirsystem/wlannoap
+	fi
+	if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
+		sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
+		iw reg set $regdom
 	fi
 	pushRefresh
 	;;

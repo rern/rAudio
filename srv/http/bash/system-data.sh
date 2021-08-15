@@ -136,7 +136,7 @@ data+='
 , "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
 , "powerbuttonconf" : "'$powerbuttonconf'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
-, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
+, "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "relayspins"      : '$relayspins'
 , "rpimodel"        : "'$rpimodel'"

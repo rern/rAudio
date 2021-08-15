@@ -166,7 +166,7 @@ renderPage = function( list ) {
 		$( '#wl' )
 			.removeAttr( 'class' )
 			.addClass( 'col-l double status' )
-			.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+			.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
 	} else {
 		$( '#wlan' ).prop( 'checked', false );
 		$( '#setting-wlan' ).toggleClass( 'hide', true );
@@ -379,20 +379,27 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 	} );
 } );
+var infowifi = heredoc( function() { /*
+<table>
+<tr><td style="padding-right: 5px; text-align: right;">Auto start Access Point</td><td><label><input type="checkbox"></label></td></tr>
+<tr><td style="padding-right: 5px; text-align: right;">Regulatory domain</td><td><input type="text" spellcheck="false"></td></tr>
+</table>
+*/ } );
 $( '#setting-wlan' ).click( function() {
 	info( {
 		  icon         : 'wifi'
 		, title        : 'Wi-Fi'
-		, checkbox     : [ 'Auto start <wh>Access Point:</wh>' ]
-		, footer       : '(On connection failed or no router)'
-		, values       : [ !G.wlannoap ]
+		, content      : infowifi
+		, boxwidth     : 50
+		, values       : [ !G.wlannoap, G.regdom ]
 		, checkchanged : ( G.wlan ? 1 : 0 )
 		, cancel       : function() {
 			$( '#wlan' ).prop( 'checked', G.wlan );
 		}
 		, ok           : function() {
+			var values = infoVal();
 			notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
-			bash( [ 'wlanset', infoVal() ] );
+			bash( [ 'wlanset', values[ 0 ], values[ 1 ] ] );
 		}
 	} );
 } );
@@ -716,20 +723,19 @@ $( '#timezone' ).change( function( e ) {
 	notify( 'Timezone', 'Change ...', 'globe' );
 	bash( [ 'timezone', $( this ).val() ] );
 } );
-$( '#setting-regional' ).click( function() {
+$( '#setting-timezone' ).click( function() {
 	var values = [ G.ntp, G.regdom || '00' ];
 	info( {
 		  icon         : 'globe'
-		, title        : 'Regional Settings'
-		, textlabel    : [ 'NTP server', 'Wi-Fi regdomain' ]
-		, footer       : '                       <code>00</code> - common for all regions'
-		, values       : values
+		, title        : 'Network Time Protocol'
+		, textlabel    : [ 'NTP server' ]
+		, values       : [ G.ntp ]
 		, checkchanged : 1
-		, checkblank   : [ 0, 1 ]
+		, checkblank   : [ 0 ]
 		, ok           : function() {
 			var values = infoVal();
-			notify( 'Regional Settings', 'Change ...', 'globe' );
-			bash( [ 'regional', values[ 0 ], values[ 1 ] ] );
+			notify( 'NTP server', 'Change ...', 'globe' );
+			bash( [ 'ntp', infoVal() ] );
 		}
 	} );
 } );

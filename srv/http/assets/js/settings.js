@@ -19,7 +19,7 @@ var cmd = {
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ 'cat /boot/config.txt' ]
 	, crossfade    : [ 'mpc crossfade' ]
-	, iw           : [ 'iw list' ]
+	, iw           : [ 'iw reg get; iw list' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
