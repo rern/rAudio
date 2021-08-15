@@ -385,7 +385,6 @@ $( '#setting-custom' ).click( function() {
 			  icon         : 'mpd'
 			, title        : "User's Configurations"
 			, content      : custominfo.replace( 'N', G.asoundcard )
-			, boxwidth     : 365
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : ( G.custom ? 1 : 0 )
 			, cancel       : function() {
