@@ -465,7 +465,7 @@ function info( json ) {
 		}
 		// set padding-right: radio / checkbox
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( tdL > 1 ) $( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
+		if ( tdL > 1 ) $( '#infoContent td:eq( 0 )' ).css( 'padding-right', '10px' );
 		// set padding-right, align right: label
 		if ( !$( '#infoContent td:first-child input' ).length ) {
 			$( '#infoContent td:first-child' ).css( {
