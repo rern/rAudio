@@ -300,7 +300,7 @@ $( '#setting-bufferoutput' ).click( function() {
 var soxrinfo = heredoc( function() { /*
 	<table>
 		<tr><td>Precision</td>
-			<td width="100"><select>
+			<td><select>
 				<option value="16">16</option>
 				<option value="20">20</option>
 				<option value="24">24</option>
@@ -344,12 +344,11 @@ $( '#setting-soxr' ).click( function() {
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : [ 1, 2, 3, 4 ]
 		, beforeshow    : function() {
-			$( '#infoContent td:nth-child( 2 )' ).css( 'padding-right', 0 );
 			var $extra = $( '#infoContent tr:eq( 5 )' );
-			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );
-			$extra.find( '.selectric-items' ).css( 'min-width', '185px' );
+			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
+			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
 		}
-		, boxwidth      : 90
+		, boxwidth      : 70
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
