@@ -554,9 +554,12 @@ function checkChanged() {
 	setTimeout( function() { // force after check length
 		var values = infoVal();
 		if ( typeof values !== 'object' ) values = [ values ];
+		var val;
 		var changed = false;
 		changed = values.some( function( v, i ) {
-			if ( v != O.values[ i ] ) return true
+			val = O.values[ i ];
+			if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
+			if ( v != val ) return true
 		} );
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
@@ -565,6 +568,7 @@ function infoVal() {
 	var values = [];
 	var $this, type, name, val, n;
 	var i = 0;
+	O.textarea = 0;
 	O.inputs.each( function() {
 		$this = $( this );
 		type = $this.prop( 'type' );
@@ -575,6 +579,7 @@ function infoVal() {
 		} else if ( type === 'checkbox' ) {
 			val = $this.prop( 'checked' );
 		} else if ( type === 'textarea' ) {
+			O.textarea = 1;
 			val = $this.val().replace( /\n/g, '\\n' ).trim();
 		} else {
 			val = $this.val().trim();
