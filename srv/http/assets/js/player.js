@@ -394,9 +394,7 @@ $( '#setting-custom' ).click( function() {
 			}
 			, ok           : function() {
 				var values = infoVal();
-				var customglobal = values[ 0 ].replace( /\n/g, '^^' );
-				var customoutput = values[ 1 ].replace( /\n/g, '^^' );
-				bash( [ 'customset', customglobal, customoutput, device.aplayname ], function( std ) {
+				bash( [ 'customset', values[ 0 ], values[ 1 ], device.aplayname ], function( std ) {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {

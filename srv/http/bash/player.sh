@@ -145,11 +145,15 @@ $output"
 	;;
 customset )
 	file=$dirsystem/custom
-	global=${args[1]//^^/\\n}
-	output=${args[2]//^^/\\n}
+	global=${args[1]}
+	output=${args[2]}
 	aplayname=${args[3]}
 	[[ -n $global ]] && echo -e "$global" > $file-global || rm -f $file-global
-	[[ -n $output ]] && echo -e "$output" | sed 's/^/\t/' > "$file-output-$aplayname" || rm -f "$file-output-$aplayname"
+	if [[ -n $output ]]; then
+		echo -e "$output" > "$file-output-$aplayname"
+	else
+		rm -f "$file-output-$aplayname"
+	fi
 	[[ -n $global || -n $output ]] && touch $file
 	restartMPD
 	if ! systemctl -q is-active mpd; then

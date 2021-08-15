@@ -574,6 +574,8 @@ function infoVal() {
 			if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
 		} else if ( type === 'checkbox' ) {
 			val = $this.prop( 'checked' );
+		} else if ( type === 'textarea' ) {
+			val = $this.val().replace( /\n/g, '\\n' ).trim();
 		} else {
 			val = $this.val().trim();
 		}
