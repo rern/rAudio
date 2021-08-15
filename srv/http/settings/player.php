@@ -170,7 +170,7 @@
 	</span>
 </div>
 <div class="col-l double">
-	<a>Resampling<br><gr>SoXR custom settings</gr></a>
+	<a>SoXR resampler<br><gr>Custom settings</gr></a>
 </div>
 <div class="col-r">
 	<input id="soxr" <?=$chkenable?>>
