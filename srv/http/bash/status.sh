@@ -346,7 +346,7 @@ $radiosampling" > $dirtmp/radio
 , "Title"         : "'$Title'"
 , "webradio"      : true'
 	if [[ -n $id ]]; then
-		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling &bull; $stationname"
+		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
 ########
 		status+='
 , "coverart"      : "'$coverart'"
