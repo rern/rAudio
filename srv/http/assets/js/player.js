@@ -360,7 +360,7 @@ $( '#setting-soxr' ).click( function() {
 	} );
 } );
 var custominfo = heredoc( function() { /*
-<table>
+<table width="100%">
 	<tr><td><code>/etc/mpd.conf</code></td></tr>
 	<tr><td><pre>
 ...
