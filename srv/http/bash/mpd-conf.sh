@@ -147,11 +147,10 @@ conf=$( cat /etc/mpd.conf )
 line=$( echo "$conf" | awk '/^resampler/,/}/ {print NR}' | tail -1 )
 global=$( echo "$conf" | sed -n "1,$line p" | sed '/# custom0/,/# custom1/ d' )
 if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
-	custom="
+	custom=$( echo "
 # custom0
 $( cat $dirsystem/custom-global )
-# custom1"
-	custom=$( echo "$custom" | sed '$!s/$/\\/' )
+# custom1" | sed '$!s/$/\\/' )
 	global=$( echo "$global" | sed "/^user/ a$custom" )
 fi
 echo "\
