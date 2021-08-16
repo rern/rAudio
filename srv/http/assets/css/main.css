@@ -23,9 +23,7 @@ ib {
 .title {
 	font-weight: 300;
 }
-#loader pre {
-	white-space: pre-wrap;
-}
+
 #progress wh {
 	width: 25px;
 	margin-right: 5px;
@@ -92,12 +90,6 @@ i.map.disabled, .map.disabled i {
 	width: 45px !important;
 	font-size: 48px;
 	color: var( --cg ) !important;
-}
-.splash {
-	background: #000000 !important;
-}
-.splash svg {
-	animation: none !important;
 }
 .menu {
 	position: absolute;
