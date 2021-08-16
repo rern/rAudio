@@ -21,7 +21,7 @@ data='
 , "counts"          : '$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )'
 , "crossfade"       : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true || echo false )'
 , "crossfadeval"    : '$( cat $dirsystem/crossfadeset 2> /dev/null || echo false )'
-, "custom"          : '$( grep -q '#custom$' /etc/mpd.conf && echo true || echo false )'
+, "custom"          : '$( [[ -e $dirsystem/custom ]] && echo true || echo false )'
 , "ffmpeg"          : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true || echo false )'
 , "normalization"   : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true || echo false )'
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"

@@ -20,7 +20,10 @@ installstart "$1"
 getinstallzip
 
 systemctl daemon-reload
-systemctl restart mpd
+
+[[ -e /srv/http/data/system/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
+/srv/http/bash/mpd-conf.sh
+
 nginx -s reload &> /dev/null
 
 installfinish
