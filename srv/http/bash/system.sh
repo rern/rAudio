@@ -237,19 +237,17 @@ i2smodule )
 	output=${args[2]}
 	reboot=${args[3]}
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
-	if systemctl -q is-enabled powerbutton && ! grep -q dtoverlay=gpio-shutdown; then
-		dtoverlay+="
-dtoverlay=gpio-shutdown,gpio_pin=5"
-	fi
 	if [[ $aplayname != onboard ]]; then
-		dtoverlay+="
+		dtoverlay+="\
 dtparam=i2s=on
 dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
+		systemctl disable --now powerbutton
 	else
-		dtoverlay+="
+		dtoverlay=$( echo "$dtoverlay" | sed -i '/gpio-shutdown/ d' )
+		dtoverlay+="\
 dtparam=audio=on"
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 		revision=${revision: -3:2}
@@ -408,11 +406,8 @@ powerbuttondisable )
 powerbuttonset )
 	sw=${args[1]}
 	led=${args[2]}
-	if [[ -n $sw ]]; then
-		sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$sw" /boot/config.txt
-	else
-		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
-	fi
+	sed -i '/gpio-shutdown/ d' /boot/config.txt
+	[[ -n $sw ]] && sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$sw" /boot/config.txt
 	echo $led > $dirsystem/powerledpin
 	systemctl restart powerbutton
 	systemctl enable powerbutton
