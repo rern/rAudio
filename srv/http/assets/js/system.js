@@ -185,10 +185,12 @@ renderPage = function( list ) {
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
+	disableSwitch( '#lcdchar', G.powerbutton );
 	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 	$( '#lcd' ).prop( 'checked', G.lcd );
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
+	disableSwitch( '#powerbutton', G.lcdchar );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
