@@ -190,9 +190,6 @@ renderPage = function( list ) {
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-	var powerbuttonconf = G.powerbuttonconf.split( ' ' );
-	$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
-	$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
@@ -550,13 +547,8 @@ $( '#setting-lcdchar' ).click( function() {
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
-	if ( G.powerbuttonconf ) {
-		var val = G.powerbuttonconf.split( ' ' );
-		var values = [ 5, val[ 0 ], val[ 1 ] ]
-	} else {
-		var values = [ 5, 5, 40 ]
-	}
-	var pins = [ 3, 5, 7, 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 29, 31, 32, 33, 35, 36, 37, 38, 40 ];
+	var i2smodule = !$( '#divi2smodule' ).hasClass( 'hide' );
+	var pins = [ 3, 7, 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 31, 32, 33, 35, 36, 37, 38, 40 ];
 	if ( G.relayspins ) {
 		pins = pins.filter( function( i ) {
 			return G.relayspins.indexOf( i ) === -1;
@@ -573,31 +565,31 @@ $( '#setting-powerbutton' ).click( function() {
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
-		<td><select id="swpin">OPTION</select></td>
+		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>LED</td>
-		<td><select id="ledpin">OPTION</select></td>
+		<td><select >OPTION</select></td>
 	</tr>
 	</table>
 */ } );
-	infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
+	infopowerbutton = infopowerbutton.replace( 'OPTION', optionpin );
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
-		, values       : values
+		, values       : [ 5, 29, G.powerled ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, beforeshow   : function() {
-			if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
-				$( '#infoContent td:eq( 0 )' ).text( 'On/Off' );
-				$( '#infoContent tr:eq( 1 )' ).addClass( 'hide' );
-			} else {
+			if ( i2smodule ) {
 				$( '#infoContent td:eq( 0 )' ).text( 'On' );
 				$( '#infoContent tr:eq( 1 )' ).removeClass( 'hide' );
+			} else {
+				$( '#infoContent td:eq( 0 )' ).text( 'On/Off' );
+				$( '#infoContent tr:eq( 1 )' ).addClass( 'hide' );
 			}
 		}
 		, ok           : function() {

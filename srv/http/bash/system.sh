@@ -128,7 +128,6 @@ databackup )
 /etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
-/etc/powerbutton.conf
 /etc/relays.conf
 /etc/soundprofile.conf
 /etc/upmpdcli.conf
@@ -413,7 +412,7 @@ powerbuttonset )
 sw=$sw
 led=$led" > /etc/powerbutton.conf
 	if grep -q dtparam=i2s=on /boot/config.txt; then
-		sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$sw" /boot/config.txt
+		sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=5" /boot/config.txt
 	else
 		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
 	fi
