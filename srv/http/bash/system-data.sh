@@ -38,11 +38,6 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
-if [[ -e /etc/powerbutton.conf ]]; then
-	powerbuttonconf=$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )
-else
-	powerbuttonconf='40 33'
-fi
 if [[ -e /etc/relays.conf ]]; then
 	relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
 	relayspins=[${relayspins:0:-1}]
@@ -134,7 +129,7 @@ data+='
 , "lcdmodel"        : "'$lcdmodel'"
 , "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
-, "powerbuttonconf" : "'$powerbuttonconf'"
+, "powerbuttonconf" : "'$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
 , "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
