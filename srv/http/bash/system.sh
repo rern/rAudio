@@ -408,14 +408,12 @@ powerbuttondisable )
 powerbuttonset )
 	sw=${args[1]}
 	led=${args[2]}
-	echo "\
-sw=$sw
-led=$led" > /etc/powerbutton.conf
-	if grep -q dtparam=i2s=on /boot/config.txt; then
-		sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=5" /boot/config.txt
+	if [[ -n $sw ]]; then
+		sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$sw" /boot/config.txt
 	else
 		sed -i '/dtoverlay=gpio-shutdown/ d' /boot/config.txt
 	fi
+	echo $led > $dirsystem/powerledpin
 	systemctl restart powerbutton
 	systemctl enable powerbutton
 	pushRefresh

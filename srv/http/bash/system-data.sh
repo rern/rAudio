@@ -129,7 +129,8 @@ data+='
 , "lcdmodel"        : "'$lcdmodel'"
 , "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
-, "powerled"        : "'$( cat $dirsystem/powerled 2> /dev/null )'"
+, "powerbuttonpin"  : "'$( grep gpio-shutdown /boot/config.txt | cut -d= -f3 )'"
+, "powerledpin"     : "'$( cat $dirsystem/powerled 2> /dev/null )'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
 , "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'

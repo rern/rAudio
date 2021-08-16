@@ -2,7 +2,7 @@
 
 # output: mode in  > write 0/1
 # input:  mode out > mode up/down
-led=$( cat /srv/http/data/system/powerled )
+led=$( cat /srv/http/data/system/powerledpin )
 
 gpio -1 mode $led out
 gpio -1 write $led 1

@@ -85,9 +85,13 @@
 	.st77{fill:none;stroke:#8C8C8C;stroke-width:3;stroke-miterlimit:4.7619;}
 	.st78{fill:none;stroke:#8C8C8C;stroke-width:3.0984;stroke-miterlimit:10;}
 	.st79{fill:none;stroke:#009900;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st80{fill:none;stroke:#993398;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st81{fill:none;stroke:#0000FF;stroke-width:2.8361;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st82{fill:none;stroke:#0000FF;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st80{fill:none;stroke:#E56B00;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st81{fill:none;stroke:#993398;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st82{fill:none;stroke:#0000FF;stroke-width:2.8361;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st83{fill:none;stroke:#0000FF;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st84{fill:none;stroke:#000000;stroke-width:1.1654;stroke-linecap:round;stroke-linejoin:round;}
+	.st85{fill:none;stroke:#000000;stroke-width:1.1654;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4.0657,4.0657;}
+	.st86{fill:none;stroke:#000000;stroke-width:1.1654;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3.9874,3.9874;}
 </style>
 <g id="rpi">
 	<path class="st0" d="M324.6,235.6H14.1c-6.5,0-11.9,5.2-11.9,11.9v196.3c0,6.6,5.4,11.9,11.9,11.9h310.4c6.5,0,11.9-5.4,11.9-11.9
@@ -3497,8 +3501,33 @@
 	<circle cx="63.7" cy="147.7" r="2"/>
 	<circle cx="55" cy="139" r="7.5"/>
 </g>
+<g>
+	<line class="st78" x1="165" y1="123" x2="165" y2="155"/>
+	<line class="st78" x1="185" y1="123" x2="185" y2="155"/>
+	<rect x="162.5" y="126.5" width="25" height="25"/>
+	<path class="st58" d="M163.1,149v-20.1c0-1,0.9-1.9,2-1.9h20c1,0,2,0.9,2,1.9V149c0,1-0.9,1.9-2,1.9H165
+		C164,151,163.1,150,163.1,149L163.1,149z"/>
+	<circle cx="184.1" cy="130" r="2"/>
+	<circle cx="166.1" cy="130" r="2"/>
+	<circle cx="166.1" cy="148" r="2"/>
+	<circle cx="183.8" cy="147.7" r="2"/>
+	<circle cx="175.1" cy="139" r="7.5"/>
+</g>
 <polyline class="st79" points="55,254 60,249 60,169 65,164 "/>
-<polyline class="st80" points="225,164 220,169 220,239 225,244 "/>
-<polyline class="st81" points="45,164 40.3,169 40,231 55,244 "/>
-<polyline class="st82" points="245,204 240,209 240,239 225,254 "/>
+<polyline class="st80" points="195.1,254 190,249 190,188 165,164 "/>
+<polyline class="st81" points="225,164 220,169 220,239 225,244 "/>
+<polyline class="st82" points="45,164 40.3,169 40,231 55,244 "/>
+<polyline class="st83" points="185,164 200,179 200,238 195,244 "/>
+<polyline class="st83" points="245,204 240,209 240,239 225,254 "/>
+<g>
+	<g>
+		<line class="st84" x1="55" y1="139" x2="55.6" y2="137"/>
+		<line class="st85" x1="56.9" y1="133.2" x2="63.7" y2="111.9"/>
+		<polyline class="st84" points="64.4,110 65,108 67.1,108 		"/>
+		<line class="st86" x1="71" y1="108" x2="180.9" y2="108"/>
+		<polyline class="st84" points="182.9,108 185,108 184.4,110 		"/>
+		<line class="st85" x1="183.1" y1="113.8" x2="176.3" y2="135.1"/>
+		<line class="st84" x1="175.6" y1="137" x2="175" y2="139"/>
+	</g>
+</g>
 </svg>

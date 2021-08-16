@@ -548,9 +548,9 @@ $( '#setting-lcdchar' ).click( function() {
 } );
 $( '#setting-powerbutton' ).click( function() {
 	var i2smodule = !$( '#divi2smodule' ).hasClass( 'hide' );
-	var pins = [ 3, 7, 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 31, 32, 33, 35, 36, 37, 38, 40 ];
+	var pinall = [ 3, 5, 7, 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 29, 31, 32, 33, 35, 36, 37, 38, 40 ];
 	if ( G.relayspins ) {
-		pins = pins.filter( function( i ) {
+		pins = pinall.filter( function( i ) {
 			return G.relayspins.indexOf( i ) === -1;
 		} );
 	}
@@ -565,20 +565,20 @@ $( '#setting-powerbutton' ).click( function() {
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
-		<td><input type="text" disabled></td>
+		<td><select >OPTION</select></td>
 	</tr>
 	<tr><td>LED</td>
 		<td><select >OPTION</select></td>
 	</tr>
 	</table>
 */ } );
-	infopowerbutton = infopowerbutton.replace( 'OPTION', optionpin );
+	infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : infopowerbutton
 		, boxwidth     : 80
-		, values       : [ 5, 29, G.powerled ]
+		, values       : [ 5, G.powerbuttonpin || 29, G.powerledpin || 40 ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
@@ -594,8 +594,15 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 		, ok           : function() {
 			var values = infoVal();
+			if ( i2smodule ) {
+				var gpio = [ 2, 3, 4, 17, 18, 27, 22, 23, 24, 10,  9, 25, 11,  8,  7,  5,  6, 12, 13, 19, 16, 26, 20, 21 ];
+				sw = gpio[ pinall.indexOf( +values[ 1 ] ) ];
+			} else {
+				sw = '';
+			}
+			var led = values[ 2 ];
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
-			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
+			bash( [ 'powerbuttonset', sw, led ] );
 		}
 	} );
 } );
