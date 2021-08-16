@@ -181,9 +181,9 @@ renderPage = function( list ) {
 		var $this = $( this );
 		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
 	} ).prop( 'selected', true );
-	var i2senabled = $( '#i2smodule' ).val() !== 'none';
-	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
-	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
+	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
+	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
+	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 	$( '#lcd' ).prop( 'checked', G.lcd );
@@ -255,7 +255,7 @@ $( '.img' ).click( function() {
 	info( {
 		  icon    : d[ 1 ] || name
 		, title   : d[ 0 ]
-		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' ) +'" style="height: '+ ( d[ 2 ] || '100%' ) +'">'
+		, message : '<img src="/assets/img/'+ ( G.i2senabled ? name +'-i2s' : name ) +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' ) +'" style="height: '+ ( d[ 2 ] || '100%' ) +'">'
 		, okno    : 1
 	} );
 } );
@@ -547,7 +547,6 @@ $( '#setting-lcdchar' ).click( function() {
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
-	var i2smodule = !$( '#divi2smodule' ).hasClass( 'hide' );
 	var pinall = [ 3, 5, 7, 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 26, 29, 31, 32, 33, 35, 36, 37, 38, 40 ];
 	if ( G.relayspins ) {
 		pins = pinall.filter( function( i ) {
@@ -584,7 +583,7 @@ $( '#setting-powerbutton' ).click( function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, beforeshow   : function() {
-			if ( i2smodule ) {
+			if ( G.i2senabled ) {
 				$( '#infoContent td:eq( 0 )' ).text( 'On' );
 				$( '#infoContent tr:eq( 1 )' ).removeClass( 'hide' );
 			} else {
