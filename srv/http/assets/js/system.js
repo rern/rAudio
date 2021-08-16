@@ -185,12 +185,12 @@ renderPage = function( list ) {
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-	disableSwitch( '#lcdchar', G.powerbutton );
+//	disableSwitch( '#lcdchar', G.powerbutton );
 	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 	$( '#lcd' ).prop( 'checked', G.lcd );
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	disableSwitch( '#powerbutton', G.lcdchar );
+	disableSwitch( '#powerbutton', G.lcdchar && G.lcdcharconf.split( ' ' ).length < 6 );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
@@ -500,7 +500,7 @@ $( '#setting-lcdchar' ).click( function() {
 		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2 ), 15, 18, 16, '21,22,23,24', backlight ]
 	} else {
 		var i2c = false;
-		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val( 2 ), backlight ];
+		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val.slice( 2 ), backlight ];
 	}
 	var lcdcharaddr = G.lcdcharaddr || '0x27 0x3F';
 	var addr = lcdcharaddr.split( ' ' );
@@ -520,6 +520,12 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="3" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
+			if ( G.powerbutton ) {
+				setTimeout( function() {
+					$( '#infoContent input[name=inf]:eq( 1 )' ).click();
+					$( '#infoContent input[name=inf]' ).prop( 'disabled', 1 );
+				}, 100 );
+			}
 			$( '#infoContent input[name=inf]' ).change( function() {
 				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
 				$( '.i2c' ).toggleClass( 'hide', !i2c );

@@ -155,7 +155,7 @@ $selecttimezone.= '</select>';
 		<br>&bull; Support 16x2 and 20x4 LCD modules.
 		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
 		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
-		<br>&bull; Cannot be enabled if Power Button is enabled.
+		<br>&bull; If Power Button is enabled, I²C mode cannot be enabled.
 	</span>
 </div>
 <div data-status="powerbutton" <?=$classstatus?>>
@@ -170,7 +170,7 @@ $selecttimezone.= '</select>';
 		Power button and LED for on/off rAudio.
 		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
 		<br>&bull; On pin is fixed.
-		<br>&bull; Cannot be enabled if Character LCD is enabled.
+		<br>&bull; Cannot be enabled if Character LCD is enabled in I²C mode.
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
