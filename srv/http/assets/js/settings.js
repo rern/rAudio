@@ -175,6 +175,7 @@ pushstream.onstatuschange = function( status ) {
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
 		if ( $( '#refresh' ).hasClass( 'blink' ) ) $( '#refresh' ).click();
+		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -194,8 +195,6 @@ function psNotify( data ) {
 			$( '#loader' ).addClass( 'splash' );
 		}
 		loader();
-	} else if ( data.text === 'Change track ...' ) { // audiocd
-		clearIntervalAll();
 	}
 }
 function psRefresh( data ) {
