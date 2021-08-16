@@ -2,13 +2,14 @@
 
 # output: mode in  > write 0/1
 # input:  mode out > mode up/down
-. /etc/powerbutton.conf
+led=$( cat /srv/http/data/system/powerled )
 
 gpio -1 mode $led out
 gpio -1 write $led 1
-gpio -1 mode $sw in
-gpio -1 mode $sw up
-gpio -1 wfi $sw falling
-
+if ! grep -q gpio-shutdown /boot/config.txt; then
+	gpio -1 mode 5 in
+	gpio -1 mode 5 up
+	gpio -1 wfi 5 falling
+fi
 [[ -e /srv/http/data/shm/relaystimer ]] && off=powerbutton || off=off
 /srv/http/bash/cmd.sh power$'\n'$off

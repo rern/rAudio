@@ -402,7 +402,7 @@ ntp )
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
-	sed -i '/dtoverlay=gpio-shutdown,gpio_pin=5/ d' /boot/config.txt
+	sed -i '/gpio-shutdown/ d' /boot/config.txt
 	pushRefresh
 	;;
 powerbuttonset )
