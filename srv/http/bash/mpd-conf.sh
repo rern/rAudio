@@ -148,7 +148,6 @@ line=$( echo "$conf" | awk '/^resampler/,/}/ {print NR}' | tail -1 )
 global=$( echo "$conf" | sed -n "1,$line p" | sed '/# custom0/,/# custom1/ d' )
 if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
 	custom="
-
 # custom0
 $( cat $dirsystem/custom-global )
 # custom1"
