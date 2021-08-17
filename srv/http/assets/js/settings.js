@@ -174,7 +174,7 @@ pushstream.onstatuschange = function( status ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
-		clearTimeout( intervalscan );
+		if ( page === 'networks' ) clearTimeout( intervalscan );
 		if ( $( '#refresh' ).hasClass( 'blink' ) ) $( '#refresh' ).click();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
