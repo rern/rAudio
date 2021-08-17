@@ -553,12 +553,14 @@ $( '#setting-powerbutton' ).click( function() {
 	</table>
 */ } );
 	infopowerbutton = infopowerbutton.replace( 'OFFPIN', offpin ).replace( 'LEDPIN', ledpin );
+	var offpin = G.poweroffpin || ( G.i2senabled ? 5 : 3 );
+	var ledpin = G.powerledpin || 40;
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 60
-		, values       : [ 5, G.poweroffpin || 3, G.powerledpin || 40 ]
+		, values       : [ 5, offpin, ledpin ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
