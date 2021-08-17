@@ -410,13 +410,16 @@ $( '#i2smodule' ).change( function() {
 		$( '#divi2smodule' ).removeClass( 'hide' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
+		G.i2sdisable = 1; // fix: 'disconnect' on hide selectric
 		aplayname = 'onboard';
 		output = '';
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', aplayname, output, 'Audio I&#178;S Module' ] );
+	bash( [ 'i2smodule', aplayname, output, 'Audio I&#178;S Module' ], function() {
+		delete G.i2sdisable;
+	} );
 } );
 $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {

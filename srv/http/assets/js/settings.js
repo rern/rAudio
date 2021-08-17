@@ -167,7 +167,7 @@ connect = () => {
 	}
 }
 disconnect = () => {
-	if ( active ) {
+	if ( active && !( 'i2sdisable' in G ) ) {
 		active = 0;
 		pushstream.disconnect();
 	}

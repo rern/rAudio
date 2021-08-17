@@ -17,7 +17,6 @@ pushstream() {
 }
 pushRefresh() {
 	data=$( /srv/http/bash/system-data.sh )
-	echo "$data" > $dirtmp/push
 	pushstream refresh "$data"
 }
 relaysOrder() {
