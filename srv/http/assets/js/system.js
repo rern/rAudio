@@ -74,20 +74,6 @@ function infoMount( values ) {
 		}
 	} );
 }
-function rebootText( enable, device ) {
-	var listed = 0;
-	if ( G.reboot ) {
-		if ( typeof G.reboot === 'string' ) G.reboot = [ G.reboot ];
-	} else {
-		G.reboot = [];
-	}
-	if ( G.reboot.length ) {
-		listed = G.reboot.some( function( line ) {
-			return line.indexOf( device ) !== -1
-		} );
-	}
-	if ( !listed ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
-}
 function renderStatus() {
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
 	if ( G.cputemp ) {
@@ -242,8 +228,7 @@ $( '.enablenoset' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
 	notify( idname[ id ], checked, id );
-	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
-	bash( [ id, checked, G.reboot.join( '\n' ) ] );
+	bash( [ id, checked, checked, ( id !== 'relays' ? idname[ id ] : '' ) ] );
 } );
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
@@ -423,17 +408,15 @@ $( '#i2smodule' ).change( function() {
 	if ( aplayname !== 'none' ) {
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
-		rebootText( 1, 'Audio I&#178;S Module' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
 		aplayname = 'onboard';
 		output = '';
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
-		rebootText( 0, 'Audio I&#178;S Module' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', aplayname, output, G.reboot.join( '\n' ) ] );
+	bash( [ 'i2smodule', aplayname, output, 'Audio I&#178;S Module' ] );
 } );
 $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
@@ -545,8 +528,7 @@ $( '#setting-lcdchar' ).click( function() {
 			var values = infoVal();
 			values[ 9 ] = values[ 9 ] === true ? 'True' : 'False';
 			if ( values[ 2 ] === 'i2c' ) {
-				rebootText( 1, 'Character LCD' );
-				bash( [ 'lcdcharset', ...values, G.reboot.join( '\n' ) ] );
+				bash( [ 'lcdcharset', ...values, 'Character LCD' ] );
 			} else {
 				bash( [ 'lcdcharset', ...values ] );
 			}
@@ -597,8 +579,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, ok           : function() {
 			var values = infoVal();
 			if ( G.i2senabled ) {
-				rebootText( 1, 'Power Button' );
-				bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ], G.reboot.join( '\n' ) ] );
+				bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ], 'Power Button' ] );
 			} else {
 				bash( [ 'powerbuttonset', '', values[ 2 ] ] );
 			}
@@ -643,8 +624,7 @@ $( '#setting-lcd' ).click( function() {
 		, ok           : function() {
 			var lcdmodel = infoVal();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
-			rebootText( 1, 'TFT 3.5" LCD' );
-			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
+			bash( [ 'lcdset', lcdmodel, 'TFT 3.5" LCD' ] );
 		}
 	} );
 } );

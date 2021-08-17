@@ -330,32 +330,31 @@ $( document ).keyup( function( e ) {
 } );
 $( '#'+ page ).addClass( 'active' );
 $( '#close' ).click( function() {
-	if ( page === 'system' || page === 'features' ) {
-		bash( 'cat '+ filereboot, function( lines ) {
-			G.reboot = lines;
-			if ( G.reboot.length ) {
-				info( {
-					  icon    : page
-					, title   : 'System Setting'
-					, message : 'Reboot required for:'
-							   +'<br><w>'+ G.reboot.replace( /\n/g, '<br>' ) +'</w>'
-					, cancel  : function() {
-						G.reboot = [];
-						bash( 'rm -f '+ filereboot );
-					}
-					, ok      : function() {
-						bash( '/srv/http/bash/cmd.sh power' );
-					}
-				} );
-			} else {
-				bash( 'rm -f /srv/http/data/tmp/backup.*' );
-				location.href = '/';
-			}
-		} );
-	} else {
-		if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) bash( 'bluetoothctl scan off' );
-		location.href = '/';
+	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
+		bash( 'bluetoothctl scan off' );
 	}
+	bash( 'cat '+ filereboot +' | sort -u', function( lines ) {
+		G.reboot = lines;
+		if ( G.reboot.length ) {
+			info( {
+				  icon    : page
+				, title   : 'System Setting'
+				, message : 'Reboot required for:'
+						   +'<br><w>'+ G.reboot.replace( /\n/g, '<br>' ) +'</w>'
+				, cancel  : function() {
+					G.reboot = [];
+					bash( 'rm -f '+ filereboot );
+				}
+				, ok      : function() {
+					bash( '/srv/http/bash/cmd.sh power' );
+				}
+			} );
+		} else {
+			bash( 'rm -f /srv/http/data/tmp/backup.*' );
+			location.href = '/';
+		}
+	} );
+	location.href = '/';
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return
