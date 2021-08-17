@@ -167,7 +167,7 @@ connect = () => {
 	}
 }
 disconnect = () => {
-	if ( active && !( 'i2sdisable' in G ) ) {
+	if ( active && !G.selectchange ) {
 		active = 0;
 		pushstream.disconnect();
 	}
@@ -404,4 +404,10 @@ $( 'body' ).on( 'click', '.status', function( e ) {
 $( '#bar-bottom div' ).click( function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
+} );
+$( '.container select' ).change( function() { // fix: 'disconnect'
+	G.selectchange = 1;
+	setTimeout( function() {
+		G.selectchange = 0;
+	}, 1000 );
 } );
