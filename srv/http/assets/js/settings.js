@@ -56,7 +56,7 @@ function codeToggle( id, target ) {
 			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '# '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'<br><br>' : '';
 			var systemctl = 0;
 		}
-		if ( id === 'bluetoothctl' ) {
+		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
 			$el
 				.html( '(Enable: reboot required.)' )
 				.removeClass( 'hide' );
@@ -108,6 +108,7 @@ function list2JSON( list ) {
 	}
 	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
+	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
 function loader() {
@@ -166,9 +167,17 @@ connect = () => {
 	}
 }
 disconnect = () => {
-	if ( active && !G.selectchange ) {
+	if ( active ) {
 		active = 0;
-		pushstream.disconnect();
+		hiddenSet();
+	}
+}
+hiddenSet = () => {
+	if ( page === 'networks' ) {
+		clearInterval( intervalscan );
+	} else if ( page === 'system' ) {
+		clearInterval( intervalcputime );
+		$( '#refresh' ).removeClass( 'blink' );
 	}
 }
 document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
@@ -190,12 +199,7 @@ pushstream.onstatuschange = function( status ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
-		if ( page === 'networks' ) {
-			clearInterval( intervalscan );
-		} else if ( page === 'system' ) {
-			clearInterval( intervalcputime );
-			$( '#refresh' ).removeClass( 'blink' );
-		}
+		hiddenSet();
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
@@ -275,6 +279,7 @@ var pagenext = {
 	, system   : [ 'networks', 'features' ]
 }
 var $focus;
+var selectchange = 0;
 
 document.title = page;
 
@@ -332,23 +337,28 @@ $( '#close' ).click( function() {
 	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
 		bash( 'bluetoothctl scan off' );
 	}
-	bash( 'cat '+ filereboot +' | sort -u; rm -f /srv/http/data/tmp/backup.*', function( reboot ) {
-		if ( !reboot ) location.href = '/';
-		
-		info( {
-			  icon    : page
-			, title   : 'System Setting'
-			, message : 'Reboot required for:'
-					   +'<br><w>'+ reboot.replace( /\n/g, '<br>' ) +'</w>'
-			, cancel  : function() {
-				reboot = [];
-				bash( 'rm -f '+ filereboot );
-			}
-			, ok      : function() {
-				bash( '/srv/http/bash/cmd.sh power' );
-			}
-		} );
+	bash( 'cat '+ filereboot +' | sort -u', function( lines ) {
+		G.reboot = lines;
+		if ( G.reboot.length ) {
+			info( {
+				  icon    : page
+				, title   : 'System Setting'
+				, message : 'Reboot required for:'
+						   +'<br><w>'+ G.reboot.replace( /\n/g, '<br>' ) +'</w>'
+				, cancel  : function() {
+					G.reboot = [];
+					bash( 'rm -f '+ filereboot );
+				}
+				, ok      : function() {
+					bash( '/srv/http/bash/cmd.sh power' );
+				}
+			} );
+		} else {
+			bash( 'rm -f /srv/http/data/tmp/backup.*' );
+			location.href = '/';
+		}
 	} );
+	location.href = '/';
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return
@@ -398,10 +408,4 @@ $( 'body' ).on( 'click', '.status', function( e ) {
 $( '#bar-bottom div' ).click( function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
-} );
-$( '.container select' ).change( function() { // fix: 'disconnect'
-	G.selectchange = 1;
-	setTimeout( function() {
-		G.selectchange = 0;
-	}, 2000 );
 } );

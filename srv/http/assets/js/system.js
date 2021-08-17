@@ -416,7 +416,7 @@ $( '#i2smodule' ).change( function() {
 		$( '#divi2smodule' ).addClass( 'hide' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', aplayname, output, 'Audio I&#178;S Module' ] );
+	bash( [ 'i2smodule', aplayname, output ] );
 } );
 $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
@@ -477,12 +477,12 @@ var infolcdchar = heredoc( function() { /*
 	</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
-	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
+	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 false';
 	var val = val.split( ' ' );
 	// i2c : cols charmap | i2caddress i2cchip | backlight
 	// gpio: cols charmap | pin_rs pin_rw pin_e pins_data | backlight
 	// v   : 0cols 1charmap | 2inf | 3i2caddress 4i2cchip | 5pin_rs 6pin_rw 7pin_e 8pins_data | 9backlight 
-	var backlight = val.pop() === 'True';
+	var backlight = val.pop() === 'true';
 	if ( val.length < 6 ) {
 		var i2c = true;
 		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2 ), 15, 18, 16, '21,22,23,24', backlight ]
@@ -526,12 +526,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			var values = infoVal();
-			values[ 9 ] = values[ 9 ] === true ? 'True' : 'False';
-			if ( values[ 2 ] === 'i2c' ) {
-				bash( [ 'lcdcharset', ...values, 'Character LCD' ] );
-			} else {
-				bash( [ 'lcdcharset', ...values ] );
-			}
+			var reboot = values[ 2 ] === 'i2c' ? 'Character LCD' : '';
+			bash( [ 'lcdcharset', ...values, reboot ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
@@ -611,7 +607,7 @@ $( '#setting-lcd' ).click( function() {
 		, ok           : function() {
 			var lcdmodel = infoVal();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
-			bash( [ 'lcdset', lcdmodel, 'TFT 3.5" LCD' ] );
+			bash( [ 'lcdset', lcdmodel ] );
 		}
 	} );
 } );
