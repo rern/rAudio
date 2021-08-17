@@ -409,5 +409,5 @@ $( '.container select' ).change( function() { // fix: 'disconnect'
 	G.selectchange = 1;
 	setTimeout( function() {
 		G.selectchange = 0;
-	}, 1000 );
+	}, 2000 );
 } );
