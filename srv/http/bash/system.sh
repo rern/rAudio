@@ -211,13 +211,6 @@ datarestore )
 		done
 	fi
 	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
-	# temp
-	if [[ -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flacm' ]]; then
-		rm -f "/srv/http/data/webradios/http:||stream.radioparadise.com"*
-		rm -f "/srv/http/data/webradiosimg/http:||stream.radioparadise.com"*
-		curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
-	fi
-	# temp
 	/srv/http/bash/cmd.sh power
 	;;
 getjournalctl )
@@ -406,7 +399,7 @@ ntp )
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
-	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	gpio -1 write $( cat $dirsystem/powerledpin ) 0
 	sed -i '/gpio-shutdown/ d' /boot/config.txt
 	pushRefresh
 	;;

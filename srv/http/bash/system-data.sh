@@ -129,7 +129,7 @@ data+='
 , "list"            : ['${list:1}']
 , "lcdmodel"        : "'$lcdmodel'"
 , "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-, "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
+, "powerbutton"     : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
 , "poweroffpin"     : "'$( grep gpio-shutdown /boot/config.txt | cut -d= -f3 )'"
 , "powerledpin"     : "'$( cat $dirsystem/powerledpin 2> /dev/null )'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"

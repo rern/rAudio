@@ -10,6 +10,8 @@ if ! grep -q dtparam=i2s=on /boot/config.txt; then
 	gpio -1 mode 5 in
 	gpio -1 mode 5 up
 	gpio -1 wfi 5 falling
+
+	[[ -e /srv/http/data/shm/relaystimer ]] && off=powerbutton || off=off
+	/srv/http/bash/cmd.sh power$'\n'$off
 fi
-[[ -e /srv/http/data/shm/relaystimer ]] && off=powerbutton || off=off
-/srv/http/bash/cmd.sh power$'\n'$off
+

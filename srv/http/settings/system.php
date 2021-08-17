@@ -158,9 +158,9 @@ $selecttimezone.= '</select>';
 		<br>&bull; I²C mode cannot be enabled if Power Button is enabled.
 	</span>
 </div>
-<div data-status="powerbutton" <?=$classstatus?>>
+<div class="col-l double">
 	<a>Power Button
-	<br><gr>powerbutton<?=$istatus?></gr></a><i class="fa fa-power"></i>
+	<br>Power LED</a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" <?=$chkenable?>>
