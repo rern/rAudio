@@ -189,7 +189,6 @@ renderPage = function( list ) {
 	$( '#lcd' ).prop( 'checked', G.lcd );
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	disableSwitch( '#powerbutton', G.i2c );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
@@ -524,12 +523,6 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '#infoContent .gpiosvg' ).html( gpiosvg );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
-			if ( G.powerbutton ) {
-				setTimeout( function() {
-					$( '#infoContent input[name=inf]:eq( 1 )' ).click();
-					$( '#infoContent input[name=inf]' ).prop( 'disabled', 1 );
-				}, 100 );
-			}
 			$( '#infoContent input[name=inf]' ).change( function() {
 				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
 				$( '.i2c' ).toggleClass( 'hide', !i2c );
