@@ -337,23 +337,24 @@ $radiosampling" > $dirtmp/radio
 		fi
 ########
 		status+='
-, "Album"         : "'$Album'"
-, "Artist"        : "'$Artist'"
+, "Album"        : "'$Album'"
+, "Artist"       : "'$Artist'"
 , "stationcover" : "'$stationcover'"
-, "Name"          : "'$Name'"
-, "station"       : "'$station'"
-, "Time"          : false
-, "Title"         : "'$Title'"
-, "webradio"      : true'
+, "Name"         : "'$Name'"
+, "station"      : "'$station'"
+, "Time"         : false
+, "Title"        : "'$Title'"
+, "webradio"     : true'
 	if [[ -n $id ]]; then
 		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
 ########
 		status+='
-, "coverart"      : "'$coverart'"
-, "elapsed"       : '$elapsed'
-, "icon"          : "'$icon'"
-, "sampling"      : "'$sampling'"
-, "song"          : '$song
+, "coverart"     : "'$coverart'"
+, "elapsed"      : '$elapsed'
+, "ext"          : "Radio"
+, "icon"         : "'$icon'"
+, "sampling"     : "'$sampling'"
+, "song"         : '$song
 # >>>>>>>>>>
 		vu
 		echo {$status}
