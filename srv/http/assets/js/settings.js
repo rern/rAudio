@@ -56,7 +56,7 @@ function codeToggle( id, target ) {
 			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '# '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'<br><br>' : '';
 			var systemctl = 0;
 		}
-		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
+		if ( id === 'bluetoothctl' ) {
 			$el
 				.html( '(Enable: reboot required.)' )
 				.removeClass( 'hide' );
