@@ -733,7 +733,7 @@ power )
 	mpc stop
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
-	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh $poweroff && sleep 2
+	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh && sleep 2
 	if [[ -e $dirsystem/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
 		$dirbash/lcdchar.py

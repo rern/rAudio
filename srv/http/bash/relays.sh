@@ -13,6 +13,8 @@ relaysfile=$dirtmp/relaystimer
 
 killall relaystimer.sh &> /dev/null &
 
+mpc -q stop
+
 if [[ $1 == true ]]; then
 	pushstream '{"state": true, "order": '"$onorder"'}'
 	for i in 0 1 2 3; do
@@ -24,16 +26,11 @@ if [[ $1 == true ]]; then
 		(( $i > 0 )) && pushstream '{"on": '$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
-	sleep 1
-	pushstream '{"done": true}'
-	
 	if [[ $timer > 0 ]]; then
 		echo $timer > $relaysfile
 		/srv/http/bash/relaystimer.sh &> /dev/null &
 	fi
 else
-	rm -f $dirtmp/radio
-	mpc -q stop
 	rm -f $relaysfile $dirsystem/volumemute
 	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
@@ -44,6 +41,9 @@ else
 		(( $i > 0 )) && pushstream '{"off": '$(( i + 1 ))'}'
 		sleep ${offd[$i]} &> /dev/null
 	done
-	sleep 1
-	pushstream '{"done": false}'
 fi
+
+sleep 1
+rm -f $dirtmp/status
+/srv/http/bash/cmd-pushstatus.sh
+pushstream '{"done":1}'

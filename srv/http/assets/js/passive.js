@@ -439,7 +439,7 @@ function psRelays( response ) { // on receive broadcast
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
-				bash( '/srv/http/bash/relays.sh false' );
+				bash( '/srv/http/bash/relays.sh' );
 			}
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
