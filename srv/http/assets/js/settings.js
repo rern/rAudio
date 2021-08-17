@@ -108,7 +108,6 @@ function list2JSON( list ) {
 	}
 	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
-	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
 function loader() {
