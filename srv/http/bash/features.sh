@@ -2,8 +2,6 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-filebootlog=/srv/http/data/shm/bootlog
-filereboot=/srv/http/data/shm/reboot
 
 # convert each line to each args
 readarray -t args <<< "$1"
