@@ -240,7 +240,8 @@ i2smodule )
 		dtoverlay+="
 dtparam=i2s=on
 dtoverlay=$aplayname"
-		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+=",gpio=25=op,dh"
+		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
+gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
 	else
