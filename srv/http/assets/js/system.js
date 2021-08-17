@@ -199,7 +199,7 @@ renderPage = function( list ) {
 //---------------------------------------------------------------------------------------
 var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
 var pin2gpio = {
-	   3:2,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
+	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
 $( '.enable' ).click( function() {
@@ -244,7 +244,7 @@ $( '.img' ).click( function() {
 	info( {
 		  icon    : d[ 1 ] || name
 		, title   : d[ 0 ]
-		, message : '<img src="/assets/img/'+ ( G.i2senabled ? name +'-i2s' : name ) +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' )
+		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' )
 					+'" style="height: '+ ( d[ 2 ] || '100%' ) +'; margin-bottom: 0;">'
 		, okno    : 1
 	} );
@@ -545,7 +545,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 	var infopowerbutton = heredoc( function() { /*
 	<table>
-	<tr><td></td>
+	<tr><td>On</td>
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
@@ -562,27 +562,14 @@ $( '#setting-powerbutton' ).click( function() {
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 60
-		, values       : [ 5, G.poweroffpin || 5, G.powerledpin || 40 ]
+		, values       : [ 5, G.poweroffpin || 3, G.powerledpin || 40 ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
-		, beforeshow   : function() {
-			if ( G.i2senabled ) {
-				$( '#infoContent td:eq( 0 )' ).text( 'On' );
-				$( '#infoContent tr:eq( 1 )' ).removeClass( 'hide' );
-			} else {
-				$( '#infoContent td:eq( 0 )' ).text( 'On/Off' );
-				$( '#infoContent tr:eq( 1 )' ).addClass( 'hide' );
-			}
-		}
 		, ok           : function() {
 			var values = infoVal();
-			if ( G.i2senabled ) {
-				bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ], 'Power Button' ] );
-			} else {
-				bash( [ 'powerbuttonset', '', values[ 2 ] ] );
-			}
+			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );

@@ -406,12 +406,18 @@ powerbuttonset )
 	off=${args[1]}
 	led=${args[2]}
 	reboot=${args[3]}
-	sed -i '/gpio-shutdown/ d' /boot/config.txt
-	[[ -n $off ]] && sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$off" /boot/config.txt
+	if [[ $off == 3 ]]; then
+		sed -i '/gpio-shutdown/ d' /boot/config.txt
+	else
+		prevoff$( grep gpio-shutdown /boot/config.txt | cut -d= -f3 )
+		if [[ $off != $prevoff ]]; then
+			sed -i -e '/gpio-shutdown/ d' -e "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$off" /boot/config.txt
+			echo 'Power Button' >> $filereboot
+		fi
+	fi
 	echo $led > $dirsystem/powerledpin
 	systemctl restart powerbutton
 	systemctl enable powerbutton
-	[[ -n $reboot ]] && echo $reboot >> $filereboot
 	pushRefresh
 	;;
 relays )
