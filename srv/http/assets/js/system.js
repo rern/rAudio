@@ -537,11 +537,11 @@ $( '#setting-lcdchar' ).click( function() {
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
-	var ledpin = '';
 	var offpin = '';
-	$.each( pin2gpio, function( k, v ) { 
-		ledpin += '<option value='+ k +'>'+ k +'</option>';
+	var ledpin = '';
+	$.each( pin2gpio, function( k, v ) {
 		offpin += '<option value='+ v +'>'+ k +'</option>';
+		if ( k != 5 ) ledpin += '<option value='+ k +'>'+ k +'</option>';
 	} );
 	var infopowerbutton = heredoc( function() { /*
 	<table>
