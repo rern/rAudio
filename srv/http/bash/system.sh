@@ -404,13 +404,15 @@ powerbuttondisable )
 	pushRefresh
 	;;
 powerbuttonset )
-	sw=${args[1]}
+	off=${args[1]}
 	led=${args[2]}
+	reboot=${args[3]}
 	sed -i '/gpio-shutdown/ d' /boot/config.txt
-	[[ -n $sw ]] && sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$sw" /boot/config.txt
+	[[ -n $off ]] && sed -i "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$off" /boot/config.txt
 	echo $led > $dirsystem/powerledpin
 	systemctl restart powerbutton
 	systemctl enable powerbutton
+	[[ -n $reboot ]] && echo "$reboot" > $filereboot
 	pushRefresh
 	;;
 relays )

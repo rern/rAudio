@@ -120,6 +120,7 @@ data+='
 , "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
 , "hostapd"         : '$( systemctl -q is-active hostapd && echo true || echo false )'
 , "hostname"        : "'$( hostname )'"
+, "i2c"             : '$( grep -q dtparam=i2c_arm=on /boot/config.txt && echo true || echo false )'
 , "kernel"          : "'$( uname -rm )'"
 , "lcd"             : '$lcd'
 , "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'

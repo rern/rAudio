@@ -185,12 +185,11 @@ renderPage = function( list ) {
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-//	disableSwitch( '#lcdchar', G.powerbutton );
 	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 	$( '#lcd' ).prop( 'checked', G.lcd );
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	disableSwitch( '#powerbutton', G.lcdchar && G.lcdcharconf.split( ' ' ).length < 6 );
+	disableSwitch( '#powerbutton', G.i2c );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
@@ -214,6 +213,10 @@ renderPage = function( list ) {
 }
 //---------------------------------------------------------------------------------------
 var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
+var pin2gpio = {
+		3:2,  5:3,   7:4,  8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
+	, 22:25, 23:11, 24:8, 26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+}
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -470,7 +473,7 @@ var infolcdchar = heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
-	<tr class="gpio"></tr>
+	<tr class="gpio"><td class="gpiosvg" colspan="3" style="padding-top: 10px;"></td></tr>
 	<tr class="gpio"><td>pin_rs</td>
 		<td colspan="2"><input type="text" id="pin_rs"></td>
 	</tr>
@@ -517,7 +520,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="3" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
+			$( '#infoContent .gpiosvg' ).html( gpiosvg );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			if ( G.powerbutton ) {
@@ -547,52 +550,41 @@ $( '#setting-lcdchar' ).click( function() {
 			values[ 9 ] = values[ 9 ] === true ? 'True' : 'False';
 			if ( values[ 2 ] === 'i2c' ) {
 				rebootText( 1, 'Character LCD' );
-				values.push( G.reboot.join( '\n' ) );
+				bash( [ 'lcdcharset', ...values, G.reboot.join( '\n' ) ] );
+			} else {
+				bash( [ 'lcdcharset', ...values ] );
 			}
-			bash( [ 'lcdcharset', ...values ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
-	var pin2gpio = { 3: 2, 5: 3, 7: 4, 11: 17, 12: 18, 13: 27, 15: 22, 16: 23, 18: 24, 19: 10, 21: 9, 22: 25, 23: 11, 24: 8, 26: 7, 29: 5, 31: 6, 32: 12, 33: 13, 35: 19, 36: 16, 37: 26, 38: 20, 40: 21 }
-	var pins = Object.keys( pin2gpio );
-	var gpio2pin = {}
-	pins.forEach( key => {
-		gpio2pin[ pin2gpio[ key ] ] = key;
+	var ledpin = '';
+	var offpin = '';
+	$.each( pin2gpio, function( k, v ) { 
+		ledpin += '<option value='+ k +'>'+ k +'</option>';
+		offpin += '<option value='+ v +'>'+ k +'</option>';
 	} );
-	if ( G.relayspins ) {
-		pins = pins.filter( function( i ) {
-			return G.relayspins.indexOf( i ) === -1;
-		} );
-	}
-	var optionpin = '';
-	pins.forEach( function( p ) { 
-		optionpin += '<option value='+ p +'>'+ p +'</option>';
-	} );
-	var infopowerbutton = gpiosvg;
-	infopowerbutton += heredoc( function() { /*
+	var infopowerbutton = heredoc( function() { /*
 	<table>
 	<tr><td></td>
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
-		<td><select >OPTION</select></td>
+		<td><select >OFFPIN</select></td>
 	</tr>
 	<tr><td>LED</td>
-		<td><select >OPTION</select></td>
+		<td><select >LEDPIN</select></td>
 	</tr>
 	</table>
 */ } );
-	infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
-	var powerledpin = G.powerledpin || 40;
-	var poweroffpin = gpio2pin[ G.poweroffpin || 5 ];
+	infopowerbutton = infopowerbutton.replace( 'OFFPIN', offpin ).replace( 'LEDPIN', ledpin );
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
-		, content      : infopowerbutton
-		, boxwidth     : 80
-		, values       : [ 5, poweroffpin, powerledpin ]
+		, content      : gpiosvg + infopowerbutton
+		, boxwidth     : 60
+		, values       : [ 5, G.poweroffpin || 5, G.powerledpin || 40 ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
@@ -608,10 +600,13 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 		, ok           : function() {
 			var values = infoVal();
-			var sw = G.i2senabled ? pin2gpio[ values[ 1 ] ] : '';
-			var led = values[ 2 ];
+			if ( G.i2senabled ) {
+				rebootText( 1, 'Power Button' );
+				bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ], G.reboot.join( '\n' ) ] );
+			} else {
+				bash( [ 'powerbuttonset', '', values[ 2 ] ] );
+			}
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
-			bash( [ 'powerbuttonset', sw, led ] );
 		}
 	} );
 } );
@@ -658,15 +653,13 @@ $( '#setting-lcd' ).click( function() {
 	} );
 } );
 $( '#setting-vuled' ).click( function() {
-	var p = { 3:2, 5:3, 7:4, 8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9, 22:25, 23:11, 24:8, 26:7, 29:5, 31:6, 32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21 }
-	var htmlselect = '<select>';
-	$.each( p, function( k, v ) {
-		htmlselect += '<option value="'+ v +'">'+ k +'</option>';
+	var opt = '';
+	$.each( pin2gpio, function( k, v ) {
+		opt += '<option value="'+ v +'">'+ k +'</option>';
 	} );
-	htmlselect += '</select>';
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>'+ i +'/7</td><td>'+ htmlselect +'</td></tr>';
+		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
 	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 14, 15, 18, 23, 24, 25, 8 ];
 	info( {
