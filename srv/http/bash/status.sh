@@ -302,6 +302,7 @@ $file
 $stationname
 $id
 $radiosampling" > $dirtmp/radio
+					rm -f $dirtmp/status
 					systemctl start radio
 				else
 					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/"/\\"/g' )
