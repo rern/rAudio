@@ -235,7 +235,6 @@ hostname )
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	reboot=${args[3]}
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
@@ -243,11 +242,14 @@ dtparam=i2s=on
 dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+=",gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-		systemctl disable --now powerbutton
+		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
 	else
+		if grep -q gpio-shutdown /boot/config.txt; then
+			systemctl disable --now powerbutton
+			dtoverlay=$( echo "$dtoverlay" | sed '/gpio-shutdown/ d' )
+		fi
 		dtoverlay+="
 dtparam=audio=on"
-		dtoverlay=$( echo "$dtoverlay" | sed '/gpio-shutdown/ d' )
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 		revision=${revision: -3:2}
 		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
@@ -259,7 +261,7 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	[[ -n $reboot ]] && echo $reboot >> $filereboot
+	echo 'Audio I&#178;S Module' >> $filereboot
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -324,7 +326,6 @@ lcddisable )
 	;;
 lcdset )
 	model=${args[1]}
-	reboot=${args[2]}
 	if [[ $model != tft35a ]]; then
 		echo $model > /srv/http/data/system/lcdmodel
 	else
@@ -345,7 +346,7 @@ i2c-dev
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	[[ -n $reboot ]] && echo $reboot >> $filereboot
+	echo $'TFT 3.5" LCD' >> $filereboot
 	pushRefresh
 	;;
 mount )
@@ -405,13 +406,12 @@ powerbuttondisable )
 powerbuttonset )
 	off=${args[1]}
 	led=${args[2]}
-	reboot=${args[3]}
 	if [[ $off == 3 ]]; then
 		sed -i '/gpio-shutdown/ d' /boot/config.txt
 	else
-		prevoff$( grep gpio-shutdown /boot/config.txt | cut -d= -f3 )
+		prevoff=$( grep gpio-shutdown /boot/config.txt | cut -d= -f3 )
 		if [[ $off != $prevoff ]]; then
-			sed -i -e '/gpio-shutdown/ d' -e "/dtparam=i2s=on/ i\dtoverlay=gpio-shutdown,gpio_pin=$off" /boot/config.txt
+			sed -i -e '/gpio-shutdown/ d' -e "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$off" /boot/config.txt
 			echo 'Power Button' >> $filereboot
 		fi
 	fi
