@@ -211,6 +211,13 @@ datarestore )
 		done
 	fi
 	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
+	# temp
+	if [[ -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flacm' ]]; then
+		rm -f "/srv/http/data/webradios/http:||stream.radioparadise.com"*
+		rm -f "/srv/http/data/webradiosimg/http:||stream.radioparadise.com"*
+		curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
+	fi
+	# temp
 	/srv/http/bash/cmd.sh power
 	;;
 getjournalctl )
