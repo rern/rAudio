@@ -419,8 +419,6 @@ function psRelays( response ) { // on receive broadcast
 	} else if ( 'off' in response ) {
 		$( '#device'+ response.off ).addClass( 'gr' );
 	} else if ( 'done' in response ) {
-		G.status.relayson = response.done;
-		setButtonOptions();
 		$( '#infoX' ).click();
 	}
 	if ( !( 'state' in response ) ) return
