@@ -333,26 +333,22 @@ $( '#close' ).click( function() {
 	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
 		bash( 'bluetoothctl scan off' );
 	}
-	bash( 'cat '+ filereboot +' | sort -u', function( lines ) {
-		G.reboot = lines;
-		if ( G.reboot.length ) {
-			info( {
-				  icon    : page
-				, title   : 'System Setting'
-				, message : 'Reboot required for:'
-						   +'<br><w>'+ G.reboot.replace( /\n/g, '<br>' ) +'</w>'
-				, cancel  : function() {
-					G.reboot = [];
-					bash( 'rm -f '+ filereboot );
-				}
-				, ok      : function() {
-					bash( '/srv/http/bash/cmd.sh power' );
-				}
-			} );
-		} else {
-			bash( 'rm -f /srv/http/data/tmp/backup.*' );
-			location.href = '/';
-		}
+	bash( 'cat '+ filereboot +' | sort -u; rm -f /srv/http/data/tmp/backup.*', function( reboot ) {
+		if ( !reboot ) location.href = '/';
+		
+		info( {
+			  icon    : page
+			, title   : 'System Setting'
+			, message : 'Reboot required for:'
+					   +'<br><w>'+ reboot.replace( /\n/g, '<br>' ) +'</w>'
+			, cancel  : function() {
+				reboot = [];
+				bash( 'rm -f '+ filereboot );
+			}
+			, ok      : function() {
+				bash( '/srv/http/bash/cmd.sh power' );
+			}
+		} );
 	} );
 } );
 $( '#button-data' ).click( function() {
