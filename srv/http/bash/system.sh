@@ -17,6 +17,7 @@ pushstream() {
 }
 pushRefresh() {
 	data=$( /srv/http/bash/system-data.sh )
+	echo "$data" > $dirtmp/push
 	pushstream refresh "$data"
 }
 relaysOrder() {
@@ -241,8 +242,7 @@ i2smodule )
 		dtoverlay+="
 dtparam=i2s=on
 dtoverlay=$aplayname"
-		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
-gpio=25=op,dh"
+		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+=",gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 		systemctl disable --now powerbutton
 	else
@@ -260,7 +260,7 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo "$reboot" >> $filereboot
+	[[ -n $reboot ]] && echo $reboot >> $filereboot
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -296,7 +296,7 @@ chip=${args[5]}"
 			echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-			echo ${args[11]} >> $filereboot
+			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
 		fi
 	else
 		conf+="
@@ -346,7 +346,7 @@ i2c-dev
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	[[ -n $reboot ]] && echo "$reboot" >> $filereboot
+	[[ -n $reboot ]] && echo $reboot >> $filereboot
 	pushRefresh
 	;;
 mount )
@@ -412,7 +412,7 @@ powerbuttonset )
 	echo $led > $dirsystem/powerledpin
 	systemctl restart powerbutton
 	systemctl enable powerbutton
-	[[ -n $reboot ]] && echo "$reboot" >> $filereboot
+	[[ -n $reboot ]] && echo $reboot >> $filereboot
 	pushRefresh
 	;;
 relays )
