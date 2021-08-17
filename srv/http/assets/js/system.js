@@ -292,9 +292,7 @@ $( '#refresh' ).click( function( e ) {
 				$( '#status' ).html( renderStatus );
 			}, 'json' );
 		}, 10000 );
-		setTimeout( function() {
-			banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
-		}, 300 );
+		banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
 	}
 } );
 $( '#status' ).on( 'click', '.undervoltage', function() {
