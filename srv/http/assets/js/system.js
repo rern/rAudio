@@ -214,8 +214,8 @@ renderPage = function( list ) {
 //---------------------------------------------------------------------------------------
 var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
 var pin2gpio = {
-		3:2,  5:3,   7:4,  8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
-	, 22:25, 23:11, 24:8, 26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+	   3:2,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
+	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
 $( '.enable' ).click( function() {
 	var idname = {
@@ -260,7 +260,8 @@ $( '.img' ).click( function() {
 	info( {
 		  icon    : d[ 1 ] || name
 		, title   : d[ 0 ]
-		, message : '<img src="/assets/img/'+ ( G.i2senabled ? name +'-i2s' : name ) +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' ) +'" style="height: '+ ( d[ 2 ] || '100%' ) +'">'
+		, message : '<img src="/assets/img/'+ ( G.i2senabled ? name +'-i2s' : name ) +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' )
+					+'" style="height: '+ ( d[ 2 ] || '100%' ) +'; margin-bottom: 0;">'
 		, okno    : 1
 	} );
 } );

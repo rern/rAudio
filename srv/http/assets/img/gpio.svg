@@ -7,6 +7,7 @@
 	.st4,.st6{fill:#B5B3B3;}
 	.st5{fill:#FF5F00;}
 	.st6{font-family:'Arial';font-size:13px;}
+	.st7{fill:#FFFFFF;}
 </style>
 <path class="st0" d="M378.7,24c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,24z"/>
 
@@ -65,7 +66,7 @@
 	<tspan x="245" y="0">13</tspan>
 	<tspan x="264.5" y="0">11</tspan>
 	<tspan x="304" y="0">7</tspan>
-	<tspan x="323.9" y="0">5</tspan>
+	<tspan class="st7" x="323.9" y="0">5</tspan>
 	<tspan x="342" y="0">3</tspan>
 </text>
 <text class="st6" transform="matrix(1 0 0 1 1.2268 75.4674)">
