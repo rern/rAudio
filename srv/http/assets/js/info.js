@@ -142,6 +142,9 @@ function banner( title, message, icon, delay ) {
 	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	
+	clearTimeout( bannertimeout );
 	$( '#banner' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' );
