@@ -195,7 +195,7 @@ pushstream.onstatuschange = function( status ) {
 			clearInterval( intervalscan );
 		} else if ( page === 'system' ) {
 			clearInterval( intervalcputime );
-			$( '#refresh i' ).removeClass( 'blink' );
+			$( '#refresh' ).removeClass( 'blink' );
 		}
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
