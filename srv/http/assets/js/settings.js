@@ -158,7 +158,24 @@ function showContent() {
 		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
-
+// active / inactive window /////////
+var active = 1;
+connect = () => {
+	if ( !active ) {
+		active = 1;
+		pushstream.connect();
+	}
+}
+disconnect = () => {
+	if ( active ) {
+		active = 0;
+		pushstream.disconnect();
+	}
+}
+document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+window.onpageshow = window.onfocus = connect;
+////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
 	, timeout                               : 5000
@@ -174,8 +191,12 @@ pushstream.onstatuschange = function( status ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
-		if ( page === 'networks' ) clearTimeout( intervalscan );
-		if ( $( '#refresh' ).hasClass( 'blink' ) ) $( '#refresh' ).click();
+		if ( page === 'networks' ) {
+			clearInterval( intervalscan );
+		} else if ( page === 'system' ) {
+			clearInterval( intervalcputime );
+			$( '#refresh i' ).removeClass( 'blink' );
+		}
 		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
@@ -234,34 +255,6 @@ function psWifi( data ) {
 		}
 	} );
 }
-function onVisibilityChange( callback ) {
-    var visible = 1;
-    function focused() {
-        if ( !visible ) callback( visible = 1 );
-    }
-    function unfocused() {
-        if ( visible ) callback( visible = 0 );
-    }
-    document.addEventListener( 'visibilitychange', function() {
-		document.hidden ? unfocused() : focused();
-	} );
-    window.onpageshow = window.onfocus = focused;
-    window.onpagehide = window.onblur = unfocused;
-}
-onVisibilityChange( function( visible ) {
-	if ( page === 'credits' ) return
-	
-	if ( visible ) {
-		refreshData();
-	} else {
-		if ( page === 'networks' ) {
-			clearInterval( intervalscan );
-		} else if ( page === 'system' ) {
-			clearInterval( intervalcputime );
-			$( '#refresh i' ).removeClass( 'blink' );
-		}
-	}
-} );
 //---------------------------------------------------------------------------------------
 var hash = Math.ceil( Date.now() / 1000 );
 G = {}
