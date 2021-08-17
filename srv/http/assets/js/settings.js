@@ -354,7 +354,6 @@ $( '#close' ).click( function() {
 			location.href = '/';
 		}
 	} );
-	location.href = '/';
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return
