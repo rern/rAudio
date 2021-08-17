@@ -13,4 +13,4 @@ gpio -g mode $sw in
 gpio -g mode $sw up
 gpio -g wfi $sw falling
 
-/srv/http/bash/cmd.sh power$'\n'$off
+/srv/http/bash/cmd.sh power$'\n'off
