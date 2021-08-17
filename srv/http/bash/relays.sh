@@ -3,14 +3,6 @@
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
-# prevent powerbutton wfi false rising/falling
-systemctl -q is-active powerbutton && powerbuttonactive=1
-[[ $1 == powerbutton ]] && powerbutton=1
-if [[ -n $powerbuttonactive && -z $powerbutton ]]; then
-	powerbuttonstart=1
-	systemctl stop powerbutton
-fi
-	
 . $dirsystem/relays
 
 pushstream() {
@@ -55,5 +47,3 @@ else
 	sleep 1
 	pushstream '{"done": false}'
 fi
-
-[[ -n $powerbuttonstart ]] &&  systemctl start powerbutton
