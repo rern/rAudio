@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-[[ -e /etc/powerbutton.conf ]] && grep led /etc/powerbutton.conf | cut -d= -f2 > /srv/http/data/system/powerled
+[[ -e /etc/powerbutton.conf ]] && grep led /etc/powerbutton.conf | cut -d= -f2 > /srv/http/data/system/powerledpin
 
 rm -f /srv/http/data/shm/status
 
