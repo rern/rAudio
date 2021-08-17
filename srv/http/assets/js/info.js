@@ -664,7 +664,8 @@ function orientationReset( file, ori, callback ) {
 	reader.readAsDataURL( file );
 }
 function selectricRender() {
-	if ( !$( 'select' ).length ) return
+	if ( !$( 'select' ).length || $( '#infoContent .selectric-wrapper' ).length ) return
+	
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
 		.selectric( { nativeOnMobile: false } )
