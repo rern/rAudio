@@ -238,7 +238,7 @@ i2smodule )
 	reboot=${args[3]}
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
-		dtoverlay+="\
+		dtoverlay+="
 dtparam=i2s=on
 dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
@@ -246,9 +246,9 @@ gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 		systemctl disable --now powerbutton
 	else
-		dtoverlay=$( echo "$dtoverlay" | sed -i '/gpio-shutdown/ d' )
-		dtoverlay+="\
+		dtoverlay+="
 dtparam=audio=on"
+		dtoverlay=$( echo "$dtoverlay" | sed '/gpio-shutdown/ d' )
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 		revision=${revision: -3:2}
 		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
@@ -257,10 +257,10 @@ dtparam=audio=on"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
 	sed -i '/dtparam=\|dtoverlay=\|gpio=25=op,dh\|^$/ d' $fileconfig
-	echo "$dtoverlay" >> $fileconfig
+	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo "$reboot" > $filereboot
+	echo "$reboot" >> $filereboot
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -292,11 +292,11 @@ charmap=${args[2]}"
 address=${args[4]}
 chip=${args[5]}"
 		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
-			sed -i '$ a\dtparam=i2c_arm=on' $fileconfig
+			echo 'dtparam=i2c_arm=on' >> $fileconfig
 			echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-			echo ${args[11]} > $filereboot
+			echo ${args[11]} >> $filereboot
 		fi
 	else
 		conf+="
@@ -346,7 +346,7 @@ i2c-dev
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	[[ -n $reboot ]] && echo "$reboot" > $filereboot
+	[[ -n $reboot ]] && echo "$reboot" >> $filereboot
 	pushRefresh
 	;;
 mount )
@@ -412,7 +412,7 @@ powerbuttonset )
 	echo $led > $dirsystem/powerledpin
 	systemctl restart powerbutton
 	systemctl enable powerbutton
-	[[ -n $reboot ]] && echo "$reboot" > $filereboot
+	[[ -n $reboot ]] && echo "$reboot" >> $filereboot
 	pushRefresh
 	;;
 relays )
