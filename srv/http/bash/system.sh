@@ -405,15 +405,15 @@ powerbuttondisable )
 	pushRefresh
 	;;
 powerbuttonset )
+	sw=${args[1]}
+	led=${args[2]}
+	reserved=${args[3]}
 	echo "\
-sw=${args[1]}
-led=${args[2]}
-reserved=${args[3]}" > /etc/powerbutton.conf
-	if [[ $reserved == 5 ]]; then
-		sed -i '/gpio-shutdown/ d' /boot/config.txt
-	else # separate gpio-shutdown from pin5 to unused pin7(BCM4)
-		! grep gpio-shutdown /boot/config.txt && sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" /boot/config.txt
-	fi
+sw=$sw
+led=$led
+reserved=$reserved" > /etc/powerbutton.conf
+	sed -i '/gpio-shutdown/ d' /boot/config.txt
+	[[ $sw != 5 ]] && sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" /boot/config.txt
 	systemctl restart powerbutton
 	systemctl enable powerbutton
 	pushRefresh

@@ -585,8 +585,8 @@ $( '#setting-powerbutton' ).click( function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			var values = infoVal().shift();
-			bash( [ 'powerbuttonset', values ] );
+			var values = infoVal().slice( 1 );
+			bash( [ 'powerbuttonset', ...values ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );
