@@ -535,8 +535,8 @@ $( '#setting-lcdchar' ).click( function() {
 $( '#setting-powerbutton' ).click( function() {
 	var offpin = '';
 	var ledpin = '';
-	$.each( pin2gpio, function( k, v ) {
-		offpin += '<option value='+ v +'>'+ k +'</option>';
+	$.each( pin2gpio, function( k ) {
+		if ( k != 7 ) offpin += '<option value='+ k +'>'+ k +'</option>';
 		if ( k != 5 ) ledpin += '<option value='+ k +'>'+ k +'</option>';
 	} );
 	var infopowerbutton = heredoc( function() { /*
@@ -553,8 +553,9 @@ $( '#setting-powerbutton' ).click( function() {
 	</table>
 */ } );
 	infopowerbutton = infopowerbutton.replace( 'OFFPIN', offpin ).replace( 'LEDPIN', ledpin );
-	var offpin = G.poweroffpin || ( G.i2senabled ? 5 : 3 );
-	var ledpin = G.powerledpin || 40;
+	var pins = G.powerpins.split( ' ' );
+	var offpin = pins[ 0 ] || ( G.i2senabled ? 7 : 5 );
+	var ledpin = pins[ 1 ] || 40;
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
@@ -567,7 +568,7 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 		, ok           : function() {
 			var values = infoVal();
-			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
+			bash( [ 'powerbuttonset', values[ 1 ] +' '+ values[ 2 ] ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );

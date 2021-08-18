@@ -2,15 +2,15 @@
 
 # output : mode in  > write 0/1
 # input  : mode out > mode  up/down
-led=$( cat /srv/http/data/system/powerledpin )
+pins=( $( cat /srv/http/data/system/powerpins ) )
+off=${pins[0]}
+led=${pins[1]}
 
 gpio -1 mode $led out
 gpio -1 write $led 1
 
-if ! grep -q gpio-shutdown /boot/config.txt; then
-	gpio -1 mode 5 in
-	gpio -1 mode 5 up
-	gpio -1 wfi 5 falling
+gpio -1 mode $off in
+gpio -1 mode $off up
+gpio -1 wfi $off falling
 
-	/srv/http/bash/cmd.sh power
-fi
+/srv/http/bash/cmd.sh power

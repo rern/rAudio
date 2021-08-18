@@ -84,7 +84,6 @@ pushstream.onstatuschange = status => {
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		hideGuide();
-		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
 pushstream.onmessage = ( data, id, channel ) => {
@@ -363,8 +362,8 @@ function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {
-			G.poweroff = 1;
 			$( '#loader' ).addClass( 'splash' );
+			setTimeout( bannerHide, 10000 );
 		}
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd

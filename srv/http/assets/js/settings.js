@@ -200,7 +200,6 @@ pushstream.onstatuschange = function( status ) {
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
 		hiddenSet();
-		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -216,8 +215,8 @@ function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {
-			G.poweroff = 1;
 			$( '#loader' ).addClass( 'splash' );
+			setTimeout( bannerHide, 10000 );
 		}
 		loader();
 	}
