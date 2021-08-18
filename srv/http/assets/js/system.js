@@ -535,9 +535,13 @@ $( '#setting-lcdchar' ).click( function() {
 $( '#setting-powerbutton' ).click( function() {
 	var offpin = '';
 	var ledpin = '';
-	$.each( pin2gpio, function( k ) {
+	var respin = '';
+	$.each( pin2gpio, function( k, v ) {
 		if ( k != 7 ) offpin += '<option value='+ k +'>'+ k +'</option>';
-		if ( k != 5 ) ledpin += '<option value='+ k +'>'+ k +'</option>';
+		if ( k != 5 ) {
+			ledpin += '<option value='+ k +'>'+ k +'</option>';
+			respin += '<option value='+ v +'>'+ k +'</option>';
+		}
 	} );
 	var infopowerbutton = heredoc( function() { /*
 	<table>
@@ -550,25 +554,39 @@ $( '#setting-powerbutton' ).click( function() {
 	<tr><td>LED</td>
 		<td><select >LEDPIN</select></td>
 	</tr>
+	<tr class="reserved hide"><td>Reserved</td>
+		<td><select >RESPIN</select></td>
+	</tr>
 	</table>
 */ } );
-	infopowerbutton = infopowerbutton.replace( 'OFFPIN', offpin ).replace( 'LEDPIN', ledpin );
-	var pins = G.powerbuttonconf.split( ' ' );
-	var offpin = pins[ 0 ] || ( G.i2senabled ? 7 : 5 );
-	var ledpin = pins[ 1 ] || 40;
+	infopowerbutton = infopowerbutton
+						.replace( 'OFFPIN', offpin )
+						.replace( 'LEDPIN', ledpin )
+						.replace( 'RESPIN', respin );
+	if ( G.powerbuttonconf ) {
+		var pins = ( '5 '+ G.powerbuttonconf ).split( ' ' );
+	} else {
+		var pins = [ 5, 5, 40, 4 ];
+	}
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 60
-		, values       : [ 5, offpin, ledpin ]
+		, values       : pins
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent .reserved' ).toggleClass( 'hide', pins[ 1 ] == 5 );
+			$( '#infoContent select:eq( 0 )' ).change( function() {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+			} );
+		}
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			var values = infoVal();
-			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
+			var values = infoVal().shift();
+			bash( [ 'powerbuttonset', values ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );
