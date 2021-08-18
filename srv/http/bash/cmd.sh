@@ -729,7 +729,7 @@ plsimilar )
 	[[ -n $pos ]] && mpc -q play $pos
 	;;
 power )
-	poweroff=${args[1]}
+	reboot=${args[1]}
 	mpc stop
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
@@ -741,10 +741,10 @@ power )
 		killall lcdchar.py &> /dev/null
 		$dirbash/lcdchar.py
 	fi
-	if [[ -n $poweroff ]]; then
-		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
-	else
+	if [[ -n $reboot ]]; then
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
+	else
+		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
@@ -752,7 +752,7 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ -n $poweroff ]] && poweroff || reboot
+	[[ -n $reboot ]] && reboot || poweroff
 	;;
 refreshbrowser )
 	pushstream reload 1

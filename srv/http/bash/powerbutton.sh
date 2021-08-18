@@ -12,5 +12,5 @@ if ! grep -q gpio-shutdown /boot/config.txt; then
 	gpio -1 mode 5 up
 	gpio -1 wfi 5 falling
 
-	/srv/http/bash/cmd.sh power$'\n'off
+	/srv/http/bash/cmd.sh power
 fi
