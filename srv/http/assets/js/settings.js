@@ -254,7 +254,7 @@ function psWifi( data ) {
 		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 		, okcolor : orange
 		, ok      : function() {
-			bash( '/srv/http/bash/cmd.sh power' );
+			bash( [ 'reboot' ] );
 		}
 	} );
 }
@@ -350,7 +350,7 @@ $( '#close' ).click( function() {
 				bash( 'rm -f '+ filereboot );
 			}
 			, ok      : function() {
-				bash( '/srv/http/bash/cmd.sh power' );
+				bash( [ 'reboot' ] );
 			}
 		} );
 	} );

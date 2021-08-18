@@ -211,7 +211,7 @@ datarestore )
 		done
 	fi
 	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
-	/srv/http/bash/cmd.sh power
+	$dirbash/cmd.sh power$'\n'reboot
 	;;
 getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
@@ -420,6 +420,9 @@ powerbuttonset )
 	systemctl restart powerbutton
 	systemctl enable powerbutton
 	pushRefresh
+	;;
+reboot )
+	$dirbash/cmd.sh power$'\n'reboot
 	;;
 relays )
 	[[ ${args[1]} == true ]] && relaysOrder || rm -f $dirsystem/relays
