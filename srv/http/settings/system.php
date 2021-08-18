@@ -169,7 +169,9 @@ $selecttimezone.= '</select>';
 		Power button and LED for on/off rAudio.
 		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
 		<br>&bull; Power on pin: Fixed to pin 5
-		<br>&bull; Power off pin: Set separate pin if pin 5 is used by other devices.
+		<br>&bull; Power off pin:
+		<br> &emsp; - Default to pin 5 (single pin on+off)
+		<br> &emsp; - If pin 5 is used by other devices, set separate off pin.
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
