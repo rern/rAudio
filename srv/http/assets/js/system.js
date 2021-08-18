@@ -553,7 +553,7 @@ $( '#setting-powerbutton' ).click( function() {
 	</table>
 */ } );
 	infopowerbutton = infopowerbutton.replace( 'OFFPIN', offpin ).replace( 'LEDPIN', ledpin );
-	var pins = G.powerpins.split( ' ' );
+	var pins = G.powerbuttonconf.split( ' ' );
 	var offpin = pins[ 0 ] || ( G.i2senabled ? 7 : 5 );
 	var ledpin = pins[ 1 ] || 40;
 	info( {
@@ -568,7 +568,7 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 		, ok           : function() {
 			var values = infoVal();
-			bash( [ 'powerbuttonset', values[ 1 ] +' '+ values[ 2 ] ] );
+			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );

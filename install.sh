@@ -6,8 +6,6 @@ alias=r1
 
 sed -i '/backlight=/ s/T/t/; s/F/f/' /etc/lcdchar.conf
 
-[[ -e /etc/powerbutton.conf ]] && grep led /etc/powerbutton.conf | cut -d= -f2 > /srv/http/data/system/powerledpin
-
 rm -f /srv/http/data/shm/status
 
 if [[ ! -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flac' ]]; then

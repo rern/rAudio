@@ -405,8 +405,10 @@ powerbuttondisable )
 	pushRefresh
 	;;
 powerbuttonset )
-	echo ${args[1]} > $dirsystem/powerpins
-	if [[ $off == 3 ]]; then
+	echo "\
+sw=${args[1]}
+led=${args[2]}" > /etc/powerbutton.conf
+	if [[ $off == 5 ]]; then
 		sed -i '/gpio-shutdown/ d' /boot/config.txt
 	else # separate gpio-shutdown from pin5 to unused pin7(BCM4)
 		! grep gpio-shutdown /boot/config.txt && sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=4" /boot/config.txt
