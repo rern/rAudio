@@ -537,7 +537,7 @@ $( '#setting-powerbutton' ).click( function() {
 	var ledpin = '';
 	var respin = '';
 	$.each( pin2gpio, function( k, v ) {
-		if ( k != 7 ) offpin += '<option value='+ k +'>'+ k +'</option>';
+		offpin += '<option value='+ k +'>'+ k +'</option>';
 		if ( k != 5 ) {
 			ledpin += '<option value='+ k +'>'+ k +'</option>';
 			respin += '<option value='+ v +'>'+ k +'</option>';
@@ -566,7 +566,7 @@ $( '#setting-powerbutton' ).click( function() {
 	if ( G.powerbuttonconf ) {
 		var pins = ( '5 '+ G.powerbuttonconf ).split( ' ' );
 	} else {
-		var pins = [ 5, 5, 40, 4 ];
+		var pins = [ 5, 5, 40, 5 ];
 	}
 	info( {
 		  icon         : 'power'
