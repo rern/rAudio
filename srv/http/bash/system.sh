@@ -308,7 +308,7 @@ pins_data=${args[9]}"
 		fi
 	fi
 	conf+="
-backlight=${args[10]^}"
+backlight=${args[10]}"
 	echo "$conf" > /etc/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar

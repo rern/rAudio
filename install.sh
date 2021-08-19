@@ -6,7 +6,7 @@ alias=r1
 
 ! grep -q reserved /etc/powerbutton.conf && echo reserved=4 >> /etc/powerbutton.conf
 
-sed -i '/backlight=/ s/T/t/; s/F/f/' /etc/lcdchar.conf
+[[ -e /etc/lcdchar.conf ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' /etc/lcdchar.conf
 
 rm -f /srv/http/data/shm/status
 
