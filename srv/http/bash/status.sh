@@ -304,8 +304,6 @@ $id
 $radiosampling" > $dirtmp/radio
 					rm -f $dirtmp/status
 					systemctl start radio
-					exit # on start - no echo {$status}
-					
 				else
 					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/"/\\"/g' )
 					Artist=${tmpstatus[0]}
