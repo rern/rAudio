@@ -114,7 +114,7 @@ databackup )
 	alsactl store
 	files=(
 /boot/cmdline.txt
-$fileconfig
+/boot/config.txt
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
