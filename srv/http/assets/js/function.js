@@ -263,19 +263,17 @@ function displayBars() {
 		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
-		$( '#page-playback, #lib-mode-list' ).addClass ( 'barshidden' );
+		$( '.page' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
-		$( '.content-top' ).css( 'top', 0 );
 		$( '.emptyadd' ).css( 'top', '90px' );
 	} else {
 		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
-		$( '#page-playback, #lib-mode-list' ).removeClass ( 'barshidden' );
+		$( '.page' ).removeClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
-		$( '.content-top' ).css( 'top', '40px' );
 		$( '.emptyadd' ).css( 'top', '' );
 	}
 	displayBottom();
@@ -1017,7 +1015,9 @@ function renderLibrary() {
 		$( '.mode:not( .mode-bookmark )' ).addClass( 'nolabel' );
 	}
 	$( '#lib-list' ).empty().addClass( 'hide' );
-	$( '#lib-mode-list' ).removeClass( 'hide' );
+	$( '#lib-mode-list' )
+		.css( 'padding-top', G.bars ? '' : '50px' )
+		.removeClass( 'hide' );
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
 	$( '.bkedit' ).remove();
@@ -1264,7 +1264,7 @@ function renderPlaybackTime() {
 	}
 	var $elapsed = $( '#elapsed' );
 	var elapsed = G.status.elapsed ? second2HMS( G.status.elapsed ) : '';
-	if ( G.display.time ) {
+	if ( $( '#time-knob' ).is( ':visible' ) ) {
 		if ( G.status.stream ) {
 			$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
 			$( '#time' ).roundSlider( 'setValue', 0 );
@@ -1673,17 +1673,17 @@ function switchPage( page ) {
 	G.page = page;
 	displayBottom();
 	// restore page scroll
-	if ( G.library ) {
+	if ( G.playback ) {
+		$( 'html, body' ).scrollTop( 0 );
+		vu();
+	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			$( 'html, body' ).scrollTop( G.liscrolltop );
 		} else {
 			renderLibrary();
 		}
-	} else if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
 	} else {
-		$( 'html, body' ).scrollTop( 0 );
-		vu();
+		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
 	}
 }
 function thumbUpdate( path ) {

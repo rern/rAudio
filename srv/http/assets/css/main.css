@@ -1210,12 +1210,21 @@ i.map.disabled, .map.disabled i {
 	}
 }
 /* ---------------------- library and queue ---------------------- */
+#bar-top.barshidden {
+	display: none;
+}
+.page.barshidden .content-top {
+	top: 0;
+}
+.page.barshidden .list {
+	padding-top: 40px;
+}
+.page.barshidden #lib-mode-list {
+	padding-top: 50px;
+}
 #lib-mode-list {
 	height: 100%;
 	padding: 90px 7px 7px 7px;
-}
-#lib-mode-list.barshidden {
-	padding: 50px 7px 7px 7px;
 }
 #lib-mode-list::after { /* fix 0 height */
 	content: " "; 
@@ -2194,12 +2203,6 @@ li.active .li2 bl {
 	}
 }
 /* portrait */
-@media( orientation: portrait ) and ( max-height: 768px ) {
-	#page-playback.barshidden {
-		padding: 60px 0 20px;
-	}
-}
-
 @media( orientation: portrait ) and ( max-width: 1200px ) {
 	#playback-row {
 		max-width: 100vw;

@@ -791,13 +791,15 @@ $( '.map' ).on( 'tap', function() {
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.stream ? false : true;
 					$( '#bar-top' ).addClass( 'hide' );
+					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).addClass( 'transparent' );
 					G.bars = false;
 				} else {
 					G.display.time = G.display.volume = G.display.buttons = true;
-					$( '#playback' ).addClass( 'active' );
 					$( '#bar-top' ).removeClass( 'hide' );
+					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).removeClass( 'transparent hide' );
+					$( '#playback' ).addClass( 'active' );
 					G.bars = true;
 				}
 			} else {
