@@ -283,7 +283,6 @@ function psDisplay( data ) {
 	}
 }
 function psMpdPlayer( data ) {
-	console.log(data.state, data.icon)
 	if ( data.state === 'play' && [ 'radioparadise', 'radiofrance' ].indexOf( data.icon ) !== -1 ) return
 	
 	clearTimeout( G.debounce );
