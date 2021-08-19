@@ -170,7 +170,7 @@ $selecttimezone.= '</select>';
 		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
 		<br>&bull; On - Fixed to pin 5
 		<br>&bull; Off - Default to pin 5 (single pin on+off)
-		<br>&bull; If pin 5 is used by DAC or LCD - Find 2 unused pins:
+		<br>&bull; If pin 5 is used by DAC or LCD - Set 2 unused pins for:
 		<br> &emsp; 1. Off
 		<br> &emsp; 2. Reserved
 	</span>
