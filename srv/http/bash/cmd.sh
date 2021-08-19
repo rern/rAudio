@@ -733,18 +733,14 @@ power )
 	mpc stop
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
-	if [[ -e $dirtmp/relaystimer ]]; then
-		$dirbash/relays.sh
-		sleep 2
-	fi
-	if [[ -e $dirsystem/lcdchar ]]; then
-		killall lcdchar.py &> /dev/null
-		$dirbash/lcdchar.py
-	fi
+	[[ -e $dirtmp/relaystimer ]] && $dirbash/relays.sh
+	sleep 2
 	if [[ -n $reboot ]]; then
 		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
+		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 	else
 		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
+		[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
