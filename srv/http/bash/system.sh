@@ -114,7 +114,7 @@ databackup )
 	alsactl store
 	files=(
 /boot/cmdline.txt
-/boot/config.txt
+$fileconfig
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
@@ -243,12 +243,8 @@ dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
+		! grep -q gpio-shutdown $fileconfig && systemctl disable --now powerbutton
 	else
-		if grep -q gpio-shutdown /boot/config.txt; then
-			systemctl disable --now powerbutton
-			dtoverlay=$( echo "$dtoverlay" | sed '/gpio-shutdown/ d' )
-		fi
 		dtoverlay+="
 dtparam=audio=on"
 		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
@@ -401,7 +397,7 @@ ntp )
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
-	sed -i '/gpio-shutdown/ d' /boot/config.txt
+	sed -i '/gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
 powerbuttonset )
@@ -412,10 +408,10 @@ powerbuttonset )
 sw=$sw
 led=$led
 reserved=$reserved" > /etc/powerbutton.conf
-	prevreserved=$( grep gpio-shutdown /boot/config.txt | cut -d= -f3 )
-	sed -i '/gpio-shutdown/ d' /boot/config.txt
+	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
+	sed -i '/gpio-shutdown/ d' $fileconfig
 	if [[ $sw != 5 ]]; then
-		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" /boot/config.txt
+		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
 		[[ $reserved != $prevreserved ]] && echo 'Power Button' >> $filereboot
 	fi
 	systemctl restart powerbutton
