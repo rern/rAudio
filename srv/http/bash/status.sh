@@ -296,7 +296,7 @@ elif [[ -n $stream ]]; then
 			fi
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
-				if [[ ! -e $dirtmp/radio ]]; then # start: > 4
+				if [[ ! -e $dirtmp/radio || -z $( head -1 $dirtmp/status 2> /dev/null ) ]]; then
 					echo "\
 $file
 $stationname
