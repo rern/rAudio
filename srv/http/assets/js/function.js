@@ -253,7 +253,7 @@ function curlPackage( pkg, active, enabled ) {
 	return 'curl -s -X POST http://127.0.0.1/pub?id=package -d \'[ "'+ pkg +'", '+ active +', '+ enabled +' ]\''
 }
 function displayBars() {
-	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
+	if ( !$( '#bio' ).hasClass( 'hide' ) || 'coverTL' in G ) return
 	
 	var wH = window.innerHeight;
 	var wW = document.body.clientWidth;
@@ -266,6 +266,7 @@ function displayBars() {
 		$( '.page' ).addClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
+		$( '.content-top' ).css( 'top', '' );
 		$( '.emptyadd' ).css( 'top', '90px' );
 	} else {
 		G.bars = true;
@@ -274,6 +275,7 @@ function displayBars() {
 		$( '.page' ).removeClass ( 'barshidden' );
 		$( '#page-playback, .emptyadd' ).addClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).removeClass( 'bars-off' );
+		$( '.content-top' ).css( 'top', G.display.bars || G.display.barsalways ? '' : 0 );
 		$( '.emptyadd' ).css( 'top', '' );
 	}
 	displayBottom();
