@@ -85,9 +85,9 @@
 	.st77{fill:#7D3232;}
 	.st78{fill:none;stroke:#8C8C8C;stroke-width:3;stroke-miterlimit:4.7619;}
 	.st79{fill:none;stroke:#993398;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st80{fill:none;stroke:#0000FF;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st81{font-family:'ArialMT';}
-	.st82{font-size:11.0994px;}
+	.st80{fill:none;stroke:#5A7AFF;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st81{font-family:'Arial';}
+	.st82{font-size:20px;}
 </style>
 <g id="rpi">
 	<path class="st0" d="M324.6,235.6H14.1c-6.5,0-11.9,5.2-11.9,11.9v196.3c0,6.6,5.4,11.9,11.9,11.9h310.4c6.5,0,11.9-5.4,11.9-11.9
@@ -891,9 +891,9 @@
 	<rect x="33" y="440.6" class="st25" width="6.1" height="2.2"/>
 	<rect x="50.7" y="440.6" class="st25" width="6.1" height="2.2"/>
 	
-		<rect x="27.5" y="457" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -315.3654 155.0446)" class="st24" width="3.8" height="2.1"/>
+		<rect x="27.5" y="457" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -315.3629 155.0422)" class="st24" width="3.8" height="2.1"/>
 	
-		<rect x="57.9" y="456.3" transform="matrix(0.7074 -0.7068 0.7068 0.7074 -306.6089 175.7262)" class="st24" width="2.1" height="3.8"/>
+		<rect x="57.9" y="456.3" transform="matrix(0.7074 -0.7068 0.7068 0.7074 -306.6046 175.7285)" class="st24" width="2.1" height="3.8"/>
 	<circle class="st26" cx="265.4" cy="245.3" r="5.9"/>
 	<circle class="st27" cx="265.4" cy="245.3" r="3.5"/>
 	<path class="st28" d="M249.3,265.3c2,0,3.5,1.5,3.5,3.5s-1.5,3.5-3.5,3.5s-3.5-1.5-3.5-3.5S247.3,265.3,249.3,265.3z"/>
@@ -1875,9 +1875,9 @@
 	<rect x="188.2" y="320.1" class="st16" width="1.6" height="4.1"/>
 	<rect x="188.2" y="321.3" class="st42" width="1.6" height="1.7"/>
 	
-		<rect x="176.4" y="344.7" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -192.0382 227.3769)" class="st16" width="4.1" height="1.6"/>
+		<rect x="176.4" y="344.7" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -192.0381 227.375)" class="st16" width="4.1" height="1.6"/>
 	
-		<rect x="177.5" y="344.8" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -192.1756 227.4372)" class="st42" width="1.7" height="1.6"/>
+		<rect x="177.5" y="344.8" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -192.1705 227.4347)" class="st42" width="1.7" height="1.6"/>
 	<rect x="171.9" y="336.3" class="st16" width="4.1" height="1.6"/>
 	<rect x="173.1" y="336.3" class="st42" width="1.7" height="1.6"/>
 	<rect x="173.7" y="324.1" class="st16" width="4.1" height="1.6"/>
@@ -1947,9 +1947,9 @@
 	<rect x="83.7" y="385.9" class="st15" width="2" height="4.4"/>
 	<rect x="83.7" y="387.1" class="st34" width="2" height="2.1"/>
 	
-		<rect x="83.1" y="400.3" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -258.7504 177.513)" class="st16" width="3.6" height="1.6"/>
+		<rect x="83.1" y="400.3" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -258.7524 177.5124)" class="st16" width="3.6" height="1.6"/>
 	
-		<rect x="83.9" y="400.4" transform="matrix(0.7073 -0.7069 0.7069 0.7073 -258.687 177.4161)" class="st42" width="2" height="1.4"/>
+		<rect x="83.9" y="400.4" transform="matrix(0.7073 -0.7069 0.7069 0.7073 -258.6894 177.4154)" class="st42" width="2" height="1.4"/>
 	<rect x="90.8" y="362.6" class="st15" width="2" height="4.4"/>
 	<rect x="90.8" y="364" class="st34" width="2" height="2.1"/>
 	<rect x="141.1" y="355.6" class="st15" width="2" height="4.4"/>
@@ -3489,7 +3489,7 @@
 	<polyline class="st79" points="225,163.7 220,168.7 220,231.4 156.7,231.4 145,243.7 	"/>
 </g>
 <polyline class="st80" points="55.3,243.8 24.9,216.7 24.9,203.7 "/>
-<text transform="matrix(1 0 0 1 16.7499 228.9007)" class="st62 st81 st82">G</text>
+<text transform="matrix(1 0 0 1 6.7499 231.9007)" class="st4 st81 st82">G</text>
 <g>
 	<g id="resister_1_">
 		<line class="st70" x1="205" y1="163.7" x2="205" y2="203.7"/>
