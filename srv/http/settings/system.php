@@ -168,9 +168,9 @@ $selecttimezone.= '</select>';
 	<span <?=$classhelp?>>
 		Power button and LED for on/off rAudio.
 		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
-		<br>&bull; On - Fixed to pin 5
-		<br>&bull; Off - Default to pin 5 (single pin on+off)
-		<br>&bull; If pin 5 is used by DAC or LCD - Set 2 unused pins for:
+		<br> &emsp; &bull; On - Fixed to pin 5
+		<br> &emsp; &bull; Off - Default to pin 5 (single pin on+off)
+		<br>If pin 5 is used by DAC or LCD - Set 2 unused pins for:
 		<br> &emsp; 1. Off (default: 7)
 		<br> &emsp; 2. Reserved (default: 29)
 	</span>

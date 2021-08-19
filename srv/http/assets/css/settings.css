@@ -136,8 +136,9 @@ heading i.back {
 }
 heading i.fa-question-circle {
 	float: right;
-	width: 25px;
+	width: 40px;
 	font-size: 20px;
+	text-align: center;
 }
 .head {
 	position: fixed;
