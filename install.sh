@@ -7,11 +7,12 @@ alias=r1
 file=/etc/powerbutton.conf
 [[ -e $file ]] && ! grep -q reserved $file && echo reserved=5 >> $file
 
-[[ -e /etc/lcdchar.conf ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' /etc/lcdchar.conf
+file=/etc/lcdchar.conf
+[[ -e $file ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' $file
 
 rm -f /srv/http/data/shm/status
 
-if [[ ! -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flac' ]]; then
+if [[ -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flacm' ]]; then
 	rm -f "/srv/http/data/webradios/http:||stream.radioparadise.com"*
 	rm -f "/srv/http/data/webradiosimg/http:||stream.radioparadise.com"*
 	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
