@@ -1263,9 +1263,11 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 }
 .mode i:first-of-type {
-	width: 60px;
 	font-size: 48px;
 	line-height: 60px;
+}
+.mode grl {
+	margin-left: 5px;
 }
 .nolabel {
 	padding-top: 25px;
@@ -2081,9 +2083,9 @@ li.active .li2 bl {
 @media(max-width: 638px)  { .coverart { width: calc( 100% / 3 ) } }
 @media(max-width: 438px)  { .coverart { width: calc( 100% / 2 ) } }
 
-@media(max-width: 740px)  { .lib-mode { width: calc( 100% / 4 ) } }
-@media(max-width: 560px)  { .lib-mode { width: calc( 100% / 3 ) } }
-@media(max-width: 410px)  { .lib-mode { width: calc( 100% / 2 ) } }
+@media(max-width: 540px)  { .lib-mode { width: calc( 100% / 4 ) } }
+@media(max-width: 440px)  { .lib-mode { width: calc( 100% / 3 ) } }
+@media(max-width: 340px)  { .mode grl { display: none } }
 
 /* scale */
 @media( orientation: landscape ) and ( max-height: 460px ) {
