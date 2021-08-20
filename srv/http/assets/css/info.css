@@ -81,7 +81,7 @@
 }
 .infobtn {
 	display: inline-block;
-	margin: 0 5px 10px;
+	margin: 0 5px;
 	min-width: 70px;
 	padding: 0 10px;
 	height: 34px !important;
@@ -140,7 +140,8 @@ hr {
 #infoBox {
 	width: 400px;
 	max-width: 98%;
-	margin: 20px auto 200px; /* 200px for on-screen keyboard */
+	margin: 20px auto;
+	padding-bottom: 20px;
 	background: var( --cga );
 	border-radius: 10px;
 }
@@ -269,6 +270,7 @@ hr {
 	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
+	white-space: pre-wrap;
 	word-wrap: break-word;
 	overflow: hidden;
 	color: var( --cg60 );
@@ -318,7 +320,6 @@ hr {
 	color: var( --cw );
 	background: var( --cgd );
 	resize: none;
-	overflow: hidden;
 }
 #infoContent input[type=text],
 #infoContent input[type=number],
@@ -351,7 +352,7 @@ hr {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
-	margin: 3px 6px 3px 0;
+	margin: 3px 6px 3px 1px;
 	vertical-align: -10px;
 	border: none;
 	border-radius: 3px;
@@ -361,7 +362,7 @@ hr {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
-	margin: 2px 7px 2px 0;
+	margin: 2px 7px 2px 1px;
 }
 #infoOverlay input:checked {
 	background-color: var( --cm );
@@ -387,7 +388,7 @@ hr {
 	margin-bottom: 10px;
 }
 #infoButtons {
-	padding: 10px 0 20px 0;
+	padding-top: 10px;
 }
 #infoContent .selectric-wrapper {
 	margin: 0;
@@ -502,19 +503,6 @@ hr {
 	background: #000000;
 	font-family: Inconsolata;
 }
-px, px10, px20, px30, px40, px50, px60, px70, px80, px90, px100 {
-	display: inline-block;
-}
-px10 { width: 10px }
-px20 { width: 20px }
-px30 { width: 30px }
-px40 { width: 40px }
-px50 { width: 50px }
-px60 { width: 60px }
-px70 { width: 70px }
-px80 { width: 80px }
-px90 { width: 90px }
-px100 { width: 100px }
 /* iOS */
 @media not all and ( min-resolution:.001dpcm ) {
 	@supports (-webkit-appearance:none) and (stroke-color:transparent) {

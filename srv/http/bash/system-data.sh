@@ -38,11 +38,6 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
-if [[ -e /etc/powerbutton.conf ]]; then
-	powerbuttonconf=$( cat /etc/powerbutton.conf | cut -d= -f2 2> /dev/null )
-else
-	powerbuttonconf='40 33'
-fi
 if [[ -e /etc/relays.conf ]]; then
 	relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
 	relayspins=[${relayspins:0:-1}]
@@ -133,10 +128,10 @@ data+='
 , "list"            : ['${list:1}']
 , "lcdmodel"        : "'$lcdmodel'"
 , "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-, "powerbutton"     : '$( systemctl -q is-active powerbutton && echo true || echo false )'
-, "powerbuttonconf" : "'$powerbuttonconf'"
+, "powerbutton"     : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
+, "powerbuttonconf" : "'$( cat /etc/powerbutton.conf 2> /dev/null | cut -d= -f2 )'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
-, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
+, "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "relayspins"      : '$relayspins'
 , "rpimodel"        : "'$rpimodel'"

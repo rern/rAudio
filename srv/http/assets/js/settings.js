@@ -18,8 +18,7 @@ var cmd = {
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ 'cat /boot/config.txt' ]
-	, crossfade    : [ 'mpc crossfade' ]
-	, iw           : [ 'iw list' ]
+	, iw           : [ 'iw reg get; iw list' ]
 	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
@@ -159,7 +158,32 @@ function showContent() {
 		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
-
+// active / inactive window /////////
+var active = 1;
+connect = () => {
+	if ( !active ) {
+		active = 1;
+		pushstream.connect();
+	}
+}
+disconnect = () => {
+	if ( active ) {
+		active = 0;
+		hiddenSet();
+	}
+}
+hiddenSet = () => {
+	if ( page === 'networks' ) {
+		clearInterval( intervalscan );
+	} else if ( page === 'system' ) {
+		clearInterval( intervalcputime );
+		$( '#refresh' ).removeClass( 'blink' );
+	}
+}
+document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+window.onpageshow = window.onfocus = connect;
+////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
 	, timeout                               : 5000
@@ -175,7 +199,7 @@ pushstream.onstatuschange = function( status ) {
 		bannerHide();
 		if ( !$.isEmptyObject( G ) ) refreshData();
 	} else if ( status === 0 ) { // disconnected
-		if ( $( '#refresh' ).hasClass( 'blink' ) ) $( '#refresh' ).click();
+		hiddenSet();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -191,12 +215,10 @@ function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {
-			G.poweroff = 1;
 			$( '#loader' ).addClass( 'splash' );
+			setTimeout( bannerHide, 10000 );
 		}
 		loader();
-	} else if ( data.text === 'Change track ...' ) { // audiocd
-		clearIntervalAll();
 	}
 }
 function psRefresh( data ) {
@@ -231,38 +253,10 @@ function psWifi( data ) {
 		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 		, okcolor : orange
 		, ok      : function() {
-			bash( '/srv/http/bash/cmd.sh power' );
+			bash( [ 'reboot' ] );
 		}
 	} );
 }
-function onVisibilityChange( callback ) {
-    var visible = 1;
-    function focused() {
-        if ( !visible ) callback( visible = 1 );
-    }
-    function unfocused() {
-        if ( visible ) callback( visible = 0 );
-    }
-    document.addEventListener( 'visibilitychange', function() {
-		document.hidden ? unfocused() : focused();
-	} );
-    window.onpageshow = window.onfocus = focused;
-    window.onpagehide = window.onblur = unfocused;
-}
-onVisibilityChange( function( visible ) {
-	if ( page === 'credits' ) return
-	
-	if ( visible ) {
-		refreshData();
-	} else {
-		if ( page === 'networks' ) {
-			clearInterval( intervalscan );
-		} else if ( page === 'system' ) {
-			clearInterval( intervalcputime );
-			$( '#refresh i' ).removeClass( 'blink' );
-		}
-	}
-} );
 //---------------------------------------------------------------------------------------
 var hash = Math.ceil( Date.now() / 1000 );
 G = {}
@@ -284,6 +278,7 @@ var pagenext = {
 	, system   : [ 'networks', 'features' ]
 }
 var $focus;
+var selectchange = 0;
 
 document.title = page;
 
@@ -338,32 +333,26 @@ $( document ).keyup( function( e ) {
 } );
 $( '#'+ page ).addClass( 'active' );
 $( '#close' ).click( function() {
-	if ( page === 'system' || page === 'features' ) {
-		bash( 'cat '+ filereboot, function( lines ) {
-			G.reboot = lines;
-			if ( G.reboot.length ) {
-				info( {
-					  icon    : page
-					, title   : 'System Setting'
-					, message : 'Reboot required for:'
-							   +'<br><w>'+ G.reboot.replace( /\n/g, '<br>' ) +'</w>'
-					, cancel  : function() {
-						G.reboot = [];
-						bash( 'rm -f '+ filereboot );
-					}
-					, ok      : function() {
-						bash( '/srv/http/bash/cmd.sh power' );
-					}
-				} );
-			} else {
-				bash( 'rm -f /srv/http/data/tmp/backup.*' );
-				location.href = '/';
+	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
+		bash( 'bluetoothctl scan off' );
+	}
+	bash( 'cat '+ filereboot +' | sort -u; rm -f /srv/http/data/tmp/backup.*', function( reboot ) {
+		if ( !reboot ) location.href = '/';
+		
+		info( {
+			  icon    : page
+			, title   : 'System Setting'
+			, message : 'Reboot required for:'
+					   +'<br><w>'+ reboot.replace( /\n/g, '<br>' ) +'</w>'
+			, cancel  : function() {
+				reboot = [];
+				bash( 'rm -f '+ filereboot );
+			}
+			, ok      : function() {
+				bash( [ 'reboot' ] );
 			}
 		} );
-	} else {
-		if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) bash( 'bluetoothctl scan off' );
-		location.href = '/';
-	}
+	} );
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return

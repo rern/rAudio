@@ -1,13 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-function lines2line( lines ) {
-	var val = '';
-	var lines = lines.split( '\n' ).filter( e => e );
-	lines.forEach( function( el ) {
-		val += '^'+ el;
-	} );
-	return val.substring( 1 );
-}
 function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
@@ -75,7 +67,7 @@ renderPage = function( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'asound', 'crossfade', 'mpdconf', 'mount' ].forEach( function( id ) {
+	[ 'asound', 'mpdconf', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	if ( $( '#infoRange' ).length ) {
@@ -308,7 +300,7 @@ $( '#setting-bufferoutput' ).click( function() {
 var soxrinfo = heredoc( function() { /*
 	<table>
 		<tr><td>Precision</td>
-			<td width="100"><select>
+			<td><select>
 				<option value="16">16</option>
 				<option value="20">20</option>
 				<option value="24">24</option>
@@ -352,12 +344,11 @@ $( '#setting-soxr' ).click( function() {
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : [ 1, 2, 3, 4 ]
 		, beforeshow    : function() {
-			$( '#infoContent td:nth-child( 2 )' ).css( 'padding-right', 0 );
 			var $extra = $( '#infoContent tr:eq( 5 )' );
-			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '185px' );
-			$extra.find( '.selectric-items' ).css( 'min-width', '185px' );
+			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
+			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
 		}
-		, boxwidth      : 90
+		, boxwidth      : 70
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
@@ -369,7 +360,7 @@ $( '#setting-soxr' ).click( function() {
 	} );
 } );
 var custominfo = heredoc( function() { /*
-<table>
+<table width="100%">
 	<tr><td><code>/etc/mpd.conf</code></td></tr>
 	<tr><td><pre>
 ...
@@ -386,35 +377,35 @@ audio_output {
 </table>
 */ } );
 $( '#setting-custom' ).click( function() {
-	var valglobal = G.userglobal.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
-	var valoutput = G.useroutput.replace( /\^/g, '\t' ).replace( /\|/g, '\n' );
-	info( {
-		  icon         : 'mpd'
-		, title        : "User's Configurations"
-		, content      : custominfo
-		, boxwidth     : 320
-		, values       : [ valglobal, valoutput ]
-		, checkchanged : ( G.custom ? 1 : 0 )
-		, cancel       : function() {
-			$( '#custom' ).prop( 'checked', G.custom );
-		}
-		, ok           : function() {
-			var values = infoVal();
-			var customglobal = lines2line( values[ 0 ] );
-			var customoutput = lines2line( values[ 1 ] );
-			bash( [ 'customset', customglobal, customoutput, device.aplayname ], function( std ) {
-				if ( std == -1 ) {
-					bannerHide();
-					info( {
-						  icon    : 'mpd'
-						, title   : "User's Configurations"
-						, message : 'MPD failed with the added lines'
-									+'<br>Restored to previous configurations.'
-					} );
-				}
-			} );
-			notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
-		}
+	bash( [ 'customget', device.aplayname ], function( val ) {
+		var val = val.split( '^^' );
+		var valglobal = val[ 0 ].trim(); // remove trailing
+		var valoutput = val[ 1 ].trim();
+		info( {
+			  icon         : 'mpd'
+			, title        : "User's Configurations"
+			, content      : custominfo.replace( 'N', G.asoundcard )
+			, values       : [ valglobal, valoutput ]
+			, checkchanged : ( G.custom ? 1 : 0 )
+			, cancel       : function() {
+				$( '#custom' ).prop( 'checked', G.custom );
+			}
+			, ok           : function() {
+				var values = infoVal();
+				bash( [ 'customset', values[ 0 ], values[ 1 ], device.aplayname ], function( std ) {
+					if ( std == -1 ) {
+						bannerHide();
+						info( {
+							  icon    : 'mpd'
+							, title   : "User's Configurations"
+							, message : 'MPD failed with the added lines'
+										+'<br>Restored to previous configurations.'
+						} );
+					}
+				} );
+				notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
+			}
+		} );
 	} );
 } );
 

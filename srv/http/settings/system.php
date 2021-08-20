@@ -82,7 +82,7 @@ $selecttimezone.= '</select>';
 	<pre>mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"</pre>
 	#2:
 	<br>CIFS:
-	<pre>mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=$uid?>,gid=<?=$gid?>,iocharset=utf8</pre>
+	<pre>mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8</pre>
 	NFS:
 	<pre>mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
 	(Append more options if required.)
@@ -93,13 +93,20 @@ $selecttimezone.= '</select>';
 	<?php $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 		  if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
 <div>
-<heading data-status="rfkill" class="status">Wireless<?=$istatus?></heading>
+<heading data-status="rfkill" class="status">Wireless<?=$istatus?><?=$ihelp?></heading>
 <pre id="coderfkill" class="hide"></pre>
 <div id="bt" data-status="bluetoothctl"></div>
 <div class="col-r">
 	<input id="bluetooth" <?=$chkenable?>>
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+			As a sender:
+		<br> &emsp; &bull; Power on Bluetooth speakers/headphones > enable pairing
+		<br> &emsp; &bull; Networks > Bluetooth > search > pair
+		<br>As a receiver:
+		<br> &emsp; &bull; Sender device > search > pair
+	</span>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
 <div id="wl" data-status="iw"></div>
@@ -107,6 +114,15 @@ $selecttimezone.= '</select>';
 	<input id="wlan" <?=$chkenable?>>
 	<div class="switchlabel" for="onboardwlan"></div>
 	<i id="setting-wlan" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+			Auto start Access Point - On failed connection or no router
+		<br>Wi-Fi regulatory domain:
+		<p>
+			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+		<br>&bull; <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">ISO 3166-1 alpha-2 country code</a>
+		<br>&bull; Active regulatory domian may be reassigned by connected router.
+		</p>
+	</span>
 </div>
 <pre id="codeiw" class="hide"></pre>
 </div>
@@ -127,7 +143,8 @@ $selecttimezone.= '</select>';
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
 <div class="col-l double">
-	<a>Character LCD<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
+	<a>Character LCD
+	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" <?=$chkenable?>>
@@ -140,17 +157,22 @@ $selecttimezone.= '</select>';
 		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 	</span>
 </div>
-<div data-status="powerbutton" <?=$classstatus?>>
-	<a>Power Button<br><gr>powerbutton<?=$istatus?></gr></a><i class="fa fa-power"></i>
+<div class="col-l double">
+	<a>Power Button
+	<br>Power LED</a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
-	<input id="powerbutton" class="enable" type="checkbox">
+	<input id="powerbutton" <?=$chkenable?>>
 	<div class="switchlabel" for="powerbutton"></div>
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		Power button and LED for on/off rAudio.
 		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
-		<br>&bull; On pin is fixed.
+		<br> &emsp; &bull; On - Fixed to pin 5
+		<br> &emsp; &bull; Off - Default to pin 5 (single pin on+off)
+		<br>If pin 5 is used by DAC or LCD - Set 2 unused pins for:
+		<br> &emsp; 1. Off (default: 7)
+		<br> &emsp; 2. Reserved (default: 29)
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
@@ -169,10 +191,11 @@ $selecttimezone.= '</select>';
 </div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
-	<a>TFT 3.5" LCD<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+	<a>TFT 3.5" LCD
+	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
-	<input id="lcd" class="enable" type="checkbox">
+	<input id="lcd" <?=$chkenable?>>
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -182,7 +205,7 @@ $selecttimezone.= '</select>';
 	<?php } ?>
 <div class="col-l single">VU LED<i class="fa fa-led"></i></div>
 <div class="col-r">
-	<input id="vuled" class="enable" type="checkbox">
+	<input id="vuled" <?=$chkenable?>>
 	<div class="switchlabel" for="vuled"></div>
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
@@ -196,29 +219,22 @@ $selecttimezone.= '</select>';
 <div>
 <heading>Environment<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
+	<a>Name
+	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
 	<span <?=$classhelp?>>Name for Renderers, Streamers, Access point, Bluetooth and system Hostname.</span>
 </div>
-<div class="col-l double">
-	<a>Timezone<br>NTP, regdomain</a><i class="fa fa-globe"></i>
-</div>
+<div class="col-l single">Timezone<i class="fa fa-globe"></i></div>
 <div class="col-r">
-	<?=$selecttimezone?><i id="setting-regional" class="settingedit fa fa-gear"></i>
-	<span <?=$classhelp?>>
-		Wi-Fi regulatory domain:
-		<p>
-			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-		<br>&bull; Active regulatory domian may be reassigned by connected router.
-		</p>
-	</span>
+	<?=$selecttimezone?><i id="setting-timezone" class="settingedit fa fa-gear"></i>
 </div>
 
 <div id="divsoundprofile">
 <div data-status="soundprofile" class="col-l icon double status">
-	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+	<a>Sound Profile
+	<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>

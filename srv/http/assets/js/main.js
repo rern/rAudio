@@ -196,12 +196,12 @@ $( '#power' ).click( function() {
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
-			bash( [ 'power' ] );
+			bash( [ 'power', 'reboot' ] );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
-			bash( [ 'power', 'off' ] );
+			bash( [ 'power' ] );
 		}
 	} );
 } );
@@ -791,13 +791,15 @@ $( '.map' ).on( 'tap', function() {
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.stream ? false : true;
 					$( '#bar-top' ).addClass( 'hide' );
+					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).addClass( 'transparent' );
 					G.bars = false;
 				} else {
 					G.display.time = G.display.volume = G.display.buttons = true;
-					$( '#playback' ).addClass( 'active' );
 					$( '#bar-top' ).removeClass( 'hide' );
+					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).removeClass( 'transparent hide' );
+					$( '#playback' ).addClass( 'active' );
 					G.bars = true;
 				}
 			} else {
@@ -976,8 +978,8 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 		var message = 'Update thumbnails and directory icons?'
 	} else {
 		var message = 'With existing album coverarts:'
-					+'<br><px30/>&bull; Create thumbnails'
-					+'<br><px30/>&bull; Create directory icons'
+					+'<br>  &bull; Create thumbnails'
+					+'<br>  &bull; Create directory icons'
 	}
 	info( {
 		  icon         : '<i class="iconcover"></i>'

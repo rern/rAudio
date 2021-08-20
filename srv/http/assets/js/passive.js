@@ -18,7 +18,6 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			setTimeout( () => {
-				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
 				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
@@ -84,7 +83,6 @@ pushstream.onstatuschange = status => {
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		hideGuide();
-		if ( 'poweroff' in G ) setTimeout( bannerHide, 8000 );
 	}
 }
 pushstream.onmessage = ( data, id, channel ) => {
@@ -284,6 +282,8 @@ function psDisplay( data ) {
 	}
 }
 function psMpdPlayer( data ) {
+	if ( data.state === 'play' && [ 'radioparadise', 'radiofrance' ].indexOf( data.icon ) !== -1 ) return
+	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
@@ -363,8 +363,8 @@ function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {
-			G.poweroff = 1;
 			$( '#loader' ).addClass( 'splash' );
+			setTimeout( bannerHide, 10000 );
 		}
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd
@@ -419,8 +419,6 @@ function psRelays( response ) { // on receive broadcast
 	} else if ( 'off' in response ) {
 		$( '#device'+ response.off ).addClass( 'gr' );
 	} else if ( 'done' in response ) {
-		G.status.relayson = response.done;
-		setButtonOptions();
 		$( '#infoX' ).click();
 	}
 	if ( !( 'state' in response ) ) return
@@ -439,7 +437,7 @@ function psRelays( response ) { // on receive broadcast
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
-				bash( '/srv/http/bash/relays.sh false' );
+				bash( '/srv/http/bash/relays.sh' );
 			}
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {

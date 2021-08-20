@@ -56,11 +56,7 @@ audiooutput )
 	output=${args[3]}
 	mixer=${args[4]}
 	sed -i "s/.$/$card/" /etc/asound.conf
-	sed -i -e '/output_device = / s/".*"/"hw:'$card'"/
-	' -e '/mixer_control_name = / s/".*"/"'$mixer'"/
-	' /etc/shairport-sync.conf
 	restartMPD
-	systemctl try-restart shairport-sync shairport-meta
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
@@ -139,24 +135,26 @@ customdisable )
 	rm -f $dirsystem/custom
 	restartMPD
 	;;
+customget )
+	global=$( cat $dirsystem/custom-global 2> /dev/null )
+	output=$( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )
+	echo "\
+$global
+^^
+$output"
+	;;
 customset )
 	file=$dirsystem/custom
-	if [[ ${args[1]} == customset ]]; then
-		global=$( cat $file-global 2> /dev/null )
-		[[ -n $global ]] && touch $file
+	global=${args[1]}
+	output=${args[2]}
+	aplayname=${args[3]}
+	[[ -n $global ]] && echo -e "$global" > $file-global || rm -f $file-global
+	if [[ -n $output ]]; then
+		echo -e "$output" > "$file-output-$aplayname"
 	else
-		global=${args[1]}
-		output=${args[2]}
-		aplayname=${args[3]}
-		[[ -n $global ]] && echo "$global" > $file-global || rm -f $file-global
-		[[ -n $output ]] && echo "$output" > "$file-output-$aplayname" || rm -f "$file-output-$aplayname"
-		[[ -n $global || -n $output ]] && touch $file
+		rm -f "$file-output-$aplayname"
 	fi
-	sed -i '/ #custom$/ d' /etc/mpd.conf
-	if [[ -n $global ]]; then
-		global=$( echo "$global" | tr ^ '\n' | sed 's/$/ #custom/' )
-		sed -i "/^user/ a$global" /etc/mpd.conf
-	fi
+	[[ -n $global || -n $output ]] && touch $file
 	restartMPD
 	if ! systemctl -q is-active mpd; then
 		sed -i '/ #custom$/ d' /etc/mpd.conf

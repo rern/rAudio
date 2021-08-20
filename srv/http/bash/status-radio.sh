@@ -9,7 +9,7 @@ station=${tmpradio[1]}
 station=${station//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos &bull; ${tmpradio[3]} &bull; $station"
+sampling="$pos &bull; ${tmpradio[3]}"
 song=$(( ${pos/\/*} - 1 ))
 case $id in
 	flac )   id=0;;
@@ -68,6 +68,12 @@ metadataGet() {
 	album=${metadata[2]}
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
+	if [[ -z $album && -z $title ]]; then
+		sleep 5
+		metadataGet
+		return
+	fi
+	
 	if [[ -z $countdown ]]; then
 		countdown=5
 	elif [[ ${#metadata[@]} == 6 ]]; then

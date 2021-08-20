@@ -2,7 +2,7 @@
 <!-- Generator: Adobe Illustrator 24.2.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1"
 	 id="svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 350 470" width="350" height="470"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 350 470"
 	 style="enable-background:new 0 0 350 470;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#037E3F;}
@@ -85,16 +85,15 @@
 	.st77{fill:none;stroke:#8C8C8C;stroke-width:3;stroke-miterlimit:4.7619;}
 	.st78{fill:none;stroke:#8C8C8C;stroke-width:3.0984;stroke-miterlimit:10;}
 	.st79{fill:none;stroke:#009900;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st80{fill:none;stroke:#E56B00;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st81{fill:none;stroke:#993398;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st82{fill:none;stroke:#0000FF;stroke-width:2.8361;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st83{fill:none;stroke:#0000FF;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
-	.st84{fill:#009900;}
-	.st85{font-family:'ArialMT';}
-	.st86{font-size:11.0994px;}
-	.st87{fill:none;stroke:#000000;stroke-width:1.1654;stroke-linecap:round;stroke-linejoin:round;}
-	.st88{fill:none;stroke:#000000;stroke-width:1.1654;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4.0657,4.0657;}
-	.st89{fill:none;stroke:#000000;stroke-width:1.1654;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3.9874,3.9874;}
+	.st80{fill:none;stroke:#993398;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st81{fill:none;stroke:#5A7AFF;stroke-width:2.8361;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st82{font-family:'Arial';}
+	.st83{font-size:20px;}
+	.st84{fill:none;stroke:#E56B00;stroke-width:2.7749;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:11.9048;}
+	.st85{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;}
+	.st86{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3.4947,3.4947;}
+	.st87{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:4.1164,4.1164;}
+	.st88{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:3.7438,3.7438;}
 </style>
 <g id="rpi">
 	<path class="st0" d="M324.6,235.6H14.1c-6.5,0-11.9,5.2-11.9,11.9v196.3c0,6.6,5.4,11.9,11.9,11.9h310.4c6.5,0,11.9-5.4,11.9-11.9
@@ -898,9 +897,9 @@
 	<rect x="33" y="440.6" class="st25" width="6.1" height="2.2"/>
 	<rect x="50.7" y="440.6" class="st25" width="6.1" height="2.2"/>
 	
-		<rect x="27.5" y="457" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -315.3579 155.049)" class="st24" width="3.8" height="2.1"/>
+		<rect x="27.5" y="457" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -315.3619 155.0459)" class="st24" width="3.8" height="2.1"/>
 	
-		<rect x="57.9" y="456.3" transform="matrix(0.7074 -0.7068 0.7068 0.7074 -306.6114 175.7381)" class="st24" width="2.1" height="3.8"/>
+		<rect x="57.9" y="456.3" transform="matrix(0.7074 -0.7068 0.7068 0.7074 -306.6092 175.7313)" class="st24" width="2.1" height="3.8"/>
 	<circle class="st26" cx="265.4" cy="245.3" r="5.9"/>
 	<circle class="st27" cx="265.4" cy="245.3" r="3.5"/>
 	<path class="st28" d="M249.3,265.3c2,0,3.5,1.5,3.5,3.5s-1.5,3.5-3.5,3.5s-3.5-1.5-3.5-3.5S247.3,265.3,249.3,265.3z"/>
@@ -1882,9 +1881,9 @@
 	<rect x="188.2" y="320.1" class="st16" width="1.6" height="4.1"/>
 	<rect x="188.2" y="321.3" class="st42" width="1.6" height="1.7"/>
 	
-		<rect x="176.4" y="344.7" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -192.0335 227.3758)" class="st16" width="4.1" height="1.6"/>
+		<rect x="176.4" y="344.7" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -192.0363 227.3761)" class="st16" width="4.1" height="1.6"/>
 	
-		<rect x="177.5" y="344.8" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -192.1659 227.4476)" class="st42" width="1.7" height="1.6"/>
+		<rect x="177.5" y="344.8" transform="matrix(0.7069 -0.7073 0.7073 0.7069 -192.1708 227.4409)" class="st42" width="1.7" height="1.6"/>
 	<rect x="171.9" y="336.3" class="st16" width="4.1" height="1.6"/>
 	<rect x="173.1" y="336.3" class="st42" width="1.7" height="1.6"/>
 	<rect x="173.7" y="324.1" class="st16" width="4.1" height="1.6"/>
@@ -1954,8 +1953,9 @@
 	<rect x="83.7" y="385.9" class="st15" width="2" height="4.4"/>
 	<rect x="83.7" y="387.1" class="st34" width="2" height="2.1"/>
 	
-		<rect x="83.1" y="400.3" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -258.7503 177.5078)" class="st16" width="3.6" height="1.6"/>
-	<rect x="83.9" y="400.4" transform="matrix(0.7073 -0.7069 0.7069 0.7073 -258.687 177.41)" class="st42" width="2" height="1.4"/>
+		<rect x="83.1" y="400.3" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -258.7508 177.5108)" class="st16" width="3.6" height="1.6"/>
+	
+		<rect x="83.9" y="400.4" transform="matrix(0.7073 -0.7069 0.7069 0.7073 -258.6874 177.4136)" class="st42" width="2" height="1.4"/>
 	<rect x="90.8" y="362.6" class="st15" width="2" height="4.4"/>
 	<rect x="90.8" y="364" class="st34" width="2" height="2.1"/>
 	<rect x="141.1" y="355.6" class="st15" width="2" height="4.4"/>
@@ -3516,22 +3516,29 @@
 	<circle cx="95.1" cy="139" r="7.5"/>
 </g>
 <polyline class="st79" points="55,254 60,249 60,169 65,164 "/>
-<polyline class="st80" points="85.1,244 80,239 80,169 85,164 "/>
-<polyline class="st81" points="225,164 220,169 220,239 225,244 "/>
-<polyline class="st82" points="45,164 40.3,169 40,199 45,204 "/>
-<polyline class="st83" points="105,164 100,169 100,199 105,204 "/>
-<polyline class="st83" points="125,204 120,209 120,239 125,244 "/>
-<text transform="matrix(1 0 0 1 49.5354 229.7188)" class="st84 st85 st86">5</text>
-<text transform="matrix(1 0 0 1 108.1135 229.7188)" class="st62 st85 st86">G</text>
+<polyline class="st80" points="225,164 220,169 220,239 225,244 "/>
+<polyline class="st81" points="45,164 40.3,169 40,199 45,204 "/>
+<g>
+	<path d="M306.4,102.3H41.8c-1.6,0-3-1.8-3-4.1V36.5c0-2.2,1.3-4.1,3-4.1h264.6c1.6,0,3,1.8,3,4.1v61.8
+		C309.4,100.5,308.1,102.3,306.4,102.3z"/>
+	<text transform="matrix(1 0 0 1 43.9181 74.9784)" class="st4 st82 st83">If pin5 used by DAC or LCD,</text>
+	<text transform="matrix(1 0 0 1 43.9181 94.9784)" class="st4 st82 st83">set separate off button.</text>
+	<text transform="matrix(1 0 0 1 42.1517 49.6103)" class="st4 st82 st83">Default: pin5 on+off</text>
+</g>
+<text transform="matrix(1 0 0 1 15.3901 231.1274)" class="st4 st82 st83">pin5</text>
+<polyline class="st84" points="64.3,255.2 69.3,250.2 69.3,183.2 85.3,164.2 "/>
+<polyline class="st81" points="104.8,164.4 100.1,169.4 99.8,199.4 104.8,204.4 "/>
+<polyline class="st81" points="174.8,204.4 170.1,209.4 169.8,239.4 174.8,244.4 "/>
 <g>
 	<g>
-		<line class="st87" x1="55" y1="139" x2="55.6" y2="137"/>
-		<line class="st88" x1="56.9" y1="133.2" x2="63.7" y2="111.9"/>
-		<polyline class="st87" points="64.4,110 65,108 67.1,108 		"/>
-		<line class="st89" x1="71" y1="108" x2="100.9" y2="108"/>
-		<polyline class="st87" points="102.9,108 105,108 104.4,110 		"/>
-		<line class="st88" x1="103.1" y1="113.8" x2="96.3" y2="135.1"/>
-		<line class="st87" x1="95.6" y1="137" x2="95" y2="139"/>
+		<line class="st85" x1="55.2" y1="138.2" x2="55.8" y2="136.2"/>
+		<line class="st86" x1="56.8" y1="132.9" x2="62.6" y2="114.6"/>
+		<polyline class="st85" points="63.1,112.9 63.8,111 65.8,111 		"/>
+		<line class="st87" x1="69.9" y1="111" x2="100.8" y2="111"/>
+		<polyline class="st85" points="102.8,111 104.9,111 104.2,112.9 		"/>
+		<line class="st88" x1="103" y1="116.4" x2="96.3" y2="135.9"/>
+		<line class="st85" x1="95.7" y1="137.7" x2="95" y2="139.6"/>
 	</g>
 </g>
+<text transform="matrix(1 0 0 1 148.0826 231.997)" class="st4 st82 st83">G</text>
 </svg>

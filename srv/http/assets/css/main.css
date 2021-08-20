@@ -91,12 +91,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 48px;
 	color: var( --cg ) !important;
 }
-.splash {
-	background: #000000 !important;
-}
-.splash svg {
-	animation: none !important;
-}
 .menu {
 	position: absolute;
 	left: 40px;
@@ -1216,12 +1210,21 @@ i.map.disabled, .map.disabled i {
 	}
 }
 /* ---------------------- library and queue ---------------------- */
+#bar-top.barshidden {
+	display: none;
+}
+.page.barshidden .content-top {
+	top: 0;
+}
+.page.barshidden .list {
+	padding-top: 40px;
+}
+.page.barshidden #lib-mode-list {
+	padding-top: 50px;
+}
 #lib-mode-list {
 	height: 100%;
 	padding: 90px 7px 7px 7px;
-}
-#lib-mode-list.barshidden {
-	padding: 50px 7px 7px 7px;
 }
 #lib-mode-list::after { /* fix 0 height */
 	content: " "; 
@@ -1260,9 +1263,11 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 }
 .mode i:first-of-type {
-	width: 60px;
 	font-size: 48px;
 	line-height: 60px;
+}
+.mode grl {
+	margin-left: 5px;
 }
 .nolabel {
 	padding-top: 25px;
@@ -1379,7 +1384,7 @@ i.map.disabled, .map.disabled i {
 	width: 100%;
 	height: 40px;
 	background: var( --cga );
-	top: 0;
+	top: 40px;
 	padding-right: 10px;
 	z-index: 104;
 }
@@ -1894,7 +1899,6 @@ li.active .li1 bl {
 }
 #pl-list .elapsed i {
 	margin-right: 5px;
-	width: 20px;
 	line-height: 17px; /* for ios */
 }
 #pl-list .elapsed {
@@ -2079,14 +2083,14 @@ li.active .li2 bl {
 @media(max-width: 638px)  { .coverart { width: calc( 100% / 3 ) } }
 @media(max-width: 438px)  { .coverart { width: calc( 100% / 2 ) } }
 
-@media(max-width: 740px)  { .lib-mode { width: calc( 100% / 4 ) } }
-@media(max-width: 560px)  { .lib-mode { width: calc( 100% / 3 ) } }
-@media(max-width: 410px)  { .lib-mode { width: calc( 100% / 2 ) } }
+@media(max-width: 540px)  { .lib-mode { width: calc( 100% / 4 ) } }
+@media(max-width: 440px)  { .lib-mode { width: calc( 100% / 3 ) } }
+@media(max-width: 340px)  { .mode grl { display: none } }
 
 /* scale */
-@media( orientation: landscape ) and ( max-height: 460px ) {
+@media( orientation: landscape ) and ( max-height: 480px ) {
 	#page-playback { padding: 40px 0 !important; }
-	#page-playback.barsalways { --scale: 0.95; padding: 60px 0 60px !important }
+	#page-playback.barsalways { padding: 60px 0 60px !important }
 	#page-playback {
 		transform-origin: 0 0;
 		transform: scale( var(--scale) );
@@ -2096,27 +2100,43 @@ li.active .li2 bl {
 }
 @media( orientation: landscape ) and ( max-height: 440px ) {
 	#page-playback { --scale: 0.98 }
-	#page-playback.barsalways { --scale: 0.9 !important }
+	#page-playback.barsalways { --scale: 0.9 }
 }
 @media( orientation: landscape ) and ( max-height: 420px ) {
 	#page-playback { --scale: 0.95 }
-	#page-playback.barsalways { --scale: 0.85 !important }
+	#page-playback.barsalways { --scale: 0.85 }
 }
 @media( orientation: landscape ) and ( max-height: 400px ) {
 	#page-playback { --scale: 0.9 }
-	#page-playback.barsalways { --scale: 0.8 !important }
+	#page-playback.barsalways { --scale: 0.8 }
 }
 @media( orientation: landscape ) and ( max-height: 380px ) {
 	#page-playback { --scale: 0.85 }
-	#page-playback.barsalways { --scale: 0.75 !important; padding: 80px 0 0 !important; }
+	#page-playback.barsalways { --scale: 0.75; padding: 80px 0 0 !important; }
 }
 @media( orientation: landscape ) and ( max-height: 360px ) {
 	#page-playback { --scale: 0.8 }
-	#page-playback.barsalways { --scale: 0.7 !important }
+	#page-playback.barsalways { --scale: 0.7 }
 }
 @media( orientation: landscape ) and ( max-height: 340px ) {
 	#page-playback { --scale: 0.75 }
-	#page-playback.barsalways { --scale: 0.65 !important }
+	#page-playback.barsalways { --scale: 0.65 }
+}
+
+@media( orientation: landscape ) and ( max-width: 768px ) {
+	#page-playback { --scale: 0.95 }
+}
+@media( orientation: landscape ) and ( max-width: 700px ) {
+	#page-playback { --scale: 0.9 }
+}
+@media( orientation: landscape ) and ( max-width: 670px ) {
+	#page-playback { --scale: 0.85 }
+}
+@media( orientation: landscape ) and ( max-width: 630px ) {
+	#page-playback { --scale: 0.8 }
+}
+@media( orientation: landscape ) and ( max-width: 590px ) {
+	#page-playback { --scale: 0.75 }
 }
 
 @media( max-height: 768px ) {
@@ -2200,12 +2220,6 @@ li.active .li2 bl {
 	}
 }
 /* portrait */
-@media( orientation: portrait ) and ( max-height: 768px ) {
-	#page-playback.barshidden {
-		padding: 60px 0 20px;
-	}
-}
-
 @media( orientation: portrait ) and ( max-width: 1200px ) {
 	#playback-row {
 		max-width: 100vw;

@@ -142,6 +142,9 @@ function banner( title, message, icon, delay ) {
 	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	
+	clearTimeout( bannertimeout );
 	$( '#banner' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' );
@@ -465,7 +468,7 @@ function info( json ) {
 		}
 		// set padding-right: radio / checkbox
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( tdL > 1 ) $( '#infoContent td:not( :last-child )' ).css( 'padding-right', '10px' );
+		if ( tdL > 1 ) $( '#infoContent td:eq( 0 )' ).css( 'padding-right', '10px' );
 		// set padding-right, align right: label
 		if ( !$( '#infoContent td:first-child input' ).length ) {
 			$( '#infoContent td:first-child' ).css( {
@@ -505,16 +508,17 @@ function info( json ) {
 		// check text input not blank
 		if ( O.checkblank ) {
 			O.checkblank.forEach( function( i ) {
-				var $blank = O.inputs.filter( function() {
-					return $( this ).val().trim() === ''
+				O.inputs.filter( function() {
+					if ( !$( this ).val().trim() ) $( '#infoOk' ).addClass( 'disabled' );
 				} );
-				$( '#infoOk' ).toggleClass( 'disabled', $blank.length > 0 );
-				O.inputs.eq( i ).on( 'keyup', function() {
-					$blank = O.inputs.filter( function() {
-						return $( this ).val().trim() === ''
-					} );
-					O.blank = $blank.length > 0;
-					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				O.inputs.eq( i ).on( 'keyup paste cut', function() {
+					setTimeout( function() {
+						$blank = O.inputs.filter( function() {
+							return $( this ).val().trim() === ''
+						} );
+						O.blank = $blank.length > 0;
+						$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+					}, 0 );
 				} );
 			} );
 		}
@@ -554,9 +558,12 @@ function checkChanged() {
 	setTimeout( function() { // force after check length
 		var values = infoVal();
 		if ( typeof values !== 'object' ) values = [ values ];
+		var val;
 		var changed = false;
 		changed = values.some( function( v, i ) {
-			if ( v != O.values[ i ] ) return true
+			val = O.values[ i ];
+			if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
+			if ( v != val ) return true
 		} );
 		$( '#infoOk' ).toggleClass( 'disabled', !changed );
 	}, 0 );
@@ -565,6 +572,7 @@ function infoVal() {
 	var values = [];
 	var $this, type, name, val, n;
 	var i = 0;
+	O.textarea = 0;
 	O.inputs.each( function() {
 		$this = $( this );
 		type = $this.prop( 'type' );
@@ -574,6 +582,9 @@ function infoVal() {
 			if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
 		} else if ( type === 'checkbox' ) {
 			val = $this.prop( 'checked' );
+		} else if ( type === 'textarea' ) {
+			O.textarea = 1;
+			val = $this.val().replace( /\n/g, '\\n' ).trim();
 		} else {
 			val = $this.val().trim();
 		}
@@ -657,7 +668,8 @@ function orientationReset( file, ori, callback ) {
 	reader.readAsDataURL( file );
 }
 function selectricRender() {
-	if ( !$( 'select' ).length ) return
+	if ( !$( 'select' ).length || $( '#infoContent .selectric-wrapper' ).length ) return
+	
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
 		.selectric( { nativeOnMobile: false } )

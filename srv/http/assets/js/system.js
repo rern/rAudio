@@ -74,20 +74,6 @@ function infoMount( values ) {
 		}
 	} );
 }
-function rebootText( enable, device ) {
-	var listed = 0;
-	if ( G.reboot ) {
-		if ( typeof G.reboot === 'string' ) G.reboot = [ G.reboot ];
-	} else {
-		G.reboot = [];
-	}
-	if ( G.reboot.length ) {
-		listed = G.reboot.some( function( line ) {
-			return line.indexOf( device ) !== -1
-		} );
-	}
-	if ( !listed ) G.reboot.push( ( enable ? 'Enable' : 'Disable' ) +' '+ device );
-}
 function renderStatus() {
 	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
 	if ( G.cputemp ) {
@@ -166,7 +152,7 @@ renderPage = function( list ) {
 		$( '#wl' )
 			.removeAttr( 'class' )
 			.addClass( 'col-l double status' )
-			.html( '<a>Wi-Fi<br><gr>brcmfmac<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+			.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
 	} else {
 		$( '#wlan' ).prop( 'checked', false );
 		$( '#setting-wlan' ).toggleClass( 'hide', true );
@@ -181,18 +167,15 @@ renderPage = function( list ) {
 		var $this = $( this );
 		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
 	} ).prop( 'selected', true );
-	var i2senabled = $( '#i2smodule' ).val() === 'none' ? false : true;
-	$( '#divi2smodulesw' ).toggleClass( 'hide', i2senabled );
-	$( '#divi2smodule' ).toggleClass( 'hide', !i2senabled );
+	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
+	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
+	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
 	$( '#lcd' ).prop( 'checked', G.lcd );
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-	var powerbuttonconf = G.powerbuttonconf.split( ' ' );
-	$( '#helpswpin' ).text( powerbuttonconf[ 0 ] );
-	$( '#helpledpin' ).text( powerbuttonconf[ 1 ] );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
@@ -215,6 +198,10 @@ renderPage = function( list ) {
 }
 //---------------------------------------------------------------------------------------
 var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
+var pin2gpio = {
+	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
+	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+}
 $( '.enable' ).click( function() {
 	var idname = {
 		  bluetooth    : 'Bluetooth'
@@ -241,8 +228,7 @@ $( '.enablenoset' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	var id = this.id;
 	notify( idname[ id ], checked, id );
-	if ( id !== 'relays' ) rebootText( checked, idname[ id ] );
-	bash( [ id, checked, G.reboot.join( '\n' ) ] );
+	bash( [ id, checked, checked, ( id !== 'relays' ? idname[ id ] : '' ) ] );
 } );
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
@@ -258,7 +244,8 @@ $( '.img' ).click( function() {
 	info( {
 		  icon    : d[ 1 ] || name
 		, title   : d[ 0 ]
-		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' ) +'" style="height: '+ ( d[ 2 ] || '100%' ) +'">'
+		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' )
+					+'" style="height: '+ ( d[ 2 ] || '100%' ) +'; margin-bottom: 0;">'
 		, okno    : 1
 	} );
 } );
@@ -289,7 +276,9 @@ $( '#refresh' ).click( function( e ) {
 				$( '#status' ).html( renderStatus );
 			}, 'json' );
 		}, 10000 );
-		banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
+		setTimeout( function() {
+			banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
+		}, 300 );
 	}
 } );
 $( '#status' ).on( 'click', '.undervoltage', function() {
@@ -379,20 +368,27 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 	} );
 } );
+var infowifi = heredoc( function() { /*
+<table>
+<tr><td style="padding-right: 5px; text-align: right;">Auto start Access Point</td><td><label><input type="checkbox"></label></td></tr>
+<tr><td style="padding-right: 5px; text-align: right;">Regulatory domain</td><td><input type="text" spellcheck="false"></td></tr>
+</table>
+*/ } );
 $( '#setting-wlan' ).click( function() {
 	info( {
 		  icon         : 'wifi'
 		, title        : 'Wi-Fi'
-		, checkbox     : [ 'Auto start <wh>Access Point:</wh>' ]
-		, footer       : '(On connection failed or no router)'
-		, values       : [ !G.wlannoap ]
+		, content      : infowifi
+		, boxwidth     : 50
+		, values       : [ !G.wlannoap, G.regdom ]
 		, checkchanged : ( G.wlan ? 1 : 0 )
 		, cancel       : function() {
 			$( '#wlan' ).prop( 'checked', G.wlan );
 		}
 		, ok           : function() {
+			var values = infoVal();
 			notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
-			bash( [ 'wlanset', infoVal() ] );
+			bash( [ 'wlanset', values[ 0 ], values[ 1 ] ] );
 		}
 	} );
 } );
@@ -412,17 +408,15 @@ $( '#i2smodule' ).change( function() {
 	if ( aplayname !== 'none' ) {
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
-		rebootText( 1, 'Audio I&#178;S Module' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
 		aplayname = 'onboard';
 		output = '';
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
-		rebootText( 0, 'Audio I&#178;S Module' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
-	bash( [ 'i2smodule', aplayname, output, G.reboot.join( '\n' ) ] );
+	bash( [ 'i2smodule', aplayname, output ] );
 } );
 $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
@@ -464,7 +458,7 @@ var infolcdchar = heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
-	<tr class="gpio"></tr>
+	<tr class="gpio"><td class="gpiosvg" colspan="3" style="padding-top: 10px;"></td></tr>
 	<tr class="gpio"><td>pin_rs</td>
 		<td colspan="2"><input type="text" id="pin_rs"></td>
 	</tr>
@@ -483,18 +477,18 @@ var infolcdchar = heredoc( function() { /*
 	</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
-	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 False';
+	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 false';
 	var val = val.split( ' ' );
 	// i2c : cols charmap | i2caddress i2cchip | backlight
 	// gpio: cols charmap | pin_rs pin_rw pin_e pins_data | backlight
 	// v   : 0cols 1charmap | 2inf | 3i2caddress 4i2cchip | 5pin_rs 6pin_rw 7pin_e 8pins_data | 9backlight 
-	var backlight = val.pop() === 'True';
+	var backlight = val.pop() === 'true';
 	if ( val.length < 6 ) {
 		var i2c = true;
 		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2 ), 15, 18, 16, '21,22,23,24', backlight ]
 	} else {
 		var i2c = false;
-		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val( 2 ), backlight ];
+		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val.slice( 2 ), backlight ];
 	}
 	var lcdcharaddr = G.lcdcharaddr || '0x27 0x3F';
 	var addr = lcdcharaddr.split( ' ' );
@@ -511,7 +505,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : v
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent tr.gpio:eq( 0 )' ).html( '<td colspan="3" style="padding-top: 10px;">'+ gpiosvg +'</td>' );
+			$( '#infoContent .gpiosvg' ).html( gpiosvg );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -532,59 +526,68 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			var values = infoVal();
-			values[ 9 ] = values[ 9 ] === true ? 'True' : 'False';
-			if ( values[ 2 ] === 'i2c' ) {
-				rebootText( 1, 'Character LCD' );
-				values.push( G.reboot.join( '\n' ) );
-			}
-			bash( [ 'lcdcharset', ...values ] );
+			var reboot = values[ 2 ] === 'i2c' ? 'Character LCD' : '';
+			bash( [ 'lcdcharset', ...values, reboot ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
-	var val = G.powerbuttonconf.split( ' ' );
-	var swpin = val[ 0 ];
-	var ledpin = val[ 1 ];
-	var pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
-	if ( G.relayspins ) {
-		pins = pins.filter( function( i ) {
-			return G.relayspins.indexOf( i ) === -1;
-		} );
-	}
-	var optionpin = '';
-	pins.forEach( function( p ) { 
-		optionpin += '<option value='+ p +'>'+ p +'</option>';
+	var offpin = '';
+	var ledpin = '';
+	var respin = '';
+	$.each( pin2gpio, function( k, v ) {
+		offpin += '<option value='+ k +'>'+ k +'</option>';
+		if ( k != 5 ) {
+			ledpin += '<option value='+ k +'>'+ k +'</option>';
+			respin += '<option value='+ v +'>'+ k +'</option>';
+		}
 	} );
-	var infopowerbutton = gpiosvg;
-	infopowerbutton += heredoc( function() { /*
+	var infopowerbutton = heredoc( function() { /*
 	<table>
 	<tr><td>On</td>
 		<td><input type="text" disabled></td>
 	</tr>
 	<tr><td>Off</td>
-		<td><select id="swpin">OPTION</select></td>
+		<td><select >OFFPIN</select></td>
 	</tr>
 	<tr><td>LED</td>
-		<td><select id="ledpin">OPTION</select></td>
+		<td><select >LEDPIN</select></td>
+	</tr>
+	<tr class="reserved hide"><td>Reserved</td>
+		<td><select >RESPIN</select></td>
 	</tr>
 	</table>
 */ } );
-infopowerbutton = infopowerbutton.replace( /OPTION/g, optionpin );
+	infopowerbutton = infopowerbutton
+						.replace( 'OFFPIN', offpin )
+						.replace( 'LEDPIN', ledpin )
+						.replace( 'RESPIN', respin );
+	if ( G.powerbuttonconf ) {
+		var pins = ( '5 '+ G.powerbuttonconf ).split( ' ' );
+	} else {
+		var pins = [ 5, 5, 40, 5 ];
+	}
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
-		, content      : infopowerbutton
-		, boxwidth     : 80
-		, values       : [ 5, swpin, ledpin ]
+		, content      : gpiosvg + infopowerbutton
+		, boxwidth     : 60
+		, values       : pins
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent .reserved' ).toggleClass( 'hide', pins[ 1 ] == 5 );
+			$( '#infoContent select:eq( 0 )' ).change( function() {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+			} );
+		}
 		, cancel       : function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			var values = infoVal();
+			var values = infoVal().slice( 1 );
+			bash( [ 'powerbuttonset', ...values ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
-			bash( [ 'powerbuttonset', values[ 1 ], values[ 2 ] ] );
 		}
 	} );
 } );
@@ -625,21 +628,18 @@ $( '#setting-lcd' ).click( function() {
 		, ok           : function() {
 			var lcdmodel = infoVal();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
-			rebootText( 1, 'TFT 3.5" LCD' );
-			bash( [ 'lcdset', lcdmodel, G.reboot.join( '\n' ) ] );
+			bash( [ 'lcdset', lcdmodel ] );
 		}
 	} );
 } );
 $( '#setting-vuled' ).click( function() {
-	var p = { 3:2, 5:3, 7:4, 8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9, 22:25, 23:11, 24:8, 26:7, 29:5, 31:6, 32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21 }
-	var htmlselect = '<select>';
-	$.each( p, function( k, v ) {
-		htmlselect += '<option value="'+ v +'">'+ k +'</option>';
+	var opt = '';
+	$.each( pin2gpio, function( k, v ) {
+		opt += '<option value="'+ v +'">'+ k +'</option>';
 	} );
-	htmlselect += '</select>';
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>'+ i +'/7</td><td>'+ htmlselect +'</td></tr>';
+		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
 	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 14, 15, 18, 23, 24, 25, 8 ];
 	info( {
@@ -716,20 +716,19 @@ $( '#timezone' ).change( function( e ) {
 	notify( 'Timezone', 'Change ...', 'globe' );
 	bash( [ 'timezone', $( this ).val() ] );
 } );
-$( '#setting-regional' ).click( function() {
+$( '#setting-timezone' ).click( function() {
 	var values = [ G.ntp, G.regdom || '00' ];
 	info( {
 		  icon         : 'globe'
-		, title        : 'Regional Settings'
-		, textlabel    : [ 'NTP server', 'Wi-Fi regdomain' ]
-		, footer       : '<px90/><code>00</code> - common for all regions'
-		, values       : values
+		, title        : 'Network Time Protocol'
+		, textlabel    : [ 'NTP server' ]
+		, values       : [ G.ntp ]
 		, checkchanged : 1
-		, checkblank   : [ 0, 1 ]
+		, checkblank   : [ 0 ]
 		, ok           : function() {
 			var values = infoVal();
-			notify( 'Regional Settings', 'Change ...', 'globe' );
-			bash( [ 'regional', values[ 0 ], values[ 1 ] ] );
+			notify( 'NTP server', 'Change ...', 'globe' );
+			bash( [ 'ntp', infoVal() ] );
 		}
 	} );
 } );

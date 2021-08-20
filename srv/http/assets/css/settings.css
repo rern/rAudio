@@ -130,13 +130,14 @@ heading i {
 	font-size: 22px;
 	text-align: center;
 	color: var( --cg60 );
+	letter-spacing: normal;
 }
 heading i.back {
 	width: 40px;
 }
 heading i.fa-question-circle {
 	float: right;
-	width: 25px;
+	width: 40px;
 	font-size: 20px;
 }
 .head {

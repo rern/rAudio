@@ -103,7 +103,7 @@ lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
     lcd.close()
-    if backlight == 'True':
+    if backlight == 'True' or backlight == 'true':
         import subprocess
         subprocess.Popen( [ '/srv/http/bash/lcdchartimer.sh' ] )
     quit()

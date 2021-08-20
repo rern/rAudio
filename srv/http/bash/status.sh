@@ -296,12 +296,13 @@ elif [[ -n $stream ]]; then
 			fi
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
-				if [[ ! -e $dirtmp/radio ]]; then # start: > 4
+				if [[ ! -e $dirtmp/radio || -z $( head -3 $dirtmp/status 2> /dev/null ) ]]; then
 					echo "\
 $file
 $stationname
 $id
 $radiosampling" > $dirtmp/radio
+					rm -f $dirtmp/status
 					systemctl start radio
 				else
 					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/"/\\"/g' )
@@ -337,23 +338,24 @@ $radiosampling" > $dirtmp/radio
 		fi
 ########
 		status+='
-, "Album"         : "'$Album'"
-, "Artist"        : "'$Artist'"
+, "Album"        : "'$Album'"
+, "Artist"       : "'$Artist'"
 , "stationcover" : "'$stationcover'"
-, "Name"          : "'$Name'"
-, "station"       : "'$station'"
-, "Time"          : false
-, "Title"         : "'$Title'"
-, "webradio"      : true'
+, "Name"         : "'$Name'"
+, "station"      : "'$station'"
+, "Time"         : false
+, "Title"        : "'$Title'"
+, "webradio"     : true'
 	if [[ -n $id ]]; then
-		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling &bull; $stationname"
+		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
 ########
 		status+='
-, "coverart"      : "'$coverart'"
-, "elapsed"       : '$elapsed'
-, "icon"          : "'$icon'"
-, "sampling"      : "'$sampling'"
-, "song"          : '$song
+, "coverart"     : "'$coverart'"
+, "elapsed"      : '$elapsed'
+, "ext"          : "Radio"
+, "icon"         : "'$icon'"
+, "sampling"     : "'$sampling'"
+, "song"         : '$song
 # >>>>>>>>>>
 		vu
 		echo {$status}

@@ -101,7 +101,7 @@ audio_output {
 	if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
 		output+="
-$( cat "$customfile" | tr ^ '\n' | sed 's/^/\t/; s/$/ #custom/' )"
+$( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
 	fi
 ########
 	output+='
@@ -143,10 +143,20 @@ audio_output {
 }'
 fi
 
-mpdfile=/etc/mpd.conf
-echo "$( sed '/audio_output/,/}/ d' $mpdfile )
+conf=$( cat /etc/mpd.conf )
+line=$( echo "$conf" | awk '/^resampler/,/}/ {print NR}' | tail -1 )
+global=$( echo "$conf" | sed -n "1,$line p" | sed '/# custom0/,/# custom1/ d' )
+if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
+	custom=$( echo "
+# custom0
+$( cat $dirsystem/custom-global )
+# custom1" | sed '$!s/$/\\/' )
+	global=$( echo "$global" | sed "/^user/ a$custom" )
+fi
+echo "\
+$global
 $output
-$btoutput" > $mpdfile
+$btoutput" > /etc/mpd.conf
 
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then
@@ -188,8 +198,11 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 	output_device = "hw:'$card'";
 }'
 	fi
-	sed -i '/^alsa =/,$ d' /etc/shairport-sync.conf
-	echo "$alsa" >> /etc/shairport-sync.conf
+	conf=$( cat /etc/shairport-sync.conf )
+	line=$( echo "$conf" | awk '/^sessioncontrol/,/}/ {print NR}' | tail -1 )
+	echo "\
+$( echo "$conf" | sed -n "1,$line p" )
+$alsa" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
 fi

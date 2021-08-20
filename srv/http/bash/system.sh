@@ -128,7 +128,6 @@ databackup )
 /etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
-/etc/powerbutton.conf
 /etc/relays.conf
 /etc/soundprofile.conf
 /etc/upmpdcli.conf
@@ -212,7 +211,7 @@ datarestore )
 		done
 	fi
 	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
-	/srv/http/bash/cmd.sh power
+	$dirbash/cmd.sh power$'\n'reboot
 	;;
 getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
@@ -236,7 +235,6 @@ hostname )
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	reboot=${args[3]}
 	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
@@ -245,6 +243,7 @@ dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
+		! grep -q gpio-shutdown $fileconfig && systemctl disable --now powerbutton
 	else
 		dtoverlay+="
 dtparam=audio=on"
@@ -256,10 +255,10 @@ dtparam=audio=on"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
 	sed -i '/dtparam=\|dtoverlay=\|gpio=25=op,dh\|^$/ d' $fileconfig
-	echo "$dtoverlay" >> $fileconfig
+	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo "$reboot" > $filereboot
+	echo 'Audio I&#178;S Module' >> $filereboot
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -291,11 +290,11 @@ charmap=${args[2]}"
 address=${args[4]}
 chip=${args[5]}"
 		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
-			sed -i '$ a\dtparam=i2c_arm=on' $fileconfig
+			echo 'dtparam=i2c_arm=on' >> $fileconfig
 			echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-			echo ${args[11]} > $filereboot
+			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
 		fi
 	else
 		conf+="
@@ -309,7 +308,7 @@ pins_data=${args[9]}"
 		fi
 	fi
 	conf+="
-backlight=${args[10]^}"
+backlight=${args[10]}"
 	echo "$conf" > /etc/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
@@ -324,7 +323,6 @@ lcddisable )
 	;;
 lcdset )
 	model=${args[1]}
-	reboot=${args[2]}
 	if [[ $model != tft35a ]]; then
 		echo $model > /srv/http/data/system/lcdmodel
 	else
@@ -345,7 +343,7 @@ i2c-dev
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	[[ -n $reboot ]] && echo "$reboot" > $filereboot
+	echo $'TFT 3.5" LCD' >> $filereboot
 	pushRefresh
 	;;
 mount )
@@ -391,26 +389,37 @@ mount )
 		rmdir "$mountpoint"
 	fi
 	;;
+ntp )
+	ntp=${args[1]}
+	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
+	pushRefresh
+	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	sed -i '/gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
 powerbuttonset )
+	sw=${args[1]}
+	led=${args[2]}
+	reserved=${args[3]}
 	echo "\
-sw=${args[1]}
-led=${args[2]}" > /etc/powerbutton.conf
+sw=$sw
+led=$led
+reserved=$reserved" > /etc/powerbutton.conf
+	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
+	sed -i '/gpio-shutdown/ d' $fileconfig
+	if [[ $sw != 5 ]]; then
+		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
+		[[ $reserved != $prevreserved ]] && echo 'Power Button' >> $filereboot
+	fi
 	systemctl restart powerbutton
 	systemctl enable powerbutton
 	pushRefresh
 	;;
-regional )
-	ntp=${args[1]}
-	regom=${args[2]}
-	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
-	sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
-	iw reg set $regdom
-	pushRefresh
+reboot )
+	$dirbash/cmd.sh power$'\n'reboot
 	;;
 relays )
 	[[ ${args[1]} == true ]] && relaysOrder || rm -f $dirsystem/relays
@@ -532,12 +541,18 @@ wlandisable )
 	pushRefresh
 	;;
 wlanset )
+	apauto=${args[1]}
+	regdom=${args[2]}
 	rfkill | grep -q wlan || modprobe brcmfmac
 	iw wlan0 set power_save off
-	if [[ ${args[1]} == false ]]; then
+	if [[ $apauto == false ]]; then
 		touch $dirsystem/wlannoap
 	else
 		rm -f $dirsystem/wlannoap
+	fi
+	if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
+		sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
+		iw reg set $regdom
 	fi
 	pushRefresh
 	;;

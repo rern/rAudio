@@ -63,6 +63,15 @@ input::-moz-focus-inner {
 #loader path {
 	fill: var( --cg75 );
 }
+#loader pre {
+	white-space: pre-wrap;
+}.splash {
+	background: #000000 !important;
+}
+.splash svg {
+	animation: none !important;
+}
+
 @font-face {
 	font-family: Lato;
 	src: url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
