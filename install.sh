@@ -4,7 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-! grep -q reserved /etc/powerbutton.conf && echo reserved=4 >> /etc/powerbutton.conf
+file=/etc/powerbutton.conf
+[[ -e $file ]] && ! grep -q reserved $file && echo reserved=5 >> $file
 
 [[ -e /etc/lcdchar.conf ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' /etc/lcdchar.conf
 
