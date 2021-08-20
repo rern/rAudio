@@ -508,16 +508,17 @@ function info( json ) {
 		// check text input not blank
 		if ( O.checkblank ) {
 			O.checkblank.forEach( function( i ) {
-				var $blank = O.inputs.filter( function() {
-					return $( this ).val().trim() === ''
+				O.inputs.filter( function() {
+					if ( !$( this ).val().trim() ) $( '#infoOk' ).addClass( 'disabled' );
 				} );
-				$( '#infoOk' ).toggleClass( 'disabled', $blank.length > 0 );
-				O.inputs.eq( i ).on( 'keyup', function() {
-					$blank = O.inputs.filter( function() {
-						return $( this ).val().trim() === ''
-					} );
-					O.blank = $blank.length > 0;
-					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				O.inputs.eq( i ).on( 'keyup paste cut', function() {
+					setTimeout( function() {
+						$blank = O.inputs.filter( function() {
+							return $( this ).val().trim() === ''
+						} );
+						O.blank = $blank.length > 0;
+						$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+					}, 0 );
 				} );
 			} );
 		}
