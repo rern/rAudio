@@ -18,7 +18,6 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			setTimeout( () => {
-				getTitleWidth();
 				setTitleWidth();
 				setPlaylistScroll()
 				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
