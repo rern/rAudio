@@ -10,6 +10,8 @@ file=/etc/powerbutton.conf
 file=/etc/lcdchar.conf
 [[ -e $file ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' $file
 
+[[ -e /srv/http/data/system/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
+
 rm -f /srv/http/data/shm/status
 
 if [[ -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flacm' ]]; then
@@ -27,7 +29,8 @@ getinstallzip
 
 systemctl daemon-reload
 
-[[ -e /srv/http/data/system/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
 /srv/http/bash/mpd-conf.sh
+
+nginx -s reload &> /dev/null
 
 installfinish
