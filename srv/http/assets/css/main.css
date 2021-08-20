@@ -2088,9 +2088,9 @@ li.active .li2 bl {
 @media(max-width: 340px)  { .mode grl { display: none } }
 
 /* scale */
-@media( orientation: landscape ) and ( max-height: 460px ) {
+@media( orientation: landscape ) and ( max-height: 480px ) {
 	#page-playback { padding: 40px 0 !important; }
-	#page-playback.barsalways { --scale: 0.95; padding: 60px 0 60px !important }
+	#page-playback.barsalways { padding: 60px 0 60px !important }
 	#page-playback {
 		transform-origin: 0 0;
 		transform: scale( var(--scale) );
@@ -2100,27 +2100,43 @@ li.active .li2 bl {
 }
 @media( orientation: landscape ) and ( max-height: 440px ) {
 	#page-playback { --scale: 0.98 }
-	#page-playback.barsalways { --scale: 0.9 !important }
+	#page-playback.barsalways { --scale: 0.9 }
 }
 @media( orientation: landscape ) and ( max-height: 420px ) {
 	#page-playback { --scale: 0.95 }
-	#page-playback.barsalways { --scale: 0.85 !important }
+	#page-playback.barsalways { --scale: 0.85 }
 }
 @media( orientation: landscape ) and ( max-height: 400px ) {
 	#page-playback { --scale: 0.9 }
-	#page-playback.barsalways { --scale: 0.8 !important }
+	#page-playback.barsalways { --scale: 0.8 }
 }
 @media( orientation: landscape ) and ( max-height: 380px ) {
 	#page-playback { --scale: 0.85 }
-	#page-playback.barsalways { --scale: 0.75 !important; padding: 80px 0 0 !important; }
+	#page-playback.barsalways { --scale: 0.75; padding: 80px 0 0 !important; }
 }
 @media( orientation: landscape ) and ( max-height: 360px ) {
 	#page-playback { --scale: 0.8 }
-	#page-playback.barsalways { --scale: 0.7 !important }
+	#page-playback.barsalways { --scale: 0.7 }
 }
 @media( orientation: landscape ) and ( max-height: 340px ) {
 	#page-playback { --scale: 0.75 }
-	#page-playback.barsalways { --scale: 0.65 !important }
+	#page-playback.barsalways { --scale: 0.65 }
+}
+
+@media( orientation: landscape ) and ( max-width: 768px ) {
+	#page-playback { --scale: 0.95 }
+}
+@media( orientation: landscape ) and ( max-width: 700px ) {
+	#page-playback { --scale: 0.9 }
+}
+@media( orientation: landscape ) and ( max-width: 670px ) {
+	#page-playback { --scale: 0.85 }
+}
+@media( orientation: landscape ) and ( max-width: 630px ) {
+	#page-playback { --scale: 0.8 }
+}
+@media( orientation: landscape ) and ( max-width: 590px ) {
+	#page-playback { --scale: 0.75 }
 }
 
 @media( max-height: 768px ) {
