@@ -44,6 +44,7 @@ else
 fi
 
 sleep 1
+systemctl stop radio
 rm -f $dirtmp/status
 /srv/http/bash/cmd-pushstatus.sh
 pushstream '{"done":1}'

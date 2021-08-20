@@ -5,3 +5,5 @@ Description=WebRadio metadata
 Type=simple
 ExecStart=/srv/http/bash/status-radio.sh
 ExecStop=/usr/bin/rm /srv/http/data/shm/radio
+ExecStop=/usr/bin/killall status-radio.sh
+StandardError=null
