@@ -511,7 +511,7 @@ hr {
 		}
 	}
 }
-@media( hover:hover ) {
+@media ( hover:hover ) {
 	/* :hover *********************************************************/
 	#infoX:hover {
 		color: var( --cml );
