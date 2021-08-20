@@ -30,6 +30,4 @@ systemctl daemon-reload
 [[ -e /srv/http/data/system/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
 /srv/http/bash/mpd-conf.sh
 
-nginx -s reload &> /dev/null
-
 installfinish
