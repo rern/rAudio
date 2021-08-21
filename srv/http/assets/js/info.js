@@ -672,13 +672,14 @@ function selectricRender() {
 	
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
-		.selectric( { nativeOnMobile: false } )
+		.selectric()
 		.each( function() {
 			var $this = $( this );
 			var option1 = $this.find( 'option' ).length === 1;
 			var $selectric = $this.parent().parent();
 			$selectric.toggleClass( 'disabled', option1 );
 		} );
+	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
