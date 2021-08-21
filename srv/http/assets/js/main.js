@@ -772,6 +772,8 @@ $( '.map' ).on( 'tap', function() {
 			return
 		}
 		
+		if ( window.innerWidth < 750 && window.innerWidth < window.innerHeight ) return
+		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
 			list.forEach( function( el ) {
