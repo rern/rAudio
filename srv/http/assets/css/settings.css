@@ -168,6 +168,7 @@ heading i.fa-question-circle {
 	float: right;
 }
 #help {
+	margin-right: 5px;
 	color: var( --cg60 )
 }
 
