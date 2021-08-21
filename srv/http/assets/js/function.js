@@ -328,6 +328,7 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || G.display.volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
+	$( '#coverTL' ).toggleClass( 'disabled', window.innerWidth < 750 && window.innerWidth < window.innerHeight );
 }
 function displaySave( keys ) {
 	G.vumeter = G.display.vumeter;
