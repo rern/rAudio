@@ -2256,6 +2256,7 @@ li.active .li2 bl {
 		}
 	}
 	@media ( max-width: 614px ) {
+		#page-playback { padding-top: 60px }
 		#time-knob { display: none }
 		#volume-knob { margin-top: 40px }
 	}
