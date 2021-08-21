@@ -462,16 +462,15 @@ function psRelays( response ) { // on receive broadcast
 				var color = state ? '' : 'class="gr"';
 			} else {
 				var color = state ? 'class="gr"' : '';
-				devices += '<br>';
 			}
-			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
+			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a><br>';
 		} );
 		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 			info( {
 				  icon       : 'relays'
 				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
-				, footer     : devices
+				, message    : '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg"></div>'
+							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
 				, beforeshow : function() {
 					$( '#infoX' ).addClass( 'hide' );
