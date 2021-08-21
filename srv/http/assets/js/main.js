@@ -760,8 +760,8 @@ $( '.map' ).on( 'tap', function() {
 		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
 		
 		if ( !G.display.volumenone
-			&& !G.display.volume
-			&& ( window.innerHeight - $( '#volume-band' )[ 0 ].getBoundingClientRect().bottom ) < 40
+			&& $( '#volume-knob' ).is( ':hidden' )
+			&& ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 		) {
 			if ( $( '#info' ).hasClass( 'hide' ) ) {
 				$( '#info' ).removeClass( 'hide' );
@@ -772,7 +772,7 @@ $( '.map' ).on( 'tap', function() {
 			return
 		}
 		
-		if ( window.innerWidth < 750 && window.innerWidth < window.innerHeight ) return
+		if ( window.innerWidth < 545 && window.innerWidth < window.innerHeight ) return
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
