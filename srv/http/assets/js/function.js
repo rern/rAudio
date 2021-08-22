@@ -1077,11 +1077,12 @@ function renderLibraryList( data ) {
 			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $img0.data( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
 		} else {
 			G.albumlist = 0;
+			if ( $( '.licover' ).length ) {
+				$( '#lib-list p' ).toggleClass( 'fixedcover', $( '#lib-list li:eq( 1 )' ).hasClass( 'track1' ) );
+				setTrackCoverart();
+			}
 		}
-		if ( $( '.licover' ).length ) setTrackCoverart();
-		$( '#lib-list p' )
-			.toggleClass( 'fixedcover', $( '#lib-list li:eq( 1 )' ).hasClass( 'track1' ) )
-			.toggleClass( 'bars-on', G.bars );
+		$( '#lib-list p' ).toggleClass( 'bars-on', G.bars );
 		if ( 'index' in data ) {
 			$( '#lib-list' ).css( 'width', '' );
 			$( '#lib-index' ).html( data.index[ 0 ] )
