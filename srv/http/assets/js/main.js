@@ -128,9 +128,11 @@ $( '#logo' ).click( function() {
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
+		setTimeout( function() {
 		$( '#settings' )
 			.css( 'top', ( G.bars ? '40px' : 0 ) )
 			.removeClass( 'hide' );
+		}, 0 );
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
