@@ -1,5 +1,7 @@
 #!/bin/bash
 
+: >/dev/tcp/8.8.8.8/53 || exit # online check
+
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
