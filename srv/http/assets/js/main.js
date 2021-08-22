@@ -95,6 +95,8 @@ $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
 	$( '#'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
+} ).click( function( e ) {
+	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
 } );
 $( '#loader' ).click( function() {
 	loaderHide();
@@ -125,15 +127,12 @@ $( '#logo' ).click( function() {
 	window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
 $( '#button-settings' ).click( function() {
-	var $settings = $( '#settings' );
-	if ( $settings.hasClass( 'hide' ) ) {
-		setTimeout( function() {
-			$settings
-				.css( 'top', ( G.bars ? '40px' : 0 ) )
-				.removeClass( 'hide' );
-		}, 100 );
+	if ( $( '#settings' ).hasClass( 'hide' ) ) {
+		$( '#settings' )
+			.css( 'top', ( G.bars ? '40px' : 0 ) )
+			.removeClass( 'hide' );
 	} else {
-		$settings.addClass( 'hide' );
+		$( '#settings' ).addClass( 'hide' );
 	}
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
@@ -317,12 +316,12 @@ $( '#page-playback' ).on( 'tap', function( e ) {
 		}
 	}
 } );
-$( '#bar-top, #page-library, #page-playback, #page-playlist' ).click( function( e ) {
-	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-} );
 $( '#bar-top, #bar-bottom, #button-library' ).click( function() {
 	if ( G.guide ) hideGuide();
 	if ( !$( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
+} );
+$( '#bar-top' ).click( function( e ) {
+	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide' );
 } );
 $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
@@ -715,7 +714,6 @@ $( '.map' ).on( 'tap', function() {
 		$( '#guide-bio, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#volume-text' ).addClass( 'hide' );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', !G.bars );
@@ -740,6 +738,7 @@ $( '.map' ).on( 'tap', function() {
 			}
 		}
 		$( '.coveredit' ).css( 'z-index', 15 );
+		$( '#volume-text, #settings' ).addClass( 'hide' );
 		return
 	}
 	
