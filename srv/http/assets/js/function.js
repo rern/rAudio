@@ -1096,7 +1096,9 @@ function renderLibraryList( data ) {
 		$( '#lib-list' ).removeClass( 'hide' );
 		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 		if ( G.iactive && G.albumlist ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
-		if ( G.albumlist ) $( '#lib-list p' ).css( 'height', $( '#lib-list p' ).height() - $( '.coverart' ).height() );
+		var pH = $( '#lib-list p' ).height() - $( '.coverart' ).height();
+		if ( !G.bars ) pH += 40;
+		if ( G.albumlist ) $( '#lib-list p' ).css( 'height', pH +'px' );
 	} );
 }
 function renderPlayback() {
