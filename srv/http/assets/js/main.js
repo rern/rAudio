@@ -321,7 +321,7 @@ $( '#page-playback' ).on( 'tap', function( e ) {
 		}
 	}
 } );
-$( '#page-library, #page-playback, #page-playlist' ).click( function( e ) {
+$( '#bar-top, #page-library, #page-playback, #page-playlist' ).click( function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
 } );
 $( '#bar-top, #bar-bottom, #button-library' ).click( function() {
