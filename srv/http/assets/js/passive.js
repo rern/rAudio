@@ -226,7 +226,7 @@ function psCoverart( data ) {
 				var srcnoext = src.slice( 0, -15 );
 				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
 				var $el = webradioIcon( srcnoext );
-				$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
+				$el.replaceWith( '<img class="lazyload iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
 			}
 			break;
 		case 'webradioreset':

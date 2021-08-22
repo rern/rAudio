@@ -526,14 +526,13 @@ function imageReplace( imagefile, type ) {
 		}
 	} );
 }
-function imgLoadError( list ) { // on img load error
-	lazyload.update();
-	var $ellazy = $( '#'+ list +' .lazy' );
-	if ( !$ellazy.length ) return
+function imageLoad( list ) {
+	var $lazyload = $( '#'+ list +' .lazyload' );
+	if ( !$lazyload.length ) return
 	
 	if ( list === 'lib-list' ) {
 		if ( G.mode === 'album' ) {
-			$ellazy.off( 'error' ).on( 'error', function() {
+			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
 				var src = $this.attr( 'src' );
 				var src = src.slice( -3 ) === 'jpg' ? src.slice( 0, -3 ) + 'gif' : '/assets/img/coverart.svg';
@@ -541,12 +540,12 @@ function imgLoadError( list ) { // on img load error
 			} );
 		} else {
 			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
-			$ellazy.off( 'error' ).on( 'error', function() {
+			$lazyload.off( 'error' ).on( 'error', function() {
 				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
 			} );
 		}
 	} else {
-		$ellazy.off( 'error' ).on( 'error', function() {
+		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
 			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
 			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
@@ -1069,7 +1068,7 @@ function renderLibraryList( data ) {
 		.html( htmlpath )
 		.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		imgLoadError( 'lib-list' );
+		imageLoad( 'lib-list' );
 		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
@@ -1377,7 +1376,7 @@ renderPlaylist = function( data ) {
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		imgLoadError( 'pl-list' );
+		imageLoad( 'pl-list' );
 		setPlaylistScroll();
 		$( '.list p' ).toggleClass( 'bars-on', G.bars );
 	} );
@@ -1407,7 +1406,7 @@ function renderSavedPlaylist( name ) {
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
-			imgLoadError( 'pl-savedlist' );
+			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', G.bars );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
 			$( '#pl-index, #pl-index1' ).addClass( 'hide' );

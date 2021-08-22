@@ -220,7 +220,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
 			}
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
-						.'<img class="lazy iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
+						.'<img class="lazyload iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
 						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>'
@@ -249,7 +249,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$urlname = str_replace( '/', '|', $file );
 			if ( !$notsaved ) {
 				$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
-				$icon = '<img class="lazy webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}

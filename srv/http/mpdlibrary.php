@@ -209,7 +209,7 @@ case 'webradio':
 		$name = str_replace( '/', '|', $each->url );
 		$thumbsrc = '/data/webradiosimg/'.$name.'-thumb.'.$time.'.jpg';
 		$html.= '<li class="file" data-index="'.$index.'">'
-					.'<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
+					.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
 					.'<a class="lipath">'.$each->url.'</a>'
 					.'<a class="liname">'.$each->name.'</a>'
 					.'<div class="li1">'.$each->name.'</div>'
@@ -246,7 +246,7 @@ function directoryList( $lists ) {
 		$indexes[] = $index;
 		$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
 		$html.=  '<li data-mode="file" data-index="'.$index.'">'
-				.'<img class="lazy iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">'
+				.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">'
 				.'<a class="lipath">'.$path.'</a>'
 				.'<span class="single">'.$each->dir.'</span>'
 				.'</li>';
@@ -353,7 +353,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' ); // replaced with icon on load error(faster than existing check)
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
-						<div><img class="lazy" data-src="'.$coverfile.'"></div> 
+						<div><img class="lazyload" data-src="'.$coverfile.'"></div> 
 						<span class="coverart1">'.$data[ 1 ].'</span>
 						<gr class="coverart2">'.( $data[ 2 ] ?: '&nbsp;' ).'</gr>
 					</div>';
