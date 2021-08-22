@@ -1091,7 +1091,7 @@ function renderLibraryList( data ) {
 				.toggleClass( 'fixedcover', G.display.fixedcover )
 				.toggleClass( 'bars-on', G.bars );
 			$( '#lib-list' ).removeClass( 'hide' );
-			setTrackCoverart();
+			G.color ? colorSet() : setTrackCoverart();
 		}
 		if ( 'index' in data ) {
 			$( '#lib-list' ).css( 'width', '' );
@@ -1630,6 +1630,12 @@ function setTrackCoverart() {
 	} ).off( 'error' ).on( 'error', function() {
 		$( this ).attr( 'src', G.coverdefault );
 	} );
+	if ( G.mode === 'album' ) {
+		$( '#mode-title' ).html( $( '.liinfo .lialbum' ).text() );
+		$( '.liinfo .lialbum' ).addClass( 'hide' );
+	} else {
+		$( '.liinfo .lialbum' ).removeClass( 'hide' );
+	}
 	if ( !G.display.fixedcover ) {
 		$( '.licover' ).addClass( 'nofixed' );
 		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
