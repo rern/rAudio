@@ -86,7 +86,7 @@ metadataGet() {
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
 		coverfile=$dirtmp/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
-		coverart=/data/shm/webradio-$name.$( date +%s ).jpg
+		coverart=/data/shm/webradio-$name.jpg
 	fi
 	echo "\
 $artist
