@@ -21,7 +21,7 @@ else
 	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
-data=$( curl -s -m 5 -G \
+data=$( curl -sG -m 5 \
 	--data-urlencode "artist=$artist" \
 	--data-urlencode "$param" \
 	--data-urlencode "$method" \
@@ -46,7 +46,7 @@ if [[ -n $image || $image != null ]]; then
 	else
 ### 2 - coverartarchive.org #####################################
 		mbid=$( jq -r .mbid <<< "$album" )
-		[[ -n $mbid || $mbid != null ]] && url=$( curl -s -m 10 -L https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
+		[[ -n $mbid || $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
 	fi
 fi
 [[ -z $url || $url == null ]] && exit

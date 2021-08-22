@@ -41,14 +41,14 @@ esac
 [[ $id < 4 ]] && icon=radioparadise || icon=radiofrance
 
 radioparadiseData() {
-	readarray -t metadata <<< $( curl -s -m 5 -G \
+	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "chan=$id" \
 		https://api.radioparadise.com/api/now_playing \
 		| jq -r .artist,.title,.album,.cover,.time \
 		| sed 's/^null$//' )
 }
 radiofranceData() {
-	readarray -t metadata <<< $( curl -s -m 5 -G \
+	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "operationName=Now" \
 		--data-urlencode 'variables={"bannerPreset":"600x600-noTransform","stationId":'$id',"previousTrackLimit":1}' \
 		--data-urlencode 'extensions={"persistedQuery":{"version":1,"sha256Hash":"8a931c7d177ff69709a79f4c213bd2403f0c11836c560bc22da55628d8100df8"}}' \
