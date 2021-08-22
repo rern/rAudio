@@ -231,9 +231,11 @@ addonsclose )
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
 	;;
 addonslist )
+	! : >/dev/tcp/8.8.8.8/53 && exit -2 # online check
+	
 	[[ -z ${args[1]} ]] && branch=main || branch=${args[1]}
 	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
-	[[ $? != 0 ]] && echo -1 && exit
+	[[ $? != 0 ]] && exit -1
 	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
 	if [[ -n $bash ]]; then
@@ -860,7 +862,7 @@ webradioadd )
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url | grep ^File | head -1 | cut -d= -f2 )
 	fi
-	[[ -z $url ]] && echo -1 && exit
+	[[ -z $url ]] && exit -1
 	
 	echo $name > $filewebradio
 	chown http:http $filewebradio # for edit in php

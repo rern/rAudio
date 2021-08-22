@@ -21,11 +21,11 @@ function list( args, callback, json ) {
 }
 //----------------------------------------------------------------------
 function addonsdl( std ) {
-	if ( std == -1 ) {
+	if ( std ) {
 		info( {
 			  icon    : 'jigsaw'
 			, title   : 'Addons'
-			, message : 'Download from Addons server failed.'
+			, message : std == -1 ? 'Download from Addons server failed.' : 'No internet connection.'
 					   +'<br>Please try again later.'
 			, ok      : function() {
 				loaderHide();
