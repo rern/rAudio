@@ -44,7 +44,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/html5kellycolorpicker.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/lazysize.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/lazysizes.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/pica.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/roundslider.min.<?=$time?>.js"></script>
