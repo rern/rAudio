@@ -100,7 +100,9 @@ pre {
 div.help-block {
 	margin-left: 0;
 }
-.clear { clear: both; }
+.clear {
+	clear: both;
+}
 heading {
 	display: inline-block;
 	margin: 25px 0 10px 0;
@@ -110,7 +112,6 @@ heading {
 	font-size: 24px;
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
-	user-select: none;
 }
 heading {
 	letter-spacing: 5px;
@@ -222,6 +223,17 @@ heading i.fa-question-circle {
 	font-weight: 300;
 	color: var( --cg60 );
 }
+.entries li,
+.entries li span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+heading,
+.col-l,
+.entries li {
+	user-select: none;
+}
 .transparent {
 	opacity: 0 !important;
 }
@@ -270,13 +282,6 @@ code {
 	padding-top: 3px;
 	font-size: 18px;
 	border-bottom: 1px solid var( --cga );
-	user-select: none;
-}
-.entries li,
-.entries li span {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .entries li:first-of-type {
 	border-top: 1px solid var( --cg );
@@ -414,7 +419,6 @@ input:checked + .switchlabel.disabled:after {
 	text-align: right;
 	padding-right: 15px;
 	padding-top: 9px;
-	user-select: none;
 }
 .col-l.text {
 	padding-top: 0;
