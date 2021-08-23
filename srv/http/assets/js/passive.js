@@ -80,6 +80,7 @@ pushstream.onstatuschange = status => {
 		getPlaybackStatus();
 		bannerHide();
 		loaderHide();
+		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 	} else if ( status === 0 ) { // disconnected
 		clearIntervalAll();
 		hideGuide();
