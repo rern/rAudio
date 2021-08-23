@@ -1842,7 +1842,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricsartist' ).click( function() {
-	getBio( $( this ).text() );
+	getBio( $( this ).text().trim() );
 } );
 $( '#lyricstextarea' ).on( 'input', function() {
 	$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
