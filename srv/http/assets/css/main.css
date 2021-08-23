@@ -1662,7 +1662,7 @@ i.map.disabled, .map.disabled i {
 	margin: 0 10px 0 0 !important;
 	width: 28px !important;
 	line-height: 33px !important;
-	vertical-align: -10%;
+	vertical-align: middle;
 	color: var( --cg60 ) !important;
 }
 #lib-list,
