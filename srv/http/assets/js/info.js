@@ -675,9 +675,7 @@ function selectricRender() {
 		.selectric()
 		.each( function() {
 			var $this = $( this );
-			var option1 = $this.find( 'option' ).length === 1;
-			var $selectric = $this.parent().parent();
-			$selectric.toggleClass( 'disabled', option1 );
+			$this.parent().parent().toggleClass( 'disabled', $this.find( 'option' ).length === 1 );
 		} );
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
