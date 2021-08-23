@@ -1841,9 +1841,6 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
-$( '#lyricsartist' ).click( function() {
-	getBio( $( this ).text().trim() );
-} );
 $( '#lyricstextarea' ).on( 'input', function() {
 	$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
 	$( '#lyricsback' ).addClass( 'hide' );
