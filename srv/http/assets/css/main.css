@@ -1164,7 +1164,7 @@ i.map.disabled, .map.disabled i {
 	width: 100%;
 	font-family: Lato;
 	font-size: 17px;
-	line-height: 22px;
+	line-height: 24px;
 	color: var( --cw );
 	scrollbar-width: none;
 	-ms-overflow-style: none;
@@ -1176,7 +1176,7 @@ i.map.disabled, .map.disabled i {
 }
 #lyricstext {
 	padding: 21px 15px 180px 0;
-	overflow-y: scroll;
+	overflow: auto;
 }
 #lyricstextarea {
 	width: calc( 100% - 10px );
