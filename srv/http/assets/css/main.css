@@ -1150,6 +1150,10 @@ i.map.disabled, .map.disabled i {
 	font-size: 18px;
 	color: var( --cg60 );
 }
+#lyricsartist img {
+	height: 34px;
+	vertical-align: middle;
+}
 #lyricsedit,
 #lyricseditbtngroup {
 	float: right;
