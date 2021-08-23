@@ -270,10 +270,13 @@ code {
 	padding-top: 3px;
 	font-size: 18px;
 	border-bottom: 1px solid var( --cga );
+	user-select: none;
+}
+.entries li,
+.entries li span {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	user-select: none;
 }
 .entries li:first-of-type {
 	border-top: 1px solid var( --cg );
@@ -282,9 +285,6 @@ code {
 	float: left;
 	display: block;
 	width: calc( 100% - 40px );
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .entries li .fa-info-circle {
     font-size: 22px !important;
