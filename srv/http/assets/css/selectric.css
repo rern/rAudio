@@ -11,12 +11,6 @@
 .selectric-wrapper.disabled {
 	pointer-events: none;
 }
-.selectric-wrapper.disabled .label {
-	margin-right: 10px;
-}
-.selectric-wrapper.disabled .button {
-	display: none;
-}
 .selectric {
 	border-radius: 4px;
 	background: var( --cg );
@@ -25,7 +19,7 @@
 .selectric .label {
 	display: block;
 	height: 39px;
-	margin: 0 30px 0 10px;
+	padding: 0 30px 0 10px;
 	line-height: 40px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -44,6 +38,12 @@
 .selectric .button:before {
 	content: '\25BE';
 }
+.selectric-wrapper.disabled .label {
+	padding-right: 10px;
+}
+.selectric-wrapper.disabled .button {
+	display: none;
+}
 .selectric-open {
 	z-index: 9999;
 }
@@ -51,14 +51,7 @@
 	display: block;
 }
 .selectric-hide-select {
-	position: relative;
-	overflow: hidden;
-	width: 0;
-	height: 0;
-}
-.selectric-hide-select select {
-	position: absolute;
-	left: -300%;
+	display: none;
 }
 .selectric-input {
 	position: absolute !important;
