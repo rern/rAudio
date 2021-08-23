@@ -413,7 +413,7 @@ input:checked + .switchlabel.disabled:after {
 	width: 170px;
 	text-align: right;
 	padding-right: 15px;
-	padding-top: 10px;
+	padding-top: 9px;
 	user-select: none;
 }
 .col-l.text {
