@@ -1623,10 +1623,7 @@ function setTrackCoverart() {
 	
 	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
 		$( 'html, body' ).scrollTop( 0 );
-		$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( this ).width() - 50 ) +'px' );
-		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) {
-			$( '#liimg' ).after( '<i class="coveredit fa fa-save cover-save"></i>' );
-		}
+		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) $( '#liimg' ).after( icoversave );
 	} ).off( 'error' ).on( 'error', function() {
 		$( this ).attr( 'src', G.coverdefault );
 	} );

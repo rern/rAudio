@@ -1624,6 +1624,7 @@ i.map.disabled, .map.disabled i {
 }
 .licover {
 	position: fixed;
+	display: flex !important;
 	width: 100%;
 	height: 230px !important;
 	padding-left: 40px;
@@ -1640,8 +1641,6 @@ i.map.disabled, .map.disabled i {
 	background: linear-gradient( #000000 192px, var( --cm ) 0 ) !important;
 }
 .licoverimg {
-	position: relative;
-	float: left;
 	height: 230px;
 }
 .licoverimg img {
@@ -1650,11 +1649,11 @@ i.map.disabled, .map.disabled i {
 }
 .liinfo {
 	display: inline-block;
-	position: absolute;
-	bottom: 0;
+	margin: auto 0 0 0;
 	padding-left: 10px;
 	line-height: 30px;
 	color: var( --cw );
+	overflow: hidden;
 }
 .lialbum {
 	padding-left: 2px;

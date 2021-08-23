@@ -59,6 +59,8 @@ if ( G.localhost ) {
 } else {
 	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 }
+var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
+var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
 var red = '#bb2828';
 var canvas = document.getElementById( 'iconrainbow' );
@@ -105,7 +107,7 @@ $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
-		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
+		$( '#divcover' ).append( icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
@@ -654,7 +656,7 @@ $( '#divcover' ).on( 'longtap', function( e ) {
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
+		.after( icoveredit );
 } ).on( 'tap', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
@@ -1344,7 +1346,7 @@ $( '#lib-list' ).on( 'longtap', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
+		.after( icoveredit );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
