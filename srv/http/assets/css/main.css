@@ -1883,6 +1883,12 @@ li.active .li1 bl {
 #pl-savedlist .li1 {
 	padding: 5px 10px 0 0;
 }
+#lib-list .li1,
+#lib-list .li2 {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 #pl-list .li1 span,
 #pl-savedlist .li1 span {
 	display: inline-block;
