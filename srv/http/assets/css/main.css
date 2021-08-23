@@ -1162,9 +1162,10 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 }
 #lyricsartist img {
-	height: 34px;
-	margin-bottom: 5px;
+	height: 36px;
+	margin-bottom: 3px;
 	vertical-align: middle;
+	border: 1px solid hsl(0,0%,15%);
 }
 #lyricsedit,
 #lyricseditbtngroup {
