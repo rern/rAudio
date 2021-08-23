@@ -374,7 +374,7 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 		return
 	}
 	
-	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
+	artist = artist.replace( /(["`])/g, '\\$1' );
 	var title = $( '#title' ).text().replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
 	bash( [ 'lyrics', artist, title, 'local', file ], function( data ) {
