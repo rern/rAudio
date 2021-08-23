@@ -173,6 +173,33 @@ i.map.disabled, .map.disabled i {
 #menu-file {
 	right: 50px;
 }
+.coverart1,
+.coverart2,
+.label,
+.liinfo div,
+.biosimilar p,
+.bklabel,
+.scrollellipse,
+#divlyricstitle,
+#lib-breadcrumbs,
+#lib-list li,
+#lib-list span,
+#lib-list .li1,
+#lib-list .li2,
+#lib-path,
+#lyricstitle,
+#lyricsartist,
+#pl-list li,
+#pl-list .li1 span,
+#pl-list .liname,
+#pl-list .li2,
+#pl-savedlist li,
+#pl-savedlist .li1 span,
+#pl-savedlist span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 /* ---------------------- bars ----------------------*/
 #reload {
 	position: absolute;
@@ -264,11 +291,7 @@ i.map.disabled, .map.disabled i {
 .page,
 #settings,
 #bar-bottom {
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none;   /* Safari */
-	-moz-user-select: none;      /* Firefox */
-	-ms-user-select: none;       /* Internet Explorer and Edge */
-	user-select: none;           /* Non-prefixed version, currently supported by Chrome and Opera */
+	user-select: none;
 }
 .page {
 	height: 100%;
@@ -376,9 +399,6 @@ i.map.disabled, .map.disabled i {
 .scrollellipse {
 	display: block !important;
 	padding: 0 10px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 @keyframes scrollleft {
 	0%   { transform : translateX( 100vw ) } /* move to right 100vw */
@@ -1087,9 +1107,6 @@ i.map.disabled, .map.disabled i {
 .biosimilar p {
 	width: 170px;
 	margin: 0 0 10px 0;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 #biosource {
 	float: right;
@@ -1118,9 +1135,6 @@ i.map.disabled, .map.disabled i {
 }
 #divlyricstitle {
 	background: var( --cga );
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	z-index: 2;
 }
 #divlyricsartist {
@@ -1132,9 +1146,6 @@ i.map.disabled, .map.disabled i {
 	max-width: calc( 100% - 40px );
 	padding-left: 15px;
 	line-height: 40px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 #lyricstitle {
 	font-size: 26px;
@@ -1152,6 +1163,7 @@ i.map.disabled, .map.disabled i {
 }
 #lyricsartist img {
 	height: 34px;
+	margin-bottom: 5px;
 	vertical-align: middle;
 }
 #lyricsedit,
@@ -1309,9 +1321,6 @@ i.map.disabled, .map.disabled i {
 .bklabel {
 	display: block;
 	font-size: 16px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	color: var( --cg60 );
 }
 .mode .fa-bookmark {
@@ -1429,9 +1438,6 @@ i.map.disabled, .map.disabled i {
 #lib-path {
 	height: 40px;
 	line-height: 40px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	font-size: 18px;
 }
 #countsong,
@@ -1449,11 +1455,6 @@ i.map.disabled, .map.disabled i {
 #button-pl-back,
 #lib-breadcrumbs a:first-of-type {
 	color: var( --cm );
-}
-#lib-breadcrumbs {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 #button-coverart {
 	position:relative;
@@ -1610,10 +1611,6 @@ i.map.disabled, .map.disabled i {
 	display: block;
 	padding-left: 2px;
 	line-height: 18px;
-	overflow: hidden;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .coverart1 {
 	padding-top: 3px;
@@ -1650,7 +1647,7 @@ i.map.disabled, .map.disabled i {
 .liinfo {
 	display: inline-block;
 	margin: auto 0 0 0;
-	padding-left: 10px;
+	padding: 0 5px 0 10px;
 	line-height: 30px;
 	color: var( --cw );
 	overflow: hidden;
@@ -1688,14 +1685,7 @@ i.map.disabled, .map.disabled i {
 	border-bottom: 1px solid var( --cga );
 	font-size: 15px;
 	background: #10161c
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	-o-user-select: none;
 	user-select: none;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 #lib-list p,
 #pl-list p,
@@ -1722,18 +1712,6 @@ i.map.disabled, .map.disabled i {
 .pl-icon,
 #lib-list li span i {
 	margin-right: 10px;
-}
-#lib-list span,
-.liinfo .lialbum,
-.liinfo .liartist,
-.liinfo .licomposer,
-.liinfo .liinfopath,
-#pl-list .liname,
-#pl-list .li2,
-#pl-savedlist span {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 #pl-list .liname {
 	max-width: calc( 100% - 190px );
@@ -1882,19 +1860,10 @@ li.active .li1 bl {
 #pl-savedlist .li1 {
 	padding: 5px 10px 0 0;
 }
-#lib-list .li1,
-#lib-list .li2 {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 #pl-list .li1 span,
 #pl-savedlist .li1 span {
 	display: inline-block;
 	max-width: calc( 100% - 105px );
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .time {
 	margin-left: 10px;
