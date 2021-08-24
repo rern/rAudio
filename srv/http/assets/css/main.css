@@ -1137,19 +1137,24 @@ i.map.disabled, .map.disabled i {
 	background: var( --cga );
 	z-index: 2;
 }
+#divlyricstitle img {
+	display: inline-block;
+	height: 40px;
+}
+#lyricstitle {
+	display: inline-block;
+	margin-left: 5px;
+	font-size: 26px;
+	font-weight: 300;
+}
 #divlyricsartist {
 	z-index: 1;
 }
-#lyricstitle,
 #lyricsartist {
 	display: inline-block;
 	max-width: calc( 100% - 40px );
 	padding-left: 15px;
 	line-height: 40px;
-}
-#lyricstitle {
-	font-size: 26px;
-	font-weight: 300;
 }
 #lyricsclose {
 	position: absolute;
@@ -1160,12 +1165,6 @@ i.map.disabled, .map.disabled i {
 #lyricsartist {
 	font-size: 18px;
 	color: var( --cg60 );
-}
-#lyricsartist img {
-	height: 36px;
-	margin-bottom: 3px;
-	vertical-align: middle;
-	border: 1px solid hsl(0,0%,15%);
 }
 #lyricsedit,
 #lyricseditbtngroup {

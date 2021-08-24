@@ -797,8 +797,9 @@ function lyricsShow( data ) {
 	if ( data !== 'current' ) {
 		G.lyrics = data;
 		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
+		$( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' )  );
 		$( '#lyricstitle' ).text( G.lyricsTitle );
-		$( '#lyricsartist' ).html( '<img src="'+ $( '#coverart' ).attr( 'src' ) +'">&ensp;'+ G.lyricsArtist );
+		$( '#lyricsartist' ).text( G.lyricsArtist );
 		$( '#lyricstext' ).html( lyricshtml );
 	}
 	$( '#lyrics' )

@@ -401,6 +401,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 </div>
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
+		<img src="">
 		<span id="lyricstitle"></span>
 		<i id="lyricsclose" class="fa fa-times"></i>
 	</div>
