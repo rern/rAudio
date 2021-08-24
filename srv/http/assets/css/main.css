@@ -1146,6 +1146,7 @@ i.map.disabled, .map.disabled i {
 	margin-left: 5px;
 	font-size: 26px;
 	font-weight: 300;
+	line-height: 40px;
 }
 #divlyricsartist {
 	z-index: 1;
