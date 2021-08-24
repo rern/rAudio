@@ -1852,6 +1852,7 @@ $( '#lyricstextarea' ).on( 'input', function() {
 	}
 } );
 $( '#lyricsedit' ).click( function() {
+	$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstext' ).addClass( 'hide' );
 	$( '#lyricstextarea' )
