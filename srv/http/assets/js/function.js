@@ -1343,7 +1343,7 @@ function renderPlaybackTitles() {
 	}
 	if ( !G.display.time ) renderPlaybackTime();
 }
-renderPlaylist = function( data ) {
+function renderPlaylist( data ) {
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
 	$( '#pl-search-close' ).click();
@@ -1439,7 +1439,7 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var prefix = G.display.time ? 'ti' : 'i';
+	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
