@@ -840,6 +840,7 @@ $( '.map' ).on( 'tap', function() {
 $( '.btn-cmd' ).click( function() {
 	var $this = $( this );
 	var cmd = this.id;
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	if ( $this.hasClass( 'btn-toggle' ) ) {
 		var onoff = !G.status[ cmd ];
 		G.status[ cmd ] = onoff;
@@ -856,7 +857,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
-			if ( G.display.time ) {
+			if ( displaytime ) {
 				$( '#elapsed' ).removeClass( 'bl' );
 				$( '#total' ).removeClass( 'wh' );
 			} else {
@@ -891,7 +892,7 @@ $( '.btn-cmd' ).click( function() {
 				$( '#total' ).empty();
 				if ( !G.status.stream ) {
 					var timehms = second2HMS( G.status.Time );
-					if ( G.display.time ) {
+					if ( displaytime ) {
 						$( '#time' ).roundSlider( 'setValue', 0 );
 						$( '#elapsed' )
 							.text( timehms )
@@ -918,7 +919,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			if ( G.display.time ) {
+			if ( displaytime ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
 			} else {

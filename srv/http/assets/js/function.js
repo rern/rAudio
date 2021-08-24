@@ -295,13 +295,14 @@ function displayCheckboxSet( i, enable, check ) {
 }
 function displayPlayback() {
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	$( '#volume-knob' ).toggleClass( 'hide', !G.display.volume || G.display.volumenone );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
 	var volume = ( G.display.volumenone || !G.display.volume ) ? 0 : 1;
-	var column = ( G.display.time ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + volume;
+	var column = ( displaytime ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + volume;
 	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
 	if ( column === 2 ) {
 		$elements.css( 'width', '' );
@@ -318,14 +319,14 @@ function displayPlayback() {
 		$( '#volume-knob' ).css( 'margin-left', '' );
 	}
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	if ( G.display.time ) {
+	if ( displaytime ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 		$( '#progress' ).empty();
 	}
-	$( '#time-bar, #time-band' ).toggleClass( 'hide', G.display.time );
+	$( '#time-bar, #time-band' ).toggleClass( 'hide', displaytime );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
-	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || G.display.volume );
+	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || $( '#volume-knob' ).is( ':visible' ) );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 }
@@ -668,12 +669,13 @@ function infoPlayback() {
 		, beforeshow   : function() {
 			$( '#infoContent tr:last' ).before( '<tr><td colspan="2" class="gr">Default if no coverart found:</td></tr>' );
 			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
+			var displaytime = $( '#time-knob' ).is( ':visible' );
 			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
-			if ( G.display.time ) displayCheckboxSet( 3 );       // disable by time
+			if ( displaytime ) displayCheckboxSet( 3 );             // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
 			if ( G.display.volumenone ) displayCheckboxSet( 6 ); // disable by mpd volume
-			if ( !G.display.time && !G.display.volume ) {
+			if ( !displaytime && !G.display.volume ) {
 				displayCheckboxSet( 4 ); // disable by autohide
 				displayCheckboxSet( 8 );
 			}
@@ -824,7 +826,7 @@ function lyricsHide() {
 }
 function mpcSeek( seekto ) {
 	var seektime = Math.round( seekto / 1000 * G.status.Time );
-	if ( G.display.time ) {
+	if ( $( '#time-knob' ).is( ':visible' ) ) {
 		G.status.elapsed = seektime;
 		elapsed = seektime;
 		position = seekto;
@@ -1106,7 +1108,7 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	if ( !G.display.volumenone && G.display.volume ) {
+	if ( !G.display.volumenone && $( '#volume-knob' ).is( ':visible' ) ) {
 		$volumeRS.setValue( G.status.volume );
 		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
@@ -1139,11 +1141,12 @@ function renderPlayback() {
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	$( '#total' ).text( timehms );
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
-		if ( G.display.time ) {
+		if ( displaytime ) {
 			$( '#time' ).roundSlider( 'setValue', 0 );
 			$( '#elapsed' )
 				.text( timehms )
@@ -1166,7 +1169,7 @@ function renderPlayback() {
 	var position = Math.round( G.status.elapsed / time * 1000 );
 // pause ////////////////////
 	if ( G.status.state === 'pause' ) {
-		if ( G.display.time ) {
+		if ( displaytime ) {
 			$( '#time' ).roundSlider( 'setValue', position );
 			$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
@@ -1189,7 +1192,7 @@ function renderPlaybackBlank() {
 	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
-	if ( G.display.time ) $( '#time' ).roundSlider( 'setValue', 0 );
+	if ( $( '#time-knob' ).is( ':visible' ) ) $( '#time' ).roundSlider( 'setValue', 0 );
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
@@ -1341,7 +1344,7 @@ function renderPlaybackTitles() {
 		$( '#playericon' ).removeAttr( 'class' );
 		if ( G.status.icon ) $( '#playericon' ).addClass( 'fa fa-'+ G.status.icon );
 	}
-	if ( !G.display.time ) renderPlaybackTime();
+	if ( !$( '#time-knob' ).is( ':visible' ) ) renderPlaybackTime();
 }
 function renderPlaylist( data ) {
 	G.savedlist = 0;
@@ -1439,12 +1442,13 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+	var displaytime = $( '#time-knob' ).is( ':visible' );
+	var prefix = displaytime ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
 	
-	if ( G.display.buttons && G.display.time ) {
+	if ( G.display.buttons && displaytime ) {
 		$( '#random' ).toggleClass( 'active', G.status.random );
 		$( '#repeat' ).toggleClass( 'active', G.status.repeat );
 		$( '#single' ).toggleClass( 'active', G.status.single );
@@ -1456,7 +1460,7 @@ function setButtonOptions() {
 	}
 	[ 'consume', 'librandom' ].forEach( function( option ) {
 		$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
-		if ( G.display.time ) {
+		if ( displaytime ) {
 			$( '#i-'+ option ).addClass( 'hide' );
 			$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
 		} else {
@@ -1466,14 +1470,14 @@ function setButtonOptions() {
 	} );
 	setButtonUpdateAddons();
 	setButtonUpdating();
-	if ( !G.display.volume && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	if ( !$( '#volume-knob' ).is( ':visible' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 	$( '#play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
 }
 function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
-			var prefix = G.display.time ? 'ti' : 'i';
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}
@@ -1493,7 +1497,7 @@ function setButtonUpdating() {
 					.addClass( 'fa-refresh-library' );
 			}
 		} else {
-			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' )
+			$( '#'+ ( $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' )
 		}
 	} else {
 		$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
@@ -1700,8 +1704,8 @@ function volColorMute() {
 	$( '#volmute' )
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
-	var prefix = G.display.time ? 'ti' : 'i';
-	if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+	if ( !$( '#volume-knob' ).is( ':visible' ) ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function volColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );
