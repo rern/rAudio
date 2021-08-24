@@ -414,9 +414,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 			<i id="lyricsback" class="fa fa-arrow-left bl"></i>
 		</div>
 	</div>
-	<div id="lyricstextoverlay">
-		<div id="lyricstext" class="lyricstext"></div>
-	</div>
+	<div id="lyricstext" class="lyricstext"></div>
 	<textarea id="lyricstextarea" class="lyricstext"></textarea>
 	<div id="lyricsfade"></div>
 </div>

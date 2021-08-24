@@ -1181,19 +1181,13 @@ i.map.disabled, .map.disabled i {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
-#lyricstextoverlay {
-	width: 100%;
-	padding-left: 15px;
-	overflow: hidden;
-}
 #lyricstext {
-	padding: 21px 15px 180px 0;
+	padding: 21px 15px 180px 15px;
 	overflow: auto;
 }
 #lyricstextarea {
-	width: calc( 100% - 10px );
-	margin-left: 5px;
-	padding:20px 10px 140px 10px;
+	width: 100%;
+	padding:20px 10px 140px 15px;
 	background: var( --cga );
 	border: none;
 	border-radius: 0;

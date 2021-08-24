@@ -377,7 +377,7 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 	artist = artist.replace( /(["`])/g, '\\$1' );
 	var title = $( '#title' ).text().replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
-	bash( [ 'lyrics', artist, title, 'local', file ], function( data ) {
+	bash( [ 'lyricsexist', artist, title, file ], function( data ) {
 		if ( data ) {
 			G.lyricsTitle = title;
 			G.lyricsArtist = artist;
@@ -1843,18 +1843,23 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {
-	$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
-	$( '#lyricsback' ).addClass( 'hide' );
+	if ( G.lyrics === $( this ).val()  ) {
+		$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
+		$( '#lyricsback' ).removeClass( 'hide' );
+	} else {
+		$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
+		$( '#lyricsback' ).addClass( 'hide' );
+	}
 } );
 $( '#lyricsedit' ).click( function() {
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
-	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
+	$( '#lyricsedit, #lyricstext' ).addClass( 'hide' );
 	$( '#lyricstextarea' )
 		.val( G.lyrics )
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
 $( '#lyricsclose' ).click( function() {
-	if ( $( '#lyricstextarea' ).val() === G.lyrics || $( '#lyricstextarea' ).val() === '' ) {
+	if ( $( '#lyricstextarea' ).val() === G.lyrics || !$( '#lyricstextarea' ).val() ) {
 		lyricsHide();
 	} else {
 		info( {
@@ -1867,7 +1872,7 @@ $( '#lyricsclose' ).click( function() {
 } );
 $( '#lyricsback' ).click( function() {
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
-	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 } );
 $( '#lyricsundo' ).click( function() {
 	info( {
@@ -1882,8 +1887,6 @@ $( '#lyricsundo' ).click( function() {
 	} );
 } );
 $( '#lyricssave' ).click( function() {
-	if ( $( '#lyricstextarea' ).val() === G.lyrics ) return;
-	
 	info( {
 		  icon     : 'lyrics'
 		, title    : 'Lyrics'
@@ -1892,11 +1895,11 @@ $( '#lyricssave' ).click( function() {
 			G.lyrics = $( '#lyricstextarea' ).val();
 			var artist = $( '#lyricsartist' ).text();
 			var title = $( '#lyricstitle' ).text();
-			bash( [ 'lyrics', artist, title, 'save', G.lyrics.replace( /\n/g, '^' ) ] ); // keep lirics single line
+			bash( [ 'lyrics', artist, title, 'save', G.lyrics.replace( /\n/g, '\\n' ) ] );
 			lyricstop = $( '#lyricstextarea' ).scrollTop();
 			lyricsShow( G.lyrics );
 			$( '#lyricseditbtngroup' ).addClass( 'hide' );
-			$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+			$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 		}
 	} );
 } );	

@@ -468,17 +468,9 @@ lyrics )
 	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
-	
 	lyricsfile="$dirdata/lyrics/${name,,}.txt"
-	if [[ $cmd == local ]]; then
-		if [[ -e "$lyricsfile" ]]; then
-			cat "$lyricsfile"
-		else
-			kid3-cli -c "select \"$data\"" \
-					 -c "get lyrics"
-		fi
-	elif [[ $cmd == save ]]; then
-		echo -e "${data//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
+	if [[ $cmd == save ]]; then
+		echo -e "$data" > "$lyricsfile"
 	elif [[ $cmd == delete ]]; then
 		rm "$lyricsfile"
 	else
@@ -494,6 +486,20 @@ lyrics )
 				| grep -v '^<' \
 				| tee "$lyricsfile"
 		fi
+	fi
+	;;
+lyricsexist )
+	artist=${args[1]}
+	title=${args[2]}
+	file=${args[3]}
+	name="$artist - $title"
+	name=${name//\/}
+	lyricsfile="$dirdata/lyrics/${name,,}.txt"
+	if [[ -e "$lyricsfile" ]]; then
+		cat "$lyricsfile"
+	else
+		kid3-cli -c "select \"$file\"" \
+				 -c "get lyrics"
 	fi
 	;;
 mpcoption )

@@ -820,7 +820,7 @@ function lyricsHide() {
 		$( '#lyricstext' ).empty();
 		$( '#lyricstextarea' ).val( '' );
 	}
-	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
 	if ( G.bars ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
