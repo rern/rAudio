@@ -45,12 +45,6 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <br>
 <img id="gpiosvg" src="/assets/img/gpio.<?=$time?>.svg">
 <br>
-<span class="help-block hide">
-	Control <wh>GPIO</wh> connected relay module for power on /off equipments in sequence.
-	<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
-	<br>&nbsp
-</span>
-
 <form id="relaysform">
 <div class="column section" id="gpio">
 	<div class="gpio-float-l">
