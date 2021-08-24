@@ -1,13 +1,6 @@
 <?php
 $time = time();
 $pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
-$powerbutton = @file( '/etc/powerbutton.conf', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-if ( $powerbutton ) {
-	foreach( $powerbutton as $p ) {
-		$powerpins[] = explode( '=', $p )[ 1 ];
-	}
-	$pins = array_diff( $pins, $powerpins );
-}
 $optionpin = '';
 foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
 $htmlpin = '';
@@ -46,11 +39,17 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <body>
 <div class="head">
 	<i class="page-icon fa fa-relays"></i><span class="title">GPIO RELAYS</span><a href="/settings.php?p=system"><i id="close" class="fa fa-times"></i></a>
+	<i id="help" class="fa fa-question-circle"></i>
 </div>
 <div class="container">
 <br>
 <img id="gpiosvg" src="/assets/img/gpio.<?=$time?>.svg">
 <br>
+<span class="help-block hide">
+	Control <wh>GPIO</wh> connected relay module for power on /off equipments in sequence.
+	<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+	<br>&nbsp
+</span>
 
 <form id="relaysform">
 <div class="column section" id="gpio">
