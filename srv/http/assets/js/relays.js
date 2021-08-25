@@ -35,6 +35,7 @@ renderPage = function( list ) {
 		D.key.names = [ 'name1', 'name2', 'name3', 'name4' ];
 		D.key.on = Object.keys( G.on );
 		D.key.off = Object.keys( G.off );
+		$( '.infobtn' ).addClass( 'disabled' )
 	}
 	var pin, namepin;
 	var optnamepin = '<option value="0">--- none ---</option>';
