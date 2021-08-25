@@ -38,12 +38,6 @@ if [[ $i2c == true ]]; then
 									| grep . \
 									| sort -u )
 fi
-if [[ -e /etc/relays.conf ]]; then
-	relayspins=$( grep '"on."' /etc/relays.conf | awk '{print $NF}' | grep -v '0.*' | tr -d '\n' )
-	relayspins=[${relayspins:0:-1}]
-else
-	relayspins=false
-fi
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 soccore=${cpu[0]}
 (( $soccore > 1 )) && soccpu="$soccore x ${cpu[1]}" || soccpu=${cpu[1]}
@@ -133,7 +127,6 @@ data+='
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
 , "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "relayspins"      : '$relayspins'
 , "rpimodel"        : "'$rpimodel'"
 , "soc"             : "'$soc'"
 , "soccpu"          : "'$soccpu'"
