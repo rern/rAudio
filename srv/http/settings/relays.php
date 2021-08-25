@@ -17,14 +17,14 @@ for ( $i = 1; $i < 5; $i++ ) {
 		<span class="gpio-text"><i class="fa fa-gpiopins bl"></i> Pin</span>
 		<?=$htmlpin?>
 		<span class="gpio-text"><i class="fa fa-stopwatch yl"></i> Idle</span>
-		<select id="timer" name="timer" class="timer"></select>
+		<select id="timer" class="timer"></select>
 	</div>
 	<div class="column" id="gpio-name">
 		<span class="gpio-text"><i class="fa fa-tag bl"></i> Name</span>
-		<input id="name1" name="name1" type="text" class="name" placeholder="(no name)">
-		<input id="name2" name="name2" type="text" class="name" placeholder="(no name)">
-		<input id="name3" name="name3" type="text" class="name" placeholder="(no name)">
-		<input id="name4" name="name4" type="text" class="name" placeholder="(no name)">
+		<input id="name1" type="text" class="name" placeholder="(no name)">
+		<input id="name2" type="text" class="name" placeholder="(no name)">
+		<input id="name3" type="text" class="name" placeholder="(no name)">
+		<input id="name4" type="text" class="name" placeholder="(no name)">
 		<span class="timer">&nbsp;min. to <i class="fa fa-power red"></i></span>
 	</div>
 </div>

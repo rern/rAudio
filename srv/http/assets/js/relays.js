@@ -25,9 +25,9 @@ renderPage = function( list ) {
 		G.v.pins = Object.keys( G.name );
 		G.v.names = Object.values( G.name );
 		G.v.timer = G.timer;
-		var on = Object.values( G.on );
-		var off = Object.values( G.off );
-		G.values = [ ...G.v.pins, ...G.v.names, ...on, ...off, G.v.timer ].toString();
+		G.v.on = Object.values( G.on );
+		G.v.off = Object.values( G.off );
+		G.values = [ ...G.v.pins, ...G.v.names, ...G.v.on, ...G.v.off, G.v.timer ].toString();
 		G.k = {}
 		G.k.pins = [ 'pin1', 'pin2', 'pin3', 'pin4' ];
 		G.k.names = [ 'name1', 'name2', 'name3', 'name4' ];
@@ -47,11 +47,11 @@ renderPage = function( list ) {
 	for ( i = 1; i < 11; i++ ) optsec += '<option value="'+ i +'">'+ i +'</option>';
 	htmlsec = '</select><span class="sec">sec.</span>';
 	for ( i = 1; i < 5; i++ ) {
-		htmlon +=  '<select id="on'+ i +'" name="on'+ i +'" class="on">'+ optnamepin +'</select>';
-		htmloff += '<select id="off'+ i +'" name="off'+ i +'" class="off">'+ optnamepin +'</select>';
+		htmlon +=  '<select id="on'+ i +'" class="on">'+ optnamepin +'</select>';
+		htmloff += '<select id="off'+ i +'" class="off">'+ optnamepin +'</select>';
 		if ( i < 4 ) {
-			htmlon += '<select id="ond'+ i +'" name="ond'+ i +'" class="ond delay">'+ optsec + htmlsec;
-			htmloff += '<select id="offd'+ i +'" name="offd'+ i +'" class="offd delay">'+ optsec + htmlsec;
+			htmlon += '<select id="ond'+ i +'" class="on delay">'+ optsec + htmlsec;
+			htmloff += '<select id="offd'+ i +'" class="off delay">'+ optsec + htmlsec;
 		}
 	}
 	$( '#timer' )
@@ -59,18 +59,13 @@ renderPage = function( list ) {
 		.find( 'option[value='+ G.v.timer +']' ).prop( 'selected', 1 );
 	$( '#on' ).html( htmlon );
 	$( '#off' ).html( htmloff );
-	for ( i=1; i < 5; i++ ) {
-		$( '#pin'+ i ).val( G.v.pins[ i - 1 ] );
-		var ex = G.v.pins.slice( 0 ); // clone
-		ex.splice( i - 1, 1 );
-		for ( x = 0; x < 3; x++ ) $( '#pin'+ i +' option[value='+ ex[ x ] +']' ).toggleClass( 'hide' );
-		$( '#name'+ i ).val( G.v.names[ i - 1 ] );
-		$( '#on'+ i +' option[value='+ G.on[ 'on'+ i ] +']' ).prop( 'selected', 1 );
-		$( '#off'+ i +' option[value='+ G.off[ 'off'+ i ] +']' ).prop( 'selected', 1 );
-		if ( i < 4 ) {
-			$( '#ond'+ i +' option[value='+ G.on[ 'ond'+ i ] +']' ).prop( 'selected', 1 );
-			$( '#offd'+ i +' option[value='+ G.off[ 'offd'+ i ] +']' ).prop( 'selected', 1 );
+	for ( i = 0; i < 7; i++ ) {
+		if ( i > 0 && i < 5 ) {
+			$( '#pin'+ i ).val( G.v.pins[ i - 1 ] );
+			$( '#name'+ i ).val( G.v.names[ i - 1 ] );
 		}
+		$( '.on' ).eq( i ).val( G.v.on[ i ] )
+		$( '.off' ).eq( i ).val( G.v.off[ i ] )
 	}
 	if ( list ) {
 		$( 'select' ).selectric();
@@ -80,8 +75,8 @@ renderPage = function( list ) {
 	}
 	$( '.selectric-ond, .selectric-offd' ).removeClass( 'disabled' );
 	$( '.selectric .label' ).removeClass( 'gr' );
-	var $el0 = $( 'select.on, select.off' ).filter( function() {
-		return $( this ).val() == 0;
+	var $el0 = $( '.on, .off' ).filter( function() {
+		return !$( this ).hasClass( 'delay' ) && $( this ).val() == 0;
 	} ).parent().parent();
 	$el0.find( '.label' ).addClass( 'gr' );
 	$el0.prev().prev()
@@ -89,25 +84,14 @@ renderPage = function( list ) {
 		.find( '.label' ).addClass( 'gr' );
 	showContent();
 }
-// disable default in shortcut.js
-$( 'select' ).off( 'change' );
-$( 'input' ).off( 'keyup' );
+// disable default > re-enable
+$( 'body' )
+	.off( 'change', 'select' )
+	.off( 'keyup', 'input' )
+	.on( 'change', 'select', refreshData )
+	.on( 'keyup', 'input', refreshData );
 $( '.infobtn' ).off( 'click' );
-
-$( '.name' ).keyup( function() {
-	refreshData();
-} );
-$( '.pin, #timer' ).change( function() {
-	refreshData();
-} );
-$( '.on, .off' ).change( function( e ) {
-	refreshData();
-	if ( $( e.target ).find( 'option:selected' ).val() == 0 ) {
-		var id = e.target.id;
-		var i = id.slice( -1 ) - 1;
-		if ( i ) $( '#'+ id.slice( 0, -1 ) +'d'+ i +' option:eq( 0 )' ).prop( 'selected', 1 );
-	}
-} );
+	
 $( '#undo' ).click( function() {
 	renderPage( G );
 	$( '.infobtn' ).addClass( 'disabled' );
