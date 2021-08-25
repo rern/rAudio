@@ -55,16 +55,14 @@ span.timer i {
 	width: 120px;
 }
 #gpio .column {
+	float: left;
+	margin: 0;
+	padding: 0;
 	width: 175px;
 }
 #gpio-num.column,
 .delay {
 	width: 90px;
-}
-#gpio .column {
-	float: left;
-	margin: 0;
-	padding: 0;
 }
 .gpio-text {
 	display: block;
