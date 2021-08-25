@@ -28,10 +28,10 @@ relaysOrder() {
 	done
 	timer=$( jq -r .timer <<< $conf )
 	echo -n "\
-onorder=[ ${onorder:1} ]
+onorder='[ ${onorder:1} ]'
 on=( ${on[@]} )
 ond=( ${ond[@]} )
-offorder=[ ${offorder:1} ]
+offorder='[ ${offorder:1} ]'
 off=( ${off[@]} )
 offd=( ${offd[@]} )
 timer=$timer" > $dirsystem/relays
