@@ -3,15 +3,15 @@ $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 function refreshData() {
 	var n = [ 'pins', 'names', 'on', 'off' ];
 	n.forEach( function( c ) {
-		G.v[ c ] = [];
-		G.k[ c ].forEach( function( id ) {
-			G.v[ c ].push( $( '#'+ id ).val() );
+		D.val[ c ] = [];
+		D.key[ c ].forEach( function( id ) {
+			D.val[ c ].push( $( '#'+ id ).val() );
 		} );
 	} );
-	G.v.timer = $( '#timer' ).val();
-	var values = [ ...G.v.pins, ...G.v.names, ...G.v.on, ...G.v.off, G.v.timer ].toString();
+	D.val.timer = $( '#timer' ).val();
+	var values = [ ...D.val.pins, ...D.val.names, ...D.val.on, ...D.val.off, D.val.timer ].toString();
 	renderPage();
-	$( '.infobtn' ).toggleClass( 'disabled', values === G.values );
+	$( '.infobtn' ).toggleClass( 'disabled', values === D.valalues );
 }
 renderPage = function( list ) {
 	if ( list ) {
@@ -21,24 +21,27 @@ renderPage = function( list ) {
 		} else {
 			G = list;
 		}
-		G.v = [];
-		G.v.pins = Object.keys( G.name );
-		G.v.names = Object.values( G.name );
-		G.v.timer = G.timer;
-		G.v.on = Object.values( G.on );
-		G.v.off = Object.values( G.off );
-		G.values = [ ...G.v.pins, ...G.v.names, ...G.v.on, ...G.v.off, G.v.timer ].toString();
-		G.k = {}
-		G.k.pins = [ 'pin1', 'pin2', 'pin3', 'pin4' ];
-		G.k.names = [ 'name1', 'name2', 'name3', 'name4' ];
-		G.k.on = Object.keys( G.on );
-		G.k.off = Object.keys( G.off );
+		D = {
+			  val : {}
+			, key : {}
+		}
+		D.val.pins = Object.keys( G.name );
+		D.val.names = Object.values( G.name );
+		D.val.timer = G.timer;
+		D.val.on = Object.values( G.on );
+		D.val.off = Object.values( G.off );
+		D.valalues = [ ...D.val.pins, ...D.val.names, ...D.val.on, ...D.val.off, D.val.timer ].toString();
+		D.key = {}
+		D.key.pins = [ 'pin1', 'pin2', 'pin3', 'pin4' ];
+		D.key.names = [ 'name1', 'name2', 'name3', 'name4' ];
+		D.key.on = Object.keys( G.on );
+		D.key.off = Object.keys( G.off );
 	}
 	var pin, namepin;
 	var optnamepin = '<option value="0">--- none ---</option>';
 	for ( i = 0; i < 4; i++ ) {
-		pin = G.v.pins[ i ];
-		namepin = ( G.v.names[ i ] || '(no name)' ) +' - '+ pin;
+		pin = D.val.pins[ i ];
+		namepin = ( D.val.names[ i ] || '(no name)' ) +' - '+ pin;
 		optnamepin += '<option value="'+ pin +'">'+ namepin +'</option>';
 	}
 	var htmlon = '';
@@ -56,16 +59,16 @@ renderPage = function( list ) {
 	}
 	$( '#timer' )
 		.html( optsec )
-		.find( 'option[value='+ G.v.timer +']' ).prop( 'selected', 1 );
+		.find( 'option[value='+ D.val.timer +']' ).prop( 'selected', 1 );
 	$( '#on' ).html( htmlon );
 	$( '#off' ).html( htmloff );
 	for ( i = 0; i < 7; i++ ) {
 		if ( i > 0 && i < 5 ) {
-			$( '#pin'+ i ).val( G.v.pins[ i - 1 ] );
-			$( '#name'+ i ).val( G.v.names[ i - 1 ] );
+			$( '#pin'+ i ).val( D.val.pins[ i - 1 ] );
+			$( '#name'+ i ).val( D.val.names[ i - 1 ] );
 		}
-		$( '.on' ).eq( i ).val( G.v.on[ i ] )
-		$( '.off' ).eq( i ).val( G.v.off[ i ] )
+		$( '.on' ).eq( i ).val( D.val.on[ i ] )
+		$( '.off' ).eq( i ).val( D.val.off[ i ] )
 	}
 	if ( list ) {
 		$( 'select' ).selectric();
@@ -101,14 +104,14 @@ $( '#save' ).off( 'click' ).click( function() {
 		  name  : {}
 		, on    : {}
 		, off   : {}
-		, timer : G.v.timer
+		, timer : D.val.timer
 	}
 	for( i = 0; i < 4; i++ ) {
-		values.name[ G.v.pins[ i ] ] = G.v.names[ i ];
+		values.name[ D.val.pins[ i ] ] = D.val.names[ i ];
 	}
 	for( i = 0; i < 7; i++ ) {
-		values.on[ G.k.on[ i ] ] = G.v.on[ i ];
-		values.off[ G.k.off[ i ] ] = G.v.off[ i ];
+		values.on[ D.key.on[ i ] ] = D.val.on[ i ];
+		values.off[ D.key.off[ i ] ] = D.val.off[ i ];
 	}
 	bash( [ 'relaysset', JSON.stringify( values ) ] );
 	banner( 'Relays', 'Change ...', 'relays' );
