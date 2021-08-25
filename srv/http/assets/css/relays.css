@@ -98,3 +98,6 @@ input {
 .column span i {
 	font-size: 20px;
 }
+.selectric-wrapper.disabled .label {
+	color: var( --cg60 );
+}

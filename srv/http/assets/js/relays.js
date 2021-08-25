@@ -79,19 +79,31 @@ renderPage = function( list ) {
 	$( '.selectric .label' ).removeClass( 'gr' );
 	var $el0 = $( '.on, .off' ).filter( function() {
 		return !$( this ).hasClass( 'delay' ) && $( this ).val() == 0;
-	} ).parent().parent();
-	$el0.find( '.label' ).addClass( 'gr' );
-	$el0.prev().prev()
-		.addClass( 'disabled' )
-		.find( '.label' ).addClass( 'gr' );
+	} ).parent().parent(); // 2-up: selectric-wrapper
+	if ( $el0.length ) {
+		$el0.find( '.label' ).addClass( 'gr' );
+		$el0.prev().prev() // 1-prv: sec. suffix; 2-prev: selectric-wrapper delay
+			.addClass( 'disabled' );
+	}
 	showContent();
 }
 // disable default > re-enable
 $( '.container' )
 	.off( 'change', 'select' )
 	.off( 'keyup', 'input' )
-	.on( 'change', 'select', refreshData )
-	.on( 'keyup', 'input', refreshData );
+	.on( 'change', 'select', function() {
+		var $this = $( this );
+		if ( $this.val() == 0 ) {
+			if ( $this.hasClass( 'on' ) ) {
+				var i = $( '.on' ).index( this );
+				if ( [ 2, 4, 6 ].indexOf( i ) !== -1 ) $( '.on' ).eq( i -1 ).val( 0 );
+			} else if ( $this.hasClass( 'off' ) ) {
+				var i = $( '.off' ).index( this );
+				if ( [ 2, 4, 6 ].indexOf( i ) !== -1 ) $( '.off' ).eq( i -1 ).val( 0 );
+			}
+		}
+		refreshData();
+	} ).on( 'keyup', 'input', refreshData );
 $( '.infobtn' ).off( 'click' );
 	
 $( '#undo' ).click( function() {
