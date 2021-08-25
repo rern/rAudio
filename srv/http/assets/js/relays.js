@@ -31,7 +31,6 @@ renderPage = function( list ) {
 		D.val.on = Object.values( G.on );
 		D.val.off = Object.values( G.off );
 		D.valalues = [ ...D.val.pins, ...D.val.names, ...D.val.on, ...D.val.off, D.val.timer ].toString();
-		D.key = {}
 		D.key.pins = [ 'pin1', 'pin2', 'pin3', 'pin4' ];
 		D.key.names = [ 'name1', 'name2', 'name3', 'name4' ];
 		D.key.on = Object.keys( G.on );
