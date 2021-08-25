@@ -85,7 +85,7 @@ renderPage = function( list ) {
 	showContent();
 }
 // disable default > re-enable
-$( 'body' )
+$( '.container' )
 	.off( 'change', 'select' )
 	.off( 'keyup', 'input' )
 	.on( 'change', 'select', refreshData )
