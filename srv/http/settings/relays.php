@@ -1,5 +1,4 @@
 <?php
-$time = time();
 $pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 $optionpin = '';
 foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
@@ -8,40 +7,8 @@ $htmlname = '';
 for ( $i = 1; $i < 5; $i++ ) {
 	$htmlpin.= '<select id="pin'.$i.'" name="pin'.$i.'" class="pin">'.$optionpin.'</select>';
 	$htmlname.= '<input id="name'.$i.'" name="name'.$i.'" type="text" class="name" placeholder="(no name)">';
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>relays</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
-	<style>
-		@font-face {
-			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
-			src: url( "/assets/fonts/rern.<?=$time?>.woff2" ) format( 'woff2' );
-		}
-	</style>
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
-</head>
-
-<body>
-<div class="head">
-	<i class="page-icon fa fa-relays"></i><span class="title">GPIO RELAYS</span><a href="/settings.php?p=system"><i id="close" class="fa fa-times"></i></a>
-	<i id="help" class="fa fa-question-circle"></i>
-</div>
-<div class="container">
 <br>
 <img id="gpiosvg" src="/assets/img/gpio.<?=$time?>.svg">
 <br>
@@ -78,14 +45,3 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	</div>
 </div>
 </form>
-
-</div>
-
-<script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
-<script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/relays.<?=$time?>.js"></script>
-	<?php if ( $localhost ) include '../keyboard.php';?>
-
-</body>
-</html>

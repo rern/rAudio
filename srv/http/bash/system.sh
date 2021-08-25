@@ -425,9 +425,12 @@ relays )
 	[[ ${args[1]} == true ]] && relaysOrder || rm -f $dirsystem/relays
 	pushRefresh
 	;;
-relayssave )
-	echo ${args[1]} | jq . > /etc/relays.conf
+relaysset )
+	data=$( echo ${args[1]} | jq . )
+	echo "$data" > /etc/relays.conf
 	relaysOrder
+	data=$( echo "$data" | sed '1 a\"page":"relays",' )
+	pushstream refresh "$data"
 	;;
 remount )
 	mountpoint=${args[1]}

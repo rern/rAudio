@@ -38,8 +38,11 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
-		<?php if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?> 
+		<?php if ( in_array( $page, [ 'features', 'player', 'relays', 'system' ] ) ) { ?> 
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+		<?php }
+			  if ( $page === 'relays' ) { ?>
+	<link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
 		<?php } ?>
 </head>
 <body>
@@ -73,11 +76,14 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
 	<?php }
-		  if ( in_array( $page, [ 'features', 'player', 'system' ] ) ) { ?>
+		  if ( in_array( $page, [ 'features', 'player', 'relays', 'system' ] ) ) { ?>
 <script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
 	<?php }
 		  if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
+	<?php }
+		  if ( $page === 'relays' ) { ?>
+<script src="/assets/js/relays.<?=$time?>.js"></script>
 	<?php }
 		  if ( $localhost ) include 'keyboard.php';?>
 	

@@ -3,6 +3,7 @@ function bash( command, callback, json ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
 		var filesh = command[ 0 ] !== 'statuspkg' ? page : 'cmd';
+		if ( filesh === 'relays' ) filesh = 'system';
 		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
 	$.post( 
@@ -284,7 +285,10 @@ document.title = page;
 
 refreshData();
 
+$( '#'+ page ).addClass( 'active' );
+if ( page === 'relays' ) $( '#help' ).addClass( 'hide' );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
+
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
@@ -331,7 +335,6 @@ $( document ).keyup( function( e ) {
 		}
 	}
 } );
-$( '#'+ page ).addClass( 'active' );
 $( '#close' ).click( function() {
 	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
 		bash( 'bluetoothctl scan off' );
