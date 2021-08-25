@@ -155,7 +155,7 @@ function infoReset() {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
 	}
-	$( '#infoContent, #infoArrow i, #infoButtons, #infoFileLabel' ).off( 'click' );
+	$( '#infoContent, #infoArrow i, #infoButtons .infobtn, #infoFileLabel' ).off( 'click' );
 	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
