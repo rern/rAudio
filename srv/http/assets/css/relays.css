@@ -54,7 +54,7 @@ span.timer i {
 #gpio-name input {
 	width: 120px;
 }
-#gpio .column {
+.column {
 	float: left;
 	margin: 0;
 	padding: 0;
