@@ -3,7 +3,6 @@ function bash( command, callback, json ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
 		var filesh = command[ 0 ] !== 'statuspkg' ? page : 'cmd';
-		if ( filesh === 'relays' ) filesh = 'system';
 		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
 	$.post( 

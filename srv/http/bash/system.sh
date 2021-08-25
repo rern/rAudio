@@ -19,43 +19,6 @@ pushRefresh() {
 	data=$( /srv/http/bash/system-data.sh )
 	pushstream refresh "$data"
 }
-relaysOrder() {
-	conf=$( cat /etc/relays.conf )
-	data() {
-		grep "$1" <<< "$conf" | awk '{print $NF}' | tr -d , | tr '\n' ' '
-	}
-	on=( $( data '"on."' ) )
-	ond=( $( data '"ond."' ) )
-	off=( $( data '"off."' ) )
-	offd=( $( data '"offd."' ) )
-	timer=$( grep '"timer"' <<< "$conf" | awk '{print $NF}' )
-	relaysfile='/srv/http/data/shm/relaystimer'
-
-	name=$( grep -A4 '"name"' <<< "$conf" | tail -4 )
-	readarray -t pins <<< $( echo "$name" | cut -d'"' -f2 )
-	readarray -t names <<< $( echo "$name" | cut -d'"' -f4 )
-	declare -A pinname
-	for i in 0 1 2 3; do
-		pinname+=( [${pins[$i]}]=${names[$i]} )
-	done
-	for i in 0 1 2 3; do
-		oni=${on[$i]}
-		offi=${off[$i]}
-		[[ $oni != 0 ]] && onorder+=,'"'${pinname[$oni]}'"'
-		[[ $offi != 0 ]] && offorder+=,'"'${pinname[$offi]}'"'
-	done
-
-	declare -p pinname > $dirsystem/relays
-	echo -n "\
-onorder='[ ${onorder:1} ]'
-on=( $( data '"on."' ) )
-ond=( $( data '"ond."' ) )
-offorder='[ ${offorder:1} ]'
-off=( $( data '"off."' ) )
-offd=( $( data '"offd."' ) )
-timer=$timer
-" >> $dirsystem/relays
-}
 soundprofile() {
 	if [[ $1 == reset ]]; then
 		latency=18000000
@@ -422,15 +385,8 @@ reboot )
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 relays )
-	[[ ${args[1]} == true ]] && relaysOrder || rm -f $dirsystem/relays
+	[[ ${args[1]} == true ]] && $dirbash/relays.sh relaysorder || rm -f $dirsystem/relays
 	pushRefresh
-	;;
-relaysset )
-	data=$( echo ${args[1]} | jq . )
-	echo "$data" > /etc/relays.conf
-	relaysOrder
-	data=$( echo "$data" | sed '1 a\"page":"relays",' )
-	pushstream refresh "$data"
 	;;
 remount )
 	mountpoint=${args[1]}
