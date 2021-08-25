@@ -673,10 +673,9 @@ function selectricRender() {
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
 		.selectric()
-		.each( function() {
-			var $this = $( this );
-			if ( $this.find( 'option' ).length === 1 ) $this.parent().parent().addClass( 'disabled' );
-		} );
+		.filter( function() {
+			return $( this ).find( 'option' ).length === 1
+		} ).parent().parent().addClass( 'disabled' );
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
 	var timeout = setTimeout( function() {
