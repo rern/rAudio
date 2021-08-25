@@ -292,11 +292,6 @@ if ( localhost ) $( 'a' ).removeAttr( 'href' );
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
-	if ( e.keyCode === 88 ) { // ctrl + x
-		$( '#close' ).click();
-		return
-	}
-	
 	var key = e.key;
 	if ( key === 'Tab'  ) {
 		$( '#bar-bottom div' ).removeClass( 'bgr' );
