@@ -57,30 +57,12 @@ streams.forEach( stream => {
 pushstream.connect();
 pushstream.onstatuschange = status => {
 	if ( status === 2 ) {        // connected
-		bash( [ 'displayget' ], data => {
-			delete G.coverTL;
-			G.display = data;
-			G.bars = data.bars;
-			G.display.screenoff = G.localhost;
-			G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
-			var submenu = {
-				  relays     : 'features'
-				, snapclient : 'player'
-				, lock       : 'system'
-				, screenoff  : 'power'
-			};
-			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
-				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
-					$( '#'+ submenu[ sub ] )
-						.addClass( 'sub' )
-						.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
-				}
-			} );
-		}, 'json' );
-		getPlaybackStatus();
-		bannerHide();
-		loaderHide();
+		if ( 'disconnected' in G ) { // don't run on page load
+			statusRefresh();
+			delete G.disconnected;
+		}
 	} else if ( status === 0 ) { // disconnected
+		G.disconnected = 1;
 		clearIntervalAll();
 		hideGuide();
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();

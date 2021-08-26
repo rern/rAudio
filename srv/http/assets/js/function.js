@@ -1643,6 +1643,31 @@ function setTrackCoverart() {
 		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
 	}
 }
+function statusRefresh() {
+	bash( [ 'displayget' ], data => {
+		delete G.coverTL;
+		G.display = data;
+		G.bars = data.bars;
+		G.display.screenoff = G.localhost;
+		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
+		var submenu = {
+			  relays     : 'features'
+			, snapclient : 'player'
+			, lock       : 'system'
+			, screenoff  : 'power'
+		};
+		[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
+			if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
+				$( '#'+ submenu[ sub ] )
+					.addClass( 'sub' )
+					.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
+			}
+		} );
+	}, 'json' );
+	getPlaybackStatus();
+	bannerHide();
+	loaderHide();
+}
 function stopAirplay() {
 	info( {
 		  icon    : 'airplay'

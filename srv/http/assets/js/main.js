@@ -89,6 +89,8 @@ var nameplayer = {
 // get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+statusRefresh();
+
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	if ( G.swipepl || G.drag ) return
 	
