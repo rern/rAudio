@@ -1,15 +1,13 @@
-var hash = Math.ceil( Date.now() / 1000 );
 var G = {
 	  addplay       : 0
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
-	, coverart      : '/assets/img/coverart.'+ hash +'.svg'
+	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
-	, covervu       : '/assets/img/vu.'+ hash +'.svg'
+	, covervu       : '/assets/img/vu.svg'
 	, debounce      : ''
 	, debouncems    : 300
-	, display       : {}
 	, guide         : 0
 	, library       : 0
 	, librarylist   : 0
@@ -1853,6 +1851,7 @@ $( '#lyricstextarea' ).on( 'input', function() {
 } );
 $( '#lyricsedit' ).click( function() {
 	$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
+	$( '#lyricsdelete' ).toggleClass( 'hide', !G.lyrics );
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
 	$( '#lyricsedit, #lyricstext' ).addClass( 'hide' );
 	$( '#lyricstextarea' )
