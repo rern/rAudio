@@ -8,26 +8,12 @@ renderPage = function( list ) {
 		} else {
 			G = list;
 		}
-		D = {
-			  val : {
-				  pin   : Object.keys( G.name )
-				, name  : Object.values( G.name )
-			}
-			, key : {}
-		};
-		[ 'on', 'off', 'ond', 'offd', 'timer' ].forEach( function( k ) {
+		D = { val : {}, key : {} };
+		D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+		D.keys.forEach( function( k ) {
 			D.val[ k ] = G[ k ];
 		} );
-		D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-		var k;
-		for ( i = 0; i < 6; i++ ) {
-			k = D.keys[ i ]
-			D.key[ k ] = [];
-			for ( j = 0; j < 4; j++ ) {
-				if ( i > 3 && j > 2 ) continue 
-				D.key[ k ].push( k + j );
-			}
-		}
+		D.val.timer = G.timer;
 		D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
 		$( '.infobtn' ).addClass( 'disabled' )
 	}
@@ -85,9 +71,8 @@ renderPage = function( list ) {
 function renderUpdate() {
 	D.keys.forEach( function( k ) {
 		D.val[ k ] = [];
-		D.key[ k ].forEach( function( id ) {
-			D.val[ k ].push( $( '#'+ id ).val() );
-		} );
+		var L = k.slice( -1 ) === 'd' ? 3 : 4;
+		for ( i = 0; i < L; i ++ ) D.val[ k ].push( $( '#'+ k + i ).val() );
 	} );
 	D.val.timer = $( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
@@ -119,14 +104,18 @@ $( '#undo' ).click( function() {
 } );
 $( '#save' ).off( 'click' ).click( function() {
 	var v = {
-		  name: {}
-		, timer : +D.val.timer
+		  names    : {}
+		, onorder  : []
+		, offorder : []
+		, timer    : +D.val.timer
 	};
-	[ 'on', 'off', 'ond', 'offd', 'onorder', 'offorder' ].forEach( function( k ) {
+	D.keys.forEach( function( k ) {
 		v[ k ] = [];
 	} );
 	for( i = 0; i < 4; i++ ) {
-		v.name[ D.val.pin[ i ] ] = D.val.name[ i ];
+		v.names[ D.val.pin[ i ] ] = D.val.name[ i ];
+		v.pin.push( +D.val.pin[ i ] )
+		v.name.push( D.val.name[ i ] )
 		v.on.push( +D.val.on[ i ] );
 		v.off.push( +D.val.off[ i ] );
 		if ( i < 3 ) {
@@ -135,19 +124,20 @@ $( '#save' ).off( 'click' ).click( function() {
 		}
 	}
 	v.on.forEach( function( p ) {
-		if ( p ) v.onorder.push( v.name[ p ] );
+		if ( p ) v.onorder.push( v.names[ p ] );
 	} );
 	v.off.forEach( function( p ) {
-		if ( p ) v.offorder.push( v.name[ p ] );
+		if ( p ) v.offorder.push( v.names[ p ] );
 	} );
-	var values = 'onorder=\'[ "'+ v.onorder.join( '","' ) +'" ]\'\\n'
+	var values = 'pin=\'[ "'+ v.pin.join( '","' ) +'" ]\'\\n'
+				+'name=\'[ "'+ v.name.join( '","' ) +'" ]\'\\n'
+				+'onorder=\'[ "'+ v.onorder.join( '","' ) +'" ]\'\\n'
+				+'offorder=\'[ "'+ v.offorder.join( '","' ) +'" ]\'\\n'
 				+'on=( '+ v.on.join( ' ' ) +' )\\n'
 				+'ond=( '+ v.ond.join( ' ' ) +' )\\n'
-				+'offorder=\'[ "'+ v.offorder.join( '","' ) +'" ]\'\\n'
 				+'off=( '+ v.off.join( ' ' ) +' )\\n'
 				+'offd=( '+ v.offd.join( ' ' ) +' )\\n'
-				+'timer='+ v.timer +'\\n'
-				+'name=\''+ JSON.stringify( v.name ) + "'";
+				+'timer='+ v.timer;
 	bash( [ 'relaysset', values ] );
 	banner( 'Relays', 'Change ...', 'relays' );
 } );

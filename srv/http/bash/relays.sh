@@ -6,10 +6,6 @@ dirtmp=/srv/http/data/shm
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"
-}
-
 cmd=${args[0]}
 
 if [[ $cmd == relaysset ]]; then
@@ -17,11 +13,16 @@ if [[ $cmd == relaysset ]]; then
 	echo -e "$data" > $dirsystem/relayspin
 	data=$( /srv/http/bash/relays-data.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d "$data"
+	exit
 fi
 
 . $dirsystem/relayspin
 
 relaysfile=$dirtmp/relaystimer
+
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"
+}
 
 killall relaystimer.sh &> /dev/null &
 

@@ -5,11 +5,16 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 if [[ -e /srv/http/data/system/relays && -e /etc/relays.conf ]]; then
-	data=$( grep -A4 '"name":' /etc/relays.conf | tail -4 )
-	echo "
-name='{"$data"}'" >> /srv/http/data/system/relays
-	mv /srv/http/data/system/relays{,pin}
-	touch /srv/http/data/system/relays
+	names=$( jq .name /etc/relays.conf )
+	pin=$( jq -r 'keys[]' <<< $names )
+	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
+	name=$( jq .[] <<< $names )
+	name="name='[ "$( echo $name | tr ' ' , )" ]'"
+	echo "\
+$pin
+$name
+$( sed -n '/^onorder/,/^timer/ p' /srv/http/data/system/relays )" > /srv/http/data/system/relayspin
+	> /srv/http/data/system/relays
 	rm /etc/relays.conf
 fi
 
