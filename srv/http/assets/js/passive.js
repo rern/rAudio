@@ -57,10 +57,7 @@ streams.forEach( stream => {
 pushstream.connect();
 pushstream.onstatuschange = status => {
 	if ( status === 2 ) {        // connected
-		if ( 'disconnected' in G ) { // don't run on page load
-			statusRefresh();
-			delete G.disconnected;
-		}
+		if ( 'disconnected' in G ) statusRefresh(); // don't run on page load
 	} else if ( status === 0 ) { // disconnected
 		G.disconnected = 1;
 		clearIntervalAll();
