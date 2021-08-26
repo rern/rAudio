@@ -144,8 +144,12 @@ audio_output {
 fi
 
 conf=$( cat /etc/mpd.conf )
-line=$( echo "$conf" | awk '/^resampler/,/}/ {print NR}' | tail -1 )
-global=$( echo "$conf" | sed -n "1,$line p" | sed '/# custom0/,/# custom1/ d' )
+line=$( echo "$conf" \
+			| awk '/^resampler/,/}/ {print NR}' \
+			| tail -1 )
+global=$( echo "$conf" \
+			| sed -n "1,$line p" \
+			| sed '/# custom0/,/# custom1/ d' )
 if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
 	custom=$( echo "
 # custom0
@@ -164,8 +168,11 @@ if [[ $1 == add || $1 == remove ]]; then
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	[[ -z $name ]] && name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
+	prevvolumenone=$( echo "$conf" \
+					| sed -n "$line,$ p" \
+					| grep -q 'mixer_type.*none' && echo true || echo false )
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
-	pushstream display '{"volumenone":'$volumenone'}'
+	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
 
 if [[ -n $Acard ]]; then
@@ -179,7 +186,9 @@ defaults.ctl.card 0
 	exit
 fi
 
-wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
+wm5102card=$( aplay -l \
+				| grep snd_rpi_wsp \
+				| cut -c 6 )
 if [[ -n $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
 	$dirbash/mpd-wm5102.sh $wm5102card $output
@@ -199,10 +208,9 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 	output_device = "hw:'$card'";
 }'
 	fi
-	conf=$( cat /etc/shairport-sync.conf )
-	line=$( echo "$conf" | awk '/^sessioncontrol/,/}/ {print NR}' | tail -1 )
+	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 	echo "\
-$( echo "$conf" | sed -n "1,$line p" )
+$conf
 $alsa" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
@@ -210,7 +218,10 @@ fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ -z $aplaydevice ]]; then # no bluetooth
-		cardname=$( aplay -l | grep "^card $card" | head -1 | cut -d' ' -f3 )
+		cardname=$( aplay -l \
+						| grep "^card $card" \
+						| head -1 \
+						| cut -d' ' -f3 )
 		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
 	fi
 	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
