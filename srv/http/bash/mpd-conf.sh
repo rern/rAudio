@@ -164,7 +164,8 @@ if [[ $1 == add || $1 == remove ]]; then
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	[[ -z $name ]] && name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
-	pushstream display "$( $dirbash/cmd.sh displayget )"
+	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
+	pushstream display '{"volumenone":'$volumenone'}'
 fi
 
 if [[ -n $Acard ]]; then
