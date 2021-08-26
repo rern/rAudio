@@ -1,36 +1,29 @@
 #!/bin/bash
 
-if [[ -e /etc/relays.conf ]]; then
-	cat /etc/relays.conf | sed '1 a\"page":"relays",'
-	exit
+if [[ -e /srv/http/data/system/relayspin ]]; then
+	. /srv/http/data/system/relayspin
+	data='
+  "page"  : "relays"
+, "name"  : '$name'
+, "on"    : ['$( echo ${on[@]} | tr ' ' , )']
+, "ond"   : ['$( echo ${ond[@]} | tr ' ' , )']
+, "off"   : ['$( echo ${off[@]} | tr ' ' , )']
+, "offd"  : ['$( echo ${offd[@]} | tr ' ' , )']
+, "timer" : '$timer
+else
+	data='
+  "page" : "relays"
+, "name" : {
+	  "11" : "DAC"
+	, "13" : "PreAmp"
+	, "15" : "Amp"
+	, "16" : "Subwoofer"
+}
+, "on"   : [ 11, 13, 15, 16 ]
+, "off"  : [ 16, 15, 13, 11 ]
+, "ond"  : [ 2, 2, 2 ]
+, "offd" : [ 2, 2, 2 ]
+, "timer" : 5'
 fi
 
-echo '
-{
-	  "page" : "relays"
-	, "name" : {
-		  "11" : "DAC"
-		, "13" : "PreAmp"
-		, "15" : "Amp"
-		, "16" : "Subwoofer"
-	}
-	, "on"   : {
-		  "on1"  : 11
-		, "ond1" : 2
-		, "on2"  : 13
-		, "ond2" : 2
-		, "on3"  : 15
-		, "ond3" : 2
-		, "on4"  : 16
-	}
-	, "off"  : {
-		  "off1"  : 16
-		, "offd1" : 2
-		, "off2"  : 15
-		, "offd2" : 2
-		, "off3"  : 13
-		, "offd3" : 2
-		, "off4"  : 11
-	}
-	, "timer" : 5
-}'
+echo "{$data}"

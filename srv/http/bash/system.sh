@@ -91,7 +91,6 @@ databackup )
 /etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
-/etc/relays.conf
 /etc/soundprofile.conf
 /etc/upmpdcli.conf
 /var/lib/alsa/asound.state
@@ -385,7 +384,7 @@ reboot )
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 relays )
-	[[ ${args[1]} == true ]] && $dirbash/relays.sh relaysorder || rm -f $dirsystem/relays
+	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
 	pushRefresh
 	;;
 remount )

@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+if [[ -e /srv/http/data/system/relays && -e /etc/relays.conf ]]; then
+	data=$( grep -A4 '"name":' /etc/relays.conf | tail -4 )
+	echo "
+name='{"$data"}'" >> /srv/http/data/system/relays
+	mv /srv/http/data/system/relays{,pin}
+	touch /srv/http/data/system/relays
+	rm /etc/relays.conf
+fi
+
 file=/etc/powerbutton.conf
 [[ -e $file ]] && ! grep -q reserved $file && echo reserved=5 >> $file
 
