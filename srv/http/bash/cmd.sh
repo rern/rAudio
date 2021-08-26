@@ -410,7 +410,7 @@ displayget )
 , "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 , "volumenone" : '$volumenone'
 }'
-echo "$data"
+	echo "$data"
 	;;
 displaysave )
 	data=$( jq . <<< ${args[1]} )
