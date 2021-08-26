@@ -55,11 +55,10 @@ streams.forEach( stream => {
 	pushstream.addChannel( stream );
 } );
 pushstream.connect();
-pushstream.onstatuschange = status => {
-	if ( status === 2 ) {        // connected
-		if ( 'disconnected' in G ) statusRefresh(); // don't run on page load
-	} else if ( status === 0 ) { // disconnected
-		G.disconnected = 1;
+pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
+	if ( status === 1 ) {
+		statusRefresh();
+	} else if ( status === 0 ) {
 		clearIntervalAll();
 		hideGuide();
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
