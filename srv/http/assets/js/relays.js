@@ -90,10 +90,8 @@ function renderUpdate() {
 }
 // disable default > re-enable
 $( '.container' )
-	.off( 'change', 'select' )
-	.off( 'keyup', 'input' )
-	.on( 'change', 'select', renderUpdate )
-	.on( 'keyup', 'input', renderUpdate );
+	.off( 'change', 'select' ).on( 'change', 'select', renderUpdate )
+	.off( 'keyup', 'input' ).on( 'keyup', 'input', renderUpdate );
 $( '.infobtn' ).off( 'click' );
 	
 $( '#undo' ).click( function() {
