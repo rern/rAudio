@@ -5,8 +5,8 @@ foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
 $htmlpin = '';
 $htmlname = '';
 for ( $i = 0; $i < 4; $i++ ) {
-	$htmlpin.= '<select id="pin'.$i.'" name="pin'.$i.'" class="pin">'.$optionpin.'</select>';
-	$htmlname.= '<input id="name'.$i.'" name="name'.$i.'" type="text" class="name" placeholder="(no name)">';
+	$htmlpin.= '<select id="pin'.$i.'" class="pin">'.$optionpin.'</select>';
+	$htmlname.= '<input id="name'.$i.'" type="text" class="name" placeholder="(no name)">';
 }
 ?>
 <br>
@@ -21,10 +21,7 @@ for ( $i = 0; $i < 4; $i++ ) {
 	</div>
 	<div class="column" id="gpio-name">
 		<span class="gpio-text"><i class="fa fa-tag bl"></i> Name</span>
-		<input id="name0" type="text" class="name" placeholder="(no name)">
-		<input id="name1" type="text" class="name" placeholder="(no name)">
-		<input id="name2" type="text" class="name" placeholder="(no name)">
-		<input id="name3" type="text" class="name" placeholder="(no name)">
+		<?=$htmlname?>
 		<span class="timer">&nbsp;min. to <i class="fa fa-power red"></i></span>
 	</div>
 </div>
