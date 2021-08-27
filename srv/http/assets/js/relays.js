@@ -67,6 +67,10 @@ function renderUpdate() {
 	D.keys.forEach( function( k ) {
 		D.val[ k ] = [];
 	} );
+	for ( i = 0; i < 4; i ++ ) {
+		D.val.pin.push( +$( '#pin'+ i ).val() );
+		D.val.name.push( $( '#name'+ i ).val() );
+	}
 	[ 'on', 'off' ].forEach( function( k ) {
 		var v0 = [];
 		for ( i = 0; i < 4; i ++ ) {
@@ -76,12 +80,8 @@ function renderUpdate() {
 		D.val[ k ] = D.val[ k ].concat( v0 );
 	} );
 	for ( i = 0; i < 3; i ++ ) {
-		D.val.ond.push( +$( '#ond'+ i ).val() );
-		D.val.offd.push( +$( '#offd'+ i ).val() );
-	}
-	for ( i = 0; i < 4; i ++ ) {
-		D.val.pin.push( +$( '#pin'+ i ).val() );
-		D.val.name.push( $( '#name'+ i ).val() );
+		D.val.ond.push( D.val.on[ i + 1 ] ? +$( '#ond'+ i ).val() : 0 );
+		D.val.offd.push( D.val.off[ i + 1 ] ? +$( '#offd'+ i ).val() : 0 );
 	}
 	D.val.timer = $( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
@@ -92,19 +92,8 @@ function renderUpdate() {
 $( '.container' )
 	.off( 'change', 'select' )
 	.off( 'keyup', 'input' )
-	.on( 'change', 'select', function() {
-		var $this = $( this );
-		if ( $this.val() == 0 ) {
-			if ( $this.hasClass( 'on' ) ) {
-				var i = $( '.on' ).index( this );
-				if ( [ 2, 4, 6 ].indexOf( i ) !== -1 ) $( '.on' ).eq( i -1 ).val( 0 );
-			} else if ( $this.hasClass( 'off' ) ) {
-				var i = $( '.off' ).index( this );
-				if ( [ 2, 4, 6 ].indexOf( i ) !== -1 ) $( '.off' ).eq( i -1 ).val( 0 );
-			}
-		}
-		renderUpdate();
-	} ).on( 'keyup', 'input', renderUpdate );
+	.on( 'change', 'select', renderUpdate )
+	.on( 'keyup', 'input', renderUpdate );
 $( '.infobtn' ).off( 'click' );
 	
 $( '#undo' ).click( function() {
