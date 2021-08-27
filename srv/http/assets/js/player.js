@@ -348,7 +348,7 @@ $( '#setting-soxr' ).click( function() {
 			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
 			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
 		}
-		, boxwidth      : 70
+		, boxwidth      : 80
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}

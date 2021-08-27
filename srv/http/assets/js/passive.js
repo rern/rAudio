@@ -55,34 +55,13 @@ streams.forEach( stream => {
 	pushstream.addChannel( stream );
 } );
 pushstream.connect();
-pushstream.onstatuschange = status => {
-	if ( status === 2 ) {        // connected
-		bash( [ 'displayget' ], data => {
-			delete G.coverTL;
-			G.display = data;
-			G.bars = data.bars;
-			G.display.screenoff = G.localhost;
-			G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
-			var submenu = {
-				  relays     : 'features'
-				, snapclient : 'player'
-				, lock       : 'system'
-				, screenoff  : 'power'
-			};
-			[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
-				if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
-					$( '#'+ submenu[ sub ] )
-						.addClass( 'sub' )
-						.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
-				}
-			} );
-		}, 'json' );
-		getPlaybackStatus();
-		bannerHide();
-		loaderHide();
-	} else if ( status === 0 ) { // disconnected
+pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
+	if ( status === 1 ) {
+		statusRefresh();
+	} else if ( status === 0 ) {
 		clearIntervalAll();
 		hideGuide();
+		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 	}
 }
 pushstream.onmessage = ( data, id, channel ) => {
@@ -226,7 +205,7 @@ function psCoverart( data ) {
 				var srcnoext = src.slice( 0, -15 );
 				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
 				var $el = webradioIcon( srcnoext );
-				$el.replaceWith( '<img class="lazy iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
+				$el.replaceWith( '<img class="lazyload iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
 			}
 			break;
 		case 'webradioreset':
@@ -462,16 +441,15 @@ function psRelays( response ) { // on receive broadcast
 				var color = state ? '' : 'class="gr"';
 			} else {
 				var color = state ? 'class="gr"' : '';
-				devices += '<br>';
 			}
-			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a>';
+			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a><br>';
 		} );
 		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 			info( {
 				  icon       : 'relays'
 				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
-				, footer     : devices
+				, message    : '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg"></div>'
+							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
 				, beforeshow : function() {
 					$( '#infoX' ).addClass( 'hide' );

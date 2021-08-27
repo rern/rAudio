@@ -1,15 +1,13 @@
-var hash = Math.ceil( Date.now() / 1000 );
 var G = {
 	  addplay       : 0
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, bookmarkedit  : 0
-	, coverart      : '/assets/img/coverart.'+ hash +'.svg'
+	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
-	, covervu       : '/assets/img/vu.'+ hash +'.svg'
+	, covervu       : '/assets/img/vu.svg'
 	, debounce      : ''
 	, debouncems    : 300
-	, display       : {}
 	, guide         : 0
 	, library       : 0
 	, librarylist   : 0
@@ -47,8 +45,7 @@ var picaOption = { // pica.js
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 /*	var drag = false, pY; // drag scroll vertically
-	$( 'body' ).css( { 'user-select': 'none'
-	} ).on( 'mousemove', function( e ) {
+	$( 'body' ).on( 'mousemove', function( e ) {
 		if ( drag ) $( window ).scrollTop( $( window ).scrollTop() + ( pY - e.pageY ) );
 	} ).on( 'mousedown', function( e ) {
 		drag = true;
@@ -59,6 +56,8 @@ if ( G.localhost ) {
 } else {
 	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 }
+var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
+var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
 var red = '#bb2828';
 var canvas = document.getElementById( 'iconrainbow' );
@@ -85,13 +84,11 @@ var nameplayer = {
 	, spotify    : 'Spotify Connect'
 	, upnp       : 'UPnP'
 }
-var lazyload = new LazyLoad( {
-	  elements_selector : '.lazy'
-	, use_native        : true
-} );
 
 // get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+statusRefresh();
 
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	if ( G.swipepl || G.drag ) return
@@ -99,7 +96,9 @@ $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
 	$( '#'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
-} );
+} ).on( 'tap', function( e ) {
+	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
+} )
 $( '#loader' ).click( function() {
 	loaderHide();
 } );
@@ -107,7 +106,7 @@ $( '#coverart' ).on( 'load', function() {
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
-		$( '#divcover' ).append( '<i class="coveredit fa fa-save cover-save"></i>' );
+		$( '#divcover' ).append( icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
@@ -129,15 +128,14 @@ $( '#logo' ).click( function() {
 	window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
 $( '#button-settings' ).click( function() {
-	var $settings = $( '#settings' );
-	if ( $settings.hasClass( 'hide' ) ) {
+	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {
-			$settings
-				.css( 'top', ( G.bars ? '40px' : 0 ) )
-				.removeClass( 'hide' );
-		}, 100 );
+		$( '#settings' )
+			.css( 'top', ( G.bars ? '40px' : 0 ) )
+			.removeClass( 'hide' );
+		}, 0 );
 	} else {
-		$settings.addClass( 'hide' );
+		$( '#settings' ).addClass( 'hide' );
 	}
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
@@ -321,12 +319,12 @@ $( '#page-playback' ).on( 'tap', function( e ) {
 		}
 	}
 } );
-$( '#page-library, #page-playback, #page-playlist' ).click( function( e ) {
-	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-} );
 $( '#bar-top, #bar-bottom, #button-library' ).click( function() {
 	if ( G.guide ) hideGuide();
 	if ( !$( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
+} );
+$( '#bar-top' ).click( function( e ) {
+	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide' );
 } );
 $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
@@ -375,10 +373,10 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 		return
 	}
 	
-	artist = artist.replace( /(["`])/g, '\\$1' ).replace( ' & ', ' and ' );
+	artist = artist.replace( /(["`])/g, '\\$1' );
 	var title = $( '#title' ).text().replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
-	bash( [ 'lyrics', artist, title, 'local', file ], function( data ) {
+	bash( [ 'lyricsexist', artist, title, file ], function( data ) {
 		if ( data ) {
 			G.lyricsTitle = title;
 			G.lyricsArtist = artist;
@@ -439,10 +437,6 @@ $( '#time' ).roundSlider( {
 	, create      : function ( e ) {
 		$timeRS = this;
 	}
-	, change      : function( e ) { // not fire on 'setValue'
-		clearIntervalAll();
-		mpcSeek( e.value );
-	}
 	, start       : function () { // drag start
 		clearIntervalAll();
 		$( '.map' ).removeClass( 'mapshow' );
@@ -450,8 +444,15 @@ $( '#time' ).roundSlider( {
 	, drag        : function ( e ) { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( Math.round( e.value / 1000 * G.status.Time ) ) );
 	}
+	, change      : function( e ) { // not fire on 'setValue'
+		clearIntervalAll();
+		mpcSeek( e.value );
+	}
 } );
 $( '#volume' ).roundSlider( {
+	// init : valueChange > create > beforeValueChange > valueChange
+	// tap  : beforeValueChange > change > valueChange
+	// drag : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	  sliderType        : 'default'
 	, radius            : 115
 	, width             : 50
@@ -460,28 +461,16 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, create            : function () {
+		G.create = 1;
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
-		$volumehandle = $( '#volume .rs-handle' );   // not available for self events
+		$volumehandle = $( '#volume .rs-handle' );
 		$volumehandlerotate = $( '#volume .rs-transition, #volume .rs-handle' );
 	}
-	// drag: start > beforeValueChange > drag > valueChange > change > stop
-	// tap: beforeValueChange > change > valueChange
 	, start             : function( e ) {
 		G.drag = 1;
-		// restore handle color immediately on start drag
-		if ( e.value === 0 ) volColorUnmute();
+		if ( e.value === 0 ) volColorUnmute(); // restore handle color immediately on start drag
 		$( '.map' ).removeClass( 'mapshow' );
-		$volumehandlerotate.css( 'transition-duration', '0s' );
-	}
-	, drag              : function( e ) {
-		G.status.volume = e.value;
-		volumeDrag( e.value );
-		$( '#volume .rs-handle' ).rsRotate( - e.handle.angle );
-	}
-	, stop              : function() {
-		G.drag = 0;
-		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
 		if ( G.drag ) return
@@ -493,21 +482,31 @@ $( '#volume' ).roundSlider( {
 			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
 			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
-		$volumehandlerotate
-			.css( 'transition-property', '' )
-			.css( 'transition-duration', speed +'s' );
+		$volumehandlerotate.css( 'transition-duration', speed +'s' );
+		setTimeout( function() {
+			$volumehandlerotate.css( 'transition-duration','' );
+		}, speed * 1000 + 500 );
+	}
+	, drag              : function( e ) {
+		G.status.volume = e.value;
+		volumeDrag( e.value );
+		$volumehandle.rsRotate( - e.handle.angle );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
 		volumeKnobSet( e.value );
-		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
 	}
 	, valueChange       : function( e ) {
-		if ( G.drag ) return
+		if ( G.drag || !G.create ) return // !G.create - fix: fire before 'create'
 		
 		G.status.volume = e.value;
-		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+	}
+	, stop              : function() {
+		G.drag = 0;
+		volumePushstream();
 	}
 } );
 $( '#volmute' ).click( function() {
@@ -657,7 +656,7 @@ $( '#divcover' ).on( 'longtap', function( e ) {
 	
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
-		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
+		.after( icoveredit );
 } ).on( 'tap', '.coveredit', function( e ) {
 	var $this = $( e.target );
 	if ( $( this ).hasClass( 'fa-save' ) ) {
@@ -719,7 +718,6 @@ $( '.map' ).on( 'tap', function() {
 		$( '#guide-bio, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#volume-text' ).addClass( 'hide' );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', !G.display.volumenone && G.display.volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', !G.bars );
@@ -744,6 +742,7 @@ $( '.map' ).on( 'tap', function() {
 			}
 		}
 		$( '.coveredit' ).css( 'z-index', 15 );
+		$( '#volume-text, #settings' ).addClass( 'hide' );
 		return
 	}
 	
@@ -760,8 +759,8 @@ $( '.map' ).on( 'tap', function() {
 		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
 		
 		if ( !G.display.volumenone
-			&& !G.display.volume
-			&& ( window.innerHeight - $( '#volume-band' )[ 0 ].getBoundingClientRect().bottom ) < 40
+			&& $( '#volume-knob' ).is( ':hidden' )
+			&& ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 		) {
 			if ( $( '#info' ).hasClass( 'hide' ) ) {
 				$( '#info' ).removeClass( 'hide' );
@@ -771,6 +770,8 @@ $( '.map' ).on( 'tap', function() {
 			}
 			return
 		}
+		
+		if ( window.innerWidth < 545 && window.innerWidth < window.innerHeight ) return
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
 		if ( 'coverTL' in G ) {
@@ -839,6 +840,7 @@ $( '.map' ).on( 'tap', function() {
 $( '.btn-cmd' ).click( function() {
 	var $this = $( this );
 	var cmd = this.id;
+	var displaytime = $( '#time-knob' ).is( ':visible' );
 	if ( $this.hasClass( 'btn-toggle' ) ) {
 		var onoff = !G.status[ cmd ];
 		G.status[ cmd ] = onoff;
@@ -855,7 +857,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
-			if ( G.display.time ) {
+			if ( displaytime ) {
 				$( '#elapsed' ).removeClass( 'bl' );
 				$( '#total' ).removeClass( 'wh' );
 			} else {
@@ -890,7 +892,7 @@ $( '.btn-cmd' ).click( function() {
 				$( '#total' ).empty();
 				if ( !G.status.stream ) {
 					var timehms = second2HMS( G.status.Time );
-					if ( G.display.time ) {
+					if ( displaytime ) {
 						$( '#time' ).roundSlider( 'setValue', 0 );
 						$( '#elapsed' )
 							.text( timehms )
@@ -917,7 +919,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			if ( G.display.time ) {
+			if ( displaytime ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
 			} else {
@@ -1345,7 +1347,7 @@ $( '#lib-list' ).on( 'longtap', '.licoverimg',  function() {
 	$( '#menu-album' ).addClass( 'hide' );
 	$img
 		.css( 'opacity', '0.33' )
-		.after( '<div class="coveredit cover"><i class="iconcover"></i></div>' );
+		.after( icoveredit );
 	$( '.menu' ).addClass( 'hide' );
 } ).on( 'tap', 'li', function( e ) {
 	var $this = $( this );
@@ -1840,22 +1842,26 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
-$( '#lyricsartist' ).click( function() {
-	getBio( $( this ).text() );
-} );
 $( '#lyricstextarea' ).on( 'input', function() {
-	$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
-	$( '#lyricsback' ).addClass( 'hide' );
+	if ( G.lyrics === $( this ).val()  ) {
+		$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
+		$( '#lyricsback' ).removeClass( 'hide' );
+	} else {
+		$( '#lyricsundo, #lyricssave' ).removeClass( 'hide' );
+		$( '#lyricsback' ).addClass( 'hide' );
+	}
 } );
 $( '#lyricsedit' ).click( function() {
+	$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
+	$( '#lyricsdelete' ).toggleClass( 'hide', !G.lyrics );
 	$( '#lyricseditbtngroup' ).removeClass( 'hide' );
-	$( '#lyricsedit, #lyricstextoverlay' ).addClass( 'hide' );
+	$( '#lyricsedit, #lyricstext' ).addClass( 'hide' );
 	$( '#lyricstextarea' )
 		.val( G.lyrics )
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
 $( '#lyricsclose' ).click( function() {
-	if ( $( '#lyricstextarea' ).val() === G.lyrics || $( '#lyricstextarea' ).val() === '' ) {
+	if ( $( '#lyricstextarea' ).val() === G.lyrics || !$( '#lyricstextarea' ).val() ) {
 		lyricsHide();
 	} else {
 		info( {
@@ -1868,7 +1874,7 @@ $( '#lyricsclose' ).click( function() {
 } );
 $( '#lyricsback' ).click( function() {
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
-	$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 } );
 $( '#lyricsundo' ).click( function() {
 	info( {
@@ -1883,8 +1889,6 @@ $( '#lyricsundo' ).click( function() {
 	} );
 } );
 $( '#lyricssave' ).click( function() {
-	if ( $( '#lyricstextarea' ).val() === G.lyrics ) return;
-	
 	info( {
 		  icon     : 'lyrics'
 		, title    : 'Lyrics'
@@ -1893,11 +1897,11 @@ $( '#lyricssave' ).click( function() {
 			G.lyrics = $( '#lyricstextarea' ).val();
 			var artist = $( '#lyricsartist' ).text();
 			var title = $( '#lyricstitle' ).text();
-			bash( [ 'lyrics', artist, title, 'save', G.lyrics.replace( /\n/g, '^' ) ] ); // keep lirics single line
+			bash( [ 'lyrics', artist, title, 'save', G.lyrics.replace( /\n/g, '\\n' ) ] );
 			lyricstop = $( '#lyricstextarea' ).scrollTop();
 			lyricsShow( G.lyrics );
 			$( '#lyricseditbtngroup' ).addClass( 'hide' );
-			$( '#lyricsedit, #lyricstextoverlay' ).removeClass( 'hide' );
+			$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 		}
 	} );
 } );	

@@ -179,7 +179,7 @@ renderPage = function( list ) {
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-	if ( 'soundprofile' in G ) {
+	if ( G.soundprofileval ) {
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
 	} else {
@@ -276,9 +276,6 @@ $( '#refresh' ).click( function( e ) {
 				$( '#status' ).html( renderStatus );
 			}, 'json' );
 		}, 10000 );
-		setTimeout( function() {
-			banner( 'System Status', 'Refresh every 10 seconds.<br>Click again to stop.', 'sliders', 10000 );
-		}, 300 );
 	}
 } );
 $( '#status' ).on( 'click', '.undervoltage', function() {
@@ -477,7 +474,7 @@ var infolcdchar = heredoc( function() { /*
 	</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
-	var val = G.lcdcharconf || '20 A00 0x27 PCF8574 false';
+	var val = G.lcdcharpins || '20 A00 0x27 PCF8574 false';
 	var val = val.split( ' ' );
 	// i2c : cols charmap | i2caddress i2cchip | backlight
 	// gpio: cols charmap | pin_rs pin_rw pin_e pins_data | backlight
@@ -563,8 +560,8 @@ $( '#setting-powerbutton' ).click( function() {
 						.replace( 'OFFPIN', offpin )
 						.replace( 'LEDPIN', ledpin )
 						.replace( 'RESPIN', respin );
-	if ( G.powerbuttonconf ) {
-		var pins = ( '5 '+ G.powerbuttonconf ).split( ' ' );
+	if ( G.powerbuttonpins ) {
+		var pins = ( '5 '+ G.powerbuttonpins ).split( ' ' );
 	} else {
 		var pins = [ 5, 5, 40, 5 ];
 	}
@@ -592,7 +589,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 } );
 $( '#setting-relays' ).click( function() {
-	location.href = '/settings/relays.php';
+	location.href = 'settings.php?p=relays';
 } );
 $( '#setting-lcd' ).click( function() {
 	info( {

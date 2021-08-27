@@ -51,7 +51,7 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	exit
 fi
 
-[[ -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+! : >/dev/tcp/8.8.8.8/53 || [[ -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 [[ -z $cddiscid ]] && exit

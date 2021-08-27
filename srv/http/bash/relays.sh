@@ -3,19 +3,32 @@
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
-. $dirsystem/relays
+# convert each line to each args
+readarray -t args <<< "$1"
+
+cmd=${args[0]}
+
+if [[ $cmd == relaysset ]]; then
+	data=${args[1]}
+	echo -e "$data" > $dirsystem/relayspins
+	data=$( /srv/http/bash/relays-data.sh )
+	curl -s -X POST http://127.0.0.1/pub?id=refresh -d "$data"
+	exit
+fi
+
+. $dirsystem/relayspins
+
+relaysfile=$dirtmp/relaystimer
 
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"
 }
 
-relaysfile=$dirtmp/relaystimer
-
 killall relaystimer.sh &> /dev/null &
 
 mpc -q stop
 
-if [[ $1 == true ]]; then
+if [[ $cmd == true ]]; then
 	pushstream '{"state": true, "order": '"$onorder"'}'
 	for i in 0 1 2 3; do
 		pin=${on[$i]}

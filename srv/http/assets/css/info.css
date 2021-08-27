@@ -60,10 +60,6 @@
 
 /* info */
 .infobtn,
-#infoOverlay:not( input textarea ) {
-	user-select: none;
-}
-.infobtn,
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
@@ -129,6 +125,8 @@ hr {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
+	user-select: none;
+	-webkit-user-select: none;
 }
 #infoOverlay .fa {
 	vertical-align: -1px;
@@ -288,6 +286,15 @@ hr {
 	width: auto;
 	height: 100px;
 	margin-bottom: 10px;
+}
+.infomessage .msg-l,
+.infomessage .msg-r {
+	display: inline-block;
+	vertical-align: middle;
+}
+.infomessage .msg-r {
+	margin-left: 30px;
+	text-align: left;
 }
 .infoimgnew {
 	margin-left: 10px;
@@ -511,7 +518,7 @@ hr {
 		}
 	}
 }
-@media( hover:hover ) {
+@media ( hover:hover ) {
 	/* :hover *********************************************************/
 	#infoX:hover {
 		color: var( --cml );

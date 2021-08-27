@@ -7,7 +7,7 @@ listProfile() {
 	i=0
 	if grep -q '^+' <<<"$netctllist"; then # leading '+' = connecting
 		(( i++ ))
-		(( i == 15 )) && echo -1 && exit
+		(( i == 15 )) && exit -1
 		
 		sleep 2
 		listProfile

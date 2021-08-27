@@ -155,7 +155,7 @@ function infoReset() {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
 	}
-	$( '#infoContent, #infoArrow i, #infoButtons, #infoFileLabel' ).off( 'click' );
+	$( '#infoContent, #infoArrow i, #infoButtons .infobtn, #infoFileLabel' ).off( 'click' );
 	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
@@ -672,13 +672,11 @@ function selectricRender() {
 	
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
-		.selectric( { nativeOnMobile: false } )
-		.each( function() {
-			var $this = $( this );
-			var option1 = $this.find( 'option' ).length === 1;
-			var $selectric = $this.parent().parent();
-			$selectric.toggleClass( 'disabled', option1 );
-		} );
+		.selectric()
+		.filter( function() {
+			return $( this ).find( 'option' ).length === 1
+		} ).parent().parent().addClass( 'disabled' );
+	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );

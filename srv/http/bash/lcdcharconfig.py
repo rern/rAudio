@@ -3,7 +3,7 @@
 import configparser
 
 config = configparser.ConfigParser()
-config.read( '/etc/lcdchar.conf' )
+config.read( '/srv/http/data/system/lcdcharpins' )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )

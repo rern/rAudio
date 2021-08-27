@@ -231,9 +231,11 @@ addonsclose )
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
 	;;
 addonslist )
+	! : >/dev/tcp/8.8.8.8/53 && exit -2 # online check
+	
 	[[ -z ${args[1]} ]] && branch=main || branch=${args[1]}
 	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
-	[[ $? != 0 ]] && echo -1 && exit
+	[[ $? != 0 ]] && exit -1
 	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
 	if [[ -n $bash ]]; then
@@ -408,7 +410,7 @@ displayget )
 , "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
 , "volumenone" : '$volumenone'
 }'
-echo "$data"
+	echo "$data"
 	;;
 displaysave )
 	data=$( jq . <<< ${args[1]} )
@@ -466,17 +468,9 @@ lyrics )
 	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
-	
 	lyricsfile="$dirdata/lyrics/${name,,}.txt"
-	if [[ $cmd == local ]]; then
-		if [[ -e "$lyricsfile" ]]; then
-			cat "$lyricsfile"
-		else
-			kid3-cli -c "select \"$data\"" \
-					 -c "get lyrics"
-		fi
-	elif [[ $cmd == save ]]; then
-		echo -e "${data//^/\\n}" > "$lyricsfile" # split at ^ delimiter to lines
+	if [[ $cmd == save ]]; then
+		echo -e "$data" > "$lyricsfile"
 	elif [[ $cmd == delete ]]; then
 		rm "$lyricsfile"
 	else
@@ -492,6 +486,20 @@ lyrics )
 				| grep -v '^<' \
 				| tee "$lyricsfile"
 		fi
+	fi
+	;;
+lyricsexist )
+	artist=${args[1]}
+	title=${args[2]}
+	file=${args[3]}
+	name="$artist - $title"
+	name=${name//\/}
+	lyricsfile="$dirdata/lyrics/${name,,}.txt"
+	if [[ -e "$lyricsfile" ]]; then
+		cat "$lyricsfile"
+	else
+		kid3-cli -c "select \"$file\"" \
+				 -c "get lyrics"
 	fi
 	;;
 mpcoption )
@@ -765,7 +773,7 @@ relayscountdown )
 	fi
 	;;
 relaystimerreset )
-	awk '/timer/ {print $NF}' /etc/relays.conf > $dirtmp/relaystimer
+	grep ^timer $dirsystem/relayspins | cut -d= -f2 > $dirtmp/relaystimer
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotateSplash )
@@ -860,7 +868,7 @@ webradioadd )
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url | grep ^File | head -1 | cut -d= -f2 )
 	fi
-	[[ -z $url ]] && echo -1 && exit
+	[[ -z $url ]] && exit -1
 	
 	echo $name > $filewebradio
 	chown http:http $filewebradio # for edit in php

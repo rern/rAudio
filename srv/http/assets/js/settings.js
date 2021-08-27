@@ -284,14 +284,12 @@ document.title = page;
 
 refreshData();
 
+$( '#'+ page ).addClass( 'active' );
+if ( page === 'relays' ) $( '#help' ).addClass( 'hide' );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
+
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
-	
-	if ( e.keyCode === 88 ) { // ctrl + x
-		$( '#close' ).click();
-		return
-	}
 	
 	var key = e.key;
 	if ( key === 'Tab'  ) {
@@ -331,7 +329,6 @@ $( document ).keyup( function( e ) {
 		}
 	}
 } );
-$( '#'+ page ).addClass( 'active' );
 $( '#close' ).click( function() {
 	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
 		bash( 'bluetoothctl scan off' );

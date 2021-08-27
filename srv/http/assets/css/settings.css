@@ -28,6 +28,18 @@
 	text-shadow: -1px 0 2px #000000;
 }
 
+.entries li,
+.entries li span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+heading,
+.col-l,
+.entries li {
+	user-select: none;
+	-webkit-user-select: none;
+}
 #button-data {
 	position: fixed;
 	top: 0;
@@ -100,7 +112,9 @@ pre {
 div.help-block {
 	margin-left: 0;
 }
-.clear { clear: both; }
+.clear {
+	clear: both;
+}
 heading {
 	display: inline-block;
 	margin: 25px 0 10px 0;
@@ -110,7 +124,6 @@ heading {
 	font-size: 24px;
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
-	user-select: none;
 }
 heading {
 	letter-spacing: 5px;
@@ -168,6 +181,7 @@ heading i.fa-question-circle {
 	float: right;
 }
 #help {
+	margin-right: 5px;
 	color: var( --cg60 )
 }
 
@@ -269,10 +283,6 @@ code {
 	padding-top: 3px;
 	font-size: 18px;
 	border-bottom: 1px solid var( --cga );
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	user-select: none;
 }
 .entries li:first-of-type {
 	border-top: 1px solid var( --cg );
@@ -281,9 +291,6 @@ code {
 	float: left;
 	display: block;
 	width: calc( 100% - 40px );
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 .entries li .fa-info-circle {
     font-size: 22px !important;
@@ -412,8 +419,7 @@ input:checked + .switchlabel.disabled:after {
 	width: 170px;
 	text-align: right;
 	padding-right: 15px;
-	padding-top: 10px;
-	user-select: none;
+	padding-top: 9px;
 }
 .col-l.text {
 	padding-top: 0;

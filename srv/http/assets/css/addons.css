@@ -11,11 +11,13 @@ hr {
 	max-width: 768px;
 	margin: auto;
 	padding: 50px 55px 0 55px;
+	user-select: none;
+	-webkit-user-select: none;
 }
 .container.progress {
 	padding-top: 0;
 }
-@media(max-width: 540px) {
+@media (max-width: 540px) {
 	.container {
 		padding: 40px 10px 15px 10px;
 	}
@@ -106,7 +108,6 @@ heading {
 	padding: 10px 20px;
 	border-radius: 6px;
 	background: var( --cga );
-	-webkit-user-select: none;
 }
 .boxed-group img {
 	max-width: 100px;
@@ -261,7 +262,7 @@ ul,
 .cg   { color: #00ff00 }
 .cr   { color: #ff0000 }
 
-@media( hover:hover ) {
+@media ( hover:hover ) {
 	/* :hover *********************************************************/
 	a:hover,
 	.close-root:hover,

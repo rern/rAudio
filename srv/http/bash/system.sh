@@ -19,43 +19,6 @@ pushRefresh() {
 	data=$( /srv/http/bash/system-data.sh )
 	pushstream refresh "$data"
 }
-relaysOrder() {
-	conf=$( cat /etc/relays.conf )
-	data() {
-		grep "$1" <<< "$conf" | awk '{print $NF}' | tr -d , | tr '\n' ' '
-	}
-	on=( $( data '"on."' ) )
-	ond=( $( data '"ond."' ) )
-	off=( $( data '"off."' ) )
-	offd=( $( data '"offd."' ) )
-	timer=$( grep '"timer"' <<< "$conf" | awk '{print $NF}' )
-	relaysfile='/srv/http/data/shm/relaystimer'
-
-	name=$( grep -A4 '"name"' <<< "$conf" | tail -4 )
-	readarray -t pins <<< $( echo "$name" | cut -d'"' -f2 )
-	readarray -t names <<< $( echo "$name" | cut -d'"' -f4 )
-	declare -A pinname
-	for i in 0 1 2 3; do
-		pinname+=( [${pins[$i]}]=${names[$i]} )
-	done
-	for i in 0 1 2 3; do
-		oni=${on[$i]}
-		offi=${off[$i]}
-		[[ $oni != 0 ]] && onorder+=,'"'${pinname[$oni]}'"'
-		[[ $offi != 0 ]] && offorder+=,'"'${pinname[$offi]}'"'
-	done
-
-	declare -p pinname > $dirsystem/relays
-	echo -n "\
-onorder='[ ${onorder:1} ]'
-on=( $( data '"on."' ) )
-ond=( $( data '"ond."' ) )
-offorder='[ ${offorder:1} ]'
-off=( $( data '"off."' ) )
-offd=( $( data '"offd."' ) )
-timer=$timer
-" >> $dirsystem/relays
-}
 soundprofile() {
 	if [[ $1 == reset ]]; then
 		latency=18000000
@@ -64,7 +27,7 @@ soundprofile() {
 		txqueuelen=1000
 		rm -f $dirsystem/soundprofile
 	else
-		. /etc/soundprofile.conf
+		. $dirsystem/soundprofileval
 		touch $dirsystem/soundprofile
 	fi
 
@@ -124,12 +87,9 @@ databackup )
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 /etc/fstab
-/etc/lcdchar.conf
 /etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
-/etc/relays.conf
-/etc/soundprofile.conf
 /etc/upmpdcli.conf
 /var/lib/alsa/asound.state
 )
@@ -309,7 +269,7 @@ pins_data=${args[9]}"
 	fi
 	conf+="
 backlight=${args[10]}"
-	echo "$conf" > /etc/lcdchar.conf
+	echo "$conf" > $dirsystem/lcdcharpins
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
 	pushRefresh
@@ -396,7 +356,7 @@ ntp )
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
-	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	gpio -1 write $( grep led $dirsystem/powerbuttonpins | cut -d= -f2 ) 0
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
@@ -407,7 +367,7 @@ powerbuttonset )
 	echo "\
 sw=$sw
 led=$led
-reserved=$reserved" > /etc/powerbutton.conf
+reserved=$reserved" > $dirsystem/powerbuttonpins
 	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	if [[ $sw != 5 ]]; then
@@ -422,12 +382,8 @@ reboot )
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 relays )
-	[[ ${args[1]} == true ]] && relaysOrder || rm -f $dirsystem/relays
+	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
 	pushRefresh
-	;;
-relayssave )
-	echo ${args[1]} | jq . > /etc/relays.conf
-	relaysOrder
 	;;
 remount )
 	mountpoint=${args[1]}
@@ -465,7 +421,7 @@ soundprofileget )
 soundprofileset )
 	values=${args[1]}
 	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
-		rm -f /etc/soundprofile.conf
+		rm -f $dirsystem/soundprofileval
 		soundprofile reset
 	else
 		val=( $values )
@@ -474,7 +430,7 @@ latency=${val[0]}
 swappiness=${val[1]}
 mtu=${val[2]}
 txqueuelen=${val[3]}
-" > /etc/soundprofile.conf
+" > $dirsystem/soundprofileval
 		soundprofile
 	fi
 	pushRefresh

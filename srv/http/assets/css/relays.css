@@ -54,17 +54,15 @@ span.timer i {
 #gpio-name input {
 	width: 120px;
 }
-#gpio .column {
+.column {
+	float: left;
+	margin: 0;
+	padding: 0;
 	width: 175px;
 }
 #gpio-num.column,
 .delay {
 	width: 90px;
-}
-#gpio .column {
-	float: left;
-	margin: 0;
-	padding: 0;
 }
 .gpio-text {
 	display: block;
@@ -99,4 +97,7 @@ input {
 }
 .column span i {
 	font-size: 20px;
+}
+.selectric-wrapper.disabled .label {
+	color: var( --cg60 );
 }
