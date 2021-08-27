@@ -437,10 +437,6 @@ $( '#time' ).roundSlider( {
 	, create      : function ( e ) {
 		$timeRS = this;
 	}
-	, change      : function( e ) { // not fire on 'setValue'
-		clearIntervalAll();
-		mpcSeek( e.value );
-	}
 	, start       : function () { // drag start
 		clearIntervalAll();
 		$( '.map' ).removeClass( 'mapshow' );
@@ -448,8 +444,15 @@ $( '#time' ).roundSlider( {
 	, drag        : function ( e ) { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( Math.round( e.value / 1000 * G.status.Time ) ) );
 	}
+	, change      : function( e ) { // not fire on 'setValue'
+		clearIntervalAll();
+		mpcSeek( e.value );
+	}
 } );
 $( '#volume' ).roundSlider( {
+	// init : valueChange > create > beforeValueChange > valueChange
+	// tap  : beforeValueChange > change > valueChange
+	// drag : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	  sliderType        : 'default'
 	, radius            : 115
 	, width             : 50
@@ -458,28 +461,16 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, create            : function () {
+		G.create = 1;
 		$volumeRS = this;
 		$volumetooltip = $( '#volume .rs-tooltip' );
-		$volumehandle = $( '#volume .rs-handle' );   // not available for self events
+		$volumehandle = $( '#volume .rs-handle' );
 		$volumehandlerotate = $( '#volume .rs-transition, #volume .rs-handle' );
 	}
-	// drag: start > beforeValueChange > drag > valueChange > change > stop
-	// tap: beforeValueChange > change > valueChange
 	, start             : function( e ) {
 		G.drag = 1;
-		// restore handle color immediately on start drag
-		if ( e.value === 0 ) volColorUnmute();
+		if ( e.value === 0 ) volColorUnmute(); // restore handle color immediately on start drag
 		$( '.map' ).removeClass( 'mapshow' );
-		$volumehandlerotate.css( 'transition-duration', '0s' );
-	}
-	, drag              : function( e ) {
-		G.status.volume = e.value;
-		volumeDrag( e.value );
-		$( '#volume .rs-handle' ).rsRotate( - e.handle.angle );
-	}
-	, stop              : function() {
-		G.drag = 0;
-		volumePushstream();
 	}
 	, beforeValueChange : function( e ) {
 		if ( G.drag ) return
@@ -491,21 +482,31 @@ $( '#volume' ).roundSlider( {
 			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
 			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
 		}
-		$volumehandlerotate
-			.css( 'transition-property', '' )
-			.css( 'transition-duration', speed +'s' );
+		$volumehandlerotate.css( 'transition-duration', speed +'s' );
+		setTimeout( function() {
+			$volumehandlerotate.css( 'transition-duration','' );
+		}, speed * 1000 + 500 );
+	}
+	, drag              : function( e ) {
+		G.status.volume = e.value;
+		volumeDrag( e.value );
+		$volumehandle.rsRotate( - e.handle.angle );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
 		volumeKnobSet( e.value );
-		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
 	}
 	, valueChange       : function( e ) {
-		if ( G.drag ) return
+		if ( G.drag || !G.create ) return // !G.create - fix: fire before 'create'
 		
 		G.status.volume = e.value;
-		$( '#volume .rs-handle' ).rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+	}
+	, stop              : function() {
+		G.drag = 0;
+		volumePushstream();
 	}
 } );
 $( '#volmute' ).click( function() {
