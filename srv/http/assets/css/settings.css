@@ -28,6 +28,18 @@
 	text-shadow: -1px 0 2px #000000;
 }
 
+.entries li,
+.entries li span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+heading,
+.col-l,
+.entries li {
+	user-select: none;
+	-webkit-user-select: none;
+}
 #button-data {
 	position: fixed;
 	top: 0;
@@ -222,17 +234,6 @@ heading i.fa-question-circle {
 	font-size: 16px;
 	font-weight: 300;
 	color: var( --cg60 );
-}
-.entries li,
-.entries li span {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-heading,
-.col-l,
-.entries li {
-	user-select: none;
 }
 .transparent {
 	opacity: 0 !important;

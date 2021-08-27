@@ -200,6 +200,13 @@ i.map.disabled, .map.disabled i {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+.page,
+#bar-bottom,
+#bar-top,
+#settings {
+	user-select: none;
+	-webkit-user-select: none;
+}
 /* ---------------------- bars ----------------------*/
 #reload {
 	position: absolute;
@@ -288,11 +295,6 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm ) !important;
 }
 /* ---------------------- middle window ----------------------*/
-.page,
-#settings,
-#bar-bottom {
-	user-select: none;
-}
 .page {
 	height: 100%;
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
@@ -1681,7 +1683,6 @@ i.map.disabled, .map.disabled i {
 	border-bottom: 1px solid var( --cga );
 	font-size: 15px;
 	background: #10161c
-	user-select: none;
 }
 #lib-list p,
 #pl-list p,
