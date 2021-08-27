@@ -21,7 +21,7 @@ else
 	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
-data=$( curl -sG -m 5 \
+data=$( curl -sGk -m 5 \
 	--data-urlencode "artist=$artist" \
 	--data-urlencode "$param" \
 	--data-urlencode "$method" \
