@@ -773,7 +773,7 @@ relayscountdown )
 	fi
 	;;
 relaystimerreset )
-	awk '/timer/ {print $NF}' /etc/relays.conf > $dirtmp/relaystimer
+	grep ^timer $dirsystem/relayspins | cut -d= -f2 > $dirtmp/relaystimer
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotateSplash )

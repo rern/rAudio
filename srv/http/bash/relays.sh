@@ -10,13 +10,13 @@ cmd=${args[0]}
 
 if [[ $cmd == relaysset ]]; then
 	data=${args[1]}
-	echo -e "$data" > $dirsystem/relayspin
+	echo -e "$data" > $dirsystem/relayspins
 	data=$( /srv/http/bash/relays-data.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d "$data"
 	exit
 fi
 
-. $dirsystem/relayspin
+. $dirsystem/relayspins
 
 relaysfile=$dirtmp/relaystimer
 

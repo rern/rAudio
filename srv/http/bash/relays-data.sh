@@ -1,7 +1,8 @@
 #!/bin/bash
 
-if [[ -e /srv/http/data/system/relayspin ]]; then
-	. /srv/http/data/system/relayspin
+file=/srv/http/data/system/relayspins
+if [[ -e $file ]]; then
+	. $file
 	data='
   "page"  : "relays"
 , "pin"   : '$pin'

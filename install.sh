@@ -4,7 +4,13 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-if [[ -e /srv/http/data/system/relays && -e /etc/relays.conf ]]; then
+dirsystem=/srv/http/data/system
+
+[[ -e /etc/lcdchar.conf ]] && mv /etc/lcdchar.conf $dirsystem/lcdcharpins
+[[ -e /etc/powerbutton.conf ]] && mv /etc/powerbutton.conf $dirsystem/powerbuttonpins
+[[ -e /etc/soundprofile.conf ]] && mv /etc/soundprofile.conf $dirsystem/soundprofileval
+
+if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	names=$( jq .name /etc/relays.conf )
 	pin=$( jq -r 'keys[]' <<< $names )
 	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
@@ -13,8 +19,8 @@ if [[ -e /srv/http/data/system/relays && -e /etc/relays.conf ]]; then
 	echo "\
 $pin
 $name
-$( sed -n '/^onorder/,/^timer/ p' /srv/http/data/system/relays )" > /srv/http/data/system/relayspin
-	> /srv/http/data/system/relays
+$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relayspins
+	> $dirsystem/relays
 	rm /etc/relays.conf
 fi
 
@@ -24,7 +30,7 @@ file=/etc/powerbutton.conf
 file=/etc/lcdchar.conf
 [[ -e $file ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' $file
 
-[[ -e /srv/http/data/system/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
+[[ -e $dirsystem/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
 
 rm -f /srv/http/data/shm/status
 
@@ -34,7 +40,7 @@ if [[ -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flacm' ]]; t
 	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
 fi
 
-file=/srv/http/data/system/display
+file=$dirsystem/display
 ! grep -q vumeter $file && sed -i '/novu/ i\    "vumeter": false,' $file
 
 installstart "$1"

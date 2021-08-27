@@ -27,7 +27,7 @@ soundprofile() {
 		txqueuelen=1000
 		rm -f $dirsystem/soundprofile
 	else
-		. /etc/soundprofile.conf
+		. $dirsystem/soundprofileval
 		touch $dirsystem/soundprofile
 	fi
 
@@ -87,11 +87,9 @@ databackup )
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 /etc/fstab
-/etc/lcdchar.conf
 /etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
-/etc/soundprofile.conf
 /etc/upmpdcli.conf
 /var/lib/alsa/asound.state
 )
@@ -271,7 +269,7 @@ pins_data=${args[9]}"
 	fi
 	conf+="
 backlight=${args[10]}"
-	echo "$conf" > /etc/lcdchar.conf
+	echo "$conf" > $dirsystem/lcdcharpins
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
 	pushRefresh
@@ -358,7 +356,7 @@ ntp )
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
-	gpio -1 write $( grep led /etc/powerbutton.conf | cut -d= -f2 ) 0
+	gpio -1 write $( grep led $dirsystem/powerbuttonpins | cut -d= -f2 ) 0
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
@@ -369,7 +367,7 @@ powerbuttonset )
 	echo "\
 sw=$sw
 led=$led
-reserved=$reserved" > /etc/powerbutton.conf
+reserved=$reserved" > $dirsystem/powerbuttonpins
 	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	if [[ $sw != 5 ]]; then
@@ -423,7 +421,7 @@ soundprofileget )
 soundprofileset )
 	values=${args[1]}
 	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
-		rm -f /etc/soundprofile.conf
+		rm -f $dirsystem/soundprofileval
 		soundprofile reset
 	else
 		val=( $values )
@@ -432,7 +430,7 @@ latency=${val[0]}
 swappiness=${val[1]}
 mtu=${val[2]}
 txqueuelen=${val[3]}
-" > /etc/soundprofile.conf
+" > $dirsystem/soundprofileval
 		soundprofile
 	fi
 	pushRefresh

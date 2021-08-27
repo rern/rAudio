@@ -27,7 +27,6 @@ fi
 i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt 2> /dev/null && echo true || echo false )
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
-lcdcharconf=$( cat /etc/lcdchar.conf 2> /dev/null | sed '1d' | cut -d= -f2 )
 if [[ $i2c == true ]]; then
 	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
 	[[ -n $dev ]] && lcdcharaddr=0x$( i2cdetect -y $dev \
@@ -55,8 +54,8 @@ else
 	esac
 fi
 if ifconfig | grep -q eth0; then
-	if [[ -e /etc/soundprofile.conf ]]; then
-		soundprofileval=$( cat /etc/soundprofile.conf | cut -d= -f2 )
+	if [[ -e $dirsystem/soundprofileval ]]; then
+		soundprofileval=$( cat $dirsystem/soundprofileval | cut -d= -f2 )
 	else
 		soundprofileval=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
 		soundprofileval+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
@@ -118,12 +117,12 @@ data+='
 , "lcd"             : '$lcd'
 , "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 , "lcdcharaddr"     : "'$lcdcharaddr'"
-, "lcdcharconf"     : "'$lcdcharconf'"
+, "lcdcharpins"     : "'$( cat dirsystem/lcdcharpins 2> /dev/null | sed '1d' | cut -d= -f2 )'"
 , "list"            : ['${list:1}']
 , "lcdmodel"        : "'$lcdmodel'"
 , "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"     : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
-, "powerbuttonconf" : "'$( cat /etc/powerbutton.conf 2> /dev/null | cut -d= -f2 )'"
+, "powerbuttonpins" : "'$( cat $dirsystem/powerbuttonpins 2> /dev/null | cut -d= -f2 )'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
 , "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
