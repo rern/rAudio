@@ -1633,6 +1633,7 @@ i.map.disabled, .map.disabled i {
 	background: linear-gradient( #000000 192px, var( --cm ) 0 ) !important;
 }
 .licoverimg {
+	position: relative;
 	height: 230px;
 }
 .licoverimg img {
