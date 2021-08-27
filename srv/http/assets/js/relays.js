@@ -64,21 +64,25 @@ renderPage = function( list ) {
 	showContent();
 }
 function renderUpdate() {
-	[ 'on', 'off', 'ond', 'offd' ].forEach( function( k ) {
+	D.keys.forEach( function( k ) {
 		D.val[ k ] = [];
-		var zero = [];
-		var L = k.slice( -1 ) === 'd' ? 3 : 4;
-		for ( i = 0; i < L; i ++ ) $( '#'+ k + i ).val() != 0 ? D.val[ k ].push( +$( '#'+ k + i ).val() ) : zero.push( 0 );
-		D.val[ k ] = D.val[ k ].concat( zero );
 	} );
-	[ 'pin', 'name' ].forEach( function( k ) {
-		D.val[ k ] = [];
+	[ 'on', 'off' ].forEach( function( k ) {
+		var v0 = [];
 		for ( i = 0; i < 4; i ++ ) {
-			var val = $( '#'+ k + i ).val();
-			if ( k === 'pin') val = +val;
-			D.val[ k ].push( val );
+			var v = +$( '#'+ k + i ).val();
+			v ? D.val[ k ].push( v ) : v0.push( 0 );
 		}
+		D.val[ k ] = D.val[ k ].concat( v0 );
 	} );
+	for ( i = 0; i < 3; i ++ ) {
+		D.val.ond.push( $( '#ond'+ i ).val() );
+		D.val.offd.push( $( '#offd'+ i ).val() );
+	}
+	for ( i = 0; i < 4; i ++ ) {
+		D.val.pin.push( +$( '#pin'+ i ).val() );
+		D.val.name.push( $( '#name'+ i ).val() );
+	}
 	D.val.timer = $( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
 	$( '.infobtn' ).toggleClass( 'disabled', values === D.values );
@@ -118,7 +122,7 @@ $( '#save' ).off( 'click' ).click( function() {
 		if ( on ) onorder.push( names[ on ] );
 		if ( off ) offorder.push( names[ off ] );
 	}
-	var values = 'pin=\'[ "'+ D.val.pin.join( '","' ) +'" ]\'\\n'
+	var values = 'pin=\'[ '+ D.val.pin.join( ',' ) +' ]\'\\n'
 				+'name=\'[ "'+ D.val.name.join( '","' ) +'" ]\'\\n'
 				+'onorder=\'[ "'+ onorder.join( '","' ) +'" ]\'\\n'
 				+'offorder=\'[ "'+ offorder.join( '","' ) +'" ]\'\\n'
