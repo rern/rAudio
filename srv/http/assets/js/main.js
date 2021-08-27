@@ -45,8 +45,7 @@ var picaOption = { // pica.js
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 /*	var drag = false, pY; // drag scroll vertically
-	$( 'body' ).css( { 'user-select': 'none'
-	} ).on( 'mousemove', function( e ) {
+	$( 'body' ).on( 'mousemove', function( e ) {
 		if ( drag ) $( window ).scrollTop( $( window ).scrollTop() + ( pY - e.pageY ) );
 	} ).on( 'mousedown', function( e ) {
 		drag = true;

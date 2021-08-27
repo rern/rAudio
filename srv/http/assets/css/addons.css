@@ -11,6 +11,8 @@ hr {
 	max-width: 768px;
 	margin: auto;
 	padding: 50px 55px 0 55px;
+	user-select: none;
+	-webkit-user-select: none;
 }
 .container.progress {
 	padding-top: 0;
@@ -106,7 +108,6 @@ heading {
 	padding: 10px 20px;
 	border-radius: 6px;
 	background: var( --cga );
-	-webkit-user-select: none;
 }
 .boxed-group img {
 	max-width: 100px;
