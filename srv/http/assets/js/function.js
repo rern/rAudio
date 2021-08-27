@@ -163,8 +163,8 @@ function coverartChange() {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : 'Change Album CoverArt'
 		, message     : '<img class="imgold">'
-					   +'<p class="infoimgname">'+ album
-					   +'<br>'+ artist +'</p>'
+					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
+					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
 		, footer      : footer
 		, beforeshow  : function() { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );

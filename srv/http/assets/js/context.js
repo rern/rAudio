@@ -382,7 +382,7 @@ function webRadioCoverart() {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : 'WebRadio CoverArt'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
-						+'<p class="infoimgname">'+ ( G.library ? G.list.name : G.status.Artist ) +'</p>'
+						+'<p class="infoimgname"><i class="fa fa-webradio wh"></i> '+ ( G.library ? G.list.name : G.status.station ) +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
