@@ -76,8 +76,8 @@ function renderUpdate() {
 		D.val[ k ] = D.val[ k ].concat( v0 );
 	} );
 	for ( i = 0; i < 3; i ++ ) {
-		D.val.ond.push( $( '#ond'+ i ).val() );
-		D.val.offd.push( $( '#offd'+ i ).val() );
+		D.val.ond.push( +$( '#ond'+ i ).val() );
+		D.val.offd.push( +$( '#offd'+ i ).val() );
 	}
 	for ( i = 0; i < 4; i ++ ) {
 		D.val.pin.push( +$( '#pin'+ i ).val() );
