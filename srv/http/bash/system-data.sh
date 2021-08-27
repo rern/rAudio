@@ -62,9 +62,6 @@ if ifconfig | grep -q eth0; then
 		soundprofileval+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
 		soundprofileval+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
 	fi
-	data+='
-, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
-, "soundprofileval" : "'$soundprofileval'"'
 fi
 version=$( cat $dirsystem/version )
 
@@ -131,6 +128,8 @@ data+='
 , "soccpu"          : "'$soccpu'"
 , "socram"          : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 , "socspeed"        : "'$socspeed'"
+, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
+, "soundprofileval" : "'$soundprofileval'"
 , "version"         : "'$version'"
 , "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 , "vuled"           : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
