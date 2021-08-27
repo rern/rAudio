@@ -1548,14 +1548,6 @@ function setPlaybackTitles() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
-	var litop = G.bars ? 80 : 40;
-	if ( !G.status.elapsed ) $( '#pl-list li .elapsed' ).empty();
-	if ( $( '#pl-list li.active' ).length ) {
-		var prevscrolltop = $( '#pl-list li.active' ).offset().top;
-	} else {
-		var prevscrolltop = litop;
-	}
-	$( '#pl-list li' ).removeClass( 'active updn' );
 	if ( !G.playlist
 		|| !G.status.playlistlength
 		|| G.plremove
@@ -1565,7 +1557,11 @@ function setPlaylistScroll() {
 		|| $( '#pl-list li' ).length < G.status.song + 1 // on eject cd G.status.song not yet refreshed
 	) return
 	
+	var litop = G.bars ? 80 : 40;
+	if ( !G.status.elapsed ) $( '#pl-list li .elapsed' ).empty();
 	$( '#menu-plaction' ).addClass( 'hide' );
+	var prevscrolltop = $( '#pl-list li.active' ).length ? $( '#pl-list li.active' ).offset().top : litop;
+	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
 	var scrolltop = $liactive.offset().top;
