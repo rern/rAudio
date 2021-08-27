@@ -97,9 +97,9 @@ $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
 	$( '#'+ pagenext[ G.page ][ e.type === 'swiperight' ? 0 : 1 ] ).click();
-} ).click( function( e ) {
+} ).on( 'tap', function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-} );
+} )
 $( '#loader' ).click( function() {
 	loaderHide();
 } );

@@ -1548,7 +1548,13 @@ function setPlaybackTitles() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
+	var litop = G.bars ? 80 : 40;
 	if ( !G.status.elapsed ) $( '#pl-list li .elapsed' ).empty();
+	if ( $( '#pl-list li.active' ).length ) {
+		var prevscrolltop = $( '#pl-list li.active' ).offset().top;
+	} else {
+		var prevscrolltop = litop;
+	}
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	if ( !G.playlist
 		|| !G.status.playlistlength
@@ -1559,14 +1565,16 @@ function setPlaylistScroll() {
 		|| $( '#pl-list li' ).length < G.status.song + 1 // on eject cd G.status.song not yet refreshed
 	) return
 	
+	$( '#menu-plaction' ).addClass( 'hide' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
-	$( '#menu-plaction' ).addClass( 'hide' );
-	if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
-		$( 'html, body' ).scrollTop( 0 );
-	} else {
-		var scrollpos = $liactive.offset().top - ( G.bars ? 80 : 40 ) - ( 49 * 3 );
-		$( 'html, body' ).scrollTop( scrollpos );
+	var scrolltop = $liactive.offset().top;
+	if ( scrolltop !== prevscrolltop ) {
+		if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
+			$( 'html, body' ).scrollTop( 0 );
+		} else {
+			$( 'html, body' ).scrollTop( scrolltop - litop - ( 49 * 3 ) );
+		}
 	}
 	var $this = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed = $this.find( '.elapsed' );
