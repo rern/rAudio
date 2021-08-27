@@ -56,9 +56,10 @@ streams.forEach( stream => {
 } );
 pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-	if ( status === 1 ) {
+	if ( status === 2 && G.disconnected ) { // suppress on 1st load
 		statusRefresh();
 	} else if ( status === 0 ) {
+		G.disconnected = 1;
 		clearIntervalAll();
 		hideGuide();
 		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
