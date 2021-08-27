@@ -3,6 +3,7 @@
 	.st0,.st1,.st2,.st3,.st4,.st5{stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
 	.st0{fill:#808080;}
 	.st1{fill:#FF0000;}
+	.st2{fill:#000000;;font-size:11px;}
 	.st3{fill:#00FF00;}
 	.st4,.st6{fill:#B5B3B3;}
 	.st5{fill:#FF5F00;}
@@ -67,6 +68,7 @@
 	<tspan x="264.5" y="0">11</tspan>
 	<tspan x="304" y="0">7</tspan>
 	<tspan class="st7" x="323.9" y="0">5</tspan>
+	<tspan class="st2" x="326.5" y="21.67">I</tspan>
 	<tspan x="342" y="0">3</tspan>
 </text>
 <text class="st6" transform="matrix(1 0 0 1 1.2268 75.4674)">
