@@ -17,13 +17,8 @@ renderPage = function( list ) {
 		D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
 		$( '.infobtn' ).addClass( 'disabled' )
 	}
-	var pin, namepin;
 	var optnamepin = '<option value="0">--- none ---</option>';
-	for ( i = 0; i < 4; i++ ) {
-		pin = D.val.pin[ i ];
-		namepin = ( D.val.name[ i ] || '(no name)' ) +' - '+ pin;
-		optnamepin += '<option value="'+ pin +'">'+ namepin +'</option>';
-	}
+	for ( i = 0; i < 4; i++ ) optnamepin += '<option value="'+ D.val.pin[ i ] +'">'+ D.val.name[ i ] || '(no name)' +'</option>';
 	var htmlon = '';
 	var htmloff = '';
 	var optsec = '<option value="0">0</option>';
@@ -69,10 +64,20 @@ renderPage = function( list ) {
 	showContent();
 }
 function renderUpdate() {
-	D.keys.forEach( function( k ) {
+	[ 'on', 'off', 'ond', 'offd' ].forEach( function( k ) {
 		D.val[ k ] = [];
+		var zero = [];
 		var L = k.slice( -1 ) === 'd' ? 3 : 4;
-		for ( i = 0; i < L; i ++ ) D.val[ k ].push( $( '#'+ k + i ).val() );
+		for ( i = 0; i < L; i ++ ) $( '#'+ k + i ).val() != 0 ? D.val[ k ].push( +$( '#'+ k + i ).val() ) : zero.push( 0 );
+		D.val[ k ] = D.val[ k ].concat( zero );
+	} );
+	[ 'pin', 'name' ].forEach( function( k ) {
+		D.val[ k ] = [];
+		for ( i = 0; i < 4; i ++ ) {
+			var val = $( '#'+ k + i ).val();
+			if ( k === 'pin') val = +val;
+			D.val[ k ].push( val );
+		}
 	} );
 	D.val.timer = $( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
@@ -103,41 +108,25 @@ $( '#undo' ).click( function() {
 	$( '.infobtn' ).addClass( 'disabled' );
 } );
 $( '#save' ).off( 'click' ).click( function() {
-	var v = {
-		  names    : {}
-		, onorder  : []
-		, offorder : []
-		, timer    : +D.val.timer
-	};
-	D.keys.forEach( function( k ) {
-		v[ k ] = [];
-	} );
-	for( i = 0; i < 4; i++ ) {
-		v.names[ D.val.pin[ i ] ] = D.val.name[ i ];
-		v.pin.push( +D.val.pin[ i ] )
-		v.name.push( D.val.name[ i ] )
-		v.on.push( +D.val.on[ i ] );
-		v.off.push( +D.val.off[ i ] );
-		if ( i < 3 ) {
-			v.ond.push( +D.val.ond[ i ] );
-			v.offd.push( +D.val.offd[ i ] );
-		}
+	var names = {}
+	for ( i = 0; i < 4; i++ ) names[ D.val.pin[ i ] ] = D.val.name[ i ];
+	var onorder = [];
+	var offorder = [];
+	for ( i = 0; i < 4; i++ ) {
+		var on = D.val.on[ i ];
+		var off = D.val.off[ i ];
+		if ( on ) onorder.push( names[ on ] );
+		if ( off ) offorder.push( names[ off ] );
 	}
-	v.on.forEach( function( p ) {
-		if ( p ) v.onorder.push( v.names[ p ] );
-	} );
-	v.off.forEach( function( p ) {
-		if ( p ) v.offorder.push( v.names[ p ] );
-	} );
-	var values = 'pin=\'[ "'+ v.pin.join( '","' ) +'" ]\'\\n'
-				+'name=\'[ "'+ v.name.join( '","' ) +'" ]\'\\n'
-				+'onorder=\'[ "'+ v.onorder.join( '","' ) +'" ]\'\\n'
-				+'offorder=\'[ "'+ v.offorder.join( '","' ) +'" ]\'\\n'
-				+'on=( '+ v.on.join( ' ' ) +' )\\n'
-				+'ond=( '+ v.ond.join( ' ' ) +' )\\n'
-				+'off=( '+ v.off.join( ' ' ) +' )\\n'
-				+'offd=( '+ v.offd.join( ' ' ) +' )\\n'
-				+'timer='+ v.timer;
+	var values = 'pin=\'[ "'+ D.val.pin.join( '","' ) +'" ]\'\\n'
+				+'name=\'[ "'+ D.val.name.join( '","' ) +'" ]\'\\n'
+				+'onorder=\'[ "'+ onorder.join( '","' ) +'" ]\'\\n'
+				+'offorder=\'[ "'+ offorder.join( '","' ) +'" ]\'\\n'
+				+'on=( '+ D.val.on.join( ' ' ) +' )\\n'
+				+'ond=( '+ D.val.ond.join( ' ' ) +' )\\n'
+				+'off=( '+ D.val.off.join( ' ' ) +' )\\n'
+				+'offd=( '+ D.val.offd.join( ' ' ) +' )\\n'
+				+'timer='+ D.val.timer;
 	bash( [ 'relaysset', values ] );
 	banner( 'Relays', 'Change ...', 'relays' );
 } );
