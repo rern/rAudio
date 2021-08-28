@@ -129,10 +129,7 @@ $( '#logo' ).click( function() {
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
-		$( '#settings' ).css( 'pointer-events', 'none' );
-		setTimeout( function() {
-			$( '#settings' ).css( 'pointer-events', '' );
-		}, 300 );
+		local(); // suppress coverTR tap on show
 		$( '#settings' )
 			.css( 'top', ( G.bars ? '40px' : 0 ) )
 			.removeClass( 'hide' );
@@ -142,9 +139,13 @@ $( '#button-settings' ).click( function() {
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
 $( '.settings' ).click( function() {
+	if ( G.local ) return
+	
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
+	if ( G.local ) return
+	
 	switch ( this.id ) {
 		case 'relays':
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
