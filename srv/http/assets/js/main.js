@@ -799,14 +799,12 @@ $( '.map' ).on( 'tap', function() {
 			} );
 			if ( this.id === 'coverTL' ) {
 				if ( G.display.time || G.display.volume ) {
-					G.bars = false;
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.stream ? false : true;
 					$( '#bar-top' ).addClass( 'hide' );
 					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).addClass( 'transparent' );
 				} else {
-					G.bars = true;
 					G.display.time = G.display.volume = G.display.buttons = true;
 					$( '#bar-top' ).removeClass( 'hide' );
 					$( '.page' ).addClass ( 'barshidden' );
