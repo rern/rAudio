@@ -8,10 +8,10 @@ $( window ).on( 'resize', () => { // portrait / landscape
 		if ( G.librarylist ) {
 			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( G.bars ? 40 : 0 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) +'px' );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 130 : 90 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ) +'px' );
 				}
 			}, 0 );
 		}
@@ -20,7 +20,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setTitleWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( G.bars ? 277 : 237 ) +'px' );
+				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
 			}, 0 );
 		}
 	}
@@ -303,7 +303,7 @@ function psMpdUpdate( data ) {
 	$( '#i-update, #ti-update' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
 		G.status.updating_db = true;
-		if ( G.bars ) {
+		if ( $( '#bar-top' ).is( ':visible' ) ) {
 			if ( !G.localhost ) $( '#library, #button-library' ).addClass( 'blink' );
 		} else {
 			if ( !G.localhost ) $( '#button-library' ).addClass( 'blink' );

@@ -131,7 +131,7 @@ $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		local(); // suppress coverTR tap on show
 		$( '#settings' )
-			.css( 'top', ( G.bars ? '40px' : 0 ) )
+			.css( 'top', ( $( '#bar-top' ).is( ':visible' ) ? '40px' : 0 ) )
 			.removeClass( 'hide' );
 	} else {
 		$( '#settings' ).addClass( 'hide' );
@@ -725,7 +725,7 @@ $( '.map' ).on( 'tap', function() {
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volumevisible );
-		$( '#bar-bottom' ).toggleClass( 'translucent', !G.bars );
+		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
 		if ( timevisible || volumevisible ) {
 			$( '#coverTL' )
 				.removeClass( 'fa-scale-dn' )
@@ -784,9 +784,13 @@ $( '.map' ).on( 'tap', function() {
 				G.display[ el ] = G.coverTL[ el ];
 			} );
 			delete G.coverTL;
-			G.bars = G.display.bars;
-			$( '#bar-top' ).toggleClass( 'hide', !G.bars );
-			$( '#bar-bottom' ).toggleClass( 'transparent', !G.bars );
+			if ( G.display.bars ) {
+				$( '#bar-top' ).removeClass( 'hide' );
+				$( '#bar-bottom' ).removeClass( 'transparent' );
+			} else {
+				$( '#bar-top' ).addClass( 'hide' );
+				$( '#bar-bottom' ).addClass( 'transparent' );
+			}
 		} else {
 			local(); // suppress - animate handle rotate
 			G.coverTL = {};
@@ -1494,7 +1498,7 @@ $( '.index' ).on( 'click', 'a', function() {
 		}
 		var scrollT = $( el +'[data-index='+ index +']' ).offset().top;
 	}
-	$( 'html, body' ).scrollTop( scrollT - ( G.bars ? 80 : 40 ) );
+	$( 'html, body' ).scrollTop( scrollT - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-playlist' ).click( function() {
@@ -1779,7 +1783,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		.css( 'top', menutop );
 	var targetB = $menu.offset().top + menuH;
 	var wH = window.innerHeight;
-	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	if ( targetB > wH - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	plRemove( $( this ).parent() );
 } );
@@ -1831,7 +1835,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				.css( 'top', ( $this.position().top + 48 ) +'px' );
 			var targetB = $menu.offset().top + $menu.height();
 			var wH = window.innerHeight;
-			if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+			if ( targetB > wH - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 		} else {
 			playlistInsertSelect( $this );
 		}
