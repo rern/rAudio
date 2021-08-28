@@ -951,7 +951,6 @@ i.map.disabled, .map.disabled i {
 }
 #volume .rs-transition,
 #volume .rs-handle {
-	transition-property: all !important; /* suppress default 'none' set by roundslider.js */
 	transition-timing-function: linear;
 }
 #volume .rs-handle {
