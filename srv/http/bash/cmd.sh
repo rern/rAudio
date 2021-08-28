@@ -400,7 +400,7 @@ displayget )
 					| grep -q 'mixer_type.*none' \
 					&& echo true || echo false )
 	fi
-	data=$( sed '$ d' $dirsystem/display )
+	data=$( head -n -1 $dirsystem/display )
 	data+='
 , "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"

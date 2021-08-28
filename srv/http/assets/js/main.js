@@ -477,7 +477,7 @@ $( '#volume' ).roundSlider( {
 	, beforeValueChange : function( e ) {
 		if ( G.drag ) return
 		
-		if ( G.getstatus || G.drag ) {
+		if ( G.getstatus || G.drag || G.local ) {
 			var speed = 0;
 		} else {
 			var diff = e.value - G.status.volume;
@@ -761,7 +761,7 @@ $( '.map' ).on( 'tap', function() {
 		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
 		
 		if ( !G.display.volumenone
-			&& $( '#volume-knob' ).is( ':hidden' )
+			&& !G.volknob
 			&& ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 		) {
 			if ( $( '#info' ).hasClass( 'hide' ) ) {
@@ -785,25 +785,26 @@ $( '.map' ).on( 'tap', function() {
 			$( '#bar-top' ).toggleClass( 'hide', !G.bars );
 			$( '#bar-bottom' ).toggleClass( 'transparent', !G.bars );
 		} else {
+			local(); // suppress - animate handle rotate
 			G.coverTL = {};
 			list.forEach( function( el ) {
 				G.coverTL[ el ] = G.display[ el ];
 			} );
 			if ( this.id === 'coverTL' ) {
 				if ( G.display.time || G.display.volume ) {
+					G.bars = false;
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
 					G.display.progressbar = G.status.stream ? false : true;
 					$( '#bar-top' ).addClass( 'hide' );
 					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).addClass( 'transparent' );
-					G.bars = false;
 				} else {
+					G.bars = true;
 					G.display.time = G.display.volume = G.display.buttons = true;
 					$( '#bar-top' ).removeClass( 'hide' );
 					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).removeClass( 'transparent hide' );
 					$( '#playback' ).addClass( 'active' );
-					G.bars = true;
 				}
 			} else {
 				G.display.time = G.display.cover = G.display.coversmall = G.display.volume = G.display.buttons = true;
@@ -842,7 +843,6 @@ $( '.map' ).on( 'tap', function() {
 $( '.btn-cmd' ).click( function() {
 	var $this = $( this );
 	var cmd = this.id;
-	var displaytime = $( '#time-knob' ).is( ':visible' );
 	if ( $this.hasClass( 'btn-toggle' ) ) {
 		var onoff = !G.status[ cmd ];
 		G.status[ cmd ] = onoff;
@@ -859,7 +859,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
-			if ( displaytime ) {
+			if ( G.display.time ) {
 				$( '#elapsed' ).removeClass( 'bl' );
 				$( '#total' ).removeClass( 'wh' );
 			} else {
@@ -894,7 +894,7 @@ $( '.btn-cmd' ).click( function() {
 				$( '#total' ).empty();
 				if ( !G.status.stream ) {
 					var timehms = second2HMS( G.status.Time );
-					if ( displaytime ) {
+					if ( G.display.time ) {
 						$( '#time' ).roundSlider( 'setValue', 0 );
 						$( '#elapsed' )
 							.text( timehms )
@@ -921,7 +921,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			if ( displaytime ) {
+			if ( G.display.time ) {
 				$( '#elapsed' ).addClass( 'bl' );
 				$( '#total' ).addClass( 'wh' );
 			} else {
