@@ -307,7 +307,8 @@ function psMpdUpdate( data ) {
 			if ( !G.localhost ) $( '#library, #button-library' ).addClass( 'blink' );
 		} else {
 			if ( !G.localhost ) $( '#button-library' ).addClass( 'blink' );
-			$( '#'+ ( G.display.time ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' );
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			$( '#'+ prefix +'-update' ).removeClass( 'hide' );
 		}
 	} else {
 		G.status.updating_db = false;
@@ -513,7 +514,7 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		G.status.volume = vol;
-		if ( G.display.volume ) {
+		if ( $( '#volume-knob' ).is( ':visible' ) ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
@@ -521,10 +522,8 @@ function psVolume( data ) {
 			$( '#volume-text' )
 				.text( mute ? data.val : vol )
 				.toggleClass( 'bl', mute );
-		}
-		if ( !G.display.volume || !G.display.buttons ) {
-			var prefix = G.display.time ? 'ti' : 'i';
-			if ( !G.display.volume ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 		}
 	}, G.debouncems );
 }
