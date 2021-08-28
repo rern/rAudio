@@ -129,11 +129,13 @@ $( '#logo' ).click( function() {
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
+		$( '#settings' ).css( 'pointer-events', 'none' );
 		setTimeout( function() {
+			$( '#settings' ).css( 'pointer-events', '' );
+		}, 300 );
 		$( '#settings' )
 			.css( 'top', ( G.bars ? '40px' : 0 ) )
 			.removeClass( 'hide' );
-		}, 0 );
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
