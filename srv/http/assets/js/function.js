@@ -1448,26 +1448,28 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
 	
-	if ( G.display.buttons && timevisible ) {
-		$( '#random' ).toggleClass( 'active', G.status.random );
-		$( '#repeat' ).toggleClass( 'active', G.status.repeat );
-		$( '#single' ).toggleClass( 'active', G.status.single );
-	} else if ( !G.status.stream ) {
-		$( '#'+ prefix +'-random' ).toggleClass( 'hide', !G.status.random );
-		$( '#'+ prefix +'-repeat' ).toggleClass( 'hide', !G.status.repeat || G.status.single );
-		$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', !( G.status.repeat && G.status.single ) );
-		$( '#'+ prefix +'-single' ).toggleClass( 'hide', !G.status.single || ( G.status.repeat && G.status.single ) );
-	}
-	[ 'consume', 'librandom' ].forEach( function( option ) {
-		if ( timevisible ) {
-			$( '#i-'+ option ).addClass( 'hide' );
-			$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+	if ( !G.status.stream ) {
+		if ( $( '#play-group' ).is( ':visible' ) ) {
+			$( '#random' ).toggleClass( 'active', G.status.random );
+			$( '#repeat' ).toggleClass( 'active', G.status.repeat );
+			$( '#single' ).toggleClass( 'active', G.status.single );
 		} else {
-			$( '#ti-'+ option ).addClass( 'hide' );
-			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+			$( '#'+ prefix +'-random' ).toggleClass( 'hide', !G.status.random );
+			$( '#'+ prefix +'-repeat' ).toggleClass( 'hide', !G.status.repeat || G.status.single );
+			$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', !( G.status.repeat && G.status.single ) );
+			$( '#'+ prefix +'-single' ).toggleClass( 'hide', !G.status.single || ( G.status.repeat && G.status.single ) );
 		}
-		$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
-	} );
+		[ 'consume', 'librandom' ].forEach( function( option ) {
+			if ( timevisible ) {
+				$( '#i-'+ option ).addClass( 'hide' );
+				$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+			} else {
+				$( '#ti-'+ option ).addClass( 'hide' );
+				$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+			}
+			$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
+		} );
+	}
 	setButtonUpdateAddons();
 	setButtonUpdating();
 	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
