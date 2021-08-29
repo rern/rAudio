@@ -1179,7 +1179,7 @@ function renderPlayback() {
 		}
 // play ////////////////////
 	} else {
-		if ( G.status.elapsed ) {
+		if ( G.status.elapsed !== false ) {
 			renderPlaybackTime();
 		} else {
 			$( '#time' ).roundSlider( 'setValue', 0 );
