@@ -157,6 +157,7 @@ input::-moz-focus-inner {
 .fa-minus::before { content: "\f518" }
 .fa-minus-circle::before { content: "\f563" }
 .fa-mpd::before { content: "\f582" }
+.fa-mpdoled::before { content: "\f57A" }
 .fa-music::before { content: "\f54A" }
 .fa-mute::before { content: "\f517" }
 .fa-nas::before { content: "\f551" }

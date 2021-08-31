@@ -189,7 +189,9 @@ $selecttimezone.= '</select>';
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
-<div class="col-l single">Spectrum OLED<i class="fa fa-lcd"></i></div>
+<div class="col-l double">
+	<a>Spectrum OLED<br><gr>mpd_oled</gr></a><i class="fa fa-mpdoled"></i>
+</div>
 <div class="col-r">
 	<input id="mpdoled" <?=$chkenable?>>
 	<div class="switchlabel" for="mpdoled"></div>
@@ -204,7 +206,7 @@ $selecttimezone.= '</select>';
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
 	<a>TFT 3.5" LCD
-	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+	<br><gr>320x420</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" <?=$chkenable?>>
