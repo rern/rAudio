@@ -176,9 +176,7 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
-<div class="col-l double">
-	<a>Relay Module<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
-</div>
+<div class="col-l single">Relay Module<i class="fa fa-relays"></i></div>
 <div class="col-r">
 	<input id="relays" <?=$chknoset?>>
 	<div class="switchlabel" for="relays"></div>
@@ -190,14 +188,15 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 <div class="col-l double">
-	<a>Spectrum OLED<br><gr>mpd_oled</gr></a><i class="fa fa-mpdoled"></i>
+	<a>Spectrum OLED
+	<br><gr>128x64</gr></a><i class="fa fa-mpdoled"></i>
 </div>
 <div class="col-r">
 	<input id="mpdoled" <?=$chkenable?>>
 	<div class="switchlabel" for="mpdoled"></div>
 	<i id="setting-mpdoled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a class="img" data-name="mpdoled">128x64 Module</a> for spectrum visualizer
+		<a class="img" data-name="mpdoled">Module</a> for spectrum visualizer
 		<br>Wiring:
 		<br>&bull; <a class="img" data-name="mpdoledi2c">I&#178;C</a>
 		<br>&bull; <a class="img" data-name="mpdoledspi">SPI</a>
