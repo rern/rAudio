@@ -189,6 +189,18 @@ $selecttimezone.= '</select>';
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
+<div class="col-l single">Spectrum OLED<i class="fa fa-lcd"></i></div>
+<div class="col-r">
+	<input id="mpdoled" <?=$chkenable?>>
+	<div class="switchlabel" for="mpdoled"></div>
+	<i id="setting-mpdoled" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		<a class="img" data-name="mpdoled">128x64 Module</a> for spectrum visualizer
+		<br>Wiring:
+		<br>&bull; <a class="img" data-name="mpdoledi2c">I&#178;C</a>
+		<br>&bull; <a class="img" data-name="mpdoledspi">SPI</a>
+	</span>
+</div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
 	<a>TFT 3.5" LCD

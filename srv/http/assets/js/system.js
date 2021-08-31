@@ -178,6 +178,8 @@ renderPage = function( list ) {
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
+	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
+	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
 	if ( G.soundprofileval ) {
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
@@ -207,6 +209,7 @@ $( '.enable' ).click( function() {
 		  bluetooth    : 'Bluetooth'
 		, lcd          : 'TFT LCD'
 		, lcdchar      : 'Character LCD'
+		, mpdoled      : 'Spectrum OLED'
 		, powerbutton  : 'Power Button'
 		, soundprofile : 'Kernel Sound Profile'
 		, vuled        : 'VU LED'
@@ -237,6 +240,9 @@ $( '.img' ).click( function() {
 		, lcdchar     : [ 'Character LCD' ]
 		, relays      : [ 'Relays Module' ]
 		, lcd         : [ 'TFT 3.5" LCD' ]
+		, mpdoled     : [ 'Spectrum OLED' ]
+		, mpdoledi2c  : [ 'Spectrum OLED - I&#178;C', 'mpdoled' ]
+		, mpdoledspi  : [ 'Spectrum OLED - SPI', 'mpdoled' ]
 		, powerbutton : [ 'Power Button', 'power', '300px', 'svg' ]
 		, vuled       : [ 'VU LED', 'led', '300px', 'svg' ]
 	}
@@ -591,6 +597,27 @@ $( '#setting-powerbutton' ).click( function() {
 $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );
+$( '#setting-mpdoled' ).click( function() {
+	info( {
+		  icon         : 'mpdoled'
+		, title        : 'Spectrum OLED'
+		, selectlabel  : 'Type'
+		, select        : {
+			  'Adafruit SPI'      : 1
+			, 'Adafruit I&#178;C' : 3
+			, 'Seeed I&#178;C'    : 4
+			, 'SH1106 I&#178;C'   : 6
+			, 'SH1106 SPI'        : 7
+		}
+		, values       : [ G.mpdoledval ]
+		, checkchanged : ( G.mpdoled ? 1 : 0 )
+		, boxwidth     : 120
+		, ok           : function() {
+			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
+			bash( [ 'mpdoledset', infoVal() ] );
+		}
+	} );
+} );
 $( '#setting-lcd' ).click( function() {
 	info( {
 		  icon         : 'lcd'
@@ -623,9 +650,8 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			var lcdmodel = infoVal();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
-			bash( [ 'lcdset', lcdmodel ] );
+			bash( [ 'lcdset', infoVal() ] );
 		}
 	} );
 } );
