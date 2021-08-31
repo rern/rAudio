@@ -236,7 +236,7 @@ $( '.enablenoset' ).click( function() {
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var title = {
-		  i2cbackpack : [ 'Character LCD I²C', '', 'lcdchar' ]
+		  i2cbackpack : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar     : [ 'Character LCD' ]
 		, relays      : [ 'Relays Module' ]
 		, lcd         : [ 'TFT 3.5" LCD' ]
@@ -244,9 +244,10 @@ $( '.img' ).click( function() {
 			  'Spectrum OLED'
 			, '<code>GND:9</code> <code>VCC:1</code>'
 			 +'<br><wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>'
-			 +'<br><wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>'  ]
-		, powerbutton : [ 'Power Button',      '', 'power', '300px', 'svg' ]
-		, vuled       : [ 'VU LED',            '', 'led', '300px', 'svg' ]
+			 +'<br><wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>'
+		]
+		, powerbutton : [ 'Power Button',  '', 'power', '300px', 'svg' ]
+		, vuled       : [ 'VU LED',        '', 'led', '300px', 'svg' ]
 	}
 	var d = title[ name ];
 	info( {
