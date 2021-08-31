@@ -237,7 +237,11 @@ $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var title = {
 		  i2cbackpack : [ 'Character LCD', '', 'lcdchar' ]
-		, lcdchar     : [ 'Character LCD' ]
+		, lcdchar     : [
+			  'Character LCD'
+			, '<br><wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>'
+			 +'<br><wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code>'
+		]
 		, relays      : [ 'Relays Module' ]
 		, lcd         : [ 'TFT 3.5" LCD' ]
 		, mpdoled     : [
