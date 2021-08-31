@@ -143,8 +143,7 @@ $selecttimezone.= '</select>';
 	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
 </div>
 <div class="col-l double">
-	<a>Character LCD
-	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
+	<a>Character LCD<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" <?=$chkenable?>>
@@ -157,8 +156,7 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 <div class="col-l double">
-	<a>Power Button
-	<br>Power LED</a><i class="fa fa-power"></i>
+	<a>Power Button<br>Power LED</a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" <?=$chkenable?>>
@@ -187,8 +185,7 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 <div class="col-l double">
-	<a>Spectrum OLED
-	<br><gr>128x64</gr></a><i class="fa fa-mpdoled"></i>
+	<a>Spectrum OLED<br><gr>128x64</gr></a><i class="fa fa-mpdoled"></i>
 </div>
 <div class="col-r">
 	<input id="mpdoled" <?=$chkenable?>>
@@ -200,8 +197,7 @@ $selecttimezone.= '</select>';
 </div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
-	<a>TFT 3.5" LCD
-	<br><gr>320x420</gr></a><i class="fa fa-lcd"></i>
+	<a>TFT 3.5" LCD<br><gr>320x420</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" <?=$chkenable?>>
@@ -228,8 +224,7 @@ $selecttimezone.= '</select>';
 <div>
 <heading>Environment<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>Name
-	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
+	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
@@ -242,8 +237,7 @@ $selecttimezone.= '</select>';
 
 <div id="divsoundprofile">
 <div data-status="soundprofile" class="col-l icon double status">
-	<a>Sound Profile
-	<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>
