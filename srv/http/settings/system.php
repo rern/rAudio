@@ -197,9 +197,6 @@ $selecttimezone.= '</select>';
 	<i id="setting-mpdoled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a class="img" data-name="mpdoled">Module</a> for spectrum visualizer
-		<br>Wiring:
-		<br>&bull; <a class="img" data-name="mpdoledi2c">I&#178;C</a>
-		<br>&bull; <a class="img" data-name="mpdoledspi">SPI</a>
 	</span>
 </div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
