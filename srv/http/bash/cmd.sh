@@ -511,7 +511,7 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
-	systemctl stop radio
+	systemctl stop radio mpd_oled
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
@@ -523,6 +523,7 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
+		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
 		[[ $command == stop ]] && rm -f $dirtmp/status
@@ -533,7 +534,7 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/status
-	systemctl stop radio
+	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
@@ -560,6 +561,7 @@ mpcprevnext )
 		else
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
+		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	;;
 mpcseek )

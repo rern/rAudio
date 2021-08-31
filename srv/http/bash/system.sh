@@ -232,10 +232,11 @@ lcdcalibrate )
 	fi
 	;;
 lcdchardisable )
-	if [[ ! -e $dirsystem/lcd ]]; then
+	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/mpdoled ]]; then
 		sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	fi
+	[[ -e $dirsystem/mpdoled ]] && sed -i '/i2c-bcm2708/ d' $filemodule
 	rm $dirsystem/lcdchar
 	pushRefresh
 	;;
@@ -245,13 +246,13 @@ lcdcharset )
 [var]
 cols=${args[1]}
 charmap=${args[2]}"
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	if [[ ${args[3]} == i2c ]]; then
 		conf+="
 address=${args[4]}
 chip=${args[5]}"
-		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
-			echo 'dtparam=i2c_arm=on' >> $fileconfig
-			echo "\
+		! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'dtparam=i2c_arm=on' >> $fileconfig
+		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
 			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
@@ -262,9 +263,8 @@ pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
 pins_data=${args[9]}"
-		if ! grep -q 'waveshare\|tft35a' $fileconfig; then
+		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
-			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
 	conf+="
@@ -289,21 +289,22 @@ lcdset )
 		rm /srv/http/data/system/lcdmodel
 	fi
 	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 	config="\
 hdmi_force_hotplug=1
 dtparam=spi=on
-dtoverlay=$model:rotate=0"
-	! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
+dtoverlay=$model:rotate=0
 dtparam=i2c_arm=on"
 	echo -n "$config" >> $fileconfig
-	! grep -q 'i2c-bcm2708' $filemodule && echo -n "\
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
+	echo -n "\
 i2c-bcm2708
 i2c-dev
 " >> $filemodule
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	echo $'TFT 3.5" LCD' >> $filereboot
+	echo 'TFT 3.5" LCD' >> $filereboot
 	pushRefresh
 	;;
 mount )
@@ -348,6 +349,27 @@ mount )
 		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
+	;;
+mpdoleddisable )
+	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/lcdchar ]]; then
+		sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
+		sed -i '/i2c-dev/ d' $filemodule
+	fi
+	systemctl disable --now mpd_oled
+	rm $dirsystem/mpdoled
+	pushRefresh
+	;;
+mpdoledset )
+	if grep -q 'dtparam=i2c_arm=on' $fileconfig; then
+		systemctl restart mpd_oled
+	else
+		echo 'dtparam=i2c_arm=on' >> $fileconfig
+		echo 'i2c-dev' >> $filemodule
+		systemctl enable mpd_oled
+		echo 'Spectrum OLED' >> $filereboot
+	fi
+	touch $dirsystem/mpdoled
+	pushRefresh
 	;;
 ntp )
 	ntp=${args[1]}
