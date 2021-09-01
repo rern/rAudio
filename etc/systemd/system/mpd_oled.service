@@ -2,7 +2,7 @@
 Description=MPD OLED Display
 
 [Service]
-ExecStart=/usr/bin/mpd_oled -o 6 -b 16 -f 25 -k -c 'fifo,/tmp/mpd.fifo'
+ExecStart=/usr/bin/mpd_oled -o 6 -b 16 -f 25 -c 'fifo,/tmp/mpd.fifo'
 
 [Install]
 WantedBy=multi-user.target
