@@ -353,37 +353,29 @@ mount )
 	;;
 mpdoleddisable )
 	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/lcdchar ]]; then
-		sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
+		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on/ d' $fileconfig
 		sed -i '/i2c-dev/ d' $filemodule
 	fi
-	[[ ! -e $dirsystem/lcdchar ]] && sed -i '/dtparam=.*_baudrate/ d' $fileconfig
-	systemctl disable --now mpd_oled
+	sed -i '/dtparam=.*_baudrate/ d' $fileconfig
 	rm $dirsystem/mpdoled
 	pushRefresh
 	;;
 mpdoledset )
 	type=${args[1]}
-	[[ $type != 1 && $type != 7 ]] && inf=i2c_arm || inf=spi
 	sed -i "s/-o ./-o $type/" /etc/systemd/system/mpd_oled.service
-	if grep -q "dtparam=$inf=on" $fileconfig; then
-		systemctl daemon-reload
-		systemctl restart mpd_oled
-	else
-		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=.*_baudrate/ d' $fileconfig
-		sed -i '/i2c-dev/ d' $filemodule
-		if [[ $inf == i2c_arm ]]; then
-			echo "\
+	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=.*_baudrate/ d' $fileconfig
+	sed -i '/i2c-dev/ d' $filemodule
+	if [[ $type != 1 && $type != 7 ]]; then
+		echo "\
 dtparam=i2c_arm=on
 dtparam=i2c_arm_baudrate=1200000" >> $fileconfig
-			echo "\
+		echo "\
 i2c-dev" >> $filemodule
-		else
-			echo "\
+	else
+		echo "\
 dtparam=spi=on" >> $fileconfig
-		fi
-		systemctl enable mpd_oled
-		echo 'Spectrum OLED' >> $filereboot
 	fi
+	echo 'Spectrum OLED' >> $filereboot
 	touch $dirsystem/mpdoled
 	pushRefresh
 	;;
