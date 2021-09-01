@@ -392,6 +392,12 @@ $( '#setting-custom' ).click( function() {
 			}
 			, ok           : function() {
 				var values = infoVal();
+				if ( !values[ 0 ] && !values[ 1 ] ) {
+					bash( [ 'customdisable' ] );
+					notify( "User's Custom Settings", 'Disable ...', 'mpd' );
+					return
+				}
+				
 				bash( [ 'customset', values[ 0 ], values[ 1 ], device.aplayname ], function( std ) {
 					if ( std == -1 ) {
 						bannerHide();
