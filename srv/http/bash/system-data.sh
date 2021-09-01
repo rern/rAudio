@@ -24,18 +24,17 @@ if [[ $bluetooth == true ]]; then
 else
 	btdiscoverable=false
 fi
-i2c=$( grep -q dtparam=i2c_arm=on /boot/config.txt 2> /dev/null && echo true || echo false )
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
-if [[ $i2c == true ]]; then
-	dev=$( ls /dev/i2c* 2> /dev/null | tail -c 2 )
-	[[ -n $dev ]] && lcdcharaddr=0x$( i2cdetect -y $dev \
-									| grep -v '^\s' \
-									| cut -d' ' -f2- \
-									| tr -d ' \-' \
-									| grep -v UU \
-									| grep . \
-									| sort -u )
+if grep -q dtparam=i2c_arm=on /boot/config.txt; then
+	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
+	i2caddr=0x$( i2cdetect -y $dev \
+					| grep -v '^\s' \
+					| cut -d' ' -f2- \
+					| tr -d ' \-' \
+					| grep -v UU \
+					| grep . \
+					| sort -u )
 fi
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 soccore=${cpu[0]}
@@ -113,7 +112,7 @@ data+='
 , "kernel"          : "'$( uname -rm )'"
 , "lcd"             : '$lcd'
 , "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
-, "lcdcharaddr"     : "'$lcdcharaddr'"
+, "lcdcharaddr"     : "'$( [[ -e $dirsystem/lcdchar ]] && echo $i2caddr )'"
 , "lcdcharpins"     : "'$( cat dirsystem/lcdcharpins 2> /dev/null | sed '1d' | cut -d= -f2 )'"
 , "list"            : ['${list:1}']
 , "lcdmodel"        : "'$lcdmodel'"
