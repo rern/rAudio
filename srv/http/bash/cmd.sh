@@ -742,7 +742,10 @@ power )
 	reboot=${args[1]}
 	mpc stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
-	[[ -e $dirsystem/mpdoled ]] && mpd_oled -o 6 -L
+	if [[ -e $dirsystem/mpdoled ]]; then
+		type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+		mpd_oled -o $type -L
+	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
 	if [[ -e $dirtmp/relaystimer ]]; then
