@@ -260,7 +260,6 @@ dtparam=i2c_arm_baudrate=1200000" >> $fileconfig
 i2c-bcm2708
 i2c-dev" >> $filemodule
 			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
-		fi
 	else
 		conf+="
 pin_rs=${args[6]}
