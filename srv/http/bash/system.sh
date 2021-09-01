@@ -233,7 +233,7 @@ lcdcalibrate )
 	;;
 lcdchardisable )
 	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/mpdoled ]]; then
-		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=i2c_arm_baudrate/ d' $fileconfig
+		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on/ d' $fileconfig
 		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	fi
 	[[ -e $dirsystem/mpdoled ]] && sed -i '/i2c-bcm2708/ d' $filemodule
@@ -243,7 +243,7 @@ lcdchardisable )
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
 	! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
-	sed -i '/dtparam=i2c_arm=on\|dtparam=i2c_arm_baudrate/ d' $fileconfig
+	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	conf="\
 [var]
@@ -254,8 +254,7 @@ charmap=${args[2]}"
 address=${args[4]}
 chip=${args[5]}"
 		echo "\
-dtparam=i2c_arm=on
-dtparam=i2c_arm_baudrate=1200000" >> $fileconfig
+dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
