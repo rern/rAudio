@@ -16,7 +16,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	data=$( /srv/http/bash/system-data.sh )
+	data=$( $dirbash/system-data.sh )
 	pushstream refresh "$data"
 }
 soundprofile() {
@@ -69,6 +69,19 @@ bluetoothset )
 	bluetoothctl discoverable $yesno &
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 	pushRefresh
+	;;
+configtxtget )
+	config=$( cat /boot/config.txt )
+	file=/etc/modules-load.d/raspberrypi.conf
+	raspberrypiconf=$( cat $file )
+	if [[ -n $raspberrypiconf ]]; then
+		config+="
+
+# $file
+
+$raspberrypiconf"
+	fi
+	echo "$config"
 	;;
 databackup )
 	dirconfig=$dirdata/config
@@ -170,7 +183,7 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 getjournalctl )
@@ -343,7 +356,7 @@ mount )
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
-		[[ $update == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed.<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
@@ -430,7 +443,7 @@ remove )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
 	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
-	/srv/http/bash/cmd.sh mpcupdate$'\n'NAS
+	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
 soundprofile )
@@ -520,9 +533,7 @@ vuledset )
 	pushRefresh
 	;;
 wlandisable )
-	if systemctl -q is-active hostapd; then
-		/srv/http/bash/features.sh hostapddisable
-	fi
+	systemctl -q is-active hostapd && $dirbash/features.sh hostapddisable
 	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;

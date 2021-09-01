@@ -12,20 +12,21 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
+var dirbash = '/srv/http/bash/';
 var cmd = {
-	  avahi        : [ '/srv/http/bash/networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
-	, asound       : [ '/srv/http/bash/player.sh devices', -1 ]
+	  avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
+	, asound       : [ dirbash +'player.sh devices', -1 ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
-	, configtxt    : [ 'cat /boot/config.txt' ]
+	, configtxt    : [ dirbash +'system.sh configtxtget', 'cat /boot/config.txt' ]
 	, iw           : [ 'iw reg get; iw list' ]
-	, journalctl   : [ '/srv/http/bash/system.sh getjournalctl', 'journalctl -b' ]
+	, journalctl   : [ dirbash +'system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, powerbutton  : [ 'systemctl status powerbutton' ]
 	, rfkill       : [ 'rfkill' ]
-	, soundprofile : [ '/srv/http/bash/system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
+	, soundprofile : [ dirbash +'system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
@@ -128,13 +129,13 @@ function refreshData() {
 		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
 			btScan();
 		} else {
-			bash( '/srv/http/bash/networks-data.sh', function( list ) {
+			bash( dirbash +'networks-data.sh', function( list ) {
 				renderPage( list );
 			} );
 		}
 		resetLocal();
 	} else {
-		bash( '/srv/http/bash/'+ page +'-data.sh', function( list ) {
+		bash( dirbash + page +'-data.sh', function( list ) {
 			renderPage( list );
 		} );
 	}
