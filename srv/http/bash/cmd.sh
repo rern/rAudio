@@ -84,6 +84,11 @@ jpgThumbnail() {
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
 	pushstream coverart '{"url":"'$coverfile.$( date +%s ).jpg'","type":"'$type'"}'
 }
+mpdoledLogo() {
+	systemctl stop mpd_oled
+	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+	mpd_oled -o $type -L
+}
 pladdPlay() {
 	pushstreamPlaylist
 	if [[ ${1: -4} == play ]]; then
@@ -587,6 +592,9 @@ mpcupdate )
 	fi
 	pushstream mpdupdate 1
 	;;
+mpdoledlogo )
+	mpdoledLogo
+	;;
 nicespotify )
 	for pid in $( pgrep spotifyd ); do
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
@@ -742,10 +750,7 @@ power )
 	reboot=${args[1]}
 	mpc stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
-	if [[ -e $dirsystem/mpdoled ]]; then
-		type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-		mpd_oled -o $type -L
-	fi
+	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
 	if [[ -e $dirtmp/relaystimer ]]; then

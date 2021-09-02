@@ -114,10 +114,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py
 fi
-if [[ -e $dirsystem/mpdoled ]]; then
-	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-	mpd_oled -o $type -L
-fi
+[[ -e $dirsystem/mpdoled ]] && dirbash/cmd.sh mpdoledlogo
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
 
