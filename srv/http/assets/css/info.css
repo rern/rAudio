@@ -265,6 +265,7 @@ hr {
 .infomessage,
 .infofooter {
 	width: fit-content;
+	width: -moz-fit-content;
 	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;
