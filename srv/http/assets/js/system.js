@@ -621,6 +621,10 @@ $( '#setting-mpdoled' ).click( function() {
 		, values       : [ G.mpdoledval ]
 		, checkchanged : ( G.mpdoled ? 1 : 0 )
 		, boxwidth     : 140
+		, buttonlabel   : '<i class="fa fa-plus-r"></i>Logo'
+		, button        : !G.mpdoled ? '' : function() {
+			bash( '/srv/http/bash/cmd.sh mpdoledlogo' );
+		}
 		, ok           : function() {
 			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
 			bash( [ 'mpdoledset', infoVal() ] );
