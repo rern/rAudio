@@ -10,7 +10,7 @@ for ( $i = 0; $i < 4; $i++ ) {
 }
 ?>
 <br>
-<img id="gpiosvg" src="/assets/img/gpio.<?=$time?>.svg">
+<?php include 'assets/img/gpio.svg';?>
 <br>
 <div class="gpio-float-l">
 	<div class="column" id="gpio-num">
