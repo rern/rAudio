@@ -7,7 +7,7 @@
 	.st3{fill:#00FF00;}
 	.st4,.st6{fill:#B5B3B3;}
 	.st5{fill:#FF5F00;}
-	.st6{font-family:'Arial';font-size:13px;}
+	.st6{font-family:'Inconsolata';font-size:15px;}
 	.st7{fill:#FFFFFF;}
 </style>
 <path class="st0" d="M378.7,24c0,12.9,0,24.2,0,37.1H1.2v-45c123.5,0,245.5,0,369,0L378.7,24z"/>
@@ -65,7 +65,7 @@
 	<tspan class="lcdchar-no" x="190" y="0">19</tspan>
 	<tspan class="mpdoled-no" x="226.5" y="0">15</tspan>
 	<tspan class="lcdchar-no mpdoled-no" x="245" y="0">13</tspan>
-	<tspan class="lcdchar-no mpdoled-no" x="264.5" y="0">11</tspan>
+	<tspan class="lcdchar-no mpdoled-no" x="265" y="0">11</tspan>
 	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="0">7</tspan>
 	<tspan class="gpio-no" x="323.9" y="0">5</tspan>
 	<tspan class="gpio-no st2" x="326.5" y="21.67">I</tspan>
