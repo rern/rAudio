@@ -1,5 +1,7 @@
 $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.gpio-no' ).addClass( 'hide' );
+
 renderPage = function( list ) {
 	if ( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors

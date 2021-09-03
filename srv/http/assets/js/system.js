@@ -199,7 +199,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
-var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
+var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );;
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
@@ -255,13 +255,16 @@ $( '.img' ).click( function() {
 	}
 	var d = title[ name ];
 	info( {
-		  icon    : d[ 2 ] || name
-		, title   : d[ 0 ]
-		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 4 ] || 'jpg' )
-					+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-		, footer  : d[ 1 ] ? '<br>'+ gpiosvg + d[ 1 ] : ''
+		  icon        : d[ 2 ] || name
+		, title       : d[ 0 ]
+		, message     : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 4 ] || 'jpg' )
+						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
+		, footer      : d[ 1 ] ? '<br>'+ gpiosvg + d[ 1 ] : ''
 		, footeralign : 'left'
-		, okno    : 1
+		, beforeshow  : function() {
+			$( '.'+ name +'-no' ).addClass( 'hide' );
+		}
+		, okno        : 1
 	} );
 } );
 $( '.container' ).on( 'click', '.settings', function() {

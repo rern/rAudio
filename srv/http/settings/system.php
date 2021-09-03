@@ -15,6 +15,7 @@ foreach( $timezonelist as $key => $zone ) {
 }
 $selecttimezone.= '</select>';
 ?>
+<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <heading data-status="journalctl" class="status">System<?=$istatus?></heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
