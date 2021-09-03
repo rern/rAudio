@@ -672,7 +672,7 @@ function selectricRender() {
 	
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
-		.selectric()
+		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
 		.filter( function() {
 			return $( this ).find( 'option' ).length === 1
 		} ).parent().parent().addClass( 'disabled' );
