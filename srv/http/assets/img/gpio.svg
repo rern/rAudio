@@ -66,7 +66,6 @@
 	<tspan class="mpdoled-no" x="226.5" y="0">15</tspan>
 	<tspan class="lcdchar-no mpdoled-no" x="245" y="0">13</tspan>
 	<tspan class="lcdchar-no mpdoled-no" x="264.5" y="0">11</tspan>
-	<tspan class="lcdchar-no gpio-no" x="286.5" y="0">9</tspan>
 	<tspan class="lcdchar-no gpio-no mpdoled-no" x="304" y="0">7</tspan>
 	<tspan class="gpio-no" x="323.9" y="0">5</tspan>
 	<tspan class="gpio-no st2" x="326.5" y="21.67">I</tspan>

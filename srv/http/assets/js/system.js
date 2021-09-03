@@ -239,14 +239,15 @@ $( '.img' ).click( function() {
 		  i2cbackpack : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar     : [
 			  'Character LCD'
-			, '<p><wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>'
+			, '<p><code>GND:(any black pin)</code>'
+			 +'<br><wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>'
 			 +'<br><wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code></p>'
 		]
 		, relays      : [ 'Relays Module' ]
 		, lcd         : [ 'TFT 3.5" LCD' ]
 		, mpdoled     : [
 			  'Spectrum OLED'
-			, '<p><code>GND:9</code> <code>VCC:1</code>'
+			, '<p><code>GND:(any black pin)</code> <code>VCC:1</code>'
 			 +'<br><wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>'
 			 +'<br><wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code></p>'
 		]
