@@ -129,23 +129,22 @@ $( '#logo' ).click( function() {
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
-		local(); // suppress coverTR tap on show
 		$( '#settings' )
 			.css( 'top', ( $( '#bar-top' ).is( ':visible' ) ? '40px' : 0 ) )
+			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
+		setTimeout( function() {
+			$( '#settings' ).css( 'pointer-events', '' );
+		}, 300 );
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
 $( '.settings' ).click( function() {
-	if ( G.local ) return
-	
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
-	if ( G.local ) return
-	
 	switch ( this.id ) {
 		case 'relays':
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
