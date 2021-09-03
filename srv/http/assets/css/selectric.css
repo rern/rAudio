@@ -79,6 +79,7 @@
 	top: 100%;
 	left: 0;
 	width: fit-content !important;
+	width: -moz-fit-content !important;
 	min-width: 230px;
 	background: var( --cga );
 	z-index: -1;

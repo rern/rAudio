@@ -178,6 +178,8 @@ renderPage = function( list ) {
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
+	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
+	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
 	if ( G.soundprofileval ) {
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
@@ -197,7 +199,7 @@ renderPage = function( list ) {
 	showContent();
 }
 //---------------------------------------------------------------------------------------
-var gpiosvg = '<img id="gpiosvg" src="/assets/img/gpio.'+ hash +'.svg">';
+var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );;
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
@@ -207,6 +209,7 @@ $( '.enable' ).click( function() {
 		  bluetooth    : 'Bluetooth'
 		, lcd          : 'TFT LCD'
 		, lcdchar      : 'Character LCD'
+		, mpdoled      : 'Spectrum OLED'
 		, powerbutton  : 'Power Button'
 		, soundprofile : 'Kernel Sound Profile'
 		, vuled        : 'VU LED'
@@ -233,20 +236,36 @@ $( '.enablenoset' ).click( function() {
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var title = {
-		  i2cbackpack : [ 'Character LCD I²C', 'lcdchar' ]
-		, lcdchar     : [ 'Character LCD' ]
+		  i2cbackpack : [ 'Character LCD', '', 'lcdchar' ]
+		, lcdchar     : [
+			  'Character LCD'
+			, '<p><code>GND:(any black pin)</code>'
+			 +'<br><wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>'
+			 +'<br><wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code></p>'
+		]
 		, relays      : [ 'Relays Module' ]
 		, lcd         : [ 'TFT 3.5" LCD' ]
-		, powerbutton : [ 'Power Button', 'power', '300px', 'svg' ]
-		, vuled       : [ 'VU LED', 'led', '300px', 'svg' ]
+		, mpdoled     : [
+			  'Spectrum OLED'
+			, '<p><code>GND:(any black pin)</code> <code>VCC:1</code>'
+			 +'<br><wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>'
+			 +'<br><wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code></p>'
+		]
+		, powerbutton : [ 'Power Button',  '', 'power', '300px', 'svg' ]
+		, vuled       : [ 'VU LED',        '', 'led', '300px', 'svg' ]
 	}
 	var d = title[ name ];
 	info( {
-		  icon    : d[ 1 ] || name
-		, title   : d[ 0 ]
-		, message : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 3 ] || 'jpg' )
-					+'" style="height: '+ ( d[ 2 ] || '100%' ) +'; margin-bottom: 0;">'
-		, okno    : 1
+		  icon        : d[ 2 ] || name
+		, title       : d[ 0 ]
+		, message     : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 4 ] || 'jpg' )
+						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
+		, footer      : d[ 1 ] ? '<br>'+ gpiosvg + d[ 1 ] : ''
+		, footeralign : 'left'
+		, beforeshow  : function() {
+			$( '.'+ name +'-no' ).addClass( 'hide' );
+		}
+		, okno        : 1
 	} );
 } );
 $( '.container' ).on( 'click', '.settings', function() {
@@ -591,6 +610,31 @@ $( '#setting-powerbutton' ).click( function() {
 $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );
+$( '#setting-mpdoled' ).click( function() {
+	info( {
+		  icon         : 'mpdoled'
+		, title        : 'Spectrum OLED'
+		, selectlabel  : 'Type'
+		, select        : {
+			  'Adafruit SPI'      : 1
+			, 'Adafruit I&#178;C' : 3
+			, 'Seeed I&#178;C'    : 4
+			, 'SH1106 I&#178;C'   : 6
+			, 'SH1106 SPI'        : 7
+		}
+		, values       : [ G.mpdoledval ]
+		, checkchanged : ( G.mpdoled ? 1 : 0 )
+		, boxwidth     : 140
+		, buttonlabel   : '<i class="fa fa-plus-r"></i>Logo'
+		, button        : !G.mpdoled ? '' : function() {
+			bash( '/srv/http/bash/cmd.sh mpdoledlogo' );
+		}
+		, ok           : function() {
+			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
+			bash( [ 'mpdoledset', infoVal() ] );
+		}
+	} );
+} );
 $( '#setting-lcd' ).click( function() {
 	info( {
 		  icon         : 'lcd'
@@ -623,9 +667,8 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			var lcdmodel = infoVal();
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
-			bash( [ 'lcdset', lcdmodel ] );
+			bash( [ 'lcdset', infoVal() ] );
 		}
 	} );
 } );

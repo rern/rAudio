@@ -6,6 +6,8 @@ alias=r1
 
 dirsystem=/srv/http/data/system
 
+[[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
+
 [[ -e /etc/lcdchar.conf ]] && mv /etc/lcdchar.conf $dirsystem/lcdcharpins
 [[ -e /etc/powerbutton.conf ]] && mv /etc/powerbutton.conf $dirsystem/powerbuttonpins
 [[ -e /etc/soundprofile.conf ]] && mv /etc/soundprofile.conf $dirsystem/soundprofileval

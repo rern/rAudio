@@ -16,7 +16,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	data=$( /srv/http/bash/system-data.sh )
+	data=$( $dirbash/system-data.sh )
 	pushstream refresh "$data"
 }
 soundprofile() {
@@ -69,6 +69,19 @@ bluetoothset )
 	bluetoothctl discoverable $yesno &
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 	pushRefresh
+	;;
+configtxtget )
+	config=$( cat /boot/config.txt )
+	file=/etc/modules-load.d/raspberrypi.conf
+	raspberrypiconf=$( cat $file )
+	if [[ -n $raspberrypiconf ]]; then
+		config+="
+
+# $file
+
+$raspberrypiconf"
+	fi
+	echo "$config"
 	;;
 databackup )
 	dirconfig=$dirdata/config
@@ -170,7 +183,7 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	[[ -e $dirsystem/color ]] && /srv/http/bash/cmd.sh color
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 getjournalctl )
@@ -232,15 +245,19 @@ lcdcalibrate )
 	fi
 	;;
 lcdchardisable )
-	if [[ ! -e $dirsystem/lcd ]]; then
-		sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
+	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/mpdoled ]]; then
+		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on/ d' $fileconfig
 		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	fi
+	[[ -e $dirsystem/mpdoled ]] && sed -i '/i2c-bcm2708/ d' $filemodule
 	rm $dirsystem/lcdchar
 	pushRefresh
 	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
+	! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
+	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	conf="\
 [var]
 cols=${args[1]}
@@ -249,22 +266,20 @@ charmap=${args[2]}"
 		conf+="
 address=${args[4]}
 chip=${args[5]}"
-		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
-			echo 'dtparam=i2c_arm=on' >> $fileconfig
-			echo "\
+		echo "\
+dtparam=i2c_arm=on" >> $fileconfig
+		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
 			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
-		fi
 	else
 		conf+="
 pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
 pins_data=${args[9]}"
-		if ! grep -q 'waveshare\|tft35a' $fileconfig; then
+		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
-			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
 	conf+="
@@ -288,22 +303,22 @@ lcdset )
 	else
 		rm /srv/http/data/system/lcdmodel
 	fi
+	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
+	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-	config="\
+	echo "\
 hdmi_force_hotplug=1
 dtparam=spi=on
-dtoverlay=$model:rotate=0"
-	! grep -q 'dtparam=i2c_arm=on' $fileconfig && config+="
-dtparam=i2c_arm=on"
-	echo -n "$config" >> $fileconfig
-	! grep -q 'i2c-bcm2708' $filemodule && echo -n "\
+dtoverlay=$model:rotate=0
+dtparam=i2c_arm=on" >> $fileconfig
+	echo -n "\
 i2c-bcm2708
 i2c-dev
 " >> $filemodule
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	echo $'TFT 3.5" LCD' >> $filereboot
+	echo 'TFT 3.5" LCD' >> $filereboot
 	pushRefresh
 	;;
 mount )
@@ -341,13 +356,41 @@ mount )
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
-		[[ $update == true ]] && /srv/http/bash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed.<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
+	;;
+mpdoleddisable )
+	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/lcdchar ]]; then
+		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on/ d' $fileconfig
+		sed -i '/i2c-dev/ d' $filemodule
+	fi
+	sed -i '/dtparam=.*_baudrate/ d' $fileconfig
+	rm $dirsystem/mpdoled
+	pushRefresh
+	;;
+mpdoledset )
+	type=${args[1]}
+	sed -i "s/-o ./-o $type/" /etc/systemd/system/mpd_oled.service
+	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=.*_baudrate/ d' $fileconfig
+	sed -i '/i2c-dev/ d' $filemodule
+	if [[ $type != 1 && $type != 7 ]]; then
+		echo "\
+dtparam=i2c_arm=on
+dtparam=i2c_arm_baudrate=1200000" >> $fileconfig
+		echo "\
+i2c-dev" >> $filemodule
+	else
+		echo "\
+dtparam=spi=on" >> $fileconfig
+	fi
+	echo 'Spectrum OLED' >> $filereboot
+	touch $dirsystem/mpdoled
+	pushRefresh
 	;;
 ntp )
 	ntp=${args[1]}
@@ -400,7 +443,7 @@ remove )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
 	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
-	/srv/http/bash/cmd.sh mpcupdate$'\n'NAS
+	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
 soundprofile )
@@ -490,9 +533,7 @@ vuledset )
 	pushRefresh
 	;;
 wlandisable )
-	if systemctl -q is-active hostapd; then
-		/srv/http/bash/features.sh hostapddisable
-	fi
+	systemctl -q is-active hostapd && $dirbash/features.sh hostapddisable
 	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;

@@ -114,8 +114,9 @@ function contextmenuLibrary( $li, $target ) {
 	$( '.contextmenu' ).find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
 	$( '.contextmenu .tag' ).toggleClass( 'hide', !$( '.licover' ).length || G.mode !== 'file' );
 	$li.addClass( 'active' );
+	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
-		var menutop = G.bars ? '310px' : '270px';
+		var menutop = barsvisible ? '310px' : '270px';
 	} else {
 		var menutop = ( $li.offset().top + 48 ) +'px';
 	}
@@ -125,7 +126,7 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.toggleClass( 'fixed', G.list.licover && $li.css( 'position' ) === 'fixed' );
 	var targetB = $menu.offset().top + $menu.height();
 	var wH = window.innerHeight;
-	if ( targetB > wH - ( G.bars ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	if ( targetB > wH - ( barsvisible ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function coverartChange() {
 	if ( G.playback ) {
@@ -260,7 +261,6 @@ function displayBars() {
 	var smallscreen = wH < 590 ||wW < 500;
 	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
 	if ( !G.display.bars || ( smallscreen && !G.display.barsalways ) || lcd ) {
-		G.bars = false;
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
 		$( '.page' ).addClass ( 'barshidden' );
@@ -269,7 +269,6 @@ function displayBars() {
 		$( '.content-top' ).css( 'top', '' );
 		$( '.emptyadd' ).css( 'top', '90px' );
 	} else {
-		G.bars = true;
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
 		$( '.page' ).removeClass ( 'barshidden' );
@@ -295,14 +294,14 @@ function displayCheckboxSet( i, enable, check ) {
 }
 function displayPlayback() {
 	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
-	var displaytime = $( '#time-knob' ).is( ':visible' );
-	$( '#volume-knob' ).toggleClass( 'hide', !G.display.volume || G.display.volumenone );
 	$( '#coverart-block' )
 		.toggleClass( 'hide', !G.display.cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
-	var volume = ( G.display.volumenone || !G.display.volume ) ? 0 : 1;
-	var column = ( displaytime ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + volume;
+	var timevisible = $( '#time-knob' ).is( ':visible' );
+	var volumevisible = G.display.volume && !G.display.volumenone;
+	$( '#volume-knob' ).toggleClass( 'hide', !volumevisible );
+	var column = ( timevisible ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + ( volumevisible ? 1 : 0 );
 	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
 	if ( column === 2 ) {
 		$elements.css( 'width', '' );
@@ -319,14 +318,14 @@ function displayPlayback() {
 		$( '#volume-knob' ).css( 'margin-left', '' );
 	}
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	if ( displaytime ) {
+	if ( timevisible ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 		$( '#progress' ).empty();
 	}
-	$( '#time-bar, #time-band' ).toggleClass( 'hide', displaytime );
+	$( '#time-bar, #time-band' ).toggleClass( 'hide', timevisible );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
-	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || $( '#volume-knob' ).is( ':visible' ) );
+	$( '.volumeband' ).toggleClass( 'hide', volumevisible );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 }
@@ -483,10 +482,11 @@ function getPlaylist() {
 function hideGuide() {
 	if ( G.guide ) {
 		G.guide = 0;
-		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !G.bars );
+		var barsvisible = $( '#bar-top' ).is( ':visible' );
+		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !barsvisible );
 		$( '.map' ).removeClass( 'mapshow' );
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( !G.bars ) $( '#bar-bottom' ).addClass( 'transparent' );
+		if ( !barsvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
 		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
@@ -669,13 +669,12 @@ function infoPlayback() {
 		, beforeshow   : function() {
 			$( '#infoContent tr:last' ).before( '<tr><td colspan="2" class="gr">Default if no coverart found:</td></tr>' );
 			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
-			var displaytime = $( '#time-knob' ).is( ':visible' );
 			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			if ( !G.display.bars ) displayCheckboxSet( 1 );      // disable by bars hide
-			if ( displaytime ) displayCheckboxSet( 3 );             // disable by time
+			if ( G.display.time ) displayCheckboxSet( 3 );             // disable by time
 			if ( !G.display.cover ) displayCheckboxSet( 5 );     // disable by cover
 			if ( G.display.volumenone ) displayCheckboxSet( 6 ); // disable by mpd volume
-			if ( !displaytime && !G.display.volume ) {
+			if ( !G.display.time && !G.display.volume ) {
 				displayCheckboxSet( 4 ); // disable by autohide
 				displayCheckboxSet( 8 );
 			}
@@ -802,14 +801,14 @@ function lyricsShow( data ) {
 		$( '#lyricsartist' ).text( G.lyricsArtist );
 		$( '#lyricstext' ).html( lyricshtml );
 	}
-	$( '#lyrics' )
-		.css( {
-			  top    : ( G.bars ? '' : 0 )
-			, height : ( G.bars ? '' : '100vh' )
-		} )
-		.removeClass( 'hide' );
+	if ( $( '#bar-top' ).is( ':visible' ) ) {
+		$( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
+		$( '#lyrics' ).css( { top: '', height: '' } )
+	} else {
+		$( '#lyrics' ).css( { top: 0, height: '100vh' } )
+	}
+	$( '#lyrics' ).removeClass( 'hide' );
 	$( '#lyricstext' ).scrollTop( 0 );
-	if ( G.bars ) $( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
 	bannerHide();
 }
 function lyricsHide() {
@@ -823,7 +822,7 @@ function lyricsHide() {
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
-	if ( G.bars ) $( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
+	$( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
 }
 function mpcSeek( seekto ) {
 	var seektime = Math.round( seekto / 1000 * G.status.Time );
@@ -840,7 +839,7 @@ function mpcSeek( seekto ) {
 	if ( G.status.state === 'play' ) {
 		bash( [ 'mpcseek', seektime ] );
 	} else {
-		if ( G.bars ) {
+		if ( $( '#bar-top' ).is( ':visible' ) ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#pause' ).addClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
@@ -1020,7 +1019,7 @@ function renderLibrary() {
 	}
 	$( '#lib-list' ).empty().addClass( 'hide' );
 	$( '#lib-mode-list' )
-		.css( 'padding-top', G.bars ? '' : '50px' )
+		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : '50px' )
 		.removeClass( 'hide' );
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
@@ -1083,7 +1082,7 @@ function renderLibraryList( data ) {
 			if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 			if ( G.albumlist ) {
 				var pH = $( '#lib-list p' ).height() - $( '.coverart' ).height();
-				if ( !G.bars ) pH += 40;
+				if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
 				$( '#lib-list p' )
 					.removeClass( 'bars-on' )
 					.css( 'height', pH +'px' );
@@ -1092,7 +1091,7 @@ function renderLibraryList( data ) {
 			G.albumlist = 0;
 			$( '#lib-list p' )
 				.toggleClass( 'fixedcover', G.display.fixedcover )
-				.toggleClass( 'bars-on', G.bars );
+				.toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 			$( '#lib-list' ).removeClass( 'hide' );
 			G.color ? colorSet() : setTrackCoverart();
 		}
@@ -1109,9 +1108,10 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	clearIntervalAll();
-	if ( !G.display.volumenone && $( '#volume-knob' ).is( ':visible' ) ) {
+	if ( $( '#volume-knob' ).is( ':visible' ) ) {
+//		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
 		$volumeRS.setValue( G.status.volume );
-		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
+//		$volumehandlerotate.css( 'transition-property', '' ); // disable animation on load / refresh data
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	} else {
 		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
@@ -1142,12 +1142,11 @@ function renderPlayback() {
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
-	var displaytime = $( '#time-knob' ).is( ':visible' );
 	$( '#total' ).text( timehms );
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
-		if ( displaytime ) {
+		if ( $( '#time-knob' ).is( ':visible' ) ) {
 			$( '#time' ).roundSlider( 'setValue', 0 );
 			$( '#elapsed' )
 				.text( timehms )
@@ -1170,7 +1169,7 @@ function renderPlayback() {
 	var position = Math.round( G.status.elapsed / time * 1000 );
 // pause ////////////////////
 	if ( G.status.state === 'pause' ) {
-		if ( displaytime ) {
+		if ( $( '#time-knob' ).is( ':visible' ) ) {
 			$( '#time' ).roundSlider( 'setValue', position );
 			$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
@@ -1180,7 +1179,7 @@ function renderPlayback() {
 		}
 // play ////////////////////
 	} else {
-		if ( G.status.elapsed ) {
+		if ( G.status.elapsed !== false ) {
 			renderPlaybackTime();
 		} else {
 			$( '#time' ).roundSlider( 'setValue', 0 );
@@ -1205,7 +1204,7 @@ function renderPlaybackBlank() {
 			, pad : 10
 		} );
 		$( '#qrwebui' ).html( qr );
-		$( '#coverTR' ).toggleClass( 'empty', !G.bars );
+		$( '#coverTR' ).toggleClass( 'empty', $( '#bar-top' ).is( ':hidden' ) );
 		$( '#coverart' )
 			.attr( 'src', G.coverdefault )
 			.addClass( 'hide' );
@@ -1345,7 +1344,7 @@ function renderPlaybackTitles() {
 		$( '#playericon' ).removeAttr( 'class' );
 		if ( G.status.icon ) $( '#playericon' ).addClass( 'fa fa-'+ G.status.icon );
 	}
-	if ( !$( '#time-knob' ).is( ':visible' ) ) renderPlaybackTime();
+	if ( $( '#time-knob' ).is( ':hidden' ) ) renderPlaybackTime();
 }
 function renderPlaylist( data ) {
 	G.savedlist = 0;
@@ -1374,7 +1373,7 @@ function renderPlaylist( data ) {
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		imageLoad( 'pl-list' );
 		setPlaylistScroll();
-		$( '.list p' ).toggleClass( 'bars-on', G.bars );
+		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 	} );
 }
 function renderPlaylistList() {
@@ -1387,7 +1386,7 @@ function renderPlaylistList() {
 		$( '.emptyadd' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
-			$( '.list p' ).toggleClass( 'bars-on', G.bars );
+			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 			$( '#pl-savedlist' ).css( 'width', '' );
 			$( '#pl-index' ).html( data.index[ 0 ] );
 			$( '#pl-index1' ).html( data.index[ 1 ] );
@@ -1403,7 +1402,7 @@ function renderSavedPlaylist( name ) {
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
 			imageLoad( 'pl-savedlist' );
-			$( '.list p' ).toggleClass( 'bars-on', G.bars );
+			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
 			$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 			$( 'html, body' ).scrollTop( 0 );
@@ -1426,7 +1425,7 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setButtonControl() {
-	if ( G.bars ) {
+	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].indexOf( G.status.player ) !== -1;
 		var noprevnext = G.status.playlistlength < 2 || !mpd_upnp;
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
@@ -1443,35 +1442,37 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var displaytime = $( '#time-knob' ).is( ':visible' );
-	var prefix = displaytime ? 'ti' : 'i';
+	var timevisible = $( '#time-knob' ).is( ':visible' );
+	var prefix = timevisible ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	if ( G.status.player !== 'mpd' ) return
 	
-	if ( G.display.buttons && displaytime ) {
-		$( '#random' ).toggleClass( 'active', G.status.random );
-		$( '#repeat' ).toggleClass( 'active', G.status.repeat );
-		$( '#single' ).toggleClass( 'active', G.status.single );
-	} else if ( !G.status.stream ) {
-		$( '#'+ prefix +'-random' ).toggleClass( 'hide', !G.status.random );
-		$( '#'+ prefix +'-repeat' ).toggleClass( 'hide', !G.status.repeat || G.status.single );
-		$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', !( G.status.repeat && G.status.single ) );
-		$( '#'+ prefix +'-single' ).toggleClass( 'hide', !G.status.single || ( G.status.repeat && G.status.single ) );
-	}
-	[ 'consume', 'librandom' ].forEach( function( option ) {
-		$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
-		if ( displaytime ) {
-			$( '#i-'+ option ).addClass( 'hide' );
-			$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+	if ( !G.status.stream ) {
+		if ( $( '#play-group' ).is( ':visible' ) ) {
+			$( '#random' ).toggleClass( 'active', G.status.random );
+			$( '#repeat' ).toggleClass( 'active', G.status.repeat );
+			$( '#single' ).toggleClass( 'active', G.status.single );
 		} else {
-			$( '#ti-'+ option ).addClass( 'hide' );
-			$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+			$( '#'+ prefix +'-random' ).toggleClass( 'hide', !G.status.random );
+			$( '#'+ prefix +'-repeat' ).toggleClass( 'hide', !G.status.repeat || G.status.single );
+			$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', !( G.status.repeat && G.status.single ) );
+			$( '#'+ prefix +'-single' ).toggleClass( 'hide', !G.status.single || ( G.status.repeat && G.status.single ) );
 		}
-	} );
+		[ 'consume', 'librandom' ].forEach( function( option ) {
+			if ( timevisible ) {
+				$( '#i-'+ option ).addClass( 'hide' );
+				$( '#ti-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+			} else {
+				$( '#ti-'+ option ).addClass( 'hide' );
+				$( '#i-'+ option ).toggleClass( 'hide', !G.status[ option ] );
+			}
+			$( '#button-pl-'+ option ).toggleClass( 'bl', G.status[ option ] );
+		} );
+	}
 	setButtonUpdateAddons();
 	setButtonUpdating();
-	if ( !$( '#volume-knob' ).is( ':visible' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 	$( '#play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
 }
 function setButtonUpdateAddons( updateaddons ) {
@@ -1489,7 +1490,7 @@ function setButtonUpdateAddons( updateaddons ) {
 }
 function setButtonUpdating() {
 	if ( G.status.updating_db ) {
-		if ( G.bars ) {
+		if ( $( '#bar-top' ).is( ':visible' ) ) {
 			if ( !G.localhost ) {
 				$( '#library, #button-library' ).addClass( 'blink' );
 			} else {
@@ -1498,7 +1499,8 @@ function setButtonUpdating() {
 					.addClass( 'fa-refresh-library' );
 			}
 		} else {
-			$( '#'+ ( $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i' ) +'-update' ).removeClass( 'hide' )
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			$( '#'+ prefix +'-update' ).removeClass( 'hide' )
 		}
 	} else {
 		$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
@@ -1557,7 +1559,7 @@ function setPlaylistScroll() {
 		|| $( '#pl-list li' ).length < G.status.song + 1 // on eject cd G.status.song not yet refreshed
 	) return
 	
-	var litop = G.bars ? 80 : 40;
+	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
 	if ( !G.status.elapsed ) $( '#pl-list li .elapsed' ).empty();
 	$( '#menu-plaction' ).addClass( 'hide' );
 	var prevscrolltop = $( '#pl-list li.active' ).length ? $( '#pl-list li.active' ).offset().top : litop;
@@ -1651,7 +1653,6 @@ function statusRefresh() {
 	bash( [ 'displayget' ], data => {
 		delete G.coverTL;
 		G.display = data;
-		G.bars = data.bars;
 		G.display.screenoff = G.localhost;
 		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 		var submenu = {
@@ -1734,8 +1735,10 @@ function volColorMute() {
 	$( '#volmute' )
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
-	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-	if ( !$( '#volume-knob' ).is( ':visible' ) ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	if ( $( '#volume-knob' ).is( ':hidden' ) ) {
+		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	}
 }
 function volColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );

@@ -84,6 +84,11 @@ jpgThumbnail() {
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
 	pushstream coverart '{"url":"'$coverfile.$( date +%s ).jpg'","type":"'$type'"}'
 }
+mpdoledLogo() {
+	systemctl stop mpd_oled
+	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+	mpd_oled -o $type -L
+}
 pladdPlay() {
 	pushstreamPlaylist
 	if [[ ${1: -4} == play ]]; then
@@ -400,7 +405,7 @@ displayget )
 					| grep -q 'mixer_type.*none' \
 					&& echo true || echo false )
 	fi
-	data=$( sed '$ d' $dirsystem/display )
+	data=$( head -n -1 $dirsystem/display )
 	data+='
 , "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
@@ -511,7 +516,7 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]}
-	systemctl stop radio
+	systemctl stop radio mpd_oled
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
@@ -523,6 +528,7 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
+		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
 		[[ $command == stop ]] && rm -f $dirtmp/status
@@ -533,7 +539,7 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/status
-	systemctl stop radio
+	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
@@ -560,6 +566,7 @@ mpcprevnext )
 		else
 			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
+		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	;;
 mpcseek )
@@ -584,6 +591,9 @@ mpcupdate )
 		mpc -q update "$path"
 	fi
 	pushstream mpdupdate 1
+	;;
+mpdoledlogo )
+	mpdoledLogo
 	;;
 nicespotify )
 	for pid in $( pgrep spotifyd ); do
@@ -740,6 +750,7 @@ power )
 	reboot=${args[1]}
 	mpc stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
+	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
 	if [[ -e $dirtmp/relaystimer ]]; then

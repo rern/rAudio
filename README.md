@@ -26,6 +26,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Character LCD: 16x2, 20x4
 	- Power on/off button
 	- Relay module
+	- Spectrum OLED (128x64)
 	- TFT 3.5" LCD (320x420)
 	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts

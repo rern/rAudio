@@ -635,26 +635,6 @@ i.map.disabled, .map.disabled i {
 .btn-default {
 	background-color: var( --cg );
 }
-.btn-group {
-	position: relative;
-	display: inline-block;
-	vertical-align: middle;
-}
-.btn-group>.btn {
-	position: relative;
-	float: left;
-}
-.btn-group>.btn:not(:first-child):not(:last-child) {
-	border-radius:0;
-}
-.btn-group>.btn:first-child:not(:last-child) {
-	border-bottom-right-radius: 0;
-	border-top-right-radius: 0;
-}
-.btn-group>.btn:last-child:not(:first-child) {
-	border-bottom-left-radius: 0;
-	border-top-left-radius: 0;
-}
 #timeicon {
 	position: absolute;
 	left: 50%;
@@ -856,16 +836,33 @@ i.map.disabled, .map.disabled i {
 #volB {
 	top: 150px;
 }
-#page-playback .btn-group i {
+.btn-group {
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
+}
+.btn-group>.btn {
+	position: relative;
+	float: left;
+}
+.btn-group>.btn:not(:first-child):not(:last-child) {
+	border-radius:0;
+}
+.btn-group>.btn:first-child:not(:last-child) {
+	border-bottom-right-radius: 0;
+	border-top-right-radius: 0;
+}
+.btn-group>.btn:last-child:not(:first-child) {
+	border-bottom-left-radius: 0;
+	border-top-left-radius: 0;
+}
+.btn-group i {
 	height: 40px;
 	width: 40px;
 	font-size:24px;
 	line-height: 40px;
 }
-#page-playback .btn-group {
-	position: relative;
-}
-#page-playback .btn-group::before {
+.btn-group::before {
 	position: absolute;
 	content: '';
 	top: 0;
@@ -951,7 +948,6 @@ i.map.disabled, .map.disabled i {
 }
 #volume .rs-transition,
 #volume .rs-handle {
-	transition-property: all !important; /* suppress default 'none' set by roundslider.js */
 	transition-timing-function: linear;
 }
 #volume .rs-handle {

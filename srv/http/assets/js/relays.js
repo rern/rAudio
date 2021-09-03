@@ -1,5 +1,7 @@
 $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.gpio-no' ).addClass( 'hide' );
+
 renderPage = function( list ) {
 	if ( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
@@ -64,21 +66,25 @@ renderPage = function( list ) {
 	showContent();
 }
 function renderUpdate() {
-	[ 'on', 'off', 'ond', 'offd' ].forEach( function( k ) {
+	D.keys.forEach( function( k ) {
 		D.val[ k ] = [];
-		var zero = [];
-		var L = k.slice( -1 ) === 'd' ? 3 : 4;
-		for ( i = 0; i < L; i ++ ) $( '#'+ k + i ).val() != 0 ? D.val[ k ].push( +$( '#'+ k + i ).val() ) : zero.push( 0 );
-		D.val[ k ] = D.val[ k ].concat( zero );
 	} );
-	[ 'pin', 'name' ].forEach( function( k ) {
-		D.val[ k ] = [];
+	for ( i = 0; i < 4; i ++ ) {
+		D.val.pin.push( +$( '#pin'+ i ).val() );
+		D.val.name.push( $( '#name'+ i ).val() );
+	}
+	[ 'on', 'off' ].forEach( function( k ) {
+		var v0 = [];
 		for ( i = 0; i < 4; i ++ ) {
-			var val = $( '#'+ k + i ).val();
-			if ( k === 'pin') val = +val;
-			D.val[ k ].push( val );
+			var v = +$( '#'+ k + i ).val();
+			v ? D.val[ k ].push( v ) : v0.push( 0 );
 		}
+		D.val[ k ] = D.val[ k ].concat( v0 );
 	} );
+	for ( i = 0; i < 3; i ++ ) {
+		D.val.ond.push( D.val.on[ i + 1 ] ? +$( '#ond'+ i ).val() : 0 );
+		D.val.offd.push( D.val.off[ i + 1 ] ? +$( '#offd'+ i ).val() : 0 );
+	}
 	D.val.timer = $( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
 	$( '.infobtn' ).toggleClass( 'disabled', values === D.values );
@@ -86,21 +92,8 @@ function renderUpdate() {
 }
 // disable default > re-enable
 $( '.container' )
-	.off( 'change', 'select' )
-	.off( 'keyup', 'input' )
-	.on( 'change', 'select', function() {
-		var $this = $( this );
-		if ( $this.val() == 0 ) {
-			if ( $this.hasClass( 'on' ) ) {
-				var i = $( '.on' ).index( this );
-				if ( [ 2, 4, 6 ].indexOf( i ) !== -1 ) $( '.on' ).eq( i -1 ).val( 0 );
-			} else if ( $this.hasClass( 'off' ) ) {
-				var i = $( '.off' ).index( this );
-				if ( [ 2, 4, 6 ].indexOf( i ) !== -1 ) $( '.off' ).eq( i -1 ).val( 0 );
-			}
-		}
-		renderUpdate();
-	} ).on( 'keyup', 'input', renderUpdate );
+	.off( 'change', 'select' ).on( 'change', 'select', renderUpdate )
+	.off( 'keyup', 'input' ).on( 'keyup', 'input', renderUpdate );
 $( '.infobtn' ).off( 'click' );
 	
 $( '#undo' ).click( function() {
@@ -118,7 +111,7 @@ $( '#save' ).off( 'click' ).click( function() {
 		if ( on ) onorder.push( names[ on ] );
 		if ( off ) offorder.push( names[ off ] );
 	}
-	var values = 'pin=\'[ "'+ D.val.pin.join( '","' ) +'" ]\'\\n'
+	var values = 'pin=\'[ '+ D.val.pin.join( ',' ) +' ]\'\\n'
 				+'name=\'[ "'+ D.val.name.join( '","' ) +'" ]\'\\n'
 				+'onorder=\'[ "'+ onorder.join( '","' ) +'" ]\'\\n'
 				+'offorder=\'[ "'+ offorder.join( '","' ) +'" ]\'\\n'

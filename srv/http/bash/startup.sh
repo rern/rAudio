@@ -114,6 +114,8 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py
 fi
+[[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
+
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
 
 if [[ -n $connected ]]; then

@@ -15,6 +15,7 @@ foreach( $timezonelist as $key => $zone ) {
 }
 $selecttimezone.= '</select>';
 ?>
+<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <heading data-status="journalctl" class="status">System<?=$istatus?></heading>
 <div id="systemlabel" class="col-l text gr">
 		Version
@@ -140,34 +141,30 @@ $selecttimezone.= '</select>';
 	<div id="divi2smodule">
 		<?=$selecti2s?>
 	</div>
-	<span <?=$classhelp?>>I²S audio modules are not plug-and-play capable. Select a driver for installed device.</span>
+	<span <?=$classhelp?>>I²S audio module - player output.</span>
 </div>
 <div class="col-l double">
-	<a>Character LCD
-	<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
+	<a>Character LCD<br><gr>HD44780</gr></a><i class="fa fa-lcdchar"></i>
 </div>
 <div class="col-r">
 	<input id="lcdchar" <?=$chkenable?>>
 	<div class="switchlabel" for="lcdchar"></div>
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-			<a class="img" data-name="lcdchar">Module</a> with Hitachi HD44780 controller.
+			<a class="img" data-name="lcdchar">LCD module</a> - display playback data
 		<br>&bull; Support 16x2 and 20x4 LCD modules.
-		<br>&bull; <a href="https://rplcd.readthedocs.io/en/latest/getting_started.html#wiring">Wiring</a>
 		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 	</span>
 </div>
 <div class="col-l double">
-	<a>Power Button
-	<br>Power LED</a><i class="fa fa-power"></i>
+	<a>Power Button<br>Power LED</a><i class="fa fa-power"></i>
 </div>
 <div class="col-r">
 	<input id="powerbutton" <?=$chkenable?>>
 	<div class="switchlabel" for="powerbutton"></div>
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		Power button and LED for on/off rAudio.
-		<br>&bull; <a class="img" data-name="powerbutton">Wiring</a>
+		<a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 		<br> &emsp; &bull; On - Fixed to pin 5
 		<br> &emsp; &bull; Off - Default to pin 5 (single pin on+off)
 		<br>If pin 5 is used by DAC or LCD - Set 2 unused pins for:
@@ -176,30 +173,38 @@ $selecttimezone.= '</select>';
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
-<div class="col-l double">
-	<a>Relay Module<br><gr>WiringPi</gr></a><i class="fa fa-relays"></i>
-</div>
+<div class="col-l single">Relay Module<i class="fa fa-relays"></i></div>
 <div class="col-r">
 	<input id="relays" <?=$chknoset?>>
 	<div class="switchlabel" for="relays"></div>
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a class="img" data-name="relays">Module</a> for power on / off equipments.
+		<a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 		<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 		<br>(This can be enabled and run as a test without a connected relay module.)
 	</span>
 </div>
+<div class="col-l double">
+	<a>Spectrum OLED<br><gr>128x64</gr></a><i class="fa fa-mpdoled"></i>
+</div>
+<div class="col-r">
+	<input id="mpdoled" <?=$chkenable?>>
+	<div class="switchlabel" for="mpdoled"></div>
+	<i id="setting-mpdoled" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
+	</span>
+</div>
 	<?php if ( file_exists( '/usr/bin/chromium' ) ) { ?>
 <div class="col-l double">
-	<a>TFT 3.5" LCD
-	<br><gr>420x320</gr></a><i class="fa fa-lcd"></i>
+	<a>TFT 3.5" LCD<br><gr>320x420</gr></a><i class="fa fa-lcd"></i>
 </div>
 <div class="col-r">
 	<input id="lcd" <?=$chkenable?>>
 	<div class="switchlabel" for="lcd"></div>
 	<i id="setting-lcd" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		<a class="img" data-name="lcd">Module</a> with resistive touchscreen.
+		<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 	</span>
 </div>
 	<?php } ?>
@@ -209,8 +214,7 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="vuled"></div>
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-		7 LEDs, with current limiting resisters
-		<br>&bull; <a class="img" data-name="vuled">Wiring</a>
+		<a class="img" data-name="vuled">7 LEDs</a> - display audio level
 		<br>&bull; <bl id="ledcalc">LED resister calculator</bl>
 	</span>
 </div>
@@ -219,8 +223,7 @@ $selecttimezone.= '</select>';
 <div>
 <heading>Environment<?=$ihelp?></heading>
 <div class="col-l double">
-	<a>Name
-	<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
+	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
 </div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
@@ -233,8 +236,7 @@ $selecttimezone.= '</select>';
 
 <div id="divsoundprofile">
 <div data-status="soundprofile" class="col-l icon double status">
-	<a>Sound Profile
-	<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>

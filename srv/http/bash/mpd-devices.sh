@@ -97,15 +97,17 @@ for line in "${lines[@]}"; do
 	Aname+=( "$name" )
 done
 
-devices=${devices:1}
-aplayname=${Aaplayname[i]}
-output=${Aname[i]}
 if [[ -e /etc/asound.conf ]]; then
 	i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	(( $i > $card )) && i=$card
 else
 	i=0
 fi
+
+devices=${devices:1}
+aplayname=${Aaplayname[i]}
+output=${Aname[i]}
+
 echo -n "\
 defaults.pcm.card $i
 defaults.ctl.card $i
