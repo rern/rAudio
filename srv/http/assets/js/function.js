@@ -580,8 +580,9 @@ var chklibrary2 = {
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
 function infoLibrary( page2 ) {
-	var checkbox = Object.values( !page2 ? chklibrary : chklibrary2 );
-	var keys = Object.keys( !page2 ? chklibrary : chklibrary2 );
+	var page1 = !page2;
+	var checkbox = Object.values( page1 ? chklibrary : chklibrary2 );
+	var keys = Object.keys( page1 ? chklibrary : chklibrary2 );
 	keys = keys.filter( function( k ) {
 		return k[ 0 ] !== '-'
 	} );
@@ -591,18 +592,20 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : !page2 ? 'Library Home Display' : 'Library/Playlist Options'
-		, message      : !page2 ? '1/2 - Show selected items:' : '2/2 - Options:'
+		, title        : page1 ? 'Library Home Display' : 'Library/Playlist Options'
+		, message      : page1 ? '1/2 - Show selected items:' : '2/2 - Options:'
 		, messagealign : 'left'
-		, arrowright   : !page2 ? function() { infoLibrary( 2 ); } : ''
-		, arrowleft    : !page2 ? '' : infoLibrary
+		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
+		, arrowleft    : page1 ? '' : infoLibrary
 		, checkbox     : checkbox
-		, checkcolumn  : !page2 ? 1 : ''
+		, checkcolumn  : page1 ? 1 : ''
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent' ).css( 'height', '340px' );
-			if ( page2 ) {
+			if ( page1 ) {
+				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
+			} else {
 				$( '.infomessage, #infoContent td' ).css( 'width', '286' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
@@ -621,8 +624,6 @@ function infoLibrary( page2 ) {
 					}
 				} );
 				$fixedcover.prop( 'disabled', G.display.hidecover );
-			} else {
-				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
 			}
 		}
 		, ok           : function () {
