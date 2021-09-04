@@ -833,7 +833,7 @@ function mpcSeek( seekto ) {
 		position = seekto;
 		var elapsedhms = second2HMS( seektime );
 		var timehms = second2HMS( G.status.Time );
-		$( '#time' ).roundSlider( 'setValue', position );
+		$( '#time' ).roundSlider( { animation: false } ).roundSlider( 'setValue', position );
 		$( '#elapsed' ).html( elapsedhms );
 		$( '#total' ).text( timehms );
 	}
@@ -860,7 +860,9 @@ function mpcSeekBar( pageX ) {
 	if ( G.status.state === 'pause' ) elapsedhms = '<bl>'+ elapsedhms +'</bl>';
 	var timehms = second2HMS( Math.round( G.status.Time ) );
 	$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i>'+ elapsedhms +' / '+ timehms );
-	$( '#time-bar' ).css( 'width', ( position / 10 ) +'%' );
+	$( '#time-bar' )
+		.css( 'transition-duration', '0s' )
+		.width( ( position / 10 ) +'%' );
 	if ( !G.drag ) mpcSeek( position );
 }
 function orderLibrary() {
@@ -1131,8 +1133,7 @@ function renderPlayback() {
 	renderPlaybackCoverart();
 	// webradio ////////////////////////////////////////
 	if ( G.status.stream ) {
-		$( '#time' ).roundSlider( 'setValue', 0 );
-		$( '#time-bar' ).css( 'width', 0 );
+		timeReset();
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
@@ -1147,16 +1148,7 @@ function renderPlayback() {
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
-		if ( $( '#time-knob' ).is( ':visible' ) ) {
-			$( '#time' ).roundSlider( 'setValue', 0 );
-			$( '#elapsed' )
-				.text( timehms )
-				.addClass( 'gr' );
-			$( '#total' ).empty();
-		} else {
-			$( '#time-bar' ).css( 'width', 0 );
-			$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
-		}
+		timeReset();
 		return
 	}
 	
@@ -1171,21 +1163,18 @@ function renderPlayback() {
 // pause ////////////////////
 	if ( G.status.state === 'pause' ) {
 		if ( $( '#time-knob' ).is( ':visible' ) ) {
-			$( '#time' ).roundSlider( 'setValue', position );
+			$( '#time' ).roundSlider( { animation: false } ).roundSlider( 'setValue', position );
 			$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
 		} else {
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
+			$( '#time-bar' )
+				.css( 'transition-duration', '0s' )
+				.width( ( position / 10 ) +'%' );
 			$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / '+ timehms );
 		}
 // play ////////////////////
-	} else {
-		if ( G.status.elapsed !== false ) {
-			renderPlaybackTime();
-		} else {
-			$( '#time' ).roundSlider( 'setValue', 0 );
-			$( '#time-bar' ).css( 'width', 0 );
-		}
+	} else { // elapsed can start at 0
+		G.status.elapsed !== false ? renderPlaybackTime() : timeReset();
 	}
 }
 function renderPlaybackBlank() {
@@ -1193,8 +1182,7 @@ function renderPlaybackBlank() {
 	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
-	if ( $( '#time-knob' ).is( ':visible' ) ) $( '#time' ).roundSlider( 'setValue', 0 );
-	$( '#time-bar' ).css( 'width', 0 );
+	timeReset();
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 	if ( G.status.ip ) {
@@ -1251,62 +1239,59 @@ function renderPlaybackTime() {
 	if ( G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
-	var position = Math.round( G.status.elapsed / time * 1000 );
-	if ( G.localhost ) {
-		var interval = 1000;
-		var each = Math.round( 1000 / time );
-	} else {
-		var interval = time;
-		var each = 1;
-	}
 	var $elapsed = $( '#elapsed' );
 	var elapsed = G.status.elapsed ? second2HMS( G.status.elapsed ) : '';
 	if ( $( '#time-knob' ).is( ':visible' ) ) {
+		$elapsed.text( elapsed );
 		if ( G.status.stream ) {
 			$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
-			$( '#time' ).roundSlider( 'setValue', 0 );
+			timeReset();
 			if ( !G.display.radioelapsed ) return
 			
 			$elapsed = $( '#total' );
-		} else {
-			G.intKnob = setInterval( function() {
-				position += each;
-				$( '#time' ).roundSlider( 'setValue', position );
-			}, interval );
 		}
-		$elapsed.text( elapsed );
-		G.intElapsed = setInterval( function() {
+		var position = Math.round( G.status.elapsed / time * 1000 );
+		$( '#time' ).roundSlider( { animation: false } ).roundSlider( 'setValue', position );
+		setTimeout( function() {
+			$( '#time' ).roundSlider( { animation: G.localhost ? false : true } );
+		}, 500 );
+		var each = 1000 / time;
+		G.intKnob = setInterval( function() {
+			position += each;
+			$( '#time' ).roundSlider( 'setValue', position );
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
-				G.status.elapsed = 0;
-				clearIntervalAll();
-				$elapsed.empty();
-				$( '#time' ).roundSlider( 'setValue', 0 );
+				timeReset();
 			} else {
 				$elapsed.text( second2HMS( G.status.elapsed ) );
 			}
 		}, 1000 );
 	} else {
-		if ( G.status.stream ) {
-			$( '#time-bar' ).css( 'width', 0 );
-			if ( !G.display.radioelapsed ) return
-			
-		} else {
-			G.intKnob = setInterval( function() {
-				position += each;
-				$( '#time-bar' ).css( 'width', position / 10 +'%' );
-			}, interval );
-		}
 		var iplay = '<i class="fa fa-play"></i>';
 		var timehms = G.status.stream ? '' : ' / '+ second2HMS( time );
-		if ( G.status.player === 'mpd' && elapsed ) $( '#progress' ).html(  iplay + elapsed + timehms );
-		G.intElapsed = setInterval( function() {
+		$( '#progress' ).html(  iplay + elapsed + timehms );
+		if ( G.status.stream ) {
+			$( '#time-bar' )
+				.css( 'transition-duration', '0s' )
+				.width( 0 );
+			if ( !G.display.radioelapsed ) return
+			
+		}
+		
+		var position = G.status.elapsed / time * 100;
+		$( '#time-bar' )
+			.css( 'transition-duration', '0s' )
+			.width( position +'%' );
+		setTimeout( function() {
+			$( '#time-bar' ).css( 'transition-duration', G.localhost ? '0s' : '' );
+		}, 500 );
+		var each = 100 / time;
+		G.intKnob = setInterval( function() {
+			position += each;
+			$( '#time-bar' ).width( position +'%' );
 			G.status.elapsed++;
 			if ( G.status.elapsed === G.status.Time ) {
-				G.status.elapsed = 0;
-				clearIntervalAll();
-				$( '#time-bar' ).css( 'width', 0 );
-				$( '#progress' ).html( iplay );
+				timeReset();
 			} else {
 				$( '#progress' ).html( iplay + second2HMS( G.status.elapsed ) + timehms );
 			}
@@ -1727,6 +1712,26 @@ function thumbUpdate( path ) {
 			  +'</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
+}
+function timeReset() {
+	clearIntervalAll();
+	G.status.elapsed = 0;
+	var time = 'Time' in G.status ? G.status.Time : '';
+	var timehms = time ? second2HMS( time ) : '';
+	if ( $( '#time-knob' ).is( ':visible' ) ) {
+		$( '#time' )
+			.roundSlider( { animation: false } )
+			.roundSlider( 'setValue', 0 );
+		$( '#elapsed' )
+			.text( timehms )
+			.addClass( 'gr' );
+		$( '#total, #progress' ).empty();
+	} else {
+		$( '#time-bar' )
+			.css( 'transition-duration', '0s' )
+			.width( 0 );
+		$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
+	}
 }
 function volColorMute() {
 	$volumetooltip

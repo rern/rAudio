@@ -435,7 +435,6 @@ $( '#time' ).roundSlider( {
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
-	, animation   : false
 	, create      : function ( e ) {
 		$timeRS = this;
 	}
@@ -898,16 +897,7 @@ $( '.btn-cmd' ).click( function() {
 				$( '#total' ).empty();
 				if ( !G.status.stream ) {
 					var timehms = second2HMS( G.status.Time );
-					if ( $( '#time-knob' ).is( ':visible' ) ) {
-						$( '#time' ).roundSlider( 'setValue', 0 );
-						$( '#elapsed' )
-							.text( timehms )
-							.addClass( 'gr' );
-						$( '#total, #progress' ).empty();
-					} else {
-						$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
-						$( '#time-bar' ).css( 'width', 0 );
-					}
+					timeReset();
 				} else {
 					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
