@@ -36,7 +36,7 @@ function addonsdl( std ) {
 	}
 }
 function clearIntervalAll() {
-	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
+	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
 	$( '#vuneedle' ).css( 'transform', '' );
@@ -1256,7 +1256,7 @@ function renderPlaybackTime() {
 			$( '#time' ).roundSlider( { animation: G.localhost ? false : true } );
 		}, 500 );
 		var each = 1000 / time;
-		G.intKnob = setInterval( function() {
+		G.intProgress = setInterval( function() {
 			position += each;
 			$( '#time' ).roundSlider( 'setValue', position );
 			G.status.elapsed++;
@@ -1286,7 +1286,7 @@ function renderPlaybackTime() {
 			$( '#time-bar' ).css( 'transition-duration', G.localhost ? '0s' : '' );
 		}, 500 );
 		var each = 100 / time;
-		G.intKnob = setInterval( function() {
+		G.intProgress = setInterval( function() {
 			position += each;
 			$( '#time-bar' ).width( position +'%' );
 			G.status.elapsed++;
