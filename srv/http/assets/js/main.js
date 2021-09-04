@@ -899,7 +899,7 @@ $( '.btn-cmd' ).click( function() {
 				if ( !G.status.stream ) {
 					var timehms = second2HMS( G.status.Time );
 					if ( $( '#time-knob' ).is( ':visible' ) ) {
-						$( '#time' ).roundSlider( 'setValue', 0 );
+						$timeRS.setValue( 0 );
 						$( '#elapsed' )
 							.text( timehms )
 							.addClass( 'gr' );

@@ -325,7 +325,7 @@ function displayPlayback() {
 	$( '#time-bar, #time-band' ).toggleClass( 'hide', timevisible );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
-	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
+	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || $( '#volume-knob' ).is( ':visible' ) );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 }
@@ -833,7 +833,7 @@ function mpcSeek( seekto ) {
 		position = seekto;
 		var elapsedhms = second2HMS( seektime );
 		var timehms = second2HMS( G.status.Time );
-		$( '#time' ).roundSlider( 'setValue', position );
+		$timeRS.setValue( position );
 		$( '#elapsed' ).html( elapsedhms );
 		$( '#total' ).text( timehms );
 	}
@@ -1131,7 +1131,7 @@ function renderPlayback() {
 	renderPlaybackCoverart();
 	// webradio ////////////////////////////////////////
 	if ( G.status.stream ) {
-		$( '#time' ).roundSlider( 'setValue', 0 );
+		$timeRS.setValue( 0 );
 		$( '#time-bar' ).css( 'width', 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
@@ -1148,7 +1148,7 @@ function renderPlayback() {
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
 		if ( $( '#time-knob' ).is( ':visible' ) ) {
-			$( '#time' ).roundSlider( 'setValue', 0 );
+			$timeRS.setValue( 0 );
 			$( '#elapsed' )
 				.text( timehms )
 				.addClass( 'gr' );
@@ -1171,7 +1171,7 @@ function renderPlayback() {
 // pause ////////////////////
 	if ( G.status.state === 'pause' ) {
 		if ( $( '#time-knob' ).is( ':visible' ) ) {
-			$( '#time' ).roundSlider( 'setValue', position );
+			$timeRS.setValue( position );
 			$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
 		} else {
@@ -1183,7 +1183,7 @@ function renderPlayback() {
 		if ( G.status.elapsed !== false ) {
 			renderPlaybackTime();
 		} else {
-			$( '#time' ).roundSlider( 'setValue', 0 );
+			$timeRS.setValue( 0 );
 			$( '#time-bar' ).css( 'width', 0 );
 		}
 	}
@@ -1193,7 +1193,7 @@ function renderPlaybackBlank() {
 	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
-	if ( $( '#time-knob' ).is( ':visible' ) ) $( '#time' ).roundSlider( 'setValue', 0 );
+	if ( $( '#time-knob' ).is( ':visible' ) ) $timeRS.setValue( 0 );
 	$( '#time-bar' ).css( 'width', 0 );
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
@@ -1264,14 +1264,14 @@ function renderPlaybackTime() {
 	if ( $( '#time-knob' ).is( ':visible' ) ) {
 		if ( G.status.stream ) {
 			$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
-			$( '#time' ).roundSlider( 'setValue', 0 );
+			$timeRS.setValue( 0 );
 			if ( !G.display.radioelapsed ) return
 			
 			$elapsed = $( '#total' );
 		} else {
 			G.intKnob = setInterval( function() {
 				position += each;
-				$( '#time' ).roundSlider( 'setValue', position );
+				$timeRS.setValue( position );
 			}, interval );
 		}
 		$elapsed.text( elapsed );
@@ -1281,7 +1281,7 @@ function renderPlaybackTime() {
 				G.status.elapsed = 0;
 				clearIntervalAll();
 				$elapsed.empty();
-				$( '#time' ).roundSlider( 'setValue', 0 );
+				$timeRS.setValue( 0 );
 			} else {
 				$elapsed.text( second2HMS( G.status.elapsed ) );
 			}
