@@ -538,8 +538,8 @@ wlandisable )
 	pushRefresh
 	;;
 wlanset )
-	apauto=${args[1]}
-	regdom=${args[2]}
+	regdom=${args[1]}
+	apauto=${args[2]}
 	rfkill | grep -q wlan || modprobe brcmfmac
 	iw wlan0 set power_save off
 	if [[ $apauto == false ]]; then

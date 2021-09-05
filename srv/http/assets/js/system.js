@@ -386,27 +386,34 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 var infowifi = heredoc( function() { /*
 <table>
-<tr><td style="padding-right: 5px; text-align: right;">Auto start Access Point</td><td><label><input type="checkbox"></label></td></tr>
-<tr><td style="padding-right: 5px; text-align: right;">Regulatory domain</td><td><input type="text" spellcheck="false"></td></tr>
+<tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>OPTIONS</select></td></tr>
+<tr><td></td><td><label><input type="checkbox"></label>Auto start Access Point</td></tr>
 </table>
 */ } );
 $( '#setting-wlan' ).click( function() {
-	info( {
-		  icon         : 'wifi'
-		, title        : 'Wi-Fi'
-		, content      : infowifi
-		, boxwidth     : 50
-		, values       : [ !G.wlannoap, G.regdom ]
-		, checkchanged : ( G.wlan ? 1 : 0 )
-		, cancel       : function() {
-			$( '#wlan' ).prop( 'checked', G.wlan );
-		}
-		, ok           : function() {
-			var values = infoVal();
-			notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
-			bash( [ 'wlanset', values[ 0 ], values[ 1 ] ] );
-		}
-	} );
+	bash( 'cat /srv/http/settings/regdomcodes.json', function( list ) {
+		var options = '';
+		$.each( list, function( k, v ) {
+			options += '<option value="'+ k +'">'+ v +'</option>';
+		} );
+		infowifi = infowifi.replace( 'OPTIONS', options );
+		info( {
+			  icon         : 'wifi'
+			, title        : 'Wi-Fi'
+			, content      : infowifi
+			, boxwidth     : 250
+			, values       : [ G.regdom, !G.wlannoap ]
+			, checkchanged : ( G.wlan ? 1 : 0 )
+			, cancel       : function() {
+				$( '#wlan' ).prop( 'checked', G.wlan );
+			}
+			, ok           : function() {
+				var values = infoVal();
+				notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
+				bash( [ 'wlanset', values[ 0 ], values[ 1 ] ] );
+			}
+		} );
+	}, 'json' );
 } );
 $( '#i2smodulesw' ).click( function() {
 	// delay to show switch sliding
