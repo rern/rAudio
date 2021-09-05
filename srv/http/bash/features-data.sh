@@ -36,7 +36,7 @@ fi
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
-	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
+	conf=( $( cat $dirsystem/localbrowserval 2> /dev/null | cut -d= -f2 ) )
 	[[ -z $conf ]] && conf=( NORMAL 0 false 1 )
 	data+='
 , "localbrowser"    : '$( systemctl -q is-active localbrowser && echo true || echo false )'

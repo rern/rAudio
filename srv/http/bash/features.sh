@@ -17,10 +17,6 @@ pushRefreshNetworks() {
 	data=$( /srv/http/bash/networks-data.sh )
 	pushstream refresh "$data"
 }
-featureDisable() {
-	systemctl disable --now $@
-	pushRefresh
-}
 featureSet() {
 	systemctl restart $@
 	systemctl -q is-active $@ && systemctl enable $@
@@ -77,9 +73,10 @@ hostapdset )
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
-	featureDisable bootsplash localbrowser
+	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
+	pushRefresh
 	;;
 localbrowserset )
 	screenoff=$(( ${args[1]} * 60 ))
@@ -125,14 +122,14 @@ rotate=$rotate
 screenoff=$screenoff
 cursor=$cursor
 zoom=$zoom
-" > /etc/localbrowser.conf
+" > $dirsystem/localbrowserval
 	systemctl disable --now getty@tty1
-	pushRefresh
 	if [[ -z $reboot ]]; then
 		featureSet bootsplash localbrowser
-	else
-		pushstream notify '{"title":"TFT 3.5\" LCD","text":"Reboot needed for rotate.","icon":"chromium"}'
+		systemctl restart bootsplash localbrowser
+		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
 	fi
+	pushRefresh
 	;;
 logindisable )
 	rm -f $dirsystem/login*
@@ -147,7 +144,8 @@ loginset )
 	pushRefresh
 	;;
 mpdscribbledisable )
-	featureDisable mpdscribble@mpd
+	systemctl disable --now mpdscribble@mpd
+	pushRefresh
 	;;
 mpdscribbleset )
 	user=${args[1]}
@@ -164,14 +162,17 @@ mpdscribbleset )
 	pushRefresh
 	;;
 smbdisable )
-	featureDisable smb
+	systemctl disable --now smb
+	pushRefresh
 	;;
 smbset )
 	smbconf=/etc/samba/smb.conf
 	sed -i '/read only = no/ d' $smbconf
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
-	featureSet smb
+	systemctl restart smb
+	systemctl -q is-active smb && systemctl enable smb
+	pushRefresh
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient
