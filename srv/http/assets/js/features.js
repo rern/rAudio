@@ -128,8 +128,7 @@ $( '#setting-snapclient' ).click( function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
 		, ok           : function() {
-			var snaplatency = Math.abs( infoVal() );
-			bash( [ 'snapclientset', snaplatency ] );
+			bash( [ 'snapclientset', Math.abs( infoVal() ) ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
 		}
 	} );
@@ -215,16 +214,19 @@ $( '#setting-localbrowser' ).click( function() {
 		, button       : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
+		, beforeshow   : function() {
+			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
+				$( this ).val( parseInt( $( this ).val() ) );
+			} );
+			$( '#infoContent input:eq( 1 )' ).on( 'keyup paste cut', function() {
+				$( this ).val( $( this ).val().replace( /[^0-9.]/, '' ) );
+			} );
+		}
 		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
-			var values = infoVal();
-			var localscreenoff = values[ 0 ] * 60;
-			var localzoom = parseFloat( values[ 1 ] ) || 1;
-			var localrotate    = values[ 2 ];
-			var localcursor    = values[ 3 ];
-			bash( [ 'localbrowserset', localscreenoff, localzoom, localrotate, localcursor ] );
+			bash( [ 'localbrowserset', ...infoVal() ] );
 			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
 		}
 	} );
@@ -241,8 +243,7 @@ $( '#setting-smb' ).click( function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
 		, ok           : function() {
-			var values = infoVal();
-			bash( [ 'smbset', values[ 0 ], values[ 1 ] ] );
+			bash( [ 'smbset', ...infoVal() ] );
 			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'networks' );
 		}
 	} );

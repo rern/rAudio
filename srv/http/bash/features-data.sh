@@ -42,7 +42,7 @@ if [[ -e $xinitrc ]]; then
 , "localbrowser"    : '$( systemctl -q is-active localbrowser && echo true || echo false )'
 , "localcursor"     : '${conf[2]}'
 , "localrotate"     : "'${conf[0]}'"
-, "localscreenoff"  : '${conf[1]}'
+, "localscreenoff"  : '$(( ${conf[1]} / 60 ))'
 , "localzoom"       : '${conf[3]}
 fi
 [[ -e /usr/bin/smbd ]] && data+='

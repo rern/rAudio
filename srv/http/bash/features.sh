@@ -82,7 +82,7 @@ localbrowserdisable )
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	;;
 localbrowserset )
-	screenoff=${args[1]}
+	screenoff=$(( ${args[1]} * 60 ))
 	zoom=${args[2]}
 	rotate=${args[3]}
 	cursor=${args[4]}
@@ -127,6 +127,7 @@ cursor=$cursor
 zoom=$zoom
 " > /etc/localbrowser.conf
 	systemctl disable --now getty@tty1
+	pushRefresh
 	if [[ -z $reboot ]]; then
 		featureSet bootsplash localbrowser
 	else
