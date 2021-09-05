@@ -482,20 +482,20 @@ var infolcdchar = heredoc( function() { /*
 		</td>
 	</tr>
 	<tr class="gpio"><td class="gpiosvg" colspan="3" style="padding-top: 10px;"></td></tr>
-	<tr class="gpio"><td>pin_rs</td>
-		<td colspan="2"><input type="text" id="pin_rs"></td>
+	<tr class="gpio">
+		<td>pin_rs</td><td colspan="2"><input type="text" id="pin_rs"></td>
 	</tr>
-	<tr class="gpio"><td>pin_rw</td>
-		<td colspan="2"><input type="text" id="pin_rw"></td>
+	<tr class="gpio">
+		<td>pin_rw</td><td colspan="2"><input type="text" id="pin_rw"></td>
 	</tr>
-	<tr class="gpio"><td>pin_e</td>
-		<td colspan="2"><input type="text" id="pin_e"></td>
+	<tr class="gpio">
+		<td>pin_e</td><td colspan="2"><input type="text" id="pin_e"></td>
 	</tr>
-	<tr class="gpio"><td>pins_data</td>
-		<td colspan="2"><input type="text" id="pins_data"></td>
+	<tr class="gpio">
+		<td>pins_data</td><td colspan="2"><input type="text" id="pins_data"></td>
 	</tr>
-	<tr><td></td>
-		<td colspan="2"><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td>
+	<tr>
+		<td></td><td colspan="2"><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td>
 	</tr>
 	</table>
 */ } );
