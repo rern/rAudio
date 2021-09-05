@@ -100,7 +100,6 @@ databackup )
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 /etc/fstab
-/etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
 /etc/upmpdcli.conf
