@@ -843,12 +843,6 @@ function mpcSeek( seekto ) {
 			$( '#pause' ).addClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
 		}
-		G.mpdseek = 1;
-		$( '#time' ).addClass( 'disabled' );
-		setTimeout( function() {
-			delete G.mpdseek;
-			$( '#time' ).removeClass( 'disabled' );
-		}, 4000 );
 		bash( [ 'mpcseek', seektime ] );
 	}
 }

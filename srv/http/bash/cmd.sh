@@ -579,8 +579,10 @@ mpcseek )
 	seek=${args[1]}
 	playing=${args[2]}
 	if [[ -z $playing ]]; then
+		touch $dirtmp/mpdseek
 		mpc play
 		mpc pause
+		rm $dirtmp/mpdseek
 	fi
 	mpc seek $seek
 	;;

@@ -39,7 +39,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		player )
-			[[ ! -e $dirtmp/radio ]] && $dirbash/cmd-pushstatus.sh
+			[[ ! -e $dirtmp/radio && ! -e $dirtmp/mpdseek ]] && $dirbash/cmd-pushstatus.sh
 			;;
 		update )
 			sleep 1
