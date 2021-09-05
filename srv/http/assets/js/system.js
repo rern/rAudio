@@ -408,9 +408,8 @@ $( '#setting-wlan' ).click( function() {
 				$( '#wlan' ).prop( 'checked', G.wlan );
 			}
 			, ok           : function() {
-				var values = infoVal();
 				notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
-				bash( [ 'wlanset', values[ 0 ], values[ 1 ] ] );
+				bash( [ 'wlanset', ...infoVal() ] );
 			}
 		} );
 	}, 'json' );
@@ -608,8 +607,7 @@ $( '#setting-powerbutton' ).click( function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			var values = infoVal().slice( 1 );
-			bash( [ 'powerbuttonset', ...values ] );
+			bash( [ 'powerbuttonset', ...infoVal().slice( 1 ) ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );
