@@ -1263,7 +1263,6 @@ function renderPlaybackTime() {
 			clearIntervalAll();
 			$elapsed.empty();
 			setProgress( 0 );
-			$( '#time-bar' ).css( 'width', 0 );
 			$( '#progress' ).html( iplay );
 		} else {
 			position += each;

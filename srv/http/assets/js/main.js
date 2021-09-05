@@ -435,7 +435,6 @@ $( '#time' ).roundSlider( {
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
-	, animation   : false
 	, create      : function ( e ) {
 		$timeRS = this;
 		$timeprogress = $( '#time .rs-transition, #time-bar' );
@@ -463,7 +462,6 @@ $( '#volume' ).roundSlider( {
 	, startAngle        : -50
 	, endAngle          : 230
 	, editableTooltip   : false
-	, animation         : false
 	, create            : function () {
 		G.create = 1;
 		$volumeRS = this;
