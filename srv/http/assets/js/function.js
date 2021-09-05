@@ -836,15 +836,20 @@ function mpcSeek( seekto ) {
 	$( '#elapsed' ).html( elapsedhms );
 	$( '#total' ).text( timehms );
 	if ( G.status.state === 'play' ) {
-		bash( [ 'mpcseek', seektime ] );
+		bash( [ 'mpcseek', seektime, 'playing' ] );
 	} else {
 		if ( $( '#bar-top' ).is( ':visible' ) ) {
 			$( '#playback-controls i' ).removeClass( 'active' );
 			$( '#pause' ).addClass( 'active' );
 			$( '#title' ).addClass( 'gr' );
 		}
-		local( 600 );
-		bash( [ 'mpcseek', seektime, 'stop' ] );
+		G.mpdseek = 1;
+		$( '#time' ).addClass( 'disabled' );
+		setTimeout( function() {
+			delete G.mpdseek;
+			$( '#time' ).removeClass( 'disabled' );
+		}, 4000 );
+		bash( [ 'mpcseek', seektime ] );
 	}
 }
 function mpcSeekBar( pageX ) {

@@ -577,15 +577,12 @@ mpcprevnext )
 	;;
 mpcseek )
 	seek=${args[1]}
-	pause=${args[2]}
-	if [[ -n $pause ]]; then
+	playing=${args[2]}
+	if [[ -z $playing ]]; then
 		mpc play
 		mpc pause
-		mpc seek $seek
-		state=pause
-	else
-		mpc seek $seek
 	fi
+	mpc seek $seek
 	;;
 mpcupdate )
 	path=${args[1]}

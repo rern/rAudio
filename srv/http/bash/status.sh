@@ -204,6 +204,7 @@ for line in "${lines[@]}"; do
 	esac
 done
 
+[[ -z $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
