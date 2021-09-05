@@ -791,7 +791,6 @@ $( '.map' ).on( 'tap', function() {
 				$( '#bar-bottom' ).addClass( 'transparent' );
 			}
 		} else {
-			local(); // suppress - animate handle rotate
 			G.coverTL = {};
 			list.forEach( function( el ) {
 				G.coverTL[ el ] = G.display[ el ];
@@ -819,7 +818,15 @@ $( '.map' ).on( 'tap', function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		renderPlayback();
+		if ( G.status.state === 'play' ) {
+			bash( '/srv/http/bash/cmd.sh mpcelapsed', function( elapsed ) {
+				clearIntervalAll();
+				G.status.elapsed = +elapsed;
+				renderPlayback();
+			} );
+		} else {
+			renderPlayback();
+		}
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		$( '#button-settings' ).click();
@@ -931,7 +938,7 @@ $( '.btn-cmd' ).click( function() {
 			} else {
 				var timehms = second2HMS( G.status.Time );
 				var elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-pause"></i><bl>'+ elapsedhms +'</bl> / '+ timehms );
+				$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
 			}
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = G.status.playlistlength;
