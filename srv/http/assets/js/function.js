@@ -38,7 +38,7 @@ function addonsdl( std ) {
 function clearIntervalAll() {
 	// .btn-cmd[!play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
 	// psNotify, pushstream[disconnect], renderPlayback, renderPlaybackTime, setPlaylistScroll, switchPage
-	[ G.intElapsed, G.intElapsedPl, G.intKnob, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
+	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
 	$( '#vuneedle' ).css( 'transform', '' );
@@ -827,16 +827,14 @@ function lyricsHide() {
 }
 function mpcSeek( seekto ) {
 	var seektime = Math.round( seekto / 1000 * G.status.Time );
-	if ( $( '#time-knob' ).is( ':visible' ) ) {
-		G.status.elapsed = seektime;
-		elapsed = seektime;
-		position = seekto;
-		var elapsedhms = second2HMS( seektime );
-		var timehms = second2HMS( G.status.Time );
-		$timeRS.setValue( position );
-		$( '#elapsed' ).html( elapsedhms );
-		$( '#total' ).text( timehms );
-	}
+	G.status.elapsed = seektime;
+	elapsed = seektime;
+	position = seekto;
+	var elapsedhms = second2HMS( seektime );
+	var timehms = second2HMS( G.status.Time );
+	setProgress( position );
+	$( '#elapsed' ).html( elapsedhms );
+	$( '#total' ).text( timehms );
 	if ( G.status.state === 'play' ) {
 		bash( [ 'mpcseek', seektime ] );
 	} else {
@@ -860,7 +858,7 @@ function mpcSeekBar( pageX ) {
 	if ( G.status.state === 'pause' ) elapsedhms = '<bl>'+ elapsedhms +'</bl>';
 	var timehms = second2HMS( Math.round( G.status.Time ) );
 	$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i>'+ elapsedhms +' / '+ timehms );
-	$( '#time-bar' ).css( 'width', ( position / 10 ) +'%' );
+	setProgress( position );
 	if ( !G.drag ) mpcSeek( position );
 }
 function orderLibrary() {
@@ -1131,8 +1129,7 @@ function renderPlayback() {
 	renderPlaybackCoverart();
 	// webradio ////////////////////////////////////////
 	if ( G.status.stream ) {
-		$timeRS.setValue( 0 );
-		$( '#time-bar' ).css( 'width', 0 );
+		setProgress( 0 );
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
@@ -1147,16 +1144,12 @@ function renderPlayback() {
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
-		if ( $( '#time-knob' ).is( ':visible' ) ) {
-			$timeRS.setValue( 0 );
-			$( '#elapsed' )
-				.text( timehms )
-				.addClass( 'gr' );
-			$( '#total' ).empty();
-		} else {
-			$( '#time-bar' ).css( 'width', 0 );
-			$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
-		}
+		setProgress( 0 );
+		$( '#elapsed' )
+			.text( timehms )
+			.addClass( 'gr' );
+		$( '#total' ).empty();
+		$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
 		return
 	}
 	
@@ -1170,14 +1163,10 @@ function renderPlayback() {
 	var position = Math.round( G.status.elapsed / time * 1000 );
 // pause ////////////////////
 	if ( G.status.state === 'pause' ) {
-		if ( $( '#time-knob' ).is( ':visible' ) ) {
-			$timeRS.setValue( position );
-			$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
-			$( '#total' ).addClass( 'wh' );
-		} else {
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
-			$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
-		}
+		setProgress( position );
+		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
+		$( '#total' ).addClass( 'wh' );
+		$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
 // play ////////////////////
 	} else {
 		renderPlaybackTime();
@@ -1188,8 +1177,7 @@ function renderPlaybackBlank() {
 	$( '#playback-controls, #infoicon i, #vu' ).addClass( 'hide' );
 	$( '#divartist, #divtitle, #divalbum' ).removeClass( 'scroll-left' );
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
-	if ( $( '#time-knob' ).is( ':visible' ) ) $timeRS.setValue( 0 );
-	$( '#time-bar' ).css( 'width', 0 );
+	setProgress( 0 );
 	$( '#divcover .coveredit' ).remove();
 	$( '#coverart' ).css( 'opacity', '' );
 	if ( G.status.ip ) {
@@ -1248,42 +1236,39 @@ function renderPlaybackTime() {
 	var $elapsed = $( '#elapsed' );
 	if ( G.status.stream ) {
 		$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
-		$timeRS.setValue( 0 );
-		$( '#time-bar' ).css( 'width', 0 );
+		setProgress( 0 );
 		if ( !G.display.radioelapsed ) return
 		
 		$elapsed = $( '#total' );
 	} else {
 		var time = 'Time' in G.status ? G.status.Time : '';
-		if ( G.localhost ) {
-			var interval = 1000;
-			var each = Math.round( 1000 / time );
-		} else {
-			var interval = time;
-			var each = 1;
-		}
 		var position = Math.round( G.status.elapsed / time * 1000 );
-		G.intKnob = setInterval( function() {
-			position += each;
-			$timeRS.setValue( position );
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
-		}, interval );
+		setProgress( position );
+		if ( !G.localhost ) {
+			setTimeout( function() {
+				$timeprogress.css( 'transition-duration', '1.5s' );
+			}, 500 );
+		}
 	}
 	var elapsed = second2HMS( G.status.elapsed );
 	$elapsed.text( elapsed );
 	var iplay = '<i class="fa fa-play"></i>';
 	var timehms = G.status.stream || !time ? '' : ' / '+ second2HMS( time );
 	$( '#progress' ).html(  iplay + elapsed + timehms );
-	G.intElapsed = setInterval( function() {
+	var each = 1000 / time;
+	G.intProgress = setInterval( function() {
 		G.status.elapsed++;
 		if ( G.status.elapsed === G.status.Time ) {
 			G.status.elapsed = 0;
 			clearIntervalAll();
 			$elapsed.empty();
-			$timeRS.setValue( 0 );
+			setProgress( 0 );
 			$( '#time-bar' ).css( 'width', 0 );
 			$( '#progress' ).html( iplay );
 		} else {
+			position += each;
+			$timeRS.setValue( position );
+			$( '#time-bar' ).css( 'width', position / 10 +'%' );
 			var elapsedhms = second2HMS( G.status.elapsed );
 			$elapsed.text( elapsedhms );
 			$( '#progress' ).html( iplay + elapsedhms + timehms );
@@ -1596,6 +1581,11 @@ function setPlaylistScroll() {
 			}, 1000 );
 		}
 	}
+}
+function setProgress( position ) {
+	$timeprogress.css( 'transition-duration', '' );
+	$timeRS.setValue( position );
+	$( '#time-bar' ).css( 'width', position / 10 +'%' );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin

@@ -438,6 +438,7 @@ $( '#time' ).roundSlider( {
 	, animation   : false
 	, create      : function ( e ) {
 		$timeRS = this;
+		$timeprogress = $( '#time .rs-transition, #time-bar' );
 	}
 	, start       : function () { // drag start
 		clearIntervalAll();
@@ -462,6 +463,7 @@ $( '#volume' ).roundSlider( {
 	, startAngle        : -50
 	, endAngle          : 230
 	, editableTooltip   : false
+	, animation         : false
 	, create            : function () {
 		G.create = 1;
 		$volumeRS = this;
@@ -870,12 +872,9 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
-			if ( $( '#time-knob' ).is( ':visible' ) ) {
-				$( '#elapsed' ).removeClass( 'bl' );
-				$( '#total' ).removeClass( 'wh' );
-			} else {
-				$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-play' );
-			}
+			$( '#elapsed' ).removeClass( 'bl' );
+			$( '#total' ).removeClass( 'wh' );
+			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-play' );
 			if ( G.status.stream ) $( '#title, #elapsed' ).html( blinkdot );
 			vu();
 		} else if ( cmd === 'stop' ) {
@@ -905,16 +904,12 @@ $( '.btn-cmd' ).click( function() {
 				$( '#total' ).empty();
 				if ( !G.status.stream ) {
 					var timehms = second2HMS( G.status.Time );
-					if ( $( '#time-knob' ).is( ':visible' ) ) {
-						$timeRS.setValue( 0 );
-						$( '#elapsed' )
-							.text( timehms )
-							.addClass( 'gr' );
-						$( '#total, #progress' ).empty();
-					} else {
-						$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
-						$( '#time-bar' ).css( 'width', 0 );
-					}
+					setProgress( 0 );
+					$( '#elapsed' )
+						.text( timehms )
+						.addClass( 'gr' );
+					$( '#total, #progress' ).empty();
+					$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
 				} else {
 					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
@@ -932,14 +927,13 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			if ( $( '#time-knob' ).is( ':visible' ) ) {
-				$( '#elapsed' ).addClass( 'bl' );
-				$( '#total' ).addClass( 'wh' );
-			} else {
-				var timehms = second2HMS( G.status.Time );
-				var elapsedhms = second2HMS( G.status.elapsed );
-				$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
-			}
+			var elapsedhms = second2HMS( G.status.elapsed + 1 ); // + 1 for delay
+			$( '#elapsed' )
+				.text( elapsedhms )
+				.addClass( 'bl' );
+			$( '#total' ).addClass( 'wh' );
+			var timehms = second2HMS( G.status.Time );
+			$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = G.status.playlistlength;
 			var song = G.status.song;

@@ -916,6 +916,10 @@ i.map.disabled, .map.disabled i {
 	border-left: 1px solid var( --cga );
 }
 /* ------------------- roundSlider ------------------- */
+#time-bar,
+.rs-animation .rs-transition {
+	transition: all 0s linear;
+}
 .rs-container {
 	box-shadow: #555555 0 0 8px 2px;
 	border-radius: 50%;
