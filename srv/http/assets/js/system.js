@@ -522,6 +522,7 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '#infoContent .gpiosvg' )
 				.css( 'text-align', 'right' )
 				.html( gpiosvg );
+			$( '.gpio-no.lcdchar' ).addClass( 'hide' );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {

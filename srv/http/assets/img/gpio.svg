@@ -70,7 +70,7 @@
 	<tspan class="gpio-no" x="323.9" y="0">5</tspan>
 	<tspan class="gpio-no st8" x="325.8" y="19.8">|</tspan>
 	<tspan class="gpio-no" x="342" y="0">3</tspan>
-	<tspan class="gpio-no" x="360" y="0">1</tspan>
+	<tspan class="gpio-no lcdchar" x="360" y="0">1</tspan>
 </text>
 <text class="st6" transform="matrix(1 0 0 1 1.2268 75.4674)">
 	<tspan class="lcdchar-no mpdoled-no" x="5.8" y="0">40</tspan>
@@ -85,6 +85,6 @@
 	<tspan class="lcdchar-no mpdoled-no" x="264.8" y="0">12</tspan>
 	<tspan class="lcdchar-no gpio-no mpdoled-no" x="283" y="0">10</tspan>
 	<tspan class="lcdchar-no gpio-no mpdoled-no" x="306" y="0">8</tspan>
-	<tspan class="gpio-no mpdoled-no" x="342.5" y="0">4</tspan>
+	<tspan class="gpio-no lcdchar mpdoled-no" x="342.5" y="0">4</tspan>
 </text>
 </svg>
