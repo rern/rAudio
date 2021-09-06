@@ -83,13 +83,16 @@ localbrowserset )
 	zoom=${args[2]}
 	rotate=${args[3]}
 	cursor=${args[4]}
-	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
-	rotateset=${conf[0]}
-	screenoffset=${conf[1]}
-	ply-image /srv/http/assets/img/splash.png
-	if [[ $rotate != $rotateset ]]; then
+	if [[ -e $dirsystem/localbrowserval ]]; then
+		conf=( $( cat $dirsystem/localbrowserval 2> /dev/null | cut -d= -f2 ) )
+		prevscreenoff=$( grep screenoff <<< "$conf" | cut -d= -f2 )
+		prevzoom=$( grep zoom <<< "$conf" | cut -d= -f2 )
+		prevrotate=$( grep rotate <<< "$conf" | cut -d= -f2 )
+		prevcursor=$( grep cursor <<< "$conf" | cut -d= -f2 )
+	fi
+	[[ $screenoff != $prevscreenoff ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
+	if [[ $rotate != $prevrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
-			reboot=1
 			case $rotate in
 				NORMAL) degree=0;;
 				CW )    degree=270;;
@@ -99,6 +102,7 @@ localbrowserset )
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
+			reboot=1
 		else
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
@@ -114,14 +118,14 @@ localbrowserset )
 			fi
 		fi
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
+		ply-image /srv/http/assets/img/splash.png
 	fi
-	[[ $screenoff != $screenoffset ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 	sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	echo -n "\
-rotate=$rotate
 screenoff=$screenoff
-cursor=$cursor
 zoom=$zoom
+rotate=$rotate
+cursor=$cursor
 " > $dirsystem/localbrowserval
 	systemctl disable --now getty@tty1
 	if [[ -z $reboot ]]; then
