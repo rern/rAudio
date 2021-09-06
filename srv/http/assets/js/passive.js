@@ -513,7 +513,6 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		G.status.volume = vol;
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();

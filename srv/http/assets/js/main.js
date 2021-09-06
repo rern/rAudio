@@ -503,6 +503,7 @@ $( '#volume' ).roundSlider( {
 	, valueChange       : function( e ) {
 		if ( G.drag || !G.create ) return // !G.create - fix: fire before 'create'
 		
+		G.status.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
 	}
 	, stop              : function() {
