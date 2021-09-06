@@ -950,10 +950,6 @@ i.map.disabled, .map.disabled i {
 #volume .rs-path-color {
 	background: linear-gradient( var( --cg ), #000000 );
 }
-#volume .rs-transition,
-#volume .rs-handle {
-	transition-timing-function: linear;
-}
 #volume .rs-handle {
 	border: 1px solid var( --cga );
 	background: var( --cm );

@@ -525,6 +525,7 @@ $( '#volup, #voldn' ).click( function() {
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
+	$volumehandlerotate.css( 'transition-duration','0s' );
 	G.intVolume = setInterval( function() {
 		if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 		

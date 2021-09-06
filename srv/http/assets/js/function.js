@@ -856,7 +856,6 @@ function mpcSeekBar( pageX ) {
 	if ( G.status.state === 'pause' ) elapsedhms = '<bl>'+ elapsedhms +'</bl>';
 	var timehms = second2HMS( Math.round( G.status.Time ) );
 	$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i>'+ elapsedhms +' / '+ timehms );
-	setProgress( position );
 	if ( !G.drag ) mpcSeek( position );
 }
 function orderLibrary() {
@@ -1106,9 +1105,8 @@ function renderLibraryList( data ) {
 function renderPlayback() {
 	clearIntervalAll();
 	if ( $( '#volume-knob' ).is( ':visible' ) ) {
-//		$volumehandlerotate.css( 'transition-property', 'none' ); // disable animation on load / refresh data
+		$volumehandlerotate.css( 'transition-duration','0s' );
 		$volumeRS.setValue( G.status.volume );
-//		$volumehandlerotate.css( 'transition-property', '' ); // disable animation on load / refresh data
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	} else {
 		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
@@ -1242,11 +1240,6 @@ function renderPlaybackTime() {
 		var time = 'Time' in G.status ? G.status.Time : '';
 		var position = Math.round( G.status.elapsed / time * 1000 );
 		setProgress( position );
-		if ( !G.localhost ) {
-			setTimeout( function() {
-				$timeprogress.css( 'transition-duration', '1.5s' );
-			}, 500 );
-		}
 	}
 	var elapsed = second2HMS( G.status.elapsed );
 	$elapsed.text( elapsed );
@@ -1254,6 +1247,7 @@ function renderPlaybackTime() {
 	var timehms = G.status.stream || !time ? '' : ' / '+ second2HMS( time );
 	$( '#progress' ).html(  iplay + elapsed + timehms );
 	var each = 1000 / time;
+	if ( !G.localhost ) $timeprogress.css( 'transition-duration', '1.5s' );
 	G.intProgress = setInterval( function() {
 		G.status.elapsed++;
 		if ( G.status.elapsed === G.status.Time ) {
@@ -1580,7 +1574,7 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	$timeprogress.css( 'transition-duration', '' );
+	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );
 }
