@@ -497,23 +497,31 @@ function info( json ) {
 		if ( O.checklength ) {
 			O.short = false;
 			$.each( O.checklength, function( i, L ) {
+				if ( O.inputs.eq( i ).val().length < L ) O.short = true; // initial
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val().length < L );
+					$short = O.inputs.filter( function() {
+						return $( this ).val().trim().length < L
+					} );
+					O.blank = $blank.short > 0;
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 				} );
-				if ( O.inputs.eq( i ).val().length < L ) O.short = true;
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', O.short );
+			$( '#infoOk' ).toggleClass( 'disabled', O.short ); // initial
 		}
 		// check text input not blank
 		if ( O.checkblank ) {
 			O.blank = false;
 			O.checkblank.forEach( function( i ) {
+				if ( !O.inputs.eq( i ).val() ) O.blank = true; // initial
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val().trim() === '' );
+					$blank = O.inputs.filter( function() {
+						return $( this ).val().trim() === ''
+					} );
+					O.blank = $blank.length > 0;
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 				} );
-				if ( O.inputs.eq( i ).val() === '' ) O.blank = true;
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+			$( '#infoOk' ).toggleClass( 'disabled', O.blank ); // initial
 		}
 		// check changed values
 		if ( O.values && O.checkchanged ) {
