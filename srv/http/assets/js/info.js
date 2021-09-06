@@ -495,25 +495,25 @@ function info( json ) {
 		if ( O.values ) setValues();
 		// check text input length
 		if ( O.checklength ) {
-			var short = false;
+			O.short = false;
 			$.each( O.checklength, function( i, L ) {
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
 					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val().length < L );
 				} );
-				if ( O.inputs.eq( i ).val().length < L ) short = true;
+				if ( O.inputs.eq( i ).val().length < L ) O.short = true;
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', short );
+			$( '#infoOk' ).toggleClass( 'disabled', O.short );
 		}
 		// check text input not blank
 		if ( O.checkblank ) {
-			var blank = false;
+			O.blank = false;
 			O.checkblank.forEach( function( i ) {
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
 					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val().trim() === '' );
 				} );
-				if ( O.inputs.eq( i ).val() === '' ) blank = true;
+				if ( O.inputs.eq( i ).val() === '' ) O.blank = true;
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', blank );
+			$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 		}
 		// check changed values
 		if ( O.values && O.checkchanged ) {
@@ -546,7 +546,7 @@ function alignVertical() { // make infoBox scrollable
 	}, 200 );
 }
 function checkChanged() {
-	if ( $( '#infoOk' ).hasClass( 'disabled' ) ) return
+	if ( O.short || O.blank ) return
 	
 	setTimeout( function() { // force after check length
 		var values = infoVal();

@@ -1543,7 +1543,8 @@ function setPlaylistScroll() {
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
-		var slash = G.status.stream ? '' : ' <gr>/</gr>';
+		var time = $this.find( '.time' ).data( 'time' );
+		var slash = time ? ' <gr>/</gr>' : '';
 		if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
 		if ( G.status.state === 'pause' ) {
 			elapsedtxt = second2HMS( G.status.elapsed );
@@ -1557,7 +1558,6 @@ function setPlaylistScroll() {
 			}
 			var elapsedL0 = 0;
 			var elapsedL = 0;
-			var time = $this.find( '.time' ).data( 'time' );
 			if ( G.status.elapsed ) $elapsed.html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + slash );
 			G.intElapsedPl = setInterval( function() {
 				G.status.elapsed++;
