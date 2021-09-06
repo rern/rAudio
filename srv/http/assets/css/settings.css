@@ -71,7 +71,7 @@ input[type="text"] {
 	max-width: 230px;
 	height: 40px;
 	margin-bottom: 10px;
-	padding: 10px;
+	padding: 0 10px;
 	font-family: "Lato";
 	font-size: 15px;
 	color: var( --cw );
@@ -483,11 +483,8 @@ input:checked + .switchlabel.disabled:after {
 	display: none;
 	color: var( --cw );
 }
-#gpiosvg {
-	width: 340px;
+.gpio svg {
 	max-width: 100%;
-	height: auto;
-	margin-bottom: 10px;
 }
 #gpiopin,
 #gpiopin1 {
@@ -608,6 +605,15 @@ input:checked + .switchlabel.disabled:after {
 	}
 	#guide .btn span {
 		display: none;
+	}
+	input[type="text"] {
+		padding: 0 7px;
+	}
+	.selectric .label {
+		padding: 0 25px 0 7px !important;
+	}
+	.selectric .button {
+		width: 25px !important;
 	}
 }
 @media (max-width: 419px) {
