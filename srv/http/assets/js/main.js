@@ -1170,7 +1170,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 							+'<br><span class="bklabel">'+ name +'</span></div>'
 			, textlabel  : 'To:'
 			, values     : name
-			, checkblank : [ 0 ]
+			, checkblank : 1
 			, boxwidth   : 'max'
 			, oklabel    : '<i class="fa fa-flash"></i>Rename'
 			, ok         : function() {

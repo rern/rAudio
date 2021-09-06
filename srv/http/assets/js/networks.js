@@ -61,7 +61,7 @@ function editLAN( $el ) {
 		, textlabel    : [ ( btndhcp ? '<gr>DHCP</gr> IP' : '<gr>Static</gr> IP' ), 'Gateway' ]
 		, values       : ( ip ? [ ip, gateway ] : '' )
 		, checkchanged : ( ip ? 1 : 0 )
-		, checkblank   : [ 0, 1 ]
+		, checkblank   : 1
 		, buttonlabel  : ( btndhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
 		, button       : ( btndhcp ? '' : function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );

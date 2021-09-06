@@ -120,7 +120,7 @@ $( '#setting-snapclient' ).click( function() {
 		, title        : 'SnapClient'
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, values       : G.snaplatency || 800
 		, boxwidth     : 100
 		, checkchange  : ( G.snapclient ? [ G.snaplatency ] : '' )
@@ -170,7 +170,7 @@ $( '#setting-hostapd' ).click( function() {
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : [ G.hostapdip, G.hostapdpwd ]
 		, checkchanged : ( G.hostapd ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, checklength  : { 1: 8 }
 		, cancel       : function() {
 			if ( set ) {
@@ -205,7 +205,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, order        : [ 'text', 'select', 'checkbox' ]
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
-		, checkblank   : [ 0, 1 ]
+		, checkblank   : 1
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
@@ -262,7 +262,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		, passwordlabel : 'Password'
 		, values        : ( G.mpdscribbleval ? G.mpdscribbleval.split( '^' ) : '' )
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
-		, checkblank    : [ 0, 1 ]
+		, checkblank    : 1
 		, cancel        : function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}
@@ -288,7 +288,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, checkblank    : ( G.login ? [ 0, 1 ] : [ 0 ] )
+		, checkblank    : 1
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}

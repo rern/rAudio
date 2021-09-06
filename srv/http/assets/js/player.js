@@ -228,7 +228,7 @@ $( '#setting-crossfade' ).click( function() {
 		, boxwidth     : 60
 		, values       : G.crossfadeval || 1
 		, checkchanged : ( G.crossfade ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
@@ -268,7 +268,7 @@ $( '#setting-buffer' ).click( function() {
 		, boxwidth     : 125
 		, values       : G.bufferval || 4096
 		, checkchanged : ( G.buffer ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
@@ -287,7 +287,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, boxwidth     : 125
 		, values       : G.bufferoutputval || 8192
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
@@ -342,7 +342,7 @@ $( '#setting-soxr' ).click( function() {
 		, content       : soxrinfo
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
-		, checkblank    : [ 1, 2, 3, 4 ]
+		, checkblank    : 1
 		, beforeshow    : function() {
 			var $extra = $( '#infoContent tr:eq( 5 )' );
 			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );

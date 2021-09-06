@@ -191,6 +191,8 @@ O = {}
 
 function info( json ) {
 	O = json;
+	O.blank = false;
+	O.short = false;
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
@@ -493,32 +495,17 @@ function info( json ) {
 		} );
 		// assign values
 		if ( O.values ) setValues();
-		// check text input length
-		if ( O.checklength ) {
-			var ichecklength = Object.keys( O.checklength );
-			var $inputschecklength = O.inputs.filter( function( i ) {
-				return ichecklength.indexOf( $( this ).index() ) !== -1
-			} );
-			O.short = false;
-			O.checklength.each( function( i, L ) {
-				if ( O.inputs.eq( i ).val().length < L ) O.short = true; // initial
-			} );
-			$inputschecklength.on( 'keyup paste cut', function() {
-				$short = $inputschecklength.filter( function() {
-					return $( this ).val().trim().length < L
-				} );
-				O.blank = $blank.short > 0;
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-			} );
-		}
 		// check text input not blank
 		if ( O.checkblank ) {
-			var $inputscheckblank = O.inputs.filter( function( i ) {
-				return O.checkblank.indexOf( $( this ).index() ) !== -1
-			} );
-			O.blank = false;
-			O.checkblank.forEach( function( i ) {
-				if ( !O.inputs.eq( i ).val() ) O.blank = true; // initial
+			if ( typeof O.checkblank === 'object' ) {
+				var $inputscheckblank = O.inputs.filter( function( i ) {
+					return O.checkblank.indexOf( $( this ).index() ) !== -1
+				} );
+			} else {
+				var $inputscheckblank = O.inputs;
+			}
+			$inputscheckblank.each( function() {
+				if ( !$( this ).val() ) O.blank = true; // initial
 			} );
 			$inputscheckblank.on( 'keyup paste cut', function() {
 				$blank = $inputscheckblank.filter( function() {
@@ -526,6 +513,23 @@ function info( json ) {
 				} );
 				O.blank = $blank.length > 0;
 				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+			} );
+		}
+		// check text input length
+		if ( O.checklength ) {
+			var ichecklength = Object.keys( O.checklength );
+			var $inputschecklength = O.inputs.filter( function( i ) {
+				return ichecklength.indexOf( $( this ).index() ) !== -1
+			} );
+			$inputschecklength.each( function( i, L ) {
+				if ( $( this ).val().length < L ) O.short = true; // initial
+			} );
+			$inputschecklength.on( 'keyup paste cut', function() {
+				$short = $inputschecklength.filter( function() {
+					return $( this ).val().trim().length < L
+				} );
+				O.short = $short.length > 0;
+				$( '#infoOk' ).toggleClass( 'disabled', O.short );
 			} );
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial

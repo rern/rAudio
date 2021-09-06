@@ -739,7 +739,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : 'Player Name'
 		, textlabel    : 'Name'
 		, values       : G.hostname
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent input' ).keyup( function() {
@@ -765,7 +765,7 @@ $( '#setting-timezone' ).click( function() {
 		, textlabel    : [ 'NTP server' ]
 		, values       : [ G.ntp ]
 		, checkchanged : 1
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, ok           : function() {
 			var values = infoVal();
 			notify( 'NTP server', 'Change ...', 'globe' );
@@ -804,7 +804,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, radiocolumn  : 1
 		, values       : values
 		, checkchanged : 1
-		, checkblank   : [ 0, 1, 2, 3 ]
+		, checkblank   : 1
 		, beforeshow   : function() {
 			for ( i = 4; i < 9; i++ ) $( '#infoContent tr:eq( '+ i +') td:first-child' ).remove();
 			var values, val;
