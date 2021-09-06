@@ -739,6 +739,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : 'Player Name'
 		, textlabel    : 'Name'
 		, values       : G.hostname
+		, checkblank   : [ 0 ]
 		, checkchanged : 1
 		, beforeshow   : function() {
 			$( '#infoContent input' ).keyup( function() {

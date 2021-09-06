@@ -500,17 +500,16 @@ function info( json ) {
 				return ichecklength.indexOf( $( this ).index() ) !== -1
 			} );
 			O.short = false;
-			O.checklength.each( O.checklength, function( i, L ) {
+			O.checklength.each( function( i, L ) {
 				if ( O.inputs.eq( i ).val().length < L ) O.short = true; // initial
-				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					$short = $inputschecklength.filter( function() {
-						return $( this ).val().trim().length < L
-					} );
-					O.blank = $blank.short > 0;
-					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-				} );
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', O.short ); // initial
+			$inputschecklength.on( 'keyup paste cut', function() {
+				$short = $inputschecklength.filter( function() {
+					return $( this ).val().trim().length < L
+				} );
+				O.blank = $blank.short > 0;
+				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+			} );
 		}
 		// check text input not blank
 		if ( O.checkblank ) {
@@ -520,16 +519,16 @@ function info( json ) {
 			O.blank = false;
 			O.checkblank.forEach( function( i ) {
 				if ( !O.inputs.eq( i ).val() ) O.blank = true; // initial
-				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					$blank = $inputscheckblank.filter( function() {
-						return $( this ).val().trim() === ''
-					} );
-					O.blank = $blank.length > 0;
-					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-				} );
 			} );
-			$( '#infoOk' ).toggleClass( 'disabled', O.blank ); // initial
+			$inputscheckblank.on( 'keyup paste cut', function() {
+				$blank = $inputscheckblank.filter( function() {
+					return $( this ).val().trim() === ''
+				} );
+				O.blank = $blank.length > 0;
+				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+			} );
 		}
+		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
 		// check changed values
 		if ( O.values && O.checkchanged ) {
 			$( '#infoOk' ).addClass( 'disabled' );
