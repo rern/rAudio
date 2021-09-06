@@ -1433,7 +1433,7 @@ function setButtonOptions() {
 	setButtonUpdateAddons();
 	setButtonUpdating();
 	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
-	$( '#play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
+	$( '#time, #play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
 }
 function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
