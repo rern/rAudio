@@ -495,11 +495,15 @@ function info( json ) {
 		if ( O.values ) setValues();
 		// check text input length
 		if ( O.checklength ) {
+			var ichecklength = Object.keys( O.checklength );
+			var $inputschecklength = O.inputs.filter( function( i ) {
+				return ichecklength.indexOf( $( this ).index() ) !== -1
+			} );
 			O.short = false;
-			$.each( O.checklength, function( i, L ) {
+			O.checklength.each( O.checklength, function( i, L ) {
 				if ( O.inputs.eq( i ).val().length < L ) O.short = true; // initial
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					$short = O.inputs.filter( function() {
+					$short = $inputschecklength.filter( function() {
 						return $( this ).val().trim().length < L
 					} );
 					O.blank = $blank.short > 0;
@@ -510,11 +514,14 @@ function info( json ) {
 		}
 		// check text input not blank
 		if ( O.checkblank ) {
+			var $inputscheckblank = O.inputs.filter( function( i ) {
+				return O.checkblank.indexOf( $( this ).index() ) !== -1
+			} );
 			O.blank = false;
 			O.checkblank.forEach( function( i ) {
 				if ( !O.inputs.eq( i ).val() ) O.blank = true; // initial
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					$blank = O.inputs.filter( function() {
+					$blank = $inputscheckblank.filter( function() {
 						return $( this ).val().trim() === ''
 					} );
 					O.blank = $blank.length > 0;
