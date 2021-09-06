@@ -426,7 +426,6 @@ function getBio( artist ) {
 	} );
 }
 function getPlaybackStatus() {
-	G.getstatus = 1;
 	bash( '/srv/http/bash/status.sh', function( list ) {
 		if ( !list ) return
 		
@@ -470,7 +469,6 @@ function getPlaybackStatus() {
 			getPlaylist();
 		}
 		setButtonUpdating();
-		G.getstatus = 0;
 	} );
 }
 function getPlaylist() {
@@ -1105,7 +1103,7 @@ function renderLibraryList( data ) {
 function renderPlayback() {
 	clearIntervalAll();
 	if ( $( '#volume-knob' ).is( ':visible' ) ) {
-		$volumehandlerotate.css( 'transition-duration','0s' );
+		local();
 		$volumeRS.setValue( G.status.volume );
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	} else {
@@ -1749,10 +1747,6 @@ function volumeDrag( vol ) {
 	} else {
 		bash( 'mpc volume '+ vol );
 	}
-}
-function volumeKnobSet( vol ) {
-	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
-	bash( [ 'volume', G.status.volume, vol, G.status.control ] );
 }
 function volumePushstream() {
 	bash( [ 'volumepushstream' ] );

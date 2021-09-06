@@ -455,6 +455,7 @@ $( '#volume' ).roundSlider( {
 	// init : valueChange > create > beforeValueChange > valueChange
 	// tap  : beforeValueChange > change > valueChange
 	// drag : start > [ beforeValueChange > drag > valueChange ] > change > stop
+	// setValue : beforeValueChange > valueChange
 	  sliderType        : 'default'
 	, radius            : 115
 	, width             : 50
@@ -477,17 +478,15 @@ $( '#volume' ).roundSlider( {
 	, beforeValueChange : function( e ) {
 		if ( G.drag ) return
 		
-		if ( G.getstatus || G.drag || G.local ) {
-			var speed = 0;
-		} else {
+		if ( !G.local ) {
 			var diff = e.value - G.status.volume;
 			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
-			var speed = Math.ceil( Math.abs( diff ) / 5 ) * 0.2;
+			var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 100 ) / 100;
+			$volumehandlerotate.css( 'transition-duration', speed +'s' );
+			setTimeout( function() {
+				$volumehandlerotate.css( 'transition-duration','' );
+			}, speed * 1000 + 500 );
 		}
-		$volumehandlerotate.css( 'transition-duration', speed +'s' );
-		setTimeout( function() {
-			$volumehandlerotate.css( 'transition-duration','' );
-		}, speed * 1000 + 500 );
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
@@ -497,13 +496,13 @@ $( '#volume' ).roundSlider( {
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
-		volumeKnobSet( e.value );
+		$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
+		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
 		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
 	}
 	, valueChange       : function( e ) {
 		if ( G.drag || !G.create ) return // !G.create - fix: fire before 'create'
 		
-		G.status.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
 	}
 	, stop              : function() {
@@ -512,7 +511,8 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volmute' ).click( function() {
-	volumeKnobSet( 0 );
+	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
+	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
 } );
 $( '#volup, #voldn' ).click( function() {
 	var voldn = this.id === 'voldn';
@@ -525,7 +525,6 @@ $( '#volup, #voldn' ).click( function() {
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
-	$volumehandlerotate.css( 'transition-duration','0s' );
 	G.intVolume = setInterval( function() {
 		if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 		

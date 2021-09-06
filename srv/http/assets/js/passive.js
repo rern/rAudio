@@ -515,7 +515,6 @@ function psVolume( data ) {
 		}
 		G.status.volume = vol;
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
-			$volumehandlerotate.css( 'transition-duration','0s' );
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();
 		} else {
