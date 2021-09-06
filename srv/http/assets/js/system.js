@@ -458,7 +458,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 } );
 var infolcdchar = heredoc( function() { /*
 <table>
-<tr id="cols"><td width="140">Size</td>
+<tr id="cols"><td width="135">Size</td>
 	<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
 	<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
 </tr>
@@ -487,7 +487,7 @@ var infolcdchar = heredoc( function() { /*
 <tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
 </table>
 <table>
-<tr><td width="45"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
+<tr><td width="40"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
