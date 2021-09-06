@@ -224,6 +224,14 @@ $( '#setting-localbrowser' ).click( function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
+			var $input = $( '#infoContent input' );
+			if ( $input.eq( 0 ).val() === '' ) $input.eq( 0 ).val( 0 );
+			var zoom = $input.eq( 1 ).val();
+			if ( zoom < 0.5 ) {
+				$input.eq( 1 ).val( 0.5 );
+			} else if ( zoom > 2 ) {
+				$input.eq( 1 ).val( 2 );
+			}
 			bash( [ 'localbrowserset', ...infoVal() ] );
 			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
 		}
