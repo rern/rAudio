@@ -459,8 +459,8 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 var infolcdchar = heredoc( function() { /*
 <table>
 <tr id="cols"><td width="135">Size</td>
-	<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
-	<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
+	<td width="80"><label><input type="radio" name="cols" value="20">20x4</label></td>
+	<td width="80"><label><input type="radio" name="cols" value="16">16x2</label></td>
 </tr>
 <tr><td>Char<wide>acter</wide> Map</td>
 	<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
@@ -472,7 +472,7 @@ var infolcdchar = heredoc( function() { /*
 </tr>
 <tr id="i2caddress" class="i2c">ADDR</tr>
 <tr class="i2c"><td>I&#178;C Chip</td>
-	<td colspan="2" style="padding-right: 70px">
+	<td colspan="2">
 	<select id="i2cchip">
 		<option value="PCF8574">PCF8574</option>
 		<option value="MCP23008">MCP23008</option>
@@ -487,7 +487,7 @@ var infolcdchar = heredoc( function() { /*
 <tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
 </table>
 <table>
-<tr><td width="40"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
+<tr><td width="80"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
