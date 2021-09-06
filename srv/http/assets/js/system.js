@@ -457,7 +457,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
-	<table id="tbllcdchar">
+	<table>
 	<tr id="cols"><td width="140">Size</td>
 		<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
 		<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
@@ -470,9 +470,9 @@ var infolcdchar = heredoc( function() { /*
 		<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
 		<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
 	</tr>
-	<tr id="i2caddress" class="i2c">RADIO</tr>
+	<tr id="i2caddress" class="i2c">ADDR</tr>
 	<tr class="i2c"><td>I&#178;C Chip</td>
-		<td colspan="2">
+		<td colspan="2" style="padding-right: 40px">
 		<select id="i2cchip">
 			<option value="PCF8574">PCF8574</option>
 			<option value="MCP23008">MCP23008</option>
@@ -480,54 +480,48 @@ var infolcdchar = heredoc( function() { /*
 		</select>
 		</td>
 	</tr>
-	<tr class="gpio"><td class="gpiosvg" colspan="3" style="padding-top: 10px;"></td></tr>
-	<tr class="gpio">
-		<td>pin_rs</td><td colspan="2"><input type="text" id="pin_rs"></td>
-	</tr>
-	<tr class="gpio">
-		<td>pin_rw</td><td colspan="2"><input type="text" id="pin_rw"></td>
-	</tr>
-	<tr class="gpio">
-		<td>pin_e</td><td colspan="2"><input type="text" id="pin_e"></td>
-	</tr>
-	<tr class="gpio">
-		<td>pins_data</td><td colspan="2"><input type="text" id="pins_data"></td>
-	</tr>
-	<tr>
-		<td></td><td colspan="2"><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td>
-	</tr>
+	</table>
+	<table class="gpio">
+	<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;"></td></tr>
+	<tr><td>RS</td><td>PINS</td><td>RW</td><td>PINS</td><td>E</td><td>PINS</td><td></td><td></td></tr>
+	<tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
+	</table>
+	<table>
+	<tr><td width="45"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 	</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
-	var val = G.lcdcharpins || '20 A00 0x27 PCF8574 false';
-	var val = val.split( ' ' );
-	// i2c : cols charmap | i2caddress i2cchip | backlight
-	// gpio: cols charmap | pin_rs pin_rw pin_e pins_data | backlight
-	// v   : 0cols 1charmap | 2inf | 3i2caddress 4i2cchip | 5pin_rs 6pin_rw 7pin_e 8pins_data | 9backlight 
-	var backlight = val.pop() === 'true';
-	if ( val.length < 6 ) {
-		var i2c = true;
-		var v = [ ...val.slice( 0, 2 ), 'i2c', ...val.slice( 2 ), 15, 18, 16, '21,22,23,24', backlight ]
-	} else {
-		var i2c = false;
-		var v = [ ...val.slice( 0, 2 ), 'gpio', '0x27', 'PCF8574', ...val.slice( 2 ), backlight ];
-	}
-	var lcdcharaddr = G.lcdcharaddr || '0x27 0x3F';
-	var addr = lcdcharaddr.split( ' ' );
-	var option = '<td>Address</td>';
-	addr.forEach( function( el ) {
-		option += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
+	var values = G.lcdcharval.split( ',' ); // cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
+	var i2c = values[ 2 ] === 'i2c';
+	var radioaddr = '<td>Address</td>';
+	G.lcdcharaddr.split( ' ' ).forEach( function( el ) {
+		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
 	} );
-	infolcdchar = infolcdchar.replace( 'RADIO', option );
+	var optpins = '<select>';
+	$.each( pin2gpio, function( k, v ) {
+		optpins += '<option value='+ k +'>'+ k +'</option>';
+	} );
+	optpins += '</select>';
+	infolcdchar = infolcdchar
+					.replace( 'ADDR', radioaddr )
+					.replace( /PINS/g, optpins );
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
-		, boxwidth      : 180
-		, values        : v
+		, values        : values
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent .gpiosvg' ).html( gpiosvg );
+			$( '#infoContent .gpio td:even' ).css( 'width', '60px' );
+			$( '#infoContent .gpio td:odd' ).css( {
+				  width           : '25px'
+				, 'padding-right' : '1px'
+				, 'text-align'    : 'right'
+			} );
+			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
+			$( '#infoContent .gpiosvg' )
+				.css( 'text-align', 'right' )
+				.html( gpiosvg );
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {

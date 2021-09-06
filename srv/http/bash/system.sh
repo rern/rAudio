@@ -270,20 +270,20 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
+		[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
 	else
-		conf+="
+		conf+="\
 pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
-pins_data=${args[9]}"
+pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
 		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 		fi
 	fi
 	conf+="
 backlight=${args[10]}"
-	echo "$conf" > $dirsystem/lcdcharpins
+	echo "$conf" > $dirsystem/lcdcharval
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
 	pushRefresh

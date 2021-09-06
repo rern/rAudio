@@ -408,10 +408,10 @@ function info( json ) {
 			} );
 		}
 		if ( O.select ) {
-			htmls.select = '<tr><td>'+ O.selectlabel +'</td><td><select>';
 			if ( typeof O.select !== 'object' ) {
-				htmls.select += O.select;
+				htmls.select = O.select;
 			} else {
+				htmls.select = '<tr><td>'+ O.selectlabel +'</td><td><select>';
 				$.each( O.select, function( key, val ) {
 					htmls.select += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
 				} );

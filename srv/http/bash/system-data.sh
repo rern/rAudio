@@ -26,16 +26,6 @@ else
 fi
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
-if grep -q dtparam=i2c_arm=on /boot/config.txt; then
-	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-	i2caddr=0x$( i2cdetect -y $dev \
-					| grep -v '^\s' \
-					| cut -d' ' -f2- \
-					| tr -d ' \-' \
-					| grep -v UU \
-					| grep . \
-					| sort -u )
-fi
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 soccore=${cpu[0]}
 (( $soccore > 1 )) && soccpu="$soccore x ${cpu[1]}" || soccpu=${cpu[1]}
@@ -101,6 +91,36 @@ if [[ -n $nas ]]; then
 	done
 fi
 
+if grep -q dtparam=i2c_arm=on /boot/config.txt; then
+	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
+	lines=$( i2cdetect -y $dev 2> /dev/null )
+	if [[ -n $lines ]]; then
+		i2caddr=$( echo "$lines" \
+						| grep -v '^\s' \
+						| cut -d' ' -f2- \
+						| tr -d ' \-' \
+						| grep -v UU \
+						| grep . \
+						| sort -u )
+	fi
+fi
+if [[ -e $dirsystem/lcdcharval ]]; then
+	vals=$( cat $dirsystem/lcdcharval )
+	keys='cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight'
+	if (( $( echo "$vals" | wc -l ) == 6 )); then
+		declare -A default=( [inf]=i2c [pin_rs]=15 [pin_rw]=18 [pin_e]=16 [pins_data]=21,22,23,24 )
+	else
+		declare -A default=( [inf]=gpio [address]=0x27 [chip]=PCF8574 )
+	fi
+	for k in $keys; do
+		line=$( grep $k <<< "$vals" )
+		[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
+	done
+	lcdcharval=${pins:1}
+else
+	lcdcharval='20,A00,i2c,0x27,PCF8574,15,18,16,21,22,23,24,false'
+fi
+
 data+='
 , "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
@@ -112,8 +132,8 @@ data+='
 , "kernel"          : "'$( uname -rm )'"
 , "lcd"             : '$lcd'
 , "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
-, "lcdcharaddr"     : "'$( [[ -e $dirsystem/lcdchar ]] && echo $i2caddr )'"
-, "lcdcharpins"     : "'$( cat dirsystem/lcdcharpins 2> /dev/null | sed '1d' | cut -d= -f2 )'"
+, "lcdcharaddr"     : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
+, "lcdcharval"      : "'$lcdcharval'"
 , "list"            : ['${list:1}']
 , "lcdmodel"        : "'$lcdmodel'"
 , "mpdoled"         : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'
