@@ -577,8 +577,8 @@ mpcprevnext )
 	;;
 mpcseek )
 	seek=${args[1]}
-	playing=${args[2]}
-	if [[ -z $playing ]]; then
+	state=${args[2]}
+	if [[ $state == stop ]]; then
 		touch $dirtmp/mpdseek
 		mpc play
 		mpc pause

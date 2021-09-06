@@ -833,18 +833,17 @@ function mpcSeek( seekto ) {
 	var elapsedhms = second2HMS( seektime );
 	var timehms = second2HMS( G.status.Time );
 	setProgress( position );
-	$( '#elapsed' ).html( elapsedhms );
+	$( '#elapsed,#total' ).removeClass( 'gr' );
+	$( '#elapsed' )
+		.addClass( 'bl' )
+		.html( elapsedhms );
 	$( '#total' ).text( timehms );
-	if ( G.status.state === 'play' ) {
-		bash( [ 'mpcseek', seektime, 'playing' ] );
-	} else {
-		if ( $( '#bar-top' ).is( ':visible' ) ) {
-			$( '#playback-controls i' ).removeClass( 'active' );
-			$( '#pause' ).addClass( 'active' );
-			$( '#title' ).addClass( 'gr' );
-		}
-		bash( [ 'mpcseek', seektime ] );
+	if ( G.status.state === 'stop' && $( '#bar-top' ).is( ':visible' ) ) {
+		$( '#playback-controls i' ).removeClass( 'active' );
+		$( '#pause' ).addClass( 'active' );
+		$( '#title' ).addClass( 'gr' );
 	}
+	bash( [ 'mpcseek', seektime, G.status.state ] );
 }
 function mpcSeekBar( pageX ) {
 	var $timeband = $( '#time-band' );
@@ -1394,7 +1393,7 @@ function setButtonControl() {
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 		$( '#pause' ).toggleClass( 'hide', G.status.stream || G.status.player === 'airplay' );
-		$( '#playback-controls .btn' ).removeClass( 'active' );
+		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ G.status.state ).addClass( 'active' );
 	}
 	if ( G.playback ) setTimeout( setButtonOptions, 0 );
