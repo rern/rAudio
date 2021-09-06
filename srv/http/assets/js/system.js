@@ -1,33 +1,33 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var htmlmount = heredoc( function() { /*
-	<table id="tblinfomount">
-	<tr><td>Type</td>
-		<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
-		<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
-	</tr>
-	<tr><td>Name</td>
-		<td><input type="text"></td>
-	</tr>
-	<tr><td>IP</td>
-		<td><input type="text"></td>
-	</tr>
-	<tr id="sharename"><td>Share name</td>
-		<td><input type="text"></td>
-	</tr>
-	<tr class="guest"><td>User</td>
-		<td><input type="text"></td>
-	</tr>
-	<tr class="guest"><td>Password</td>
-		<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
-	</tr>
-	<tr><td>Options</td>
-		<td><input type="text"></td>
-	</tr>
-	<tr><td></td>
-		<td><label><input type="checkbox" checked>Update Library on mount</label></td>
-	</tr>
-	</table>
+<table id="tblinfomount">
+<tr><td>Type</td>
+	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
+	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+</tr>
+<tr><td>Name</td>
+	<td><input type="text"></td>
+</tr>
+<tr><td>IP</td>
+	<td><input type="text"></td>
+</tr>
+<tr id="sharename"><td>Share name</td>
+	<td><input type="text"></td>
+</tr>
+<tr class="guest"><td>User</td>
+	<td><input type="text"></td>
+</tr>
+<tr class="guest"><td>Password</td>
+	<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
+</tr>
+<tr><td>Options</td>
+	<td><input type="text"></td>
+</tr>
+<tr><td></td>
+	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
+</tr>
+</table>
 */ } );
 function infoMount( values ) {
 	info( {
@@ -457,38 +457,38 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 var infolcdchar = heredoc( function() { /*
-	<table>
-	<tr id="cols"><td width="140">Size</td>
-		<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
-		<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
-	</tr>
-	<tr><td>Char<wide>acter</wide> Map</td>
-		<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
-		<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
-	</tr>
-	<tr><td>Interface</td>
-		<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
-		<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
-	</tr>
-	<tr id="i2caddress" class="i2c">ADDR</tr>
-	<tr class="i2c"><td>I&#178;C Chip</td>
-		<td colspan="2" style="padding-right: 40px">
-		<select id="i2cchip">
-			<option value="PCF8574">PCF8574</option>
-			<option value="MCP23008">MCP23008</option>
-			<option value="MCP23017">MCP23017</option>
-		</select>
-		</td>
-	</tr>
-	</table>
-	<table class="gpio">
-	<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;"></td></tr>
-	<tr><td>RS</td><td>PINS</td><td>RW</td><td>PINS</td><td>E</td><td>PINS</td><td></td><td></td></tr>
-	<tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
-	</table>
-	<table>
-	<tr><td width="45"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
-	</table>
+<table>
+<tr id="cols"><td width="140">Size</td>
+	<td width="100"><label><input type="radio" name="cols" value="20">20x4</label></td>
+	<td width="100"><label><input type="radio" name="cols" value="16">16x2</label></td>
+</tr>
+<tr><td>Char<wide>acter</wide> Map</td>
+	<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
+	<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
+</tr>
+<tr><td>Interface</td>
+	<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
+	<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
+</tr>
+<tr id="i2caddress" class="i2c">ADDR</tr>
+<tr class="i2c"><td>I&#178;C Chip</td>
+	<td colspan="2" style="padding-right: 70px">
+	<select id="i2cchip">
+		<option value="PCF8574">PCF8574</option>
+		<option value="MCP23008">MCP23008</option>
+		<option value="MCP23017">MCP23017</option>
+	</select>
+	</td>
+</tr>
+</table>
+<table class="gpio">
+<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;"></td></tr>
+<tr><td>RS</td><td>PINS</td><td>RW</td><td>PINS</td><td>E</td><td>PINS</td><td></td><td></td></tr>
+<tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
+</table>
+<table>
+<tr><td width="45"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
+</table>
 */ } );
 $( '#setting-lcdchar' ).click( function() {
 	var values = G.lcdcharval.split( ',' ); // cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
@@ -561,20 +561,20 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 	} );
 	var infopowerbutton = heredoc( function() { /*
-	<table>
-	<tr><td>On</td>
-		<td><input type="text" disabled></td>
-	</tr>
-	<tr><td>Off</td>
-		<td><select >OFFPIN</select></td>
-	</tr>
-	<tr><td>LED</td>
-		<td><select >LEDPIN</select></td>
-	</tr>
-	<tr class="reserved hide"><td>Reserved</td>
-		<td><select >RESPIN</select></td>
-	</tr>
-	</table>
+<table>
+<tr><td>On</td>
+	<td><input type="text" disabled></td>
+</tr>
+<tr><td>Off</td>
+	<td><select >OFFPIN</select></td>
+</tr>
+<tr><td>LED</td>
+	<td><select >LEDPIN</select></td>
+</tr>
+<tr class="reserved hide"><td>Reserved</td>
+	<td><select >RESPIN</select></td>
+</tr>
+</table>
 */ } );
 	infopowerbutton = infopowerbutton
 						.replace( 'OFFPIN', offpin )
