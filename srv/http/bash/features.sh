@@ -93,12 +93,8 @@ localbrowserset )
 	[[ $screenoff != $prevscreenoff ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 	if [[ $rotate != $prevrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
-			case $rotate in
-				NORMAL) degree=0;;
-				CW )    degree=270;;
-				CCW )   degree=90;;
-				UD )    degree=180;;
-			esac
+			declare -A deg=( [NORMAL]=0 [CW]=270 [CCW]=90 [UD]=180 )
+			degree=${deg[$rotate]}
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
@@ -108,13 +104,11 @@ localbrowserset )
 			if [[ $rotate == NORMAL ]]; then
 				rm -f $rotateconf
 			else
-				case $rotate in
-					CW )  matrix='0 1 0 -1 0 1 0 0 1';;
-					CCW ) matrix='0 -1 1 1 0 0 0 0 1';;
-					UD )  matrix='-1 0 1 0 -1 1 0 0 1';;
-				esac
+				declare -A matrix=( [CW]='0 1 0 -1 0 1 0 0 1'
+									[CCW]='0 -1 1 1 0 0 0 0 1'
+									[UD]='-1 0 1 0 -1 1 0 0 1' )
 				sed -e "s/ROTATION_SETTING/$rotate/
-				" -e "s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+				" -e "s/MATRIX_SETTING/${matrix[$rotate]}/" /etc/X11/xinit/rotateconf > $rotateconf
 			fi
 		fi
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
