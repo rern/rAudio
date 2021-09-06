@@ -156,7 +156,7 @@ function infoReset() {
 		O.infoscroll = 0;
 	}
 	$( '#infoContent, #infoArrow i, #infoButtons .infobtn, #infoFileLabel' ).off( 'click' );
-	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
+	$( '#infoContent input, #infoFileBox' ).off( 'change keyup paste cut' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
 	$( '#infoOverlay' )
@@ -495,31 +495,25 @@ function info( json ) {
 		if ( O.values ) setValues();
 		// check text input length
 		if ( O.checklength ) {
+			var short = false;
 			$.each( O.checklength, function( i, L ) {
-				O.short = O.inputs.eq( i ).val().length < L;
-				$( '#infoOk' ).toggleClass( 'disabled', O.short );
-				O.inputs.eq( i ).on( 'keyup', function() {
-					O.short = $( this ).val().length < L;
-					$( '#infoOk' ).toggleClass( 'disabled', O.short );
+				O.inputs.eq( i ).on( 'keyup paste cut', function() {
+					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val().length < L );
 				} );
+				if ( O.inputs.eq( i ).val().length < L ) short = true;
 			} );
+			$( '#infoOk' ).toggleClass( 'disabled', short );
 		}
 		// check text input not blank
 		if ( O.checkblank ) {
+			var blank = false;
 			O.checkblank.forEach( function( i ) {
-				O.inputs.filter( function() {
-					if ( !$( this ).val().trim() ) $( '#infoOk' ).addClass( 'disabled' );
-				} );
 				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					setTimeout( function() {
-						$blank = O.inputs.filter( function() {
-							return $( this ).val().trim() === ''
-						} );
-						O.blank = $blank.length > 0;
-						$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-					}, 0 );
+					$( '#infoOk' ).toggleClass( 'disabled', $( this ).val().trim() === '' );
 				} );
+				if ( O.inputs.eq( i ).val() === '' ) blank = true;
 			} );
+			$( '#infoOk' ).toggleClass( 'disabled', blank );
 		}
 		// check changed values
 		if ( O.values && O.checkchanged ) {
@@ -552,7 +546,7 @@ function alignVertical() { // make infoBox scrollable
 	}, 200 );
 }
 function checkChanged() {
-	if ( O.short || O.blank ) return // shorter - already disabled
+	if ( $( '#infoOk' ).hasClass( 'disabled' ) ) return
 	
 	setTimeout( function() { // force after check length
 		var values = infoVal();

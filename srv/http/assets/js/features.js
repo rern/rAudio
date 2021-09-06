@@ -206,17 +206,15 @@ $( '#setting-localbrowser' ).click( function() {
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : [ 0, 1 ]
-		, beforeshow   : function() {
-			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
-		}
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
 		, beforeshow   : function() {
+			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
 			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
-				$( this ).val( parseInt( $( this ).val() ) );
+				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 			$( '#infoContent input:eq( 1 )' ).on( 'keyup paste cut', function() {
 				$( this ).val( $( this ).val().replace( /[^0-9.]/, '' ) );
