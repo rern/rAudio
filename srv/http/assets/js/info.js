@@ -70,7 +70,7 @@ info( {                                     // default
 	
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkchanged  : 1                       // (none)         (check values changed)
-	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
+	checkblank    : 1 or [ i, ... ]         // (none)         (check values not blank /  [ partial ] )
 	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
@@ -191,8 +191,6 @@ O = {}
 
 function info( json ) {
 	O = json;
-	O.blank = false;
-	O.short = false;
 	infoReset();
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
@@ -494,53 +492,46 @@ function info( json ) {
 			}
 		} );
 		// assign values
-		if ( O.values ) setValues();
+		if ( 'values' in O ) setValues();
 		// check text input not blank
-		if ( O.checkblank ) {
-			if ( typeof O.checkblank === 'object' ) {
-				var $inputscheckblank = O.inputs.filter( function( i ) {
-					return O.checkblank.indexOf( $( this ).index() ) !== -1
-				} );
+		O.blank = false;
+		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
+		if ( 'checkblank' in O ) {
+			var inputall = typeof O.checkblank !== 'object';
+			if ( inputall ) {
+				$inputs_txt.each( function() { if ( $( this ).val() === '' ) O.blank = true } );
 			} else {
-				var $inputscheckblank = O.inputs;
+				O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val() === '' ) O.blank = true } );
 			}
-			$inputscheckblank.each( function() {
-				if ( !$( this ).val() ) O.blank = true; // initial
-			} );
-			$inputscheckblank.on( 'keyup paste cut', function() {
-				$blank = $inputscheckblank.filter( function() {
-					return $( this ).val().trim() === ''
-				} );
-				O.blank = $blank.length > 0;
+			$inputs_txt.on( 'keyup paste cut', function() {
+				O.blank = false;
+				if ( inputall ) {
+					$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
+				} else {
+					O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
+				}
 				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
 			} );
 		}
 		// check text input length
-		if ( O.checklength ) {
-			var ichecklength = Object.keys( O.checklength );
-			var $inputschecklength = O.inputs.filter( function( i ) {
-				return ichecklength.indexOf( $( this ).index() ) !== -1
-			} );
-			$inputschecklength.each( function( i, L ) {
-				if ( $( this ).val().length < L ) O.short = true; // initial
-			} );
-			$inputschecklength.on( 'keyup paste cut', function() {
-				$short = $inputschecklength.filter( function() {
-					return $( this ).val().trim().length < L
-				} );
-				O.short = $short.length > 0;
+		O.short = false;
+		if ( 'checklength' in O ) {
+			$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
+			$inputs_txt.on( 'keyup paste cut', function() {
+				O.short = false;
+				$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
 				$( '#infoOk' ).toggleClass( 'disabled', O.short );
 			} );
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
 		// check changed values
-		if ( O.values && O.checkchanged ) {
+		if ( 'values' in O && 'checkchanged' in O ) {
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
 		}
 		// custom function before show
-		if ( O.beforeshow ) O.beforeshow();
+		if ( 'beforeshow' in O ) O.beforeshow();
 	} );
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
