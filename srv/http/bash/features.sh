@@ -84,13 +84,17 @@ localbrowserset )
 	rotate=${args[3]}
 	cursor=${args[4]}
 	if [[ -e $dirsystem/localbrowserval ]]; then
-		conf=( $( cat $dirsystem/localbrowserval 2> /dev/null | cut -d= -f2 ) )
+		conf=$( cat $dirsystem/localbrowserval )
 		prevscreenoff=$( grep screenoff <<< "$conf" | cut -d= -f2 )
 		prevzoom=$( grep zoom <<< "$conf" | cut -d= -f2 )
 		prevrotate=$( grep rotate <<< "$conf" | cut -d= -f2 )
 		prevcursor=$( grep cursor <<< "$conf" | cut -d= -f2 )
 	fi
-	[[ $screenoff != $prevscreenoff ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
+	if [[ $screenoff != $prevscreenoff ]]; then # no restart / reboot
+		changescreenoff=1
+		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
+	fi
+	[[ $zoom != $prevzoom ]] && changezoom=1
 	if [[ $rotate != $prevrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			declare -A deg=( [NORMAL]=0 [CW]=270 [CCW]=90 [UD]=180 )
@@ -100,6 +104,7 @@ localbrowserset )
 			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
 			reboot=1
 		else
+			changerotate=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
 				rm -f $rotateconf
@@ -114,15 +119,18 @@ localbrowserset )
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 		ply-image /srv/http/assets/img/splash.png
 	fi
-	sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+	[[ $cursor != $prevcursor ]] && changecursor=1
 	echo -n "\
 screenoff=$screenoff
 zoom=$zoom
 rotate=$rotate
 cursor=$cursor
 " > $dirsystem/localbrowserval
+	if ! grep -q console=tty3 /boot/cmdline.txt; then
+		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+	fi
 	systemctl disable --now getty@tty1
-	if [[ -z $reboot ]]; then
+	if [[ -z $reboot && ( -n $changezoom || -n $changerotate || -n $changecursor ) ]]; then
 		featureSet bootsplash localbrowser
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
