@@ -1,6 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var htmlmount = heredoc( function() { /*
+var htmlmount = `
 <table id="tblinfomount">
 <tr><td>Type</td>
 	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
@@ -28,7 +28,7 @@ var htmlmount = heredoc( function() { /*
 	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
 </tr>
 </table>
-*/ } );
+`;
 function infoMount( values ) {
 	info( {
 		  icon       : 'networks'
@@ -384,12 +384,12 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 	} );
 } );
-var infowifi = heredoc( function() { /*
+var infowifi = `
 <table>
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>OPTIONS</select></td></tr>
 <tr><td></td><td><label><input type="checkbox"></label>Auto start Access Point</td></tr>
 </table>
-*/ } );
+`;
 $( '#setting-wlan' ).click( function() {
 	bash( 'cat /srv/http/settings/regdomcodes.json', function( list ) {
 		var options = '';
@@ -456,7 +456,7 @@ $( '#gpioimgtxt' ).click( function() {
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-var infolcdchar = heredoc( function() { /*
+var infolcdchar = `
 <table>
 <tr id="cols"><td width="135">Size</td>
 	<td width="80"><label><input type="radio" name="cols" value="20">20x4</label></td>
@@ -489,7 +489,7 @@ var infolcdchar = heredoc( function() { /*
 <table>
 <tr><td width="80"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>
-*/ } );
+`;
 $( '#setting-lcdchar' ).click( function() {
 	var values = G.lcdcharval.split( ',' ); // cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = values[ 2 ] === 'i2c';
@@ -560,7 +560,7 @@ $( '#setting-powerbutton' ).click( function() {
 			respin += '<option value='+ v +'>'+ k +'</option>';
 		}
 	} );
-	var infopowerbutton = heredoc( function() { /*
+	var infopowerbutton = `
 <table>
 <tr><td>On</td>
 	<td><input type="text" disabled></td>
@@ -575,7 +575,7 @@ $( '#setting-powerbutton' ).click( function() {
 	<td><select >RESPIN</select></td>
 </tr>
 </table>
-*/ } );
+`;
 	infopowerbutton = infopowerbutton
 						.replace( 'OFFPIN', offpin )
 						.replace( 'LEDPIN', ledpin )

@@ -1,4 +1,5 @@
-/*
+function infoUsage() {
+	console.log( `
 ===============================
 | icon - title              X |
 |-----------------------------|
@@ -10,84 +11,83 @@
 | file - button - cancel - ok |
 ===============================
 
-simple usage: 
-info( 'message' );
+Simple usage:
+	info( 'message' )
+	banner( 'title', 'message', 'icon', delayms )
 
-normal usage:
-info( {                                     // default
-	icon          : 'NAME'                  // 'question'     (top icon)
-	title         : 'TITLE'                 // 'Information'  (top title)
-	width         : N                       // 400            (info width)
+info( {                                       // default
+	icon          : 'NAME'                    // 'question'     (top icon)
+	title         : 'TITLE'                   // 'Information'  (top title)
+	width         : N                         // 400            (info width)
 	
-	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
-	arrowleft     : FUNCTION                // (none)
+	arrowright    : FUNCTION                  // (none)         (switch between multiple infos)
+	arrowleft     : FUNCTION                  // (none)
 	
-	content       : 'HTML'                  // ***            (custom html <table> input content)
-	height        : N                       // (fit)          (infocontent height)
+	content       : 'HTML'                    // ***            (custom html <table> input content)
+	height        : N                         // (fit)          (infocontent height)
 	
-	message       : 'MESSAGE'               // (blank)        (message under title)
-	messagealign  : 'CSS'                   // 'center'
-	footer        : 'FOOTER'                // (blank)        (footer above buttons)
-	footeralign   : 'CSS'                   // (blank)
+	message       : 'MESSAGE'                 // (blank)        (message under title)
+	messagealign  : 'CSS'                     // 'center'
+	footer        : 'FOOTER'                  // (blank)        (footer above buttons)
+	footeralign   : 'CSS'                     // (blank)
 	
-	textlabel     : [ 'LABEL', ... ]        // ***            (label array input label)
-	textalign     : 'CSS'                   // 'left'         (input text alignment)
+	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
+	textalign     : 'CSS'                     // 'left'         (input text alignment)
 	
-	passwordlabel : 'LABEL'                 // (blank)        (password input label)
+	passwordlabel : 'LABEL'                   // (blank)        (password input label)
 	
-	textarea      : 1                       // ***
+	textarea      : 1                         // ***
 	
-	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
+	boxwidth      : N                         // 200            (input text/password width - 'max' to fit)
 	
-	radio         : { LABEL: 'VALUE', ... } // ***
+	radio         : { LABEL: 'VALUE', ... }   // ***
 	
-	checkbox      : [ 'LABEL', ... ]        // ***
+	checkbox      : [ 'LABEL', ... ]          // ***
 	
-	select        : { LABEL: 'VALUE', ... } // ***
-	selectlabel   : 'LABEL'                 // (blank)        (select input label)
+	select        : { LABEL: 'VALUE', ... }   // ***
+	selectlabel   : 'LABEL'                   // (blank)        (select input label)
 	
-	order         : [ TYPE, ... ]           // (sequence)     (order of *** inputs)
+	order         : [ TYPE, ... ]             // (sequence)     (order of *** inputs)
 	
-	filelabel     : 'LABEL'                 // ***            (browse button label)
-	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
-	filetype      : '.EXT, ...'             // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
+	filelabel     : 'LABEL'                   // ***            (browse button label)
+	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
+	filetype      : '.EXT, ...'               // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
-	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
-	button        : [ FUNCTION, ... ]       // (none)         (function array)
-	buttoncolor   : [ 'COLOR', ... ]        // 'var( --cm )'  (color array)
-	buttonfit     : 1                       // (none)         (fit buttons width to label)
-	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
+	buttonlabel   : [ 'LABEL', ... ]          // ***            (label array)
+	button        : [ FUNCTION, ... ]         // (none)         (function array)
+	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
+	buttonfit     : 1                         // (none)         (fit buttons width to label)
+	buttonnoreset : 1                         // (none)         (do not hide/reset on button clicked)
 	
-	okno          : 1                       // (show)         (no ok button)
-	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
-	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
-	ok            : FUNCTION                // (reset)        (ok click function)
+	okno          : 1                         // (show)         (no ok button)
+	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
+	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
+	ok            : FUNCTION                  // (reset)        (ok click function)
 	
-	cancellabel   : 'LABEL'                 // ***            (cancel button label)
-	cancelcolor   : 'COLOR'                 // var( --cg )    (cancel button color)
-	cancelshow    : 1                       // (hide)         (show cancel button)
-	cancel        : FUNCTION                // (reset)        (cancel click function)
+	cancellabel   : 'LABEL'                   // ***            (cancel button label)
+	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
+	cancelshow    : 1                         // (hide)         (show cancel button)
+	cancel        : FUNCTION                  // (reset)        (cancel click function)
 	
-	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
-	checkchanged  : 1                       // (none)         (check values changed)
-	checkblank    : 1 or [ i, ... ]         // (none)         (check values not blank /  [ partial ] )
-	checklength   : { i: N, . }             // (none)         (required N characters in i)
-	checklength   : { i: [ N, 'COND' ], . } // (none)         (required N: characters; COND: min, max; in i)
+	values        : [ 'VALUE', ... ]          // (none)         (default values - in layout order)
+	checkchanged  : 1                         // (none)         (check values changed)
+	checkblank    : 1 or [ i, ... ]           // (none)         (check values not blank /  [ partial ] )
+	checklength   : { i: N, . }               // (none)         (required N characters in i)
+	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
-	beforeshow    : FUNCTION                // (none)         (function after values set)
+	beforeshow    : FUNCTION                  // (none)         (function after values set)
 } );
 
-Note:
-- Single value/function - no need to be array
-- select requires Selectric.js
-- Get values - infoVal()
-- For html without quotes: heredoc( function() { /*
-*/
+Get values: infoVal()
+Show usage: infoUsage()
 
-function heredoc( fn ) {
-	return fn.toString().match( /\/\*\s*([\s\S]*?)\s*\*\//m )[ 1 ];
-};
-var containerhtml = heredoc( function() { /*
+Note:
+- Require fa-font, Selectric.js
+- Single value/function - no need to be array
+` );
+}
+
+$( 'body' ).prepend( `
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
 		<div id="infoTopBg">
@@ -102,8 +102,7 @@ var containerhtml = heredoc( function() { /*
 	<div id="bannerTitle"></div>
 	<div id="bannerMessage"></div>
 </div>
-*/ } );
-$( 'body' ).prepend( containerhtml );
+` );
 
 $( '#banner' ).click( bannerHide );
 $( '#infoOverlay' ).keyup( function( e ) {
