@@ -90,10 +90,7 @@ localbrowserset )
 		prevrotate=$( grep rotate <<< "$conf" | cut -d= -f2 )
 		prevcursor=$( grep cursor <<< "$conf" | cut -d= -f2 )
 	fi
-	if [[ $screenoff != $prevscreenoff ]]; then # no restart / reboot
-		changescreenoff=1
-		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
-	fi
+	[[ $screenoff != $prevscreenoff ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 	[[ $zoom != $prevzoom ]] && changezoom=1
 	if [[ $rotate != $prevrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
