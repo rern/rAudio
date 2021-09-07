@@ -71,7 +71,8 @@ info( {                                     // default
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkchanged  : 1                       // (none)         (check values changed)
 	checkblank    : 1 or [ i, ... ]         // (none)         (check values not blank /  [ partial ] )
-	checklength   : { i: [ N, 'COND' ], . } // (none)         (required N: characters; COND: min, max, equal; in i)
+	checklength   : { i: N, . }             // (none)         (required N characters in i)
+	checklength   : { i: [ N, 'COND' ], . } // (none)         (required N: characters; COND: min, max; in i)
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
@@ -499,6 +500,7 @@ function info( json ) {
 		O.short = false;
 		if ( O.checklength ) {
 			function checkLength( k, v ) {
+				if ( typeof v !== 'object' ) v = [ v, 'equal' ];
 				var L = v[ 0 ];
 				var cond = v[ 1 ];
 				var diff = O.inputs.eq( k ).val().trim().length - L;
