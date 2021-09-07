@@ -518,6 +518,7 @@ function info( json ) {
 			}
 			$inputs_txt.on( 'keyup paste cut', function() {
 				if ( O.short ) return
+				
 				O.blank = false;
 				if ( inputall ) {
 					$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
