@@ -495,11 +495,13 @@ function info( json ) {
 		if ( O.values ) setValues();
 		
 		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
-		// check text input length (must be before checkblank)
+		// check text input length
 		O.short = false;
 		if ( O.checklength ) {
 			$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
 			$inputs_txt.on( 'keyup paste cut', function() {
+				if ( O.blank ) return
+				
 				O.short = false;
 				$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
 				$( '#infoOk' ).toggleClass( 'disabled', O.short );
@@ -515,6 +517,7 @@ function info( json ) {
 				O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val() === '' ) O.blank = true } );
 			}
 			$inputs_txt.on( 'keyup paste cut', function() {
+				if ( O.short ) return
 				O.blank = false;
 				if ( inputall ) {
 					$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
