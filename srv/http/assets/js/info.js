@@ -1,6 +1,15 @@
 function infoUsage() {
 	console.log( `
 ===============================
+| icon | title                |
+|      |----------------------|
+|      | message              |
+===============================
+
+banner( 'title', 'message', 'icon', delayms )
+
+
+===============================
 | icon - title              X |
 |-----------------------------|
 | <-                       -> |
@@ -11,9 +20,7 @@ function infoUsage() {
 | file - button - cancel - ok |
 ===============================
 
-Simple usage:
-	info( 'message' )
-	banner( 'title', 'message', 'icon', delayms )
+Simple usage: info( 'message' )
 
 info( {                                       // default
 	icon          : 'NAME'                    // 'question'     (top icon)
