@@ -656,7 +656,7 @@ $( '#setting-lcd' ).click( function() {
 				  icon    : 'lcd'
 				, title   : 'TFT LCD'
 				, message : 'Calibrate touchscreen?'
-								+'<br>(Get stylus ready.)'
+							+'<br>(Get stylus ready.)'
 				, ok      : function() {
 					notify( 'Calibrate Touchscreen', 'Start ...', 'lcd' );
 					bash( [ 'lcdcalibrate' ] );
