@@ -171,7 +171,7 @@ $( '#setting-hostapd' ).click( function() {
 		, values       : [ G.hostapdip, G.hostapdpwd ]
 		, checkchanged : ( G.hostapd ? 1 : 0 )
 		, checkblank   : 1
-		, checklength  : { 1: 8 }
+		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : function() {
 			if ( set ) {
 				loader();

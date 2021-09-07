@@ -71,7 +71,7 @@ info( {                                     // default
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkchanged  : 1                       // (none)         (check values changed)
 	checkblank    : 1 or [ i, ... ]         // (none)         (check values not blank /  [ partial ] )
-	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
+	checklength   : { i: [ N, 'C' ], ... } // (none)         (required N characters 'C'ondition in 'i')
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
@@ -498,12 +498,24 @@ function info( json ) {
 		// check text input length
 		O.short = false;
 		if ( O.checklength ) {
-			$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
+			function checkLength( k, v ) {
+				var L = v[ 0 ];
+				var cond = v[ 1 ];
+				var diff = O.inputs.eq( k ).val().trim().length - L;
+				if ( cond === 'min' ) {
+					O.short = diff < 0;
+				} else if ( cond === 'max' ) {
+					O.short = diff > 0;
+				} else if ( cond === 'equal' ) {
+					O.short = diff === 0;
+				}
+			}
+			$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
 			$inputs_txt.on( 'keyup paste cut', function() {
 				if ( O.blank ) return
 				
 				O.short = false;
-				$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
+				$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
 				$( '#infoOk' ).toggleClass( 'disabled', O.short );
 			} );
 		}
@@ -531,6 +543,22 @@ function info( json ) {
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
 		// check changed values
 		if ( O.values && O.checkchanged ) {
+			function checkChanged() {
+				if ( O.short || O.blank ) return
+				
+				setTimeout( function() { // force after check length
+					var values = infoVal();
+					if ( typeof values !== 'object' ) values = [ values ];
+					var val;
+					var changed = false;
+					changed = values.some( function( v, i ) {
+						val = O.values[ i ];
+						if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
+						if ( v != val ) return true
+					} );
+					$( '#infoOk' ).toggleClass( 'disabled', !changed );
+				}, 0 );
+			}
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
@@ -558,22 +586,6 @@ function alignVertical() { // make infoBox scrollable
 		} );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 	}, 200 );
-}
-function checkChanged() {
-	if ( O.short || O.blank ) return
-	
-	setTimeout( function() { // force after check length
-		var values = infoVal();
-		if ( typeof values !== 'object' ) values = [ values ];
-		var val;
-		var changed = false;
-		changed = values.some( function( v, i ) {
-			val = O.values[ i ];
-			if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
-			if ( v != val ) return true
-		} );
-		$( '#infoOk' ).toggleClass( 'disabled', !changed );
-	}, 0 );
 }
 function infoVal() {
 	var values = [];

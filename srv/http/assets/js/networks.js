@@ -117,7 +117,7 @@ function editWiFi( $el ) {
 		, passwordlabel : 'Password'
 		, values        : [ ssid, ip, gateway, password, static, hidden, security ]
 		, checkchanged  : 1
-		, checklength   : { 3: 8 }
+		, checklength   : { 3: [ 8, 'min' ] }
 		, checkblank    : 1
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
