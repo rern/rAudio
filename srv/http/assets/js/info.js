@@ -71,7 +71,7 @@ info( {                                     // default
 	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
 	checkchanged  : 1                       // (none)         (check values changed)
 	checkblank    : 1 or [ i, ... ]         // (none)         (check values not blank /  [ partial ] )
-	checklength   : { i: [ N, 'C' ], ... } // (none)         (required N characters 'C'ondition in 'i')
+	checklength   : { i: [ N, 'COND' ], . } // (none)         (required N: characters; COND: min, max, equal; in i)
 	
 	beforeshow    : FUNCTION                // (none)         (function after values set)
 } );
