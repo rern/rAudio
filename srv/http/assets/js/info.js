@@ -502,13 +502,7 @@ function info( json ) {
 				var L = v[ 0 ];
 				var cond = v[ 1 ];
 				var diff = O.inputs.eq( k ).val().trim().length - L;
-				if ( cond === 'min' ) {
-					O.short = diff < 0;
-				} else if ( cond === 'max' ) {
-					O.short = diff > 0;
-				} else if ( cond === 'equal' ) {
-					O.short = diff === 0;
-				}
+				if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) O.short = true;
 			}
 			$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
 			$inputs_txt.on( 'keyup paste cut', function() {
