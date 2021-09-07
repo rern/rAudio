@@ -1127,13 +1127,16 @@ function renderPlayback() {
 		$( '#progress, #elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			renderPlaybackTime();
+			setProgress( 0 );
+			if ( G.display.radioelapsed ) renderPlaybackTime();
 		}
 		return
 	}
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
+	var position = Math.round( G.status.elapsed / time * 1000 );
+	setProgress( position );
 	$( '#total' ).text( timehms );
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
@@ -1227,25 +1230,20 @@ function renderPlaybackTime() {
 	clearIntervalAll();
 	if ( G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
-	var $elapsed = $( '#elapsed' );
-	if ( G.status.stream ) {
-		$elapsed.html( G.status.state === 'play' ? blinkdot : '' );
-		setProgress( 0 );
-		if ( !G.display.radioelapsed ) return
-		
-		$elapsed = $( '#total' );
-	} else {
-		var time = 'Time' in G.status ? G.status.Time : '';
-		var position = Math.round( G.status.elapsed / time * 1000 );
-		setProgress( position );
-	}
+	var time = 'Time' in G.status ? G.status.Time : '';
+	var timehms = G.status.stream || !time ? '' : ' / '+ second2HMS( time );
+	var position = Math.round( G.status.elapsed / time * 1000 );
 	var elapsed = second2HMS( G.status.elapsed );
+	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
 	$elapsed.text( elapsed );
 	var iplay = '<i class="fa fa-play"></i>';
-	var timehms = G.status.stream || !time ? '' : ' / '+ second2HMS( time );
 	$( '#progress' ).html(  iplay + elapsed + timehms );
 	var each = 1000 / time;
-	if ( !G.localhost ) $timeprogress.css( 'transition-duration', '1.5s' );
+	if ( !G.localhost ) {
+		setTimeout( function() { // delay to after setvalue on load
+			$timeprogress.css( 'transition-duration', '1.5s' );
+		}, 0 );
+	}
 	G.intProgress = setInterval( function() {
 		G.status.elapsed++;
 		if ( G.status.elapsed === G.status.Time ) {

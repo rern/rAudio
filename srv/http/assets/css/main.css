@@ -917,7 +917,8 @@ i.map.disabled, .map.disabled i {
 }
 /* ------------------- roundSlider ------------------- */
 #time-bar,
-.rs-animation .rs-transition {
+.rs-handle,
+.rs-transition {
 	transition: all 0s linear;
 }
 .rs-container {

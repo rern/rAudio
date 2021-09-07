@@ -435,6 +435,7 @@ $( '#time' ).roundSlider( {
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
+	, animation   : false // disable default
 	, create      : function ( e ) {
 		$timeRS = this;
 		$timeprogress = $( '#time .rs-transition, #time-bar' );
@@ -463,6 +464,7 @@ $( '#volume' ).roundSlider( {
 	, startAngle        : -50
 	, endAngle          : 230
 	, editableTooltip   : false
+	, animation         : false  // disable default
 	, create            : function () {
 		G.create = 1;
 		$volumeRS = this;
@@ -476,17 +478,15 @@ $( '#volume' ).roundSlider( {
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, beforeValueChange : function( e ) {
-		if ( G.drag ) return
+		if ( G.local || G.drag ) return
 		
-		if ( !G.local ) {
-			var diff = e.value - G.status.volume;
-			if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
-			var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 100 ) / 100;
-			$volumehandlerotate.css( 'transition-duration', speed +'s' );
-			setTimeout( function() {
-				$volumehandlerotate.css( 'transition-duration','' );
-			}, speed * 1000 + 500 );
-		}
+		var diff = e.value - G.status.volume;
+		if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
+		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 100 ) / 100;
+		$volumehandlerotate.css( 'transition-duration', speed +'s' );
+		setTimeout( function() {
+			$volumehandlerotate.css( 'transition-duration','' );
+		}, speed * 1000 + 500 );
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
@@ -498,13 +498,13 @@ $( '#volume' ).roundSlider( {
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
-		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$volumehandle.rsRotate( - this._handle1.angle ); // e.handle.angle
 	}
 	, valueChange       : function( e ) {
-		if ( G.drag || !G.create ) return // !G.create - fix: fire before 'create'
+		if ( G.drag || !G.create ) return // !G.create - suppress fire before 'create'
 		
 		G.status.volume = e.value;
-		$volumehandle.rsRotate( - this._handle1.angle ); // keep handle shadow in sync
+		$volumehandle.rsRotate( - this._handle1.angle ); // e.handles[ 0 ].angle
 	}
 	, stop              : function() {
 		G.drag = 0;
