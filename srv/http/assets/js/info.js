@@ -493,9 +493,20 @@ function info( json ) {
 		} );
 		// assign values
 		if ( O.values ) setValues();
+		
+		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
+		// check text input length (must be before checkblank)
+		O.short = false;
+		if ( O.checklength ) {
+			$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
+			$inputs_txt.on( 'keyup paste cut', function() {
+				O.short = false;
+				$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
+				$( '#infoOk' ).toggleClass( 'disabled', O.short );
+			} );
+		}
 		// check text input not blank
 		O.blank = false;
-		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
 		if ( O.checkblank ) {
 			var inputall = typeof O.checkblank !== 'object';
 			if ( inputall ) {
@@ -511,16 +522,6 @@ function info( json ) {
 					O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
 				}
 				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-			} );
-		}
-		// check text input length
-		O.short = false;
-		if ( O.checklength ) {
-			$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
-			$inputs_txt.on( 'keyup paste cut', function() {
-				O.short = false;
-				$.each( O.checklength, function( k, v ) { if ( O.inputs.eq( k ).val().length < v ) O.short = true } );
-				$( '#infoOk' ).toggleClass( 'disabled', O.short );
 			} );
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial

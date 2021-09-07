@@ -118,7 +118,7 @@ function editWiFi( $el ) {
 		, values        : [ ssid, ip, gateway, password, static, hidden, security ]
 		, checkchanged  : 1
 		, checklength   : { 3: 8 }
-		, checkblank    : [ 0 ]
+		, checkblank    : 1
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', !static );
