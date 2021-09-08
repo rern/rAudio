@@ -176,13 +176,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			G.screenoff = 1;
 			break;
 		case 'displaycolor':
+			G.color = 1;
 			if ( !G.library ) $( '#library' ).click();
 			if ( G.mode !== 'webradio' ) {
 				$( '#mode-webradio' ).click();
 			} else {
 				colorSet();
 			}
-			G.color = 1;
 			break;
 		case 'guide':
 			location.href = 'settings/guide.php';
