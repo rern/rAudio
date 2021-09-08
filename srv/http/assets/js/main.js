@@ -487,8 +487,7 @@ $( '#volume' ).roundSlider( {
 	, beforeValueChange : function( e ) {
 		if ( G.local || G.drag ) return
 		
-		var diff = e.value - G.status.volume;
-		if ( !diff ) diff = G.status.volume - G.status.volumemute; // mute/unmute
+		var diff = e.value - G.status.volume || G.status.volume - G.status.volumemute; // change || mute/unmute
 		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
 		$volumehandlerotate.css( 'transition-duration', speed +'s' );
 		setTimeout( function() {
