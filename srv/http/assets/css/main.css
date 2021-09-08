@@ -19,7 +19,6 @@ ib {
 .label,
 .liinfo,
 .lib-mode grl,
-.rs-tooltip,
 .title {
 	font-weight: 300;
 }
@@ -926,7 +925,8 @@ i.map.disabled, .map.disabled i {
 	border-radius: 50%;
 }
 .rs-container::before,
-.rs-container::after {
+.rs-container::after,
+#time .rs-inner-container::after {
 	position: absolute;
 	content: '';
 }
@@ -945,6 +945,7 @@ i.map.disabled, .map.disabled i {
 	width: 80px;
 	font-family: Lato !important;
 	font-size: 38px !important;
+	font-weight: 300;
 	line-height: 50px;
 	color: var( --cw );
 }
@@ -954,19 +955,21 @@ i.map.disabled, .map.disabled i {
 #time .rs-container {
 	background: var( --cg );
 }
-#time .rs-container::before {
+#time .rs-container::before,
+#time .rs-container::after {
 	top: 20px;
 	left: 20px;
 	width: 190px;
 	height: 190px;
 	border-radius: 50%;
 }
-#time .rs-container::after {
+#time .rs-inner-container::after {
 	left: 24px;
 	top: 24px;
 	width: 182px;
 	height: 182px;
 	background-color: #000000;
+	border-radius: 50%;
 }
 #time .rs-container::before,
 #volume .rs-container {
