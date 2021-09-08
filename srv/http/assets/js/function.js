@@ -1135,6 +1135,8 @@ function renderPlayback() {
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
+	var position = Math.round( G.status.elapsed / time * 1000 );
+	setProgress( position );
 	$( '#total' ).text( timehms );
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
