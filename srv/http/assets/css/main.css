@@ -929,6 +929,7 @@ i.map.disabled, .map.disabled i {
 #time .rs-inner-container::after {
 	position: absolute;
 	content: '';
+	z-index: 1;
 }
 .rs-container::after { /* glossy overlay */
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
@@ -977,6 +978,7 @@ i.map.disabled, .map.disabled i {
 }
 #time .rs-range {
 	stroke: var( --cm );
+	stroke-width: 21px; /* from width 22 - fix clipped right edge */
 }
 #time .rs-handle {
 	margin-left: 0 !important;

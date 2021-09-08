@@ -436,7 +436,7 @@ $( '#time' ).roundSlider( {
 	, borderWidth : 0
 	, max         : 1000
 	, radius      : 115
-	, width       : 20
+	, width       : 22
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
