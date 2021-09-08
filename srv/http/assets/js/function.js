@@ -44,7 +44,6 @@ function clearIntervalAll() {
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
-	G.color = 0;
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '#lib-list li:eq( 0 )' ).trigger( 'tap' );
 	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
@@ -129,6 +128,7 @@ function contextmenuLibrary( $li, $target ) {
 	var targetB = $menu.offset().top + $menu.height();
 	var wH = window.innerHeight;
 	if ( targetB > wH - ( barsvisible ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	G.color = 0; // reset to 0 once show
 }
 function coverartChange() {
 	if ( G.playback ) {
