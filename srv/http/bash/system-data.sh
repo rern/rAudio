@@ -142,7 +142,7 @@ data+='
 , "powerbutton"     : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
 , "powerbuttonpins" : "'$( cat $dirsystem/powerbuttonpins 2> /dev/null | cut -d= -f2 )'"
 , "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
-, "regdom"          : "'$( iw reg get | awk '/country/ {print $2}' | tr -d : )'"
+, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 , "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "rpimodel"        : "'$rpimodel'"
 , "soc"             : "'$soc'"
