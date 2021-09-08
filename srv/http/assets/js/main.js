@@ -432,15 +432,15 @@ $( '#elapsed' ).click( function() {
 } );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
+	, svgMode     : true
+	, borderWidth : 0
 	, max         : 1000
 	, radius      : 115
 	, width       : 20
-	, borderWidth : 0
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
-	, animation   : false // disable default
-	, svgMode     : true
+	, animation   : false
 	, create      : function ( e ) {
 		$timeRS = this;
 		$timeprogress = $( '#time .rs-transition, #time-bar' );
@@ -462,16 +462,16 @@ $( '#volume' ).roundSlider( {
 	// tap  : beforeValueChange > change > valueChange
 	// drag : start > [ beforeValueChange > drag > valueChange ] > change > stop
 	// setValue : beforeValueChange > valueChange
-	  sliderType        : 'default'
+	// angle : this._handle1.angle (instaed of inconsistent e.handle.angle/e.handles[ 0 ].angle)
+	  svgMode           : true
+	, borderWidth       : 0
 	, radius            : 115
 	, width             : 50
-	, borderWidth       : 0
 	, handleSize        : '-25'
 	, startAngle        : -50
 	, endAngle          : 230
 	, editableTooltip   : false
-	, animation         : false  // disable default
-	, svgMode           : true
+	, animation         : false
 	, create            : function () {
 		G.create = 1;
 		$volumeRS = this;
@@ -498,20 +498,20 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		G.status.volume = e.value;
 		volumeDrag( e.value );
-		$volumehandle.rsRotate( - e.handle.angle );
+		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
-		$volumehandle.rsRotate( - this._handle1.angle ); // e.handle.angle
+		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
 		if ( G.drag || !G.create ) return // !G.create - suppress fire before 'create'
 		
 		G.status.volume = e.value;
-		$volumehandle.rsRotate( - this._handle1.angle ); // e.handles[ 0 ].angle
+		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, stop              : function() {
 		G.drag = 0;
