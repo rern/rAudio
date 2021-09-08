@@ -514,11 +514,13 @@ function info( json ) {
 			}
 			$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
 			$inputs_txt.on( 'keyup paste cut', function() {
-				if ( O.blank ) return
-				
-				O.short = false;
-				$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
-				$( '#infoOk' ).toggleClass( 'disabled', O.short );
+				setTimeout( function() { // paste cut on touch devices
+					if ( O.blank ) return
+					
+					O.short = false;
+					$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
+					$( '#infoOk' ).toggleClass( 'disabled', O.short );
+				}, 0 ); // 0-checklength > 100-checkblank > 200-checkchange
 			} );
 		}
 		// check text input not blank
@@ -531,24 +533,26 @@ function info( json ) {
 				O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val() === '' ) O.blank = true } );
 			}
 			$inputs_txt.on( 'keyup paste cut', function() {
-				if ( O.short ) return
-				
-				O.blank = false;
-				if ( inputall ) {
-					$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
-				} else {
-					O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
-				}
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				setTimeout( function() {
+					if ( O.short ) return
+					
+					O.blank = false;
+					if ( inputall ) {
+						$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
+					} else {
+						O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
+					}
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				}, 100 );
 			} );
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
 		// check changed values
 		if ( O.values && O.checkchanged ) {
 			function checkChanged() {
-				if ( O.short || O.blank ) return
-				
 				setTimeout( function() { // force after check length
+					if ( O.short || O.blank ) return
+					
 					var values = infoVal();
 					if ( typeof values !== 'object' ) values = [ values ];
 					var val;
@@ -559,7 +563,7 @@ function info( json ) {
 						if ( v != val ) return true
 					} );
 					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				}, 0 );
+				}, 200 );
 			}
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
