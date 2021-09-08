@@ -931,14 +931,13 @@ i.map.disabled, .map.disabled i {
 	content: '';
 }
 .rs-container::after { /* glossy overlay */
-	border-radius: 50%;
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 	background: -webkit-radial-gradient( 75% 0%, 160% 100%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 									  /* x   y   w    h */
+	border-radius: 50%;
 	z-index: 6;
 }
-.rs-border,
 .rs-path {
 	stroke: none !important;
 }

@@ -431,7 +431,8 @@ $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
 	, max         : 1000
 	, radius      : 115
-	, width       : 19
+	, width       : 20
+	, borderWidth : 0
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
@@ -461,6 +462,7 @@ $( '#volume' ).roundSlider( {
 	  sliderType        : 'default'
 	, radius            : 115
 	, width             : 50
+	, borderWidth       : 0
 	, handleSize        : '-25'
 	, startAngle        : -50
 	, endAngle          : 230
