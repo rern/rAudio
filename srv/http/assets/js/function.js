@@ -1573,6 +1573,7 @@ function setProgress( position ) {
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );
+	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
