@@ -511,6 +511,7 @@ i.map.disabled, .map.disabled i {
 }
 #time-bar {
 	top: -6px;
+	transition: all 0s linear;
 }
 #volume-bar {
 	bottom: -6px;
@@ -915,7 +916,6 @@ i.map.disabled, .map.disabled i {
 	border-left: 1px solid var( --cga );
 }
 /* ------------------- roundSlider ------------------- */
-#time-bar,
 .rs-handle,
 .rs-transition {
 	transition: all 0s linear;
