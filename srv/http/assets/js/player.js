@@ -115,9 +115,10 @@ $( '.enablenoset' ).click( function() {
 	bash( [ id, checked ] );
 } );
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
-var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
-			 +'<br><br>Signal will be set to original level (0dB).'
-			 +'<br>Beware of too high volume from speakers.';
+var warning = `\
+<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
+Signal will be set to original level (0dB).
+Beware of too high volume from speakers.`;
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).val();
 	var dev = G.devices[ card ];
@@ -207,9 +208,10 @@ $( '#novolume' ).click( function() {
 		info( {
 			  icon         : 'volume'
 			, title        : 'No Volume'
-			, message      : '<wh>No volume</wh> will be disabled on:'
-							+'<br>&emsp; &bull; Select a Mixer Control'
-							+'<br>&emsp; &bull; Enable any Volume options'
+			, message      : `\
+No volume</wh> will be disabled on:
+&emsp; &bull; Select a Mixer Control
+&emsp; &bull; Enable any Volume options`
 			, messagealign : 'left'
 		} );
 		$( this ).prop( 'checked', 1 );
@@ -297,7 +299,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		}
 	} );
 } );
-var soxrinfo = `
+var soxrinfo = `\
 <table>
 <tr><td>Precision</td>
 	<td><select>
@@ -331,8 +333,7 @@ var soxrinfo = `
 		</select>
 	</td>
 </tr>
-</table>
-`;
+</table>`;
 $( '#setting-soxr' ).click( function() {
 	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
 	var values = G.soxr ? G.soxrval.split( ' ' ) : defaultval;
@@ -359,7 +360,7 @@ $( '#setting-soxr' ).click( function() {
 		}
 	} );
 } );
-var custominfo = `
+var custominfo = `\
 <table width="100%">
 <tr><td><code>/etc/mpd.conf</code></td></tr>
 <tr><td><pre>
@@ -374,8 +375,7 @@ audio_output {
 <tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
-</table>
-`;
+</table>`;
 $( '#setting-custom' ).click( function() {
 	bash( [ 'customget', device.aplayname ], function( val ) {
 		var val = val.split( '^^' );

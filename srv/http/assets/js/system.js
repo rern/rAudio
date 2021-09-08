@@ -1,6 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var htmlmount = `
+var htmlmount = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
 	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
@@ -27,8 +27,7 @@ var htmlmount = `
 <tr><td></td>
 	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
 </tr>
-</table>
-`;
+</table>`;
 function infoMount( values ) {
 	info( {
 		  icon       : 'networks'
@@ -235,22 +234,20 @@ $( '.enablenoset' ).click( function() {
 } );
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
+	var txtlcdchar = `\
+<p><code>GND:(any black pin)</code>
+<wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>
+<wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code></p>`;
+	var txtmpdoled = `\
+<p><code>GND:(any black pin)</code> <code>VCC:1</code>
+<wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
+<wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code></p>`;
 	var title = {
 		  i2cbackpack : [ 'Character LCD', '', 'lcdchar' ]
-		, lcdchar     : [
-			  'Character LCD'
-			, '<p><code>GND:(any black pin)</code>'
-			 +'<br><wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>'
-			 +'<br><wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code></p>'
-		]
+		, lcdchar     : [ 'Character LCD', txtlcdchar ]
 		, relays      : [ 'Relays Module' ]
 		, lcd         : [ 'TFT 3.5" LCD' ]
-		, mpdoled     : [
-			  'Spectrum OLED'
-			, '<p><code>GND:(any black pin)</code> <code>VCC:1</code>'
-			 +'<br><wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>'
-			 +'<br><wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code></p>'
-		]
+		, mpdoled     : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton : [ 'Power Button',  '', 'power', '300px', 'svg' ]
 		, vuled       : [ 'VU LED',        '', 'led', '300px', 'svg' ]
 	}
@@ -384,19 +381,17 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 	} );
 } );
-var infowifi = `
-<table>
-<tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>OPTIONS</select></td></tr>
-<tr><td></td><td><label><input type="checkbox"></label>Auto start Access Point</td></tr>
-</table>
-`;
 $( '#setting-wlan' ).click( function() {
 	bash( 'cat /srv/http/settings/regdomcodes.json', function( list ) {
 		var options = '';
 		$.each( list, function( k, v ) {
 			options += '<option value="'+ k +'">'+ v +'</option>';
 		} );
-		infowifi = infowifi.replace( 'OPTIONS', options );
+		var infowifi = `\
+<table>
+<tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
+<tr><td></td><td><label><input type="checkbox"></label>Auto start Access Point</td></tr>
+</table>`;
 		info( {
 			  icon         : 'wifi'
 			, title        : 'Wi-Fi'
@@ -456,7 +451,7 @@ $( '#gpioimgtxt' ).click( function() {
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-var infolcdchar = `
+var infolcdchar = `\
 <table>
 <tr id="cols"><td width="135">Size</td>
 	<td width="80"><label><input type="radio" name="cols" value="20">20x4</label></td>
@@ -488,8 +483,7 @@ var infolcdchar = `
 </table>
 <table>
 <tr><td width="80"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
-</table>
-`;
+</table>`;
 $( '#setting-lcdchar' ).click( function() {
 	var values = G.lcdcharval.split( ',' ); // cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = values[ 2 ] === 'i2c';
@@ -560,26 +554,21 @@ $( '#setting-powerbutton' ).click( function() {
 			respin += '<option value='+ v +'>'+ k +'</option>';
 		}
 	} );
-	var infopowerbutton = `
+	var infopowerbutton = `\
 <table>
 <tr><td>On</td>
 	<td><input type="text" disabled></td>
 </tr>
 <tr><td>Off</td>
-	<td><select >OFFPIN</select></td>
+	<td><select >${ offpin }</select></td>
 </tr>
 <tr><td>LED</td>
-	<td><select >LEDPIN</select></td>
+	<td><select >${ ledpin }</select></td>
 </tr>
 <tr class="reserved hide"><td>Reserved</td>
-	<td><select >RESPIN</select></td>
+	<td><select >${ respin }</select></td>
 </tr>
-</table>
-`;
-	infopowerbutton = infopowerbutton
-						.replace( 'OFFPIN', offpin )
-						.replace( 'LEDPIN', ledpin )
-						.replace( 'RESPIN', respin );
+</table>`;
 	if ( G.powerbuttonpins ) {
 		var pins = ( '5 '+ G.powerbuttonpins ).split( ' ' );
 	} else {
