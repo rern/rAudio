@@ -431,11 +431,12 @@ $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
 	, max         : 1000
 	, radius      : 115
-	, width       : 20
+	, width       : 19
 	, startAngle  : 90
 	, endAngle    : 450
 	, showTooltip : false
 	, animation   : false // disable default
+	, svgMode     : true
 	, create      : function ( e ) {
 		$timeRS = this;
 		$timeprogress = $( '#time .rs-transition, #time-bar' );
@@ -465,6 +466,7 @@ $( '#volume' ).roundSlider( {
 	, endAngle          : 230
 	, editableTooltip   : false
 	, animation         : false  // disable default
+	, svgMode           : true
 	, create            : function () {
 		G.create = 1;
 		$volumeRS = this;
