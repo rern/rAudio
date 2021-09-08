@@ -120,7 +120,6 @@ $selecttimezone.= '</select>';
 		<br>Country of Wi-Fi regulatory domain:
 		<p>
 			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-		<br>&bull; <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">ISO 3166-1 alpha-2 country code</a>
 		<br>&bull; Active regulatory domian may be reassigned by router while connected.
 		</p>
 	</span>
