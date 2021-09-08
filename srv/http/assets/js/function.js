@@ -1232,33 +1232,33 @@ function renderPlaybackTime() {
 	
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = G.status.stream || !time ? '' : ' / '+ second2HMS( time );
-	var position = Math.round( G.status.elapsed / time * 1000 );
-	var elapsed = second2HMS( G.status.elapsed );
-	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
-	$elapsed.text( elapsed );
+	var elapsedhms = second2HMS( G.status.elapsed );
 	var iplay = '<i class="fa fa-play"></i>';
-	$( '#progress' ).html(  iplay + elapsed + timehms );
-	var each = 1000 / time;
+	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
+	$elapsed.text( elapsedhms );
+	$( '#progress' ).html(  iplay + elapsedhms + timehms );
 	if ( !G.localhost ) {
 		setTimeout( function() { // delay to after setvalue on load
 			$timeprogress.css( 'transition-duration', '1.5s' );
 		}, 0 );
 	}
+	var position = Math.round( G.status.elapsed / time * 1000 );
+	var each = 1000 / time;
 	G.intProgress = setInterval( function() {
 		G.status.elapsed++;
-		if ( G.status.elapsed === G.status.Time ) {
+		if ( G.status.elapsed < G.status.Time ) {
+			position += each;
+			$timeRS.setValue( position );
+			$( '#time-bar' ).css( 'width', position / 10 +'%' );
+			elapsedhms = second2HMS( G.status.elapsed );
+			$elapsed.text( elapsedhms );
+			$( '#progress' ).html( iplay + elapsedhms + timehms );
+		} else {
 			G.status.elapsed = 0;
 			clearIntervalAll();
 			$elapsed.empty();
 			setProgress( 0 );
 			$( '#progress' ).html( iplay );
-		} else {
-			position += each;
-			$timeRS.setValue( position );
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
-			var elapsedhms = second2HMS( G.status.elapsed );
-			$elapsed.text( elapsedhms );
-			$( '#progress' ).html( iplay + elapsedhms + timehms );
 		}
 	}, 1000 );
 }
