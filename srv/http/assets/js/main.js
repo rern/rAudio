@@ -427,6 +427,9 @@ $( '#title, #guide-lyrics' ).on( 'tap', function() {
 $( '#album, #guide-album' ).click( function() {
 	window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
 } );
+$( '#elapsed' ).click( function() {
+	G.status.state === 'play' ? $( '#pause' ).click() : $( '#play' ).click();
+} );
 $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
 	, max         : 1000
