@@ -979,6 +979,8 @@ i.map.disabled, .map.disabled i {
 	stroke: var( --cm );
 }
 #time .rs-handle {
+	margin-left: 0 !important;
+	width: 40px !important;
 	opacity: 0;
 }
 #volume .rs-container::before {
