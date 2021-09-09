@@ -106,19 +106,25 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 fi
 if [[ -e $dirsystem/lcdcharval ]]; then
 	vals=$( cat $dirsystem/lcdcharval )
-	keys='cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight'
+	keys=( cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight )
 	if (( $( echo "$vals" | wc -l ) == 6 )); then
 		declare -A default=( [inf]=i2c [pin_rs]=15 [pin_rw]=18 [pin_e]=16 [pins_data]=21,22,23,24 )
 	else
 		declare -A default=( [inf]=gpio [address]=0x27 [chip]=PCF8574 )
 	fi
-	for k in $keys; do
+	kL=${#keys[@]}
+	for (( i=0; i < $kL; i++ )); do
+		k=${keys[$i]}
 		line=$( grep $k <<< "$vals" )
-		[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
+		if (( i > 0 && i < 5 )); then
+			[[ -n $line ]] && pins+=",\"${line/*=}\"" || pins+=",\"${default[$k]}\""
+		else
+			[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
+		fi
 	done
-	lcdcharval=${pins:1}
+	lcdcharval=[${pins:1}]
 else
-	lcdcharval='20,A00,i2c,0x27,PCF8574,15,18,16,21,22,23,24,false'
+	lcdcharval='[20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false]'
 fi
 
 data+='
@@ -133,7 +139,7 @@ data+='
 , "lcd"             : '$lcd'
 , "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 , "lcdcharaddr"     : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
-, "lcdcharval"      : "'$lcdcharval'"
+, "lcdcharval"      : '$lcdcharval'
 , "list"            : ['${list:1}']
 , "lcdmodel"        : "'$lcdmodel'"
 , "mpdoled"         : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'

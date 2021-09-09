@@ -230,7 +230,7 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo 'Audio I&#178;S Module' >> $filereboot
+	echo 'Audio I&#178;S module' >> $filereboot
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -270,7 +270,7 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-		[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
+		echo 'Charater LCD module' >> $filereboot
 	else
 		conf+="\
 pin_rs=${args[6]}
@@ -282,7 +282,7 @@ pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
 		fi
 	fi
 	conf+="
-backlight=${args[10]}"
+backlight=${args[13]}"
 	echo "$conf" > $dirsystem/lcdcharval
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar

@@ -485,8 +485,8 @@ var infolcdchar = `\
 <tr><td width="80"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>`;
 $( '#setting-lcdchar' ).click( function() {
-	var values = G.lcdcharval.split( ',' ); // cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	var i2c = values[ 2 ] === 'i2c';
+	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
+	var i2c = G.lcdcharval[ 2 ] === 'i2c';
 	var radioaddr = '<td>Address</td>';
 	G.lcdcharaddr.split( ' ' ).forEach( function( el ) {
 		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
@@ -503,7 +503,7 @@ $( '#setting-lcdchar' ).click( function() {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
-		, values        : values
+		, values        : G.lcdcharval
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
 			$( '#infoContent .gpio td:even' ).css( 'width', '60px' );

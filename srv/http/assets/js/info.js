@@ -543,7 +543,7 @@ function info( json ) {
 						O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
 					}
 					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-				}, 100 );
+				}, 25 );
 			} );
 		}
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
@@ -563,7 +563,7 @@ function info( json ) {
 						if ( v != val ) return true
 					} );
 					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				}, 200 );
+				}, 50 );
 			}
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
