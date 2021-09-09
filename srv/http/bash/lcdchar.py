@@ -85,7 +85,7 @@ else:
 
 if elapsed != 'false':
     elapsed = round( float( elapsed ) )
-    elapsedhhmmss = second2hhmmss( elapsed )
+    elapsedhhmmss = elapsed > 0 and second2hhmmss( elapsed ) or ''
 else:
     elapsedhhmmss = ''
 
