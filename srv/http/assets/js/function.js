@@ -638,7 +638,7 @@ var chkplayback = {
 	, volume       : 'Volume'
 	, coversmall   : 'Small coverart'
 	, buttons      : 'Buttons'
-	, swipe        : 'Swipe switch page'
+	, noswipe      : 'Disable swipe'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).trigger( 'tap' );

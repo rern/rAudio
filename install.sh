@@ -6,7 +6,7 @@ alias=r1
 
 dirsystem=/srv/http/data/system
 
-! grep -q swipe $dirsystem/display && sed -i '/radioelapsed/ i\  "swipe": true,' $dirsystem/display
+! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
 
 [[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
 
