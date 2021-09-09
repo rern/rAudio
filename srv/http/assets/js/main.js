@@ -91,7 +91,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 statusRefresh();
 
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
-	if ( !G.display.swipe || G.drag ) return
+	if ( G.display.noswipe || G.drag ) return
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
