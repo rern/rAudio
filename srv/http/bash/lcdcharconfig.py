@@ -3,7 +3,7 @@
 import configparser
 
 config = configparser.ConfigParser()
-config.read( '/srv/http/data/system/lcdcharpins' )
+config.read( '/srv/http/data/system/lcdcharval' )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
