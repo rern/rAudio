@@ -874,6 +874,7 @@ $( '.btn-cmd' ).click( function() {
 		}
 		if ( cmd !== 'play' ) clearIntervalAll();
 		if ( cmd === 'play' ) {
+			if ( G.status.state === 'pause' ) setProgress1s();
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
@@ -932,13 +933,8 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
-			var elapsedhms = second2HMS( G.status.elapsed + 1 ); // + 1 for delay
-			$( '#elapsed' )
-				.text( elapsedhms )
-				.addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
-			var timehms = second2HMS( G.status.Time );
-			$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
+			setProgress1s();
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = G.status.playlistlength;
 			var song = G.status.song;
