@@ -71,16 +71,12 @@ title() {
 	[[ $nobottom == 0 ]] && echo $( lcolor $lbottom $cbottom )
 }
 
-wgetnc() {
-	[[ -t 1 ]] && progress='--show-progress'
-	wget -q --no-check-certificate $progress $@ &> /dev/null
-}
 getinstallzip() {
 	installurl=$( jq -r .$alias.installurl $addonsjson )
 	installzip=${installurl/raw\/main\/install.sh/archive\/$branch.zip}
 	
 	echo $bar Get files ...
-	wgetnc $installzip
+	curl -skLO $installurl
 	echo
 	echo $bar Install new files ...
 	tmpdir=/tmp/install
@@ -102,7 +98,7 @@ getuninstall() {
 	installurl=$( jq -r .$alias.installurl $addonsjson )
 	installurl=${installurl/raw\/main/raw\/$branch}
 	uninstallurl=${installurl/install.sh/uninstall_$alias.sh}
-	wgetnc $uninstallurl -P /usr/local/bin
+	curl -skLO $uninstallurl --output-dir /usr/local/bin
 	chmod 755 /usr/local/bin/uninstall_$alias.sh
 }
 installstart() { # $1-'u'=update
