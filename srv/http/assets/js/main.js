@@ -91,7 +91,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 statusRefresh();
 
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
-	if ( G.swipepl || G.drag ) return
+	if ( !G.display.swipe || G.drag ) return
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
@@ -784,7 +784,7 @@ $( '.map' ).on( 'tap', function() {
 		
 		if ( window.innerWidth < 545 && window.innerWidth < window.innerHeight ) return
 		
-		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons', 'progressbar' ];
+		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons' ];
 		if ( 'coverTL' in G ) {
 			list.forEach( function( el ) {
 				G.display[ el ] = G.coverTL[ el ];
@@ -805,7 +805,6 @@ $( '.map' ).on( 'tap', function() {
 			if ( this.id === 'coverTL' ) {
 				if ( G.display.time || G.display.volume ) {
 					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
-					G.display.progressbar = G.status.stream ? false : true;
 					$( '#bar-top' ).addClass( 'hide' );
 					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).addClass( 'transparent' );
@@ -1669,23 +1668,6 @@ var sortablesavedplaylist = new Sortable( document.getElementById( 'pl-savedlist
 			, new  : e.newIndex
 		} );
 	}
-} );
-$( '#pl-list, #pl-savedlist' ).on( 'swipeleft', 'li', function() {
-	G.swipe = 1;
-	G.swipepl = 1; // suppress .page swipe
-	setTimeout( function() {
-		G.swipe = 0;
-		G.swipepl = 0;
-	}, 500 );
-	$( '#library' ).click();
-} ).on( 'swiperight', 'li', function() {
-	G.swipe = 1;
-	G.swipepl = 1;
-	setTimeout( function() {
-		G.swipe = 0;
-		G.swipepl = 0;
-	}, 500 );
-	$( '#playback' ).click();
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );

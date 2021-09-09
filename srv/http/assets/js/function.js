@@ -485,7 +485,6 @@ function hideGuide() {
 		$( '.map' ).removeClass( 'mapshow' );
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( !barsvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
-		if ( !G.display.progressbar ) $( '#timebar' ).addClass( 'hide' );
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.coveredit' ).css( 'z-index', '' );
@@ -633,13 +632,13 @@ var chkplayback = {
 	  bars         : 'Top-Bottom bars'
 	, barsalways   : 'Bars always on'
 	, time         : 'Time'
-	, progressbar  : 'Progress bar'
+	, radioelapsed : 'WebRadio time'
 	, cover        : 'Coverart'
 	, vumeter      : 'VU meter'
 	, volume       : 'Volume'
 	, coversmall   : 'Small coverart'
 	, buttons      : 'Buttons'
-	, radioelapsed : 'WebRadio time'
+	, swipe        : 'Swipe switch page'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).trigger( 'tap' );
@@ -675,7 +674,6 @@ function infoPlayback() {
 				window[ k ] = i;
 			} );
 			if ( !G.display.bars ) displayCheckboxSet( barsalways );
-			if ( G.display.time ) displayCheckboxSet( progressbar );
 			if ( !G.display.cover ) displayCheckboxSet( vumeter );
 			if ( G.display.volumenone ) displayCheckboxSet( volume, 0, 0 );
 			if ( !G.display.time && !G.display.volume ) {
@@ -688,22 +686,12 @@ function infoPlayback() {
 				var v = $volume.prop( 'checked' );
 				if ( t || v ) {
 					displayCheckboxSet( cover, 1 );
-					displayCheckboxSet( progressbar, 0, 0 );
 					displayCheckboxSet( buttons, 1 );
 				} else {
 					displayCheckboxSet( cover, 0, 1 );
-					displayCheckboxSet( progressbar, 0, 0 );
 					displayCheckboxSet( buttons, 0, 0 );
 				}
-				if ( !t && $cover.prop( 'checked' ) ) {
-					displayCheckboxSet( progressbar, 1, 1 );
-				} else {
-					displayCheckboxSet( progressbar, 0, 0 );
-				}
-				if ( !t && ( !v || G.display.volumenone ) ) {
-					displayCheckboxSet( cover, 1, 1 );
-					displayCheckboxSet( progressbar, 1, 1 );
-				}
+				if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( cover, 1, 1 );
 			} );
 			$bars.change( function() {
 				if ( $( this ).prop( 'checked' ) ) {
@@ -714,13 +702,11 @@ function infoPlayback() {
 			} );
 			$cover.change( function() {
 				if ( $( this ).prop( 'checked' ) ) {
-					if ( !$time.prop( 'checked' ) ) displayCheckboxSet( progressbar, 1, 1 );
 					displayCheckboxSet( coversmall, 1 );
 					displayCheckboxSet( vumeter, 1, 0 );
 					$vumeter.prop( 'disabled', 0 );
 					$coverdefault.toggleClass( 'hide', 0 );
 				} else {
-					displayCheckboxSet( progressbar, 0, 0 );
 					displayCheckboxSet( coversmall, 0, 0 );
 					displayCheckboxSet( vumeter, 0, 0 );
 					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
@@ -1241,30 +1227,34 @@ function renderPlaybackTime() {
 	if ( G.status.Time ) {
 		var time = G.status.Time;
 		var timehms = ' / '+ second2HMS( time );
+		var position = Math.round( G.status.elapsed / time * 1000 );
+		var each = 1000 / time;
 		$( '#progress' ).html(  iplay + elapsedhms + timehms );
+		G.intProgress = setInterval( function() {
+			G.status.elapsed++;
+			if ( G.status.elapsed < time ) {
+				position += each;
+				$timeRS.setValue( position );
+				$( '#time-bar' ).css( 'width', position / 10 +'%' );
+				elapsedhms = second2HMS( G.status.elapsed );
+				$elapsed.text( elapsedhms );
+				$( '#progress' ).html( iplay + elapsedhms + timehms );
+			} else {
+				G.status.elapsed = 0;
+				clearIntervalAll();
+				$elapsed.empty();
+				setProgress( 0 );
+				$( '#progress' ).html( iplay );
+			}
+		}, 1000 );
 	} else {
-		var time = 0;
-		var timehms = '';
-	}
-	var position = Math.round( G.status.elapsed / time * 1000 );
-	var each = 1000 / time;
-	G.intProgress = setInterval( function() {
-		G.status.elapsed++;
-		if ( G.status.elapsed < time ) {
-			position += each;
-			$timeRS.setValue( position );
-			$( '#time-bar' ).css( 'width', position / 10 +'%' );
+		G.intProgress = setInterval( function() {
+			G.status.elapsed++;
 			elapsedhms = second2HMS( G.status.elapsed );
 			$elapsed.text( elapsedhms );
-			$( '#progress' ).html( iplay + elapsedhms + timehms );
-		} else {
-			G.status.elapsed = 0;
-			clearIntervalAll();
-			$elapsed.empty();
-			setProgress( 0 );
-			$( '#progress' ).html( iplay );
-		}
-	}, 1000 );
+			$( '#progress' ).html( iplay + elapsedhms );
+		}, 1000 );
+	}
 }
 function renderPlaybackTitles() {
 	G.prevartist = $( '#artist' ).text();
