@@ -73,7 +73,7 @@ title() {
 
 wgetnc() {
 	[[ -t 1 ]] && progress='--show-progress'
-	wget -q --no-check-certificate $progress $@
+	wget -q --no-check-certificate $progress $@ &> /dev/null
 }
 getinstallzip() {
 	installurl=$( jq -r .$alias.installurl $addonsjson )
