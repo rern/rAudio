@@ -1564,27 +1564,32 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position, animate ) {
-	$timeprogress.css( 'transition-duration', animate ? '1.5s' : '0s' );
+	if ( animate ) {
+		local( 1000 );
+		$timeprogress.css( 'transition-duration', '1.5s' );
+	} else {
+		if ( !G.local ) $timeprogress.css( 'transition-duration', '0s' );
+	}
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );
 	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
 }
 function setProgress1s() { // +1s delay on pause/play
-	if ( !G.status.elapsed ) return
+	if ( G.status.elapsed === false ) return
 	
 	G.status.elapsed++;
 	if ( G.status.Time ) {
 		var position = Math.round( G.status.elapsed / G.status.Time * 1000 );
 		setProgress( position, 'animate' );
-		var timehms = second2HMS( G.status.Time );
+		var timehms = ' / '+ second2HMS( G.status.Time );
 	} else {
 		var timehms = '';
 	}
-	var elapsedhms = second2HMS( G.status.elapsed );
-	$( '#elapsed' )
-		.text( elapsedhms )
-		.addClass( 'bl' );
-	$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms +' / '+ timehms );
+	setTimeout( function() {
+		var elapsedhms = second2HMS( G.status.elapsed );
+		$( '#elapsed' ).text( elapsedhms );
+		$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms + timehms );
+	}, 1000 );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin

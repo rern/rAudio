@@ -873,12 +873,15 @@ $( '.btn-cmd' ).click( function() {
 		}
 		if ( cmd !== 'play' ) clearIntervalAll();
 		if ( cmd === 'play' ) {
-			if ( G.status.state === 'pause' ) setProgress1s();
+			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
+			if ( G.status.elapsed === 0 || G.status.state === 'pause' ) setProgress1s();
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
-			$( '#elapsed' ).removeClass( 'bl' );
-			$( '#total' ).removeClass( 'wh' );
+			$( '#elapsed' ).removeClass( 'bl gr' );
+			$( '#total' )
+				.text( second2HMS( G.status.Time ) )
+				.removeClass( 'wh' );
 			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-play' );
 			if ( G.status.stream ) $( '#title, #elapsed' ).html( blinkdot );
 			vu();
@@ -932,6 +935,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
+			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
 			setProgress1s();
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
