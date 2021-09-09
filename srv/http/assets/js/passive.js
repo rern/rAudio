@@ -271,6 +271,7 @@ function psMpdPlayer( data ) {
 			delete data.control;
 			delete data.volume;
 		}
+		if ( G.status.state === 'pause' && data.state === 'play' ) delete data.elapsed;
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
 		} );

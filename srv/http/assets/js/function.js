@@ -1229,6 +1229,8 @@ function renderPlaybackTime() {
 		var timehms = ' / '+ second2HMS( time );
 		var position = Math.round( G.status.elapsed / time * 1000 );
 		var each = 1000 / time;
+		$timeRS.setValue( position );
+		$( '#time-bar' ).css( 'width', position / 10 +'%' );
 		$( '#progress' ).html(  iplay + elapsedhms + timehms );
 		G.intProgress = setInterval( function() {
 			G.status.elapsed++;
@@ -1239,6 +1241,7 @@ function renderPlaybackTime() {
 				elapsedhms = second2HMS( G.status.elapsed );
 				$elapsed.text( elapsedhms );
 				$( '#progress' ).html( iplay + elapsedhms + timehms );
+				if ( G.status.state !== 'play' ) clearIntervalAll();
 			} else {
 				G.status.elapsed = 0;
 				clearIntervalAll();
@@ -1573,23 +1576,6 @@ function setProgress( position, animate ) {
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );
 	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
-}
-function setProgress1s() { // +1s delay on pause/play
-	if ( G.status.elapsed === false ) return
-	
-	G.status.elapsed++;
-	if ( G.status.Time ) {
-		var position = Math.round( G.status.elapsed / G.status.Time * 1000 );
-		setProgress( position, 'animate' );
-		var timehms = ' / '+ second2HMS( G.status.Time );
-	} else {
-		var timehms = '';
-	}
-	setTimeout( function() {
-		var elapsedhms = second2HMS( G.status.elapsed );
-		$( '#elapsed' ).text( elapsedhms );
-		$( '#progress' ).html( '<i class="fa fa-pause"></i>'+ elapsedhms + timehms );
-	}, 1000 );
 }
 function setTitleWidth() {
 	// pl-icon + margin + duration + margin
