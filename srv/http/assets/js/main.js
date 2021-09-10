@@ -875,11 +875,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
-			if ( G.status.elapsed !== false && G.status.Time ) {
-				var position = Math.round( ( G.status.elapsed + 1 ) / G.status.Time * 1000 );
-				local();
-				setProgress( position );
-			}
+			setProgress( 'playpause' );
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
@@ -937,6 +933,7 @@ $( '.btn-cmd' ).click( function() {
 			if ( G.status.state === 'stop' ) return
 			
 			G.status.state = cmd;
+			setProgress( 'playpause' );
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );

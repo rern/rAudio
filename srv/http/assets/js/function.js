@@ -1142,7 +1142,6 @@ function renderPlayback() {
 	setProgress( position );
 // pause ////////////////////
 	if ( G.status.state === 'pause' ) {
-		setProgress( position );
 		var elapsedhms = second2HMS( G.status.elapsed );
 		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 		$( '#total' ).addClass( 'wh' );
@@ -1222,7 +1221,6 @@ function renderPlaybackTime() {
 		var timehms = ' / '+ second2HMS( time );
 		var position = Math.round( G.status.elapsed / time * 1000 );
 		var each = 1000 / time;
-		G.local = 0;
 		setProgress( position );
 		$( '#progress' ).html(  iplay + elapsedhms + timehms );
 		if ( !G.localhost ) {
@@ -1564,8 +1562,16 @@ function setPlaylistScroll() {
 		}
 	}
 }
-function setProgress( position, animate ) {
-	if ( !G.local ) $timeprogress.css( 'transition-duration', '0s' );
+function setProgress( position ) {
+	if ( G.status.elapsed == false || !G.status.Time ) return
+	
+	if ( position === 'playpause' ) {
+		var position = Math.round( ( G.status.elapsed + 1 ) / G.status.Time * 1000 );
+		var duration = '1.5s';
+	} else {
+		var duration = '0s';
+	}
+	$timeprogress.css( 'transition-duration', duration );
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );
 	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
