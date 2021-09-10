@@ -877,7 +877,8 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			if ( G.status.elapsed !== false && G.status.Time ) {
 				var position = Math.round( ( G.status.elapsed + 1 ) / G.status.Time * 1000 );
-				setProgress( position, 'animate' );
+				local();
+				setProgress( position );
 			}
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
