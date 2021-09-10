@@ -881,7 +881,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
-		if ( cmd !== 'play' ) setTimeout( clearIntervalAll, 1000 );
+		if ( cmd !== 'play' ) setTimeout( clearIntervalAll, 2000 );
 		if ( cmd === 'play' ) {
 			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
@@ -943,7 +943,6 @@ $( '.btn-cmd' ).click( function() {
 			if ( G.status.state === 'stop' ) return
 			
 			G.status.state = cmd;
-			setProgress( 'pause' );
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
