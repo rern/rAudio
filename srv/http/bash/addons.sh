@@ -73,16 +73,27 @@ title() {
 
 getinstallzip() {
 	echo $bar Get files ...
-	installurl=$( jq -r .$alias.installurl $addonsjson )
-	curl -skLO ${installurl/raw\/main\/install.sh/archive\/$branch.zip}
+	installfile=$branch.tar.gz
+	curl -skLO $( jq -r .$alias.installurl $addonsjson \
+					| sed "s|raw/main/install.sh|archive/$installfile|" )
 	echo
 	echo $bar Install new files ...
 	tmpdir=/tmp/install
 	rm -rf $tmpdir
 	mkdir -p $tmpdir
-	bsdtar -tf $branch.zip | cut -d/ -f2- | grep / | grep -v '/$' | sed 's|^|/|' # list files
-	bsdtar -xf $branch.zip --strip 1 -C $tmpdir
-	rm $branch.zip $tmpdir/* &> /dev/null
+	filelist=$( bsdtar tf $installfile )
+	uninstallfile=$( grep uninstall_.*sh <<< "$filelist" )
+	if [[ -n $uninstallfile ]]; then
+		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
+		chmod 755 /usr/local/bin/$uninstallfile
+	fi
+	cut -d/ -f2- <<< "$filelist" \
+		| grep / \
+		| grep -v '/$' \
+		| sed 's|^|/|'
+		| sort -V
+	bsdtar xf $installfile --strip 1 -C $tmpdir
+	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
 	chown -R http:http /srv/http
@@ -91,13 +102,6 @@ getinstallzip() {
 	chmod 777 /srv/http/data/tmp
 	
 	[[ -e /srv/http/data/system/color ]] && /srv/http/bash/cmd.sh color
-}
-getuninstall() {
-	installurl=$( jq -r .$alias.installurl $addonsjson )
-	installurl=${installurl/raw\/main/raw\/$branch}
-	uninstallurl=${installurl/install.sh/uninstall_$alias.sh}
-	curl -skLO $uninstallurl --output-dir /usr/local/bin
-	chmod 755 /usr/local/bin/uninstall_$alias.sh
 }
 installstart() { # $1-'u'=update
 	rm $0
