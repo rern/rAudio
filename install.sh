@@ -12,7 +12,7 @@ dirsystem=/srv/http/data/system
 
 [[ -e $dirsystem/lcdcharpins ]] && mv $dirsystem/lcdchar{pins,val}
 [[ -e /etc/lcdchar.conf ]] && mv /etc/lcdchar.conf $dirsystem/lcdcharval
-sed -i 's/True/true/; s/False/false/' $dirsystem/lcdcharval
+[[ -e $dirsystem/lcdcharval ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdcharval
 [[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
 
 [[ -e /etc/localbrowser.conf ]] && mv /etc/localbrowser.conf $dirsystem/localbrowserval
