@@ -1109,10 +1109,9 @@ function renderPlayback() {
 	// webradio ////////////////////////////////////////
 	if ( G.status.stream ) {
 		setProgress( 0 );
-		$( '#progress, #elapsed, #total' ).empty();
+		$( '#elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			setProgress( 0 );
 			if ( G.display.radioelapsed ) renderPlaybackTime();
 		}
 		return
