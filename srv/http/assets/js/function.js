@@ -1563,7 +1563,7 @@ function setProgress( position ) {
 	
 	if ( position === 'play' ) {
 		var position = G.status.elapsed + 1;
-		var duration = '1s';
+		var duration = '1.2s';
 		if ( G.status.elapsed ) renderPlaybackElapsed();
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;

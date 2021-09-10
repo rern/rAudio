@@ -943,6 +943,7 @@ $( '.btn-cmd' ).click( function() {
 			if ( G.status.state === 'stop' ) return
 			
 			G.status.state = cmd;
+			setProgress( 'play' );
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
