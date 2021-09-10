@@ -1565,11 +1565,11 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position, animate ) {
-	if ( animate ) {
+	if ( animate === 'animate' ) {
 		local( 1000 );
 		$timeprogress.css( 'transition-duration', '1.5s' );
 	} else {
-		if ( !G.local || animate === 'noanimate' ) $timeprogress.css( 'transition-duration', '0s' );
+		if ( animate === 'noanimate' || !G.local ) $timeprogress.css( 'transition-duration', '0s' );
 	}
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );
