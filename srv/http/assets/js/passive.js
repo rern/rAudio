@@ -406,16 +406,14 @@ function psRelays( response ) { // on receive broadcast
 	if ( !( 'state' in response ) ) return
 		
 	var state = response.state;
-	G.status.relayson = state;
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
 	} else if ( state === 'IDLE' ) {
-		var delay = response.delay;
 		info( {
 			  icon        : 'relays'
 			, title       : 'GPIO Relays Countdown'
-			, message     : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
-			, footer      : '<wh>'+ delay +'</wh>'
+			, message     : '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.svg"></div>'
+							+'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
@@ -424,12 +422,13 @@ function psRelays( response ) { // on receive broadcast
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
+				banner( 'GPIO Relays', 'Reset to '+ response.timer +'', 'relays' );
 			}
 		} );
-		delay--
+		var delay = 59;
 		G.intRelaysTimer = setInterval( function() {
 			if ( delay ) {
-				$( '.infofooter wh' ).text( delay-- );
+				$( '.infomessage .wh' ).text( delay-- );
 			} else {
 				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
@@ -438,6 +437,7 @@ function psRelays( response ) { // on receive broadcast
 			}
 		}, 1000 );
 	} else {
+		G.status.relayson = state;
 		var devices = '';
 		$.each( response.order, function( i, val ) {
 			if ( i === 0 ) {
@@ -451,7 +451,7 @@ function psRelays( response ) { // on receive broadcast
 			info( {
 				  icon       : 'relays'
 				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg"></div>'
+				, message    : '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.svg"></div>'
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
 				, beforeshow : function() {

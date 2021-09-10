@@ -24,7 +24,7 @@ player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ $player != mpd ]] && icon=$player
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
-relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
+relayson=$( [[ -e  $dirtmp/relayson ]] && echo true || echo false )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
 if [[ -e $dirsystem/updating ]]; then 
 	updating_db=true

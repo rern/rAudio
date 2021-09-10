@@ -534,10 +534,12 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
+		killall relaystimer.sh &> /dev/null
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
 		[[ $command == stop ]] && rm -f $dirtmp/status
+		[[ -e $dirtmp/relayson ]] && $dirbash/relaystimer.sh &> /dev/null &
 	fi
 	;;
 mpcprevnext )
@@ -758,7 +760,7 @@ power )
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
-	if [[ -e $dirtmp/relaystimer ]]; then
+	if [[ -e $dirtmp/relayson ]]; then
 		$dirbash/relays.sh
 		sleep 2
 	fi
@@ -779,17 +781,9 @@ power )
 refreshbrowser )
 	pushstream reload 1
 	;;
-relayscountdown )
-	relaysfile=$dirtmp/relaystimer
-	if [[ -e $relaysfile ]] && (( $( cat $relaysfile ) < 2 )); then
-		killall relaystimer.sh &> /dev/null
-		echo 1 > $relaysfile
-		$dirbash/relaystimer.sh &> /dev/null &
-		curl -s -X POST http://127.0.0.1/pub?id=relays -d '{ "state": "IDLE", "delay": 60 }'
-	fi
-	;;
 relaystimerreset )
-	grep ^timer $dirsystem/relayspins | cut -d= -f2 > $dirtmp/relaystimer
+	killall relaystimer.sh &> /dev/null
+	$dirbash/relaystimer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotateSplash )
