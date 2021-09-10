@@ -910,14 +910,14 @@ $( '.btn-cmd' ).click( function() {
 			$( '#pl-list .elapsed' ).empty();
 			if ( G.playback ) {
 				$( '#total' ).empty();
-				if ( !G.status.stream ) {
+				if ( G.status.Time ) {
 					var timehms = second2HMS( G.status.Time );
 					setProgress( 0 );
 					$( '#elapsed' )
 						.text( timehms )
 						.addClass( 'gr' );
 					$( '#total, #progress' ).empty();
-					$( '#progress' ).html( '<i class="fa fa-stop"></i>'+ timehms );
+					$( '#progress' ).html( '<i class="fa fa-stop"></i><span></span>'+ timehms );
 				} else {
 					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
@@ -938,6 +938,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
+			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-pause' );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = G.status.playlistlength;
 			var song = G.status.song;
