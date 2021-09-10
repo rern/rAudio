@@ -1561,8 +1561,9 @@ function setPlaylistScroll() {
 function setProgress( position ) {
 	if ( G.status.elapsed === false || !G.status.Time ) return
 	
-	if ( position === 'playpause' ) {
-		var position = G.status.elapsed + 1;
+	if ( position === 'play' || position === 'pause' ) {
+		if ( position === 'play' ) G.status.elapsed++;
+		var position = G.status.elapsed;
 		var duration = '1.5s';
 		if ( G.status.elapsed ) renderPlaybackElapsed();
 	} else {

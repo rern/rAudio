@@ -885,7 +885,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
-			setProgress( 'playpause' );
+			setProgress( 'play' );
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
@@ -943,7 +943,7 @@ $( '.btn-cmd' ).click( function() {
 			if ( G.status.state === 'stop' ) return
 			
 			G.status.state = cmd;
-			setProgress( 'playpause' );
+			setProgress( 'pause' );
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
