@@ -811,12 +811,11 @@ function lyricsHide() {
 }
 function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
-	var elapsedhms = second2HMS( elapsed );
-	var timehms = second2HMS( G.status.Time );
 	setProgress();
 	$( '#elapsed, #total' ).removeClass( 'gr' );
 	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
-	$( '#elapsed' ).text( elapsedhms );
+	$( '#elapsed' ).text( second2HMS( elapsed ) );
+	$( '#total' ).text( second2HMS( G.status.Time ) );
 	if ( G.status.state === 'stop' && $( '#bar-top' ).is( ':visible' ) ) {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#pause' ).addClass( 'active' );
@@ -1204,25 +1203,28 @@ function renderPlaybackCoverart() {
 		vu();
 //	}, delay );
 }
+function renderPlaybackElapsed() {
+	var elapsedhms = second2HMS( G.status.elapsed );
+	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
+	$elapsed.text( elapsedhms );
+	$( '#progress span' ).html( elapsedhms );
+}
 function renderPlaybackTime() {
 	clearIntervalAll();
 	if ( !G.status.elapsed || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
-	var elapsedhms = second2HMS( G.status.elapsed );
-	var iplay = '<i class="fa fa-play"></i>';
-	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
-	$elapsed.text( elapsedhms );
+	renderPlaybackElapsed();
 	if ( G.status.Time ) {
 		var time = G.status.Time;
 		var timehms = ' / '+ second2HMS( time );
 		$timeRS.option( 'max', time );
 		setProgress();
-		$( '#progress span' ).html( elapsedhms );
 		if ( !G.localhost ) {
 			setTimeout( function() { // delay to after setvalue on load
 				$timeprogress.css( 'transition-duration', '1.5s' );
 			}, 0 );
 		}
+		var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
 		G.intProgress = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed < time ) {
@@ -1562,6 +1564,7 @@ function setProgress( position ) {
 	if ( position === 'playpause' ) {
 		var position = G.status.elapsed + 1;
 		var duration = '1.5s';
+		if ( G.status.elapsed ) renderPlaybackElapsed();
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;
 		var duration = '0s';

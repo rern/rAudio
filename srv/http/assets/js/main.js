@@ -881,7 +881,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
-		if ( cmd !== 'play' ) clearIntervalAll();
+		if ( cmd !== 'play' ) setTimeout( clearIntervalAll, 1000 );
 		if ( cmd === 'play' ) {
 			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
