@@ -1221,7 +1221,7 @@ function renderPlaybackTime() {
 		setProgress();
 		if ( !G.localhost ) {
 			setTimeout( function() { // delay to after setvalue on load
-				$timeprogress.css( 'transition-duration', '1.5s' );
+				$timeprogress.css( 'transition-duration', '1s' );
 			}, 0 );
 		}
 		var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
@@ -1563,7 +1563,7 @@ function setProgress( position ) {
 	
 	if ( position === 'play' ) {
 		var position = G.status.elapsed + 1;
-		var duration = '1.5s';
+		var duration = '1s';
 		if ( G.status.elapsed ) renderPlaybackElapsed();
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;
