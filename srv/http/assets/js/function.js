@@ -1223,8 +1223,7 @@ function renderPlaybackTime() {
 		var timehms = ' / '+ second2HMS( time );
 		var position = Math.round( G.status.elapsed / time * 1000 );
 		var each = 1000 / time;
-		G.local = 0;
-		setProgress( position );
+		setProgress( position, 'noanimate' );
 		$( '#progress' ).html(  iplay + elapsedhms + timehms );
 		if ( !G.localhost ) {
 			setTimeout( function() { // delay to after setvalue on load
@@ -1249,7 +1248,7 @@ function renderPlaybackTime() {
 				$( '#progress' ).html( iplay );
 			}
 		}, 1000 );
-	} else {
+	} else if ( G.display.radioelapsed ) {
 		G.intProgress = setInterval( function() {
 			G.status.elapsed++;
 			elapsedhms = second2HMS( G.status.elapsed );
@@ -1570,7 +1569,7 @@ function setProgress( position, animate ) {
 		local( 1000 );
 		$timeprogress.css( 'transition-duration', '1.5s' );
 	} else {
-		if ( !G.local ) $timeprogress.css( 'transition-duration', '0s' );
+		if ( !G.local || animate === 'noanimate' ) $timeprogress.css( 'transition-duration', '0s' );
 	}
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / 10 +'%' );

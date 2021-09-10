@@ -875,7 +875,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
-			if ( G.status.elapsed !== false ) {
+			if ( G.status.elapsed !== false && G.status.Time ) {
 				var position = Math.round( ( G.status.elapsed + 1 ) / G.status.Time * 1000 );
 				setProgress( position, 'animate' );
 			}
