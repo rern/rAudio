@@ -829,9 +829,11 @@ function mpcSeekBar( pageX ) {
 	var posX = pageX - $timeband.offset().left;
 	var bandW = $timeband.width();
 	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-	var elapsed = Math.round( posX / bandW * G.status.Time );
+	var pos = posX / bandW;
+	var elapsed = Math.round( pos * G.status.Time );
 	var elapsedhms = second2HMS( elapsed );
 	$( '#progress span' ).html( elapsedhms );
+	$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
 	if ( !G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {

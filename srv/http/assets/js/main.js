@@ -91,7 +91,13 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 statusRefresh();
 
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
-	if ( G.display.noswipe || G.drag ) return
+	var $target = $( e.target );
+	var targetid = e.target.id;
+	if ( G.display.noswipe
+		|| G.drag || G.down
+		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
+		|| targetid === 'time-band'|| targetid === 'volume-band'
+	) return
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 1000 );
