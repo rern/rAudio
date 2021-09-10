@@ -72,11 +72,9 @@ title() {
 }
 
 getinstallzip() {
-	installurl=$( jq -r .$alias.installurl $addonsjson )
-	installzip=${installurl/raw\/main\/install.sh/archive\/$branch.zip}
-	
 	echo $bar Get files ...
-	curl -skLO $installurl
+	installurl=$( jq -r .$alias.installurl $addonsjson )
+	curl -skLO ${installurl/raw\/main\/install.sh/archive\/$branch.zip}
 	echo
 	echo $bar Install new files ...
 	tmpdir=/tmp/install
