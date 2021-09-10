@@ -1113,7 +1113,7 @@ function renderPlayback() {
 	var time = 'Time' in G.status ? G.status.Time : '';
 	var timehms = time ? second2HMS( time ) : '';
 	$( '#total' ).text( timehms );
-	$timeRS.option( 'max', time || 1000 );
+	$timeRS.option( 'max', time || 100 );
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {

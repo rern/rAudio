@@ -434,7 +434,6 @@ $( '#time' ).roundSlider( {
 	  sliderType  : 'min-range'
 	, svgMode     : true
 	, borderWidth : 0
-	, max         : 1000
 	, radius      : 115
 	, width       : 22
 	, startAngle  : 90
@@ -446,15 +445,20 @@ $( '#time' ).roundSlider( {
 		$timeprogress = $( '#time .rs-transition, #time-bar' );
 	}
 	, start       : function () { // drag start
+		G.drag = 1;
 		clearIntervalAll();
+		$( '#time .rs-range' ).css( 'stroke', '' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, drag        : function ( e ) { // drag with no transition by default
-		$( '#elapsed' ).text( second2HMS( Math.round( e.value / 1000 * G.status.Time ) ) );
+		$( '#elapsed' ).text( second2HMS( e.value ) );
 	}
 	, change      : function( e ) { // not fire on 'setValue'
 		clearIntervalAll();
 		mpcSeek( e.value );
+	}
+	, stop              : function() {
+		G.drag = 0;
 	}
 } );
 $( '#volume' ).roundSlider( {
