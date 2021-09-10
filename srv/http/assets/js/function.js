@@ -818,9 +818,8 @@ function mpcSeek( seekto ) {
 	var timehms = second2HMS( G.status.Time );
 	setProgress( position );
 	$( '#elapsed,#total' ).removeClass( 'gr' );
-	$( '#elapsed' )
-		.addClass( 'bl' )
-		.html( elapsedhms );
+	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
+	$( '#elapsed' ).text( elapsedhms );
 	$( '#total' ).text( timehms );
 	if ( G.status.state === 'stop' && $( '#bar-top' ).is( ':visible' ) ) {
 		$( '#playback-controls i' ).removeClass( 'active' );
@@ -1219,19 +1218,19 @@ function renderPlaybackTime() {
 	var iplay = '<i class="fa fa-play"></i>';
 	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
 	$elapsed.text( elapsedhms );
-	if ( !G.localhost ) {
-		setTimeout( function() { // delay to after setvalue on load
-			$timeprogress.css( 'transition-duration', '1.5s' );
-		}, 0 );
-	}
 	if ( G.status.Time ) {
 		var time = G.status.Time;
 		var timehms = ' / '+ second2HMS( time );
 		var position = Math.round( G.status.elapsed / time * 1000 );
 		var each = 1000 / time;
-		$timeRS.setValue( position );
-		$( '#time-bar' ).css( 'width', position / 10 +'%' );
+		G.local = 0;
+		setProgress( position );
 		$( '#progress' ).html(  iplay + elapsedhms + timehms );
+		if ( !G.localhost ) {
+			setTimeout( function() { // delay to after setvalue on load
+				$timeprogress.css( 'transition-duration', '1.5s' );
+			}, 0 );
+		}
 		G.intProgress = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed < time ) {
