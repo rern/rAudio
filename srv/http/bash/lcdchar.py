@@ -74,8 +74,8 @@ if not title: title = idots
 if not album: album = idots
 if rows == 2:
     if state == 'stop' or state == 'pause':
-        if backlight == 'True' or backlight == 'true':
-            os.system( 'sleep 60 && /srv/http/bash/lcdchar.py off &' )
+        if backlight == 'true':
+            os.system( '/srv/http/bash/lcdchartimer.sh &' )
         lcd.close()
         quit()
         
@@ -106,8 +106,8 @@ progress = ( progress + ' ' * cols )[ :cols - 4 ]
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
-    if backlight == 'True' or backlight == 'true':
-        os.system( 'sleep 60 && /srv/http/bash/lcdchar.py off &' )
+    if backlight == 'true':
+        os.system( '/srv/http/bash/lcdchartimer.sh &' )
     lcd.close()
     quit()
 
