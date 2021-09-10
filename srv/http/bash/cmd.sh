@@ -88,6 +88,7 @@ mpdoledLogo() {
 	systemctl stop mpd_oled
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
+	( sleep 60 && mpd_oled -o $type ) &
 }
 pladdPlay() {
 	pushstreamPlaylist
