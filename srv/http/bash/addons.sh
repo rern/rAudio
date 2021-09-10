@@ -90,7 +90,7 @@ getinstallzip() {
 	cut -d/ -f2- <<< "$filelist" \
 		| grep / \
 		| grep -v '/$' \
-		| sed 's|^|/|'
+		| sed 's|^|/|' \
 		| sort -V
 	bsdtar xf $installfile --strip 1 -C $tmpdir
 	rm $installfile $tmpdir/* &> /dev/null
