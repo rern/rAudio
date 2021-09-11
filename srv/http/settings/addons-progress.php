@@ -44,7 +44,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
+	<link rel="icon" href="/assets/img/icon.png">
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;

@@ -14,7 +14,7 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
+	<link rel="icon" href="/assets/img/icon.png">
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
@@ -158,8 +158,8 @@ foreach( $arrayalias as $alias ) {
 }
 ?>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>
 	<?php if ( $localhost ) include 'keyboard.php';?>
