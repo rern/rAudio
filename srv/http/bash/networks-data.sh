@@ -11,7 +11,7 @@ if systemctl -q is-active hostapd; then
 , "hostapdip"  : "'$hostapdip'"'
 fi
 
-ipeth=$( ifconfig eth0 | awk '/^\s*inet/ {print $2}' )
+ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet/ {print $2}' )
 if [[ -n $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	dhcp=$( [[ $ipr == *"dhcp src $ipeth "* ]] && echo dhcp || echo static )
