@@ -18,7 +18,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			setTimeout( () => {
-				setTitleWidth();
+				setPlaylistInfoWidth();
 				setPlaylistScroll()
 				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
 			}, 0 );
@@ -151,10 +151,10 @@ function psCoverart( data ) {
 				if ( G.status.coverart === url ) break;
 				
 				G.status.coverart = url;
-				renderPlaybackCoverart();
+				setCoverart();
 				if ( 'Album' in data ) { // with webradio
 					G.status.Album = data.Album;
-					renderPlaybackTitles();
+					setInfo();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -291,9 +291,9 @@ function psMpdRadio( data ) {
 	} );
 	if ( G.playback ) {
 		setButtonControl();
-		renderPlaybackTitles();
-		renderPlaybackCoverart();
-		renderPlaybackTime();
+		setInfo();
+		setCoverart();
+		setTimeInterval();
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
