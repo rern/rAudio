@@ -1101,11 +1101,13 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	// webradio ////////////////////////////////////////
+	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 	if ( G.status.stream ) {
 		setProgress( 0 );
 		$( '#elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+			$( '#progress' ).html( istate +'<span></span>' );
 			if ( G.display.radioelapsed ) setTimeInterval();
 		}
 		return
@@ -1115,7 +1117,6 @@ function renderPlayback() {
 	var timehms = time ? second2HMS( time ) : '';
 	$( '#total' ).text( timehms );
 	$timeRS.option( 'max', time || 100 );
-	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 // stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
@@ -1550,6 +1551,7 @@ function setTimeInterval() {
 	if ( !G.status.elapsed || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	setElapsed();
+	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
 	clearInterval( G.intProgress );
 	if ( G.status.Time ) {
 		var time = G.status.Time;
@@ -1561,7 +1563,6 @@ function setTimeInterval() {
 				$timeprogress.css( 'transition-duration', '1s' );
 			}, 0 );
 		}
-		var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
 		G.intProgress = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed < time ) {
