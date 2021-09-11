@@ -53,7 +53,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 ### Image files: 
 - GitHub:
 	- [**Release i20210911**](https://github.com/rern/rAudio-1/releases/tag/i20210911)
--Mirrors:
+- Mirrors:
 	- [rAudio-1-RPi64-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi64-20210911.img.xz)
 	- [rAudio-1-RPi4-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi4-20210911.img.xz)
 	- [rAudio-1-RPi2-3-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi2-3-20210911.img.xz)
