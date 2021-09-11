@@ -1320,10 +1320,14 @@ function setCoverart() {
 		$( '#vu' ).removeClass( 'hide' );
 	} else {
 		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
-		$( '#vu' ).addClass( 'hide' );
-		$( '#coverart' )
-			.attr( 'src', coverart )
-			.removeClass( 'hide' );
+		if ( coveart ) {
+			$( '#vu' ).addClass( 'hide' );
+			$( '#coverart' )
+				.attr( 'src', coverart )
+				.removeClass( 'hide' );
+		} else {
+			coverartDefault();
+		}
 	}
 }
 function setElapsed() {
