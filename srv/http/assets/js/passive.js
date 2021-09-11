@@ -422,7 +422,7 @@ function psRelays( response ) { // on receive broadcast
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
-				banner( 'GPIO Relays', 'Reset to '+ response.timer +'m', 'relays' );
+				banner( 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m', 'relays' );
 			}
 		} );
 		var delay = 59;
