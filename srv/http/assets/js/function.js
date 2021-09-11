@@ -1320,7 +1320,7 @@ function setCoverart() {
 		$( '#vu' ).removeClass( 'hide' );
 	} else {
 		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
-		if ( coveart ) {
+		if ( coverart ) {
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
 				.attr( 'src', coverart )
