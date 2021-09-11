@@ -1565,7 +1565,7 @@ function setProgress( position ) {
 	if ( position === 'play' ) {
 		var position = G.status.elapsed + 1;
 		var duration = '1.5s';
-		if ( G.status.elapsed ) renderPlaybackElapsed();
+		renderPlaybackElapsed();
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;
 		if ( G.local || G.status.state !== 'play' || ( position - $timeRS.getValue() ) > 2 ) {

@@ -882,9 +882,9 @@ $( '.btn-cmd' ).click( function() {
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd === 'play' ) {
-			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
-			setProgress( 'play' );
+			if ( !G.status.elapsed ) $( '#elapsed' ).empty();
+			if ( G.status.elapsed !== false ) setProgress( 'play' );
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
