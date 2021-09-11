@@ -80,7 +80,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$( printf '%.0f' $(( ( now - start + 500 ) / 1000 )) )
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg && -z $vumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"  : "'$coverart'"
