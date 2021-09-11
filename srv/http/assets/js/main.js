@@ -883,7 +883,7 @@ $( '.btn-cmd' ).click( function() {
 		}
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
-			if ( !G.status.elapsed ) $( '#elapsed' ).empty();
+			if ( !G.status.elapsed ) $( '#elapsed' ).empty(); // 0 or false
 			if ( G.status.elapsed !== false ) setProgress( 'play' );
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
