@@ -3,7 +3,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
-		setButtonControl()
+		setButtonControl();
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			setTimeout( () => {
