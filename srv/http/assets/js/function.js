@@ -1562,7 +1562,7 @@ function setPlaylistScroll() {
 function setProgress( position ) {
 	if ( G.status.elapsed === false || !G.status.Time ) return
 	
-	if ( position === 'play' ) {
+	if ( position === 'play' ) { // start animate - not wait for push status
 		var position = G.status.elapsed + 1;
 		var duration = '1.5s';
 		renderPlaybackElapsed();
