@@ -1523,9 +1523,10 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( G.status.elapsed === false || !G.status.Time ) return
-	
-	if ( position === 'play' ) { // start animate - compensate push status delay
+	if ( G.status.elapsed === false || !G.status.Time ) {
+		var position = 0;
+		var duration = '0s'
+	} else if ( position === 'play' ) { // start animate - compensate push status delay
 		var position = G.status.elapsed + 1;
 		var duration = '1.5s';
 		setElapsed();
