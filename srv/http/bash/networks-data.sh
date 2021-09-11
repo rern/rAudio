@@ -11,7 +11,7 @@ if systemctl -q is-active hostapd; then
 , "hostapdip"  : "'$hostapdip'"'
 fi
 
-ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet/ {print $2}' )
+ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ -n $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	dhcp=$( [[ $ipr == *"dhcp src $ipeth "* ]] && echo dhcp || echo static )
@@ -37,7 +37,7 @@ ifconfig wlan0 up &> /dev/null # force up
 ipr=$( ip r | grep "^default.*wlan0" )
 if [[ -n $ipr ]]; then
 	gateway=$( echo $ipr | cut -d' ' -f3 )
-	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet/ {print $2}' )
+	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet / {print $2}' )
 	dhcp=$( [[ $ipr == *"dhcp src $ipwlan "* ]] && echo dhcp || echo static )
 	[[ -n $ipwlan ]] && hostname=$( avahi-resolve -a4 $ipwlan | awk '{print $NF}' )
 	ssid=$( iwgetid wlan0 -r )
