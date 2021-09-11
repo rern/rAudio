@@ -27,7 +27,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
+	<link rel="icon" href="/assets/img/icon.png">
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
@@ -70,17 +70,17 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 </div>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/settings.<?=$time?>.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
 	<?php }
 		  if ( in_array( $page, [ 'features', 'player', 'relays', 'system' ] ) ) { ?>
-<script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 	<?php }
 		  if ( $page === 'networks' ) { ?>
-<script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/qrcode.min.js"></script>
 	<?php }
 		  if ( $page === 'relays' ) { ?>
 <script src="/assets/js/relays.<?=$time?>.js"></script>

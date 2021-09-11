@@ -12,7 +12,7 @@ include 'logosvg.php';
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
+	<link rel="icon" href="/assets/img/icon.png">
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
@@ -38,7 +38,7 @@ include 'logosvg.php';
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script>
 var nlibrary = 22;
 var nplaylist = 39;
