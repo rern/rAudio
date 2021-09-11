@@ -195,6 +195,8 @@ function coverartChange() {
 	} );
 }
 function coverartDefault() {
+	if ( G.display.vumeter ) return
+	
 	if ( G.display.novu ) {
 		$( '#coverart' )
 			.attr( 'src', G.coverdefault )
@@ -331,7 +333,6 @@ function displayPlayback() {
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 }
 function displaySave( keys ) {
-	G.vumeter = G.display.vumeter;
 	var values = infoVal();
 	var display = JSON.parse( JSON.stringify( G.display ) );
 	keys.forEach( function( k, i ) {
@@ -1312,26 +1313,18 @@ function setButtonUpdating() {
 	}
 }
 function setCoverart() {
-/*	clearTimeout( G.timeoutover );
-	var coverdefault = $( '#coverart' ).attr( 'src' ).slice( 0, 5 ) !== '/data';
-	var delay = !G.status.webradio || G.status.coverart || coverdefault || G.status.state !== 'play' ? 0 : 8000;
-	G.timeoutover = setTimeout( function() {*/
-		if ( G.display.vumeter
-			|| ( !G.display.novu && !G.status.coverart && !G.status.stationcover )
-		) {
-			$( '#coverart' )
-				.addClass( 'hide' )
-				.attr( 'src', '' );
-			$( '#vu' ).removeClass( 'hide' );
-		} else {
-			var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
-			$( '#vu' ).addClass( 'hide' );
-			$( '#coverart' )
-				.attr( 'src', coverart )
-				.removeClass( 'hide' );
-		}
-		vu();
-//	}, delay );
+	if ( G.display.vumeter ) {
+		$( '#coverart' )
+			.addClass( 'hide' )
+			.attr( 'src', '' );
+		$( '#vu' ).removeClass( 'hide' );
+	} else {
+		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
+		$( '#vu' ).addClass( 'hide' );
+		$( '#coverart' )
+			.attr( 'src', coverart )
+			.removeClass( 'hide' );
+	}
 }
 function setElapsed() {
 	var elapsedhms = second2HMS( G.status.elapsed );
@@ -1418,7 +1411,9 @@ function setPlaybackBlank() {
 	$( '#artist, #title, #album, #progress, #elapsed, #total' ).empty();
 	setProgress( 0 );
 	$( '#divcover .coveredit' ).remove();
-	$( '#coverart' ).css( 'opacity', '' );
+	$( '#coverart' )
+		.attr( 'src', G.coverdefault )
+		.css( 'opacity', '' );
 	if ( G.status.ip ) {
 		$( '#qrip' ).html( '<gr>http://</gr>'+ G.status.ip +'<br><gr>http://</gr>'+ G.status.hostname );
 		var qr = new QRCode( {
@@ -1428,14 +1423,10 @@ function setPlaybackBlank() {
 		} );
 		$( '#qrwebui' ).html( qr );
 		$( '#coverTR' ).toggleClass( 'empty', $( '#bar-top' ).is( ':hidden' ) );
-		$( '#coverart' )
-			.attr( 'src', G.coverdefault )
-			.addClass( 'hide' );
+		$( '#coverart' ).addClass( 'hide' );
 		$( '#sampling' ).empty();
 	} else {
-		$( '#coverart' )
-			.attr( 'src', G.coverdefault )
-			.removeClass( 'hide' );
+		$( '#coverart' ).removeClass( 'hide' );
 		$( '#page-playback .emptyadd' ).empty();
 		$( '#sampling' )
 			.css( 'display', 'block' )
@@ -1756,7 +1747,7 @@ function volumePushstream() {
 	bash( [ 'volumepushstream' ] );
 }
 function vu() {
-	if ( $( '#vu' ).hasClass( 'hide' ) || G.status.state !== 'play' || G.display.vumeter ) {
+	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).is( ':hidden' ) ) {
 		clearInterval( G.intVu );
 		$( '#vuneedle' ).css( 'transform', '' );
 		return
