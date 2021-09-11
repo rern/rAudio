@@ -288,7 +288,8 @@ hr {
 	height: 100px;
 	margin-bottom: 10px;
 }
-.infomessage .msg-l img {
+.infomessage object {
+	height: 100px;
 	margin-bottom: 0;
 }
 .infomessage .msg-l,

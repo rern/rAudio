@@ -404,7 +404,7 @@ function psRelays( response ) { // on receive broadcast
 	}
 	if ( !( 'state' in response ) ) return
 		
-	var stopwatch = '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.HASH.svg"></div>';
+	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
 	var state = response.state;
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
@@ -412,7 +412,7 @@ function psRelays( response ) { // on receive broadcast
 		info( {
 			  icon        : 'relays'
 			, title       : 'GPIO Relays Countdown'
-			, message     : stopwatch.replace( 'HASH', Math.round( Date.now() / 1000 ) )
+			, message     : stopwatch
 							+'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
@@ -451,7 +451,7 @@ function psRelays( response ) { // on receive broadcast
 			info( {
 				  icon       : 'relays'
 				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : stopwatch.replace( 'HASH', Math.round( Date.now() / 1000 ) )
+				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
 				, beforeshow : function() {
