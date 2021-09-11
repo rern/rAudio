@@ -117,11 +117,10 @@ $selecttimezone.= '</select>';
 	<i id="setting-wlan" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 			Auto start Access Point - On failed connection or no router
-		<br>Wi-Fi regulatory domain:
+		<br>Country of Wi-Fi regulatory domain:
 		<p>
 			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-		<br>&bull; <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements">ISO 3166-1 alpha-2 country code</a>
-		<br>&bull; Active regulatory domian may be reassigned by connected router.
+		<br>(The connected router may override it to a certain country.)
 		</p>
 	</span>
 </div>

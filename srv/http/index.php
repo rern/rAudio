@@ -22,8 +22,8 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
-	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.<?=$time?>.png">
+	<link rel="icon" href="/assets/img/icon.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
 	<style>
 		@font-face {
 			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
@@ -33,7 +33,7 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/roundslider.min.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/roundslider-1.6.1.min.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
 </head>
 <body>
@@ -41,14 +41,14 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <?php include 'index-body.php';?>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/pushstream.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/html5kellycolorpicker.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/lazysizes.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/pica.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/qrcode.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/roundslider.min.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/Sortable.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
+<script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
+<script src="/assets/js/plugin/html5kellycolorpicker-1.21.min.js"></script>
+<script src="/assets/js/plugin/lazysizes-5.3.2.min.js"></script>
+<script src="/assets/js/plugin/pica-7.1.0.min.js"></script>
+<script src="/assets/js/plugin/qrcode.min.js"></script>
+<script src="/assets/js/plugin/roundslider-1.6.1.min.js"></script>
+<script src="/assets/js/plugin/Sortable-1.14.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>

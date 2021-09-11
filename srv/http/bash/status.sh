@@ -24,7 +24,7 @@ player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ $player != mpd ]] && icon=$player
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
-relayson=$( [[ -e  $dirtmp/relaystimer ]] && echo true || echo false )
+relayson=$( [[ -e  $dirtmp/relayson ]] && echo true || echo false )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
 if [[ -e $dirsystem/updating ]]; then 
 	updating_db=true
@@ -78,9 +78,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 		Time=$( cat $path-Time 2> /dev/null || echo false )
 		now=$( date +%s%3N )
 		if [[ -n $start && -n $Time ]]; then
-			elapsed=$(( ( now - start + 500 ) / 1000 ))
+			elapsed=$( printf '%.0f' $(( ( now - start + 500 ) / 1000 )) )
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg && -z $vumeter ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"  : "'$coverart'"
@@ -116,7 +116,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 				echo 0 > $path-elapsed
 			fi
 		fi
-		elapsed=$(( ( elapsed + 500 ) / 1000 ))
+		elapsed=$( printf '%.0f' $(( ( elapsed + 500 ) / 1000 )) )
 	########
 		status+=$( cat $path )
 		status+='
@@ -153,7 +153,7 @@ vu() {
 		[[ -n $vumeter ]] && exit
 	fi
 }
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^elapsed\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
+filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -190,7 +190,7 @@ for line in "${lines[@]}"; do
 , "'$key'" : '$tf
 			;;
 		# number
-		duration | elapsed | playlistlength | song | Time )
+		duration | playlistlength | song | Time )
 			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
 		# string - escaped name
 		Album | AlbumArtist | Artist | Name | Title )
@@ -204,13 +204,12 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-[[ -z $elapsed ]] && elapsed=false || elapsed=$( printf '%.0f\n' $elapsed )
+[[ -z $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
 [[ -z $song ]] && song=false
 [[ -z $Time ]] && Time=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
-, "elapsed"        : '$elapsed'
 , "file"           : "'$file'"
 , "playlistlength" : '$playlistlength'
 , "song"           : '$song'
@@ -348,6 +347,10 @@ $radiosampling" > $dirtmp/radio
 , "webradio"     : true'
 	if [[ -n $id ]]; then
 		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
+		elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| grep ^elapsed \
+					| cut -d' ' -f2 ) )
 ########
 		status+='
 , "coverart"     : "'$coverart'"
@@ -464,7 +467,13 @@ status+='
 vu
 
 if grep -q '"cover": false' $dirsystem/display; then
+	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| grep ^elapsed \
+				| cut -d' ' -f2 ) )
 # >>>>>>>>>>
+	status+='
+, "elapsed"  : '$elapsed
 	echo {$status}
 	exit
 fi
@@ -475,8 +484,13 @@ $Artist
 $Album
 $file0" )
 fi
+elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+			| telnet 127.0.0.1 6600 2> /dev/null \
+			| grep ^elapsed \
+			| cut -d' ' -f2 ) )
 ########
 status+='
+, "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 echo {$status}

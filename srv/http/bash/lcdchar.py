@@ -73,8 +73,9 @@ if not artist: artist = idots
 if not title: title = idots
 if not album: album = idots
 if rows == 2:
-    if state == 'stop':
-        lcd.write_string( artist + rn + album )
+    if state == 'stop' or state == 'pause':
+        if backlight == 'true':
+            os.system( '/srv/http/bash/lcdchartimer.sh &' )
         lcd.close()
         quit()
         
@@ -85,12 +86,15 @@ else:
 
 if elapsed != 'false':
     elapsed = round( float( elapsed ) )
-    elapsedhhmmss = second2hhmmss( elapsed )
+    elapsedhhmmss = elapsed > 0 and second2hhmmss( elapsed ) or ''
 else:
     elapsedhhmmss = ''
 
 if total != 'false':
-    totalhhmmss = cols > 16 and ' / ' or '/'
+    if elapsedhhmmss:
+        totalhhmmss = cols > 16 and ' / ' or '/'
+    else:
+        totalhhmmss = ''
     total = round( float( total ) )
     totalhhmmss += second2hhmmss( total )
 else:
@@ -102,10 +106,9 @@ progress = ( progress + ' ' * cols )[ :cols - 4 ]
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
+    if backlight == 'true':
+        os.system( '/srv/http/bash/lcdchartimer.sh &' )
     lcd.close()
-    if backlight == 'True' or backlight == 'true':
-        import subprocess
-        subprocess.Popen( [ '/srv/http/bash/lcdchartimer.sh' ] )
     quit()
 
 # play

@@ -112,6 +112,7 @@ $coverart" > $dirtmp/status
 , "state"    : "play"
 , "song"     : '$song'
 , "station"  : "'$station'"
+, "Time"     : false
 , "Title"    : "'$title'"
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"

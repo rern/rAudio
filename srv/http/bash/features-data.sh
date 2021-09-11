@@ -36,14 +36,17 @@ fi
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
-	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
-	[[ -z $conf ]] && conf=( NORMAL 0 false 1 )
+	if [[ -e $dirsystem/localbrowserval ]]; then
+		conf=$( cat $dirsystem/localbrowserval )
+	else
+		conf=( NORMAL 0 false 1 )
+	fi
 	data+='
 , "localbrowser"    : '$( systemctl -q is-active localbrowser && echo true || echo false )'
-, "localcursor"     : '${conf[2]}'
-, "localrotate"     : "'${conf[0]}'"
-, "localscreenoff"  : '${conf[1]}'
-, "localzoom"       : '${conf[3]}
+, "localscreenoff"  : '$(( $( grep screenoff <<< "$conf" | cut -d= -f2 ) / 60 ))'
+, "localzoom"       : '$( grep zoom <<< "$conf" | cut -d= -f2 )'
+, "localrotate"     : "'$( grep rotate <<< "$conf" | cut -d= -f2 )'"
+, "localcursor"     : '$( grep cursor <<< "$conf" | cut -d= -f2 )
 fi
 [[ -e /usr/bin/smbd ]] && data+='
 , "smb"             : '$( systemctl -q is-active smb && echo true || echo false )'

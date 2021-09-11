@@ -1,4 +1,14 @@
-/*
+function infoUsage() {
+	console.log( `
+===============================
+| icon | title                |
+|      |----------------------|
+|      | message              |
+===============================
+
+banner( 'title', 'message', 'icon', delayms )
+
+
 ===============================
 | icon - title              X |
 |-----------------------------|
@@ -10,83 +20,81 @@
 | file - button - cancel - ok |
 ===============================
 
-simple usage: 
-info( 'message' );
+Simple usage: info( 'message' )
 
-normal usage:
-info( {                                     // default
-	icon          : 'NAME'                  // 'question'     (top icon)
-	title         : 'TITLE'                 // 'Information'  (top title)
-	width         : N                       // 400            (info width)
+info( {                                       // default
+	icon          : 'NAME'                    // 'question'     (top icon)
+	title         : 'TITLE'                   // 'Information'  (top title)
+	width         : N                         // 400            (info width)
 	
-	arrowright    : FUNCTION                // (none)         (switch between multiple infos)
-	arrowleft     : FUNCTION                // (none)
+	arrowright    : FUNCTION                  // (none)         (switch between multiple infos)
+	arrowleft     : FUNCTION                  // (none)
 	
-	content       : 'HTML'                  // ***            (custom html <table> input content)
-	height        : N                       // (fit)          (infocontent height)
+	content       : 'HTML'                    // ***            (custom html <table> input content)
+	height        : N                         // (fit)          (infocontent height)
 	
-	message       : 'MESSAGE'               // (blank)        (message under title)
-	messagealign  : 'CSS'                   // 'center'
-	footer        : 'FOOTER'                // (blank)        (footer above buttons)
-	footeralign   : 'CSS'                   // (blank)
+	message       : 'MESSAGE'                 // (blank)        (message under title)
+	messagealign  : 'CSS'                     // 'center'
+	footer        : 'FOOTER'                  // (blank)        (footer above buttons)
+	footeralign   : 'CSS'                     // (blank)
 	
-	textlabel     : [ 'LABEL', ... ]        // ***            (label array input label)
-	textalign     : 'CSS'                   // 'left'         (input text alignment)
+	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
+	textalign     : 'CSS'                     // 'left'         (input text alignment)
 	
-	passwordlabel : 'LABEL'                 // (blank)        (password input label)
+	passwordlabel : 'LABEL'                   // (blank)        (password input label)
 	
-	textarea      : 1                       // ***
+	textarea      : 1                         // ***
 	
-	boxwidth      : N                       // 200            (input text/password width - 'max' to fit)
+	boxwidth      : N                         // 200            (input text/password width - 'max' to fit)
 	
-	radio         : { LABEL: 'VALUE', ... } // ***
+	radio         : { LABEL: 'VALUE', ... }   // ***
 	
-	checkbox      : [ 'LABEL', ... ]        // ***
+	checkbox      : [ 'LABEL', ... ]          // ***
 	
-	select        : { LABEL: 'VALUE', ... } // ***
-	selectlabel   : 'LABEL'                 // (blank)        (select input label)
+	select        : { LABEL: 'VALUE', ... }   // ***
+	selectlabel   : 'LABEL'                   // (blank)        (select input label)
 	
-	order         : [ TYPE, ... ]           // (sequence)     (order of *** inputs)
+	order         : [ TYPE, ... ]             // (sequence)     (order of *** inputs)
 	
-	filelabel     : 'LABEL'                 // ***            (browse button label)
-	fileoklabel   : 'LABEL'                 // 'OK'           (upload button label)
-	filetype      : '.EXT, ...'             // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
+	filelabel     : 'LABEL'                   // ***            (browse button label)
+	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
+	filetype      : '.EXT, ...'               // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
-	buttonlabel   : [ 'LABEL', ... ]        // ***            (label array)
-	button        : [ FUNCTION, ... ]       // (none)         (function array)
-	buttoncolor   : [ 'COLOR', ... ]        // 'var( --cm )'  (color array)
-	buttonfit     : 1                       // (none)         (fit buttons width to label)
-	buttonnoreset : 1                       // (none)         (do not hide/reset on button clicked)
+	buttonlabel   : [ 'LABEL', ... ]          // ***            (label array)
+	button        : [ FUNCTION, ... ]         // (none)         (function array)
+	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
+	buttonfit     : 1                         // (none)         (fit buttons width to label)
+	buttonnoreset : 1                         // (none)         (do not hide/reset on button clicked)
 	
-	okno          : 1                       // (show)         (no ok button)
-	oklabel       : 'LABEL'                 // ('OK')         (ok button label)
-	okcolor       : 'COLOR'                 // var( --cm )    (ok button color)
-	ok            : FUNCTION                // (reset)        (ok click function)
+	okno          : 1                         // (show)         (no ok button)
+	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
+	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
+	ok            : FUNCTION                  // (reset)        (ok click function)
 	
-	cancellabel   : 'LABEL'                 // ***            (cancel button label)
-	cancelcolor   : 'COLOR'                 // var( --cg )    (cancel button color)
-	cancelshow    : 1                       // (hide)         (show cancel button)
-	cancel        : FUNCTION                // (reset)        (cancel click function)
+	cancellabel   : 'LABEL'                   // ***            (cancel button label)
+	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
+	cancelshow    : 1                         // (hide)         (show cancel button)
+	cancel        : FUNCTION                  // (reset)        (cancel click function)
 	
-	values        : [ 'VALUE', ... ]        // (none)         (default values - in layout order)
-	checkchanged  : 1                       // (none)         (check values changed)
-	checkblank    : [ i, ... ]              // (none)         (required text in 'i' of all inputs)
-	checklength   : { i: N, ... }           // (none)         (required min N characters in 'i')
+	values        : [ 'VALUE', ... ]          // (none)         (default values - in layout order)
+	checkchanged  : 1                         // (none)         (check values changed)
+	checkblank    : 1 or [ i, ... ]           // (none)         (check values not blank /  [ partial ] )
+	checklength   : { i: N, . }               // (none)         (required N characters in i)
+	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
-	beforeshow    : FUNCTION                // (none)         (function after values set)
+	beforeshow    : FUNCTION                  // (none)         (function after values set)
 } );
 
-Note:
-- Single value/function - no need to be array
-- select requires Selectric.js
-- Get values - infoVal()
-- For html without quotes: heredoc( function() { /*
-*/
+Get values: infoVal()
+Show usage: infoUsage()
 
-function heredoc( fn ) {
-	return fn.toString().match( /\/\*\s*([\s\S]*?)\s*\*\//m )[ 1 ];
-};
-var containerhtml = heredoc( function() { /*
+Note:
+- Require fa-font, Selectric.js
+- Single value/function - no need to be array
+` );
+}
+
+$( 'body' ).prepend( `
 <div id="infoOverlay" class="hide" tabindex="1">
 	<div id="infoBox">
 		<div id="infoTopBg">
@@ -101,8 +109,7 @@ var containerhtml = heredoc( function() { /*
 	<div id="bannerTitle"></div>
 	<div id="bannerMessage"></div>
 </div>
-*/ } );
-$( 'body' ).prepend( containerhtml );
+` );
 
 $( '#banner' ).click( bannerHide );
 $( '#infoOverlay' ).keyup( function( e ) {
@@ -156,7 +163,7 @@ function infoReset() {
 		O.infoscroll = 0;
 	}
 	$( '#infoContent, #infoArrow i, #infoButtons .infobtn, #infoFileLabel' ).off( 'click' );
-	$( '#infoContent input, #infoFileBox' ).off( 'change keyup' );
+	$( '#infoContent input, #infoFileBox' ).off( 'change keyup paste cut' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
 	$( '#infoOverlay' )
@@ -408,16 +415,15 @@ function info( json ) {
 			} );
 		}
 		if ( O.select ) {
-			htmls.select = '';
 			if ( typeof O.select !== 'object' ) {
-				htmls.select += O.select;
+				htmls.select = O.select;
 			} else {
-				htmls.select += '<tr><td>'+ O.selectlabel +'</td><td><select>';
+				htmls.select = '<tr><td>'+ O.selectlabel +'</td><td><select>';
 				$.each( O.select, function( key, val ) {
 					htmls.select += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
 				} );
-				htmls.select += '</select></td></tr>';
 			}
+			htmls.select += '</select></td></tr>';
 		}
 		if ( O.rangevalue ) {
 			htmls.range = '<div id="infoRange">'
@@ -494,42 +500,77 @@ function info( json ) {
 		} );
 		// assign values
 		if ( O.values ) setValues();
+		
+		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
 		// check text input length
+		O.short = false;
 		if ( O.checklength ) {
-			$.each( O.checklength, function( i, L ) {
-				O.short = O.inputs.eq( i ).val().length < L;
-				$( '#infoOk' ).toggleClass( 'disabled', O.short );
-				O.inputs.eq( i ).on( 'keyup', function() {
-					O.short = $( this ).val().length < L;
+			function checkLength( k, v ) {
+				if ( typeof v !== 'object' ) v = [ v, 'equal' ];
+				var L = v[ 0 ];
+				var cond = v[ 1 ];
+				var diff = O.inputs.eq( k ).val().trim().length - L;
+				if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) O.short = true;
+			}
+			$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
+			$inputs_txt.on( 'keyup paste cut', function() {
+				setTimeout( function() { // paste cut on touch devices
+					if ( O.blank ) return
+					
+					O.short = false;
+					$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
 					$( '#infoOk' ).toggleClass( 'disabled', O.short );
-				} );
+				}, 0 ); // 0-checklength > 100-checkblank > 200-checkchange
 			} );
 		}
 		// check text input not blank
+		O.blank = false;
 		if ( O.checkblank ) {
-			O.checkblank.forEach( function( i ) {
-				O.inputs.filter( function() {
-					if ( !$( this ).val().trim() ) $( '#infoOk' ).addClass( 'disabled' );
-				} );
-				O.inputs.eq( i ).on( 'keyup paste cut', function() {
-					setTimeout( function() {
-						$blank = O.inputs.filter( function() {
-							return $( this ).val().trim() === ''
-						} );
-						O.blank = $blank.length > 0;
-						$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-					}, 0 );
-				} );
+			var inputall = typeof O.checkblank !== 'object';
+			if ( inputall ) {
+				$inputs_txt.each( function() { if ( $( this ).val() === '' ) O.blank = true } );
+			} else {
+				O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val() === '' ) O.blank = true } );
+			}
+			$inputs_txt.on( 'keyup paste cut', function() {
+				setTimeout( function() {
+					if ( O.short ) return
+					
+					O.blank = false;
+					if ( inputall ) {
+						$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
+					} else {
+						O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
+					}
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank );
+				}, 25 );
 			} );
 		}
+		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
 		// check changed values
 		if ( O.values && O.checkchanged ) {
+			function checkChanged() {
+				setTimeout( function() { // force after check length
+					if ( O.short || O.blank ) return
+					
+					var values = infoVal();
+					if ( typeof values !== 'object' ) values = [ values ];
+					var val;
+					var changed = false;
+					changed = values.some( function( v, i ) {
+						val = O.values[ i ];
+						if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
+						if ( v != val ) return true
+					} );
+					$( '#infoOk' ).toggleClass( 'disabled', !changed );
+				}, 50 );
+			}
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
 		}
 		// custom function before show
-		if ( O.beforeshow ) O.beforeshow();
+		if ( 'beforeshow' in O ) O.beforeshow();
 	} );
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
@@ -551,22 +592,6 @@ function alignVertical() { // make infoBox scrollable
 		} );
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 	}, 200 );
-}
-function checkChanged() {
-	if ( O.short || O.blank ) return // shorter - already disabled
-	
-	setTimeout( function() { // force after check length
-		var values = infoVal();
-		if ( typeof values !== 'object' ) values = [ values ];
-		var val;
-		var changed = false;
-		changed = values.some( function( v, i ) {
-			val = O.values[ i ];
-			if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
-			if ( v != val ) return true
-		} );
-		$( '#infoOk' ).toggleClass( 'disabled', !changed );
-	}, 0 );
 }
 function infoVal() {
 	var values = [];

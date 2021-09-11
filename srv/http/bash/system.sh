@@ -100,7 +100,6 @@ databackup )
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 /etc/fstab
-/etc/localbrowser.conf
 /etc/mpd.conf
 /etc/mpdscribble.conf
 /etc/upmpdcli.conf
@@ -231,7 +230,7 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo 'Audio I&#178;S Module' >> $filereboot
+	echo 'Audio I&#178;S module' >> $filereboot
 	pushRefresh
 	;;
 lcdcalibrate )
@@ -271,20 +270,20 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-			[[ -n ${args[11]} ]] && echo ${args[11]} >> $filereboot
+		echo 'Charater LCD module' >> $filereboot
 	else
-		conf+="
+		conf+="\
 pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
-pins_data=${args[9]}"
+pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
 		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 		fi
 	fi
 	conf+="
-backlight=${args[10]}"
-	echo "$conf" > $dirsystem/lcdcharpins
+backlight=${args[13]}"
+	echo "$conf" > $dirsystem/lcdcharval
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
 	pushRefresh
@@ -538,8 +537,8 @@ wlandisable )
 	pushRefresh
 	;;
 wlanset )
-	apauto=${args[1]}
-	regdom=${args[2]}
+	regdom=${args[1]}
+	apauto=${args[2]}
 	rfkill | grep -q wlan || modprobe brcmfmac
 	iw wlan0 set power_save off
 	if [[ $apauto == false ]]; then

@@ -56,7 +56,7 @@ function bookmarkIcon( path ) {
 						+'<br><w>'+ path +'</w>'
 		, textlabel  : 'As:'
 		, values     : path.split( '/' ).pop()
-		, checkblank : [ 0 ]
+		, checkblank : 1
 		, boxwidth   : 'max'
 		, ok         : function() {
 			$.post( cmdphp, {
@@ -132,7 +132,7 @@ function playlistNew() {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, boxwidth     : 'max'
 		, ok           : function() {
 			playlistSave( infoVal() );
@@ -150,7 +150,7 @@ function playlistRename() {
 		, boxwidth     : 'max'
 		, values       : name
 		, checkchanged : 1
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
 		, ok           : function() {
 			var newname = infoVal();
@@ -430,7 +430,7 @@ function webRadioEdit() {
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : [ name, url ]
 		, checkchanged : 1
-		, checkblank   : [ 0, 1 ]
+		, checkblank   : 1
 		, boxwidth     : 'max'
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
@@ -471,7 +471,7 @@ function webRadioNew( name, url ) {
 		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : ( name || url ? [ name, url ] : '' )
-		, checkblank   : [ 0, 1 ]
+		, checkblank   : 1
 		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
 		, boxwidth     : 'max'
 		, ok           : function() {
@@ -508,7 +508,7 @@ function webRadioSave( url ) {
 		, title        : 'Save WebRadio'
 		, message      : url
 		, textlabel    : 'Name'
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, ok           : function() {
 			G.local = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space

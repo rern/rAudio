@@ -17,10 +17,6 @@ pushRefreshNetworks() {
 	data=$( /srv/http/bash/networks-data.sh )
 	pushstream refresh "$data"
 }
-featureDisable() {
-	systemctl disable --now $@
-	pushRefresh
-}
 featureSet() {
 	systemctl restart $@
 	systemctl -q is-active $@ && systemctl enable $@
@@ -77,61 +73,63 @@ hostapdset )
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
-	featureDisable bootsplash localbrowser
+	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
+	pushRefresh
 	;;
 localbrowserset )
-	screenoff=${args[1]}
+	screenoff=$(( ${args[1]} * 60 ))
 	zoom=${args[2]}
 	rotate=${args[3]}
 	cursor=${args[4]}
-	conf=( $( cat /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 ) )
-	rotateset=${conf[0]}
-	screenoffset=${conf[1]}
-	ply-image /srv/http/assets/img/splash.png
-	if [[ $rotate != $rotateset ]]; then
+	if [[ -e $dirsystem/localbrowserval ]]; then
+		conf=$( cat $dirsystem/localbrowserval )
+		prevscreenoff=$( grep screenoff <<< "$conf" | cut -d= -f2 )
+		prevzoom=$( grep zoom <<< "$conf" | cut -d= -f2 )
+		prevrotate=$( grep rotate <<< "$conf" | cut -d= -f2 )
+		prevcursor=$( grep cursor <<< "$conf" | cut -d= -f2 )
+	fi
+	[[ $screenoff != $prevscreenoff ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
+	if [[ $rotate != $prevrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
-			reboot=1
-			case $rotate in
-				NORMAL) degree=0;;
-				CW )    degree=270;;
-				CCW )   degree=90;;
-				UD )    degree=180;;
-			esac
+			declare -A deg=( [NORMAL]=0 [CW]=270 [CCW]=90 [UD]=180 )
+			degree=${deg[$rotate]}
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
+			reboot=1
 		else
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
 				rm -f $rotateconf
 			else
-				case $rotate in
-					CW )  matrix='0 1 0 -1 0 1 0 0 1';;
-					CCW ) matrix='0 -1 1 1 0 0 0 0 1';;
-					UD )  matrix='-1 0 1 0 -1 1 0 0 1';;
-				esac
+				declare -A matrix=( [CW]='0 1 0 -1 0 1 0 0 1'
+									[CCW]='0 -1 1 1 0 0 0 0 1'
+									[UD]='-1 0 1 0 -1 1 0 0 1' )
 				sed -e "s/ROTATION_SETTING/$rotate/
-				" -e "s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+				" -e "s/MATRIX_SETTING/${matrix[$rotate]}/" /etc/X11/xinit/rotateconf > $rotateconf
 			fi
 		fi
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
+		ply-image /srv/http/assets/img/splash.png
 	fi
-	[[ $screenoff != $screenoffset ]] && DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
-	sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	echo -n "\
-rotate=$rotate
 screenoff=$screenoff
-cursor=$cursor
 zoom=$zoom
-" > /etc/localbrowser.conf
-	systemctl disable --now getty@tty1
-	if [[ -z $reboot ]]; then
-		featureSet bootsplash localbrowser
-	else
-		pushstream notify '{"title":"TFT 3.5\" LCD","text":"Reboot needed for rotate.","icon":"chromium"}'
+rotate=$rotate
+cursor=$cursor
+" > $dirsystem/localbrowserval
+	if ! grep -q console=tty3 /boot/cmdline.txt; then
+		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	fi
+	systemctl disable --now getty@tty1
+	if [[ -z $reboot && ( $zoom != $prevzoom || $rotate != $prevrotate || $cursor != $prevcursor ) ]]; then
+		featureSet bootsplash localbrowser
+		systemctl restart bootsplash localbrowser
+		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+	fi
+	pushRefresh
 	;;
 logindisable )
 	rm -f $dirsystem/login*
@@ -146,7 +144,8 @@ loginset )
 	pushRefresh
 	;;
 mpdscribbledisable )
-	featureDisable mpdscribble@mpd
+	systemctl disable --now mpdscribble@mpd
+	pushRefresh
 	;;
 mpdscribbleset )
 	user=${args[1]}
@@ -163,14 +162,17 @@ mpdscribbleset )
 	pushRefresh
 	;;
 smbdisable )
-	featureDisable smb
+	systemctl disable --now smb
+	pushRefresh
 	;;
 smbset )
 	smbconf=/etc/samba/smb.conf
 	sed -i '/read only = no/ d' $smbconf
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
-	featureSet smb
+	systemctl restart smb
+	systemctl -q is-active smb && systemctl enable smb
+	pushRefresh
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient

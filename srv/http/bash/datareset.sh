@@ -86,7 +86,7 @@ echo '{
 	"cover": true,
 	"coversmall": false,
 	"novu": true,
-	"progressbar": false,
+	"noswipe": false,
 	"radioelapsed": false,
 	"time": true,
 	"volume": true,

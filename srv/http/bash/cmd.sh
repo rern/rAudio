@@ -88,6 +88,7 @@ mpdoledLogo() {
 	systemctl stop mpd_oled
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
+	( sleep 60 && mpd_oled -o $type ) &
 }
 pladdPlay() {
 	pushstreamPlaylist
@@ -422,15 +423,11 @@ displaysave )
 	grep -q 'vumeter.*true' <<< "$data" && vumeter=true || vumeter=false
 	[[ -e $dirsystem/vumeter ]] && vumeter0=true || vumeter0=false
 	if [[ $vumeter != $vumeter0 ]]; then
-		if [[ $vumeter == true ]]; then
-			touch $dirsystem/vumeter
-			! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
-		else
-			rm $dirsystem/vumeter
-		fi
+		[[ $vumeter == true ]] && touch $dirsystem/vumeter || rm $dirsystem/vumeter
+		$dirbash/mpd-conf.sh
 		status=$( $dirbash/status.sh )
 		pushstream mpdplayer "$status"
-		if [[ $vumeter == true || -e $dirsystem/vuled ]]; then
+		if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 			killall cava &> /dev/null
 			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		fi
@@ -507,6 +504,12 @@ lyricsexist )
 				 -c "get lyrics"
 	fi
 	;;
+mpcelapsed )
+	printf '%.0f' $( { echo status; sleep 0.05; } \
+		| telnet 127.0.0.1 6600 2> /dev/null \
+		| grep ^elapsed \
+		| cut -d' ' -f2 )
+	;;
 mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
@@ -528,10 +531,12 @@ mpcplayback )
 			pushstreamAudiocd "Start play ..."
 			audiocdWaitStart
 		fi
+		killall relaystimer.sh &> /dev/null
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
 		[[ $command == stop ]] && rm -f $dirtmp/status
+		[[ -e $dirtmp/relayson ]] && $dirbash/relaystimer.sh &> /dev/null &
 	fi
 	;;
 mpcprevnext )
@@ -571,15 +576,14 @@ mpcprevnext )
 	;;
 mpcseek )
 	seek=${args[1]}
-	pause=${args[2]}
-	if [[ -n $pause ]]; then
+	state=${args[2]}
+	if [[ $state == stop ]]; then
+		touch $dirtmp/mpdseek
 		mpc play
 		mpc pause
-		mpc seek $seek
-		state=pause
-	else
-		mpc seek $seek
+		rm $dirtmp/mpdseek
 	fi
+	mpc seek $seek
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -753,7 +757,7 @@ power )
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
-	if [[ -e $dirtmp/relaystimer ]]; then
+	if [[ -e $dirtmp/relayson ]]; then
 		$dirbash/relays.sh
 		sleep 2
 	fi
@@ -774,17 +778,9 @@ power )
 refreshbrowser )
 	pushstream reload 1
 	;;
-relayscountdown )
-	relaysfile=$dirtmp/relaystimer
-	if [[ -e $relaysfile ]] && (( $( cat $relaysfile ) < 2 )); then
-		killall relaystimer.sh &> /dev/null
-		echo 1 > $relaysfile
-		$dirbash/relaystimer.sh &> /dev/null &
-		curl -s -X POST http://127.0.0.1/pub?id=relays -d '{ "state": "IDLE", "delay": 60 }'
-	fi
-	;;
 relaystimerreset )
-	grep ^timer $dirsystem/relayspins | cut -d= -f2 > $dirtmp/relaystimer
+	killall relaystimer.sh &> /dev/null
+	$dirbash/relaystimer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotateSplash )

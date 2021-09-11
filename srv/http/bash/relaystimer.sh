@@ -1,23 +1,9 @@
 #!/bin/bash
 
-relaysfile=/srv/http/data/shm/relaystimer
-timer=$( cat $relaysfile )
-i=$timer
-while sleep 60; do
-	if grep -q RUNNING /proc/asound/card*/pcm*/sub*/status; then # state: RUNNING
-		[[ $i != $timer ]] && echo $timer > $relaysfile
-	else
-		i=$( cat $relaysfile )
-		(( $i == 1 )) && /srv/http/bash/relays.sh && exit
-		
-		(( i-- ))
-		echo $i > $relaysfile
-		if (( $i < 6 && $i > 1 )); then
-			curl -s -X POST http://127.0.0.1/pub?id=notify \
-				-d '{ "title": "GPIO Relays Idle", "text": "'$i' minutes to OFF", "icon": "relays" }'
-		elif (( $i == 1 )); then
-			curl -s -X POST http://127.0.0.1/pub?id=relays \
-				-d '{ "state": "IDLE", "delay": 60 }'
-		fi
-	fi
-done
+timer=$( grep timer /srv/http/data/system/relayspins | cut -d= -f2 )
+(( $timer == 0 )) && exit
+
+sleep $(( ( $timer - 1 ) * 60 ))
+curl -s -X POST http://127.0.0.1/pub?id=relays -d '{ "state": "IDLE", "timer": '$timer' }'
+sleep 60
+/srv/http/bash/relays.sh

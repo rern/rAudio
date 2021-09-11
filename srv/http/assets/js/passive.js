@@ -3,7 +3,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
-		setButtonControl()
+		setButtonControl();
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			setTimeout( () => {
@@ -18,7 +18,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	} else {
 		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			setTimeout( () => {
-				setTitleWidth();
+				setPlaylistInfoWidth();
 				setPlaylistScroll()
 				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
 			}, 0 );
@@ -151,10 +151,10 @@ function psCoverart( data ) {
 				if ( G.status.coverart === url ) break;
 				
 				G.status.coverart = url;
-				renderPlaybackCoverart();
+				setCoverart();
 				if ( 'Album' in data ) { // with webradio
 					G.status.Album = data.Album;
-					renderPlaybackTitles();
+					setInfo();
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
@@ -291,9 +291,9 @@ function psMpdRadio( data ) {
 	} );
 	if ( G.playback ) {
 		setButtonControl();
-		renderPlaybackTitles();
-		renderPlaybackCoverart();
-		renderPlaybackTime();
+		setInfo();
+		setCoverart();
+		setTimeInterval();
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
@@ -404,17 +404,16 @@ function psRelays( response ) { // on receive broadcast
 	}
 	if ( !( 'state' in response ) ) return
 		
+	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
 	var state = response.state;
-	G.status.relayson = state;
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
 	} else if ( state === 'IDLE' ) {
-		var delay = response.delay;
 		info( {
 			  icon        : 'relays'
 			, title       : 'GPIO Relays Countdown'
-			, message     : '<img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg">'
-			, footer      : '<wh>'+ delay +'</wh>'
+			, message     : stopwatch
+							+'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
@@ -423,12 +422,13 @@ function psRelays( response ) { // on receive broadcast
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
+				banner( 'GPIO Relays', 'Reset to '+ response.timer +'m', 'relays' );
 			}
 		} );
-		delay--
+		var delay = 59;
 		G.intRelaysTimer = setInterval( function() {
 			if ( delay ) {
-				$( '.infofooter wh' ).text( delay-- );
+				$( '.infomessage .wh' ).text( delay-- );
 			} else {
 				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
@@ -437,6 +437,7 @@ function psRelays( response ) { // on receive broadcast
 			}
 		}, 1000 );
 	} else {
+		G.status.relayson = state;
 		var devices = '';
 		$.each( response.order, function( i, val ) {
 			if ( i === 0 ) {
@@ -450,7 +451,7 @@ function psRelays( response ) { // on receive broadcast
 			info( {
 				  icon       : 'relays'
 				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : '<div class="msg-l"><img class="stopwatch" src="/assets/img/stopwatch.'+ Math.ceil( Date.now() / 1000 ) +'.svg"></div>'
+				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
 				, beforeshow : function() {
@@ -513,7 +514,6 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		G.status.volume = vol;
 		if ( $( '#volume-knob' ).is( ':visible' ) ) {
 			$volumeRS.setValue( vol );
 			mute ? volColorMute() : volColorUnmute();

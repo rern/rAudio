@@ -115,9 +115,10 @@ $( '.enablenoset' ).click( function() {
 	bash( [ id, checked ] );
 } );
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
-var warning = '<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>'
-			 +'<br><br>Signal will be set to original level (0dB).'
-			 +'<br>Beware of too high volume from speakers.';
+var warning = `\
+<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
+Signal will be set to original level (0dB).
+Beware of too high volume from speakers.`;
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).val();
 	var dev = G.devices[ card ];
@@ -207,9 +208,10 @@ $( '#novolume' ).click( function() {
 		info( {
 			  icon         : 'volume'
 			, title        : 'No Volume'
-			, message      : '<wh>No volume</wh> will be disabled on:'
-							+'<br>&emsp; &bull; Select a Mixer Control'
-							+'<br>&emsp; &bull; Enable any Volume options'
+			, message      : `\
+No volume</wh> will be disabled on:
+&emsp; &bull; Select a Mixer Control
+&emsp; &bull; Enable any Volume options`
 			, messagealign : 'left'
 		} );
 		$( this ).prop( 'checked', 1 );
@@ -228,7 +230,7 @@ $( '#setting-crossfade' ).click( function() {
 		, boxwidth     : 60
 		, values       : G.crossfadeval || 1
 		, checkchanged : ( G.crossfade ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
@@ -268,7 +270,7 @@ $( '#setting-buffer' ).click( function() {
 		, boxwidth     : 125
 		, values       : G.bufferval || 4096
 		, checkchanged : ( G.buffer ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
@@ -287,7 +289,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, boxwidth     : 125
 		, values       : G.bufferoutputval || 8192
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
@@ -297,42 +299,41 @@ $( '#setting-bufferoutput' ).click( function() {
 		}
 	} );
 } );
-var soxrinfo = heredoc( function() { /*
-	<table>
-		<tr><td>Precision</td>
-			<td><select>
-				<option value="16">16</option>
-				<option value="20">20</option>
-				<option value="24">24</option>
-				<option value="28">28</option>
-				<option value="32">32</option>
-				</select></td><td>&nbsp;<gr>bit</gr></td>
-		</tr>
-		<tr><td>Phase Response</td>
-			<td><input type="text"></td><td>&nbsp;<gr>0-100</gr></td>
-		</tr>
-		<tr><td>Passband End</td>
-			<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
-		</tr>
-		<tr><td>Stopband Begin</td>
-			<td><input type="text"></td><td>&nbsp;<gr>100-150%</gr></td>
-		</tr>
-		<tr><td>Attenuation</td>
-			<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
-		</tr>
-		<tr><td>Rolloff</td>
-			<td colspan="2"><select>
-					<option value="0">0 - Small</option>
-					<option value="1">1 - Medium</option>
-					<option value="2">2 - None</option>
-					<option value="8">8 - High precision</option>
-					<option value="16">16 - Double precision</option>
-					<option value="32">32 - Variable rate</option>
-				</select>
-			</td>
-		</tr>
-	</table>
-*/ } );
+var soxrinfo = `\
+<table>
+<tr><td>Precision</td>
+	<td><select>
+		<option value="16">16</option>
+		<option value="20">20</option>
+		<option value="24">24</option>
+		<option value="28">28</option>
+		<option value="32">32</option>
+		</select></td><td>&nbsp;<gr>bit</gr></td>
+</tr>
+<tr><td>Phase Response</td>
+	<td><input type="text"></td><td>&nbsp;<gr>0-100</gr></td>
+</tr>
+<tr><td>Passband End</td>
+	<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
+</tr>
+<tr><td>Stopband Begin</td>
+	<td><input type="text"></td><td>&nbsp;<gr>100-150%</gr></td>
+</tr>
+<tr><td>Attenuation</td>
+	<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
+</tr>
+<tr><td>Rolloff</td>
+	<td colspan="2"><select>
+			<option value="0">0 - Small</option>
+			<option value="1">1 - Medium</option>
+			<option value="2">2 - None</option>
+			<option value="8">8 - High precision</option>
+			<option value="16">16 - Double precision</option>
+			<option value="32">32 - Variable rate</option>
+		</select>
+	</td>
+</tr>
+</table>`;
 $( '#setting-soxr' ).click( function() {
 	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
 	var values = G.soxr ? G.soxrval.split( ' ' ) : defaultval;
@@ -342,7 +343,7 @@ $( '#setting-soxr' ).click( function() {
 		, content       : soxrinfo
 		, values        : values
 		, checkchanged  : ( G.soxr ? 1 : 0 )
-		, checkblank    : [ 1, 2, 3, 4 ]
+		, checkblank    : 1
 		, beforeshow    : function() {
 			var $extra = $( '#infoContent tr:eq( 5 )' );
 			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
@@ -359,10 +360,10 @@ $( '#setting-soxr' ).click( function() {
 		}
 	} );
 } );
-var custominfo = heredoc( function() { /*
+var custominfo = `\
 <table width="100%">
-	<tr><td><code>/etc/mpd.conf</code></td></tr>
-	<tr><td><pre>
+<tr><td><code>/etc/mpd.conf</code></td></tr>
+<tr><td><pre>
 ...
 user                   "mpd"</pre></td></tr>
 	<tr><td><textarea></textarea></td></tr>
@@ -371,11 +372,10 @@ user                   "mpd"</pre></td></tr>
 audio_output {
 	...
 	mixer_device   "hw:N"</pre></td></tr>
-	<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
-	<tr><td><pre style="margin-top: -20px">
+<tr><td><textarea style="padding-left: 39px"></textarea></td></tr>
+<tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
-</table>
-*/ } );
+</table>`;
 $( '#setting-custom' ).click( function() {
 	bash( [ 'customget', device.aplayname ], function( val ) {
 		var val = val.split( '^^' );

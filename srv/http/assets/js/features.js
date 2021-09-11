@@ -120,7 +120,7 @@ $( '#setting-snapclient' ).click( function() {
 		, title        : 'SnapClient'
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
-		, checkblank   : [ 0 ]
+		, checkblank   : 1
 		, values       : G.snaplatency || 800
 		, boxwidth     : 100
 		, checkchange  : ( G.snapclient ? [ G.snaplatency ] : '' )
@@ -128,8 +128,7 @@ $( '#setting-snapclient' ).click( function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
 		, ok           : function() {
-			var snaplatency = Math.abs( infoVal() );
-			bash( [ 'snapclientset', snaplatency ] );
+			bash( [ 'snapclientset', Math.abs( infoVal() ) ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
 		}
 	} );
@@ -171,8 +170,8 @@ $( '#setting-hostapd' ).click( function() {
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : [ G.hostapdip, G.hostapdpwd ]
 		, checkchanged : ( G.hostapd ? 1 : 0 )
-		, checkblank   : [ 0 ]
-		, checklength  : { 1: 8 }
+		, checkblank   : 1
+		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : function() {
 			if ( set ) {
 				loader();
@@ -206,25 +205,34 @@ $( '#setting-localbrowser' ).click( function() {
 		, order        : [ 'text', 'select', 'checkbox' ]
 		, values       : [ G.localscreenoff, G.localzoom, G.localrotate, G.localcursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
-		, checkblank   : [ 0, 1 ]
-		, beforeshow   : function() {
-			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
-		}
+		, checkblank   : 1
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
 		, buttoncolor  : orange
 		, button       : function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
+		, beforeshow   : function() {
+			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
+			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
+				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
+			} );
+			$( '#infoContent input:eq( 1 )' ).on( 'keyup paste cut', function() {
+				$( this ).val( $( this ).val().replace( /[^0-9.]/, '' ) );
+			} );
+		}
 		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
-			var values = infoVal();
-			var localscreenoff = values[ 0 ] * 60;
-			var localzoom = parseFloat( values[ 1 ] ) || 1;
-			var localrotate    = values[ 2 ];
-			var localcursor    = values[ 3 ];
-			bash( [ 'localbrowserset', localscreenoff, localzoom, localrotate, localcursor ] );
+			var $input = $( '#infoContent input' );
+			if ( $input.eq( 0 ).val() === '' ) $input.eq( 0 ).val( 0 );
+			var zoom = $input.eq( 1 ).val();
+			if ( zoom < 0.5 ) {
+				$input.eq( 1 ).val( 0.5 );
+			} else if ( zoom > 2 ) {
+				$input.eq( 1 ).val( 2 );
+			}
+			bash( [ 'localbrowserset', ...infoVal() ] );
 			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
 		}
 	} );
@@ -241,8 +249,7 @@ $( '#setting-smb' ).click( function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
 		, ok           : function() {
-			var values = infoVal();
-			bash( [ 'smbset', values[ 0 ], values[ 1 ] ] );
+			bash( [ 'smbset', ...infoVal() ] );
 			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'networks' );
 		}
 	} );
@@ -255,7 +262,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		, passwordlabel : 'Password'
 		, values        : ( G.mpdscribbleval ? G.mpdscribbleval.split( '^' ) : '' )
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
-		, checkblank    : [ 0, 1 ]
+		, checkblank    : 1
 		, cancel        : function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}
@@ -281,7 +288,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
-		, checkblank    : ( G.login ? [ 0, 1 ] : [ 0 ] )
+		, checkblank    : 1
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );
 		}

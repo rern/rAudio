@@ -19,7 +19,6 @@ ib {
 .label,
 .liinfo,
 .lib-mode grl,
-.rs-tooltip,
 .title {
 	font-weight: 300;
 }
@@ -59,7 +58,7 @@ ib {
 }
 #divcolor .infobtn {
 	margin: 0;
-	width: 85px;
+	width: 90px;
 	box-shadow: 0 0 6px 5px #000000;
 }
 #divcolor .btn.disabled {
@@ -512,6 +511,7 @@ i.map.disabled, .map.disabled i {
 }
 #time-bar {
 	top: -6px;
+	transition: all 0s linear;
 }
 #volume-bar {
 	bottom: -6px;
@@ -916,101 +916,95 @@ i.map.disabled, .map.disabled i {
 	border-left: 1px solid var( --cga );
 }
 /* ------------------- roundSlider ------------------- */
+.rs-handle,
+.rs-transition {
+	transition: all 0s linear;
+}
 .rs-container {
 	box-shadow: #555555 0 0 8px 2px;
 	border-radius: 50%;
 }
-.rs-disabled {
-	opacity: 1;
+.rs-container::before,
+.rs-container::after,
+#time .rs-inner-container::after {
+	position: absolute;
+	content: '';
+	z-index: 1;
 }
-.rs-border {
-	border: none;
+.rs-container::after { /* glossy overlay */
+									  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+	background: -webkit-radial-gradient( 75% 0%, 160% 100%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+									  /* x   y   w    h */
+	border-radius: 50%;
+	z-index: 6;
 }
-.rs-range-color,
-#time .rs-path-color {
-	background: var( --cg );
+.rs-path {
+	stroke: none !important;
 }
 .rs-tooltip {
 	width: 80px;
 	font-family: Lato !important;
 	font-size: 38px !important;
+	font-weight: 300;
 	line-height: 50px;
 	color: var( --cw );
 }
-#time .rs-range-color {
-	background: var( --cm ) !important;
+.rs-disabled {
+	opacity: 1;
+}
+#time .rs-container {
+	background: var( --cg );
+}
+#time .rs-container::before,
+#time .rs-container::after {
+	top: 20px;
+	left: 20px;
+	width: 190px;
+	height: 190px;
+	border-radius: 50%;
+}
+#time .rs-inner-container::after {
+	left: 24px;
+	top: 24px;
+	width: 182px;
+	height: 182px;
+	background-color: #000000;
+	border-radius: 50%;
+}
+#time .rs-container::before,
+#volume .rs-container {
+	background: linear-gradient( var( --cgl ), #000000 );
+}
+#time .rs-range {
+	stroke: var( --cm );
+	stroke-width: 21px; /* from width 22 - fix clipped right edge */
 }
 #time .rs-handle {
+	margin-left: 0 !important;
+	width: 40px !important;
 	opacity: 0;
 }
-#volume .rs-path-color {
-	background: linear-gradient( var( --cg ), #000000 );
+#volume .rs-container::before {
+	top: 5px;
+	left: 5px;
+	width: 220px;
+	height: 220px;
+	background-color: #000000;
+	border-radius: 50%;
+	z-index: 5;
 }
-#volume .rs-transition,
-#volume .rs-handle {
-	transition-timing-function: linear;
+#volume .rs-container::after {
+	left: 0;
+	width: 230px;
+	height: 230px;
 }
 #volume .rs-handle {
 	border: 1px solid var( --cga );
 	background: var( --cm );
 	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
-.rs-outer {
-	position: relative; /* overlay */
-}
-.rs-outer::before {
-	width: 220px;
-	height: 220px;
-}
-.rs-readonly {
-	z-index: 10;
-}
-.rs-outer::before,
-#time .rs-inner::before {
-	position: absolute;
-	content: '';
-	top: 5px;
-	left: 5px;
-	background-color: #000000;
-	border-radius: 50%;
-	z-index: 5;
-}
-#time .rs-outer::before {
-	background: none;
-}
-.rs-outer::after { /* glossy overlay */
-	position: absolute;
-	content: '';
-	border-radius: 50%;
-									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-	background: -webkit-radial-gradient( 75% 0%, 160% 100%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-									  /* x   y   w    h */
-	z-index: 6;
-}
-#time .rs-outer::after {
-	top: 20px;
-	left: 20px;
-	width: 190px;
-	height: 190px;
-}
-#time .rs-inner::before { /* inner circle */
-	top: 4px;
-	left: 4px;
-	width: 182px;
-	height: 182px;
-}
-#time .rs-inner {
-	position: relative;
-	background: linear-gradient( var( --cg ), #000000 );
-}
-#volume .rs-outer::after {
-	top: 0;
-	left: 0;
-	width: 230px;
-	height: 230px;
-}
-.rscontainer,
+
 #volume { /* volume up/down */
 	position: relative;
 }

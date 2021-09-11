@@ -13,11 +13,17 @@ fi
 
 ipeth=$( ifconfig eth0 | awk '/^\s*inet/ {print $2}' )
 if [[ -n $ipeth ]]; then
-	ipr=$( ip r | grep "^default.*eth0" )
+	ipr=$( ip r | grep ^default.*eth0 )
 	dhcp=$( [[ $ipr == *"dhcp src $ipeth "* ]] && echo dhcp || echo static )
 	gateway=$( echo $ipr | cut -d' ' -f3 )
 	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
-	[[ -n $ipeth ]] && hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+	if [[ -n $ipeth ]]; then
+		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+		if [[ -z $hostname ]]; then
+			systemctl restart avahi-daemon
+			hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+		fi
+	fi
 	listeth='{
   "dhcp"     : "'$dhcp'"
 , "gateway"  : "'$gateway'"
