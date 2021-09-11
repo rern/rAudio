@@ -881,7 +881,6 @@ $( '.btn-cmd' ).click( function() {
 			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
-		if ( cmd !== 'play' ) setTimeout( clearIntervalAll, 2000 );
 		if ( cmd === 'play' ) {
 			if ( G.status.elapsed === 0 ) $( '#elapsed' ).empty();
 			G.status.state = cmd;
@@ -897,6 +896,7 @@ $( '.btn-cmd' ).click( function() {
 			vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
+			clearInterval( G.intProgress );
 			if ( G.status.player === 'airplay' ) {
 				bash( '/srv/http/bash/shairport.sh stop' );
 			} else if ( G.status.player === 'bluetooth' ) {
@@ -943,7 +943,6 @@ $( '.btn-cmd' ).click( function() {
 			if ( G.status.state === 'stop' ) return
 			
 			G.status.state = cmd;
-			setProgress( 'play' );
 			bash( [ 'mpcplayback', 'pause' ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );

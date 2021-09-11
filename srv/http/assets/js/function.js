@@ -811,6 +811,7 @@ function lyricsHide() {
 }
 function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
+	local();
 	setProgress();
 	$( '#elapsed, #total' ).removeClass( 'gr' );
 	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
@@ -1080,7 +1081,6 @@ function renderLibraryList( data ) {
 	} );
 }
 function renderPlayback() {
-	clearIntervalAll();
 	if ( $( '#volume-knob' ).is( ':visible' ) ) {
 		local();
 		$volumeRS.setValue( G.status.volume );
@@ -1210,10 +1210,10 @@ function renderPlaybackElapsed() {
 	$( '#progress span' ).html( elapsedhms );
 }
 function renderPlaybackTime() {
-	clearIntervalAll();
 	if ( !G.status.elapsed || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	renderPlaybackElapsed();
+	clearInterval( G.intProgress );
 	if ( G.status.Time ) {
 		var time = G.status.Time;
 		var timehms = ' / '+ second2HMS( time );
@@ -1233,7 +1233,7 @@ function renderPlaybackTime() {
 				elapsedhms = second2HMS( G.status.elapsed );
 				$elapsed.text( elapsedhms );
 				$( '#progress span' ).html( elapsedhms );
-				if ( G.status.state !== 'play' ) clearIntervalAll();
+				if ( G.status.state !== 'play' ) clearInterval( G.intProgress );
 			} else {
 				G.status.elapsed = 0;
 				clearIntervalAll();
@@ -1248,6 +1248,7 @@ function renderPlaybackTime() {
 			elapsedhms = second2HMS( G.status.elapsed );
 			$elapsed.text( elapsedhms );
 			$( '#progress span' ).html( elapsedhms );
+			if ( G.status.state !== 'play' ) clearInterval( G.intProgress );
 		}, 1000 );
 	}
 }
@@ -1563,11 +1564,16 @@ function setProgress( position ) {
 	
 	if ( position === 'play' ) {
 		var position = G.status.elapsed + 1;
-		var duration = '1.2s';
+		var duration = '1.5s';
 		if ( G.status.elapsed ) renderPlaybackElapsed();
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;
-		var duration = '0s';
+		if ( G.local || G.status.state !== 'play' || ( position - $timeRS.getValue() ) > 2 ) {
+			var duration = '0s'
+			local();
+		} else {
+			var duration = '1.5s'
+		}
 	}
 	$timeprogress.css( 'transition-duration', duration );
 	$timeRS.setValue( position );
