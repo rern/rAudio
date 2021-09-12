@@ -52,4 +52,5 @@ fi
 
 # online
 killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+$dirbash/status-coverartonline.sh "$artist
+$album" &> /dev/null &
