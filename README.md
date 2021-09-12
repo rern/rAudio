@@ -44,13 +44,13 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Plug and play
 	- Audio CD (with metadata and coverarts)
 	
-### Default root password:
+### Default root password
 - `ros`
 
-### Q&A:
+### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
-### Image files: 
+### Image files
 - [**Release i20210911**](https://github.com/rern/rAudio-1/releases/tag/i20210911)
 
 ### DIY Image file
