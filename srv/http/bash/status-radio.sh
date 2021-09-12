@@ -96,10 +96,6 @@ $coverart" > $dirtmp/status
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
-	elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| awk '/elapsed/ {print $NF}' )
-	[[ -z $elapsed ]] && elapsed=0
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
   "Album"    : "'$album'"
@@ -107,7 +103,6 @@ $coverart" > $dirtmp/status
 , "coverart" : "'$coverart'"
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
-, "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
 , "state"    : "play"
 , "song"     : '$song'

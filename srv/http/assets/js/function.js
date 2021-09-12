@@ -37,7 +37,7 @@ function addonsdl( std ) {
 }
 function clearIntervalAll() {
 	// .btn-cmd[!play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
-	// psNotify, pushstream[disconnect], renderPlayback, setTimeInterval, setPlaylistScroll, switchPage
+	// psNotify, pushstream[disconnect], renderPlayback, setProgressInterval, setPlaylistScroll, switchPage
 	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
@@ -1109,7 +1109,7 @@ function renderPlayback() {
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			$( '#progress' ).html( istate +'<span></span>' );
-			if ( G.display.radioelapsed ) setTimeInterval();
+			if ( G.display.radioelapsed ) setProgressInterval();
 		}
 		return
 	}
@@ -1145,7 +1145,7 @@ function renderPlayback() {
 		$( '#total' ).addClass( 'wh' );
 // play ////////////////////
 	} else {
-		setTimeInterval();
+		setProgressInterval();
 	}
 }
 function renderPlaylist( data ) {
@@ -1368,7 +1368,7 @@ function setInfo() {
 		$( '#playericon' ).removeAttr( 'class' );
 		if ( G.status.icon ) $( '#playericon' ).addClass( 'fa fa-'+ G.status.icon );
 	}
-	if ( $( '#time-knob' ).is( ':hidden' ) ) setTimeInterval();
+	if ( $( '#time-knob' ).is( ':hidden' ) ) setProgressInterval();
 }
 function setInfoScroll() {
 	var wW = document.body.clientWidth;
@@ -1543,8 +1543,8 @@ function setProgress( position ) {
 	$( '#time-bar' ).css( 'width', position / G.status.Time * 100 +'%' );
 	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
 }
-function setTimeInterval() {
-	if ( !G.status.elapsed || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
+function setProgressInterval() {
+	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	setElapsed();
 	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
