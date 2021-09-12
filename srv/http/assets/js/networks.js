@@ -45,22 +45,14 @@ function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 	} );
 }
 function editLAN( $el ) {
-	if ( $el ) {
-		var ip = $el.data( 'ip' );
-		var gateway = $el.data( 'gateway' );
-		var dhcp = $el.data( 'dhcp' ) === 'dhcp';
-	} else {
-		var ip = '';
-		var gateway = '';
-		var dhcp = '';
-	}
-	var btndhcp = $el && dhcp;
+	var values = [ $el.data( 'ip' ), $el.data( 'gateway' ) ];
+	var btndhcp = $el.data( 'dhcp' ) === 'dhcp';
 	info( {
 		  icon         : 'lan'
-		, title        : ( $el ? 'LAN' : 'Add LAN' )
+		, title        : 'LAN'
 		, textlabel    : [ ( btndhcp ? '<gr>DHCP</gr> IP' : '<gr>Static</gr> IP' ), 'Gateway' ]
-		, values       : ( ip ? [ ip, gateway ] : '' )
-		, checkchanged : ( ip ? 1 : 0 )
+		, values       : [ $el.data( 'ip' ), $el.data( 'gateway' ) ]
+		, checkchanged : 1
 		, checkblank   : 1
 		, buttonlabel  : ( btndhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
 		, button       : ( btndhcp ? '' : function() {
@@ -71,16 +63,15 @@ function editLAN( $el ) {
 		} )
 		, ok           : function() {
 			var values = infoVal();
-			var data1 = {}
-			data1.ip = values[ 0 ];
-			data1.gateway = values[ 1 ];
-			notify( 'LAN IP Address', 'Change ip to '+ data1.ip, 'lan' );
-			bash( [ 'editlan', data1.ip, data1.gateway ], function( used ) {
+			var ip = values[ 0 ];
+			var gateway = values[ 1 ];
+			notify( 'LAN IP Address', 'Change ip to '+ ip, 'lan' );
+			bash( [ 'editlan', ip, gateway ], function( used ) {
 				if ( used == -1 ) {
 					info( {
 						  icon    : 'lan'
 						, title   : 'Duplicate IP'
-						, message : 'IP <wh>'+ data1.ip +'</wh> already in use.'
+						, message : 'IP <wh>'+ ip +'</wh> already in use.'
 						, ok      : function() {
 							editLAN( $el );
 						}
@@ -92,36 +83,27 @@ function editLAN( $el ) {
 	} );
 }
 function editWiFi( $el ) {
-	var ssid = '';
-	var ip = '';
-	var gateway = '';
-	var password = '';
-	var static = false;
-	var hidden = false;
-	var security = false
 	if ( $el ) {
-		ssid = $el.data( 'ssid' );
-		ip = $el.data( 'ip' ) || '';
-		gateway = $el.data( 'gateway' ) || '';
-		password = $el.data( 'password' );
-		static = $el.data( 'dhcp' ) === 'static';
-		hidden = $el.data( 'hidden' );
-		security = $el.data( 'security' ) === 'wep';
+		var values = [];
+		[ 'ssid', 'ip', 'gateway', 'password', 'dhcp', 'hidden', 'security' ].forEach( function( v ) {
+			values.push( $el.data( v ) );
+		} );
+	} else {
+		var values = [ '', '', '', '', false, false, false ]
 	}
 	info( {
 		  icon          : 'wifi'
-		, title         : ssid ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
+		, title         : $el ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, boxwidth      : 180
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
-		, values        : [ ssid, ip, gateway, password, static, hidden, security ]
-		, checkchanged  : 1
-		, checklength   : { 3: [ 8, 'min' ] }
-		, checkblank    : 1
+		, values        : values
+		, checkchanged  : $el ? 1 : 0
+		, checkblank    : $el ? 1 : 0
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
-			$static.toggleClass( 'hide', !static );
+			$static.toggleClass( 'hide', !values[ 4 ] );
 			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
 				$static.toggleClass( 'hide', !$( this ).prop( 'checked' ) );
 			} );
@@ -163,7 +145,7 @@ function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
 		, title   : 'Wi-Fi'
-		, message : 'RPi Access Point must be disabled.'
+		, message : 'Access Point must be disabled.'
 	} );
 }
 renderPage = function( list ) {
@@ -345,9 +327,6 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 			}
 		} );
 	}
-} );
-$( '#lanadd' ).click( function() {
-	editLAN();
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : editWiFi();
