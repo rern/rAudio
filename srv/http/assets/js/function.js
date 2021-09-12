@@ -1529,7 +1529,11 @@ function setProgress( position ) {
 		var duration = '1.5s';
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;
-		if ( G.local || G.status.state !== 'play' || ( position - $timeRS.getValue() ) > 2 ) {
+		if ( G.local
+			|| G.status.state !== 'play'
+			|| position === 0
+			|| ( position - $timeRS.getValue() ) > 2
+		) {
 			var duration = '0s'
 		} else {
 			var duration = '1.5s'
