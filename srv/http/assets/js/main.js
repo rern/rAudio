@@ -453,7 +453,6 @@ $( '#time' ).roundSlider( {
 	, start       : function () { // drag start
 		G.drag = 1;
 		clearIntervalAll();
-		$( '#time .rs-range' ).css( 'stroke', '' );
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, drag        : function ( e ) { // drag with no transition by default
@@ -834,15 +833,7 @@ $( '.map' ).on( 'tap', function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		if ( G.status.state === 'play' ) {
-			bash( '/srv/http/bash/cmd.sh mpcelapsed', function( elapsed ) {
-				clearIntervalAll();
-				G.status.elapsed = +elapsed;
-				renderPlayback();
-			} );
-		} else {
-			renderPlayback();
-		}
+		renderPlayback();
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		$( '#button-settings' ).click();
@@ -884,7 +875,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
 			if ( !G.status.elapsed ) $( '#elapsed' ).empty(); // 0 or false
-			if ( G.status.elapsed !== false ) setProgress( 'play' );
+			if ( G.status.elapsed !== false ) setProgressAnimate();
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );

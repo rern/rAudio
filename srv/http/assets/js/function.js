@@ -41,6 +41,7 @@ function clearIntervalAll() {
 	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
+	setProgress(); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
@@ -1521,28 +1522,15 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( G.status.elapsed === false || !G.status.Time ) {
-		var position = 0;
-		var duration = '0s'
-	} else if ( position === 'play' ) { // start animate - compensate push status delay
-		var position = G.status.elapsed + 1;
-		var duration = '1.5s';
-	} else {
-		if ( position !== 0 ) position = G.status.elapsed;
-		if ( G.local
-			|| G.status.state !== 'play'
-			|| position === 0
-			|| ( position - $timeRS.getValue() ) > 2
-		) {
-			var duration = '0s'
-		} else {
-			var duration = '1.5s'
-		}
-	}
-	$timeprogress.css( 'transition-duration', duration );
+	if ( position !== 0 ) position = G.status.elapsed;
+	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / G.status.Time * 100 +'%' );
-	if ( G.status.state !== 'play' ) $( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
+}
+function setProgressAnimate() {
+	$timeprogress.css( 'transition-duration', G.status.Time - G.status.elapsed +'s' );
+	$timeRS.setValue( G.status.Time );
+	$( '#time-bar' ).css( 'width', '100%' );
 }
 function setProgressInterval() {
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
@@ -1558,15 +1546,17 @@ function setProgressInterval() {
 		$timeRS.option( 'max', time );
 		setProgress();
 		if ( !G.localhost ) {
-			setTimeout( function() { // delay to after setvalue on load
-				$timeprogress.css( 'transition-duration', '1s' );
-			}, 0 );
+			setTimeout( setProgressAnimate, 0 ); // delay to after setvalue on load
+		} else {
+			$timeprogress.css( 'transition-duration', '0s' );
 		}
 		G.intProgress = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed < time ) {
-				$timeRS.setValue( G.status.elapsed );
-				$( '#time-bar' ).css( 'width', G.status.elapsed / time * 100 +'%' );
+				if ( G.localhost ) {
+					$timeRS.setValue( G.status.elapsed );
+					$( '#time-bar' ).css( 'width', G.status.elapsed / time * 100 +'%' );
+				}
 				elapsedhms = second2HMS( G.status.elapsed );
 				$elapsed.text( elapsedhms );
 				$( '#progress span' ).html( elapsedhms );

@@ -514,12 +514,6 @@ lyricsexist )
 				 -c "get lyrics"
 	fi
 	;;
-mpcelapsed )
-	printf '%.0f' $( { echo status; sleep 0.05; } \
-		| telnet 127.0.0.1 6600 2> /dev/null \
-		| grep ^elapsed \
-		| cut -d' ' -f2 )
-	;;
 mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
