@@ -818,7 +818,7 @@ function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
 	local();
 	setProgress( );
-	setTimeout( setProgressAnimate, 0 );
+	if ( G.status.state === 'play' ) setTimeout( setProgressAnimate, 0 );
 	$( '#elapsed, #total' ).removeClass( 'gr' );
 	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
 	$( '#elapsed' ).text( second2HMS( elapsed ) );
