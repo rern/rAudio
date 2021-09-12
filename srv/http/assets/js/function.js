@@ -833,7 +833,11 @@ function mpcSeekBar( pageX ) {
 	var pos = posX / bandW;
 	var elapsed = Math.round( pos * G.status.Time );
 	var elapsedhms = second2HMS( elapsed );
-	$( '#progress span' ).html( elapsedhms );
+	if ( G.status.elapsed ) {
+		$( '#progress span' ).html( elapsedhms );
+	} else {
+		$( '#progress' ).html( '<i class="fa fa-pause"></i><span>'+ elapsedhms +'</span> / '+ second2HMS( G.status.Time ) );
+	}
 	$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
 	if ( !G.drag ) mpcSeek( elapsed );
 }
@@ -1326,12 +1330,6 @@ function setCoverart() {
 		}
 	}
 }
-function setElapsed() {
-	var elapsedhms = second2HMS( G.status.elapsed );
-	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
-	$elapsed.text( elapsedhms );
-	$( '#progress span' ).html( elapsedhms );
-}
 function setInfo() {
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
@@ -1525,7 +1523,6 @@ function setProgress( position ) {
 	} else if ( position === 'play' ) { // start animate - compensate push status delay
 		var position = G.status.elapsed + 1;
 		var duration = '1.5s';
-		setElapsed();
 	} else {
 		if ( position !== 0 ) position = G.status.elapsed;
 		if ( G.local || G.status.state !== 'play' || ( position - $timeRS.getValue() ) > 2 ) {
@@ -1542,8 +1539,10 @@ function setProgress( position ) {
 function setProgressInterval() {
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
-	setElapsed();
+	var elapsedhms = second2HMS( G.status.elapsed );
 	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
+	$elapsed.text( elapsedhms );
+	$( '#progress span' ).html( elapsedhms );
 	clearInterval( G.intProgress );
 	if ( G.status.Time ) {
 		var time = G.status.Time;
