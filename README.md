@@ -6,7 +6,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
 - Based on Arch Linux Arm
-- Metadata Tag Editor - `*.cue` support
+- Metadata Tag Editor (`*.cue` included)
 - Album mode with coverarts
 - File mode with thumbnail icons
 - Coverarts and bookmarks - add, replace and remove
