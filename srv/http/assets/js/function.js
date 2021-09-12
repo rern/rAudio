@@ -41,7 +41,7 @@ function clearIntervalAll() {
 	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
-	setProgress( 0 ); // stop progress animation
+	setProgress( G.status.stream || !G.status.elapsed ? 0 : G.status.elapsed ); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
