@@ -6,7 +6,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
 - Based on Arch Linux Arm
-- Metadata Tag Editor - `*.cue` support
+- Metadata Tag Editor (`*.cue` included)
 - Album mode with coverarts
 - File mode with thumbnail icons
 - Coverarts and bookmarks - add, replace and remove
@@ -44,20 +44,14 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Plug and play
 	- Audio CD (with metadata and coverarts)
 	
-### Default root password:
+### Default root password
 - `ros`
 
-### Q&A:
+### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
-### Image files: 
-- GitHub:
-	- [**Release i20210911**](https://github.com/rern/rAudio-1/releases/tag/i20210911)
-- Mirrors:
-	- [rAudio-1-RPi64-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi64-20210911.img.xz)
-	- [rAudio-1-RPi4-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi4-20210911.img.xz)
-	- [rAudio-1-RPi2-3-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi2-3-20210911.img.xz)
-	- [rAudio-1-RPi0-1-20210911.img.xz](https://cloud.s-t-franz.de/s/isPGys5jYNRwdEy/download?path=%2F&files=rAudio-1-RPi0-1-20210911.img.xz)
+### Image files
+- [**Release i20210911**](https://github.com/rern/rAudio-1/releases/tag/i20210911)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
