@@ -13,9 +13,8 @@ coverFilesLimit() {
 	/srv/http/bash/cmd.sh coverfileslimit
 }
 # already got path in temp file
-coverfile=$( ls $dirtmp/$covername 2> /dev/null )
-if [[ -n $coverfile ]]; then
-	cat $coverfile
+if [[ -e $dirtmp/$covername ]]; then
+	cat $dirtmp/$covername
 	exit
 fi
 # already got embedded
