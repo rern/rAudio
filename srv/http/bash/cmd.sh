@@ -387,9 +387,17 @@ coverartreset )
 	url=$( $dirbash/status-coverart.sh "\
 $artist
 $album
-$mpdpath
-reset" )
+$mpdpath" )
 	echo $url
+	;;
+coverfileslimit )
+	for type in local online webradio; do
+		files=$( ls -1t $dirtmp/$type-* 2> /dev/null )
+		if (( $( echo "$files" | wc -l ) > 10 )); then
+			file=$( echo "$files" | tail -1 )
+			rm -f "$file"
+		fi
+	done
 	;;
 coversave )
 	source=${args[1]}
@@ -604,18 +612,6 @@ nicespotify )
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
-	;;
-onlinefileslimit )
-	onlinefiles=$( ls -1t $dirtmp/online-*.* 2> /dev/null )
-	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
-		file=$( echo "$onlinefiles" | tail -1 )
-		rm -f "$file"
-	fi
-	onlinefiles=$( ls -1t $dirtmp/webradio-*.* 2> /dev/null )
-	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
-		file=$( echo "$onlinefiles" | tail -1 )
-		rm -f "$file" "${file:0:-4}"
-	fi
 	;;
 ordersave )
 	data=$( jq . <<< ${args[1]} )

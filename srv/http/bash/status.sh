@@ -153,7 +153,7 @@ vu() {
 		[[ -n $vumeter ]] && exit
 	fi
 }
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
+filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -376,6 +376,7 @@ else
 	ext=${ext^^}
 	# missing id3tags
 	[[ -z $Album ]] && Album=
+	[[ -z $AlbumArtist ]] && AlbumArtist=$Artist
 	[[ -z $Artist ]] && Artist=$AlbumArtist
 	[[ -z $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
 	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
@@ -478,12 +479,10 @@ if grep -q '"cover": false' $dirsystem/display; then
 	exit
 fi
 
-if [[ $ext != CD && -z $stream ]]; then
-	coverart=$( $dirbash/status-coverart.sh "\
-$Artist
+[[ $ext != CD && -z $stream ]] && coverart=$( $dirbash/status-coverart.sh "\
+$AlbumArtist
 $Album
 $file0" )
-fi
 elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 			| telnet 127.0.0.1 6600 2> /dev/null \
 			| grep ^elapsed \
@@ -495,15 +494,15 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-if [[ -z $coverart && -n $Artist ]]; then
+if [[ -z $coverart && -n $AlbumArtist ]]; then
 	if [[ -n $stream && $state == play && -n $Title ]]; then
 		args="\
-$Artist
+$AlbumArtist
 ${Title/ (*}
 webradio"
 	elif [[ -n $Album ]]; then
 		args="\
-$Artist
+$AlbumArtist
 $Album"
 	fi
 	if [[ -n $args ]]; then

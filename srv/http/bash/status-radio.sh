@@ -122,7 +122,7 @@ $coverart" > $dirtmp/status
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
 		done
 	fi
-	/srv/http/bash/cmd.sh onlinefileslimit
+	/srv/http/bash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet
