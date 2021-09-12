@@ -1101,7 +1101,6 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	setInfo();
 	setCoverart();
-	// webradio ////////////////////////////////////////
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 	if ( G.status.stream ) {
 		setProgress( 0 );
@@ -1118,7 +1117,6 @@ function renderPlayback() {
 	var timehms = time ? second2HMS( time ) : '';
 	$( '#total' ).text( timehms );
 	$timeRS.option( 'max', time || 100 );
-// stop ////////////////////
 	if ( G.status.state === 'stop' ) {
 		$( '#title' ).removeClass( 'gr' );
 		setProgress( 0 );
@@ -1139,12 +1137,10 @@ function renderPlayback() {
 	var elapsedhms = second2HMS( G.status.elapsed );
 	$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
 	setProgress();
-// pause ////////////////////
 	if ( G.status.state === 'pause' ) {
 		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 		$( '#total' ).addClass( 'wh' );
-// play ////////////////////
-	} else {
+	} else { //play
 		setProgressInterval();
 	}
 }
