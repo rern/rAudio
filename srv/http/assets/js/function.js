@@ -1535,7 +1535,7 @@ function setProgress( position ) {
 	$timeprogress.css( 'transition-duration', duration );
 	$timeRS.setValue( position );
 	$( '#time-bar' ).css( 'width', position / G.status.Time * 100 +'%' );
-	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
+	if ( G.status.state !== 'play' ) $( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' ); // fix ios shows thin line at 0
 }
 function setProgressInterval() {
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
