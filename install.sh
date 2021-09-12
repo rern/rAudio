@@ -60,6 +60,4 @@ systemctl daemon-reload
 
 /srv/http/bash/mpd-conf.sh
 
-nginx -s reload &> /dev/null
-
 installfinish
