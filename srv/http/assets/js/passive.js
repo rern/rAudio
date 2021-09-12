@@ -275,6 +275,7 @@ function psMpdPlayer( data ) {
 			delete data.control;
 			delete data.volume;
 		}
+		if ( G.status.state !== 'play' && data.state === 'play' ) setProgress( 'play' );
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
 		} );

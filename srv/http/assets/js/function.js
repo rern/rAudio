@@ -1122,6 +1122,7 @@ function renderPlayback() {
 	$( '#total' ).text( timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( G.status.state === 'stop' ) {
+		clearInterval( G.intProgress );
 		$( '#title' ).removeClass( 'gr' );
 		setProgress( 0 );
 		$( '#elapsed' )
