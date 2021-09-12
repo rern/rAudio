@@ -262,12 +262,6 @@ function psDisplay( data ) {
 	}
 }
 function psMpdPlayer( data ) {
-	if ( data.state === 'play' && [ 'radioparadise', 'radiofrance' ].indexOf( data.icon ) !== -1 ) {
-		G.status.elapsed = data.elapsed;
-		setProgressInterval();
-		return
-	}
-	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
