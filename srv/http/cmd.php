@@ -102,6 +102,7 @@ case 'datarestore':
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type = $_POST[ 'type' ];
+	$covername = $_POST[ 'covername' ];
 	$base64 = isset( $_POST[ 'base64' ] );
 	$ext = $base64 ? '.jpg' : '.gif';
 	if ( $type === 'audiocd' ) {
@@ -119,6 +120,7 @@ case 'imagereplace':
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
 	}
+	exec( 'rm -f /srv/http/data/shm/local-'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';

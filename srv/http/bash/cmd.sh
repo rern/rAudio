@@ -402,8 +402,10 @@ coverfileslimit )
 coversave )
 	source=${args[1]}
 	path=${args[2]}
+	covername=${args[3]}
 	coverfile="$path/cover.jpg"
 	jpgThumbnail coverart "$source" "$coverfile"
+	rm -f $dirtmp/local-$covername*
 	;;
 displayget )
 	if [[ -e $dirtmp/nosound ]]; then

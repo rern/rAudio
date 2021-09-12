@@ -162,6 +162,7 @@ function coverartChange() {
 	var coverartlocal = ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
 						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault );
 	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
+	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : 'Change Album CoverArt'
@@ -190,7 +191,7 @@ function coverartChange() {
 			} );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, type );
+			imageReplace( imagefile, type, covername );
 		}
 	} );
 }
@@ -227,6 +228,7 @@ function coverartSave() {
 		var artist = $( '.licover .liartist' ).text();
 		var album = $( '.licover .lialbum' ).text();
 	}
+	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
 		  icon    : '<i class="iconcover"></i>'
 		, title   : 'Save Album CoverArt'
@@ -234,7 +236,7 @@ function coverartSave() {
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
 		, ok      : function() {
-			bash( [ 'coversave', '/srv/http'+ src.slice( 0, -15 ) + src.slice( -4 ), path ] );
+			bash( [ 'coversave', '/srv/http'+ src.slice( 0, -15 ) + src.slice( -4 ), path, covername ] );
 		}
 	} );
 }
@@ -497,10 +499,13 @@ function HMS2Second( HMS ) {
 	if ( !hhmmss[ 2 ] ) return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60;
 	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
-function imageReplace( imagefile, type ) {
+function imageReplace( imagefile, type, covername ) {
 	var ext = '.'+ G.infofile.name.split( '.' ).pop();
 	var formData = new FormData();
 	formData.append( 'cmd', 'imagereplace' );
+	formData.append( 'imagefile', imagefile + ext );
+	formData.append( 'type', type );
+	formData.append( 'covername', covername );
 	if ( ext !== '.gif' ) {
 		ext = '.jpg';
 		var base64 = $( '.infoimgnew' )
@@ -511,8 +516,6 @@ function imageReplace( imagefile, type ) {
 	} else { // gif - upload file
 		formData.append( 'file', G.infofile );
 	}
-	formData.append( 'imagefile', imagefile + ext );
-	formData.append( 'type', type );
 	$.ajax( {
 		  url         : cmdphp
 		, type        : 'POST'
