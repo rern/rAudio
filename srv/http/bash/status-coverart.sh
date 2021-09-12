@@ -47,4 +47,9 @@ kid3-cli -c "cd \"$dir\"" \
 if [[ -e $coverfile ]]; then
 	echo /data/embedded/$covername.$date.jpg | tee $dirtmp/$covername
 	coverFilesLimit
+	exit
 fi
+
+# online
+killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+$dirbash/status-coverartonline.sh "$args" &> /dev/null &

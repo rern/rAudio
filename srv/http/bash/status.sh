@@ -479,20 +479,23 @@ if grep -q '"cover": false' $dirsystem/display; then
 	exit
 fi
 
-[[ $ext != CD && -z $stream ]] && coverart=$( $dirbash/status-coverart.sh "\
+if [[ $ext != CD && -z $stream ]]; then
+	coverart=$( $dirbash/status-coverart.sh "\
 $AlbumArtist
 $Album
 $file0" )
-elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-			| telnet 127.0.0.1 6600 2> /dev/null \
-			| grep ^elapsed \
-			| cut -d' ' -f2 ) )
+	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| grep ^elapsed \
+				| cut -d' ' -f2 ) )
 ########
-status+='
+	status+='
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
-echo {$status}
+	echo {$status}
+	exit
+fi
 
 if [[ -z $coverart && -n $AlbumArtist ]]; then
 	if [[ -n $stream && $state == play && -n $Title ]]; then
