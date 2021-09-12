@@ -1527,7 +1527,8 @@ function setProgress( position ) {
 	if ( position !== 0 ) position = G.status.elapsed;
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
-	$( '#time-bar' ).css( 'width', position / G.status.Time * 100 +'%' );
+	var w = position && G.status.Time ? position / G.status.Time * 100 : 0;
+	$( '#time-bar' ).css( 'width', w +'%' );
 }
 function setProgressAnimate() {
 	$timeprogress.css( 'transition-duration', G.status.Time - G.status.elapsed +'s' );
