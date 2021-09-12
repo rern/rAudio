@@ -480,7 +480,7 @@ if grep -q '"cover": false' $dirsystem/display; then
 fi
 
 if [[ $ext != CD && -z $stream ]]; then
-	localfile=1
+	getcover=1
 	coverart=$( $dirbash/status-coverart.sh "\
 $AlbumArtist
 $Album
@@ -497,21 +497,19 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $localfile ]] && exit
+[[ -n $getcover || -z $AlbumArtist ]] && exit
 
-if [[ -z $coverart && -n $AlbumArtist ]]; then
-	if [[ -n $stream && $state == play && -n $Title ]]; then
-		args="\
+if [[ -n $stream && $state == play && -n $Title ]]; then
+	args="\
 $AlbumArtist
 ${Title/ (*}
 webradio"
-	elif [[ -n $Album ]]; then
-		args="\
+elif [[ -n $Album ]]; then
+	args="\
 $AlbumArtist
 $Album"
-	fi
-	if [[ -n $args ]]; then
-		killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-		$dirbash/status-coverartonline.sh "$args" &> /dev/null &
-	fi
+fi
+if [[ -n $args ]]; then
+	killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
 fi
