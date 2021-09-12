@@ -817,7 +817,8 @@ function lyricsHide() {
 function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
 	local();
-	setProgress();
+	setProgress( );
+	setTimeout( setProgressAnimate, 0 );
 	$( '#elapsed, #total' ).removeClass( 'gr' );
 	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
 	$( '#elapsed' ).text( second2HMS( elapsed ) );
