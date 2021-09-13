@@ -19,7 +19,7 @@ if [[ -e $dirtmp/$covername ]]; then
 fi
 # already got embedded
 if [[ -e /srv/http/data/embedded/$covername.jpg ]]; then
-	echo /data/embedded/$covername.$date.jpg | tee $dirtmp/$covername
+	echo /data/embedded/$covername.jpg | tee $dirtmp/$covername
 	coverFilesLimit
 	exit
 fi
