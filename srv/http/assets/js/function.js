@@ -143,7 +143,7 @@ function coverartChange() {
 		var album = G.status.Album;
 		var artist = G.status.Artist;
 	} else {
-		var src = $( '.licoverimg img' ).attr( 'src' );
+		var src = $( '#liimg' ).attr( 'src' );
 		var path = $( '.licover .lipath' ).text();
 		if ( path.split( '.' ).pop() === 'cue' ) path = path.substr( 0, path.lastIndexOf( '/' ) );
 		var album = $( '.licover .lialbum' ).text();
@@ -166,7 +166,8 @@ function coverartChange() {
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
 	}
 	var coverartlocal = ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
-						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault );
+						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
+						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
@@ -506,32 +507,24 @@ function HMS2Second( HMS ) {
 	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
 function imageReplace( imagefile, type, covername ) {
-	var ext = '.'+ G.infofile.name.split( '.' ).pop();
-	var formData = new FormData();
-	formData.append( 'cmd', 'imagereplace' );
-	formData.append( 'imagefile', imagefile + ext );
-	formData.append( 'type', type );
-	formData.append( 'covername', covername );
-	if ( ext !== '.gif' ) {
-		ext = '.jpg';
-		var base64 = $( '.infoimgnew' )
+	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';;
+	var data = {
+		  cmd       : 'imagereplace'
+		, type      : type
+		, imagefile : imagefile +'.'+ ext
+		, covername : covername || ''
+	}
+	if ( ext === 'gif' ) {
+		data.file = G.infofile;
+	} else {
+		data.base64 = $( '.infoimgnew' )
 						.attr( 'src' )
 						.split( ',' )
 						.pop();
-		formData.append( 'base64', base64 );
-	} else { // gif - upload file
-		formData.append( 'file', G.infofile );
 	}
-	$.ajax( {
-		  url         : cmdphp
-		, type        : 'POST'
-		, data        : formData
-		, processData : false  // no - process the data
-		, contentType : false  // no - contentType
-		, success     : function() {
-			G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
-			$( '#coverart, #liimg' ).css( 'opacity', '' );
-		}
+	$.post( cmdphp, data, function() {
+		G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
+		$( '#coverart, #liimg' ).css( 'opacity', '' );
 	} );
 }
 function imageLoad( list ) {

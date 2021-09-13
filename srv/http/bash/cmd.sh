@@ -372,7 +372,13 @@ coverartreset )
 		exit
 	fi
 	
-	rm -f "$coverfile" "$dir/coverart".* "$dir/thumb".*
+	covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
+	echo $covername > $dirtmp/0
+	rm -f "$coverfile" \
+		"$dir/coverart".* \
+		"$dir/thumb".* \
+		$dirtmp/local-$covername \
+		$dirdata/embedded/$covername*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile%%.backup}

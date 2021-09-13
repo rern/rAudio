@@ -138,15 +138,6 @@ function psCoverart( data ) {
 			break;
 		case 'coverart':
 			var urlhead = url.slice( 0, 9 );
-			var coverpath, covername, currentpath, currentname, cd, name;
-			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
-				coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
-			} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
-				covername = url.split( '-' ).pop().split( '.' ).shift();
-			} else { // /data/audiocd/DISCID.jpg > DISCID
-				covername = url.split( '/' ).pop().split( '.' ).shift();
-				cd = 1;
-			}
 			if ( G.playback ) {
 				if ( G.status.coverart === url ) break;
 				
@@ -158,6 +149,15 @@ function psCoverart( data ) {
 				}
 			} else if ( G.library ) {
 				if ( $( '.licover' ).length ) {
+					var coverpath, covername, currentpath, currentname, cd, name;
+					if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
+						coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
+					} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
+						covername = url.split( '-' ).pop().split( '.' ).shift();
+					} else { // /data/audiocd/DISCID.jpg > DISCID
+						covername = url.split( '/' ).pop().split( '.' ).shift();
+						cd = 1;
+					}
 					currentpath = $( '.licover .lipath' ).text();
 					name = $( '.licover .liartist' ).text() + $( '.licover .lialbum' ).text();
 					currentname = name.replace( /[ "`?/#&'"']/g, '' );
