@@ -31,7 +31,8 @@ coverfile=$( ls -1 "$path" \
 				| grep -i '.gif$\|.jpg$\|.png$' \
 				| head -1 )
 if [[ -n $coverfile ]]; then
-	jq -Rr @uri <<< "$path/${coverfile/.*}.$date.${coverfile/*.}" | tee $dirtmp/$covername
+#	jq -Rr @uri <<< "$path/${coverfile/.*}.$date.${coverfile/*.}" | tee $dirtmp/$covername
+	echo $path/${coverfile/.*}.$date.${coverfile/*.} | tee $dirtmp/$covername
 	coverFilesLimit
 	exit
 fi
