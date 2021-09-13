@@ -418,7 +418,10 @@ samplingLine() {
 if [[ $ext == CD ]]; then
 	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; CD'
 elif [[ $state != stop ]]; then
-	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
+	if [[ $ext == DSF || $ext == DFF ]]; then
+		bitdepth=dsd
+		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
+	fi
 	# save only webradio: update sampling database on each play
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
