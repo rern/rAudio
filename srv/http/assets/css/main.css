@@ -905,6 +905,7 @@ i.map.disabled, .map.disabled i {
 		rgba(0,0,0,0) 100% );
 	background-color: var( --cg );
 	border-left: 1px solid var( --cga );
+	border-right: 1px solid var( --cga );
 }
 #repeat,
 #volup {
@@ -913,7 +914,6 @@ i.map.disabled, .map.disabled i {
 	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 									  /* x  y   w    h */
 	background-color: var( --cg );
-	border-left: 1px solid var( --cga );
 }
 /* ------------------- roundSlider ------------------- */
 .rs-handle,
