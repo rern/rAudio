@@ -14,7 +14,7 @@ coverFilesLimit() {
 }
 # already got path in temp file
 [[ -e $dirtmp/$covername ]] && cat $dirtmp/$covername && exit
-fi
+
 # already got embedded
 [[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
 
@@ -31,6 +31,7 @@ if [[ -n $coverfile ]]; then
 	coverFilesLimit
 	exit
 fi
+
 # embedded
 path="/mnt/MPD/$file"
 dir=$( dirname "$path" )
