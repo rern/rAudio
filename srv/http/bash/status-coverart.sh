@@ -7,16 +7,19 @@ file=${args[2]}
 type=${args[3]}
 date=$( date +%s )
 dirtmp=/srv/http/data/shm
-covername=local-$( echo $artist$album | tr -d ' "`?/#&'"'" )
+covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
 
 coverFilesLimit() {
 	/srv/http/bash/cmd.sh coverfileslimit
 }
 # already got path in temp file
-[[ -e $dirtmp/$covername ]] && cat $dirtmp/$covername && exit
-
+[[ -e $dirtmp/local-$covername ]] && cat $dirtmp/local-$covername && exit
 # already got embedded
 [[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
+# already got online
+for ext in jpg png; do
+	[[ -e $dirtmp/online-$covername.$ext ]] && echo ${coverfile/.*}.$date.$ext && exit
+done
 
 # cover file
 path="/mnt/MPD/$file"
@@ -27,7 +30,7 @@ coverfile=$( ls -1 "$path" \
 				| head -1 )
 if [[ -n $coverfile ]]; then
 #	jq -Rr @uri <<< "$path/${coverfile/.*}.$date.${coverfile/*.}" | tee $dirtmp/$covername
-	echo $path/${coverfile/.*}.$date.${coverfile/*.} | tee $dirtmp/$covername
+	echo $path/${coverfile/.*}.$date.${coverfile/*.} | tee $dirtmp/local-$covername
 	coverFilesLimit
 	exit
 fi
@@ -41,7 +44,7 @@ kid3-cli -c "cd \"$dir\"" \
 		-c "select \"$filename\"" \
 		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 if [[ -e $coverfile ]]; then
-	echo /data/embedded/$covername.$date.jpg | tee $dirtmp/$covername
+	echo /data/embedded/$covername.$date.jpg | tee $dirtmp/local-$covername
 	coverFilesLimit
 	exit
 fi
