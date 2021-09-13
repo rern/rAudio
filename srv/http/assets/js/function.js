@@ -187,15 +187,7 @@ function coverartChange() {
 		, buttoncolor : !coverartlocal ? '' : red
 		, button      : !coverartlocal ? '' : function() {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
-			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ], function( url ) {
-				G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
-				$( '#coverart, #liimg' ).css( 'opacity', '' );
-				if ( G.playback ) {
-					coverartDefault();
-				} else {
-					$( '.licoverimg img' ).attr( 'src', url || G.coverdefault );
-				}
-			} );
+			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ] );
 		}
 		, ok          : function() {
 			imageReplace( imagefile, type, covername );
@@ -522,10 +514,7 @@ function imageReplace( imagefile, type, covername ) {
 						.split( ',' )
 						.pop();
 	}
-	$.post( cmdphp, data, function() {
-		G.playback ? $( '.coveredit' ).remove() : $( '.bkedit' ).remove();
-		$( '#coverart, #liimg' ).css( 'opacity', '' );
-	} );
+	$.post( cmdphp, data );
 }
 function imageLoad( list ) {
 	var $lazyload = $( '#'+ list +' .lazyload' );

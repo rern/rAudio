@@ -137,6 +137,8 @@ function psCoverart( data ) {
 			}
 			break;
 		case 'coverart':
+			$( '.coveredit, .bkedit' ).remove();
+			$( '#coverart, #liimg' ).css( 'opacity', '' );
 			var urlhead = url.slice( 0, 9 );
 			if ( G.playback ) {
 				if ( G.status.coverart === url ) break;
@@ -148,20 +150,31 @@ function psCoverart( data ) {
 					setInfo();
 				}
 			} else if ( G.library ) {
-				if ( $( '.licover' ).length ) {
-					var coverpath, covername, currentpath, currentname, cd, name;
-					if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
-						coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
-					} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
-						covername = url.split( '-' ).pop().split( '.' ).shift();
-					} else { // /data/audiocd/DISCID.jpg > DISCID
-						covername = url.split( '/' ).pop().split( '.' ).shift();
-						cd = 1;
+				var coverpath = urlhead !== '/mnt/MPD/' ? '' : url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 ); // /mnt/MPD/path/cover.jpg > path
+				$( '.bookmark' ).each( function() {
+					var $this = $( this );
+					var thispath = $this.find( '.lipath' ).text();
+					if ( thispath === coverpath ) {
+						var htmlbk = '<a class="lipath">'+ thispath +'</a>';
+						if ( url.slice( -4 ) !== 'none' ) {
+							htmlbk += '<img class="bkcoverart" src="'+ url +'">';
+						} else {
+							htmlbk += '<i class="fa fa-bookmark"></i>'
+									 +'<div class="divbklabel">'
+									 +'<span class="bklabel label">'+ thispath.split( '/' ).pop() +'</span></div>'
+						}
+						$this.find( '.mode' ).html( htmlbk );
 					}
-					currentpath = $( '.licover .lipath' ).text();
-					name = $( '.licover .liartist' ).text() + $( '.licover .lialbum' ).text();
-					currentname = name.replace( /[ "`?/#&'"']/g, '' );
-					if ( coverpath === currentpath || covername === currentname ) {
+				} );
+				if ( $( '.licover' ).length ) {
+					if ( coverpath ) {
+						var matched = coverpath === $( '.licover .lipath' ).text();
+					} else {
+						var covername = url.split( urlhead === '/data/shm' ? '-' : '/' ).pop().split( '.' ).shift();
+						var artistalbum = $( '.licover .liartist' ).text() + $( '.licover .lialbum' ).text();
+						var matched = covername === artistalbum.replace( /[ "`?/#&'"']/g, '' );
+					}
+					if ( matched ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );

@@ -373,7 +373,6 @@ coverartreset )
 	fi
 	
 	covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
-	echo $covername > $dirtmp/0
 	rm -f "$coverfile" \
 		"$dir/coverart".* \
 		"$dir/thumb".* \
@@ -394,7 +393,9 @@ coverartreset )
 $artist
 $album
 $mpdpath" )
-	echo $url
+	[[ -z $url ]] && url=/mnt/MPD/$mpdpath/none
+	data='{"url":"'$url'","type":"coverart"}'
+	pushstream coverart "$data"
 	;;
 coverfileslimit )
 	for type in local online webradio; do
