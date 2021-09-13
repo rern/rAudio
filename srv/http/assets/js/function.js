@@ -122,14 +122,14 @@ function contextmenuLibrary( $li, $target ) {
 	} else {
 		var menutop = ( $li.offset().top + 48 ) +'px';
 	}
-	$menu.toggleClass( 'fixed', G.list.licover && $li.css( 'position' ) === 'fixed' );
 	contextmenuScroll( $menu, menutop );
 	G.color = 0; // reset to 0 once show
 }
 function contextmenuScroll( $menu, menutop ) {
 	$menu
-		.removeClass( 'hide' )
-		.css( 'top',  menutop );
+		.css( 'top',  menutop )
+		.toggleClass( 'fixed', G.list.licover && G.display.fixedcover )
+		.removeClass( 'hide' );
 	var targetB = $menu.offset().top + $menu.height();
 	var wH = window.innerHeight;
 	var topH = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
