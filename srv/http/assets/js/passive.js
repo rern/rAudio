@@ -139,12 +139,9 @@ function psCoverart( data ) {
 		case 'coverart':
 			$( '.coveredit, .bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
-			var coverpath = url.substr( 0, url.lastIndexOf( '/' ) );  // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
-			var audiocd = coverpath === '/data/audiocd' ? 1 : 0;
-			coverpath = coverpath.slice( 9 ); // /mnt/MPD/path > path
+			var path = url.substr( 0, url.lastIndexOf( '/' ) );  // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
+			var mpdpath = path.slice( 9 ); // /mnt/MPD/path > path
 			if ( G.playback ) {
-				if ( G.status.coverart === url ) break;
-				
 				G.status.coverart = url;
 				setCoverart();
 				if ( 'Album' in data ) { // with webradio
@@ -152,37 +149,37 @@ function psCoverart( data ) {
 					setInfo();
 				}
 			} else if ( G.library ) {
-				if ( audiocd ) return
+				if ( path === '/data/audiocd' ) return
 				
-				$( '.bookmark' ).each( function() {
-					var $this = $( this );
-					var thispath = $this.find( '.lipath' ).text();
-					if ( thispath === coverpath ) {
-						var htmlbk = '<a class="lipath">'+ thispath +'</a>';
-						if ( url.slice( -4 ) !== 'none' ) {
-							htmlbk += '<img class="bkcoverart" src="'+ url +'">';
-						} else {
-							htmlbk += '<i class="fa fa-bookmark"></i>'
-									 +'<div class="divbklabel">'
-									 +'<span class="bklabel label">'+ thispath.split( '/' ).pop() +'</span></div>'
-						}
-						$this.find( '.mode' ).html( htmlbk );
-					}
-				} );
 				if ( $( '.licover' ).length ) {
-					if ( coverpath === $( '.licover .lipath' ).text() ) {
+					if ( mpdpath === $( '.licover .lipath' ).text() ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );
 					}
 				} else {
 					$( '#lib-list li' ).filter( function() {
-						return $( this ).find( '.lipath' ).text() === coverpath
+						return $( this ).find( '.lipath' ).text() === mpdpath
 					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
 				}
 			} else {
-				if ( $( '#pl-index' ).hasClass( 'hide' ) ) getPlaylist();
+				if ( path !== '/data/shm' && $( '#pl-index' ).hasClass( 'hide' ) ) getPlaylist();
 			}
+			$( '.bookmark' ).each( function() {
+				var $this = $( this );
+				var thispath = $this.find( '.lipath' ).text();
+				if ( thispath === mpdpath ) {
+					var htmlbk = '<a class="lipath">'+ thispath +'</a>';
+					if ( url.slice( -4 ) !== 'none' ) {
+						htmlbk += '<img class="bkcoverart" src="'+ url +'">';
+					} else {
+						htmlbk += '<i class="fa fa-bookmark"></i>'
+								 +'<div class="divbklabel">'
+								 +'<span class="bklabel label">'+ thispath.split( '/' ).pop() +'</span></div>'
+					}
+					$this.find( '.mode' ).html( htmlbk );
+				}
+			} );
 			break;
 		case 'webradio':
 			G.status.stationcover = src;
