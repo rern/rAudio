@@ -13,16 +13,11 @@ coverFilesLimit() {
 	/srv/http/bash/cmd.sh coverfileslimit
 }
 # already got path in temp file
-if [[ -e $dirtmp/$covername ]]; then
-	cat $dirtmp/$covername
-	exit
+[[ -e $dirtmp/$covername ]] && cat $dirtmp/$covername && exit
 fi
 # already got embedded
-if [[ -e /srv/http/data/embedded/$covername.jpg ]]; then
-	echo /data/embedded/$covername.jpg | tee $dirtmp/$covername
-	coverFilesLimit
-	exit
-fi
+[[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
+
 # cover file
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
