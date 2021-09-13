@@ -1763,13 +1763,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
-	var menuH = $menu.height();
-	$menu
-		.removeClass( 'hide' )
-		.css( 'top', menutop );
-	var targetB = $menu.offset().top + menuH;
-	var wH = window.innerHeight;
-	if ( targetB > wH - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	contextmenuScroll( $menu, menutop );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	plRemove( $( this ).parent() );
 } );
@@ -1816,12 +1810,8 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			}
 			$this.addClass( 'active' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
-			$menu
-				.removeClass( 'hide' )
-				.css( 'top', ( $this.position().top + 48 ) +'px' );
-			var targetB = $menu.offset().top + $menu.height();
-			var wH = window.innerHeight;
-			if ( targetB > wH - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+			var menutop = ( $this.position().top + 48 ) +'px';
+			contextmenuScroll( $menu, menutop );
 		} else {
 			playlistInsertSelect( $this );
 		}

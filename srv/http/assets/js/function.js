@@ -122,14 +122,19 @@ function contextmenuLibrary( $li, $target ) {
 	} else {
 		var menutop = ( $li.offset().top + 48 ) +'px';
 	}
-	$menu
-		.css( 'top',  menutop )
-		.removeClass( 'hide' );
 	$menu.toggleClass( 'fixed', G.list.licover && $li.css( 'position' ) === 'fixed' );
+	contextmenuScroll( $menu, menutop );
+	G.color = 0; // reset to 0 once show
+}
+function contextmenuScroll( $menu, menutop ) {
+	$menu
+		.removeClass( 'hide' )
+		.css( 'top',  menutop );
 	var targetB = $menu.offset().top + $menu.height();
 	var wH = window.innerHeight;
-	if ( targetB > wH - ( barsvisible ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-	G.color = 0; // reset to 0 once show
+	var topH = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
+	var wT = $( window ).scrollTop();
+	if ( targetB > ( wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 }
 function coverartChange() {
 	if ( G.playback ) {
