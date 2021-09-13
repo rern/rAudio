@@ -139,7 +139,9 @@ function psCoverart( data ) {
 		case 'coverart':
 			$( '.coveredit, .bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
-			var urlhead = url.slice( 0, 9 );
+			var coverpath = url.substr( 0, url.lastIndexOf( '/' ) );  // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
+			var audiocd = coverpath === '/data/audiocd' ? 1 : 0;
+			coverpath = coverpath.slice( 9 ); // /mnt/MPD/path > path
 			if ( G.playback ) {
 				if ( G.status.coverart === url ) break;
 				
@@ -150,7 +152,8 @@ function psCoverart( data ) {
 					setInfo();
 				}
 			} else if ( G.library ) {
-				var coverpath = urlhead !== '/mnt/MPD/' ? '' : url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 ); // /mnt/MPD/path/cover.jpg > path
+				if ( audiocd ) return
+				
 				$( '.bookmark' ).each( function() {
 					var $this = $( this );
 					var thispath = $this.find( '.lipath' ).text();
@@ -167,14 +170,7 @@ function psCoverart( data ) {
 					}
 				} );
 				if ( $( '.licover' ).length ) {
-					if ( coverpath ) {
-						var matched = coverpath === $( '.licover .lipath' ).text();
-					} else {
-						var covername = url.split( urlhead === '/data/shm' ? '-' : '/' ).pop().split( '.' ).shift();
-						var artistalbum = $( '.licover .liartist' ).text() + $( '.licover .lialbum' ).text();
-						var matched = covername === artistalbum.replace( /[ "`?/#&'"']/g, '' );
-					}
-					if ( matched ) {
+					if ( coverpath === $( '.licover .lipath' ).text() ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );
@@ -185,23 +181,7 @@ function psCoverart( data ) {
 					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
 				}
 			} else {
-				if ( !$( '#pl-index' ).hasClass( 'hide' ) ) return
-				
-				if ( !cd ) {
-					var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
-					var lipath;
-					var $litarget = $li.filter( function() {
-						lipath = $( this ).find( '.lipath' ).text()
-						return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath;
-					} );
-				} else {
-					var $litarget = $( '#pl-list li' ).filter( function() {
-						return $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda';
-					} );
-				}
-				$litarget.each( function() {
-					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
-				} );
+				if ( $( '#pl-index' ).hasClass( 'hide' ) ) getPlaylist();
 			}
 			break;
 		case 'webradio':
