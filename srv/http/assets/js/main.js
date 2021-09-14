@@ -1213,11 +1213,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 			, buttoncolor : !thumbnail ? '' : orange
 			, button      : !thumbnail ? '' : function() {
-				bash( [ 'bookmarkreset', path ], function() {
-					var label = path.split( '/' ).pop();
-					$this.find( 'img' ).remove();
-					$this.find( '.lipath' ).after( '<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'+ label +'</span></div>' );
-				} );
+				bash( [ 'bookmarkreset', path ] );
 			}
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark' );

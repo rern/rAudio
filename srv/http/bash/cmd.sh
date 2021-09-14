@@ -51,9 +51,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
-	coverfile=${target:9:-4}
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).gif'","type":"'$type'"}'
+	pushstreamThumb gif $type
 }
 jpgThumbnail() {
 	type=$1
@@ -80,9 +78,7 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
-	[[ $type == coverart ]] && coverfile=${target:0:-4} || coverfile=${target:9:-4}
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).jpg'","type":"'$type'"}'
+	pushstreamThumb jpg $type
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -114,6 +110,11 @@ pushstreamAudiocd() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+}
+pushstreamThumb() {
+	coverfile=${target:0:-4}
+	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
+	pushstream coverart '{"url":"'$coverfile.$( date +%s ).$1'","type":"'$2'"}'
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -303,8 +304,10 @@ bluetoothplayerstop )
 	pushstream mpdplayer "$status"
 	;;
 bookmarkreset )
-	path=${args[1]}
-	rm -f "/mnt/MPD/$path/"{coverart,thumb}.*
+	mpdpath=${args[1]}
+	rm -f "/mnt/MPD/$mpdpath/"{coverart,thumb}.*
+	data='{"url":"'/mnt/MPD/$mpdpath/none'","type":"bookmark"}'
+	pushstream coverart "$data"
 	;;
 bookmarkthumb )
 	mpdpath=${args[1]}

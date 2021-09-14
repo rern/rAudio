@@ -39,6 +39,31 @@ disconnect = () => {
 		pushstream.disconnect();
 	}
 }
+function bookmarkCover( url, path ) {
+	$( '.bookmark' ).each( function() {
+		var $this = $( this );
+		if ( $this.find( '.lipath' ).text() === path ) {
+			var htmlbk = '<a class="lipath">'+ path +'</a>';
+			if ( url.slice( -4 ) !== 'none' ) {
+				htmlbk += '<img class="bkcoverart" src="'+ url +'">';
+			} else {
+				htmlbk += '<i class="fa fa-bookmark"></i>'
+						 +'<div class="divbklabel">'
+						 +'<span class="bklabel label">'+ path.split( '/' ).pop() +'</span></div>'
+			}
+			$this.find( '.mode' ).html( htmlbk );
+			return false
+		}
+	} );
+}
+function webradioIcon( srcnoext ) {
+	var radiourl = decodeURIComponent( srcnoext )
+					.split( '/' ).pop()
+					.replace( /\|/g, '/' );
+	return $( '#lib-list li' ).filter( function() {
+		return $( this ).find( '.lipath' ).text() === radiourl;
+	} ).find( '.lib-icon' );
+}
 document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
 window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
 window.onpageshow = window.onfocus = connect;
@@ -119,36 +144,22 @@ function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
-	var path = url.substr( 0, url.lastIndexOf( '/' ) );
+	var path = url.substr( 0, url.lastIndexOf( '/' ) ).replace( '/mnt/MPD/', '' );
 	switch( data.type ) {
 		case 'bookmark':
-			var $this = $( '.bookmark' ).filter( function() {
-				return $( this ).find( '.lipath' ).text() === path;
-			} );
-			var $img = $this.find( 'img' );
-			var src = '/mnt/MPD/'+ src;
-			if ( $img.length ) {
-				$img.attr( 'src', src  );
-			} else {
-				$this.find( '.fa-bookmark' ).remove();
-				$this.find( '.divbklabel' ).remove();
-				$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ src +'">' );
-				$( '.mode-bookmark img' ).css( 'opacity', '' );
-			}
+			bookmarkCover( url, path );
 			break;
 		case 'coverart':
 			$( '.coveredit, .bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
-			var path = url.substr( 0, url.lastIndexOf( '/' ) );  // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
-			var mpdpath = path.slice( 9 ); // /mnt/MPD/path > path
 			if ( G.playback ) {
 				if ( path === '/data/shm' ) {
 					var prevartistalbum = ( G.status.Artist + G.status.Album ).replace( /[ '"`?/#&]/g, '' );
 					var artistalbum = url.split( '-' ).pop().slice( 0, -4 ); // /data/shm/online-name.jpg > name.jpg
 					var matched = artistalbum === prevartistalbum
 				} else {
-					var prevmpdpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
-					var matched = mpdpath === prevmpdpath;
+					var prevpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+					var matched = path === prevpath;
 				}
 				if ( !matched ) return
 				
@@ -162,34 +173,40 @@ function psCoverart( data ) {
 				if ( path === '/data/audiocd' ) return
 				
 				if ( $( '.licover' ).length ) {
-					if ( mpdpath === $( '.licover .lipath' ).text() ) {
+					if ( path === $( '.licover .lipath' ).text() ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );
 					}
 				} else {
-					$( '#lib-list li' ).filter( function() {
-						return $( this ).find( '.lipath' ).text() === mpdpath
-					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+					$( '#lib-list li' ).each( function() {
+						if ( $( this ).find( '.lipath' ).text() === path ) {
+							$( this ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+							return false
+						}
+					} );
 				}
 			} else {
-				if ( path !== '/data/shm' && $( '#pl-index' ).hasClass( 'hide' ) ) getPlaylist();
-			}
-			$( '.bookmark' ).each( function() {
-				var $this = $( this );
-				var thispath = $this.find( '.lipath' ).text();
-				if ( thispath === mpdpath ) {
-					var htmlbk = '<a class="lipath">'+ thispath +'</a>';
-					if ( url.slice( -4 ) !== 'none' ) {
-						htmlbk += '<img class="bkcoverart" src="'+ url +'">';
-					} else {
-						htmlbk += '<i class="fa fa-bookmark"></i>'
-								 +'<div class="divbklabel">'
-								 +'<span class="bklabel label">'+ thispath.split( '/' ).pop() +'</span></div>'
-					}
-					$this.find( '.mode' ).html( htmlbk );
+				if ( path === '/data/shm' || !$( '#pl-index' ).hasClass( 'hide' ) ) return
+				
+				if ( path === '/data/audiocd' ) {
+					$( '#pl-list li' ).each( function() {
+						if ( $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda' ) {
+							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+						}
+					} );
+					return // skip .bookmark
 				}
-			} );
+				
+				var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+				$li.each( function() {
+					var lipath = $( this ).find( '.lipath' ).text()
+					if ( lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === path ) {
+						$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+					}
+				} );
+			}
+			bookmarkCover( url, path );
 			break;
 		case 'webradio':
 			G.status.stationcover = src;
@@ -532,13 +549,5 @@ function psWebradio( data ) {
 	$( '#mode-webradio grl' ).text( data )
 	if ( G.librarylist ) $( '#mode-webradio grl' ).click();
 	if ( G.playlist && !G.local ) getPlaylist();
-}
-function webradioIcon( srcnoext ) {
-	var radiourl = decodeURIComponent( srcnoext )
-					.split( '/' ).pop()
-					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( function() {
-		return $( this ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.lib-icon' );
 }
 
