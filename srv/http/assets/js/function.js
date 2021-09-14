@@ -1517,7 +1517,7 @@ function setProgress( position ) {
 	var w = position && G.status.Time ? position / G.status.Time * 100 : 0;
 	$( '#time-bar' ).css( 'width', w +'%' );
 	// fix: ios position 0 visible
-	$( '#time .rs-range' ).css( 'stroke', position ? '' : 'transparent' );
+	$( '#time .rs-range' ).css( 'stroke', !position && G.status.state === 'stop' ? 'transparent' : '' );
 }
 function setProgressAnimate() {
 	$timeprogress.css( 'transition-duration', G.status.Time - G.status.elapsed +'s' );
