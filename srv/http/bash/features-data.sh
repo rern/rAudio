@@ -39,9 +39,9 @@ if [[ -e $xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowserval ]]; then
 		val=( $( cut -d= -f2 $dirsystem/localbrowserval ) )
 		for (( i=0; i < 4; i++ )); do
-			(( i != 2 )) && localbrowserval+=,${val[$i]} || localbrowserval+=",\"${val[$i]}\""
+			(( i != 2 )) && v+=,${val[$i]} || v+=",\"${val[$i]}\""
 		done
-		localbrowserval=[${localbrowserval:1}]
+		localbrowserval=[${v:1}]
 	else
 		localbrowserval='[ 0, 1, "NORMAL", false ]'
 	fi
