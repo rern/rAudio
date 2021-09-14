@@ -1,3 +1,6 @@
+img {
+	-webkit-touch-callout: none;
+}
 a {
 	color: var( --cw );
 	text-decoration: none !important;
