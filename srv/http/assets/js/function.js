@@ -1067,14 +1067,14 @@ function renderLibraryList( data ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
 		}
-		if ( G.library ) $( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
-		if ( G.albumlist ) {
-			var pH = $( '#lib-list p' ).height() - $( '.coverart' ).height();
-			if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
-			$( '#lib-list p' )
-				.removeClass( 'bars-on' )
-				.css( 'height', pH +'px' );
-		}
+		$( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
+		var pH = window.innerHeight - 80;
+		pH -= G.albumlist ? $( '.coverart' ).height() : 49;
+		if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
+		$( '#lib-list p' )
+			.removeClass( 'bars-on' )
+			.toggleClass( 'fixedcover', G.display.fixedcover && $( '.licover' ).length === 1 )
+			.css( 'height', pH +'px' );
 	} );
 }
 function renderPlayback() {
