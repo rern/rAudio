@@ -1191,7 +1191,8 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			}
 		} );
 	} else if ( $target.hasClass( 'bk-cover' ) || $target.hasClass( 'iconcover' ) ) {
-		if ( $this.find( 'img' ).length ) {
+		var thumbnail = $this.find( 'img' ).length;
+		if ( thumbnail ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					  +'<p class="infoimgname">'+ name +'</p>';
 		} else {
@@ -1209,6 +1210,11 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
+			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
+			, buttoncolor : !thumbnail ? '' : orange
+			, button      : !thumbnail ? '' : function() {
+				bash( [ 'bookmarkreset', path ] );
+			}
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark' );
 			}
@@ -1264,11 +1270,14 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	G.bookmarkedit = 1;
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
-		$this = $( this );
+		var $this = $( this );
+		var path = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
-		$this.append( buttonhtml );
+		bash( [ 'coverexists', path ], function( cover ) {
+			if ( !cover ) buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+			$this.append( buttonhtml );
+		} );
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )

@@ -303,6 +303,12 @@ bluetoothplayerstop )
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
+bookmarkreset )
+	mpdpath=${args[1]}
+	rm -f "/mnt/MPD/$mpdpath/"coverart.*
+	data='{"url":"'/mnt/MPD/$mpdpath/none'","type":"bookmark"}'
+	pushstream coverart "$data"
+	;;
 bookmarkthumb )
 	mpdpath=${args[1]}
 	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
@@ -393,6 +399,12 @@ $mpdpath" )
 	[[ -z $url ]] && url=/mnt/MPD/$mpdpath/none
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
+	;;
+coverexists )
+	ls -1 "/mnt/MPD/${args[1]}" \
+		| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
+		| grep -i '.gif$\|.jpg$\|.png$' \
+		| head -1
 	;;
 coverfileslimit )
 	for type in local online webradio; do
