@@ -804,7 +804,7 @@ function lyricsHide() {
 function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
 	local();
-	setProgress( );
+	setProgress();
 	if ( G.status.state === 'play' ) setTimeout( setProgressAnimate, 0 );
 	$( '#elapsed, #total' ).removeClass( 'gr' );
 	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
@@ -1507,13 +1507,13 @@ function setPlaylistScroll() {
 }
 function setProgress( position ) {
 	if ( position !== 0 ) position = G.status.elapsed;
-	$timeprogress.css( 'transition-duration', '0s' );
+	if( !G.local ) $timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	var w = position && G.status.Time ? position / G.status.Time * 100 : 0;
 	$( '#time-bar' ).css( 'width', w +'%' );
 	// fix: ios position 0 visible
 	var stroke = !position && ( G.status.state === 'stop' || G.status.stream ) ? 'transparent' : '';
-	$( '#time .rs-range' ).css( 'stroke', stroke );
+//	$( '#time .rs-range' ).css( 'stroke', stroke );
 }
 function setProgressAnimate() {
 	$timeprogress.css( 'transition-duration', G.status.Time - G.status.elapsed +'s' );
