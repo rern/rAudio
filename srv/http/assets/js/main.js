@@ -1191,8 +1191,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			}
 		} );
 	} else if ( $target.hasClass( 'bk-cover' ) || $target.hasClass( 'iconcover' ) ) {
-		var thumbnail = $this.find( 'img' ).length;
-		if ( thumbnail ) {
+		if ( $this.find( 'img' ).length ) {
 			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					  +'<p class="infoimgname">'+ name +'</p>';
 		} else {
@@ -1210,11 +1209,6 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, filelabel   : '<i class="fa fa-folder-open"></i>File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
-			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
-			, buttoncolor : !thumbnail ? '' : orange
-			, button      : !thumbnail ? '' : function() {
-				bash( [ 'bookmarkreset', path ] );
-			}
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark' );
 			}

@@ -303,12 +303,6 @@ bluetoothplayerstop )
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
-bookmarkreset )
-	mpdpath=${args[1]}
-	rm -f "/mnt/MPD/$mpdpath/"{coverart,thumb}.*
-	data='{"url":"'/mnt/MPD/$mpdpath/none'","type":"bookmark"}'
-	pushstream coverart "$data"
-	;;
 bookmarkthumb )
 	mpdpath=${args[1]}
 	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
