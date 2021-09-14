@@ -124,7 +124,7 @@ cursor=$cursor
 		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	fi
 	systemctl disable --now getty@tty1
-	if [[ -z $reboot && ( $zoom != $prevzoom || $rotate != $prevrotate || $cursor != $prevcursor ) ]]; then
+	if [[ -z $reboot ]]; then
 		featureSet bootsplash localbrowser
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
