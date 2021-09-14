@@ -142,6 +142,16 @@ function psCoverart( data ) {
 			var path = url.substr( 0, url.lastIndexOf( '/' ) );  // /mnt/MPD/path/cover.jpg > /mnt/MPD/path
 			var mpdpath = path.slice( 9 ); // /mnt/MPD/path > path
 			if ( G.playback ) {
+				if ( path === '/data/shm' ) {
+					var prevartistalbum = ( G.status.Artist + G.status.Album ).replace( /[ '"`?/#&]/g, '' );
+					var artistalbum = url.split( '-' ).pop().slice( 0, -4 ); // /data/shm/online-name.jpg > name.jpg
+					var matched = artistalbum === prevartistalbum
+				} else {
+					var prevmpdpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+					var matched = mpdpath === prevmpdpath;
+				}
+				if ( !matched ) return
+				
 				G.status.coverart = url;
 				setCoverart();
 				if ( 'Album' in data ) { // with webradio
