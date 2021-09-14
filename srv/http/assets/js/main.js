@@ -1074,9 +1074,12 @@ $( '#button-lib-back' ).click( function() {
 	}
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.query.length < 2 || G.mode === 'webradio' ) {
-		G.liscrolltop = $( window ).scrollTop();
 		$( '#button-library' ).click();
-	} else if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
+		return
+	}
+	
+	if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+	if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
 		if ( $( '#lib-breadcrumbs a' ).length > 1 ) {
 			$( '#lib-breadcrumbs a' ).eq( -2 ).click();
 		} else {

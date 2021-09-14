@@ -969,11 +969,6 @@ function renderLibrary() {
 	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
-	if ( G.librarylist ) {
-		$( 'html, body' ).scrollTop( G.liscrolltop );
-		return
-	}
-	
 	$( '#page-library .content-top, #lib-list' ).addClass( 'hide' );
 	$( '#page-library .content-top, #lib-mode-list' ).removeClass( 'hide' );
 	$( '.mode:not( .mode-bookmark )' ).each( function() {
