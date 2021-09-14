@@ -1078,7 +1078,6 @@ $( '#button-lib-back' ).click( function() {
 		return
 	}
 	
-	if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 	if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
 		if ( $( '#lib-breadcrumbs a' ).length > 1 ) {
 			$( '#lib-breadcrumbs a' ).eq( -2 ).click();
@@ -1093,9 +1092,9 @@ $( '#button-lib-back' ).click( function() {
 		} else if ( query === 'playlist' ) {
 			$( '#playlist' ).click();
 		} else {
-//			if ( query.query === 'ls' ) G.mode = 'file';
 			list( query, function( data ) {
 				if ( data != -1 ) {
+					G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 					data.path = G.mode === 'album' ? 'ALBUM' : query.path;
 					data.modetitle = query.modetitle;
 					renderLibraryList( data );
