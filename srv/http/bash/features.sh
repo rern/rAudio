@@ -125,9 +125,10 @@ cursor=$cursor
 	fi
 	systemctl disable --now getty@tty1
 	if [[ -z $reboot ]]; then
-		featureSet bootsplash localbrowser
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+	else
+		pushstream notify '{"title":"Browser on RPi","text":"Reboot required.","icon":"chromium"}'
 	fi
 	pushRefresh
 	;;

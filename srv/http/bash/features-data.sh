@@ -37,16 +37,17 @@ fi
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowserval ]]; then
-		conf=$( cat $dirsystem/localbrowserval )
+		val=( $( cut -d= -f2 $dirsystem/localbrowserval ) )
+		for (( i=0; i < 4; i++ )); do
+			(( i != 2 )) && localbrowserval+=,${val[$i]} || localbrowserval+=",\"${val[$i]}\""
+		done
+		localbrowserval=[${localbrowserval:1}]
 	else
-		conf=( NORMAL 0 false 1 )
+		localbrowserval='[ 0, 1, "NORMAL", false ]'
 	fi
 	data+='
 , "localbrowser"    : '$( systemctl -q is-active localbrowser && echo true || echo false )'
-, "localscreenoff"  : '$(( $( grep screenoff <<< "$conf" | cut -d= -f2 ) / 60 ))'
-, "localzoom"       : '$( grep zoom <<< "$conf" | cut -d= -f2 )'
-, "localrotate"     : "'$( grep rotate <<< "$conf" | cut -d= -f2 )'"
-, "localcursor"     : '$( grep cursor <<< "$conf" | cut -d= -f2 )
+, "localbrowserval"  : '$localbrowserval
 fi
 [[ -e /usr/bin/smbd ]] && data+='
 , "smb"             : '$( systemctl -q is-active smb && echo true || echo false )'
