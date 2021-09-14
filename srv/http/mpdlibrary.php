@@ -447,7 +447,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
-		$args = escape( implode( "\n", [ $artist, $album, $file0, 'licover' ] ) );
+		$args = escape( implode( "\n", [ $artist, $album, $file0 ] ) );
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
