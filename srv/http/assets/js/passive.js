@@ -202,7 +202,11 @@ function psCoverart( data ) {
 				$li.each( function() {
 					var lipath = $( this ).find( '.lipath' ).text()
 					if ( lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === path ) {
-						$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+						if ( url.slice( -4 ) !== 'none' ) {
+							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+						} else {
+							$( this ).find( '.pl-icon' ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
+						}
 					}
 				} );
 			}
