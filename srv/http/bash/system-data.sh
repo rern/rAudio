@@ -44,7 +44,7 @@ else
 fi
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofileval ]]; then
-		soundprofileval=$( cat $dirsystem/soundprofileval | cut -d= -f2 )
+		soundprofileval=$( cut -d= -f2 $dirsystem/soundprofileval )
 	else
 		soundprofileval=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
 		soundprofileval+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
