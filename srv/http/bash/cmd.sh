@@ -563,7 +563,7 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/status
+	rm -f $dirtmp/{status,sampling}
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1

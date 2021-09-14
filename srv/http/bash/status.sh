@@ -433,27 +433,33 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
+	rm -f $dirtmp/sampling
 else
 	if [[ $ext != Radio ]]; then
-		if [[ $ext == DSF || $ext == DFF ]]; then
-			# DSF: byte# 56+4 ? DSF: byte# 60+4
-			[[ $ext == DSF ]] && byte=56 || byte=60;
-			[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
-			hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
-			dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
-			bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
-			sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
+		if [[ -e $dirtmp/sampling ]]; then
+			sampling=$( cat $dirtmp/sampling )
 		else
-			data=( $( ffprobe -v quiet -select_streams a:0 \
-				-show_entries stream=bits_per_raw_sample,sample_rate \
-				-show_entries format=bit_rate \
-				-of default=noprint_wrappers=1:nokey=1 \
-				"/mnt/MPD/$file0" ) )
-			samplerate=${data[0]}
-			bitdepth=${data[1]}
-			bitrate=${data[2]}
-			samplingLine $bitdepth $samplerate $bitrate $ext
+			if [[ $ext == DSF || $ext == DFF ]]; then
+				# DSF: byte# 56+4 ? DSF: byte# 60+4
+				[[ $ext == DSF ]] && byte=56 || byte=60;
+				[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
+				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
+				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
+				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
+				sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
+			else
+				data=( $( ffprobe -v quiet -select_streams a:0 \
+					-show_entries stream=bits_per_raw_sample,sample_rate \
+					-show_entries format=bit_rate \
+					-of default=noprint_wrappers=1:nokey=1 \
+					"/mnt/MPD/$file0" ) )
+				samplerate=${data[0]}
+				bitdepth=${data[1]}
+				bitrate=${data[2]}
+				samplingLine $bitdepth $samplerate $bitrate $ext
+			fi
 		fi
+		echo $sampling > $dirtmp/sampling
 	else
 		sampling="$radiosampling"
 	fi
