@@ -929,6 +929,7 @@ i.map.disabled, .map.disabled i {
 }
 .rs-container::before,
 .rs-container::after,
+#time .rs-inner-container::before,
 #time .rs-inner-container::after {
 	position: absolute;
 	content: '';
@@ -978,6 +979,11 @@ i.map.disabled, .map.disabled i {
 #time .rs-container::before,
 #volume .rs-container {
 	background: linear-gradient( var( --cgl ), #000000 );
+}
+#time .rs-inner-container::before { /* fix: ios show thin line at 0 */
+	width: 1px;
+	height: 20px;
+	background: var( --cg );
 }
 #time .rs-range {
 	stroke: var( --cm );

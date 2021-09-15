@@ -1510,7 +1510,7 @@ function setPlaylistScroll() {
 }
 function setProgress( position ) {
 	if ( position !== 0 ) position = G.status.elapsed;
-	if( !G.local ) $timeprogress.css( 'transition-duration', '0s' );
+	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
 	var w = position && G.status.Time ? position / G.status.Time * 100 : 0;
 	$( '#time-bar' ).css( 'width', w +'%' );
