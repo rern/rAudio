@@ -479,7 +479,7 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-r i:first-child {
 	position: relative;
-	margin-left: 0;
+	margin-left: -10px;
 }
 #fliptxt {
 	display: none;
