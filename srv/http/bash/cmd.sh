@@ -272,8 +272,9 @@ addonsupdates )
 albumlistremove )
 	album=${args[1]}
 	artist=${args[2]}
-	sed -i "/\^^$album^^$artist"$"/ d" $dirdata/mpd/album
-	sed -i "/\^^$artist^^$album"$"/ d" $dirdata/mpd/albumbyartist
+	sed -i "/\^$album^^$artist^/ d" $dirdata/mpd/album
+	sed -i "/\^$artist^^$album^/ d" $dirdata/mpd/albumbyartist
+	echo $album^^$artist >> $dirdata/mpd/albumignore
 	;;
 audiocdtag )
 	track=${args[1]}

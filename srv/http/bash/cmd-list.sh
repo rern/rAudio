@@ -81,7 +81,14 @@ fi
 for mode in album albumartist artist composer conductor genre date; do
 	dircount=$dirmpd/$mode
 	if [[ $mode == album ]]; then
-		album=$( echo "$album_artist_file" | grep . | sort -uf | tee $dirmpd/album | wc -l )
+		album=$( grep . <<< "$album_artist_file" | sort -uf )
+		if [[ -e $dirmpd/albumignore ]]; then
+			readarray -t albumignore < $dirmpd/albumignore
+			for line in "${albumignore[@]}"; do
+				album=$( sed "/\^$line^/ d" <<< "$album" )
+			done
+		fi
+		album=$( echo "$album" | tee $dirmpd/album | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dircount | wc -l )
 	fi

@@ -1351,13 +1351,13 @@ $( '#lib-list' ).on( 'tap', '.coverart', function() {
 	var artist = $this.find( el[ 1 ] ).text();
 	info( {
 		  icon    : 'album'
-		, title   : 'Album'
+		, title   : 'Album Thumbnail'
 		, message : `\
 <img src="${ src }">
 <wh><i class="fa fa-album"></i> ${ album }</wh>
 <i class="fa fa-artist wh"></i> ${ artist }
 
-Remove this from Album list?`
+Remove this thumbnail?`
 		, okcolor : red
 		, oklabel : '<i class="fa fa-minus-circle"></i> Remove'
 		, ok      : function() {
