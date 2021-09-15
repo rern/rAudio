@@ -433,9 +433,11 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
-	rm -f $dirtmp/sampling
+	echo $sampling > $dirtmp/sampling
 else
-	if [[ $ext != Radio ]]; then
+	if [[ $ext == Radio ]]; then
+		sampling="$radiosampling"
+	else
 		if [[ -e $dirtmp/sampling ]]; then
 			sampling=$( cat $dirtmp/sampling )
 		else
@@ -460,8 +462,6 @@ else
 			fi
 		fi
 		echo $sampling > $dirtmp/sampling
-	else
-		sampling="$radiosampling"
 	fi
 fi
 

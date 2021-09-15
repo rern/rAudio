@@ -564,10 +564,12 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/{status,sampling}
+	touch $dirtmp/nostatus
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
+		rm -f $dirtmp/nostatus
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -582,14 +584,12 @@ mpcprevnext )
 		fi
 	fi
 	if [[ -z $playing ]]; then
+		rm -f $dirtmp/nostatus
 		mpc stop
 	else
-		fileheadder=$( mpc | head -c 4 )
-		if [[ $fileheadder == cdda ]]; then
+		if [[ $( mpc | head -c 4 ) == cdda ]]; then
 			pushstreamAudiocd "Change track ..."
 			audiocdWaitStart
-		else
-			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
 		fi
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
@@ -598,10 +598,10 @@ mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
 	if [[ $state == stop ]]; then
-		touch $dirtmp/mpdseek
+		touch $dirtmp/nostatus
 		mpc play
 		mpc pause
-		rm $dirtmp/mpdseek
+		rm $dirtmp/nostatus
 	fi
 	mpc seek $seek
 	;;
