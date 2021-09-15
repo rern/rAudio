@@ -477,7 +477,8 @@ input:checked + .switchlabel.disabled:after {
 	white-space: nowrap !important;
 	line-height: 26px;
 }
-.col-r :first-child {
+.col-r i:first-child {
+	position: relative;
 	margin-left: 0;
 }
 #fliptxt {
