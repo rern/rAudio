@@ -1094,8 +1094,12 @@ $( '#button-lib-back' ).click( function() {
 		} else {
 			list( query, function( data ) {
 				if ( data != -1 ) {
-					G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
-					data.path = G.mode === 'album' ? 'ALBUM' : query.path;
+					if ( G.mode === 'album' ) {
+						data.path = 'ALBUM';
+					} else {
+						G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+						data.path = query.path;
+					}
 					data.modetitle = query.modetitle;
 					renderLibraryList( data );
 				} else {
@@ -1334,6 +1338,7 @@ $( '#lib-list' ).on( 'tap', '.coverart', function() {
 	}
 	list( query, function( data ) {
 		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
+		data.path = 'ALBUM';
 		renderLibraryList( data );
 	}, 'json' );
 	query.modetitle = 'ALBUM';
