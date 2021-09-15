@@ -414,5 +414,35 @@ $( '#setting-custom' ).click( function() {
 		} );
 	} );
 } );
+$( '#albumignore' ).click( function() {
+	bash( 'cat /srv/http/data/mpd/albumignore', function( list ) {
+		info( {
+			  icon     : 'album'
+			, title    : "Excluded Album"
+			, textarea : 1
+			, boxwidth : 'max'
+			, values   : list
+			, ok       : function() {
+				bash( [ 'albumignore', infoVal() ] );
+			}
+		} );
+	} );
+} );
+$( '#mpdignore' ).click( function() {
+	notify( "Excluded Directories", 'Get files ...', 'library' );
+	bash( 'find /mnt/MPD -name .mpdignore', function( list ) {
+		bannerHide();
+		info( {
+			  icon     : 'library'
+			, title    : "Excluded Directory"
+			, textarea : 1
+			, boxwidth : 'max'
+			, values   : list
+			, ok       : function() {
+				console.log(9)
+			}
+		} );
+	} );
+} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

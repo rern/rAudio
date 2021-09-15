@@ -202,4 +202,22 @@
 </div>
 </div>
 
+<div class="hide">
+<heading>Excluded Lists<?=$ihelp?></heading>
+<div class="col-l">Album</div>
+<div class="col-r">
+	<i id="albumignore" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		List of albums excluded from Album page.
+	</span>
+</div>
+<div class="col-l">Directory</div>
+<div class="col-r">
+	<i id="mpdignore" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		List of directories excluded from database.
+	</span>
+</div>
+</div>
+
 <div style="clear:both"></div>

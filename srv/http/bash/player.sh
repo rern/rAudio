@@ -37,6 +37,9 @@ update() { # for /etc/conf.d/devmon - devmon@http.service
 
 case ${args[0]} in
 
+albumignore )
+	echo -e "${args[1]}" > /srv/http/data/mpd/albumignore
+	;;
 amixer )
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
