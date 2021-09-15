@@ -41,7 +41,7 @@ function clearIntervalAll() {
 	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
-	setProgress( G.status.stream || !G.status.elapsed ? 0 : G.status.elapsed ); // stop progress animation
+	if ( G.status.state === 'play' && !G.status.stream ) setProgress(); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
@@ -1097,7 +1097,6 @@ function renderPlayback() {
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 	if ( G.status.stream ) {
-		clearInterval( G.intProgress );
 		setProgress( 0 );
 		$( '#elapsed, #total' ).empty();
 		if ( G.status.state === 'play' ) {
@@ -1113,9 +1112,8 @@ function renderPlayback() {
 	$( '#total' ).text( timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( G.status.state === 'stop' ) {
-		clearInterval( G.intProgress );
-		$( '#title' ).removeClass( 'gr' );
 		setProgress( 0 );
+		$( '#title' ).removeClass( 'gr' );
 		$( '#elapsed' )
 			.text( timehms )
 			.addClass( 'gr' );
@@ -1509,6 +1507,7 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
+	if ( G.status.state !== 'play' || G.status.stream ) clearInterval( G.intProgress );
 	if ( position !== 0 ) position = G.status.elapsed;
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
