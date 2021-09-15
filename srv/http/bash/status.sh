@@ -387,9 +387,9 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-artistalbum=$( echo $AlbumArtist$Album | tr -d ' "`?/#&'"'" )
-samplingFile() {
-	echo $sampling > $dirtmp/sampling-$artistalbum
+samplingfile=$dirtmp/sampling-$( echo $file | tr -d ' "`?/#&'"'_.\-" )
+samplingSave() {
+	echo $sampling > $samplingfile
 	files=$( ls -1t $dirtmp/sampling-* 2> /dev/null )
 	(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 }
@@ -438,13 +438,13 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
-	samplingFile &
+	samplingSave &
 else
 	if [[ $ext == Radio ]]; then
 		sampling="$radiosampling"
 	else
-		if [[ -e $dirtmp/sampling-$artistalbum ]]; then
-			sampling=$( cat $dirtmp/sampling-$artistalbum )
+		if [[ -e $samplingfile ]]; then
+			sampling=$( cat $samplingfile )
 		else
 			if [[ $ext == DSF || $ext == DFF ]]; then
 				# DSF: byte# 56+4 ? DSF: byte# 60+4
@@ -466,8 +466,7 @@ else
 				samplingLine $bitdepth $samplerate $bitrate $ext
 			fi
 		fi
-		echo $sampling > $dirtmp/sampling-$artistalbum
-		samplingFile &
+		samplingSave &
 	fi
 fi
 
