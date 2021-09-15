@@ -269,6 +269,12 @@ addonsupdates )
 	done
 	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
 	;;
+albumlistremove )
+	album=${args[1]}
+	artist=${args[2]}
+	sed -i "/\^^$album^^$artist"$"/ d" $dirdata/mpd/album
+	sed -i "/\^^$artist^^$album"$"/ d" $dirdata/mpd/albumbyartist
+	;;
 audiocdtag )
 	track=${args[1]}
 	tag=${args[2]}

@@ -1343,6 +1343,28 @@ $( '#lib-list' ).on( 'tap', '.coverart', function() {
 	}, 'json' );
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
+} ).on( 'longtap', '.coverart', function() {
+	var $this = $( this );
+	var src = $this.find( 'img' ).attr( 'src' );
+	var el = G.display.albumbyartist ? [ '.coverart2', '.coverart1' ] : [ '.coverart1', '.coverart2' ];
+	var album = $this.find( el[ 0 ] ).text();
+	var artist = $this.find( el[ 1 ] ).text();
+	info( {
+		  icon    : 'album'
+		, title   : 'Album'
+		, message : `\
+<img src="${ src }">
+<wh><i class="fa fa-album"></i> ${ album }</wh>
+<i class="fa fa-artist wh"></i> ${ artist }
+
+Remove this from Album list?`
+		, okcolor : red
+		, oklabel : '<i class="fa fa-minus-circle"></i> Remove'
+		, ok      : function() {
+			bash( [ 'albumlistremove', album, artist ] );
+			$this.remove();
+		}
+	} );
 } );
 $( '#lib-list' ).on( 'tap', '.coveredit',  function() {
 	var $this = $( this );
