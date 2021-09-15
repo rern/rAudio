@@ -332,6 +332,7 @@ hr {
 	color: var( --cw );
 	background: var( --cgd );
 	resize: none;
+	white-space: pre;
 }
 #infoContent input[type=text],
 #infoContent input[type=number],
