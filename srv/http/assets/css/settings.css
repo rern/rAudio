@@ -417,6 +417,7 @@ input:checked + .switchlabel.disabled:after {
 .col-l {
 	display: inline-block;
 	width: 170px;
+	height: 40px;
 	text-align: right;
 	padding-right: 15px;
 	padding-top: 9px;
@@ -424,6 +425,10 @@ input:checked + .switchlabel.disabled:after {
 .col-l.text {
 	padding-top: 0;
 	line-height: 26px;
+}
+#mpdignore,
+#albumignore {
+	margin-left: 0;
 }
 .col-l i {
 	width: 30px;
