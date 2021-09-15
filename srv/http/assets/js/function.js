@@ -1020,7 +1020,7 @@ function renderLibraryList( data ) {
 		}
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"'+ radioclass +'>'+ data.modetitle +'</span>'+ radiobtn;
 		$( '#button-lib-search' ).addClass( 'hide' );
-	} else { // dir breadcrumbs
+	} else if ( data.path ) { // dir breadcrumbs
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ dir0.toLowerCase() +'"></i>';
@@ -1032,12 +1032,12 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<blb>/</blb><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	$( '#lib-breadcrumbs' )
-		.html( htmlpath )
-		.removeClass( 'hide' );
+	if ( htmlpath ) $( '#lib-breadcrumbs' )
+						.html( htmlpath )
+						.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		imageLoad( 'lib-list' );
-		$( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
+		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
