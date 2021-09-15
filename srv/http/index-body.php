@@ -143,6 +143,7 @@ $html.= menuli( 'bookmark',  'star',            'Bookmark' );
 $html.= menuli( 'exclude',   'folder-forbid',   'Exclude directory' );
 $html.= menuli( 'update',    'refresh-library', 'Update database' );
 $html.= menuli( 'thumb',     'iconcover',       'Update thumbnails' );
+$html.= menuli( 'directory', 'folder',          'Browse directory' );
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'folder', $html );
 

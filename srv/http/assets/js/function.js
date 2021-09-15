@@ -110,11 +110,14 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	
+	var modes = [ 'file', 'nas', 'sd', 'usb' ];
+	var filemode = modes.indexOf( G.mode ) !== -1;
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
-	$( '.contextmenu' ).find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) === -1 );
-	$( '.contextmenu .tag' ).toggleClass( 'hide', !$( '.licover' ).length || G.mode !== 'file' );
+	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', ...modes ].indexOf( G.mode ) === -1 );
+	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
+	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
+	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || G.mode !== 'file' );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
