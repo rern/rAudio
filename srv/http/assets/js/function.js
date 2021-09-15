@@ -1514,12 +1514,8 @@ function setProgress( position ) {
 	$timeRS.setValue( position );
 	var w = position && G.status.Time ? position / G.status.Time * 100 : 0;
 	$( '#time-bar' ).css( 'width', w +'%' );
-	// fix: ios position 0 visible
-	var stroke = G.status.state === 'stop' || G.status.stream ? 'none' : '';
-	$( '#time .rs-range' ).css( 'stroke', stroke );
 }
 function setProgressAnimate() {
-	$( '#time .rs-range' ).css( 'stroke', '' );
 	$timeprogress.css( 'transition-duration', G.status.Time - G.status.elapsed +'s' );
 	$timeRS.setValue( G.status.Time );
 	$( '#time-bar' ).css( 'width', '100%' );
