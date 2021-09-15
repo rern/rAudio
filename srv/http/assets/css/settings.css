@@ -426,10 +426,6 @@ input:checked + .switchlabel.disabled:after {
 	padding-top: 0;
 	line-height: 26px;
 }
-#mpdignore,
-#albumignore {
-	margin-left: 0;
-}
 .col-l i {
 	width: 30px;
 	vertical-align: 5px;
@@ -481,8 +477,8 @@ input:checked + .switchlabel.disabled:after {
 	white-space: nowrap !important;
 	line-height: 26px;
 }
-.col-r .fa {
-	text-align: center;
+.col-r :first-child {
+	margin-left: 0;
 }
 #fliptxt {
 	display: none;
