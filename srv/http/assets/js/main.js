@@ -1357,9 +1357,9 @@ $( '#lib-list' ).on( 'tap', '.coverart', function() {
 <wh><i class="fa fa-album"></i> ${ album }</wh>
 <i class="fa fa-artist wh"></i> ${ artist }
 
-Remove this thumbnail?`
-		, okcolor : red
-		, oklabel : '<i class="fa fa-minus-circle"></i> Remove'
+Exclude this thumbnail?`
+		, okcolor : orange
+		, oklabel : '<i class="fa fa-minus-circle"></i> Exclude'
 		, ok      : function() {
 			bash( [ 'albumlistremove', album, artist ] );
 			$this.remove();
