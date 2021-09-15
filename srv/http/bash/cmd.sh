@@ -409,10 +409,7 @@ coverexists )
 coverfileslimit )
 	for type in local online webradio; do
 		files=$( ls -1t $dirtmp/$type-* 2> /dev/null )
-		if (( $( echo "$files" | wc -l ) > 10 )); then
-			file=$( echo "$files" | tail -1 )
-			rm -f "$file"
-		fi
+		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 	done
 	;;
 coversave )

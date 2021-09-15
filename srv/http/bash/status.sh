@@ -160,7 +160,6 @@ mpdStatus() {
 		| grep "$filter" )
 }
 mpdStatus currentsong
-
 # 'file:' missing / blank
 #   - when playlist is empty, add song without play
 #     - 'currentsong' has no data
@@ -388,6 +387,12 @@ else
 , "Title"  : "'$Title'"'
 fi
 
+artistalbum=$( echo $AlbumArtist$Album | tr -d ' "`?/#&'"'" )
+samplingFile() {
+	echo $sampling > $dirtmp/sampling-$artistalbum
+	files=$( ls -1t $dirtmp/sampling-* 2> /dev/null )
+	(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+}
 samplingLine() {
 	bitdepth=$1
 	samplerate=$2
@@ -433,13 +438,13 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
-	echo $sampling > $dirtmp/sampling
+	samplingFile &
 else
 	if [[ $ext == Radio ]]; then
 		sampling="$radiosampling"
 	else
-		if [[ -e $dirtmp/sampling ]]; then
-			sampling=$( cat $dirtmp/sampling )
+		if [[ -e $dirtmp/sampling-$artistalbum ]]; then
+			sampling=$( cat $dirtmp/sampling-$artistalbum )
 		else
 			if [[ $ext == DSF || $ext == DFF ]]; then
 				# DSF: byte# 56+4 ? DSF: byte# 60+4
@@ -461,7 +466,8 @@ else
 				samplingLine $bitdepth $samplerate $bitrate $ext
 			fi
 		fi
-		echo $sampling > $dirtmp/sampling
+		echo $sampling > $dirtmp/sampling-$artistalbum
+		samplingFile &
 	fi
 fi
 
