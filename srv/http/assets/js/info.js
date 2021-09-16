@@ -466,10 +466,11 @@ function info( json ) {
 		}
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
-			if ( O.boxwidth === 'max' ) $( '#infoBox' ).css( 'width', window.innerWidth );
+			var widthmax = O.boxwidth === 'max';
+			if ( widthmax ) $( '#infoBox' ).css( 'width', window.innerWidth );
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() + 20 || 0;
-			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - labelW;
+			var boxW = widthmax ? allW - labelW : O.boxwidth + 12;
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
