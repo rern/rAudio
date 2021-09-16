@@ -467,10 +467,10 @@ function info( json ) {
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
-			if ( widthmax ) $( '#infoBox' ).css( 'width', window.innerWidth );
+			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
 			var allW = $( '#infoContent' ).width();
-			var labelW = $( '#infoContent td:first-child' ).width() + 20 || 0;
-			var boxW = widthmax ? allW - labelW : O.boxwidth + 12;
+			var labelW = $( '#infoContent td:first-child' ).width() || 0;
+			var boxW = widthmax ? allW - labelW - 20 : O.boxwidth + 10;
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}

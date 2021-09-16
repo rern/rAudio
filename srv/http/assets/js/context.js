@@ -253,7 +253,7 @@ function tagEditor() {
 				var $text = $( '#infoContent input' );
 				setTimeout( function() {
 					var boxW = parseInt( $text.css( 'width' ) );
-					var boxS = boxW - labelW - 6;
+					var boxS = boxW - labelW - 5;
 					$( '#infoContent' ).on( 'click', '#taglabel', function() {
 						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
 							$( '.taglabel' ).removeClass( 'hide' );
@@ -468,7 +468,6 @@ function webRadioNew( name, url ) {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
 		, width        : 500
-		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : ( name || url ? [ name, url ] : '' )
 		, checkblank   : 1

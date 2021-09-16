@@ -274,6 +274,9 @@ hr {
 	overflow: hidden;
 	color: var( --cg60 );
 }
+.infofooter {
+	padding: 0 5px;
+}
 .infomessage .fa {
 	width: 25px;
 	vertical-align: 0;
