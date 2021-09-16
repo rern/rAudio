@@ -508,20 +508,19 @@ i.map.disabled, .map.disabled i {
 #time-bar,
 #volume-bar {
 	width: 0;
-	height: 4px;
-	border-radius: 2px;
+	height: 2px;
 	background: var( --cm );
 }
 #time-bar {
-	top: -6px;
+	top: -4px;
 	transition: all 0s linear;
 }
 #volume-bar {
-	bottom: -6px;
+	bottom: -4px;
 }
 #volume-band-dn,
 #volume-band-up {
-	bottom: -25px;
+	bottom: -22px;
 	width: 40px;
 	height: 40px;
 	font-size: 18px;
@@ -557,12 +556,12 @@ i.map.disabled, .map.disabled i {
 	line-height: 30px;
 }
 #time-band {
-	top: -20px;
+	top: -18px;
 	font-size: 18px;
 }
 #volume-band {
 	display: block;
-	bottom: -20px;
+	bottom: -18px;
 	font-size: 24px;
 }
 .transparent {
