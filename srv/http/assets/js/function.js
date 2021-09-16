@@ -129,9 +129,10 @@ function contextmenuLibrary( $li, $target ) {
 	G.color = 0; // reset to 0 once show
 }
 function contextmenuScroll( $menu, menutop ) {
+	var fixedmenu = G.library && G.list.licover && G.display.fixedcover ? true : false;
 	$menu
 		.css( 'top',  menutop )
-		.toggleClass( 'fixed', G.list.licover && G.display.fixedcover )
+		.toggleClass( 'fixed', fixedmenu )
 		.removeClass( 'hide' );
 	var targetB = $menu.offset().top + $menu.height();
 	var wH = window.innerHeight;
