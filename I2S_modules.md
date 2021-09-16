@@ -26,6 +26,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Audiophonics I-Sabre DAC ES9028Q2M
 - Audiophonics I-Sabre DAC ES9038Q2M
 - AudioSense-Pi
+- ChipDip DAC
 - BerryNOS
 - DACBerry AMP2
 - DACBerry One+ - RCA
