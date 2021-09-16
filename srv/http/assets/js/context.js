@@ -468,7 +468,6 @@ function webRadioNew( name, url ) {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
 		, width        : 500
-		, message      : 'Add new WebRadio:'
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : ( name || url ? [ name, url ] : '' )
 		, checkblank   : 1
