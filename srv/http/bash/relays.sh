@@ -11,13 +11,13 @@ cmd=${args[0]}
 
 if [[ $cmd == relaysset ]]; then
 	data=${args[1]}
-	echo -e "$data" > $dirsystem/relayspins
+	echo -e "$data" > $dirsystem/relays.conf
 	data=$( $dirbash/relays-data.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d "$data"
 	exit
 fi
 
-. $dirsystem/relayspins
+. $dirsystem/relays.conf
 
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"

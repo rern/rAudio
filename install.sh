@@ -10,16 +10,16 @@ dirsystem=/srv/http/data/system
 
 [[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
 
-[[ -e $dirsystem/lcdcharpins ]] && mv $dirsystem/lcdchar{pins,val}
-[[ -e /etc/lcdchar.conf ]] && mv /etc/lcdchar.conf $dirsystem/lcdcharval
-[[ -e $dirsystem/lcdcharval ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdcharval
-[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
+for name in lcdchar localbrowser powerbutton; do
+	mv -f /etc/$name.conf $dirsystem
+done
 
-[[ -e /etc/localbrowser.conf ]] && mv /etc/localbrowser.conf $dirsystem/localbrowserval
-[[ -e /etc/powerbutton.conf ]] && mv /etc/powerbutton.conf $dirsystem/powerbuttonpins
-[[ -e /etc/soundprofile.conf ]] && mv /etc/soundprofile.conf $dirsystem/soundprofileval
+for name in lcdcharval localbrowserval powerbuttonpins relayspins soundprofileval vuledpins; do
+	newname=$( echo $name | sed 's/pins\|val/.conf/' )
+	mv -f $dirsystem/{$name,$newname}
+done
 
-if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
+if [[ -e /etc/relays.conf ]]; then
 	names=$( jq .name /etc/relays.conf )
 	pin=$( jq -r 'keys[]' <<< $names )
 	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
@@ -28,16 +28,14 @@ if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	echo "\
 $pin
 $name
-$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relayspins
+$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
 	> $dirsystem/relays
 	rm /etc/relays.conf
 fi
 
-file=/etc/powerbutton.conf
-[[ -e $file ]] && ! grep -q reserved $file && echo reserved=5 >> $file
-
-file=/etc/lcdchar.conf
-[[ -e $file ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' $file
+[[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdcharval
+[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
+systemctl try-restart localbrowser
 
 [[ -e $dirsystem/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
 

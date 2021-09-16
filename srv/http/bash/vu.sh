@@ -3,7 +3,7 @@
 [[ -e /srv/http/data/system/vumeter ]] && vumeter=1
 if [[ -e /srv/http/data/system/vuled ]]; then
 	vuled=1
-	p=( $( cat /srv/http/data/system/vuledpins ) )
+	p=( $( cat /srv/http/data/system/vuled.conf ) )
 	for i in ${p[@]}; do
 		gpio export $i out
 	done

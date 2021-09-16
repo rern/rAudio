@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file=/srv/http/data/system/relayspins
+file=/srv/http/data/system/relays.conf
 if [[ -e $file ]]; then
 	. $file
 	data='

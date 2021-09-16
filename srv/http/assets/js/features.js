@@ -203,7 +203,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, select       : { 'Normal': 'NORMAL', '90°&ensp;&#xf524;': 'CW', '90°&ensp;&#xf523;': 'CCW', '180°': 'UD' } 
 		, checkbox     : [ 'Mouse pointer' ]
 		, order        : [ 'text', 'select', 'checkbox' ]
-		, values       : G.localbrowserval
+		, values       : G.localbrowserconf
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : 1
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'

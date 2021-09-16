@@ -2,7 +2,7 @@
 
 export XDG_CACHE_HOME="/tmp/.cache"
 
-file=/srv/http/data/system/localbrowserval
+file=/srv/http/data/system/localbrowser.conf
 if [[ -e $file ]]; then
 	. $file
 else

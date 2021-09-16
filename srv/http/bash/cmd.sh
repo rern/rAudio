@@ -269,7 +269,7 @@ addonsupdates )
 	done
 	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
 	;;
-albumlistremove )
+albumignore )
 	album=${args[1]}
 	artist=${args[2]}
 	sed -i "/\^$album^^$artist^/ d" $dirdata/mpd/album

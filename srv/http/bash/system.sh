@@ -27,7 +27,7 @@ soundprofile() {
 		txqueuelen=1000
 		rm -f $dirsystem/soundprofile
 	else
-		. $dirsystem/soundprofileval
+		. $dirsystem/soundprofile.conf
 		touch $dirsystem/soundprofile
 	fi
 
@@ -283,7 +283,7 @@ pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
 	fi
 	conf+="
 backlight=${args[13]}"
-	echo "$conf" > $dirsystem/lcdcharval
+	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
 	pushRefresh
@@ -398,7 +398,7 @@ ntp )
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
-	gpio -1 write $( grep led $dirsystem/powerbuttonpins | cut -d= -f2 ) 0
+	gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
@@ -409,7 +409,7 @@ powerbuttonset )
 	echo "\
 sw=$sw
 led=$led
-reserved=$reserved" > $dirsystem/powerbuttonpins
+reserved=$reserved" > $dirsystem/powerbutton.conf
 	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	if [[ $sw != 5 ]]; then
@@ -463,7 +463,7 @@ soundprofileget )
 soundprofileset )
 	values=${args[1]}
 	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
-		rm -f $dirsystem/soundprofileval
+		rm -f $dirsystem/soundprofile.conf
 		soundprofile reset
 	else
 		val=( $values )
@@ -472,7 +472,7 @@ latency=${val[0]}
 swappiness=${val[1]}
 mtu=${val[2]}
 txqueuelen=${val[3]}
-" > $dirsystem/soundprofileval
+" > $dirsystem/soundprofile.conf
 		soundprofile
 	fi
 	pushRefresh
@@ -511,7 +511,7 @@ usbremove )
 vuleddisable )
 	rm -f $dirsystem/vuled
 	killall cava &> /dev/null
-	p=$( cat /srv/http/data/system/vuledpins )
+	p=$( cat /srv/http/data/system/vuled.conf )
 	for i in $p; do
 		echo 0 > /sys/class/gpio/gpio$i/value
 	done
@@ -525,7 +525,7 @@ vuleddisable )
 vuledset )
 	pins=${args[1]}
 	touch $dirsystem/vuled
-	echo $pins > $dirsystem/vuledpins
+	echo $pins > $dirsystem/vuled.conf
 	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
 	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &

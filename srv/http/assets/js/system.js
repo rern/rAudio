@@ -180,7 +180,7 @@ renderPage = function( list ) {
 	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
 	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-	if ( G.soundprofileval ) {
+	if ( G.soundprofileconf ) {
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
 	} else {
@@ -486,7 +486,7 @@ var infolcdchar = `\
 </table>`;
 $( '#setting-lcdchar' ).click( function() {
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	var i2c = G.lcdcharval[ 2 ] === 'i2c';
+	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
 	var radioaddr = '<td>Address</td>';
 	G.lcdcharaddr.split( ' ' ).forEach( function( el ) {
 		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
@@ -503,7 +503,7 @@ $( '#setting-lcdchar' ).click( function() {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
 		, content       : infolcdchar
-		, values        : G.lcdcharval
+		, values        : G.lcdcharconf
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
 			$( '#infoContent .gpio td:even' ).css( 'width', '60px' );
@@ -569,8 +569,8 @@ $( '#setting-powerbutton' ).click( function() {
 	<td><select >${ respin }</select></td>
 </tr>
 </table>`;
-	if ( G.powerbuttonpins ) {
-		var pins = ( '5 '+ G.powerbuttonpins ).split( ' ' );
+	if ( G.powerbuttonconf ) {
+		var pins = ( '5 '+ G.powerbuttonconf ).split( ' ' );
 	} else {
 		var pins = [ 5, 5, 40, 5 ];
 	}
@@ -670,19 +670,19 @@ $( '#setting-vuled' ).click( function() {
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
-	var vuledval = G.vuledval ? G.vuledval.split( ' ' ) : [ 14, 15, 18, 23, 24, 25, 8 ];
+	var vuledconf = G.vuledconf ? G.vuledconf.split( ' ' ) : [ 14, 15, 18, 23, 24, 25, 8 ];
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
 		, message      : gpiosvg
 		, select       : htmlpins
-		, values       : vuledval
+		, values       : vuledconf
 		, boxwidth     : 60
 		, beforeshow   : function() {
 			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
 			$( '#infoContent select' ).on( 'change', function() {
 				var v = infoVal();
-				var changed = G.vuled && v.join( ' ' ) === vuledval.join( ' ' );
+				var changed = G.vuled && v.join( ' ' ) === vuledconf.join( ' ' );
 				var duplicate = new Set( v ).size !== v.length;
 				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
 				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
@@ -780,9 +780,9 @@ $( '#setting-soundprofile' ).click( function() {
 		, Um3ggh1U  : '500000 0 1500 1000'
 		, Custom    : '0'
 	}
-	var values = G.soundprofileval.split( ' ' );
+	var values = G.soundprofileconf.split( ' ' );
 	var radioval = Object.values( radio );
-	var rchecked = radioval.indexOf( G.soundprofileval ) !== -1 ? G.soundprofileval : '0';
+	var rchecked = radioval.indexOf( G.soundprofileconf ) !== -1 ? G.soundprofileconf : '0';
 	values.push( rchecked );
 	info( {
 		  icon         : 'sliders'

@@ -144,7 +144,7 @@ vu() {
 			killall cava &> /dev/null
 			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
 			if [[ -n $vuled ]]; then
-				p=$( cat /srv/http/data/system/vuledpins )
+				p=$( cat /srv/http/data/system/vuled.conf )
 				for i in $p; do
 					echo 0 > /sys/class/gpio/gpio$i/value
 				done

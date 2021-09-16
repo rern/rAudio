@@ -1361,7 +1361,7 @@ Exclude this thumbnail?`
 		, okcolor : orange
 		, oklabel : '<i class="fa fa-minus-circle"></i> Exclude'
 		, ok      : function() {
-			bash( [ 'albumlistremove', album, artist ] );
+			bash( [ 'albumignore', album, artist ] );
 			$this.remove();
 		}
 	} );
