@@ -14,8 +14,9 @@ function bash( command, callback, json ) {
 }
 var dirbash = '/srv/http/bash/';
 var cmd = {
-	  avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
+	  albumignore  : [ 'cat /srv/http/data/mpd/albumignore' ]
 	, asound       : [ dirbash +'player.sh devices', -1 ]
+	, avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ dirbash +'system.sh configtxtget', 'cat /boot/config.txt' ]
@@ -24,6 +25,7 @@ var cmd = {
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
+	, mpdignore    : [ 'find /mnt/MPD -name .mpdignore' ]
 	, powerbutton  : [ 'systemctl status powerbutton' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ dirbash +'system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
@@ -38,9 +40,6 @@ var pkg = {
 
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
-	if ( $( target ).hasClass( 'help' )
-		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( target.id ) !== -1 ) return
-	
 	var $el = $( '#code'+ id );
 	if ( target === 'status' && $el.hasClass( 'hide' ) ) return
 	
@@ -50,11 +49,11 @@ function codeToggle( id, target ) {
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
 			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = [ 'statuspkg', pkgname, id ];
-			var cmdtxt = '# pacman -Q '+ pkgname +'; systemctl status '+ id +'<br><br>';
+			var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '# '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'<br><br>' : '';
+			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bl># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bl><br><br>' : '';
 			var systemctl = 0;
 		}
 		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
@@ -392,10 +391,14 @@ $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( 'body' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).hasClass( 'help' ) || $( e.target ).hasClass( 'fa-plus-circle' ) ) return
+$( '.status' ).click( function( e ) {
+	if ( $( e.target ).hasClass( 'help' )
+		|| $( e.target ).hasClass( 'fa-plus-circle' )
+		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
+	) return
 	
-	codeToggle( $( this ).data( 'status' ), e.target );
+	var datastatus = $( this ).data( 'status' ) || $( this ).parent().data( 'status' );
+	codeToggle( datastatus, e.target );
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();

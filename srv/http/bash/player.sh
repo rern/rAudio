@@ -37,9 +37,6 @@ update() { # for /etc/conf.d/devmon - devmon@http.service
 
 case ${args[0]} in
 
-albumignore )
-	echo -e "${args[1]}" > /srv/http/data/mpd/albumignore
-	;;
 amixer )
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
@@ -167,9 +164,9 @@ customset )
 	fi
 	;;
 devices )
-	devices=$'# cat /etc/asound.conf\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n# aplay -l | grep ^card\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n# amixer scontrols\n'$( /srv/http/bash/player.sh amixer )
+	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
+	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
+	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( /srv/http/bash/player.sh amixer )
 	echo "$devices"
 	;;
 dop )
