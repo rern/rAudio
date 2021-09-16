@@ -11,12 +11,12 @@ dirsystem=/srv/http/data/system
 [[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
 
 for name in lcdchar localbrowser powerbutton; do
-	mv -f /etc/$name.conf $dirsystem
+	mv -f /etc/$name.conf $dirsystem &> /dev/null
 done
 
 for name in lcdcharval localbrowserval powerbuttonpins relayspins soundprofileval vuledpins; do
 	newname=$( echo $name | sed 's/pins\|val/.conf/' )
-	mv -f $dirsystem/{$name,$newname}
+	mv -f $dirsystem/{$name,$newname} &> /dev/null
 done
 
 if [[ -e /etc/relays.conf ]]; then
