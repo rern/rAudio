@@ -516,6 +516,14 @@ hr {
 	background: #000000;
 	font-family: Inconsolata;
 }
+@media ( max-width: 420px ) {
+	#infoContent {
+		padding: 25px 5px 10px 5px;
+	}
+	.infofooter {
+		padding: 0 5px;
+	}
+}
 /* iOS */
 @media not all and ( min-resolution:.001dpcm ) {
 	@supports (-webkit-appearance:none) and (stroke-color:transparent) {
