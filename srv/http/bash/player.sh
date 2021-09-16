@@ -234,6 +234,16 @@ mixertype )
 	[[ $mixertype == software ]] && mpc volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
+mpdignorelist )
+	readarray -t files <<< $( find /mnt/MPD -name .mpdignore | sort -V )
+	for file in "${files[@]}"; do
+		list+="\
+$file
+$( cat "$file" | sed 's|^| <grn>●</grn> |' )
+"
+	done
+	echo "$list"
+	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '/^user/ a\volume_normalization   "yes"' /etc/mpd.conf

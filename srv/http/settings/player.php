@@ -220,9 +220,9 @@
 <div class="col-r">
 	<i data-status="mpdignore" class="setting fa fa-gear status"></i>
 	<span <?=$classhelp?>>
-		List of directories excluded from database.
+		List of <code>.mpdignore</code> files contain directories excluded from database.
 		<br>To restore:
-		<br> &emsp; &bull; Edit <code>.mpdignore</code> file at parent of target directory
+		<br> &emsp; &bull; Edit <code>.../.mpdignore</code>
 		<br> &emsp; &bull; Remove directories to restore
 		<br> &emsp; &bull; Update Library
 	</span>
