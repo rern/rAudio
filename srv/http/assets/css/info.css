@@ -137,7 +137,6 @@ hr {
 }
 #infoBox {
 	width: 400px;
-	min-width: 400px;
 	max-width: 98%;
 	margin: 20px auto;
 	padding-bottom: 20px;

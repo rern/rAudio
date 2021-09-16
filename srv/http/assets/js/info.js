@@ -466,7 +466,7 @@ function info( json ) {
 		}
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
-			$( '#infoBox' ).css( 'width', O.boxwidth === 'max' ? window.innerWidth : O.boxwidth );
+			if ( O.boxwidth === 'max' ) $( '#infoBox' ).css( 'width', window.innerWidth );
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() + 20 || 0;
 			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - labelW;
