@@ -672,10 +672,10 @@ function infoPlayback() {
 			function toggleBars( t, c ) {
 				if ( !t && !c ) {
 					displayCheckboxSet( bars, 0, 1 );
-					displayCheckboxSet( barsalways, 1 );
+					displayCheckboxSet( barsalways, 0, 1 );
 				} else {
 					displayCheckboxSet( bars, 1 );
-					displayCheckboxSet( barsalways, 1 );
+					displayCheckboxSet( barsalways, 1, 0 );
 				}
 			}
 			if ( !G.display.bars ) displayCheckboxSet( barsalways );
