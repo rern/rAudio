@@ -32,7 +32,7 @@ red, .red {
 .yl {
 	color: yellow
 }
-w, wh, whl, .wh {
+wh, .wh {
 	color: var( --cw ) !important
 }
 .bgr {
