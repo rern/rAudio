@@ -342,10 +342,10 @@ $( '#close' ).click( function() {
 		info( {
 			  icon    : page
 			, title   : 'System Setting'
-			, message : 'Reboot required for:'
-					   +'<br><w>'+ reboot.replace( /\n/g, '<br>' ) +'</w>'
+			, message : `\
+Reboot required for:
+<wh>${ reboot }</wh>`
 			, cancel  : function() {
-				reboot = [];
 				bash( 'rm -f '+ filereboot );
 			}
 			, ok      : function() {
