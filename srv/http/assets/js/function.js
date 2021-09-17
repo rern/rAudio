@@ -886,9 +886,9 @@ function playlistInsertSelect( $this ) {
 		  icon        : 'playlist'
 		, title       : 'Add to playlist'
 		, message     : 'Insert'
-				   +'<br><w>'+ G.pladd.name +'</w>'
+				   +'<br><wh>'+ G.pladd.name +'</wh>'
 				   +'<br>before'
-				   +'<br><w># '+ ( $this.index() + 1 ) +' - '+ $this.find( '.name' ).text() +'</w>'
+				   +'<br><wh># '+ ( $this.index() + 1 ) +' - '+ $this.find( '.name' ).text() +'</wh>'
 		, buttonlabel : '<i class="fa fa-undo"></i>Reselect'
 		, button  : function() {
 			playlistInsertTarget();
@@ -906,7 +906,7 @@ function playlistInsertTarget() {
 		  icon    : 'playlist'
 		, title   : 'Add to playlist'
 		, message : 'Select where to add:'
-				   +'<br><w>'+ G.list.name +'</w>'
+				   +'<br><wh>'+ G.list.name +'</wh>'
 		, radio   : { First : 'first', Select: 'select', Last: 'last' }
 		, cancel  : function() {
 			G.pladd = {};

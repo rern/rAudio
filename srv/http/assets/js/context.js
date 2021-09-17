@@ -16,7 +16,7 @@ function bookmarkNew() {
 							  +'<br>'+ path;
 			} else {
 				var msghtml = '<img src="'+ $exist.find( 'img' ).attr( 'src' ) +'">'
-							  +'<br><w>'+ path +'</w>';
+							  +'<br><wh>'+ path +'</wh>';
 			}
 			info( {
 				  icon    : 'bookmark'
@@ -53,7 +53,7 @@ function bookmarkIcon( path ) {
 		, title      : 'Add Bookmark'
 		, width      : 500
 		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
-						+'<br><w>'+ path +'</w>'
+						+'<br><wh>'+ path +'</wh>'
 		, textlabel  : 'As:'
 		, values     : path.split( '/' ).pop()
 		, checkblank : 1
@@ -73,7 +73,7 @@ function bookmarkThumb( path, coverart ) {
 		  icon    : 'bookmark'
 		, title   : 'Add Bookmark'
 		, message : '<img src="'+ coverart +'">'
-				   +'<br><w>'+ path +'</w>'
+				   +'<br><wh>'+ path +'</wh>'
 		, ok      : function() {
 			$.post( cmdphp, {
 				  cmd  : 'bookmark'
@@ -96,7 +96,7 @@ function playlistDelete() {
 		  icon    : 'playlist'
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
-				   +'<br><w>'+ G.list.name +'</w>'
+				   +'<br><wh>'+ G.list.name +'</wh>'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
 		, ok      : function() {
@@ -145,7 +145,7 @@ function playlistRename() {
 		  icon         : 'playlist'
 		, title        : 'Rename Playlist'
 		, message      : 'Rename:'
-						+'<br><w>'+ name +'</w>'
+						+'<br><wh>'+ name +'</wh>'
 						+'<br>To:'
 		, boxwidth     : 'max'
 		, values       : name
@@ -168,7 +168,7 @@ function playlistSave( name, oldname ) {
 				info( {
 					  icon        : 'playlist'
 					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
-					, message     : '<i class="fa fa-warning fa-lg"></i> <w>'+ name +'</w>'
+					, message     : '<i class="fa fa-warning fa-lg"></i> <wh>'+ name +'</wh>'
 								   +'<br>Already exists.'
 					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
 					, button      : playlistNew
@@ -406,7 +406,7 @@ function webRadioDelete() {
 		, title   : 'Delete WebRadio'
 		, width   : 500
 		, message : '<br><img src="'+ img +'">'
-				   +'<br><w>'+ name +'</w>'
+				   +'<br><wh>'+ name +'</wh>'
 				   +'<br>'+ url
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
@@ -455,9 +455,9 @@ function webRadioExists( existname, existurl, name ) {
 		  icon    : 'webradio'
 		, title   : 'Add WebRadio'
 		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
-				   +'<br><w>'+ existurl +'</w>'
+				   +'<br><wh>'+ existurl +'</wh>'
 				   +'<br>Already exists as:'
-				   +'<br><w>'+ existname +'</w>'
+				   +'<br><wh>'+ existname +'</wh>'
 		, ok      : function() {
 			name ? webRadioNew( name, existurl ) : webRadioEdit();
 		}
@@ -572,7 +572,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				  icon    : 'playlist'
 				, title   : 'Add to playlist'
 				, message : 'Open target playlist to add:'
-						   +'<br><w>'+ G.list.name +'</w>'
+						   +'<br><wh>'+ G.list.name +'</wh>'
 				, ok      : function() {
 					G.pladd.index = G.list.li.index();
 					G.pladd.name = G.list.name;
