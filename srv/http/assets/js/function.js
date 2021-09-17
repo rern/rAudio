@@ -314,18 +314,9 @@ function displayPlayback() {
 	var cover = G.display.cover;
 	var volume = G.display.volume && !G.display.volumenone;
 	$volume.toggleClass( 'hide', !volume );
-	var column = ( time ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + ( volume ? 1 : 0 );
-	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
-	if ( column === 2 ) {
-		$elements.css( 'width', '' );
-		$cover.addClass( 'coverlarge' );
-		$( '#time-knob, #volume-knob, #play-group, #vol-group' ).addClass( 'knobsmall' );
-	} else {
-		$elements.css( 'width', column === 1 ? '100%' : '' );
-		$( '#playback-row' ).css( 'max-width', '' );
-		$cover.removeClass( 'coverlarge' );
-		$( '#time-knob, #volume-knob, #play-group, #vol-group' ).removeClass( 'knobsmall' );
-	}
+	var sumW = $time.width() + $cover.width() + $volume.width();
+	var wW = window.innerWidth;
+	if ( sumW > wW && sumW < wW * 1.5 ) $( '#time-knob, #coverart-block, #volume-knob' ).css( 'width', '50%' );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
