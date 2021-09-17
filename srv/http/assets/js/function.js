@@ -1044,12 +1044,12 @@ function renderLibraryList( data ) {
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ dir0.toLowerCase() +'"></i>';
-		htmlpath += '<a>'+ dir0 +'/<span class="lidir">'+ dir0 +'</span></a>';
+		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
 		for ( i = 1; i < iL; i++ ) {
 			lidir += '/'+ dir[ i ];
-			htmlpath += '<a>'+ dir[ i ] +'<bl>/</bl><span class="lidir">'+ lidir +'</span></a>';
+			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
 	if ( htmlpath ) $( '#lib-breadcrumbs' )
