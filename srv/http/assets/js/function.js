@@ -669,6 +669,15 @@ function infoPlayback() {
 				window[ '$'+ k ] = $chk.eq( i );
 				window[ k ] = i;
 			} );
+			function toggleBars( t, c ) {
+				if ( !t && !c ) {
+					displayCheckboxSet( bars, 0, 1 );
+					displayCheckboxSet( barsalways, 1 );
+				} else {
+					displayCheckboxSet( bars, 1 );
+					displayCheckboxSet( barsalways, 1 );
+				}
+			}
 			if ( !G.display.bars ) displayCheckboxSet( barsalways );
 			if ( !G.display.cover ) displayCheckboxSet( vumeter );
 			if ( G.display.volumenone ) displayCheckboxSet( volume, 0, 0 );
@@ -676,9 +685,11 @@ function infoPlayback() {
 				displayCheckboxSet( cover );
 				displayCheckboxSet( buttons );
 			}
+			if ( !G.display.time && !G.display.cover ) displayCheckboxSet( bars, 0, 1 );
 			if ( G.status.player !== 'mpd' ) displayCheckboxSet( buttons );
 			$time.add( $volume ).change( function() {
 				var t = $time.prop( 'checked' );
+				var c = $cover.prop( 'checked' );
 				var v = $volume.prop( 'checked' );
 				if ( t || v ) {
 					displayCheckboxSet( cover, 1 );
@@ -688,6 +699,7 @@ function infoPlayback() {
 					displayCheckboxSet( buttons, 0, 0 );
 				}
 				if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( cover, 1, 1 );
+				toggleBars( t, c );
 			} );
 			$bars.change( function() {
 				if ( $( this ).prop( 'checked' ) ) {
@@ -697,7 +709,10 @@ function infoPlayback() {
 				}
 			} );
 			$cover.change( function() {
-				if ( $( this ).prop( 'checked' ) ) {
+				var t = $time.prop( 'checked' );
+				var c = $cover.prop( 'checked' );
+				var v = $volume.prop( 'checked' );
+				if ( c ) {
 					displayCheckboxSet( coversmall, 1 );
 					displayCheckboxSet( vumeter, 1, 0 );
 					$vumeter.prop( 'disabled', 0 );
@@ -705,9 +720,10 @@ function infoPlayback() {
 				} else {
 					displayCheckboxSet( coversmall, 0, 0 );
 					displayCheckboxSet( vumeter, 0, 0 );
-					if ( !$time.prop( 'checked' ) && ( !$volume.prop( 'checked' ) || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
+					if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
 					$coverdefault.toggleClass( 'hide', true );
 				}
+				toggleBars( t, c );
 			} );
 			$vumeter.change( function() {
 				var checked = $( this ).prop( 'checked' );
