@@ -826,7 +826,7 @@ $( '.map' ).on( 'tap', function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		if ( G.status.state === 'play' && !G.localhost ) {
+		if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
 			setProgress();
 			setTimeout( setProgressAnimate, 0 );
 		}
