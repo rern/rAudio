@@ -60,8 +60,6 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 
-[[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
-
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
@@ -115,6 +113,8 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdchar.py
 fi
 [[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
+
+[[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
 
