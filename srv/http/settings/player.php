@@ -230,4 +230,4 @@
 <pre id="codempdignore" class="hide"></pre>
 </div>
 
-<div style="clear:both"></div>
+<div style="height: 80px;"></div>

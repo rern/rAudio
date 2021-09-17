@@ -323,5 +323,3 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations<br>
 <a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 </div>
-
-<div style="clear: both"></div>
