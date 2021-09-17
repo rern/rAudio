@@ -838,9 +838,7 @@ i.map.disabled, .map.disabled i {
 	top: 150px;
 }
 .btn-group {
-	position: relative;
 	display: inline-block;
-	vertical-align: middle;
 }
 .btn-group>.btn {
 	position: relative;
@@ -862,17 +860,6 @@ i.map.disabled, .map.disabled i {
 	width: 40px;
 	font-size:24px;
 	line-height: 40px;
-}
-.btn-group::before {
-	position: absolute;
-	content: '';
-	top: 0;
-	left: 0;
-	width: 120px;
-	height: 40px;
-	border-radius: 4px;
-	box-shadow: 0 0 1px 1px var( --cga );
-	z-index: -10;
 }
 #play-group .btn.active,
 #volmute.btn-default.active {

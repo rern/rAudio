@@ -302,32 +302,32 @@ function displayCheckboxSet( i, enable, check ) {
 		.parent().toggleClass( 'gr', !enable );
 }
 function displayPlayback() {
-	$( '#time-knob' ).toggleClass( 'hide', !G.display.time );
-	$( '#coverart-block' )
+	var $time = $( '#time-knob' );
+	var $cover = $( '#coverart-block' );
+	var $volume = $( '#volume-knob' );
+	$time.toggleClass( 'hide', !G.display.time );
+	$cover
 		.toggleClass( 'hide', !G.display.cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
-	var timevisible = $( '#time-knob' ).is( ':visible' );
-	var volumevisible = G.display.volume && !G.display.volumenone;
-	$( '#volume-knob' ).toggleClass( 'hide', !volumevisible );
-	var column = ( timevisible ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + ( volumevisible ? 1 : 0 );
+	var time = $time.is( ':visible' );
+	var cover = G.display.cover;
+	var volume = G.display.volume && !G.display.volumenone;
+	$volume.toggleClass( 'hide', !volume );
+	var column = ( time ? 1 : 0 ) + ( G.display.cover ? 1 : 0 ) + ( volume ? 1 : 0 );
 	var $elements = $( '#time-knob, #coverart-block, #volume-knob, #play-group, #vol-group' );
 	if ( column === 2 ) {
 		$elements.css( 'width', '' );
-		$( '#coverart-block' ).addClass( 'coverlarge' );
+		$cover.addClass( 'coverlarge' );
 		$( '#time-knob, #volume-knob, #play-group, #vol-group' ).addClass( 'knobsmall' );
-		$( '#time-knob' ).css( 'margin-right', '20px' );
-		$( '#volume-knob' ).css( 'margin-left', '20px' );
 	} else {
 		$elements.css( 'width', column === 1 ? '100%' : '' );
 		$( '#playback-row' ).css( 'max-width', '' );
-		$( '#coverart-block' ).removeClass( 'coverlarge' );
+		$cover.removeClass( 'coverlarge' );
 		$( '#time-knob, #volume-knob, #play-group, #vol-group' ).removeClass( 'knobsmall' );
-		$( '#time-knob' ).css( 'margin-right', '' );
-		$( '#volume-knob' ).css( 'margin-left', '' );
 	}
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	if ( timevisible ) {
+	if ( time ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	}
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
