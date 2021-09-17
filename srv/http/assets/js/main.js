@@ -826,7 +826,10 @@ $( '.map' ).on( 'tap', function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		renderPlayback();
+		if ( !G.localhost ) {
+			setProgress();
+			setTimeout( setProgressAnimate, 0 );
+		}
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		$( '#button-settings' ).click();
