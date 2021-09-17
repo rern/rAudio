@@ -596,9 +596,6 @@ input:checked + .switchlabel.disabled:after {
 	heading {
 		letter-spacing: 4px;
 	}
-	grw {
-		display: none;
-	}
 	#guide .btn {
 		width: 70px;
 	}

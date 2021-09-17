@@ -13,15 +13,14 @@ ib {
 }
 #biocontent .artist,
 #elapsed,
-#lib-mode-list wh,
+#lib-mode-list gr,
 #volume,
 .biosimilar p,
 .bklabel,
-.content-top grl,
-.content-top whl,
+.content-top gr,
+.content-top wh,
 .label,
 .liinfo,
-.lib-mode grl,
 .title {
 	font-weight: 300;
 }
@@ -1278,25 +1277,15 @@ i.map.disabled, .map.disabled i {
 	font-size: 48px;
 	line-height: 60px;
 }
-.mode grl {
+.mode gr {
 	margin-left: 5px;
 }
 .nolabel {
 	padding-top: 25px;
 }
 #lib-mode-list gr {
-	font-size: 18px;
-	line-height: 18px;
-}
-#lib-mode-list gr i {
-	width: 18px;
-	height: 18px;
-	font-size: 18px;
-}
-#lib-mode-list wh {
-	display: block;
-	font-size: 18px;
-	line-height: 40px;
+	font-size: 16px;
+	line-height: 16px;
 }
 .divbklabel {
 	overflow: hidden;
@@ -2096,7 +2085,7 @@ li.active .li2 bl {
 
 @media (max-width: 540px)  { .lib-mode { width: calc( 100% / 4 ) } }
 @media (max-width: 440px)  { .lib-mode { width: calc( 100% / 3 ) } }
-@media (max-width: 340px)  { .mode grl { display: none } }
+@media (max-width: 340px)  { .mode gr { display: none } }
 
 @media ( orientation: landscape ) {
 	@media ( max-height: 480px ) {

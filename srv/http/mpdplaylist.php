@@ -268,7 +268,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	if ( $plname ) $counthtml.= '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'&ensp;<gr> · </gr></span>';
 	if ( $countsong ) {
 		$counthtml.= '<wh id="pl-trackcount">'.number_format( $countsong ).'</wh><i class="fa fa-music"></i>'
-					.'<grl id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</grl>';
+					.'<gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';

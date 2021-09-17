@@ -333,7 +333,7 @@ function psMpdUpdate( data ) {
 		$( '#li-count' ).html( data.song.toLocaleString() );
 		G.status.counts = data;
 		$.each( data, function( key, val ) {
-			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
+			$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 		} );
 		if ( G.library ) {
 			if ( G.mode === 'webradio' ) {
@@ -547,8 +547,8 @@ function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
-	$( '#mode-webradio grl' ).text( data )
-	if ( G.librarylist ) $( '#mode-webradio grl' ).click();
+	$( '#mode-webradio gr' ).text( data )
+	if ( G.librarylist ) $( '#mode-webradio gr' ).click();
 	if ( G.playlist && !G.local ) getPlaylist();
 }
 

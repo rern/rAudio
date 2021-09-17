@@ -466,7 +466,7 @@ function getPlaybackStatus() {
 			if ( !G.librarylist && G.status.counts ) {
 				$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
 				$.each( G.status.counts, function( key, val ) {
-					$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
+					$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 				} );
 			}
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
@@ -938,7 +938,7 @@ function playlistFilter() {
 	} );
 	$( 'html, body' ).scrollTop( 0 );
 	if ( keyword ) {
-		$( '#pl-search-close' ).html( '<i class="fa fa-times"></i><span>'+ count +' <grl>of</grl> </span>' );
+		$( '#pl-search-close' ).html( '<i class="fa fa-times"></i><span>'+ count +' <gr>of</gr> </span>' );
 	} else {
 		$( '#pl-search-close' ).empty();
 	}
@@ -995,7 +995,7 @@ function renderLibrary() {
 		var name = this.id.replace( 'mode-', '' );
 		$( this ).parent().toggleClass( 'hide', !G.display[ name ] );
 	} );
-	$( '.mode grl' ).toggleClass( 'hide', !G.display.count );
+	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 	if ( G.display.label ) {
 		$( '#lib-mode-list a.label' ).show();
 		$( '.mode' ).removeClass( 'nolabel' );
@@ -1027,7 +1027,7 @@ function renderLibraryList( data ) {
 	if ( 'count' in data ) {
 		$( '#lib-path' ).css( 'max-width', '40px' );
 		$( '#lib-list' ).css( 'width', '100%' );
-		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <grl>of</grl></span>' );
+		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
@@ -1049,7 +1049,7 @@ function renderLibraryList( data ) {
 		var iL = dir.length;
 		for ( i = 1; i < iL; i++ ) {
 			lidir += '/'+ dir[ i ];
-			htmlpath += '<a>'+ dir[ i ] +'<blb>/</blb><span class="lidir">'+ lidir +'</span></a>';
+			htmlpath += '<a>'+ dir[ i ] +'<bl>/</bl><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
 	if ( htmlpath ) $( '#lib-breadcrumbs' )

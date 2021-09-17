@@ -80,7 +80,7 @@ function renderStatus() {
 	} else {
 		$( '#cputemp' ).hide();
 	}
-	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'&emsp;<grw>'+ G.timezone.replace( '/', ' · ' ) +'</grw>'
+	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
@@ -108,7 +108,7 @@ renderPage = function( list ) {
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel
-		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<grw>$1</grw>' )
+		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
 		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
 		+'<br>'+ cpu
 	);

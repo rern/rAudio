@@ -243,7 +243,7 @@ $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
 	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
 		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
-	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, grl, \
+	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, \
 		#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', '' );
 	$( '.menu a' ).css( 'border-top', '' );
 	$( '#lib-list li' ).css( 'border-bottom', '' );
