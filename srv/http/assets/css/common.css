@@ -90,7 +90,13 @@ input::-moz-focus-inner {
 	font-weight: normal;
 	font-style: normal;
 }
-/* @font-face 'rern' declared in <head> for cache busting */
+@font-face {
+	font-family: rern;
+	src: url( '/assets/fonts/rern.woff2' ) format( 'woff2' );
+	font-display: block;
+	font-style: normal;
+	font-weight: normal;
+}
 .fa {
 	display: inline-block;
 	font-family: rern;

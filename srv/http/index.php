@@ -24,12 +24,6 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 	<meta name="msapplication-tap-highlight" content="no">
 	<link rel="icon" href="/assets/img/icon.png">
 	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
-	<style>
-		@font-face {
-			font-family: rern; font-display: block; font-style: normal; font-weight: normal;
-			src: url( "/assets/fonts/rern.<?=$time?>.woff2" ) format( 'woff2' );
-		}
-	</style>
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
