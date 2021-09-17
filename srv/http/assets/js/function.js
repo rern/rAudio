@@ -313,10 +313,14 @@ function displayPlayback() {
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
 	var volume = G.display.volume && !G.display.volumenone;
+	var visible = 0;
+	if ( time ) visible++;
+	if ( cover ) visible++;
+	if ( volume ) visible++;
 	$volume.toggleClass( 'hide', !volume );
 	var sumW = $time.width() + $cover.width() + $volume.width();
 	var wW = window.innerWidth;
-	if ( sumW > wW && sumW < wW * 1.5 ) $( '#time-knob, #coverart-block, #volume-knob' ).css( 'width', '50%' );
+	if ( visible === 2 || sumW > wW && sumW < wW * 1.5 ) $( '#time-knob, #coverart-block, #volume-knob' ).css( 'width', '45%' );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
