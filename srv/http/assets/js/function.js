@@ -37,8 +37,8 @@ function addonsdl( std ) {
 }
 function clearIntervalAll() {
 	// .btn-cmd[!play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
-	// psNotify, pushstream[disconnect], renderPlayback, setProgressInterval, setPlaylistScroll, switchPage
-	[ G.intElapsedPl, G.intProgress, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
+	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
+	[ G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
 	if ( G.status.state === 'play' && !G.status.stream ) setProgress(); // stop progress animation
@@ -1103,7 +1103,7 @@ function renderPlayback() {
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			$( '#progress' ).html( istate +'<span></span>' );
-			if ( G.display.radioelapsed ) setProgressInterval();
+			if ( G.display.radioelapsed ) setProgressElapsed();
 		}
 		return
 	}
@@ -1136,7 +1136,7 @@ function renderPlayback() {
 		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
 		$( '#total' ).addClass( 'wh' );
 	} else { //play
-		setProgressInterval();
+		setProgressElapsed();
 	}
 }
 function renderPlaylist( data ) {
@@ -1353,7 +1353,7 @@ function setInfo() {
 		$( '#playericon' ).removeAttr( 'class' );
 		if ( G.status.icon ) $( '#playericon' ).addClass( 'fa fa-'+ G.status.icon );
 	}
-	if ( $( '#time-knob' ).is( ':hidden' ) ) setProgressInterval();
+	if ( $( '#time-knob' ).is( ':hidden' ) ) setProgressElapsed();
 }
 function setInfoScroll() {
 	var wW = document.body.clientWidth;
@@ -1508,7 +1508,7 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( G.status.state !== 'play' || G.status.stream ) clearInterval( G.intProgress );
+	if ( G.status.state !== 'play' || G.status.stream ) clearInterval( G.intElapsed );
 	if ( position !== 0 ) position = G.status.elapsed;
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
@@ -1520,14 +1520,13 @@ function setProgressAnimate() {
 	$timeRS.setValue( G.status.Time );
 	$( '#time-bar' ).css( 'width', '100%' );
 }
-function setProgressInterval() {
+function setProgressElapsed() {
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	var elapsedhms = second2HMS( G.status.elapsed );
-	var $elapsed = G.status.stream ? $( '#total' ) : $( '#elapsed' );
+	var $elapsed = G.status.stream ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
 	$elapsed.text( elapsedhms );
-	$( '#progress span' ).html( elapsedhms );
-	clearInterval( G.intProgress );
+	clearInterval( G.intElapsed );
 	if ( G.status.Time ) {
 		var time = G.status.Time;
 		var timehms = ' / '+ second2HMS( time );
@@ -1538,7 +1537,7 @@ function setProgressInterval() {
 		} else {
 			$timeprogress.css( 'transition-duration', '0s' );
 		}
-		G.intProgress = setInterval( function() {
+		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			if ( G.status.elapsed < time ) {
 				if ( G.localhost ) {
@@ -1547,23 +1546,20 @@ function setProgressInterval() {
 				}
 				elapsedhms = second2HMS( G.status.elapsed );
 				$elapsed.text( elapsedhms );
-				$( '#progress span' ).html( elapsedhms );
-				if ( G.status.state !== 'play' ) clearInterval( G.intProgress );
+				if ( G.status.state !== 'play' ) clearInterval( G.intElapsed );
 			} else {
 				G.status.elapsed = 0;
 				clearIntervalAll();
 				$elapsed.empty();
 				setProgress( 0 );
-				$( '#progress span' ).empty();
 			}
 		}, 1000 );
 	} else if ( G.display.radioelapsed ) {
-		G.intProgress = setInterval( function() {
+		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			elapsedhms = second2HMS( G.status.elapsed );
 			$elapsed.text( elapsedhms );
-			$( '#progress span' ).html( elapsedhms );
-			if ( G.status.state !== 'play' ) clearInterval( G.intProgress );
+			if ( G.status.state !== 'play' ) clearInterval( G.intElapsed );
 		}, 1000 );
 	}
 }

@@ -768,13 +768,6 @@ $( '.map' ).on( 'tap', function() {
 	
 	hideGuide();
 	if ( cmd === 'cover' ) {
-		if ( $( '#info' ).hasClass( 'hide' ) ) {
-			$( '#info' ).removeClass( 'hide' );
-			clearTimeout( G.volumebar );
-			volumeBarHide();
-			return
-		}
-		
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
 		
@@ -887,7 +880,7 @@ $( '.btn-cmd' ).click( function() {
 			vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
-			clearInterval( G.intProgress );
+			clearInterval( G.intElapsed );
 			if ( G.status.player === 'airplay' ) {
 				bash( '/srv/http/bash/shairport.sh stop' );
 			} else if ( G.status.player === 'bluetooth' ) {
