@@ -1697,9 +1697,11 @@ i.map.disabled, .map.disabled i {
 .fixedcover {
 	height: calc( 100vh - 320px ) !important;
 }
-.lib-mode.updn .mode,
-#pl-list li.updn {
+.lib-mode.updn .mode {
 	background: var( --cga );
+}
+#pl-list li.updn {
+	background: var( --cmd );
 }
 #pl-list li.active.updn {
 	background: var( --cm );

@@ -8,9 +8,11 @@
 	background-color: var( --cga );
 }
 #lib-list li.updn:hover,
-#pl-savedlist li.updn:hover,
-#pl-list li.updn:hover {
+#pl-savedlist li.updn:hover {
 	background-color: var( --cga );
+}
+#pl-list li.updn:hover {
+	background-color: var( --cmd );
 }
 #bar-top i.active:hover,
 #bar-bottom i.active:hover,
