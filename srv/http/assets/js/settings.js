@@ -73,16 +73,16 @@ function codeToggle( id, target ) {
 				if ( systemctl ) status = status
 									.replace( /(.*)\n/, '<grn>$1</grn>\n' )
 									.replace( /(failed)/, '<red>$1</red>' );
-				$el
-					.html( cmdtxt + status )
-					.removeClass( 'hide' );
-				if ( id === 'mpdconf' ) {
-					setTimeout( function() {
-						$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-					}, 100 );
-				}
-				bannerHide();
-				if ( id === 'albumignore' || id === 'mpdignore' ) $( '#code'+ id )[ 0 ].scrollIntoView();
+				$el.html( cmdtxt + status ).promise().done( function() {
+					$el.removeClass( 'hide' );
+					if ( id === 'mpdconf' ) {
+						setTimeout( function() {
+							$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
+						}, 100 );
+					}
+					if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
+					bannerHide();
+				} );
 			} );
 		}, delay );
 	} else {
@@ -388,7 +388,7 @@ $( '#help' ).click( function() {
 		var visible = $( '#bar-bottom' ).css( 'display' ) !== 'none';
 		$( '#bar-bottom' ).css( 'display', visible ? '' : 'block' );
 	}
-	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
+	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 } );
 $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
