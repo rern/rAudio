@@ -537,8 +537,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonnoreset : 1
 		, ok            : function() {
 			var values = infoVal();
-			var reboot = values[ 2 ] === 'i2c' ? 'Character LCD' : '';
-			bash( [ 'lcdcharset', ...values, reboot ] );
+			bash( [ 'lcdcharset', infoVal() ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
