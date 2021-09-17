@@ -32,7 +32,7 @@ $selecttimezone.= '</select>';
 <heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$ihelp?></heading>
 <div id="statuslabel" class="col-l text gr">
 		CPU Load
-	<span id="cputemp"><br>CPU Temperatue</span>
+	<span id="cputemp"><br>CPU Temperature</span>
 	<br>Time
 	<br>Up Time
 	<br>Boot Duration
