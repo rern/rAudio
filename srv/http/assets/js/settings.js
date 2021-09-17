@@ -63,6 +63,7 @@ function codeToggle( id, target ) {
 			return
 		}
 		
+		if ( id === 'journalctl' || id === 'mpdignore' ) banner( 'Get Data', id, page, -1 );
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
@@ -80,6 +81,8 @@ function codeToggle( id, target ) {
 						$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
 					}, 100 );
 				}
+				bannerHide();
+				if ( id === 'albumignore' || id === 'mpdignore' ) $( '#code'+ id )[ 0 ].scrollIntoView();
 			} );
 		}, delay );
 	} else {
