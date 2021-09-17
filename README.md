@@ -118,9 +118,11 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
-	- Update Library database:
+	- Build Library database:
 		- Automatically run on boot if database is empty with connected USB and NAS
-		- Force update - Settings > update Library (icon next to Sources)
+		- Force build / update - Settings > update Library (icon next to Sources)
+		- Tracks on existing database can be played during updating.
+		- Before database is available, default WebRadio stations are available for playing.
 	- Parse coverarts for Album and directory thumbnails :
 		- Only if never run before or to force update
 		- Library > Album > coverart icon (next to ALBUM heading)
