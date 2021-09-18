@@ -5,7 +5,6 @@ function branchtest( alias, type, message, install ) {
 		, message   : message
 		, textlabel : 'Tree #/Branch'
 		, values    : 'UPDATE'
-		, boxwidth  : 'max'
 		, ok        : function() {
 			opt = [ alias, type, infoVal() ];
 			option = addons[ alias ].option;
