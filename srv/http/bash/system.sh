@@ -254,17 +254,18 @@ lcdchardisable )
 	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
+	v=( ${args[1]} )
 	! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	conf="\
 [var]
-cols=${args[1]}
-charmap=${args[2]}"
-	if [[ ${args[3]} == i2c ]]; then
+cols=${v[0]}
+charmap=${v[1]}"
+	if [[ ${v[2]} == i2c ]]; then
 		conf+="
-address=${args[4]}
-chip=${args[5]}"
+address=${v[3]}
+chip=${v[4]}"
 		echo "\
 dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
@@ -273,16 +274,16 @@ i2c-dev" >> $filemodule
 		echo 'Charater LCD module' >> $filereboot
 	else
 		conf+="\
-pin_rs=${args[6]}
-pin_rw=${args[7]}
-pin_e=${args[8]}
-pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
+pin_rs=${v[5]}
+pin_rw=${v[6]}
+pin_e=${v[7]}
+pins_data=$( echo ${v[@]:8:4} | tr ' ' , )"
 		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 		fi
 	fi
 	conf+="
-backlight=${args[13]}"
+backlight=${v[12]}"
 	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar

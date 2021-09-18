@@ -536,7 +536,7 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			bash( [ 'lcdcharset', infoVal() ] );
+			bash( [ 'lcdcharset', infoVal().toString().replace( /,/g, ' ' ) ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
