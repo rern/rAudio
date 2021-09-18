@@ -318,7 +318,7 @@ function displayPlayback() {
 	if ( cover ) visible++;
 	if ( volume ) visible++;
 	$volume.toggleClass( 'hide', !volume );
-	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
+	$( '.btn-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	}
