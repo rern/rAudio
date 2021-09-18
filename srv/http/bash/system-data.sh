@@ -91,6 +91,7 @@ if [[ -n $nas ]]; then
 		fi
 	done
 fi
+list="[ ${list:1} ]"
 
 if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
@@ -123,7 +124,7 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 			[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
 		fi
 	done
-	lcdcharconf=[${pins:1}]
+	lcdcharconf="[ ${pins:1} ]" # need a space before end bracket
 else
 	lcdcharconf='[20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false]'
 fi
@@ -141,7 +142,7 @@ data+='
 , "lcdchar"          : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
 , "lcdcharaddr"      : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
 , "lcdcharconf"      : '$lcdcharconf'
-, "list"             : ['${list:1}']
+, "list"             : '$list'
 , "lcdmodel"         : "'$lcdmodel'"
 , "mpdoled"          : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'
 , "mpdoledval"       : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
