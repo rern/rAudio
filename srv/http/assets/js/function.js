@@ -318,9 +318,6 @@ function displayPlayback() {
 	if ( cover ) visible++;
 	if ( volume ) visible++;
 	$volume.toggleClass( 'hide', !volume );
-	var sumW = $time.width() + $cover.width() + $volume.width();
-	var wW = window.innerWidth;
-	if ( visible === 2 || sumW > wW && sumW < wW * 1.5 ) $( '#time-knob, #coverart-block, #volume-knob' ).css( 'width', '45%' );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
@@ -1422,6 +1419,7 @@ function setPlaybackBlank() {
 			, pad : 10
 		} );
 		$( '#qrwebui' ).html( qr );
+		$( '.qr' ).removeClass( 'hide' );
 		$( '#coverTR' ).toggleClass( 'empty', $( '#bar-top' ).is( ':hidden' ) );
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#sampling' ).empty();
@@ -1434,6 +1432,7 @@ function setPlaybackBlank() {
 			.on( 'click', '.fa-networks', function() {
 				location.href = 'settings.php?p=networks';
 			} );
+		$( '.qr' ).addClass( 'hide' );
 	}
 	vu();
 }
