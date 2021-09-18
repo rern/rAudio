@@ -235,8 +235,7 @@ $( '#setting-crossfade' ).click( function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
 		, ok           : function() {
-			crossfadeval = infoVal();
-			bash( [ 'crossfadeset', crossfadeval ] );
+			bash( [ 'crossfadeset', infoVal() ] );
 			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -252,8 +251,7 @@ $( '#setting-replaygain' ).click( function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
 		, ok           : function() {
-			replaygainval = infoVal();
-			bash( [ 'replaygainset', replaygainval ] );
+			bash( [ 'replaygainset', infoVal() ] );
 			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -354,8 +352,7 @@ $( '#setting-soxr' ).click( function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			var soxrval = infoVal().join( ' ' );
-			bash( [ 'soxrset', soxrval ] );
+			bash( [ 'soxrset', infoVal().join( ' ' ) ] );
 			notify( 'SoXR Custom Settings', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
