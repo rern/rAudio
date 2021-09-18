@@ -306,9 +306,10 @@ function displayPlayback() {
 	var $cover = $( '#coverart-block' );
 	var $volume = $( '#volume-knob' );
 	$time.toggleClass( 'hide', !G.display.time );
+	$volume.toggleClass( 'hide', !G.display.volume || G.display.volumenone );
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
-	var volume = G.display.volume && !G.display.volumenone;
+	var volume = $volume.is( ':visible' );
 	$cover
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
@@ -316,21 +317,25 @@ function displayPlayback() {
 	if ( ( !time || !volume ) && window.innerWidth > 500 ) {
 		$( '#playback-row' ).css( 'align-items', 'center' );
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
-		$cover.css( 'width', 'unset' );
 	} else {
 		$( '#playback-row' ).css( 'align-items', '' );
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
-		$cover.css( 'width', '' );
 	}
-	$volume.toggleClass( 'hide', !volume );
+	if ( !time && !volume ) {
+		$cover.css( { width: '100%', 'max-width': '100%' } );
+	} else if ( !time || !volume ) {
+		$cover.css( { width: '100%', 'max-width': '55vw' } );
+	} else {
+		$cover.css( { width: '', 'max-width': '' } );
+	}
 	$( '.btn-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) {
 		$( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	}
-	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', $( '#time-knob' ).is( ':visible' ) );
+	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
 	$( '#time, .timemap, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
-	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || $( '#volume-knob' ).is( ':visible' ) );
+	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 }
