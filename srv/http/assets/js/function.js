@@ -306,17 +306,22 @@ function displayPlayback() {
 	var $cover = $( '#coverart-block' );
 	var $volume = $( '#volume-knob' );
 	$time.toggleClass( 'hide', !G.display.time );
-	$cover
-		.toggleClass( 'hide', !G.display.cover )
-		.toggleClass( 'coversmall', G.display.coversmall );
-	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
 	var volume = G.display.volume && !G.display.volumenone;
-	var visible = 0;
-	if ( time ) visible++;
-	if ( cover ) visible++;
-	if ( volume ) visible++;
+	$cover
+		.toggleClass( 'hide', !cover )
+		.toggleClass( 'coversmall', G.display.coversmall );
+	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
+	if ( ( !time || !volume ) && window.innerWidth > 500 ) {
+		$( '#playback-row' ).css( 'align-items', 'center' );
+		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
+		$cover.css( 'width', 'unset' );
+	} else {
+		$( '#playback-row' ).css( 'align-items', '' );
+		$( '#time-knob, #volume-knob' ).css( 'width', '' );
+		$cover.css( 'width', '' );
+	}
 	$volume.toggleClass( 'hide', !volume );
 	$( '.btn-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) {
