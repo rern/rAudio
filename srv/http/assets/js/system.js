@@ -375,9 +375,8 @@ $( '#setting-bluetooth' ).click( function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
 		, ok           : function() {
-			var v = infoVal();
 			notify( 'Bluetooth', G.bluetooth ? 'Change ...' : 'Enable ...', 'bluetooth' );
-			bash( [ 'bluetoothset', v[ 0 ], v[ 1 ] ] );
+			bash( [ 'bluetoothset', ...infoVal() ] );
 		}
 	} );
 } );
@@ -536,7 +535,7 @@ $( '#setting-lcdchar' ).click( function() {
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
-			bash( [ 'lcdcharset', infoVal().toString().replace( /,/g, ' ' ) ] );
+			bash( [ 'lcdcharset', ...infoVal() ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
@@ -690,9 +689,8 @@ $( '#setting-vuled' ).click( function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
 		}
 		, ok           : function() {
-			var pins = infoVal().join( ' ' );
 			notify( 'VU LED', 'Change ...', 'led' );
-			bash( [ 'vuledset', pins ] );
+			bash( [ 'vuledset', infoVal().join( ' ' ) ] );
 		}
 	} );
 } );
@@ -734,9 +732,8 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			} );
 		}
 		, ok           : function() {
-			var hostname = infoVal();
 			notify( 'Name', 'Change ...', 'plus-r' );
-			bash( [ 'hostname', hostname ] );
+			bash( [ 'hostname', infoVal() ] );
 		}
 	} );
 } );
@@ -754,7 +751,6 @@ $( '#setting-timezone' ).click( function() {
 		, checkchanged : 1
 		, checkblank   : 1
 		, ok           : function() {
-			var values = infoVal();
 			notify( 'NTP server', 'Change ...', 'globe' );
 			bash( [ 'ntp', infoVal() ] );
 		}
