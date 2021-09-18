@@ -104,7 +104,7 @@ else
 	i=0
 fi
 
-devices=${devices:1}
+devices="[ ${devices:1} ]"
 aplayname=${Aaplayname[i]}
 output=${Aname[i]}
 

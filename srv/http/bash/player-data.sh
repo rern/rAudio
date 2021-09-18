@@ -8,7 +8,7 @@ active=$( mpc &> /dev/null && echo true || echo false )
 
 data='
   "page"            : "player"
-, "devices"         : ['$devices']
+, "devices"         : '$devices'
 , "active"          : '$active'
 , "asoundcard"      : '$i'
 , "audioaplayname"  : "'$aplayname'"

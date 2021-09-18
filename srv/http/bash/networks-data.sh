@@ -86,7 +86,6 @@ if [[ -n $notconnected ]]; then
 , "ssid"     : "'$ssid'"
 }'
 	done
-	listwlannc=[${listwlannc:1}]
 fi
 
 # bluetooth
@@ -108,7 +107,6 @@ if systemctl -q is-active bluetooth; then
 , "mac"       : "'$mac'"
 }'
 		done
-		listbt=[${listbt:1}]
 	fi
 fi
 
@@ -117,9 +115,9 @@ data='
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
 , "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
-, "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
+, "listbt"     : '$( [[ -n $listbt ]] && echo [ ${listbt:1} ] || echo false )'
 , "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
-, "listwlannc" : '$( [[ -n $listwlannc ]] && echo $listwlannc || echo false )'
+, "listwlannc" : '$( [[ -n $listwlannc ]] && echo [ ${listwlannc:1} ] || echo false )'
 , "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
 , "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
 , "hostname"   : "'$( hostname )'"

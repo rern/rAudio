@@ -41,7 +41,7 @@ if [[ -e $xinitrc ]]; then
 		for (( i=0; i < 4; i++ )); do
 			(( i != 2 )) && v+=,${val[$i]} || v+=",\"${val[$i]}\""
 		done
-		localbrowserconf=[${v:1}]
+		localbrowserconf="[ ${v:1} ]"
 	else
 		localbrowserconf='[ 0, 1, "NORMAL", false ]'
 	fi

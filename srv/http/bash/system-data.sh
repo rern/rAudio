@@ -126,7 +126,7 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 	done
 	lcdcharconf="[ ${pins:1} ]" # need a space before end bracket
 else
-	lcdcharconf='[20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false]'
+	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 
 data+='
