@@ -7,10 +7,10 @@ if [[ -e $file ]]; then
   "page"  : "relays"
 , "pin"   : '$pin'
 , "name"  : '$name'
-, "on"    : ['$( echo ${on[@]} | tr ' ' , )']
-, "ond"   : ['$( echo ${ond[@]} | tr ' ' , )']
-, "off"   : ['$( echo ${off[@]} | tr ' ' , )']
-, "offd"  : ['$( echo ${offd[@]} | tr ' ' , )']
+, "on"    : [ '$( echo ${on[@]} | tr ' ' , )' ]
+, "ond"   : [ '$( echo ${ond[@]} | tr ' ' , )' ]
+, "off"   : [ '$( echo ${off[@]} | tr ' ' , )' ]
+, "offd"  : [ '$( echo ${offd[@]} | tr ' ' , )' ]
 , "timer" : '$timer
 else
 	data='
