@@ -467,6 +467,9 @@ i.map.disabled, .map.disabled i {
 	order: 2;
 	-webkit-order: 2;
 }
+#coverart {
+	display: block; /* fix container div larger tahn img */
+}
 #volume-knob {
 	order: 3;
 	-webkit-order: 3;
