@@ -273,7 +273,7 @@ i2c-bcm2708
 i2c-dev" >> $filemodule
 		echo 'Charater LCD module' >> $filereboot
 	else
-		conf+="\
+		conf+="
 pin_rs=${v[5]}
 pin_rw=${v[6]}
 pin_e=${v[7]}
