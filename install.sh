@@ -33,8 +33,9 @@ $( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
 	rm /etc/relays.conf
 fi
 
-[[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdcharval
+[[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
 [[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
+
 systemctl try-restart localbrowser
 
 [[ -e $dirsystem/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
