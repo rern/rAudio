@@ -2097,7 +2097,6 @@ li.active .li2 bl {
 	@media ( max-height: 335px ) {
 		#bar-top,
 		#bar-bottom,
-		#sampling { display: none }
 		#page-playback { padding-top: 20px !important }
 	}
 
@@ -2126,7 +2125,6 @@ li.active .li2 bl {
 			min-width: 30%;
 			margin: 0 10px;
 		}
-		#coverart-block { margin-top: -20px; }
 		#play-group,
 		#vol-group { display: none }
 	}
@@ -2223,8 +2221,6 @@ li.active .li2 bl {
 		padding: 40px 0 0 !important;
 	}
 	#info { transform: scale( 1.25 ) }
-	#sampling,
-	#guide-lyrics { display: none; }
 	#coverart-block,
 	#divcover { max-width: 100vh; }
 	#coverart-block { margin-bottom : 0; }
