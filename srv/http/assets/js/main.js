@@ -769,9 +769,12 @@ $( '.map' ).on( 'tap', function() {
 	hideGuide();
 	if ( cmd === 'cover' ) {
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
+		if ( G.status.player === 'mpd' && !G.status.playlistlength
+			|| $( '#page-playback' ).css( 'transform' ) !== 'none'
+		) return
 		
-		if ( ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
+		if ( !( 'coverTL' in G )
+			&& ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 			&& !G.display.volumenone
 			&& !$( '#volume-knob' ).is( ':visible' )
 		) {

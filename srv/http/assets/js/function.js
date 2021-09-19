@@ -320,12 +320,11 @@ function displayPlayback() {
 			$cover.css( { width: '100%', 'max-width': '100%' } );
 		} else if ( !time || !volume ) {
 			$cover.css( { width: '100%', 'max-width': '55vw' } );
-		} else {
-			$cover.css( { width: '', 'max-width': '' } );
 		}
 	} else {
 		$( '#playback-row' ).css( 'align-items', '' );
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
+		$cover.css( { width: '', 'max-width': '' } );
 	}
 	$( '.btn-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	$( '#playback-row' ).css( 'align-items', $( '.btn-group' ).is( ':visible' ) ? '' : 'center' );
