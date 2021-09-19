@@ -120,7 +120,12 @@ fi
 
 if [[ -n $connected ]]; then
 	rfkill | grep -q wlan && iw wlan0 set power_save off
-	$dirbash/cmd.sh addonsupdates
+	if : >/dev/tcp/8.8.8.8/53; then
+		$dirbash/cmd.sh addonsupdates
+		if ! ifconfig | grep -A1 ^eth | grep -q 'inet.*broadcast'; then # not by eth
+			ntpdate pool.ntp.org # fix wlan time sync
+		fi
+	fi
 else
 	if [[ ! -e $dirsystem/wlannoap ]]; then
 		modprobe brcmfmac &> /dev/null 

@@ -12,6 +12,12 @@ dirwebradios=$dirdata/webradios
 # convert each line to each args
 readarray -t args <<< "$1"
 
+addonsListGet() {
+	: >/dev/tcp/8.8.8.8/53 || exit -2 # online check
+	
+	[[ -z $1 ]] && branch=main || branch=$1
+	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
+}
 audiocdWaitStart() {
 	sleep 5
 	for i in {1..20}; do
@@ -234,30 +240,22 @@ case ${args[0]} in
 addonsclose )
 	script=${args[1]}
 	alias=${args[2]}
-	killall $script wget pacman &> /dev/null
+	killall $script curl pacman &> /dev/null
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
 	;;
 addonslist )
-	! : >/dev/tcp/8.8.8.8/53 && exit -2 # online check
+	addonsListGet ${args[1]}
 	
-	[[ -z ${args[1]} ]] && branch=main || branch=${args[1]}
-	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
-	[[ $? != 0 ]] && exit -1
-	
-	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
+	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
 	if [[ -n $bash ]]; then
-		eval "$bash"
-		[[ $? != 0 ]] && exit
+		eval "$bash" || exit
 	fi
 	
-	url=$( jq -r .push.url $diraddons/addons-list.json )
+	url=$( jq -r .push.url $diraddons/addons-list.json ) # push download
 	[[ -n $url ]] && bash <( curl -sL $url )
 	;;
 addonsupdates )
-	: >/dev/tcp/8.8.8.8/53 || exit # online check
-	
-	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-	[[ $? != 0 ]] && exit
+	addonsListGet
 
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	for addon in $installed; do
