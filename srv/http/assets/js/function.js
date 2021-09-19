@@ -327,7 +327,6 @@ function displayPlayback() {
 		$cover.css( { width: '', 'max-width': '' } );
 	}
 	$( '.btn-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
-	$( '#playback-row' ).css( 'align-items', $( '.btn-group' ).is( ':visible' ) ? '' : 'center' );
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
@@ -1096,9 +1095,8 @@ function renderPlayback() {
 		local();
 		$volumeRS.setValue( G.status.volume );
 		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
-	} else {
-		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	}
+	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		setPlaybackBlank();
 		return

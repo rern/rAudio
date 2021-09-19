@@ -109,6 +109,8 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
+	var knobH = $( '.btn-group' ).is( ':hidden' ) ? 230 : 290;
+	$( '#playback-row' ).css( 'align-items', $( '#coverart' ).height() > knobH ? 'center' : '' );
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
