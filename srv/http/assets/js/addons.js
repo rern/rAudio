@@ -3,7 +3,7 @@ function branchtest( alias, type, message, install ) {
 		  icon      : 'jigsaw'
 		, title     : title
 		, message   : message
-		, textlabel : 'Tree #/Branch'
+		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
 		, ok        : function() {
 			opt = [ alias, type, infoVal() ];
