@@ -30,7 +30,7 @@ if [[ -e /etc/relays.conf ]]; then
 	echo "\
 $pin
 $name
-$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
+$( sed -n '/^onorder/,/^timer/ p' /etc/relays.conf )" > $dirsystem/relays.conf
 	[[ -e $dirsystem/relays ]] && > $dirsystem/relays
 	rm /etc/relays.conf
 fi
