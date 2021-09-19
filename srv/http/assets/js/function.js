@@ -1112,7 +1112,7 @@ function renderPlayback() {
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 	if ( G.status.stream ) {
 		setProgress( 0 );
-		$( '#elapsed, #total' ).empty();
+		$( '#elapsed, #total, #progress' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 			$( '#progress' ).html( istate +'<span></span>' );

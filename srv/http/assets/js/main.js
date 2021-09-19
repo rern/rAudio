@@ -876,7 +876,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
 			if ( !G.status.elapsed ) $( '#elapsed' ).empty(); // 0 or false
-			if ( G.status.elapsed !== false ) setProgressAnimate();
+			if ( !G.status.stream && G.status.elapsed !== false ) setProgressAnimate();
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
