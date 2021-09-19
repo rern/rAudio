@@ -392,9 +392,10 @@ dtparam=spi=on" >> $fileconfig
 	pushRefresh
 	;;
 ntp )
-	ntp=${args[1]}
-	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
+	server=${args[1]}
+	sed -i "s/^\(NTP=\).*/\1$server/" /etc/systemd/timesyncd.conf
 	pushRefresh
+	ntpdate $server
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
