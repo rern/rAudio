@@ -6,6 +6,8 @@ alias=r1
 
 dirsystem=/srv/http/data/system
 
+[[ ! -e /usr/bin/ntpdate ]] && pacman -Sy --noconfirm ntp
+
 ! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
 
 [[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
