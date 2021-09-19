@@ -92,6 +92,7 @@ getinstallzip() {
 		| grep -v '/$' \
 		| sed 's|^|/|' \
 		| sort -V
+	rm -rf /srv/http/assets/{css,js}
 	bsdtar xf $installfile --strip 1 -C $tmpdir
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
