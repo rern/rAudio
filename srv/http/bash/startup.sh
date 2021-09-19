@@ -123,7 +123,8 @@ if [[ -n $connected ]]; then
 	if : >/dev/tcp/8.8.8.8/53; then
 		$dirbash/cmd.sh addonsupdates
 		if ! ifconfig | grep -A1 ^eth | grep -q 'inet.*broadcast'; then # not by eth
-			ntpdate pool.ntp.org # fix wlan time sync
+			server=$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )
+			ntpdate $server # fix wlan time sync
 		fi
 	fi
 else
