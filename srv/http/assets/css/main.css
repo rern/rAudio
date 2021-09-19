@@ -2057,10 +2057,7 @@ li.active .li2 bl {
 @media (max-width: 340px)  { .mode gr { display: none } }
 
 @media ( orientation: landscape ) {
-	#coverart-block, #divcover {
-		position: relative;
-		max-width: 50vh;
-	}
+	#coverart-block, #divcover { max-width: 50vh }
 	@media ( max-height: 540px ) {
 		#page-playback { padding: 40px 0 !important; }
 		#page-playback.barsalways { padding: 60px 0 60px !important }
