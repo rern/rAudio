@@ -2057,7 +2057,7 @@ li.active .li2 bl {
 @media (max-width: 340px)  { .mode gr { display: none } }
 
 @media ( orientation: landscape ) {
-	@media ( max-height: 480px ) {
+	@media ( max-height: 540px ) {
 		#page-playback { padding: 40px 0 !important; }
 		#page-playback.barsalways { padding: 60px 0 60px !important }
 		#page-playback {
