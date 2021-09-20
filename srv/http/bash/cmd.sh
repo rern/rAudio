@@ -25,7 +25,7 @@ audiocdWaitStart() {
 	done
 }
 gifNotify() {
-	pushstream notify '{"title":"Thumbnail","text":"Resize animated GIF ...","icon":"coverart blink","delay":-1}'
+	pushstreamNotify Thumbnail "Resize animated GIF ..." coverart
 }
 gifThumbnail() {
 	type=$1
@@ -111,8 +111,12 @@ pladdPosition() {
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
-pushstreamAudiocd() {
-	pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1}'
+pushstreamNotify() {
+	if [[ $1 == Power ]]; then
+		[[ $3 == power ]] && power=',"power":"off"' || power=',"power":"reboot"'
+	fi
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1'$power'}'
+	pushstream notify "$data"
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -447,21 +451,22 @@ displayget )
 	echo "$data"
 	;;
 displaysave )
-	data=$( jq . <<< ${args[1]} )
-	grep -q 'vumeter.*true' <<< "$data" && vumeter=true || vumeter=false
-	[[ -e $dirsystem/vumeter ]] && vumeter0=true || vumeter0=false
-	if [[ $vumeter != $vumeter0 ]]; then
-		[[ $vumeter == true ]] && touch $dirsystem/vumeter || rm $dirsystem/vumeter
-		$dirbash/mpd-conf.sh
-		status=$( $dirbash/status.sh )
-		pushstream mpdplayer "$status"
-		if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-			killall cava &> /dev/null
-			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		fi
-	fi
+	data=${args[1]}
 	pushstream display "$data"
-	echo "$data" > $dirsystem/display
+	jq . <<< $data > $dirsystem/display
+	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
+	[[ $data =~ '"vumeter":true' ]] && vumeter=1
+	[[ -n $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
+	[[ $prevvumeter == $vumeter ]] && exit
+	
+	pushstreamNotify 'Playback' 'VU meter change ...' 'playback'
+	$dirbash/mpd-conf.sh
+	status=$( $dirbash/status.sh )
+	pushstream mpdplayer "$status"
+	if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
+		killall cava &> /dev/null
+		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+	fi
 	;;
 ignoredir )
 	touch $dirsystem/updating
@@ -550,7 +555,7 @@ mpcplayback )
 			webradio=1
 			sleep 1 # fix: webradio start - blank 'file:' status
 		elif [[ $fileheadder == cdda && -z $pause ]]; then
-			pushstreamAudiocd "Start play ..."
+			pushstreamNotify 'Audio CD' 'Start play ...' audiocd
 			audiocdWaitStart
 		fi
 		killall relaystimer.sh &> /dev/null
@@ -590,7 +595,7 @@ mpcprevnext )
 		mpc stop
 	else
 		if [[ $( mpc | head -c 4 ) == cdda ]]; then
-			pushstreamAudiocd "Change track ..."
+			pushstreamNotify 'Audio CD' 'Change track ...' audiocd
 			audiocdWaitStart
 		fi
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
@@ -772,9 +777,9 @@ power )
 		sleep 2
 	fi
 	if [[ -n $reboot ]]; then
-		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
+		pushstreamNotify Power 'Reboot ...' reboot
 	else
-		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
+		pushstreamNotify Power 'Off ...' power
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
