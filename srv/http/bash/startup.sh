@@ -134,6 +134,3 @@ else
 		systemctl -q disable hostapd
 	fi
 fi
-
-systemdata=$( /srv/http/bash/system-data.sh )
-curl -s -X POST http://127.0.0.1/pub?id=refresh -d "$systemdata"
