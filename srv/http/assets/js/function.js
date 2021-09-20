@@ -1317,11 +1317,17 @@ function setButtonUpdating() {
 	}
 }
 function setCoverart() {
+	if ( !G.display.cover ) {
+		loaderHide();
+		return
+	}
+	
 	if ( G.display.vumeter ) {
 		$( '#coverart' )
 			.addClass( 'hide' )
 			.attr( 'src', '' );
 		$( '#vu' ).removeClass( 'hide' );
+		loaderHide();
 	} else {
 		var coverart = G.status.stream ? ( G.status.coverart || G.status.stationcover ) : G.status.coverart;
 		if ( coverart ) {
@@ -1531,6 +1537,8 @@ function setProgress( position ) {
 	$( '#time-bar' ).css( 'width', w +'%' );
 }
 function setProgressAnimate() {
+	if ( !G.display.time && !G.display.cover ) return
+	
 	$timeprogress.css( 'transition-duration', G.status.Time - G.status.elapsed +'s' );
 	$timeRS.setValue( G.status.Time );
 	$( '#time-bar' ).css( 'width', '100%' );
@@ -1620,7 +1628,6 @@ function statusRefresh() {
 	}, 'json' );
 	getPlaybackStatus();
 	bannerHide();
-	loaderHide();
 }
 function stopAirplay() {
 	info( {

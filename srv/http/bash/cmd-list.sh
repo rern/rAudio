@@ -88,7 +88,7 @@ for mode in album albumartist artist composer conductor genre date; do
 				album=$( sed "/^$line^/ d" <<< "$album" )
 			done
 		fi
-		album=$( echo "$album" | tee $dirmpd/album | wc -l )
+		album=$( echo "$album" | grep . | tee $dirmpd/album | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dircount | wc -l )
 	fi
