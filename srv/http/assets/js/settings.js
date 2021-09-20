@@ -2,7 +2,12 @@ function bash( command, callback, json ) {
 	if ( typeof command === 'string' ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
-		var filesh = command[ 0 ] !== 'statuspkg' ? page : 'cmd';
+		if ( command[ 0 ] === 'cmd' ) {
+			var filesh = 'cmd';
+			command.shift();
+		} else {
+			var filesh = page;
+		}
 		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
 	$.post( 
@@ -48,7 +53,7 @@ function codeToggle( id, target ) {
 		if ( i !== -1 ) {
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
 			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = [ 'statuspkg', pkgname, id ];
+			var command = [ 'cmd', 'statuspkg', pkgname, id ];
 			var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
 			var systemctl = 1;
 		} else {
@@ -336,25 +341,27 @@ $( '#close' ).click( function() {
 		clearTimeout( intervalscan );
 		bash( 'killall networks-scanbt.sh networks-scanwlan.sh &> /dev/null' );
 	}
-	if ( !G.reboot ) {
-		location.href = '/';
-	} else {
-		var list = G.reboot.replace( /\^/s, '\n' );
-		info( {
-			  icon    : page
-			, title   : 'System Setting'
-			, message : `\
+	bash( [ 'cmd', 'rebootlist' ], function( list ) {
+		if ( !list ) {
+			location.href = '/';
+		} else {
+			var list = list.replace( /\^/s, '\n' );
+			info( {
+				  icon    : page
+				, title   : 'System Setting'
+				, message : `\
 Reboot required for:
 <wh>${ list }</wh>`
-			, cancel  : function() {
-				bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
-				location.href = '/';
-			}
-			, ok      : function() {
-				bash( [ 'reboot' ] );
-			}
-		} );
-	}
+				, cancel  : function() {
+					bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
+					location.href = '/';
+				}
+				, ok      : function() {
+					bash( 'cmd', 'power', 'reboot' );
+				}
+			} );
+		}
+	} );
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return

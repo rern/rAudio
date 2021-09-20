@@ -420,9 +420,6 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 	systemctl enable powerbutton
 	pushRefresh
 	;;
-reboot )
-	$dirbash/cmd.sh power$'\n'reboot
-	;;
 relays )
 	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
 	pushRefresh
