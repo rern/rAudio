@@ -93,7 +93,7 @@ function renderStatus() {
 		}
 		status += '&emsp;<i class="fa fa-status gr"></i></span></span>';
 	}
-	return status
+	$( '#status' ).html( status );
 }
 
 renderPage = function( list ) {
@@ -112,7 +112,7 @@ renderPage = function( list ) {
 		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
 		+'<br>'+ cpu
 	);
-	$( '#status' ).html( renderStatus );
+	renderStatus();
 	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 	var html = '';
 	$.each( G.list, function( i, val ) {
@@ -289,7 +289,7 @@ $( '#refresh' ).click( function( e ) {
 				$.each( status, function( key, val ) {
 					G[ key ] = val;
 				} );
-				$( '#status' ).html( renderStatus );
+				renderStatus();
 			}, 'json' );
 		}, 10000 );
 	}

@@ -39,7 +39,7 @@ $selecttimezone.= '</select>';
 </div>
 <div id="status" class="col-r text"></div>
 
-<div class="col-l"></div>
+<div class="col-l" style="height:0"></div>
 <div class="col-r">
 	<span <?=$classhelp?>>
 		<br><gr><i class="fa fa-refresh"></i>&emsp;Toggle refresh every 10 seconds.</gr>
