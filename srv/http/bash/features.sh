@@ -97,7 +97,7 @@ localbrowserset )
 			degree=${deg[$rotate]}
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
-			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
+			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
 			reboot=1
 		else
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf

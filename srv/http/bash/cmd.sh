@@ -774,6 +774,12 @@ power )
 	[[ -z $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ -n $reboot ]] && reboot || poweroff
 	;;
+rebootlist )
+	[[ -e $dirtmp/reboot ]] && cat $dirtmp/reboot \
+								| sort -u \
+								| tr '\n' ^ \
+								| head -c -1
+	;;
 refreshbrowser )
 	pushstream reload 1
 	;;

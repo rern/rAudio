@@ -254,7 +254,6 @@ lcdchardisable )
 	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
-	! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	conf="\
@@ -262,6 +261,7 @@ lcdcharset )
 cols=${args[1]}
 charmap=${args[2]}"
 	if [[ ${args[3]} == i2c ]]; then
+		! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 		conf+="
 address=${args[4]}
 chip=${args[5]}"
@@ -270,7 +270,6 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-		echo 'Charater LCD module' >> $filereboot
 	else
 		conf+="
 pin_rs=${args[6]}

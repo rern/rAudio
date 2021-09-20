@@ -265,7 +265,6 @@ var hash = Math.ceil( Date.now() / 1000 );
 G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
-var filereboot = '/srv/http/data/shm/reboot';
 var intervalcputime;
 var intervalscan;
 var local = 0;
@@ -333,26 +332,29 @@ $( document ).keyup( function( e ) {
 	}
 } );
 $( '#close' ).click( function() {
-	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
-		bash( 'bluetoothctl scan off' );
+	if ( page === 'networks' ) {
+		clearTimeout( intervalscan );
+		bash( 'killall networks-scanbt.sh networks-scanwlan.sh &> /dev/null' );
 	}
-	bash( 'cat '+ filereboot +' | sort -u; rm -f /srv/http/data/tmp/backup.*', function( reboot ) {
-		if ( !reboot ) location.href = '/';
-		
+	if ( !G.reboot ) {
+		location.href = '/';
+	} else {
+		var list = G.reboot.replace( /\^/s, '\n' );
 		info( {
 			  icon    : page
 			, title   : 'System Setting'
 			, message : `\
 Reboot required for:
-<wh>${ reboot }</wh>`
+<wh>${ list }</wh>`
 			, cancel  : function() {
-				bash( 'rm -f '+ filereboot );
+				bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
+				location.href = '/';
 			}
 			, ok      : function() {
 				bash( [ 'reboot' ] );
 			}
 		} );
-	} );
+	}
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return

@@ -24,7 +24,7 @@ data='
 , "custom"           : '$( [[ -e $dirsystem/custom ]] && echo true || echo false )'
 , "ffmpeg"           : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true || echo false )'
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true || echo false )'
-, "reboot"           : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"
+, "reboot"           : "'$( /srv/http/bash/cmd.sh rebootlist )'"
 , "replaygain"       : '$( grep -q '^replaygain.*off' /etc/mpd.conf && echo false || echo true )'
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null )'"
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true || echo false )'

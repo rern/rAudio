@@ -121,6 +121,6 @@ data='
 , "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
 , "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
 , "hostname"   : "'$( hostname )'"
-, "reboot"     : "'$( cat /srv/http/data/shm/reboot 2> /dev/null )'"'
+, "reboot"     : "'$( /srv/http/bash/cmd.sh rebootlist )'"'
 
 echo {$data}
