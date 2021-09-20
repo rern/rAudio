@@ -24,10 +24,11 @@ data+='
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
+	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
+	hostapdpwd=$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )
 	data+='
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
-, "hostapdip"        : "'$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )'"
-, "hostapdpwd"       : "'$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
+, "hostapdconf"      : [ "'$hostapdip'","'$hostapdpwd'" ]
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
 fi
@@ -37,7 +38,7 @@ fi
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true || echo false )'
 , "snapclient"       : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
-, "snaplatency"      : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )
+, "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true || echo false )
 [[ -e /usr/bin/upmpdcli ]] && data+='

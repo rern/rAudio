@@ -121,9 +121,9 @@ $( '#setting-snapclient' ).click( function() {
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
 		, checkblank   : 1
-		, values       : G.snaplatency || 800
+		, values       : G.snapcastconf || 800
 		, boxwidth     : 100
-		, checkchange  : ( G.snapclient ? [ G.snaplatency ] : '' )
+		, checkchange  : ( G.snapclient ? 1 : 0 )
 		, cancel       : function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
@@ -168,7 +168,7 @@ $( '#setting-hostapd' ).click( function() {
 		, title        : 'Access Point Settings'
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
-		, values       : [ G.hostapdip, G.hostapdpwd ]
+		, values       : G.hostapdconf
 		, checkchanged : ( G.hostapd ? 1 : 0 )
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
