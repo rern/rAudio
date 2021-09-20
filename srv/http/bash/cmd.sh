@@ -18,12 +18,6 @@ addonsListGet() {
 	[[ -z $1 ]] && branch=main || branch=$1
 	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
 }
-audiocdWaitStart() {
-	sleep 5
-	for i in {1..20}; do
-		[[ $( mpc | awk '/^\[playing\]/ {print $3}' | cut -d/ -f1 ) == 0:00 ]] && sleep 1 || break
-	done
-}
 gifNotify() {
 	pushstreamNotify Thumbnail 'Resize animated GIF ...' coverart
 }
@@ -550,14 +544,7 @@ mpcplayback )
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
-		fileheadder=$( mpc | head -c 4 )
-		if [[ $fileheadder == http ]]; then
-			webradio=1
-			sleep 1 # fix: webradio start - blank 'file:' status
-		elif [[ $fileheadder == cdda && -z $pause ]]; then
-			pushstreamNotify 'Audio CD' 'Start play ...' audiocd
-			audiocdWaitStart
-		fi
+		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotify 'Audio CD' 'Start play ...' audiocd
 		killall relaystimer.sh &> /dev/null
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
@@ -594,10 +581,7 @@ mpcprevnext )
 		rm -f $dirtmp/nostatus
 		mpc stop
 	else
-		if [[ $( mpc | head -c 4 ) == cdda ]]; then
-			pushstreamNotify 'Audio CD' 'Change track ...' audiocd
-			audiocdWaitStart
-		fi
+		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotify 'Audio CD' 'Change track ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	;;
