@@ -357,7 +357,7 @@ Reboot required for:
 					location.href = '/';
 				}
 				, ok      : function() {
-					bash( 'cmd', 'power', 'reboot' );
+					bash( [ 'cmd', 'power', 'reboot' ] );
 				}
 			} );
 		}
