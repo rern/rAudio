@@ -381,8 +381,10 @@ i.map.disabled, .map.disabled i {
 }
 #progress i {
 	width: auto;
-	margin-right: 8px;
 	color: var( --cgl );
+}
+#progress :nth-child( 2 ) {
+	margin-left: 8px;
 }
 #sampling {
 	font-size: 14px;

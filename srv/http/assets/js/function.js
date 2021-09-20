@@ -1115,8 +1115,11 @@ function renderPlayback() {
 		$( '#elapsed, #total, #progress' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			$( '#progress' ).html( istate +'<span></span>' );
-			if ( G.display.radioelapsed ) setProgressElapsed();
+			$( '#progress' ).html( istate );
+			if ( G.display.radioelapsed ) {
+				$( '#progress' ).append( '<span></span>' );
+				setProgressElapsed();
+			}
 		}
 		return
 	}
