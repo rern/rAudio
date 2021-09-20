@@ -732,8 +732,8 @@ $( '.map' ).on( 'tap', function() {
 		}
 		
 		G.guide = 1;
-		var timevisible = $( '#time-knob' ).is( ':visible' );
-		var volumevisible = $( '#volume-knob' ).is( ':visible' );
+		var time = $( '#time-knob' ).is( ':visible' );
+		var volume = $( '#volume-knob' ).is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.covermap, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
@@ -741,9 +741,9 @@ $( '.map' ).on( 'tap', function() {
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
-		$( '.volmap' ).toggleClass( 'mapshow', volumevisible );
+		$( '.volmap' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
-		if ( timevisible || volumevisible ) {
+		if ( time || volume ) {
 			$( '#coverTL' )
 				.removeClass( 'fa-scale-dn' )
 				.addClass( 'fa-scale-up' );
@@ -753,12 +753,12 @@ $( '.map' ).on( 'tap', function() {
 				.addClass( 'fa-scale-dn' );
 		}
 		if ( G.status.player === 'mpd' ) {
-			if ( !timevisible && !G.status.stream ) {
+			if ( !time && !G.status.stream ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( $( '#progress' ).text() );
+					.text( G.status.Time ? second2HMS( G.status.Time ) : '' );
 			}
-			if ( !volumevisible && !G.display.volumenone ) {
+			if ( !volume && !G.display.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent hide' );
 				$( '#volume-bar' ).removeClass( 'hide' );
 			}
