@@ -120,7 +120,6 @@ data='
 , "listwlannc" : '$( [[ -n $listwlannc ]] && echo [ ${listwlannc:1} ] || echo false )'
 , "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
 , "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
-, "hostname"   : "'$( hostname )'"
-, "reboot"     : "'$( /srv/http/bash/cmd.sh rebootlist )'"'
+, "hostname"   : "'$( hostname )'"'
 
 echo {$data}

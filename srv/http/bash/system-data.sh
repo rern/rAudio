@@ -149,7 +149,6 @@ data+='
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
 , "powerbuttonconf"  : "'$( cat $dirsystem/powerbutton.conf 2> /dev/null | cut -d= -f2 )'"
-, "reboot"           : "'$( /srv/http/bash/cmd.sh rebootlist )'"
 , "regdom"           : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 , "relays"           : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "rpimodel"         : "'$rpimodel'"

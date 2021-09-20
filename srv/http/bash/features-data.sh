@@ -11,8 +11,7 @@ data+='
 , "login"            : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "mpdscribble"      : '$( systemctl -q is-active mpdscribble@mpd && echo true || echo false )'
 , "mpdscribbleval"   : "'$( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- | tr '\n' ^ )'"
-, "reboot"          : "'$( /srv/http/bash/cmd.sh rebootlist )'"
-, "streaming"       : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
+, "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
 	data+='
