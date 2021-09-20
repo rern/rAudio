@@ -2,6 +2,16 @@
 
 dirsystem=/srv/http/data/system
 
+readarray -t lines <<< $( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- )
+if [[ -n $lines ]]; then
+	for line in "${lines[@]}"; do
+		val+=',"'$line'"'
+	done
+	mpdscribbleconf="[ ${val:1} ]"
+else
+	mpdscribbleconf=false
+fi
+
 data+='
   "page"             : "features"
 , "autoplay"         : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
@@ -10,7 +20,7 @@ data+='
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true || echo false )'
 , "login"            : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "mpdscribble"      : '$( systemctl -q is-active mpdscribble@mpd && echo true || echo false )'
-, "mpdscribbleval"   : "'$( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- | tr '\n' ^ )'"
+, "mpdscribbleconf"  : '$mpdscribbleconf'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then

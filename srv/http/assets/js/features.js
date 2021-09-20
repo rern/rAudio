@@ -260,7 +260,7 @@ $( '#setting-mpdscribble' ).click( function() {
 		, title         : 'Last.fm Scrobbler'
 		, textlabel     : 'User'
 		, passwordlabel : 'Password'
-		, values        : ( G.mpdscribbleval ? G.mpdscribbleval.split( '^' ) : '' )
+		, values        : G.mpdscribbleconf
 		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
 		, checkblank    : 1
 		, cancel        : function() {
