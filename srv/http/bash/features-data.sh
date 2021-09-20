@@ -58,9 +58,13 @@ if [[ -e $xinitrc ]]; then
 , "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true || echo false )'
 , "localbrowserconf" : '$localbrowserconf
 fi
-[[ -e /usr/bin/smbd ]] && data+='
+if [[ -e /usr/bin/smbd ]]; then
+	grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
+	grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
+	smbconf="[ $writesd, $writeusb ]"
+	data+='
 , "smb"              : '$( systemctl -q is-active smb && echo true || echo false )'
-, "smbwritesd"       : '$( grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )'
-, "smbwriteusb"      : '$( grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && echo true || echo false )
+, "smbconf"          : '$smbconf
+fi
 	
 echo {$data}

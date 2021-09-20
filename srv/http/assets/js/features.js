@@ -243,7 +243,7 @@ $( '#setting-smb' ).click( function() {
 		, title        : 'Samba File Sharing'
 		, message      : '<wh>Write</wh> permission:</gr>'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
-		, values       : [ G.smbwritesd, G.smbwriteusb ]
+		, values       : G.smbconf
 		, checkchanged : ( G.smb ? 1 : 0 )
 		, cancel       : function() {
 			$( '#smb' ).prop( 'checked', G.smb );
