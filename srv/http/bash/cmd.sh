@@ -25,7 +25,7 @@ audiocdWaitStart() {
 	done
 }
 gifNotify() {
-	pushstreamNotify Thumbnail "Resize animated GIF ..." coverart
+	pushstreamNotify Thumbnail 'Resize animated GIF ...' coverart
 }
 gifThumbnail() {
 	type=$1
