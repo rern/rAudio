@@ -608,7 +608,7 @@ $( '#setting-mpdoled' ).click( function() {
 			, 'SH1106 I&#178;C'   : 6
 			, 'SH1106 SPI'        : 7
 		}
-		, values       : [ G.mpdoledval ]
+		, values       : [ G.mpdoledconf ]
 		, checkchanged : ( G.mpdoled ? 1 : 0 )
 		, boxwidth     : 140
 		, buttonlabel   : '<i class="fa fa-plus-r"></i>Logo'
