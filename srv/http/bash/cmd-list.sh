@@ -49,7 +49,7 @@ if (( $? != 0 )); then # very large database
 	done
 	if [[ -n $albums ]]; then
 		listAlbums "$albums"
-		echo $buffer > $dirsystem/bufferoutputset
+		echo $buffer > $dirsystem/bufferoutput.conf
 	else
 		toolarge=1
 		sed -i '/^max_output_buffer/ d' /etc/mpd.conf

@@ -174,7 +174,7 @@ datarestore )
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
-	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
+	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then

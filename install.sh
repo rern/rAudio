@@ -16,9 +16,9 @@ for name in lcdchar localbrowser powerbutton; do
 	mv -f /etc/$name.conf $dirsystem &> /dev/null
 done
 
-for name in lcdcharval localbrowserval powerbuttonpins relayspins soundprofileval vuledpins; do
-	newname=$( echo $name | sed 's/pins\|val/.conf/' )
-	mv -f $dirsystem/{$name,$newname} &> /dev/null
+for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval powerbuttonpins relayspins replaygainset soundprofileval soxr vuledpins; do
+	newname=$( echo $name | sed 's/pins\|set\|val//' )
+	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
 done
 
 if [[ -e /etc/relays.conf ]]; then
@@ -27,10 +27,11 @@ if [[ -e /etc/relays.conf ]]; then
 	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
 	name=$( jq .[] <<< $names )
 	name="name='[ "$( echo $name | tr ' ' , )" ]'"
+	onoff=$( sed -n '/^onorder/,/^timer/ p' /etc/relays.conf )
 	echo "\
 $pin
 $name
-$( sed -n '/^onorder/,/^timer/ p' /etc/relays.conf )" > $dirsystem/relays.conf
+$onoff" > $dirsystem/relays.conf
 	[[ -e $dirsystem/relays ]] && > $dirsystem/relays
 	rm /etc/relays.conf
 fi

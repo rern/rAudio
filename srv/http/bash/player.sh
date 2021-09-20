@@ -74,10 +74,10 @@ bufferset )
 	buffer=${args[1]}
 	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
 	if (( $buffer == 4096 )); then
-		rm -f $dirsystem/bufferset
+		rm -f $dirsystem/buffer.conf
 	else
 		sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
-		echo $buffer > $dirsystem/bufferset
+		echo $buffer > $dirsystem/buffer.conf
 	fi
 	restartMPD
 	;;
@@ -89,10 +89,10 @@ bufferoutputset )
 	buffer=${args[1]}
 	sed -i '/^max_output_buffer_size/ d' /etc/mpd.conf
 	if (( $buffer == 8192 )); then
-		rm -f $dirsystem/bufferoutputset
+		rm -f $dirsystem/bufferoutput.conf
 	else
 		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
-		echo $buffer > $dirsystem/bufferoutputset
+		echo $buffer > $dirsystem/bufferoutput.conf
 	fi
 	restartMPD
 	;;
@@ -126,7 +126,7 @@ crossfadedisable )
 crossfadeset )
 	crossfade=${args[1]}
 	mpc crossfade $crossfade
-	echo $crossfade > $dirsystem/crossfadeset
+	echo $crossfade > $dirsystem/crossfade.conf
 	touch $dirsystem/crossfade
 	pushRefresh
 	;;
@@ -274,7 +274,7 @@ replaygaindisable )
 replaygainset )
 	replaygain=${args[1]}
 	sed -i '/^replaygain/ s/".*"/"'$replaygain'"/' /etc/mpd.conf
-	echo $replaygain > $dirsystem/replaygainset
+	echo $replaygain > $dirsystem/replaygain.conf
 	restartMPD
 	;;
 restart )
