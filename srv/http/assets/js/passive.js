@@ -427,7 +427,7 @@ function psRelays( response ) { // on receive broadcast
 	} else if ( state === 'IDLE' ) {
 		info( {
 			  icon        : 'relays'
-			, title       : 'GPIO Relays Countdown'
+			, title       : 'Relays Countdown'
 			, message     : stopwatch
 							+'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
@@ -467,7 +467,7 @@ function psRelays( response ) { // on receive broadcast
 		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 			info( {
 				  icon       : 'relays'
-				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
+				, title      : 'Relays '+ ( state ? 'ON' : 'OFF' )
 				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
