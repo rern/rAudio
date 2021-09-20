@@ -24,6 +24,7 @@ if [[ $bluetooth == true ]]; then
 else
 	btdiscoverable=false
 fi
+btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
@@ -133,8 +134,7 @@ data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "bluetooth"        : '$bluetooth'
-, "btdiscoverable"   : '$btdiscoverable'
-, "btformat"         : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
+, "bluetoothconf"    : [ '$btdiscoverable','$btformat' ]
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
