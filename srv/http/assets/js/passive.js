@@ -454,6 +454,7 @@ function psRelays( response ) { // on receive broadcast
 		}, 1000 );
 	} else {
 		G.status.relayson = state;
+		if ( !state ) $( '#infoX' ).click();
 		var devices = '';
 		$.each( response.order, function( i, val ) {
 			if ( i === 0 ) {
