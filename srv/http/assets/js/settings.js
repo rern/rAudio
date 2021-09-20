@@ -53,7 +53,7 @@ function codeToggle( id, target ) {
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bl># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bl><br><br>' : '';
+			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
 			var systemctl = 0;
 		}
 		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
