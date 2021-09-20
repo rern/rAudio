@@ -228,7 +228,7 @@ $( '#setting-crossfade' ).click( function() {
 		, title        : 'Crossfade'
 		, textlabel    : 'Seconds'
 		, boxwidth     : 60
-		, values       : G.crossfadeval || 1
+		, values       : G.crossfadeconf || 1
 		, checkchanged : ( G.crossfade ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
@@ -245,7 +245,7 @@ $( '#setting-replaygain' ).click( function() {
 		  icon         : 'mpd'
 		, title        : 'Replay Gain'
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, values       : G.replaygainval || 'auto'
+		, values       : G.replaygainconf || 'auto'
 		, checkchanged : ( G.replaygain ? 1 : 0 )
 		, cancel       : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
@@ -266,7 +266,7 @@ $( '#setting-buffer' ).click( function() {
 		, message      : '<code>audio_buffer_size</code> (default: 4096)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, boxwidth     : 125
-		, values       : G.bufferval || 4096
+		, values       : G.bufferconf || 4096
 		, checkchanged : ( G.buffer ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
@@ -285,7 +285,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, boxwidth     : 125
-		, values       : G.bufferoutputval || 8192
+		, values       : G.bufferoutputconf || 8192
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
