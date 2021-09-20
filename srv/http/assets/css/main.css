@@ -383,7 +383,7 @@ i.map.disabled, .map.disabled i {
 	width: auto;
 	color: var( --cgl );
 }
-#progress :nth-child( 2 ) {
+#progress span {
 	margin-left: 8px;
 }
 #sampling {
