@@ -347,15 +347,18 @@ $( '#close' ).click( function() {
 		} else {
 			var list = list.replace( /\^/s, '\n' );
 			info( {
-				  icon    : page
-				, title   : 'System Setting'
-				, message : `\
+				  icon        : page
+				, title       : 'System Setting'
+				, message     : `\
 Reboot required for:
 <wh>${ list }</wh>`
-				, cancel  : function() {
+				, buttonlabel : 'Later'
+				, button      : function() {
 					bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
 					location.href = '/';
 				}
+				, okcolor : orange
+				, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 				, ok      : function() {
 					bash( [ 'cmd', 'power', 'reboot' ] );
 				}
