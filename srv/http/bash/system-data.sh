@@ -45,14 +45,15 @@ else
 fi
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf=$( cut -d= -f2 $dirsystem/soundprofile.conf )
+		soundprofileconf=$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )
 	else
 		soundprofileconf="\
-$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
-$( sysctl vm.swappiness | awk '{print $NF}'  )
-$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )"
+ $( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
+,$( sysctl vm.swappiness | awk '{print $NF}'  )
+,$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
+,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )"
 	fi
+	soundprofileconf="[ $soundprofileconf ]"
 fi
 version=$( cat $dirsystem/version )
 
@@ -163,7 +164,7 @@ data+='
 , "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 , "socspeed"         : "'$socspeed'"
 , "soundprofile"     : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
-, "soundprofileconf" : "'$soundprofileconf'"
+, "soundprofileconf" : '$soundprofileconf'
 , "version"          : "'$version'"
 , "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 , "vuled"            : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'

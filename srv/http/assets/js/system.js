@@ -767,10 +767,10 @@ $( '#setting-soundprofile' ).click( function() {
 		, Um3ggh1U  : '500000 0 1500 1000'
 		, Custom    : '0'
 	}
-	var values = G.soundprofileconf.split( ' ' );
+	var soundprofileconf = G.soundprofileconf.join( ' ' );
 	var radioval = Object.values( radio );
-	var rchecked = radioval.indexOf( G.soundprofileconf ) !== -1 ? G.soundprofileconf : '0';
-	values.push( rchecked );
+	var rchecked = radioval.indexOf( soundprofileconf ) !== -1 ? soundprofileconf : '0';
+	G.soundprofileconf.push( rchecked );
 	info( {
 		  icon         : 'sliders'
 		, title        : 'Kernel Sound Profile'
@@ -778,7 +778,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, boxwidth     : 110
 		, radio        : radio
 		, radiocolumn  : 1
-		, values       : values
+		, values       : G.soundprofileconf
 		, checkchanged : 1
 		, checkblank   : 1
 		, beforeshow   : function() {
