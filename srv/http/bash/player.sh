@@ -299,7 +299,7 @@ soxrset )
 	flags          "'${val[5]}'"
 }' > $dirsystem/soxr
 	sed -i -e '/quality/,/}/ d
-' -e "/soxr/ r $dirsystem/soxr
+' -e "/soxr/ r $dirsystem/soxr.conf
 " /etc/mpd.conf
 	restartMPD
 	;;
