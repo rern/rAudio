@@ -58,7 +58,8 @@ else
 	mv /tmp/addons $dirdata
 fi
 # display
-echo '{
+cat << EOF > $dirsystem/display
+{
 	"album": true,
 	"albumbyartist": false,
 	"albumartist": true,
@@ -88,10 +89,12 @@ echo '{
 	"novu": true,
 	"noswipe": false,
 	"radioelapsed": false,
+	"noswipe": false,
 	"time": true,
 	"volume": true,
 	"vumeter": false
-}' > $dirsystem/display
+}
+EOF
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
 # relays
