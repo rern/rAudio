@@ -1166,8 +1166,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	$( '#lib-search-close' ).click();
 	if ( G.bookmarkedit ) {
 		if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
-			$( '.bkedit' ).remove();
-			$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
+			bookmarkeditClear();
 			return
 		}
 	}
@@ -1296,12 +1295,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	if ( $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' ) ) return
 		
 	if ( G.bookmarkedit ) {
-		G.bookmarkedit = 0;
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' )
-			.css( 'background', '' )
-			.find( '.fa-bookmark, .bklabel, img' )
-			.css( 'opacity', '' );
+		bookmarkeditClear();
 	} else {
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 	}
@@ -1311,10 +1305,8 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
 	, onStart       : function () {
-		G.bookmarkedit = 0;
+		if ( G.bookmarkedit ) bookmarkeditClear();
 		G.drag = 1;
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
 	}
 	, onEnd         : function () {
 		G.drag = 0;
