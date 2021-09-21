@@ -121,7 +121,7 @@ $( '#setting-snapclient' ).click( function() {
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
 		, checkblank   : 1
-		, values       : G.snapcastconf || 800
+		, values       : G.snapcastconf
 		, boxwidth     : 100
 		, checkchange  : ( G.snapclient ? 1 : 0 )
 		, cancel       : function() {
