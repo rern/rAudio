@@ -333,12 +333,11 @@ var soxrinfo = `\
 </tr>
 </table>`;
 $( '#setting-soxr' ).click( function() {
-	var values = G.soxr ? G.soxrconf.split( ' ' ) : [ 20, 50, 91.3, 100, 0, 0 ];
 	info( {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
-		, values        : values
+		, values        : G.soxrconf
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : 1
 		, beforeshow    : function() {

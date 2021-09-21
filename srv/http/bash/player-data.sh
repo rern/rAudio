@@ -5,6 +5,15 @@ dirsystem=/srv/http/data/system
 . /srv/http/bash/mpd-devices.sh
 
 active=$( mpc &> /dev/null && echo true || echo false )
+lines=$( grep -v 'quality\|}' $dirsystem/soxr.conf 2> /dev/null | cut -d'"' -f2 )
+if [[ -n $lines ]]; then
+	for line in $lines; do
+		soxrconf+=",$line"
+	done
+	soxrconf="[ ${soxrconf:1} ]"
+else
+	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
+fi
 
 data='
   "page"             : "player"
@@ -27,7 +36,7 @@ data='
 , "replaygain"       : '$( grep -q '^replaygain.*off' /etc/mpd.conf && echo false || echo true )'
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true || echo false )'
-, "soxrconf"         : "'$( grep -v 'quality\|}' $dirsystem/soxr.conf 2> /dev/null | cut -d'"' -f2 )'"
+, "soxrconf"         : '$soxrconf'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 echo {$data}
