@@ -458,17 +458,15 @@ soundprofileget )
 	echo "${val:0:-1}"
 	;;
 soundprofileset )
-	values=${args[1]}
-	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
+	if [[ ${args[@]:1:4} == '18000000 60 1500 1000' ]]; then
 		rm -f $dirsystem/soundprofile.conf
 		soundprofile reset
 	else
-		val=( $values )
 		echo -n "\
-latency=${val[0]}
-swappiness=${val[1]}
-mtu=${val[2]}
-txqueuelen=${val[3]}
+latency=${args[1]}
+swappiness=${args[2]}
+mtu=${args[3]}
+txqueuelen=${args[4]}
 " > $dirsystem/soundprofile.conf
 		soundprofile
 	fi
