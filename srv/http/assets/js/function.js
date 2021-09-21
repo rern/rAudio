@@ -1091,11 +1091,9 @@ function renderLibraryList( data ) {
 	} );
 }
 function renderPlayback() {
-	if ( $( '#volume-knob' ).is( ':visible' ) ) {
-		local();
-		$volumeRS.setValue( G.status.volume );
-		G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
-	}
+	local();
+	$volumeRS.setValue( G.status.volume );
+	G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		setPlaybackBlank();
