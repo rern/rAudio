@@ -21,20 +21,20 @@ for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval po
 	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
 done
 
-if [[ -e /etc/relays.conf ]]; then
+if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	names=$( jq .name /etc/relays.conf )
 	pin=$( jq -r 'keys[]' <<< $names )
 	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
 	name=$( jq .[] <<< $names )
 	name="name='[ "$( echo $name | tr ' ' , )" ]'"
-	onoff=$( sed -n '/^onorder/,/^timer/ p' /etc/relays.conf )
 	echo "\
 $pin
 $name
-$onoff" > $dirsystem/relays.conf
-	[[ -e $dirsystem/relays ]] && > $dirsystem/relays
+$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relayspins
+	> $dirsystem/relays
 	rm /etc/relays.conf
 fi
+
 
 [[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
 [[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
