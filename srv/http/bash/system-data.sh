@@ -129,9 +129,9 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
-powerbuttonconf=$( cat $dirsystem/powerbutton.conf 2> /dev/null | cut -d= -f2 )
-if [[ -n $powerbuttonconf ]]; then
-	powerbuttonconf="[ $( echo 5 $powerbuttonconf | sed 's/ /,/g' ) ]"
+if [[ -e $dirsystem/powerbutton.conf ]]; then
+	powerbuttonconf=$( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , )
+	powerbuttonconf="[ 5,$powerbuttonconf ]"
 else
 	powerbuttonconf='[ 5,5,40,5 ]'
 fi
