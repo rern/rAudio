@@ -350,7 +350,7 @@ $( '#setting-soxr' ).click( function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			bash( [ 'soxrset', infoVal().join( ' ' ) ] );
+			bash( [ 'soxrset', infoVal() ] );
 			notify( 'SoXR Custom Settings', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
