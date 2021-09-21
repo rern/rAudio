@@ -94,6 +94,18 @@ echo '{
 }' > $dirsystem/display
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
+# relays
+cat << EOF > $dirsystem/relays.conf
+pin='[ 11,13,15,16 ]'
+name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
+onorder='[ "DAC","PreAmp","Amp","Subwoofer" ]'
+offorder='[ "Subwoofer","Amp","PreAmp", "DAC" ]'
+on=( 11 13 15 16 )
+ond=( 2 2 2 )
+off=( 16 15 13 11 )
+offd=( 2 2 2 )
+timer=5
+EOF
 # system
 echo rAudio > $dirsystem/hostname
 hostnamectl set-hostname rAudio

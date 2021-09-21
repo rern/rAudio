@@ -30,11 +30,22 @@ if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	echo "\
 $pin
 $name
-$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relayspins
+$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
 	> $dirsystem/relays
 	rm /etc/relays.conf
+else
+	cat << EOF > $dirsystem/relays.conf
+pin='[ 11,13,15,16 ]'
+name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
+onorder='[ "DAC","PreAmp","Amp","Subwoofer" ]'
+offorder='[ "Subwoofer","Amp","PreAmp", "DAC" ]'
+on=( 11 13 15 16 )
+ond=( 2 2 2 )
+off=( 16 15 13 11 )
+offd=( 2 2 2 )
+timer=5
+EOF
 fi
-
 
 [[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
 [[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
