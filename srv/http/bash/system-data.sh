@@ -18,13 +18,12 @@ data='
 dirsystem=/srv/http/data/system
 
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
-if [[ $bluetooth == true ]]; then
-	# 'bluetoothctl show' needs active bluetooth
-	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
-else
-	btdiscoverable=false
-fi
 btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
+if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
+	bluetoothconf="[ $( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false ), $btformat ]"
+else
+	bluetoothconf="[ false, $btformat ]"
+fi
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
@@ -45,15 +44,15 @@ else
 fi
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf=$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )
+		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
 	else
-		soundprofileconf="\
+		soundprofileconf="[
  $( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
 ,$( sysctl vm.swappiness | awk '{print $NF}'  )
 ,$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )"
+,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+]"
 	fi
-	soundprofileconf="[ $soundprofileconf ]"
 fi
 version=$( cat $dirsystem/version )
 
@@ -131,8 +130,7 @@ else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 if [[ -e $dirsystem/powerbutton.conf ]]; then
-	powerbuttonconf=$( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , )
-	powerbuttonconf="[ 5,$powerbuttonconf ]"
+	powerbuttonconf="[ 5,$( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else
 	powerbuttonconf='[ 5,5,40,5 ]'
 fi
@@ -141,7 +139,7 @@ data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "bluetooth"        : '$bluetooth'
-, "bluetoothconf"    : [ '$btdiscoverable','$btformat' ]
+, "bluetoothconf"    : '$bluetoothconf'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
