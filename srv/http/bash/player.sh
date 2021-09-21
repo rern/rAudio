@@ -289,14 +289,13 @@ soxrdisable )
 	restartMPD
 	;;
 soxrset )
-	val=( ${args[1]} )
 	echo '	quality        "custom"
-	precision      "'${val[0]}'"
-	phase_response "'${val[1]}'"
-	passband_end   "'${val[2]}'"
-	stopband_begin "'${val[3]}'"
-	attenuation    "'${val[4]}'"
-	flags          "'${val[5]}'"
+	precision      "'${args[1]}'"
+	phase_response "'${args[2]}'"
+	passband_end   "'${args[3]}'"
+	stopband_begin "'${args[4]}'"
+	attenuation    "'${args[5]}'"
+	flags          "'${args[6]}'"
 }' > $dirsystem/soxr
 	sed -i -e '/quality/,/}/ d
 ' -e "/soxr/ r $dirsystem/soxr.conf
