@@ -553,7 +553,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 	var infopowerbutton = `\
 <table>
-<tr><td>On</td>
+<tr><td width="70">On</td>
 	<td><input type="text" disabled></td>
 </tr>
 <tr><td>Off</td>
@@ -566,20 +566,15 @@ $( '#setting-powerbutton' ).click( function() {
 	<td><select >${ respin }</select></td>
 </tr>
 </table>`;
-	if ( G.powerbuttonconf ) {
-		var pins = ( '5 '+ G.powerbuttonconf ).split( ' ' );
-	} else {
-		var pins = [ 5, 5, 40, 5 ];
-	}
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 60
-		, values       : pins
+		, values       : G.powerbuttonconf
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', pins[ 1 ] == 5 );
+			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 1 ] == 5 );
 			$( '#infoContent select:eq( 0 )' ).change( function() {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );
@@ -667,19 +662,18 @@ $( '#setting-vuled' ).click( function() {
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
-	var vuledconf = G.vuledconf ? G.vuledconf.split( ' ' ) : [ 14, 15, 18, 23, 24, 25, 8 ];
 	info( {
 		  icon         : 'led'
 		, title        : 'VU LED'
 		, message      : gpiosvg
 		, select       : htmlpins
-		, values       : vuledconf
+		, values       : G.vuledconf.split( ' ' )
 		, boxwidth     : 60
 		, beforeshow   : function() {
 			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
 			$( '#infoContent select' ).on( 'change', function() {
 				var v = infoVal();
-				var changed = G.vuled && v.join( ' ' ) === vuledconf.join( ' ' );
+				var changed = G.vuled && v.join( ' ' ) === G.vuledconf;
 				var duplicate = new Set( v ).size !== v.length;
 				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
 				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
@@ -742,7 +736,6 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
-	var values = [ G.ntp, G.regdom || '00' ];
 	info( {
 		  icon         : 'globe'
 		, title        : 'Network Time Protocol'

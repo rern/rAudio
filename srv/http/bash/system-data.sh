@@ -129,6 +129,12 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
+powerbuttonconf=$( cat $dirsystem/powerbutton.conf 2> /dev/null | cut -d= -f2 )
+if [[ -n $powerbuttonconf ]]; then
+	powerbuttonconf="[ $( echo 5 $powerbuttonconf | sed 's/ /,/g' ) ]"
+else
+	powerbuttonconf='[ 5,5,40,5 ]'
+fi
 
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
@@ -148,7 +154,7 @@ data+='
 , "mpdoledconf"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
-, "powerbuttonconf"  : "'$( cat $dirsystem/powerbutton.conf 2> /dev/null | cut -d= -f2 )'"
+, "powerbuttonconf"  : '$powerbuttonconf'
 , "regdom"           : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 , "relays"           : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "rpimodel"         : "'$rpimodel'"
@@ -161,7 +167,7 @@ data+='
 , "version"          : "'$version'"
 , "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 , "vuled"            : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
-, "vuledconf"        : "'$( cat /srv/http/data/system/vuled.conf 2> /dev/null )'"
+, "vuledconf"        : "'$( cat /srv/http/data/system/vuled.conf 2> /dev/null || echo 14 15 18 23 24 25 8 )'"
 , "wlan"             : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "wlannoap"         : '$( [[ -e $dirsystem/wlannoap ]] && echo true || echo false )'
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
