@@ -802,7 +802,7 @@ $( '#setting-soundprofile' ).click( function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
 		, ok           : function() {
-			bash( [ 'soundprofileset', infoVal() ] );
+			bash( [ 'soundprofileset', ...infoVal() ] );
 			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );
