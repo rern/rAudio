@@ -3,11 +3,6 @@ $login = file_exists( '/srv/http/data/system/login' );
 if ( $login ) session_start();
 $time = time();  // for cache busting
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-$desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
-			&& !preg_match( 
-				  '/(Mobile|Android|Tablet|GoBrowser|[0-9]x[0-9]*|uZardWeb\/|Mini|Doris\/|Skyfire\/|iPhone|Fennec\/|Maemo|Iris\/|CLDC\-|Mobi\/)/uis'
-				, $_SERVER[ 'HTTP_USER_AGENT' ]
-			);
 ?>
 
 <!DOCTYPE html>
@@ -48,11 +43,18 @@ $desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] )
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>
 <script src="/assets/js/passive.<?=$time?>.js"></script>
-	<?php if ( $desktop ) { ?>
-<link rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
-<script src="/assets/js/shortcut.<?=$time?>.js"></script>
-	<?php }
-		  if ( $localhost ) include 'keyboard.php';?>
+	<?php
+	$desktop = isset( $_SERVER[ 'HTTP_USER_AGENT' ] ) && !preg_match( 
+				  '/(Mobile|Android|Tablet|GoBrowser|[0-9]x[0-9]*|uZardWeb\/|Mini|Doris\/|Skyfire\/|Fennec\/|Maemo|Iris\/|CLDC\-|Mobi\/)/uis'
+				, $_SERVER[ 'HTTP_USER_AGENT' ]
+			);
+	if ( $desktop ) { ?>
+<link class="desktop" rel="stylesheet" href="/assets/css/desktop.<?=$time?>.css">
+<script class="desktop" src="/assets/js/shortcut.<?=$time?>.js"></script>
+	<?php
+	}
+	if ( $localhost ) include 'keyboard.php';
+	?>
 	
 </body>
 </html>

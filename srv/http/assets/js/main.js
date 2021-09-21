@@ -85,9 +85,11 @@ var nameplayer = {
 	, upnp       : 'UPnP'
 }
 
-// get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+// fix: ios safari cannot be detected by php HTTP_USER_AGENT
+if ( navigator.maxTouchPoints ) $( '.desktop' ).remove(); // desktop.css, shortcut.js
+	
 statusRefresh();
 
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
