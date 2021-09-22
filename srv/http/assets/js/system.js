@@ -667,7 +667,7 @@ $( '#setting-vuled' ).click( function() {
 		, title        : 'VU LED'
 		, message      : gpiosvg
 		, select       : htmlpins
-		, values       : G.vuledconf.split( ' ' )
+		, values       : G.vuledconf
 		, boxwidth     : 60
 		, beforeshow   : function() {
 			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
@@ -739,8 +739,8 @@ $( '#setting-timezone' ).click( function() {
 	info( {
 		  icon         : 'globe'
 		, title        : 'Network Time Protocol'
-		, textlabel    : [ 'NTP server' ]
-		, values       : [ G.ntp ]
+		, textlabel    : 'NTP server'
+		, values       : G.ntp
 		, checkchanged : 1
 		, checkblank   : 1
 		, ok           : function() {

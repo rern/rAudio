@@ -137,6 +137,11 @@ if [[ -e $dirsystem/powerbutton.conf ]]; then
 else
 	powerbuttonconf='[ 5,5,40,5 ]'
 fi
+if [[ -e $dirsystem/vuled.conf ]]; then
+	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"
+else
+	vuledconf='[ 14,15,18,23,24,25,8 ]'
+fi
 
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
@@ -169,7 +174,7 @@ data+='
 , "version"          : "'$version'"
 , "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
 , "vuled"            : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
-, "vuledconf"        : "'$( cat /srv/http/data/system/vuled.conf 2> /dev/null || echo 14 15 18 23 24 25 8 )'"
+, "vuledconf"        : '$vuledconf'
 , "wlan"             : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "wlannoap"         : '$( [[ -e $dirsystem/wlannoap ]] && echo true || echo false )'
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
