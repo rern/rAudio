@@ -3,14 +3,7 @@
 dirsystem=/srv/http/data/system
 
 readarray -t lines <<< $( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- )
-if [[ -n $lines ]]; then
-	for line in "${lines[@]}"; do
-		val+=',"'$line'"'
-	done
-	mpdscribbleconf="[ ${val:1} ]"
-else
-	mpdscribbleconf=false
-fi
+mpdscribbleconf="[ \"${lines[0]}\", \"${lines[1]}\" ]"
 
 data+='
   "page"             : "features"
@@ -47,11 +40,8 @@ fi
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		val=( $( cut -d= -f2 $dirsystem/localbrowser.conf ) )
-		for (( i=0; i < 4; i++ )); do
-			(( i != 2 )) && v+=,${val[$i]} || v+=",\"${val[$i]}\""
-		done
-		localbrowserconf="[ ${v:1} ]"
+		v=( $( cut -d= -f2 $dirsystem/localbrowser.conf ) )
+		localbrowserconf="[ $(( ${v[0]} / 60 )), ${v[1]}, \"${v[2]}\", ${v[3]} ]"
 	else
 		localbrowserconf='[ 0, 1, "NORMAL", false ]'
 	fi
