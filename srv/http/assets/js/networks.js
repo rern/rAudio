@@ -44,22 +44,31 @@ function connect( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:
 		}
 	} );
 }
-function editLAN( $el ) {
-	var btndhcp = $el.data( 'dhcp' ) === 'dhcp';
+function editLAN() {
+	var static = G.listeth.static;
+	var ip = G.listeth.ip;
+	var gw = G.listeth.gateway;
 	info( {
 		  icon         : 'lan'
 		, title        : 'LAN'
-		, textlabel    : [ ( btndhcp ? '<gr>DHCP</gr> IP' : '<gr>Static</gr> IP' ), 'Gateway' ]
-		, values       : [ $el.data( 'ip' ), $el.data( 'gateway' ) ]
+		, textlabel    : [ ( static ? '<gr>Static</gr> IP' : '<gr>DHCP</gr> IP' ), 'Gateway' ]
+		, values       : [ ip, gw ]
 		, checkchanged : 1
 		, checkblank   : 1
-		, buttonlabel  : ( btndhcp ? '' : '<i class="fa fa-undo"></i>DHCP' )
-		, button       : ( btndhcp ? '' : function() {
+		, beforeshow   : function() {
+			if ( !static ) {
+				$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
+					$( '#infoContent gr' ).text( $( this ).val() === ip ? 'DHCP' : 'Static' );
+				} );
+			}
+		}
+		, buttonlabel  : ( static ? '<i class="fa fa-undo"></i>DHCP' : '' )
+		, button       : ( static ? function() {
 			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
-		} )
+		} : '' )
 		, ok           : function() {
 			var values = infoVal();
 			var ip = values[ 0 ];
@@ -72,7 +81,7 @@ function editLAN( $el ) {
 						, title   : 'Duplicate IP'
 						, message : 'IP <wh>'+ ip +'</wh> already in use.'
 						, ok      : function() {
-							editLAN( $el );
+							editLAN();
 						}
 					} );
 				}
@@ -81,25 +90,26 @@ function editLAN( $el ) {
 		}
 	} );
 }
-function editWiFi( $el ) {
-	if ( $el ) {
-		var values = [];
-		[ 'ssid', 'ip', 'gateway', 'password', 'dhcp', 'hidden', 'security' ].forEach( function( v ) {
-			values.push( $el.data( v ) );
-		} );
-	} else {
+function editWiFi( add ) {
+	if ( add ) {
 		var values = [ '', '', '', '', false, false, false ]
+	} else {
+		var list = wlanList();
+		var values = [];
+		[ 'ssid', 'ip', 'gateway', 'password', 'static', 'hidden', 'wep' ].forEach( function( k ) {
+			values.push( list[ k ] );
+		} );
 	}
 	info( {
 		  icon          : 'wifi'
-		, title         : $el ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
+		, title         : add ? 'New Wi-Fi Connection' : 'Edit Saved Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
 		, boxwidth      : 180
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
 		, values        : values
-		, checkchanged  : $el ? 1 : 0
-		, checkblank    : $el ? 1 : 0
+		, checkchanged  : add ? 0 : 1
+		, checkblank    : add ? 0 : 1
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', !values[ 4 ] );
@@ -129,7 +139,7 @@ function editWiFi( $el ) {
 							, title   : 'Duplicate IP'
 							, message : 'IP <wh>'+ data.Address +'</wh> already in use.'
 							, ok      : function() {
-								editWiFi( $el );
+								editWiFi();
 							}
 						} );
 					} else {
@@ -155,45 +165,33 @@ renderPage = function( list ) {
 		G = list;
 	}
 	var htmlbt = '';
-	var htmllan = '';
 	var htmlwl = '';
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
-			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'" data-mac="'+ list.mac +'"><i class="fa fa-bluetooth"></i>';
-			htmlbt += ( list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;' ) + list.name +'</li>';
+			htmlbt += '<li class="bt"><i class="fa fa-bluetooth"></i>';
+			htmlbt += list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;'
+			htmlbt += list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
 		$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
 	}
 	if ( G.listwlan ) {
-		var val = G.listwlan;
-		htmlwl += '<li class="wlan0" data-dhcp="'+ val.dhcp +'" data-hostname="'+ val.hostname +'" ';
-		htmlwl += 'data-ip="'+ val.ip +'" data-gateway="'+ val.gateway +'" ';
-		htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
-		htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
-		var signal = val.dbm > good ? '' : ( val.dbm < fair ? 1 : 2 );
-		htmlwl += '<i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
+		var list = G.listwlan;
+		var signal = list.dbm > good ? '' : ( list.dbm < fair ? 1 : 2 );
+		htmlwl += '<li class="wlan0"><i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
 		if ( !G.hostapd ) {
-			htmlwl += val.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ val.ip +'<gr>&ensp;&raquo;&ensp;'+ val.gateway +'</gr></li>';
+			htmlwl += list.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 		} else {
 			htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 		}
 	}
 	if ( G.listwlannc ) {
 		G.listwlannc.forEach( function( list ) {
-			var val = list;
-			htmlwl += '<li class="wlan0" data-dhcp="'+ val.dhcp +'" data-offline="1" ';
-			htmlwl += 'data-ip="'+ val.ip +'" data-gateway="'+ val.gateway +'" ';
-			htmlwl += 'data-ssid="'+ val.ssid +'" data-security="'+ val.security +'" ';
-			htmlwl += 'data-hidden="'+ val.hidden +'" data-password="'+ val.password +'">';
-			htmlwl += '<i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ val.ssid +'</li>';
+			htmlwl += '<li class="wlan0" data-offline="1"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ list.ssid +'</li>';
 		} );
 	}
 	if ( G.listeth ) {
-		var val = G.listeth;
-		htmllan += '<li class="eth0" data-ip="'+ val.ip +'" data-dhcp="'+ val.dhcp +'" ';
-		htmllan += 'data-gateway="'+ val.gateway +'" data-hostname="'+ val.hostname +'">';
-		htmllan += '<i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ val.ip +'</li>';
+		var htmllan = '<li class="eth0"><i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ G.listeth.ip +'</li>';
 	}
 	if ( G.activebt ) {
 		var active = $( '#listbt grn' ).length > 0;
@@ -262,6 +260,10 @@ function renderQR() {
 		$( '#boxqr' ).addClass( 'hide' );
 	}
 }
+function wlanList() {
+	var i = G.li.index( '.wlan0' );
+	return i === 0 ? G.listwlan : G.listwlannc[ i - 1 ];
+}
 function wlanScan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh', function( list ) {
 		var html = '';
@@ -328,7 +330,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#wladd' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : editWiFi();
+	'ssid' in G ? infoAccesspoint() : editWiFi( 'add' );
 } );
 $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
@@ -375,53 +377,57 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( intervalscan );
-	var ssid = G.li.data( 'ssid' );
+	var ssid = wlanList().ssid;
 	notify( ssid, 'Connect ...', 'wifi' );
 	bash( [ 'profileconnect', ssid ] )
 } );
 $( '.disconnect' ).click( function() {
 	if ( G.list === 'listbt' ) {
-		var ssidname = G.li.data( 'name' );
+		var i = G.li.index( '.bt' );
+		var list = G.listbt[ i ]
+		var name = list.name;
 		var icon = 'bluetooth';
 	} else {
-		var ssidname = G.li.data( 'ssid' );
+		var name = wlanList().ssid;
 		var icon = 'wifi';
 	}
 	info( {
 		  icon    : icon
-		, title   : ssidname
+		, title   : name
 		, message : 'Disconnect?'
 		, oklabel : '<i class="fa fa-times"></i>OK'
 		, okcolor : orange
 		, ok      : function() {
 			clearTimeout( intervalscan );
-			notify( ssidname, 'Disconnect ...', icon );
-			icon === 'wifi' ? bash( [ 'disconnect' ] ) : bash( '/srv/http/bash/networks.sh btdisconnect' );
+			notify( name, 'Disconnect ...', icon );
+			bash( [ icon === 'wifi' ? 'disconnect' : 'btdisconnect' ] )
 		}
 	} );
 } );
 $( '.edit' ).click( function() {
-	G.list === 'listwl' ? editWiFi( G.li ) : editLAN( G.li );
+	G.list === 'listwl' ? editWiFi() : editLAN();
 } );
 $( '.forget' ).click( function() {
 	if ( G.list === 'listbt' ) {
-		var ssidname = G.li.data( 'name' );
-		var mac = G.li.data( 'mac' );
+		var i = G.li.index( '.bt' );
+		var list = G.listbt[ i ]
+		var name = list.name;
+		var mac = list.mac;
 		var icon = 'bluetooth';
 	} else {
-		var ssidname = G.li.data( 'ssid' );
+		var name = wlanList().ssid;
 		var icon = 'wifi';
 	}
 	info( {
 		  icon    : icon
-		, title   : ssidname
+		, title   : name
 		, message : 'Forget?'
 		, oklabel : '<i class="fa fa-minus-circle"></i>OK'
 		, okcolor : red
 		, ok      : function() {
 			clearTimeout( intervalscan );
-			notify( ssidname, 'Forget ...', icon );
-			icon === 'wifi' ? bash( [ 'profileremove', ssidname ] ) : bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
+			notify( name, 'Forget ...', icon );
+			icon === 'wifi' ? bash( [ 'profileremove', name ] ) : bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
 		}
 	} );
 } );
