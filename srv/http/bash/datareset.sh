@@ -39,12 +39,12 @@ max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on"
+	[[ -e /boot/kernel8.img || $revision =~ ^(08|0c|0d|0e|11)$ ]] && config+="
+dtparam=krnbt=on"
 	[[ $revision =~ ^(09|0c)$ ]] && config+="
 force_turbo=1
 hdmi_drive=2
 over_voltage=2"
-	[[ -e /boot/kernel8.img || $revision =~ ^(08|0c|0d|0e|11)$ ]] && config+="
-dtparam=krnbt=on"
 	echo "$config" > /boot/config.txt
 fi
 # data directories
