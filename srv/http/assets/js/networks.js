@@ -45,7 +45,6 @@ function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
 	} );
 }
 function editLAN( $el ) {
-	var values = [ $el.data( 'ip' ), $el.data( 'gateway' ) ];
 	var btndhcp = $el.data( 'dhcp' ) === 'dhcp';
 	info( {
 		  icon         : 'lan'
