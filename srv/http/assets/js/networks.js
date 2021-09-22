@@ -16,7 +16,7 @@ function btScan() {
 		intervalscan = setTimeout( btScan, 12000 );
 	}, 'json' );
 }
-function connect( data ) { // [ ssid, wpa, password, hidden, ip, gw ]
+function connect( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( intervalscan );
 	var ssid = data.ESSID;
 	var ip = data.Address;
@@ -110,30 +110,30 @@ function editWiFi( $el ) {
 		, ok            : function() {
 			var k =[ 'ESSID', 'Address', 'Gateway', 'Key', 'IP', 'Hidden', 'Security' ];
 			var v = infoVal();
-			values = {}
+			var data = {}
 			$.each( v, function( i, v ) {
 				if ( i === 4 ) {
 					v = v ? 'static' : 'dhcp';
 				} else if ( i === 6 ) {
 					v = v ? 'wep' : 'wpa';
 				}
-				values[ k[ i ] ] = v;
+				data[ k[ i ] ] = v;
 			} );
-			if ( values.IP === 'dhcp' ) {
-				connect( values );
+			if ( data.IP === 'dhcp' ) {
+				connect( data );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ values.Address +' &> /dev/null && echo -1', function( std ) {
+				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', function( std ) {
 					if ( std == -1 ) {
 						info( {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
-							, message : 'IP <wh>'+ values.Address +'</wh> already in use.'
+							, message : 'IP <wh>'+ data.Address +'</wh> already in use.'
 							, ok      : function() {
 								editWiFi( $el );
 							}
 						} );
 					} else {
-						connect( values );
+						connect( data );
 					}
 				} );
 			}
@@ -429,7 +429,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	var ssid = $this.data( 'ssid' );
 	var wpa = $this.data( 'wpa' ) || 'wep';
-	var vals = {
+	var data = {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
@@ -441,13 +441,13 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				, passwordlabel : 'Password'
 				, oklabel       : 'Connect'
 				, ok            : function() {
-					vals.Security = wpa;
-					vals.Key      = infoVal();
-					connect( vals );
+					data.Security = wpa;
+					data.Key      = infoVal();
+					connect( data );
 				}
 			} );
 		} else {
-			connect( vals );
+			connect( data );
 		}
 	} else {
 		var ssid = $this.data( 'ssid' );
