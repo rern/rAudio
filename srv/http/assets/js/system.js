@@ -684,7 +684,7 @@ $( '#setting-vuled' ).click( function() {
 		}
 		, ok           : function() {
 			notify( 'VU LED', 'Change ...', 'led' );
-			bash( [ 'vuledset', infoVal().join( ' ' ) ] );
+			bash( [ 'vuledset', ...infoVal() ] );
 		}
 	} );
 } );
