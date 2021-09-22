@@ -20,7 +20,10 @@ dirsystem=/srv/http/data/system
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
 if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
-	bluetoothconf="[ $( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false ), $btformat ]"
+	bluetoothconf="[
+$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+, $btformat
+]"
 else
 	bluetoothconf="[ false, $btformat ]"
 fi
