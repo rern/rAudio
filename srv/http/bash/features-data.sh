@@ -19,9 +19,10 @@ data+='
 if [[ -e /usr/bin/hostapd ]]; then
 	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
 	hostapdpwd=$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )
+	hostapdconf="[ \"$hostapdip\",\"$hostapdpwd\" ]"
 	data+='
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
-, "hostapdconf"      : [ "'$hostapdip'","'$hostapdpwd'" ]
+, "hostapdconf"      : '$hostapdconf'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
 fi
