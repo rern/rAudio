@@ -19,14 +19,12 @@ dirsystem=/srv/http/data/system
 
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
-if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
-	bluetoothconf="[
- $( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
-,$btformat
-]"
-else
-	bluetoothconf="[ false, $btformat ]"
+if [[ $bluetooth == false ]]; then
+	discoverable=true
+else # 'bluetoothctl show' needs active bluetooth
+	discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 fi
+bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
