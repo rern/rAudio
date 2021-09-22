@@ -5,12 +5,8 @@ dirsystem=/srv/http/data/system
 . /srv/http/bash/mpd-devices.sh
 
 active=$( mpc &> /dev/null && echo true || echo false )
-lines=$( grep -v 'quality\|}' $dirsystem/soxr.conf 2> /dev/null | cut -d'"' -f2 )
-if [[ -n $lines ]]; then
-	for line in $lines; do
-		soxrconf+=",$line"
-	done
-	soxrconf="[ ${soxrconf:1} ]"
+if [[ -e $dirsystem/soxr.conf ]]; then
+	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
 else
 	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
 fi
