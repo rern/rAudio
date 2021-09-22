@@ -123,7 +123,7 @@ $( '#setting-snapclient' ).click( function() {
 		, checkblank   : 1
 		, values       : G.snapcastconf
 		, boxwidth     : 100
-		, checkchange  : ( G.snapclient ? 1 : 0 )
+		, checkchanged : ( G.snapclient ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
