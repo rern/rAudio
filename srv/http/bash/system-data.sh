@@ -19,10 +19,10 @@ dirsystem=/srv/http/data/system
 
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
-if [[ $bluetooth == false ]]; then
-	discoverable=true
-else # 'bluetoothctl show' needs active bluetooth
+if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
 	discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+else
+	discoverable=true
 fi
 bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
