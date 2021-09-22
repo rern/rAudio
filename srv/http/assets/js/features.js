@@ -124,11 +124,16 @@ $( '#setting-snapclient' ).click( function() {
 		, values       : G.snapcastconf
 		, boxwidth     : 100
 		, checkchange  : ( G.snapclient ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
+				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
+			} );
+		}
 		, cancel       : function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
 		, ok           : function() {
-			bash( [ 'snapclientset', Math.abs( infoVal() ) ] );
+			bash( [ 'snapclientset', infoVal() ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
 		}
 	} );
@@ -183,7 +188,7 @@ $( '#setting-hostapd' ).click( function() {
 		, ok           : function() {
 			var values = infoVal();
 			var ip = values[ 0 ];
-			var pwd = values[ 1 ];
+			var pwd = escapeUsrPwd( values[ 1 ] );
 			var ips = ip.split( '.' );
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );
