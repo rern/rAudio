@@ -518,9 +518,8 @@ vuleddisable )
 	pushRefresh
 	;;
 vuledset )
-	pins=${args[1]}
+	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	echo $pins > $dirsystem/vuled.conf
 	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
 	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
