@@ -296,7 +296,7 @@ soxrset )
 	stopband_begin "'${args[4]}'"
 	attenuation    "'${args[5]}'"
 	flags          "'${args[6]}'"
-}' > $dirsystem/soxr
+}' > $dirsystem/soxr.conf
 	sed -i -e '/quality/,/}/ d
 ' -e "/soxr/ r $dirsystem/soxr.conf
 " /etc/mpd.conf
