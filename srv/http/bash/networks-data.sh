@@ -1,14 +1,26 @@
 #!/bin/bash
 
-# accesspoint
-if systemctl -q is-active hostapd; then
-	ssid=$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf )
-	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
-	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	ap='
-  "ssid"       : "'${ssid//\"/\\\"}'"
-, "passphrase" : "'${passphrase//\"/\\\"}'"
-, "hostapdip"  : "'$hostapdip'"'
+# bluetooth
+if systemctl -q is-active bluetooth; then
+	readarray -t lines <<< $( bluetoothctl paired-devices | cut -d' ' -f2,3- )
+	if [[ -n $lines ]]; then
+		for line in "${lines[@]}"; do
+			devices+="
+		${line#* }^${line/ *}"
+		done
+		readarray -t lines <<< "$( echo "$devices" | sort -f | grep . )"
+		for line in "${lines[@]}"; do
+			mac=${line#*^}
+			name=${line/^*}
+			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
+			listbt+=',{
+  "name"      : "'${name//\"/\\\"}'"
+, "connected" : '$connected'
+, "mac"       : "'$mac'"
+}'
+		done
+		listbt="[ ${listbt:1} ]"
+	fi
 fi
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
@@ -84,28 +96,19 @@ if [[ -n $notconnected ]]; then
 , "wep"      : '$wep'
 }'
 	done
+	listwlnc="[ ${listwlnc:1} ]"
 fi
 
-# bluetooth
-if systemctl -q is-active bluetooth; then
-	readarray -t lines <<< $( bluetoothctl paired-devices | cut -d' ' -f2,3- )
-	if [[ -n $lines ]]; then
-		for line in "${lines[@]}"; do
-			devices+="
-		${line#* }^${line/ *}"
-		done
-		readarray -t lines <<< "$( echo "$devices" | sort -f | grep . )"
-		for line in "${lines[@]}"; do
-			mac=${line#*^}
-			name=${line/^*}
-			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
-			listbt+=',{
-  "name"      : "'${name//\"/\\\"}'"
-, "connected" : '$connected'
-, "mac"       : "'$mac'"
+# hostapd
+if systemctl -q is-active hostapd; then
+	ssid=$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf )
+	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
+	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
+	ap='{
+  "ssid"       : "'${ssid//\"/\\\"}'"
+, "passphrase" : "'${passphrase//\"/\\\"}'"
+, "hostapdip"  : "'$hostapdip'"
 }'
-		done
-	fi
 fi
 
 data='
@@ -113,11 +116,11 @@ data='
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
 , "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
-, "listbt"     : '$( [[ -n $listbt ]] && echo [ ${listbt:1} ] || echo false )'
+, "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
 , "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
 , "listwl"     : '$( [[ -n $listwl ]] && echo $listwl || echo false )'
-, "listwlnc"   : '$( [[ -n $listwlnc ]] && echo [ ${listwlnc:1} ] || echo false )'
-, "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
+, "listwlnc"   : '$( [[ -n $listwlnc ]] && echo $listwlnc || echo false )'
+, "hostapd"    : '$( [[ -n $ap ]] && echo $ap || echo false )'
 , "hostname"   : "'$( hostname )'"'
 
 echo {$data}

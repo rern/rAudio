@@ -283,17 +283,20 @@ bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
 		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
-		pushstream refresh '{ "page": "networks" }'
 	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
-		pushstream refresh '{ "page": "networks" }'
 	else
 		mpc stop
 		rm -f $dirtmp/{player-*,btclient}
 		echo $val > $dirtmp/player-bluetooth
 		sleep 1
 		volume0dB
+	fi
+	if [[ $val == 1 || $val == 0 ]]; then
+		data=$( /srv/http/bash/networks-data.sh )
+		pushstream refresh "$data"
+	else
 		status=$( $dirbash/status.sh )
 		pushstream mpdplayer "$status"
 	fi
