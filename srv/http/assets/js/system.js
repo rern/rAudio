@@ -396,7 +396,7 @@ $( '#setting-wlan' ).click( function() {
 			, title        : 'Wi-Fi'
 			, content      : infowifi
 			, boxwidth     : 250
-			, values       : [ G.regdom, !G.wlannoap ]
+			, values       : G.wlanconf
 			, checkchanged : ( G.wlan ? 1 : 0 )
 			, cancel       : function() {
 				$( '#wlan' ).prop( 'checked', G.wlan );
@@ -603,7 +603,7 @@ $( '#setting-mpdoled' ).click( function() {
 			, 'SH1106 I&#178;C'   : 6
 			, 'SH1106 SPI'        : 7
 		}
-		, values       : [ G.mpdoledconf ]
+		, values       : G.mpdoledconf
 		, checkchanged : ( G.mpdoled ? 1 : 0 )
 		, boxwidth     : 140
 		, buttonlabel   : '<i class="fa fa-plus-r"></i>Logo'

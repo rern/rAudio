@@ -21,8 +21,8 @@ bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
 btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
 if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
 	bluetoothconf="[
-$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
-, $btformat
+ $( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+,$btformat
 ]"
 else
 	bluetoothconf="[ false, $btformat ]"
@@ -142,6 +142,10 @@ if [[ -e $dirsystem/vuled.conf ]]; then
 else
 	vuledconf='[ 14,15,18,23,24,25,8 ]'
 fi
+wlanconf="[
+ \"$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )\"
+,$( [[ -e $dirsystem/wlannoap ]] && echo false || echo true )
+]"
 
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
@@ -162,7 +166,6 @@ data+='
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
 , "powerbuttonconf"  : '$powerbuttonconf'
-, "regdom"           : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
 , "relays"           : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "rpimodel"         : "'$rpimodel'"
 , "soc"              : "'$soc'"
@@ -176,7 +179,7 @@ data+='
 , "vuled"            : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
 , "vuledconf"        : '$vuledconf'
 , "wlan"             : '$( rfkill | grep -q wlan && echo true || echo false )'
-, "wlannoap"         : '$( [[ -e $dirsystem/wlannoap ]] && echo true || echo false )'
+, "wlanconf"         : '$wlanconf'
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
 
 echo {$data}
