@@ -46,7 +46,7 @@ if [[ -n $ipr ]]; then
 	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ -z $dbm ]] && dbm=0
-	listwlan='{
+	listwl='{
   "dbm"      : '$dbm'
 , "gateway"  : "'$gateway'"
 , "hidden"   : '$hidden'
@@ -74,7 +74,7 @@ if [[ -n $notconnected ]]; then
 			gateway=
 			ip=
 		fi
-		listwlannc+=',{
+		listwlnc+=',{
   "gateway"  : "'$gateway'"
 , "hidden"   : '$hidden'
 , "ip"       : "'$ip'"
@@ -115,8 +115,8 @@ data='
 , "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "listbt"     : '$( [[ -n $listbt ]] && echo [ ${listbt:1} ] || echo false )'
 , "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
-, "listwlan"   : '$( [[ -n $listwlan ]] && echo $listwlan || echo false )'
-, "listwlannc" : '$( [[ -n $listwlannc ]] && echo [ ${listwlannc:1} ] || echo false )'
+, "listwl"     : '$( [[ -n $listwl ]] && echo $listwl || echo false )'
+, "listwlnc"   : '$( [[ -n $listwlnc ]] && echo [ ${listwlnc:1} ] || echo false )'
 , "hostapd"    : '$( [[ -n $ap ]] && echo {$ap} || echo false )'
 , "hostname"   : "'$( hostname )'"'
 
