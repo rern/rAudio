@@ -352,8 +352,9 @@ mount )
 	fi
 	[[ -n $extraoptions ]] && options+=,$extraoptions
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	std=$( mount "$mountpoint" 2>&1 )
+	mount "$mountpoint" 2> /dev/null
 	if [[ $? == 0 ]]; then
+		echo 0
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		pushRefresh
 	else

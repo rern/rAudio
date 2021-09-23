@@ -813,14 +813,13 @@ function infoMount( values ) {
 			} );
 		}
 		, ok         : function() {
-			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			notify( 'Network Mount', 'Mount ...', 'networks' );
-			bash( [ 'mount', ...values ], function( std ) {
-				if ( std ) {
+			// [ protocol, mountpoint, ip, directory, user, password, options, update ]
+			bash( [ 'mount', ...infoVal() ], function( error ) {
+				if ( error != 0 ) {
 					info( {
 						  icon    : 'networks'
 						, title   : 'Mount Share'
-						, message : std
+						, message : error
 						, ok      : function() {
 							infoMount( values );
 						}
@@ -830,6 +829,7 @@ function infoMount( values ) {
 					refreshData();
 				}
 			} );
+			notify( 'Network Mount', 'Mount ...', 'networks' );
 		}
 	} );
 }
