@@ -172,6 +172,7 @@ connect = () => {
 	if ( !active ) {
 		active = 1;
 		pushstream.connect();
+		$( '#scanning-bt, #scanning-wifi' ).addClass( 'blink' );
 	}
 }
 disconnect = () => {
@@ -183,6 +184,7 @@ disconnect = () => {
 hiddenSet = () => {
 	if ( page === 'networks' ) {
 		clearInterval( intervalscan );
+		$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	} else if ( page === 'system' ) {
 		clearInterval( intervalcputime );
 		$( '#refresh' ).removeClass( 'blink' );
