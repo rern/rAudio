@@ -14,3 +14,4 @@ done
 
 echo { '"00": "00 - Allowed worldwide"', $( echo "$list" | sort -k2 ) } | jq . > /srv/http/settings/regdomcodes.json
 
+echo Updated: /srv/http/settings/regdomcodes.json
