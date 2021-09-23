@@ -266,7 +266,6 @@ function psWifi( data ) {
 	} );
 }
 //---------------------------------------------------------------------------------------
-var hash = Math.ceil( Date.now() / 1000 );
 G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';

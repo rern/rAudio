@@ -255,7 +255,7 @@ $( '.img' ).click( function() {
 	info( {
 		  icon        : d[ 2 ] || name
 		, title       : d[ 0 ]
-		, message     : '<img src="/assets/img/'+ name +'.'+ hash +'.'+ (d[ 4 ] || 'jpg' )
+		, message     : '<img src="/assets/img/'+ name +'.'+ Math.ceil( Date.now() / 1000 ) +'.'+ (d[ 4 ] || 'jpg' )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
 		, footer      : d[ 1 ] ? '<br>'+ gpiosvg + d[ 1 ] : ''
 		, footeralign : 'left'

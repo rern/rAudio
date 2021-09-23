@@ -87,8 +87,10 @@ var nameplayer = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-// fix: ios safari cannot be detected by php HTTP_USER_AGENT
-if ( navigator.maxTouchPoints ) $( '.desktop' ).remove(); // desktop.css, shortcut.js
+if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
+	$.getScript( '/assets/js/shortcut.js' );
+}
 	
 statusRefresh();
 
