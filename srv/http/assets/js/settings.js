@@ -230,11 +230,7 @@ function psNotify( data ) {
 	}
 }
 function psRefresh( data ) {
-	if ( data.page === page ) {
-		renderPage( data );
-	} else if ( data.page === 'all' ) {
-		refreshData();
-	}
+	if ( data.page === page ) renderPage( data );
 }
 function psReload() {
 	if ( localhost ) location.reload();
