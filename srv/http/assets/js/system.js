@@ -791,7 +791,7 @@ var htmlmount = `\
 function infoMount( values ) {
 	info( {
 		  icon       : 'networks'
-		, title      : 'Add Network Share'
+		, title      : 'Add Network Storage'
 		, content    : htmlmount
 		, values     : values
 		, beforeshow : function() {

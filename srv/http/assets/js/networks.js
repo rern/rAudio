@@ -193,12 +193,10 @@ function btScan() {
 			var htmlbt = '';
 			data.forEach( function( list ) {
 				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i>';
-				if ( list.connected ) {
-					htmlbt += '<grn>&bull;&ensp;</grn>';
-				} else if ( list.paired ) {
-					htmlbt += '<gr>&bull;&ensp;</gr>';
-				}
-				htmlbt += '<a class="liname wh">'+ list.name +'</a></li>';
+				if ( list.connected ) htmlbt += '<grn>&bull;&ensp;</grn>';
+				htmlbt += '<a class="liname wh">'+ list.name +'</a>';
+				if ( list.paired ) htmlbt += '&ensp;<i class="fa fa-save-circle wh"></i>';
+				htmlbt += '</li>';
 			} );
 			$( '#listbtscan' ).html( htmlbt );
 		}
@@ -206,7 +204,6 @@ function btScan() {
 	}, 'json' );
 }
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
-	console.log(data)
 	clearTimeout( timeoutscan );
 	var ssid = data.ESSID;
 	var ip = data.Address;
