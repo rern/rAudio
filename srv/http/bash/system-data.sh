@@ -131,9 +131,9 @@ else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 if [[ -e $dirsystem/powerbutton.conf ]]; then
-	powerbuttonconf="[ 5,$( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
+	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else
-	powerbuttonconf='[ 5,5,40,5 ]'
+	powerbuttonconf='[ 5,40,5 ]'
 fi
 if [[ -e $dirsystem/vuled.conf ]]; then
 	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"

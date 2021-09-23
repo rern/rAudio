@@ -373,10 +373,10 @@ $( '#setting-powerbutton' ).click( function() {
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 60
-		, values       : G.powerbuttonconf
+		, values       : [ 5, ...G.powerbuttonconf ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 1 ] == 5 );
+			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
 			$( '#infoContent select:eq( 0 )' ).change( function() {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );
@@ -475,7 +475,7 @@ $( '#setting-vuled' ).click( function() {
 			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
 			$( '#infoContent select' ).on( 'change', function() {
 				var v = infoVal();
-				var changed = G.vuled && v.join( ' ' ) === G.vuledconf;
+				var changed = G.vuled && v.join( ' ' ) === G.vuledconf.join( ' ' );
 				var duplicate = new Set( v ).size !== v.length;
 				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
 				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
