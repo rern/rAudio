@@ -460,6 +460,7 @@ $( '#time' ).roundSlider( {
 		G.drag = 1;
 		clearIntervalAll();
 		$( '.map' ).removeClass( 'mapshow' );
+		if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 	}
 	, drag        : function ( e ) { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( e.value ) );
@@ -567,6 +568,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	G.down = 1;
 	clearIntervalAll();
+	if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
 	
