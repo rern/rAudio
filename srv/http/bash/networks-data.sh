@@ -103,11 +103,11 @@ fi
 if systemctl -q is-active hostapd; then
 	ssid=$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf )
 	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
-	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
+	ip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
 	ap='{
   "ssid"       : "'${ssid//\"/\\\"}'"
 , "passphrase" : "'${passphrase//\"/\\\"}'"
-, "hostapdip"  : "'$hostapdip'"
+, "ip"         : "'$ip'"
 }'
 fi
 

@@ -195,7 +195,7 @@ function btScan() {
 				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i>';
 				if ( list.connected ) htmlbt += '<grn>&bull;&ensp;</grn>';
 				htmlbt += '<a class="liname wh">'+ list.name +'</a>';
-				if ( list.paired ) htmlbt += '&ensp;<i class="fa fa-save-circle wh"></i>';
+				if ( list.paired && !list.connected ) htmlbt += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlbt += '</li>';
 			} );
 			$( '#listbtscan' ).html( htmlbt );
@@ -424,23 +424,21 @@ function qr( msg ) {
 	} );
 }
 function renderQR() {
-	var $el = $( '#listlan li' ).length ? $( '#listlan li' ) : $( '#listwl li' );
-	var ip = $el.data( 'ip' );
-	if ( ip && ip !== G.hostapd.hostapdip ) {
-		var hostname = $el.data( 'hostname' );
+	var ip = G.listeth ? G.listeth.ip : G.listwl.ip;
+	if ( ip && ip !== G.hostapd.ip ) {
 		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
-		if( hostname ) ip += '<br><gr>http://</gr>'+ hostname;
+		if( G.hostname ) ip += '<br><gr>http://</gr>'+ G.hostname +'.local';
 		$( '#ipwebui' ).html( ip );
 		$( '#divwebui' ).removeClass( 'hide' );
 	} else {
 		$( '#divwebui' ).addClass( 'hide' );
 	}
 	if ( G.hostapd ) {
-		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.hostapdip );
+		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.ip );
 		$( '#ssid' ).text( G.hostapd.ssid );
 		$( '#passphrase' ).text( G.hostapd.passphrase )
-		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.ssid +';T:WPA;P:'+ G.passphrase +';' ) );
-		$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapdip ) );
+		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.hostapd.ssid +';T:WPA;P:'+ G.hostapd.passphrase +';' ) );
+		$( '#qrwebuiap' ).html( qr( 'http://'+ G.hostapd.ip ) );
 		$( '#boxqr' ).removeClass( 'hide' );
 	} else {
 		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();

@@ -99,7 +99,7 @@ $( '#hostapd' ).click( function() {
 	if ( !G.hostapd && G.wlanconnect && checked ) {
 		info( {
 			  icon    : 'networks'
-			, title   : 'RPi Access Point'
+			, title   : 'Access Point'
 			, message : '<wh>Wi-Fi is currently connected.</wh>'
 						 +'<br>Disconnect and continue?'
 			, cancel  : function() {
@@ -126,7 +126,7 @@ $( '#hostapd' ).click( function() {
 $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'
-		, title        : 'Access Point Settings'
+		, title        : 'Access Point'
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : G.hostapdconf
