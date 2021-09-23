@@ -144,7 +144,7 @@ $( '#setting-hostapd' ).click( function() {
 		, ok           : function() {
 			var values = infoVal();
 			var ip = values[ 0 ];
-			var pwd = escapeUsrPwd( values[ 1 ] );
+			var pwd = values[ 1 ];
 			var ips = ip.split( '.' );
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );
@@ -228,8 +228,7 @@ $( '#setting-mpdscribble' ).click( function() {
 			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
 		}
 		, ok            : function() {
-			var values = infoVal();
-			bash( [ 'mpdscribbleset', escapeUsrPwd( values[ 0 ] ), escapeUsrPwd( values[ 1 ] ) ], function( std ) {
+			bash( [ 'mpdscribbleset', ...infoVal() ], function( std ) {
 				if ( std == -1 ) {
 					info( {
 						  icon    : 'lastfm'
@@ -258,8 +257,8 @@ $( '#setting-login' ).click( function() {
 			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
-				, password : escapeUsrPwd( values[ 0 ] )
-				, pwdnew   : escapeUsrPwd( G.login ? values[ 1 ] : values )
+				, password : values[ 0 ]
+				, pwdnew   : G.login ? values[ 1 ] : values
 			}, function( std ) {
 				if ( !std ) passwordWrong();
 				bannerHide();

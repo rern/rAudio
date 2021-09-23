@@ -99,9 +99,6 @@ function disableSwitch( id, truefalse ) {
 		.prop( 'disabled', truefalse )
 		.next().toggleClass( 'disabled', truefalse );
 }
-function escapeUsrPwd( usrpwd ) {
-	return usrpwd.replace( /(["&()\\])/g, '\$1' )
-}
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );

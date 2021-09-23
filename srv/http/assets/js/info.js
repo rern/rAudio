@@ -611,7 +611,9 @@ function infoVal() {
 			val = $this.prop( 'checked' );
 		} else if ( type === 'textarea' ) {
 			O.textarea = 1;
-			val = $this.val().replace( /\n/g, '\\n' ).trim();
+			val = $this.val().trim().replace( /\n/g, '\\n' );
+		} else if ( type === 'password' ) {
+			val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
 		} else {
 			val = $this.val().trim();
 		}
