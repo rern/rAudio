@@ -1,54 +1,10 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-function passwordWrong() {
-	info( {
-		  icon    : 'lock'
-		, title   : 'Password Login'
-		, message : 'Wrong existing password.'
-	} );
-	$( '#login' ).prop( 'checked', G.login );
-}
-
-renderPage = function( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
-	$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
-	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
-	$( '#snapclient' ).prop( 'checked', G.snapclient );
-	disableSwitch( '#snapclient', G.snapserver );
-	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
-	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
-	$( '#streaming' ).prop( 'checked', G.streaming );
-	$( '#snapserver' ).prop( 'checked', G.snapserver );
-	disableSwitch( '#snapserver', G.snapclient );
-	$( '#hostapd' ).prop( 'checked', G.hostapd );
-	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
-	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
-	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
-	$( '#smb' ).prop( 'checked', G.smb );
-	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
-	$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
-	$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
-	$( '#login' ).prop( 'checked', G.login );
-	$( '#setting-login' ).toggleClass( 'hide', !G.login );
-	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
-	$( '#autoplay' ).prop( 'checked', G.autoplay );
-	[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
-	resetLocal();
-	showContent();
-}
-
 // hostapd
 if ( set ) setTimeout( function() { $( '#'+ set ).click() }, 900 );
 
 $( '#ip' ).html( 'http://'+ location.host +':8000' );
-//---------------------------------------------------------------------------------------
+
 $( '.enable' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( $( this ).hasClass( 'disabled' ) ) {
@@ -313,3 +269,46 @@ $( '#setting-login' ).click( function() {
 } );
 
 } );
+
+function passwordWrong() {
+	info( {
+		  icon    : 'lock'
+		, title   : 'Password Login'
+		, message : 'Wrong existing password.'
+	} );
+	$( '#login' ).prop( 'checked', G.login );
+}
+function renderPage( list ) {
+	if ( typeof list === 'string' ) { // on load, try catching any errors
+		var list2G = list2JSON( list );
+		if ( !list2G ) return
+	} else {
+		G = list;
+	}
+	$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
+	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
+	$( '#snapclient' ).prop( 'checked', G.snapclient );
+	disableSwitch( '#snapclient', G.snapserver );
+	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
+	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
+	$( '#streaming' ).prop( 'checked', G.streaming );
+	$( '#snapserver' ).prop( 'checked', G.snapserver );
+	disableSwitch( '#snapserver', G.snapclient );
+	$( '#hostapd' ).prop( 'checked', G.hostapd );
+	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
+	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
+	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
+	$( '#smb' ).prop( 'checked', G.smb );
+	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
+	$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
+	$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
+	$( '#login' ).prop( 'checked', G.login );
+	$( '#setting-login' ).toggleClass( 'hide', !G.login );
+	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
+	$( '#autoplay' ).prop( 'checked', G.autoplay );
+	[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
+		codeToggle( id, 'status' );
+	} );
+	resetLocal();
+	showContent();
+}

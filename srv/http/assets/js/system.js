@@ -1,203 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var htmlmount = `\
-<table id="tblinfomount">
-<tr><td>Type</td>
-	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
-	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
-</tr>
-<tr><td>Name</td>
-	<td><input type="text"></td>
-</tr>
-<tr><td>IP</td>
-	<td><input type="text"></td>
-</tr>
-<tr id="sharename"><td>Share name</td>
-	<td><input type="text"></td>
-</tr>
-<tr class="guest"><td>User</td>
-	<td><input type="text"></td>
-</tr>
-<tr class="guest"><td>Password</td>
-	<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
-</tr>
-<tr><td>Options</td>
-	<td><input type="text"></td>
-</tr>
-<tr><td></td>
-	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
-</tr>
-</table>`;
-function infoMount( values ) {
-	info( {
-		  icon       : 'networks'
-		, title      : 'Add Network Share'
-		, content    : htmlmount
-		, values     : values
-		, beforeshow : function() {
-			$( '#infoContent td:eq( 0 )' ).css( 'width', '90px' );
-			$( '#infoContent td:eq( 1 )' ).css( 'width', '267px' );
-			var $sharelabel = $( '#sharename td:eq( 0 )' );
-			var $share = $( '#sharename input' );
-			var $guest = $( '.guest' );
-			$( '#infoContent input:radio' ).change( function() {
-				if ( $( this ).val() === 'nfs' ) {
-					$sharelabel.text( 'Share path' );
-					$guest.addClass( 'hide' );
-					$share.val( '/'+ $share.val() );
-				} else {
-					$sharelabel.text( 'Share name' );
-					$guest.removeClass( 'hide' );
-					$share.val( $share.val().replace( /\//g, '' ) );
-				}
-			} );
-		}
-		, ok         : function() {
-			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			notify( 'Network Mount', 'Mount ...', 'networks' );
-			bash( [ 'mount', ...values ], function( std ) {
-				if ( std ) {
-					info( {
-						  icon    : 'networks'
-						, title   : 'Mount Share'
-						, message : std
-						, ok      : function() {
-							infoMount( values );
-						}
-					} );
-					bannerHide();
-				} else {
-					refreshData();
-				}
-			} );
-		}
-	} );
-}
-function renderStatus() {
-	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
-	if ( G.cputemp ) {
-		status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
-	} else {
-		$( '#cputemp' ).hide();
-	}
-	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
-			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
-			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
-	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		status += '<br><span class="undervoltage"><i class="fa fa-warning';
-		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
-		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
-		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
-			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
-		}
-		status += '&emsp;<i class="fa fa-status gr"></i></span></span>';
-	}
-	$( '#status' ).html( status );
-}
-
-renderPage = function( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
-	var cpu = G.soccpu +' <gr>@</gr> ';
-	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
-	$( '#systemvalue' ).html(
-		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
-		+'<br>'+ G.kernel
-		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
-		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
-		+'<br>'+ cpu
-	);
-	renderStatus();
-	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
-	var html = '';
-	$.each( G.list, function( i, val ) {
-		if ( val.mounted ) {
-			var dataunmounted = '';
-			var dot = '<grn>&ensp;&bull;&ensp;</grn>';
-		} else {
-			var dataunmounted = ' data-unmounted="1"';
-			var dot = '<red>&ensp;&bull;&ensp;</red>';
-		}
-		html += '<li '+ dataunmounted;
-		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>';
-		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
-	} );
-	$( '#list' ).html( html );
-	if ( G.bluetooth ) {
-		$( '#bluetooth' ).prop( 'checked', true );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', false );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
-	} else {
-		$( '#bluetooth' ).prop( 'checked', false );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', true );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
-	}
-	$( '#wlan' ).prop( 'checked', G.wlan );
-	if ( G.wlan ) {
-		$( '#wlan' ).prop( 'checked', true );
-		$( '#setting-wlan' ).toggleClass( 'hide', false );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
-	} else {
-		$( '#wlan' ).prop( 'checked', false );
-		$( '#setting-wlan' ).toggleClass( 'hide', true );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
-	}
-	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
-	$( '#i2smodule' ).val( 'none' );
-	$( '#i2smodule option' ).filter( function() {
-		var $this = $( this );
-		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
-	} ).prop( 'selected', true );
-	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
-	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
-	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
-	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
-	$( '#lcd' ).prop( 'checked', G.lcd );
-	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
-	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-	$( '#relays' ).prop( 'checked', G.relays );
-	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
-	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
-	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
-	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
-	if ( G.soundprofileconf ) {
-		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
-	} else {
-		$( '#divsoundprofile' ).addClass( 'hide' );
-	}
-	$( '#vuled' ).prop( 'checked', G.vuled );
-	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
-	$( '#hostname' ).val( G.hostname );
-	$( '#timezone' ).val( G.timezone );
-	selectricRender();
-	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
-	resetLocal();
-	showContent();
-}
-//---------------------------------------------------------------------------------------
 var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );;
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
@@ -957,3 +759,200 @@ $( '.list' ).on( 'click', 'bl', function() {
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+var htmlmount = `\
+<table id="tblinfomount">
+<tr><td>Type</td>
+	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
+	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+</tr>
+<tr><td>Name</td>
+	<td><input type="text"></td>
+</tr>
+<tr><td>IP</td>
+	<td><input type="text"></td>
+</tr>
+<tr id="sharename"><td>Share name</td>
+	<td><input type="text"></td>
+</tr>
+<tr class="guest"><td>User</td>
+	<td><input type="text"></td>
+</tr>
+<tr class="guest"><td>Password</td>
+	<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
+</tr>
+<tr><td>Options</td>
+	<td><input type="text"></td>
+</tr>
+<tr><td></td>
+	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
+</tr>
+</table>`;
+function infoMount( values ) {
+	info( {
+		  icon       : 'networks'
+		, title      : 'Add Network Share'
+		, content    : htmlmount
+		, values     : values
+		, beforeshow : function() {
+			$( '#infoContent td:eq( 0 )' ).css( 'width', '90px' );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', '267px' );
+			var $sharelabel = $( '#sharename td:eq( 0 )' );
+			var $share = $( '#sharename input' );
+			var $guest = $( '.guest' );
+			$( '#infoContent input:radio' ).change( function() {
+				if ( $( this ).val() === 'nfs' ) {
+					$sharelabel.text( 'Share path' );
+					$guest.addClass( 'hide' );
+					$share.val( '/'+ $share.val() );
+				} else {
+					$sharelabel.text( 'Share name' );
+					$guest.removeClass( 'hide' );
+					$share.val( $share.val().replace( /\//g, '' ) );
+				}
+			} );
+		}
+		, ok         : function() {
+			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
+			notify( 'Network Mount', 'Mount ...', 'networks' );
+			bash( [ 'mount', ...values ], function( std ) {
+				if ( std ) {
+					info( {
+						  icon    : 'networks'
+						, title   : 'Mount Share'
+						, message : std
+						, ok      : function() {
+							infoMount( values );
+						}
+					} );
+					bannerHide();
+				} else {
+					refreshData();
+				}
+			} );
+		}
+	} );
+}
+function renderPage( list ) {
+	if ( typeof list === 'string' ) { // on load, try catching any errors
+		var list2G = list2JSON( list );
+		if ( !list2G ) return
+	} else {
+		G = list;
+	}
+	var cpu = G.soccpu +' <gr>@</gr> ';
+	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
+	$( '#systemvalue' ).html(
+		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
+		+'<br>'+ G.kernel
+		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
+		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
+		+'<br>'+ cpu
+	);
+	renderStatus();
+	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
+	var html = '';
+	$.each( G.list, function( i, val ) {
+		if ( val.mounted ) {
+			var dataunmounted = '';
+			var dot = '<grn>&ensp;&bull;&ensp;</grn>';
+		} else {
+			var dataunmounted = ' data-unmounted="1"';
+			var dot = '<red>&ensp;&bull;&ensp;</red>';
+		}
+		html += '<li '+ dataunmounted;
+		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
+		html += '<gr class="source">'+ val.source +'</gr>';
+		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
+	} );
+	$( '#list' ).html( html );
+	if ( G.bluetooth ) {
+		$( '#bluetooth' ).prop( 'checked', true );
+		$( '#setting-bluetooth' ).toggleClass( 'hide', false );
+		$( '#bt' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l double status' )
+			.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
+	} else {
+		$( '#bluetooth' ).prop( 'checked', false );
+		$( '#setting-bluetooth' ).toggleClass( 'hide', true );
+		$( '#bt' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l single' )
+			.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
+	}
+	$( '#wlan' ).prop( 'checked', G.wlan );
+	if ( G.wlan ) {
+		$( '#wlan' ).prop( 'checked', true );
+		$( '#setting-wlan' ).toggleClass( 'hide', false );
+		$( '#wl' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l double status' )
+			.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
+	} else {
+		$( '#wlan' ).prop( 'checked', false );
+		$( '#setting-wlan' ).toggleClass( 'hide', true );
+		$( '#wl' )
+			.removeAttr( 'class' )
+			.addClass( 'col-l single' )
+			.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
+	}
+	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
+	$( '#i2smodule' ).val( 'none' );
+	$( '#i2smodule option' ).filter( function() {
+		var $this = $( this );
+		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
+	} ).prop( 'selected', true );
+	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
+	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
+	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
+	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
+	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
+	$( '#lcd' ).prop( 'checked', G.lcd );
+	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
+	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
+	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
+	$( '#relays' ).prop( 'checked', G.relays );
+	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
+	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
+	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
+	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
+	if ( G.soundprofileconf ) {
+		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
+		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
+	} else {
+		$( '#divsoundprofile' ).addClass( 'hide' );
+	}
+	$( '#vuled' ).prop( 'checked', G.vuled );
+	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
+	$( '#hostname' ).val( G.hostname );
+	$( '#timezone' ).val( G.timezone );
+	selectricRender();
+	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+		codeToggle( id, 'status' );
+	} );
+	resetLocal();
+	showContent();
+}
+function renderStatus() {
+	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
+	if ( G.cputemp ) {
+		status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
+	} else {
+		$( '#cputemp' ).hide();
+	}
+	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
+			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
+			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
+	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
+		status += '<br><span class="undervoltage"><i class="fa fa-warning';
+		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
+		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
+			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
+		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
+			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
+		}
+		status += '&emsp;<i class="fa fa-status gr"></i></span></span>';
+	}
+	$( '#status' ).html( status );
+}
