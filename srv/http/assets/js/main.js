@@ -97,10 +97,10 @@ statusRefresh();
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	var $target = $( e.target );
 	var targetid = e.target.id;
-	if ( G.display.noswipe
-		|| G.drag || G.down
-		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
+	if ( G.display.noswipe || G.drag || G.down
+		|| targetid === 'time-knob'|| targetid === 'volume-knob'
 		|| targetid === 'time-band'|| targetid === 'volume-band'
+		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 	) return
 	
 	G.swipe = 1;
