@@ -28,7 +28,7 @@ var cmd = {
 	, iw           : [ 'iw reg get; iw list' ]
 	, journalctl   : [ dirbash +'system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
-	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
+	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mpdignore    : [ dirbash +'player.sh mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
 	, powerbutton  : [ 'systemctl status powerbutton' ]
