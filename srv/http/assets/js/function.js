@@ -1304,7 +1304,7 @@ function setButtonUpdateAddons( updateaddons ) {
 }
 function setButtonUpdating() {
 	if ( G.status.updating_db ) {
-		if ( $( '#bar-top' ).is( ':visible' ) ) {
+		if ( $( '#bar-bottom' ).is( ':visible' ) ) {
 			if ( !G.localhost ) {
 				$( '#library, #button-library' ).addClass( 'blink' );
 			} else {
@@ -1313,6 +1313,7 @@ function setButtonUpdating() {
 					.addClass( 'fa-refresh-library' );
 			}
 		} else {
+			$( '#i-update, #ti-update' ).removeClass( 'blink' );
 			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-update' ).removeClass( 'hide' )
 		}
