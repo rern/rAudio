@@ -842,6 +842,8 @@ $( '.map' ).on( 'tap', function() {
 			setTimeout( setProgressAnimate, 0 );
 		}
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
+		var knobH = $( '.btn-group' ).is( ':hidden' ) ? 230 : 290;
+		$( '#playback-row' ).css( 'align-items', $( '#coverart' ).height() > knobH ? 'center' : '' );
 	} else if ( cmd === 'settings' ) {
 		$( '#button-settings' ).click();
 	} else if ( cmd === 'repeat' ) {
