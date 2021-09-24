@@ -130,7 +130,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
-if grep -q '"cover".*true' $dirsystem/display && [[ -e $dirsystem/vumeter ]]; then
+if grep -q '"cover".*true' $dirsystem/display && [[ ! -e $dirsystem/vumeter ]]; then
 	displaycover=1
 fi
 
