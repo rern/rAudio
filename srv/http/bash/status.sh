@@ -138,10 +138,10 @@ fi
 vuMeter() {
 	[[ -e $dirsystem/vuled ]] && vuled=1
 	if [[ -n $vumeter || -n $vuled ]]; then
+		killall cava &> /dev/null
 		if [[ $state == play ]]; then
-			pgrep cava &> /dev/null || cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		else
-			killall cava &> /dev/null
 			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
 			if [[ -n $vuled ]]; then
 				p=$( cat /srv/http/data/system/vuled.conf )
