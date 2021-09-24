@@ -23,11 +23,11 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Easy update and extra features with Addons
 - Supported GPIO devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
-	- Character LCD: 16x2, 20x4
+	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
 	- Power on/off button
-	- Relay module
-	- Spectrum OLED (128x64)
-	- TFT 3.5" LCD (320x420)
+	- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
+	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
+	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
@@ -118,9 +118,11 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
-	- Update Library database:
+	- Build Library database:
 		- Automatically run on boot if database is empty with connected USB and NAS
-		- Force update - Settings > update Library (icon next to Sources)
+		- Force build / update - Settings > update Library (icon next to Sources)
+		- Tracks on existing database can be played during updating.
+		- Before database is available, default WebRadio stations are available for playing.
 	- Parse coverarts for Album and directory thumbnails :
 		- Only if never run before or to force update
 		- Library > Album > coverart icon (next to ALBUM heading)
