@@ -1150,8 +1150,12 @@ function renderPlayback() {
 		return
 	}
 	
-	var elapsedhms = second2HMS( G.status.elapsed );
-	$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
+	if ( G.status.elapsed ) {
+		var elapsedhms = second2HMS( G.status.elapsed );
+		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
+	} else {
+		$( '#progress' ).html( istate +'<span></span>'+ timehms );
+	}
 	setProgress();
 	if ( G.status.state === 'pause' ) {
 		$( '#elapsed' ).text( elapsedhms ).addClass( 'bl' );
@@ -1224,7 +1228,7 @@ function renderSavedPlaylist( name ) {
 	}, 'json' );
 }
 function second2HMS( second ) {
-	if ( !second || second < 1 ) return;
+	if ( !second || second < 1 ) return 0
 	
 	var second = Math.round( second );
 	if ( second < 60 ) return second;
@@ -1555,13 +1559,12 @@ function setProgressAnimate() {
 function setProgressElapsed() {
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
-	var elapsedhms = second2HMS( G.status.elapsed );
-	var $elapsed = G.status.stream ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
-	$elapsed.text( elapsedhms );
 	clearInterval( G.intElapsed );
+	var elapsedhms;
+	var $elapsed = G.status.stream ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
+	if ( G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );
 	if ( G.status.Time ) {
 		var time = G.status.Time;
-		var timehms = ' / '+ second2HMS( time );
 		$timeRS.option( 'max', time );
 		setProgress();
 		if ( !G.localhost ) {

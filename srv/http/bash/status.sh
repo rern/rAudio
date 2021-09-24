@@ -130,30 +130,10 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
-[[ -e $dirsystem/vumeter ]] && vumeter=1
-if grep -q '"cover".*true' /srv/http/data/system/display && [[ -z $vumeter ]]; then
+if grep -q '"cover".*true' $dirsystem/display && [[ -e $dirsystem/vumeter ]]; then
 	displaycover=1
 fi
 
-vuMeter() {
-	[[ -e $dirsystem/vuled ]] && vuled=1
-	if [[ -n $vumeter || -n $vuled ]]; then
-		if [[ $state == play ]]; then
-			if ! pgrep cava &> /dev/null; then
-				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-			fi
-		else
-			killall cava &> /dev/null
-			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-			if [[ -n $vuled ]]; then
-				p=$( cat /srv/http/data/system/vuled.conf )
-				for i in $p; do
-					echo 0 > /sys/class/gpio/gpio$i/value
-				done
-			fi
-		fi
-	fi
-}
 filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
@@ -365,7 +345,6 @@ $radiosampling" > $dirtmp/radio
 , "song"         : '$song
 # >>>>>>>>>>
 		echo {$status}
-		vuMeter
 		exit
 	fi
 	
@@ -484,7 +463,7 @@ status+='
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
-if [[ -z $displaycover || -n $vumeter ]]; then
+if [[ -z $displaycover ]]; then
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
@@ -493,7 +472,6 @@ if [[ -z $displaycover || -n $vumeter ]]; then
 	status+='
 , "elapsed"  : '$elapsed
 	echo {$status}
-	vuMeter
 	exit
 fi
 
@@ -514,7 +492,6 @@ status+='
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 echo {$status}
-vuMeter
 
 [[ -n $getcover || -z $AlbumArtist ]] && exit
 
