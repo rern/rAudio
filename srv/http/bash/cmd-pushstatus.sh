@@ -4,7 +4,7 @@ dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
-[[ $( sed -n 6p $dirtmp/status ) == pause ]] && sleep 0.1
+[[ $( sed -n 6p $dirtmp/status ) == pause ]] && sleep 0.1 # fix: resume with wrong track
 
 status=$( $dirbash/status.sh )
 statusdata=$( echo $status \
