@@ -770,12 +770,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
-	cmd = cmd.replace( /albumartist|album|artist|composer|conductor|genre|date/, '' );
+	cmd = cmd.replace( /album|albumartist|artist|composer|conductor|date|genre/, '' );
 	var command = contextCommand[ cmd ];
-	if ( cmd === 'addplay' || cmd === 'replaceplay' ) {
-		$( '#stop' ).click();
-		if ( G.display.playbackswitch ) $( '#playback' ).click();
-	}
 	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
 		var title = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
 	} else {
@@ -791,12 +787,18 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else {
 		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
-	if ( G.display.plclear && G.status.playlistlength && cmd === 'replace' ) {
+	if ( G.display.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
 		infoReplace( function() {
+			$( '#stop' ).click();
+			if ( G.display.playbackswitch ) $( '#playback' ).click();
 			bash( command );
 			banner( title, msg, 'playlist' );
 		} );
 	} else {
+		if ( cmd === 'addplay' || cmd === 'replaceplay' ) {
+			$( '#stop' ).click();
+			if ( G.display.playbackswitch ) $( '#playback' ).click();
+		}
 		var radioplay = G.mode === 'webradio' && G.status.state === 'play';
 		setTimeout( function() {
 			bash( command );
