@@ -11,8 +11,8 @@ readarray -t data <<< "$statusdata"
 if [[ -e $dirtmp/status ]]; then
 	dataprev=$( cat $dirtmp/status )
 	if [[ ${data[ 9 ]} == false ]]; then # not webradio
-		datanew=${data[@]:0:6}
-		dataprev=$( head -6 <<< $dataprev | tr -d '\n ' )
+		datanew=${data[@]:0:8}
+		dataprev=$( head -8 <<< $dataprev | tr -d '\n ' )
 		[[ ${datanew// } == $dataprev ]] && exit
 	else
 		datanew=${data[@]:0:3}
