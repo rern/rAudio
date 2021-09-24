@@ -193,7 +193,20 @@ $( '#setting-localbrowser' ).click( function() {
 			} else if ( zoom > 2 ) {
 				$input.eq( 1 ).val( 2 );
 			}
-			bash( [ 'localbrowserset', ...infoVal() ] );
+			bash( [ 'localbrowserset', ...infoVal() ], function( reboot ) {
+				if ( reboot ) {
+					info( {
+						  icon    : 'chromium'
+						, title   : 'Browser on RPi'
+						, message : 'Reboot required for rotate'
+						, okcolor : orange
+						, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+						, ok      : function() {
+							bash( [ 'cmd', 'power', 'reboot' ] );
+						}
+					} );
+				}
+			} );
 			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
 		}
 	} );

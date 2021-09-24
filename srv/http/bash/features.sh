@@ -100,6 +100,7 @@ localbrowserset )
 			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
 			reboot=1
 		else
+			changerotate=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
 				rm -f $rotateconf
@@ -114,7 +115,7 @@ localbrowserset )
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 		ply-image /srv/http/assets/img/splash.png
 	fi
-	echo -n "\
+	echo "\
 screenoff=$screenoff
 zoom=$zoom
 rotate=$rotate
@@ -124,11 +125,11 @@ cursor=$cursor
 		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	fi
 	systemctl disable --now getty@tty1
-	if [[ -z $reboot ]]; then
+	if [[ -n $reboot ]]; then
+		echo reboot
+	elif [[ $zoom != $prevzoom || -n $changerotate || $cursor != $prevcursor ]]; then
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
-	else
-		pushstream notify '{"title":"Browser on RPi","text":"Reboot required.","icon":"chromium"}'
 	fi
 	pushRefresh
 	;;
