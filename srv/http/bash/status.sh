@@ -130,9 +130,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
-if grep -q '"cover".*true' $dirsystem/display && [[ ! -e $dirsystem/vumeter ]]; then
-	displaycover=1
-fi
+(( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
 filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
