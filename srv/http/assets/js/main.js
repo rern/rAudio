@@ -85,18 +85,22 @@ var nameplayer = {
 	, upnp       : 'UPnP'
 }
 
-// get display settings and mpd status with passive.js on pushstream connect ////////
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
+	$.getScript( '/assets/js/shortcut.js' );
+}
+	
 statusRefresh();
 
 $( '.page' ).on( 'swipeleft swiperight', function( e ) {
 	var $target = $( e.target );
 	var targetid = e.target.id;
-	if ( G.display.noswipe
-		|| G.drag || G.down
-		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
+	if ( G.display.noswipe || G.drag || G.down
+		|| targetid === 'time-knob'|| targetid === 'volume-knob'
 		|| targetid === 'time-band'|| targetid === 'volume-band'
+		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 	) return
 	
 	G.swipe = 1;
@@ -109,6 +113,8 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
+	var knobH = $( '.btn-group' ).is( ':hidden' ) ? 230 : 290;
+	$( '#playback-row' ).css( 'align-items', $( '#coverart' ).height() > knobH ? 'center' : '' );
 	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
@@ -243,7 +249,7 @@ $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
 	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
 		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
-	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, grl, \
+	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, \
 		#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', '' );
 	$( '.menu a' ).css( 'border-top', '' );
 	$( '#lib-list li' ).css( 'border-bottom', '' );
@@ -453,8 +459,8 @@ $( '#time' ).roundSlider( {
 	, start       : function () { // drag start
 		G.drag = 1;
 		clearIntervalAll();
-		$( '#time .rs-range' ).css( 'stroke', '' );
 		$( '.map' ).removeClass( 'mapshow' );
+		if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 	}
 	, drag        : function ( e ) { // drag with no transition by default
 		$( '#elapsed' ).text( second2HMS( e.value ) );
@@ -562,6 +568,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	G.down = 1;
 	clearIntervalAll();
+	if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
 	
@@ -731,8 +738,8 @@ $( '.map' ).on( 'tap', function() {
 		}
 		
 		G.guide = 1;
-		var timevisible = $( '#time-knob' ).is( ':visible' );
-		var volumevisible = $( '#volume-knob' ).is( ':visible' );
+		var time = $( '#time-knob' ).is( ':visible' );
+		var volume = $( '#volume-knob' ).is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.covermap, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
@@ -740,9 +747,9 @@ $( '.map' ).on( 'tap', function() {
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
-		$( '.volmap' ).toggleClass( 'mapshow', volumevisible );
+		$( '.volmap' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
-		if ( timevisible || volumevisible ) {
+		if ( time || volume ) {
 			$( '#coverTL' )
 				.removeClass( 'fa-scale-dn' )
 				.addClass( 'fa-scale-up' );
@@ -752,12 +759,12 @@ $( '.map' ).on( 'tap', function() {
 				.addClass( 'fa-scale-dn' );
 		}
 		if ( G.status.player === 'mpd' ) {
-			if ( !timevisible && !G.status.stream ) {
+			if ( !time && !G.status.stream ) {
 				$( '#time-band' )
 					.removeClass( 'transparent' )
-					.text( $( '#progress' ).text() );
+					.text( G.status.Time ? second2HMS( G.status.Time ) : '' );
 			}
-			if ( !volumevisible && !G.display.volumenone ) {
+			if ( !volume && !G.display.volumenone ) {
 				$( '.volumeband' ).removeClass( 'transparent hide' );
 				$( '#volume-bar' ).removeClass( 'hide' );
 			}
@@ -769,17 +776,13 @@ $( '.map' ).on( 'tap', function() {
 	
 	hideGuide();
 	if ( cmd === 'cover' ) {
-		if ( $( '#info' ).hasClass( 'hide' ) ) {
-			$( '#info' ).removeClass( 'hide' );
-			clearTimeout( G.volumebar );
-			volumeBarHide();
-			return
-		}
-		
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( G.status.player === 'mpd' && !G.status.playlistlength ) return
+		if ( G.status.player === 'mpd' && !G.status.playlistlength
+			|| $( '#page-playback' ).css( 'transform' ) !== 'none'
+		) return
 		
-		if ( ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
+		if ( !( 'coverTL' in G )
+			&& ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 			&& !G.display.volumenone
 			&& !$( '#volume-knob' ).is( ':visible' )
 		) {
@@ -834,14 +837,9 @@ $( '.map' ).on( 'tap', function() {
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
 		displayPlayback();
-		if ( G.status.state === 'play' ) {
-			bash( '/srv/http/bash/cmd.sh mpcelapsed', function( elapsed ) {
-				clearIntervalAll();
-				G.status.elapsed = +elapsed;
-				renderPlayback();
-			} );
-		} else {
-			renderPlayback();
+		if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
+			setProgress();
+			setTimeout( setProgressAnimate, 0 );
 		}
 		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
@@ -884,7 +882,7 @@ $( '.btn-cmd' ).click( function() {
 		if ( cmd === 'play' ) {
 			G.status.state = cmd;
 			if ( !G.status.elapsed ) $( '#elapsed' ).empty(); // 0 or false
-			if ( G.status.elapsed !== false ) setProgress( 'play' );
+			if ( !G.status.stream && G.status.elapsed !== false ) setProgressAnimate();
 			bash( [ 'mpcplayback', 'play' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
@@ -896,7 +894,7 @@ $( '.btn-cmd' ).click( function() {
 			vu();
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
-			clearInterval( G.intProgress );
+			clearInterval( G.intElapsed );
 			if ( G.status.player === 'airplay' ) {
 				bash( '/srv/http/bash/shairport.sh stop' );
 			} else if ( G.status.player === 'bluetooth' ) {
@@ -1083,9 +1081,11 @@ $( '#button-lib-back' ).click( function() {
 	}
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.query.length < 2 || G.mode === 'webradio' ) {
-		G.liscrolltop = $( window ).scrollTop();
 		$( '#button-library' ).click();
-	} else if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
+		return
+	}
+	
+	if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
 		if ( $( '#lib-breadcrumbs a' ).length > 1 ) {
 			$( '#lib-breadcrumbs a' ).eq( -2 ).click();
 		} else {
@@ -1099,10 +1099,14 @@ $( '#button-lib-back' ).click( function() {
 		} else if ( query === 'playlist' ) {
 			$( '#playlist' ).click();
 		} else {
-//			if ( query.query === 'ls' ) G.mode = 'file';
 			list( query, function( data ) {
 				if ( data != -1 ) {
-					data.path = G.mode === 'album' ? 'ALBUM' : query.path;
+					if ( G.mode === 'album' ) {
+						data.path = 'ALBUM';
+					} else {
+						G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+						data.path = query.path;
+					}
 					data.modetitle = query.modetitle;
 					renderLibraryList( data );
 				} else {
@@ -1166,8 +1170,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	$( '#lib-search-close' ).click();
 	if ( G.bookmarkedit ) {
 		if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
-			$( '.bkedit' ).remove();
-			$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
+			bookmarkeditClear();
 			return
 		}
 	}
@@ -1222,11 +1225,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 			, buttoncolor : !thumbnail ? '' : orange
 			, button      : !thumbnail ? '' : function() {
-				bash( [ 'bookmarkreset', path ], function() {
-					var label = path.split( '/' ).pop();
-					$this.find( 'img' ).remove();
-					$this.find( '.lipath' ).after( '<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'+ label +'</span></div>' );
-				} );
+				bash( [ 'bookmarkreset', path ] );
 			}
 			, ok          : function() {
 				imageReplace( imagefile, 'bookmark' );
@@ -1283,11 +1282,14 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	G.bookmarkedit = 1;
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
-		$this = $( this );
+		var $this = $( this );
+		var path = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
-		$this.append( buttonhtml );
+		bash( [ 'coverexists', path ], function( cover ) {
+			if ( !cover ) buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+			$this.append( buttonhtml );
+		} );
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )
@@ -1297,12 +1299,7 @@ $( '#lib-mode-list' ).on( 'tap', '.mode-bookmark', function( e ) { // delegate -
 	if ( $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' ) ) return
 		
 	if ( G.bookmarkedit ) {
-		G.bookmarkedit = 0;
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' )
-			.css( 'background', '' )
-			.find( '.fa-bookmark, .bklabel, img' )
-			.css( 'opacity', '' );
+		bookmarkeditClear();
 	} else {
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 	}
@@ -1312,10 +1309,8 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
 	, onStart       : function () {
-		G.bookmarkedit = 0;
+		if ( G.bookmarkedit ) bookmarkeditClear();
 		G.drag = 1;
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).find( '.fa-bookmark, .bklabel, img' ).css( 'opacity', '' );
 	}
 	, onEnd         : function () {
 		G.drag = 0;
@@ -1342,10 +1337,33 @@ $( '#lib-list' ).on( 'tap', '.coverart', function() {
 	}
 	list( query, function( data ) {
 		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
+		data.path = 'ALBUM';
 		renderLibraryList( data );
 	}, 'json' );
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
+} ).on( 'longtap', '.coverart', function() {
+	var $this = $( this );
+	var src = $this.find( 'img' ).attr( 'src' );
+	var el = G.display.albumbyartist ? [ '.coverart2', '.coverart1' ] : [ '.coverart1', '.coverart2' ];
+	var album = $this.find( el[ 0 ] ).text();
+	var artist = $this.find( el[ 1 ] ).text();
+	info( {
+		  icon    : 'album'
+		, title   : 'Album Thumbnail'
+		, message : `\
+<img src="${ src }">
+<wh><i class="fa fa-album"></i> ${ album }</wh>
+<i class="fa fa-artist wh"></i> ${ artist }
+
+Exclude this thumbnail?`
+		, okcolor : orange
+		, oklabel : '<i class="fa fa-minus-circle"></i> Exclude'
+		, ok      : function() {
+			bash( [ 'albumignore', album, artist ] );
+			$this.remove();
+		}
+	} );
 } );
 $( '#lib-list' ).on( 'tap', '.coveredit',  function() {
 	var $this = $( this );
@@ -1742,8 +1760,10 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var menutop = ( $thisli.position().top + 48 ) +'px';
 	var $menu = $( '#menu-plaction' );
 	$( '#pl-list li' ).removeClass( 'updn' );
+	$thisli.addClass( 'updn' );
 	if ( !$menu.hasClass( 'hide' ) && $menu.css( 'top' ) === menutop ) {
 		$menu.addClass( 'hide' );
+		$thisli.removeClass( 'updn' );
 		return
 	}
 	
@@ -1772,13 +1792,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
-	var menuH = $menu.height();
-	$menu
-		.removeClass( 'hide' )
-		.css( 'top', menutop );
-	var targetB = $menu.offset().top + menuH;
-	var wH = window.innerHeight;
-	if ( targetB > wH - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	contextmenuScroll( $menu, menutop );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	plRemove( $( this ).parent() );
 } );
@@ -1825,12 +1839,8 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			}
 			$this.addClass( 'active' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
-			$menu
-				.removeClass( 'hide' )
-				.css( 'top', ( $this.position().top + 48 ) +'px' );
-			var targetB = $menu.offset().top + $menu.height();
-			var wH = window.innerHeight;
-			if ( targetB > wH - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+			var menutop = ( $this.position().top + 48 ) +'px';
+			contextmenuScroll( $menu, menutop );
 		} else {
 			playlistInsertSelect( $this );
 		}

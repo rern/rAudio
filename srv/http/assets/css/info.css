@@ -36,9 +36,6 @@
 	text-align: center;
 	background-color: var( --cg );
 }
-#bannerIcon i {
-	width: 30px;
-}
 #bannerMessage {
 	font-size: 16px;
 }
@@ -274,6 +271,9 @@ hr {
 	overflow: hidden;
 	color: var( --cg60 );
 }
+.infofooter {
+	padding: 0 5px;
+}
 .infomessage .fa {
 	width: 25px;
 	vertical-align: 0;
@@ -332,6 +332,7 @@ hr {
 	color: var( --cw );
 	background: var( --cgd );
 	resize: none;
+	white-space: pre;
 }
 #infoContent input[type=text],
 #infoContent input[type=number],
@@ -514,6 +515,14 @@ hr {
 	border-radius: 3px;
 	background: #000000;
 	font-family: Inconsolata;
+}
+@media ( max-width: 420px ) {
+	#infoContent {
+		padding: 25px 5px 10px 5px;
+	}
+	.infofooter {
+		padding: 0 5px;
+	}
 }
 /* iOS */
 @media not all and ( min-resolution:.001dpcm ) {

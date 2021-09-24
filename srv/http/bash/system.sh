@@ -27,7 +27,7 @@ soundprofile() {
 		txqueuelen=1000
 		rm -f $dirsystem/soundprofile
 	else
-		. $dirsystem/soundprofileval
+		. $dirsystem/soundprofile.conf
 		touch $dirsystem/soundprofile
 	fi
 
@@ -174,7 +174,7 @@ datarestore )
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
-	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfadeset )
+	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ -n $mountpoints ]]; then
@@ -254,7 +254,6 @@ lcdchardisable )
 	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
-	! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	conf="\
@@ -262,6 +261,7 @@ lcdcharset )
 cols=${args[1]}
 charmap=${args[2]}"
 	if [[ ${args[3]} == i2c ]]; then
+		! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 		conf+="
 address=${args[4]}
 chip=${args[5]}"
@@ -270,9 +270,8 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-		echo 'Charater LCD module' >> $filereboot
 	else
-		conf+="\
+		conf+="
 pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
@@ -283,7 +282,7 @@ pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
 	fi
 	conf+="
 backlight=${args[13]}"
-	echo "$conf" > $dirsystem/lcdcharval
+	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
 	pushRefresh
@@ -353,8 +352,9 @@ mount )
 	fi
 	[[ -n $extraoptions ]] && options+=,$extraoptions
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	std=$( mount "$mountpoint" 2>&1 )
+	mount "$mountpoint" 2> /dev/null
 	if [[ $? == 0 ]]; then
+		echo 0
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		pushRefresh
 	else
@@ -392,13 +392,14 @@ dtparam=spi=on" >> $fileconfig
 	pushRefresh
 	;;
 ntp )
-	ntp=${args[1]}
-	sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
+	server=${args[1]}
+	sed -i "s/^\(NTP=\).*/\1$server/" /etc/systemd/timesyncd.conf
 	pushRefresh
+	ntpdate $server
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
-	gpio -1 write $( grep led $dirsystem/powerbuttonpins | cut -d= -f2 ) 0
+	gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
@@ -409,7 +410,7 @@ powerbuttonset )
 	echo "\
 sw=$sw
 led=$led
-reserved=$reserved" > $dirsystem/powerbuttonpins
+reserved=$reserved" > $dirsystem/powerbutton.conf
 	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 	sed -i '/gpio-shutdown/ d' $fileconfig
 	if [[ $sw != 5 ]]; then
@@ -419,9 +420,6 @@ reserved=$reserved" > $dirsystem/powerbuttonpins
 	systemctl restart powerbutton
 	systemctl enable powerbutton
 	pushRefresh
-	;;
-reboot )
-	$dirbash/cmd.sh power$'\n'reboot
 	;;
 relays )
 	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
@@ -461,18 +459,16 @@ soundprofileget )
 	echo "${val:0:-1}"
 	;;
 soundprofileset )
-	values=${args[1]}
-	if [[ $values == '18000000 60 1500 1000' || $values == '18000000 60' ]]; then
-		rm -f $dirsystem/soundprofileval
+	if [[ ${args[@]:1:4} == '18000000 60 1500 1000' ]]; then
+		rm -f $dirsystem/soundprofile.conf
 		soundprofile reset
 	else
-		val=( $values )
 		echo -n "\
-latency=${val[0]}
-swappiness=${val[1]}
-mtu=${val[2]}
-txqueuelen=${val[3]}
-" > $dirsystem/soundprofileval
+latency=${args[1]}
+swappiness=${args[2]}
+mtu=${args[3]}
+txqueuelen=${args[4]}
+" > $dirsystem/soundprofile.conf
 		soundprofile
 	fi
 	pushRefresh
@@ -511,7 +507,7 @@ usbremove )
 vuleddisable )
 	rm -f $dirsystem/vuled
 	killall cava &> /dev/null
-	p=$( cat /srv/http/data/system/vuledpins )
+	p=$( cat /srv/http/data/system/vuled.conf )
 	for i in $p; do
 		echo 0 > /sys/class/gpio/gpio$i/value
 	done
@@ -523,9 +519,8 @@ vuleddisable )
 	pushRefresh
 	;;
 vuledset )
-	pins=${args[1]}
+	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	echo $pins > $dirsystem/vuledpins
 	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
 	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &

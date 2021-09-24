@@ -67,7 +67,7 @@ foreach( $modes as $mode ) {
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
-				'.( $counts && $counts->$modeLC ? '<grl>'.number_format( $counts->$modeLC ).'</grl>' : '<grl></grl>' ).'
+				'.( $counts && $counts->$modeLC ? '<gr>'.number_format( $counts->$modeLC ).'</gr>' : '<gr></gr>' ).'
 				<a class="label">'.$mode.'</a>
 			</div>
 		</div>
@@ -143,6 +143,7 @@ $html.= menuli( 'bookmark',  'star',            'Bookmark' );
 $html.= menuli( 'exclude',   'folder-forbid',   'Exclude directory' );
 $html.= menuli( 'update',    'refresh-library', 'Update database' );
 $html.= menuli( 'thumb',     'iconcover',       'Update thumbnails' );
+$html.= menuli( 'directory', 'folder',          'Browse directory' );
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'folder', $html );
 
@@ -285,8 +286,8 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 				<div id="vu" class="hide">
 					<?php include 'assets/img/vu.svg';?>
 				</div>
-				<div id="qrwebui"></div>
-				<div id="qrip"></div>
+				<div id="qrwebui" class="qr hide"></div>
+				<div id="qrip" class="qr hide"></div>
 				<div id="covermap">
 					<i id="coverTL" class="map covermap r1 c1 ws hs fa fa-scale-dn"></i>
 					<i id="coverT" class="map covermap r1 c2 wl hs fa fa-guide"></i>

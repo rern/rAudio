@@ -3,9 +3,8 @@ function branchtest( alias, type, message, install ) {
 		  icon      : 'jigsaw'
 		, title     : title
 		, message   : message
-		, textlabel : 'Tree #/Branch'
+		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
-		, boxwidth  : 'max'
 		, ok        : function() {
 			opt = [ alias, type, infoVal() ];
 			option = addons[ alias ].option;

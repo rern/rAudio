@@ -45,8 +45,8 @@ case 'bookmark':
 	$fileorder = $dirsystem.'order';
 	$order = json_decode( file_get_contents( $fileorder ) );
 	$order[] = $path;
-	if ( isset( $_POST[ 'name' ] ) ) {
-		$name = $_POST[ 'name' ];
+	$name ??= $_POST[ 'name' ];
+	if ( $name ) {
 		file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $path );
 		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
 	} else {
@@ -102,6 +102,7 @@ case 'datarestore':
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type = $_POST[ 'type' ];
+	$covername = $_POST[ 'covername' ];
 	$base64 = isset( $_POST[ 'base64' ] );
 	$ext = $base64 ? '.jpg' : '.gif';
 	if ( $type === 'audiocd' ) {
@@ -119,6 +120,7 @@ case 'imagereplace':
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
 	}
+	if ( $covername ) exec( 'rm -f /srv/http/data/shm/local-'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';
@@ -127,8 +129,9 @@ case 'login':
 		if ( !password_verify( $_POST[ 'password' ], $hash ) ) die();
 	}
 	
-	if ( isset( $_POST[ 'pwdnew' ] ) ) {
-		$hash = password_hash( $_POST[ 'pwdnew' ], PASSWORD_BCRYPT, [ 'cost' => 12 ] );
+	$pwdnew ??= $_POST[ 'pwdnew' ];
+	if ( $pwdnew ) {
+		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		echo file_put_contents( $passwordfile, $hash );
 		exec( $sudo.'/srv/http/bash/features.sh loginset' );
 	} else {

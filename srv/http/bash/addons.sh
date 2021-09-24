@@ -76,6 +76,11 @@ getinstallzip() {
 	installfile=$branch.tar.gz
 	curl -skLO $( jq -r .$alias.installurl $addonsjson \
 					| sed "s|raw/main/install.sh|archive/$installfile|" )
+	if [[ ! -e $installfile ]]; then
+		echo -e "$warn Get files failed."
+		exit
+	fi
+	
 	echo
 	echo $bar Install new files ...
 	tmpdir=/tmp/install
@@ -92,6 +97,7 @@ getinstallzip() {
 		| grep -v '/$' \
 		| sed 's|^|/|' \
 		| sort -V
+	rm -rf /srv/http/assets
 	bsdtar xf $installfile --strip 1 -C $tmpdir
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /

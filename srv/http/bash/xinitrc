@@ -2,8 +2,9 @@
 
 export XDG_CACHE_HOME="/tmp/.cache"
 
-if [[ -e /etc/localbrowser.conf ]]; then
-	. /etc/localbrowser.conf
+file=/srv/http/data/system/localbrowser.conf
+if [[ -e $file ]]; then
+	. $file
 else
 	screenoff=0
 	cursor=false

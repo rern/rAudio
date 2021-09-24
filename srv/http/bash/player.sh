@@ -74,10 +74,10 @@ bufferset )
 	buffer=${args[1]}
 	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
 	if (( $buffer == 4096 )); then
-		rm -f $dirsystem/bufferset
+		rm -f $dirsystem/buffer.conf
 	else
 		sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
-		echo $buffer > $dirsystem/bufferset
+		echo $buffer > $dirsystem/buffer.conf
 	fi
 	restartMPD
 	;;
@@ -89,10 +89,10 @@ bufferoutputset )
 	buffer=${args[1]}
 	sed -i '/^max_output_buffer_size/ d' /etc/mpd.conf
 	if (( $buffer == 8192 )); then
-		rm -f $dirsystem/bufferoutputset
+		rm -f $dirsystem/bufferoutput.conf
 	else
 		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
-		echo $buffer > $dirsystem/bufferoutputset
+		echo $buffer > $dirsystem/bufferoutput.conf
 	fi
 	restartMPD
 	;;
@@ -126,7 +126,7 @@ crossfadedisable )
 crossfadeset )
 	crossfade=${args[1]}
 	mpc crossfade $crossfade
-	echo $crossfade > $dirsystem/crossfadeset
+	echo $crossfade > $dirsystem/crossfade.conf
 	touch $dirsystem/crossfade
 	pushRefresh
 	;;
@@ -164,9 +164,9 @@ customset )
 	fi
 	;;
 devices )
-	devices=$'# cat /etc/asound.conf\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n# aplay -l | grep ^card\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n# amixer scontrols\n'$( /srv/http/bash/player.sh amixer )
+	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
+	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
+	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( /srv/http/bash/player.sh amixer )
 	echo "$devices"
 	;;
 dop )
@@ -234,6 +234,16 @@ mixertype )
 	[[ $mixertype == software ]] && mpc volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
+mpdignorelist )
+	readarray -t files <<< $( find /mnt/MPD -name .mpdignore | sort -V )
+	for file in "${files[@]}"; do
+		list+="\
+$file
+$( cat "$file" | sed 's|^| <grn>●</grn> |' )
+"
+	done
+	echo "$list"
+	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '/^user/ a\volume_normalization   "yes"' /etc/mpd.conf
@@ -264,7 +274,7 @@ replaygaindisable )
 replaygainset )
 	replaygain=${args[1]}
 	sed -i '/^replaygain/ s/".*"/"'$replaygain'"/' /etc/mpd.conf
-	echo $replaygain > $dirsystem/replaygainset
+	echo $replaygain > $dirsystem/replaygain.conf
 	restartMPD
 	;;
 restart )
@@ -279,17 +289,16 @@ soxrdisable )
 	restartMPD
 	;;
 soxrset )
-	val=( ${args[1]} )
 	echo '	quality        "custom"
-	precision      "'${val[0]}'"
-	phase_response "'${val[1]}'"
-	passband_end   "'${val[2]}'"
-	stopband_begin "'${val[3]}'"
-	attenuation    "'${val[4]}'"
-	flags          "'${val[5]}'"
-}' > $dirsystem/soxr
+	precision      "'${args[1]}'"
+	phase_response "'${args[2]}'"
+	passband_end   "'${args[3]}'"
+	stopband_begin "'${args[4]}'"
+	attenuation    "'${args[5]}'"
+	flags          "'${args[6]}'"
+}' > $dirsystem/soxr.conf
 	sed -i -e '/quality/,/}/ d
-' -e "/soxr/ r $dirsystem/soxr
+' -e "/soxr/ r $dirsystem/soxr.conf
 " /etc/mpd.conf
 	restartMPD
 	;;

@@ -2,7 +2,12 @@ function bash( command, callback, json ) {
 	if ( typeof command === 'string' ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
-		var filesh = command[ 0 ] !== 'statuspkg' ? page : 'cmd';
+		if ( command[ 0 ] === 'cmd' ) {
+			var filesh = 'cmd';
+			command.shift();
+		} else {
+			var filesh = page;
+		}
 		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
 	$.post( 
@@ -14,16 +19,18 @@ function bash( command, callback, json ) {
 }
 var dirbash = '/srv/http/bash/';
 var cmd = {
-	  avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
+	  albumignore  : [ 'cat /srv/http/data/mpd/albumignore' ]
 	, asound       : [ dirbash +'player.sh devices', -1 ]
+	, avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ dirbash +'system.sh configtxtget', 'cat /boot/config.txt' ]
 	, iw           : [ 'iw reg get; iw list' ]
 	, journalctl   : [ dirbash +'system.sh getjournalctl', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
-	, mount        : [ 'cat /etc/fstab; echo -e "\n# mount | grep ^/dev\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
+	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
+	, mpdignore    : [ dirbash +'player.sh mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
 	, powerbutton  : [ 'systemctl status powerbutton' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ dirbash +'system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
@@ -38,9 +45,6 @@ var pkg = {
 
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
-	if ( $( target ).hasClass( 'help' )
-		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( target.id ) !== -1 ) return
-	
 	var $el = $( '#code'+ id );
 	if ( target === 'status' && $el.hasClass( 'hide' ) ) return
 	
@@ -49,12 +53,12 @@ function codeToggle( id, target ) {
 		if ( i !== -1 ) {
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
 			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = [ 'statuspkg', pkgname, id ];
-			var cmdtxt = '# pacman -Q '+ pkgname +'; systemctl status '+ id +'<br><br>';
+			var command = [ 'cmd', 'statuspkg', pkgname, id ];
+			var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
 			var systemctl = 1;
 		} else {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '# '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'<br><br>' : '';
+			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
 			var systemctl = 0;
 		}
 		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
@@ -64,6 +68,7 @@ function codeToggle( id, target ) {
 			return
 		}
 		
+		if ( id === 'journalctl' || id === 'mpdignore' ) banner( 'Get Data', id, page, -1 );
 		var delay = target === 'status' ? 1000 : 0;
 		setTimeout( function() {
 			bash( command, function( status ) {
@@ -73,14 +78,16 @@ function codeToggle( id, target ) {
 				if ( systemctl ) status = status
 									.replace( /(.*)\n/, '<grn>$1</grn>\n' )
 									.replace( /(failed)/, '<red>$1</red>' );
-				$el
-					.html( cmdtxt + status )
-					.removeClass( 'hide' );
-				if ( id === 'mpdconf' ) {
-					setTimeout( function() {
-						$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-					}, 100 );
-				}
+				$el.html( cmdtxt + status ).promise().done( function() {
+					$el.removeClass( 'hide' );
+					if ( id === 'mpdconf' ) {
+						setTimeout( function() {
+							$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
+						}, 100 );
+					}
+					if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
+					bannerHide();
+				} );
 			} );
 		}, delay );
 	} else {
@@ -91,9 +98,6 @@ function disableSwitch( id, truefalse ) {
 	$( id )
 		.prop( 'disabled', truefalse )
 		.next().toggleClass( 'disabled', truefalse );
-}
-function escapeUsrPwd( usrpwd ) {
-	return usrpwd.replace( /(["&()\\])/g, '\$1' )
 }
 function list2JSON( list ) {
 	try {
@@ -165,6 +169,7 @@ connect = () => {
 	if ( !active ) {
 		active = 1;
 		pushstream.connect();
+		$( '#scanning-bt, #scanning-wifi' ).addClass( 'blink' );
 	}
 }
 disconnect = () => {
@@ -176,6 +181,7 @@ disconnect = () => {
 hiddenSet = () => {
 	if ( page === 'networks' ) {
 		clearInterval( intervalscan );
+		$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	} else if ( page === 'system' ) {
 		clearInterval( intervalcputime );
 		$( '#refresh' ).removeClass( 'blink' );
@@ -223,11 +229,7 @@ function psNotify( data ) {
 	}
 }
 function psRefresh( data ) {
-	if ( data.page === page ) {
-		renderPage( data );
-	} else if ( data.page === 'all' ) {
-		refreshData();
-	}
+	if ( data.page === page ) renderPage( data );
 }
 function psReload() {
 	if ( localhost ) location.reload();
@@ -259,11 +261,9 @@ function psWifi( data ) {
 	} );
 }
 //---------------------------------------------------------------------------------------
-var hash = Math.ceil( Date.now() / 1000 );
 G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
-var filereboot = '/srv/http/data/shm/reboot';
 var intervalcputime;
 var intervalscan;
 var local = 0;
@@ -331,25 +331,32 @@ $( document ).keyup( function( e ) {
 	}
 } );
 $( '#close' ).click( function() {
-	if ( page === 'networks' && $( '#listinterfaces li' ).hasClass( 'bt' ) ) {
-		bash( 'bluetoothctl scan off' );
+	if ( page === 'networks' ) {
+		clearTimeout( intervalscan );
+		bash( 'killall networks-scanbt.sh networks-scanwlan.sh &> /dev/null' );
 	}
-	bash( 'cat '+ filereboot +' | sort -u; rm -f /srv/http/data/tmp/backup.*', function( reboot ) {
-		if ( !reboot ) location.href = '/';
-		
-		info( {
-			  icon    : page
-			, title   : 'System Setting'
-			, message : 'Reboot required for:'
-					   +'<br><w>'+ reboot.replace( /\n/g, '<br>' ) +'</w>'
-			, cancel  : function() {
-				reboot = [];
-				bash( 'rm -f '+ filereboot );
-			}
-			, ok      : function() {
-				bash( [ 'reboot' ] );
-			}
-		} );
+	bash( [ 'cmd', 'rebootlist' ], function( list ) {
+		if ( !list ) {
+			location.href = '/';
+		} else {
+			var list = list.replace( /\^/s, '\n' );
+			info( {
+				  icon    : page
+				, title   : 'System Setting'
+				, message : `\
+Reboot required for:
+<wh>${ list }</wh>`
+				, cancel  : function() {
+					bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
+					location.href = '/';
+				}
+				, okcolor : orange
+				, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+				, ok      : function() {
+					bash( [ 'cmd', 'power', 'reboot' ] );
+				}
+			} );
+		}
 	} );
 } );
 $( '#button-data' ).click( function() {
@@ -386,16 +393,20 @@ $( '#help' ).click( function() {
 		var visible = $( '#bar-bottom' ).css( 'display' ) !== 'none';
 		$( '#bar-bottom' ).css( 'display', visible ? '' : 'block' );
 	}
-	if ( eltop ) $( window ).scrollTop( eltop.offsetTop - offset0 );
+	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 } );
 $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( 'body' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).hasClass( 'help' ) || $( e.target ).hasClass( 'fa-plus-circle' ) ) return
+$( '.status' ).click( function( e ) {
+	if ( $( e.target ).hasClass( 'help' )
+		|| $( e.target ).hasClass( 'fa-plus-circle' )
+		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
+	) return
 	
-	codeToggle( $( this ).data( 'status' ), e.target );
+	var datastatus = $( this ).data( 'status' ) || $( this ).parent().data( 'status' );
+	codeToggle( datastatus, e.target );
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();

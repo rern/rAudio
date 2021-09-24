@@ -39,6 +39,31 @@ disconnect = () => {
 		pushstream.disconnect();
 	}
 }
+function bookmarkCover( url, path ) {
+	$( '.bookmark' ).each( function() {
+		var $this = $( this );
+		if ( $this.find( '.lipath' ).text() === path ) {
+			var htmlbk = '<a class="lipath">'+ path +'</a>';
+			if ( url.slice( -4 ) !== 'none' ) {
+				htmlbk += '<img class="bkcoverart" src="'+ url +'">';
+			} else {
+				htmlbk += '<i class="fa fa-bookmark"></i>'
+						 +'<div class="divbklabel">'
+						 +'<span class="bklabel label">'+ path.split( '/' ).pop() +'</span></div>'
+			}
+			$this.find( '.mode' ).html( htmlbk );
+			return false
+		}
+	} );
+}
+function webradioIcon( srcnoext ) {
+	var radiourl = decodeURIComponent( srcnoext )
+					.split( '/' ).pop()
+					.replace( /\|/g, '/' );
+	return $( '#lib-list li' ).filter( function() {
+		return $( this ).find( '.lipath' ).text() === radiourl;
+	} ).find( '.lib-icon' );
+}
 document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
 window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
 window.onpageshow = window.onfocus = connect;
@@ -119,36 +144,24 @@ function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
-	var path = url.substr( 0, url.lastIndexOf( '/' ) );
+	var path = url.substr( 0, url.lastIndexOf( '/' ) ).replace( '/mnt/MPD/', '' );
 	switch( data.type ) {
 		case 'bookmark':
-			var $this = $( '.bookmark' ).filter( function() {
-				return $( this ).find( '.lipath' ).text() === path;
-			} );
-			var $img = $this.find( 'img' );
-			var src = '/mnt/MPD/'+ src;
-			if ( $img.length ) {
-				$img.attr( 'src', src  );
-			} else {
-				$this.find( '.fa-bookmark' ).remove();
-				$this.find( '.divbklabel' ).remove();
-				$this.find( '.lipath' ).after( '<img class="bkcoverart" src="'+ src +'">' );
-				$( '.mode-bookmark img' ).css( 'opacity', '' );
-			}
+			bookmarkCover( url, path );
 			break;
 		case 'coverart':
-			var urlhead = url.slice( 0, 9 );
-			var coverpath, covername, currentpath, currentname, cd, name;
-			if ( urlhead === '/mnt/MPD/' ) { // /mnt/MPD/path/cover.jpg > path
-				coverpath = url.substr( 0, url.lastIndexOf( '/' ) ).slice( 9 );
-			} else if ( urlhead === '/data/shm' ) { // /data/shm/online-ArtistNameTitleName.1234567890.png > ArtistNameTitleName
-				covername = url.split( '-' ).pop().split( '.' ).shift();
-			} else { // /data/audiocd/DISCID.jpg > DISCID
-				covername = url.split( '/' ).pop().split( '.' ).shift();
-				cd = 1;
-			}
+			$( '.coveredit, .bkedit' ).remove();
+			$( '#coverart, #liimg' ).css( 'opacity', '' );
 			if ( G.playback ) {
-				if ( G.status.coverart === url ) break;
+				if ( path === '/data/shm' ) {
+					var prevartistalbum = ( G.status.Artist + G.status.Album ).replace( /[ '"`?/#&]/g, '' );
+					var artistalbum = url.split( '-' ).pop().slice( 0, -4 ); // /data/shm/online-name.jpg > name.jpg
+					var matched = artistalbum === prevartistalbum
+				} else {
+					var prevpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+					var matched = path === prevpath;
+				}
+				if ( !matched ) return
 				
 				G.status.coverart = url;
 				setCoverart();
@@ -157,39 +170,47 @@ function psCoverart( data ) {
 					setInfo();
 				}
 			} else if ( G.library ) {
+				if ( path === '/data/audiocd' ) return
+				
 				if ( $( '.licover' ).length ) {
-					currentpath = $( '.licover .lipath' ).text();
-					name = $( '.licover .liartist' ).text() + $( '.licover .lialbum' ).text();
-					currentname = name.replace( /[ "`?/#&'"']/g, '' );
-					if ( coverpath === currentpath || covername === currentname ) {
+					if ( path === $( '.licover .lipath' ).text() ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );
 					}
 				} else {
-					$( '#lib-list li' ).filter( function() {
-						return $( this ).find( '.lipath' ).text() === coverpath
-					} ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+					$( '#lib-list li' ).each( function() {
+						if ( $( this ).find( '.lipath' ).text() === path ) {
+							$( this ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+							return false
+						}
+					} );
 				}
 			} else {
-				if ( !$( '#pl-index' ).hasClass( 'hide' ) ) return
+				if ( path === '/data/shm' || !$( '#pl-index' ).hasClass( 'hide' ) ) return
 				
-				if ( !cd ) {
-					var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
-					var lipath;
-					var $litarget = $li.filter( function() {
-						lipath = $( this ).find( '.lipath' ).text()
-						return lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === coverpath;
+				if ( path === '/data/audiocd' ) {
+					$( '#pl-list li' ).each( function() {
+						if ( $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda' ) {
+							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+						}
 					} );
-				} else {
-					var $litarget = $( '#pl-list li' ).filter( function() {
-						return $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda';
-					} );
+					return // skip .bookmark
 				}
-				$litarget.each( function() {
-					$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+				
+				var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+				$li.each( function() {
+					var lipath = $( this ).find( '.lipath' ).text()
+					if ( lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === path ) {
+						if ( url.slice( -4 ) !== 'none' ) {
+							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
+						} else {
+							$( this ).find( '.pl-icon' ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
+						}
+					}
 				} );
 			}
+			bookmarkCover( url, path );
 			break;
 		case 'webradio':
 			G.status.stationcover = src;
@@ -262,8 +283,6 @@ function psDisplay( data ) {
 	}
 }
 function psMpdPlayer( data ) {
-	if ( data.state === 'play' && [ 'radioparadise', 'radiofrance' ].indexOf( data.icon ) !== -1 ) return
-	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
@@ -293,7 +312,6 @@ function psMpdRadio( data ) {
 		setButtonControl();
 		setInfo();
 		setCoverart();
-		setTimeInterval();
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
@@ -315,7 +333,7 @@ function psMpdUpdate( data ) {
 		$( '#li-count' ).html( data.song.toLocaleString() );
 		G.status.counts = data;
 		$.each( data, function( key, val ) {
-			$( '#mode-'+ key ).find( 'grl' ).text( val ? val.toLocaleString() : '' );
+			$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 		} );
 		if ( G.library ) {
 			if ( G.mode === 'webradio' ) {
@@ -325,8 +343,6 @@ function psMpdUpdate( data ) {
 				var query = G.query[ G.query.length - 1 ];
 				if ( query ) {
 					list( query, function( data ) {
-						data.path = query.path;
-						data.modetitle = query.modetitle;
 						renderLibraryList( data );
 					}, 'json' );
 				}
@@ -411,7 +427,7 @@ function psRelays( response ) { // on receive broadcast
 	} else if ( state === 'IDLE' ) {
 		info( {
 			  icon        : 'relays'
-			, title       : 'GPIO Relays Countdown'
+			, title       : 'Relays Countdown'
 			, message     : stopwatch
 							+'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
@@ -438,6 +454,7 @@ function psRelays( response ) { // on receive broadcast
 		}, 1000 );
 	} else {
 		G.status.relayson = state;
+		if ( !state ) $( '#infoX' ).click();
 		var devices = '';
 		$.each( response.order, function( i, val ) {
 			if ( i === 0 ) {
@@ -450,7 +467,7 @@ function psRelays( response ) { // on receive broadcast
 		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 			info( {
 				  icon       : 'relays'
-				, title      : 'GPIO Relays '+ ( state ? 'ON' : 'OFF' )
+				, title      : 'Relays '+ ( state ? 'ON' : 'OFF' )
 				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
@@ -531,16 +548,8 @@ function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
-	$( '#mode-webradio grl' ).text( data )
-	if ( G.librarylist ) $( '#mode-webradio grl' ).click();
+	$( '#mode-webradio gr' ).text( data )
+	if ( G.librarylist ) $( '#mode-webradio gr' ).click();
 	if ( G.playlist && !G.local ) getPlaylist();
-}
-function webradioIcon( srcnoext ) {
-	var radiourl = decodeURIComponent( srcnoext )
-					.split( '/' ).pop()
-					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( function() {
-		return $( this ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.lib-icon' );
 }
 

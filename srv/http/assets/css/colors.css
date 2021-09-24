@@ -14,13 +14,13 @@
 	--cgd:  hsl(200,3%,10%);   /* gray-dark */
 }
 
-bl, blb, .bl {
+bl, .bl {
 	color: var( --cm ) !important
 }
 bll {
 	color: var( --cml ) !important;
 }
-gr, grl, grw, .gr, .grl {
+gr, .gr {
 	color: var( --cg60 ) !important
 }
 grn, .grn {
@@ -32,7 +32,7 @@ red, .red {
 .yl {
 	color: yellow
 }
-w, wh, whl, .wh {
+wh, .wh {
 	color: var( --cw ) !important
 }
 .bgr {

@@ -12,14 +12,14 @@ dirwebradios=$dirdata/webradios
 # convert each line to each args
 readarray -t args <<< "$1"
 
-audiocdWaitStart() {
-	sleep 5
-	for i in {1..20}; do
-		[[ $( mpc | awk '/^\[playing\]/ {print $3}' | cut -d/ -f1 ) == 0:00 ]] && sleep 1 || break
-	done
+addonsListGet() {
+	: >/dev/tcp/8.8.8.8/53 || exit -2 # online check
+	
+	[[ -z $1 ]] && branch=main || branch=$1
+	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
 }
 gifNotify() {
-	pushstream notify '{"title":"Thumbnail","text":"Resize animated GIF ...","icon":"coverart blink","delay":-1}'
+	pushstreamNotify Thumbnail 'Resize animated GIF ...' coverart
 }
 gifThumbnail() {
 	type=$1
@@ -51,9 +51,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
-	coverfile=${target:9:-4}
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).gif'","type":"'$type'"}'
+	pushstreamThumb gif $type
 }
 jpgThumbnail() {
 	type=$1
@@ -80,9 +78,7 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
-	[[ $type == coverart ]] && coverfile=${target:0:-4} || coverfile=${target:9:-4}
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).jpg'","type":"'$type'"}'
+	pushstreamThumb jpg $type
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -95,6 +91,7 @@ pladdPlay() {
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc play $pos
+		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	$dirbash/cmd-pushstatus.sh
 }
@@ -109,11 +106,20 @@ pladdPosition() {
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
-pushstreamAudiocd() {
-	pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1}'
+pushstreamNotify() {
+	if [[ $1 == Power ]]; then
+		[[ $3 == power ]] && power=',"power":"off"' || power=',"power":"reboot"'
+	fi
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1'$power'}'
+	pushstream notify "$data"
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+}
+pushstreamThumb() {
+	coverfile=${target:0:-4}
+	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
+	pushstream coverart '{"url":"'$coverfile.$( date +%s ).$1'","type":"'$2'"}'
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -233,30 +239,22 @@ case ${args[0]} in
 addonsclose )
 	script=${args[1]}
 	alias=${args[2]}
-	killall $script wget pacman &> /dev/null
+	killall $script curl pacman &> /dev/null
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
 	;;
 addonslist )
-	! : >/dev/tcp/8.8.8.8/53 && exit -2 # online check
+	addonsListGet ${args[1]}
 	
-	[[ -z ${args[1]} ]] && branch=main || branch=${args[1]}
-	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -qO $diraddons/addons-list.json
-	[[ $? != 0 ]] && exit -1
-	
-	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # check condition - wget if necessary
+	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
 	if [[ -n $bash ]]; then
-		eval "$bash"
-		[[ $? != 0 ]] && exit
+		eval "$bash" || exit
 	fi
 	
-	url=$( jq -r .push.url $diraddons/addons-list.json )
+	url=$( jq -r .push.url $diraddons/addons-list.json ) # push download
 	[[ -n $url ]] && bash <( curl -sL $url )
 	;;
 addonsupdates )
-	: >/dev/tcp/8.8.8.8/53 || exit # online check
-	
-	wget --no-check-certificate https://github.com/rern/rAudio-addons/raw/main/addons-list.json -qO $diraddons/addons-list.json
-	[[ $? != 0 ]] && exit
+	addonsListGet
 
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	for addon in $installed; do
@@ -267,6 +265,13 @@ addonsupdates )
 		fi
 	done
 	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
+	;;
+albumignore )
+	album=${args[1]}
+	artist=${args[2]}
+	sed -i "/\^$album^^$artist^/ d" $dirdata/mpd/album
+	sed -i "/\^$artist^^$album^/ d" $dirdata/mpd/albumbyartist
+	echo $album^^$artist >> $dirdata/mpd/albumignore
 	;;
 audiocdtag )
 	track=${args[1]}
@@ -279,17 +284,20 @@ bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
 		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
-		pushstream refresh '{ "page": "networks" }'
 	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
-		pushstream refresh '{ "page": "networks" }'
 	else
 		mpc stop
 		rm -f $dirtmp/{player-*,btclient}
 		echo $val > $dirtmp/player-bluetooth
 		sleep 1
 		volume0dB
+	fi
+	if [[ $val == 1 || $val == 0 ]]; then
+		data=$( /srv/http/bash/networks-data.sh )
+		pushstream refresh "$data"
+	else
 		status=$( $dirbash/status.sh )
 		pushstream mpdplayer "$status"
 	fi
@@ -303,8 +311,10 @@ bluetoothplayerstop )
 	pushstream mpdplayer "$status"
 	;;
 bookmarkreset )
-	path=${args[1]}
-	rm -f "/mnt/MPD/$path/"{coverart,thumb}.*
+	mpdpath=${args[1]}
+	rm -f "/mnt/MPD/$mpdpath/"coverart.*
+	data='{"url":"'/mnt/MPD/$mpdpath/none'","type":"bookmark"}'
+	pushstream coverart "$data"
 	;;
 bookmarkthumb )
 	mpdpath=${args[1]}
@@ -372,7 +382,12 @@ coverartreset )
 		exit
 	fi
 	
-	rm -f "$coverfile" "$dir/coverart".* "$dir/thumb".*
+	covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
+	rm -f "$coverfile" \
+		"$dir/coverart".* \
+		"$dir/thumb".* \
+		$dirtmp/local-$covername \
+		$dirdata/embedded/$covername*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile%%.backup}
@@ -387,15 +402,30 @@ coverartreset )
 	url=$( $dirbash/status-coverart.sh "\
 $artist
 $album
-$mpdpath
-reset" )
-	echo $url
+$mpdpath" )
+	[[ -z $url ]] && url=/mnt/MPD/$mpdpath/none
+	data='{"url":"'$url'","type":"coverart"}'
+	pushstream coverart "$data"
+	;;
+coverexists )
+	ls -1 "/mnt/MPD/${args[1]}" \
+		| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
+		| grep -i '.gif$\|.jpg$\|.png$' \
+		| head -1
+	;;
+coverfileslimit )
+	for type in local online webradio; do
+		files=$( ls -1t $dirtmp/$type-* 2> /dev/null )
+		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+	done
 	;;
 coversave )
 	source=${args[1]}
 	path=${args[2]}
+	covername=${args[3]}
 	coverfile="$path/cover.jpg"
 	jpgThumbnail coverart "$source" "$coverfile"
+	rm -f $dirtmp/local-$covername*
 	;;
 displayget )
 	if [[ -e $dirtmp/nosound ]]; then
@@ -419,21 +449,18 @@ displayget )
 	echo "$data"
 	;;
 displaysave )
-	data=$( jq . <<< ${args[1]} )
-	grep -q 'vumeter.*true' <<< "$data" && vumeter=true || vumeter=false
-	[[ -e $dirsystem/vumeter ]] && vumeter0=true || vumeter0=false
-	if [[ $vumeter != $vumeter0 ]]; then
-		[[ $vumeter == true ]] && touch $dirsystem/vumeter || rm $dirsystem/vumeter
-		$dirbash/mpd-conf.sh
-		status=$( $dirbash/status.sh )
-		pushstream mpdplayer "$status"
-		if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-			killall cava &> /dev/null
-			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		fi
-	fi
+	data=${args[1]}
 	pushstream display "$data"
-	echo "$data" > $dirsystem/display
+	jq . <<< $data > $dirsystem/display
+	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
+	[[ $data =~ '"vumeter":true' ]] && vumeter=1
+	[[ -n $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
+	[[ $prevvumeter == $vumeter ]] && exit
+	
+	pushstreamNotify 'Playback' 'VU meter change ...' 'playback'
+	$dirbash/mpd-conf.sh
+	status=$( $dirbash/status.sh )
+	pushstream mpdplayer "$status"
 	;;
 ignoredir )
 	touch $dirsystem/updating
@@ -504,12 +531,6 @@ lyricsexist )
 				 -c "get lyrics"
 	fi
 	;;
-mpcelapsed )
-	printf '%.0f' $( { echo status; sleep 0.05; } \
-		| telnet 127.0.0.1 6600 2> /dev/null \
-		| grep ^elapsed \
-		| cut -d' ' -f2 )
-	;;
 mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
@@ -523,14 +544,7 @@ mpcplayback )
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc $command $pos
 	if [[ $command == play ]]; then
-		fileheadder=$( mpc | head -c 4 )
-		if [[ $fileheadder == http ]]; then
-			webradio=1
-			sleep 1 # fix: webradio start - blank 'file:' status
-		elif [[ $fileheadder == cdda && -z $pause ]]; then
-			pushstreamAudiocd "Start play ..."
-			audiocdWaitStart
-		fi
+		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotify 'Audio CD' 'Start play ...' audiocd
 		killall relaystimer.sh &> /dev/null
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
@@ -544,10 +558,12 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	rm -f $dirtmp/status
+	touch $dirtmp/nostatus
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
+		rm -f $dirtmp/nostatus
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -562,15 +578,10 @@ mpcprevnext )
 		fi
 	fi
 	if [[ -z $playing ]]; then
+		rm -f $dirtmp/nostatus
 		mpc stop
 	else
-		fileheadder=$( mpc | head -c 4 )
-		if [[ $fileheadder == cdda ]]; then
-			pushstreamAudiocd "Change track ..."
-			audiocdWaitStart
-		else
-			[[ $fileheadder == http ]] && sleep 0.6 || sleep 0.05 # suppress multiple player events
-		fi
+		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotify 'Audio CD' 'Change track ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	;;
@@ -578,10 +589,10 @@ mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
 	if [[ $state == stop ]]; then
-		touch $dirtmp/mpdseek
+		touch $dirtmp/nostatus
 		mpc play
 		mpc pause
-		rm $dirtmp/mpdseek
+		rm $dirtmp/nostatus
 	fi
 	mpc seek $seek
 	;;
@@ -604,18 +615,6 @@ nicespotify )
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
-	;;
-onlinefileslimit )
-	onlinefiles=$( ls -1t $dirtmp/online-*.* 2> /dev/null )
-	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
-		file=$( echo "$onlinefiles" | tail -1 )
-		rm -f "$file"
-	fi
-	onlinefiles=$( ls -1t $dirtmp/webradio-*.* 2> /dev/null )
-	if (( $( echo "$onlinefiles" | wc -l ) > 10 )); then
-		file=$( echo "$onlinefiles" | tail -1 )
-		rm -f "$file" "${file:0:-4}"
-	fi
 	;;
 ordersave )
 	data=$( jq . <<< ${args[1]} )
@@ -762,9 +761,9 @@ power )
 		sleep 2
 	fi
 	if [[ -n $reboot ]]; then
-		pushstream notify '{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
+		pushstreamNotify Power 'Reboot ...' reboot
 	else
-		pushstream notify '{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
+		pushstreamNotify Power 'Off ...' power
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
@@ -774,6 +773,12 @@ power )
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ -z $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ -n $reboot ]] && reboot || poweroff
+	;;
+rebootlist )
+	[[ -e $dirtmp/reboot ]] && cat $dirtmp/reboot \
+								| sort -u \
+								| tr '\n' ^ \
+								| head -c -1
 	;;
 refreshbrowser )
 	pushstream reload 1

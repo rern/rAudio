@@ -51,12 +51,9 @@ audio_output {
 }'
 		
 	done
-	if [[ -z $btoutput ]]; then
-		pushstream refresh '{"page":"network"}' # bluetooth status
-		exit # no Audio Sink bluetooth
-	fi
+	[[ -z $btoutput ]] && exit # no Audio Sink bluetooth
+	
 fi
-pushstream refresh '{"page":"network"}'
 
 . $dirbash/mpd-devices.sh
 
@@ -139,6 +136,7 @@ audio_output {
 	name           "'$( [[ -z $output ]] && echo '(no sound device)' || echo '(visualizer)' )'"
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
+	format         "44100:16:1"
 	buffer_time    "1000000"
 }'
 fi

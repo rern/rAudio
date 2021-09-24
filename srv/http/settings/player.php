@@ -202,4 +202,32 @@
 </div>
 </div>
 
-<div style="clear:both"></div>
+<div>
+<heading>Excluded Lists<?=$ihelp?></heading>
+<div class="col-l">Album</div>
+<div class="col-r">
+	<i data-status="albumignore" class="setting fa fa-gear status"></i>
+	<span <?=$classhelp?>>
+		List of albums excluded from Album page.
+		<br>To restore:
+		<br> &emsp; &bull; Edit <code>/srv/http/data/mpd/albumignore</code>
+		<br> &emsp; &bull; Remove albums to restore
+		<br> &emsp; &bull; Update Library
+	</span>
+</div>
+<pre id="codealbumignore" class="hide"></pre>
+<div class="col-l">Directory</div>
+<div class="col-r">
+	<i data-status="mpdignore" class="setting fa fa-gear status"></i>
+	<span <?=$classhelp?>>
+		List of <code>.mpdignore</code> files contain directories excluded from database.
+		<br>To restore:
+		<br> &emsp; &bull; Edit <code>.../.mpdignore</code>
+		<br> &emsp; &bull; Remove directories to restore
+		<br> &emsp; &bull; Update Library
+	</span>
+</div>
+<pre id="codempdignore" class="hide"></pre>
+</div>
+
+<div style="height: 80px;"></div>

@@ -1,16 +1,16 @@
 #!/bin/bash
 
-file=/srv/http/data/system/relayspins
+file=/srv/http/data/system/relays.conf
 if [[ -e $file ]]; then
 	. $file
 	data='
   "page"  : "relays"
 , "pin"   : '$pin'
 , "name"  : '$name'
-, "on"    : ['$( echo ${on[@]} | tr ' ' , )']
-, "ond"   : ['$( echo ${ond[@]} | tr ' ' , )']
-, "off"   : ['$( echo ${off[@]} | tr ' ' , )']
-, "offd"  : ['$( echo ${offd[@]} | tr ' ' , )']
+, "on"    : [ '$( echo ${on[@]} | tr ' ' , )' ]
+, "ond"   : [ '$( echo ${ond[@]} | tr ' ' , )' ]
+, "off"   : [ '$( echo ${off[@]} | tr ' ' , )' ]
+, "offd"  : [ '$( echo ${offd[@]} | tr ' ' , )' ]
 , "timer" : '$timer
 else
 	data='

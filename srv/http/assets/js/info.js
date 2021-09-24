@@ -466,9 +466,11 @@ function info( json ) {
 		}
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
+			var widthmax = O.boxwidth === 'max';
+			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
 			var allW = $( '#infoContent' ).width();
-			var labelW = $( '#infoContent td:first-child' ).width();
-			var boxW = O.boxwidth !== 'max' ? O.boxwidth + 12 : allW - ( allW > 399 ? 50 : 20 ) - labelW;
+			var labelW = $( '#infoContent td:first-child' ).width() || 0;
+			var boxW = widthmax ? allW - labelW - 20 : O.boxwidth + 10;
 			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
 			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
 		}
@@ -609,7 +611,9 @@ function infoVal() {
 			val = $this.prop( 'checked' );
 		} else if ( type === 'textarea' ) {
 			O.textarea = 1;
-			val = $this.val().replace( /\n/g, '\\n' ).trim();
+			val = $this.val().trim().replace( /\n/g, '\\n' );
+		} else if ( type === 'password' ) {
+			val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
 		} else {
 			val = $this.val().trim();
 		}

@@ -1,90 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-function setMixerType( mixertype ) {
-	var hwmixer = device.mixers ? device.hwmixer : '';
-	notify( 'Mixer Control', 'Change ...', 'mpd' );
-	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
-}
-renderPage = function( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
-	var htmlstatus =  G.version +'<br>'
-	if ( G.counts ) {
-		htmlstatus += G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
-					+ G.counts.webradio.toLocaleString() +'&nbsp;<i class="fa fa-webradio gr"></i>';
-	} else {
-		htmlstatus += '<gr>Updating ...</gr>';
-	}
-	if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
-	$( '#statusvalue' ).html( htmlstatus );
-	if ( G.asoundcard == -1 ) {
-		$( '.soundcard' ).addClass( 'hide' );
-	} else {
-		$( '.soundcard' ).removeClass( 'hide' );
-		device = G.devices[ G.asoundcard ];
-		var htmldevices = '';
-		$.each( G.devices, function() {
-			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
-		} );
-		$( '#audiooutput' )
-			.html( htmldevices )
-			.val( G.asoundcard );
-		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-		device.mixerdevices.forEach( function( mixer ) {
-			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-		} );
-		$( '#hwmixer' )
-			.html( htmlhwmixer )
-			.val( device.hwmixer );
-		var htmlmixertype = '<option value="none">None / 0dB</option>';
-		if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-		htmlmixertype += '<option value="software">MPD software</option>';
-		$( '#mixertype' )
-			.html( htmlmixertype )
-			.val( device.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
-		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', device.dop == 1 );
-		selectricRender();
-	}
-	$( '#crossfade' ).prop( 'checked', G.crossfade );
-	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
-	$( '#normalization' ).prop( 'checked', G.normalization );
-	$( '#replaygain' ).prop( 'checked', G.replaygain );
-	$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
-	$( '#buffer' ).prop( 'checked', G.buffer );
-	$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
-	$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
-	$( '#setting-bufferoutput' ).toggleClass( 'hide', !G.bufferoutput );
-	$( '#ffmpeg' ).prop( 'checked', G.ffmpeg );
-	$( '#autoupdate' ).prop( 'checked', G.autoupdate );
-	$( '#custom' ).prop( 'checked', G.custom );
-	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
-	$( '#soxr' ).prop( 'checked', G.soxr );
-	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'asound', 'mpdconf', 'mount' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
-	if ( $( '#infoRange' ).length ) {
-		bash( [ 'volumeget', 'db' ], function( voldb ) {
-			var voldb = voldb.split( ' ' );
-			var vol = voldb[ 0 ];
-			var db = voldb[ 1 ];
-			$( '#infoRange .value' ).text( vol );
-			$( '#infoRange input' ).val( vol );
-			$( '.infofooter' ).text( db +' dB' );
-			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
-		} );
-	}
-	resetLocal();
-	showContent();
-}
-//---------------------------------------------------------------------------------------
 var device;
 $( '.enable' ).click( function() {
 	var idname = {
@@ -228,15 +143,14 @@ $( '#setting-crossfade' ).click( function() {
 		, title        : 'Crossfade'
 		, textlabel    : 'Seconds'
 		, boxwidth     : 60
-		, values       : G.crossfadeval || 1
+		, values       : G.crossfadeconf
 		, checkchanged : ( G.crossfade ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
 		, ok           : function() {
-			crossfadeval = infoVal();
-			bash( [ 'crossfadeset', crossfadeval ] );
+			bash( [ 'crossfadeset', infoVal() ] );
 			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -246,14 +160,13 @@ $( '#setting-replaygain' ).click( function() {
 		  icon         : 'mpd'
 		, title        : 'Replay Gain'
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, values       : G.replaygainval || 'auto'
+		, values       : G.replaygainconf
 		, checkchanged : ( G.replaygain ? 1 : 0 )
 		, cancel       : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
 		, ok           : function() {
-			replaygainval = infoVal();
-			bash( [ 'replaygainset', replaygainval ] );
+			bash( [ 'replaygainset', infoVal() ] );
 			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -268,7 +181,7 @@ $( '#setting-buffer' ).click( function() {
 		, message      : '<code>audio_buffer_size</code> (default: 4096)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, boxwidth     : 125
-		, values       : G.bufferval || 4096
+		, values       : G.bufferconf
 		, checkchanged : ( G.buffer ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
@@ -287,7 +200,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
 		, textlabel    : 'Size <gr>(kB)</gr>'
 		, boxwidth     : 125
-		, values       : G.bufferoutputval || 8192
+		, values       : G.bufferoutputconf
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
@@ -335,13 +248,11 @@ var soxrinfo = `\
 </tr>
 </table>`;
 $( '#setting-soxr' ).click( function() {
-	var defaultval = [ 20, 50, 91.3, 100, 0, 0 ];
-	var values = G.soxr ? G.soxrval.split( ' ' ) : defaultval;
 	info( {
 		  icon          : 'mpd'
 		, title         : 'SoXR Custom Settings'
 		, content       : soxrinfo
-		, values        : values
+		, values        : G.soxrconf
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : 1
 		, beforeshow    : function() {
@@ -354,8 +265,7 @@ $( '#setting-soxr' ).click( function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			var soxrval = infoVal().join( ' ' );
-			bash( [ 'soxrset', soxrval ] );
+			bash( [ 'soxrset', ...infoVal() ] );
 			notify( 'SoXR Custom Settings', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -416,3 +326,88 @@ $( '#setting-custom' ).click( function() {
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+function renderPage( list ) {
+	if ( typeof list === 'string' ) { // on load, try catching any errors
+		var list2G = list2JSON( list );
+		if ( !list2G ) return
+	} else {
+		G = list;
+	}
+	var htmlstatus =  G.version +'<br>'
+	if ( G.counts ) {
+		htmlstatus += G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
+					+ G.counts.webradio.toLocaleString() +'&nbsp;<i class="fa fa-webradio gr"></i>';
+	} else {
+		htmlstatus += '<gr>Updating ...</gr>';
+	}
+	if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
+	$( '#statusvalue' ).html( htmlstatus );
+	if ( G.asoundcard == -1 ) {
+		$( '.soundcard' ).addClass( 'hide' );
+	} else {
+		$( '.soundcard' ).removeClass( 'hide' );
+		device = G.devices[ G.asoundcard ];
+		var htmldevices = '';
+		$.each( G.devices, function() {
+			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
+		} );
+		$( '#audiooutput' )
+			.html( htmldevices )
+			.val( G.asoundcard );
+		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+		device.mixerdevices.forEach( function( mixer ) {
+			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+		} );
+		$( '#hwmixer' )
+			.html( htmlhwmixer )
+			.val( device.hwmixer );
+		var htmlmixertype = '<option value="none">None / 0dB</option>';
+		if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
+		htmlmixertype += '<option value="software">MPD software</option>';
+		$( '#mixertype' )
+			.html( htmlmixertype )
+			.val( device.mixertype );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
+		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
+		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
+		$( '#dop' ).prop( 'checked', device.dop == 1 );
+		selectricRender();
+	}
+	$( '#crossfade' ).prop( 'checked', G.crossfade );
+	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
+	$( '#normalization' ).prop( 'checked', G.normalization );
+	$( '#replaygain' ).prop( 'checked', G.replaygain );
+	$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
+	$( '#buffer' ).prop( 'checked', G.buffer );
+	$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
+	$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
+	$( '#setting-bufferoutput' ).toggleClass( 'hide', !G.bufferoutput );
+	$( '#ffmpeg' ).prop( 'checked', G.ffmpeg );
+	$( '#autoupdate' ).prop( 'checked', G.autoupdate );
+	$( '#custom' ).prop( 'checked', G.custom );
+	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
+	$( '#soxr' ).prop( 'checked', G.soxr );
+	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
+	[ 'asound', 'mpdconf', 'mount' ].forEach( function( id ) {
+		codeToggle( id, 'status' );
+	} );
+	if ( $( '#infoRange' ).length ) {
+		bash( [ 'volumeget', 'db' ], function( voldb ) {
+			var voldb = voldb.split( ' ' );
+			var vol = voldb[ 0 ];
+			var db = voldb[ 1 ];
+			$( '#infoRange .value' ).text( vol );
+			$( '#infoRange input' ).val( vol );
+			$( '.infofooter' ).text( db +' dB' );
+			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+		} );
+	}
+	resetLocal();
+	showContent();
+}
+function setMixerType( mixertype ) {
+	var hwmixer = device.mixers ? device.hwmixer : '';
+	notify( 'Mixer Control', 'Change ...', 'mpd' );
+	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
+}

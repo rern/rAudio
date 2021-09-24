@@ -2,22 +2,25 @@
 
 alias=r1
 
-. /srv/http/bash/addons.sh
-
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
+
+. $dirbash/addons.sh
+
+[[ ! -e /usr/bin/ntpdate ]] && pacman -Sy --noconfirm ntp
 
 ! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
 
 [[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
 
-[[ -e $dirsystem/lcdcharpins ]] && mv $dirsystem/lcdchar{pins,val}
-[[ -e /etc/lcdchar.conf ]] && mv /etc/lcdchar.conf $dirsystem/lcdcharval
-[[ -e $dirsystem/lcdcharval ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdcharval
-[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
+for name in lcdchar localbrowser powerbutton; do
+	mv -f /etc/$name.conf $dirsystem &> /dev/null
+done
 
-[[ -e /etc/localbrowser.conf ]] && mv /etc/localbrowser.conf $dirsystem/localbrowserval
-[[ -e /etc/powerbutton.conf ]] && mv /etc/powerbutton.conf $dirsystem/powerbuttonpins
-[[ -e /etc/soundprofile.conf ]] && mv /etc/soundprofile.conf $dirsystem/soundprofileval
+for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval powerbuttonpins relayspins replaygainset soundprofileval soxr vuledpins; do
+	newname=$( echo $name | sed 's/pins\|set\|val//' )
+	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
+done
 
 if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	names=$( jq .name /etc/relays.conf )
@@ -28,16 +31,27 @@ if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	echo "\
 $pin
 $name
-$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relayspins
+$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
 	> $dirsystem/relays
 	rm /etc/relays.conf
+else
+	cat << EOF > $dirsystem/relays.conf
+pin='[ 11,13,15,16 ]'
+name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
+onorder='[ "DAC","PreAmp","Amp","Subwoofer" ]'
+offorder='[ "Subwoofer","Amp","PreAmp", "DAC" ]'
+on=( 11 13 15 16 )
+ond=( 2 2 2 )
+off=( 16 15 13 11 )
+offd=( 2 2 2 )
+timer=5
+EOF
 fi
 
-file=/etc/powerbutton.conf
-[[ -e $file ]] && ! grep -q reserved $file && echo reserved=5 >> $file
+[[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py && $dirbash/lcdchar.py
 
-file=/etc/lcdchar.conf
-[[ -e $file ]] && sed -i '/backlight=/ {s/T/t/; s/F/f/}' $file
+systemctl try-restart localbrowser
 
 [[ -e $dirsystem/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
 
@@ -58,8 +72,6 @@ getinstallzip
 
 systemctl daemon-reload
 
-/srv/http/bash/mpd-conf.sh
-
-nginx -s reload &> /dev/null
+$dirbash/mpd-conf.sh
 
 installfinish

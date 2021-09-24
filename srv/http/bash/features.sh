@@ -83,8 +83,8 @@ localbrowserset )
 	zoom=${args[2]}
 	rotate=${args[3]}
 	cursor=${args[4]}
-	if [[ -e $dirsystem/localbrowserval ]]; then
-		conf=$( cat $dirsystem/localbrowserval )
+	if [[ -e $dirsystem/localbrowser.conf ]]; then
+		conf=$( cat $dirsystem/localbrowser.conf )
 		prevscreenoff=$( grep screenoff <<< "$conf" | cut -d= -f2 )
 		prevzoom=$( grep zoom <<< "$conf" | cut -d= -f2 )
 		prevrotate=$( grep rotate <<< "$conf" | cut -d= -f2 )
@@ -97,9 +97,10 @@ localbrowserset )
 			degree=${deg[$rotate]}
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
-			echo Rotate GPIO LCD screen > /srv/http/data/shm/reboot
+			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
 			reboot=1
 		else
+			changerotate=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
 				rm -f $rotateconf
@@ -114,18 +115,19 @@ localbrowserset )
 		$dirbash/cmd.sh rotateSplash$'\n'$rotate
 		ply-image /srv/http/assets/img/splash.png
 	fi
-	echo -n "\
+	echo "\
 screenoff=$screenoff
 zoom=$zoom
 rotate=$rotate
 cursor=$cursor
-" > $dirsystem/localbrowserval
+" > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
 		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 	fi
 	systemctl disable --now getty@tty1
-	if [[ -z $reboot && ( $zoom != $prevzoom || $rotate != $prevrotate || $cursor != $prevcursor ) ]]; then
-		featureSet bootsplash localbrowser
+	if [[ -n $reboot ]]; then
+		echo reboot
+	elif [[ $zoom != $prevzoom || -n $changerotate || $cursor != $prevcursor ]]; then
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
 	fi

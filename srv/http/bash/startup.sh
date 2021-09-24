@@ -60,8 +60,6 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 
-[[ -e $dirsystem/soundprofile ]] && $dirbash/system soundprofile
-
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
@@ -116,11 +114,19 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 [[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
 
+[[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
+
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
 
 if [[ -n $connected ]]; then
 	rfkill | grep -q wlan && iw wlan0 set power_save off
-	$dirbash/cmd.sh addonsupdates
+	if : >/dev/tcp/8.8.8.8/53; then
+		$dirbash/cmd.sh addonsupdates
+		if ! ifconfig | grep -A1 ^eth | grep -q 'inet.*broadcast'; then # not by eth
+			server=$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )
+			ntpdate $server # fix wlan time sync
+		fi
+	fi
 else
 	if [[ ! -e $dirsystem/wlannoap ]]; then
 		modprobe brcmfmac &> /dev/null 

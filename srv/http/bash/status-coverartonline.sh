@@ -73,4 +73,4 @@ if [[ $type == webradio ]]; then
 , "Album": "'$Album'"'
 fi
 curl -s -X POST http://127.0.0.1/pub?id=coverart -d "{$data}"
-/srv/http/bash/cmd.sh onlinefileslimit
+/srv/http/bash/cmd.sh coverfileslimit

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-timer=$( grep timer /srv/http/data/system/relayspins | cut -d= -f2 )
+timer=$( grep timer /srv/http/data/system/relays.conf | cut -d= -f2 )
 (( $timer == 0 )) && exit
 
 sleep $(( ( $timer - 1 ) * 60 ))

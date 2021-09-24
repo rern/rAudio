@@ -96,10 +96,6 @@ $coverart" > $dirtmp/status
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
-	elapsed=$( { echo clearerror; echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| awk '/elapsed/ {print $NF}' )
-	[[ -z $elapsed ]] && elapsed=0
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
   "Album"    : "'$album'"
@@ -107,7 +103,6 @@ $coverart" > $dirtmp/status
 , "coverart" : "'$coverart'"
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
-, "elapsed"  : '$elapsed'
 , "sampling" : "'$sampling'"
 , "state"    : "play"
 , "song"     : '$song'
@@ -117,9 +112,19 @@ $coverart" > $dirtmp/status
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then
-		status=( "$artist" "$title" "$album" "$station" "$file" play false "$elapsed" $( date +%s%3N ) true )
-		killall lcdchar.py &> /dev/null
-		/srv/http/bash/lcdchar.py "${status[@]}" &
+		statusdata="\
+$artist
+$title
+$album
+$station
+$file
+play
+false
+1
+$( date +%s%3N )
+true"
+		readarray -t data <<< "${statusdata//\"/\\\"}"
+		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi
 	if [[ -e $dirtmp/snapclientip ]]; then
 		readarray -t clientip < $dirtmp/snapclientip
@@ -127,7 +132,7 @@ $coverart" > $dirtmp/status
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
 		done
 	fi
-	/srv/http/bash/cmd.sh onlinefileslimit
+	/srv/http/bash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

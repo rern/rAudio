@@ -2,15 +2,15 @@
 
 cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
-  "page"            : "system"
-, "cpuload"         : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
-, "cputemp"         : '$( [[ -n $cputemp ]] && echo $cputemp || echo 0 )'
-, "startup"         : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
-, "throttled"       : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
-, "time"            : "'$( date +'%T %F' )'"
-, "timezone"        : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
-, "uptime"          : "'$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )'"
-, "uptimesince"     : "'$( uptime -s | cut -d: -f1-2 )'"'
+  "page"             : "system"
+, "cpuload"          : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
+, "cputemp"          : '$( [[ -n $cputemp ]] && echo $cputemp || echo 0 )'
+, "startup"          : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
+, "throttled"        : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
+, "time"             : "'$( date +'%T %F' )'"
+, "timezone"         : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
+, "uptime"           : "'$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )'"
+, "uptimesince"      : "'$( uptime -s | cut -d: -f1-2 )'"'
 
 # for interval refresh
 (( $# > 0 )) && echo {$data} && exit
@@ -18,12 +18,13 @@ data='
 dirsystem=/srv/http/data/system
 
 bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
-if [[ $bluetooth == true ]]; then
-	# 'bluetoothctl show' needs active bluetooth
-	btdiscoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
+if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
+	discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 else
-	btdiscoverable=false
+	discoverable=true
 fi
+bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
@@ -43,13 +44,15 @@ else
 	esac
 fi
 if ifconfig | grep -q eth0; then
-	if [[ -e $dirsystem/soundprofileval ]]; then
-		soundprofileval=$( cat $dirsystem/soundprofileval | cut -d= -f2 )
+	if [[ -e $dirsystem/soundprofile.conf ]]; then
+		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
 	else
-		soundprofileval=$( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
-		soundprofileval+=' '$( sysctl vm.swappiness | awk '{print $NF}'  )
-		soundprofileval+=' '$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-		soundprofileval+=' '$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+		soundprofileconf="[
+ $( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
+,$( sysctl vm.swappiness | awk '{print $NF}'  )
+,$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
+,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+]"
 	fi
 fi
 version=$( cat $dirsystem/version )
@@ -90,6 +93,7 @@ if [[ -n $nas ]]; then
 		fi
 	done
 fi
+list="[ ${list:1} ]"
 
 if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
@@ -104,8 +108,8 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 						| sort -u )
 	fi
 fi
-if [[ -e $dirsystem/lcdcharval ]]; then
-	vals=$( cat $dirsystem/lcdcharval )
+if [[ -e $dirsystem/lcdchar.conf ]]; then
+	vals=$( cat $dirsystem/lcdchar.conf )
 	keys=( cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight )
 	if (( $( echo "$vals" | wc -l ) == 6 )); then
 		declare -A default=( [inf]=i2c [pin_rs]=15 [pin_rw]=18 [pin_e]=16 [pins_data]=21,22,23,24 )
@@ -122,47 +126,58 @@ if [[ -e $dirsystem/lcdcharval ]]; then
 			[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
 		fi
 	done
-	lcdcharval=[${pins:1}]
+	lcdcharconf="[ ${pins:1} ]" # need a space before end bracket
 else
-	lcdcharval='[20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false]'
+	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
+if [[ -e $dirsystem/powerbutton.conf ]]; then
+	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
+else
+	powerbuttonconf='[ 5,40,5 ]'
+fi
+if [[ -e $dirsystem/vuled.conf ]]; then
+	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"
+else
+	vuledconf='[ 14,15,18,23,24,25,8 ]'
+fi
+wlanconf="[
+ \"$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )\"
+,$( [[ -e $dirsystem/wlannoap ]] && echo false || echo true )
+]"
 
 data+='
-, "audioaplayname"  : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
-, "audiooutput"     : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
-, "bluetooth"       : '$bluetooth'
-, "btdiscoverable"  : '$btdiscoverable'
-, "btformat"        : '$( [[ -e $dirsystem/btformat ]] && echo true || echo false )'
-, "hostapd"         : '$( systemctl -q is-active hostapd && echo true || echo false )'
-, "hostname"        : "'$( hostname )'"
-, "kernel"          : "'$( uname -rm )'"
-, "lcd"             : '$lcd'
-, "lcdchar"         : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
-, "lcdcharaddr"     : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
-, "lcdcharval"      : '$lcdcharval'
-, "list"            : ['${list:1}']
-, "lcdmodel"        : "'$lcdmodel'"
-, "mpdoled"         : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'
-, "mpdoledval"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
-, "ntp"             : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-, "powerbutton"     : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
-, "powerbuttonpins" : "'$( cat $dirsystem/powerbuttonpins 2> /dev/null | cut -d= -f2 )'"
-, "reboot"          : "'$( cat /srv/http/data/shm/reboot 2> /dev/null | sed 's/"/\\"/g' )'"
-, "regdom"          : "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
-, "relays"          : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "rpimodel"        : "'$rpimodel'"
-, "soc"             : "'$soc'"
-, "soccpu"          : "'$soccpu'"
-, "socram"          : "'$( free -h | grep Mem | awk '{print $2}' )'B"
-, "socspeed"        : "'$socspeed'"
-, "soundprofile"    : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
-, "soundprofileval" : "'$soundprofileval'"
-, "version"         : "'$version'"
-, "versionui"       : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
-, "vuled"           : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
-, "vuledval"        : "'$( cat /srv/http/data/system/vuledpins 2> /dev/null )'"
-, "wlan"            : '$( rfkill | grep -q wlan && echo true || echo false )'
-, "wlannoap"        : '$( [[ -e $dirsystem/wlannoap ]] && echo true || echo false )'
-, "wlanconnected"   : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
+, "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
+, "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
+, "bluetooth"        : '$bluetooth'
+, "bluetoothconf"    : '$bluetoothconf'
+, "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
+, "hostname"         : "'$( hostname )'"
+, "kernel"           : "'$( uname -rm )'"
+, "lcd"              : '$lcd'
+, "lcdchar"          : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
+, "lcdcharaddr"      : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
+, "lcdcharconf"      : '$lcdcharconf'
+, "list"             : '$list'
+, "lcdmodel"         : "'$lcdmodel'"
+, "mpdoled"          : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'
+, "mpdoledconf"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
+, "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
+, "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
+, "powerbuttonconf"  : '$powerbuttonconf'
+, "relays"           : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
+, "rpimodel"         : "'$rpimodel'"
+, "soc"              : "'$soc'"
+, "soccpu"           : "'$soccpu'"
+, "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"
+, "socspeed"         : "'$socspeed'"
+, "soundprofile"     : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
+, "soundprofileconf" : '$soundprofileconf'
+, "version"          : "'$version'"
+, "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
+, "vuled"            : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
+, "vuledconf"        : '$vuledconf'
+, "wlan"             : '$( rfkill | grep -q wlan && echo true || echo false )'
+, "wlanconf"         : '$wlanconf'
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
 
 echo {$data}

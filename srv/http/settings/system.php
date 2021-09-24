@@ -32,14 +32,14 @@ $selecttimezone.= '</select>';
 <heading>Status<i id="refresh" class="fa fa-refresh"></i><?=$ihelp?></heading>
 <div id="statuslabel" class="col-l text gr">
 		CPU Load
-	<span id="cputemp"><br>CPU Temperatue</span>
+	<span id="cputemp"><br>CPU Temperature</span>
 	<br>Time
 	<br>Up Time
 	<br>Boot Duration
 </div>
 <div id="status" class="col-r text"></div>
 
-<div class="col-l"></div>
+<div class="col-l" style="height:0"></div>
 <div class="col-r">
 	<span <?=$classhelp?>>
 		<br><gr><i class="fa fa-refresh"></i>&emsp;Toggle refresh every 10 seconds.</gr>
@@ -323,5 +323,3 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 <a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations<br>
 <a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 </div>
-
-<div style="clear: both"></div>

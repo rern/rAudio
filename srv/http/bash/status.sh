@@ -13,7 +13,6 @@ dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
 
-[[ -e $dirsystem/vumeter ]] && vumeter=1
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
@@ -131,36 +130,15 @@ if [[ $player != mpd && $player != upnp ]]; then
 	exit
 fi
 
-vu() {
-	[[ -e $dirsystem/vuled ]] && vuled=1
-	if [[ -n $vumeter || -n $vuled ]]; then
-		[[ -n $vumeter ]] && echo {$status}
-		if [[ $state == play ]]; then
-			if ! pgrep cava &> /dev/null; then
-				killall cava &> /dev/null
-				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-			fi
-		else
-			killall cava &> /dev/null
-			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
-			if [[ -n $vuled ]]; then
-				p=$( cat /srv/http/data/system/vuledpins )
-				for i in $p; do
-					echo 0 > /sys/class/gpio/gpio$i/value
-				done
-			fi
-		fi
-		[[ -n $vumeter ]] && exit
-	fi
-}
-filter='^Album\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
+(( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
+
+filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
 		| grep "$filter" )
 }
 mpdStatus currentsong
-
 # 'file:' missing / blank
 #   - when playlist is empty, add song without play
 #     - 'currentsong' has no data
@@ -247,8 +225,10 @@ if [[ $fileheader == cdda ]]; then
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
-		coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
-		[[ -n $coverfile && -z $vumeter ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		if [[ -n $displaycover ]]; then
+			coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
+			[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+		fi
 	else
 		[[ $state == stop ]] && Time=0
 	fi
@@ -270,9 +250,11 @@ elif [[ -n $stream ]]; then
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
 		# fetched coverart
-		covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-		onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
-		[[ -n $onlinefile && -z $vumeter ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		if [[ -n $displaycover ]]; then
+			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
+			onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+			[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+		fi
 	else
 		ext=Radio
 		icon=webradio
@@ -308,10 +290,10 @@ $radiosampling" > $dirtmp/radio
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
-					[[ -z $vumeter ]] && coverart=${tmpstatus[3]}
+					[[ -n $displaycover ]] && coverart=${tmpstatus[3]}
 					station=$stationname
 				fi
-			elif [[ -n $Title && -z $vumeter ]]; then
+			elif [[ -n $Title && -n $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
@@ -326,7 +308,7 @@ $radiosampling" > $dirtmp/radio
 				fi
 			fi
 		fi
-		if [[ -z $vumeter ]]; then
+		if [[ -n $displaycover ]]; then
 			filenoext=/data/webradiosimg/$urlname
 			pathnoext=/srv/http$filenoext
 			if [[ -e $pathnoext.gif ]]; then
@@ -360,7 +342,6 @@ $radiosampling" > $dirtmp/radio
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
 # >>>>>>>>>>
-		vu
 		echo {$status}
 		exit
 	fi
@@ -376,6 +357,7 @@ else
 	ext=${ext^^}
 	# missing id3tags
 	[[ -z $Album ]] && Album=
+	[[ -z $AlbumArtist ]] && AlbumArtist=$Artist
 	[[ -z $Artist ]] && Artist=$AlbumArtist
 	[[ -z $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
 	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
@@ -387,6 +369,12 @@ else
 , "Title"  : "'$Title'"'
 fi
 
+samplingfile=$dirtmp/sampling-$( echo $file | tr -d ' "`?/#&'"'_.\-" )
+samplingSave() {
+	echo $sampling > $samplingfile
+	files=$( ls -1t $dirtmp/sampling-* 2> /dev/null )
+	(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+}
 samplingLine() {
 	bitdepth=$1
 	samplerate=$2
@@ -417,7 +405,10 @@ samplingLine() {
 if [[ $ext == CD ]]; then
 	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; CD'
 elif [[ $state != stop ]]; then
-	[[ $ext == DSF || $ext == DFF ]] && bitdepth=dsd
+	if [[ $ext == DSF || $ext == DFF ]]; then
+		bitdepth=dsd
+		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
+	fi
 	# save only webradio: update sampling database on each play
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
@@ -429,29 +420,35 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
+	samplingSave &
 else
-	if [[ $ext != Radio ]]; then
-		if [[ $ext == DSF || $ext == DFF ]]; then
-			# DSF: byte# 56+4 ? DSF: byte# 60+4
-			[[ $ext == DSF ]] && byte=56 || byte=60;
-			[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
-			hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
-			dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
-			bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
-			sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
-		else
-			data=( $( ffprobe -v quiet -select_streams a:0 \
-				-show_entries stream=bits_per_raw_sample,sample_rate \
-				-show_entries format=bit_rate \
-				-of default=noprint_wrappers=1:nokey=1 \
-				"/mnt/MPD/$file0" ) )
-			samplerate=${data[0]}
-			bitdepth=${data[1]}
-			bitrate=${data[2]}
-			samplingLine $bitdepth $samplerate $bitrate $ext
-		fi
-	else
+	if [[ $ext == Radio ]]; then
 		sampling="$radiosampling"
+	else
+		if [[ -e $samplingfile ]]; then
+			sampling=$( cat $samplingfile )
+		else
+			if [[ $ext == DSF || $ext == DFF ]]; then
+				# DSF: byte# 56+4 ? DSF: byte# 60+4
+				[[ $ext == DSF ]] && byte=56 || byte=60;
+				[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
+				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
+				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
+				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
+				sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
+			else
+				data=( $( ffprobe -v quiet -select_streams a:0 \
+					-show_entries stream=bits_per_raw_sample,sample_rate \
+					-show_entries format=bit_rate \
+					-of default=noprint_wrappers=1:nokey=1 \
+					"/mnt/MPD/$file0" ) )
+				samplerate=${data[0]}
+				bitdepth=${data[1]}
+				bitrate=${data[2]}
+				samplingLine $bitdepth $samplerate $bitrate $ext
+			fi
+		fi
+		samplingSave &
 	fi
 fi
 
@@ -464,9 +461,7 @@ status+='
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
-vu
-
-if grep -q '"cover": false' $dirsystem/display; then
+if [[ -z $displaycover ]]; then
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
@@ -479,8 +474,9 @@ if grep -q '"cover": false' $dirsystem/display; then
 fi
 
 if [[ $ext != CD && -z $stream ]]; then
+	getcover=1
 	coverart=$( $dirbash/status-coverart.sh "\
-$Artist
+$AlbumArtist
 $Album
 $file0" )
 fi
@@ -495,19 +491,19 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-if [[ -z $coverart && -n $Artist ]]; then
-	if [[ -n $stream && $state == play && -n $Title ]]; then
-		args="\
-$Artist
+[[ -n $getcover || -z $AlbumArtist ]] && exit
+
+if [[ -n $stream && $state == play && -n $Title ]]; then
+	args="\
+$AlbumArtist
 ${Title/ (*}
 webradio"
-	elif [[ -n $Album ]]; then
-		args="\
-$Artist
+elif [[ -n $Album ]]; then
+	args="\
+$AlbumArtist
 $Album"
-	fi
-	if [[ -n $args ]]; then
-		killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-		$dirbash/status-coverartonline.sh "$args" &> /dev/null &
-	fi
+fi
+if [[ -n $args ]]; then
+	killall status-coverartonline.sh &> /dev/null # new track - kill if still running
+	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
 fi

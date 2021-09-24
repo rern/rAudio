@@ -16,6 +16,11 @@ pushstreamNotify() { # double quote "$1" needed
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 }
+restartMPD() {
+	systemctl restart mpd
+	data=$( /srv/http/bash/player-data.sh )
+	pushstream refresh "$data"
+}
 
 [[ -n $1 ]] && pushstreamNotify "USB CD $1"
 
@@ -26,8 +31,7 @@ input { #cdio0\
 	speed          "12" \
 } \
 ' /etc/mpd.conf
-	systemctl restart mpd
-	pushstream refresh '{ "page": "player" }'
+	restartMPD
 	exit
 elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playlist
 	rm -f $dirtmp/audiocd
@@ -45,8 +49,7 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	fi
 	if [[ $1 == off ]]; then
 		sed -i '/#cdio/,/^$/ d' /etc/mpd.conf
-		systemctl restart mpd
-		pushstream refresh '{ "page": "player" }'
+		restartMPD
 	fi
 	exit
 fi
