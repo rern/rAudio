@@ -461,10 +461,6 @@ displaysave )
 	$dirbash/mpd-conf.sh
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
-	if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-		killall cava &> /dev/null
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-	fi
 	;;
 ignoredir )
 	touch $dirsystem/updating
