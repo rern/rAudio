@@ -4,6 +4,8 @@ dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
+[[ $( sed -n 6p $dirtmp/status ) == pause ]] && sleep 0.1
+
 status=$( $dirbash/status.sh )
 statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
