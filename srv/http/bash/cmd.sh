@@ -91,6 +91,7 @@ pladdPlay() {
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc play $pos
+		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	$dirbash/cmd-pushstatus.sh
 }
