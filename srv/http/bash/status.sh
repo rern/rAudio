@@ -515,6 +515,7 @@ status+='
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 echo {$status}
+vuMeter
 
 [[ -n $getcover || -z $AlbumArtist ]] && exit
 
