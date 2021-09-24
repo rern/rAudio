@@ -112,9 +112,19 @@ $coverart" > $dirtmp/status
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
 	if [[ -e $dirsystem/lcdchar ]]; then
-		status=( "$artist" "$title" "$album" "$station" "$file" play false "$elapsed" $( date +%s%3N ) true )
-		killall lcdchar.py &> /dev/null
-		/srv/http/bash/lcdchar.py "${status[@]}" &
+		statusdata="\
+$artist
+$title
+$album
+$station
+$file
+play
+false
+1
+$( date +%s%3N )
+true"
+		readarray -t data <<< "${statusdata//\"/\\\"}"
+		/srv/http/bash/lcdchar.py "${data[@]}" &
 	fi
 	if [[ -e $dirtmp/snapclientip ]]; then
 		readarray -t clientip < $dirtmp/snapclientip

@@ -2,9 +2,10 @@
 
 alias=r1
 
-. /srv/http/bash/addons.sh
-
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
+
+. $dirbash/addons.sh
 
 [[ ! -e /usr/bin/ntpdate ]] && pacman -Sy --noconfirm ntp
 
@@ -48,7 +49,7 @@ EOF
 fi
 
 [[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
-[[ -e $dirsystem/lcdchar ]] && /srv/http/bash/lcdcharinit.py
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py && $dirbash/lcdchar.py
 
 systemctl try-restart localbrowser
 
@@ -71,6 +72,6 @@ getinstallzip
 
 systemctl daemon-reload
 
-/srv/http/bash/mpd-conf.sh
+$dirbash/mpd-conf.sh
 
 installfinish
