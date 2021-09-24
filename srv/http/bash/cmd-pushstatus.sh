@@ -31,11 +31,14 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
 
 echo "$statusdata" > $dirtmp/status
 
+[[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
+
 if [[ -e $dirsystem/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
 	readarray -t data <<< "${statusdata//\"/\\\"}"
 	$dirbash/lcdchar.py "${data[@]}" &
 fi
+
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
@@ -52,6 +55,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		fi
 	fi
 fi
+
 if [[ -e $dirtmp/snapclientip ]]; then
 	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
 	readarray -t clientip < $dirtmp/snapclientip
@@ -59,4 +63,5 @@ if [[ -e $dirtmp/snapclientip ]]; then
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 fi
+
 [[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
