@@ -350,7 +350,6 @@ function displaySave( keys ) {
 	keys.forEach( function( k, i ) {
 		display[ k ] = values[ i ];
 	} );
-	G.coverdefault = display.novu ? G.coverart : G.covervu;
 	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
 		delete display[ item ];
 	} );
