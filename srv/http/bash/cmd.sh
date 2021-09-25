@@ -454,10 +454,18 @@ displaysave )
 	jq . <<< $data > $dirsystem/display
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $data =~ '"vumeter":true' ]] && vumeter=1
-	[[ -n $vumeter ]] && touch $dirsystem/vumeter || rm -f $dirsystem/vumeter
 	[[ $prevvumeter == $vumeter ]] && exit
 	
-	pushstreamNotify 'Playback' 'VU meter change ...' 'playback'
+	if [[ -n $vumeter ]]; then
+		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		touch $dirsystem/vumeter
+		enable='VU meter enable...'
+	else
+		killall cava &> /dev/null
+		rm -f $dirsystem/vumeter
+		enable='VU meter disable...'
+	fi
+	pushstreamNotify 'Playback' "$enable" 'playback'
 	$dirbash/mpd-conf.sh
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
