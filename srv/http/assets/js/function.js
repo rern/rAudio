@@ -319,7 +319,7 @@ function displayPlayback() {
 	var cover = G.display.cover;
 	var volume = $volume.is( ':visible' );
 	var buttons = G.status.player === 'mpd' && G.display.buttons;
-	$( '#playback-row' ).css( 'align-items', buttons ? '' : 'center' );
+	$( '#playback-row' ).css( 'align-items', buttons || G.display.vumeter ? 'stretch' : 'center' );
 	$cover
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
