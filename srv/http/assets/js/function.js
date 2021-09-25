@@ -318,6 +318,8 @@ function displayPlayback() {
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
 	var volume = $volume.is( ':visible' );
+	var buttons = G.status.player === 'mpd' && G.display.buttons;
+	$( '#playback-row' ).css( 'align-items', buttons || G.display.vumeter ? 'stretch' : 'center' );
 	$cover
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
@@ -330,11 +332,10 @@ function displayPlayback() {
 			$cover.css( { width: '100%', 'max-width': '55vw' } );
 		}
 	} else {
-		$( '#playback-row' ).css( 'align-items', '' );
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	$( '.btn-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
+	$( '#play-group, #vol-group' ).toggleClass( 'hide', !buttons );
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
@@ -349,7 +350,6 @@ function displaySave( keys ) {
 	keys.forEach( function( k, i ) {
 		display[ k ] = values[ i ];
 	} );
-	G.coverdefault = display.novu ? G.coverart : G.covervu;
 	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
 		delete display[ item ];
 	} );

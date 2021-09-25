@@ -19,7 +19,6 @@ pushstream() {
 }
 restartMPD() {
 	systemctl restart mpd
-	status=$( $dirbash/status.sh )
 	pushstream refresh "$( $dirbash/player-data.sh )"
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
