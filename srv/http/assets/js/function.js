@@ -335,7 +335,7 @@ function displayPlayback() {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	$( '.btn-group' ).toggleClass( 'hide', !buttons );
+	$( '#play-group, #vol-group' ).toggleClass( 'hide', !buttons );
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
