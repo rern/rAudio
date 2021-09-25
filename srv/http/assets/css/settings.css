@@ -409,6 +409,11 @@ input:checked + .switchlabel.disabled:after {
 	min-height: 100vh;
 	padding: 30px 55px 100px 55px;
 }
+.container::after {
+	display: block;
+	content: '';
+	clear: both;
+}
 .col-l,
 .col-r {
 	float: left;
