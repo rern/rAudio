@@ -22,7 +22,7 @@ for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval po
 	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
 done
 
-if [[ -e /etc/relays.conf ]]; then
+if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	names=$( jq .name /etc/relays.conf )
 	pin=$( jq -r 'keys[]' <<< $names )
 	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
