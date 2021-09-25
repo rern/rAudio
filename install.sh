@@ -34,7 +34,7 @@ $name
 $( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
 	> $dirsystem/relays
 	rm /etc/relays.conf
-else
+elif [[ ! -e $dirsystem/relays.conf ]]; then
 	cat << EOF > $dirsystem/relays.conf
 pin='[ 11,13,15,16 ]'
 name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
