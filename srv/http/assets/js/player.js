@@ -1,6 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var device;
 $( '.enable' ).click( function() {
 	var idname = {
 		  buffer       : 'Custom Audio Buffer'
