@@ -450,8 +450,8 @@ displayget )
 	;;
 displaysave )
 	data=${args[1]}
-	pushstream display "$data"
 	jq . <<< $data > $dirsystem/display
+	pushstream display "$data"
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $data =~ '"vumeter":true' ]] && vumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
