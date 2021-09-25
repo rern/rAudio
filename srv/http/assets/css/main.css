@@ -2037,7 +2037,6 @@ li.active .li2 bl {
 	#play-group,
 	#vol-group { display: none }
 }
-/************************************************************************************/
 @media ( max-width: 700px ) {
 	#sampling .radio { display: inline }
 	#sampling .station { display: none }
