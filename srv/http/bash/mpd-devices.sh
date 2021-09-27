@@ -15,6 +15,7 @@ dirsystem=/srv/http/data/system
 aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ -z $aplay ]]; then
 	i=-1
+	devices=false
 	touch /srv/http/data/shm/nosound
 	return
 fi
