@@ -7,6 +7,8 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+[[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pacman -Sy --noconfirm alsaequal
+
 [[ ! -e /usr/bin/ntpdate ]] && pacman -Sy --noconfirm ntp
 
 ! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display

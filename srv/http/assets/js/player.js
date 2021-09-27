@@ -149,7 +149,7 @@ $( '#setting-equalizer' ).click( function() {
 }
 </style>
 ` );
-	bash( [ 'equalizerget' ], function( values ) {
+	bash( [ 'equalizerval' ], function( values ) {
 		var allflat = '66'.repeat( 10 );
 		var flat = values.join( '' ) === allflat;
 		info( {
@@ -184,7 +184,7 @@ $( '#setting-equalizer' ).click( function() {
 			, okno          : 1
 			, buttonlabel   : '<i class="fa fa-set0"></i>Flat'
 			, button        : function() {
-				bash( [ 'equalizerreset' ] );
+				bash( [ 'equalizerval', 'reset' ] );
 				$( '#infoRange input' ).val( 66 );
 				$( '#infoButtons' ).addClass( 'hide' );
 			}

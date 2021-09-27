@@ -6,19 +6,6 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
-equalizerValues() {
-	[[ $1 == reset ]] && reset=1
-	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	for (( i=0; i < 10; i++ )); do
-		(( i < 5 )) && unit=Hz || unit=kHz
-		band="0$i. ${freq[$i]} $unit"
-		if [[ -n $reset ]]; then
-			su mpd -c "amixer -D equal sset \"$band\" 66"
-		else
-			val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
-		fi
-	done
-}
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
@@ -194,20 +181,22 @@ dop )
 	restartMPD
 	;;
 equalizer )
-	if [[ ${args[1]} == true ]]; then
-		touch $dirsystem/equalizer 
-	else
-		rm $dirsystem/equalizer
-		equalizerValues reset
-	fi
+	[[ ${args[1]} == true ]] && touch $dirsystem/equalizer || rm $dirsystem/equalizer
 	restartMPD
 	;;
-equalizerget )
-	equalizerValues
-	echo [ ${val:1} ]
-	;;
-equalizerreset )
-	equalizerValues reset
+equalizerval )
+	[[ ${args[1]} == reset ]] && reset=1
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band="0$i. ${freq[$i]} $unit"
+		if [[ -n $reset ]]; then
+			su mpd -c "amixer -D equal sset \"$band\" 66"
+		else
+			val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
+		fi
+	done
+	[[ -z $reset ]] && echo [ ${val:1} ]
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
@@ -293,7 +282,6 @@ novolume )
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} /srv/http/data/shm/mpdvolume
-	equalizerValues reset
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
