@@ -46,6 +46,15 @@
 		</p>
 	</span>
 </div>
+<div class="col-l hide">Equalizer</div>
+<div class="col-r hide">
+	<input id="equalizer" <?=$chknoset?>>
+	<div class="switchlabel" for="equalizer"></div>
+	<i id="setting-equalizer" <?=$classsetting?>></i>
+	<span <?=$classhelp?>>
+		10 band graphic equalizer.
+	</span>
+</div>
 </div>
 </div>
 
@@ -59,9 +68,10 @@
 		Disable all manipulations for bit-perfect stream from MPD to DAC output.
 		<p>
 			&bull; No changes in data stream until it reaches amplifier volume control.
-		<br>&bull; Mixer device volume set to 0dB - No amplitude manipulations.
-		<br>&bull; Volume Control <code>None / 0db</code> - Hide Volume in Playback.
-		<br>&bull; Disable Crossfade, Normalization and Replay Gain.
+		<br>&bull; Mixer device volume: 0dB (No amplitude manipulations)
+		<br>&bull; Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
+		<br>&bull; Equalizer: Disabled
+		<br>&bull; Crossfade, Normalization and Replay Gain: Disabled
 		</p>
 	</span>
 </div>
