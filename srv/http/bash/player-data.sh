@@ -4,6 +4,8 @@ dirsystem=/srv/http/data/system
 
 . /srv/http/bash/mpd-devices.sh
 
+[[ -z $devices ]] && devices=false
+
 active=$( mpc &> /dev/null && echo true || echo false )
 if [[ -e $dirsystem/soxr.conf ]]; then
 	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
