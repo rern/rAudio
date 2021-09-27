@@ -1,19 +1,33 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
+equalizerValues() {
+	[[ $1 == reset ]] && reset=1
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band="0$i. ${freq[$i]} $unit"
+		if [[ -n $reset ]]; then
+			su mpd -c "amixer -D equal sset \"$band\" 66"
+		else
+			val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
+		fi
+	done
+}
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	data=$( /srv/http/bash/player-data.sh )
+	data=$( $dirbash/player-data.sh )
 	pushstream refresh "$data"
 }
 restartMPD() {
-	/srv/http/bash/mpd-conf.sh
+	$dirbash/mpd-conf.sh
 }
 scontrols() {
 	amixer scontents \
@@ -166,7 +180,7 @@ customset )
 devices )
 	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
 	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( /srv/http/bash/player.sh amixer )
+	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( $dirbash/player.sh amixer )
 	echo "$devices"
 	;;
 dop )
@@ -178,6 +192,22 @@ dop )
 		rm -f "$dirsystem/dop-$aplayname"
 	fi
 	restartMPD
+	;;
+equalizer )
+	if [[ ${args[1]} == true ]]; then
+		touch $dirsystem/equalizer 
+	else
+		rm $dirsystem/equalizer
+		equalizerValues reset
+	fi
+	restartMPD
+	;;
+equalizerget )
+	equalizerValues
+	echo [ ${val:1} ]
+	;;
+equalizerreset )
+	equalizerValues reset
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
@@ -261,9 +291,9 @@ novolume )
 	' /etc/mpd.conf
 	mpc crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
-	rm -f /srv/http/data/shm/mpdvolume
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{crossfade,replaygain,normalization}
+	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} /srv/http/data/shm/mpdvolume
+	equalizerValues reset
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
@@ -304,12 +334,12 @@ soxrset )
 	;;
 volume0db )
 	amixer -Mq sset "${args[1]}" 0dB
-	level=$( /srv/http/bash/cmd.sh volumeget )
+	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	rm -f /srv/http/data/shm/mpdvolume
 	;;
 volumeget )
-	vol_db=( $( /srv/http/bash/cmd.sh volumeget$'\n'db ) )
+	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )
 	vol=${vol_db[0]}
 	db=${vol_db[1]}
 	echo $vol $db

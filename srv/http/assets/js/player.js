@@ -20,6 +20,7 @@ $( '.enable' ).click( function() {
 $( '.enablenoset' ).click( function() {
 	var idname = {
 		  autoupdate    : 'Auto Update'
+		, equalizer     : 'Equalizer'
 		, ffmpeg        : 'FFmpeg Decoder'
 		, normalization : 'Normalization'
 	}
@@ -63,11 +64,11 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoContent' ).after( '<div class="infomessage warning hide"><br>'+ warning +'</div>' );
 					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
 					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
-					$( '#infoRange input' ).on( 'click input', function() {
+					$( '#infoRange input' ).on( 'click input keyup', function() {
 						var val = $( this ).val();
 						$( '#infoRange .value' ).text( val );
 						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ val +'%' );
-					} ).on( 'mouseup touchend', function() {
+					} ).on( 'mouseup touchend keyup', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
@@ -105,6 +106,90 @@ $( '#mixertype' ).change( function() {
 	} else {
 		setMixerType( mixertype );
 	}
+} );
+$( '#setting-equalizer' ).click( function() {
+	if ( !$( '#verticalrange' ).length ) $( 'head' ).append( `
+<style id="verticalrange">
+.infomessage .hz {
+	white-space: nowrap;
+}
+.infomessage .hz a {
+	display: inline-block;
+	width: 55px;
+	height: 30px;
+	color: var( --cw );
+	text-align: center;
+	font-family: Inconsolata;
+}
+#flatline {
+	position: absolute;
+	margin: 135px 10px;
+	width: 560px;
+	height: 1px;
+	background: var( --cgl );
+}
+#infoRange.vertical {
+	margin-left: -35px;
+	width: 300px;
+	height: 200px;
+	transform : rotateZ( -90deg );
+}
+#infoRange.vertical input {
+	display: block;
+	position: relative;
+	height: 55px;
+	right: -50px;
+}
+#infoRange.vertical input::-webkit-slider-thumb {
+	margin-top: -18px;
+	transform : rotateZ( 90deg );
+}
+#infoRange.vertical input::-moz-range-thumb {
+	transform : rotateZ( 90deg );
+}
+</style>
+` );
+	bash( [ 'equalizerget' ], function( values ) {
+		var allflat = '66'.repeat( 10 );
+		var flat = values.join( '' ) === allflat;
+		info( {
+			  icon       : 'volume'
+			, title      : 'Equalizer'
+			, content    : `
+<div id="flatline"></div>
+<div class="infomessage">Hz
+<div class="hz"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1,000</a><a>2,000</a><a>4,000</a><a>8,000</a><a>16,000</a></div></div>
+<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>`
+			, boxwidth   : 'max'
+			, values     : values
+			, beforeshow : function() {
+				$( '#infoButtons' ).toggleClass( 'hide', flat );
+				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					var $this = $( this );
+					var i = $this.index( 'input' );
+					var val = $( this ).val();
+					var unit = i < 5 ? ' Hz' : ' kHz';
+					var band = '0'+ i +'. '+ freq[ i ] + unit;
+					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
+				} ).on( 'mouseup touchend keyup', function() {
+					var allval = '';
+					$( '#infoRange input' ).each( function() {
+						allval +=$( this ).val();
+					} );
+					$( '#infoButtons' ).toggleClass( 'hide', allval === allflat );
+				} );
+			}
+			, buttonnoreset : 1
+			, okno          : 1
+			, buttonlabel   : '<i class="fa fa-set0"></i>Flat'
+			, button        : function() {
+				bash( [ 'equalizerreset' ] );
+				$( '#infoRange input' ).val( 66 );
+				$( '#infoButtons' ).addClass( 'hide' );
+			}
+		} );
+	}, 'json' );
 } );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
@@ -368,7 +453,7 @@ function renderPage( list ) {
 			.html( htmlmixertype )
 			.val( device.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.normalization && !G.replaygain );
+		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', device.dop == 1 );
 		selectricRender();
@@ -378,6 +463,8 @@ function renderPage( list ) {
 	$( '#normalization' ).prop( 'checked', G.normalization );
 	$( '#replaygain' ).prop( 'checked', G.replaygain );
 	$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
+	$( '#equalizer' ).prop( 'checked', G.equalizer );
+	$( '#setting-equalizer' ).toggleClass( 'hide', !G.equalizer );
 	$( '#buffer' ).prop( 'checked', G.buffer );
 	$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
 	$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
@@ -391,7 +478,7 @@ function renderPage( list ) {
 	[ 'asound', 'mpdconf', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
-	if ( $( '#infoRange' ).length ) {
+	if ( $( '#infoRange .value' ).length ) {
 		bash( [ 'volumeget', 'db' ], function( voldb ) {
 			var voldb = voldb.split( ' ' );
 			var vol = voldb[ 0 ];

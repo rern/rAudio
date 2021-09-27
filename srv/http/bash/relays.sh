@@ -23,7 +23,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=relays -d "$1"
 }
 
-mpc -q stop
+mpc stop
 systemctl stop radio
 rm -f $dirtmp/status
 

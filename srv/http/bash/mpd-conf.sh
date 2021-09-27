@@ -71,8 +71,18 @@ if [[ $i != -1 ]]; then
 	hwmixer=${Ahwmixer[$i]}
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
+	if [[ -e $dirsystem/equalizer ]]; then
 ########
-	output+='
+		output+='
+audio_output {
+	name           "ALSAEqual"
+	device         "plug:plugequal"
+	type           "alsa"
+	auto_resample  "no"
+	mixer_type     "'$mixertype'"'
+	else
+########
+		output+='
 audio_output {
 	name           "'$name'"
 	device         "'$hw'"
@@ -80,12 +90,13 @@ audio_output {
 	auto_resample  "no"
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
-	if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-		mixercontrol=$hwmixer
+		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
+			mixercontrol=$hwmixer
 ########
-		output+='
+			output+='
 	mixer_control  "'$mixercontrol'"
 	mixer_device   "hw:'$card'"'
+		fi
 	fi
 	if [[ $dop == 1 ]]; then
 ########
@@ -171,17 +182,11 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-
-if [[ -n $Acard ]]; then
-	sed -i "s/.$/$card/" /etc/asound.conf
-else
-	echo -n "\
-defaults.pcm.card 0
-defaults.ctl.card 0
-" > /etc/asound.conf
-	restartMPD
-	exit
-fi
+[[ -n $Acard ]] && card=$card || card=0
+echo "\
+defaults.pcm.card $card
+defaults.ctl.card $card" > /etc/asound.conf
+[[ -z $Acard ]] && restartMPD && exit
 
 wm5102card=$( aplay -l \
 				| grep snd_rpi_wsp \

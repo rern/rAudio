@@ -318,8 +318,6 @@ function displayPlayback() {
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
 	var volume = $volume.is( ':visible' );
-	var buttons = G.status.player === 'mpd' && G.display.buttons;
-	$( '#playback-row' ).css( 'align-items', buttons || G.display.vumeter ? 'stretch' : 'center' );
 	$cover
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
@@ -335,7 +333,7 @@ function displayPlayback() {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	$( '#play-group, #vol-group' ).toggleClass( 'hide', !buttons );
+	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
@@ -343,6 +341,17 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
+	var wW = window.innerWidth;
+	if ( G.display.vumeter ) {
+		var aligntop = 'stretch';
+	} else if ( $( '.btn-group' ).is( ':hidden' ) ) {
+		var align = 'center';
+	} else if ( time && volume && ( wW < 900 && wW > 750 ) || wW < 600 ) {
+		var align = 'stretch';
+	} else {
+		var align = 'center';
+	}
+	$( '#playback-row' ).css( 'align-items', align );
 }
 function displaySave( keys ) {
 	var values = infoVal();
@@ -1155,6 +1164,9 @@ function renderPlayback() {
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
 	} else {
 		$( '#progress' ).html( istate +'<span></span>'+ timehms );
+		setTimeout( function() {
+			$( '#progress span' ).after( ' / ' );
+		}, 1000 );
 	}
 	setProgress();
 	if ( G.status.state === 'pause' ) {
