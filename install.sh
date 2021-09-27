@@ -53,7 +53,7 @@ fi
 [[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
 [[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py && $dirbash/lcdchar.py
 
-systemctl try-restart localbrowser
+[[ -e /usr/bin/chromium ]] && systemctl try-restart localbrowser
 
 [[ -e $dirsystem/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
 

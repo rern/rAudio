@@ -54,6 +54,8 @@ if ifconfig | grep -q eth0; then
 ,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
 ]"
 	fi
+else
+	soundprofileconf=false
 fi
 version=$( cat $dirsystem/version )
 
