@@ -123,22 +123,22 @@ $( '#setting-equalizer' ).click( function() {
 }
 #flatline {
 	position: absolute;
-	margin: 135px 10px;
+	margin: 155px 10px;
 	width: 560px;
 	height: 1px;
 	background: var( --cgl );
 }
 #infoRange.vertical {
-	margin-left: -35px;
-	width: 300px;
-	height: 200px;
+	margin-left: -50px;
+	width: 400px;
+	height: 270px;
 	transform : rotateZ( -90deg );
 }
 #infoRange.vertical input {
 	display: block;
 	position: relative;
 	height: 55px;
-	right: -50px;
+	right: -70px;
 }
 #infoRange.vertical input::-webkit-slider-thumb {
 	margin-top: -18px;
