@@ -46,8 +46,8 @@
 		</p>
 	</span>
 </div>
-<div class="col-l hide">Equalizer</div>
-<div class="col-r hide">
+<div class="col-l">Equalizer</div>
+<div class="col-r">
 	<input id="equalizer" <?=$chknoset?>>
 	<div class="switchlabel" for="equalizer"></div>
 	<i id="setting-equalizer" <?=$classsetting?>></i>
