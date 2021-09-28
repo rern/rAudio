@@ -185,18 +185,44 @@ equalizer )
 	restartMPD
 	;;
 equalizerval )
-	[[ ${args[1]} == reset ]] && reset=1
+	type=${args[1]} # rename, preset, new, delete, save
+	name=${args[2]}
+	newname=${args[3]}
+	if [[ $type == rename ]]; then
+		sed -i 's/"'$name'"/"'$newname'"/' $dirsystem/equalizer.conf
+#############
+		echo '[ "Flat"'$( sed 's/, \[.*//; s/\[ //' $dirsystem/equalizer.conf | sort )']'
+		exit
+	fi
+	
+	if [[ -n $type ]]; then
+		if [[ $type == preset ]]; then
+			[[ $name == Flat ]] && v=flat || v=( $( grep "\"$name\"" $dirsystem/equalizer.conf | sed 's/.*\[ \| ].*//g; s/,/ /g' ) )
+		else # new|delete|save
+			sed -i '/"'$name'"/ d' $dirsystem/equalizer.conf
+			[[ $type == delete ]] && v=flat
+		fi
+	fi
+	[[ $v == flat ]] && v=( $( seq 10 | sed "c 66" ) )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	for (( i=0; i < 10; i++ )); do
 		(( i < 5 )) && unit=Hz || unit=kHz
-		band="0$i. ${freq[$i]} $unit"
-		if [[ -n $reset ]]; then
-			su mpd -c "amixer -D equal sset \"$band\" 66"
-		else
-			val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
-		fi
+		band=( "0$i. ${freq[i]} $unit" )
+		[[ -n $v ]] && su mpd -c "amixer -qD equal sset \"$band\" ${v[i]}"
+		val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
 	done
-	[[ -z $reset ]] && echo [ ${val:1} ]
+	val=${val:1}
+	[[ $type =~ new|save ]] && echo ",[ \"$name\", [ $val ] ]" >> $dirsystem/equalizer.conf
+	if [[ $type == new ]]; then
+#############
+		echo '[ "Flat"'$( sed 's/, \[.*//; s/\[ //' $dirsystem/equalizer.conf | sort )']'
+		exit
+	fi
+	
+	presets='[ "Flat", [ 66, 66, 66, 66, 66, 66, 66, 66, 66, 66 ] ]'
+	[[ -e $dirsystem/equalizer.conf ]] && presets+=$( cat $dirsystem/equalizer.conf | sort )
+#############
+	echo '{"values"  : [ '$val' ], "presets": [ '$presets' ] }'
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then

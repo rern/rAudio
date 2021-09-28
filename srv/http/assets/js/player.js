@@ -121,24 +121,24 @@ $( '#setting-equalizer' ).click( function() {
 	text-align: center;
 	font-family: Inconsolata;
 }
-#flatline {
+#eqflatline {
 	position: absolute;
-	margin: 135px 10px;
+	margin: 155px 10px;
 	width: 560px;
 	height: 1px;
 	background: var( --cgl );
 }
 #infoRange.vertical {
-	margin-left: -35px;
-	width: 300px;
-	height: 200px;
+	margin-left: -50px;
+	width: 400px;
+	height: 270px;
 	transform : rotateZ( -90deg );
 }
 #infoRange.vertical input {
 	display: block;
 	position: relative;
 	height: 55px;
-	right: -50px;
+	right: -70px;
 }
 #infoRange.vertical input::-webkit-slider-thumb {
 	margin-top: -18px;
@@ -147,23 +147,57 @@ $( '#setting-equalizer' ).click( function() {
 #infoRange.vertical input::-moz-range-thumb {
 	transform : rotateZ( 90deg );
 }
+#eq .ibtn {
+	width: 35px;
+	font-size: 22px;
+	line-height: 36px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+#eq .ibtn,
+#eqname {
+	position: relative;
+	z-index: 10;
+}
+.ibtn.disabled {
+	pointer-events: none;
+	color: var( --cg60 );
+}
 </style>
 ` );
-	bash( [ 'equalizerval' ], function( values ) {
-		var allflat = '66'.repeat( 10 );
-		var flat = values.join( '' ) === allflat;
-		info( {
-			  icon       : 'volume'
-			, title      : 'Equalizer'
-			, content    : `
-<div id="flatline"></div>
+	bash( [ 'equalizerval' ], function( data ) {
+		var valuesjoin = data.values.join( '' );
+		var options = '';
+		G.eqpreset = 0;
+		data.presets.forEach( function( v ) {
+			var name = v[ 0 ];
+			options += '<option value="'+ name +'">'+ name +'</option>';
+			if ( v[ 1 ].join( '' ) === valuesjoin ) G.eqpreset = name;
+		} );
+		data.values.push( G.eqpreset );
+		if ( !G.eqpreset ) options = '<option value="0">(unsaved)</option>'+ options;
+		var content = `
+<div id="eq">
+<div id="eqflatline"></div>
 <div class="infomessage">Hz
 <div class="hz"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1,000</a><a>2,000</a><a>4,000</a><a>8,000</a><a>16,000</a></div></div>
-<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>`
-			, boxwidth   : 'max'
-			, values     : values
+<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
+<br>
+<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
+<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
+<i id="eqsave" class="ibtn fa fa-save"></i>
+<select id="eqpreset">${ options }</select><input id="eqname" type="text" class="hide">
+<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
+</div>`;
+		info( {
+			  icon       : 'sliders fa90'
+			, title      : 'Equalizer'
+			, content    : content
+			, boxwidth   : 150
+			, values     : data.values
 			, beforeshow : function() {
-				$( '#infoButtons' ).toggleClass( 'hide', flat );
+				$( '#infoBox' ).css( 'width', '600px' );
+				$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
@@ -172,22 +206,66 @@ $( '#setting-equalizer' ).click( function() {
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
-				} ).on( 'mouseup touchend keyup', function() {
-					var allval = '';
-					$( '#infoRange input' ).each( function() {
-						allval +=$( this ).val();
-					} );
-					$( '#infoButtons' ).toggleClass( 'hide', allval === allflat );
+				} );
+				$( '#eqpreset' ).change( function() {
+					G.eqpreset = $( this ).val();
+					bash( [ 'equalizerval', 'preset', G.eqpreset ], function( data ) {
+						data.values.push( G.eqpreset );
+						O.values = data.values;
+						setValues();
+						$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqpreset === 'Flat' );
+					}, 'json' );
+				} );
+				$( '#eqdelete' ).click( function() {
+					var eqname = $( '#eqpreset' ).val();
+					bash( [ 'equalizerval', 'delete', eqname ], function( data ) {
+						data.values.push( eqname );
+						O.values = data.values;
+						setValues();
+						$( '#eqrename, #eqsave' ).addClass( 'disabled' );
+					}, 'json' );
+				} );
+				$( '#eqrename' ).click( function() {
+					G.eqrename = 1;
+					$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
+					$( '#eqnew' ).click();
+					$( '#eqname' ).val( G.eqpreset );
+				} );
+				$( '#eqsave' ).click( function() {
+					var eqname = $( '#eqname' ).val();
+					if ( G.eqnew || G.eqrename ) {
+						var cmd = G.eqnew ? [ 'equalizerval', 'new', eqname ] : [ 'equalizerval', 'rename', G.eqpreset, eqname ];
+						bash( cmd, function( names ) {
+							names.forEach( function( name ) {
+								options += '<option value="'+ name +'">'+ name +'</option>';
+							} );
+							$( '#eqpreset' )
+								.html( options )
+								.val( G.eqpreset )
+								.selectric( 'refresh' );
+						}, 'json' );
+					} else {
+						bash( [ 'equalizerval', 'save', eqname ] );
+					}
+					$( '#eqcancel' ).click();
+				} );
+				$( '#eqnew' ).click( function() {
+					G.eqnew = 1;
+					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
+					$( '#eqname, #eqcancel' ).removeClass( 'hide' );
+					$( '#eqrename' ).addClass( 'disabled' );
+					$( '#eqsave' ).removeClass( 'disabled' );
+				} );
+				$( '#eqcancel' ).click( function() {
+					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
+					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
+					$( '#eqrename' ).removeClass( 'disabled' );
+					$( '#eqname' ).val( '' );
+					G.eqnew = G.eqrename = 0;
 				} );
 			}
 			, buttonnoreset : 1
 			, okno          : 1
-			, buttonlabel   : '<i class="fa fa-set0"></i>Flat'
-			, button        : function() {
-				bash( [ 'equalizerval', 'reset' ] );
-				$( '#infoRange input' ).val( 66 );
-				$( '#infoButtons' ).addClass( 'hide' );
-			}
 		} );
 	}, 'json' );
 } );
