@@ -216,7 +216,6 @@ $( '#setting-equalizer' ).click( function() {
 								.selectric( 'refresh' );
 						}, 'json' );
 					} else {
-						console.log( [ 'equalizerval', 'save', $( '#eqpreset' ).val() ] );
 						bash( [ 'equalizerval', 'save', $( '#eqpreset' ).val() ] );
 					}
 					$( '#eqcancel' ).click();
