@@ -122,9 +122,9 @@ function loader() {
 function loaderHide() {
 	$( '#loader' ).addClass( 'hide' );
 }
-function notify( title, message, icon ) {
+function notify( title, message, icon, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( title, message, icon +' blink', -1 );
+	banner( title, message, icon +' blink', delay || -1 );
 }
 function refreshData() {
 	if ( page === 'networks' ) {
