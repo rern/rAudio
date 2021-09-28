@@ -153,6 +153,7 @@
 	position: relative;
 	z-index: 10;
 }
+#infoRange.disabled,
 .ibtn.disabled {
 	pointer-events: none;
 	color: var( --cg60 );
