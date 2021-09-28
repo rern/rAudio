@@ -201,6 +201,11 @@ $( '#setting-equalizer' ).click( function() {
 					if ( cmd ) {
 						G.eqpreset = eqname;
 						bash( cmd, function( names ) {
+							if ( names[ 0 ] !== 'Flat' ) {
+								notify( 'Equalizer Preset', 'Values already exist as '+ names[ 0 ], 'sliders fa90', 3000 );
+								return
+							}
+							
 							var options = '';
 							names.forEach( function( name ) {
 								options += '<option value="'+ name +'">'+ name +'</option>';

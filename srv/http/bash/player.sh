@@ -188,6 +188,7 @@ equalizerval )
 	type=${args[1]} # rename, preset, new, delete, save
 	name=${args[2]}
 	newname=${args[3]}
+	touch $dirsystem/equalizer.conf # if not exist
 	if [[ $type == rename ]]; then
 		sed -i "s/\"$name\"/\"$newname\"/" $dirsystem/equalizer.conf
 #############
@@ -212,6 +213,12 @@ equalizerval )
 		val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
 	done
 	val=${val:1}
+	if [[ $type == new ]]; then
+		exist=$( grep "$val" $dirsystem/equalizer.conf | cut -d'"' -f2 )
+		[[ -n $exist ]] && echo [ $exist ]
+		exit
+	fi
+	
 	[[ $type =~ new|save ]] && echo ",[ \"$name\", [ $val ] ]" >> $dirsystem/equalizer.conf
 	if [[ $type == new ]]; then
 #############
