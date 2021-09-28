@@ -102,6 +102,7 @@ input::-moz-focus-inner {
 	font-family: rern;
 	font-style: normal;
 }
+.fa90 { transform: rotate( -90deg ) }
 .fa-lg { font-size: 22px !important }
 .fa-accesspoint::before { content: "\f554" }
 .fa-airplay::before { content: "\f580" }
