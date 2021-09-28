@@ -215,7 +215,7 @@ equalizerval )
 	val=${val:1}
 	if [[ $type == new ]]; then
 		exist=$( grep "$val" $dirsystem/equalizer.conf | cut -d'"' -f2 )
-		[[ -n $exist ]] && echo [ $exist ]
+		[[ -n $exist ]] && echo '[ "'$exist'" ]'
 		exit
 	fi
 	
