@@ -144,6 +144,7 @@ $( '#setting-equalizer' ).click( function() {
 				var eqrename = 0;
 				$( '#infoBox' ).css( 'width', '600px' );
 				$( '#eqrename' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
+				$( '#eqnew' ).toggleClass( 'disabled', G.eqpreset !== 0 || G.eqpreset === 'Flat' );
 				$( '#eqsave' ).addClass( 'disabled' );
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				$( '#infoRange input' ).on( 'click input keyup', function() {
@@ -153,7 +154,10 @@ $( '#setting-equalizer' ).click( function() {
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
-					$( '#eqsave' ).toggleClass( 'disabled', infoVal().slice( 0, -2 ).join( '' ) === valuesjoin );
+					var vnewjoin = infoVal().slice( 0, -2 ).join( '' );
+					var nochange = vnewjoin === valuesjoin;
+					$( '#eqsave' ).toggleClass( 'disabled', nochange );
+					$( '#eqnew' ).toggleClass( 'disabled', nochange || vnewjoin === '66'.repeat( 10 ) )
 				} );
 				$( '#eqpreset' ).change( function() {
 					G.eqpreset = $( this ).val();
