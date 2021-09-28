@@ -110,6 +110,7 @@ $( '#mixertype' ).change( function() {
 $( '#setting-equalizer' ).click( function() {
 	bash( [ 'equalizerval' ], function( data ) {
 		var valuesjoin = data.values.join( '' );
+		var presets = [];
 		var options = '';
 		G.eqpreset = 0;
 		data.presets.forEach( function( v ) {
@@ -139,8 +140,11 @@ $( '#setting-equalizer' ).click( function() {
 			, boxwidth   : 150
 			, values     : data.values
 			, beforeshow : function() {
+				var eqnew = 0;
+				var eqrename = 0;
 				$( '#infoBox' ).css( 'width', '600px' );
-				$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
+				$( '#eqrename' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
+				$( '#eqsave' ).addClass( 'disabled' );
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
@@ -149,62 +153,83 @@ $( '#setting-equalizer' ).click( function() {
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
+					$( '#eqsave' ).toggleClass( 'disabled', infoVal().slice( 0, -2 ).join( '' ) === valuesjoin );
 				} );
 				$( '#eqpreset' ).change( function() {
 					G.eqpreset = $( this ).val();
 					bash( [ 'equalizerval', 'preset', G.eqpreset ], function( data ) {
 						data.values.push( G.eqpreset );
 						O.values = data.values;
+						$( '#eqpreset option[value=0]' ).remove();
+						$( '#eqpreset' ).selectric( 'refresh' );
 						setValues();
-						$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqpreset === 'Flat' );
+						$( '#eqrename' ).toggleClass( 'disabled', G.eqpreset === 'Flat' );
+						$( '#eqsave' ).addClass( 'disabled' )
 					}, 'json' );
+				} );
+				$( '#eqname' ).on( 'keyup paste cut', function() {
+					var val = $( this ).val();
+					$( '#eqsave' ).toggleClass( 'disabled', eqnew ? val === '' : val === G.eqpreset );
 				} );
 				$( '#eqdelete' ).click( function() {
 					var eqname = $( '#eqpreset' ).val();
 					bash( [ 'equalizerval', 'delete', eqname ], function( data ) {
-						data.values.push( eqname );
+						data.values.push( 'Flat' );
 						O.values = data.values;
 						setValues();
+						$( '#eqpreset option[value="'+ eqname +'"]' ).remove();
+						$( '#eqpreset' ).selectric( 'refresh' );
 						$( '#eqrename, #eqsave' ).addClass( 'disabled' );
 					}, 'json' );
+					$( '#eqcancel' ).click();
 				} );
 				$( '#eqrename' ).click( function() {
-					G.eqrename = 1;
+					eqrename = 1;
 					$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
-					$( '#eqnew' ).click();
 					$( '#eqname' ).val( G.eqpreset );
+					$( '#eqnew' ).click();
+					eqnew = 0;
 				} );
 				$( '#eqsave' ).click( function() {
+					var cmd = '';
 					var eqname = $( '#eqname' ).val();
-					if ( G.eqnew || G.eqrename ) {
-						var cmd = G.eqnew ? [ 'equalizerval', 'new', eqname ] : [ 'equalizerval', 'rename', G.eqpreset, eqname ];
+					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
+						var cmd = [ 'equalizerval', 'rename', G.eqpreset, eqname ];;
+					} else if ( $( '#eqrename' ).hasClass( 'disabled' ) ) {
+						var cmd = [ 'equalizerval', 'new', eqname ];
+					}
+					if ( cmd ) {
+						G.eqpreset = eqname;
 						bash( cmd, function( names ) {
+							var options = '';
 							names.forEach( function( name ) {
 								options += '<option value="'+ name +'">'+ name +'</option>';
 							} );
 							$( '#eqpreset' )
 								.html( options )
-								.val( G.eqpreset )
+								.val( eqname )
 								.selectric( 'refresh' );
 						}, 'json' );
 					} else {
-						bash( [ 'equalizerval', 'save', eqname ] );
+						console.log( [ 'equalizerval', 'save', $( '#eqpreset' ).val() ] );
+						bash( [ 'equalizerval', 'save', $( '#eqpreset' ).val() ] );
 					}
 					$( '#eqcancel' ).click();
 				} );
 				$( '#eqnew' ).click( function() {
-					G.eqnew = 1;
+					eqnew = 1;
 					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
 					$( '#eqname, #eqcancel' ).removeClass( 'hide' );
-					$( '#eqrename' ).addClass( 'disabled' );
-					$( '#eqsave' ).removeClass( 'disabled' );
+					$( '#infoRange, #eqrename' ).addClass( 'disabled' );
+					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqcancel' ).click( function() {
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
-					$( '#eqrename' ).removeClass( 'disabled' );
+					$( '#infoRange' ).removeClass( 'disabled' );
+					$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
 					$( '#eqname' ).val( '' );
-					G.eqnew = G.eqrename = 0;
+					eqnew = eqrename = 0;
 				} );
 			}
 			, buttonnoreset : 1

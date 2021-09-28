@@ -189,7 +189,7 @@ equalizerval )
 	name=${args[2]}
 	newname=${args[3]}
 	if [[ $type == rename ]]; then
-		sed -i 's/"'$name'"/"'$newname'"/' $dirsystem/equalizer.conf
+		sed -i "s/\"$name\"/\"$newname\"/" $dirsystem/equalizer.conf
 #############
 		echo '[ "Flat"'$( sed 's/, \[.*//; s/\[ //' $dirsystem/equalizer.conf | sort )']'
 		exit
@@ -199,7 +199,7 @@ equalizerval )
 		if [[ $type == preset ]]; then
 			[[ $name == Flat ]] && v=flat || v=( $( grep "\"$name\"" $dirsystem/equalizer.conf | sed 's/.*\[ \| ].*//g; s/,/ /g' ) )
 		else # new|delete|save
-			sed -i '/"'$name'"/ d' $dirsystem/equalizer.conf
+			sed -i "/\"$name\"/ d" $dirsystem/equalizer.conf
 			[[ $type == delete ]] && v=flat
 		fi
 	fi
