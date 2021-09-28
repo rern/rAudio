@@ -103,6 +103,60 @@
 #infoRange {
 	text-align: center;
 }
+/* equalizer */
+.infomessage .hz {
+	white-space: nowrap;
+}
+.infomessage .hz a {
+	display: inline-block;
+	width: 55px;
+	height: 30px;
+	color: var( --cw );
+	text-align: center;
+	font-family: Inconsolata;
+}
+#eqflatline {
+	position: absolute;
+	margin: 155px 10px;
+	width: 560px;
+	height: 1px;
+	background: var( --cgl );
+}
+#infoRange.vertical {
+	margin-left: -50px;
+	width: 400px;
+	height: 270px;
+	transform : rotateZ( -90deg );
+}
+#infoRange.vertical input {
+	display: block;
+	position: relative;
+	height: 55px;
+	right: -70px;
+}
+#infoRange.vertical input::-webkit-slider-thumb {
+	margin-top: -18px;
+	transform : rotateZ( 90deg );
+}
+#infoRange.vertical input::-moz-range-thumb {
+	transform : rotateZ( 90deg );
+}
+#eq .ibtn {
+	width: 35px;
+	font-size: 22px;
+	line-height: 36px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+#eq .ibtn,
+#eqname {
+	position: relative;
+	z-index: 10;
+}
+.ibtn.disabled {
+	pointer-events: none;
+	color: var( --cg60 );
+}
 
 .menu {
 	position: absolute;
