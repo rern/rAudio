@@ -201,6 +201,7 @@ equalizerval )
 			[[ $name == Flat ]] && v=flat || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
 		elif [[ $type == rename ]]; then
 			sed -i "s/$name^/$newname^/" $dirsystem/equalizer.conf
+			name=$newname
 		else # new|delete|save
 			sed -i "/$name^/ d" $dirsystem/equalizer.conf
 			[[ $type == delete ]] && v=flat
