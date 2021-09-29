@@ -161,7 +161,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'equalizer':
 			bash( '/srv/http/bash/player.sh equalizerval', function( data ) {
-				var radio = {}
+				var radio = { '<i class="fa fa-set0"></i>Flat': 'Flat' }
+				data.presets.shift();
 				data.presets.forEach( function( v ) {
 					radio[ v ] = v;
 				} );
@@ -175,6 +176,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 						$( '#infoContent input' ).click( function() {
 							var preset = infoVal();
 							$.post( 'cmd.php', { cmd: 'sh', sh: [ 'player.sh', 'equalizerval', 'preset', preset ] } );
+							$( '#infoX' ).click();
 							banner( 'Equalizer Presets', 'Set to '+ preset, 'equalizer' );
 						} );
 					}
