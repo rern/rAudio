@@ -198,15 +198,15 @@ equalizerval )
 	touch $dirsystem/equalizer.conf # if not exist
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
-			[[ $name == Flat ]] && flat=1 || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
+			[[ $name == Flat ]] && v=flat || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
 		else # remove then save again with current values
 			sed -i "/$name^/ d" $dirsystem/equalizer.conf
-			[[ $type == delete ]] && flat=1
+			[[ $type == delete ]] && v=flat
 		fi
 		[[ $type == rename ]] && name=$newname
 	fi
 	flat='66 66 66 66 66 66 66 66 66 66'
-	[[ -n $flat ]] && v=( $flat )
+	[[ $v == flat ]] && v=( $flat )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	for (( i=0; i < 10; i++ )); do
 		(( i < 5 )) && unit=Hz || unit=kHz
