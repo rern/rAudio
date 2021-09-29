@@ -153,6 +153,8 @@
 	position: relative;
 	z-index: 10;
 }
+#eqsave { margin-right: 10px }
+#eqnew { margin-left: 10px }
 #infoRange.disabled,
 .ibtn.disabled {
 	pointer-events: none;
