@@ -225,7 +225,7 @@ equalizerval )
 	done
 	[[ $type =~ new|rename ]] && echo "[ $presets ]" && exit
 	
-	[[ -z $current ]] && current=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
+	[[ $val == $flat ]] && current=Flat || current=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
 	if [[ -z $current ]]; then
 		current='(unnamed)'
 		presets="\"(unnamed)\",$presets"
