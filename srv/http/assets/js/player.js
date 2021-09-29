@@ -134,7 +134,7 @@ $( '#setting-equalizer' ).click( function() {
 			  icon       : 'sliders fa90'
 			, title      : 'Equalizer'
 			, content    : content
-			, boxwidth   : 150
+			, boxwidth   : 145
 			, values     : data.values
 			, beforeshow : function() {
 				var eqnew = 0;
