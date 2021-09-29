@@ -50,7 +50,6 @@
 <div class="col-r">
 	<input id="equalizer" <?=$chknoset?>>
 	<div class="switchlabel" for="equalizer"></div>
-	<i id="setting-equalizer" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		10 band graphic equalizer.
 		<br>Preset:

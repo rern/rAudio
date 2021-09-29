@@ -107,146 +107,6 @@ $( '#mixertype' ).change( function() {
 		setMixerType( mixertype );
 	}
 } );
-$( '#setting-equalizer' ).click( function() {
-	bash( [ 'equalizerval' ], function( data ) {
-		G.eqcurrent = data.current;
-		var vcurrent = data.values.join( '' );
-		data.values.push( data.current );
-		var options = '';
-		data.presets.forEach( function( name ) {
-			options += '<option value="'+ name +'">'+ name +'</option>';
-		} );
-		var content = `
-<div id="eq">
-<div id="eqflatline"></div>
-<div class="infomessage">Hz
-<div class="hz"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1,000</a><a>2,000</a><a>4,000</a><a>8,000</a><a>16,000</a></div></div>
-<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
-<br>
-<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
-<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
-<i id="eqsave" class="ibtn fa fa-save"></i>
-<select id="eqpreset">${ options }</select><input id="eqname" type="text" class="hide">
-<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
-<i id="eqflat" class="ibtn fa fa-set0"></i>
-</div>`;
-		info( {
-			  icon       : 'equalizer'
-			, title      : 'Equalizer'
-			, content    : content
-			, boxwidth   : 145
-			, values     : data.values
-			, beforeshow : function() {
-				var eqnew = 0;
-				var eqrename = 0;
-				$( '#infoBox' ).css( 'width', '600px' );
-				$( '#eqrename' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
-				$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
-				$( '#eqsave' ).addClass( 'disabled' );
-				$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' )
-				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					var $this = $( this );
-					var i = $this.index( 'input' );
-					var val = $( this ).val();
-					var unit = i < 5 ? ' Hz' : ' kHz';
-					var band = '0'+ i +'. '+ freq[ i ] + unit;
-					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
-					var vnew = infoVal().slice( 0, -2 ).join( '' );
-					var vflat = '66'.repeat( 10 );
-					var changed = vnew !== vcurrent;
-					var flat = vnew === vflat;
-					$( '#eqsave' ).toggleClass( 'disabled', !changed );
-					$( '#eqnew' ).toggleClass( 'disabled', !changed || flat )
-					$( '#eqflat' ).toggleClass( 'disabled', flat )
-				} );
-				$( '#eqpreset' ).change( function() {
-					equalizerPreset( $( this ).val() );
-				} );
-				$( '#eqname' ).on( 'keyup paste cut', function() {
-					var val = $( this ).val().trim();
-					var exists = data.presets.indexOf( val ) !== -1;
-					if ( eqnew ) {
-						var changed = val !== '' && !exists;
-					} else { // rename
-						var changed = val !== G.eqcurrent && !exists;
-					}
-					$( '#eqsave' ).toggleClass( 'disabled', !changed );
-				} );
-				$( '#eqdelete' ).click( function() {
-					var eqname = $( '#eqpreset' ).val();
-					bash( [ 'equalizerval', 'delete', eqname ], function( data ) {
-						data.values.push( 'Flat' );
-						O.values = data.values;
-						setValues();
-						$( '#eqpreset option[value="'+ eqname +'"]' ).remove();
-						$( '#eqpreset' ).selectric( 'refresh' );
-						$( '#eqrename, #eqsave' ).addClass( 'disabled' );
-					}, 'json' );
-					$( '#eqcancel' ).click();
-				} );
-				$( '#eqrename' ).click( function() {
-					eqrename = 1;
-					$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
-					$( '#eqname' ).val( G.eqcurrent );
-					$( '#eqnew' ).click();
-					eqnew = 0;
-				} );
-				$( '#eqsave' ).click( function() {
-					var cmd = '';
-					var eqname = $( '#eqname' ).val();
-					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-						var cmd = [ 'equalizerval', 'rename', G.eqcurrent, eqname ];;
-					} else if ( $( '#eqrename' ).hasClass( 'disabled' ) ) {
-						var cmd = [ 'equalizerval', 'new', eqname ];
-					}
-					if ( cmd ) {
-						G.eqcurrent = eqname;
-						bash( cmd, function( names ) {
-							if ( names[ 0 ] === -1 ) {
-								notify( 'Equalizer Preset', 'Values already exist as '+ names[ 1 ], 'sliders fa90', 3000 );
-								return
-							}
-							
-							var options = '';
-							names.forEach( function( name ) {
-								options += '<option value="'+ name +'">'+ name +'</option>';
-							} );
-							$( '#eqpreset' )
-								.html( options )
-								.val( eqname )
-								.selectric( 'refresh' );
-						}, 'json' );
-					} else {
-						bash( [ 'equalizerval', 'save', $( '#eqpreset' ).val() ] );
-					}
-					$( '#eqcancel' ).click();
-					$( '#eqsave' ).addClass( 'disabled' );
-				} );
-				$( '#eqnew' ).click( function() {
-					eqnew = 1;
-					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
-					$( '#eqname, #eqcancel' ).removeClass( 'hide' );
-					$( '#infoRange, #eqrename, #eqflat' ).addClass( 'disabled' );
-					$( '#eqsave' ).addClass( 'disabled' );
-				} );
-				$( '#eqcancel' ).click( function() {
-					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
-					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
-					$( '#infoRange, #eqflat' ).removeClass( 'disabled' );
-					$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
-					$( '#eqname' ).val( '' );
-					eqnew = eqrename = 0;
-				} );
-				$( '#eqflat' ).click( function() {
-					equalizerPreset( 'Flat' );
-				} );
-			}
-			, buttonnoreset : 1
-			, okno          : 1
-		} );
-	}, 'json' );
-} );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
@@ -467,19 +327,6 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function equalizerPreset( name ) {
-	G.eqcurrent = name;
-	bash( [ 'equalizerval', 'preset', name ], function( data ) {
-		data.values.push( name );
-		O.values = data.values;
-		$( '#eqpreset option[value=0]' ).remove();
-		$( '#eqpreset' ).selectric( 'refresh' );
-		setValues();
-		$( '#eqrename' ).toggleClass( 'disabled', name === 'Flat' );
-		$( '#eqsave, #eqnew' ).addClass( 'disabled' )
-	}, 'json' );
-	$( '#eqflat' ).toggleClass( 'disabled', name === 'Flat' );
-}
 function renderPage( list ) {
 	if ( typeof list === 'string' ) { // on load, try catching any errors
 		var list2G = list2JSON( list );
@@ -533,7 +380,6 @@ function renderPage( list ) {
 	$( '#replaygain' ).prop( 'checked', G.replaygain );
 	$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
 	$( '#equalizer' ).prop( 'checked', G.equalizer );
-	$( '#setting-equalizer' ).toggleClass( 'hide', !G.equalizer );
 	$( '#buffer' ).prop( 'checked', G.buffer );
 	$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
 	$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );

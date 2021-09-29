@@ -160,28 +160,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
 		case 'equalizer':
-			bash( '/srv/http/bash/player.sh equalizerval', function( data ) {
-				var radio = { '<i class="fa fa-set0"></i>Flat': 'Flat' }
-				data.presets.shift();
-				data.presets.forEach( function( v ) {
-					radio[ v ] = v;
-				} );
-				info( {
-					  icon       : 'equalizer'
-					, title      : 'Equalizer Presets'
-					, radio      : radio
-					, values     : data.current
-					, okno       : 1
-					, beforeshow : function() {
-						$( '#infoContent input' ).click( function() {
-							var preset = infoVal();
-							$.post( 'cmd.php', { cmd: 'sh', sh: [ 'player.sh', 'equalizerval', 'preset', preset ] } );
-							$( '#infoX' ).click();
-							banner( 'Equalizer Presets', 'Set to '+ preset, 'equalizer' );
-						} );
-					}
-				} );
-			}, 'json' );
+			equalizer();
 			break;
 		case 'snapclient':
 			var startstop = G.status.player === 'snapclient' ? 'stop' : 'start';
