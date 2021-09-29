@@ -440,6 +440,7 @@ displayget )
 	data+='
 , "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "equalizer"  : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'

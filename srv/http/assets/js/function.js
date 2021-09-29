@@ -1638,11 +1638,13 @@ function statusRefresh() {
 		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 		var submenu = {
 			  relays     : 'features'
-			, snapclient : 'player'
+			, equalizer  : 'player'
+			, snapclient : 'networks'
 			, lock       : 'system'
 			, screenoff  : 'power'
 		};
-		[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
+		var subkeys = Object.keys( submenu );
+		subkeys.forEach( sub => {
 			if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
 				$( '#'+ submenu[ sub ] )
 					.addClass( 'sub' )

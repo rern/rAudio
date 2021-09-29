@@ -92,7 +92,7 @@ input::-moz-focus-inner {
 }
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern-20210929.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -131,6 +131,7 @@ input::-moz-focus-inner {
 .fa-date::before { content: "\f55C" }
 .fa-dice::before { content: "\f569" }
 .fa-edit-circle::before { content: "\f565" }
+.fa-equalizer::before { content: "\f50C" }
 .fa-eye::before { content: "\f567" }
 .fa-features::before { content: "\f50B" }
 .fa-file-music::before { content: "\f549" }
@@ -151,7 +152,7 @@ input::-moz-focus-inner {
 .fa-i2saudio::before { content: "\f571" }
 .fa-info-circle::before { content: "\f561" }
 .fa-input::before { content: "\f529" }
-.fa-jigsaw::before { content: "\f50C" }
+.fa-jigsaw::before { content: "\f50D" }
 .fa-lan::before { content: "\f552" }
 .fa-lastfm::before { content: "\f585" }
 .fa-lcd::before { content: "\f577" }
