@@ -256,9 +256,9 @@ function info( json ) {
 		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
 	}
-	$( '#infoButtons' )
-		.html( htmlbutton )
-		.removeClass( 'hide' );
+	if ( htmlbutton ) $( '#infoButtons' )
+						.html( htmlbutton )
+						.removeClass( 'hide' );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		$( '#infoButtons' )
