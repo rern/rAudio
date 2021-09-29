@@ -142,7 +142,7 @@
 	transform : rotateZ( 90deg );
 }
 #eq .ibtn {
-	width: 35px;
+	width: 50px;
 	font-size: 24px;
 	vertical-align: bottom;
 	cursor: pointer;
@@ -152,9 +152,9 @@
 	position: relative;
 	z-index: 10;
 }
-#eqsave { margin-right: 10px }
+#eqsave { margin-right: 5px }
 #eqnew,
-#eqcancel { margin-left: 10px }
+#eqcancel { margin-left: 5px }
 #infoRange.disabled,
 .ibtn.disabled {
 	pointer-events: none;
