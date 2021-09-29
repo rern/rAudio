@@ -327,7 +327,7 @@ function displayPlayback() {
 		if ( !time && !volume ) {
 			$cover.css( { width: '100%', 'max-width': '100%' } );
 		} else if ( !time || !volume ) {
-			$cover.css( { width: '100%', 'max-width': '55vw' } );
+			$cover.css( { width: 'fit-content', 'max-width': '55vw' } );
 		}
 	} else {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
