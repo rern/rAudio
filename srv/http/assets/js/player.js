@@ -128,6 +128,7 @@ $( '#setting-equalizer' ).click( function() {
 <i id="eqsave" class="ibtn fa fa-save"></i>
 <select id="eqpreset">${ options }</select><input id="eqname" type="text" class="hide">
 <i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
+<i id="eqflat" class="ibtn fa fa-set0"></i>
 </div>`;
 		info( {
 			  icon       : 'sliders fa90'
@@ -142,6 +143,7 @@ $( '#setting-equalizer' ).click( function() {
 				$( '#eqrename' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
 				$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
 				$( '#eqsave' ).addClass( 'disabled' );
+				$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' )
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
@@ -151,21 +153,15 @@ $( '#setting-equalizer' ).click( function() {
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
 					var vnew = infoVal().slice( 0, -2 ).join( '' );
+					var vflat = '66'.repeat( 10 );
 					var changed = vnew !== vcurrent;
+					var flat = vnew === vflat;
 					$( '#eqsave' ).toggleClass( 'disabled', !changed );
-					$( '#eqnew' ).toggleClass( 'disabled', !changed || vnew === '66'.repeat( 10 ) )
+					$( '#eqnew' ).toggleClass( 'disabled', !changed || flat )
+					$( '#eqflat' ).toggleClass( 'disabled', flat )
 				} );
 				$( '#eqpreset' ).change( function() {
-					G.eqcurrent = $( this ).val();
-					bash( [ 'equalizerval', 'preset', G.eqcurrent ], function( data ) {
-						data.values.push( G.eqcurrent );
-						O.values = data.values;
-						$( '#eqpreset option[value=0]' ).remove();
-						$( '#eqpreset' ).selectric( 'refresh' );
-						setValues();
-						$( '#eqrename' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' );
-						$( '#eqsave, #eqnew' ).addClass( 'disabled' )
-					}, 'json' );
+					equalizerPreset( $( this ).val() );
 				} );
 				$( '#eqname' ).on( 'keyup paste cut', function() {
 					var val = $( this ).val();
@@ -240,6 +236,9 @@ $( '#setting-equalizer' ).click( function() {
 					$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
 					$( '#eqname' ).val( '' );
 					eqnew = eqrename = 0;
+				} );
+				$( '#eqflat' ).click( function() {
+					equalizerPreset( 'Flat' );
 				} );
 			}
 			, buttonnoreset : 1
@@ -467,6 +466,19 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function equalizerPreset( name ) {
+	G.eqcurrent = name;
+	bash( [ 'equalizerval', 'preset', name ], function( data ) {
+		data.values.push( name );
+		O.values = data.values;
+		$( '#eqpreset option[value=0]' ).remove();
+		$( '#eqpreset' ).selectric( 'refresh' );
+		setValues();
+		$( '#eqrename' ).toggleClass( 'disabled', name === 'Flat' );
+		$( '#eqsave, #eqnew' ).addClass( 'disabled' )
+	}, 'json' );
+	$( '#eqflat' ).toggleClass( 'disabled', name === 'Flat' );
+}
 function renderPage( list ) {
 	if ( typeof list === 'string' ) { // on load, try catching any errors
 		var list2G = list2JSON( list );
