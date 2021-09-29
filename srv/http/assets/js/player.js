@@ -227,13 +227,13 @@ $( '#setting-equalizer' ).click( function() {
 					eqnew = 1;
 					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
 					$( '#eqname, #eqcancel' ).removeClass( 'hide' );
-					$( '#infoRange, #eqrename' ).addClass( 'disabled' );
+					$( '#infoRange, #eqrename, #eqflat' ).addClass( 'disabled' );
 					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqcancel' ).click( function() {
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
-					$( '#infoRange' ).removeClass( 'disabled' );
+					$( '#infoRange, #eqflat' ).removeClass( 'disabled' );
 					$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
 					$( '#eqname' ).val( '' );
 					eqnew = eqrename = 0;
