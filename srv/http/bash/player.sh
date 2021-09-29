@@ -192,20 +192,18 @@ equalizer )
 	restartMPD
 	;;
 equalizerval )
-	type=${args[1]} # rename, preset, new, delete, save
+	type=${args[1]} # none = get values
 	name=${args[2]}
 	newname=${args[3]}
 	touch $dirsystem/equalizer.conf # if not exist
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
 			[[ $name == Flat ]] && v=flat || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
-		elif [[ $type == rename ]]; then
-			sed -i "s/$name^/$newname^/" $dirsystem/equalizer.conf
-			name=$newname
-		else # new|delete|save
+		else
 			sed -i "/$name^/ d" $dirsystem/equalizer.conf
 			[[ $type == delete ]] && v=flat
 		fi
+		[[ $type == rename ]] && name=$newname
 	fi
 	[[ $v == flat ]] && v=( 66 66 66 66 66 66 66 66 66 66 )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
