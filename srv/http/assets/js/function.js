@@ -511,7 +511,7 @@ function equalizerPreset( name ) {
 	bash( [ 'equalizer', 'preset', name ], function( data ) {
 		data.values.push( name );
 		O.values = data.values;
-		$( '#eqpreset option[value=0]' ).remove();
+		$( '#eqpreset option[value="(unnamed)"]' ).remove();
 		$( '#eqpreset' ).selectric( 'refresh' );
 		setValues();
 		$( '#eqrename' ).toggleClass( 'disabled', name === 'Flat' );
