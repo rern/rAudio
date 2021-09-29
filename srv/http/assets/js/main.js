@@ -159,6 +159,28 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'relays':
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
+		case 'equalizer':
+			bash( '/srv/http/bash/player.sh equalizerval', function( data ) {
+				var radio = {}
+				data.presets.forEach( function( v ) {
+					radio[ v ] = v;
+				} );
+				info( {
+					  icon       : 'equalizer'
+					, title      : 'Equalizer Presets'
+					, radio      : radio
+					, values     : data.current
+					, okno       : 1
+					, beforeshow : function() {
+						$( '#infoContent input' ).click( function() {
+							var preset = infoVal();
+							$.post( 'cmd.php', { cmd: 'sh', sh: [ 'player.sh', 'equalizerval', 'preset', preset ] } );
+							banner( 'Equalizer Presets', 'Set to '+ preset, 'equalizer' );
+						} );
+					}
+				} );
+			}, 'json' );
+			break;
 		case 'snapclient':
 			var startstop = G.status.player === 'snapclient' ? 'stop' : 'start';
 			bash( '/srv/http/bash/snapcast.sh '+ startstop, function( data ) {

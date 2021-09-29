@@ -131,7 +131,7 @@ $( '#setting-equalizer' ).click( function() {
 <i id="eqflat" class="ibtn fa fa-set0"></i>
 </div>`;
 		info( {
-			  icon       : 'sliders fa90'
+			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, content    : content
 			, boxwidth   : 145
