@@ -109,17 +109,13 @@ $( '#mixertype' ).change( function() {
 } );
 $( '#setting-equalizer' ).click( function() {
 	bash( [ 'equalizerval' ], function( data ) {
-		var valuesjoin = data.values.join( '' );
-		var presets = [];
+		G.eqcurrent = data.current;
+		var vcurrent = data.values.join( '' );
+		data.values.push( data.current );
 		var options = '';
-		G.eqpreset = 0;
-		data.presets.forEach( function( v ) {
-			var name = v[ 0 ];
+		data.presets.forEach( function( name ) {
 			options += '<option value="'+ name +'">'+ name +'</option>';
-			if ( v[ 1 ].join( '' ) === valuesjoin ) G.eqpreset = name;
 		} );
-		data.values.push( G.eqpreset );
-		if ( !G.eqpreset ) options = '<option value="0">(unsaved)</option>'+ options;
 		var content = `
 <div id="eq">
 <div id="eqflatline"></div>
@@ -143,8 +139,8 @@ $( '#setting-equalizer' ).click( function() {
 				var eqnew = 0;
 				var eqrename = 0;
 				$( '#infoBox' ).css( 'width', '600px' );
-				$( '#eqrename' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
-				$( '#eqnew' ).toggleClass( 'disabled', G.eqpreset !== 0 || G.eqpreset === 'Flat' );
+				$( '#eqrename' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
+				$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
 				$( '#eqsave' ).addClass( 'disabled' );
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				$( '#infoRange input' ).on( 'click input keyup', function() {
@@ -154,26 +150,32 @@ $( '#setting-equalizer' ).click( function() {
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
-					var vnewjoin = infoVal().slice( 0, -2 ).join( '' );
-					var nochange = vnewjoin === valuesjoin;
-					$( '#eqsave' ).toggleClass( 'disabled', nochange );
-					$( '#eqnew' ).toggleClass( 'disabled', nochange || vnewjoin === '66'.repeat( 10 ) )
+					var vnew = infoVal().slice( 0, -2 ).join( '' );
+					var changed = vnew !== vcurrent;
+					$( '#eqsave' ).toggleClass( 'disabled', !changed );
+					$( '#eqnew' ).toggleClass( 'disabled', !changed || vnew === '66'.repeat( 10 ) )
 				} );
 				$( '#eqpreset' ).change( function() {
-					G.eqpreset = $( this ).val();
-					bash( [ 'equalizerval', 'preset', G.eqpreset ], function( data ) {
-						data.values.push( G.eqpreset );
+					G.eqcurrent = $( this ).val();
+					bash( [ 'equalizerval', 'preset', G.eqcurrent ], function( data ) {
+						data.values.push( G.eqcurrent );
 						O.values = data.values;
 						$( '#eqpreset option[value=0]' ).remove();
 						$( '#eqpreset' ).selectric( 'refresh' );
 						setValues();
-						$( '#eqrename' ).toggleClass( 'disabled', G.eqpreset === 'Flat' );
-						$( '#eqsave' ).addClass( 'disabled' )
+						$( '#eqrename' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' );
+						$( '#eqsave, #eqnew' ).addClass( 'disabled' )
 					}, 'json' );
 				} );
 				$( '#eqname' ).on( 'keyup paste cut', function() {
 					var val = $( this ).val();
-					$( '#eqsave' ).toggleClass( 'disabled', eqnew ? val === '' : val === G.eqpreset );
+					var exists = data.presets.indexOf( val ) !== -1;
+					if ( eqnew ) {
+						var changed = val !== '' && !exists;
+					} else { // rename
+						var changed = val !== G.eqcurrent && !exists;
+					}
+					$( '#eqsave' ).toggleClass( 'disabled', !changed );
 				} );
 				$( '#eqdelete' ).click( function() {
 					var eqname = $( '#eqpreset' ).val();
@@ -190,7 +192,7 @@ $( '#setting-equalizer' ).click( function() {
 				$( '#eqrename' ).click( function() {
 					eqrename = 1;
 					$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
-					$( '#eqname' ).val( G.eqpreset );
+					$( '#eqname' ).val( G.eqcurrent );
 					$( '#eqnew' ).click();
 					eqnew = 0;
 				} );
@@ -198,12 +200,12 @@ $( '#setting-equalizer' ).click( function() {
 					var cmd = '';
 					var eqname = $( '#eqname' ).val();
 					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-						var cmd = [ 'equalizerval', 'rename', G.eqpreset, eqname ];;
+						var cmd = [ 'equalizerval', 'rename', G.eqcurrent, eqname ];;
 					} else if ( $( '#eqrename' ).hasClass( 'disabled' ) ) {
 						var cmd = [ 'equalizerval', 'new', eqname ];
 					}
 					if ( cmd ) {
-						G.eqpreset = eqname;
+						G.eqcurrent = eqname;
 						bash( cmd, function( names ) {
 							if ( names[ 0 ] !== 'Flat' ) {
 								notify( 'Equalizer Preset', 'Values already exist as '+ names[ 0 ], 'sliders fa90', 3000 );
@@ -235,7 +237,7 @@ $( '#setting-equalizer' ).click( function() {
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#infoRange' ).removeClass( 'disabled' );
-					$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqpreset === 0 || G.eqpreset === 'Flat' );
+					$( '#eqrename, #eqsave' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
 					$( '#eqname' ).val( '' );
 					eqnew = eqrename = 0;
 				} );

@@ -6,6 +6,13 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
+equalizerPresets() {
+	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
+	presets='"Flat"'
+	for line in "${lines[@]}"; do
+		presets+=',"'$line'"'
+	done
+}
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
@@ -189,47 +196,42 @@ equalizerval )
 	name=${args[2]}
 	newname=${args[3]}
 	touch $dirsystem/equalizer.conf # if not exist
-	if [[ $type == rename ]]; then
-		sed -i "s/\"$name\"/\"$newname\"/" $dirsystem/equalizer.conf
-#############
-		echo '[ "Flat"'$( sed 's/, \[.*//; s/\[ //' $dirsystem/equalizer.conf | sort )']'
-		exit
-	fi
-	
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
-			[[ $name == Flat ]] && v=flat || v=( $( grep "\"$name\"" $dirsystem/equalizer.conf | sed 's/.*\[ \| ].*//g; s/,/ /g' ) )
+			[[ $name == Flat ]] && v=flat || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
+		elif [[ $type == rename ]]; then
+			sed -i "s/$name^/$newname^/" $dirsystem/equalizer.conf
 		else # new|delete|save
-			sed -i "/\"$name\"/ d" $dirsystem/equalizer.conf
+			sed -i "/$name^/ d" $dirsystem/equalizer.conf
 			[[ $type == delete ]] && v=flat
 		fi
 	fi
-	[[ $v == flat ]] && v=( $( seq 10 | sed "c 66" ) )
+	[[ $v == flat ]] && v=( 66 66 66 66 66 66 66 66 66 66 )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	for (( i=0; i < 10; i++ )); do
 		(( i < 5 )) && unit=Hz || unit=kHz
 		band=( "0$i. ${freq[i]} $unit" )
 		[[ -n $v ]] && su mpd -c "amixer -qD equal sset \"$band\" ${v[i]}"
-		val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
+		val+=" $( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )"
 	done
 	val=${val:1}
-	if [[ $type == new ]]; then
-		exist=$( grep "$val" $dirsystem/equalizer.conf | cut -d'"' -f2 )
-		[[ -n $exist ]] && echo '[ "'$exist'" ]'
-		exit
-	fi
+	current=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
+	[[ $type == new && -n $current ]] && echo '[ "'$exist'" ]' && exit
 	
-	[[ $type =~ new|save ]] && echo ",[ \"$name\", [ $val ] ]" >> $dirsystem/equalizer.conf
-	if [[ $type == new ]]; then
-#############
-		echo '[ "Flat"'$( sed 's/, \[.*//; s/\[ //' $dirsystem/equalizer.conf | sort )']'
-		exit
-	fi
+	[[ $type =~ new|save ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	equalizerPresets
+	[[ $type == new ]] && echo [ $presets ] && exit
 	
-	presets='[ "Flat", [ 66, 66, 66, 66, 66, 66, 66, 66, 66, 66 ] ]'
-	[[ -e $dirsystem/equalizer.conf ]] && presets+=$( cat $dirsystem/equalizer.conf | sort )
+	if [[ -z $current ]]; then
+		current='(unnamed)'
+		presets="\"(unnamed)\",$presets"
+	fi
 #############
-	echo '{"values"  : [ '$val' ], "presets": [ '$presets' ] }'
+	echo '{
+  "current" : "'$current'"
+, "values"  : [ '${val// /,}' ]
+, "presets" : [ '$presets' ]
+}'
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
