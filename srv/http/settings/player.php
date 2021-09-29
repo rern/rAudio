@@ -55,9 +55,11 @@
 		10 band graphic equalizer.
 		<br>Preset:
 		<p>
-			&bull; New: Adjust > <i class="fa fa-plus-circle"></i> > NAME > <i class="fa fa-save"></i> to save as NAME preset.
-		<br> &bull; Existing: Adjust > <i class="fa fa-save"></i> to save to preset.
-		<br> &bull; <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> > NAME > <i class="fa fa-save"></i> to save as NAME preset.
+			&bull; New: Adjust >&emsp; <i class="fa fa-plus-circle"></i>> NAME > <i class="fa fa-save"></i> to save as NAME preset.
+		<br>&bull; Existing: Adjust > <i class="fa fa-save"></i> to save to cuurent preset.
+		<br>&bull; <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>> NAME > <i class="fa fa-save"></i> to save as NAME preset.
+		<br>&bull; Values adjusted without save will be listed as <code>(unnamed)</code>
+		<br>&bull; <code>Flat</code>: All bands at 0db
 		</p>
 	</span>
 </div>
