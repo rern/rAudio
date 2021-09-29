@@ -34,10 +34,10 @@ include 'logosvg.php';
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script>
-var nlibrary = 22;
-var nplaylist = 39;
-var nsettings = 46;
-var ntotal = 57;
+var nlibrary = 23;
+var nplaylist = 40;
+var nsettings = 47;
+var ntotal = 58;
 var n = 1;
 $( '#count' ).text( n +' / '+ ntotal );
 
