@@ -749,11 +749,11 @@ $( '.list' ).on( 'click', 'bl', function() {
 	if ( localhost ) return
 	
 	var pkg = $( this ).text();
-	if ( [ 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager', 'mpdscribble', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
-		pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
+	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager'
+			, 'mpdscribble', 'nginx-mainline-pushstream', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
+		if ( pkg === 'bluez-alsa' ) pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
 		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
 	} else {
-		pkg = pkg.replace( '-pushstream', '' );
 		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
 	}
 } );
@@ -926,6 +926,7 @@ function renderPage( list ) {
 	$( '#vuled' ).prop( 'checked', G.vuled );
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
+	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	selectricRender();
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {

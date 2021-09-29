@@ -199,7 +199,7 @@ equalizerval )
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
 			[[ $name == Flat ]] && v=flat || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
-		else
+		else # remove then save again with current values
 			sed -i "/$name^/ d" $dirsystem/equalizer.conf
 			[[ $type == delete ]] && v=flat
 		fi

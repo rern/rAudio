@@ -4,15 +4,19 @@
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="hide"></pre>
 	<div <?=$classhelp?>>
-			&bull; As sender / source - Send signal to another device.
-		<br>&ensp; - Pairing - Turn on discovery mode on receiver device.
-		<br>&ensp; - Search the device on RPi and connect.
-		<br>&ensp; - Power on/off paired devices connect/disconnect automatically.
-		<br>&bull; As receiver / sink - Receive signal from another device.
-		<br>&emsp; - Pairing - If discoverable turned off on RPi, turn it on.
-		<br>&emsp; - Make pairing/connecting from sender device. No authorization required.
-		<br>&emsp; - Connection from sender start renderer mode automatically.
-		<br>&emsp; - Turn off discoverable to hide from unpaired senders.
+		As sender / source (send signal to another device)
+		<p>
+			&bull; Pairing - Turn on discovery mode on receiver device.
+		<br>&bull; Search the device on RPi and connect.
+		<br>&bull; Power on/off paired devices connect/disconnect automatically.
+		</p>
+		As receiver / sink (receive signal from another device)
+		<p>
+			&bull; Pairing - If discoverable turned off on RPi, turn it on.
+		<br>&bull; Make pairing/connecting from sender device. No authorization required.
+		<br>&bull; Connection from sender start renderer mode automatically.
+		<br>&bull; Turn off discoverable to hide from unpaired senders.
+		</p>
 	</div>
 	</div>
 	<div id="divwl">

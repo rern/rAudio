@@ -53,6 +53,12 @@
 	<i id="setting-equalizer" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		10 band graphic equalizer.
+		<br>Preset:
+		<p>
+			&bull; New: Adjust > <i class="fa fa-plus-circle"></i> > NAME > <i class="fa fa-save"></i> to save as NAME preset.
+		<br> &bull; Existing: Adjust > <i class="fa fa-save"></i> to save to preset.
+		<br> &bull; <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> > NAME > <i class="fa fa-save"></i> to save as NAME preset.
+		</p>
 	</span>
 </div>
 </div>
@@ -82,11 +88,14 @@
 		<input id="dop" type="checkbox">
 		<div class="switchlabel" for="dop"></div>
 		<span <?=$classhelp?>>
-				For DSD-capable devices without drivers dedicated for native DSD.
-			<br>&bull; Enable if there's static/no sound from the DAC.
+			For DSD-capable devices without drivers dedicated for native DSD.
+			<p>
+				&bull; Enable if there's static/no sound from the DAC.
 			<br>&bull; DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
 			<br>&bull; PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
-			<br>&bull; On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect</span>
+			<br>&bull; On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
+			</p>
+		</span>
 	</div>
 </div>
 </div>
@@ -220,9 +229,11 @@
 	<span <?=$classhelp?>>
 		List of albums excluded from Album page.
 		<br>To restore:
-		<br> &emsp; &bull; Edit <code>/srv/http/data/mpd/albumignore</code>
-		<br> &emsp; &bull; Remove albums to restore
-		<br> &emsp; &bull; Update Library
+		<p>
+				&bull; Edit <code>/srv/http/data/mpd/albumignore</code>
+			<br>&bull; Remove albums to restore
+			<br>&bull; Update Library
+		</p>
 	</span>
 </div>
 <pre id="codealbumignore" class="hide"></pre>
@@ -232,9 +243,11 @@
 	<span <?=$classhelp?>>
 		List of <code>.mpdignore</code> files contain directories excluded from database.
 		<br>To restore:
-		<br> &emsp; &bull; Edit <code>.../.mpdignore</code>
-		<br> &emsp; &bull; Remove directories to restore
-		<br> &emsp; &bull; Update Library
+		<p>
+			&bull; Edit <code>.../.mpdignore</code>
+		<br>&bull; Remove directories to restore
+		<br>&bull; Update Library
+		</p>
 	</span>
 </div>
 <pre id="codempdignore" class="hide"></pre>
