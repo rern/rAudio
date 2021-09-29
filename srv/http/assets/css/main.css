@@ -416,8 +416,6 @@ i.map.disabled, .map.disabled i {
 	justify-content: center;
 	margin: 30px auto 0;
 	padding: 0;
-	min-width: 100%;
-	max-width: 1200px;
 	min-height: 230px;
 }
 #playback-row.top0 {
@@ -2135,12 +2133,16 @@ li.active .li2 bl {
 		#play-group,
 		#vol-group { display: none }
 	}
+	@media ( min-width: 750px ) {
+		#time-knob,
+		#coverart-block,
+		#volume-knob {
+			margin: 0;
+		}
+	}
 }
 /************************************************************************************/
 @media ( orientation: portrait ) {
-	@media ( max-width: 1200px ) {
-		#playback-row { max-width: 100vw }
-	}
 	@media ( max-width: 900px ) {
 		#coverart-block { max-width: 55vw }
 	}
