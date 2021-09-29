@@ -164,7 +164,7 @@ $( '#setting-equalizer' ).click( function() {
 					equalizerPreset( $( this ).val() );
 				} );
 				$( '#eqname' ).on( 'keyup paste cut', function() {
-					var val = $( this ).val();
+					var val = $( this ).val().trim();
 					var exists = data.presets.indexOf( val ) !== -1;
 					if ( eqnew ) {
 						var changed = val !== '' && !exists;
@@ -203,8 +203,8 @@ $( '#setting-equalizer' ).click( function() {
 					if ( cmd ) {
 						G.eqcurrent = eqname;
 						bash( cmd, function( names ) {
-							if ( names[ 0 ] !== 'Flat' ) {
-								notify( 'Equalizer Preset', 'Values already exist as '+ names[ 0 ], 'sliders fa90', 3000 );
+							if ( names[ 0 ] === -1 ) {
+								notify( 'Equalizer Preset', 'Values already exist as '+ names[ 1 ], 'sliders fa90', 3000 );
 								return
 							}
 							
@@ -221,6 +221,7 @@ $( '#setting-equalizer' ).click( function() {
 						bash( [ 'equalizerval', 'save', $( '#eqpreset' ).val() ] );
 					}
 					$( '#eqcancel' ).click();
+					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqnew' ).click( function() {
 					eqnew = 1;

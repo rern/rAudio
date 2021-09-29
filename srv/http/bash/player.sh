@@ -6,13 +6,6 @@ dirsystem=/srv/http/data/system
 # convert each line to each args
 readarray -t args <<< "$1"
 
-equalizerPresets() {
-	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
-	presets='"Flat"'
-	for line in "${lines[@]}"; do
-		presets+=',"'$line'"'
-	done
-}
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
@@ -200,13 +193,17 @@ equalizerval )
 		if [[ $type == preset ]]; then
 			[[ $name == Flat ]] && v=flat || v=( $( grep "$name^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
 		else # remove then save again with current values
-			sed -i "/$name^/ d" $dirsystem/equalizer.conf
+			append=1
+			sed -i "/^$name\^/ d" $dirsystem/equalizer.conf
 			[[ $type == delete ]] && v=flat
 		fi
 		[[ $type == rename ]] && name=$newname
 	fi
 	flat='66 66 66 66 66 66 66 66 66 66'
-	[[ $v == flat ]] && v=( $flat )
+	if [[ $v == flat ]]; then
+		v=( $flat )
+		current=Flat
+	fi
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	for (( i=0; i < 10; i++ )); do
 		(( i < 5 )) && unit=Hz || unit=kHz
@@ -215,16 +212,21 @@ equalizerval )
 		val+=" $( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )"
 	done
 	val=${val:1}
-	current=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
-	[[ $type == new && -n $current ]] && echo '[ "'$exist'" ]' && exit
+	if [[ $type == new ]]; then
+		exist=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
+		[[ -n $exist ]] && echo '[ -1, "'$exist'" ]' && exit
+	fi
 	
-	[[ $type =~ new|save ]] && echo $name^$val >> $dirsystem/equalizer.conf
-	equalizerPresets
-	[[ $type == new ]] && echo [ $presets ] && exit
+	[[ -n $append ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
+	presets='"Flat"'
+	for line in "${lines[@]}"; do
+		presets+=',"'$line'"'
+	done
+	[[ $type =~ new|rename ]] && echo "[ $presets ]" && exit
 	
-	if [[ $val == $flat ]]; then
-		current=Flat
-	elif [[ -z $current ]]; then
+	[[ -z $current ]] && current=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
+	if [[ -z $current ]]; then
 		current='(unnamed)'
 		presets="\"(unnamed)\",$presets"
 	fi
