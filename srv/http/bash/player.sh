@@ -200,10 +200,7 @@ equalizerval )
 		[[ $type == rename ]] && name=$newname
 	fi
 	flat='66 66 66 66 66 66 66 66 66 66'
-	if [[ $v == flat ]]; then
-		v=( $flat )
-		current=Flat
-	fi
+	[[ $v == flat ]] && v=( $flat )
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
 	for (( i=0; i < 10; i++ )); do
 		(( i < 5 )) && unit=Hz || unit=kHz
