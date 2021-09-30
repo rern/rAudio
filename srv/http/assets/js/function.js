@@ -394,12 +394,12 @@ function equalizer() {
 			, boxwidth   : 145
 			, values     : data.values
 			, beforeshow : function() {
+				$( '#infoBox' ).css( 'width', '550px' );
 				var eqnew = 0;
 				var eqrename = 0;
 				var vflat = '66'.repeat( 10 );
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
-				$( '#infoBox' ).css( 'width', '550px' );
 				equalizerButtonSet();
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
@@ -415,7 +415,9 @@ function equalizer() {
 					$( '#eqflat' ).toggleClass( 'disabled', flat )
 				} );
 				$( '#eqpreset' ).change( function() {
-					equalizerPreset( $( this ).val() );
+					var name = $( this ).val();
+					G.eqcurrent = name;
+					bash( [ 'equalizer', 'preset', name ] );
 				} );
 				$( '#eqname' ).on( 'keyup paste cut', function( e ) {
 					var val = $( this ).val().trim();
@@ -456,6 +458,10 @@ function equalizer() {
 				} );
 				$( '#eqnew' ).click( function() {
 					eqnew = 1;
+					G.eqbuttons = {};
+					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
+						G.eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
+					} );
 					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
 					$( '#eqname, #eqcancel' ).removeClass( 'hide' );
 					$( '#eqrename' ).addClass( 'disabled' );
@@ -465,12 +471,15 @@ function equalizer() {
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#eqname' ).val( '' );
-					equalizerButtonSet();
-					$( '#eqsave' ).toggleClass( 'disabled', notpreset || infoVal().slice( 0, -2 ).join( '' ) === vcurrent )
+					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
+						$( '#'+ btn ).toggleClass( 'disabled', G.eqbuttons[ btn ] );
+					} );
 					eqnew = eqrename = 0;
 				} );
 				$( '#eqflat' ).click( function() {
 					equalizerPreset( 'Flat' );
+					G.eqcurrent = 'Flat';
+					bash( [ 'equalizer', 'preset', 'Flat' ] );
 				} );
 			}
 			, buttonnoreset : 1
@@ -484,12 +493,6 @@ function equalizerButtonSet() {
 	$( '#eqsave' ).addClass( 'disabled' );
 	$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
 	$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' );
-}
-function equalizerPreset( name ) {
-	G.eqcurrent = name;
-	bash( [ 'equalizer', 'preset', name ] );
-	$( '#eqsave, #eqnew' ).addClass( 'disabled' )
-	$( '#eqrename, #eqflat' ).toggleClass( 'disabled', name === 'Flat' );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
