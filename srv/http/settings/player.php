@@ -46,19 +46,23 @@
 		</p>
 	</span>
 </div>
+<?php
+$iplus = '<i class="fa fa-plus-circle"></i>';
+$isave = '<i class="fa fa-save"></i>';
+?>
 <div class="col-l">Equalizer</div>
 <div class="col-r">
 	<input id="equalizer" <?=$chknoset?>>
 	<div class="switchlabel" for="equalizer"></div>
 	<span <?=$classhelp?>>
 		10 band graphic equalizer.
-		<br>Preset:
+		<br>Presets:
 		<p>
-			&bull; New: Adjust >&emsp; <i class="fa fa-plus-circle"></i>> NAME > <i class="fa fa-save"></i> to save as NAME preset.
-		<br>&bull; Existing: Adjust > <i class="fa fa-save"></i> to save to cuurent preset.
-		<br>&bull; <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>> NAME > <i class="fa fa-save"></i> to save as NAME preset.
-		<br>&bull; Values adjusted without save will be listed as <code>(unnamed)</code>
-		<br>&bull; <code>Flat</code>: All bands at 0db
+			&bull; <code>Flat</code>: All bands at <code>66% / 0dB</code>
+		<br>&bull; New: adjust > <?=$iplus?>> <code>NAME</code> > <?=$isave?>
+		<br>&bull; Existing: adjust > <?=$isave?>
+		<br>&bull; Adjust without <?=$isave?>will be listed as <code>(unnamed)</code>
+		<br>&bull; Save <code>(unnamed)</code>: <?=$iplus?>> <code>NAME</code> > <?=$isave?>
 		</p>
 	</span>
 </div>
