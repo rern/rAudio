@@ -618,7 +618,7 @@ hr {
 	}
 	input:not( [type=range] ):focus,
 	.infobtn.active {
-		box-shadow: 0 0 3px 1px var( --cg75 ) !important;
+		box-shadow: 0 0 2px 0 var( --cgl ) !important;
 
 	}
 }

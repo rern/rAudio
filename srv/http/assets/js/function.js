@@ -395,8 +395,6 @@ function equalizer() {
 			, values     : data.values
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', '550px' );
-				var eqnew = 0;
-				var eqrename = 0;
 				var vflat = '66'.repeat( 10 );
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
@@ -421,11 +419,12 @@ function equalizer() {
 				} );
 				$( '#eqname' ).on( 'keyup paste cut', function( e ) {
 					var val = $( this ).val().trim();
+					var blank = val === '';
 					var exists = data.presets.indexOf( val ) !== -1;
-					if ( eqnew ) {
-						var changed = val !== '' && !exists;
-					} else { // rename
-						var changed = val !== G.eqcurrent && !exists;
+					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
+						var changed = !blank && !exists && val !== G.eqcurrent;
+					} else { // new
+						var changed = !blank && !exists;
 					}
 					if ( e.key === 'Enter' && changed ) $( '#eqsave' ).click();
 					$( '#eqsave' ).toggleClass( 'disabled', !changed );
@@ -436,28 +435,27 @@ function equalizer() {
 					$( '#eqcancel' ).click();
 				} );
 				$( '#eqrename' ).click( function() {
-					eqrename = 1;
 					$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
 					$( '#eqname' ).val( G.eqcurrent );
 					$( '#eqnew' ).click();
-					eqnew = 0;
 				} );
 				$( '#eqsave' ).click( function() {
 					var cmd = '';
 					var eqname = $( '#eqname' ).val();
-					if ( eqrename ) {
+					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
 						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
 						G.eqcurrent = eqname;
-					} else if ( eqnew ) {
+						$( '#eqcancel' ).click();
+					} else if ( $( '#eqnew' ).hasClass( 'hide' )  ) {
 						G.eqcurrent = eqname;
 						bash( [ 'equalizer', 'new', eqname ] );
+						$( '#eqcancel' ).click();
 					} else {
 						bash( [ 'equalizer', 'save', G.eqcurrent ] );
 					}
-					$( '#eqcancel' ).click();
+					$( this ).addClass( 'disabled' );
 				} );
 				$( '#eqnew' ).click( function() {
-					eqnew = 1;
 					G.eqbuttons = {};
 					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
 						G.eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
@@ -474,7 +472,6 @@ function equalizer() {
 					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
 						$( '#'+ btn ).toggleClass( 'disabled', G.eqbuttons[ btn ] );
 					} );
-					eqnew = eqrename = 0;
 				} );
 				$( '#eqflat' ).click( function() {
 					G.eqcurrent = 'Flat';
