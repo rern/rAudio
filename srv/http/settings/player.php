@@ -55,7 +55,8 @@ $isave = '<i class="fa fa-save"></i>';
 	<input id="equalizer" <?=$chknoset?>>
 	<div class="switchlabel" for="equalizer"></div>
 	<span <?=$classhelp?>>
-		10 band graphic equalizer.
+		10 band graphic equalizer with user presets.
+		<br>Console: &ensp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
 		<br>Presets:
 		<p>
 			&bull; <code>Flat</code>: All bands at <code>66% / 0dB</code>

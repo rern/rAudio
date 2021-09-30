@@ -185,6 +185,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
+		<br>Settings: &ensp;<i class="fa fa-sliders"></i>Features |&ensp;<i class="fa fa-relays"></i>
 		<p>
 			&bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
 		<br>&bull; Can be enabled and run as a test without a connected relay module.
