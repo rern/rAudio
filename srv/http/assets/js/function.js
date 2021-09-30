@@ -461,7 +461,8 @@ function equalizer() {
 					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqcancel' ).click( function() {
-					$( '#eq .selectric-wrapper' ).removeClass( 'hide' );
+					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
+					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#eqname' ).val( '' );
 					equalizerButtonSet();
 					$( '#eqsave' ).toggleClass( 'disabled', notpreset || infoVal().slice( 0, -2 ).join( '' ) === vcurrent )
