@@ -286,7 +286,11 @@ function psDisplay( data ) {
 function psEqualizer( data ) {
 	if ( !$( '#eq' ).length ) return
 	
-	$( '#eqpreset option[value="(unnamed)"]' ).remove();
+	var options = '';
+	data.presets.forEach( function( name ) {
+		options += '<option value="'+ name +'">'+ name +'</option>';
+	} );
+	$( '#eqpreset' ).html( options );
 	data.values.push( G.eqcurrent );
 	O.values = data.values;
 	setValues();

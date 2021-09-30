@@ -431,15 +431,8 @@ function equalizer() {
 					$( '#eqsave' ).toggleClass( 'disabled', !changed );
 				} );
 				$( '#eqdelete' ).click( function() {
-					var eqname = $( '#eqpreset' ).val();
-					bash( [ 'equalizer', 'delete', eqname ], function( data ) {
-						data.values.push( 'Flat' );
-						O.values = data.values;
-						setValues();
-						$( '#eqpreset option[value="'+ eqname +'"]' ).remove();
-						$( '#eqpreset' ).selectric( 'refresh' );
-						$( '#eqrename, #eqsave' ).addClass( 'disabled' );
-					}, 'json' );
+					G.eqcurrent = 'Flat';
+					bash( [ 'equalizer', 'delete', $( '#eqpreset' ).val() ] );
 					$( '#eqcancel' ).click();
 				} );
 				$( '#eqrename' ).click( function() {
@@ -454,7 +447,9 @@ function equalizer() {
 					var eqname = $( '#eqname' ).val();
 					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
 						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
+						G.eqcurrent = eqname;
 					} else if ( $( '#eqrename' ).hasClass( 'disabled' ) ) {
+						G.eqcurrent = eqname;
 						bash( [ 'equalizer', 'new', eqname ] );
 					} else {
 						bash( [ 'equalizer', 'save', G.eqcurrent ] );
