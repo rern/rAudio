@@ -396,13 +396,11 @@ function equalizer() {
 			, beforeshow : function() {
 				var eqnew = 0;
 				var eqrename = 0;
+				var vflat = '66'.repeat( 10 );
+				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				$( '#infoBox' ).css( 'width', '550px' );
-				$( '#eqrename' ).toggleClass( 'disabled', notpreset );
-				$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
-				$( '#eqsave' ).addClass( 'disabled' );
-				$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' )
-				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+				equalizerButtonSet();
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
 					var i = $this.index( 'input' );
@@ -410,7 +408,6 @@ function equalizer() {
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( [ 'equalizerupdn', band, $this.val() ] );
 					var vnew = infoVal().slice( 0, -2 ).join( '' );
-					var vflat = '66'.repeat( 10 );
 					var changed = vnew !== vcurrent;
 					var flat = vnew === vflat;
 					$( '#eqsave' ).toggleClass( 'disabled', !changed || G.eqcurrent === 'Flat' );
@@ -445,33 +442,29 @@ function equalizer() {
 				$( '#eqsave' ).click( function() {
 					var cmd = '';
 					var eqname = $( '#eqname' ).val();
-					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
+					if ( eqrename ) {
 						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
 						G.eqcurrent = eqname;
-					} else if ( $( '#eqrename' ).hasClass( 'disabled' ) ) {
+					} else if ( eqnew ) {
 						G.eqcurrent = eqname;
 						bash( [ 'equalizer', 'new', eqname ] );
 					} else {
 						bash( [ 'equalizer', 'save', G.eqcurrent ] );
 					}
 					$( '#eqcancel' ).click();
-					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqnew' ).click( function() {
 					eqnew = 1;
 					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
 					$( '#eqname, #eqcancel' ).removeClass( 'hide' );
-					$( '#infoRange, #eqrename, #eqflat' ).addClass( 'disabled' );
+					$( '#eqrename' ).addClass( 'disabled' );
 					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqcancel' ).click( function() {
-					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
-					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
-					$( '#infoRange, #eqflat' ).removeClass( 'disabled' );
-					var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
-					$( '#eqrename' ).toggleClass( 'disabled', notpreset );
-					$( '#eqsave' ).toggleClass( 'disabled', notpreset || infoVal().slice( 0, -2 ).join( '' ) === vcurrent )
+					$( '#eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname' ).val( '' );
+					equalizerButtonSet();
+					$( '#eqsave' ).toggleClass( 'disabled', notpreset || infoVal().slice( 0, -2 ).join( '' ) === vcurrent )
 					eqnew = eqrename = 0;
 				} );
 				$( '#eqflat' ).click( function() {
@@ -482,6 +475,14 @@ function equalizer() {
 			, okno          : 1
 		} );
 	}, 'json' );
+}
+function equalizerButtonSet() {
+	console.log('equalizerButtonSet')
+	var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
+	$( '#eqrename' ).toggleClass( 'disabled', notpreset );
+	$( '#eqsave' ).addClass( 'disabled' );
+	$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
+	$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' );
 }
 function equalizerPreset( name ) {
 	G.eqcurrent = name;

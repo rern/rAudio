@@ -295,6 +295,7 @@ function psEqualizer( data ) {
 	O.values = data.values;
 	setValues();
 	selectricRender();
+	equalizerButtonSet();
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
