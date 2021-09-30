@@ -477,7 +477,6 @@ function equalizer() {
 					eqnew = eqrename = 0;
 				} );
 				$( '#eqflat' ).click( function() {
-					equalizerPreset( 'Flat' );
 					G.eqcurrent = 'Flat';
 					bash( [ 'equalizer', 'preset', 'Flat' ] );
 				} );
