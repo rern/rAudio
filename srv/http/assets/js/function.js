@@ -477,7 +477,6 @@ function equalizer() {
 	}, 'json' );
 }
 function equalizerButtonSet() {
-	console.log('equalizerButtonSet')
 	var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 	$( '#eqrename' ).toggleClass( 'disabled', notpreset );
 	$( '#eqsave' ).addClass( 'disabled' );
