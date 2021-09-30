@@ -702,9 +702,9 @@ function selectricRender() {
 	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
 	$select
 		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
-		.filter( function() {
-			return $( this ).find( 'option' ).length === 1
-		} ).parent().parent().addClass( 'disabled' );
+		.each( function() {
+			if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
+		} );
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
 	var timeout = setTimeout( function() {
@@ -802,7 +802,6 @@ function setValues() {
 			$this.val( val );
 		}
 	} );
-	if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
 }
 function switchRL( rl, fn ) {
 	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
