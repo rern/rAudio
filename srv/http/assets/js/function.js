@@ -1369,7 +1369,7 @@ function renderSavedPlaylist( name ) {
 	}, 'json' );
 }
 function second2HMS( second ) {
-	if ( !second || second < 1 ) return 0
+	if ( !second || second < 1 ) return ''
 	
 	var second = Math.round( second );
 	if ( second < 60 ) return second;
