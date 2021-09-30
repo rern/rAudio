@@ -73,8 +73,8 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
+var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
+	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -96,6 +96,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'bookmark':  psBookmark( data );  break;
 		case 'coverart':  psCoverart( data );  break;
 		case 'display':   psDisplay( data );   break;
+		case 'equalizer': psEqualizer( data ); break;
 		case 'relays':    psRelays( data );    break;
 		case 'mpdplayer': psMpdPlayer( data ); break;
 		case 'mpdradio':  psMpdRadio( data );  break;
@@ -281,6 +282,15 @@ function psDisplay( data ) {
 			$( '#mode-album' ).click();
 		}
 	}
+}
+function psEqualizer( data ) {
+	if ( !$( '#eq' ).length ) return
+	
+	data.values.push( G.eqcurrent );
+	O.values = data.values;
+	setValues();
+	$( '#eqpreset option[value="(unnamed)"]' ).remove();
+	$( '#eqpreset' ).selectric( 'refresh' );
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

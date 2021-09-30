@@ -181,7 +181,12 @@ dop )
 	restartMPD
 	;;
 equalizer )
-	[[ ${args[1]} == true ]] && touch $dirsystem/equalizer || rm $dirsystem/equalizer
+	if [[ ${args[1]} == true ]]; then
+		echo Flat > $dirsystem/equalizer
+	else
+		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
+		rm -f $dirsystem/equalizer
+	fi
 	restartMPD
 	;;
 ffmpeg )

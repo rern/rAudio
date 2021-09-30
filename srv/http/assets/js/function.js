@@ -405,10 +405,9 @@ function equalizer() {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
 					var i = $this.index( 'input' );
-					var val = $( this ).val();
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
-					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
+					bash( [ 'equalizerupdn', band, $this.val() ] );
 					var vnew = infoVal().slice( 0, -2 ).join( '' );
 					var vflat = '66'.repeat( 10 );
 					var changed = vnew !== vcurrent;
@@ -453,29 +452,11 @@ function equalizer() {
 					var cmd = '';
 					var eqname = $( '#eqname' ).val();
 					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-						var cmd = [ 'equalizer', 'rename', G.eqcurrent, eqname ];;
+						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
 					} else if ( $( '#eqrename' ).hasClass( 'disabled' ) ) {
-						var cmd = [ 'equalizer', 'new', eqname ];
-					}
-					if ( cmd ) {
-						G.eqcurrent = eqname;
-						bash( cmd, function( names ) {
-							if ( names[ 0 ] === -1 ) {
-								notify( 'Equalizer Preset', 'Values already exist as '+ names[ 1 ], 'sliders fa90', 3000 );
-								return
-							}
-							
-							var options = '';
-							names.forEach( function( name ) {
-								options += '<option value="'+ name +'">'+ name +'</option>';
-							} );
-							$( '#eqpreset' )
-								.html( options )
-								.val( eqname )
-								.selectric( 'refresh' );
-						}, 'json' );
+						bash( [ 'equalizer', 'new', eqname ] );
 					} else {
-						bash( [ 'equalizer', 'save', $( '#eqpreset' ).val() ] );
+						bash( [ 'equalizer', 'save', G.eqcurrent ] );
 					}
 					$( '#eqcancel' ).click();
 					$( '#eqsave' ).addClass( 'disabled' );
@@ -508,16 +489,9 @@ function equalizer() {
 }
 function equalizerPreset( name ) {
 	G.eqcurrent = name;
-	bash( [ 'equalizer', 'preset', name ], function( data ) {
-		data.values.push( name );
-		O.values = data.values;
-		$( '#eqpreset option[value="(unnamed)"]' ).remove();
-		$( '#eqpreset' ).selectric( 'refresh' );
-		setValues();
-		$( '#eqrename' ).toggleClass( 'disabled', name === 'Flat' );
-		$( '#eqsave, #eqnew' ).addClass( 'disabled' )
-	}, 'json' );
-	$( '#eqflat' ).toggleClass( 'disabled', name === 'Flat' );
+	bash( [ 'equalizer', 'preset', name ] );
+	$( '#eqsave, #eqnew' ).addClass( 'disabled' )
+	$( '#eqrename, #eqflat' ).toggleClass( 'disabled', name === 'Flat' );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;

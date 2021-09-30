@@ -473,51 +473,54 @@ equalizer )
 	type=${args[1]} # none = get values
 	name=${args[2]}
 	newname=${args[3]}
-	touch $dirsystem/equalizer.conf # if not exist
+	flat='66 66 66 66 66 66 66 66 66 66'
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
-			[[ $name == Flat ]] && v=flat || v=( $( grep "^$name\^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
+			[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
 		else # remove then save again with current values
 			append=1
 			sed -i "/^$name\^/ d" $dirsystem/equalizer.conf
-			[[ $type == delete ]] && v=flat
+			if [[ $type == delete ]]; then
+				v=( $flat )
+				name=Flat
+			elif [[ $type == rename ]]; then
+				name=$newname
+			fi
 		fi
-		[[ $type == rename ]] && name=$newname
+		freq=( 31 63 125 250 500 1 2 4 8 16 )
+		for (( i=0; i < 10; i++ )); do
+			(( i < 5 )) && unit=Hz || unit=kHz
+			band=( "0$i. ${freq[i]} $unit" )
+			[[ -n $v ]] && su mpd -c "amixer -MqD equal sset \"$band\" ${v[i]}%"
+		done
+		echo $name > $dirsystem/equalizer
+	else
+		name=$( cat $dirsystem/equalizer )
 	fi
-	flat='66 66 66 66 66 66 66 66 66 66'
-	[[ $v == flat ]] && v=( $flat )
-	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	for (( i=0; i < 10; i++ )); do
-		(( i < 5 )) && unit=Hz || unit=kHz
-		band=( "0$i. ${freq[i]} $unit" )
-		[[ -n $v ]] && su mpd -c "amixer -qD equal sset \"$band\" ${v[i]}"
-		val+=" $( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )"
-	done
-	val=${val:1}
-	if [[ $type == new ]]; then
-		exist=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
-		[[ -n $exist ]] && echo '[ -1, "'$exist'" ]' && exit
-	fi
-	
+	val=$( su mpd -c 'amixer -D equal contents' | awk -F ',' '/: val/ {print $NF}' | xargs )
 	[[ -n $append ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	[[ $type == save ]] && exit
+	
+	[[ $name == '(unnamed)' ]] && presets='"(unnamed)",'
+	presets+='"Flat"'
 	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
-	presets='"Flat"'
 	for line in "${lines[@]}"; do
 		presets+=',"'$line'"'
 	done
-	[[ $type =~ new|rename ]] && echo "[ $presets ]" && exit
-	
-	[[ $val == $flat ]] && current=Flat || current=$( grep "$val" $dirsystem/equalizer.conf | cut -d^ -f1 )
-	if [[ -z $current ]]; then
-		current='(unnamed)'
-		presets="\"(unnamed)\",$presets"
-	fi
 #############
-	echo '{
-  "current" : "'$current'"
+	data='{
+  "current" : "'$name'"
 , "values"  : [ '${val// /,}' ]
 , "presets" : [ '$presets' ]
 }'
+	[[ -n $type ]] && pushstream equalizer "$data"
+	echo $data
+	;;
+equalizerupdn )
+	band=${args[1]}
+	val=${args[2]}
+	su mpd -c "amixer -D equal sset \"$band\" $val"
+	echo '(unnamed)' > $dirsystem/equalizer
 	;;
 ignoredir )
 	touch $dirsystem/updating
