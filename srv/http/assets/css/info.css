@@ -200,7 +200,7 @@
 	transform : rotateZ( 90deg );
 }
 #eq .ibtn {
-	width: 50px;
+	width: 45px;
 	font-size: 24px;
 	vertical-align: bottom !important;
 	cursor: pointer;
@@ -209,9 +209,9 @@
 #eqname {
 	position: relative;
 }
-#eqsave { margin-right: 5px }
+#eqsave { margin-right: 10px }
 #eqnew,
-#eqcancel { margin-left: 5px }
+#eqcancel { margin-left: 10px }
 #infoRange.disabled,
 .ibtn.disabled {
 	pointer-events: none;

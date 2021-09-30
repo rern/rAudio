@@ -391,7 +391,7 @@ function equalizer() {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, content    : content
-			, boxwidth   : 145
+			, boxwidth   : 170
 			, values     : data.values
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', '550px' );
