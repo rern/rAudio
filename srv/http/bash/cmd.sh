@@ -498,15 +498,17 @@ equalizer )
 		name=$( cat $dirsystem/equalizer )
 	fi
 	val=$( su mpd -c 'amixer -D equal contents' | awk -F ',' '/: val/ {print $NF}' | xargs )
-	[[ -n $append ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	[[ -n $append && $name != Flat ]] && echo $name^$val >> $dirsystem/equalizer.conf
 	[[ $type == save ]] && exit
 	
 	[[ $name == '(unnamed)' ]] && presets='"(unnamed)",'
 	presets+='"Flat"'
 	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
-	for line in "${lines[@]}"; do
-		presets+=',"'$line'"'
-	done
+	if [[ -n $lines ]]; then
+		for line in "${lines[@]}"; do
+			presets+=',"'$line'"'
+		done
+	fi
 #############
 	data='{
   "current" : "'$name'"

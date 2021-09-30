@@ -286,11 +286,11 @@ function psDisplay( data ) {
 function psEqualizer( data ) {
 	if ( !$( '#eq' ).length ) return
 	
+	$( '#eqpreset option[value="(unnamed)"]' ).remove();
 	data.values.push( G.eqcurrent );
 	O.values = data.values;
 	setValues();
-	$( '#eqpreset option[value="(unnamed)"]' ).remove();
-	$( '#eqpreset' ).selectric( 'refresh' );
+	selectricRender();
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

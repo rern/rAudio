@@ -446,10 +446,23 @@ function info( json ) {
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		// get all input fields - omit .selectric-input for select
+		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
+		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
+		var name, nameprev;
+		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
+			name = this.name;
+			if ( !name ) {
+				return true
+			} else if (	name !== nameprev ) {
+				nameprev = name;
+				return true
+			}
+		} );
+		// assign values
+		if ( O.values ) setValues();
 		// set vertical position
 		alignVertical();
-		// apply selectric
-		selectricRender();
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
@@ -465,15 +478,16 @@ function info( json ) {
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
 		// set width: text / password / textarea
+		O.boxW = '';
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
 			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() || 0;
-			var boxW = widthmax ? allW - labelW - 20 : O.boxwidth + 10;
-			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
-			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
+			O.boxW = ( widthmax ? allW - labelW - 20 : O.boxwidth + 10 ) +'px';
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).css( 'width', O.boxW );
 		}
+		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		// set padding-right: radio / checkbox
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
 		if ( tdL > 1 ) $( '#infoContent td:eq( 0 )' ).css( 'padding-right', '10px' );
@@ -488,22 +502,6 @@ function info( json ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
 		}
-		// get all input fields - omit .selectric-input for select
-		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
-		var name, nameprev;
-		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
-			name = this.name;
-			if ( !name ) {
-				return true
-			} else if (	name !== nameprev ) {
-				nameprev = name;
-				return true
-			}
-		} );
-		// assign values
-		if ( O.values ) setValues();
-		
-		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
 		// check text input length
 		O.short = false;
 		if ( O.checklength ) {
@@ -697,14 +695,12 @@ function orientationReset( file, ori, callback ) {
 	reader.readAsDataURL( file );
 }
 function selectricRender() {
-	if ( !$( 'select' ).length || $( '#infoContent .selectric-wrapper' ).length ) return
-	
-	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
-	$select
-		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
-		.each( function() {
-			if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
-		} );
+	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
+	$( 'select' ).each( function() {
+		if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
+	} );
+	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
+	$( '.selectric-items' ).css( 'min-width', O.boxW );
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
 	var timeout = setTimeout( function() {

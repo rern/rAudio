@@ -396,8 +396,9 @@ function equalizer() {
 			, beforeshow : function() {
 				var eqnew = 0;
 				var eqrename = 0;
+				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				$( '#infoBox' ).css( 'width', '550px' );
-				$( '#eqrename' ).toggleClass( 'disabled', G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat' );
+				$( '#eqrename' ).toggleClass( 'disabled', notpreset );
 				$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
 				$( '#eqsave' ).addClass( 'disabled' );
 				$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' )
@@ -412,7 +413,7 @@ function equalizer() {
 					var vflat = '66'.repeat( 10 );
 					var changed = vnew !== vcurrent;
 					var flat = vnew === vflat;
-					$( '#eqsave' ).toggleClass( 'disabled', !changed );
+					$( '#eqsave' ).toggleClass( 'disabled', !changed || G.eqcurrent === 'Flat' );
 					$( '#eqnew' ).toggleClass( 'disabled', !changed || flat )
 					$( '#eqflat' ).toggleClass( 'disabled', flat )
 				} );
