@@ -417,7 +417,7 @@ function equalizer() {
 				$( '#eqpreset' ).change( function() {
 					equalizerPreset( $( this ).val() );
 				} );
-				$( '#eqname' ).on( 'keyup paste cut', function() {
+				$( '#eqname' ).on( 'keyup paste cut', function( e ) {
 					var val = $( this ).val().trim();
 					var exists = data.presets.indexOf( val ) !== -1;
 					if ( eqnew ) {
@@ -425,6 +425,7 @@ function equalizer() {
 					} else { // rename
 						var changed = val !== G.eqcurrent && !exists;
 					}
+					if ( e.key === 'Enter' && changed ) $( '#eqsave' ).click();
 					$( '#eqsave' ).toggleClass( 'disabled', !changed );
 				} );
 				$( '#eqdelete' ).click( function() {
