@@ -5,7 +5,7 @@ include 'logosvg.php';
 <!DOCTYPE html>
 <html>
 <head>
-	<title>R+R User Guide</title>
+	<title>rAudio</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<meta name="apple-mobile-web-app-capable" content="yes">
@@ -32,15 +32,16 @@ include 'logosvg.php';
 	<img src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script>
+var xstart, xend;
+var xswipe = 100;
 var nlibrary = 23;
 var nplaylist = 40;
 var nsettings = 47;
 var ntotal = 58;
 var n = 1;
-$( '#count' ).text( n +' / '+ ntotal );
 
+$( '#count' ).text( n +' / '+ ntotal );
 $( '.btn' ).click( function() {
 	var page = {
 		  playback : 1
@@ -59,10 +60,12 @@ $( '#previous' ).click( function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-$( 'body' ).on( 'swipeleft', function() {
-	$( '#next' ).click();
-} ).on( 'swiperight', function() {
-	$( '#previous' ).click();
+$( 'body' ).on( 'touchstart mousedown', function( e ) {
+	xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+} ).on( 'touchend mouseup', function( e ) {
+	xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	var xdiff = xstart - xend;
+	if ( Math.abs( xdiff ) > xswipe ) xdiff > 0 ? $( '#next' ).click() : $( '#previous' ).click();
 } );
 function renderPage( n ) {
 	$( 'img' ).attr( 'src', '/assets/img/guide/'+ n +'.<?=$time?>.jpg' );
