@@ -179,10 +179,15 @@ function sendcommand() {
 }
 
 $.fn.longtap = function( callback ) {
+	var $this, timeout;
 	$( this ).on( 'touchstart mousedown', function() {
-		var $this = $( this );
-		var timeout = setTimeout( function() { callback( $this ) }, 1000 );
-	} ).on( 'touchend mouseup', function() {
+		$this = $( this );
+		timeout = setTimeout( function() {
+			$this.css( 'pointer-events', 'none' ); // temporarily disable click
+			setTimeout( function() { $this.css( 'pointer-events', '' ) }, 1000 );
+			callback( $this );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
 	} );
 }
