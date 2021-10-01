@@ -42,7 +42,7 @@ var n = 1;
 
 var $ = function( id ) { return document.getElementById( id ) }
 var btn = document.getElementsByClassName( 'btn' );
-var count = $( 'count' );
+var count = $( 'count' ); // not jQuery on this page
 var image = $( 'image' );
 var next = $( 'next' );
 var previous = $( 'previous' );
