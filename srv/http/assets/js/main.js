@@ -45,12 +45,12 @@ var picaOption = { // pica.js
 if ( G.localhost ) {
 	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
 /*	var drag = false, pY; // drag scroll vertically
-	$( 'body' ).on( 'mousemove', function( e ) {
+	$( 'body' ).on( 'touchmove mousemove', function( e ) {
 		if ( drag ) $( window ).scrollTop( $( window ).scrollTop() + ( pY - e.pageY ) );
 	} ).on( 'mousedown', function( e ) {
 		drag = true;
 		pY = e.pageY;
-	} ).on( 'mouseup', function() {
+	} ).on( 'touchend mouseup mouseleave', function() {
 		drag = false;
 	} );*/
 } else {
@@ -112,7 +112,7 @@ $( '.page' ).on( 'touchstart mousedown', function( e ) {
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 600 );
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( !G.swipe ) return
 	
 	var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
@@ -559,7 +559,7 @@ $( '#volup, #voldn' ).click( function() {
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
 	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
-} ).on( 'mouseup touchend', function() {
+} ).on( 'touchend mouseup mouseleave', function() {
 	if ( G.volhold ) {
 		G.volhold = 0;
 		clearInterval( G.intVolume );
@@ -593,7 +593,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	e.preventDefault();
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	mpcSeekBar( pageX );
-} ).on( 'touchend mouseup', function( e ) {
+} ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( G.status.player !== 'mpd' || G.status.stream ) return
 	
 	G.down = 0;
@@ -603,7 +603,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) || G.status.volumenone ) return
+	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	G.down = 1;
 	clearTimeout( G.volumebar );
@@ -614,28 +614,25 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	e.preventDefault();
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	volumeBarSet( pageX );
-} ).on( 'touchend mouseup', function( e ) {
-	if ( G.status.volumenone ) return
+} ).on( 'touchend mouseup mouseleave', function( e ) {
+	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
-	volumeBarTimeout();
+	G.volumebar = setTimeout( volumeBarHide, 3000 );
 	G.down = 0;
 	if ( G.drag ) {
 		G.drag = 0;
 		volumePushstream();
 		return
 	}
+} ).click( function() {
+	if ( G.status.volumenone ) return
 	
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-		$( '#volume-text' )
-			.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
-			.toggleClass( 'bl', G.status.volumemute !== 0 );
-		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
-		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-	} else {
-		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
-		volumeBarSet( pageX );
-	}
+	$( '#volume-text' )
+		.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
+		.toggleClass( 'bl', G.status.volumemute !== 0 );
+	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	hideGuide();
@@ -652,11 +649,11 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	$( '#vol'+ updn ).click();
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
-} ).on( 'mouseup touchend', function() {
+} ).on( 'touchend mouseup mouseleave', function() {
 	volumePushstream();
 	clearTimeout( G.intVolume );
 	clearTimeout( G.volumebar );
-	volumeBarTimeout();
+	setTimeout( volumeBarHide, 3000 );
 } ).longtap( function() {
 	if ( G.status.volumenone ) return
 	
@@ -695,11 +692,12 @@ $( '#divcover' ).on( 'click', '.coveredit', function( e ) {
 	} else {
 		G.status.webradio ? webRadioCoverart () : coverartChange();
 	}
-} ).longtap( function() {
+} ).longtap( function( e ) {
 	if (
 		( G.status.stream && G.status.state === 'play' )
 		|| !G.status.playlistlength
 		|| G.guide
+		|| $( e.target ).hasClass( 'band' )
 	) return
 	
 	$( '#coverart' )

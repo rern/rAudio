@@ -1878,7 +1878,9 @@ function volumeBarSet( pageX ) {
 			, {
 				  duration: ms
 				, easing: 'linear'
-				, complete: volumeBarTimeout
+				, complete: function() {
+					setTimeout( volumeBarHide, 3000 );
+				}
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
@@ -1889,9 +1891,6 @@ function volumeBarSet( pageX ) {
 	$( '#volume-text' ).text( G.status.volumemute || vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 	G.status.volume = vol;
-}
-function volumeBarTimeout() {
-	G.volumebar = setTimeout( volumeBarHide, 3000 );
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {
