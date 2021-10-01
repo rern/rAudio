@@ -20,7 +20,6 @@ var G = {
 	, mode          : ''
 	, modescrolltop : 0
 	, page          : 'playback'
-	, pageX         : ''
 	, pladd         : {}
 	, playback      : 1
 	, playlist      : 0
@@ -618,7 +617,6 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
 	} else {
 		var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
-		if ( pageX === G.pageX ) G.drag = 0;
 		volumeBarSet( pageX );
 	}
 } );
