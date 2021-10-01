@@ -19,6 +19,7 @@ function list( args, callback, json ) {
 		, json || null
 	);
 }
+
 //----------------------------------------------------------------------
 function addonsdl( std ) {
 	if ( std ) {
@@ -54,7 +55,7 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
-	$( '#lib-list li:eq( 0 )' ).trigger( 'tap' );
+	$( '#lib-list li:eq( 0 )' ).click();
 	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
@@ -778,7 +779,7 @@ var chkplayback = {
 	, noswipe      : 'Disable swipe'
 }
 function infoPlayback() {
-	if ( 'coverTL' in G ) $( '#coverTL' ).trigger( 'tap' );
+	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys = Object.keys( chkplayback );
 	var values = [];
 	keys.forEach( function( k, i ) {

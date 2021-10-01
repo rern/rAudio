@@ -304,7 +304,6 @@ $listui = [
 	, 'roundSlider'         => 'https://github.com/soundar24/roundSlider'
 	, 'simple-keyboard'     => 'https://github.com/hodgef/simple-keyboard/'
 	, 'Sortable'            => 'https://github.com/SortableJS/Sortable'
-	, 'Tocca'               => 'https://github.com/GianlucaGuarini/Tocca.js'
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {

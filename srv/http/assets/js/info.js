@@ -93,6 +93,43 @@ Note:
 - Single value/function - no need to be array
 ` );
 }
+/* common event - longtap
+$( ELEMENT ).longtap( DELEGATE, function( e ) {
+	// ELEMENT: '#id' or '.class'
+	// DELEGATE: optional
+	// $( e.currentTarget ) = $( ELEMENT );
+	// must be last if chained
+} );
+*/
+$.fn.longtap = function( arg1, arg2 ) {
+	var $this = $( this )
+	var callback, delegate, timeout;
+	if ( arguments.length === 1 ) {
+		callback = arg1;
+		delegate = '';
+	} else {
+		callback = arg2;
+		delegate = arg1;
+	}
+	$this.on( 'touchstart mousedown', delegate, function( e ) {
+		var event = e;
+		if ( delegate ) {
+			var $this1 = $( this );
+			$this = $this.add( $this1 );
+		}
+		timeout = setTimeout( function() {
+			G.longtap = 1;
+			$this.css( 'pointer-events', 'none' ); // temporarily disable click
+			callback( event );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', function() {
+		clearTimeout( timeout );
+		setTimeout( function() {
+			G.longtap = 0;
+			$this.css( 'pointer-events', '' );
+		}, 1000 );
+	} );
+}
 
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide" tabindex="1">

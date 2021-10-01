@@ -31,7 +31,6 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <?php include 'index-body.php';?>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/plugin/html5kellycolorpicker-1.21.min.js"></script>
 <script src="/assets/js/plugin/lazysizes-5.3.2.min.js"></script>

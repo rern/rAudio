@@ -546,7 +546,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			bash( [ 'plcurrent', G.list.index + 1 ] );
 			return
 		case 'directory':
-			$( '#lib-list .liinfopath' ).trigger( 'tap' );
+			$( '#lib-list .liinfopath' ).click();
 			return
 		case 'exclude':
 			info( {
