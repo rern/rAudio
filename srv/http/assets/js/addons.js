@@ -177,7 +177,17 @@ function sendcommand() {
 		postcmd();
 	}
 }
+
+$.fn.longtap = function( callback ) {
+	$( this ).on( 'touchstart mousedown', function() {
+		var $this = $( this );
+		var timeout = setTimeout( function() { callback( $this ) }, 1000 );
+	} ).on( 'touchend mouseup', function() {
+		clearTimeout( timeout );
+	} );
+}
 //---------------------------------------------------------------------------
+
 data = {}
 if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) $( 'a' ).removeAttr( 'href' );
 $( '#close' ).click( function() {
@@ -192,34 +202,7 @@ $( '#list li' ).click( function() {
 	var alias = this.getAttribute( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } );
-$( '.boxed-group .infobtn' ).on( 'longtap', function () {
-	$this = $( this );
-	alias = $this.parent().attr( 'alias' );
-	title = addons[ alias ].title.replace( / *\**$/, '' );
-	type = $this.text();
-	rollback = addons[ alias ].rollback || '';
-	if ( rollback ) {
-		info( {
-			  icon      : 'jigsaw'
-			, title     : title
-			, message   : 'Upgrade / Downgrade ?'
-			, radiohtml : '<label><input type="radio" name="inforadio" value="1" checked>&ensp;Rollback to previous version</label><br>'
-						 +'<label><input type="radio" name="inforadio" value="Branch">&ensp;Tree # / Branch ...</label>'
-			, ok        : function() {
-				if ( infoVal() == 1 ) {
-					opt = [ alias, type, rollback ];
-					postcmd();
-				} else {
-					branchtest( alias, type, 'Upgrade / Downgrade to ?' );
-				}
-			}
-		} );
-	} else if ( type === 'Install' ) {
-		branchtest( alias, type, 'Install version?', 'install' );
-	} else {
-		branchtest( alias, type, 'Install version?' );
-	}
-} ).on( 'click', function () {
+$( '.boxed-group .infobtn' ).click( function () {
 	$this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
@@ -250,6 +233,32 @@ $( '.boxed-group .infobtn' ).on( 'longtap', function () {
 				( option && type !== 'Update' && type !== 'Uninstall' ) ? getoptions() : postcmd();
 			}
 		} );
+	}
+} ).longtap( function( $this ) {
+	alias = $this.parent().attr( 'alias' );
+	title = addons[ alias ].title.replace( / *\**$/, '' );
+	type = $this.text();
+	rollback = addons[ alias ].rollback || '';
+	if ( rollback ) {
+		info( {
+			  icon      : 'jigsaw'
+			, title     : title
+			, message   : 'Upgrade / Downgrade ?'
+			, radiohtml : '<label><input type="radio" name="inforadio" value="1" checked>&ensp;Rollback to previous version</label><br>'
+						 +'<label><input type="radio" name="inforadio" value="Branch">&ensp;Tree # / Branch ...</label>'
+			, ok        : function() {
+				if ( infoVal() == 1 ) {
+					opt = [ alias, type, rollback ];
+					postcmd();
+				} else {
+					branchtest( alias, type, 'Upgrade / Downgrade to ?' );
+				}
+			}
+		} );
+	} else if ( type === 'Install' ) {
+		branchtest( alias, type, 'Install version?', 'install' );
+	} else {
+		branchtest( alias, type, 'Install version?' );
 	}
 } );
 $( '.thumbnail' ).click( function() {
