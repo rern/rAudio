@@ -32,7 +32,7 @@ include 'logosvg.php';
 	<img id="image" src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
 <script>
-var xstart, xend;
+var xstart;
 var xswipe = 100;
 var nlibrary = 23;
 var nplaylist = 40;
@@ -75,7 +75,7 @@ previous.addEventListener( 'click', function() {
 } );
 [ 'touchend', 'mouseup' ].forEach( function( ev ) {
 	document.addEventListener( ev, function( e ) {
-		xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 		var xdiff = xstart - xend;
 		if ( Math.abs( xdiff ) > xswipe ) xdiff > 0 ? next.click() : previous.click();
 	} );
