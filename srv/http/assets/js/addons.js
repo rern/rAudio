@@ -226,7 +226,8 @@ $( '.boxed-group .infobtn' ).click( function () {
 			}
 		} );
 	}
-} ).longtap( function( $this ) { // from info.js
+} ).longtap( function() { // from info.js
+	$this = $( '.boxed-group .infobtn' );
 	alias = $this.parent().attr( 'alias' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );
 	type = $this.text();

@@ -101,6 +101,7 @@ $( ELEMENT ).longtap( DELEGATE, function( e ) {
 	// must be last if chained
 } );
 */
+var longtap
 $.fn.longtap = function( arg1, arg2 ) {
 	var $this = $( this )
 	var callback, delegate, timeout;
@@ -118,14 +119,14 @@ $.fn.longtap = function( arg1, arg2 ) {
 			$this = $this.add( $this1 );
 		}
 		timeout = setTimeout( function() {
-			G.longtap = 1;
+			longtap = 1;
 			$this.css( 'pointer-events', 'none' ); // temporarily disable click
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
 		setTimeout( function() {
-			G.longtap = 0;
+			longtap = 0;
 			$this.css( 'pointer-events', '' );
 		}, 1000 );
 	} );

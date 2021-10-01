@@ -112,7 +112,7 @@ $( '.page' ).on( 'touchstart mousedown', function( e ) {
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 600 );
-} ).on( 'touchend mouseup mouseleave', function( e ) {
+} ).on( 'touchend mouseup', function( e ) { // no mouseleave for swipe
 	if ( !G.swipe ) return
 	
 	var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
@@ -338,7 +338,7 @@ $( '#playlist' ).click( function() {
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
-	if ( G.longtap
+	if ( longtap
 		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1
 	) return
 	
@@ -622,7 +622,6 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	if ( G.drag ) {
 		G.drag = 0;
 		volumePushstream();
-		return
 	}
 } ).click( function() {
 	if ( G.status.volumenone ) return
