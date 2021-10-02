@@ -96,7 +96,7 @@ $isave = '<i class="fa fa-save"></i>';
 		<span <?=$classhelp?>>
 			For DSD-capable devices without drivers dedicated for native DSD.
 			<p>
-				&bull; Enable if there's static/no sound from the DAC.
+				&bull; Enable if there's static/no sound from the DAC which means not support as native DSD.
 			<br>&bull; DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
 			<br>&bull; PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
 			<br>&bull; On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
