@@ -120,18 +120,14 @@ $.fn.press = function( arg1, arg2 ) {
 	}
 	$this.on( 'touchstart mousedown', delegate, function( e ) {
 		var event = e;
-		if ( delegate ) {
-			var $this1 = $( this );
-			$this = $this.add( $this1 );
-		}
 		timeout = setTimeout( function() {
-			$this.parents().css( 'pointer-events', 'none' ); // temporarily disable click
+			$( 'body' ).css( 'pointer-events', 'none' ); // temporarily disable click
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
 		// pointer-events none - fires mouseleave + disable mouseup
-		setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
+		setTimeout( function() { $( 'body' ).css( 'pointer-events', '' ) }, 1000 );
 	} );
 }
 
