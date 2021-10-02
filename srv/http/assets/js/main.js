@@ -31,7 +31,6 @@ var G = {
 	, scrolltop     : {}
 	, similarpl     : -1
 	, status        : {}
-	, touch         : 1
 	, xswipe        : 100
 }
 var cmdphp = 'cmd.php';
@@ -89,7 +88,6 @@ var nameplayer = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
-	G.touch = 0;
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
 	$.getScript( '/assets/js/shortcut.js' );
 }
@@ -327,7 +325,8 @@ $( '#playlist' ).click( function() {
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
-	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
+	if ( G.press
+		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
@@ -552,9 +551,9 @@ $( '#volup, #voldn' ).click( function() {
 		clearInterval( G.intVolume );
 		volumePushstream();
 	}
-} ).press( function() {
+} ).press( function( e ) {
 	G.volhold = 1;
-	var voldn = this.id === 'voldn';
+	var voldn = $( e.currentTarget ).prop( 'id' ) === 'voldn';
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
@@ -640,12 +639,12 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	clearTimeout( G.intVolume );
 	clearTimeout( G.volumebar );
 	setTimeout( volumeBarHide, 3000 );
-} ).press( function() {
+} ).press( function( e ) {
 	if ( G.status.volumenone ) return
 	
 	clearTimeout( G.volumebar );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	var voldn = this.id === 'volume-band-dn';
+	var voldn = $( e.currentTarget ).prop( 'id' ) === 'volume-band-dn';
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
@@ -671,14 +670,7 @@ $( '#volume-text' ).click( function() { // mute /unmute
 	}
 	volumeBarSet( pageX );
 } );
-$( '#divcover' ).on( 'click', '.coveredit', function( e ) {
-	var $this = $( e.target );
-	if ( $( this ).hasClass( 'fa-save' ) ) {
-		coverartSave();
-	} else {
-		G.status.webradio ? webRadioCoverart () : coverartChange();
-	}
-} ).press( function( e ) {
+$( '#divcover' ).press( function( e ) {
 	if (
 		( G.status.stream && G.status.state === 'play' )
 		|| !G.status.playlistlength
@@ -689,6 +681,11 @@ $( '#divcover' ).on( 'click', '.coveredit', function( e ) {
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
 		.after( icoveredit );
+} );
+$( '#divcover' ).on( 'click', '.fa-save', function() {
+	coverartSave();
+} ).on( 'click', '.iconcover', function() {
+	G.status.webradio ? webRadioCoverart () : coverartChange();
 } );
 var btnctrl = {
 	  timeTL  : 'cover'
@@ -716,6 +713,8 @@ var btnctrl = {
 	, volB    : 'voldn'
 }
 $( '.map' ).click( function() {
+	if ( G.press ) return
+	
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
 		$( '#info' ).removeClass( 'hide' );
 		clearTimeout( G.volumebar );
@@ -1177,9 +1176,8 @@ $( '#lib-mode-list' ).click( function( e ) {
 	}
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
-	var bkedit = $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' );
 	$( '#lib-search-close' ).click();
-	if ( G.press || G.bookmarkedit ) return
+	if ( G.press ) return
 	
 	var $target = $( e.target );
 	var $this = $( this );
@@ -1223,7 +1221,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			  icon        : 'bookmark'
 			, title       : 'Change Bookmark Thumbnail'
 			, message     : icon
-			, filelabel   : '<i class="fa fa-folder-open"></i>File'
+			, filelabel   : '<i class="fa fa-folder-open"></i> File'
 			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 			, filetype    : 'image/*'
 			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
@@ -1263,6 +1261,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			}
 		} );
 	} else {
+		if ( G.bookmarkedit ) return
+		
 		var path = $( this ).find( '.lipath' ).text();
 		var query = {
 			  query  : 'ls'
@@ -1319,6 +1319,8 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	}
 } );
 $( '#lib-list' ).on( 'click', '.coverart', function() {
+	if ( G.press ) return
+	
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
@@ -1383,6 +1385,8 @@ $( '#lib-list' ).press( '.licoverimg',  function( e ) {
 	$( '.menu' ).addClass( 'hide' );
 } );
 $( '#lib-list' ).on( 'click', 'li', function( e ) {
+	if ( G.press ) return
+	
 	if ( $( '.licover .coveredit.cover' ).length ) {
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );

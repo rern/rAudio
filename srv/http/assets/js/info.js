@@ -122,20 +122,11 @@ $.fn.press = function( arg1, arg2 ) {
 		var event = e;
 		timeout = setTimeout( function() {
 			G.press = 1;
-			// temporarily disable click (mouseleave fired + mouseup disabled)
-			if ( !G.touch ) $( 'body' ).addClass( 'disabled' );
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
-		if ( G.touch ) {
-			G.press = 0;
-		} else {
-			setTimeout( function() {
-				G.press = 0;
-				$( 'body' ).removeClass( 'disabled' );
-			}, 1000 );
-		}
+		setTimeout( function() { G.press = 0 }, 300 );
 	} );
 }
 
