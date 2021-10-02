@@ -122,7 +122,7 @@ $.fn.press = function( arg1, arg2 ) {
 		var event = e;
 		timeout = setTimeout( function() {
 			G.press = 1;
-			$( 'body' ).addClass( 'disabled' ); // temporarily disable click
+			$( 'body' ).addClass( 'disabled' ); // temporarily disable click (mouseleave fired + mouseup disabled)
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
