@@ -99,7 +99,7 @@ Note:
 $( ELEMENT ).press( DELEGATE, function( e ) {
 	// ELEMENT: '#id' or '.class'
 	// DELEGATE: optional
-	// $( e.currentTarget ) = $( ELEMENT );
+	// $( e.currentTarget ) = $( this );
 	// cannot be attached with on
 	// must be last if chained
 } );
@@ -127,10 +127,10 @@ $.fn.press = function( arg1, arg2 ) {
 		timeout = setTimeout( function() {
 			$this.parents().css( 'pointer-events', 'none' ); // temporarily disable click
 			callback( event );
-			setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
+		setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
 	} );
 }
 

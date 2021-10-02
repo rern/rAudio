@@ -1356,8 +1356,8 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 	}, 'json' );
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
-} ).press( '.coverart', function() {
-	var $this = $( '#lib-list' );
+} ).press( '.coverart', function( e ) {
+	var $this = $( e.currentTarget );
 	var src = $this.find( 'img' ).attr( 'src' );
 	var el = G.display.albumbyartist ? [ '.coverart2', '.coverart1' ] : [ '.coverart1', '.coverart2' ];
 	var album = $this.find( el[ 0 ] ).text();
@@ -1393,12 +1393,11 @@ $( '#lib-list' ).on( 'click', '.coveredit',  function() {
 		coverartChange();
 	}
 } );
-$( '#lib-list' ).press( '.licoverimg',  function() {
-	$this = $( '#lib-list' );
-	$img = $this.find( 'img' );
+$( '#lib-list' ).press( '.licoverimg',  function( e ) {
+	var $this = $( e.currentTarget );
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
-	$img
+	$this.find( 'img' )
 		.css( 'opacity', '0.33' )
 		.after( icoveredit );
 	$( '.menu' ).addClass( 'hide' );
