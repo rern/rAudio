@@ -524,6 +524,23 @@ equalizerupdn )
 	su mpd -c "amixer -D equal sset \"$band\" $val"
 	echo '(unnamed)' > $dirsystem/equalizer
 	;;
+hashFiles )
+	path=/srv/http/assets
+	for dir in css fonts js; do
+		[[ $dir == js ]] && d=d
+		files+=$( ls -p$d "$path/$dir/"* | grep -v '/$' )$'\n'
+	done
+	date=$( date +%s )
+	for file in ${files[@]}; do
+		mv $file ${file/.*}.$date.${file/*.}
+		pages=$( grep -rl "assets/js" /srv | grep 'php$' )
+		for page in ${pages[@]}; do
+			name=$( basename $file )
+			newname=${name/.*}.$date.${name/*.}
+			sed -i "s|$name|$newname|" $page
+		done
+	done
+	;;
 ignoredir )
 	touch $dirsystem/updating
 	path=${args[1]}
