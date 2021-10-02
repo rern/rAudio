@@ -124,13 +124,13 @@ $.fn.press = function( arg1, arg2 ) {
 			var $this1 = $( this );
 			$this = $this.add( $this1 );
 		}
-		timeout = setTimeout( function() {
+		timeout = setTimeout( function() { // pointer-events none - fires mouseleave
 			$this.parents().css( 'pointer-events', 'none' ); // temporarily disable click
+			setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
-		setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
 	} );
 }
 

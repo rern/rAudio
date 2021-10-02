@@ -281,19 +281,6 @@ $( '#addons' ).click( function () {
 		addonsdl( std )
 	} );
 	loader();
-} ).press( function() {
-	info( {
-		  icon      : 'jigsaw'
-		, title     : 'Addons'
-		, textlabel : 'Tree #/Branch'
-		, values    : 'UPDATE'
-		, ok        : function() {
-			banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
-			bash( [ 'addonslist', $( '#infotextbox input:eq( 0 )' ).val() ], function( std ) {
-				addonsdl( std )
-			} );
-		}
-	} );
 } );
 $( '#library, #button-library' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
