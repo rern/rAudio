@@ -1239,7 +1239,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			var icon = '<img src="'+ src +'">'
 			var ext = src.slice( -4 );
 		} else {
-			var icon = '<i class="fa fa-bookmark bookmark"></i>'
+			var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
 					  +'<br><a class="bklabel">'+ name +'</a>'
 			var ext = '.txt';
 		}
