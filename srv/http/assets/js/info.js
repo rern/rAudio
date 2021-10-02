@@ -111,7 +111,7 @@ events:
 $.fn.press = function( arg1, arg2 ) {
 	var $this = $( this )
 	var callback, delegate, timeout;
-	if ( arguments.length === 1 ) {
+	if ( !arg2 ) {
 		callback = arg1;
 		delegate = '';
 	} else {
