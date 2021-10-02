@@ -1,4 +1,29 @@
-#guide { user-select: none }
+@font-face {
+	font-family: rern;
+	src: url( '/assets/fonts/rern-20211001.woff2' ) format( 'woff2' );
+	font-display: block;
+	font-style: normal;
+	font-weight: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	font-weight: 300;
+	font-style: normal;
+}
+@font-face {
+	font-family: Inconsolata;
+	src: url('/assets/fonts/Inconsolata.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+
 html {
 	height: 100%;
 	padding: env( safe-area-inset ); /* disable iPhone X rounded corner padding */
@@ -73,31 +98,6 @@ input::-moz-focus-inner {
 	animation: none !important;
 }
 
-@font-face {
-	font-family: Lato;
-	src: url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: Lato;
-	src: url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
-	font-weight: 300;
-	font-style: normal;
-}
-@font-face {
-	font-family: Inconsolata;
-	src: url('/assets/fonts/Inconsolata.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: rern;
-	src: url( '/assets/fonts/rern-20210929.woff2' ) format( 'woff2' );
-	font-display: block;
-	font-style: normal;
-	font-weight: normal;
-}
 .fa {
 	display: inline-block;
 	font-family: rern;
