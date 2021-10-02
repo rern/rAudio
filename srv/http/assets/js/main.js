@@ -90,12 +90,13 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
 	$.getScript( '/assets/js/shortcut.js' );
-	if ( navigator.userAgent.indexOf( 'Firefox' ) !== -1 ) firefox = 1; // for press
 }
 	
 statusRefresh();
 
-$( '.page' ).on( 'touchstart mousedown', function( e ) {
+$( '.page' ).click( function( e ) {
+	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
+} ).on( 'touchstart mousedown', function( e ) {
 	var $target = $( e.target );
 	var targetid = e.target.id;
 	if ( G.display.noswipe || G.drag || G.down
@@ -120,8 +121,6 @@ $( '.page' ).on( 'touchstart mousedown', function( e ) {
 	var xdiff = G.xstart - xend;
 	G.xstart = 0;
 	if ( Math.abs( xdiff ) > G.xswipe ) $( '#'+ pagenext[ G.page ][ xdiff > 0 ? 1 : 0 ] ).click();
-} ).click( function( e ) {
-	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
 } );
 
 $( '#loader' ).click( function() {

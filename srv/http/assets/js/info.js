@@ -103,6 +103,10 @@ $( ELEMENT ).press( DELEGATE, function( e ) {
 	// cannot be attached with on
 	// must be last if chained
 } );
+events:
+	- while up/down : mouseenter > mousemove > mouseleave > mouseout
+	- click         : mousedown > mouseup > click
+	- touch         : touchstart > touchmove > touchend
 */
 $.fn.press = function( arg1, arg2 ) {
 	var $this = $( this )
@@ -123,14 +127,10 @@ $.fn.press = function( arg1, arg2 ) {
 		timeout = setTimeout( function() {
 			$this.parents().css( 'pointer-events', 'none' ); // temporarily disable click
 			callback( event );
+			setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
-		if ( typeof firefox !== 'undefined' ) { // fix: firefox fires mouseleave
-			setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
-		} else {
-			$this.parents().css( 'pointer-events', '' );
-		}
 	} );
 }
 
