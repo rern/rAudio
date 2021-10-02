@@ -179,6 +179,7 @@ function sendcommand() {
 }
 
 //---------------------------------------------------------------------------
+G = {}
 if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) $( 'a' ).removeAttr( 'href' );
 $( '#close' ).click( function() {
 	location.href = '/';
