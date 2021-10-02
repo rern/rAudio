@@ -1169,6 +1169,8 @@ $( '.mode' ).click( function() {
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var bkedit = $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' );
 	$( '#lib-search-close' ).click();
+	if ( G.press ) return
+	
 	if ( G.bookmarkedit ) {
 		if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
 			bookmarkeditClear();
@@ -1239,7 +1241,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			var icon = '<img src="'+ src +'">'
 			var ext = src.slice( -4 );
 		} else {
-			var icon = '<i class="fa fa-bookmark bookmark"></i>'
+			var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
 					  +'<br><a class="bklabel">'+ name +'</a>'
 			var ext = '.txt';
 		}
@@ -1277,15 +1279,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		query.modetitle = path;
 		G.query.push( query );
 	}
-} ).on( 'click', function( e ) {
-	if ( $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' ) ) return
-		
-	if ( G.bookmarkedit ) {
-		bookmarkeditClear();
-	} else {
-		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
-	}
-} ).press( '.mode-bookmark', function() {
+} ).press( function() {
 	G.bookmarkedit = 1;
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
