@@ -1391,12 +1391,15 @@ $( '#lib-list' ).on( 'long-press', '.licoverimg',  function( e ) {
 	$( '.menu' ).addClass( 'hide' );
 } );
 $( '#lib-list' ).on( 'click', 'li', function( e ) {
+	if ( $( '.licover .coveredit.cover' ).length ) {
+		$( '.licover .coveredit.cover' ).remove();
+		$( '.licover img' ).css( 'opacity', '' );
+		return
+	}
 	var $this = $( this );
 	var $target = $( e.target );
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( '.coverart' ) ) return
 	
-	$( '.licover .coveredit.cover' ).remove();
-	$( '.licover img' ).css( 'opacity', '' );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
 		if ( $this.hasClass( 'active' ) && menushow ) {
