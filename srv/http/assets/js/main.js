@@ -145,7 +145,7 @@ $( '#coverart' ).on( 'load', function() {
 	loaderHide();
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #reload, #button-library, #button-playlist' ).longtap( function() { // from info.js
+$( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // from info.js
 	location.reload();
 } );
 $( '#logo' ).click( function() {
@@ -281,7 +281,7 @@ $( '#addons' ).click( function () {
 		addonsdl( std )
 	} );
 	loader();
-} ).longtap( function() {
+} ).press( function() {
 	info( {
 		  icon      : 'jigsaw'
 		, title     : 'Addons'
@@ -338,9 +338,7 @@ $( '#playlist' ).click( function() {
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
-	if ( longtap
-		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1
-	) return
+	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
@@ -565,7 +563,7 @@ $( '#volup, #voldn' ).click( function() {
 		clearInterval( G.intVolume );
 		volumePushstream();
 	}
-} ).longtap( function() {
+} ).press( function() {
 	G.volhold = 1;
 	var voldn = this.id === 'voldn';
 	var vol = G.status.volume;
@@ -653,7 +651,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	clearTimeout( G.intVolume );
 	clearTimeout( G.volumebar );
 	setTimeout( volumeBarHide, 3000 );
-} ).longtap( function() {
+} ).press( function() {
 	if ( G.status.volumenone ) return
 	
 	clearTimeout( G.volumebar );
@@ -691,7 +689,7 @@ $( '#divcover' ).on( 'click', '.coveredit', function( e ) {
 	} else {
 		G.status.webradio ? webRadioCoverart () : coverartChange();
 	}
-} ).longtap( function( e ) {
+} ).press( function( e ) {
 	if (
 		( G.status.stream && G.status.state === 'play' )
 		|| !G.status.playlistlength
@@ -1300,7 +1298,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	} else {
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 	}
-} ).longtap( '.mode-bookmark', function() {
+} ).press( '.mode-bookmark', function() {
 	if ( G.drag ) return
 	
 	G.bookmarkedit = 1;
@@ -1358,7 +1356,7 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 	}, 'json' );
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
-} ).longtap( '.coverart', function() {
+} ).press( '.coverart', function() {
 	var $this = $( '#lib-list' );
 	var src = $this.find( 'img' ).attr( 'src' );
 	var el = G.display.albumbyartist ? [ '.coverart2', '.coverart1' ] : [ '.coverart1', '.coverart2' ];
@@ -1395,7 +1393,7 @@ $( '#lib-list' ).on( 'click', '.coveredit',  function() {
 		coverartChange();
 	}
 } );
-$( '#lib-list' ).longtap( '.licoverimg',  function() {
+$( '#lib-list' ).press( '.licoverimg',  function() {
 	$this = $( '#lib-list' );
 	$img = $this.find( 'img' );
 	$this.parent().removeClass( 'active' );

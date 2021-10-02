@@ -1,3 +1,5 @@
+// info() + banner() + $(...).press(...)
+
 function infoUsage() {
 	console.log( `
 ===============================
@@ -93,16 +95,16 @@ Note:
 - Single value/function - no need to be array
 ` );
 }
-/* common event - longtap
-$( ELEMENT ).longtap( DELEGATE, function( e ) {
+/* common event - press
+$( ELEMENT ).press( DELEGATE, function( e ) {
 	// ELEMENT: '#id' or '.class'
 	// DELEGATE: optional
 	// $( e.currentTarget ) = $( ELEMENT );
+	// cannot be attached with on
 	// must be last if chained
 } );
 */
-var longtap
-$.fn.longtap = function( arg1, arg2 ) {
+$.fn.press = function( arg1, arg2 ) {
 	var $this = $( this )
 	var callback, delegate, timeout;
 	if ( arguments.length === 1 ) {
@@ -119,15 +121,13 @@ $.fn.longtap = function( arg1, arg2 ) {
 			$this = $this.add( $this1 );
 		}
 		timeout = setTimeout( function() {
-			longtap = 1;
-			$this.css( 'pointer-events', 'none' ); // temporarily disable click
+			$this.parents().css( 'pointer-events', 'none' ); // temporarily disable click
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
-		setTimeout( function() {
-			longtap = 0;
-			$this.css( 'pointer-events', '' );
+		setTimeout( function() { // fix: firefox fires mouseleave
+			$this.parents().css( 'pointer-events', '' );
 		}, 1000 );
 	} );
 }
