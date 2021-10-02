@@ -82,12 +82,14 @@ var nameplayer = {
 	, bluetooth  : 'Bluetooth Renderer'
 	, snapclient : 'Snapcast Client'
 	, spotify    : 'Spotify Connect'
+	, touch      : 1
 	, upnp       : 'UPnP'
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+	G.touch = 0;
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
 	$.getScript( '/assets/js/shortcut.js' );
 }
@@ -105,11 +107,11 @@ $( '.page' ).click( function( e ) {
 		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 	) return
 
-	G.xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	G.xstart = G.touch ? e.originalEvent.touches[ 0 ].pageX : e.pageX;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( !G.xstart ) return
 	
-	var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	var xmove = G.touch ? e.originalEvent.touches[ 0 ].pageX : e.pageX;
 	if ( Math.abs( G.xstart - xmove ) < 10 ) return
 	
 	G.swipe = 1;
@@ -117,7 +119,7 @@ $( '.page' ).click( function( e ) {
 } ).on( 'touchend mouseup', function( e ) { // no mouseleave for swipe
 	if ( !G.swipe ) return
 	
-	var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	var xend = G.touch ? e.originalEvent.touches[ 0 ].pageX : e.pageX;
 	var xdiff = G.xstart - xend;
 	G.xstart = 0;
 	if ( Math.abs( xdiff ) > G.xswipe ) $( '#'+ pagenext[ G.page ][ xdiff > 0 ? 1 : 0 ] ).click();
@@ -577,14 +579,14 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	G.drag = 1;
 	e.preventDefault();
-	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	var pageX = G.touch ? e.originalEvent.touches[ 0 ].pageX : e.pageX;
 	mpcSeekBar( pageX );
 } ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( G.status.player !== 'mpd' || G.status.stream ) return
 	
 	G.down = 0;
 	G.drag = 0;
-	var pageX = e.pageX || e.originalEvent.changedTouches[ 0 ].pageX;
+	var pageX = G.touch ? e.originalEvent.touches[ 0 ].pageX : e.pageX;
 	mpcSeekBar( pageX );
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
@@ -598,7 +600,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	G.drag = 1;
 	e.preventDefault();
-	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	var pageX = G.touch ? e.originalEvent.touches[ 0 ].pageX : e.pageX;
 	volumeBarSet( pageX );
 } ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
@@ -1281,6 +1283,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		G.query.push( query );
 	}
 } ).press( function() {
+	if ( G.drag ) return
+	
 	G.bookmarkedit = 1;
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
