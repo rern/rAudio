@@ -112,11 +112,11 @@ $.fn.press = function( arg1, arg2 ) {
 	var $this = $( this )
 	var callback, delegate, timeout;
 	if ( !arg2 ) {
-		callback = arg1;
 		delegate = '';
+		callback = arg1;
 	} else {
-		callback = arg2;
 		delegate = arg1;
+		callback = arg2;
 	}
 	$this.on( 'touchstart mousedown', delegate, function( e ) {
 		var event = e;
