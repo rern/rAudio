@@ -299,7 +299,6 @@ $listui = [
 	, 'jQuery Selectric'    => 'https://github.com/lcdsantos/jQuery-Selectric'
 	, 'Lato-Fonts'          => 'http://www.latofonts.com/lato-free-fonts'
 	, 'lazysizes'           => 'https://github.com/aFarkas/lazysizes'
-	, 'long-press-event'    => 'https://github.com/john-doherty/long-press-event'
 	, 'pica'                => 'https://github.com/nodeca/pica'
 	, 'QR Code generator'   => 'https://github.com/datalog/qrcode-svg'
 	, 'roundSlider'         => 'https://github.com/soundar24/roundSlider'

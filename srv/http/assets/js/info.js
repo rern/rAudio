@@ -95,6 +95,40 @@ Note:
 - Single value/function - no need to be array
 ` );
 }
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	// ELEMENT: '#id' or '.class'
+	// DELEGATE: optional
+	// $( e.currentTarget ) = $( this );
+	// cannot be attached with on
+	// must be last if chained
+} );
+events:
+	- while up/down : mouseenter > mousemove > mouseleave > mouseout
+	- click         : mousedown > mouseup > click
+	- touch         : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var $this = $( this )
+	var callback, delegate, timeout;
+	if ( arguments.length === 1 ) {
+		callback = arg1;
+		delegate = '';
+	} else {
+		callback = arg2;
+		delegate = arg1;
+	}
+	$this.on( 'touchstart mousedown', delegate, function( e ) {
+		var event = e;
+		timeout = setTimeout( function() {
+			$( 'body' ).css( 'pointer-events', 'none' ); // temporarily disable click
+			callback( event );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', function() {
+		clearTimeout( timeout );
+		setTimeout( function() { $( 'body' ).css( 'pointer-events', '' ) }, 1000 );
+	} );
+}
 
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide" tabindex="1">

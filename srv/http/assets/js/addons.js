@@ -178,42 +178,7 @@ function sendcommand() {
 	}
 }
 
-/*
-$( ELEMENT ).press( DELEGATE, function( e ) {
-	// ELEMENT: '#id' or '.class'
-	// DELEGATE: optional
-	// $( e.currentTarget ) = $( this );
-	// cannot be attached with on
-	// must be last if chained
-} );
-events:
-	- while up/down : mouseenter > mousemove > mouseleave > mouseout
-	- click         : mousedown > mouseup > click
-	- touch         : touchstart > touchmove > touchend
-*/
-$.fn.press = function( arg1, arg2 ) {
-	var $this = $( this )
-	var callback, delegate, timeout;
-	if ( arguments.length === 1 ) {
-		callback = arg1;
-		delegate = '';
-	} else {
-		callback = arg2;
-		delegate = arg1;
-	}
-	$this.on( 'touchstart mousedown', delegate, function( e ) {
-		var event = e;
-		timeout = setTimeout( function() {
-			$( 'body' ).css( 'pointer-events', 'none' ); // temporarily disable click
-			callback( event );
-		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', function() {
-		clearTimeout( timeout );
-		setTimeout( function() { $( 'body' ).css( 'pointer-events', '' ) }, 1000 );
-	} );
-}
 //---------------------------------------------------------------------------
-
 if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) $( 'a' ).removeAttr( 'href' );
 $( '#close' ).click( function() {
 	location.href = '/';
