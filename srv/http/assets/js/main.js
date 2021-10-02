@@ -31,6 +31,7 @@ var G = {
 	, scrolltop     : {}
 	, similarpl     : -1
 	, status        : {}
+	, touch         : 1
 	, xswipe        : 100
 }
 var cmdphp = 'cmd.php';
@@ -88,6 +89,7 @@ var nameplayer = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+	G.touch = 0;
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
 	$.getScript( '/assets/js/shortcut.js' );
 }
