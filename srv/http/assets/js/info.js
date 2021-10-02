@@ -121,12 +121,16 @@ $.fn.press = function( arg1, arg2 ) {
 	$this.on( 'touchstart mousedown', delegate, function( e ) {
 		var event = e;
 		timeout = setTimeout( function() {
-			$( 'body' ).css( 'pointer-events', 'none' ); // temporarily disable click
+			G.press = 1;
+			$( 'body' ).addClass( 'disabled' ); // temporarily disable click
 			callback( event );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
-		setTimeout( function() { $( 'body' ).css( 'pointer-events', '' ) }, 1000 );
+		setTimeout( function() {
+			G.press = 0;
+			$( 'body' ).removeClass( 'disabled' );
+		}, 1000 );
 	} );
 }
 
