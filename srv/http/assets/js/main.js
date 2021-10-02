@@ -90,6 +90,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
 	$.getScript( '/assets/js/shortcut.js' );
+	firefox = navigator.userAgent.indexOf( 'Firefox' ) !== -1; // for press
 }
 	
 statusRefresh();

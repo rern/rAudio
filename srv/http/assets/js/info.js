@@ -126,9 +126,11 @@ $.fn.press = function( arg1, arg2 ) {
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', function() {
 		clearTimeout( timeout );
-		setTimeout( function() { // fix: firefox fires mouseleave
+		if ( typeof firefox !== 'undefined' ) { // fix: firefox fires mouseleave
+			setTimeout( function() { $this.parents().css( 'pointer-events', '' ) }, 1000 );
+		} else {
 			$this.parents().css( 'pointer-events', '' );
-		}, 1000 );
+		}
 	} );
 }
 
