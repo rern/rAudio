@@ -1166,17 +1166,18 @@ $( '.mode' ).click( function() {
 	query.modetitle = path;
 	G.query.push( query );
 } );
+$( '#lib-mode-list' ).click( function( e ) {
+	if ( G.press || !G.bookmarkedit ) return
+	
+	if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
+		bookmarkeditClear();
+		return
+	}
+} );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var bkedit = $( e.target ).hasClass( 'bkedit' ) || $( e.target ).hasClass( 'iconcover' );
 	$( '#lib-search-close' ).click();
-	if ( G.press ) return
-	
-	if ( G.bookmarkedit ) {
-		if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
-			bookmarkeditClear();
-			return
-		}
-	}
+	if ( G.press || G.bookmarkedit ) return
 	
 	var $target = $( e.target );
 	var $this = $( this );
@@ -1186,13 +1187,11 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		info( {
 			  icon       : 'bookmark'
 			, title      : 'Rename Bookmark'
-			, width      : 500
 			, message    : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
 							+'<br><span class="bklabel">'+ name +'</span></div>'
 			, textlabel  : 'To:'
 			, values     : name
 			, checkblank : 1
-			, boxwidth   : 'max'
 			, oklabel    : '<i class="fa fa-flash"></i>Rename'
 			, ok         : function() {
 				var newname = infoVal();
