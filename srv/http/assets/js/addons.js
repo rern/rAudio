@@ -178,6 +178,40 @@ function sendcommand() {
 	}
 }
 
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	// ELEMENT: '#id' or '.class'
+	// DELEGATE: optional
+	// $( e.currentTarget ) = $( this );
+	// cannot be attached with on
+	// must be last if chained
+} );
+events:
+	- while up/down : mouseenter > mousemove > mouseleave > mouseout
+	- click         : mousedown > mouseup > click
+	- touch         : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var $this = $( this )
+	var callback, delegate, timeout;
+	if ( arguments.length === 1 ) {
+		callback = arg1;
+		delegate = '';
+	} else {
+		callback = arg2;
+		delegate = arg1;
+	}
+	$this.on( 'touchstart mousedown', delegate, function( e ) {
+		var event = e;
+		timeout = setTimeout( function() {
+			$( 'body' ).css( 'pointer-events', 'none' ); // temporarily disable click
+			callback( event );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', function() {
+		clearTimeout( timeout );
+		setTimeout( function() { $( 'body' ).css( 'pointer-events', '' ) }, 1000 );
+	} );
+}
 //---------------------------------------------------------------------------
 
 if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) $( 'a' ).removeAttr( 'href' );
@@ -186,15 +220,16 @@ $( '#close' ).click( function() {
 } );
 $( '.revision' ).click( function(e) {
 	e.stopPropagation();
-	$( this ).parent().parent().next().toggle();
-	$( this ).toggleClass( 'revisionup' );
+	var $this = $( this );
+	$this.parent().parent().next().toggle();
+	$this.toggleClass( 'revisionup' );
 } );
 $( '#list li' ).click( function() {
 	var alias = this.getAttribute( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } );
 $( '.boxed-group .infobtn' ).click( function () {
-	$this = $( this );
+	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
 	alias = $this.parent().attr( 'alias' );
@@ -226,7 +261,7 @@ $( '.boxed-group .infobtn' ).click( function () {
 		} );
 	}
 } ).press( function( e ) { // from info.js
-	$this = $( e.currentTarget );
+	var $this = $( e.currentTarget );
 	alias = $this.parent().attr( 'alias' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );
 	type = $this.text();

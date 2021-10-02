@@ -145,7 +145,7 @@ $( '#coverart' ).on( 'load', function() {
 	loaderHide();
 } ).on( 'error', coverartDefault );
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // from info.js
+$( '#logo, #reload, #button-library, #button-playlist' ).on( 'long-press', function() { // from info.js
 	location.reload();
 } );
 $( '#logo' ).click( function() {
@@ -550,7 +550,7 @@ $( '#volup, #voldn' ).click( function() {
 		clearInterval( G.intVolume );
 		volumePushstream();
 	}
-} ).press( function() {
+} ).on( 'long-press', function() {
 	G.volhold = 1;
 	var voldn = this.id === 'voldn';
 	var vol = G.status.volume;
@@ -638,7 +638,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	clearTimeout( G.intVolume );
 	clearTimeout( G.volumebar );
 	setTimeout( volumeBarHide, 3000 );
-} ).press( function() {
+} ).on( 'long-press', function() {
 	if ( G.status.volumenone ) return
 	
 	clearTimeout( G.volumebar );
@@ -676,7 +676,8 @@ $( '#divcover' ).on( 'click', '.coveredit', function( e ) {
 	} else {
 		G.status.webradio ? webRadioCoverart () : coverartChange();
 	}
-} ).press( function( e ) {
+} ).on( 'long-press', function( e ) {
+	e.preventDefault();
 	if (
 		( G.status.stream && G.status.state === 'play' )
 		|| !G.status.playlistlength
@@ -1239,7 +1240,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			var icon = '<img src="'+ src +'">'
 			var ext = src.slice( -4 );
 		} else {
-			var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
+			var icon = '<i class="fa fa-bookmark bookmark"></i>'
 					  +'<br><a class="bklabel">'+ name +'</a>'
 			var ext = '.txt';
 		}
@@ -1285,9 +1286,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	} else {
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
 	}
-} ).press( '.mode-bookmark', function() {
-	if ( G.drag ) return
-	
+} ).on( 'long-press', '.mode-bookmark', function( e ) {
+	e.preventDefault();	
 	G.bookmarkedit = 1;
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
@@ -1343,8 +1343,8 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 	}, 'json' );
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
-} ).press( '.coverart', function( e ) {
-	var $this = $( e.currentTarget );
+} ).on( 'long-press', '.coverart', function( e ) {
+	var $this = $( this );
 	var src = $this.find( 'img' ).attr( 'src' );
 	var el = G.display.albumbyartist ? [ '.coverart2', '.coverart1' ] : [ '.coverart1', '.coverart2' ];
 	var album = $this.find( el[ 0 ] ).text();
@@ -1380,8 +1380,9 @@ $( '#lib-list' ).on( 'click', '.coveredit',  function() {
 		coverartChange();
 	}
 } );
-$( '#lib-list' ).press( '.licoverimg',  function( e ) {
-	var $this = $( e.currentTarget );
+$( '#lib-list' ).on( 'long-press', '.licoverimg',  function( e ) {
+	e.preventDefault();
+	var $this = $( this );
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
 	$this.find( 'img' )
