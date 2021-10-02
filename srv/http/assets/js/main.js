@@ -1179,109 +1179,26 @@ $( '#lib-mode-list' ).click( function( e ) {
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
-	if ( G.press ) return
+	if ( G.press || G.bookmarkedit ) return
 	
-	var $target = $( e.target );
-	var $this = $( this );
-	var path = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
-	if ( $target.hasClass( 'bk-rename' ) ) {
-		info( {
-			  icon       : 'bookmark'
-			, title      : 'Rename Bookmark'
-			, message    : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
-							+'<br><span class="bklabel">'+ name +'</span></div>'
-			, textlabel  : 'To:'
-			, values     : name
-			, checkblank : 1
-			, oklabel    : '<i class="fa fa-flash"></i>Rename'
-			, ok         : function() {
-				var newname = infoVal();
-				$.post( cmdphp, {
-					  cmd    : 'bookmarkrename'
-					, path   : path
-					, name   : name
-					, rename : newname
-				} );
-				$this.find( '.bklabel' ).text( newname );
-			}
-		} );
-	} else if ( $target.hasClass( 'bk-cover' ) || $target.hasClass( 'iconcover' ) ) {
-		var thumbnail = $this.find( 'img' ).length;
-		if ( thumbnail ) {
-			var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
-					  +'<p class="infoimgname">'+ name +'</p>';
-		} else {
-			var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
-		}
-		// [imagereplace]
-		// select file
-		//    - gif    > [file]   - no canvas
-		//    - others > [base64] - data:image/jpeg;base64,...
-		var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
-		info( {
-			  icon        : 'bookmark'
-			, title       : 'Change Bookmark Thumbnail'
-			, message     : icon
-			, filelabel   : '<i class="fa fa-folder-open"></i> File'
-			, fileoklabel : '<i class="fa fa-flash"></i>Replace'
-			, filetype    : 'image/*'
-			, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
-			, buttoncolor : !thumbnail ? '' : orange
-			, button      : !thumbnail ? '' : function() {
-				bash( [ 'bookmarkreset', path ] );
-			}
-			, ok          : function() {
-				imageReplace( imagefile, 'bookmark' );
-			}
-		} );
-	} else if ( $target.hasClass( 'bk-remove' ) ) {
-		var $img = $this.find( 'img' );
-		if ( $img.length ) {
-			var src = $img.attr( 'src' );
-			var icon = '<img src="'+ src +'">'
-			var ext = src.slice( -4 );
-		} else {
-			var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
-					  +'<br><a class="bklabel">'+ name +'</a>'
-			var ext = '.txt';
-		}
-		info( {
-			  icon    : 'bookmark'
-			, title   : 'Remove Bookmark'
-			, message : icon
-			, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
-			, okcolor : red
-			, ok      : function() {
-				G.bookmarkedit = 1;
-				$.post( cmdphp, {
-					  cmd    : 'bookmarkremove'
-					, path   : path
-					, delete : name
-				} );
-				$this.parent().remove();
-			}
-		} );
-	} else {
-		if ( G.bookmarkedit ) return
-		
-		var path = $( this ).find( '.lipath' ).text();
-		var query = {
-			  query  : 'ls'
-			, string : path
-			, format : [ 'file' ]
-		}
-		query.gmode = G.mode;
-		list( query, function( data ) {
-			data.path = path;
-			data.modetitle = path;
-			G.mode = 'file';
-			renderLibraryList( data );
-		}, 'json' );
-		query.path = path;
-		query.modetitle = path;
-		G.query.push( query );
+	var path = $( this ).find( '.lipath' ).text();
+	if ( G.bookmarkedit ) return
+	
+	var query = {
+		  query  : 'ls'
+		, string : path
+		, format : [ 'file' ]
 	}
+	query.gmode = G.mode;
+	list( query, function( data ) {
+		data.path = path;
+		data.modetitle = path;
+		G.mode = 'file';
+		renderLibraryList( data );
+	}, 'json' );
+	query.path = path;
+	query.modetitle = path;
+	G.query.push( query );
 } ).press( function() {
 	if ( G.drag ) return
 	
@@ -1301,6 +1218,95 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		.css( 'background', 'hsl(0,0%,15%)' )
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', 0.33 );
+} );
+$( '#lib-mode-list' ).on( 'click', '.bk-remove', function() {
+	var $this = $( this ).parent();
+	var path = $this.find( '.lipath' ).text();
+	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	var $img = $this.find( 'img' );
+	if ( $img.length ) {
+		var src = $img.attr( 'src' );
+		var icon = '<img src="'+ src +'">'
+		var ext = src.slice( -4 );
+	} else {
+		var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
+				  +'<br><a class="bklabel">'+ name +'</a>'
+		var ext = '.txt';
+	}
+	info( {
+		  icon    : 'bookmark'
+		, title   : 'Remove Bookmark'
+		, message : icon
+		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
+		, okcolor : red
+		, ok      : function() {
+			G.bookmarkedit = 1;
+			$.post( cmdphp, {
+				  cmd    : 'bookmarkremove'
+				, path   : path
+				, delete : name
+			} );
+			$this.parent().remove();
+		}
+	} );
+} );
+$( '#lib-mode-list' ).on( 'click', '.bk-rename', function() {
+	var $this = $( this ).parent();
+	var path = $this.find( '.lipath' ).text();
+	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	info( {
+		  icon       : 'bookmark'
+		, title      : 'Rename Bookmark'
+		, message    : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
+						+'<br><span class="bklabel">'+ name +'</span></div>'
+		, textlabel  : 'To:'
+		, values     : name
+		, checkblank : 1
+		, oklabel    : '<i class="fa fa-flash"></i>Rename'
+		, ok         : function() {
+			var newname = infoVal();
+			$.post( cmdphp, {
+				  cmd    : 'bookmarkrename'
+				, path   : path
+				, name   : name
+				, rename : newname
+			} );
+			$this.find( '.bklabel' ).text( newname );
+		}
+	} );
+} );
+$( '#lib-mode-list' ).on( 'click', '.bk-cover .iconcover', function() {
+	var $this = $( this ).parent().parent();
+	var path = $this.find( '.lipath' ).text();
+	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	var thumbnail = $this.find( 'img' ).length;
+	if ( thumbnail ) {
+		var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
+				  +'<p class="infoimgname">'+ name +'</p>';
+	} else {
+		var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
+	}
+	// [imagereplace]
+	// select file
+	//    - gif    > [file]   - no canvas
+	//    - others > [base64] - data:image/jpeg;base64,...
+	var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
+	info( {
+		  icon        : 'bookmark'
+		, title       : 'Change Bookmark Thumbnail'
+		, message     : icon
+		, filelabel   : '<i class="fa fa-folder-open"></i> File'
+		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filetype    : 'image/*'
+		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
+		, buttoncolor : !thumbnail ? '' : orange
+		, button      : !thumbnail ? '' : function() {
+			bash( [ 'bookmarkreset', path ] );
+		}
+		, ok          : function() {
+			imageReplace( imagefile, 'bookmark' );
+		}
+	} );
 } );
 var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
