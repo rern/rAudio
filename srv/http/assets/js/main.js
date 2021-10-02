@@ -555,7 +555,7 @@ $( '#volup, #voldn' ).click( function() {
 	}
 } ).press( function( e ) {
 	G.volhold = 1;
-	var voldn = $( e.currentTarget ).prop( 'id' ) === 'voldn';
+	var voldn = e.currentTarget.id === 'voldn';
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
@@ -646,7 +646,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	
 	clearTimeout( G.volumebar );
 	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	var voldn = $( e.currentTarget ).prop( 'id' ) === 'volume-band-dn';
+	var voldn = e.currentTarget.id === 'volume-band-dn';
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
