@@ -125,7 +125,7 @@ $.fn.press = function( arg1, arg2 ) {
 			$( 'body' ).addClass( 'disabled' ); // temporarily disable click
 			callback( event );
 		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', function() {
+	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
 		setTimeout( function() {
 			G.press = 0;
