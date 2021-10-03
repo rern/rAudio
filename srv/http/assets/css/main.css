@@ -157,7 +157,8 @@ i.map.disabled, .map.disabled i {
 	background: var( --cgl );
 }
 .menu .iconcover {
-	margin: -4px 8px !important;
+	margin: -2px 8px 0 !important;
+	vertical-align: middle;
 }
 #settings .gr {
 	font-size: 22px;
