@@ -43,6 +43,7 @@ function bookmarkeditClear() {
 		.css( 'background', '' )
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', '' );
+	G.sortablelibrary.option( 'disabled', false );
 }
 function clearIntervalAll() {
 	// .btn-cmd[!play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 

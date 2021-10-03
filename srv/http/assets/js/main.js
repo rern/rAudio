@@ -1203,6 +1203,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	if ( G.drag ) return
 	
 	G.bookmarkedit = 1;
+	G.sortablelibrary.option( 'disabled', true );
 	G.bklabel = $( this ).find( '.bklabel' );
 	$( '.mode-bookmark' ).each( function() {
 		var $this = $( this );
@@ -1308,21 +1309,19 @@ $( '#lib-mode-list' ).on( 'click', '.bk-cover .iconcover', function() {
 		}
 	} );
 } );
-var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
+G.sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
 	, onStart       : function () {
-		if ( G.bookmarkedit ) bookmarkeditClear();
 		G.drag = 1;
 	}
 	, onEnd         : function () {
 		G.drag = 0;
 	}
 	, onUpdate      : function () {
-		var $blocks = $( '.mode' );
 		var order = [];
-		$blocks.each( function() {
+		$( '.mode' ).each( function() {
 			order.push( $( this ).find( '.lipath' ).text() );
 		} );
 		bash( [ 'ordersave', JSON.stringify( order ) ] );
