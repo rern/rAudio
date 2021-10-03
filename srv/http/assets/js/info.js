@@ -101,6 +101,7 @@ $( ELEMENT ).press( DELEGATE, function( e ) {
 	// DELEGATE: optional
 	// $( e.currentTarget ) = $( this );
 	// cannot be attached with on
+	// must be last if chained
 } );
 events:
 	- while up/down : mouseenter > mousemove > mouseleave > mouseout
@@ -108,6 +109,7 @@ events:
 	- touch         : touchstart > touchmove > touchend
 */
 $.fn.press = function( arg1, arg2 ) {
+	var $this = $( this )
 	var callback, delegate, timeout;
 	if ( !arg2 ) {
 		delegate = '';
@@ -116,20 +118,16 @@ $.fn.press = function( arg1, arg2 ) {
 		delegate = arg1;
 		callback = arg2;
 	}
-	$( this ).on( 'touchstart mousedown', delegate, function( e ) {
-		e.stopImmediatePropagation();
-		e.stopPropagation();
+	$this.on( 'touchstart mousedown', delegate, function( e ) {
+		var event = e;
 		timeout = setTimeout( function() {
 			G.press = 1;
-			callback( e );
+			callback( event );
 		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
-		e.stopImmediatePropagation();
-		e.stopPropagation();
+	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
 		setTimeout( function() { G.press = 0 }, 300 );
 	} );
-	return this // allow chain
 }
 
 $( 'body' ).prepend( `

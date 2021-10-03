@@ -327,7 +327,8 @@ $( '#playlist' ).click( function() {
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
-	if ( [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
+	if ( G.press
+		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].indexOf( e.target.id ) !== -1 ) return
 	
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
@@ -714,6 +715,8 @@ var btnctrl = {
 	, volB    : 'voldn'
 }
 $( '.map' ).click( function() {
+	if ( G.press ) return
+	
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
 		$( '#info' ).removeClass( 'hide' );
 		clearTimeout( G.volumebar );
@@ -1167,11 +1170,16 @@ $( '.mode' ).click( function() {
 	G.query.push( query );
 } );
 $( '#lib-mode-list' ).click( function( e ) {
-	if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) bookmarkeditClear();
+	if ( G.press || !G.bookmarkedit ) return
+	
+	if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
+		bookmarkeditClear();
+		return
+	}
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
-	if ( G.bookmarkedit ) return
+	if ( G.press || G.bookmarkedit ) return
 	
 	var path = $( this ).find( '.lipath' ).text();
 	if ( G.bookmarkedit ) return
@@ -1321,6 +1329,8 @@ var sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), 
 	}
 } );
 $( '#lib-list' ).on( 'click', '.coverart', function() {
+	if ( G.press ) return
+	
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
 	var $this = $( this );
 	var path = $this.find( '.lipath' ).text();
@@ -1385,6 +1395,8 @@ $( '#lib-list' ).press( '.licoverimg',  function( e ) {
 	$( '.menu' ).addClass( 'hide' );
 } );
 $( '#lib-list' ).on( 'click', 'li', function( e ) {
+	if ( G.press ) return
+	
 	if ( $( '.licover .coveredit.cover' ).length ) {
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
