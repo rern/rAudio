@@ -34,9 +34,8 @@ ib {
 }
 .infobookmark {
 	float: left;
-	width: 100px;
+	width: 140px;
 	height: 100px;
-	margin: 10px;
 }
 .infobookmark i {
 	width: 100px;
