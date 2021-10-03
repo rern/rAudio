@@ -1308,7 +1308,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', 0.33 );
 } );
-G.sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
+new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
@@ -1675,7 +1675,7 @@ $( '#button-pl-search' ).click( function() {
 	$( '#pl-manage, #button-pl-search' ).addClass( 'hide' );
 	$( '#pl-search-input' ).focus();
 } );
-var sortableplaylist = new Sortable( document.getElementById( 'pl-list' ), {
+new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
@@ -1692,7 +1692,7 @@ var sortableplaylist = new Sortable( document.getElementById( 'pl-list' ), {
 		} );
 	}
 } );
-var sortablesavedplaylist = new Sortable( document.getElementById( 'pl-savedlist' ), {
+new Sortable( document.getElementById( 'pl-savedlist' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
