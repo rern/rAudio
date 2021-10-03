@@ -1288,7 +1288,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			imageReplace( imagefile, 'bookmark' );
 		}
 	} );
-} ).press( function() {
+} ).press( '.mode-bookmark', function() {
 	if ( G.drag ) return
 	
 	G.bookmarkedit = 1;
