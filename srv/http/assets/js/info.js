@@ -1,5 +1,138 @@
-// info() + banner() + $(...).press(...)
+// $.fn.press(), $fn.swipe(), info(), banner()
 
+// $.fn.press(), $fn.swipe() --------------------------------------------------------
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	// ELEMENT: '#id' or '.class'
+	// DELEGATE: optional
+	// $( e.currentTarget ) = $( this );
+	// cannot be attached with on
+} );
+events:
+	- while up/down : mouseenter > mousemove > mouseleave > mouseout
+	- click         : mousedown > mouseup > click
+	- touch         : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var callback, delegate, timeout;
+	if ( !arg2 ) {
+		delegate = '';
+		callback = arg1;
+	} else {
+		delegate = arg1;
+		callback = arg2;
+	}
+	this.on( 'touchstart mousedown', delegate, function( e ) {
+		timeout = setTimeout( function() {
+			G.press = 1;
+			callback( e );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
+		clearTimeout( timeout );
+		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
+	} );
+	return this // allow chain
+}
+$.fn.swipe = function( callback ) { // no delegate
+	var px = 100;
+	var ms = 200;
+	var xstart;
+	this.on( 'touchstart mousedown', function( e ) {
+		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		G.swipe = 0;
+	} ).on( 'touchmove mousemove', function( e ) {
+		if ( !xstart ) return
+		
+		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		if ( Math.abs( xstart - xmove ) > 10 ) {
+			G.swipe = 1;
+			setTimeout( function() { G.swipe = 0 }, ms );
+		} else {
+			return
+		}
+	} ).on( 'touchend mouseup', function( e ) {
+		if ( !G.swipe ) {
+			xstart = 0;
+			return
+		}
+		
+		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		var xdiff = xstart - xend;
+		if ( Math.abs( xdiff ) > px ) {
+			e.swipe = xdiff > 0 ? 'left' : 'right';
+		} else {
+			e.swipe = false;
+		}
+		callback( e );
+		xstart = 0;
+	} );
+	return this
+}
+// banner -----------------------------------------------------------------------------
+$( 'body' ).prepend( `
+<div id="infoOverlay" class="hide" tabindex="1">
+	<div id="infoBox">
+		<div id="infoTopBg">
+			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
+		</div>
+		<div id="infoContent"></div>
+		<div id="infoButtons"></div>
+	</div>
+</div>
+<div id="banner" class="hide">
+	<div id="bannerIcon"></div>
+	<div id="bannerTitle"></div>
+	<div id="bannerMessage"></div>
+</div>
+` );
+
+$( '#banner' ).click( bannerHide );
+$( '#infoOverlay' ).keyup( function( e ) {
+/*
+all:      [Tab]       - focus / next input
+          [Shift+Tab] - previous input
+radio:    [L] [R]     - check
+checkbox: [space]     - check
+select:   [U] [D]     - check
+*/
+	var key = e.key;
+	if ( key == 'Enter' ) {
+		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+	} else if ( key === 'Escape' ) {
+		G.local = 1; // prevent toggle setting menu
+		setTimeout( function() { G.local = 0 }, 300 );
+		$( '#infoX' ).click();
+	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
+		var rl = key === 'ArrowLeft' ? 'left' : 'right';
+		$( '#infoArrow .fa-arrow-'+ rl ).click();
+	}
+} );
+$( '#infoContent' ).click( function() {
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
+} );
+
+var bannertimeout;
+function banner( title, message, icon, delay ) {
+	clearTimeout( bannertimeout );
+	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
+					? icon 
+					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
+	$( '#bannerIcon' ).html( iconhtml );
+	$( '#bannerTitle' ).html( title );
+	$( '#bannerMessage' ).html( message );
+	$( '#banner' ).removeClass( 'hide' );
+	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
+}
+function bannerHide() {
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	
+	clearTimeout( bannertimeout );
+	$( '#banner' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' );
+	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
+}
+// ------------------------------------------------------------------------------------
 function infoUsage() {
 	console.log( `
 ===============================
@@ -94,137 +227,6 @@ Note:
 - Require fa-font, Selectric.js
 - Single value/function - no need to be array
 ` );
-}
-/*
-$( ELEMENT ).press( DELEGATE, function( e ) {
-	// ELEMENT: '#id' or '.class'
-	// DELEGATE: optional
-	// $( e.currentTarget ) = $( this );
-	// cannot be attached with on
-} );
-events:
-	- while up/down : mouseenter > mousemove > mouseleave > mouseout
-	- click         : mousedown > mouseup > click
-	- touch         : touchstart > touchmove > touchend
-*/
-$.fn.press = function( arg1, arg2 ) {
-	var callback, delegate, timeout;
-	if ( !arg2 ) {
-		delegate = '';
-		callback = arg1;
-	} else {
-		delegate = arg1;
-		callback = arg2;
-	}
-	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( function() {
-			G.press = 1;
-			callback( e );
-		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
-		clearTimeout( timeout );
-		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
-	} );
-	return this // allow chain
-}
-$.fn.swipe = function( callback ) { // no delegate
-	var px = 100;
-	var ms = 200;
-	var xstart;
-	this.on( 'touchstart mousedown', function( e ) {
-		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		G.swipe = 0;
-	} ).on( 'touchmove mousemove', function( e ) {
-		if ( !xstart ) return
-		
-		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		if ( Math.abs( xstart - xmove ) > 10 ) {
-			G.swipe = 1;
-			setTimeout( function() { G.swipe = 0 }, ms );
-		} else {
-			return
-		}
-	} ).on( 'touchend mouseup', function( e ) {
-		if ( !G.swipe ) {
-			xstart = 0;
-			return
-		}
-		
-		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		var xdiff = xstart - xend;
-		if ( Math.abs( xdiff ) > px ) {
-			e.swipe = xdiff > 0 ? 'left' : 'right';
-		} else {
-			e.swipe = false;
-		}
-		callback( e );
-		xstart = 0;
-	} );
-	return this
-}
-
-$( 'body' ).prepend( `
-<div id="infoOverlay" class="hide" tabindex="1">
-	<div id="infoBox">
-		<div id="infoTopBg">
-			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
-		</div>
-		<div id="infoContent"></div>
-		<div id="infoButtons"></div>
-	</div>
-</div>
-<div id="banner" class="hide">
-	<div id="bannerIcon"></div>
-	<div id="bannerTitle"></div>
-	<div id="bannerMessage"></div>
-</div>
-` );
-
-$( '#banner' ).click( bannerHide );
-$( '#infoOverlay' ).keyup( function( e ) {
-/*
-all:      [Tab]       - focus / next input
-          [Shift+Tab] - previous input
-radio:    [L] [R]     - check
-checkbox: [space]     - check
-select:   [U] [D]     - check
-*/
-	var key = e.key;
-	if ( key == 'Enter' ) {
-		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
-	} else if ( key === 'Escape' ) {
-		G.local = 1; // prevent toggle setting menu
-		setTimeout( function() { G.local = 0 }, 300 );
-		$( '#infoX' ).click();
-	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
-		var rl = key === 'ArrowLeft' ? 'left' : 'right';
-		$( '#infoArrow .fa-arrow-'+ rl ).click();
-	}
-} );
-$( '#infoContent' ).click( function() {
-	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} );
-
-var bannertimeout;
-function banner( title, message, icon, delay ) {
-	clearTimeout( bannertimeout );
-	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
-					? icon 
-					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
-	$( '#bannerIcon' ).html( iconhtml );
-	$( '#bannerTitle' ).html( title );
-	$( '#bannerMessage' ).html( message );
-	$( '#banner' ).removeClass( 'hide' );
-	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
-}
-function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	
-	clearTimeout( bannertimeout );
-	$( '#banner' )
-		.addClass( 'hide' )
-		.removeAttr( 'style' );
-	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
 }
 function infoReset() {
 	if ( O.infoscroll ) {
