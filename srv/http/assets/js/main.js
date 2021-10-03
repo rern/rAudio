@@ -683,8 +683,7 @@ $( '#divcover' ).press( function( e ) {
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
 		.after( icoveredit );
-} );
-$( '#divcover' ).on( 'click', '.fa-save', function() {
+} ).on( 'click', '.fa-save', function() {
 	coverartSave();
 } ).on( 'click', '.iconcover', function() {
 	G.status.webradio ? webRadioCoverart () : coverartChange();
@@ -1219,8 +1218,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		.css( 'background', 'hsl(0,0%,15%)' )
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', 0.33 );
-} );
-$( '#lib-mode-list' ).on( 'click', '.bk-remove', function() {
+} ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
@@ -1250,8 +1248,7 @@ $( '#lib-mode-list' ).on( 'click', '.bk-remove', function() {
 			$this.parent().remove();
 		}
 	} );
-} );
-$( '#lib-mode-list' ).on( 'click', '.bk-rename', function() {
+} ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
@@ -1275,8 +1272,7 @@ $( '#lib-mode-list' ).on( 'click', '.bk-rename', function() {
 			$this.find( '.bklabel' ).text( newname );
 		}
 	} );
-} );
-$( '#lib-mode-list' ).on( 'click', '.bk-cover .iconcover', function() {
+} ).on( 'click', '.bk-cover .iconcover', function() {
 	var $this = $( this ).parent().parent();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
@@ -1369,8 +1365,7 @@ Exclude this thumbnail?`
 			$this.remove();
 		}
 	} );
-} );
-$( '#lib-list' ).on( 'click', '.coveredit',  function() {
+} ).on( 'click', '.coveredit',  function() {
 	var $this = $( this );
 	var $img = $this.siblings( 'img' );
 	var $thisli = $this.parent().parent();
