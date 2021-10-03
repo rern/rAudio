@@ -581,7 +581,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	mpcSeekBar( pageX );
 } ).on( 'touchend mouseup mouseleave', function( e ) {
-	if ( G.status.player !== 'mpd' || G.status.stream ) return
+	if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
 	
 	G.down = 0;
 	G.drag = 0;
@@ -602,7 +602,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	volumeBarSet( pageX );
 } ).on( 'touchend mouseup mouseleave', function( e ) {
-	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
+	if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	G.volumebar = setTimeout( volumeBarHide, 3000 );
 	G.down = 0;
