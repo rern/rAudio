@@ -116,14 +116,14 @@ $.fn.press = function( arg1, arg2 ) {
 		delegate = arg1;
 		callback = arg2;
 	}
-	$( this ).on( 'touchstart mousedown', delegate, function( e ) {
+	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( function() {
 			G.press = 1;
 			callback( e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		clearTimeout( timeout );
-		setTimeout( function() { G.press = 0 }, 300 );
+		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
 }
