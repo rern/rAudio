@@ -226,7 +226,7 @@ $( '.boxed-group .infobtn' ).click( function () {
 			}
 		} );
 	}
-} ).press( function( e ) { // from info.js
+} ).press( function( e ) {
 	var $this = $( e.currentTarget );
 	alias = $this.parent().attr( 'alias' );
 	title = addons[ alias ].title.replace( / *\**$/, '' );

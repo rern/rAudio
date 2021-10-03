@@ -96,7 +96,7 @@ statusRefresh();
 
 $( '.page' ).click( function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-} ).swipe( function( e ) { // from info.js
+} ).swipe( function( e ) {
 	var $target = $( e.target );
 	var targetid = e.target.id;
 	if ( G.display.noswipe || !e.swipe || G.drag || G.down
