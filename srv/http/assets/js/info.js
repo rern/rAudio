@@ -120,14 +120,12 @@ $.fn.press = function( arg1, arg2 ) {
 		e.stopImmediatePropagation();
 		e.stopPropagation();
 		timeout = setTimeout( function() {
-			G.press = 1;
 			callback( e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		e.stopImmediatePropagation();
 		e.stopPropagation();
 		clearTimeout( timeout );
-		setTimeout( function() { G.press = 0 }, 300 );
 	} );
 	return this // allow chain
 }
