@@ -91,9 +91,6 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css">' );
 	$.getScript( '/assets/js/shortcut.js' );
-	var pageX = function( e ) { return e.pageX }
-} else {
-	var pageX = function( e ) { return e.originalEvent.touches[ 0 ].pageX }
 }
 	
 statusRefresh();
@@ -109,19 +106,21 @@ $( '.page' ).click( function( e ) {
 		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 	) return
 
-	G.xstart = pageX( e );
+	G.xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( !G.xstart ) return
 	
-	if ( Math.abs( G.xstart - pageX( e ) ) < 10 ) return
+	var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	if ( Math.abs( G.xstart - xmove ) < 10 ) return
 	
 	G.swipe = 1;
 	setTimeout( function() { G.swipe = 0 }, 600 );
 } ).on( 'touchend mouseup', function( e ) { // no mouseleave for swipe
+	G.xstart = 0;
 	if ( !G.swipe ) return
 	
-	var xdiff = G.xstart - pageX( e );
-	G.xstart = 0;
+	var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	var xdiff = G.xstart - xend;
 	if ( Math.abs( xdiff ) > G.xswipe ) $( '#'+ pagenext[ G.page ][ xdiff > 0 ? 1 : 0 ] ).click();
 } );
 
@@ -579,13 +578,15 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 	
 	G.drag = 1;
 	e.preventDefault();
-	mpcSeekBar( pageX( e ) );
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	mpcSeekBar( pageX );
 } ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( G.status.player !== 'mpd' || G.status.stream ) return
 	
 	G.down = 0;
 	G.drag = 0;
-	mpcSeekBar( pageX( e ) );
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	mpcSeekBar( pageX );
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	hideGuide();
@@ -598,7 +599,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	
 	G.drag = 1;
 	e.preventDefault();
-	volumeBarSet( pageX( e ) );
+	var pageX = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	volumeBarSet( pageX );
 } ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
