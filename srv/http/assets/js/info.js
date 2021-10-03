@@ -127,6 +127,41 @@ $.fn.press = function( arg1, arg2 ) {
 	} );
 	return this // allow chain
 }
+$.fn.swipe = function( callback ) { // no delegate
+	var px = 100;
+	var ms = 200;
+	var xstart;
+	this.on( 'touchstart mousedown', function( e ) {
+		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		G.swipe = 0;
+	} ).on( 'touchmove mousemove', function( e ) {
+		if ( !xstart ) return
+		
+		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		if ( Math.abs( xstart - xmove ) > 10 ) {
+			G.swipe = 1;
+			setTimeout( function() { G.swipe = 0 }, ms );
+		} else {
+			return
+		}
+	} ).on( 'touchend mouseup', function( e ) {
+		if ( !G.swipe ) {
+			xstart = 0;
+			return
+		}
+		
+		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		var xdiff = xstart - xend;
+		if ( Math.abs( xdiff ) > px ) {
+			e.swipe = xdiff > 0 ? 'left' : 'right';
+		} else {
+			e.swipe = false;
+		}
+		callback( e );
+		xstart = 0;
+	} );
+	return this
+}
 
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide" tabindex="1">

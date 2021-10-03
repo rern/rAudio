@@ -31,7 +31,6 @@ var G = {
 	, scrolltop     : {}
 	, similarpl     : -1
 	, status        : {}
-	, xswipe        : 100
 }
 var cmdphp = 'cmd.php';
 var data = {}
@@ -97,38 +96,16 @@ statusRefresh();
 
 $( '.page' ).click( function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-} ).on( 'touchstart mousedown', function( e ) {
+} ).swipe( function( e ) { // from info.js
 	var $target = $( e.target );
 	var targetid = e.target.id;
-	if ( G.display.noswipe || G.drag || G.down
-		|| targetid === 'time-knob'|| targetid === 'volume-knob'
-		|| targetid === 'time-band'|| targetid === 'volume-band'
+	if ( G.display.noswipe || !e.swipe || G.drag || G.down
+		|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].indexOf( e.target.id ) !== -1
 		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 	) return
-
-	G.xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	G.swipe = 0;
-} ).on( 'touchmove mousemove', function( e ) {
-	if ( !G.xstart ) return
 	
-	var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	if ( Math.abs( G.xstart - xmove ) > 10 ) {
-		G.swipe = 1;
-		setTimeout( function() { G.swipe = 0 }, 200 );
-	}
-} ).on( 'touchend mouseup', function( e ) { // no mouseleave for swipe
-	if ( !G.swipe ) {
-		G.xstart = 0;
-		return
-	}
-	
-	var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	var xdiff = G.xstart - xend;
-	if ( Math.abs( xdiff ) > G.xswipe ) $( '#'+ pagenext[ G.page ][ xdiff > 0 ? 1 : 0 ] ).click();
-	G.xstart = 0;
-	
+	$( '#'+ pagenext[ G.page ][ e.swipe === 'left' ? 1 : 0 ] ).click();
 } );
-
 $( '#loader' ).click( function() {
 	loaderHide();
 } );
