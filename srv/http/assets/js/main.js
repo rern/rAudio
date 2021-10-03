@@ -107,21 +107,26 @@ $( '.page' ).click( function( e ) {
 	) return
 
 	G.xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+	G.swipe = 0;
 } ).on( 'touchmove mousemove', function( e ) {
 	if ( !G.xstart ) return
 	
 	var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-	if ( Math.abs( G.xstart - xmove ) < 10 ) return
-	
-	G.swipe = 1;
-	setTimeout( function() { G.swipe = 0 }, 600 );
+	if ( Math.abs( G.xstart - xmove ) > 10 ) {
+		G.swipe = 1;
+		setTimeout( function() { G.swipe = 0 }, 200 );
+	}
 } ).on( 'touchend mouseup', function( e ) { // no mouseleave for swipe
-	G.xstart = 0;
-	if ( !G.swipe ) return
+	if ( !G.swipe ) {
+		G.xstart = 0;
+		return
+	}
 	
 	var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
 	var xdiff = G.xstart - xend;
 	if ( Math.abs( xdiff ) > G.xswipe ) $( '#'+ pagenext[ G.page ][ xdiff > 0 ? 1 : 0 ] ).click();
+	G.xstart = 0;
+	
 } );
 
 $( '#loader' ).click( function() {
@@ -1197,26 +1202,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	query.path = path;
 	query.modetitle = path;
 	G.query.push( query );
-} ).press( function() {
-	if ( G.drag ) return
-	
-	G.bookmarkedit = 1;
-	G.sortablelibrary.option( 'disabled', true );
-	G.bklabel = $( this ).find( '.bklabel' );
-	$( '.mode-bookmark' ).each( function() {
-		var $this = $( this );
-		var path = $this.find( '.lipath' ).text();
-		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
-		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		bash( [ 'coverexists', path ], function( cover ) {
-			if ( !cover ) buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
-			$this.append( buttonhtml );
-		} );
-	} );
-	$( '.mode-bookmark' )
-		.css( 'background', 'hsl(0,0%,15%)' )
-		.find( '.fa-bookmark, .bklabel, img' )
-		.css( 'opacity', 0.33 );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var path = $this.find( '.lipath' ).text();
@@ -1303,6 +1288,25 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			imageReplace( imagefile, 'bookmark' );
 		}
 	} );
+} ).press( function() {
+	if ( G.drag ) return
+	
+	G.bookmarkedit = 1;
+	G.bklabel = $( this ).find( '.bklabel' );
+	$( '.mode-bookmark' ).each( function() {
+		var $this = $( this );
+		var path = $this.find( '.lipath' ).text();
+		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
+		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
+		bash( [ 'coverexists', path ], function( cover ) {
+			if ( !cover ) buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+			$this.append( buttonhtml );
+		} );
+	} );
+	$( '.mode-bookmark' )
+		.css( 'background', 'hsl(0,0%,15%)' )
+		.find( '.fa-bookmark, .bklabel, img' )
+		.css( 'opacity', 0.33 );
 } );
 G.sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
@@ -1310,6 +1314,7 @@ G.sortablelibrary = new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, forceFallback : true // fix: iphone safari
 	, onStart       : function () {
 		G.drag = 1;
+		bookmarkeditClear();
 	}
 	, onEnd         : function () {
 		G.drag = 0;
@@ -1345,9 +1350,9 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 } ).press( '.coverart', function( e ) {
 	var $this = $( e.currentTarget );
 	var src = $this.find( 'img' ).attr( 'src' );
-	var el = G.display.albumbyartist ? [ '.coverart2', '.coverart1' ] : [ '.coverart1', '.coverart2' ];
-	var album = $this.find( el[ 0 ] ).text();
-	var artist = $this.find( el[ 1 ] ).text();
+	var i = G.display.albumbyartist ? '21' : '12';
+	var album = $this.find( '.coverart'+ i[ 0 ] ).text();
+	var artist = $this.find( '.coverart'+ i[ 1 ] ).text();
 	info( {
 		  icon    : 'album'
 		, title   : 'Album Thumbnail'
