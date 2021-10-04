@@ -182,11 +182,27 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-[[ -n $Acard ]] && card=$card || card=0
-echo "\
-defaults.pcm.card $card
-defaults.ctl.card $card" > /etc/asound.conf
 [[ -z $Acard ]] && restartMPD && exit
+
+[[ -n $Acard ]] && card=$card || card=0
+asound="\
+defaults.pcm.card $card
+defaults.ctl.card $card"
+if [[ -e $dirsystem/equalizer ]]; then
+	asound+='
+ctl.equal {
+	type equal;
+}
+pcm.plugequal {
+	type equal;
+	slave.pcm "plug:dmix";
+}
+pcm.!default {
+	type plug;
+	slave.pcm plugequal;
+}'
+fi
+echo "$asound" > /etc/asound.conf
 
 wm5102card=$( aplay -l \
 				| grep snd_rpi_wsp \
