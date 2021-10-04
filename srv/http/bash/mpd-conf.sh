@@ -147,7 +147,6 @@ audio_output {
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
 	format         "44100:16:1"
-	buffer_time    "1000000"
 }'
 fi
 
