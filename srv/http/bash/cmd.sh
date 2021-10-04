@@ -473,7 +473,7 @@ equalizer )
 	type=${args[1]} # none = get values
 	name=${args[2]}
 	newname=${args[3]}
-	flat='66 66 66 66 66 66 66 66 66 66'
+	flat='60 60 60 60 60 60 60 60 60 60'
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
 			[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )

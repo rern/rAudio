@@ -398,7 +398,7 @@ function equalizer() {
 			, values     : data.values
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', '550px' );
-				var vflat = '66'.repeat( 10 );
+				var vflat = '60606060606060606060';
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				equalizerButtonSet();
