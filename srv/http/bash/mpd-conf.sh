@@ -194,7 +194,7 @@ ctl.equal {
 }
 pcm.plugequal {
 	type equal;
-	slave.pcm "plug:dmix";
+	slave.pcm "plughw:'$card',0";
 }
 pcm.!default {
 	type plug;
