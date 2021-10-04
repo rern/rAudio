@@ -376,6 +376,8 @@ $( '#title, #guide-lyrics' ).click( function() {
 	artist = artist.replace( /(["`])/g, '\\$1' );
 	var title = $( '#title' ).text().replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
+	var src = $( '#coverart' ).attr( 'src' );
+	G.lyricsCover = src.slice( 0, 7 ) === '/asses' ? '' : src;
 	bash( [ 'lyricsexist', artist, title, file ], function( data ) {
 		if ( data ) {
 			G.lyricsTitle = title;
@@ -389,10 +391,9 @@ $( '#title, #guide-lyrics' ).click( function() {
 		info( {
 			  icon        : 'lyrics'
 			, title       : 'Bio / Lyrics'
-			, width       : 500
 			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
 			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
-			, boxwidth    : 'max'
+			, boxwidth    : 320
 			, checkbox    : noparen ? '' : [ 'Title with parentheses content' ]
 			, beforeshow  : noparen ? '' : function() {
 				$( '#infoContent input' ).change( function() {

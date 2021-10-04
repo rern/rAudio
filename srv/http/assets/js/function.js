@@ -937,7 +937,7 @@ function lyricsShow( data ) {
 	if ( data !== 'current' ) {
 		G.lyrics = data;
 		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-		$( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' )  );
+		if ( G.lyricsCover ) $( '#divlyricstitle img' ).attr( 'src', G.lyricsCover );
 		$( '#lyricstitle' ).text( G.lyricsTitle );
 		$( '#lyricsartist' ).text( G.lyricsArtist );
 		$( '#lyricstext' ).html( lyricshtml );
