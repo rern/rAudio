@@ -241,9 +241,9 @@ function infoReset() {
 		.addClass( 'hide' )
 		.css( 'pointer-events', 'none' ); // prevent click OK on consecutive info
 	$( '#infoBox' ).css( {
-		  margin     : ''
-		, width      : ''
-		, visibility : 'hidden'
+		  margin  : ''
+		, width   : ''
+		, opacity : 0
 	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
 	$( '#infoIcon, #infoTitle' ).empty();
@@ -513,10 +513,7 @@ function info( json ) {
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
-		// show to get width - still visibility hidden
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields - omit .selectric-input for select
 		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
@@ -648,6 +645,8 @@ function info( json ) {
 }
 
 function infoAlignVertical() { // make infoBox scrollable
+	$( '#infoBox' ).css( 'opacity', 0 );
+	$( '#infoOverlay' ).removeClass( 'hide' ); // show to get width
 	setTimeout( function() {
 		var boxH = $( '#infoBox' ).height();
 		var wH = window.innerHeight;
@@ -655,14 +654,29 @@ function infoAlignVertical() { // make infoBox scrollable
 		$( 'html, body' ).scrollTop( 0 );
 		$( '#infoBox' ).css( {
 			  'margin-top' : top +'px'
-			, 'visibility' : 'visible'
+			, 'opacity'    : 1
 		} );
 		$( '#infoOverlay' ).css( {
 			  'height'         : document.body.clientHeight
 			, 'pointer-events' : ''
-		} );
-		$( '#infoContent input:text' ).prop( 'spellcheck', false );
+		} ).focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 	}, 200 );
+}
+function infoSetValues() {
+	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
+	var $this, type, val;
+	O.inputs.each( function( i, e ) {
+		$this = $( e );
+		type = $this.prop( 'type' );
+		val = O.values[ i ];
+		if ( type === 'radio' ) { // reselect radio by name
+			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
+		} else if ( type === 'checkbox' ) {
+			$this.prop( 'checked',  val );
+		} else { // text, password, textarea, select
+			$this.val( val );
+		}
+	} );
 }
 function infoVal() {
 	var values = [];
@@ -852,22 +866,6 @@ function selectricRender() {
 		ctx.rotate( Math.PI / 2 );
 		ctx.drawImage( img, -cw, -ch );
 		image.src = canvas.toDataURL( 'image/jpeg' );
-	} );
-}
-function infoSetValues() {
-	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
-	var $this, type, val;
-	O.inputs.each( function( i, e ) {
-		$this = $( e );
-		type = $this.prop( 'type' );
-		val = O.values[ i ];
-		if ( type === 'radio' ) { // reselect radio by name
-			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
-		} else if ( type === 'checkbox' ) {
-			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select
-			$this.val( val );
-		}
 	} );
 }
 function switchRL( rl, fn ) {
