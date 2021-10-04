@@ -231,6 +231,7 @@
 	#eq .hz.narrow {
 		display: block;
 		margin-left: -2px;
+		white-space: nowrap;
 	}
 	#eq .hz a { width: 40px }
 	#infoRange input::-webkit-slider-thumb { width: 33px; }
@@ -264,14 +265,27 @@
 	}
 	#eq .bottom { top: -285px }
 }
-@media ( max-height: 320px ) {
-	#eq { height: 220px }
+@media ( max-height: 320px ) and ( max-width: 570px ) {
+	#eq { height: 225px }
 	#eqflatline { margin-top: 97px }
+	#eq .hz { white-space: unset }
 	#infoRange.vertical {
-		top: -180px;
-		width: 155px;
+		top: -175px;
+		width: 160px;
 	}
-	#eq .bottom { top: -345px }
+	#eq .hz a { width: 50px }
+	#infoRange.vertical input { height: 50px }
+	#infoRange input::-webkit-slider-thumb { width: 40px; }
+	#infoRange input::-moz-range-thumb { width: 40px; }
+	#eq .bottom { top: -337px }
+}
+@media ( max-height: 320px ) and ( max-width: 480px ) {
+	#infoRange.vertical { top: -150px }
+	#eq .hz a { width: 45px }
+	#infoRange.vertical input { height: 45px }
+	#infoRange input::-webkit-slider-thumb { width: 35px; }
+	#infoRange input::-moz-range-thumb { width: 35px; }
+	#eq .bottom { top: -285px }
 }
 /* info */
 .infobtn,
