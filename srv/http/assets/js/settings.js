@@ -102,8 +102,6 @@ function disableSwitch( id, truefalse ) {
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
-		G.wH = window.innerHeight;
-		G.wW = window.innerWidth;
 	} catch( e ) {
 		var msg = e.message.split( ' ' );
 		var pos = msg.pop();
@@ -164,14 +162,6 @@ function showContent() {
 		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
-// portrait / landscape
-$( window ).on( 'resize', () => {
-	if ( G.wH > G.wW === window.innerHeight > window.innerWidth ) return
-	
-	G.wH = window.innerHeight;
-	G.wW = window.innerWidth;
-	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) infoAlignVertical();
-} );
 // active / inactive window /////////
 var active = 1;
 connect = () => {
@@ -394,7 +384,7 @@ $( '#help' ).click( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
-	if ( G.wH > 570 ) {
+	if ( window.innerHeight > 570 ) {
 		var visible = $( '.help-block:not(.hide)' ).length > 0;
 		$( this ).toggleClass( 'bl', !visible );
 		$( '.help-block' ).toggleClass( 'hide', visible );

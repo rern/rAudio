@@ -243,7 +243,6 @@ function infoReset() {
 	$( '#infoBox' ).css( {
 		  margin  : ''
 		, width   : ''
-		, opacity : 0
 	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
 	$( '#infoIcon, #infoTitle' ).empty();
@@ -645,22 +644,12 @@ function info( json ) {
 }
 
 function infoAlignVertical() { // make infoBox scrollable
-	$( '#infoBox' ).css( 'opacity', 0 );
 	$( '#infoOverlay' ).removeClass( 'hide' ); // show to get width
-	setTimeout( function() {
-		var boxH = $( '#infoBox' ).height();
-		var wH = window.innerHeight;
-		var top = boxH < wH ? ( wH - boxH ) / 2 : 20;
-		$( 'html, body' ).scrollTop( 0 );
-		$( '#infoBox' ).css( {
-			  'margin-top' : top +'px'
-			, 'opacity'    : 1
-		} );
-		$( '#infoOverlay' ).css( {
-			  'height'         : document.body.clientHeight
-			, 'pointer-events' : ''
-		} ).focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
-	}, 200 );
+	$( 'html, body' ).scrollTop( 0 );
+	$( '#infoOverlay' ).css( {
+		  'height'         : document.body.clientHeight
+		, 'pointer-events' : ''
+	} ).focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 }
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];

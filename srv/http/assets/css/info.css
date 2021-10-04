@@ -368,9 +368,12 @@ hr {
 	color: var( --cw );
 }
 #infoBox {
+	position: relative;
+	top: 50vh;
+	transform: translateY( -50% ); /* of #infoBox height */
 	width: 400px;
 	max-width: 98%;
-	margin: 20px auto;
+	margin: 0 auto;
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;

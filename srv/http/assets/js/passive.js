@@ -28,7 +28,6 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			}, 0 );
 		}
 	}
-	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) infoAlignVertical();
 } );
 // active / inactive window /////////
 var active = 1;
