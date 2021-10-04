@@ -24,6 +24,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			}, 0 );
 		}
 	}
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) alignVertical();
 } );
 // active / inactive window /////////
 var active = 1;

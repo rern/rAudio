@@ -163,6 +163,10 @@ function showContent() {
 		$( '#data' ).html( JSON.stringify( G, null, 2 ) );
 	}
 }
+// portrait / landscape
+$( window ).on( 'resize', () => {
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) alignVertical();
+} );
 // active / inactive window /////////
 var active = 1;
 connect = () => {
