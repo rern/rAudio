@@ -390,7 +390,7 @@ function renderPage( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'asound', 'mpdconf', 'mount' ].forEach( function( id ) {
+	[ 'asound', 'mpd', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	if ( $( '#infoRange .value' ).length ) {
