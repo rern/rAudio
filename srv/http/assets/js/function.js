@@ -379,22 +379,22 @@ function equalizer() {
 		var content = `
 <div id="eq">
 <div id="eqflatline"></div>
-<div class="infomessage">Hz
-<div class="hz"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1000</a><a>2000</a><a>4000</a><a>8000</a><a>16000</a></div></div>
+<div class="hz full"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1000</a><a>2000</a><a>4000</a><a>8000</a><a>16000</a></div>
+<div class="hz narrow"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1k</a><a>2k</a><a>4k</a><a>8k</a><a>16k</a></div>
 <div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
-<br>
-<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
-<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
-<i id="eqsave" class="ibtn fa fa-save"></i>
-<select id="eqpreset">${ options }</select><input id="eqname" type="text" class="hide">
-<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
-<i id="eqflat" class="ibtn fa fa-set0"></i>
+<div class="bottom">
+	<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
+	<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
+	<i id="eqsave" class="ibtn fa fa-save"></i>
+	<select id="eqpreset">${ options }</select><input id="eqname" type="text" class="hide">
+	<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
+	<i id="eqflat" class="ibtn fa fa-set0"></i>
+<div>
 </div>`;
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, content    : content
-			, boxwidth   : 170
 			, values     : data.values
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', '550px' );

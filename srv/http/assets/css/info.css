@@ -106,7 +106,7 @@
 }
 #infoRange input::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
-	width: 40px;
+	width: 20px;
 	border: none;
 	border-radius: 4px;
 	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -161,10 +161,15 @@
 	text-align: center;
 }
 /* equalizer */
-.infomessage .hz {
+#eq {
+	height: 375px;
+}
+#eq .hz {
 	white-space: nowrap;
 }
-.infomessage .hz a {
+#eq .hz.full { display: block }
+#eq .hz.narrow { display: none }
+#eq .hz a {
 	display: inline-block;
 	width: 50px;
 	height: 30px;
@@ -174,15 +179,17 @@
 }
 #eqflatline {
 	position: absolute;
-	margin: 170px 10px;
-	width: 510px;
+	margin: 157px 0;
+	width: 530px;
+	max-width: 95%;
 	height: 1px;
 	background: var( --cgl );
 }
 #infoRange.vertical {
-	margin-left: -50px;
-	width: 400px;
-	height: 270px;
+	position: relative;
+	width: 300px;
+	top: -100px;
+	margin: 0 auto;
 	transform : rotateZ( -90deg );
 	z-index: 0;
 }
@@ -190,14 +197,21 @@
 	display: block;
 	position: relative;
 	height: 50px;
-	right: -70px;
+	max-width: 100%;
 }
+#eq .selectric-wrapper,
+#eq .selectric,
+#eq .selectric-items { width: 180px }
 #infoRange.vertical input::-webkit-slider-thumb {
 	margin-top: -18px;
 	transform : rotateZ( 90deg );
 }
 #infoRange.vertical input::-moz-range-thumb {
 	transform : rotateZ( 90deg );
+}
+#eq .bottom {
+	position: relative;
+	top: -185px;
 }
 #eq .ibtn {
 	width: 45px;
@@ -217,7 +231,35 @@
 	pointer-events: none;
 	color: var( --cg60 );
 }
-
+@media ( max-width: 420px ) {
+	#eq .hz.full { display: none }
+	#eq .hz.narrow {
+		display: block;
+		margin-left: -2px;
+	}
+	#eq .hz a { width: 40px }
+	#infoRange input::-webkit-slider-thumb { width: 33px; }
+	#infoRange input::-moz-range-thumb { width: 33px; }
+	#infoRange.vertical { top: -50px }
+	#infoRange.vertical input { height: 40px }
+	#eq .selectric-wrapper,
+	#eq .selectric,
+	#eq .selectric-items { width: 160px }
+	#eq .bottom { top: -85px }
+	#eq .ibtn { width: 35px }
+}
+@media ( max-width: 380px ) {
+	#eq .hz.narrow { margin-left: 0 }
+	#eq .hz a { width: 35px }
+	#infoRange.vertical { top: -25px }
+	#infoRange.vertical input { height: 35px }
+	#infoRange input::-webkit-slider-thumb { width: 28px; }
+	#infoRange input::-moz-range-thumb { width: 28px; }
+	#eq .bottom { top: -35px }
+}
+@media ( max-width: 320px ) {
+	#eq .hz.narrow { margin-left: -5px }
+}
 /* info */
 .infobtn,
 #infoOverlay input[type=radio],
