@@ -237,9 +237,7 @@ function infoReset() {
 	$( '#infoContent input, #infoFileBox' ).off( 'change keyup paste cut' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
-	$( '#infoOverlay' )
-		.addClass( 'hide' )
-		.css( 'pointer-events', 'none' ); // prevent click OK on consecutive info
+	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoBox' ).css( {
 		  margin  : ''
 		, width   : ''
@@ -283,7 +281,10 @@ function info( json ) {
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		infoAlignVertical();
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
 	
@@ -528,8 +529,6 @@ function info( json ) {
 		} );
 		// assign values
 		if ( O.values ) infoSetValues();
-		// set vertical position
-		infoAlignVertical();
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
@@ -638,19 +637,15 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( 'beforeshow' in O ) O.beforeshow();
-	} );
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		$( 'html, body' ).scrollTop( 0 );
+		} );
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
 
-function infoAlignVertical() { // make infoBox scrollable
-	$( '#infoOverlay' ).removeClass( 'hide' ); // show to get width
-	$( 'html, body' ).scrollTop( 0 );
-	$( '#infoOverlay' ).css( {
-		  'height'         : document.body.clientHeight
-		, 'pointer-events' : ''
-	} ).focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
-}
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 	var $this, type, val;
