@@ -58,7 +58,7 @@ function clearIntervalAll() {
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '#lib-list li:eq( 0 )' ).click();
-	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
+	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
 		.before( '<canvas id="canvascolor"></canvas>' );
@@ -146,10 +146,9 @@ function contextmenuScroll( $menu, menutop ) {
 		.toggleClass( 'fixed', fixedmenu )
 		.removeClass( 'hide' );
 	var targetB = $menu.offset().top + $menu.height();
-	var wH = window.innerHeight;
 	var topH = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
 	var wT = $( window ).scrollTop();
-	if ( targetB > ( wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	if ( targetB > ( G.wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - G.wH + 42 } );
 }
 function coverartChange() {
 	if ( G.playback ) {
@@ -276,10 +275,9 @@ function curlPackage( pkg, active, enabled ) {
 function displayBars() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) || 'coverTL' in G ) return
 	
-	var wH = window.innerHeight;
 	var wW = document.body.clientWidth;
-	var smallscreen = wH < 590 ||wW < 500;
-	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
+	var smallscreen = G.wH < 590 ||wW < 500;
+	var lcd = ( G.wH <= 320 && wW <= 480 ) || ( G.wH <= 480 && wW <= 320 );
 	if ( !G.display.bars || ( smallscreen && !G.display.barsalways ) || lcd ) {
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
@@ -325,7 +323,7 @@ function displayPlayback() {
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
 	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
-	if ( ( !time || !volume ) && window.innerWidth > 500 ) {
+	if ( ( !time || !volume ) && G.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
 		if ( !time && !volume ) {
 			$cover.css( { width: '100%', 'max-width': '100%' } );
@@ -344,12 +342,11 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
-	var wW = window.innerWidth;
 	if ( G.display.vumeter ) {
 		var aligntop = 'stretch';
 	} else if ( $( '.btn-group' ).is( ':hidden' ) ) {
 		var align = 'center';
-	} else if ( time && volume && ( wW < 900 && wW > 750 ) || wW < 600 ) {
+	} else if ( time && volume && ( G.wW < 900 && G.wW > 750 ) || G.wW < 600 ) {
 		var align = 'stretch';
 	} else {
 		var align = 'center';
@@ -1226,7 +1223,7 @@ function renderLibraryList( data ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
 		}
-		var pH = window.innerHeight - 80;
+		var pH = G.wH - 80;
 		pH -= G.albumlist ? $( '.coverart' ).height() : 49;
 		if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
 		$( '#lib-list p' )

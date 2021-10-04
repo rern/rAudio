@@ -1,4 +1,8 @@
 $( window ).on( 'resize', () => { // portrait / landscape
+	if ( G.wH > G.wW === window.innerHeight > window.innerWidth ) return
+	
+	G.wH = window.innerHeight;
+	G.wW = window.innerWidth;
 	displayBars();
 	if ( G.playback ) {
 		displayPlayback();
@@ -11,7 +15,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) +'px' );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ) +'px' );
 				}
 			}, 0 );
 		}
@@ -20,7 +24,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
+				$( '#pl-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
 			}, 0 );
 		}
 	}

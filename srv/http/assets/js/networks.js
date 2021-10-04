@@ -70,8 +70,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		.removeClass( 'hide' )
 		.css( 'top', menutop );
 	var targetB = $menu.offset().top + menuH;
-	var wH = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	if ( targetB > G.wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - G.wH + 42 } );
 } );
 $( 'body' ).click( function( e ) {
 	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) {

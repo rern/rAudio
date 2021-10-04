@@ -31,6 +31,8 @@ var G = {
 	, scrolltop     : {}
 	, similarpl     : -1
 	, status        : {}
+	, wH            : window.innerHeight
+	, wW            : window.innerWidth
 }
 var cmdphp = 'cmd.php';
 var data = {}
@@ -118,7 +120,7 @@ $( '#coverart' ).on( 'load', function() {
 		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 	}
-	if ( ( window.innerWidth - $( '#divcover' ).width() ) < 80 ) {
+	if ( ( G.wW - $( '#divcover' ).width() ) < 80 ) {
 		$( '#volume-band-dn' ).css( 'left', 0 );
 		$( '#volume-band-up' ).css( 'right', 0 );
 	} else {
@@ -284,7 +286,7 @@ $( '#library, #button-library' ).click( function() {
 	}
 } );
 $( '#playback' ).click( function() {
-	if ( G.playback && ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
+	if ( G.playback && ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
 		$( '#stop' ).click();
 	} else {
 		getPlaybackStatus();
@@ -767,7 +769,7 @@ $( '.map' ).click( function() {
 		) return
 		
 		if ( !( 'coverTL' in G )
-			&& ( window.innerHeight - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
+			&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 			&& !G.display.volumenone
 			&& !$( '#volume-knob' ).is( ':visible' )
 		) {
@@ -780,7 +782,7 @@ $( '.map' ).click( function() {
 			return
 		}
 		
-		if ( window.innerWidth < 545 && window.innerWidth < window.innerHeight ) return
+		if ( G.wW < 545 && G.wW < G.wH ) return
 		
 		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons' ];
 		if ( 'coverTL' in G ) {
