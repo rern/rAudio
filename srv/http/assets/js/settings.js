@@ -165,7 +165,7 @@ function showContent() {
 }
 // portrait / landscape
 $( window ).on( 'resize', () => {
-	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) alignVertical();
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) infoAlignVertical();
 } );
 // active / inactive window /////////
 var active = 1;

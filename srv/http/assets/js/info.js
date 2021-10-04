@@ -284,7 +284,7 @@ function info( json ) {
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		alignVertical();
+		infoAlignVertical();
 		return;
 	}
 	
@@ -386,7 +386,7 @@ function info( json ) {
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButtons' ).one( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
-					setValues();
+					infoSetValues();
 					$( this ).remove();
 					$( '#infoFileLabel' ).removeClass( 'hide' );
 					$( '.infoimgnew, .infoimgwh' ).remove();
@@ -531,9 +531,9 @@ function info( json ) {
 			}
 		} );
 		// assign values
-		if ( O.values ) setValues();
+		if ( O.values ) infoSetValues();
 		// set vertical position
-		alignVertical();
+		infoAlignVertical();
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
@@ -647,7 +647,7 @@ function info( json ) {
 	}, 0 );
 }
 
-function alignVertical() { // make infoBox scrollable
+function infoAlignVertical() { // make infoBox scrollable
 	setTimeout( function() {
 		var boxH = $( '#infoBox' ).height();
 		var wH = window.innerHeight;
@@ -854,7 +854,7 @@ function selectricRender() {
 		image.src = canvas.toDataURL( 'image/jpeg' );
 	} );
 }
-function setValues() {
+function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 	var $this, type, val;
 	O.inputs.each( function( i, e ) {

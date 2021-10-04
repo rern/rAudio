@@ -24,7 +24,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			}, 0 );
 		}
 	}
-	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) alignVertical();
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) infoAlignVertical();
 } );
 // active / inactive window /////////
 var active = 1;
@@ -294,7 +294,7 @@ function psEqualizer( data ) {
 	$( '#eqpreset' ).html( options );
 	data.values.push( G.eqcurrent );
 	O.values = data.values;
-	setValues();
+	infoSetValues();
 	selectricRender();
 	equalizerButtonSet();
 }
