@@ -598,6 +598,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } ).click( function() {
 	if ( G.status.volumenone ) return
 	
+	G.volumebar = setTimeout( volumeBarHide, 3000 );
 	$( '#volume-text' )
 		.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
 		.toggleClass( 'bl', G.status.volumemute !== 0 );
@@ -777,7 +778,7 @@ $( '.map' ).click( function() {
 				$( '#info' ).removeClass( 'hide' );
 			} else {
 				$( '#info' ).addClass( 'hide' );
-				$( '#volume-band' ).mouseup();
+				$( '#volume-band' ).click();
 			}
 			return
 		}

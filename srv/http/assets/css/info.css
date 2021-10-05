@@ -228,6 +228,7 @@
 	color: var( --cg60 );
 }
 @media ( max-width: 420px ) {
+	#infoRange.vertical { top: -50px }
 	#eq .hz.full { display: none }
 	#eq .hz.narrow {
 		display: block;
@@ -235,10 +236,9 @@
 		white-space: nowrap;
 	}
 	#eq .hz a { width: 40px }
+	#infoRange.vertical input { height: 40px }
 	#infoRange input::-webkit-slider-thumb { width: 33px; }
 	#infoRange input::-moz-range-thumb { width: 33px; }
-	#infoRange.vertical { top: -50px }
-	#infoRange.vertical input { height: 40px }
 	#eq .selectric-wrapper,
 	#eq .selectric,
 	#eq .selectric-items { width: 160px }
@@ -246,16 +246,22 @@
 	#eq .ibtn { width: 35px }
 }
 @media ( max-width: 380px ) {
+	#infoRange.vertical { top: -25px }
 	#eq .hz.narrow { margin-left: 0 }
 	#eq .hz a { width: 35px }
-	#infoRange.vertical { top: -25px }
 	#infoRange.vertical input { height: 35px }
 	#infoRange input::-webkit-slider-thumb { width: 28px; }
 	#infoRange input::-moz-range-thumb { width: 28px; }
 	#eq .bottom { top: -35px }
+	#eq .ibtn { width: 30px }
 }
 @media ( max-width: 320px ) {
-	#eq .hz.narrow { margin-left: -5px }
+	#infoRange.vertical { top: -10px }
+	#eq .hz a { width: 32px }
+	#infoRange.vertical input { height: 32px }
+	#infoRange input::-webkit-slider-thumb { width: 25px; }
+	#infoRange input::-moz-range-thumb { width: 25px; }
+	#eq .bottom { top: -5px }
 }
 @media ( max-height: 420px ) {
 	#eq { height: 280px }
@@ -269,11 +275,11 @@
 @media ( max-height: 320px ) and ( max-width: 570px ) {
 	#eq { height: 225px }
 	#eqflatline { margin-top: 97px }
-	#eq .hz { white-space: unset }
 	#infoRange.vertical {
 		top: -175px;
 		width: 160px;
 	}
+	#eq .hz { white-space: unset }
 	#eq .hz a { width: 50px }
 	#infoRange.vertical input { height: 50px }
 	#infoRange input::-webkit-slider-thumb { width: 40px; }
