@@ -558,13 +558,13 @@ function info( json ) {
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( !$tdfirst.find( 'input' ).length ) { // text label
+		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox
+			$tdfirst.css( 'padding-right', tdL > 1 ? 10 : 0 );
+		} else { // label - text input
 			$tdfirst.css( {
 				  'padding-right' : tdL > 1 ? 5 : 0
 				, 'text-align'    : tdL > 1 ? 'right' : 'left'
 			} );
-		} else { // radio / checkbox
-			$tdfirst.css( 'padding-right', tdL > 1 ? 10 : 0 );
 		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
