@@ -556,16 +556,15 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).css( 'width', O.boxW );
 		}
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
-		// set padding-right: radio / checkbox
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( tdL > 1 ) $tdfirst.css( 'padding-right', 10 );
-		// set padding-right, align right: label
-		if ( !$tdfirst.find( 'input' ).length ) {
+		if ( !$tdfirst.find( 'input' ).length ) { // text label
 			$tdfirst.css( {
-				  'padding-right' : ( tdL > 1 ? 10 : 0 )
-				, 'text-align'    : ( tdL > 1 ? 'right' : 'left' )
+				  'padding-right' : tdL > 1 ? 5 : 0
+				, 'text-align'    : tdL > 1 ? 'right' : 'left'
 			} );
+		} else { // radio / checkbox
+			$tdfirst.css( 'padding-right', tdL > 1 ? 10 : 0 );
 		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
