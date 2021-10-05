@@ -325,8 +325,7 @@ i2c-dev
 	pushRefresh
 	;;
 mirrorlist )
-	mirrorlist=$( curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist \
-		| grep . \
+	mirrorlist=$( grep . /etc/pacman.d/mirrorlist \
 		| sed -n '/### A/,$ p' \
 		| sed 's/ (not Austria\!)//' )
 	readarray -t lines <<< "$mirrorlist"
@@ -344,9 +343,11 @@ mirrorlist )
 			url+=',"'$( sed 's|.*//\(.*\).mirror.*|\1|' <<< $line )'"'
 		fi
 	done
+	current=$( grep ^Server /etc/pacman.d/mirrorlist | head -1 | sed 's|.*//\(.*\).mirror.*|\1|' )
+	[[ -z $current ]] && current=0
 	echo '{
   "country" : [ '$clist' ]
-, "current" : "'$( grep ^Server /etc/pacman.d/mirrorlist | head -1 | sed 's|.*//\(.*\).mirror.*|\1|' )'"
+, "current" : "'$current'"
 , "url"     : [ '$url' ]
 }'
 	;;

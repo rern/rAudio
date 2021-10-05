@@ -249,6 +249,12 @@ $selecttimezone.= '</select>';
 <div class="col-l single">Timezone<i class="fa fa-globe"></i></div>
 <div class="col-r">
 	<?=$selecttimezone?><i id="setting-timezone" class="settingedit fa fa-gear"></i>
+	<span <?=$classhelp?>>
+		<p>
+		<i class="fa fa-gear"></i>Servers:
+		<br>&bull; NTP - For date-time sync
+		<br>&bull; Package mirror - For system packages and upgrade
+	</span>
 </div>
 
 <div id="divsoundprofile">

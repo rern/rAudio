@@ -538,9 +538,7 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
-	notify( 'Servers', 'Get mirror list ...', 'globe' );
 	bash( [ 'mirrorlist' ], function( list ) {
-		bannerHide();
 		var lL = list.url.length;
 		var selecthtml = '<select>';
 		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.url[ i ] +'">'+ list.country[ i ] +'</option>';
@@ -942,7 +940,6 @@ function renderPage( list ) {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	$( '#setting-timezone' ).toggleClass( 'hide', !G.online );
 	selectricRender();
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
