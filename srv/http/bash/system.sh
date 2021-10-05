@@ -319,6 +319,32 @@ i2c-dev
 	echo 'TFT 3.5" LCD' >> $filereboot
 	pushRefresh
 	;;
+mirrorlist )
+	mirrorlist=$( curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist \
+		| grep . \
+		| sed -n '/### A/,$ p' \
+		| sed 's/ (not Austria\!)//' )
+	readarray -t lines <<< "$mirrorlist"
+	clist='"Auto (by Geo-IP)"'
+	url=0
+	for line in "${lines[@]}"; do
+		if [[ ${line:0:4} == '### ' ]];then
+			city=
+			country=${line:4}
+		elif [[ ${line:0:3} == '## ' ]];then
+			city=${line:3}
+		else
+			[[ -n $city ]] && cc="$country - $city" || cc=$country
+			clist+=',"'$cc'"'
+			url+=',"'$( sed 's|.*//\(.*\).mirror.*|\1|' <<< $line )'"'
+		fi
+	done
+	echo '{
+  "country" : [ '$clist' ]
+, "current" : "'$( grep ^Server /etc/pacman.d/mirrorlist | head -1 | sed 's|.*//\(.*\).mirror.*|\1|' )'"
+, "url"     : [ '$url' ]
+}'
+	;;
 mount )
 	protocol=${args[1]}
 	mountpoint="/mnt/MPD/NAS/${args[2]}"
@@ -391,12 +417,6 @@ dtparam=spi=on" >> $fileconfig
 	touch $dirsystem/mpdoled
 	pushRefresh
 	;;
-ntp )
-	server=${args[1]}
-	sed -i "s/^\(NTP=\).*/\1$server/" /etc/systemd/timesyncd.conf
-	pushRefresh
-	ntpdate $server
-	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
@@ -441,6 +461,20 @@ remove )
 	rmdir "$mountpoint" &> /dev/null
 	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
+	pushRefresh
+	;;
+servers )
+	ntp=${args[1]}
+	mirror=${args[2]}
+	prevntp=$( grep ^NTP /etc/systemd/timesyncd.conf | cut -d= -f2 )
+	prevmirror=$( grep ^Server /etc/pacman.d/mirrorlist \
+					| head -1 \
+					| sed 's|.*//\(.*\).mirror.*|\1|' )
+	if [[ $ntp != $pevntp ]]; then
+		sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
+		ntpdate $ntp
+	fi
+	[[ $mirror != $prevmirror ]] && sed -i "0,/^Server/ s|//sg.mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
 	pushRefresh
 	;;
 soundprofile )

@@ -538,18 +538,32 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
-	info( {
-		  icon         : 'globe'
-		, title        : 'Network Time Protocol'
-		, textlabel    : 'NTP server'
-		, values       : G.ntp
-		, checkchanged : 1
-		, checkblank   : 1
-		, ok           : function() {
-			notify( 'NTP server', 'Change ...', 'globe' );
-			bash( [ 'ntp', infoVal() ] );
-		}
-	} );
+	notify( 'Servers', 'Get mirror list ...', 'globe' );
+	bash( [ 'mirrorlist' ], function( list ) {
+		bannerHide();
+		var lL = list.url.length;
+		var selecthtml = '<select>';
+		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.url[ i ] +'">'+ list.country[ i ] +'</option>';
+		selecthtml += '</select>';
+		var content = `
+<table>
+<tr><td>NTP</td><td><input type="text"></td></tr>
+<tr><td>Package</td><td>${ selecthtml }</td></tr>
+</table>`
+		info( {
+			  icon         : 'globe'
+			, title        : 'Servers'
+			, content      : content
+			, boxwidth     : 240
+			, values       : [ G.ntp, list.current ]
+			, checkchanged : 1
+			, checkblank   : [ 0 ]
+			, ok           : function() {
+				notify( 'Servers', 'Change ...', 'globe' );
+				bash( [ 'servers', infoVal() ] );
+			}
+		} );
+	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
 	var textlabel = [

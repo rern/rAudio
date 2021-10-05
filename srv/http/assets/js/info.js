@@ -546,14 +546,15 @@ function info( json ) {
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 		// set width: text / password / textarea
-		O.boxW = '';
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
 			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() || 0;
 			O.boxW = ( widthmax ? allW - labelW - 20 : O.boxwidth );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).css( 'width', O.boxW );
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).parent().css( 'width', O.boxW );
+		} else {
+			O.boxW = '';
 		}
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );

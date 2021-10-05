@@ -463,6 +463,9 @@ hr {
 	font-size: 16px;
 	font-family: "Lato";
 }
+#infoContent td input[type=text] {
+	width: 100% !important;
+}
 #infoContent input[type=text]:disabled {
 	background: none !important;
 	outline: none;
