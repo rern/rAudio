@@ -7,14 +7,16 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-[[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pacman -Sy --noconfirm alsaequal
+[[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pkg+=' alsaequal'
 grep -q '^mpd.*bash$' /etc/passwd || chsh -s /bin/bash mpd
 
-[[ ! -e /usr/bin/ntpdate ]] && pacman -Sy --noconfirm ntp
+[[ ! -e /usr/bin/ntpdate ]] && pkg+=' ntp'
 
 ! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
 
-[[ ! -e /usr/bin/mpd_oled ]] && pacman -Sy --noconfirm audio_spectrum_oled
+[[ ! -e /usr/bin/mpd_oled ]] && pkg+=' audio_spectrum_oled'
+
+pacman -Sy --noconfirm $pkg
 
 for name in lcdchar localbrowser powerbutton; do
 	mv -f /etc/$name.conf $dirsystem &> /dev/null
