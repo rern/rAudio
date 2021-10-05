@@ -13,8 +13,7 @@
 #eqflatline {
 	position: absolute;
 	margin: 157px 0;
-	width: 530px;
-	max-width: 95%;
+	width: calc( 100% - 20px );
 	height: 1px;
 	background: var( --cgl );
 }
@@ -65,6 +64,7 @@
 	color: var( --cg60 );
 }
 @media ( max-width: 420px ) {
+	#eqflatline { width: calc( 100% - 10px ) }
 	#infoRange.vertical { top: -40px }
 	#eq .hz.full { display: none }
 	#eq .hz.narrow {
