@@ -491,13 +491,13 @@ equalizer )
 		for (( i=0; i < 10; i++ )); do
 			(( i < 5 )) && unit=Hz || unit=kHz
 			band=( "0$i. ${freq[i]} $unit" )
-			[[ -n $v ]] && su mpd -c "amixer -MqD equal sset \"$band\" ${v[i]}%"
+			[[ -n $v ]] && sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
 		done
 		echo $name > $dirsystem/equalizer
 	else
 		name=$( cat $dirsystem/equalizer )
 	fi
-	val=$( su mpd -c 'amixer -D equal contents' | awk -F ',' '/: val/ {print $NF}' | xargs )
+	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
 	[[ -n $append && $name != Flat ]] && echo $name^$val >> $dirsystem/equalizer.conf
 	[[ $type == save ]] && exit
 	
@@ -521,7 +521,7 @@ equalizer )
 equalizerupdn )
 	band=${args[1]}
 	val=${args[2]}
-	su mpd -c "amixer -D equal sset \"$band\" $val"
+	sudo -u mpd amixer -D equal sset "$band" $val
 	echo '(unnamed)' > $dirsystem/equalizer
 	;;
 hashFiles )
