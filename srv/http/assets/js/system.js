@@ -942,6 +942,7 @@ function renderPage( list ) {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
+	$( '#setting-timezone' ).toggleClass( 'hide', !G.online );
 	selectricRender();
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
