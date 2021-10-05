@@ -188,6 +188,7 @@ asound="\
 defaults.pcm.card $card
 defaults.ctl.card $card"
 if [[ -e $dirsystem/equalizer ]]; then
+	preset=$( cat $dirsystem/equalizer )
 	asound+='
 ctl.equal {
 	type equal;
@@ -202,7 +203,10 @@ pcm.!default {
 }'
 fi
 echo "$asound" > /etc/asound.conf
-
+if [[ $preset == enable ]]; then
+	echo Flat > $dirsystem/equalizer
+	$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
+fi
 wm5102card=$( aplay -l \
 				| grep snd_rpi_wsp \
 				| cut -c 6 )

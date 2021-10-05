@@ -182,7 +182,7 @@ dop )
 	;;
 equalizer )
 	if [[ ${args[1]} == true ]]; then
-		echo Flat > $dirsystem/equalizer
+		echo enable > $dirsystem/equalizer
 	else
 		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
 		rm -f $dirsystem/equalizer
