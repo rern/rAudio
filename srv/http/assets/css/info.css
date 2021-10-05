@@ -529,7 +529,7 @@ hr {
 	#infoContent { padding: 10px 5px }
 }
 @media ( max-width: 420px ) {
-	#infoContent { padding: 25px 5px 10px 5px }
+	#infoContent { padding: 20px 5px 10px 5px }
 	.infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
