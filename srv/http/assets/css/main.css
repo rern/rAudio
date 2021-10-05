@@ -2342,12 +2342,6 @@ li.active .li2 bl {
 	@media ( max-width: 330px ) {
 		#playback-controls i { margin: 0 }
 		#button-pl-shuffle { display: none }
-		#infoOverlay {
-			transform: scale( 0.9 );
-			transform-origin: top;
-			width: calc( 100% / 0.9 );
-			left: calc( -100% / 18 );
-		}
 		.radiomodetitle { display: none; }
 	}
 	@media ( max-width: 280px ) {
