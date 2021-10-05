@@ -960,6 +960,7 @@ function renderStatus() {
 	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
+	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		status += '<br><span class="undervoltage"><i class="fa fa-warning';
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
