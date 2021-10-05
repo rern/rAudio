@@ -280,7 +280,6 @@ function info( json ) {
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
@@ -543,6 +542,9 @@ function info( json ) {
 			} );
 			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
 		}
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 		// set width: text / password / textarea
 		O.boxW = '';
 		if ( O.boxwidth ) {
@@ -637,9 +639,6 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( 'beforeshow' in O ) O.beforeshow();
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
 		$( 'html, body' ).scrollTop( 0 );
 		} );
 	//////////////////////////////////////////////////////////////////////////
