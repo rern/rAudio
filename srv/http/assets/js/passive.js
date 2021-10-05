@@ -12,10 +12,10 @@ $( window ).on( 'resize', () => { // portrait / landscape
 		if ( G.librarylist ) {
 			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) +'px' );
-					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) );
+					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ));
 				}
 			}, 0 );
 		}
@@ -24,7 +24,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
+				$( '#pl-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) );
 			}, 0 );
 		}
 	}

@@ -139,7 +139,7 @@ $( '#logo' ).click( function() {
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		$( '#settings' )
-			.css( 'top', ( $( '#bar-top' ).is( ':visible' ) ? '40px' : 0 ) )
+			.css( 'top', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
 		setTimeout( function() {
@@ -1005,7 +1005,7 @@ $( '#button-lib-search' ).click( function() { // icon
 	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
-	$( '#lib-path' ).css( 'max-width', '40px' );
+	$( '#lib-path' ).css( 'max-width', 40 );
 	$( '#lib-search-input' ).focus();
 } );
 $( '#lib-search-btn' ).click( function() { // search
@@ -1746,11 +1746,10 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	G.list.artist = $thisli.find( '.artist' ).text();
 	G.list.name = $thisli.find( '.name' ).text();
 	G.list.index = $thisli.index();
-	var menutop = ( $thisli.position().top + 48 ) +'px';
 	var $menu = $( '#menu-plaction' );
 	$( '#pl-list li' ).removeClass( 'updn' );
 	$thisli.addClass( 'updn' );
-	if ( !$menu.hasClass( 'hide' ) && $menu.css( 'top' ) === menutop ) {
+	if ( !$menu.hasClass( 'hide' ) && $menu.css( 'top' ) === ( $thisli.position().top + 48 ) +'px' ) {
 		$menu.addClass( 'hide' );
 		$thisli.removeClass( 'updn' );
 		return
@@ -1828,8 +1827,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			}
 			$this.addClass( 'active' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
-			var menutop = ( $this.position().top + 48 ) +'px';
-			contextmenuScroll( $menu, menutop );
+			contextmenuScroll( $menu, $this.position().top + 48 );
 		} else {
 			playlistInsertSelect( $this );
 		}

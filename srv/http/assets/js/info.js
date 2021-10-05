@@ -291,8 +291,8 @@ function info( json ) {
 	if ( O.arrowright ) switchRL( 'right', O.arrowright )
 	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )
 	// title
-	if ( O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
-	if ( O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
+	if ( O.width ) $( '#infoBox' ).css( 'width', O.width );
+	if ( O.height ) $( '#infoContent' ).css( 'height', O.height );
 	if ( O.icon ) {
 		if ( O.icon.charAt( 0 ) !== '<' ) {
 			$( '#infoIcon' ).addClass( 'fa fa-'+ O.icon );
@@ -540,7 +540,7 @@ function info( json ) {
 				if ( w > widest ) widest = w;
 				$this.toggleClass( 'hide', btnhide );
 			} );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
+			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 		}
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
@@ -552,23 +552,24 @@ function info( json ) {
 			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() || 0;
-			O.boxW = ( widthmax ? allW - labelW - 20 : O.boxwidth + 10 ) +'px';
+			O.boxW = ( widthmax ? allW - labelW - 20 : O.boxwidth );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).css( 'width', O.boxW );
 		}
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		// set padding-right: radio / checkbox
+		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( tdL > 1 ) $( '#infoContent td:eq( 0 )' ).css( 'padding-right', '10px' );
+		if ( tdL > 1 ) $tdfirst.css( 'padding-right', 10 );
 		// set padding-right, align right: label
-		if ( !$( '#infoContent td:first-child input' ).length ) {
-			$( '#infoContent td:first-child' ).css( {
-				  'padding-right' : ( tdL > 1 ? '5px' : 0 )
+		if ( !$tdfirst.find( 'input' ).length ) {
+			$tdfirst.css( {
+				  'padding-right' : ( tdL > 1 ? 10 : 0 )
 				, 'text-align'    : ( tdL > 1 ? 'right' : 'left' )
 			} );
 		}
 		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
-			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
+			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
 		// check text input length
 		O.short = false;

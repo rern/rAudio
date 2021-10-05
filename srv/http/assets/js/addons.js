@@ -135,7 +135,7 @@ function getoptions() {
 				, selectlabel : ojson.label
 				, select      : ojson.list
 				, values      : ojson.checked
-				, boxwidth    : ojson.width || 80
+				, boxwidth    : ojson.width
 				, ok          : function() {
 					opt.push( infoVal() );
 					sendcommand();

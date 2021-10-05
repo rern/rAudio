@@ -64,11 +64,10 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', !connected );
 	}
-	var menutop = ( G.li.position().top + 48 ) +'px';
 	var menuH = $menu.height();
 	$menu
 		.removeClass( 'hide' )
-		.css( 'top', menutop );
+		.css( 'top', G.li.position().top + 48 );
 	var targetB = $menu.offset().top + menuH;
 	vaw wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );

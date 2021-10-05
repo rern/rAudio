@@ -51,7 +51,7 @@ $( '.img' ).click( function() {
 		, lcd         : [ 'TFT 3.5" LCD' ]
 		, mpdoled     : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton : [ 'Power Button',  '', 'power', '300px', 'svg' ]
-		, vuled       : [ 'VU LED',        '', 'led', '300px', 'svg' ]
+		, vuled       : [ 'VU LED',        '', 'led',   '300px', 'svg' ]
 	}
 	var d = title[ name ];
 	info( {
@@ -307,10 +307,10 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : G.lcdcharconf
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent .gpio td:even' ).css( 'width', '60px' );
+			$( '#infoContent .gpio td:even' ).css( 'width', 60 );
 			$( '#infoContent .gpio td:odd' ).css( {
-				  width           : '25px'
-				, 'padding-right' : '1px'
+				  width           : 25
+				, 'padding-right' : 1
 				, 'text-align'    : 'right'
 			} );
 			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
@@ -372,7 +372,7 @@ $( '#setting-powerbutton' ).click( function() {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
-		, boxwidth     : 60
+		, boxwidth     : 80
 		, values       : [ 5, ...G.powerbuttonconf ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
@@ -795,8 +795,8 @@ function infoMount( values ) {
 		, content    : htmlmount
 		, values     : values
 		, beforeshow : function() {
-			$( '#infoContent td:eq( 0 )' ).css( 'width', '90px' );
-			$( '#infoContent td:eq( 1 )' ).css( 'width', '267px' );
+			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', 267 );
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );

@@ -132,9 +132,9 @@ function contextmenuLibrary( $li, $target ) {
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
-		var menutop = barsvisible ? '310px' : '270px';
+		var menutop = barsvisible ? 310 : 270;
 	} else {
-		var menutop = ( $li.offset().top + 48 ) +'px';
+		var menutop = $li.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
 	G.color = 0; // reset to 0 once show
@@ -285,7 +285,7 @@ function displayBars() {
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '' );
-		$( '.emptyadd' ).css( 'top', '90px' );
+		$( '.emptyadd' ).css( 'top', 90 );
 	} else {
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
@@ -322,7 +322,7 @@ function displayPlayback() {
 	$cover
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
-	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
+	$( '#coverart' ).css( 'width', G.display.coversmall ? 230 : '' );
 	if ( ( !time || !volume ) && G.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
 		if ( !time && !volume ) {
@@ -394,7 +394,7 @@ function equalizer() {
 			, content    : content
 			, values     : data.values
 			, beforeshow : function() {
-				$( '#infoBox' ).css( 'width', '550px' );
+				$( '#infoBox' ).css( 'width', 550 );
 				var vflat = '60606060606060606060';
 				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
@@ -493,7 +493,7 @@ function equalizerButtonSet() {
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
 	var iso1 = ( iso.toLowerCase().charCodeAt( 1 ) - 97 ) * -20;
-	return iso1 +'px '+ iso0 +'px';
+	return [ iso1, iso0 ];
 }*/
 function getBio( artist ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
@@ -736,7 +736,7 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent' ).css( 'height', '340px' );
+			$( '#infoContent' ).css( 'height', 340 );
 			if ( page1 ) {
 				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
 			} else {
@@ -1146,7 +1146,7 @@ function renderLibrary() {
 	}
 	$( '#lib-list' ).empty().addClass( 'hide' );
 	$( '#lib-mode-list' )
-		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : '50px' )
+		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
@@ -1166,7 +1166,7 @@ function renderLibraryList( data ) {
 	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
 	if ( 'count' in data ) {
-		$( '#lib-path' ).css( 'max-width', '40px' );
+		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
@@ -1229,7 +1229,7 @@ function renderLibraryList( data ) {
 		$( '#lib-list p' )
 			.removeClass( 'bars-on' )
 			.toggleClass( 'fixedcover', G.display.fixedcover && $( '.licover' ).length === 1 )
-			.css( 'height', pH +'px' );
+			.css( 'height', pH );
 		$( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 	} );
 }
@@ -1549,7 +1549,7 @@ function setInfoScroll() {
 	if ( !tWmax ) return
 	
 	$( '.scrollleft' ).css( { // same width and speed
-		  width     : tWmax +'px'
+		  width     : tWmax
 		, animation : ( G.wW + tWmax ) / G.scrollspeed +'s infinite linear scrollleft'
 	} );
 	if ( G.localhost ) {
@@ -1606,7 +1606,7 @@ function setPlaylistInfoWidth() {
 	var titleW = $title.scrollWidth;
 	var iWdW = 40 + 10 + $duration.width() + 9;
 	var wW = document.body.clientWidth;
-	$title.css(  'max-width', iWdW + titleW < wW ? '' : wW - iWdW +'px' );
+	$title.css(  'max-width', iWdW + titleW < wW ? '' : wW - iWdW );
 }
 function setPlaylistScroll() {
 	clearIntervalAll();

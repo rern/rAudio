@@ -54,9 +54,10 @@
 #banner .li2 {
 	font-size: 13px;
 }
-/* range slider */
+/* selectric */
 #infoContent .selectric-wrapper {
 	margin: 0;
+	min-width: 60px;
 }
 #infoContent .selectric-items ul {
 	color: var( --cw );
@@ -455,8 +456,7 @@ hr {
 }
 #infoArrow {
 	position: absolute;
-	width: 400px;
-	max-width: 98%;
+	width: 100%;
 }
 #infoArrow i {
 	float: left;
