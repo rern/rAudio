@@ -740,7 +740,7 @@ function infoLibrary( page2 ) {
 			if ( page1 ) {
 				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
 			} else {
-				$( '.infomessage, #infoContent td' ).css( 'width', '286' );
+				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
