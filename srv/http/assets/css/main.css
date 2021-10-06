@@ -97,7 +97,7 @@
 	#eq .selectric,
 	#eq .selectric-items { width: 160px !important }
 }
-@media ( max-width: 330px ) {
+@media ( max-width: 330px ) { /* scaled 0.9 */
 	#eq { --eqb: calc( 100vw / 10 ) }
 	#eqname,
 	#eq .selectric-wrapper { margin: 0 5px }
