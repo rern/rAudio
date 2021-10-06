@@ -50,7 +50,7 @@
 	width: 1px; /* at center */
 	height: 100%;
 	margin-left: calc( ( 100% - 40px ) / 10 ); /* 0-100 : rangeW - range buttonH > 60% = shift 10% from 50% */
-	background: var( --cgl );
+	background: #000000;
 }
 #eq input {
 	display: block;
@@ -67,55 +67,40 @@
 #eq .ibtn {
 	font-size: 24px;
 	vertical-align: bottom !important;
-	cursor: pointer;
 }
 #eq .ibtn,
 #eqname {
 	position: relative;
 }
-#eqsave { margin-right: 10px }
-#eqnew,
-#eqcancel { margin-left: 10px }
 #eq .disabled,
 .ibtn.disabled {
 	pointer-events: none;
 	color: var( --cg60 );
 }
+#eqname,
 #eq .selectric-wrapper,
 #eq .selectric,
-#eq .selectric-items { width: 180px }
-@media ( max-height: 420px ) {
-	#eq { --eqw: 240px }
+#eq .selectric-items { width: 180px !important }
+#eqname,
+#eq .selectric-wrapper { margin: 0 10px }
+@media ( max-height: 550px ) {
+	#eq { --eqw: calc( 100vh - 150px ) }
 }
-@media ( max-height: 380px ) {
-	#eq { --eqw: 200px }
-}
-@media ( max-width: 480px ) {
-	#eq input::-webkit-slider-thumb { width: calc( var( --eqb ) - 8px ) }
-	#eq input::-moz-range-thumb { width: calc( var( --eqb ) - 8px ) }
-}
-@media ( max-width: 420px ) {
-	#eq { --eqb: 38px }
+@media ( max-width: 550px ) {
+	#eq { --eqb: calc( ( 100vw - 5vw ) / 10 ) }
+	#eq input::-webkit-slider-thumb { width: calc( var( --eqb ) - 2vw ) }
+	#eq input::-moz-range-thumb { width: calc( var( --eqb ) - 2vw ) }
 	#eq .hz.full { display: none }
 	#eq .hz.narrow { display: block }
+	#eqname,
 	#eq .selectric-wrapper,
 	#eq .selectric,
-	#eq .selectric-items { width: 160px }
+	#eq .selectric-items { width: 160px !important }
 }
-@media ( max-width: 380px ) {
-	#eq { --eqb: 35px }
-}
-@media ( max-width: 320px ) {
-	#eq { --eqb: 33px }
-	#eqsave { margin-right: 5px }
-	#eqnew { margin-left: 5px }
-}
-
-@media ( max-height: 320px ) and ( max-width: 570px ) {
-	#eq { --eqw: 160px }
-}
-@media ( max-height: 320px ) and ( max-width: 480px ) {
-	#eq { --eqb: 44px }
+@media ( max-width: 330px ) {
+	#eq { --eqb: calc( 100vw / 10 ) }
+	#eqname,
+	#eq .selectric-wrapper { margin: 0 5px }
 }
 
 #infoContent .imgicon {
