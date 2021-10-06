@@ -290,13 +290,12 @@ function psDisplay( data ) {
 function psEqualizer( data ) {
 	if ( !$( '#eq' ).length ) return
 	
+	O.values = [ '', data.current, ...data.values ];
 	var options = '';
 	data.presets.forEach( function( name ) {
 		options += '<option value="'+ name +'">'+ name +'</option>';
 	} );
 	$( '#eqpreset' ).html( options );
-	data.values.push( G.eqcurrent );
-	O.values = data.values;
 	infoSetValues();
 	selectricRender();
 	equalizerButtonSet();

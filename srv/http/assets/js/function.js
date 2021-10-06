@@ -367,32 +367,40 @@ function displaySave( keys ) {
 function equalizer() {
 	bash( [ 'equalizer' ], function( data ) {
 		G.eqcurrent = data.current;
+		var values = [ '', data.current, ...data.values ]; // [ #eqname, #eqpreset, ... ]
 		var vcurrent = data.values.join( '' );
-		data.values.push( data.current );
-		var options = '';
+		var optpreset = '';
 		data.presets.forEach( function( name ) {
-			options += '<option value="'+ name +'">'+ name +'</option>';
+			optpreset += '<option value="'+ name +'">'+ name +'</option>';
+		} );
+		var opthz = '';
+		[ 31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ].forEach( function( hz ) {
+			opthz += '<a>'+ hz +'</a>';
+		} );
+		var optkhz = '';
+		[ 31, 63, 125, 250, 500, '1k', '2k', '4k', '8k', '16k' ].forEach( function( khz ) {
+			optkhz += '<a>'+ khz +'</a>';
 		} );
 		var content = `
 <div id="eq">
-<div class="hz full"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1000</a><a>2000</a><a>4000</a><a>8000</a><a>16000</a></div>
-<div class="hz narrow"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1k</a><a>2k</a><a>4k</a><a>8k</a><a>16k</a></div>
-<div class="flatline"></div>
-<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
+<div class="hz full">${ opthz }</div>
+<div class="hz narrow">${ optkhz }</div>
+<div class="line"></div>
 <div class="bottom">
 	<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
 	<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
 	<i id="eqsave" class="ibtn fa fa-save"></i>
-	<select id="eqpreset">${ options }</select><input id="eqname" type="text" class="hide">
+	<input id="eqname" type="text" class="hide"><select id="eqpreset">${ optpreset }</select>
 	<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
 	<i id="eqflat" class="ibtn fa fa-set0"></i>
-<div>
+</div>
+<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
 </div>`;
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
 			, content    : content
-			, values     : data.values
+			, values     : values
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', 550 );
 				var vflat = '60606060606060606060';
