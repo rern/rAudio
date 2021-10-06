@@ -15,6 +15,10 @@ readarray -t args <<< "$1"
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
+pushstreamNotify() {
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
+	pushstream notify "$data"
+}
 pushRefresh() {
 	data=$( $dirbash/system-data.sh )
 	pushstream refresh "$data"
@@ -194,8 +198,7 @@ getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
 		cat "$filebootlog"
 	else
-		data='{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
-		pushstream notify "$data"
+		pushstreamNotify 'Boot Log' 'Get ...' plus-r
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;
@@ -325,10 +328,16 @@ i2c-dev
 	pushRefresh
 	;;
 mirrorlist )
-	mirrorlist=$( grep . /etc/pacman.d/mirrorlist \
-		| sed -n '/### A/,$ p' \
-		| sed 's/ (not Austria\!)//' )
-	readarray -t lines <<< "$mirrorlist"
+	file=/etc/pacman.d/mirrorlist
+	current=$( grep ^Server $file | head -1 | sed 's|.*//\(.*\).mirror.*|\1|' )
+	[[ -z $current ]] && current=0
+	if ! grep -q '^###' $file; then
+		pushstreamNotify 'Mirror List' 'Get ...' globe
+		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
+	fi
+	readarray -t lines <<< $( grep . $file \
+								| sed -n '/### A/,$ p' \
+								| sed 's/ (not Austria\!)//' )
 	clist='"Auto (by Geo-IP)"'
 	url=0
 	for line in "${lines[@]}"; do
@@ -343,8 +352,6 @@ mirrorlist )
 			url+=',"'$( sed 's|.*//\(.*\).mirror.*|\1|' <<< $line )'"'
 		fi
 	done
-	current=$( grep ^Server /etc/pacman.d/mirrorlist | head -1 | sed 's|.*//\(.*\).mirror.*|\1|' )
-	[[ -z $current ]] && current=0
 	echo '{
   "country" : [ '$clist' ]
 , "current" : "'$current'"
@@ -534,14 +541,12 @@ unmount )
 	fi
 	pushRefresh
 	;;
-usbconnect )
-	# for /etc/conf.d/devmon - devmon@http.service
-	pushstream notify '{"title":"USB Drive","text":"Connected.","icon":"usbdrive"}'
+usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
+	pushstreamNotify 'USB Drive' Connected. usbdrive
 	update
 	;;
-usbremove )
-	# for /etc/conf.d/devmon - devmon@http.service
-	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
+usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+	pushstreamNotify 'USB Drive' Removed usbdrive
 	update
 	;;
 vuleddisable )

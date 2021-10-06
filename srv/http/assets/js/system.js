@@ -561,6 +561,7 @@ $( '#setting-timezone' ).click( function() {
 				bash( [ 'servers', infoVal() ] );
 			}
 		} );
+		bannerHide();
 	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
