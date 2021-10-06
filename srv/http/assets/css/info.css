@@ -88,6 +88,7 @@
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--track: linear-gradient( 90deg, var( --cg ) 20px, #000000 20px, #000000 calc( 100% - 20px ), var( --cg ) 20px );
+	--trackborder : 1px solid var( --cgd );
 }
 #infoRange input {
 	height: 40px;
@@ -130,14 +131,16 @@
 	width: 100%;
 	height: 3px;
 	background: var( --track );
+	border: var( --trackborder );
 }
 #infoRange input:focus::-webkit-slider-runnable-track {
 	background: var( --track );
 }
 #infoRange input::-moz-range-track {
 	width: 100%;
-	height: 3px;
+	height: 1px;
 	background: var( --track );
+	border: var( --trackborder );
 }
 #infoRange .value {
 	height: 30px;
