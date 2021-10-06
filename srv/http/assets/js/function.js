@@ -499,6 +499,17 @@ function equalizerButtonSet() {
 	$( '#eqnew' ).toggleClass( 'disabled', !unnamed || flat );
 	$( '#eqflat' ).toggleClass( 'disabled', flat );
 }
+function equalizerRefresh( data ) {
+	O.values = [ '', data.current, ...data.values ];
+	var options = '';
+	data.presets.forEach( function( name ) {
+		options += '<option value="'+ name +'">'+ name +'</option>';
+	} );
+	$( '#eqpreset' ).html( options );
+	infoSetValues();
+	selectricRender();
+	equalizerButtonSet();
+}
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
 	var iso1 = ( iso.toLowerCase().charCodeAt( 1 ) - 97 ) * -20;

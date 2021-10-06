@@ -288,17 +288,7 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
-	if ( !$( '#eq' ).length ) return
-	
-	O.values = [ '', data.current, ...data.values ];
-	var options = '';
-	data.presets.forEach( function( name ) {
-		options += '<option value="'+ name +'">'+ name +'</option>';
-	} );
-	$( '#eqpreset' ).html( options );
-	infoSetValues();
-	selectricRender();
-	equalizerButtonSet();
+	if ( O.title === 'Equalizer' ) equalizerRefresh( data )
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
