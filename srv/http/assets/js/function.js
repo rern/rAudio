@@ -1766,6 +1766,11 @@ function setTrackCoverart() {
 	}
 }
 function statusRefresh() {
+	if ( O.title === 'Equalizer' ) {
+		bash( [ 'equalizer' ], function( data ) {
+			psEqualizer( data );
+		}, 'json' );
+	}
 	bash( [ 'displayget' ], data => {
 		delete G.coverTL;
 		G.display = data;
