@@ -1,30 +1,32 @@
 /* equalizer */
 #eq {
-	--eqw: 300px;
-	--eqb: 50px;
+	--eqw: 300px; /* .vertical W */
+	--eqb: 50px;  /* .vertical input H */
 }
-#eq .line,
-#eq .bottom {
-	position: absolute;
-	width: calc( 100% - 20px );
+#eq { /* 25 + rangeW + 40 */
+	height: calc( var( --eqw ) + 65px );
 }
-/*
-H = .vertical input - height x 10
-W = .vertical - width
-range 100-0 : range width - button width
-#eq       - height     = 25 + W + 40
-.line   - margin-top = 20 + ( ( W - 40 ) x 0.4 )
-.vertical - top        = - ( H - W ) / 2
-.bottom - margin-top = W + 10
-*/
-#eq { height: calc( var( --eqw ) + 65px ) }
-#eq .hz a { width: var( --eqb ) }
-#eq .line { margin-top: calc( 20px + ( var( --eqw ) - 40px ) * 0.4 ) }
-#eq .vertical { top: calc( ( var( --eqw ) - var( --eqb ) * 10 ) / 2 ) }
-#eq input { height: var( --eqb ) }
-#eq .bottom { margin-top: calc( var( --eqw ) + 10px ) }
-#eq .ibtn { width: var( --eqb ) }
-	
+#eq .hz a {
+	width: var( --eqb );
+}
+#eq .line { /* 20 + ( ( .rangeW - 40 ) x 0.4 ) - range 100-0 : rangeW - buttonW */
+	margin-top: calc( 20px + ( var( --eqw ) - 40px ) * 0.4 );
+	width: calc( var( --eqb ) * 10.2 );
+}
+#eq .vertical { /* ( rangeW - rangeH x 10 ) / 2 */
+	top: calc( ( var( --eqw ) - var( --eqb ) * 10 ) / 2 );
+}
+#eq input { /* each rangeH */
+	height: var( --eqb );
+}
+#eq .bottom { /* rangeW + 10 */
+	margin-top: calc( var( --eqw ) + 10px );
+	width: 100%;
+}
+#eq .ibtn {
+	width: var( --eqb );
+}
+
 #eq .hz.full { display: block }
 #eq .hz.narrow { display: none }
 #eq .hz a {
@@ -38,6 +40,12 @@ range 100-0 : range width - button width
 	height: 1px;
 	background: var( --cgl );
 }
+#eq .line,
+#eq .bottom {
+	position: absolute;
+	left: 50%;
+	transform: translateX( -50% );
+}
 #eq .vertical {
 	position: relative;
 	width: var( --eqw );
@@ -50,9 +58,6 @@ range 100-0 : range width - button width
 	position: relative;
 	max-width: 100%;
 }
-#eq .selectric-wrapper,
-#eq .selectric,
-#eq .selectric-items { width: 180px }
 #eq input::-webkit-slider-thumb {
 	margin-top: -18px;
 	transform : rotateZ( 90deg );
@@ -77,9 +82,11 @@ range 100-0 : range width - button width
 	pointer-events: none;
 	color: var( --cg60 );
 }
+#eq .selectric-wrapper,
+#eq .selectric,
+#eq .selectric-items { width: 180px }
 @media ( max-height: 420px ) {
 	#eq { --eqw: 240px }
-	#eq .line { width: calc( 100% - 10px ) }
 }
 @media ( max-height: 380px ) {
 	#eq { --eqw: 200px }
@@ -91,11 +98,7 @@ range 100-0 : range width - button width
 @media ( max-width: 420px ) {
 	#eq { --eqb: 38px }
 	#eq .hz.full { display: none }
-	#eq .hz.narrow {
-		display: block;
-		white-space: nowrap;
-	}
-	#eq .line { width: calc( 100% - 10px ) }
+	#eq .hz.narrow { display: block }
 	#eq .selectric-wrapper,
 	#eq .selectric,
 	#eq .selectric-items { width: 160px }
@@ -104,7 +107,7 @@ range 100-0 : range width - button width
 	#eq { --eqb: 35px }
 }
 @media ( max-width: 320px ) {
-	#eq { --eqb: 34px }
+	#eq { --eqb: 33px }
 	#eqsave { margin-right: 5px }
 	#eqnew { margin-left: 5px }
 }
