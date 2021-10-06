@@ -491,11 +491,13 @@ function equalizer() {
 	}, 'json' );
 }
 function equalizerButtonSet() {
-	var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
+	var flat = G.eqcurrent === 'Flat';
+	var unnamed = G.eqcurrent === '(unnamed)';
+	var notpreset = unnamed || flat;
 	$( '#eqrename' ).toggleClass( 'disabled', notpreset );
 	$( '#eqsave' ).addClass( 'disabled' );
-	$( '#eqnew' ).toggleClass( 'disabled', G.eqcurrent !== '(unnamed)' || G.eqcurrent === 'Flat' );
-	$( '#eqflat' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' );
+	$( '#eqnew' ).toggleClass( 'disabled', !unnamed || flat );
+	$( '#eqflat' ).toggleClass( 'disabled', flat );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
