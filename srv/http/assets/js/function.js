@@ -413,7 +413,7 @@ function equalizer() {
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( [ 'equalizerupdn', band, $this.val() ] );
-					var vnew = infoVal().slice( 0, -2 ).join( '' );
+					var vnew = infoVal().slice( 2 ).join( '' );
 					var changed = vnew !== vcurrent;
 					var flat = vnew === vflat;
 					$( '#eqsave' ).toggleClass( 'disabled', !changed || G.eqcurrent === 'Flat' );
