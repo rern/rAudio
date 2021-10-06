@@ -58,7 +58,7 @@
 	max-width: 100%;
 }
 #eq input::-webkit-slider-thumb {
-	margin-top: -18px;
+	margin-top: -19px;
 	transform : rotateZ( 90deg );
 }
 #eq input::-moz-range-thumb {
