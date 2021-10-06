@@ -44,12 +44,12 @@
 	transform : rotateZ( -90deg );
 	z-index: 0;
 }
-#eq .vertical::before {
+#eq .vertical::before { /* flat line */
 	position: absolute;
 	content: '';
-	width: 1px;
+	width: 1px; /* at center */
 	height: 100%;
-	right: calc( 20px + ( var( --eqw ) - 40px ) * 0.4 );
+	margin-left: calc( ( 100% - 40px ) / 10 ); /* 0-100 : rangeW - range buttonH > 60% = shift 10% from 50% */
 	background: var( --cgl );
 }
 #eq input {
