@@ -6,6 +6,7 @@
 #eq { /* 25 + rangeW + 40 */
 	height: calc( var( --eqw ) + 65px );
 }
+#eq .hz { white-space: pre-line }
 #eq .hz a {
 	width: var( --eqb );
 }
@@ -40,6 +41,7 @@
 #eq .vertical {
 	position: relative;
 	width: var( --eqw );
+	max-width: 300px;
 	margin: 0 auto;
 	transform : rotateZ( -90deg );
 	z-index: 0;
@@ -83,24 +85,29 @@
 #eq .selectric-items { width: 180px !important }
 #eqname,
 #eq .selectric-wrapper { margin: 0 10px }
-@media ( max-height: 550px ) {
+@media ( max-height: 450px ) and ( orientation: landscape ) {
 	#eq { --eqw: calc( 100vh - 150px ) }
 }
-@media ( max-width: 550px ) {
+@media ( max-width: 530px ) {
 	#eq { --eqb: calc( ( 100vw - 5vw ) / 10 ) }
 	#eq input::-webkit-slider-thumb { width: calc( var( --eqb ) - 2vw ) }
 	#eq input::-moz-range-thumb { width: calc( var( --eqb ) - 2vw ) }
-	#eq .hz.full { display: none }
-	#eq .hz.narrow { display: block }
 	#eqname,
 	#eq .selectric-wrapper,
 	#eq .selectric,
 	#eq .selectric-items { width: 160px !important }
 }
+@media ( max-width: 450px ) {
+	#eq .hz.full { display: none }
+	#eq .hz.narrow { display: block }
+}
 @media ( max-width: 330px ) { /* scaled 0.9 */
 	#eq { --eqb: calc( 100vw / 10 ) }
 	#eqname,
 	#eq .selectric-wrapper { margin: 0 5px }
+}
+@media ( max-width: 320px ) and ( max-height: 480px ) {
+	#eq { --eqw: calc( 100vh - 180px ) }
 }
 
 #infoContent .imgicon {
