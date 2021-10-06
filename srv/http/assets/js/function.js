@@ -408,7 +408,7 @@ function equalizer() {
 				equalizerButtonSet();
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
-					var i = $this.index( 'input' );
+					var i = $this.index();
 					var unit = i < 5 ? ' Hz' : ' kHz';
 					var band = '0'+ i +'. '+ freq[ i ] + unit;
 					bash( [ 'equalizerupdn', band, $this.val() ] );
