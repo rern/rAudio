@@ -385,7 +385,6 @@ function equalizer() {
 <div id="eq">
 <div class="hz full">${ opthz }</div>
 <div class="hz narrow">${ optkhz }</div>
-<div class="line"></div>
 <div class="bottom">
 	<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
 	<i id="eqrename" class="ibtn fa fa-edit-circle"></i>

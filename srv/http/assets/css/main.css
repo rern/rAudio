@@ -9,10 +9,6 @@
 #eq .hz a {
 	width: var( --eqb );
 }
-#eq .line { /* 20 + ( ( .rangeW - 40 ) x 0.4 ) - range 100-0 : rangeW - buttonW */
-	margin-top: calc( 20px + ( var( --eqw ) - 40px ) * 0.4 );
-	width: calc( var( --eqb ) * 10.2 );
-}
 #eq .vertical { /* ( rangeW - rangeH x 10 ) / 2 */
 	top: calc( ( var( --eqw ) - var( --eqb ) * 10 ) / 2 );
 }
@@ -36,11 +32,6 @@
 	text-align: center;
 	font-family: Inconsolata;
 }
-#eq .line {
-	height: 1px;
-	background: var( --cgl );
-}
-#eq .line,
 #eq .bottom {
 	position: absolute;
 	left: 50%;
@@ -52,6 +43,14 @@
 	margin: 0 auto;
 	transform : rotateZ( -90deg );
 	z-index: 0;
+}
+#eq .vertical::before {
+	position: absolute;
+	content: '';
+	width: 1px;
+	height: 100%;
+	right: calc( 20px + ( var( --eqw ) - 40px ) * 0.4 );
+	background: var( --cgl );
 }
 #eq input {
 	display: block;
