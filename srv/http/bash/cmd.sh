@@ -295,7 +295,7 @@ bluetoothplayer )
 		volume0dB
 	fi
 	if [[ $val == 1 || $val == 0 ]]; then
-		data=$( /srv/http/bash/networks-data.sh )
+		data=$( $dirbash/networks-data.sh )
 		pushstream refresh "$data"
 	else
 		status=$( $dirbash/status.sh )
