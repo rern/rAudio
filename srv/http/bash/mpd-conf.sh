@@ -44,7 +44,7 @@ audio_output {
 	device         "'$aplaydevice'"
 	type           "alsa"
 	mixer_type     "software"'
-		[[ -e /srv/http/data/system/btformat ]] && btoutput+='
+		[[ -e $dirsystem/btformat ]] && btoutput+='
 	format         "44100:16:2"'
 		btoutput+='
 }'
