@@ -6,7 +6,6 @@
 #eq { /* 25 + rangeW + 40 */
 	height: calc( var( --eqw ) + 65px );
 }
-#eq .hz { white-space: pre-line }
 #eq .hz a {
 	width: var( --eqb );
 }
@@ -24,8 +23,7 @@
 	width: var( --eqb );
 }
 
-#eq .hz.full { display: block }
-#eq .hz.narrow { display: none }
+#eq .hz { white-space: pre-line }
 #eq .hz a {
 	display: inline-block;
 	height: 25px;
@@ -96,10 +94,6 @@
 	#eq .selectric-wrapper,
 	#eq .selectric,
 	#eq .selectric-items { width: 160px !important }
-}
-@media ( max-width: 450px ) {
-	#eq .hz.full { display: none }
-	#eq .hz.narrow { display: block }
 }
 @media ( max-width: 330px ) { /* scaled 0.9 */
 	#eq { --eqb: calc( 100vw / 10 ) }

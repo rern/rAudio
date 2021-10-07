@@ -365,6 +365,29 @@ function displaySave( keys ) {
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function equalizer() {
+	var vflat = '60'.repeat( 10 );
+	var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+	var band = [];
+	freq.forEach( function( hz, i ) {
+		band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
+	} );
+	var opthz = '';
+	freq.forEach( function( hz, i ) {
+		opthz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
+	} );
+	var content = `
+<div id="eq">
+<div class="hz">${ opthz }</div>
+<div class="bottom">
+	<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
+	<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
+	<i id="eqsave" class="ibtn fa fa-save"></i>
+	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
+	<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
+	<i id="eqflat" class="ibtn fa fa-set0"></i>
+</div>
+<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
+</div>`;
 	bash( [ 'equalizer' ], function( data ) {
 		G.eqcurrent = data.current;
 		var values = [ '', data.current, ...data.values ]; // [ #eqname, #eqpreset, ... ]
@@ -373,45 +396,19 @@ function equalizer() {
 		data.presets.forEach( function( name ) {
 			optpreset += '<option value="'+ name +'">'+ name +'</option>';
 		} );
-		var opthz = '';
-		[ 31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000 ].forEach( function( hz ) {
-			opthz += '<a>'+ hz +'</a>';
-		} );
-		var optkhz = '';
-		[ 31, 63, 125, 250, 500, '1k', '2k', '4k', '8k', '16k' ].forEach( function( khz ) {
-			optkhz += '<a>'+ khz +'</a>';
-		} );
-		var content = `
-<div id="eq">
-<div class="hz full">${ opthz }</div>
-<div class="hz narrow">${ optkhz }</div>
-<div class="bottom">
-	<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
-	<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
-	<i id="eqsave" class="ibtn fa fa-save"></i>
-	<input id="eqname" type="text" class="hide"><select id="eqpreset">${ optpreset }</select>
-	<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
-	<i id="eqflat" class="ibtn fa fa-set0"></i>
-</div>
-<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
-</div>`;
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
-			, content    : content
+			, content    : content.replace( 'PRESETS', optpreset )
 			, values     : values
+			, noscroll   : 1
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', 550 );
-				var vflat = '60606060606060606060';
-				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				equalizerButtonSet();
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
-					var i = $this.index();
-					var unit = i < 5 ? ' Hz' : ' kHz';
-					var band = '0'+ i +'. '+ freq[ i ] + unit;
-					bash( [ 'equalizerupdn', band, $this.val() ] );
+					bash( [ 'equalizerupdn', band[ $this.index() ], $this.val() ] );
 					var vnew = infoVal().slice( 2 ).join( '' );
 					var changed = vnew !== vcurrent;
 					var flat = vnew === vflat;
