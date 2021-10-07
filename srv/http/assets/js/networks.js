@@ -69,7 +69,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		.removeClass( 'hide' )
 		.css( 'top', G.li.position().top + 48 );
 	var targetB = $menu.offset().top + menuH;
-	vaw wH = window.innerHeight;
+	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( 'body' ).click( function( e ) {
