@@ -188,16 +188,16 @@ defaults.ctl.card $card"
 if [[ -e $dirsystem/equalizer ]]; then
 	preset=$( cat $dirsystem/equalizer )
 	asound+='
-pcm.!default {
-	type plug;
-	pcm plugequal;
-}
-pcm_slave.plugequal {
-	type equal;
-	pcm "plughw:'$card',0";
-}
 ctl.equal {
 	type equal;
+}
+pcm.plugequal {
+	type equal;
+	slave.pcm "plughw:'$card',0";
+}
+pcm.!default {
+	type plug;
+	slave.pcm plugequal;
 }'
 fi
 echo "$asound" > /etc/asound.conf
