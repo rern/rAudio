@@ -379,12 +379,12 @@ function equalizer() {
 <div id="eq">
 <div class="hz">${ opthz }</div>
 <div class="bottom">
-	<i id="eqdelete" class="ibtn fa fa-minus-circle hide"></i>
-	<i id="eqrename" class="ibtn fa fa-edit-circle"></i>
-	<i id="eqsave" class="ibtn fa fa-save"></i>
+	<i id="eqdelete" class="fa fa-minus-circle hide"></i>
+	<i id="eqrename" class="fa fa-edit-circle"></i>
+	<i id="eqsave" class="fa fa-save"></i>
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
-	<i id="eqnew" class="ibtn fa fa-plus-circle"></i><i id="eqcancel" class="ibtn fa fa-times bl hide"></i>
-	<i id="eqflat" class="ibtn fa fa-set0"></i>
+	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-times bl hide"></i>
+	<i id="eqflat" class="fa fa-set0"></i>
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
 </div>`;

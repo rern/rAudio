@@ -25,7 +25,7 @@
 
 /* size - position */
 #eq                   { height      : var( --eqAllH )     }
-#eq .hz a, #eq .ibtn  { width       : var( --eqBandW )    }
+#eq .hz a, #eq i      { width       : var( --eqBandW )    }
 #eq .vertical::before { margin-left : var( --eqFlatT )    } /* flat line - from center */
 #eq .vertical         { top         : var( --eqSliderT );
                         width       : var( --eqSliderH ); }
@@ -78,16 +78,16 @@
 #eq input::-moz-range-thumb {
 	transform : rotateZ( 90deg );
 }
-#eq .ibtn {
+#eq i {
 	font-size: 24px;
 	vertical-align: bottom !important;
 }
-#eq .ibtn,
+#eq i,
 #eqname {
 	position: relative;
 }
 #eq .disabled,
-.ibtn.disabled {
+#eq i.disabled {
 	pointer-events: none;
 	color: var( --cg60 );
 }
