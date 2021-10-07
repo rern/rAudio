@@ -24,8 +24,10 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/roundslider-1.6.1.min.css">
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/equalizer.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
+<?php if ( file_exists( '/srv/http/data/system/equalizer' ) ) {?>
+	<link rel="stylesheet" href="/assets/css/equalizer.<?=$time?>.css">
+<?php } ?>
 </head>
 <body>
 
