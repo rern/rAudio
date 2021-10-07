@@ -355,9 +355,7 @@ function info( json ) {
 				+'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 				+ ( O.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
-		$( '#infoOk' )
-			.html( O.fileoklabel )
-			.addClass( 'hide' );
+		$( '#infoOk' ).html( O.fileoklabel );
 		$( '#infoFileLabel' ).click( function() {
 			$( '#infoFileBox' ).click();
 		} );
@@ -528,23 +526,20 @@ function info( json ) {
 		} );
 		// assign values
 		if ( O.values ) infoSetValues();
-		// set width: button
-		if ( !O.buttonfit ) {
-			var widest = 0;
-			var $this, w, btnhide;
-			$.each( $( '#infoButtons a' ), function() {
-				$this = $( this )
-				btnhide = $this.hasClass( 'hide' );
-				$this.removeClass( 'hide' );
-				w = $this.outerWidth();
-				if ( w > widest ) widest = w;
-				$this.toggleClass( 'hide', btnhide );
-			} );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
-		}
+		
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+			
+		// set width: button
+		if ( !O.buttonfit ) {
+			var widest = 0;
+			$( '#infoButtons a' ).each( function() {
+				var w = $( this ).outerWidth();
+				if ( w > widest ) widest = w;
+			} );
+			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
+		}
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
