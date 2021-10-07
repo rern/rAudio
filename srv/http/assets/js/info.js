@@ -161,7 +161,6 @@ info( {                                       // default
 	icon          : 'NAME'                    // 'question'     (top icon)
 	title         : 'TITLE'                   // 'Information'  (top title)
 	width         : N                         // 400            (info width)
-	noscroll      : 1                         // ***            (disable scroll)
 	
 	arrowright    : FUNCTION                  // (none)         (switch between multiple infos)
 	arrowleft     : FUNCTION                  // (none)
@@ -230,7 +229,6 @@ Note:
 ` );
 }
 function infoReset() {
-	$( 'body' ).css( 'overflow', '' );
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
@@ -277,7 +275,6 @@ function info( json ) {
 		if ( O.cancel ) O.cancel();
 		infoReset();
 	} );
-	if ( O.noscroll ) $( 'body' ).css( 'overflow', 'hidden' );
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
