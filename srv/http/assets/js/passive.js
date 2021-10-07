@@ -78,7 +78,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'refresh', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -109,6 +109,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'option':    psOption( data );    break;
 		case 'order':     psOrder( data );     break;
 		case 'playlist':  psPlaylist( data );  break;
+		case 'refresh':   psRefresh( data );    break;
 		case 'reload':    psReload( data );    break;
 		case 'restore':   psRestore( data );   break;
 		case 'spotify':   psSpotify( data );   break;
@@ -417,7 +418,12 @@ function psPlaylist( data ) {
 		}
 	}, G.debouncems );
 }
-function psRelays( response ) { // on receive broadcast
+function psRefresh( data ) { // for bluetooth client by cmd.sh bluetoothplayer
+	G.status.btclient = data.activebt;
+	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
+}
+function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );
