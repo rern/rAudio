@@ -25,9 +25,6 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	<link rel="stylesheet" href="/assets/css/roundslider-1.6.1.min.css">
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
-<?php if ( file_exists( '/srv/http/data/system/equalizer' ) ) {?>
-	<link rel="stylesheet" href="/assets/css/equalizer.<?=$time?>.css">
-<?php } ?>
 </head>
 <body>
 
@@ -47,9 +44,13 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>
 <script src="/assets/js/passive.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 
-<?php if ( $localhost ) include 'keyboard.php';?>
+<?php if ( file_exists( '/srv/http/data/system/equalizer' ) ) {?>
+<link rel="stylesheet" href="/assets/css/equalizer.<?=$time?>.css">
+<script src="/assets/js/equalizer.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
+<?php }
+	  if ( $localhost ) include 'keyboard.php';?>
 	
 </body>
 </html>
