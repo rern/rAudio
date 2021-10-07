@@ -34,11 +34,13 @@ if [[ $1 == bt ]]; then
 	# $( bluealsa-aplay -L ) takes 2 seconds before available
 	readarray -t paired <<< "$lines"
 	for device in "${paired[@]}"; do
-		mac=$( cut -d' ' -f2 <<< "$device" )
-		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) != 2 )) && continue
-		
-		aplaydevice="bluealsa:DEV=$mac,PROFILE=a2dp"
-		btoutput='
+		btmac=$( cut -d' ' -f2 <<< "$device" )
+		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && break || continue
+	done
+	[[ -z $btmac ]] && exit # no Audio Sink bluetooth
+	
+	aplaydevice="bluealsa:DEV=$btmac,PROFILE=a2dp"
+	btoutput='
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
 	device         "'$aplaydevice'"
@@ -48,10 +50,6 @@ audio_output {
 	format         "44100:16:2"'
 		btoutput+='
 }'
-		
-	done
-	[[ -z $btoutput ]] && exit # no Audio Sink bluetooth
-	
 fi
 
 . $dirbash/mpd-devices.sh
