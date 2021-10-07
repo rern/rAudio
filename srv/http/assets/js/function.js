@@ -401,8 +401,8 @@ function equalizer() {
 			, title      : 'Equalizer'
 			, content    : content.replace( 'PRESETS', optpreset )
 			, values     : values
-			, noscroll   : 1
-//			, beforeshow : function() {
+//			, noscroll   : 1
+			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', 550 );
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				equalizerButtonSet();
