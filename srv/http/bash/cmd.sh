@@ -624,12 +624,10 @@ mpcplayback )
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotify 'Audio CD' 'Start play ...' audiocd
-		killall relaystimer.sh &> /dev/null
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
 		[[ $command == stop ]] && rm -f $dirtmp/status
-		[[ -e $dirtmp/relayson ]] && $dirbash/relaystimer.sh &> /dev/null &
 	fi
 	;;
 mpcprevnext )

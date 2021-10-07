@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
+timerfile=/srv/http/data/shm/relaystimer
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -39,8 +40,15 @@ if [[ $cmd == true ]]; then
 		sleep ${ond[$i]} &> /dev/null
 	done
 	touch $dirtmp/relayson
-	$dirbash/relaystimer.sh &> /dev/null &
+	if [[ $timer > 0 ]]; then
+		echo $timer > $timerfile
+		$dirbash/relaystimer.sh &> /dev/null &
+	fi
 else
+	if [[ -e $timerfile ]]; then
+		rm $timerfile
+		killall relaystimer.sh &> /dev/null &
+	fi
 	pushstream '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
@@ -51,7 +59,6 @@ else
 		sleep ${offd[$i]} &> /dev/null
 	done
 	rm -f $dirtmp/relayson
-	killall relaystimer.sh &> /dev/null
 fi
 
 sleep 1
