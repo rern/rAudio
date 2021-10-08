@@ -481,16 +481,20 @@ remove )
 servers )
 	ntp=${args[1]}
 	mirror=${args[2]}
-	prevntp=$( grep ^NTP /etc/systemd/timesyncd.conf | cut -d= -f2 )
-	prevmirror=$( grep ^Server /etc/pacman.d/mirrorlist \
-					| head -1 \
-					| sed 's|\.*mirror.*||; s|.*//||' )
-	if [[ $ntp != $pevntp ]]; then
-		sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
+	file=/etc/systemd/timesyncd.conf
+	prevntp=$( grep ^NTP $file | cut -d= -f2 )
+	if [[ $ntp != $prevntp ]]; then
+		sed -i "s/^\(NTP=\).*/\1$ntp/" $file
 		ntpdate $ntp
 	fi
-	[[ $mirror != $prevmirror ]] && sed -i "0,/^Server/ s|//sg.mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
-	pushRefresh
+	file=/etc/pacman.d/mirrorlist
+	prevmirror=$( grep ^Server $file \
+					| head -1 \
+					| sed 's|\.*mirror.*||; s|.*//||' )
+	if [[ $mirror != $prevmirror ]]; then
+		[[ $mirror == 0 ]] && mirror= || mirror+=.
+		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
+	fi
 	;;
 soundprofile )
 	soundprofile

@@ -557,8 +557,9 @@ $( '#setting-timezone' ).click( function() {
 			, checkchanged : 1
 			, checkblank   : [ 0 ]
 			, ok           : function() {
-				notify( 'Servers', 'Change ...', 'globe' );
-				bash( [ 'servers', ...infoVal() ] );
+				var values = infoVal();
+				if ( values[ 0 ] !== G.ntp ) notify( 'NTP', 'Sync ...', 'globe' );
+				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
 		bannerHide();
