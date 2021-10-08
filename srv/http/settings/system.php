@@ -242,7 +242,7 @@ $selecttimezone.= '</select>';
 		<p>
 	</span>
 </div>
-<div class="col-l single">Timezone<i class="fa fa-globe"></i></div>
+<div class="col-l single">Time Zone<i class="fa fa-globe"></i></div>
 <div class="col-r">
 	<?=$selecttimezone?><i id="setting-timezone" class="settingedit fa fa-gear"></i>
 	<span <?=$classhelp?>>
