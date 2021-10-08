@@ -483,9 +483,6 @@ hr {
 	text-align: center;
 	margin-right: -25px;
 }
-.eyeactive {
-	color: var( --cm );
-}
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
 	-webkit-appearance: none;

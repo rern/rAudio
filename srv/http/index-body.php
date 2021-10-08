@@ -20,10 +20,10 @@ $( '#divlogin i' ).click( function() {
 	$this = $( this );
 	$pwd = $( '#pwd' );
 	if ( $pwd.prop( 'type' ) === 'text' ) {
-		$this.removeClass( 'eyeactive' );
+		$this.removeClass( 'bl' );
 		$pwd.prop( 'type', 'password' );
 	} else {
-		$this.addClass( 'eyeactive' );
+		$this.addClass( 'bl' );
 		$pwd.prop( 'type', 'text' );
 	}
 } );
