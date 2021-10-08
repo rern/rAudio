@@ -109,6 +109,7 @@ $( '.edit' ).click( function() {
 	G.list === 'listwl' ? editWiFi() : editLAN();
 } );
 $( '.forget' ).click( function() {
+	var connectedlan = '';
 	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.li.index() ]
 		var name = list.name;
@@ -117,11 +118,12 @@ $( '.forget' ).click( function() {
 	} else {
 		var name = G.li.data( 'ssid' );
 		var icon = 'wifi';
+		if ( !$( '#listlan li' ).data( 'ip' ) ) connectedlan = '<i class="fa fa-warning red"></i> Network connection will be lost.<br>';
 	}
 	info( {
 		  icon    : icon
 		, title   : name
-		, message : 'Forget?'
+		, message : connectedlan + 'Forget?'
 		, oklabel : '<i class="fa fa-minus-circle"></i>OK'
 		, okcolor : red
 		, ok      : function() {

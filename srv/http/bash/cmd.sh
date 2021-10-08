@@ -330,7 +330,7 @@ color )
 	if [[ -e $file ]]; then
 		hsl=( $( cat $file ) )
 	else
-		hsl=( $( grep '\-\-cd:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
+		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
@@ -338,16 +338,16 @@ color )
 	hsl="${hs}$l%"
 
 	sed -i "
- s|\(--cml: *hsl\).*;|\1(${hs}$(( l + 5 ))%);|
-  s|\(--cm: *hsl\).*;|\1($hsl);|
- s|\(--cma: *hsl\).*;|\1(${hs}$(( l - 5 ))%);|
- s|\(--cmd: *hsl\).*;|\1(${hs}$(( l - 15 ))%);|
-s|\(--cg75: *hsl\).*;|\1(${hsg}75%);|
-s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
- s|\(--cgl: *hsl\).*;|\1(${hsg}40%);|
-  s|\(--cg: *hsl\).*;|\1(${hsg}30%);|
- s|\(--cga: *hsl\).*;|\1(${hsg}20%);|
- s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
+ s|\(--cml *: *hsl\).*;|\1(${hs}$(( l + 5 ))%);|
+  s|\(--cm *: *hsl\).*;|\1($hsl);|
+ s|\(--cma *: *hsl\).*;|\1(${hs}$(( l - 5 ))%);|
+ s|\(--cmd *: *hsl\).*;|\1(${hs}$(( l - 15 ))%);|
+s|\(--cg75 *: *hsl\).*;|\1(${hsg}75%);|
+s|\(--cg60 *: *hsl\).*;|\1(${hsg}60%);|
+ s|\(--cgl *: *hsl\).*;|\1(${hsg}40%);|
+  s|\(--cg *: *hsl\).*;|\1(${hsg}30%);|
+ s|\(--cga *: *hsl\).*;|\1(${hsg}20%);|
+ s|\(--cgd *: *hsl\).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
 	sed -i "
  s|\(.box{fill:hsl\).*|\1($hsl);|
