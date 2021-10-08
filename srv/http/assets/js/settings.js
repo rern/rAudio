@@ -195,7 +195,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -210,12 +210,16 @@ pushstream.onstatuschange = function( status ) {
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
-		case 'notify':  psNotify( data );  break;
-		case 'refresh': psRefresh( data ); break;
-		case 'reload':  psReload();        break;
-		case 'volume':  psVolume( data );  break;
-		case 'wifi':    psWifi( data );    break;
+		case 'bluetooth': psBluetooth( data ); break;
+		case 'notify':    psNotify( data );    break;
+		case 'refresh':   psRefresh( data );   break;
+		case 'reload':    psReload();          break;
+		case 'volume':    psVolume( data );    break;
+		case 'wifi':      psWifi( data );      break;
 	}
+}
+function psBluetooth( data ) {
+	renderBluetooth( data );
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );

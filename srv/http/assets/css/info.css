@@ -478,6 +478,11 @@ hr {
 	margin-top: 0 !important;
 	outline: none;
 }
+#infoContent .fa-eye {
+	width: 30px;
+	text-align: center;
+	margin-right: -25px;
+}
 .eyeactive {
 	color: var( --cm );
 }

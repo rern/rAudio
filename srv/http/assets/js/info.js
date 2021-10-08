@@ -426,7 +426,7 @@ function info( json ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
 			htmls.password = '';
 			O.passwordlabel.forEach( function( lbl ) {
-				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password">&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
+				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 			$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 				var $this = $( this );

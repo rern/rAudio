@@ -77,8 +77,8 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'refresh', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
+var streams = [ 'airplay', 'bluetooth', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
+	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -97,6 +97,7 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
 		case 'airplay':   psAirplay( data );   break;
+		case 'bluetooth': psBluetooth( data ); break;
 		case 'bookmark':  psBookmark( data );  break;
 		case 'coverart':  psCoverart( data );  break;
 		case 'display':   psDisplay( data );   break;
@@ -109,7 +110,6 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'option':    psOption( data );    break;
 		case 'order':     psOrder( data );     break;
 		case 'playlist':  psPlaylist( data );  break;
-		case 'refresh':   psRefresh( data );    break;
 		case 'reload':    psReload( data );    break;
 		case 'restore':   psRestore( data );   break;
 		case 'spotify':   psSpotify( data );   break;
@@ -125,6 +125,14 @@ function psAirplay( data ) {
 	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
+}
+function psBluetooth( data ) {
+	var connected = false;
+	data.forEach( function( ea ) {
+		if ( ea.connected ) connected === true
+	} );
+	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -417,11 +425,6 @@ function psPlaylist( data ) {
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
 	}, G.debouncems );
-}
-function psRefresh( data ) { // for bluetooth client by cmd.sh bluetoothplayer
-	G.status.btclient = data.activebt;
-	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 }
 function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );
