@@ -284,9 +284,11 @@ bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
 		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
+		pushstream btclient true
 	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
+		pushstream btclient false
 	else
 		mpc stop
 		rm -f $dirtmp/{player-*,btclient}
