@@ -230,19 +230,15 @@ $selecttimezone.= '</select>';
 
 <div>
 <heading>Environment<?=$ihelp?></heading>
-<div class="col-l double">
-	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
-</div>
+<div class="col-l single">Host Name<i class="fa fa-plus-r"></i></div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
 	<span <?=$classhelp?>>
 		For:
 		<p>
-			&bull; Renderers
-		<br>&bull; Streamers
+			&bull; Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
 		<br>&bull; Web Interface URL: <code id="avahiurl"></code>
-		<br>&bull; Access point
-		<br>&bull; Bluetooth.
+		<br>&bull; System hostname
 		<p>
 	</span>
 </div>
@@ -252,8 +248,8 @@ $selecttimezone.= '</select>';
 	<span <?=$classhelp?>>
 		<p>
 		<i class="fa fa-gear"></i>Servers:
-		<br>&bull; NTP - For date-time sync
-		<br>&bull; Package mirror - For system packages and upgrade
+		<br>&bull; NTP: For time sync
+		<br>&bull; Package mirror: For system upgrade <code>pacman -Syu</code>
 	</span>
 </div>
 
