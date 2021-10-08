@@ -61,12 +61,6 @@ function codeToggle( id, target ) {
 			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
 			var systemctl = 0;
 		}
-		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
-			$el
-				.html( '(Enable: reboot required.)' )
-				.removeClass( 'hide' );
-			return
-		}
 		
 		if ( id === 'journalctl' || id === 'mpdignore' ) banner( 'Get Data', id, page, -1 );
 		var delay = target === 'status' ? 1000 : 0;

@@ -295,11 +295,9 @@ bluetoothplayer )
 		volume0dB
 	fi
 	if [[ $val == 1 || $val == 0 ]]; then
-		data=$( $dirbash/networks-data.sh bt )
-		pushstream bluetooth "$data"
+		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	else
-		status=$( $dirbash/status.sh )
-		pushstream mpdplayer "$status"
+		pushstream mpdplayer "$( $dirbash/status.sh )"
 	fi
 	;;
 bluetoothplayerstop )
@@ -307,8 +305,7 @@ bluetoothplayerstop )
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
 	volumeReset
-	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
+	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
 bookmarkreset )
 	mpdpath=${args[1]}

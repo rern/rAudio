@@ -127,9 +127,8 @@ function psAirplay( data ) {
 	clearTimeout( G.debounce );
 }
 function psBluetooth( data ) {
-	var connected = false;
-	data.forEach( function( ea ) {
-		if ( ea.connected ) connected === true
+	var connected = data.some( function( el ) {
+		if ( el.connected ) return true
 	} );
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
