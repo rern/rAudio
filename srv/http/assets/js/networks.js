@@ -15,8 +15,7 @@ $( '#btscan' ).click( function() {
 	btScan();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	var i = $( this ).index( '.btscan' );
-	var list = G.listbtscan[ i ];
+	var list = G.listbtscan[ $( this ).index() ];
 	if ( !list.connected ) {
 		notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
 		bash( [ 'btpair', list.mac ], function( data ) {
@@ -81,13 +80,12 @@ $( 'body' ).click( function( e ) {
 $( '.connect' ).click( function() {
 	clearTimeout( timeoutscan );
 	var name = G.li.data( 'ssid' );
-	notify( ssid, 'Connect ...', 'wifi' );
+	notify( name, 'Connect ...', 'wifi' );
 	bash( [ 'profileconnect', name ] )
 } );
 $( '.disconnect' ).click( function() {
 	if ( G.list === 'listbt' ) {
-		var i = G.li.index();
-		var list = G.listbt[ i ]
+		var list = G.listbt[ G.li.index() ]
 		var name = list.name;
 		var icon = 'bluetooth';
 	} else {
@@ -112,8 +110,7 @@ $( '.edit' ).click( function() {
 } );
 $( '.forget' ).click( function() {
 	if ( G.list === 'listbt' ) {
-		var i = G.li.index();
-		var list = G.listbt[ i ]
+		var list = G.listbt[ G.li.index() ]
 		var name = list.name;
 		var mac = list.mac;
 		var icon = 'bluetooth';
@@ -135,8 +132,7 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
-	var i = $( this ).index();
-	var list = G.listwlscan[ i ];
+	var list = G.listwlscan[ $( this ).index() ];
 	var ssid = list.ssid;
 	var wpa = list.wpa || 'wep';
 	var data = {
@@ -280,8 +276,7 @@ function editWiFi( add ) {
 	if ( add ) {
 		var values = [ '', '', '', '', false, false, false ]
 	} else {
-		var i = G.li.index();
-		var list = G.listwl[ i ];
+		var list = G.listwl[ G.li.index() ];
 		var values = [];
 		[ 'ssid', 'ip', 'gateway', 'password', 'static', 'hidden', 'wep' ].forEach( function( k ) {
 			values.push( list[ k ] );
