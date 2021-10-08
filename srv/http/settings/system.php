@@ -242,7 +242,9 @@ $selecttimezone.= '</select>';
 		<p>
 	</span>
 </div>
-<div class="col-l single">Time Zone<i class="fa fa-globe"></i></div>
+<div data-status="timesyncd" class="col-l double status">
+	<a>Time Zone<br><gr>timesyncd <?=$istatus?></gr></a><i class="fa fa-globe"></i>
+</div>
 <div class="col-r">
 	<?=$selecttimezone?><i id="setting-timezone" class="settingedit fa fa-gear"></i>
 	<span <?=$classhelp?>>
@@ -252,9 +254,10 @@ $selecttimezone.= '</select>';
 		<br>&bull; Package mirror: For system upgrade <code>pacman -Syu</code>
 	</span>
 </div>
+<pre id="codetimesyncd" class="hide"></pre>
 
 <div id="divsoundprofile">
-<div data-status="soundprofile" class="col-l icon double status">
+<div data-status="soundprofile" class="col-l double status">
 	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
