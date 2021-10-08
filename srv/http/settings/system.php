@@ -258,7 +258,7 @@ $selecttimezone.= '</select>';
 
 <div id="divsoundprofile">
 <div data-status="soundprofile" class="col-l double status">
-	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+	<a>Sound Profile<br><gr>sysctl <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>
