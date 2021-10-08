@@ -539,9 +539,9 @@ $( '#timezone' ).change( function( e ) {
 } );
 $( '#setting-timezone' ).click( function() {
 	bash( [ 'mirrorlist' ], function( list ) {
-		var lL = list.url.length;
+		var lL = list.code.length;
 		var selecthtml = '<select>';
-		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.url[ i ] +'">'+ list.country[ i ] +'</option>';
+		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
 		selecthtml += '</select>';
 		var content = `
 <table>
@@ -558,7 +558,7 @@ $( '#setting-timezone' ).click( function() {
 			, checkblank   : [ 0 ]
 			, ok           : function() {
 				notify( 'Servers', 'Change ...', 'globe' );
-				bash( [ 'servers', infoVal() ] );
+				bash( [ 'servers', ...infoVal() ] );
 			}
 		} );
 		bannerHide();

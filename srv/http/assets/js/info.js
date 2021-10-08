@@ -676,8 +676,10 @@ function infoVal() {
 			val = $this.val().trim().replace( /\n/g, '\\n' );
 		} else if ( type === 'password' ) {
 			val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
-		} else {
+		} else if ( type === 'text' ) {
 			val = $this.val().trim();
+		} else {
+			val = $this.val();
 		}
 		values.push( val );
 	} );

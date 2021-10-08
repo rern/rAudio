@@ -329,7 +329,9 @@ i2c-dev
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
-	current=$( grep ^Server $file | head -1 | sed 's|.*//\(.*\).mirror.*|\1|' )
+	current=$( grep ^Server $file \
+				| head -1 \
+				| sed 's|\.*mirror.*||; s|.*//||' )
 	[[ -z $current ]] && current=0
 	if ! grep -q '^###' $file; then
 		pushstreamNotify 'Mirror List' 'Get ...' globe
@@ -337,9 +339,9 @@ mirrorlist )
 	fi
 	readarray -t lines <<< $( grep . $file \
 								| sed -n '/### A/,$ p' \
-								| sed 's/ (not Austria\!)//' )
+								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
 	clist='"Auto (by Geo-IP)"'
-	url=0
+	codelist=0
 	for line in "${lines[@]}"; do
 		if [[ ${line:0:4} == '### ' ]];then
 			city=
@@ -349,13 +351,13 @@ mirrorlist )
 		else
 			[[ -n $city ]] && cc="$country - $city" || cc=$country
 			clist+=',"'$cc'"'
-			url+=',"'$( sed 's|.*//\(.*\).mirror.*|\1|' <<< $line )'"'
+			codelist+=',"'$line'"'
 		fi
 	done
 	echo '{
   "country" : [ '$clist' ]
 , "current" : "'$current'"
-, "url"     : [ '$url' ]
+, "code"    : [ '$codelist' ]
 }'
 	;;
 mount )
@@ -482,7 +484,7 @@ servers )
 	prevntp=$( grep ^NTP /etc/systemd/timesyncd.conf | cut -d= -f2 )
 	prevmirror=$( grep ^Server /etc/pacman.d/mirrorlist \
 					| head -1 \
-					| sed 's|.*//\(.*\).mirror.*|\1|' )
+					| sed 's|\.*mirror.*||; s|.*//||' )
 	if [[ $ntp != $pevntp ]]; then
 		sed -i "s/^\(NTP=\).*/\1$ntp/" /etc/systemd/timesyncd.conf
 		ntpdate $ntp
