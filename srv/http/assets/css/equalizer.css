@@ -97,7 +97,7 @@
 #eq .selectric,
 #eq .selectric-items { width: 180px !important }
 #eqname,
-#eq .selectric-wrapper { margin: 0 10px }
+#eq .selectric-wrapper { margin: 0 10px !important }
 @media ( max-width: 530px ) {
 	#eqname,
 	#eq .selectric-wrapper,
@@ -106,5 +106,5 @@
 }
 @media ( max-width: 330px ) {
 	#eqname,
-	#eq .selectric-wrapper { margin: 0 5px }
+	#eq .selectric-wrapper { margin: 0 5px !important }
 }

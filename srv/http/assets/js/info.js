@@ -430,12 +430,12 @@ function info( json ) {
 			} );
 			$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 				var $this = $( this );
-				var $pwd = $this.prev();
-				if ( $this.prev().prop( 'type' ) === 'text' ) {
-					$this.removeClass( 'eyeactive' );
+				var $pwd = $this.parent().prev().find( 'input' );
+				if ( $pwd.prop( 'type' ) === 'text' ) {
+					$this.removeClass( 'bl' );
 					$pwd.prop( 'type', 'password' );
 				} else {
-					$this.addClass( 'eyeactive' );
+					$this.addClass( 'bl' );
 					$pwd.prop( 'type', 'text' );
 				}
 			} );

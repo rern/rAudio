@@ -456,7 +456,7 @@ hr {
 #infoContent input[type=number],
 #infoContent input[type=password] {
 	display: inline-block;
-	margin: 0 !important;
+	margin: 0;
 	width: 230px;
 	height: 36px !important;
 	padding: 10px 9px;
