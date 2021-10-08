@@ -40,7 +40,7 @@ connect = () => {
 disconnect = () => {
 	if ( active ) {
 		active = 0;
-		pushstream.disconnect();
+//		pushstream.disconnect();
 	}
 }
 function bookmarkCover( url, path ) {
@@ -77,7 +77,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bluetooth', 'bookmark', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
+var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
@@ -97,8 +97,8 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
 		case 'airplay':   psAirplay( data );   break;
-		case 'bluetooth': psBluetooth( data ); break;
 		case 'bookmark':  psBookmark( data );  break;
+		case 'btclient':  psBtClient( data );  break;
 		case 'coverart':  psCoverart( data );  break;
 		case 'display':   psDisplay( data );   break;
 		case 'equalizer': psEqualizer( data ); break;
@@ -126,10 +126,7 @@ function psAirplay( data ) {
 	renderPlayback();
 	clearTimeout( G.debounce );
 }
-function psBluetooth( data ) {
-	var connected = data.some( function( el ) {
-		if ( el.connected ) return true
-	} );
+function psBtClient( connected ) {
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
 }
