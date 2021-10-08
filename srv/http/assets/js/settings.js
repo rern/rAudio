@@ -402,7 +402,7 @@ $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).hasClass( 'help' )
 		|| $( e.target ).hasClass( 'fa-plus-circle' )
 		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
