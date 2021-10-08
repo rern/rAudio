@@ -547,10 +547,10 @@ function info( json ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() || 0;
 			O.boxW = ( widthmax ? allW - labelW - 20 : O.boxwidth );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).parent().css( 'width', O.boxW );
 		} else {
-			O.boxW = '';
+			O.boxW = 230;
 		}
+		$( '#infoContent' ).find( 'input:text, input:password, textarea' ).parent().css( 'width', O.boxW );
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
