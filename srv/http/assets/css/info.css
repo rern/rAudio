@@ -87,7 +87,7 @@
 #infoRange {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--track: linear-gradient( 90deg, var( --cg ) 20px, #000000 20px, #000000 calc( 100% - 20px ), var( --cg ) 20px );
+	--track: linear-gradient( 90deg, transparent 20px, #000000 20px, #000000 calc( 100% - 20px ), transparent 20px );
 	--trackborder : 1px solid var( --cgd );
 }
 #infoRange input {
