@@ -83,7 +83,6 @@ var nameplayer = {
 	, bluetooth  : 'Bluetooth Renderer'
 	, snapclient : 'Snapcast Client'
 	, spotify    : 'Spotify Connect'
-	, touch      : 1
 	, upnp       : 'UPnP'
 }
 

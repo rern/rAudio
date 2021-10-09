@@ -1642,10 +1642,10 @@ function statusRefresh() {
 		G.display.screenoff = G.localhost;
 		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
 		var submenu = {
-			  relays     : 'features'
+			  lock       : 'features'
 			, equalizer  : 'player'
 			, snapclient : 'networks'
-			, lock       : 'system'
+			, relays     : 'system'
 			, screenoff  : 'power'
 		};
 		var subkeys = Object.keys( submenu );
