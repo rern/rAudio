@@ -43,6 +43,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - USB drive
 	- Plug and play
 	- Audio CD (with metadata and coverarts)
+- 10 band graphic equalizer - support custom presets
 	
 ### Default root password
 - `ros`

@@ -54,7 +54,117 @@
 #banner .li2 {
 	font-size: 13px;
 }
-
+/* selectric */
+#infoContent .selectric-wrapper {
+	margin: 0;
+	min-width: 60px;
+}
+#infoContent .selectric-items ul {
+	color: var( --cw );
+}
+#infoContent .selectric {
+	border-radius: 3px;
+}
+#infoContent .selectric,
+#infoContent .selectric .label,
+#infoContent .selectric-items li {
+	height: 35px;
+	text-align: left;
+	line-height: 16px;
+}
+#infoContent .selectric-items {
+	min-width: 100%;
+}
+#infoContent .selectric .label {
+	margin: 1px 0;
+	padding: 0 10px;
+}
+#infoContent .selectric .label,
+#infoContent .selectric .button {
+	line-height: 34px;
+	color: var( --cw );
+}
+#infoRange {
+	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--track: linear-gradient( 90deg, transparent 20px, #000000 20px, #000000 calc( 100% - 20px ), transparent 20px );
+	--trackborder : 1px solid var( --cgd );
+}
+#infoRange input {
+	height: 40px;
+	width: 300px;
+	margin: 0;
+	max-width: 70%;
+	background: transparent;
+	-webkit-appearance: none;
+	cursor: pointer;
+}
+#infoRange input::-webkit-slider-thumb {
+	height: 40px;
+	width: 40px;
+	margin-top: -20px;
+	border: none;
+	border-radius: 4px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	-webkit-appearance: none;
+	box-shadow: -2px 2px 4px #000000;
+}
+#infoRange input::-moz-range-thumb { /* cannot be combined */
+	height: 40px;
+	width: 40px;
+	border: none;
+	border-radius: 4px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	box-shadow: -2px 2px 4px #000000;
+}
+#infoRange input:disabled::-webkit-slider-thumb {
+	background-color: var( --cmd );
+}
+#infoRange input:disabled::-moz-range-thumb {
+	background-color: var( --cmd );
+}
+#infoRange input::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 4px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+#infoRange input:focus::-webkit-slider-runnable-track {
+	background: var( --track );
+}
+#infoRange input::-moz-range-track {
+	width: 100%;
+	height: 2px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+#infoRange .value {
+	height: 30px;
+	font-size: 18px;
+	font-weight: 300;
+	text-align: center;
+}
+#infoRange .min,
+#infoRange .max {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	padding: 0 10px;
+	vertical-align: 16px;
+	text-align: right;
+	color: var( --cg60 );
+	cursor: pointer;
+}
+#infoRange .max {
+	text-align: left;
+}
+#infoRange {
+	text-align: center;
+}
 /* info */
 .infobtn,
 #infoOverlay input[type=radio],
@@ -136,10 +246,13 @@ hr {
 	color: var( --cw );
 }
 #infoBox {
+	position: relative;
+	top: 50vh;
+	transform: translateY( -50% ); /* of #infoBox height */
 	width: 400px;
 	max-width: 98%;
-	margin: 20px auto;
-	padding-bottom: 20px;
+	margin: 0 auto;
+	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;
 }
@@ -147,6 +260,9 @@ hr {
 #infoBox i,
 .infobtn {
 	text-shadow: -1px 1px 2px #000000;
+}
+#infoContent .bklabel {
+	height: auto;
 }
 #infoTopBg {
 	width: 100%;
@@ -217,8 +333,7 @@ hr {
 }
 #infoArrow {
 	position: absolute;
-	width: 400px;
-	max-width: 98%;
+	width: 100%;
 }
 #infoArrow i {
 	float: left;
@@ -231,7 +346,7 @@ hr {
 	float: right !important;
 }
 #infoContent {
-	padding: 25px 10px 10px 10px;
+	padding: 20px 10px 10px 10px;
 	font-size: 16px;
 }
 #infoContent table {
@@ -341,16 +456,19 @@ hr {
 #infoContent input[type=number],
 #infoContent input[type=password] {
 	display: inline-block;
-	margin: 0 !important;
+	margin: 0;
 	width: 230px;
 	height: 36px !important;
-	padding: 10px;
+	padding: 10px 9px;
 	color: var( --cw );
 	background-color: #000000;
 	border-radius: 5px;
 	border: 1px solid var( --cg );
 	font-size: 16px;
 	font-family: "Lato";
+}
+#infoContent td input[type=text] {
+	width: 100% !important;
 }
 #infoContent input[type=text]:disabled {
 	background: none !important;
@@ -360,8 +478,10 @@ hr {
 	margin-top: 0 !important;
 	outline: none;
 }
-.eyeactive {
-	color: var( --cm );
+#infoContent .fa-eye {
+	width: 30px;
+	text-align: center;
+	margin-right: -25px;
 }
 #infoOverlay input[type=radio],
 #infoOverlay input[type=checkbox] {
@@ -414,12 +534,19 @@ hr {
 	background: #000000;
 	font-family: Inconsolata;
 }
+@media ( max-height: 420px ) {
+	#infoContent { padding: 10px 5px }
+}
 @media ( max-width: 420px ) {
-	#infoContent {
-		padding: 25px 5px 10px 5px;
-	}
-	.infofooter {
-		padding: 0 5px;
+	#infoContent { padding: 20px 5px 10px 5px }
+	.infofooter { padding: 0 5px }
+}
+@media ( max-width: 330px ) {
+	#infoOverlay {
+		transform: scale( 0.9 ) translateY(2.5%);
+		transform-origin: top;
+		width: calc( 100% / 0.9 );
+		left: calc( -100% / 18 );
 	}
 }
 /* iOS */
@@ -455,7 +582,7 @@ hr {
 	}
 	input:not( [type=range] ):focus,
 	.infobtn.active {
-		box-shadow: 0 0 3px 1px var( --cg75 ) !important;
+		box-shadow: 0 0 2px 0 var( --cgl ) !important;
 
 	}
 }

@@ -51,7 +51,7 @@ $( '.img' ).click( function() {
 		, lcd         : [ 'TFT 3.5" LCD' ]
 		, mpdoled     : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton : [ 'Power Button',  '', 'power', '300px', 'svg' ]
-		, vuled       : [ 'VU LED',        '', 'led', '300px', 'svg' ]
+		, vuled       : [ 'VU LED',        '', 'led',   '300px', 'svg' ]
 	}
 	var d = title[ name ];
 	info( {
@@ -307,10 +307,10 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : G.lcdcharconf
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent .gpio td:even' ).css( 'width', '60px' );
+			$( '#infoContent .gpio td:even' ).css( 'width', 60 );
 			$( '#infoContent .gpio td:odd' ).css( {
-				  width           : '25px'
-				, 'padding-right' : '1px'
+				  width           : 25
+				, 'padding-right' : 1
 				, 'text-align'    : 'right'
 			} );
 			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
@@ -372,7 +372,7 @@ $( '#setting-powerbutton' ).click( function() {
 		  icon         : 'power'
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
-		, boxwidth     : 60
+		, boxwidth     : 80
 		, values       : [ 5, ...G.powerbuttonconf ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
@@ -538,18 +538,32 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
-	info( {
-		  icon         : 'globe'
-		, title        : 'Network Time Protocol'
-		, textlabel    : 'NTP server'
-		, values       : G.ntp
-		, checkchanged : 1
-		, checkblank   : 1
-		, ok           : function() {
-			notify( 'NTP server', 'Change ...', 'globe' );
-			bash( [ 'ntp', infoVal() ] );
-		}
-	} );
+	bash( [ 'mirrorlist' ], function( list ) {
+		var lL = list.code.length;
+		var selecthtml = '<select>';
+		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
+		selecthtml += '</select>';
+		var content = `
+<table>
+<tr><td>NTP</td><td><input type="text"></td></tr>
+<tr><td>Package</td><td>${ selecthtml }</td></tr>
+</table>`
+		info( {
+			  icon         : 'globe'
+			, title        : 'Servers'
+			, content      : content
+			, boxwidth     : 240
+			, values       : [ G.ntp, list.current ]
+			, checkchanged : 1
+			, checkblank   : [ 0 ]
+			, ok           : function() {
+				var values = infoVal();
+				if ( values[ 0 ] !== G.ntp ) notify( 'NTP', 'Sync ...', 'globe' );
+				bash( [ 'servers', ...values ], bannerHide );
+			}
+		} );
+		bannerHide();
+	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
 	var textlabel = [
@@ -795,8 +809,8 @@ function infoMount( values ) {
 		, content    : htmlmount
 		, values     : values
 		, beforeshow : function() {
-			$( '#infoContent td:eq( 0 )' ).css( 'width', '90px' );
-			$( '#infoContent td:eq( 1 )' ).css( 'width', '267px' );
+			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', 267 );
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
@@ -926,6 +940,7 @@ function renderPage( list ) {
 	$( '#vuled' ).prop( 'checked', G.vuled );
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
+	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	selectricRender();
 	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
@@ -944,6 +959,7 @@ function renderStatus() {
 	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
+	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		status += '<br><span class="undervoltage"><i class="fa fa-warning';
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )

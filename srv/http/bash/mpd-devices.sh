@@ -108,23 +108,3 @@ fi
 devices="[ ${devices:1} ]"
 aplayname=${Aaplayname[i]}
 output=${Aname[i]}
-
-asound="\
-defaults.pcm.card $i
-defaults.ctl.card $i"
-if [[ -e $dirsystem/equalizer ]]; then
-	asound+='
-ctl.equal {
-	type equal;
-}
-pcm.plugequal {
-	type equal;
-	slave.pcm "plug:dmix";
-}
-pcm.!default {
-	type plug;
-	slave.pcm plugequal;
-}'
-fi
-
-echo "$asound" > /etc/asound.conf

@@ -107,90 +107,6 @@ $( '#mixertype' ).change( function() {
 		setMixerType( mixertype );
 	}
 } );
-$( '#setting-equalizer' ).click( function() {
-	if ( !$( '#verticalrange' ).length ) $( 'head' ).append( `
-<style id="verticalrange">
-.infomessage .hz {
-	white-space: nowrap;
-}
-.infomessage .hz a {
-	display: inline-block;
-	width: 55px;
-	height: 30px;
-	color: var( --cw );
-	text-align: center;
-	font-family: Inconsolata;
-}
-#flatline {
-	position: absolute;
-	margin: 155px 10px;
-	width: 560px;
-	height: 1px;
-	background: var( --cgl );
-}
-#infoRange.vertical {
-	margin-left: -50px;
-	width: 400px;
-	height: 270px;
-	transform : rotateZ( -90deg );
-}
-#infoRange.vertical input {
-	display: block;
-	position: relative;
-	height: 55px;
-	right: -70px;
-}
-#infoRange.vertical input::-webkit-slider-thumb {
-	margin-top: -18px;
-	transform : rotateZ( 90deg );
-}
-#infoRange.vertical input::-moz-range-thumb {
-	transform : rotateZ( 90deg );
-}
-</style>
-` );
-	bash( [ 'equalizerval' ], function( values ) {
-		var allflat = '66'.repeat( 10 );
-		var flat = values.join( '' ) === allflat;
-		info( {
-			  icon       : 'volume'
-			, title      : 'Equalizer'
-			, content    : `
-<div id="flatline"></div>
-<div class="infomessage">Hz
-<div class="hz"><a>31</a><a>63</a><a>125</a><a>250</a><a>500</a><a>1,000</a><a>2,000</a><a>4,000</a><a>8,000</a><a>16,000</a></div></div>
-<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>`
-			, boxwidth   : 'max'
-			, values     : values
-			, beforeshow : function() {
-				$( '#infoButtons' ).toggleClass( 'hide', flat );
-				var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					var $this = $( this );
-					var i = $this.index( 'input' );
-					var val = $( this ).val();
-					var unit = i < 5 ? ' Hz' : ' kHz';
-					var band = '0'+ i +'. '+ freq[ i ] + unit;
-					bash( 'su mpd -c "amixer -D equal sset \\"'+ band +'\\" '+ val +'"' );
-				} ).on( 'mouseup touchend keyup', function() {
-					var allval = '';
-					$( '#infoRange input' ).each( function() {
-						allval +=$( this ).val();
-					} );
-					$( '#infoButtons' ).toggleClass( 'hide', allval === allflat );
-				} );
-			}
-			, buttonnoreset : 1
-			, okno          : 1
-			, buttonlabel   : '<i class="fa fa-set0"></i>Flat'
-			, button        : function() {
-				bash( [ 'equalizerval', 'reset' ] );
-				$( '#infoRange input' ).val( 66 );
-				$( '#infoButtons' ).addClass( 'hide' );
-			}
-		} );
-	}, 'json' );
-} );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
@@ -464,7 +380,6 @@ function renderPage( list ) {
 	$( '#replaygain' ).prop( 'checked', G.replaygain );
 	$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
 	$( '#equalizer' ).prop( 'checked', G.equalizer );
-	$( '#setting-equalizer' ).toggleClass( 'hide', !G.equalizer );
 	$( '#buffer' ).prop( 'checked', G.buffer );
 	$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
 	$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
@@ -475,7 +390,7 @@ function renderPage( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'asound', 'mpdconf', 'mount' ].forEach( function( id ) {
+	[ 'asound', 'mpd', 'mpdconf', 'mount' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	if ( $( '#infoRange .value' ).length ) {

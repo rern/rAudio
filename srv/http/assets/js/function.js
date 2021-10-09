@@ -19,6 +19,7 @@ function list( args, callback, json ) {
 		, json || null
 	);
 }
+
 //----------------------------------------------------------------------
 function addonsdl( std ) {
 	if ( std ) {
@@ -36,6 +37,8 @@ function addonsdl( std ) {
 	}
 }
 function bookmarkeditClear() {
+	if ( !G.bookmarkedit ) return
+	
 	G.bookmarkedit = 0;
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' )
@@ -54,8 +57,8 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
-	$( '#lib-list li:eq( 0 )' ).trigger( 'tap' );
-	$( '.licover' ).toggleClass( 'hide', window.innerHeight < 590 );
+	$( '#lib-list li:eq( 0 )' ).click();
+	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
 		.before( '<canvas id="canvascolor"></canvas>' );
@@ -129,9 +132,9 @@ function contextmenuLibrary( $li, $target ) {
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
-		var menutop = barsvisible ? '310px' : '270px';
+		var menutop = barsvisible ? 310 : 270;
 	} else {
-		var menutop = ( $li.offset().top + 48 ) +'px';
+		var menutop = $li.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
 	G.color = 0; // reset to 0 once show
@@ -143,10 +146,9 @@ function contextmenuScroll( $menu, menutop ) {
 		.toggleClass( 'fixed', fixedmenu )
 		.removeClass( 'hide' );
 	var targetB = $menu.offset().top + $menu.height();
-	var wH = window.innerHeight;
 	var topH = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
 	var wT = $( window ).scrollTop();
-	if ( targetB > ( wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	if ( targetB > ( G.wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - G.wH + 42 } );
 }
 function coverartChange() {
 	if ( G.playback ) {
@@ -273,10 +275,9 @@ function curlPackage( pkg, active, enabled ) {
 function displayBars() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) || 'coverTL' in G ) return
 	
-	var wH = window.innerHeight;
 	var wW = document.body.clientWidth;
-	var smallscreen = wH < 590 ||wW < 500;
-	var lcd = ( wH <= 320 && wW <= 480 ) || ( wH <= 480 && wW <= 320 );
+	var smallscreen = G.wH < 590 ||wW < 500;
+	var lcd = ( G.wH <= 320 && wW <= 480 ) || ( G.wH <= 480 && wW <= 320 );
 	if ( !G.display.bars || ( smallscreen && !G.display.barsalways ) || lcd ) {
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
@@ -284,7 +285,7 @@ function displayBars() {
 		$( '#page-playback, .emptyadd' ).removeClass( 'barsalways' );
 		$( '.list, #lib-index, #pl-index' ).addClass( 'bars-off' );
 		$( '.content-top' ).css( 'top', '' );
-		$( '.emptyadd' ).css( 'top', '90px' );
+		$( '.emptyadd' ).css( 'top', 90 );
 	} else {
 		$( '#bar-top' ).removeClass( 'hide' );
 		$( '#bar-bottom' ).removeClass( 'hide transparent' );
@@ -321,13 +322,13 @@ function displayPlayback() {
 	$cover
 		.toggleClass( 'hide', !cover )
 		.toggleClass( 'coversmall', G.display.coversmall );
-	$( '#coverart' ).css( 'width', G.display.coversmall ? '230px' : '' );
-	if ( ( !time || !volume ) && window.innerWidth > 500 ) {
+	$( '#coverart' ).css( 'width', G.display.coversmall ? 230 : '' );
+	if ( ( !time || !volume ) && G.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
 		if ( !time && !volume ) {
 			$cover.css( { width: '100%', 'max-width': '100%' } );
 		} else if ( !time || !volume ) {
-			$cover.css( { width: '100%', 'max-width': '55vw' } );
+			$cover.css( { width: 'fit-content', 'max-width': '55vw' } );
 		}
 	} else {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
@@ -341,12 +342,11 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
-	var wW = window.innerWidth;
 	if ( G.display.vumeter ) {
 		var aligntop = 'stretch';
 	} else if ( $( '.btn-group' ).is( ':hidden' ) ) {
 		var align = 'center';
-	} else if ( time && volume && ( wW < 900 && wW > 750 ) || wW < 600 ) {
+	} else if ( time && volume && ( G.wW < 900 && G.wW > 750 ) || G.wW < 600 ) {
 		var align = 'stretch';
 	} else {
 		var align = 'center';
@@ -364,10 +364,15 @@ function displaySave( keys ) {
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
+function displaySubMenu() {
+	[ 'lock', 'equalizer', 'snapclient', 'relays', 'screenoff' ].forEach( function( el ) {
+		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
+	} );  // submenu toggled by css .settings + .submenu
+}
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
 	var iso1 = ( iso.toLowerCase().charCodeAt( 1 ) - 97 ) * -20;
-	return iso1 +'px '+ iso0 +'px';
+	return [ iso1, iso0 ];
 }*/
 function getBio( artist ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
@@ -610,11 +615,11 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent' ).css( 'height', '340px' );
+			$( '#infoContent' ).css( 'height', 340 );
 			if ( page1 ) {
 				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
 			} else {
-				$( '.infomessage, #infoContent td' ).css( 'width', '286' );
+				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
@@ -652,7 +657,7 @@ var chkplayback = {
 	, noswipe      : 'Disable swipe'
 }
 function infoPlayback() {
-	if ( 'coverTL' in G ) $( '#coverTL' ).trigger( 'tap' );
+	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys = Object.keys( chkplayback );
 	var values = [];
 	keys.forEach( function( k, i ) {
@@ -808,7 +813,7 @@ function lyricsShow( data ) {
 	if ( data !== 'current' ) {
 		G.lyrics = data;
 		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-		$( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' )  );
+		if ( G.lyricsCover ) $( '#divlyricstitle img' ).attr( 'src', G.lyricsCover );
 		$( '#lyricstitle' ).text( G.lyricsTitle );
 		$( '#lyricsartist' ).text( G.lyricsArtist );
 		$( '#lyricstext' ).html( lyricshtml );
@@ -1020,7 +1025,7 @@ function renderLibrary() {
 	}
 	$( '#lib-list' ).empty().addClass( 'hide' );
 	$( '#lib-mode-list' )
-		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : '50px' )
+		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
 	$( '.mode-bookmark' ).children()
 		.add( '.coverart img' ).css( 'opacity', '' );
@@ -1040,7 +1045,7 @@ function renderLibraryList( data ) {
 	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
 	if ( 'count' in data ) {
-		$( '#lib-path' ).css( 'max-width', '40px' );
+		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
@@ -1097,13 +1102,13 @@ function renderLibraryList( data ) {
 			$( '#lib-list' ).css( 'width', '100%' );
 			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
 		}
-		var pH = window.innerHeight - 80;
+		var pH = G.wH - 80;
 		pH -= G.albumlist ? $( '.coverart' ).height() : 49;
 		if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
 		$( '#lib-list p' )
 			.removeClass( 'bars-on' )
 			.toggleClass( 'fixedcover', G.display.fixedcover && $( '.licover' ).length === 1 )
-			.css( 'height', pH +'px' );
+			.css( 'height', pH );
 		$( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
 	} );
 }
@@ -1240,7 +1245,7 @@ function renderSavedPlaylist( name ) {
 	}, 'json' );
 }
 function second2HMS( second ) {
-	if ( !second || second < 1 ) return 0
+	if ( !second || second < 1 ) return ''
 	
 	var second = Math.round( second );
 	if ( second < 60 ) return second;
@@ -1423,7 +1428,7 @@ function setInfoScroll() {
 	if ( !tWmax ) return
 	
 	$( '.scrollleft' ).css( { // same width and speed
-		  width     : tWmax +'px'
+		  width     : tWmax
 		, animation : ( G.wW + tWmax ) / G.scrollspeed +'s infinite linear scrollleft'
 	} );
 	if ( G.localhost ) {
@@ -1480,7 +1485,7 @@ function setPlaylistInfoWidth() {
 	var titleW = $title.scrollWidth;
 	var iWdW = 40 + 10 + $duration.width() + 9;
 	var wW = document.body.clientWidth;
-	$title.css(  'max-width', iWdW + titleW < wW ? '' : wW - iWdW +'px' );
+	$title.css(  'max-width', iWdW + titleW < wW ? '' : wW - iWdW );
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
@@ -1631,24 +1636,17 @@ function setTrackCoverart() {
 	}
 }
 function statusRefresh() {
+	if ( O.title === 'Equalizer' ) {
+		bash( [ 'equalizer' ], function( data ) {
+			psEqualizer( data );
+		}, 'json' );
+	}
 	bash( [ 'displayget' ], data => {
 		delete G.coverTL;
 		G.display = data;
 		G.display.screenoff = G.localhost;
 		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
-		var submenu = {
-			  relays     : 'features'
-			, snapclient : 'player'
-			, lock       : 'system'
-			, screenoff  : 'power'
-		};
-		[ 'relays', 'snapclient', 'lock', 'screenoff' ].forEach( sub => {
-			if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
-				$( '#'+ submenu[ sub ] )
-					.addClass( 'sub' )
-					.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
-			}
-		} );
+		displaySubMenu();
 	}, 'json' );
 	getPlaybackStatus();
 	bannerHide();
@@ -1749,7 +1747,9 @@ function volumeBarSet( pageX ) {
 			, {
 				  duration: ms
 				, easing: 'linear'
-				, complete: volumeBarTimeout
+				, complete: function() {
+					setTimeout( volumeBarHide, 3000 );
+				}
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
@@ -1760,9 +1760,6 @@ function volumeBarSet( pageX ) {
 	$( '#volume-text' ).text( G.status.volumemute || vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 	G.status.volume = vol;
-}
-function volumeBarTimeout() {
-	G.volumebar = setTimeout( volumeBarHide, 3000 );
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {

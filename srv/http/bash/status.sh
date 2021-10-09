@@ -491,7 +491,10 @@ status+='
 # >>>>>>>>>>
 echo {$status}
 
-[[ -n $getcover || -z $AlbumArtist ]] && exit
+[[ -n $getcover ]] && exit
+
+[[ -z $AlbumArtist ]] && AlbumArtist=$Artist
+[[ -z $AlbumArtist ]] && exit
 
 if [[ -n $stream && $state == play && -n $Title ]]; then
 	args="\

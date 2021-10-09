@@ -22,6 +22,7 @@ if systemctl -q is-active bluetooth; then
 		listbt="[ ${listbt:1} ]"
 	fi
 fi
+[[ $1 == bt ]] && echo $listbt && exit
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ -n $ipeth ]]; then
@@ -58,7 +59,7 @@ if [[ -n $ipr ]]; then
 	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ -z $dbm ]] && dbm=0
-	listwl='{
+	listwl=',{
   "dbm"      : '$dbm'
 , "gateway"  : "'$gateway'"
 , "hidden"   : '$hidden'
@@ -86,7 +87,7 @@ if [[ -n $notconnected ]]; then
 			gateway=
 			ip=
 		fi
-		listwlnc+=',{
+		listwl+=',{
   "gateway"  : "'$gateway'"
 , "hidden"   : '$hidden'
 , "ip"       : "'$ip'"
@@ -96,8 +97,8 @@ if [[ -n $notconnected ]]; then
 , "wep"      : '$wep'
 }'
 	done
-	listwlnc="[ ${listwlnc:1} ]"
 fi
+[[ -n $listwl ]] && listwl="[ ${listwl:1} ]" || listwl=false
 
 # hostapd
 if systemctl -q is-active hostapd; then
@@ -118,8 +119,7 @@ data='
 , "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
 , "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
-, "listwl"     : '$( [[ -n $listwl ]] && echo $listwl || echo false )'
-, "listwlnc"   : '$( [[ -n $listwlnc ]] && echo $listwlnc || echo false )'
+, "listwl"     : '$listwl'
 , "hostapd"    : '$( [[ -n $ap ]] && echo $ap || echo false )'
 , "hostname"   : "'$( hostname )'"'
 

@@ -284,9 +284,11 @@ bluetoothplayer )
 	val=${args[1]}
 	if [[ $val == 1 ]]; then # connected
 		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
+		pushstream btclient true
 	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
+		pushstream btclient false
 	else
 		mpc stop
 		rm -f $dirtmp/{player-*,btclient}
@@ -295,11 +297,9 @@ bluetoothplayer )
 		volume0dB
 	fi
 	if [[ $val == 1 || $val == 0 ]]; then
-		data=$( /srv/http/bash/networks-data.sh )
-		pushstream refresh "$data"
+		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	else
-		status=$( $dirbash/status.sh )
-		pushstream mpdplayer "$status"
+		pushstream mpdplayer "$( $dirbash/status.sh )"
 	fi
 	;;
 bluetoothplayerstop )
@@ -307,8 +307,7 @@ bluetoothplayerstop )
 	rm -f $dirtmp/player-bluetooth
 	touch $dirtmp/player-mpd
 	volumeReset
-	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
+	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
 bookmarkreset )
 	mpdpath=${args[1]}
@@ -330,7 +329,7 @@ color )
 	if [[ -e $file ]]; then
 		hsl=( $( cat $file ) )
 	else
-		hsl=( $( grep '\-\-cd:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
+		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
@@ -338,16 +337,16 @@ color )
 	hsl="${hs}$l%"
 
 	sed -i "
- s|\(--cml: *hsl\).*;|\1(${hs}$(( l + 5 ))%);|
-  s|\(--cm: *hsl\).*;|\1($hsl);|
- s|\(--cma: *hsl\).*;|\1(${hs}$(( l - 5 ))%);|
- s|\(--cmd: *hsl\).*;|\1(${hs}$(( l - 15 ))%);|
-s|\(--cg75: *hsl\).*;|\1(${hsg}75%);|
-s|\(--cg60: *hsl\).*;|\1(${hsg}60%);|
- s|\(--cgl: *hsl\).*;|\1(${hsg}40%);|
-  s|\(--cg: *hsl\).*;|\1(${hsg}30%);|
- s|\(--cga: *hsl\).*;|\1(${hsg}20%);|
- s|\(--cgd: *hsl\).*;|\1(${hsg}10%);|
+ s|\(--cml *: *hsl\).*;|\1(${hs}$(( l + 5 ))%);|
+  s|\(--cm *: *hsl\).*;|\1($hsl);|
+ s|\(--cma *: *hsl\).*;|\1(${hs}$(( l - 5 ))%);|
+ s|\(--cmd *: *hsl\).*;|\1(${hs}$(( l - 15 ))%);|
+s|\(--cg75 *: *hsl\).*;|\1(${hsg}75%);|
+s|\(--cg60 *: *hsl\).*;|\1(${hsg}60%);|
+ s|\(--cgl *: *hsl\).*;|\1(${hsg}40%);|
+  s|\(--cg *: *hsl\).*;|\1(${hsg}30%);|
+ s|\(--cga *: *hsl\).*;|\1(${hsg}20%);|
+ s|\(--cgd *: *hsl\).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
 	sed -i "
  s|\(.box{fill:hsl\).*|\1($hsl);|
@@ -440,6 +439,7 @@ displayget )
 	data+='
 , "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "equalizer"  : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
@@ -467,6 +467,78 @@ displaysave )
 	$dirbash/mpd-conf.sh
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
+	;;
+equalizer )
+	type=${args[1]} # none = get values
+	name=${args[2]}
+	newname=${args[3]}
+	flat='61 61 61 61 61 61 61 61 61 61' # value 60 > set at 59
+	if [[ -n $type ]]; then
+		if [[ $type == preset ]]; then
+			[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
+		else # remove then save again with current values
+			append=1
+			sed -i "/^$name\^/ d" $dirsystem/equalizer.conf
+			if [[ $type == delete ]]; then
+				v=( $flat )
+				name=Flat
+			elif [[ $type == rename ]]; then
+				name=$newname
+			fi
+		fi
+		freq=( 31 63 125 250 500 1 2 4 8 16 )
+		for (( i=0; i < 10; i++ )); do
+			(( i < 5 )) && unit=Hz || unit=kHz
+			band=( "0$i. ${freq[i]} $unit" )
+			[[ -n $v ]] && sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
+		done
+		echo $name > $dirsystem/equalizer
+	else
+		name=$( cat $dirsystem/equalizer )
+	fi
+	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
+	[[ -n $append && $name != Flat ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	[[ $type == save ]] && exit
+	
+	[[ $name == '(unnamed)' ]] && presets='"(unnamed)",'
+	presets+='"Flat"'
+	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
+	if [[ -n $lines ]]; then
+		for line in "${lines[@]}"; do
+			presets+=',"'$line'"'
+		done
+	fi
+#############
+	data='{
+  "current" : "'$name'"
+, "values"  : [ '${val// /,}' ]
+, "presets" : [ '$presets' ]
+}'
+	[[ -n $type ]] && pushstream equalizer "$data"
+	echo $data
+	;;
+equalizerupdn )
+	band=${args[1]}
+	val=${args[2]}
+	sudo -u mpd amixer -D equal sset "$band" $val
+	echo '(unnamed)' > $dirsystem/equalizer
+	;;
+hashFiles )
+	path=/srv/http/assets
+	for dir in css fonts js; do
+		[[ $dir == js ]] && d=d
+		files+=$( ls -p$d "$path/$dir/"* | grep -v '/$' )$'\n'
+	done
+	date=$( date +%s )
+	for file in ${files[@]}; do
+		mv $file ${file/.*}.$date.${file/*.}
+		pages=$( grep -rl "assets/js" /srv | grep 'php$' )
+		for page in ${pages[@]}; do
+			name=$( basename $file )
+			newname=${name/.*}.$date.${name/*.}
+			sed -i "s|$name|$newname|" $page
+		done
+	done
 	;;
 ignoredir )
 	touch $dirsystem/updating
@@ -551,12 +623,10 @@ mpcplayback )
 	mpc $command $pos
 	if [[ $command == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotify 'Audio CD' 'Start play ...' audiocd
-		killall relaystimer.sh &> /dev/null
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
 		[[ $command == stop ]] && rm -f $dirtmp/status
-		[[ -e $dirtmp/relayson ]] && $dirbash/relaystimer.sh &> /dev/null &
 	fi
 	;;
 mpcprevnext )

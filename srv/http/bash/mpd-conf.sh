@@ -34,24 +34,22 @@ if [[ $1 == bt ]]; then
 	# $( bluealsa-aplay -L ) takes 2 seconds before available
 	readarray -t paired <<< "$lines"
 	for device in "${paired[@]}"; do
-		mac=$( cut -d' ' -f2 <<< "$device" )
-		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) != 2 )) && continue
-		
-		aplaydevice="bluealsa:DEV=$mac,PROFILE=a2dp"
-		btoutput='
+		btmac=$( cut -d' ' -f2 <<< "$device" )
+		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && break || continue
+	done
+	[[ -z $btmac ]] && exit # no Audio Sink bluetooth
+	
+	aplaydevice="bluealsa:DEV=$btmac,PROFILE=a2dp"
+	btoutput='
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
 	device         "'$aplaydevice'"
 	type           "alsa"
 	mixer_type     "software"'
-		[[ -e /srv/http/data/system/btformat ]] && btoutput+='
+		[[ -e $dirsystem/btformat ]] && btoutput+='
 	format         "44100:16:2"'
 		btoutput+='
 }'
-		
-	done
-	[[ -z $btoutput ]] && exit # no Audio Sink bluetooth
-	
 fi
 
 . $dirbash/mpd-devices.sh
@@ -147,7 +145,6 @@ audio_output {
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
 	format         "44100:16:1"
-	buffer_time    "1000000"
 }'
 fi
 
@@ -182,12 +179,32 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-[[ -n $Acard ]] && card=$card || card=0
-echo "\
-defaults.pcm.card $card
-defaults.ctl.card $card" > /etc/asound.conf
 [[ -z $Acard ]] && restartMPD && exit
 
+[[ -n $Acard ]] && card=$card || card=0
+asound="\
+defaults.pcm.card $card
+defaults.ctl.card $card"
+if [[ -e $dirsystem/equalizer ]]; then
+	preset=$( cat $dirsystem/equalizer )
+	asound+='
+pcm.!default {
+	type plug;
+	slave.pcm plugequal;
+}
+pcm.plugequal {
+	type equal;
+	slave.pcm "plughw:'$card',0";
+}
+ctl.equal {
+	type equal;
+}'
+fi
+echo "$asound" > /etc/asound.conf
+if [[ $preset == enable ]]; then
+	echo Flat > $dirsystem/equalizer
+	$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
+fi
 wm5102card=$( aplay -l \
 				| grep snd_rpi_wsp \
 				| cut -c 6 )

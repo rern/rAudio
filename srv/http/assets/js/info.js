@@ -1,3 +1,138 @@
+// $.fn.press(), $fn.swipe(), info(), banner()
+
+// $.fn.press(), $fn.swipe() --------------------------------------------------------
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	// ELEMENT: '#id' or '.class'
+	// DELEGATE: optional
+	// $( e.currentTarget ) = $( this );
+	// cannot be attached with on
+} );
+events:
+	- while up/down : mouseenter > mousemove > mouseleave > mouseout
+	- click         : mousedown > mouseup > click
+	- touch         : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var callback, delegate, timeout;
+	if ( !arg2 ) {
+		delegate = '';
+		callback = arg1;
+	} else {
+		delegate = arg1;
+		callback = arg2;
+	}
+	this.on( 'touchstart mousedown', delegate, function( e ) {
+		timeout = setTimeout( function() {
+			G.press = 1;
+			callback( e );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
+		clearTimeout( timeout );
+		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
+	} );
+	return this // allow chain
+}
+$.fn.swipe = function( callback ) { // no delegate
+	var px = 100;
+	var ms = 200;
+	var xstart;
+	this.on( 'touchstart mousedown', function( e ) {
+		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		G.swipe = 0;
+	} ).on( 'touchmove mousemove', function( e ) {
+		if ( !xstart ) return
+		
+		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		if ( Math.abs( xstart - xmove ) > 10 ) {
+			G.swipe = 1;
+			setTimeout( function() { G.swipe = 0 }, ms );
+		} else {
+			return
+		}
+	} ).on( 'touchend mouseup', function( e ) {
+		if ( !G.swipe ) {
+			xstart = 0;
+			return
+		}
+		
+		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		var xdiff = xstart - xend;
+		if ( Math.abs( xdiff ) > px ) {
+			e.swipe = xdiff > 0 ? 'left' : 'right';
+		} else {
+			e.swipe = false;
+		}
+		callback( e );
+		xstart = 0;
+	} );
+	return this
+}
+// banner -----------------------------------------------------------------------------
+$( 'body' ).prepend( `
+<div id="infoOverlay" class="hide" tabindex="1">
+	<div id="infoBox">
+		<div id="infoTopBg">
+			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
+		</div>
+		<div id="infoContent"></div>
+		<div id="infoButtons"></div>
+	</div>
+</div>
+<div id="banner" class="hide">
+	<div id="bannerIcon"></div>
+	<div id="bannerTitle"></div>
+	<div id="bannerMessage"></div>
+</div>
+` );
+
+$( '#banner' ).click( bannerHide );
+$( '#infoOverlay' ).keyup( function( e ) {
+/*
+all:      [Tab]       - focus / next input
+          [Shift+Tab] - previous input
+radio:    [L] [R]     - check
+checkbox: [space]     - check
+select:   [U] [D]     - check
+*/
+	var key = e.key;
+	if ( key == 'Enter' ) {
+		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+	} else if ( key === 'Escape' ) {
+		G.local = 1; // prevent toggle setting menu
+		setTimeout( function() { G.local = 0 }, 300 );
+		$( '#infoX' ).click();
+	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
+		var rl = key === 'ArrowLeft' ? 'left' : 'right';
+		$( '#infoArrow .fa-arrow-'+ rl ).click();
+	}
+} );
+$( '#infoContent' ).click( function() {
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
+} );
+
+var bannertimeout;
+function banner( title, message, icon, delay ) {
+	clearTimeout( bannertimeout );
+	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
+					? icon 
+					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
+	$( '#bannerIcon' ).html( iconhtml );
+	$( '#bannerTitle' ).html( title );
+	$( '#bannerMessage' ).html( message );
+	$( '#banner' ).removeClass( 'hide' );
+	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
+}
+function bannerHide() {
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	
+	clearTimeout( bannertimeout );
+	$( '#banner' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' );
+	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
+}
+// ------------------------------------------------------------------------------------
 function infoUsage() {
 	console.log( `
 ===============================
@@ -93,70 +228,6 @@ Note:
 - Single value/function - no need to be array
 ` );
 }
-
-$( 'body' ).prepend( `
-<div id="infoOverlay" class="hide" tabindex="1">
-	<div id="infoBox">
-		<div id="infoTopBg">
-			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
-		</div>
-		<div id="infoContent"></div>
-		<div id="infoButtons"></div>
-	</div>
-</div>
-<div id="banner" class="hide">
-	<div id="bannerIcon"></div>
-	<div id="bannerTitle"></div>
-	<div id="bannerMessage"></div>
-</div>
-` );
-
-$( '#banner' ).click( bannerHide );
-$( '#infoOverlay' ).keyup( function( e ) {
-/*
-all:      [Tab]       - focus / next input
-          [Shift+Tab] - previous input
-radio:    [L] [R]     - check
-checkbox: [space]     - check
-select:   [U] [D]     - check
-*/
-	var key = e.key;
-	if ( key == 'Enter' ) {
-		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
-	} else if ( key === 'Escape' ) {
-		G.local = 1; // prevent toggle setting menu
-		setTimeout( function() { G.local = 0 }, 300 );
-		$( '#infoX' ).click();
-	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
-		var rl = key === 'ArrowLeft' ? 'left' : 'right';
-		$( '#infoArrow .fa-arrow-'+ rl ).click();
-	}
-} );
-$( '#infoContent' ).click( function() {
-	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} );
-
-var bannertimeout;
-function banner( title, message, icon, delay ) {
-	clearTimeout( bannertimeout );
-	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
-					? icon 
-					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
-	$( '#bannerIcon' ).html( iconhtml );
-	$( '#bannerTitle' ).html( title );
-	$( '#bannerMessage' ).html( message );
-	$( '#banner' ).removeClass( 'hide' );
-	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
-}
-function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	
-	clearTimeout( bannertimeout );
-	$( '#banner' )
-		.addClass( 'hide' )
-		.removeAttr( 'style' );
-	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
-}
 function infoReset() {
 	if ( O.infoscroll ) {
 		$( 'html, body' ).scrollTop( O.infoscroll );
@@ -166,13 +237,10 @@ function infoReset() {
 	$( '#infoContent input, #infoFileBox' ).off( 'change keyup paste cut' );
 	$( '#infoRange input' ).off( 'click input mouseup touchend' );
 	
-	$( '#infoOverlay' )
-		.addClass( 'hide' )
-		.css( 'pointer-events', 'none' ); // prevent click OK on consecutive info
+	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoBox' ).css( {
-		  margin     : ''
-		, width      : ''
-		, visibility : 'hidden'
+		  margin  : ''
+		, width   : ''
 	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
 	$( '#infoIcon, #infoTitle' ).empty();
@@ -212,8 +280,10 @@ function info( json ) {
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		alignVertical();
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
 	
@@ -221,8 +291,8 @@ function info( json ) {
 	if ( O.arrowright ) switchRL( 'right', O.arrowright )
 	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )
 	// title
-	if ( O.width ) $( '#infoBox' ).css( 'width', O.width +'px' );
-	if ( O.height ) $( '#infoContent' ).css( 'height', O.height +'px' );
+	if ( O.width ) $( '#infoBox' ).css( 'width', O.width );
+	if ( O.height ) $( '#infoContent' ).css( 'height', O.height );
 	if ( O.icon ) {
 		if ( O.icon.charAt( 0 ) !== '<' ) {
 			$( '#infoIcon' ).addClass( 'fa fa-'+ O.icon );
@@ -285,9 +355,7 @@ function info( json ) {
 				+'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 				+ ( O.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
-		$( '#infoOk' )
-			.html( O.fileoklabel )
-			.addClass( 'hide' );
+		$( '#infoOk' ).html( O.fileoklabel );
 		$( '#infoFileLabel' ).click( function() {
 			$( '#infoFileBox' ).click();
 		} );
@@ -315,7 +383,7 @@ function info( json ) {
 				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
 				$( '#infoButtons' ).one( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
-					setValues();
+					infoSetValues();
 					$( this ).remove();
 					$( '#infoFileLabel' ).removeClass( 'hide' );
 					$( '.infoimgnew, .infoimgwh' ).remove();
@@ -358,16 +426,16 @@ function info( json ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
 			htmls.password = '';
 			O.passwordlabel.forEach( function( lbl ) {
-				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password">&ensp;<i class="fa fa-eye fa-lg"></i></td></tr>';
+				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 			$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 				var $this = $( this );
-				var $pwd = $this.prev();
-				if ( $this.prev().prop( 'type' ) === 'text' ) {
-					$this.removeClass( 'eyeactive' );
+				var $pwd = $this.parent().prev().find( 'input' );
+				if ( $pwd.prop( 'type' ) === 'text' ) {
+					$this.removeClass( 'bl' );
 					$pwd.prop( 'type', 'password' );
 				} else {
-					$this.addClass( 'eyeactive' );
+					$this.addClass( 'bl' );
 					$pwd.prop( 'type', 'text' );
 				}
 			} );
@@ -442,53 +510,9 @@ function info( json ) {
 	}
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
-		// show to get width - still visibility hidden
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
-		// set vertical position
-		alignVertical();
-		// apply selectric
-		selectricRender();
-		// set width: button
-		if ( !O.buttonfit ) {
-			var widest = 0;
-			var $this, w, btnhide;
-			$.each( $( '#infoButtons a' ), function() {
-				$this = $( this )
-				btnhide = $this.hasClass( 'hide' );
-				$this.removeClass( 'hide' );
-				w = $this.outerWidth();
-				if ( w > widest ) widest = w;
-				$this.toggleClass( 'hide', btnhide );
-			} );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest +'px' );
-		}
-		// set width: text / password / textarea
-		if ( O.boxwidth ) {
-			var widthmax = O.boxwidth === 'max';
-			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
-			var allW = $( '#infoContent' ).width();
-			var labelW = $( '#infoContent td:first-child' ).width() || 0;
-			var boxW = widthmax ? allW - labelW - 20 : O.boxwidth + 10;
-			$( '#infoContent' ).find( 'input:text, input:password, textarea, .selectric, .selectric-wrapper' ).css( 'width', boxW +'px' );
-			$( '.selectric-items' ).css( 'min-width', boxW +'px' );
-		}
-		// set padding-right: radio / checkbox
-		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( tdL > 1 ) $( '#infoContent td:eq( 0 )' ).css( 'padding-right', '10px' );
-		// set padding-right, align right: label
-		if ( !$( '#infoContent td:first-child input' ).length ) {
-			$( '#infoContent td:first-child' ).css( {
-				  'padding-right' : ( tdL > 1 ? '5px' : 0 )
-				, 'text-align'    : ( tdL > 1 ? 'right' : 'left' )
-			} );
-		}
-		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
-			var tblW = $( '#infoContent table' ).width();
-			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW +'px' );
-		}
+		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields - omit .selectric-input for select
+		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
@@ -501,9 +525,47 @@ function info( json ) {
 			}
 		} );
 		// assign values
-		if ( O.values ) setValues();
+		if ( O.values ) infoSetValues();
 		
-		var $inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+			
+		// set width: button
+		if ( !O.buttonfit ) {
+			var widest = 0;
+			$( '#infoButtons a' ).each( function() {
+				var w = $( this ).outerWidth();
+				if ( w > widest ) widest = w;
+			} );
+			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
+		}
+		// set width: text / password / textarea
+		if ( O.boxwidth ) {
+			var widthmax = O.boxwidth === 'max';
+			if ( widthmax ) $( '#infoBox' ).css( 'width', 600 );
+			var allW = $( '#infoContent' ).width();
+			var labelW = $( '#infoContent td:first-child' ).width() || 0;
+			O.boxW = ( widthmax ? allW - labelW - 20 : O.boxwidth );
+		} else {
+			O.boxW = 230;
+		}
+		$( '#infoContent' ).find( 'input:text, input:password, textarea' ).parent().css( 'width', O.boxW );
+		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
+		var $tdfirst = $( '#infoContent td:first-child' );
+		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
+		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox
+			$tdfirst.css( 'padding-right', tdL > 1 ? 10 : 0 );
+		} else { // label - text input
+			$tdfirst.css( {
+				  'padding-right' : tdL > 1 ? 5 : 0
+				, 'text-align'    : tdL > 1 ? 'right' : 'left'
+			} );
+		}
+		if ( ( O.messagealign || O.footeralign ) && $( '#infoContent table' ) ) {
+			var tblW = $( '#infoContent table' ).width();
+			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
+		}
 		// check text input length
 		O.short = false;
 		if ( O.checklength ) {
@@ -573,27 +635,27 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( 'beforeshow' in O ) O.beforeshow();
-	} );
+		$( 'html, body' ).scrollTop( 0 );
+		} );
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
 
-function alignVertical() { // make infoBox scrollable
-	setTimeout( function() {
-		var boxH = $( '#infoBox' ).height();
-		var wH = window.innerHeight;
-		var top = boxH < wH ? ( wH - boxH ) / 2 : 20;
-		$( 'html, body' ).scrollTop( 0 );
-		$( '#infoBox' ).css( {
-			  'margin-top' : top +'px'
-			, 'visibility' : 'visible'
-		} );
-		$( '#infoOverlay' ).css( {
-			  'height'         : document.body.clientHeight
-			, 'pointer-events' : ''
-		} );
-		$( '#infoContent input:text' ).prop( 'spellcheck', false );
-	}, 200 );
+function infoSetValues() {
+	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
+	var $this, type, val;
+	O.inputs.each( function( i, e ) {
+		$this = $( e );
+		type = $this.prop( 'type' );
+		val = O.values[ i ];
+		if ( type === 'radio' ) { // reselect radio by name
+			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
+		} else if ( type === 'checkbox' ) {
+			$this.prop( 'checked',  val );
+		} else { // text, password, textarea, select
+			$this.val( val );
+		}
+	} );
 }
 function infoVal() {
 	var values = [];
@@ -614,8 +676,10 @@ function infoVal() {
 			val = $this.val().trim().replace( /\n/g, '\\n' );
 		} else if ( type === 'password' ) {
 			val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
-		} else {
+		} else if ( type === 'text' ) {
 			val = $this.val().trim();
+		} else {
+			val = $this.val();
 		}
 		values.push( val );
 	} );
@@ -697,14 +761,12 @@ function orientationReset( file, ori, callback ) {
 	reader.readAsDataURL( file );
 }
 function selectricRender() {
-	if ( !$( 'select' ).length || $( '#infoContent .selectric-wrapper' ).length ) return
-	
-	var $select = $( '#infoOverlay' ).hasClass( 'hide' ) ? $( '.container select' ) : $( '#infoContent select' );
-	$select
-		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
-		.filter( function() {
-			return $( this ).find( 'option' ).length === 1
-		} ).parent().parent().addClass( 'disabled' );
+	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
+	$( 'select' ).each( function() {
+		if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
+	} );
+	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
+	$( '.selectric-items' ).css( 'min-width', O.boxW );
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 }function setFileImage( file ) {
 	var timeout = setTimeout( function() {
@@ -786,23 +848,6 @@ function selectricRender() {
 		ctx.drawImage( img, -cw, -ch );
 		image.src = canvas.toDataURL( 'image/jpeg' );
 	} );
-}
-function setValues() {
-	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
-	var $this, type, val;
-	O.inputs.each( function( i, e ) {
-		$this = $( e );
-		type = $this.prop( 'type' );
-		val = O.values[ i ];
-		if ( type === 'radio' ) { // reselect radio by name
-			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
-		} else if ( type === 'checkbox' ) {
-			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select
-			$this.val( val );
-		}
-	} );
-	if ( $( '#infoContent select' ).length ) $( '#infoContent select' ).selectric( 'refresh' );
 }
 function switchRL( rl, fn ) {
 	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );

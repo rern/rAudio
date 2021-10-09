@@ -1,3 +1,10 @@
+#infoContent .imgicon {
+	width: 30px !important;
+	margin-right: 5px !important;
+	vertical-align: -10px;
+	border: none;
+}
+
 img {
 	-webkit-touch-callout: none;
 }
@@ -34,9 +41,8 @@ ib {
 }
 .infobookmark {
 	float: left;
-	width: 100px;
+	width: 140px;
 	height: 100px;
-	margin: 10px;
 }
 .infobookmark i {
 	width: 100px;
@@ -50,12 +56,9 @@ ib {
 .disable,
 .disabled {
 	pointer-events: none;
-}
-.disable {
-	color: var( --cg60 );
+	color: var( --cg60 ) !important;
 }
 #play-group .disabled {
-	color: var( --cg60 ) !important;
 	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {
@@ -64,7 +67,6 @@ ib {
 	box-shadow: 0 0 6px 5px #000000;
 }
 #divcolor .btn.disabled {
-	color: var( --cg60 );
 	background-color: var( --cg ) !important;
 }
 #colorreset {
@@ -106,7 +108,12 @@ i.map.disabled, .map.disabled i {
 }
 .menu .sub {
 	width: calc( 100% - 40px );
-	border-right: 1px solid var( --cga );
+}
+.settings + .submenu {
+	display: none;;
+}
+.settings.sub + .submenu {
+	display: block;
 }
 .menu a {
 	display: inline-block;
@@ -120,7 +127,7 @@ i.map.disabled, .map.disabled i {
 .menu i {
 	width: 40px;
 	line-height: 40px;
-	vertical-align: -3px;
+	vertical-align: bottom;
 	text-align: center;
 	font-size: 22px;
 	color: var( --cw );
@@ -132,6 +139,10 @@ i.map.disabled, .map.disabled i {
 .submenu {
 	float: right;
 	border-top: 1px solid var( --cga );
+	border-left: 1px solid var( --cga );
+}
+#screenoff {
+	border-left: 1px solid #000000;
 }
 #settings {
 	position: fixed;
@@ -147,9 +158,6 @@ i.map.disabled, .map.disabled i {
 #power, #screenoff {
 	background: var( --cga );
 }
-#power.sub {
-	border-right: 1px solid #000000
-}
 #settings i.on {
 	color: var( --cml ) !important;
 }
@@ -158,7 +166,8 @@ i.map.disabled, .map.disabled i {
 	background: var( --cgl );
 }
 .menu .iconcover {
-	margin: -4px 8px !important;
+	margin: -2px 8px 0 !important;
+	vertical-align: middle;
 }
 #settings .gr {
 	font-size: 22px;
@@ -348,15 +357,6 @@ i.map.disabled, .map.disabled i {
 .capitalize {
 	text-transform: capitalize;
 }
-#infoOverlay.noscroll { /* for volume input range */
-	height: 100%;
-}
-#infoContent .imgicon {
-	width: 30px !important;
-	margin-right: 5px !important;
-	vertical-align: -10px;
-	border: none;
-}
 #infoicon {
 	height: 25px;
 	font-size: 0;
@@ -416,8 +416,6 @@ i.map.disabled, .map.disabled i {
 	justify-content: center;
 	margin: 30px auto 0;
 	padding: 0;
-	min-width: 100%;
-	max-width: 1200px;
 	min-height: 230px;
 }
 #playback-row.top0 {
@@ -2135,12 +2133,16 @@ li.active .li2 bl {
 		#play-group,
 		#vol-group { display: none }
 	}
+	@media ( min-width: 750px ) {
+		#time-knob,
+		#coverart-block,
+		#volume-knob {
+			margin: 0;
+		}
+	}
 }
 /************************************************************************************/
 @media ( orientation: portrait ) {
-	@media ( max-width: 1200px ) {
-		#playback-row { max-width: 100vw }
-	}
 	@media ( max-width: 900px ) {
 		#coverart-block { max-width: 55vw }
 	}
@@ -2208,13 +2210,6 @@ li.active .li2 bl {
 	@media ( max-width: 330px ) {
 		#playback-controls i { margin: 0 }
 		#button-pl-shuffle { display: none }
-		#infoOverlay {
-			transform: scale( 0.9 );
-			transform-origin: top;
-			width: calc( 100% / 0.9 );
-			left: calc( -100% / 18 );
-		}
-		#infoOverlay.noscroll { height: calc( 100% / 0.9 ) }
 		.radiomodetitle { display: none; }
 	}
 	@media ( max-width: 280px ) {

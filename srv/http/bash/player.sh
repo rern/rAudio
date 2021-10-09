@@ -181,22 +181,16 @@ dop )
 	restartMPD
 	;;
 equalizer )
-	[[ ${args[1]} == true ]] && touch $dirsystem/equalizer || rm $dirsystem/equalizer
+	if [[ ${args[1]} == true ]]; then
+		boolean=true
+		echo enable > $dirsystem/equalizer
+	else
+		boolean=false
+		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
+		rm -f $dirsystem/equalizer
+	fi
+	pushstream display '{"submenu":"equalizer","value":'$boolean'}'
 	restartMPD
-	;;
-equalizerval )
-	[[ ${args[1]} == reset ]] && reset=1
-	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	for (( i=0; i < 10; i++ )); do
-		(( i < 5 )) && unit=Hz || unit=kHz
-		band="0$i. ${freq[$i]} $unit"
-		if [[ -n $reset ]]; then
-			su mpd -c "amixer -D equal sset \"$band\" 66"
-		else
-			val+=,$( su mpd -c "amixer -D equal sget \"$band\"" | awk '/^ *Front Left/ {print $4}' )
-		fi
-	done
-	[[ -z $reset ]] && echo [ ${val:1} ]
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then

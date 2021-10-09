@@ -25,7 +25,7 @@
 	<i id="setting-snapclient" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
-		<br>SnapClient - Connect: Menu >&ensp;<i class="fa fa-folder-cascade"></i>&ensp;Sources |&ensp;<i class="fa fa-snapcast"></i>
+		<br>Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
 	</span>
 </div>
 	<?php }
@@ -153,7 +153,10 @@
 	<input id="login" <?=$chkenable?>>
 	<div class="switchlabel" for="password"></div>
 	<i id="setting-login" <?=$classsetting?>></i>
-	<span <?=$classhelp?>><a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.</span>
+	<span <?=$classhelp?>>
+		<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.
+		<br>Lock: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-lock"></i>
+	</span>
 </div>
 <div class="col-l single">
 	Play on Insert CD<i class="fa fa-play-cd"></i>

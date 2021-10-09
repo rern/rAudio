@@ -15,6 +15,10 @@ readarray -t args <<< "$1"
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
+pushstreamNotify() {
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
+	pushstream notify "$data"
+}
 pushRefresh() {
 	data=$( $dirbash/system-data.sh )
 	pushstream refresh "$data"
@@ -112,6 +116,9 @@ databackup )
 		fi
 	done
 	hostname > $dirsystem/hostname
+	grep ^Server /etc/pacman.d/mirrorlist \
+		| head -1 \
+		| sed 's|.*//\(.*\).mirror.*|\1|' > $dirsystem/mirror
 	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 	if [[ -n $profiles ]]; then
@@ -168,9 +175,11 @@ datarestore )
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
+	mirror=$( cat $dirsystem/mirror )
+	sed -i "0,/^Server/ s|//sg.mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
-	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
+	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,mirror,netctlprofile,timezone}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
@@ -189,8 +198,7 @@ getjournalctl )
 	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
 		cat "$filebootlog"
 	else
-		data='{ "title":"Boot Log","text":"Get ...","icon":"plus-r" }'
-		pushstream notify "$data"
+		pushstreamNotify 'Boot Log' 'Get ...' plus-r
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;
@@ -319,6 +327,39 @@ i2c-dev
 	echo 'TFT 3.5" LCD' >> $filereboot
 	pushRefresh
 	;;
+mirrorlist )
+	file=/etc/pacman.d/mirrorlist
+	current=$( grep ^Server $file \
+				| head -1 \
+				| sed 's|\.*mirror.*||; s|.*//||' )
+	[[ -z $current ]] && current=0
+	if ! grep -q '^###' $file; then
+		pushstreamNotify 'Mirror List' 'Get ...' globe
+		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
+	fi
+	readarray -t lines <<< $( grep . $file \
+								| sed -n '/### A/,$ p' \
+								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
+	clist='"Auto (by Geo-IP)"'
+	codelist=0
+	for line in "${lines[@]}"; do
+		if [[ ${line:0:4} == '### ' ]];then
+			city=
+			country=${line:4}
+		elif [[ ${line:0:3} == '## ' ]];then
+			city=${line:3}
+		else
+			[[ -n $city ]] && cc="$country - $city" || cc=$country
+			clist+=',"'$cc'"'
+			codelist+=',"'$line'"'
+		fi
+	done
+	echo '{
+  "country" : [ '$clist' ]
+, "current" : "'$current'"
+, "code"    : [ '$codelist' ]
+}'
+	;;
 mount )
 	protocol=${args[1]}
 	mountpoint="/mnt/MPD/NAS/${args[2]}"
@@ -391,12 +432,6 @@ dtparam=spi=on" >> $fileconfig
 	touch $dirsystem/mpdoled
 	pushRefresh
 	;;
-ntp )
-	server=${args[1]}
-	sed -i "s/^\(NTP=\).*/\1$server/" /etc/systemd/timesyncd.conf
-	pushRefresh
-	ntpdate $server
-	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
 	gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
@@ -422,8 +457,15 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 	pushRefresh
 	;;
 relays )
-	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
+	if [[ ${args[1]} == true ]]; then
+		boolean=true
+		touch $dirsystem/relays
+	else
+		boolean=false
+		rm -f $dirsystem/relays
+	fi
 	pushRefresh
+	pushstream display '{"submenu":"relays","value":'$boolean'}'
 	;;
 remount )
 	mountpoint=${args[1]}
@@ -442,6 +484,24 @@ remove )
 	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
+	;;
+servers )
+	ntp=${args[1]}
+	mirror=${args[2]}
+	file=/etc/systemd/timesyncd.conf
+	prevntp=$( grep ^NTP $file | cut -d= -f2 )
+	if [[ $ntp != $prevntp ]]; then
+		sed -i "s/^\(NTP=\).*/\1$ntp/" $file
+		ntpdate $ntp
+	fi
+	file=/etc/pacman.d/mirrorlist
+	prevmirror=$( grep ^Server $file \
+					| head -1 \
+					| sed 's|\.*mirror.*||; s|.*//||' )
+	if [[ $mirror != $prevmirror ]]; then
+		[[ $mirror == 0 ]] && mirror= || mirror+=.
+		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
+	fi
 	;;
 soundprofile )
 	soundprofile
@@ -494,14 +554,12 @@ unmount )
 	fi
 	pushRefresh
 	;;
-usbconnect )
-	# for /etc/conf.d/devmon - devmon@http.service
-	pushstream notify '{"title":"USB Drive","text":"Connected.","icon":"usbdrive"}'
+usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
+	pushstreamNotify 'USB Drive' Connected. usbdrive
 	update
 	;;
-usbremove )
-	# for /etc/conf.d/devmon - devmon@http.service
-	pushstream notify '{"title":"USB Drive","text":"Removed.","icon":"usbdrive"}'
+usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+	pushstreamNotify 'USB Drive' Removed usbdrive
 	update
 	;;
 vuleddisable )

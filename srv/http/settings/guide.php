@@ -5,7 +5,7 @@ include 'logosvg.php';
 <!DOCTYPE html>
 <html>
 <head>
-	<title>R+R User Guide</title>
+	<title>rAudio</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,57 +17,94 @@ include 'logosvg.php';
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
-<body style="height: 100%">
+<body style="height: 100%; user-select: none;">
 <div class="head" style="top: 0">
 	<i class="page-icon fa fa-question-circle"></i><span class='title'>USER GUIDE</span>
 	<a href="/"><i id="close" class="fa fa-times"></i></a>
 </div>
-<div id="guide">
+<div id="guide" style="user-select: none;">
 	<p><a class="gr" href="https://github.com/rern/rAudio-1" target="_blank"><i class="fa fa-github fa-lg bl"></i> Source</a><span id="count" style="float: right"></span></p>
 	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
 	<div id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></div>
 	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
 	<div id="settings" class="btn btn-default"><i id="settings" class="fa fa-gear"></i></div>
 	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
-	<img src="/assets/img/guide/1.<?=$time?>.jpg">
+	<img id="image" src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
-<script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script>
-var nlibrary = 22;
-var nplaylist = 39;
-var nsettings = 46;
-var ntotal = 57;
+var xstart, swipe;
+var xswipe = 100;
+var nlibrary = 23;
+var nplaylist = 40;
+var nsettings = 47;
+var ntotal = 58;
 var n = 1;
-$( '#count' ).text( n +' / '+ ntotal );
 
-$( '.btn' ).click( function() {
-	var page = {
-		  playback : 1
-		, library  : nlibrary
-		, playlist : nplaylist
-		, settings : nsettings
-	}
-	n = page[ this.id ]
-	renderPage( n );
+var $ = function( id ) { return document.getElementById( id ) }
+var btn = document.getElementsByClassName( 'btn' );
+var count = $( 'count' ); // not jQuery on this page
+var image = $( 'image' );
+var next = $( 'next' );
+var previous = $( 'previous' );
+
+count.textContent = n +' / '+ ntotal;
+Array.from( btn ).forEach( function( el ) {
+	el.addEventListener( 'click', function() {
+		var page = {
+			  playback : 1
+			, library  : nlibrary
+			, playlist : nplaylist
+			, settings : nsettings
+		}
+		n = page[ this.id ]
+		renderPage( n );
+	} );
 } );
-$( '#next' ).click( function() {
+next.addEventListener( 'click', function() {
 	n = n < ntotal ? n + 1 : 1;
 	renderPage( n );
 } );
-$( '#previous' ).click( function() {
+previous.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-$( 'body' ).on( 'swipeleft', function() {
-	$( '#next' ).click();
-} ).on( 'swiperight', function() {
-	$( '#previous' ).click();
+[ 'touchstart', 'mousedown' ].forEach( function( ev ) {
+	document.addEventListener( ev, function( e ) {
+		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		swipe = 0
+	} );
 } );
+[ 'touchmove', 'mousemove' ].forEach( function( ev ) {
+	document.addEventListener( ev, function( e ) {
+		if ( !xstart ) return
+		
+		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		if ( Math.abs( xstart - xmove ) > 10 ) {
+			swipe = 1;
+			setTimeout( function() { swipe = 0 }, 200 );
+		}
+	} );
+} );
+[ 'touchend', 'mouseup' ].forEach( function( ev ) {
+	document.addEventListener( ev, function( e ) {
+		if ( !swipe ) {
+			xstart = 0;
+			return
+		}
+		
+		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		var xdiff = xstart - xend;
+		if ( Math.abs( xdiff ) > xswipe ) xdiff > 0 ? next.click() : previous.click();
+		xstart = 0;
+	} );
+} );
+
 function renderPage( n ) {
-	$( 'img' ).attr( 'src', '/assets/img/guide/'+ n +'.<?=$time?>.jpg' );
-	$( '#count' ).text( n +' / '+ ntotal );
-	$( '.btn' ).removeClass( 'active' );
+	image.src = '/assets/img/guide/'+ n +'.<?=$time?>.jpg';
+	count.textContent = n +' / '+ ntotal;
+	Array.from( btn ).forEach( function( el ) {
+		el.classList.remove( 'active' );
+	} );
 	if ( n >= 1 && n < nlibrary ) {
 		var id = 'playback';
 	} else if ( n >= nlibrary && n < nplaylist ) {
@@ -77,7 +114,7 @@ function renderPage( n ) {
 	} else {
 		var id = 'settings';
 	}
-	$( '#'+ id ).addClass( 'active' );
+	$( id ).classList.add( 'active' );
 }
 </script>
 </body>

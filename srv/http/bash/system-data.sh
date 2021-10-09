@@ -163,6 +163,7 @@ data+='
 , "lcdmodel"         : "'$lcdmodel'"
 , "mpdoled"          : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'
 , "mpdoledconf"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
+, "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true || echo false )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
 , "powerbuttonconf"  : '$powerbuttonconf'

@@ -31,9 +31,9 @@ var cmd = {
 	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mpdignore    : [ dirbash +'player.sh mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
-	, powerbutton  : [ 'systemctl status powerbutton' ]
 	, rfkill       : [ 'rfkill' ]
 	, soundprofile : [ dirbash +'system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
+	, timesyncd    : [ 'systemctl status systemd-timesyncd' ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
@@ -60,12 +60,6 @@ function codeToggle( id, target ) {
 			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
 			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
 			var systemctl = 0;
-		}
-		if ( id === 'bluetoothctl' && G.reboot.toString().indexOf( 'Bluetooth' ) !== -1 ) {
-			$el
-				.html( '(Enable: reboot required.)' )
-				.removeClass( 'hide' );
-			return
 		}
 		
 		if ( id === 'journalctl' || id === 'mpdignore' ) banner( 'Get Data', id, page, -1 );
@@ -113,7 +107,6 @@ function list2JSON( list ) {
 	}
 	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
-	if ( G.page === 'system' ) G.reboot = G.reboot ? G.reboot.split( '\n' ) : [];
 	return true
 }
 function loader() {
@@ -122,9 +115,9 @@ function loader() {
 function loaderHide() {
 	$( '#loader' ).addClass( 'hide' );
 }
-function notify( title, message, icon ) {
+function notify( title, message, icon, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( title, message, icon +' blink', -1 );
+	banner( title, message, icon +' blink', delay || -1 );
 }
 function refreshData() {
 	if ( page === 'networks' ) {
@@ -196,7 +189,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -211,12 +204,16 @@ pushstream.onstatuschange = function( status ) {
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
-		case 'notify':  psNotify( data );  break;
-		case 'refresh': psRefresh( data ); break;
-		case 'reload':  psReload();        break;
-		case 'volume':  psVolume( data );  break;
-		case 'wifi':    psWifi( data );    break;
+		case 'bluetooth': psBluetooth( data ); break;
+		case 'notify':    psNotify( data );    break;
+		case 'refresh':   psRefresh( data );   break;
+		case 'reload':    psReload();          break;
+		case 'volume':    psVolume( data );    break;
+		case 'wifi':      psWifi( data );      break;
 	}
+}
+function psBluetooth( data ) {
+	renderBluetooth( data );
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
@@ -399,7 +396,7 @@ $( '.help' ).click( function() {
 	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).hasClass( 'help' )
 		|| $( e.target ).hasClass( 'fa-plus-circle' )
 		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1

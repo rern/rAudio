@@ -23,6 +23,7 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/roundslider-1.6.1.min.css">
+	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
 </head>
 <body>
@@ -30,7 +31,6 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <?php include 'index-body.php';?>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/plugin/html5kellycolorpicker-1.21.min.js"></script>
 <script src="/assets/js/plugin/lazysizes-5.3.2.min.js"></script>
@@ -38,13 +38,19 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <script src="/assets/js/plugin/qrcode.min.js"></script>
 <script src="/assets/js/plugin/roundslider-1.6.1.min.js"></script>
 <script src="/assets/js/plugin/Sortable-1.14.0.min.js"></script>
+<script src="/assets/js/shortcut.<?=$time?>.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>
 <script src="/assets/js/passive.<?=$time?>.js"></script>
 
-<?php if ( $localhost ) include 'keyboard.php';?>
+<?php if ( file_exists( '/srv/http/data/system/equalizer' ) ) {?>
+<link rel="stylesheet" href="/assets/css/equalizer.<?=$time?>.css">
+<script src="/assets/js/equalizer.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
+<?php }
+	  if ( $localhost ) include 'keyboard.php';?>
 	
 </body>
 </html>

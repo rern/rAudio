@@ -152,7 +152,6 @@ foreach( $arrayalias as $alias ) {
 }
 ?>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/Tocca-2.0.9.min.js"></script>
 <script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>

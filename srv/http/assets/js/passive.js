@@ -1,5 +1,9 @@
 $( window ).on( 'resize', () => { // portrait / landscape
 	displayBars();
+	if ( G.wH > G.wW === window.innerHeight > window.innerWidth ) return
+	
+	G.wH = window.innerHeight;
+	G.wW = window.innerWidth;
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
@@ -8,10 +12,10 @@ $( window ).on( 'resize', () => { // portrait / landscape
 		if ( G.librarylist ) {
 			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) +'px' );
-					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) );
+					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ) +'px' );
+					$( '#lib-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ));
 				}
 			}, 0 );
 		}
@@ -20,7 +24,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', window.innerHeight - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) +'px' );
+				$( '#pl-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) );
 			}, 0 );
 		}
 	}
@@ -36,7 +40,7 @@ connect = () => {
 disconnect = () => {
 	if ( active ) {
 		active = 0;
-		pushstream.disconnect();
+//		pushstream.disconnect();
 	}
 }
 function bookmarkCover( url, path ) {
@@ -73,8 +77,8 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'coverart', 'display', 'relays', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'reload', 'spotify', 'volume', 'webradio' ];
+var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
+	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -94,8 +98,10 @@ pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
 		case 'airplay':   psAirplay( data );   break;
 		case 'bookmark':  psBookmark( data );  break;
+		case 'btclient':  psBtClient( data );  break;
 		case 'coverart':  psCoverart( data );  break;
 		case 'display':   psDisplay( data );   break;
+		case 'equalizer': psEqualizer( data ); break;
 		case 'relays':    psRelays( data );    break;
 		case 'mpdplayer': psMpdPlayer( data ); break;
 		case 'mpdradio':  psMpdRadio( data );  break;
@@ -119,6 +125,10 @@ function psAirplay( data ) {
 	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
 	clearTimeout( G.debounce );
+}
+function psBtClient( connected ) {
+	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
 	if ( G.bookmarkedit ) return
@@ -246,6 +256,12 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
+	if ( 'submenu' in data ) {
+		G.display[ data.submenu ] = data.value;
+		displaySubMenu();
+		return
+	}
+	
 	if ( 'updateaddons' in data ) {
 		G.status.updateaddons = data.updateaddons ? true : false;
 		setButtonUpdateAddons();
@@ -281,6 +297,9 @@ function psDisplay( data ) {
 			$( '#mode-album' ).click();
 		}
 	}
+}
+function psEqualizer( data ) {
+	if ( O.title === 'Equalizer' ) equalizerRefresh( data )
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
@@ -409,7 +428,7 @@ function psPlaylist( data ) {
 		}
 	}, G.debouncems );
 }
-function psRelays( response ) { // on receive broadcast
+function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
 		$( '#device'+ response.on ).removeClass( 'gr' );

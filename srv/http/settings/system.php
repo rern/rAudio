@@ -102,11 +102,13 @@ $selecttimezone.= '</select>';
 	<div class="switchlabel" for="bluetooth"></div>
 	<i id="setting-bluetooth" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
-			As a sender:
-		<br> &emsp; &bull; Power on Bluetooth speakers/headphones > enable pairing
-		<br> &emsp; &bull; Networks > Bluetooth > search > pair
+		As a sender:
+		<p>
+			&bull; Power on Bluetooth speakers/headphones > enable pairing
+		<br>&bull; Networks > Bluetooth > search > pair
+		</p>
 		<br>As a receiver:
-		<br> &emsp; &bull; Sender device > search > pair
+		<p>&bull; Sender device > search > pair</p>
 	</span>
 </div>
 <pre id="codebluetoothctl" class="hide"></pre>
@@ -120,7 +122,7 @@ $selecttimezone.= '</select>';
 		<br>Country of Wi-Fi regulatory domain:
 		<p>
 			&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-		<br>(The connected router may override it to a certain country.)
+		<br>&bull; The connected router may override it to a certain country.
 		</p>
 	</span>
 </div>
@@ -151,7 +153,7 @@ $selecttimezone.= '</select>';
 	<i id="setting-lcdchar" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 			<a class="img" data-name="lcdchar">LCD module</a> - display playback data
-		<br>&bull; Support 16x2 and 20x4 LCD modules.
+		<p>&bull; Support 16x2 and 20x4 LCD modules.</p>
 		<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 	</span>
 </div>
@@ -164,11 +166,15 @@ $selecttimezone.= '</select>';
 	<i id="setting-powerbutton" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
-		<br> &emsp; &bull; On - Fixed to pin 5
-		<br> &emsp; &bull; Off - Default to pin 5 (single pin on+off)
-		<br>If pin 5 is used by DAC or LCD - Set 2 unused pins for:
-		<br> &emsp; 1. Off (default: 7)
-		<br> &emsp; 2. Reserved (default: 29)
+		<p>
+			&bull; On - Fixed to pin 5
+		<br>&bull; Off - Default to pin 5 (single pin on+off)
+		</p>
+		If pin 5 is used by DAC or LCD - Set 2 unused pins for:
+		<p>
+			&bull; Off (default: 7)
+		<br>&bull; Reserved (default: 29)
+		</p>
 	</span>
 </div>
 <pre id="codepowerbutton" class="hide"></pre>
@@ -179,8 +185,11 @@ $selecttimezone.= '</select>';
 	<i id="setting-relays" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-		<br>More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
-		<br>(This can be enabled and run as a test without a connected relay module.)
+		<br>Settings: &ensp;<i class="fa fa-sliders"></i>Features |&ensp;<i class="fa fa-relays"></i>
+		<p>
+			&bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+		<br>&bull; Can be enabled and run as a test without a connected relay module.
+		</p>
 	</span>
 </div>
 <div class="col-l double">
@@ -214,28 +223,42 @@ $selecttimezone.= '</select>';
 	<i id="setting-vuled" <?=$classsetting?>></i>
 	<span <?=$classhelp?>>
 		<a class="img" data-name="vuled">7 LEDs</a> - display audio level
-		<br>&bull; <bl id="ledcalc">LED resister calculator</bl>
+		<p>&bull; <bl id="ledcalc">LED resister calculator</bl></p>
 	</span>
 </div>
 </div>
 
 <div>
 <heading>Environment<?=$ihelp?></heading>
-<div class="col-l double">
-	<a>Name<br><gr>hostname</gr></a><i class="fa fa-plus-r"></i>
-</div>
+<div class="col-l single">Host Name<i class="fa fa-plus-r"></i></div>
 <div class="col-r">
 	<input type="text" id="hostname" readonly>
-	<span <?=$classhelp?>>Name for Renderers, Streamers, Access point, Bluetooth and system Hostname.</span>
+	<span <?=$classhelp?>>
+		For:
+		<p>
+			&bull; Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
+		<br>&bull; Web Interface URL: <code id="avahiurl"></code>
+		<br>&bull; System hostname
+		<p>
+	</span>
 </div>
-<div class="col-l single">Timezone<i class="fa fa-globe"></i></div>
+<div data-status="timesyncd" class="col-l double status">
+	<a>Time Zone<br><gr>timesyncd <?=$istatus?></gr></a><i class="fa fa-globe"></i>
+</div>
 <div class="col-r">
 	<?=$selecttimezone?><i id="setting-timezone" class="settingedit fa fa-gear"></i>
+	<span <?=$classhelp?>>
+		<p>
+		<i class="fa fa-gear"></i>Servers:
+		<br>&bull; NTP: For time sync
+		<br>&bull; Package mirror: For system upgrade <code>pacman -Syu</code>
+	</span>
 </div>
+<pre id="codetimesyncd" class="hide"></pre>
 
 <div id="divsoundprofile">
-<div data-status="soundprofile" class="col-l icon double status">
-	<a>Sound Profile<br><gr>kernel <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
+<div data-status="soundprofile" class="col-l double status">
+	<a>Sound Profile<br><gr>sysctl <?=$istatus?></gr></a><i class="fa fa-soundprofile"></i>
 </div>
 <div class="col-r">
 	<input id="soundprofile" <?=$chkenable?>>
@@ -254,8 +277,9 @@ $selecttimezone.= '</select>';
 	<input id="backup" type="checkbox">
 	<div class="switchlabel" for="backup"></div>
 	<span <?=$classhelp?>>
-			Backup all settings and Library database:
-		<p>&bull; Settings
+		Backup all settings and Library database:
+		<p>
+			&bull; Settings
 		<br>&bull; Library database
 		<br>&bull; Saved playlists
 		<br>&bull; Bookmarks
@@ -285,7 +309,6 @@ $listui = [
 	, 'roundSlider'         => 'https://github.com/soundar24/roundSlider'
 	, 'simple-keyboard'     => 'https://github.com/hodgef/simple-keyboard/'
 	, 'Sortable'            => 'https://github.com/SortableJS/Sortable'
-	, 'Tocca'               => 'https://github.com/GianlucaGuarini/Tocca.js'
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {
