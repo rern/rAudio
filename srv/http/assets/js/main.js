@@ -148,7 +148,7 @@ $( '#button-settings' ).click( function() {
 	}
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
-$( '.settings' ).click( function() {
+$( '.settings:not( :last )' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
