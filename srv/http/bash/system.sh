@@ -457,8 +457,15 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 	pushRefresh
 	;;
 relays )
-	[[ ${args[1]} == true ]] && touch $dirsystem/relays || rm -f $dirsystem/relays
+	if [[ ${args[1]} == true ]]; then
+		boolean=true
+		touch $dirsystem/relays
+	else
+		boolean=false
+		rm -f $dirsystem/relays
+	fi
 	pushRefresh
+	pushstream display '{"submenu","relays","value":'$boolean'}'
 	;;
 remount )
 	mountpoint=${args[1]}

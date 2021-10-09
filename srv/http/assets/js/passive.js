@@ -256,6 +256,12 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
+	if ( 'submenu' in data ) {
+		G.display[ data.submenu ] = data.value;
+		displaySubMenu();
+		return
+	}
+	
 	if ( 'updateaddons' in data ) {
 		G.status.updateaddons = data.updateaddons ? true : false;
 		setButtonUpdateAddons();

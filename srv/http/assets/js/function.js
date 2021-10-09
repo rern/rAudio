@@ -310,11 +310,6 @@ function displayCheckboxSet( i, enable, check ) {
 		.prop( 'checked', check )
 		.parent().toggleClass( 'gr', !enable );
 }
-function displayMenu() {
-	[ 'lock', 'equalizer', 'snapclient', 'relays', 'screenoff' ].forEach( function( el ) {
-		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
-	} );  // submenu toggled by css .settings + .submenu
-}
 function displayPlayback() {
 	var $time = $( '#time-knob' );
 	var $cover = $( '#coverart-block' );
@@ -368,6 +363,11 @@ function displaySave( keys ) {
 		delete display[ item ];
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
+}
+function displaySubMenu() {
+	[ 'lock', 'equalizer', 'snapclient', 'relays', 'screenoff' ].forEach( function( el ) {
+		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
+	} );  // submenu toggled by css .settings + .submenu
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
@@ -1646,7 +1646,7 @@ function statusRefresh() {
 		G.display = data;
 		G.display.screenoff = G.localhost;
 		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
-		displayMenu();
+		displaySubMenu();
 	}, 'json' );
 	getPlaybackStatus();
 	bannerHide();

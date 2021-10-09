@@ -182,11 +182,14 @@ dop )
 	;;
 equalizer )
 	if [[ ${args[1]} == true ]]; then
+		boolean=true
 		echo enable > $dirsystem/equalizer
 	else
+		boolean=false
 		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
 		rm -f $dirsystem/equalizer
 	fi
+	pushstream display '{"submenu","equalizer","value":'$boolean'}'
 	restartMPD
 	;;
 ffmpeg )
