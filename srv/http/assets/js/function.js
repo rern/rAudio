@@ -310,6 +310,11 @@ function displayCheckboxSet( i, enable, check ) {
 		.prop( 'checked', check )
 		.parent().toggleClass( 'gr', !enable );
 }
+function displayMenu() {
+	[ 'lock', 'equalizer', 'snapclient', 'relays', 'screenoff' ].forEach( function( el ) {
+		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
+	} );  // submenu toggled by css .settings + .submenu
+}
 function displayPlayback() {
 	var $time = $( '#time-knob' );
 	var $cover = $( '#coverart-block' );
@@ -1641,21 +1646,7 @@ function statusRefresh() {
 		G.display = data;
 		G.display.screenoff = G.localhost;
 		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
-		var submenu = {
-			  lock       : 'features'
-			, equalizer  : 'player'
-			, snapclient : 'networks'
-			, relays     : 'system'
-			, screenoff  : 'power'
-		};
-		var subkeys = Object.keys( submenu );
-		subkeys.forEach( sub => {
-			if ( G.display[ sub ] && !$( '#'+ sub ).length ) {
-				$( '#'+ submenu[ sub ] )
-					.addClass( 'sub' )
-					.after( '<i id="'+ sub +'" class="fa fa-'+ sub +' submenu"></i>' );
-			}
-		} );
+		displayMenu();
 	}, 'json' );
 	getPlaybackStatus();
 	bannerHide();

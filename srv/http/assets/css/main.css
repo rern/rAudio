@@ -109,6 +109,12 @@ i.map.disabled, .map.disabled i {
 .menu .sub {
 	width: calc( 100% - 40px );
 }
+.settings + .submenu {
+	display: none;;
+}
+.settings.sub + .submenu {
+	display: block;
+}
 .menu a {
 	display: inline-block;
 	width: 100%;
@@ -135,6 +141,9 @@ i.map.disabled, .map.disabled i {
 	border-top: 1px solid var( --cga );
 	border-left: 1px solid var( --cga );
 }
+#screenoff {
+	border-left: 1px solid #000000;
+}
 #settings {
 	position: fixed;
 	float: right;
@@ -148,9 +157,6 @@ i.map.disabled, .map.disabled i {
 }
 #power, #screenoff {
 	background: var( --cga );
-}
-#power.sub {
-	border-right: 1px solid #000000
 }
 #settings i.on {
 	color: var( --cml ) !important;
