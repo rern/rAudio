@@ -6,6 +6,7 @@
 	--eqSliderT : calc( ( var( --eqSliderH ) - var( --eqBandW ) * 10 ) / 2 ); /* ( sliderW - sliderH x 10 ) / 2 */
 	--eqFlatT   : calc( ( 100% - 40px ) / 10 ); /* 0-100 : sliderW - slider thumbH | 60% = shift 10% from 50% */
 	--eqBottomT : calc( var( --eqSliderH ) + 10px );
+	--eqPresetW : calc( var( --eqBandW ) * 5 );
 }
 @media ( max-height: 450px ) and ( orientation: landscape ) {
 	#eq { --eqSliderH: calc( 100vh - 150px ) }
@@ -31,6 +32,15 @@
                         width       : var( --eqSliderH ); }
 #eq input             { height      : var( --eqBandW )    }
 #eq .bottom           { margin-top  : var( --eqBottomT )  }
+#eqname,
+#eq .selectric-wrapper,
+#eq .selectric,
+#eq .selectric-items { 
+	width: var( --eqPresetW ) !important;
+	max-width: 200px;
+}
+#eqname,
+#eq .selectric-wrapper { margin: 0 10px !important }
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
 	#eq input::-moz-range-thumb     { width : var( --eqThumbW ) }
@@ -48,7 +58,7 @@
 }
 #eq .bottom {
 	position: absolute;
-	width: 100%;
+	width: 100% !important;
 	left: 50%;
 	transform: translateX( -50% );
 	z-index: 1;
@@ -86,25 +96,4 @@
 #eq i,
 #eqname {
 	position: relative;
-}
-#eq .disabled,
-#eq i.disabled {
-	pointer-events: none;
-	color: var( --cg60 );
-}
-#eqname,
-#eq .selectric-wrapper,
-#eq .selectric,
-#eq .selectric-items { width: 180px !important }
-#eqname,
-#eq .selectric-wrapper { margin: 0 10px !important }
-@media ( max-width: 530px ) {
-	#eqname,
-	#eq .selectric-wrapper,
-	#eq .selectric,
-	#eq .selectric-items { width: 160px !important }
-}
-@media ( max-width: 330px ) {
-	#eqname,
-	#eq .selectric-wrapper { margin: 0 5px !important }
 }
