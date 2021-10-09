@@ -465,7 +465,7 @@ relays )
 		rm -f $dirsystem/relays
 	fi
 	pushRefresh
-	pushstream display '{"submenu","relays","value":'$boolean'}'
+	pushstream display '{"submenu":"relays","value":'$boolean'}'
 	;;
 remount )
 	mountpoint=${args[1]}

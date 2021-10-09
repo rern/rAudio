@@ -77,7 +77,7 @@ localbrowserdisable )
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	pushRefresh
-	pushstream display '{"submenu","screenoff","value":false}'
+	pushstream display '{"submenu":"screenoff","value":false}'
 	;;
 localbrowserset )
 	screenoff=$(( ${args[1]} * 60 ))
@@ -94,7 +94,7 @@ localbrowserset )
 	if [[ $screenoff != $prevscreenoff ]]; then
 		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 		[[ $screenoff != 0 ]] && boolean=true || boolean=false )
-		pushstream display '{"submenu","screenoff","value":'$boolean'}'
+		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
 	if [[ $rotate != $prevrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
@@ -143,14 +143,14 @@ logindisable )
 	sed -i '/^bind_to_address/ s/".*"/"0.0.0.0"/' /etc/mpd.conf
 	systemctl restart mpd
 	pushRefresh
-	pushstream display '{"submenu","lock","value":false}'
+	pushstream display '{"submenu":"lock","value":false}'
 	;;
 loginset )
 	touch $dirsystem/login
 	sed -i '/^bind_to_address/ s/".*"/"127.0.0.1"/' /etc/mpd.conf
 	systemctl restart mpd
 	pushRefresh
-	pushstream display '{"submenu","lock","value":true}'
+	pushstream display '{"submenu":"lock","value":true}'
 	;;
 mpdscribbledisable )
 	systemctl disable --now mpdscribble@mpd
@@ -186,14 +186,14 @@ smbset )
 snapclientdisable )
 	rm $dirsystem/snapclient
 	pushRefresh
-	pushstream display '{"submenu","sanpclient","value":false}'
+	pushstream display '{"submenu":"sanpclient","value":false}'
 	;;
 snapclientset )
 	latency=${args[1]}
 	sed -i '/OPTS=/ s/".*"/"--latency='$latency'"/' /etc/default/snapclient
 	touch $dirsystem/snapclient
 	pushRefresh
-	pushstream display '{"submenu","sanpclient","value":true}'
+	pushstream display '{"submenu":"sanpclient","value":true}'
 	;;
 snapserver )
 	if [[ ${args[1]} == true ]]; then

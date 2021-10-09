@@ -189,7 +189,7 @@ equalizer )
 		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
 		rm -f $dirsystem/equalizer
 	fi
-	pushstream display '{"submenu","equalizer","value":'$boolean'}'
+	pushstream display '{"submenu":"equalizer","value":'$boolean'}'
 	restartMPD
 	;;
 ffmpeg )
