@@ -1779,7 +1779,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
-	contextmenuScroll( $menu, menutop );
+	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	plRemove( $( this ).parent() );
 } );
