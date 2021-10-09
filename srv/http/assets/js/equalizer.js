@@ -48,8 +48,6 @@ function equalizer() {
 					$( '#eqsave' ).toggleClass( 'disabled', !changed || G.eqcurrent === 'Flat' );
 					$( '#eqnew' ).toggleClass( 'disabled', !changed || flat )
 					$( '#eqflat' ).toggleClass( 'disabled', flat )
-				} ).on( 'touchmove', function( e ) { // fix - scroll on andriod
-					e.stopPropagation();
 				} );
 				$( '#eqpreset' ).change( function() {
 					var name = $( this ).val();
