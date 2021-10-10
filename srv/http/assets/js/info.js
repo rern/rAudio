@@ -9,9 +9,9 @@ $( ELEMENT ).press( DELEGATE, function( e ) {
 	// cannot be attached with on
 } );
 events:
-	- while up/down : mouseenter > mousemove > mouseleave > mouseout
-	- click         : mousedown > mouseup > click
-	- touch         : touchstart > touchmove > touchend
+	- always : mouseenter > mousemove > mouseleave > mouseout
+	- click  : mousedown > mouseup > click
+	- touch  : touchstart > touchmove > touchend
 */
 $.fn.press = function( arg1, arg2 ) {
 	var callback, delegate, timeout;
@@ -34,38 +34,26 @@ $.fn.press = function( arg1, arg2 ) {
 	return this // allow chain
 }
 $.fn.swipe = function( callback ) { // no delegate
-	var px = 100;
-	var ms = 200;
-	var xstart;
-	this.on( 'touchstart mousedown', function( e ) {
-		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		G.swipe = 0;
-	} ).on( 'touchmove mousemove', function( e ) {
-		if ( !xstart ) return
+	var xstart = 0;
+	var xend = 0;
+	window.addEventListener( 'touchstart', function( e ) {
+		G.swipe = false;
+		xstart = e.touches[ 0 ].pageX;
+	}, false );
+	window.addEventListener( 'touchmove', function( e ) {
+		xend = e.touches[ 0 ].pageX;
+		G.swipe = Math.abs( xstart - xend ) > 10;
+	}, false );
+	window.addEventListener( 'touchend', function( e ) {
+		if ( !G.swipe ) return
 		
-		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		if ( Math.abs( xstart - xmove ) > 10 ) {
-			G.swipe = 1;
-			setTimeout( function() { G.swipe = 0 }, ms );
-		} else {
-			return
-		}
-	} ).on( 'touchend mouseup', function( e ) {
-		if ( !G.swipe ) {
-			xstart = 0;
-			return
-		}
-		
-		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
+		G.swipe = false;
 		var xdiff = xstart - xend;
-		if ( Math.abs( xdiff ) > px ) {
+		if ( Math.abs( xdiff ) > 100 ) {
 			e.swipe = xdiff > 0 ? 'left' : 'right';
-		} else {
-			e.swipe = false;
+			callback( e );
 		}
-		callback( e );
-		xstart = 0;
-	} );
+	}, false );
 	return this
 }
 // banner -----------------------------------------------------------------------------
