@@ -58,6 +58,7 @@
 #infoContent .selectric-wrapper {
 	margin: 0;
 	min-width: 60px;
+	font-size: 16px;
 }
 #infoContent .selectric-items ul {
 	color: var( --cw );
@@ -86,8 +87,8 @@
 }
 #infoRange {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--track: linear-gradient( 90deg, transparent 20px, #000000 20px, #000000 calc( 100% - 20px ), transparent 20px );
+	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--track: linear-gradient( 90deg, transparent 10px, #000000 10px, #000000 calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
 }
 #infoRange input {

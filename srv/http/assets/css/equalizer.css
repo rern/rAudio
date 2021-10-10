@@ -4,7 +4,6 @@
 	--eqBandW   : 50px;
 	--eqAllH    : calc( var( --eqSliderH ) + 65px ); /* console H = 25 + sliderW + 40 */
 	--eqSliderT : calc( ( var( --eqSliderH ) - var( --eqBandW ) * 10 ) / 2 ); /* ( sliderW - sliderH x 10 ) / 2 */
-	--eqFlatT   : calc( ( 100% - 40px ) / 10 ); /* 0-100 : sliderW - slider thumbH | 60% = shift 10% from 50% */
 	--eqBottomT : calc( var( --eqSliderH ) + 10px );
 	--eqPresetW : calc( var( --eqBandW ) * 5 );
 }
@@ -27,7 +26,6 @@
 /* size - position */
 #eq                   { height      : var( --eqAllH )     }
 #eq .hz a, #eq i      { width       : var( --eqBandW )    }
-#eq .vertical::before { margin-left : var( --eqFlatT )    } /* flat line - from center */
 #eq .vertical         { top         : var( --eqSliderT );
                         width       : var( --eqSliderH ); }
 #eq input             { height      : var( --eqBandW )    }
@@ -36,11 +34,10 @@
 #eq .selectric-wrapper,
 #eq .selectric,
 #eq .selectric-items { 
-	width: var( --eqPresetW ) !important;
-	max-width: 200px;
+	width: calc( var( --eqBandW ) * 4 ) !important;
 }
 #eqname,
-#eq .selectric-wrapper { margin: 0 10px !important }
+#eq .selectric-wrapper { margin: 0 calc( var( --eqBandW ) / 2 ) !important }
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
 	#eq input::-moz-range-thumb     { width : var( --eqThumbW ) }
@@ -61,6 +58,7 @@
 	width: 100% !important;
 	left: 50%;
 	transform: translateX( -50% );
+	font-size: 0; /* force no space between inline-block */
 	z-index: 1;
 }
 #eq .vertical {
@@ -75,12 +73,13 @@
 	content: '';
 	width: 1px;
 	height: 100%;
-	background: #000000;
+	background: var( --cgl );
 }
 #eq input {
 	display: block;
 	position: relative;
 	max-width: 100%;
+	touch-action: none; /* fix: android chrome cannot drag */
 }
 #eq input::-webkit-slider-thumb {
 	margin-top: -19px;

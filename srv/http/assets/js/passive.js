@@ -299,7 +299,17 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
-	if ( O.title === 'Equalizer' ) equalizerRefresh( data )
+	if ( O.title !== 'Equalizer' ) return
+	
+	O.values = [ '', data.current, ...data.values ];
+	var options = '';
+	data.presets.forEach( function( name ) {
+		options += '<option value="'+ name +'">'+ name +'</option>';
+	} );
+	$( '#eqpreset' ).html( options );
+	infoSetValues();
+	selectricRender();
+	eqButtonSet();
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
