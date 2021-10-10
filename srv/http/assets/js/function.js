@@ -1206,8 +1206,8 @@ function renderPlaylist( data ) {
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		imageLoad( 'pl-list' );
 		setPlaylistScroll();
+		imageLoad( 'pl-list' );
 		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 	} );
 }
