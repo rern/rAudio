@@ -1,15 +1,12 @@
-function equalizer() {
-	var vflat = '60'.repeat( 10 );
-	var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
-	var band = [];
-	freq.forEach( function( hz, i ) {
-		band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
-	} );
-	var opthz = '';
-	freq.forEach( function( hz, i ) {
-		opthz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
-	} );
-	var content = `
+var vflat = '60'.repeat( 10 );
+var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+var band = [];
+var opthz = '';
+freq.forEach( function( hz, i ) {
+	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
+	opthz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
+} );
+var content = `
 <div id="eq">
 <div class="hz">${ opthz }</div>
 <div class="bottom">
@@ -20,8 +17,9 @@ function equalizer() {
 	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-times bl hide"></i>
 	<i id="eqflat" class="fa fa-set0"></i>
 </div>
-<div id="infoRange" class="vertical">${ '<input type="range">'.repeat( 10 ) }</div>
+<div id="infoRange" class="vertical">${ '<input type="range" min="30" max="90">'.repeat( 10 ) }</div>
 </div>`;
+function equalizer() {
 	bash( [ 'equalizer' ], function( data ) {
 		G.eqcurrent = data.current;
 		var values = [ '', data.current, ...data.values ]; // [ #eqname, #eqpreset, ... ]
