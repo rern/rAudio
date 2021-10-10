@@ -59,7 +59,7 @@ $isave = '<i class="fa fa-save"></i>';
 		<br>Console: &ensp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
 		<br>Presets:
 		<p>
-			&bull; <code>Flat</code>: All bands at <code>0dB</code> (60%)
+			&bull; <code>Flat</code>: All bands at <code>0dB</code>
 		<br>&bull; New: adjust > <?=$iplus?>> <code>NAME</code> > <?=$isave?>
 		<br>&bull; Existing: adjust > <?=$isave?>
 		<br>&bull; Adjust without <?=$isave?>will be listed as <code>(unnamed)</code>
