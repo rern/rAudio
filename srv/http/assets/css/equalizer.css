@@ -79,6 +79,7 @@
 	display: block;
 	position: relative;
 	max-width: 100%;
+	touch-action: none; /* fix: android chrome cannot drag */
 }
 #eq input::-webkit-slider-thumb {
 	margin-top: -19px;

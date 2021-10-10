@@ -48,9 +48,9 @@ $.fn.swipe = function( callback ) { // no delegate
 		if ( !G.swipe ) return
 		
 		G.swipe = false;
-		var xdiff = xstart - xend;
-		if ( Math.abs( xdiff ) > 100 ) {
-			e.swipe = xdiff > 0 ? 'left' : 'right';
+		var diff = xstart - xend;
+		if ( Math.abs( diff ) > 100 ) {
+			e.swipe = diff > 0 ? 'left' : 'right';
 			callback( e );
 		}
 	}, false );
