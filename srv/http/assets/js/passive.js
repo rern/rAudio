@@ -40,7 +40,7 @@ connect = () => {
 disconnect = () => {
 	if ( active ) {
 		active = 0;
-//		pushstream.disconnect();
+		pushstream.disconnect();
 	}
 }
 function bookmarkCover( url, path ) {
