@@ -68,36 +68,20 @@ previous.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-[ 'touchstart', 'mousedown' ].forEach( function( ev ) {
-	document.addEventListener( ev, function( e ) {
-		xstart = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		swipe = 0
-	} );
-} );
-[ 'touchmove', 'mousemove' ].forEach( function( ev ) {
-	document.addEventListener( ev, function( e ) {
-		if ( !xstart ) return
-		
-		var xmove = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		if ( Math.abs( xstart - xmove ) > 10 ) {
-			swipe = 1;
-			setTimeout( function() { swipe = 0 }, 200 );
-		}
-	} );
-} );
-[ 'touchend', 'mouseup' ].forEach( function( ev ) {
-	document.addEventListener( ev, function( e ) {
-		if ( !swipe ) {
-			xstart = 0;
-			return
-		}
-		
-		var xend = e.pageX || e.originalEvent.touches[ 0 ].pageX;
-		var xdiff = xstart - xend;
-		if ( Math.abs( xdiff ) > xswipe ) xdiff > 0 ? next.click() : previous.click();
-		xstart = 0;
-	} );
-} );
+var xstart = 0;
+var xend = 0;
+window.addEventListener( 'touchstart', function( e ) {
+	xstart = e.touches[ 0 ].pageX;
+}, false );
+window.addEventListener( 'touchmove', function( e ) {
+	xend = e.touches[ 0 ].pageX;
+}, false );
+window.addEventListener( 'touchend', function( e ) {
+	var xdiff = xstart - xend;
+	if ( Math.abs( xdiff ) > 100 ) {
+		xdiff > 0 ? next.click() : previous.click();
+	}
+}, false );
 
 function renderPage( n ) {
 	image.src = '/assets/img/guide/'+ n +'.<?=$time?>.jpg';
