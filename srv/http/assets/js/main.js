@@ -88,23 +88,25 @@ var nameplayer = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( !navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+statusRefresh();
+
+if ( navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+	$( '.page' ).swipe( function( e ) {
+		var $target = $( e.target );
+		var targetid = e.target.id;
+		if ( G.display.noswipe || !e.swipe || G.drag || G.down
+			|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].indexOf( e.target.id ) !== -1
+			|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
+		) return
+		
+		$( '#'+ pagenext[ G.page ][ e.swipe === 'left' ? 1 : 0 ] ).click();
+	} );
+} else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
 }
 	
-statusRefresh();
-
 $( '.page' ).click( function( e ) {
 	if ( [ 'coverTR', 'timeTR' ].indexOf( e.target.id ) === -1 ) $( '#settings' ).addClass( 'hide' );
-} ).swipe( function( e ) {
-	var $target = $( e.target );
-	var targetid = e.target.id;
-	if ( G.display.noswipe || !e.swipe || G.drag || G.down
-		|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].indexOf( e.target.id ) !== -1
-		|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
-	) return
-	
-	$( '#'+ pagenext[ G.page ][ e.swipe === 'left' ? 1 : 0 ] ).click();
 } );
 $( '#loader' ).click( function() {
 	loaderHide();

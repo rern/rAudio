@@ -76,7 +76,7 @@ window.addEventListener( 'touchstart', function( e ) {
 window.addEventListener( 'touchmove', function( e ) {
 	xend = e.touches[ 0 ].pageX;
 }, false );
-window.addEventListener( 'touchend', function( e ) {
+window.addEventListener( 'touchend', function() {
 	var xdiff = xstart - xend;
 	if ( Math.abs( xdiff ) > 100 ) {
 		xdiff > 0 ? next.click() : previous.click();
