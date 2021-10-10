@@ -39,7 +39,12 @@ function equalizer() {
 				$( '#infoBox' ).css( 'width', 550 );
 				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				eqButtonSet();
-				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android cannot drag
+				if ( !/Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android cannot drag
+					$( '#infoRange input' ).on( 'click input keyup', function() {
+						var $this = $( this );
+						eqValueSet( band[ $this.index() ], $this.val() )
+					} );
+				} else {
 					var $this, ystart, val, prevval;
 					var yH = $( '#infoRange input' ).width() - 40;
 					var step = yH / 40;
@@ -58,11 +63,6 @@ function equalizer() {
 						prevval = v;
 						$this.val( v );
 						eqValueSet( band[ $this.index() ], v )
-					} );
-				} else {
-					$( '#infoRange input' ).on( 'click input keyup', function() {
-						var $this = $( this );
-						eqValueSet( band[ $this.index() ], $this.val() )
 					} );
 				}
 				$( '#eqpreset' ).change( function() {
