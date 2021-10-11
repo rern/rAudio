@@ -8,13 +8,6 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 }
 $time = time();
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-$istatus = '<i class="fa fa-status"></i>';
-$ihelp = '<i class="help fa fa-question-circle"></i>';
-$chkenable = 'class="enable" type="checkbox"';
-$chknoset = 'class="enablenoset" type="checkbox"';
-$classhelp = 'class="help-block hide"';
-$classstatus = 'class="col-l double status"';
-$classsetting = 'class="setting fa fa-gear"';
 $page = $_GET[ 'p' ];
 $sudo = '/usr/bin/sudo /usr/bin';
 ?>
@@ -48,6 +41,69 @@ $sudo = '/usr/bin/sudo /usr/bin';
 </div>
 <div class="container hide">
 <?php
+function htmlHead( $data ) {
+	$title = $data[ 'title' ];
+	$status = $data[ 'status' ] ?? '';
+	$button = $data[ 'button' ] ?? '';
+	$button1 = $data[ 'button1' ] ?? '';
+	$help = $data[ 'help' ] ?? '';
+	$html = $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
+	$html.= isset( $data[ 'subhead' ] ) ? ' sub' : '';
+	$html.= isset( $data[ 'noline' ] ) ? ' noline">' : '">';
+	$html.= $title;
+	$html.= $status ? '<i class="fa fa-status"></i>' : '';
+	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
+	$html.= $button1 ? '<i id="'.$button1[ 0 ].'" class="fa fa-'.$button1[ 1 ].'"></i>' : '';
+	$html.= isset( $data[ 'nohelp' ] ) ? '' : '<i class="help fa fa-question-circle"></i>';
+	$html.= isset( $data[ 'back' ] ) ? '<i class="help fa fa-fa fa-arrow-left back"></i>' : '';
+	$html.= '</heading>';
+	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
+	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	echo $html;
+}
+function htmlSetting( $data ) {
+	if ( isset( $data[ 'condition' ] ) && !$data[ 'condition' ] ) return;
+	// col-l
+	$label = $data[ 'label' ];
+	$icon = $data[ 'icon' ] ?? '';
+	$sublabel = $data[ 'sublabel' ] ?? '';
+	$status = $data[ 'status' ] ?? '';
+	$id = $data[ 'id' ];
+	$input = $data[ 'input' ] ?? '';
+	$setting = $data[ 'setting' ] ?? '';
+	$help = $data[ 'help' ] ?? '';
+	$html = '<div id="div'.$id.'"><div class="col-l';
+	$html.= $sublabel ? '' : ' single';
+	$html.= $status ? ' status" data-status="'.$status.'">' : '">';
+	if ( $sublabel ) {
+		$html.= '<a>'.$label.'<gr>'.$sublabel;
+		$html.= $status ? '<i class="fa fa-status"></i>' : '';
+		$html.= '</gr></a>';
+	} else {
+		$html.= $label;
+	}
+	$html.= $icon ? '<i class="fa fa-'.$icon.'"></i>' : '';
+	$html.= '</div>';
+	// col-r
+	if ( !$icon ) {
+		global $page;
+		$icon = $page;
+	}
+	$html.= '<div class="col-r">';
+	if ( !$input ) {
+		$html.= '<input type="checkbox" id="'.$id.'" class="switch '. $setting.'" data-label="'.$label.'" data-icon="'.$icon.'">'
+			.'<div class="switchlabel" for="'.$id.'"></div>';
+	} else {
+		$html.= $input;
+	}
+	$html.= $setting ? '<i id="setting-'.$id.'" class="setting fa fa-gear"></i>' : '';
+	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html.= '</div>';
+	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
+	$html.= '</div>';
+	echo $html;
+}
+
 include "settings/$page.php";
 $htmlbar = '';
 foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {

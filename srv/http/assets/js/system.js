@@ -5,35 +5,6 @@ var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-$( '.enable' ).click( function() {
-	var idname = {
-		  bluetooth    : 'Bluetooth'
-		, lcd          : 'TFT LCD'
-		, lcdchar      : 'Character LCD'
-		, mpdoled      : 'Spectrum OLED'
-		, powerbutton  : 'Power Button'
-		, soundprofile : 'Kernel Sound Profile'
-		, vuled        : 'VU LED'
-		, wlan         : 'Wi-Fi'
-	}
-	var id = this.id;
-	if ( $( this ).prop( 'checked' ) ) {
-		$( '#setting-'+ id ).click();
-	} else {
-		bash( [ id +'disable' ] );
-		notify( idname[ id ], 'Disable ...', id );
-	}
-} );
-$( '.enablenoset' ).click( function() {
-	var idname = {
-		  onboardaudio : 'On-board Audio'
-		, relays       : 'GPIO Relay'
-	}
-	var checked = $( this ).prop( 'checked' );
-	var id = this.id;
-	notify( idname[ id ], checked, id );
-	bash( [ id, checked, checked, ( id !== 'relays' ? idname[ id ] : '' ) ] );
-} );
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var txtlcdchar = `\
@@ -881,37 +852,12 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	if ( G.bluetooth ) {
-		$( '#bluetooth' ).prop( 'checked', true );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', false );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
-	} else {
-		$( '#bluetooth' ).prop( 'checked', false );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', true );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
-	}
+	$( '#bluetooth' ).prop( 'checked', G.bluetooth );
+	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
+	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' ).prop( 'checked', G.wlan );
-	if ( G.wlan ) {
-		$( '#wlan' ).prop( 'checked', true );
-		$( '#setting-wlan' ).toggleClass( 'hide', false );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
-	} else {
-		$( '#wlan' ).prop( 'checked', false );
-		$( '#setting-wlan' ).toggleClass( 'hide', true );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
-	}
+	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
+	$( '#wlan' ).parent().prev().toggleClass( 'single', !G.wlan );
 	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
@@ -944,7 +890,7 @@ function renderPage( list ) {
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	selectricRender();
-	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	resetLocal();

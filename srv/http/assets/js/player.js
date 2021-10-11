@@ -1,34 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.enable' ).click( function() {
-	var idname = {
-		  buffer       : 'Custom Audio Buffer'
-		, bufferoutput : 'Custom Output Buffer'
-		, crossfade    : 'Crossfade'
-		, custom       : "User's Custom Settings"
-		, replaygain   : 'Replay Gain'
-		, soxr         : 'SoXR Custom Settings'
-	}
-	var id = this.id;
-	if ( $( this ).prop( 'checked' ) ) {
-		$( '#setting-'+ id ).click();
-	} else {
-		bash( [ id +'disable' ] );
-		notify( idname[ id ], 'Disable ...', 'mpd' );
-	}
-} );
-$( '.enablenoset' ).click( function() {
-	var idname = {
-		  autoupdate    : 'Auto Update'
-		, equalizer     : 'Equalizer'
-		, ffmpeg        : 'FFmpeg Decoder'
-		, normalization : 'Normalization'
-	}
-	var checked = $( this ).prop( 'checked' );
-	var id = this.id;
-	notify( idname[ id ], checked, 'mpd' );
-	bash( [ id, checked ] );
-} );
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>

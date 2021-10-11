@@ -1,16 +1,22 @@
 <div id="divinterface">
 	<div id="divbt">
-	<heading id="headbt" class="status" data-status="bluetooth">Bluetooth<?=$istatus?><i id="btscan" class="fa fa-search"></i><?=$ihelp?></heading>
+<?php
+htmlHead( [
+	  'title'  => 'Bluetooth'
+	, 'status' => 'bluetooth'
+	, 'button' => [ 'btscan', 'search wh' ]
+] );
+?>
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="hide"></pre>
-	<div <?=$classhelp?>>
-		As sender / source (send signal to another device)
+	<div class="help-block hide">
+		As sender (to another device)
 		<p>
 			&bull; Pairing - Turn on discovery mode on receiver device.
 		<br>&bull; Search the device on RPi and connect.
 		<br>&bull; Power on/off paired devices connect/disconnect automatically.
 		</p>
-		As receiver / sink (receive signal from another device)
+		As receiver (from another device)
 		<p>
 			&bull; Pairing - If discoverable turned off on RPi, turn it on.
 		<br>&bull; Make pairing/connecting from sender device. No authorization required.
@@ -20,48 +26,81 @@
 	</div>
 	</div>
 	<div id="divwl">
-	<heading id="headwl" class="status" data-status="wlan">Wi-Fi<?=$istatus?><i id="wladd" class="fa fa-plus-circle wh"></i><i id="wlscan" class="fa fa-search wh"></i></heading>
+<?php
+htmlHead( [
+	  'title'   => 'Wi-Fi'
+	, 'status'  => 'wlan'
+	, 'button'  => [ 'wladd', 'plus-circle wh' ]
+	, 'button1' => [ 'wlscan', 'search wh' ]
+] );
+?>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
 	</div>
 	<div id="divlan">
-	<heading id="headlan" class="status" data-status="lan">LAN<i id="lanadd" class="fa fa-plus-circle wh"></i><?=$istatus?></heading>
+<?php
+htmlHead( [
+	  'title'  => 'LAN'
+	, 'status' => 'lan'
+	, 'button' => [ 'lanadd', 'plus-circle wh' ]
+] );
+?>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
 	</div>
 	
 	<div>
-	<heading class="status" data-status="avahi">Web User Interface<?=$istatus?><?=$ihelp?></heading>
+<?php
+htmlHead( [
+	  'title'  => 'Web User Interface'
+	, 'status' => 'avahi'
+] );
+?>
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span><br>
 		<div id="qrwebui" class="qr"></div>
-		<div <?=$classhelp?>>Scan QR code or use IP address to connect with web user interface.</div>
+		<div class="help-block hide">Scan QR code or use IP address to connect with web user interface.</div>
 	</div>
 	<pre id="codeavahi" class="hide"></pre>
 	</div>
 </div>
 
-<div id="divwifi" class="hide">
-	<div>
-	<heading class="noline">Wi-Fi
-		<i id="add" class="fa fa-plus-circle"></i><i id="scanning-wifi" class="fa fa-wifi blink"></i>
-		<?=$ihelp?><i class="fa fa-arrow-left back"></i>
-	</heading>
-	<ul id="listwlscan" class="entries"></ul>
-	<div <?=$classhelp?>>Access points with less than -66dBm should not be used.</div>
-	</div>
-</div>
-
 <div id="divbluetooth" class="hide">
-	<heading class="noline">Bluetooth
-		<i id="scanning-bt" class="fa fa-bluetooth blink"></i>
-		<i class="fa fa-arrow-left back"></i>
-	</heading>
+<?php
+htmlHead( [
+	  'title'  => 'Bluetooth'
+	, 'button' => [ 'scanning-bt', 'bluetooth blink' ]
+	, 'back'   => true
+	, 'nohelp' => true
+	, 'noline' => true
+] );
+?>
 	<ul id="listbtscan" class="entries"></ul>
 </div>
 
+<div id="divwifi" class="hide">
+	<div>
+<?php
+htmlHead( [
+	  'title'  => 'Wi-Fi'
+	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
+	, 'back'   => true
+	, 'nohelp' => true
+	, 'noline' => true
+] );
+?>
+	<ul id="listwlscan" class="entries"></ul>
+	<div class="help-block hide">Access points with less than -66dBm should not be used.</div>
+	</div>
+</div>
+
 <div id="divaccesspoint">
-	<heading>Access Point<i id="setting-accesspoint" class="fa fa-gear"></i><?=$ihelp?></heading>
+<?php
+htmlHead( [
+	  'title'  => 'Access Point'
+	, 'button' => [ 'setting-accesspoint', 'gear' ]
+] );
+?>
 	<div id="boxqr" class="hide">
 		<div class="col-l">
 			<span id="ipwebuiap"></span>
@@ -75,7 +114,7 @@
 			<div id="qraccesspoint" class="qr"></div>
 		</div>
 	</div>
-	<div <?=$classhelp?>>
+	<div class="help-block hide">
 			&bull; Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</div>

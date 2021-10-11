@@ -4,7 +4,7 @@ var accesspoint = $( '#accesspoint' ).length;
 var timeoutscan;
 $( '.back' ).click( function() {
 	clearTimeout( timeoutscan );
-	$( '#divinterface, #divaccesspoint' ).removeClass( 'hide' );
+	$( '#divinterface' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
@@ -383,25 +383,25 @@ function renderPage( list ) {
 	}
 	if ( G.activebt ) {
 		var active = $( '#listbt grn' ).length > 0;
-		$( '#headbt' )
+		$( '#divbt heading' )
 			.toggleClass( 'noline', $( '#listbt' ).html() !== '' )
 			.toggleClass( 'status', active );
-		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
-		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
+		$( '#divbt heading' ).data( 'status', active ? 'bt' : '' );
+		$( '#divbt .fa-status' ).toggleClass( 'hide', !active );
 		$( '#divbt' ).removeClass( 'hide' );
 	} else {
 		$( '#divbt' ).addClass( 'hide' );
 	}
 	if ( G.activewlan ) {
 		$( '#listwl' ).html( htmlwl );
-		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
+		$( '#divwl heading' ).toggleClass( 'noline', htmlwl !== '' );
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
 		$( '#listlan' ).html( htmllan );
-		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
+		$( '#divlan heading' ).toggleClass( 'noline', htmllan !== '' );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {

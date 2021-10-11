@@ -425,7 +425,7 @@ input:checked + .switchlabel.disabled:after {
 	height: 40px;
 	text-align: right;
 	padding-right: 15px;
-	padding-top: 9px;
+	padding-top: 5px;
 }
 .col-l.text {
 	padding-top: 0;
@@ -444,14 +444,25 @@ input:checked + .switchlabel.disabled:after {
 	vertical-align: 0;
 	text-align: center
 }
-.col-l.single i {
-	vertical-align: -3px;
-}
-.col-l.icon {
-	padding-top: 2px;
-}
 .col-l i.fa-status {
 	font-size: 15px;
+}
+.col-l a {
+	display: inline-block;
+	line-height: 16px;
+	color: var( --cw );
+}
+.col-l gr {
+	display: block;
+	font-weight: 300;
+}
+.col-l.single { padding-top: 9px }
+.col-l.single gr { display: none }
+.col-l.single a { color: var( --cw ) }
+.col-l.single i { vertical-align: -3px }
+
+.col-l.icon {
+	padding-top: 2px;
 }
 .settings i {
 	color: var( --cw );
@@ -459,17 +470,6 @@ input:checked + .switchlabel.disabled:after {
 .w2x {
 	width: 2em;
 	text-align: center;
-}
-.col-l.double {
-	padding-top: 5px;
-}
-.col-l.double gr {
-	font-weight: 300;
-}
-.col-l.double a {
-	display: inline-block;
-	line-height: 16px;
-	color: var( --cw );
 }
 .col-r {
 	width: calc( 100% - 170px );

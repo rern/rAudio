@@ -538,7 +538,7 @@ function info( json ) {
 		} else {
 			O.boxW = 230;
 		}
-		$( '#infoContent' ).find( 'input:text, input:password, textarea' ).parent().css( 'width', O.boxW );
+		$( '#infoContent' ).find( 'input:text, input:password, textarea select' ).parent().css( 'width', O.boxW );
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;

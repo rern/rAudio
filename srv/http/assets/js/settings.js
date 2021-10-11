@@ -409,3 +409,26 @@ $( '#bar-bottom div' ).click( function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );
+$( '.switch' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'self' ) ) return
+	
+	var checked = $this.prop( 'checked' );
+	if ( !$this.hasClass( 'preenable' ) ) {
+		notify( $this.data( 'label' ), checked, $this.data( 'icon' ) );
+		bash( [ this.id, checked ] );
+	} else {
+		if ( $this.hasClass( 'disabled' ) ) {
+			$this.prop( 'checked', !checked );
+			return
+		}
+		
+		var id = this.id;
+		if ( checked ) {
+			$( '#setting-'+ id ).click();
+		} else {
+			notify( $this.data( 'label' ), 'Disable ...', $this.data( 'icon' ) );
+			bash( [ id +'disable' ] );
+		}
+	}
+} );
