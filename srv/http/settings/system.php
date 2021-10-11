@@ -205,6 +205,7 @@ htmlSetting( [
 	  'label'   => 'Relay Module'
 	, 'icon'    => 'relays'
 	, 'id'      => 'relays'
+	, 'setting' => 'self'
 	, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 <br>Settings: &ensp;<i class="fa fa-sliders"></i>Features |&ensp;<i class="fa fa-relays"></i>

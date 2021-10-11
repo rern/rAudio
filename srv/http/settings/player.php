@@ -36,10 +36,11 @@ html
 ] );
 echo '<div>';
 htmlSetting( [
-	  'label'   => 'Mixer Device'
-	, 'input'   => '<select id="hwmixer"></select>'
-	, 'id'      => 'hwmixer'
-	, 'setting' => 'self'
+	  'label'       => 'Mixer Device'
+	, 'input'       => '<select id="hwmixer"></select>'
+	, 'id'          => 'hwmixer'
+	, 'setting'     => 'self'
+	, 'settingicon' => 'volume'
 ] );
 htmlSetting( [
 	  'label' => 'Volume Control'

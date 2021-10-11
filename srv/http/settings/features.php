@@ -4,48 +4,48 @@ $ip = getHostByName( $hostname );
 echo '<div>';
 htmlHead( [ 'title' => 'Renderers' ] );
 htmlSetting( [
-	  'label'     => 'AirPlay'
-	, 'sublabel'  => 'shairport-sync'
-	, 'icon'      => 'airplay'
-	, 'status'    => 'shairport-sync'
-	, 'id'        => 'shairport-sync'
-	, 'help'      => <<<html
+	  'label'    => 'AirPlay'
+	, 'sublabel' => 'shairport-sync'
+	, 'icon'     => 'airplay'
+	, 'status'   => 'shairport-sync'
+	, 'id'       => 'shairport-sync'
+	, 'help'     => <<<html
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 html
-	, 'condition' => file_exists( '/usr/bin/shairport-sync' )
+	, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 ] );
 htmlSetting( [
-	  'label'     => 'SnapClient'
-	, 'icon'      => 'snapcast'
-	, 'id'        => 'snapclient'
-	, 'setting'   => 'preenable'
-	, 'help'      => <<<html
+	  'label'    => 'SnapClient'
+	, 'icon'     => 'snapcast'
+	, 'id'       => 'snapclient'
+	, 'setting'  => 'preenable'
+	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 <br>Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
 html
-	, 'condition' => file_exists( '/usr/bin/snapserver' )
+	, 'exist'    => file_exists( '/usr/bin/snapserver' )
 ] );
 htmlSetting( [
-	  'label'     => 'Spotify'
-	, 'sublabel'  => 'spotifyd'
-	, 'icon'      => 'spotify'
-	, 'status'    => 'spotifyd'
-	, 'id'        => 'spotifyd'
-	, 'help'      => <<<html
+	  'label'    => 'Spotify'
+	, 'sublabel' => 'spotifyd'
+	, 'icon'     => 'spotify'
+	, 'status'   => 'spotifyd'
+	, 'id'       => 'spotifyd'
+	, 'help'     => <<<html
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.(For Premium account only)
 html
-	, 'condition' => file_exists( '/usr/bin/spotifyd' )
+	, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 ] );
 htmlSetting( [
-	  'label'     => 'UPnP'
-	, 'sublabel'  => 'upmpdcli'
-	, 'icon'      => 'upnp'
-	, 'status'    => 'upmpdcli'
-	, 'id'        => 'upmpdcli'
-	, 'help'      => <<<html
+	  'label'    => 'UPnP'
+	, 'sublabel' => 'upmpdcli'
+	, 'icon'     => 'upnp'
+	, 'status'   => 'upmpdcli'
+	, 'id'       => 'upmpdcli'
+	, 'help'     => <<<html
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 html
-	, 'condition' => file_exists( '/usr/bin/upmpdcli' )
+	, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 ] );
 echo '</div><div>';
 // -----------------------------------------------------------------------------------------
@@ -60,60 +60,60 @@ htmlSetting( [
 html
 ] );
 htmlSetting( [
-	  'label'     => 'SnapServer'
-	, 'sublabel'  => 'snapserver'
-	, 'icon'      => 'snapcast'
-	, 'status'    => 'snapserver'
-	, 'id'        => 'snapserver'
-	, 'help'      => <<<html
+	  'label'    => 'SnapServer'
+	, 'sublabel' => 'snapserver'
+	, 'icon'     => 'snapcast'
+	, 'status'   => 'snapserver'
+	, 'id'       => 'snapserver'
+	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 <br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 html
-	, 'condition' => file_exists( '/usr/bin/snapserver' )
+	, 'exist'    => file_exists( '/usr/bin/snapserver' )
 ] );
 echo '</div><div>';
 // -----------------------------------------------------------------------------------------
 htmlHead( [ 'title' => 'Others' ] );
 htmlSetting( [
-	  'label'     => 'Access Point'
-	, 'sublabel'  => 'hostapd'
-	, 'icon'      => 'accesspoint'
-	, 'status'    => 'hostapd'
-	, 'id'        => 'hostapd'
-	, 'setting'   => 'self'
-	, 'help'      => <<<html
+	  'label'    => 'Access Point'
+	, 'sublabel' => 'hostapd'
+	, 'icon'     => 'accesspoint'
+	, 'status'   => 'hostapd'
+	, 'id'       => 'hostapd'
+	, 'setting'  => 'self'
+	, 'help'     => <<<html
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
 <br>This should be used only when necessary.
 html
-	, 'condition' => file_exists( '/usr/bin/hostapd' )
+	, 'exist'    => file_exists( '/usr/bin/hostapd' )
 ] );
 htmlSetting( [
-	  'label'     => 'Browser on RPi'
-	, 'sublabel'  => 'localbrowser'
-	, 'icon'      => 'chromium'
-	, 'status'    => 'localbrowser'
-	, 'id'        => 'localbrowser'
-	, 'setting'   => 'preenable'
-	, 'help'      => <<<html
+	  'label'    => 'Browser on RPi'
+	, 'sublabel' => 'localbrowser'
+	, 'icon'     => 'chromium'
+	, 'status'   => 'localbrowser'
+	, 'id'       => 'localbrowser'
+	, 'setting'  => 'preenable'
+	, 'help'     => <<<html
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
 <br> &bull; HDMI/LCD display must be connected before boot.
 <br> &bull; TFT 3.5" LCD - rotate needs reboot.
 html
-	, 'condition' => file_exists( '/usr/bin/chromium' )
+	, 'exist'    => file_exists( '/usr/bin/chromium' )
 ] );
 htmlSetting( [
-	  'label'     => 'File Sharing'
-	, 'sublabel'  => 'smb'
-	, 'icon'      => 'networks'
-	, 'status'    => 'smb'
-	, 'id'        => 'smb'
-	, 'setting'   => 'preenable'
-	, 'help'      => <<<html
+	  'label'    => 'File Sharing'
+	, 'sublabel' => 'smb'
+	, 'icon'     => 'networks'
+	, 'status'   => 'smb'
+	, 'id'       => 'smb'
+	, 'setting'  => 'preenable'
+	, 'help'     => <<<html
 <a href="https://www.samba.org">Samba</a> - Share files on network.
 <br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
 <br> &bull; At address bar of Windows File Explorer: <code>{$ip}</code> or <code>{$hostname}</code>
 html
-	, 'condition' => file_exists( '/usr/bin/smbd' )
+	, 'exist'    => file_exists( '/usr/bin/smbd' )
 ] );
 htmlSetting( [
 	  'label'    => 'Last.fm Scrobbler'
