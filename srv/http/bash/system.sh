@@ -305,9 +305,9 @@ lcddisable )
 lcdset )
 	model=${args[1]}
 	if [[ $model != tft35a ]]; then
-		echo $model > /srv/http/data/system/lcdmodel
+		echo $model > $dirsystem/lcdmodel
 	else
-		rm /srv/http/data/system/lcdmodel
+		rm $dirsystem/lcdmodel
 	fi
 	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
@@ -565,7 +565,7 @@ usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 vuleddisable )
 	rm -f $dirsystem/vuled
 	killall cava &> /dev/null
-	p=$( cat /srv/http/data/system/vuled.conf )
+	p=$( cat $dirsystem/vuled.conf )
 	for i in $p; do
 		echo 0 > /sys/class/gpio/gpio$i/value
 	done

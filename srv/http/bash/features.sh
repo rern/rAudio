@@ -10,11 +10,11 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushRefresh() {
-	data=$( /srv/http/bash/features-data.sh )
+	data=$( $dirbash/features-data.sh )
 	pushstream refresh "$data"
 }
 pushRefreshNetworks() {
-	data=$( /srv/http/bash/networks-data.sh )
+	data=$( $dirbash/networks-data.sh )
 	pushstream refresh "$data"
 }
 featureSet() {
@@ -58,7 +58,7 @@ hostapdset )
 		router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
 		sed -i -e '/^wpa\|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
 	fi
-	ifconfig wlan0 &> /dev/null || /srv/http/bash/system.sh wlanset$'\n'true
+	ifconfig wlan0 &> /dev/null || $dirbash/system.sh wlanset$'\n'true
 	netctl stop-all
 	ifconfig wlan0 $router
 	featureSet hostapd

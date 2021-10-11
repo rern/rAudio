@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 
 # convert each line to each args
@@ -10,7 +11,7 @@ pushstream() {
 }
 pushRefresh() {
 	sleep 2
-	data=$( /srv/http/bash/networks-data.sh )
+	data=$( $dirbash/networks-data.sh )
 	pushstream refresh "$data"
 }
 netctlSwitch() {
@@ -30,7 +31,7 @@ netctlSwitch() {
 	[[ -z $active ]] && netctl switch-to "$connected" && sleep 2
 	pushRefresh
 	if systemctl -q is-active hostapd; then
-		data=$( /srv/http/bash/features-data.sh )
+		data=$( $dirbash/features-data.sh )
 		pushstream refresh "$data"
 	fi
 }
