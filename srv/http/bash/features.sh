@@ -25,13 +25,6 @@ featureSet() {
 
 case ${args[0]} in
 
-shairport-sync | spotifyd | upmpdcli )
-	service=${args[0]}
-	enable=${args[1]}
-	[[ $enable == true ]] && enable=enable || enable=disable
-	systemctl $enable --now $service
-	pushRefresh
-	;;
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
@@ -168,6 +161,13 @@ mpdscribbleset )
 		systemctl disable mpdscribble@mpd
 		echo -1
 	fi
+	pushRefresh
+	;;
+shairport-sync | spotifyd | upmpdcli )
+	service=${args[0]}
+	enable=${args[1]}
+	[[ $enable == true ]] && enable=enable || enable=disable
+	systemctl $enable --now $service
 	pushRefresh
 	;;
 smbdisable )
