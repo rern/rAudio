@@ -25,7 +25,7 @@ else
 	discoverable=true
 fi
 bluetoothconf="[ $discoverable, $btformat ]"
-lcdmodel=$( cat /srv/http/data/system/lcdmodel 2> /dev/null || echo tft35a )
+lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 soccore=${cpu[0]}
@@ -177,7 +177,7 @@ data+='
 , "soundprofileconf" : '$soundprofileconf'
 , "version"          : "'$version'"
 , "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
-, "vuled"            : '$( [[ -e /srv/http/data/system/vuled ]] && echo true || echo false )'
+, "vuled"            : '$( [[ -e $dirsystem/vuled ]] && echo true || echo false )'
 , "vuledconf"        : '$vuledconf'
 , "wlan"             : '$( rfkill | grep -q wlan && echo true || echo false )'
 , "wlanconf"         : '$wlanconf'
