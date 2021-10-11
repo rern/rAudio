@@ -51,7 +51,7 @@
     "HiFiBerry DAC+ Lite": "rpi-dac",
     "HiFiBerry DAC+ Pro": "hifiberry-dacplus",
     "HiFiBerry DAC+ Pro XLR": "hifiberry-dacplus",
-    "HiFiBerry DAC+ RTC": "hifiberry-dacplus",
+    "HiFiBerry DAC+ RTC": "hifiberry-dac",
     "HiFiBerry DAC+ Zero": "hifiberry-dac",
     "HiFiBerry DAC+ADC": "hifiberry-dacplusadc",
     "HiFiBerry DAC+ADC Pro": "hifiberry-dacplusadcpro",
