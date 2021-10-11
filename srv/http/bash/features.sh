@@ -42,6 +42,11 @@ hostapddisable )
 	pushRefresh
 	pushRefreshNetworks
 	;;
+hostapdget )
+	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
+	hostapdpwd=$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )
+	echo '[ "'$hostapdip'","'$hostapdpwd'" ]'
+	;;
 hostapdset )
 	if [[ ${#args[@]} > 1 ]]; then
 		iprange=${args[1]}

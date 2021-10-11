@@ -178,7 +178,27 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#setting-accesspoint' ).click( function() {
-	location.href = 'settings.php?p=features&set=setting-hostapd';
+	info( {
+		  icon         : 'accesspoint'
+		, title        : 'Access Point'
+		, footer       : '(8 characters or more)'
+		, textlabel    : [ 'IP', 'Password' ]
+		, values       : G.hostapd.conf
+		, checkchanged : ( G.hostapd ? 1 : 0 )
+		, checkblank   : 1
+		, checklength  : { 1: [ 8, 'min' ] }
+		, ok           : function() {
+			var values = infoVal();
+			var ip = values[ 0 ];
+			var pwd = values[ 1 ];
+			var ips = ip.split( '.' );
+			var ip3 = ips.pop();
+			var ip012 = ips.join( '.' );
+			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
+			bash( [ 'hostapdset', iprange, ip, pwd ] );
+			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+		}
+	} );
 } );
 
 } );

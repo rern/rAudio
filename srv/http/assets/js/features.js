@@ -1,8 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-// hostapd
-if ( set ) setTimeout( function() { $( '#'+ set ).click() }, 900 );
-
 $( '#setting-snapclient' ).click( function() {
 	info( {
 		  icon         : 'snapcast'
@@ -36,12 +33,7 @@ $( '#hostapd' ).click( function() {
 			, message : '<wh>Wi-Fi is currently connected.</wh>'
 						 +'<br>Disconnect and continue?'
 			, cancel  : function() {
-				if ( set ) {
-					loader();
-					location.href = '/settings.php?p=networks';
-				} else {
-					$( '#hostapd' ).prop( 'checked', 0 );
-				}
+				$( '#hostapd' ).prop( 'checked', 0 );
 			}
 			, ok      : function() {
 				$( '#hostapd' ).click();
@@ -67,12 +59,7 @@ $( '#setting-hostapd' ).click( function() {
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : function() {
-			if ( set ) {
-				loader();
-				location.href = '/settings.php?p=networks';
-			} else {
-				$( '#hostapd' ).prop( 'checked', G.hostapd );
-			}
+			$( '#hostapd' ).prop( 'checked', G.hostapd );
 		}
 		, ok           : function() {
 			var values = infoVal();

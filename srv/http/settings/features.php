@@ -1,6 +1,3 @@
-<script>
-	var set = '<?=( $_GET[ 'set' ] ?? '' )?>';
-</script>
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
