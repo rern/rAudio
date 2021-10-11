@@ -93,7 +93,7 @@ localbrowserset )
 	fi
 	if [[ $screenoff != $prevscreenoff ]]; then
 		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
-		[[ $screenoff != 0 ]] && boolean=true || boolean=false )
+		[[ $screenoff != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
 	if [[ $rotate != $prevrotate ]]; then
