@@ -53,7 +53,7 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 <body>
 
 <div class="container progress">
-	<heading>Addons Progress<i id="close" class="fa fa-times"></i></heading>
+	<heading><?=$heading?><i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<wh><?=$title?></wh><br>
 		<i class="fa fa-gear blink"></i>&ensp;<?=$type?> ...
