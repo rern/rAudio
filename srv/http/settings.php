@@ -44,7 +44,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 /*
 htmlHead( [
 	  'title'   => 'TITLE'           // REQUIRED
-	, 'id'      => 'ID'              // default divtitle
+	, 'id'      => 'ID'
 	, 'hide'    => true
 	, 'subhead' => true              // with no help icon
 	, 'status'  => 'COMMAND'         // include status icon and status box
@@ -56,13 +56,16 @@ htmlHead( [
 HELP - PHP heredoc
 html
 ] );
-
+NOTE:
+	1st  : <div id="divTITLE">HTML
+	next : </div><div id="divtitle">HTML
+	closing </div> at last htmlSetting()
 */
 $heads = -1;
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
-	$id = $data[ 'id' ] ?? 'div'.strtolower( $title );
+	$id = $data[ 'id' ] ?? '';
 	$hide = $data[ 'hide' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
 	$button = $data[ 'button' ] ?? '';
@@ -72,7 +75,7 @@ function htmlHead( $data ) {
 	global $heads;
 	$heads++;
 	$html = $heads ? '</div>' : '';
-	$html.= '<div id="'.$id.'"';
+	$html.= $id ? '<div id="'.$id.'"' : '<div';
 	$html.= $hide ? ' class="hide">' : '>';
 	$html.= $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
 	$html.= $subhead ? ' sub' : '';
@@ -92,10 +95,10 @@ function htmlHead( $data ) {
 /*
 htmlSetting( [
 	  'label'       => 'LABEL'      // REQUIRED
+	, 'id'          => 'INPUT ID'   // REQUIRED
 	, 'sublabel'    => 'SUB LABEL'
 	, 'icon'        => 'ICON'
 	, 'status'      => 'COMMAND'    // include status icon and status box
-	, 'id'          => 'INPUT ID'   // REQUIRED
 	, 'input'       => 'HTML'       // alternative - if not switch
 	, 'setting'     => 'preenable'  // preenable = show setting before enable; self = self function / no pre-enable
 	, 'settingicon' => 'ICON'
@@ -104,7 +107,9 @@ HELP - PHP heredoc
 html
 	, 'exist'       => EXIST        // return blank if not EXIST
 ] );
-IMPORTANT: Last htmlSetting() with no following htmlHead() must be closed with '</div>'
+NOTE:
+	<div id="divLABEL">HTML</div>
+	IMPORTANT - Last htmlSetting() with no following htmlHead() must be closed with '</div>'
 */
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;

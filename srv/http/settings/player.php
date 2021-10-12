@@ -18,10 +18,9 @@ htmlHead( [ //////////////////////////////////
 	</span>
 </div>
 <div style="clear:both"></div>
-<pre id="codempd" class="hide"></pre>
 
 <?php
-if ( !file_exists( '/srv/http/data/shm/nosound' ) {
+if ( !file_exists( '/srv/http/data/shm/nosound' ) ) {
 // ----------------------------------------------------------------------------------
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Output'
@@ -29,6 +28,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 htmlSetting( [
 	  'label' => 'Device'
+	, 'id'    => 'audiooutput'
 	, 'input' => '<select id="audiooutput"></select>'
 	, 'help'  => <<<html
 HDMI device available only when connected before boot.
@@ -36,13 +36,14 @@ html
 ] );
 htmlSetting( [
 	  'label'       => 'Mixer Device'
-	, 'input'       => '<select id="hwmixer"></select>'
 	, 'id'          => 'hwmixer'
+	, 'input'       => '<select id="hwmixer"></select>'
 	, 'setting'     => 'self'
 	, 'settingicon' => 'volume'
 ] );
 htmlSetting( [
 	  'label' => 'Volume Control'
+	, 'id'    => 'mixertype'
 	, 'input' => '<select id="mixertype"></select>'
 	, 'help'  => <<<html
 Volume control for each device.
@@ -135,8 +136,8 @@ htmlHead( [ //////////////////////////////////
 ] );
 htmlSetting( [
 	  'label'    => 'Buffer - Audio'
-	, 'sublabel' => 'custom size'
 	, 'id'       => 'buffer'
+	, 'sublabel' => 'custom size'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <code>audio_buffer_size "kB"</code>
@@ -146,8 +147,8 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Buffer - Output'
-	, 'sublabel' => 'custom size'
 	, 'id'       => 'bufferoutput'
+	, 'sublabel' => 'custom size'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <code>max_output_buffer_size "kB"</code>
@@ -157,8 +158,8 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'FFmpeg'
-	, 'sublabel' => 'decoder plugin'
 	, 'id'       => 'ffmpeg'
+	, 'sublabel' => 'decoder plugin'
 	, 'help'     => <<<html
 <code>enable "yes"</code>
 <br>Should be disabled if not used for faster Sources update.
@@ -176,8 +177,8 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'SoXR resampler'
-	, 'sublabel' => 'custom settings'
 	, 'id'       => 'soxr'
+	, 'sublabel' => 'custom settings'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <code>quality "custom"</code>

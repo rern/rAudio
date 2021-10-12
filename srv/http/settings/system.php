@@ -115,10 +115,10 @@ htmlHead( [ //////////////////////////////////
 ] );
 htmlSetting( [
 	  'label'    => 'Bluetooth'
+	, 'id'       => 'bluetooth'
 	, 'sublabel' => 'bluetoothctl'
 	, 'icon'     => 'bluetooth'
 	, 'status'   => 'bluetoothctl'
-	, 'id'       => 'bluetooth'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 As sender:
@@ -132,10 +132,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Wi-Fi'
+	, 'id'       => 'wlan'
 	, 'sublabel' => 'iw'
 	, 'icon'     => 'wifi'
 	, 'status'   => 'iw'
-	, 'id'       => 'wlan'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 	Auto start Access Point - On failed connection or no router
@@ -154,6 +154,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 htmlSetting( [
 	  'label'    => 'Audio - I²S'
+	, 'id'       => 'i2smodulesw'
 	, 'icon'     => 'i2saudio'
 	, 'input'    => <<<html
 <div id="divi2smodulesw">
@@ -170,9 +171,9 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Character LCD'
+	, 'id'       => 'lcdchar'
 	, 'sublabel' => 'HD44780'
 	, 'icon'     => 'lcdchar'
-	, 'id'       => 'lcdchar'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 	<a class="img" data-name="lcdchar">LCD module</a> - display playback data
@@ -182,9 +183,9 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Power Button'
+	, 'id'       => 'powerbutton'
 	, 'sublabel' => 'Power LED'
 	, 'icon'     => 'power'
-	, 'id'       => 'powerbutton'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
@@ -201,8 +202,8 @@ html
 ] );
 htmlSetting( [
 	  'label'   => 'Relay Module'
-	, 'icon'    => 'relays'
 	, 'id'      => 'relays'
+	, 'icon'    => 'relays'
 	, 'setting' => 'self'
 	, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
@@ -215,8 +216,8 @@ html
 ] );
 htmlSetting( [
 	  'label'   => 'Spectrum OLED'
-	, 'icon'    => 'mpdoled'
 	, 'id'      => 'mpdoled'
+	, 'icon'    => 'mpdoled'
 	, 'setting' => 'preenable'
 	, 'help'    => <<<html
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
@@ -224,8 +225,8 @@ html
 ] );
 htmlSetting( [
 	  'label'   => 'TFT 3.5" LCD'
-	, 'icon'    => 'lcd'
 	, 'id'      => 'lcd'
+	, 'icon'    => 'lcd'
 	, 'setting' => 'preenable'
 	, 'help'    => <<<html
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
@@ -234,8 +235,8 @@ html
 ] );
 htmlSetting( [
 	  'label'   => 'VU LED'
-	, 'icon'    => 'led'
 	, 'id'      => 'vuled'
+	, 'icon'    => 'led'
 	, 'setting' => 'preenable'
 	, 'help'    => <<<html
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
@@ -245,6 +246,7 @@ html
 htmlHead( [ 'title' => 'Environment' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label' => 'Host Name'
+	, 'id'    => 'hostname'
 	, 'icon'  => 'plus-r'
 	, 'input' => '<input type="text" id="hostname" readonly>'
 	, 'help'  => <<<html
@@ -258,11 +260,11 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Time Zone'
+	, 'id'       => 'timezone'
 	, 'sublabel' => 'timesyncd'
 	, 'icon'     => 'globe'
 	, 'status'   => 'timesyncd'
 	, 'input'    => $selecttimezone
-	, 'id'       => 'timezone'
 	, 'setting'  => 'self'
 	, 'help'     => <<<html
 <i class="fa fa-gear"></i>Servers:
@@ -274,10 +276,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Sound Profile'
+	, 'id'       => 'soundprofile'
 	, 'sublabel' => 'sysctl'
 	, 'icon'     => 'soundprofile'
 	, 'status'   => 'soundprofile'
-	, 'id'       => 'soundprofile'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
@@ -286,8 +288,8 @@ html
 htmlHead( [ 'title' => 'Settings and Data' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label' => 'Backup'
-	, 'icon'  => 'sd'
 	, 'id'    => 'backup'
+	, 'icon'  => 'sd'
 	, 'help'  => <<<html
 Backup all settings and Library database:
 <p>
@@ -302,8 +304,8 @@ html
 ] );
 htmlSetting( [
 	  'label' => 'Restore'
-	, 'icon'  => 'restore'
 	, 'id'    => 'restore'
+	, 'icon'  => 'restore'
 	, 'help'  => <<<html
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 html

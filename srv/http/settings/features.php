@@ -4,10 +4,10 @@ $ip = getHostByName( $hostname );
 htmlHead( [ 'title' => 'Renderers' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'    => 'AirPlay'
+	, 'id'       => 'shairport-sync'
 	, 'sublabel' => 'shairport-sync'
 	, 'icon'     => 'airplay'
 	, 'status'   => 'shairport-sync'
-	, 'id'       => 'shairport-sync'
 	, 'help'     => <<<html
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 html
@@ -15,8 +15,8 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'SnapClient'
-	, 'icon'     => 'snapcast'
 	, 'id'       => 'snapclient'
+	, 'icon'     => 'snapcast'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
@@ -26,10 +26,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Spotify'
+	, 'id'       => 'spotifyd'
 	, 'sublabel' => 'spotifyd'
 	, 'icon'     => 'spotify'
 	, 'status'   => 'spotifyd'
-	, 'id'       => 'spotifyd'
 	, 'help'     => <<<html
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.(For Premium account only)
 html
@@ -37,10 +37,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'UPnP'
+	, 'id'       => 'upmpdcli'
 	, 'sublabel' => 'upmpdcli'
 	, 'icon'     => 'upnp'
 	, 'status'   => 'upmpdcli'
-	, 'id'       => 'upmpdcli'
 	, 'help'     => <<<html
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 html
@@ -49,19 +49,19 @@ html
 htmlHead( [ 'title' => 'Streamers' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'    => 'For browsers'
+	, 'id'       => 'streaming'
 	, 'sublabel' => 'MPD httpd'
 	, 'icon'     => 'webradio'
-	, 'id'       => 'streaming'
 	, 'help'     => <<<html
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://$ip:8000</code> (Latency - several seconds)
 html
 ] );
 htmlSetting( [
 	  'label'    => 'SnapServer'
+	, 'id'       => 'snapserver'
 	, 'sublabel' => 'snapserver'
 	, 'icon'     => 'snapcast'
 	, 'status'   => 'snapserver'
-	, 'id'       => 'snapserver'
 	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 <br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
@@ -71,10 +71,10 @@ html
 htmlHead( [ 'title' => 'Others' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'    => 'Access Point'
+	, 'id'       => 'hostapd'
 	, 'sublabel' => 'hostapd'
 	, 'icon'     => 'accesspoint'
 	, 'status'   => 'hostapd'
-	, 'id'       => 'hostapd'
 	, 'setting'  => 'self'
 	, 'help'     => <<<html
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
@@ -84,10 +84,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Browser on RPi'
+	, 'id'       => 'localbrowser'
 	, 'sublabel' => 'localbrowser'
 	, 'icon'     => 'chromium'
 	, 'status'   => 'localbrowser'
-	, 'id'       => 'localbrowser'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
@@ -98,10 +98,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'File Sharing'
+	, 'id'       => 'smb'
 	, 'sublabel' => 'smb'
 	, 'icon'     => 'networks'
 	, 'status'   => 'smb'
-	, 'id'       => 'smb'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://www.samba.org">Samba</a> - Share files on network.
@@ -112,10 +112,10 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Last.fm Scrobbler'
+	, 'id'       => 'mpdscribble'
 	, 'sublabel' => 'mpdscribble'
 	, 'icon'     => 'lastfm'
 	, 'status'   => 'mpdscribble'
-	, 'id'       => 'mpdscribble'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://github.com/MusicPlayerDaemon/mpdscribble">mpdscribble</a> - Automatically send listened music data to Last.fm for tracking.
@@ -123,9 +123,9 @@ html
 ] );
 htmlSetting( [
 	  'label'    => 'Password Login'
+	, 'id'       => 'login'
 	, 'sublabel' => 'password_hash'
 	, 'icon'     => 'lock'
-	, 'id'       => 'login'
 	, 'setting'  => 'self'
 	, 'help'     => <<<html
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.
@@ -134,16 +134,16 @@ html
 ] );
 htmlSetting( [
 	  'label' => 'Play on Insert CD'
-	, 'icon'  => 'play-cd'
 	, 'id'    => 'autoplaycd'
+	, 'icon'  => 'play-cd'
 	, 'help'  => <<<html
 Start playing automatically on audio CD inserting or power on with CD inserted.
 html
 ] );
 htmlSetting( [
 	  'label' => 'Play on Startup'
-	, 'icon'  => 'play-power'
 	, 'id'    => 'autoplay'
+	, 'icon'  => 'play-power'
 	, 'help'  => <<<html
 Start playing automatically after boot.
 html
