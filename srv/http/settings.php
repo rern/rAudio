@@ -43,13 +43,14 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <?php
 /*
 htmlHead( [
-	  'title'   => 'TITLE'
-	, 'subhead' => true             // optional
-	, 'status'  => 'COMMAND'        // optional
-	, 'button'  => [ 'ID', 'ICON' ] // optional
-	, 'button1' => [ 'ID', 'ICON' ] // optional
-	, 'nohelp'  => true             // optional
-	, 'help'        => <<<html      // optional
+	  'title'   => 'TITLE'           // REQUIRED
+	, 'subhead' => true              // with no help icon
+	, 'status'  => 'COMMAND'         // include status icon and status box
+	, 'button'  => [ 'ID', 'ICON' ]  // icon button
+	, 'button1' => [ 'ID', 'ICON' ]  // icon button2
+	, 'back'    => true              // back button
+	, 'nohelp'  => true
+	, 'help'    => <<<html
 HELP - PHP heredoc
 html
 ] );
@@ -78,18 +79,18 @@ function htmlHead( $data ) {
 }
 /*
 htmlSetting( [
-	  'label'       => 'LABEL'
-	, 'sublabel'    => 'SUB LABEL'  // optional
-	, 'icon'        => 'ICON'       // optional
-	, 'status'      => 'COMMAND'    // optional (include sublabel icon and status box)
-	, 'id'          => 'INPUT ID'
+	  'label'       => 'LABEL'      // REQUIRED
+	, 'sublabel'    => 'SUB LABEL'
+	, 'icon'        => 'ICON'
+	, 'status'      => 'COMMAND'    // include status icon and status box
+	, 'id'          => 'INPUT ID'   // REQUIRED
 	, 'input'       => 'HTML'       // alternative - if not switch
-	, 'setting'     => 'preenable'  // optional (preenable = show setting before enable; self = self function / no pre-enable)
-	, 'settingicon' => 'ICON'       // optional
-	, 'help'        => <<<html      // optional
+	, 'setting'     => 'preenable'  // preenable = show setting before enable; self = self function / no pre-enable
+	, 'settingicon' => 'ICON'
+	, 'help'        => <<<html
 HELP - PHP heredoc
 html
-	, 'exist'    => EXIST           // optional (return blank if not EXIST)
+	, 'exist'       => EXIST        // return blank if not EXIST
 ] );
 */
 function htmlSetting( $data ) {
