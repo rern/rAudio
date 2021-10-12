@@ -188,7 +188,7 @@ htmlSetting( [
 	, 'setting' => 'self'
 	, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-Settings: &ensp;<i class="fa fa-sliders"></i>Features |&ensp;<i class="fa fa-relays"></i>
+On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
  &bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  &bull; Can be enabled and run as a test without a connected relay module.
 html
