@@ -404,9 +404,8 @@ function renderPage( list ) {
 	if ( G.activebt ) {
 		var active = $( '#listbt grn' ).length > 0;
 		$( '#divbt heading' )
-			.toggleClass( 'noline', $( '#listbt' ).html() !== '' )
-			.toggleClass( 'status', active );
-		$( '#divbt heading' ).data( 'status', active ? 'bt' : '' );
+			.toggleClass( 'status', active )
+			.data( 'status', active ? 'bt' : '' );
 		$( '#divbt .fa-status' ).toggleClass( 'hide', !active );
 		$( '#divbt' ).removeClass( 'hide' );
 	} else {
@@ -414,14 +413,12 @@ function renderPage( list ) {
 	}
 	if ( G.activewlan ) {
 		$( '#listwl' ).html( htmlwl );
-		$( '#divwl heading' ).toggleClass( 'noline', htmlwl !== '' );
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
 		$( '#listlan' ).html( htmllan );
-		$( '#divlan heading' ).toggleClass( 'noline', htmllan !== '' );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {

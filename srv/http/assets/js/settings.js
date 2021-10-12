@@ -402,7 +402,8 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
 	) return
 	
-	var datastatus = $( this ).data( 'status' ) || $( this ).parent().data( 'status' );
+	var $this = $( this );
+	var datastatus = $this.data( 'status' ) || $this.parent().data( 'status' );
 	codeToggle( datastatus, e.target );
 } );
 $( '#bar-bottom div' ).click( function() {

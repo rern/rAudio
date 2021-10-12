@@ -85,7 +85,6 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
 	, 'button' => [ 'addnas', 'plus-circle wh' ]
-	, 'noline' => true
 ] );
 ?>
 <ul id="list" class="entries"></ul>

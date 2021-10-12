@@ -68,7 +68,6 @@ htmlHead( [ //////////////////////////////////
 	, 'button' => [ 'scanning-bt', 'bluetooth blink' ]
 	, 'back'   => true
 	, 'nohelp' => true
-	, 'noline' => true
 ] );
 echo '
 <ul id="listbtscan" class="entries"></ul>';
@@ -78,7 +77,6 @@ htmlHead( [ //////////////////////////////////
 	, 'hide'   => true
 	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
 	, 'back'   => true
-	, 'noline' => true
 	, 'help'   => <<<html
 <div class="help-block hide">Access points with less than -66dBm should not be used.</div>
 html

@@ -64,7 +64,6 @@ NOTE:
 $heads = -1;
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
-	$subhead = $data[ 'subhead' ] ?? '';
 	$id = $data[ 'id' ] ?? '';
 	$hide = $data[ 'hide' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
@@ -78,8 +77,7 @@ function htmlHead( $data ) {
 	$html.= $id ? '<div id="'.$id.'"' : '<div';
 	$html.= $hide ? ' class="hide">' : '>';
 	$html.= $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
-	$html.= $subhead ? ' sub' : '';
-	$html.= isset( $data[ 'noline' ] ) ? ' noline">' : '">';
+	$html.= isset( $data[ 'subhead' ] ) ? ' sub">' : '">';
 	$html.= $title;
 	$html.= $status ? '<i class="fa fa-status"></i>' : '';
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';

@@ -259,7 +259,7 @@ code {
 }
 .entries {
 	display: block;
-	margin: 0 0 10px 0;
+	margin: -10px 0 10px 0;
 	padding: 0;
 	line-height: 42px;
 	list-style: none;
@@ -283,9 +283,6 @@ code {
 	padding-top: 3px;
 	font-size: 18px;
 	border-bottom: 1px solid var( --cga );
-}
-.entries li:first-of-type {
-	border-top: 1px solid var( --cg );
 }
 .entries li span {
 	float: left;
