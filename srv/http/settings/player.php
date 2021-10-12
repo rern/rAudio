@@ -1,7 +1,7 @@
-<div id="mpd">
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Music Player Daemon'
+	, 'id'     => 'divmpd'
 	, 'status' => 'mpd'
 ] );
 ?>
@@ -19,11 +19,11 @@ htmlHead( [
 </div>
 <div style="clear:both"></div>
 <pre id="codempd" class="hide"></pre>
-</div>
 
-<div class="soundcard">
 <?php
-htmlHead( [
+if ( !file_exists( '/srv/http/data/shm/nosound' ) {
+// ----------------------------------------------------------------------------------
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'asound'
 ] );
@@ -34,7 +34,6 @@ htmlSetting( [
 HDMI device available only when connected before boot.
 html
 ] );
-echo '<div>';
 htmlSetting( [
 	  'label'       => 'Mixer Device'
 	, 'input'       => '<select id="hwmixer"></select>'
@@ -72,13 +71,7 @@ htmlSetting( [
 </p>
 html
 ] );
-?>
-</div>
-</div>
-
-<div class="soundcard">
-<?php
-htmlHead( [ 'title' => 'Bit-Perfect' ] );
+htmlHead( [ 'title' => 'Bit-Perfect' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label' => 'No Volume'
 	, 'id'    => 'novolume'
@@ -106,9 +99,9 @@ For DSD-capable devices without drivers dedicated for native DSD.
 </p>
 html
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [ 'title' => 'Volume' ] );
+// ----------------------------------------------------------------------------------
+}
+htmlHead( [ 'title' => 'Volume' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'   => 'Crossfade'
 	, 'id'      => 'crossfade'
@@ -136,9 +129,7 @@ htmlSetting( [
 <br>Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
 html
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Options'
 	, 'status' => 'mpdconf'
 ] );
@@ -216,9 +207,7 @@ htmlSetting( [
 Insert custom configurations into <code>/etc/mpd.conf</code>.
 html
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [ 'title' => 'Excluded Lists' ] );
+htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
 htmlHead( [
 	  'title'   => 'Album'
 	, 'status'  => 'albumignore'
@@ -247,4 +236,5 @@ List of <code>.mpdignore</code> files contain directories excluded from database
 </p>
 html
 ] );
-echo '</div>';
+echo '
+</div>'; // last closing for no following htmlHead()

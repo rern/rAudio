@@ -1,8 +1,8 @@
 <div id="divinterface">
-	<div id="divbt">
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
+	, 'id'     => 'divbt'
 	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan', 'search wh' ]
 ] );
@@ -24,11 +24,10 @@ htmlHead( [
 		<br>&bull; Turn off discoverable to hide from unpaired senders.
 		</p>
 	</div>
-	</div>
-	<div id="divwl">
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
+	, 'id'      => 'divwl'
 	, 'status'  => 'wlan'
 	, 'button'  => [ 'wladd', 'plus-circle wh' ]
 	, 'button1' => [ 'wlscan', 'search wh' ]
@@ -37,11 +36,10 @@ htmlHead( [
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<pre id="codewlan" class="hide"></pre>
-	</div>
-	<div id="divlan">
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
+	, 'id'     => 'divlan'
 	, 'status' => 'lan'
 	, 'button' => [ 'lanadd', 'plus-circle wh' ]
 	, 'nohelp'  => true
@@ -49,11 +47,8 @@ htmlHead( [
 ?>
 	<ul id="listlan" class="entries"></ul>
 	<pre id="codelan" class="hide"></pre>
-	</div>
-	
-	<div>
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web User Interface'
 	, 'status' => 'avahi'
 ] );
@@ -65,41 +60,35 @@ htmlHead( [
 	</div>
 	<pre id="codeavahi" class="hide"></pre>
 	</div>
-</div>
-
-<div id="divbluetooth" class="hide">
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
+	, 'id'     => 'divbluetooth'
+	, 'hide'   => true
 	, 'button' => [ 'scanning-bt', 'bluetooth blink' ]
 	, 'back'   => true
 	, 'nohelp' => true
 	, 'noline' => true
 ] );
-?>
-	<ul id="listbtscan" class="entries"></ul>
-</div>
-
-<div id="divwifi" class="hide">
-	<div>
-<?php
-htmlHead( [
+echo '
+<ul id="listbtscan" class="entries"></ul>';
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
+	, 'id'     => 'divwifi'
+	, 'hide'   => true
 	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
 	, 'back'   => true
-	, 'nohelp' => true
 	, 'noline' => true
+	, 'help'   => <<<html
+<div class="help-block hide">Access points with less than -66dBm should not be used.</div>
+html
 ] );
-?>
-	<ul id="listwlscan" class="entries"></ul>
-	<div class="help-block hide">Access points with less than -66dBm should not be used.</div>
-	</div>
-</div>
-
-<div id="divaccesspoint">
-<?php
-htmlHead( [
+echo '
+<ul id="listwlscan" class="entries"></ul>';
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
+	, 'id'     => 'divaccesspoint'
+	, 'hide'   => true
 	, 'button' => [ 'setting-accesspoint', 'gear' ]
 ] );
 ?>
@@ -120,7 +109,7 @@ htmlHead( [
 			&bull; Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</div>
-</div>
+</div> <!-- last closing for no following htmlHead() -->
 
 <div id="menu" class="menu hide">
 <a class="connect"><i class="fa fa-check"></i>Connect</a>

@@ -1,8 +1,7 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
-echo '<div>';
-htmlHead( [ 'title' => 'Renderers' ] );
+htmlHead( [ 'title' => 'Renderers' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'    => 'AirPlay'
 	, 'sublabel' => 'shairport-sync'
@@ -47,9 +46,7 @@ htmlSetting( [
 html
 	, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [ 'title' => 'Streamers' ] );
+htmlHead( [ 'title' => 'Streamers' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'    => 'For browsers'
 	, 'sublabel' => 'MPD httpd'
@@ -71,9 +68,7 @@ htmlSetting( [
 html
 	, 'exist'    => file_exists( '/usr/bin/snapserver' )
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [ 'title' => 'Others' ] );
+htmlHead( [ 'title' => 'Others' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'    => 'Access Point'
 	, 'sublabel' => 'hostapd'
@@ -153,4 +148,5 @@ htmlSetting( [
 Start playing automatically after boot.
 html
 ] );
-echo '</div>';
+echo '
+</div>'; // last closing for no following htmlHead()

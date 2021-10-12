@@ -314,10 +314,7 @@ function renderPage( list ) {
 	}
 	if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 	$( '#statusvalue' ).html( htmlstatus );
-	if ( G.asoundcard == -1 ) {
-		$( '.soundcard' ).addClass( 'hide' );
-	} else {
-		$( '.soundcard' ).removeClass( 'hide' );
+	if ( G.asoundcard != -1 ) {
 		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {

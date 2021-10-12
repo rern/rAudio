@@ -14,10 +14,14 @@ foreach( $timezonelist as $key => $zone ) {
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>\n';
 }
 $selecttimezone.= '</select>';
-?>
-<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
-<?php
-htmlHead( [
+
+echo '
+<div id="gpiosvg" class="hide">';
+include 'assets/img/gpio.svg';
+echo '
+</div>';
+
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'journalctl'
 	, 'nohelp' => true
@@ -32,10 +36,8 @@ htmlHead( [
 </div>
 <div id="systemvalue" class="col-r text"></div> 
 <div style="clear:both"></div>
-<!-- ------------------------------------------------------------------- -->
-<div>
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'button' => [ 'refresh', 'refresh' ]
 ] );
@@ -78,11 +80,8 @@ htmlHead( [
 </div>
 <div style="clear:both"></div>
 <pre id="codeundervoltage" class="hide"></pre>
-</div>
-<!-- ------------------------------------------------------------------- -->
-<div>
 <?php
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
 	, 'button' => [ 'addnas', 'plus-circle wh' ]
@@ -105,25 +104,23 @@ htmlHead( [
 	<pre>mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
 	(Append more options if required.)
 </div>
-<!-- ------------------------------------------------------------------- -->
-</div>
 
 <?php
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) {
-	echo '<div>';
-	htmlHead( [
-		  'title'  => 'Wireless'
-		, 'status' => 'rfkill'
-	] );
-	htmlSetting( [
-		  'label'    => 'Bluetooth'
-		, 'sublabel' => 'bluetoothctl'
-		, 'icon'     => 'bluetooth'
-		, 'status'   => 'bluetoothctl'
-		, 'id'       => 'bluetooth'
-		, 'setting'  => 'preenable'
-		, 'help'     => <<<html
+// ----------------------------------------------------------------------------------
+htmlHead( [ //////////////////////////////////
+	  'title'  => 'Wireless'
+	, 'status' => 'rfkill'
+] );
+htmlSetting( [
+	  'label'    => 'Bluetooth'
+	, 'sublabel' => 'bluetoothctl'
+	, 'icon'     => 'bluetooth'
+	, 'status'   => 'bluetoothctl'
+	, 'id'       => 'bluetooth'
+	, 'setting'  => 'preenable'
+	, 'help'     => <<<html
 As sender:
 <p>
 	&bull; Power on Bluetooth speakers/headphones > enable pairing
@@ -132,15 +129,15 @@ As sender:
 As receiver:
 <p>&bull; Sender device > search > pair</p>
 html
-	] );
-	htmlSetting( [
-		  'label'    => 'Wi-Fi'
-		, 'sublabel' => 'iw'
-		, 'icon'     => 'wifi'
-		, 'status'   => 'iw'
-		, 'id'       => 'wlan'
-		, 'setting'  => 'preenable'
-		, 'help'     => <<<html
+] );
+htmlSetting( [
+	  'label'    => 'Wi-Fi'
+	, 'sublabel' => 'iw'
+	, 'icon'     => 'wifi'
+	, 'status'   => 'iw'
+	, 'id'       => 'wlan'
+	, 'setting'  => 'preenable'
+	, 'help'     => <<<html
 	Auto start Access Point - On failed connection or no router
 <br>Country of Wi-Fi regulatory domain:
 <p>
@@ -148,11 +145,10 @@ html
 <br>&bull; The connected router may override it to a certain country.
 </p>
 html
-	] );
+] );
+// ----------------------------------------------------------------------------------
 }
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [
+htmlHead( [ //////////////////////////////////
 	  'title'  => 'GPIO Devices'
 	, 'status' => 'configtxt'
 ] );
@@ -246,9 +242,7 @@ htmlSetting( [
 <p>&bull; <bl id="ledcalc">LED resister calculator</bl></p>
 html
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [ 'title' => 'Environment' ] );
+htmlHead( [ 'title' => 'Environment' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label' => 'Host Name'
 	, 'icon'  => 'plus-r'
@@ -289,9 +283,7 @@ htmlSetting( [
 Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
 html
 ] );
-echo '</div><div>';
-// -----------------------------------------------------------------------------------------
-htmlHead( [ 'title' => 'Settings and Data' ] );
+htmlHead( [ 'title' => 'Settings and Data' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label' => 'Backup'
 	, 'icon'  => 'sd'
@@ -316,9 +308,8 @@ htmlSetting( [
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 html
 ] );
-?>
-</div>
-<?php
+echo '
+</div>'; // last closing for no following htmlHead()
 $listui = [
 	  'jQuery'             => 'https://jquery.com/'
 	, 'HTML5-Color-Picker' => 'https://github.com/NC22/HTML5-Color-Picker'
@@ -334,16 +325,10 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $name => $link ) {
-	if ( $localhost ) {
-		$uihtml.= $name.'<br>';
-	} else {
-		$uihtml.= '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
-	}
+	$uihtml.= $localhost ? $name.'<br>' : '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
 ?>
-<br>
-<!-- ------------------------------------------------------------------- -->
 <heading>About</heading>
 <i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
 <br><gr>by</gr>&emsp;r e r n

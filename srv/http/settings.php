@@ -44,6 +44,8 @@ $sudo = '/usr/bin/sudo /usr/bin';
 /*
 htmlHead( [
 	  'title'   => 'TITLE'           // REQUIRED
+	, 'id'      => 'ID'              // default divtitle
+	, 'hide'    => true
 	, 'subhead' => true              // with no help icon
 	, 'status'  => 'COMMAND'         // include status icon and status box
 	, 'button'  => [ 'ID', 'ICON' ]  // icon button
@@ -56,14 +58,23 @@ html
 ] );
 
 */
+$heads = -1;
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
+	$id = $data[ 'id' ] ?? 'div'.strtolower( $title );
+	$hide = $data[ 'hide' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
 	$button = $data[ 'button' ] ?? '';
 	$button1 = $data[ 'button1' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
-	$html = $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
+	
+	global $heads;
+	$heads++;
+	$html = $heads ? '</div>' : '';
+	$html.= '<div id="'.$id.'"';
+	$html.= $hide ? ' class="hide">' : '>';
+	$html.= $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
 	$html.= $subhead ? ' sub' : '';
 	$html.= isset( $data[ 'noline' ] ) ? ' noline">' : '">';
 	$html.= $title;
@@ -75,6 +86,7 @@ function htmlHead( $data ) {
 	$html.= '</heading>';
 	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	
 	echo $html;
 }
 /*
@@ -92,6 +104,7 @@ HELP - PHP heredoc
 html
 	, 'exist'       => EXIST        // return blank if not EXIST
 ] );
+IMPORTANT: Last htmlSetting() with no following htmlHead() must be closed with '</div>'
 */
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
@@ -155,7 +168,6 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/settings.<?=$time?>.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
 	<?php }
@@ -169,6 +181,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/relays.<?=$time?>.js"></script>
 	<?php }
 		  if ( $localhost ) include 'keyboard.php';?>
+<script src="/assets/js/settings.<?=$time?>.js"></script>
 	
 </body>
 </html>
