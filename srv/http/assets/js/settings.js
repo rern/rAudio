@@ -412,11 +412,14 @@ $( '#bar-bottom div' ).click( function() {
 } );
 $( '.switch' ).click( function() {
 	var $this = $( this );
-	if ( $this.hasClass( 'self' ) ) return
+	var setting = $this.data( 'setting' );
+	if ( setting === 'self' ) return
 	
+	var label = $this.data( 'label' );
+	var icon = $this.data( 'icon' );
 	var checked = $this.prop( 'checked' );
-	if ( !$this.hasClass( 'preenable' ) ) {
-		notify( $this.data( 'label' ), checked, $this.data( 'icon' ) );
+	if ( !setting ) {
+		notify( label, checked, icon );
 		bash( [ this.id, checked ] );
 	} else {
 		if ( $this.hasClass( 'disabled' ) ) {
@@ -428,7 +431,7 @@ $( '.switch' ).click( function() {
 		if ( checked ) {
 			$( '#setting-'+ id ).click();
 		} else {
-			notify( $this.data( 'label' ), 'Disable ...', $this.data( 'icon' ) );
+			notify( label, 'Disable ...', icon );
 			bash( [ id +'disable' ] );
 		}
 	}

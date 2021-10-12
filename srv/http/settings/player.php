@@ -97,7 +97,7 @@ htmlHead( [ 'title' => 'Volume' ] ); //////////////////////////////////
 htmlSetting( [
 	  'label'   => 'Crossfade'
 	, 'id'      => 'crossfade'
-	, 'setting' => 'preenable'
+	, 'setting' => 'before'
 	, 'help'    => <<<html
 <code>mpc crossfade N</code>
 Fade-out to fade-in between songs.
@@ -114,7 +114,7 @@ html
 htmlSetting( [
 	  'label'   => 'Replay Gain'
 	, 'id'      => 'replaygain'
-	, 'setting' => 'preenable'
+	, 'setting' => 'before'
 	, 'help'    => <<<html
 <code>replaygain "N"</code>
 Set gain control to setting in replaygain tag.
@@ -129,7 +129,7 @@ htmlSetting( [
 	  'label'    => 'Buffer - Audio'
 	, 'id'       => 'buffer'
 	, 'sublabel' => 'custom size'
-	, 'setting'  => 'preenable'
+	, 'setting'  => 'before'
 	, 'help'     => <<<html
 <code>audio_buffer_size "kB"</code>
 Default buffer size: 4096 kB (24 seconds of CD-quality audio)
@@ -140,7 +140,7 @@ htmlSetting( [
 	  'label'    => 'Buffer - Output'
 	, 'id'       => 'bufferoutput'
 	, 'sublabel' => 'custom size'
-	, 'setting'  => 'preenable'
+	, 'setting'  => 'before'
 	, 'help'     => <<<html
 <code>max_output_buffer_size "kB"</code>
 Default buffer size: 8192 kB
@@ -170,7 +170,7 @@ htmlSetting( [
 	  'label'    => 'SoXR resampler'
 	, 'id'       => 'soxr'
 	, 'sublabel' => 'custom settings'
-	, 'setting'  => 'preenable'
+	, 'setting'  => 'before'
 	, 'help'     => <<<html
 <code>quality "custom"</code>
 Default quality: very high
@@ -192,7 +192,7 @@ html
 htmlSetting( [
 	  'label'   => "User's Configurations"
 	, 'id'      => 'custom'
-	, 'setting' => 'preenable'
+	, 'setting' => 'before'
 	, 'help'    => <<<html
 Insert custom configurations into <code>/etc/mpd.conf</code>.
 html
