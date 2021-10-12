@@ -56,7 +56,7 @@ htmlSetting( [
 	, 'icon'     => 'webradio'
 	, 'id'       => 'streaming'
 	, 'help'     => <<<html
-<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://{$ip}:8000</code> (Latency - several seconds)
+<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://$ip:8000</code> (Latency - several seconds)
 html
 ] );
 htmlSetting( [
@@ -111,7 +111,7 @@ htmlSetting( [
 	, 'help'     => <<<html
 <a href="https://www.samba.org">Samba</a> - Share files on network.
 <br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
-<br> &bull; At address bar of Windows File Explorer: <code>{$ip}</code> or <code>{$hostname}</code>
+<br> &bull; At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
 html
 	, 'exist'    => file_exists( '/usr/bin/smbd' )
 ] );
