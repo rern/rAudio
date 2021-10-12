@@ -99,7 +99,7 @@ pre {
 	margin-bottom: 20px;
 	line-height: 22px;
 	color: var( --cg75 );
-	white-space: normal;
+	white-space: pre-wrap;
 }
 .help-block .fa {
 	width: 20px;

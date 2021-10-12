@@ -53,30 +53,23 @@ htmlHead( [ //////////////////////////////////
 
 <div class="col-l" style="height:0"></div>
 <div class="col-r">
-	<span class="help-block hide">
-		<br><gr><i class="fa fa-refresh"></i>&emsp;Toggle refresh every 10 seconds.</gr>
-		<br>
-		<br>CPU Load:
-		<p>
-			&bull; Average number of processes which are being executed and in waiting.
-		<br>&bull; calculated over 1, 5 and 15 minutes.
-		<br>&bull; Each one should not be constantly over 0.75 x CPU cores.
-		</p>
-		<br>CPU temperature:
-		<p>
-			&bull; 80-84°C: ARM cores throttled.
-		<br>&bull; 85°C: ARM cores and GPU throttled.
-		<br>&bull; RPi 3B+: 60°C soft limit (optimized throttling)
-		</p>
-		<div id="throttled">
-			<br><i class="fa fa-warning"></i> Under-voltage warning: <code>vcgencmd get_throttled</code>
-			<p>
-				&bull; "occurred" - Events happenned.
-			<br>&bull; "currently detected" - Currently under minimum limit. System unstable is very likely.
-			<br>&bull; More info - <a href="https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md">vcgencmd</a>
-		</p>
-		</div>
-	</span>
+	<div class="help-block hide">
+&ensp;<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
+
+CPU Load:
+ &bull; Average number of processes which are being executed and in waiting.
+ &bull; calculated over 1, 5 and 15 minutes.
+ &bull; Each one should not be constantly over 0.75 x CPU cores.
+CPU temperature:
+ &bull; 80-84°C: ARM cores throttled.
+ &bull; 85°C: ARM cores and GPU throttled.
+ &bull; RPi 3B+: 60°C soft limit (optimized throttling)
+
+<i class="fa fa-warning"></i> Under-voltage warning: <code>vcgencmd get_throttled</code>
+ &bull; "occurred" - Events happenned.
+ &bull; "currently detected" - Currently under minimum limit. System unstable is very likely.
+ &bull; More info - <a href="https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md">vcgencmd</a>
+</div>
 </div>
 <div style="clear:both"></div>
 <pre id="codeundervoltage" class="hide"></pre>
@@ -89,19 +82,19 @@ htmlHead( [ //////////////////////////////////
 ?>
 <ul id="list" class="entries"></ul>
 <div class="help-block hide">
-	Available sources, local USB and NAS mounts, for Library.
-	<br>USB drive will be found and mounted automatically. Network shares must be manually configured.
-	<br>
-	<br><i class="fa fa-plus-circle"></i>&ensp; Add network share commands:
-	<br> &emsp; <gr>(If mount failed, try in SSH terminal.)</gr>
-	<br>#1:
-	<pre>mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"</pre>
-	#2:
-	<br>CIFS:
-	<pre>mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8</pre>
-	NFS:
-	<pre>mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5</pre>
-	(Append more options if required.)
+Available sources, local USB and NAS mounts, for Library.
+ &bull; USB drive will be found and mounted automatically.
+ &bull; Network shares must be manually configured.
+
+<i class="fa fa-plus-circle"></i>&ensp; Add network share commands: <gr>(If mount failed, try in SSH terminal.)</gr>
+#1:
+mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
+#2:
+CIFS:
+mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8
+NFS:
+mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5
+(Append more options if required.)
 </div>
 
 <?php
@@ -120,13 +113,7 @@ htmlSetting( [
 	, 'status'   => 'bluetoothctl'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
-As sender:
-<p>
-	&bull; Power on Bluetooth speakers/headphones > enable pairing
-<br>&bull; Networks > Bluetooth > search > pair
-</p>
-As receiver:
-<p>&bull; Sender device > search > pair</p>
+Pairing: &emsp; <i class="fa fa-networks"></i> Networks
 html
 ] );
 htmlSetting( [
@@ -137,12 +124,10 @@ htmlSetting( [
 	, 'status'   => 'iw'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
-	Auto start Access Point - On failed connection or no router
-<br>Country of Wi-Fi regulatory domain:
-<p>
-	&bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
-<br>&bull; The connected router may override it to a certain country.
-</p>
+Auto start Access Point - On failed connection or no router
+Country of Wi-Fi regulatory domain:
+ &bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+ &bull; The connected router may override it to a certain country.
 html
 ] );
 // ----------------------------------------------------------------------------------
@@ -163,9 +148,9 @@ htmlSetting( [
 <div id="divi2smodule">$selecti2s</div>
 html
 	, 'help'     => <<<html
-	<a class="img" data-name="lcdchar">LCD module</a> - display playback data
-<p>&bull; Support 16x2 and 20x4 LCD modules.</p>
-<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+<a class="img" data-name="lcdchar">LCD module</a> - display playback data
+ &bull; Support 16x2 and 20x4 LCD modules.
+<i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 html
 ] );
 htmlSetting( [
@@ -175,9 +160,9 @@ htmlSetting( [
 	, 'icon'     => 'lcdchar'
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
-	<a class="img" data-name="lcdchar">LCD module</a> - display playback data
-<p>&bull; Support 16x2 and 20x4 LCD modules.</p>
-<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+<a class="img" data-name="lcdchar">LCD module</a> - display playback data
+ &bull; Support 16x2 and 20x4 LCD modules.
+<i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 html
 ] );
 htmlSetting( [
@@ -188,15 +173,11 @@ htmlSetting( [
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
-<p>
-	&bull; On - Fixed to pin 5
-<br>&bull; Off - Default to pin 5 (single pin on+off)
-</p>
+ &bull; On - Fixed to pin 5
+ &bull; Off - Default to pin 5 (single pin on+off)
 If pin 5 is used by DAC or LCD - Set 2 unused pins for:
-<p>
-	&bull; Off (default: 7)
-<br>&bull; Reserved (default: 29)
-</p>
+ &bull; Off (default: 7)
+ &bull; Reserved (default: 29)
 html
 ] );
 htmlSetting( [
@@ -206,11 +187,9 @@ htmlSetting( [
 	, 'setting' => 'self'
 	, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-<br>Settings: &ensp;<i class="fa fa-sliders"></i>Features |&ensp;<i class="fa fa-relays"></i>
-<p>
-	&bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
-<br>&bull; Can be enabled and run as a test without a connected relay module.
-</p>
+Settings: &ensp;<i class="fa fa-sliders"></i>Features |&ensp;<i class="fa fa-relays"></i>
+ &bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+ &bull; Can be enabled and run as a test without a connected relay module.
 html
 ] );
 htmlSetting( [
@@ -239,7 +218,7 @@ htmlSetting( [
 	, 'setting' => 'preenable'
 	, 'help'    => <<<html
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
-<p>&bull; <bl id="ledcalc">LED resister calculator</bl></p>
+ &bull; <bl id="ledcalc">LED resister calculator</bl>
 html
 ] );
 htmlHead( [ 'title' => 'Environment' ] ); //////////////////////////////////
@@ -250,11 +229,9 @@ htmlSetting( [
 	, 'input' => '<input type="text" id="hostname" readonly>'
 	, 'help'  => <<<html
 For:
-<p>
-	&bull; Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
-<br>&bull; Web Interface URL: <code id="avahiurl"></code>
-<br>&bull; System hostname
-<p>
+ &bull; Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
+ &bull; Web Interface URL: <code id="avahiurl"></code>
+ &bull; System hostname
 html
 ] );
 htmlSetting( [
@@ -267,10 +244,8 @@ htmlSetting( [
 	, 'setting'  => 'self'
 	, 'help'     => <<<html
 <i class="fa fa-gear"></i>Servers:
-<p>
-	&bull; NTP: For time sync
-<br>&bull; Package mirror: For system upgrade <code>pacman -Syu</code>
-</p>
+ &bull; NTP: For time sync
+ &bull; Package mirror: For system upgrade <code>pacman -Syu</code>
 html
 ] );
 htmlSetting( [
@@ -291,14 +266,12 @@ htmlSetting( [
 	, 'icon'  => 'sd'
 	, 'help'  => <<<html
 Backup all settings and Library database:
-<p>
-	&bull; Settings
-<br>&bull; Library database
-<br>&bull; Saved playlists
-<br>&bull; Bookmarks
-<br>&bull; Lyrics
-<br>&bull; WebRadios
-</p>
+ &bull; Settings
+ &bull; Library database
+ &bull; Saved playlists
+ &bull; Bookmarks
+ &bull; Lyrics
+ &bull; WebRadios
 html
 ] );
 htmlSetting( [

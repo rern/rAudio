@@ -20,7 +20,7 @@ htmlSetting( [
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
-<br>Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
+Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
 html
 	, 'exist'    => file_exists( '/usr/bin/snapserver' )
 ] );
@@ -64,7 +64,7 @@ htmlSetting( [
 	, 'status'   => 'snapserver'
 	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
-<br>SnapServer - Clients can be either between RPis or with Snapcast capable devices.
+SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 html
 	, 'exist'    => file_exists( '/usr/bin/snapserver' )
 ] );
@@ -78,7 +78,7 @@ htmlSetting( [
 	, 'setting'  => 'self'
 	, 'help'     => <<<html
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
-<br>This should be used only when necessary.
+This should be used only when necessary.
 html
 	, 'exist'    => file_exists( '/usr/bin/hostapd' )
 ] );
@@ -91,8 +91,8 @@ htmlSetting( [
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
-<br> &bull; HDMI/LCD display must be connected before boot.
-<br> &bull; TFT 3.5" LCD - rotate needs reboot.
+ &bull; HDMI/LCD display must be connected before boot.
+ &bull; TFT 3.5" LCD - rotate needs reboot.
 html
 	, 'exist'    => file_exists( '/usr/bin/chromium' )
 ] );
@@ -105,8 +105,8 @@ htmlSetting( [
 	, 'setting'  => 'preenable'
 	, 'help'     => <<<html
 <a href="https://www.samba.org">Samba</a> - Share files on network.
-<br> &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
-<br> &bull; At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
+ &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
+ &bull; At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
 html
 	, 'exist'    => file_exists( '/usr/bin/smbd' )
 ] );
@@ -129,7 +129,7 @@ htmlSetting( [
 	, 'setting'  => 'self'
 	, 'help'     => <<<html
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with set password using <code>PASSWORD_BCRYPT</code>.
-<br>Lock: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-lock"></i>
+Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock"></i>
 html
 ] );
 htmlSetting( [

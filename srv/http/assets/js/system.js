@@ -836,7 +836,6 @@ function renderPage( list ) {
 		+'<br>'+ cpu
 	);
 	renderStatus();
-	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 	var html = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
