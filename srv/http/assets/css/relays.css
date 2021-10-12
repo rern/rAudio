@@ -50,7 +50,6 @@ span.timer i {
 .gpio-float-r {
 	float: left;
 }
-#gpio-name,
 #gpio-name input {
 	width: 120px;
 }
