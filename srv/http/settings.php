@@ -140,8 +140,9 @@ function htmlSetting( $data ) {
 	}
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
-		$html.= '<input type="checkbox" id="'.$id.'" class="switch '. $setting.'" data-label="'.$label.'" data-icon="'.$icon.'">' // data-* for notify banner
-			.'<div class="switchlabel" for="'.$id.'"></div>';
+		$html.= '<input type="checkbox" id="'.$id.'" class="switch';
+		$html.= $setting ? ' '.$setting : '';
+		$html.= '" data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
 	}
