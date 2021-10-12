@@ -108,22 +108,22 @@ htmlHead( [
 <!-- ------------------------------------------------------------------- -->
 </div>
 
-<?php $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) { ?>
-<div>
 <?php
-htmlHead( [
-	  'title'  => 'Wireless'
-	, 'status' => 'rfkill'
-] );
-htmlSetting( [
-	  'label'    => 'Bluetooth'
-	, 'sublabel' => 'bluetoothctl'
-	, 'icon'     => 'bluetooth'
-	, 'status'   => 'bluetoothctl'
-	, 'id'       => 'bluetooth'
-	, 'setting'  => 'preenable'
-	, 'help'     => <<<html
+$rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
+if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) {
+	echo '<div>';
+	htmlHead( [
+		  'title'  => 'Wireless'
+		, 'status' => 'rfkill'
+	] );
+	htmlSetting( [
+		  'label'    => 'Bluetooth'
+		, 'sublabel' => 'bluetoothctl'
+		, 'icon'     => 'bluetooth'
+		, 'status'   => 'bluetoothctl'
+		, 'id'       => 'bluetooth'
+		, 'setting'  => 'preenable'
+		, 'help'     => <<<html
 As sender:
 <p>
 	&bull; Power on Bluetooth speakers/headphones > enable pairing
@@ -132,15 +132,15 @@ As sender:
 As receiver:
 <p>&bull; Sender device > search > pair</p>
 html
-] );
-htmlSetting( [
-	  'label'    => 'Wi-Fi'
-	, 'sublabel' => 'iw'
-	, 'icon'     => 'wifi'
-	, 'status'   => 'iw'
-	, 'id'       => 'wlan'
-	, 'setting'  => 'preenable'
-	, 'help'     => <<<html
+	] );
+	htmlSetting( [
+		  'label'    => 'Wi-Fi'
+		, 'sublabel' => 'iw'
+		, 'icon'     => 'wifi'
+		, 'status'   => 'iw'
+		, 'id'       => 'wlan'
+		, 'setting'  => 'preenable'
+		, 'help'     => <<<html
 	Auto start Access Point - On failed connection or no router
 <br>Country of Wi-Fi regulatory domain:
 <p>
@@ -148,7 +148,7 @@ htmlSetting( [
 <br>&bull; The connected router may override it to a certain country.
 </p>
 html
-] );
+	] );
 }
 echo '</div><div>';
 // -----------------------------------------------------------------------------------------
@@ -224,17 +224,16 @@ htmlSetting( [
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 html
 ] );
-if ( file_exists( '/usr/bin/chromium' ) ) {
-	htmlSetting( [
-		  'label'   => 'TFT 3.5" LCD'
-		, 'icon'    => 'lcd'
-		, 'id'      => 'lcd'
-		, 'setting' => 'preenable'
-		, 'help'    => <<<html
+htmlSetting( [
+	  'label'   => 'TFT 3.5" LCD'
+	, 'icon'    => 'lcd'
+	, 'id'      => 'lcd'
+	, 'setting' => 'preenable'
+	, 'help'    => <<<html
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 html
-	] );
-}
+	, 'exist'   => file_exists( '/usr/bin/chromium' )
+] );
 htmlSetting( [
 	  'label'   => 'VU LED'
 	, 'icon'    => 'led'
