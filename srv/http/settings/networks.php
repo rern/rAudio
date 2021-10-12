@@ -32,6 +32,7 @@ htmlHead( [
 	, 'status'  => 'wlan'
 	, 'button'  => [ 'wladd', 'plus-circle wh' ]
 	, 'button1' => [ 'wlscan', 'search wh' ]
+	, 'nohelp'  => true
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
@@ -43,6 +44,7 @@ htmlHead( [
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
 	, 'button' => [ 'lanadd', 'plus-circle wh' ]
+	, 'nohelp'  => true
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>

@@ -222,7 +222,6 @@ htmlHead( [ 'title' => 'Excluded Lists' ] );
 htmlHead( [
 	  'title'   => 'Album'
 	, 'status'  => 'albumignore'
-	, 'nohelp'  => true
 	, 'subhead' => true
 	, 'help'    => <<<html
 List of albums excluded from Album page.
@@ -237,7 +236,6 @@ html
 htmlHead( [
 	  'title'   => 'Directory'
 	, 'status'  => 'mpdignore'
-	, 'nohelp'  => true
 	, 'subhead' => true
 	, 'help'    => <<<html
 List of <code>.mpdignore</code> files contain directories excluded from database.
