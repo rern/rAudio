@@ -156,20 +156,22 @@ htmlHead( [
 	  'title'  => 'GPIO Devices'
 	, 'status' => 'configtxt'
 ] );
-?>
-<div class="col-l single">Audio - I²S<i class="fa fa-i2saudio"></i></div>
-<div class="col-r i2s">
-	<div id="divi2smodulesw">
-		<input id="i2smodulesw" type="checkbox">
-		<div class="switchlabel" for="i2smodulesw"></div>
-	</div>
-	<div id="divi2smodule">
-		<?=$selecti2s?>
-	</div>
-	<span class="help-block hide">I²S audio module - player output.</span>
+htmlSetting( [
+	  'label'    => 'Audio - I²S'
+	, 'icon'     => 'i2saudio'
+	, 'input'    => <<<html
+<div id="divi2smodulesw">
+	<input id="i2smodulesw" type="checkbox">
+	<div class="switchlabel" for="i2smodulesw"></div>
 </div>
-
-<?php
+<div id="divi2smodule">$selecti2s</div>
+html
+	, 'help'     => <<<html
+	<a class="img" data-name="lcdchar">LCD module</a> - display playback data
+<p>&bull; Support 16x2 and 20x4 LCD modules.</p>
+<br><i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+html
+] );
 htmlSetting( [
 	  'label'    => 'Character LCD'
 	, 'sublabel' => 'HD44780'
