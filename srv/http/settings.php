@@ -43,18 +43,19 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <?php
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
+	$subhead = $data[ 'subhead' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
 	$button = $data[ 'button' ] ?? '';
 	$button1 = $data[ 'button1' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$html = $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
-	$html.= isset( $data[ 'subhead' ] ) ? ' sub' : '';
+	$html.= $subhead ? ' sub' : '';
 	$html.= isset( $data[ 'noline' ] ) ? ' noline">' : '">';
 	$html.= $title;
 	$html.= $status ? '<i class="fa fa-status"></i>' : '';
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
 	$html.= $button1 ? '<i id="'.$button1[ 0 ].'" class="fa fa-'.$button1[ 1 ].'"></i>' : '';
-	$html.= isset( $data[ 'nohelp' ] ) ? '' : '<i class="help fa fa-question-circle"></i>';
+	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
 	$html.= isset( $data[ 'back' ] ) ? '<i class="help fa fa-fa fa-arrow-left back"></i>' : '';
 	$html.= '</heading>';
 	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
@@ -62,7 +63,7 @@ function htmlHead( $data ) {
 	echo $html;
 }
 function htmlSetting( $data ) {
-	if ( isset( $data[ 'condition' ] ) && !$data[ 'condition' ] ) return;
+	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
 	// col-l
 	$label = $data[ 'label' ];
 	$icon = $data[ 'icon' ] ?? '';
@@ -71,6 +72,7 @@ function htmlSetting( $data ) {
 	$id = $data[ 'id' ];
 	$input = $data[ 'input' ] ?? '';
 	$setting = $data[ 'setting' ] ?? '';
+	$settingicon = $data[ 'settingicon' ] ?? 'gear';
 	$help = $data[ 'help' ] ?? '';
 	$html = '<div id="div'.$id.'"><div class="col-l';
 	$html.= $sublabel ? '' : ' single';
@@ -96,7 +98,7 @@ function htmlSetting( $data ) {
 	} else {
 		$html.= $input;
 	}
-	$html.= $setting ? '<i id="setting-'.$id.'" class="setting fa fa-gear"></i>' : '';
+	$html.= $setting ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= '</div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
