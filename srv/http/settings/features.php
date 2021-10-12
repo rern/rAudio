@@ -17,7 +17,7 @@ htmlSetting( [
 	  'label'    => 'SnapClient'
 	, 'id'       => 'snapclient'
 	, 'icon'     => 'snapcast'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
@@ -88,7 +88,7 @@ htmlSetting( [
 	, 'sublabel' => 'localbrowser'
 	, 'icon'     => 'chromium'
 	, 'status'   => 'localbrowser'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  &bull; HDMI/LCD display must be connected before boot.
@@ -102,7 +102,7 @@ htmlSetting( [
 	, 'sublabel' => 'smb'
 	, 'icon'     => 'networks'
 	, 'status'   => 'smb'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
@@ -116,7 +116,7 @@ htmlSetting( [
 	, 'sublabel' => 'mpdscribble'
 	, 'icon'     => 'lastfm'
 	, 'status'   => 'mpdscribble'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 <a href="https://github.com/MusicPlayerDaemon/mpdscribble">mpdscribble</a> - Automatically send listened music data to Last.fm for tracking.
 html

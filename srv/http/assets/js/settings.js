@@ -412,21 +412,15 @@ $( '#bar-bottom div' ).click( function() {
 } );
 $( '.switch' ).click( function() {
 	var $this = $( this );
-	var setting = $this.data( 'setting' );
-	if ( setting === 'self' ) return
+	if ( $this.hasClass( 'disabled' ) ) {
+		$this.prop( 'checked', !checked );
+		return
+	}
 	
 	var label = $this.data( 'label' );
 	var icon = $this.data( 'icon' );
 	var checked = $this.prop( 'checked' );
-	if ( !setting ) {
-		notify( label, checked, icon );
-		bash( [ this.id, checked ] );
-	} else {
-		if ( $this.hasClass( 'disabled' ) ) {
-			$this.prop( 'checked', !checked );
-			return
-		}
-		
+	if ( $this.hasClass( 'common' ) ) {
 		var id = this.id;
 		if ( checked ) {
 			$( '#setting-'+ id ).click();
@@ -434,5 +428,8 @@ $( '.switch' ).click( function() {
 			notify( label, 'Disable ...', icon );
 			bash( [ id +'disable' ] );
 		}
+	} else {
+		notify( label, checked, icon );
+		bash( [ this.id, checked ] );
 	}
 } );

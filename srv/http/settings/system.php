@@ -110,7 +110,7 @@ htmlSetting( [
 	, 'sublabel' => 'bluetoothctl'
 	, 'icon'     => 'bluetooth'
 	, 'status'   => 'bluetoothctl'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 Pairing: &emsp; <i class="fa fa-networks"></i> Networks
 html
@@ -121,7 +121,7 @@ htmlSetting( [
 	, 'sublabel' => 'iw'
 	, 'icon'     => 'wifi'
 	, 'status'   => 'iw'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 Auto start Access Point - On failed connection or no router
 Country of Wi-Fi regulatory domain:
@@ -157,7 +157,7 @@ htmlSetting( [
 	, 'id'       => 'lcdchar'
 	, 'sublabel' => 'HD44780'
 	, 'icon'     => 'lcdchar'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  &bull; Support 16x2 and 20x4 LCD modules.
@@ -169,7 +169,7 @@ htmlSetting( [
 	, 'id'       => 'powerbutton'
 	, 'sublabel' => 'Power LED'
 	, 'icon'     => 'power'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  &bull; On - Fixed to pin 5
@@ -195,7 +195,7 @@ htmlSetting( [
 	  'label'   => 'Spectrum OLED'
 	, 'id'      => 'mpdoled'
 	, 'icon'    => 'mpdoled'
-	, 'setting' => 'before'
+	, 'setting' => 'common'
 	, 'help'    => <<<html
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 html
@@ -204,7 +204,7 @@ htmlSetting( [
 	  'label'   => 'TFT 3.5" LCD'
 	, 'id'      => 'lcd'
 	, 'icon'    => 'lcd'
-	, 'setting' => 'before'
+	, 'setting' => 'common'
 	, 'help'    => <<<html
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 html
@@ -214,7 +214,7 @@ htmlSetting( [
 	  'label'   => 'VU LED'
 	, 'id'      => 'vuled'
 	, 'icon'    => 'led'
-	, 'setting' => 'before'
+	, 'setting' => 'common'
 	, 'help'    => <<<html
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  &bull; <bl id="ledcalc">LED resister calculator</bl>
@@ -253,7 +253,7 @@ htmlSetting( [
 	, 'sublabel' => 'sysctl'
 	, 'icon'     => 'soundprofile'
 	, 'status'   => 'soundprofile'
-	, 'setting'  => 'before'
+	, 'setting'  => 'common'
 	, 'help'     => <<<html
 Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
 html

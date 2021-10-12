@@ -98,7 +98,7 @@ htmlSetting( [
 	, 'icon'        => 'ICON'
 	, 'status'      => 'COMMAND'    // include status icon and status box
 	, 'input'       => 'HTML'       // alternative - if not switch
-	, 'setting'     => 'preenable'  // preenable = show setting before enable; self = self function / no pre-enable
+	, 'setting'     => 'TYPE'       // common = common function; self = self function
 	, 'settingicon' => 'ICON'
 	, 'help'        => <<<html
 HELP - PHP heredoc
@@ -140,8 +140,8 @@ function htmlSetting( $data ) {
 	}
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
-		$html.= '<input type="checkbox" id="'.$id.'" class="switch"';
-		$html.= $setting ? ' data-setting="'.$setting.'"' : '';
+		$html.= '<input type="checkbox" id="'.$id.'"';
+		$html.= $setting !== 'self' ? ' class="switch '.$setting.'"' : '';
 		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
