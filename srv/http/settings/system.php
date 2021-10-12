@@ -85,16 +85,17 @@ htmlHead( [ //////////////////////////////////
 Available sources, local USB and NAS mounts, for Library.
  &bull; USB drive will be found and mounted automatically.
  &bull; Network shares must be manually configured.
-
-<i class="fa fa-plus-circle"></i>&ensp; Add network share commands: <gr>(If mount failed, try in SSH terminal.)</gr>
-#1:
+ &bull; If mount failed, try in SSH terminal:
+<pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
-#2:
-CIFS:
-mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8
-NFS:
-mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" -o defaults,noauto,bg,soft,timeo=5
-(Append more options if required.)
+
+# CIFS:
+mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
+      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8
+# NFS:
+mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
+      -o defaults,noauto,bg,soft,timeo=5
+</pre>
 </div>
 
 <?php
