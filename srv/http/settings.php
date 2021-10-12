@@ -133,7 +133,7 @@ function htmlSetting( $data ) {
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= '</div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	$html.= '</div>';
+	$html.= '<div style="clear:both"></div></div>';
 	echo $html;
 }
 
