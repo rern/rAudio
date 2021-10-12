@@ -41,6 +41,20 @@ $sudo = '/usr/bin/sudo /usr/bin';
 </div>
 <div class="container hide">
 <?php
+/*
+htmlHead( [
+	  'title'   => 'TITLE'
+	, 'subhead' => true             // optional
+	, 'status'  => 'COMMAND'        // optional
+	, 'button'  => [ 'ID', 'ICON' ] // optional
+	, 'button1' => [ 'ID', 'ICON' ] // optional
+	, 'nohelp'  => true             // optional
+	, 'help'        => <<<html      // optional
+HELP - PHP heredoc
+html
+] );
+
+*/
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
@@ -62,6 +76,22 @@ function htmlHead( $data ) {
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	echo $html;
 }
+/*
+htmlSetting( [
+	  'label'       => 'LABEL'
+	, 'sublabel'    => 'SUB LABEL'  // optional
+	, 'icon'        => 'ICON'       // optional
+	, 'status'      => 'COMMAND'    // optional (include sublabel icon and status box)
+	, 'id'          => 'INPUT ID'
+	, 'input'       => 'HTML'       // alternative - if not switch
+	, 'setting'     => 'preenable'  // optional (preenable = show setting before enable; self = self function / no pre-enable)
+	, 'settingicon' => 'ICON'       // optional
+	, 'help'        => <<<html      // optional
+HELP - PHP heredoc
+html
+	, 'exist'    => EXIST           // optional (return blank if not EXIST)
+] );
+*/
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
 	// col-l
@@ -93,7 +123,7 @@ function htmlSetting( $data ) {
 	}
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
-		$html.= '<input type="checkbox" id="'.$id.'" class="switch '. $setting.'" data-label="'.$label.'" data-icon="'.$icon.'">'
+		$html.= '<input type="checkbox" id="'.$id.'" class="switch '. $setting.'" data-label="'.$label.'" data-icon="'.$icon.'">' // data-* for notify banner
 			.'<div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
