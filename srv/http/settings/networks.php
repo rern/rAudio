@@ -31,7 +31,9 @@ htmlHead( [ //////////////////////////////////
 	, 'status'  => 'wlan'
 	, 'button'  => [ 'wladd', 'plus-circle wh' ]
 	, 'button1' => [ 'wlscan', 'search wh' ]
-	, 'nohelp'  => true
+	, 'help'    => <<<html
+Access points with less than -66dBm should not be used.
+html
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
@@ -77,9 +79,7 @@ htmlHead( [ //////////////////////////////////
 	, 'hide'   => true
 	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
 	, 'back'   => true
-	, 'help'   => <<<html
-<div class="help-block hide">Access points with less than -66dBm should not be used.</div>
-html
+	, 'nohelp' => true
 ] );
 echo '
 <ul id="listwlscan" class="entries"></ul>';
