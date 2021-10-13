@@ -7,19 +7,23 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+# > 20211011
 novu=$( grep novu $dirsystem/display | cut -d: -f2 | tr -d ' ,' )
 if [[ -n $novu ]]; then
 	[[ $novu == true ]] && covervu=false || covervu=true
 	sed -i '/novu/ s/.*/  "covervu": '$covervu',/' $dirsystem/display
 fi
-
-[[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pkg+=' alsaequal'
-[[ ! -e /usr/bin/ntpdate ]] && pkg+=' ntp'
-[[ ! -e /usr/bin/mpd_oled ]] && pkg+=' audio_spectrum_oled'
-[[ -n $pkg ]] && pacman -Sy --noconfirm $pkg
-
+# 20210927
 grep -q '^mpd.*bash$' /etc/passwd || chsh -s /bin/bash mpd
+[[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pkg+=' alsaequal'
+# 20210924
+[[ ! -e /usr/bin/ntpdate ]] && pkg+=' ntp'
+# 20210911
 ! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
+# 20210903
+[[ ! -e /usr/bin/mpd_oled ]] && pkg+=' audio_spectrum_oled'
+
+[[ -n $pkg ]] && pacman -Sy --noconfirm $pkg
 
 for name in lcdchar localbrowser powerbutton; do
 	mv -f /etc/$name.conf $dirsystem &> /dev/null
@@ -55,24 +59,6 @@ offd=( 2 2 2 )
 timer=5
 EOF
 fi
-
-[[ -e $dirsystem/lcdchar.conf ]] && sed -i 's/True/true/; s/False/false/' $dirsystem/lcdchar.conf
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdcharinit.py && $dirbash/lcdchar.py
-
-[[ -e /usr/bin/chromium ]] && systemctl try-restart localbrowser
-
-[[ -e $dirsystem/custom ]] && sed -i '/#custom$/ d' /etc/mpd.conf
-
-rm -f /srv/http/data/shm/status
-
-if [[ -e '/srv/http/data/webradios/https:||stream.radioparadise.com|flacm' ]]; then
-	rm -f "/srv/http/data/webradios/http:||stream.radioparadise.com"*
-	rm -f "/srv/http/data/webradiosimg/http:||stream.radioparadise.com"*
-	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
-fi
-
-file=$dirsystem/display
-! grep -q vumeter $file && sed -i '/novu/ i\    "vumeter": false,' $file
 
 installstart "$1"
 

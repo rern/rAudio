@@ -319,10 +319,7 @@ function displayPlayback() {
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
 	var volume = $volume.is( ':visible' );
-	$cover
-		.toggleClass( 'hide', !cover )
-		.toggleClass( 'coversmall', G.display.coversmall );
-	$( '#coverart' ).css( 'width', G.display.coversmall ? 230 : '' );
+	$cover.toggleClass( 'hide', !cover );
 	if ( ( !time || !volume ) && G.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
 		if ( !time && !volume ) {
@@ -650,12 +647,11 @@ var chkplayback = {
 	, time         : 'Time'
 	, radioelapsed : 'WebRadio time'
 	, cover        : 'Coverart'
-	, vumeter      : 'VU meter'
+	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> VU cover'
 	, volume       : 'Volume'
-	, coversmall   : 'Small coverart'
+	, vumeter      : 'VU meter'
 	, buttons      : 'Buttons'
 	, noswipe      : 'Disable swipe'
-	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> VU cover'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
@@ -723,22 +719,22 @@ function infoPlayback() {
 				var c = $cover.prop( 'checked' );
 				var v = $volume.prop( 'checked' );
 				if ( c ) {
-					displayCheckboxSet( coversmall, 1 );
 					displayCheckboxSet( vumeter, 1, 0 );
-					$vumeter.prop( 'disabled', 0 );
-					$coverdefault.toggleClass( 'hide', 0 );
+					$covervu.add( $vumeter ).prop( 'disabled', 0 );
 				} else {
-					displayCheckboxSet( coversmall, 0, 0 );
 					displayCheckboxSet( vumeter, 0, 0 );
 					if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
-					$coverdefault.toggleClass( 'hide', true );
+					displayCheckboxSet( covervu, 0, 0 );
+					displayCheckboxSet( vumeter, 0, 0 );
+					$covervu.add( $vumeter ).prop( 'disabled', 1 );
 				}
 				toggleBars( t, c );
 			} );
+			$covervu.change( function() {
+				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( vumeter, 1, 0 );
+			} );
 			$vumeter.change( function() {
-				var checked = $( this ).prop( 'checked' );
-				$coverdefault.toggleClass( 'hide', checked );
-				$( 'input[name=inforadio]' ).val( [ true ] )
+				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( covervu, 1, 0 );
 			} );
 		}
 		, ok           : function () {

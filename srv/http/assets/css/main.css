@@ -448,17 +448,6 @@ i.map.disabled, .map.disabled i {
 	margin-top: 20px;
 	width: 100%;
 }
-.coversmall {
-	width: auto !important;
-	height: auto !important;
-	max-width: 230px !important;
-	max-height: 230px !important;
-	position: absolute; /* vertical align */
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-}
 #time-knob {
 	order: 1;
 	-webkit-order: 1;

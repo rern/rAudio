@@ -785,7 +785,7 @@ $( '.map' ).click( function() {
 		
 		if ( G.wW < 545 && G.wW < G.wH ) return
 		
-		var list = [ 'bars', 'time', 'cover', 'coversmall', 'volume', 'buttons' ];
+		var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
 		if ( 'coverTL' in G ) {
 			list.forEach( function( el ) {
 				G.display[ el ] = G.coverTL[ el ];
@@ -805,7 +805,7 @@ $( '.map' ).click( function() {
 			} );
 			if ( this.id === 'coverTL' ) {
 				if ( G.display.time || G.display.volume ) {
-					G.display.time = G.display.coversmall = G.display.volume = G.display.buttons = false;
+					G.display.time = G.display.volume = G.display.buttons = false;
 					$( '#bar-top' ).addClass( 'hide' );
 					$( '.page' ).addClass ( 'barshidden' );
 					$( '#bar-bottom' ).addClass( 'transparent' );
@@ -817,7 +817,7 @@ $( '.map' ).click( function() {
 					$( '#playback' ).addClass( 'active' );
 				}
 			} else {
-				G.display.time = G.display.cover = G.display.coversmall = G.display.volume = G.display.buttons = true;
+				G.display.time = G.display.cover = G.display.volume = G.display.buttons = true;
 			}
 		}
 		$( '.band' ).addClass( 'transparent' );
@@ -829,7 +829,7 @@ $( '.map' ).click( function() {
 			setProgress();
 			setTimeout( setProgressAnimate, 0 );
 		}
-		if ( 'coverTL' in G && G.display.coversmall ) $( '#timemap' ).removeClass( 'hide' );
+		if ( 'coverTL' in G && !G.display.cover ) $( '#timemap' ).removeClass( 'hide' );
 	} else if ( cmd === 'settings' ) {
 		$( '#button-settings' ).click();
 	} else if ( cmd === 'repeat' ) {
