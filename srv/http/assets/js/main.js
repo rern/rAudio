@@ -519,7 +519,7 @@ $( '#volume' ).roundSlider( {
 	}
 	, stop              : function() {
 		G.drag = 0;
-		volumePushstream();
+		bash( [ 'volumepushstream' ] );
 	}
 } );
 $( '#volmute' ).click( function() {
@@ -535,7 +535,7 @@ $( '#volup, #voldn' ).click( function() {
 	if ( G.volhold ) {
 		G.volhold = 0;
 		clearInterval( G.intVolume );
-		volumePushstream();
+		bash( [ 'volumepushstream' ] );
 	}
 } ).press( function( e ) {
 	G.volhold = 1;
@@ -568,8 +568,7 @@ $( '#time-band' ).on( 'touchstart mousedown', function() {
 } ).on( 'touchend mouseup mouseleave', function( e ) {
 	if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
 	
-	G.down = 0;
-	G.drag = 0;
+	G.down = G.drag = 0;
 	var pageX = e.pageX || e.touches[ 0 ].pageX;
 	mpcSeekBar( pageX );
 } );
@@ -590,21 +589,22 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	G.volumebar = setTimeout( volumeBarHide, 3000 );
-	G.down = 0;
-	if ( G.drag ) {
-		G.drag = 0;
-		volumePushstream();
-	}
-} ).click( function() {
+	if ( G.drag ) bash( [ 'volumepushstream' ] );
+	G.down = G.drag = 0;
+} ).click( function( e ) {
 	if ( G.status.volumenone ) return
 	
-	G.volumebar = setTimeout( volumeBarHide, 3000 );
-	$( '#volume-text' )
-		.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
-		.toggleClass( 'bl', G.status.volumemute !== 0 );
-	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
+	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
+		G.volumebar = setTimeout( volumeBarHide, 3000 );
+		$( '#volume-text' )
+			.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
+			.toggleClass( 'bl', G.status.volumemute !== 0 );
+		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
+	} else {
+		volumeBarSet( e.pageX );
+	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	hideGuide();
@@ -622,7 +622,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	$( '#volume-text' ).text( vol );
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).on( 'touchend mouseup mouseleave', function() {
-	volumePushstream();
+	bash( [ 'volumepushstream' ] );
 	clearTimeout( G.intVolume );
 	clearTimeout( G.volumebar );
 	setTimeout( volumeBarHide, 3000 );

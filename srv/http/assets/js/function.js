@@ -1746,6 +1746,7 @@ function volumeBarSet( pageX ) {
 	$( '#volume-text' ).text( G.status.volumemute || vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 	G.status.volume = vol;
+	if ( !G.drag ) $volumeRS.setValue( G.status.volume );
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {
@@ -1753,9 +1754,6 @@ function volumeDrag( vol ) {
 	} else {
 		bash( 'mpc volume '+ vol );
 	}
-}
-function volumePushstream() {
-	bash( [ 'volumepushstream' ] );
 }
 function vu() {
 	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).is( ':hidden' ) ) {
