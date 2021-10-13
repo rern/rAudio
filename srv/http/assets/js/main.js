@@ -101,8 +101,69 @@ if ( navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_U
 		
 		$( '#'+ pagenext[ G.page ][ e.swipe === 'left' ? 1 : 0 ] ).click();
 	} );
+	var xend = 0;
+	$( '#time-band' ).on( 'touchstart', function() {
+		timeBandStart();
+	} ).on( 'touchmove', function( e ) {
+		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
+		
+		G.drag = 1;
+		e.preventDefault();
+		xend = e.touches[ 0 ].pageX;
+		mpcSeekBar( xend );
+	} ).on( 'touchend', function( e ) {
+		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
+		
+		G.down = G.drag = 0;
+		mpcSeekBar( xend );
+	} );
+	$( '#volume-band' ).on( 'touchstart', function() {
+		volumeBandStart();
+	} ).on( 'touchmove', function( e ) {
+		if ( !G.down || G.status.volumenone ) return
+		
+		G.drag = 1;
+		e.preventDefault();
+		xend = e.touches[ 0 ].pageX;
+		volumeBarSet( xend );
+	} ).on( 'touchend', function( e ) {
+		if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
+		
+		G.drag ? bash( [ 'volumepushstream' ] ) : volumeBarSet( e.touches[ 0 ].pageX );
+		G.down = G.drag = 0;
+		G.volumebar = setTimeout( volumeBarHide, 3000 );
+	} ).on( 'click', volumeBarShow );
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
+	$( '#time-band' ).on( 'mousedown', function() {
+		timeBandStart();
+	} ).on( 'mousemove', function( e ) {
+		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
+		
+		G.drag = 1;
+		e.preventDefault();
+		mpcSeekBar( e.pageX );
+	} ).on( 'mouseup mouseleave', function( e ) {
+		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
+		
+		G.down = G.drag = 0;
+		mpcSeekBar( e.pageX );
+	} );
+	$( '#volume-band' ).on( 'mousedown', function() {
+		volumeBandStart();
+	} ).on( 'mousemove', function( e ) {
+		if ( !G.down || G.status.volumenone ) return
+		
+		G.drag = 1;
+		e.preventDefault();
+		volumeBarSet( e.pageX );
+	} ).on( 'mouseup mouseleave', function( e ) {
+		if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
+		
+		G.drag ? bash( [ 'volumepushstream' ] ) : volumeBarSet( e.pageX );
+		G.down = G.drag = 0;
+		G.volumebar = setTimeout( volumeBarHide, 3000 );
+	} ).on( 'click', volumeBarShow );
 }
 	
 $( '.page' ).click( function( e ) {
@@ -550,61 +611,6 @@ $( '#volup, #voldn' ).click( function() {
 		$volumeRS.setValue( vol );
 		volumeDrag( vol );
 	}, 100 );
-} );
-$( '#time-band' ).on( 'touchstart mousedown', function() {
-	hideGuide();
-	if ( G.status.player !== 'mpd' || G.status.stream ) return
-	
-	G.down = 1;
-	clearIntervalAll();
-	if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
-} ).on( 'touchmove mousemove', function( e ) {
-	if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
-	
-	G.drag = 1;
-	e.preventDefault();
-	var pageX = e.pageX || e.touches[ 0 ].pageX;
-	mpcSeekBar( pageX );
-} ).on( 'touchend mouseup mouseleave', function( e ) {
-	if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
-	
-	G.down = G.drag = 0;
-	var pageX = e.pageX || e.touches[ 0 ].pageX;
-	mpcSeekBar( pageX );
-} );
-$( '#volume-band' ).on( 'touchstart mousedown', function() {
-	hideGuide();
-	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
-	
-	G.down = 1;
-	clearTimeout( G.volumebar );
-} ).on( 'touchmove mousemove', function( e ) {
-	if ( !G.down || G.status.volumenone ) return
-	
-	G.drag = 1;
-	e.preventDefault();
-	var pageX = e.pageX || e.touches[ 0 ].pageX;
-	volumeBarSet( pageX );
-} ).on( 'touchend mouseup mouseleave', function( e ) {
-	if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
-	
-	G.volumebar = setTimeout( volumeBarHide, 3000 );
-	if ( G.drag ) bash( [ 'volumepushstream' ] );
-	G.down = G.drag = 0;
-} ).click( function( e ) {
-	if ( G.status.volumenone ) return
-	
-	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-		G.volumebar = setTimeout( volumeBarHide, 3000 );
-		$( '#volume-text' )
-			.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
-			.toggleClass( 'bl', G.status.volumemute !== 0 );
-		$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
-		$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-		$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
-	} else {
-		volumeBarSet( e.pageX );
-	}
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	hideGuide();

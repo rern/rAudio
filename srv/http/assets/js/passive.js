@@ -543,17 +543,14 @@ function psVolume( data ) {
 		} else {
 			G.status.volumemute = 0;
 		}
-		if ( $( '#volume-knob' ).is( ':visible' ) ) {
-			$volumeRS.setValue( vol );
-			mute ? volColorMute() : volColorUnmute();
-		} else {
-			$( '#volume-bar' ).css( 'width',  vol +'%' )
-			$( '#volume-text' )
-				.text( mute ? data.val : vol )
-				.toggleClass( 'bl', mute );
-			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
-		}
+		$volumeRS.setValue( vol );
+		mute ? volColorMute() : volColorUnmute();
+		$( '#volume-bar' ).css( 'width',  vol +'%' )
+		$( '#volume-text' )
+			.text( mute ? data.val : vol )
+			.toggleClass( 'bl', mute );
+		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 	}, G.debouncems );
 }
 function psVUmeter( data ) {
