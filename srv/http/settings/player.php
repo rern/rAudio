@@ -40,6 +40,10 @@ html
 		, 'input'       => '<select id="hwmixer"></select>'
 		, 'setting'     => 'self'
 		, 'settingicon' => 'volume'
+		, 'help'  => <<<html
+Available hardware mixers of current device.
+&emsp;<i class="fa fa-volume"></i>Control current mixer device.
+html
 	]
 	, [
 		  'label' => 'Volume Control'
