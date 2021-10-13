@@ -164,8 +164,9 @@ function psCoverart( data ) {
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 			if ( G.playback ) {
 				if ( path === '/data/shm' ) {
-					var prevartistalbum = ( G.status.Artist + G.status.Album ).replace( /[ '"`?/#&]/g, '' );
-					var artistalbum = url.split( '-' ).pop().slice( 0, -4 ); // /data/shm/online-name.jpg > name.jpg
+					var prevartistalbum = G.status.stream ? G.status.Artist + G.status.Title : G.status.Artist + G.status.Album;
+					prevartistalbum = prevartistalbum.replace( /[ '"`?/#&]/g, '' ); // remove spaces and symbols
+					var artistalbum = url.split( '-' ).pop().slice( 0, -4 );        // /data/shm/online-name.jpg > name.jpg
 					var matched = artistalbum === prevartistalbum
 				} else {
 					var prevpath = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
