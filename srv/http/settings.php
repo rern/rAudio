@@ -42,7 +42,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <div class="container hide">
 <?php
 /*
-htmlHead( [
+$head = [
 	  'title'   => 'TITLE'           // REQUIRED
 	, 'id'      => 'ID'
 	, 'hide'    => true
@@ -53,15 +53,30 @@ htmlHead( [
 	, 'back'    => true              // back button
 	, 'nohelp'  => true
 	, 'help'    => <<<html
+HELP
+html
+];
+$body = [
+	[
+		  'label'       => 'LABEL'      // REQUIRED
+		, 'id'          => 'INPUT ID'   // REQUIRED
+		, 'sublabel'    => 'SUB LABEL'
+		, 'icon'        => 'ICON'
+		, 'status'      => 'COMMAND'    // include status icon and status box
+		, 'input'       => 'HTML'       // alternative - if not switch
+		, 'setting'     => true         // true = common function; 'self' = self function
+		, 'settingicon' => 'ICON'
+		, 'help'        => <<<html
 HELP - PHP heredoc
 html
-] );
-NOTE:
-	1st  : <div id="divTITLE">HTML
-	next : </div><div id="divtitle">HTML
-	closing </div> at last htmlSetting()
+		, 'exist'       => EXIST        // return blank if not EXIST
+	]
+	, [
+		...
+	]
+];
+htmlSection( $head, $body );
 */
-$heads = -1;
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
 	$id = $data[ 'id' ] ?? '';
@@ -71,9 +86,6 @@ function htmlHead( $data ) {
 	$button1 = $data[ 'button1' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	
-	global $heads;
-	$heads++;
-	$html = $heads ? '</div>' : '';
 	$html.= $id ? '<div id="'.$id.'"' : '<div';
 	$html.= $hide ? ' class="hide">' : '>';
 	$html.= $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
@@ -87,28 +99,10 @@ function htmlHead( $data ) {
 	$html.= '</heading>';
 	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html.= '</div>';
 	
 	echo $html;
 }
-/*
-htmlSetting( [
-	  'label'       => 'LABEL'      // REQUIRED
-	, 'id'          => 'INPUT ID'   // REQUIRED
-	, 'sublabel'    => 'SUB LABEL'
-	, 'icon'        => 'ICON'
-	, 'status'      => 'COMMAND'    // include status icon and status box
-	, 'input'       => 'HTML'       // alternative - if not switch
-	, 'setting'     => 'TYPE'       // common = common function; self = self function
-	, 'settingicon' => 'ICON'
-	, 'help'        => <<<html
-HELP - PHP heredoc
-html
-	, 'exist'       => EXIST        // return blank if not EXIST
-] );
-NOTE:
-	<div id="divLABEL">HTML</div>
-	IMPORTANT - Last htmlSetting() with no following htmlHead() must be closed with '</div>'
-*/
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
 	// col-l
@@ -141,7 +135,9 @@ function htmlSetting( $data ) {
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
 		$html.= '<input type="checkbox" id="'.$id.'"';
-		$html.= $setting !== 'self' ? ' class="switch '.$setting.'"' : '';
+		if ( $setting !== 'self' ) {
+			$html.= $setting ? ' class="switch common"' : ' class="switch"';
+		}
 		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
@@ -152,6 +148,12 @@ function htmlSetting( $data ) {
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	$html.= '<div style="clear:both"></div></div>';
 	echo $html;
+}
+function htmlSection( $head, $body ) {
+	echo '<div>';
+	htmlHead( $head );
+	foreach( $body as $data ) htmlSetting( $data );
+	echo '</div>';
 }
 
 include "settings/$page.php";

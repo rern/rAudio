@@ -100,46 +100,50 @@ mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) {
 // ----------------------------------------------------------------------------------
-htmlHead( [ //////////////////////////////////
+$head = [ //////////////////////////////////
 	  'title'  => 'Wireless'
 	, 'status' => 'rfkill'
-] );
-htmlSetting( [
-	  'label'    => 'Bluetooth'
-	, 'id'       => 'bluetooth'
-	, 'sublabel' => 'bluetoothctl'
-	, 'icon'     => 'bluetooth'
-	, 'status'   => 'bluetoothctl'
-	, 'setting'  => 'common'
-	, 'help'     => <<<html
+];
+$body = [
+	[
+		  'label'    => 'Bluetooth'
+		, 'id'       => 'bluetooth'
+		, 'sublabel' => 'bluetoothctl'
+		, 'icon'     => 'bluetooth'
+		, 'status'   => 'bluetoothctl'
+		, 'setting'  => true
+		, 'help'     => <<<html
 Pairing: &emsp; <i class="fa fa-networks"></i> Networks
 html
-] );
-htmlSetting( [
-	  'label'    => 'Wi-Fi'
-	, 'id'       => 'wlan'
-	, 'sublabel' => 'iw'
-	, 'icon'     => 'wifi'
-	, 'status'   => 'iw'
-	, 'setting'  => 'common'
-	, 'help'     => <<<html
+	]
+	, [
+		  'label'    => 'Wi-Fi'
+		, 'id'       => 'wlan'
+		, 'sublabel' => 'iw'
+		, 'icon'     => 'wifi'
+		, 'status'   => 'iw'
+		, 'setting'  => true
+		, 'help'     => <<<html
 Auto start Access Point - On failed connection or no router
 Country of Wi-Fi regulatory domain:
  &bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
  &bull; The connected router may override it to a certain country.
 html
-] );
+	]
+];
+htmlSection( $head, $body );
 // ----------------------------------------------------------------------------------
 }
-htmlHead( [ //////////////////////////////////
+$head = [ //////////////////////////////////
 	  'title'  => 'GPIO Devices'
 	, 'status' => 'configtxt'
-] );
-htmlSetting( [
-	  'label'    => 'Audio - I²S'
-	, 'id'       => 'i2smodulesw'
-	, 'icon'     => 'i2saudio'
-	, 'input'    => <<<html
+];
+$body = [
+	[
+		  'label'    => 'Audio - I²S'
+		, 'id'       => 'i2smodulesw'
+		, 'icon'     => 'i2saudio'
+		, 'input'    => <<<html
 <div id="divi2smodulesw">
 	<input id="i2smodulesw" type="checkbox">
 	<div class="switchlabel" for="i2smodulesw"></div>
@@ -151,26 +155,26 @@ html
  &bull; Support 16x2 and 20x4 LCD modules.
 <i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 html
-] );
-htmlSetting( [
-	  'label'    => 'Character LCD'
-	, 'id'       => 'lcdchar'
-	, 'sublabel' => 'HD44780'
-	, 'icon'     => 'lcdchar'
-	, 'setting'  => 'common'
-	, 'help'     => <<<html
+	]
+	, [
+		  'label'    => 'Character LCD'
+		, 'id'       => 'lcdchar'
+		, 'sublabel' => 'HD44780'
+		, 'icon'     => 'lcdchar'
+		, 'setting'  => true
+		, 'help'     => <<<html
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  &bull; Support 16x2 and 20x4 LCD modules.
 <i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 html
-] );
-htmlSetting( [
-	  'label'    => 'Power Button'
-	, 'id'       => 'powerbutton'
-	, 'sublabel' => 'Power LED'
-	, 'icon'     => 'power'
-	, 'setting'  => 'common'
-	, 'help'     => <<<html
+	]
+	, [
+		  'label'    => 'Power Button'
+		, 'id'       => 'powerbutton'
+		, 'sublabel' => 'Power LED'
+		, 'icon'     => 'power'
+		, 'setting'  => true
+		, 'help'     => <<<html
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  &bull; On - Fixed to pin 5
  &bull; Off - Default to pin 5 (single pin on+off)
@@ -178,92 +182,98 @@ If pin 5 is used by DAC or LCD - Set 2 unused pins for:
  &bull; Off (default: 7)
  &bull; Reserved (default: 29)
 html
-] );
-htmlSetting( [
-	  'label'   => 'Relay Module'
-	, 'id'      => 'relays'
-	, 'icon'    => 'relays'
-	, 'setting' => 'self'
-	, 'help'    => <<<html
+	]
+	, [
+		  'label'   => 'Relay Module'
+		, 'id'      => 'relays'
+		, 'icon'    => 'relays'
+		, 'setting' => 'self'
+		, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
  &bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  &bull; Can be enabled and run as a test without a connected relay module.
 html
-] );
-htmlSetting( [
-	  'label'   => 'Spectrum OLED'
-	, 'id'      => 'mpdoled'
-	, 'icon'    => 'mpdoled'
-	, 'setting' => 'common'
-	, 'help'    => <<<html
+	],
+	[
+		  'label'   => 'Spectrum OLED'
+		, 'id'      => 'mpdoled'
+		, 'icon'    => 'mpdoled'
+		, 'setting' => true
+		, 'help'    => <<<html
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 html
-] );
-htmlSetting( [
-	  'label'   => 'TFT 3.5" LCD'
-	, 'id'      => 'lcd'
-	, 'icon'    => 'lcd'
-	, 'setting' => 'common'
-	, 'help'    => <<<html
+	]
+	, [
+		  'label'   => 'TFT 3.5" LCD'
+		, 'id'      => 'lcd'
+		, 'icon'    => 'lcd'
+		, 'setting' => true
+		, 'help'    => <<<html
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 html
-	, 'exist'   => file_exists( '/usr/bin/chromium' )
-] );
-htmlSetting( [
-	  'label'   => 'VU LED'
-	, 'id'      => 'vuled'
-	, 'icon'    => 'led'
-	, 'setting' => 'common'
-	, 'help'    => <<<html
+		, 'exist'   => file_exists( '/usr/bin/chromium' )
+	]
+	, [
+		  'label'   => 'VU LED'
+		, 'id'      => 'vuled'
+		, 'icon'    => 'led'
+		, 'setting' => true
+		, 'help'    => <<<html
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  &bull; <bl id="ledcalc">LED resister calculator</bl>
 html
-] );
-htmlHead( [ 'title' => 'Environment' ] ); //////////////////////////////////
-htmlSetting( [
-	  'label' => 'Host Name'
-	, 'id'    => 'hostname'
-	, 'icon'  => 'plus-r'
-	, 'input' => '<input type="text" id="hostname" readonly>'
-	, 'help'  => <<<html
+	]
+];
+htmlSection( $head, $body );
+$head = [ 'title' => 'Environment' ]; //////////////////////////////////
+$body = [
+	[
+		  'label' => 'Host Name'
+		, 'id'    => 'hostname'
+		, 'icon'  => 'plus-r'
+		, 'input' => '<input type="text" id="hostname" readonly>'
+		, 'help'  => <<<html
 For:
  &bull; Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  &bull; Web Interface URL: <code id="avahiurl"></code>
  &bull; System hostname
 html
-] );
-htmlSetting( [
-	  'label'    => 'Time Zone'
-	, 'id'       => 'timezone'
-	, 'sublabel' => 'timesyncd'
-	, 'icon'     => 'globe'
-	, 'status'   => 'timesyncd'
-	, 'input'    => $selecttimezone
-	, 'setting'  => 'self'
-	, 'help'     => <<<html
+	]
+	, [
+		  'label'    => 'Time Zone'
+		, 'id'       => 'timezone'
+		, 'sublabel' => 'timesyncd'
+		, 'icon'     => 'globe'
+		, 'status'   => 'timesyncd'
+		, 'input'    => $selecttimezone
+		, 'setting'  => 'self'
+		, 'help'     => <<<html
 <i class="fa fa-gear"></i>Servers:
  &bull; NTP: For time sync
  &bull; Package mirror: For system upgrade <code>pacman -Syu</code>
 html
-] );
-htmlSetting( [
-	  'label'    => 'Sound Profile'
-	, 'id'       => 'soundprofile'
-	, 'sublabel' => 'sysctl'
-	, 'icon'     => 'soundprofile'
-	, 'status'   => 'soundprofile'
-	, 'setting'  => 'common'
-	, 'help'     => <<<html
+	]
+	, [
+		  'label'    => 'Sound Profile'
+		, 'id'       => 'soundprofile'
+		, 'sublabel' => 'sysctl'
+		, 'icon'     => 'soundprofile'
+		, 'status'   => 'soundprofile'
+		, 'setting'  => true
+		, 'help'     => <<<html
 Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
 html
-] );
-htmlHead( [ 'title' => 'Settings and Data' ] ); //////////////////////////////////
-htmlSetting( [
-	  'label' => 'Backup'
-	, 'id'    => 'backup'
-	, 'icon'  => 'sd'
-	, 'help'  => <<<html
+	]
+];
+htmlSection( $head, $body );
+$head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
+$body = [
+	[
+		  'label' => 'Backup'
+		, 'id'    => 'backup'
+		, 'icon'  => 'sd'
+		, 'help'  => <<<html
 Backup all settings and Library database:
  &bull; Settings
  &bull; Library database
@@ -272,17 +282,17 @@ Backup all settings and Library database:
  &bull; Lyrics
  &bull; WebRadios
 html
-] );
-htmlSetting( [
-	  'label' => 'Restore'
-	, 'id'    => 'restore'
-	, 'icon'  => 'restore'
-	, 'help'  => <<<html
+	]
+	, [
+		  'label' => 'Restore'
+		, 'id'    => 'restore'
+		, 'icon'  => 'restore'
+		, 'help'  => <<<html
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 html
-] );
-echo '
-</div>'; // last closing for no following htmlHead()
+	]
+];
+htmlSection( $head, $body );
 $listui = [
 	  'jQuery'             => 'https://jquery.com/'
 	, 'HTML5-Color-Picker' => 'https://github.com/NC22/HTML5-Color-Picker'
