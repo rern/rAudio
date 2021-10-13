@@ -106,6 +106,7 @@ input::-moz-focus-inner {
 .fa90 { transform: rotate( -90deg ) }
 .fa-lg { font-size: 22px !important }
 .fa-accesspoint::before { content: "\f554" }
+.fa-addons::before { content: "\f50D" }
 .fa-airplay::before { content: "\f580" }
 .fa-album::before { content: "\f555" }
 .fa-albumartist::before { content: "\f557" }
@@ -118,7 +119,7 @@ input::-moz-focus-inner {
 .fa-bio::before { content: "\f51D" }
 .fa-bookmark::before { content: "\f550" }
 .fa-bluetooth::before { content: "\f595" }
-.fa-bluetooth-client::before { content: "\f596" }
+.fa-btclient::before { content: "\f596" }
 .fa-brush::before { content: "\f536" }
 .fa-capslock:before { content: "\f607" }
 .fa-check::before { content: "\f51B" }
@@ -127,10 +128,10 @@ input::-moz-focus-inner {
 .fa-chromium::before { content: "\f584" }
 .fa-composer::before { content: "\f558" }
 .fa-conductor::before { content: "\f559" }
+.fa-consume::before { content: "\f566" }
 .fa-coverart-refresh::before { content: "\f53D" }
 .fa-crop::before { content: "\f568" }
 .fa-date::before { content: "\f55C" }
-.fa-dice::before { content: "\f569" }
 .fa-edit-circle::before { content: "\f565" }
 .fa-equalizer::before { content: "\f50C" }
 .fa-eye::before { content: "\f567" }
@@ -159,7 +160,9 @@ input::-moz-focus-inner {
 .fa-lcd::before { content: "\f577" }
 .fa-lcdchar::before { content: "\f578" }
 .fa-led::before { content: "\f52B" }
+.fa-librandom::before { content: "\f569" }
 .fa-library::before { content: "\f506" }
+.fa-libupdate::before { content: "\f506"; animation: blinkopaque 1.5s linear infinite; }
 .fa-lock::before { content: "\f574"; }
 .fa-lyrics::before { content: "\f54B" }
 .fa-microsd::before { content: "\f543" }
@@ -202,7 +205,7 @@ input::-moz-focus-inner {
 .fa-relays::before { content: "\f522" }
 .fa-reload::before { content: "\f525" }
 .fa-repeat::before { content: "\f511" }
-.fa-repeat-single::before { content: "\f510" }
+.fa-repeat1::before { content: "\f510" }
 .fa-replace::before { content: "\f531" }
 .fa-reset::before { content: "\f527" }
 .fa-restore::before { content: "\f544" }

@@ -336,17 +336,10 @@ function psMpdRadio( data ) {
 	}
 }	
 function psMpdUpdate( data ) {
-	var $elupdate = $( '#library, #button-library, #i-update, #ti-update' );
-	$( '#i-update, #ti-update' ).addClass( 'hide' );
+	var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
+	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
 	if ( typeof data === 'number' ) {
 		G.status.updating_db = true;
-		if ( $( '#bar-top' ).is( ':visible' ) ) {
-			if ( !G.localhost ) $( '#library, #button-library' ).addClass( 'blink' );
-		} else {
-			if ( !G.localhost ) $( '#button-library' ).addClass( 'blink' );
-			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-			$( '#'+ prefix +'-update' ).removeClass( 'hide' );
-		}
 	} else {
 		G.status.updating_db = false;
 		$( '#li-count' ).html( data.song.toLocaleString() );
@@ -358,7 +351,6 @@ function psMpdUpdate( data ) {
 			if ( G.mode === 'webradio' ) {
 				data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
 			} else {
-				$( '.lib-icon.blink' ).removeClass( 'blink' );
 				var query = G.query[ G.query.length - 1 ];
 				if ( query ) {
 					list( query, function( data ) {
@@ -370,10 +362,11 @@ function psMpdUpdate( data ) {
 			$( '#playlist' ).click();
 		}
 		setTimeout( function() {
-			$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
+			$( '#library, #button-library' ).removeClass( 'blink' );
 			banner( 'Library Update', 'Done', 'library' );
 		}, 2000 );
 	}
+	setButtonUpdating();
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );

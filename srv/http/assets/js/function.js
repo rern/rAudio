@@ -1310,26 +1310,26 @@ function setButtonUpdateAddons( updateaddons ) {
 	}
 }
 function setButtonUpdating() {
+	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
 	if ( G.status.updating_db ) {
-		if ( $( '#bar-bottom' ).is( ':visible' ) ) {
-			if ( !G.localhost ) {
-				$( '#library, #button-library' ).addClass( 'blink' );
-			} else {
-				$( '#library, #button-library' )
-					.removeClass( 'fa-library' )
-					.addClass( 'fa-refresh-library' );
-			}
-		} else {
-			$( '#i-update, #ti-update' ).removeClass( 'blink' );
+		$( '#library, #button-library' ).addClass( 'blink' );
+		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-			$( '#'+ prefix +'-update' ).removeClass( 'hide' )
+			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
+		}
+		if ( G.localhost ) {
+			$( '#library, #button-library, #i-libupdate, #ti-libupdate' ).removeClass( 'blink' );
+			$( '#library, #button-library' )
+				.removeClass( 'fa-library' )
+				.addClass( 'fa-refresh-library' );
 		}
 	} else {
-		$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
-		$( '#i-update, #ti-update' ).addClass( 'hide' );
-		if ( G.localhost ) $( '#library, #button-library' )
-							.removeClass( 'fa-refresh-library' )
-							.addClass( 'fa-library' );
+		$( '#library, #button-library' ).removeClass( 'blink' );
+		if ( G.localhost ) {
+			$( '#library, #button-library' )
+				.removeClass( 'fa-refresh-library' )
+				.addClass( 'fa-library' );
+		}
 	}
 }
 function setCoverart() {
