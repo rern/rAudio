@@ -273,7 +273,7 @@ function curlPackage( pkg, active, enabled ) {
 	return 'curl -s -X POST http://127.0.0.1/pub?id=package -d \'[ "'+ pkg +'", '+ active +', '+ enabled +' ]\''
 }
 function displayBars() {
-	if ( !$( '#bio' ).hasClass( 'hide' ) || 'coverTL' in G ) return
+	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
 	var wW = document.body.clientWidth;
 	var smallscreen = G.wH < 590 ||wW < 500;

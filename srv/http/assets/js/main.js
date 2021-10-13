@@ -797,13 +797,6 @@ $( '.map' ).click( function() {
 				G.display[ el ] = G.coverTL[ el ];
 			} );
 			delete G.coverTL;
-			if ( G.display.bars ) {
-				$( '#bar-top' ).removeClass( 'hide' );
-				$( '#bar-bottom' ).removeClass( 'transparent' );
-			} else {
-				$( '#bar-top' ).addClass( 'hide' );
-				$( '#bar-bottom' ).addClass( 'transparent' );
-			}
 		} else {
 			G.coverTL = {};
 			list.forEach( function( el ) {
@@ -811,16 +804,9 @@ $( '.map' ).click( function() {
 			} );
 			if ( this.id === 'coverTL' ) {
 				if ( G.display.time || G.display.volume ) {
-					G.display.time = G.display.volume = G.display.buttons = false;
-					$( '#bar-top' ).addClass( 'hide' );
-					$( '.page' ).addClass ( 'barshidden' );
-					$( '#bar-bottom' ).addClass( 'transparent' );
+					G.display.bars = G.display.time = G.display.volume = G.display.buttons = false;
 				} else {
-					G.display.time = G.display.volume = G.display.buttons = true;
-					$( '#bar-top' ).removeClass( 'hide' );
-					$( '.page' ).addClass ( 'barshidden' );
-					$( '#bar-bottom' ).removeClass( 'transparent hide' );
-					$( '#playback' ).addClass( 'active' );
+					G.display.bars = G.display.time = G.display.volume = G.display.buttons = true;
 				}
 			} else {
 				G.display.time = G.display.cover = G.display.volume = G.display.buttons = true;
@@ -829,8 +815,8 @@ $( '.map' ).click( function() {
 		$( '.band' ).addClass( 'transparent' );
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
-		setButtonControl();
 		displayBars();
+		setButtonControl();
 		displayPlayback();
 		if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
 			setProgress();
