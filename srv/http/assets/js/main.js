@@ -90,7 +90,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 statusRefresh();
 
-if ( navigator.maxTouchPoints ) { // iOS safari cannot be detected by php HTTP_USER_AGENT
+if ( navigator.maxTouchPoints ) {
 	$( '.page' ).swipe( function( e ) {
 		if ( G.display.noswipe || !e.swipe || G.drag || G.down ) return
 		
