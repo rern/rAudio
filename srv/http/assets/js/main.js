@@ -824,6 +824,7 @@ $( '.map' ).click( function() {
 		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
 		setButtonControl();
+		displayBars();
 		displayPlayback();
 		if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
 			setProgress();
