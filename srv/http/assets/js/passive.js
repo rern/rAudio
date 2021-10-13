@@ -262,7 +262,7 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
-	G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
+	G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();

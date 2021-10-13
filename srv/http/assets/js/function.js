@@ -211,7 +211,7 @@ function coverartChange() {
 function coverartDefault() {
 	if ( G.display.vumeter ) return
 	
-	if ( G.display.novu ) {
+	if ( !G.display.covervu ) {
 		$( '#coverart' )
 			.attr( 'src', G.coverdefault )
 			.css( 'border', G.coverdefault === G.coverart ? 'none' : '' )
@@ -655,6 +655,7 @@ var chkplayback = {
 	, coversmall   : 'Small coverart'
 	, buttons      : 'Buttons'
 	, noswipe      : 'Disable swipe'
+	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> VU cover'
 }
 function infoPlayback() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
@@ -663,8 +664,6 @@ function infoPlayback() {
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );
 	} );
-	keys.push( 'novu' );
-	values.push( G.display.novu )
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback Display'
@@ -672,18 +671,9 @@ function infoPlayback() {
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
-		, radio        : {
-			  '<i class="imgicon iconcover"></i>'              : true
-			, '<img class="imgicon" src="/assets/img/vu.svg">' : false
-		}
-		, radiocolumn  : 1
-		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent tr:last' ).before( '<tr><td colspan="2" class="gr">Default if no coverart found:</td></tr>' );
-			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
-			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			var $chk = $( '#infoContent input' );
 			keys.forEach( function( k, i ) {
 				window[ '$'+ k ] = $chk.eq( i );
@@ -1645,7 +1635,7 @@ function statusRefresh() {
 		delete G.coverTL;
 		G.display = data;
 		G.display.screenoff = G.localhost;
-		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
+		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 		displaySubMenu();
 	}, 'json' );
 	getPlaybackStatus();
