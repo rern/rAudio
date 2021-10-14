@@ -93,9 +93,8 @@ statusRefresh();
 
 if ( navigator.maxTouchPoints ) {
 	// swipe /////////////////////////////////////////////
-	var xstart = 0;
+	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
-		xstart = 0;
 		var $target = $( e.target );
 		if ( G.display.noswipe
 			|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].indexOf( e.target.id ) !== -1
@@ -111,11 +110,11 @@ if ( navigator.maxTouchPoints ) {
 		G.swipe = Math.abs( xstart - e.changedTouches[ 0 ].pageX ) > 10;
 	} );
 	window.addEventListener( 'touchend', function( e ) {
-		if ( !xstart || !G.swipe ) return
+		if ( !xstart ) return
 		
-		G.swipe = 0;
 		var diff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
+		xstart = G.swipe = 0;
 	} );
 	//////////////////////////////////////////////////////
 } else {
