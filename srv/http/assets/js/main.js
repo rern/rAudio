@@ -101,20 +101,14 @@ if ( navigator.maxTouchPoints ) {
 			|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 		) return
 		
-		G.swipe = 0;
 		xstart = e.changedTouches[ 0 ].pageX;
 	} );
-	window.addEventListener( 'touchmove', function( e ) {
-		if ( !xstart ) return
-		
-		G.swipe = Math.abs( xstart - e.changedTouches[ 0 ].pageX ) > 10;
-	} );
 	window.addEventListener( 'touchend', function( e ) {
-		if ( !xstart || !G.swipe ) return
+		if ( !xstart ) return
 		
 		var diff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
-		xstart = G.swipe = 0;
+		xstart = 0;
 	} );
 	//////////////////////////////////////////////////////
 } else {
@@ -1689,7 +1683,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	if ( G.swipe || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
+	if ( $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
 	
 	var $this = $( this );
 	if ( [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 ) {
@@ -1776,7 +1770,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	$( '.menu' ).addClass( 'hide' );
 	var $target = $( e.target );
-	if ( G.swipe || $target.hasClass( 'savewr' ) ) return
+	if ( $target.hasClass( 'savewr' ) ) return
 	
 	$this = $( this );
 	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
