@@ -33,29 +33,6 @@ $.fn.press = function( arg1, arg2 ) {
 	} );
 	return this // allow chain
 }
-$.fn.swipe = function( callback ) { // no delegate
-	var xstart = 0;
-	var xend = 0;
-	window.addEventListener( 'touchstart', function( e ) {
-		G.swipe = false;
-		xstart = e.touches[ 0 ].pageX;
-	}, false );
-	window.addEventListener( 'touchmove', function( e ) {
-		xend = e.touches[ 0 ].pageX;
-		G.swipe = Math.abs( xstart - xend ) > 10;
-	}, false );
-	window.addEventListener( 'touchend', function( e ) {
-		if ( !G.swipe ) return
-		
-		G.swipe = false;
-		var diff = xstart - xend;
-		if ( Math.abs( diff ) > 100 ) {
-			e.swipe = diff > 0 ? 'left' : 'right';
-			callback( e );
-		}
-	}, false );
-	return this
-}
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide" tabindex="1">

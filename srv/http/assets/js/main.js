@@ -91,79 +91,62 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 statusRefresh();
 
 if ( navigator.maxTouchPoints ) {
-	$( '.page' ).swipe( function( e ) {
-		if ( G.display.noswipe || !e.swipe || G.drag || G.down ) return
-		
+	// swipe /////////////////////////////////////////////
+	var xstart = 0;
+	window.addEventListener( 'touchstart', function( e ) {
+		xstart = 0;
 		var $target = $( e.target );
-		if ( [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].indexOf( e.target.id ) !== -1
+		if ( G.display.noswipe
+			|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].indexOf( e.target.id ) !== -1
 			|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
 		) return
 		
-		$( '#'+ pagenext[ G.page ][ e.swipe === 'left' ? 1 : 0 ] ).click();
+		G.swipe = 0;
+		xstart = e.touches[ 0 ].pageX;
 	} );
-	var xend = 0;
+	window.addEventListener( 'touchmove', function( e ) {
+		if ( !xstart ) return
+		
+		G.swipe = Math.abs( xstart - e.touches[ 0 ].pageX ) > 10;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		if ( !xstart || !G.swipe ) return
+		
+		G.swipe = 0;
+		var diff = xstart - e.changedTouches[ 0 ].pageX;
+		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
+	} );
+	//////////////////////////////////////////////////////
 	$( '#time-band' ).on( 'touchstart', function() {
-		timeBandStart();
+		timeband.start();
 	} ).on( 'touchmove', function( e ) {
-		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
-		
-		G.drag = 1;
-		e.preventDefault();
-		xend = e.touches[ 0 ].pageX;
-		mpcSeekBar( xend );
+		timeband.move( e.touches[ 0 ].pageX );
 	} ).on( 'touchend', function( e ) {
-		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
-		
-		G.down = G.drag = 0;
-		mpcSeekBar( xend );
+		timeband.end( e.changedTouches[ 0 ].pageX );
 	} );
 	$( '#volume-band' ).on( 'touchstart', function() {
-		volumeBandStart();
+		volumeband.start();
 	} ).on( 'touchmove', function( e ) {
-		if ( !G.down || G.status.volumenone ) return
-		
-		G.drag = 1;
-		e.preventDefault();
-		xend = e.touches[ 0 ].pageX;
-		volumeBarSet( xend );
+		volumeband.move( e.touches[ 0 ].pageX );
 	} ).on( 'touchend', function( e ) {
-		if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
-		
-		G.drag ? bash( [ 'volumepushstream' ] ) : volumeBarSet( e.touches[ 0 ].pageX );
-		G.down = G.drag = 0;
-		G.volumebar = setTimeout( volumeBarHide, 3000 );
-	} ).on( 'click', volumeBarShow );
+		volumeband.end( e.changedTouches[ 0 ].pageX );
+	} );
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
 	$( '#time-band' ).on( 'mousedown', function() {
-		timeBandStart();
+		timeband.start();
 	} ).on( 'mousemove', function( e ) {
-		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
-		
-		G.drag = 1;
-		e.preventDefault();
-		mpcSeekBar( e.pageX );
-	} ).on( 'mouseup mouseleave', function( e ) {
-		if ( !G.down || G.status.player !== 'mpd' || G.status.stream ) return
-		
-		G.down = G.drag = 0;
-		mpcSeekBar( e.pageX );
+		timeband.move( e.pageX );
+	} ).on( 'mouseup', function( e ) {
+		timeband.end( e.pageX );
 	} );
 	$( '#volume-band' ).on( 'mousedown', function() {
-		volumeBandStart();
+		volumeband.start();
 	} ).on( 'mousemove', function( e ) {
-		if ( !G.down || G.status.volumenone ) return
-		
-		G.drag = 1;
-		e.preventDefault();
-		volumeBarSet( e.pageX );
-	} ).on( 'mouseup mouseleave', function( e ) {
-		if ( !G.down || G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
-		
-		G.drag ? bash( [ 'volumepushstream' ] ) : volumeBarSet( e.pageX );
-		G.down = G.drag = 0;
-		G.volumebar = setTimeout( volumeBarHide, 3000 );
-	} ).on( 'click', volumeBarShow );
+		volumeband.move( e.pageX );
+	} ).on( 'mouseup', function( e ) {
+		volumeband.end( e.pageX );
+	} );
 }
 	
 $( '.page' ).click( function( e ) {
@@ -547,7 +530,7 @@ $( '#volume' ).roundSlider( {
 	}
 	, start             : function( e ) {
 		G.drag = 1;
-		if ( e.value === 0 ) volColorUnmute(); // restore handle color immediately on start drag
+		if ( e.value === 0 ) volumeColorUnmute(); // restore handle color immediately on start drag
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, beforeValueChange : function( e ) {

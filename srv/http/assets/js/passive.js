@@ -544,7 +544,7 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		$volumeRS.setValue( vol );
-		mute ? volColorMute() : volColorUnmute();
+		mute ? volumeColorMute() : volumeColorUnmute();
 		$( '#volume-bar' ).css( 'width',  vol +'%' )
 		$( '#volume-text' )
 			.text( mute ? data.val : vol )
