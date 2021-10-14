@@ -133,9 +133,7 @@ function htmlSetting( $data ) {
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
 		$html.= '<input type="checkbox" id="'.$id.'"';
-		if ( $setting !== 'self' ) {
-			$html.= $setting ? ' class="switch common"' : ' class="switch"';
-		}
+		$html.= $setting === 'self' ? '' : ( $setting ? ' class="switch common"' : ' class="switch"' );
 		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
