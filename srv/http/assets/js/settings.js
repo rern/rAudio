@@ -391,7 +391,7 @@ $( '#help' ).click( function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 } );
 $( '.help' ).click( function() {
-	$( this ).parents().eq( 3 ).find( '.help-block' ).toggleClass( 'hide' );
+	$( this ).parents().eq( 2 ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
