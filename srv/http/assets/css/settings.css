@@ -641,7 +641,7 @@ input:checked + .switchlabel.disabled:after {
 	.title {
 		letter-spacing: 3px;
 	}
-	#mpd .help {
+	#divmpd .help {
 		display: none;
 	}
 }

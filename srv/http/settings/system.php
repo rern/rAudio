@@ -19,41 +19,43 @@ echo '
 <div id="gpiosvg" class="hide">';
 include 'assets/img/gpio.svg';
 echo '
-</div>';
-
+</div>
+<div>';
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'journalctl'
 	, 'nohelp' => true
 ] );
 ?>
-<div id="systemlabel" class="col-l text gr">
-		Version
-	<br>Kernel
-	<br>Hardware
-	<br>SoC
-	<br>CPU
+	<div id="systemlabel" class="col-l text gr">
+			Version
+		<br>Kernel
+		<br>Hardware
+		<br>SoC
+		<br>CPU
+	</div>
+	<div id="systemvalue" class="col-r text"></div> 
+	<div style="clear:both"></div>
 </div>
-<div id="systemvalue" class="col-r text"></div> 
-<div style="clear:both"></div>
+<div>
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'button' => [ 'refresh', 'refresh' ]
 ] );
 ?>
-<div id="statuslabel" class="col-l text gr">
-		CPU Load
-	<span id="cputemp"><br>CPU Temperature</span>
-	<br>Time
-	<br>Up Time
-	<br>Boot Duration
-</div>
-<div id="status" class="col-r text"></div>
+	<div id="statuslabel" class="col-l text gr">
+			CPU Load
+		<br>CPU Temp<wide>erature</wide></span>
+		<br>Time
+		<br>Up Time
+		<br>Boot Duration
+	</div>
+	<div id="status" class="col-r text"></div>
 
-<div class="col-l" style="height:0"></div>
-<div class="col-r">
-	<div class="help-block hide">
+	<div class="col-l" style="height:0"></div>
+	<div class="col-r">
+		<div class="help-block hide">
 &ensp;<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
 
 CPU Load:
@@ -68,9 +70,11 @@ CPU temperature:
  • occurred - Happenned.
  • currently detected - Currently under minimum limit - system is unstable.
 </div>
+	</div>
+	<div style="clear:both"></div>
+	<pre id="codeundervoltage" class="hide"></pre>
 </div>
-<div style="clear:both"></div>
-<pre id="codeundervoltage" class="hide"></pre>
+<div>
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
@@ -78,8 +82,8 @@ htmlHead( [ //////////////////////////////////
 	, 'button' => [ 'addnas', 'plus-circle wh' ]
 ] );
 ?>
-<ul id="list" class="entries"></ul>
-<div class="help-block hide">
+	<ul id="list" class="entries"></ul>
+	<div class="help-block hide">
 Available sources, local USB and NAS mounts, for Library.
  • USB drive will be found and mounted automatically.
  • Network shares must be manually configured.
@@ -93,9 +97,8 @@ mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bl
 # NFS:
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
-</pre>
+</pre></div>
 </div>
-
 <?php
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) {
