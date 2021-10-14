@@ -152,7 +152,7 @@ function htmlSetting( $data ) {
 	echo $html;
 }
 function htmlSection( $head, $body ) {
-	echo '<div>';
+	echo '<div class="section">';
 	htmlHead( $head );
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';

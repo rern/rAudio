@@ -452,7 +452,7 @@ function renderQR() {
 		$( '#divwebui' ).addClass( 'hide' );
 	}
 	if ( G.hostapd ) {
-		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.ip );
+		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ G.hostapd.ip +'</wh>' );
 		$( '#ssid' ).text( G.hostapd.ssid );
 		$( '#passphrase' ).text( G.hostapd.passphrase )
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.hostapd.ssid +';T:WPA;P:'+ G.hostapd.passphrase +';' ) );

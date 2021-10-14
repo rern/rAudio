@@ -1,4 +1,4 @@
-<div>
+<div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Music Player Daemon'
@@ -65,10 +65,10 @@ html
 Control: &emsp; <i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
- • New: adjust > <i class="fa fa-plus-circle"></i> > <code>NAME</code> > <i class="fa fa-save"></i>
- • Existing: adjust > <i class="fa fa-save"></i>
+ • New: adjust ➤ <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
+ • Existing: adjust ➤ <i class="fa fa-save"></i>
  • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>> <code>NAME</code> > <i class="fa fa-save"></i>
+ • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
 html
 	]
 ];
@@ -211,7 +211,7 @@ html
 	]
 ];
 htmlSection( $head, $body );
-echo '<div>';
+echo '<div class="section">';
 htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
 htmlHead( [
 	  'title'   => 'Album'

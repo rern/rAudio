@@ -1,5 +1,5 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
-<div>
+<div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
@@ -21,7 +21,7 @@ html
 ?>
 <ul id="listbt" class="entries"></ul>
 </div>
-<div>
+<div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
@@ -36,7 +36,7 @@ html
 ?>
 	<ul id="listwl" class="entries"></ul>
 </div>
-<div>
+<div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
@@ -49,21 +49,22 @@ htmlHead( [ //////////////////////////////////
 	<ul id="listlan" class="entries"></ul>
 </div>
 </div>
-<div> <!-- ------------------------------------------------------------ -->
+<div class="section"> <!-- ------------------------------------------------------------ -->
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web User Interface'
 	, 'status' => 'avahi'
+	, 'help'   => <<<html
+Scan QR code or use IP address to connect with web user interface.
+html
 ] );
 ?>
 	<div id="divwebui" class="hide">
 		<gr>http://</gr><span id="ipwebui"></span>
 		<div id="qrwebui" class="qr"></div>
-		<div class="help-block hide">Scan QR code or use IP address to connect with web user interface.</div>
 	</div>
-	<pre id="codeavahi" class="hide"></pre>
 </div>
-<div> <!-- -------------------------------------------------------------- -->
+<div class="section"> <!-- -------------------------------------------------------------- -->
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
@@ -76,7 +77,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 <ul id="listbtscan" class="entries"></ul>
 </div>
-<div>
+<div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
@@ -89,7 +90,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 <ul id="listwlscan" class="entries"></ul>
 </div>
-<div>
+<div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
@@ -100,7 +101,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<div id="boxqr" class="hide">
 		<div class="col-l">
-			<span id="ipwebuiap"></span>
+			<span id="ipwebuiap" class="gr"></span>
 			<div class="divqr">
 				<div id="qrwebuiap" class="qr"></div>
 			</div>
@@ -112,9 +113,9 @@ htmlHead( [ //////////////////////////////////
 		</div>
 	</div>
 	<div class="help-block hide">
-			• Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
-		<br>• Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
-	</div>
+• Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
+• Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
+</div>
 </div>
 
 <div id="menu" class="menu hide">
