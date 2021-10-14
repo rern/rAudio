@@ -51,10 +51,10 @@ function equalizer() {
 					var step = yH / 40;
 					$( '#infoRange input' ).on( 'touchstart', function( e ) {
 						$this = $( this );
-						ystart = e.touches[ 0 ].pageY;
+						ystart = e.changedTouches[ 0 ].pageY;
 						val = +$this.val();
 					} ).on( 'touchmove', function( e ) {
-						var pageY = e.touches[ 0 ].pageY;
+						var pageY = e.changedTouches[ 0 ].pageY;
 						var diff = ystart - pageY;
 						if ( Math.abs( diff ) < step ) return
 						

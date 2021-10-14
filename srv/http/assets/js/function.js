@@ -1691,54 +1691,6 @@ function thumbUpdate( path ) {
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 }
-timeband = {
-	  start : function() {
-		if ( G.status.player !== 'mpd' || G.status.stream ) return
-		
-		G.start = 1;
-		hideGuide();
-		clearIntervalAll();
-		if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
-	}
-	, move  : function( pagex ) {
-		if ( !G.start ) return
-		
-		G.drag = 1;
-		mpcSeekBar( pagex );
-	}
-	, end   : function( pagex ) {
-		if ( !G.start ) return
-		
-		G.start = G.drag = 0;
-		mpcSeekBar( pagex );
-	}
-}
-volumeband = {
-	  start : function() {
-		hideGuide();
-		clearTimeout( G.volumebar );
-		if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
-		
-		G.start = 1;
-	}
-	, move  : function( pagex ) {
-		if ( !G.start ) return
-		
-		G.drag = 1;
-		volumeBarSet( pagex );
-	}
-	, end   : function( pagex ) {
-		if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
-			volumeBarShow();
-			return
-		}
-		
-		if ( !G.start ) return
-		
-		G.start = G.drag = 0;
-		volumeBarSet( pagex );
-	}
-}
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );

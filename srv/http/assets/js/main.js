@@ -90,6 +90,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 statusRefresh();
 
+
 if ( navigator.maxTouchPoints ) {
 	// swipe /////////////////////////////////////////////
 	var xstart = 0;
@@ -102,12 +103,12 @@ if ( navigator.maxTouchPoints ) {
 		) return
 		
 		G.swipe = 0;
-		xstart = e.touches[ 0 ].pageX;
+		xstart = e.changedTouches[ 0 ].pageX;
 	} );
 	window.addEventListener( 'touchmove', function( e ) {
 		if ( !xstart ) return
 		
-		G.swipe = Math.abs( xstart - e.touches[ 0 ].pageX ) > 10;
+		G.swipe = Math.abs( xstart - e.changedTouches[ 0 ].pageX ) > 10;
 	} );
 	window.addEventListener( 'touchend', function( e ) {
 		if ( !xstart || !G.swipe ) return
@@ -117,36 +118,8 @@ if ( navigator.maxTouchPoints ) {
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
 	} );
 	//////////////////////////////////////////////////////
-	$( '#time-band' ).on( 'touchstart', function() {
-		timeband.start();
-	} ).on( 'touchmove', function( e ) {
-		timeband.move( e.touches[ 0 ].pageX );
-	} ).on( 'touchend', function( e ) {
-		timeband.end( e.changedTouches[ 0 ].pageX );
-	} );
-	$( '#volume-band' ).on( 'touchstart', function() {
-		volumeband.start();
-	} ).on( 'touchmove', function( e ) {
-		volumeband.move( e.touches[ 0 ].pageX );
-	} ).on( 'touchend', function( e ) {
-		volumeband.end( e.changedTouches[ 0 ].pageX );
-	} );
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
-	$( '#time-band' ).on( 'mousedown', function() {
-		timeband.start();
-	} ).on( 'mousemove', function( e ) {
-		timeband.move( e.pageX );
-	} ).on( 'mouseup', function( e ) {
-		timeband.end( e.pageX );
-	} );
-	$( '#volume-band' ).on( 'mousedown', function() {
-		volumeband.start();
-	} ).on( 'mousemove', function( e ) {
-		volumeband.move( e.pageX );
-	} ).on( 'mouseup', function( e ) {
-		volumeband.end( e.pageX );
-	} );
 }
 	
 $( '.page' ).click( function( e ) {
@@ -506,6 +479,24 @@ $( '#time' ).roundSlider( {
 		G.drag = 0;
 	}
 } );
+$( '#time-band' ).on( 'touchstart mousedown', function() {
+	if ( G.status.player !== 'mpd' || G.status.stream ) return
+	
+	G.start = 1;
+	hideGuide();
+	clearIntervalAll();
+	if ( G.status.state !== 'play' ) $( '#title' ).addClass( 'gr' );
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( !G.start ) return
+	
+	G.drag = 1;
+	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
+} ).on( 'touchend mouseup', function( e ) {
+	if ( !G.start ) return
+	
+	G.start = G.drag = 0;
+	mpcSeekBar( e.pageX || e.changedTouches[ 0 ].pageX );
+} );
 $( '#volume' ).roundSlider( {
 	// init : valueChange > create > beforeValueChange > valueChange
 	// tap  : beforeValueChange > change > valueChange
@@ -565,6 +556,28 @@ $( '#volume' ).roundSlider( {
 		G.drag = 0;
 		bash( [ 'volumepushstream' ] );
 	}
+} );
+$( '#volume-band' ).on( 'touchstart mousedown', function() {
+	hideGuide();
+	clearTimeout( G.volumebar );
+	if ( G.status.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
+	
+	G.start = 1;
+} ).on( 'touchmove mousemove', function( e ) {
+	if ( !G.start ) return
+	
+	G.drag = 1;
+	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
+} ).on( 'touchend mouseup', function( e ) {
+	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
+		volumeBarShow();
+		return
+	}
+	
+	if ( !G.start ) return
+	
+	G.start = G.drag = 0;
+	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
 $( '#volmute' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );

@@ -68,20 +68,17 @@ previous.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-var xstart = 0;
-var xend = 0;
+// swipe
+var xstart;
 window.addEventListener( 'touchstart', function( e ) {
-	xstart = e.touches[ 0 ].pageX;
-}, false );
-window.addEventListener( 'touchmove', function( e ) {
-	xend = e.touches[ 0 ].pageX;
-}, false );
-window.addEventListener( 'touchend', function() {
-	var xdiff = xstart - xend;
+	xstart = e.changedTouches[ 0 ].pageX;
+} );
+window.addEventListener( 'touchend', function( e ) {
+	var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 	if ( Math.abs( xdiff ) > 100 ) {
 		xdiff > 0 ? next.click() : previous.click();
 	}
-}, false );
+} );
 
 function renderPage( n ) {
 	image.src = '/assets/img/guide/'+ n +'.<?=$time?>.jpg';
