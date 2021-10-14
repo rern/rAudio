@@ -1,3 +1,4 @@
+<div>
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Music Player Daemon'
@@ -17,7 +18,7 @@ Through plugins and libraries it can play a variety of sound files while being c
 </div>
 </div>
 <div style="clear:both"></div>
-
+</div>
 <?php
 if ( !file_exists( '/srv/http/data/shm/nosound' ) ) {
 // ----------------------------------------------------------------------------------
@@ -210,11 +211,13 @@ html
 	]
 ];
 htmlSection( $head, $body );
+echo '<div>';
 htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
 htmlHead( [
 	  'title'   => 'Album'
 	, 'status'  => 'albumignore'
 	, 'subhead' => true
+	, 'nohelp'  => true
 	, 'help'    => <<<html
 List of albums excluded from Album page.
 To restore:
@@ -227,6 +230,7 @@ htmlHead( [
 	  'title'   => 'Directory'
 	, 'status'  => 'mpdignore'
 	, 'subhead' => true
+	, 'nohelp'  => true
 	, 'help'    => <<<html
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:
@@ -236,5 +240,4 @@ To restore:
 </p>
 html
 ] );
-echo '
-</div>'; // last closing for no following htmlHead()
+echo '</div>';

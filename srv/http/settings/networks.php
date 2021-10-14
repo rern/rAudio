@@ -1,4 +1,5 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
+<div>
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
@@ -17,8 +18,11 @@ As receiver (from another device)
  • Turn off discoverable to hide from unpaired senders.
 html
 ] );
-echo '
-<ul id="listbt" class="entries"></ul>';
+?>
+<ul id="listbt" class="entries"></ul>
+</div>
+<div>
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
 	, 'id'      => 'divwl'
@@ -29,8 +33,11 @@ htmlHead( [ //////////////////////////////////
 Access points with less than -66dBm should not be used.
 html
 ] );
-echo '
-<ul id="listwl" class="entries"></ul>';
+?>
+<ul id="listwl" class="entries"></ul>
+</div>
+<div>
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'id'     => 'divlan'
@@ -38,8 +45,11 @@ htmlHead( [ //////////////////////////////////
 	, 'button' => [ 'lanadd', 'plus-circle wh' ]
 	, 'nohelp'  => true
 ] );
-echo '
-<ul id="listlan" class="entries"></ul>';
+?>
+<ul id="listlan" class="entries"></ul>
+</div>
+<div>
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web User Interface'
 	, 'status' => 'avahi'
@@ -52,6 +62,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<pre id="codeavahi" class="hide"></pre>
 </div> <!-- -------------------------------------------------------------- -->
+<div>
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
@@ -61,8 +72,11 @@ htmlHead( [ //////////////////////////////////
 	, 'back'   => true
 	, 'nohelp' => true
 ] );
-echo '
-<ul id="listbtscan" class="entries"></ul>';
+?>
+<ul id="listbtscan" class="entries"></ul>
+</div>
+<div>
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
 	, 'id'     => 'divwifi'
@@ -71,8 +85,11 @@ htmlHead( [ //////////////////////////////////
 	, 'back'   => true
 	, 'nohelp' => true
 ] );
-echo '
-<ul id="listwlscan" class="entries"></ul>';
+?>
+<ul id="listwlscan" class="entries"></ul>
+</div>
+<div>
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
 	, 'id'     => 'divaccesspoint'
@@ -97,7 +114,7 @@ htmlHead( [ //////////////////////////////////
 			• Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 		<br>• Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</div>
-</div> <!-- last closing for no following htmlHead() -->
+</div>
 
 <div id="menu" class="menu hide">
 <a class="connect"><i class="fa fa-check"></i>Connect</a>
