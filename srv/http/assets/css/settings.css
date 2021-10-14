@@ -576,7 +576,7 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media (max-width: 515px) {
-	.help-block {
+	.col-r .help-block {
 		margin-left: -170px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );

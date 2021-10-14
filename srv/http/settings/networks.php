@@ -34,7 +34,7 @@ Access points with less than -66dBm should not be used.
 html
 ] );
 ?>
-<ul id="listwl" class="entries"></ul>
+	<ul id="listwl" class="entries"></ul>
 </div>
 <div>
 <?php
@@ -46,9 +46,10 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp'  => true
 ] );
 ?>
-<ul id="listlan" class="entries"></ul>
+	<ul id="listlan" class="entries"></ul>
 </div>
-<div>
+</div>
+<div> <!-- ------------------------------------------------------------ -->
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web User Interface'
@@ -61,8 +62,8 @@ htmlHead( [ //////////////////////////////////
 		<div class="help-block hide">Scan QR code or use IP address to connect with web user interface.</div>
 	</div>
 	<pre id="codeavahi" class="hide"></pre>
-</div> <!-- -------------------------------------------------------------- -->
-<div>
+</div>
+<div> <!-- -------------------------------------------------------------- -->
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'

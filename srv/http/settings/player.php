@@ -6,18 +6,18 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'mpd'
 ] );
 ?>
-<div class="col-l text gr">
-	Version
-	<br>Database
-</div>
-<div class="col-r text">
-	<div id="statusvalue"></div>
+	<div class="col-l text gr">
+		Version
+		<br>Database
+	</div>
+	<div class="col-r text">
+		<div id="statusvalue"></div>
+	</div>
+	<div style="clear:both"></div>
 	<div class="help-block hide">
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 </div>
-</div>
-<div style="clear:both"></div>
 </div>
 <?php
 if ( !file_exists( '/srv/http/data/shm/nosound' ) ) {
