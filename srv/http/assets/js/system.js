@@ -899,7 +899,6 @@ function renderStatus() {
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
 			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
-		status += '&emsp;<i class="fa fa-status gr"></i>';
 	}
 	$( '#status' ).html( status );
 }
