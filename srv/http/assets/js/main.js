@@ -110,7 +110,7 @@ if ( navigator.maxTouchPoints ) {
 		G.swipe = Math.abs( xstart - e.changedTouches[ 0 ].pageX ) > 10;
 	} );
 	window.addEventListener( 'touchend', function( e ) {
-		if ( !xstart ) return
+		if ( !xstart || !G.swipe ) return
 		
 		var diff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
