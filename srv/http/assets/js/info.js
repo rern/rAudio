@@ -1,4 +1,4 @@
-// $.fn.press(), $fn.swipe(), info(), banner()
+// $.fn.press(), info(), banner()
 
 // $.fn.press(), $fn.swipe() --------------------------------------------------------
 /*

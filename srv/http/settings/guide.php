@@ -32,8 +32,6 @@ include 'logosvg.php';
 	<img id="image" src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
 <script>
-var xstart, swipe;
-var xswipe = 100;
 var nlibrary = 23;
 var nplaylist = 40;
 var nsettings = 47;
