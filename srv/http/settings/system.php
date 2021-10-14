@@ -52,11 +52,10 @@ htmlHead( [ //////////////////////////////////
 		<br>Boot Duration
 	</div>
 	<div id="status" class="col-r text"></div>
-
-	<div class="col-l" style="height:0"></div>
-	<div class="col-r">
-		<div class="help-block hide">
-&ensp;<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
+	<pre id="codeundervoltage" class="hide"></pre>
+	<div style="clear:both"></div>
+	<div class="help-block hide">
+<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
 
 CPU Load:
  • Average number of processes which are being executed and in waiting.
@@ -70,9 +69,6 @@ CPU temperature:
  • occurred - Happenned.
  • currently detected - Currently under minimum limit - system is unstable.
 </div>
-	</div>
-	<div style="clear:both"></div>
-	<pre id="codeundervoltage" class="hide"></pre>
 </div>
 <div>
 <?php
