@@ -52,7 +52,6 @@ htmlHead( [ //////////////////////////////////
 		<br>Boot Duration
 	</div>
 	<div id="status" class="col-r text"></div>
-	<pre id="codeundervoltage" class="hide"></pre>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
 <i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>

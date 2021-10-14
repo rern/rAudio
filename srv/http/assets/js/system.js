@@ -67,17 +67,6 @@ $( '#refresh' ).click( function( e ) {
 		}, 10000 );
 	}
 } );
-$( '#status' ).on( 'click', '.undervoltage', function() {
-	if ( $( '#codeundervoltage' ).is( ':empty' ) ) {
-		bash( 'journalctl -b | grep "Under-voltage detected"', function( log ) {
-			$( '#codeundervoltage' )
-				.html( "# journalctl -b | grep 'Under-voltage detected'\n\n"+ log )
-				.removeClass( 'hide' );
-		} );
-	} else {
-		$( '#codeundervoltage' ).toggleClass( 'hide' );
-	}
-} );
 $( '#addnas' ).click( function() {
 	infoMount();
 } );
@@ -903,14 +892,14 @@ function renderStatus() {
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		status += '<br><span class="undervoltage"><i class="fa fa-warning';
+		status += '<br><i class="fa fa-warning';
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
 			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
 			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
-		status += '&emsp;<i class="fa fa-status gr"></i></span></span>';
+		status += '&emsp;<i class="fa fa-status gr"></i>';
 	}
 	$( '#status' ).html( status );
 }
