@@ -65,7 +65,8 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => true         // true = common function; 'self' = self function
+		, 'setting'     => true         // true = common - setting before enable
+		                                // 'self' = self trigger function or no setting before enable
 		, 'settingicon' => 'ICON'
 		, 'help'        => <<<html
 HELP - PHP heredoc
