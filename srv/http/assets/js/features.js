@@ -113,7 +113,9 @@ $( '#setting-localbrowser' ).click( function() {
 			} else if ( zoom > 2 ) {
 				$input.eq( 1 ).val( 2 );
 			}
-			bash( [ 'localbrowserset', ...infoVal() ], function( reboot ) {
+			var values = infoVal();
+			values[ 1 ] = +values[ 1 ]; // fix: missing leading 0 - '.7' > 0.7
+			bash( [ 'localbrowserset', ...values ], function( reboot ) {
 				if ( reboot ) {
 					info( {
 						  icon    : 'chromium'
