@@ -1,9 +1,8 @@
 <div id="divinterface"> <!-- ---------------------------------------------------- -->
-<div class="section">
+<div id="divbt" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'id'     => 'divbt'
 	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan', 'search wh' ]
 	, 'help'    => <<<html
@@ -21,11 +20,10 @@ html
 ?>
 <ul id="listbt" class="entries"></ul>
 </div>
-<div class="section">
+<div id="divwl" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
-	, 'id'      => 'divwl'
 	, 'status'  => 'wlan'
 	, 'button'  => [ 'wladd', 'plus-circle wh' ]
 	, 'button1' => [ 'wlscan', 'search wh' ]
@@ -36,11 +34,10 @@ html
 ?>
 	<ul id="listwl" class="entries"></ul>
 </div>
-<div class="section">
+<div id="divlan" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
-	, 'id'     => 'divlan'
 	, 'status' => 'lan'
 	, 'button' => [ 'lanadd', 'plus-circle wh' ]
 	, 'nohelp'  => true
@@ -49,7 +46,7 @@ htmlHead( [ //////////////////////////////////
 	<ul id="listlan" class="entries"></ul>
 </div>
 </div>
-<div class="section"> <!-- ------------------------------------------------------------ -->
+<div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web User Interface'
@@ -59,43 +56,13 @@ Scan QR code or use IP address to connect with web user interface.
 html
 ] );
 ?>
-	<div id="divwebui" class="hide">
-		<gr>http://</gr><span id="ipwebui"></span>
-		<div id="qrwebui" class="qr"></div>
-	</div>
+	<gr>http://</gr><span id="ipwebui"></span>
+	<div id="qrwebui" class="qr"></div>
 </div>
-<div class="section"> <!-- -------------------------------------------------------------- -->
-<?php
-htmlHead( [ //////////////////////////////////
-	  'title'  => 'Bluetooth'
-	, 'id'     => 'divbluetooth'
-	, 'hide'   => true
-	, 'button' => [ 'scanning-bt', 'bluetooth blink' ]
-	, 'back'   => true
-	, 'nohelp' => true
-] );
-?>
-<ul id="listbtscan" class="entries"></ul>
-</div>
-<div class="section">
-<?php
-htmlHead( [ //////////////////////////////////
-	  'title'  => 'Wi-Fi'
-	, 'id'     => 'divwifi'
-	, 'hide'   => true
-	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
-	, 'back'   => true
-	, 'nohelp' => true
-] );
-?>
-<ul id="listwlscan" class="entries"></ul>
-</div>
-<div class="section">
+<div id="divaccesspoint" class="section hide">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
-	, 'id'     => 'divaccesspoint'
-	, 'hide'   => true
 	, 'button' => [ 'setting-accesspoint', 'gear' ]
 ] );
 ?>
@@ -116,6 +83,28 @@ htmlHead( [ //////////////////////////////////
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 </div>
+</div>
+<div id="divbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
+<?php
+htmlHead( [ //////////////////////////////////
+	  'title'  => 'Bluetooth'
+	, 'button' => [ 'scanning-bt', 'bluetooth blink' ]
+	, 'back'   => true
+	, 'nohelp' => true
+] );
+?>
+<ul id="listbtscan" class="entries"></ul>
+</div>
+<div id="divwifi" class="section hide">
+<?php
+htmlHead( [ //////////////////////////////////
+	  'title'  => 'Wi-Fi'
+	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
+	, 'back'   => true
+	, 'nohelp' => true
+] );
+?>
+<ul id="listwlscan" class="entries"></ul>
 </div>
 
 <div id="menu" class="menu hide">

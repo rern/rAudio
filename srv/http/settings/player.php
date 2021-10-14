@@ -1,8 +1,7 @@
-<div class="section">
+<div id="divmpd" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Music Player Daemon'
-	, 'id'     => 'divmpd'
 	, 'status' => 'mpd'
 ] );
 ?>
@@ -217,7 +216,6 @@ htmlHead( [
 	  'title'   => 'Album'
 	, 'status'  => 'albumignore'
 	, 'subhead' => true
-	, 'nohelp'  => true
 	, 'help'    => <<<html
 List of albums excluded from Album page.
 To restore:
@@ -230,7 +228,6 @@ htmlHead( [
 	  'title'   => 'Directory'
 	, 'status'  => 'mpdignore'
 	, 'subhead' => true
-	, 'nohelp'  => true
 	, 'help'    => <<<html
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:

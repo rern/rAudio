@@ -45,8 +45,6 @@ $sudo = '/usr/bin/sudo /usr/bin';
 /*
 $head = [
 	  'title'   => 'TITLE'           // REQUIRED
-	, 'id'      => 'ID'
-	, 'hide'    => true
 	, 'subhead' => true              // with no help icon
 	, 'status'  => 'COMMAND'         // include status icon and status box
 	, 'button'  => [ 'ID', 'ICON' ]  // icon button
@@ -81,17 +79,14 @@ htmlSection( $head, $body );
 */
 function htmlHead( $data ) {
 	$title = $data[ 'title' ];
-	$id = $data[ 'id' ] ?? '';
-	$hide = $data[ 'hide' ] ?? '';
+	$subhead = $data[ 'subhead' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
 	$button = $data[ 'button' ] ?? '';
 	$button1 = $data[ 'button1' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	
-	$html.= $id ? '<div id="'.$id.'"' : '<div';
-	$html.= $hide ? ' class="hide">' : '>';
 	$html.= $status ? '<heading data-status="'.$status.'" class="status' : '<heading class="';
-	$html.= isset( $data[ 'subhead' ] ) ? ' sub">' : '">';
+	$html.= $subhead ? ' sub">' : '">';
 	$html.= $title;
 	$html.= $status ? '<i class="fa fa-status"></i>' : '';
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
@@ -101,7 +96,6 @@ function htmlHead( $data ) {
 	$html.= '</heading>';
 	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
-	$html.= '</div>';
 	
 	echo $html;
 }
