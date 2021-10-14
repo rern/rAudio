@@ -7,14 +7,14 @@ htmlHead( [ //////////////////////////////////
 	, 'button' => [ 'btscan', 'search wh' ]
 	, 'help'    => <<<html
 As sender (to another device)
- &bull; Pairing - Turn on discovery mode on receiver device.
- &bull; Search the device on RPi and connect.
- &bull; Power on/off paired devices connect/disconnect automatically.
+ • Pairing - Turn on discovery mode on receiver device.
+ • Search the device on RPi and connect.
+ • Power on/off paired devices connect/disconnect automatically.
 As receiver (from another device)
- &bull; Pairing - If discoverable turned off on RPi, turn it on.
- &bull; Make pairing/connecting from sender device. No authorization required.
- &bull; Connection from sender start renderer mode automatically.
- &bull; Turn off discoverable to hide from unpaired senders.
+ • Pairing - If discoverable turned off on RPi, turn it on.
+ • Make pairing/connecting from sender device. No authorization required.
+ • Connection from sender start renderer mode automatically.
+ • Turn off discoverable to hide from unpaired senders.
 html
 ] );
 echo '
@@ -94,8 +94,8 @@ htmlHead( [ //////////////////////////////////
 		</div>
 	</div>
 	<div class="help-block hide">
-			&bull; Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
-		<br>&bull; Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
+			• Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
+		<br>• Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 	</div>
 </div> <!-- last closing for no following htmlHead() -->
 

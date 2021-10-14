@@ -51,9 +51,9 @@ html
 		, 'input' => '<select id="mixertype"></select>'
 		, 'help'  => <<<html
 Volume control for each device.
- &bull; <code>None / 0dB</code> Best sound quality. (Use amplifier volume)
- &bull; <code>Mixer device</code> Good and convenient. (Device hardware volume)
- &bull; <code>MPD software</code> Software volume.
+ • <code>None / 0dB</code> Best sound quality. (Use amplifier volume)
+ • <code>Mixer device</code> Good and convenient. (Device hardware volume)
+ • <code>MPD software</code> Software volume.
 html
 	]
 	, [
@@ -63,11 +63,11 @@ html
 10 band graphic equalizer with user presets.
 Control: &emsp; <i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
 Presets:
- &bull; <code>Flat</code>: All bands at <code>0dB</code>
- &bull; New: adjust > <i class="fa fa-plus-circle"></i> > <code>NAME</code> > <i class="fa fa-save"></i>
- &bull; Existing: adjust > <i class="fa fa-save"></i>
- &bull; Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
- &bull; Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>> <code>NAME</code> > <i class="fa fa-save"></i>
+ • <code>Flat</code>: All bands at <code>0dB</code>
+ • New: adjust > <i class="fa fa-plus-circle"></i> > <code>NAME</code> > <i class="fa fa-save"></i>
+ • Existing: adjust > <i class="fa fa-save"></i>
+ • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
+ • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>> <code>NAME</code> > <i class="fa fa-save"></i>
 html
 	]
 ];
@@ -79,11 +79,11 @@ $body = [
 		, 'id'    => 'novolume'
 		, 'help'  => <<<html
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
- &bull; No changes in data stream until it reaches amplifier volume control.
- &bull; Mixer device volume: 0dB (No amplitude manipulations)
- &bull; Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
- &bull; Equalizer: Disabled
- &bull; Crossfade, Normalization and Replay Gain: Disabled
+ • No changes in data stream until it reaches amplifier volume control.
+ • Mixer device volume: 0dB (No amplitude manipulations)
+ • Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
+ • Equalizer: Disabled
+ • Crossfade, Normalization and Replay Gain: Disabled
 html
 	]
 	, [
@@ -91,10 +91,10 @@ html
 		, 'id'    => 'dop'
 		, 'help'  => <<<html
 For DSD-capable devices without drivers dedicated for native DSD.
- &bull; Enable if there's static/no sound from the DAC which means not support as native DSD.
- &bull; DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
- &bull; PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
- &bull; On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
+ • Enable if there's static/no sound from the DAC which means not support as native DSD.
+ • DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
+ • PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
+ • On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
 html
 	]
 ];
@@ -186,12 +186,12 @@ html
 <code>quality "custom"</code>
 Default quality: very high
 SoX Resampler custom settings:
- &bull; Precision - Conversion precision (20 = HQ)
- &bull; Phase Response (50 = Linear)
- &bull; Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
- &bull; Stopband Begin - Aliasing/imaging control
- &bull; Attenuation - Lowers the source to prevent clipping
- &bull; Flags - Extra settings:
+ • Precision - Conversion precision (20 = HQ)
+ • Phase Response (50 = Linear)
+ • Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
+ • Stopband Begin - Aliasing/imaging control
+ • Attenuation - Lowers the source to prevent clipping
+ • Flags - Extra settings:
  &emsp; 0 - Rolloff - small (<= 0.01 dB)
  &emsp; 1 - Rolloff - medium (<= 0.35 dB)
  &emsp; 2 - Rolloff - none - For Chebyshev bandwidth
@@ -218,9 +218,9 @@ htmlHead( [
 	, 'help'    => <<<html
 List of albums excluded from Album page.
 To restore:
- &bull; Edit <code>/srv/http/data/mpd/albumignore</code>
- &bull; Remove albums to restore
- &bull; Update Library
+ • Edit <code>/srv/http/data/mpd/albumignore</code>
+ • Remove albums to restore
+ • Update Library
 html
 ] );
 htmlHead( [
@@ -230,9 +230,9 @@ htmlHead( [
 	, 'help'    => <<<html
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:
- &bull; Edit <code>.../.mpdignore</code>
- &bull; Remove directories to restore
- &bull; Update Library
+ • Edit <code>.../.mpdignore</code>
+ • Remove directories to restore
+ • Update Library
 </p>
 html
 ] );

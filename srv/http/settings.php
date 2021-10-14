@@ -36,7 +36,8 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <i id="button-data"></i>
 <pre id="data" class="hide"></pre>
 <div class="head hide">
-	<i class="page-icon fa fa-<?=$page?>"></i><span class='title'><?=( strtoupper( $page ) )?></span>
+	<?php $pagehead = $page !== 'relays' ? $page : 'system';?>
+	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=( strtoupper( $pagehead ) )?></span>
 	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-question-circle"></i>
 </div>
 <div class="container hide">
@@ -95,7 +96,7 @@ function htmlHead( $data ) {
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
 	$html.= $button1 ? '<i id="'.$button1[ 0 ].'" class="fa fa-'.$button1[ 1 ].'"></i>' : '';
 	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
-	$html.= isset( $data[ 'back' ] ) ? '<i class="help fa fa-fa fa-arrow-left back"></i>' : '';
+	$html.= isset( $data[ 'back' ] ) ? '<i class="fa fa-arrow-left back"></i>' : '';
 	$html.= '</heading>';
 	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
@@ -160,7 +161,8 @@ include "settings/$page.php";
 $htmlbar = '';
 foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	$id = strtolower( $name );
-	$htmlbar.= '<div id="'.$id.'"><i class="fa fa-'.$id.'"></i><a> '.$name.'</a></div>';
+	$active = $id === $pagehead ? ' class="active"' : '';
+	$htmlbar.= '<div id="'.$id.'"'.$active.'><i class="fa fa-'.$id.'"></i><a> '.$name.'</a></div>';
 }
 ?>
 </div>

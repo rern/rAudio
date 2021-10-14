@@ -97,8 +97,8 @@ html
 		, 'setting'  => true
 		, 'help'     => <<<html
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
- &bull; HDMI/LCD display must be connected before boot.
- &bull; TFT 3.5" LCD - rotate needs reboot.
+ • HDMI/LCD display must be connected before boot.
+ • TFT 3.5" LCD - rotate needs reboot.
 html
 		, 'exist'    => file_exists( '/usr/bin/chromium' )
 	]
@@ -111,8 +111,8 @@ html
 		, 'setting'  => true
 		, 'help'     => <<<html
 <a href="https://www.samba.org">Samba</a> - Share files on network.
- &bull; Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
- &bull; At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
+ • Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
+ • At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
 html
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]

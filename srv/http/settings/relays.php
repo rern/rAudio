@@ -8,8 +8,17 @@ for ( $i = 0; $i < 4; $i++ ) {
 	$htmlpin.= '<select id="pin'.$i.'" class="pin">'.$optionpin.'</select>';
 	$htmlname.= '<input id="name'.$i.'" type="text" class="name" placeholder="(no name)">';
 }
+htmlHead( [ //////////////////////////////////
+	  'title'  => 'GPIO Relays'
+	, 'back'   => true
+	, 'nohelp' => true
+] );
 ?>
-<br>
+<span class="help-block hide"><a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
+On/Off:  <i class="fa fa-plus-r"></i>System | <i class="fa fa-relays"></i>
+ • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+ • Can be enabled and run as a test without a connected relay module.
+</span>
 <?php include 'assets/img/gpio.svg';?>
 <br>
 <div class="gpio-float-l">

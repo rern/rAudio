@@ -96,6 +96,9 @@ $( '.container' )
 	.off( 'keyup', 'input' ).on( 'keyup', 'input', renderUpdate );
 $( '.infobtn' ).off( 'click' );
 	
+$( '.back' ).click( function() {
+	location.href = 'settings.php?p=system';
+} );
 $( '#undo' ).click( function() {
 	renderPage( G );
 	$( '.infobtn' ).addClass( 'disabled' );

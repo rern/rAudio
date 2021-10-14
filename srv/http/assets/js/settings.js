@@ -282,8 +282,6 @@ document.title = page;
 
 refreshData();
 
-$( '#'+ page ).addClass( 'active' );
-if ( page === 'relays' ) $( '#help' ).addClass( 'hide' );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 $( document ).keyup( function( e ) {

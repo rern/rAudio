@@ -57,16 +57,16 @@ htmlHead( [ //////////////////////////////////
 &ensp;<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
 
 CPU Load:
- &bull; Average number of processes which are being executed and in waiting.
- &bull; calculated over 1, 5 and 15 minutes.
- &bull; Each one should not be constantly over 0.75 x CPU cores.
+ • Average number of processes which are being executed and in waiting.
+ • calculated over 1, 5 and 15 minutes.
+ • Each one should not be constantly over 0.75 x CPU cores.
 CPU temperature:
- &bull; 80-84°C: ARM cores throttled.
- &bull; 85°C: ARM cores and GPU throttled.
- &bull; RPi 3B+: 60°C soft limit (optimized throttling)
+ • 80-84°C: ARM cores throttled.
+ • 85°C: ARM cores and GPU throttled.
+ • RPi 3B+: 60°C soft limit (optimized throttling)
 <i class="fa fa-warning"></i> Under-voltage warning (if any):
- &bull; occurred - Happenned.
- &bull; currently detected - Currently under minimum limit - system is unstable.
+ • occurred - Happenned.
+ • currently detected - Currently under minimum limit - system is unstable.
 </div>
 </div>
 <div style="clear:both"></div>
@@ -81,9 +81,9 @@ htmlHead( [ //////////////////////////////////
 <ul id="list" class="entries"></ul>
 <div class="help-block hide">
 Available sources, local USB and NAS mounts, for Library.
- &bull; USB drive will be found and mounted automatically.
- &bull; Network shares must be manually configured.
- &bull; If mount failed, try in SSH terminal:
+ • USB drive will be found and mounted automatically.
+ • Network shares must be manually configured.
+ • If mount failed, try in SSH terminal:
 <pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
 
@@ -126,8 +126,8 @@ html
 		, 'help'     => <<<html
 Auto start Access Point - On failed connection or no router
 Country of Wi-Fi regulatory domain:
- &bull; 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
- &bull; The connected router may override it to a certain country.
+ • 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+ • The connected router may override it to a certain country.
 html
 	]
 ];
@@ -152,7 +152,7 @@ $body = [
 html
 	, 'help'     => <<<html
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
- &bull; Support 16x2 and 20x4 LCD modules.
+ • Support 16x2 and 20x4 LCD modules.
 <i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 html
 	]
@@ -164,7 +164,7 @@ html
 		, 'setting'  => true
 		, 'help'     => <<<html
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
- &bull; Support 16x2 and 20x4 LCD modules.
+ • Support 16x2 and 20x4 LCD modules.
 <i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 html
 	]
@@ -176,11 +176,11 @@ html
 		, 'setting'  => true
 		, 'help'     => <<<html
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
- &bull; On - Fixed to pin 5
- &bull; Off - Default to pin 5 (single pin on+off)
+ • On - Fixed to pin 5
+ • Off - Default to pin 5 (single pin on+off)
 If pin 5 is used by DAC or LCD - Set 2 unused pins for:
- &bull; Off (default: 7)
- &bull; Reserved (default: 29)
+ • Off (default: 7)
+ • Reserved (default: 29)
 html
 	]
 	, [
@@ -191,8 +191,8 @@ html
 		, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
- &bull; More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
- &bull; Can be enabled and run as a test without a connected relay module.
+ • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+ • Can be enabled and run as a test without a connected relay module.
 html
 	],
 	[
@@ -221,7 +221,7 @@ html
 		, 'setting' => true
 		, 'help'    => <<<html
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
- &bull; <bl id="ledcalc">LED resister calculator</bl>
+ • <bl id="ledcalc">LED resister calculator</bl>
 html
 	]
 ];
@@ -235,9 +235,9 @@ $body = [
 		, 'input' => '<input type="text" id="hostname" readonly>'
 		, 'help'  => <<<html
 For:
- &bull; Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
- &bull; Web Interface URL: <code id="avahiurl"></code>
- &bull; System hostname
+ • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
+ • Web Interface URL: <code id="avahiurl"></code>
+ • System hostname
 html
 	]
 	, [
@@ -250,8 +250,8 @@ html
 		, 'setting'  => 'self'
 		, 'help'     => <<<html
 <i class="fa fa-gear"></i>Servers:
- &bull; NTP: For time sync
- &bull; Package mirror: For system upgrade <code>pacman -Syu</code>
+ • NTP: For time sync
+ • Package mirror: For system upgrade <code>pacman -Syu</code>
 html
 	]
 	, [
@@ -275,12 +275,12 @@ $body = [
 		, 'icon'  => 'sd'
 		, 'help'  => <<<html
 Backup all settings and Library database:
- &bull; Settings
- &bull; Library database
- &bull; Saved playlists
- &bull; Bookmarks
- &bull; Lyrics
- &bull; WebRadios
+ • Settings
+ • Library database
+ • Saved playlists
+ • Bookmarks
+ • Lyrics
+ • WebRadios
 html
 	]
 	, [
