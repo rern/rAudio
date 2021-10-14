@@ -31,9 +31,8 @@ span.timer {
 span.timer i {
 	vertical-align: -2px;
 }
-#gpiosvg {
-	width: 100%;
-	max-width: 393px;
+svg {
+	max-width: 100%;
 }
 #gpiopin,
 #gpiopin1 {
