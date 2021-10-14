@@ -64,7 +64,8 @@ $body = [
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
 		, 'setting'     => true         // true = common - setting before enable
-		                                // 'self' = self trigger function or no setting before enable
+		                                // 'self' = self trigger setting
+		                                // 'none' = self trigger + no settings
 		, 'settingicon' => 'ICON'
 		, 'help'        => <<<html
 HELP - PHP heredoc
@@ -133,12 +134,12 @@ function htmlSetting( $data ) {
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
 		$html.= '<input type="checkbox" id="'.$id.'"';
-		$html.= $setting === 'self' ? '' : ( $setting ? ' class="switch common"' : ' class="switch"' );
+		$html.= $setting === 'self' || $setting === 'none' ? '' : ( $setting ? ' class="switch common"' : ' class="switch"' );
 		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
 	}
-	$html.= $setting ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
+	$html.= $setting && $setting !== 'none' ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= '</div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';

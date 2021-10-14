@@ -268,10 +268,11 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
 $body = [
 	[
-		  'label' => 'Backup'
-		, 'id'    => 'backup'
-		, 'icon'  => 'sd'
-		, 'help'  => <<<html
+		  'label'   => 'Backup'
+		, 'id'      => 'backup'
+		, 'icon'    => 'sd'
+		, 'setting' => 'none'
+		, 'help'    => <<<html
 Backup all settings and Library database:
  • Settings
  • Library database
@@ -282,10 +283,11 @@ Backup all settings and Library database:
 html
 	]
 	, [
-		  'label' => 'Restore'
-		, 'id'    => 'restore'
-		, 'icon'  => 'restore'
-		, 'help'  => <<<html
+		  'label'   => 'Restore'
+		, 'id'      => 'restore'
+		, 'icon'    => 'restore'
+		, 'setting' => 'none'
+		, 'help'    => <<<html
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 html
 	]
