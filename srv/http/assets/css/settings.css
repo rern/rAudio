@@ -603,6 +603,7 @@ input:checked + .switchlabel.disabled:after {
 	#guide .btn i {
 		margin: 3px auto 0;
 	}
+	.selectric-wrapper + .setting,
 	#guide .btn span {
 		display: none;
 	}
