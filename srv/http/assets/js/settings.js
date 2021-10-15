@@ -37,11 +37,6 @@ var cmd = {
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
-var pkg = {
-	  localbrowser    : 'firefox'
-	, smb             : 'samba'
-	, snapserver      : 'snapcast'
-}
 
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
@@ -51,6 +46,11 @@ function codeToggle( id, target ) {
 	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
 		var i = services.indexOf( id );
 		if ( i !== -1 ) {
+			var pkg = {
+				  localbrowser : G.browser
+				, smb          : 'samba'
+				, snapserver   : 'snapcast'
+			}
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
 			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = [ 'cmd', 'statuspkg', pkgname, id ];

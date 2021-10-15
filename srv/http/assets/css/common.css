@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern-20211001.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern-20211015.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -138,6 +138,8 @@ input::-moz-focus-inner {
 .fa-features::before { content: "\f50B" }
 .fa-file-music::before { content: "\f549" }
 .fa-file-playlist::before { content: "\f548" }
+.fa-firefox::before {content: "\f589"; position: absolute; color: var( --cgl ); }
+.fa-firefox::after {content: "\f58A"; position: relative; } /* position: relative - fix order */
 .fa-flash::before { content: "\f566" }
 .fa-folder::before { content: "\f540" }
 .fa-folder-cascade::before { content: "\f54A" }
