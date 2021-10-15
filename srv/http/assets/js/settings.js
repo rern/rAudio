@@ -384,7 +384,7 @@ $( '#help' ).click( function() {
 		var visible = $( '.help-block:not(.hide)' ).length > 0;
 		$( this ).toggleClass( 'bl', !visible );
 		$( '.section' ).each( function() {
-			if ( $( this ).find( 'div:eq( 0 )' ).hasClass( 'hide' ) ) return
+			if ( $( this ).hasClass( 'hide' ) ) return
 			
 			$( this ).find( '.help-block' ).toggleClass( 'hide', visible );
 		} )

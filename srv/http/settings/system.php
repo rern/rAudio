@@ -78,8 +78,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries"></ul>
-	<div class="help-block hide">
-Available sources, local USB and NAS mounts, for Library.
+	<div class="help-block hide">Available sources, local USB and NAS mounts, for Library.
  • USB drive will be found and mounted automatically.
  • Network shares must be manually configured.
  • If mount failed, try in SSH terminal:

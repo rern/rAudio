@@ -129,14 +129,10 @@ heading {
 	letter-spacing: 5px;
 }
 heading.sub {
-	margin: 5px 0 5px 0;
+	margin: 5px 0 10px 0;
 	padding-bottom: 5px;
 	line-height: 24px;
 	font-size: 18px;
-}
-heading.noline {
-	margin-bottom: 0;
-	border-bottom: none;
 }
 heading i {
 	width: 50px;
@@ -393,7 +389,7 @@ input:checked + .switchlabel.disabled:after {
 	text-align: left;
 }
 .qr {
-	margin: 5px 0 10px;
+	margin: 5px 0;
 	width: 130px;
 	height: 130px;
 }

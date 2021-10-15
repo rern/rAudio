@@ -5,8 +5,10 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan', 'search wh' ]
-	, 'help'    => <<<html
-As sender (to another device)
+] );
+?>
+	<ul id="listbt" class="entries"></ul>
+	<div class="help-block hide">As sender (to another device)
  • Pairing - Turn on discovery mode on receiver device.
  • Search the device on RPi and connect.
  • Power on/off paired devices connect/disconnect automatically.
@@ -15,10 +17,7 @@ As receiver (from another device)
  • Make pairing/connecting from sender device. No authorization required.
  • Connection from sender start renderer mode automatically.
  • Turn off discoverable to hide from unpaired senders.
-html
-] );
-?>
-<ul id="listbt" class="entries"></ul>
+</div>
 </div>
 <div id="divwl" class="section">
 <?php
@@ -27,12 +26,11 @@ htmlHead( [ //////////////////////////////////
 	, 'status'  => 'wlan'
 	, 'button'  => [ 'wladd', 'plus-circle wh' ]
 	, 'button1' => [ 'wlscan', 'search wh' ]
-	, 'help'    => <<<html
-Access points with less than -66dBm should not be used.
-html
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
+	<div class="help-block hide">Access points with less than -66dBm should not be used.
+</div>
 </div>
 <div id="divlan" class="section">
 <?php
@@ -51,13 +49,13 @@ htmlHead( [ //////////////////////////////////
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web User Interface'
 	, 'status' => 'avahi'
-	, 'help'   => <<<html
-Scan QR code or use IP address to connect with web user interface.
-html
 ] );
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>
 	<div id="qrwebui" class="qr"></div>
+	<div class="help-block hide">
+Scan QR code or use IP address to connect with web user interface.
+</div>
 </div>
 <div id="divaccesspoint" class="section hide">
 <?php
