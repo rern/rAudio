@@ -48,7 +48,7 @@ foreach( $arrayalias as $alias ) {
 	$uninstallfile = file_exists( "/usr/local/bin/uninstall_$alias.sh" );
 	if ( $nouninstall || $uninstallfile ) {
 		$installed = ' class="installed"';
-		$check = '<grn>&bull;</grn> ';
+		$check = '<grn>•</grn> ';
 		if ( $nouninstall ) {
 			$taphold = ' style="pointer-events: unset"';
 			$hide = ' hide';
@@ -70,7 +70,7 @@ foreach( $arrayalias as $alias ) {
 			$updates = 1;
 			$update = 1;
 			$installed = ' class="installed update"';
-			$check = '<grn class="blink">&bull;</grn> ';
+			$check = '<grn class="blink">•</grn> ';
 			$btnin = '<a class="infobtn infobtn-primary"><i class="fa fa-update"></i> Update</a>';
 		}
 		$btnunattr = isset( $addon[ 'rollback' ] ) ? ' rollback="'.$addon[ 'rollback' ].'"' : '';
@@ -89,9 +89,9 @@ foreach( $arrayalias as $alias ) {
 	$revisionclass = $version ? 'revision' : 'revisionnone';
 	$addonrevision = $addon[ 'revision' ] ?? '';
 	if ( $addonrevision ) {
-		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br><gr>&bull;</gr> ', $addonrevision );
+		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br><gr>•</gr> ', $addonrevision );
 		$revision = str_replace( '\\', '', $addonrevision ); // remove escaped [ \" ] to [ " ]
-		$revision = '<p class="revisiontext"><gr>&bull;</gr> '.$revision.'</p>';
+		$revision = '<p class="revisiontext"><gr>•</gr> '.$revision.'</p>';
 	} else {
 		$revision = '';
 	}

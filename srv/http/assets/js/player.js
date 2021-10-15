@@ -96,8 +96,8 @@ $( '#novolume' ).click( function() {
 			, title        : 'No Volume'
 			, message      : `\
 No volume</wh> will be disabled on:
-&emsp; &bull; Select a Mixer Control
-&emsp; &bull; Enable any Volume options`
+&emsp; • Select a Mixer Control
+&emsp; • Enable any Volume options`
 			, messagealign : 'left'
 		} );
 		$( this ).prop( 'checked', 1 );

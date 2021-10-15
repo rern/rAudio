@@ -210,7 +210,7 @@ function btScan() {
 			var htmlbt = '';
 			data.forEach( function( list ) {
 				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i>';
-				if ( list.connected ) htmlbt += '<grn>&bull;&ensp;</grn>';
+				if ( list.connected ) htmlbt += '<grn>•&ensp;</grn>';
 				htmlbt += '<a class="liname wh">'+ list.name +'</a>';
 				if ( list.paired && !list.connected ) htmlbt += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlbt += '</li>';
@@ -365,7 +365,7 @@ function renderBluetooth( listbt ) {
 	var htmlbt = '';
 	listbt.forEach( function( list ) {
 		htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
-		htmlbt += list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;'
+		htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 		htmlbt += list.name +'</li>';
 	} );
 	$( '#listbt' ).html( htmlbt );
@@ -387,19 +387,19 @@ function renderPage( list ) {
 			if ( list.dbm ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 				var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
-				htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
+				htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';
 				if ( !G.hostapd ) {
-					htmlwl += list.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
+					htmlwl += list.ssid +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 				} else {
 					htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 				}
 			} else {
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ list.ssid +'</li>';
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
 			}
 		} );
 	}
 	if ( G.listeth ) {
-		var htmllan = '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ G.listeth.ip +'</li>';
+		var htmllan = '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>';
 	}
 	if ( G.activebt ) {
 		var active = $( '#listbt grn' ).length > 0;
@@ -471,7 +471,7 @@ function wlanScan() {
 			G.listwlscan.forEach( function( list ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
-				if ( list.connected ) htmlwl += '<grn>&bull;</grn>&ensp;';
+				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
 				htmlwl += list.dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
 				htmlwl += '<gr>'+ list.dbm +' dBm</gr>';
