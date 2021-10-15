@@ -52,7 +52,7 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files
-- [**Release i20210911**](https://github.com/rern/rAudio-1/releases/tag/i20210911)
+- [**Release i20211015**](https://github.com/rern/rAudio-1/releases/tag/i20211015)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
