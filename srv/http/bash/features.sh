@@ -78,23 +78,23 @@ localbrowserdisable )
 	pushstream display '{"submenu":"screenoff","value":false}'
 	;;
 localbrowserset )
-	screenoff=$(( ${args[1]} * 60 ))
-	zoom=${args[2]}
-	rotate=${args[3]}
-	cursor=${args[4]}
+	newscreenoff=$(( ${args[1]} * 60 ))
+	newzoom=${args[2]}
+	newrotate=${args[3]}
+	newcursor=${args[4]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		conf=$( cat $dirsystem/localbrowser.conf )
-		prevscreenoff=$( grep screenoff <<< "$conf" | cut -d= -f2 )
-		prevzoom=$( grep zoom <<< "$conf" | cut -d= -f2 )
-		prevrotate=$( grep rotate <<< "$conf" | cut -d= -f2 )
-		prevcursor=$( grep cursor <<< "$conf" | cut -d= -f2 )
+		. $dirsystem/localbrowser.conf
+		[[ $screenoff != $newscreenoff ]] && changedscreenoff=1
+		[[ $zoom != $newzoom ]] && changedzoom=1
+		[[ $rotate != $newrotate ]] && changedrotate=1
+		[[ $cursor != $newcursor ]] && changedcursor=1
 	fi
-	if [[ $screenoff != $prevscreenoff ]]; then
+	if [[ -n $changedscreenoff ]]; then
 		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 		[[ $screenoff != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
-	if [[ $rotate != $prevrotate ]]; then
+	if [[ -n $changedrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			declare -A deg=( [NORMAL]=0 [CW]=270 [CCW]=90 [UD]=180 )
 			degree=${deg[$rotate]}
@@ -103,7 +103,6 @@ localbrowserset )
 			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
 			reboot=1
 		else
-			changerotate=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $rotate == NORMAL ]]; then
 				rm -f $rotateconf
@@ -126,13 +125,16 @@ cursor=$cursor
 " > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
 		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+		systemctl disable --now getty@tty1
 	fi
-	systemctl disable --now getty@tty1
 	if [[ -n $reboot ]]; then
 		echo reboot
-	elif [[ $zoom != $prevzoom || -n $changerotate || $cursor != $prevcursor ]]; then
-		systemctl restart bootsplash localbrowser
-		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+	else
+		systemctl -q is-active localbrowser && active=1
+		if [[ -z $active || -n $changedzoom || -n $changedrotate || -n $changedcursor ]]; then
+			systemctl restart bootsplash localbrowser
+			systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+		fi
 	fi
 	pushRefresh
 	;;
