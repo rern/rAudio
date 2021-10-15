@@ -18,21 +18,6 @@ grep -q '^mpd.*bash$' /etc/passwd || chsh -s /bin/bash mpd
 [[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pkg+=' alsaequal'
 # 20210924
 [[ ! -e /usr/bin/ntpdate ]] && pkg+=' ntp'
-# 20210911
-! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
-# 20210903
-[[ ! -e /usr/bin/mpd_oled ]] && pkg+=' audio_spectrum_oled'
-
-[[ -n $pkg ]] && pacman -Sy --noconfirm $pkg
-
-for name in lcdchar localbrowser powerbutton; do
-	mv -f /etc/$name.conf $dirsystem &> /dev/null
-done
-
-for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval powerbuttonpins relayspins replaygainset soundprofileval soxr vuledpins; do
-	newname=$( echo $name | sed 's/pins\|set\|val//' )
-	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
-done
 # 20200921
 if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
 	names=$( jq .name /etc/relays.conf )
@@ -59,6 +44,18 @@ offd=( 2 2 2 )
 timer=5
 EOF
 fi
+for name in lcdchar localbrowser powerbutton; do
+	mv -f /etc/$name.conf $dirsystem &> /dev/null
+done
+
+for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval powerbuttonpins relayspins replaygainset soundprofileval soxr vuledpins; do
+	newname=$( echo $name | sed 's/pins\|set\|val//' )
+	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
+done
+# 20210911
+! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
+
+[[ -n $pkg ]] && pacman -Sy --noconfirm $pkg
 
 installstart "$1"
 

@@ -1,0 +1,11 @@
+[Unit]
+Description=Browser on RPi
+After=startup.service
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/sudo /usr/bin/startx
+ExecStop=/usr/bin/killall Xorg
+
+[Install]
+WantedBy=multi-user.target
