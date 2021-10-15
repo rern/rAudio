@@ -882,7 +882,7 @@ stationcoverreset )
 	;;
 statuspkg )
 	echo "$( pacman -Q ${args[1]} )
-$( systemctl status ${args[2]} )"
+$( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
 	;;
 thumbgif )
 	type=${args[1]}
