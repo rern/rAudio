@@ -30,6 +30,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="systemlabel" class="col-l text gr">
 			Version
 		<br>Kernel
+		<br>Firmware
 		<br>Hardware
 		<br>SoC
 		<br>CPU

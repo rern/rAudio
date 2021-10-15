@@ -820,6 +820,7 @@ function renderPage( list ) {
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel
+		+'<br>'+ G.firmware
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
 		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
 		+'<br>'+ cpu

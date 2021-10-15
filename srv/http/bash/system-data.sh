@@ -152,6 +152,7 @@ data+='
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "bluetooth"        : '$bluetooth'
 , "bluetoothconf"    : '$bluetoothconf'
+, "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
