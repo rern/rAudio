@@ -969,8 +969,8 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 		var message = 'Update thumbnails and directory icons?'
 	} else {
 		var message = 'With existing album coverarts:'
-					+'<br>  &bull; Create thumbnails'
-					+'<br>  &bull; Create directory icons'
+					+'<br>  • Create thumbnails'
+					+'<br>  • Create directory icons'
 	}
 	info( {
 		  icon         : '<i class="iconcover"></i>'

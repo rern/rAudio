@@ -636,7 +636,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, title        : 'Tag Editor'
 				, width        : 500
 				, message      : '<img src="'+ src +'">'
-								+'<br># '+ track +' &bull; '+ second2HMS( time )
+								+'<br># '+ track +' • '+ second2HMS( time )
 				, messagealign : 'left'
 				, footer       : '<br><span id="taglabel"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag label</span>'
 				, footeralign  : 'right'
