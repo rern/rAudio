@@ -76,7 +76,7 @@ $( '#setting-hostapd' ).click( function() {
 } );
 $( '#setting-localbrowser' ).click( function() {
 	info( {
-		  icon         : 'chromium'
+		  icon         : G.browser
 		, title        : 'Browser on RPi'
 		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
 		, selectlabel  : 'Screen rotation'
@@ -118,7 +118,7 @@ $( '#setting-localbrowser' ).click( function() {
 			bash( [ 'localbrowserset', ...values ], function( reboot ) {
 				if ( reboot ) {
 					info( {
-						  icon    : 'chromium'
+						  icon    :  G.browser
 						, title   : 'Browser on RPi'
 						, message : 'Reboot required for rotate'
 						, okcolor : orange
@@ -129,7 +129,7 @@ $( '#setting-localbrowser' ).click( function() {
 					} );
 				}
 			} );
-			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
+			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  G.browser );
 		}
 	} );
 } );

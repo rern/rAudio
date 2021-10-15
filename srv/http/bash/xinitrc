@@ -24,6 +24,15 @@ else
 fi
 matchbox-window-manager -use_cursor $cursor &
 
-chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
+if [[ -e /usr/bin/firefox ]]; then
+	dirfirefox=/root/.mozilla/firefox
+	profile=$( grep Default $dirfirefox/installs.ini | cut -d= -f2 )
+	echo 'user_pref("layout.css.devPixelsPerPx", "'$zoom'");' > $dirfirefox/$profile/user.js
+	firefox -kiosk http://localhost
+else
+	chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
+fi
+
+#chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
 #midori -e Fullscreen -a http://localhost
 #firefox -kiosk http://localhost

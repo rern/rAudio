@@ -74,6 +74,7 @@ html
 	]
 ];
 htmlSection( $head, $body );
+$browser = file_exists( '/usr/bin/firefox' ) ? 'firefox' : 'chromium';
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
@@ -92,7 +93,7 @@ html
 		  'label'    => 'Browser on RPi'
 		, 'id'       => 'localbrowser'
 		, 'sublabel' => 'localbrowser'
-		, 'icon'     => 'chromium'
+		, 'icon'     => $browser
 		, 'status'   => 'localbrowser'
 		, 'setting'  => true
 		, 'help'     => <<<html
@@ -100,7 +101,7 @@ html
  • HDMI/LCD display must be connected before boot.
  • TFT 3.5" LCD - rotate needs reboot.
 html
-		, 'exist'    => file_exists( '/usr/bin/chromium' )
+		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
 		  'label'    => 'File Sharing'

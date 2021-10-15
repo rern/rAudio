@@ -44,6 +44,7 @@ if [[ -e $xinitrc ]]; then
 		localbrowserconf='[ 0, 1, "NORMAL", false ]'
 	fi
 	data+='
+, "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"
 , "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true || echo false )'
 , "localbrowserconf" : '$localbrowserconf
 fi

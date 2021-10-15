@@ -38,7 +38,7 @@ var cmd = {
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 var pkg = {
-	  localbrowser    : 'chromium'
+	  localbrowser    : 'firefox'
 	, smb             : 'samba'
 	, snapserver      : 'snapcast'
 }
