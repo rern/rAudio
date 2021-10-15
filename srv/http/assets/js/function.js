@@ -1443,7 +1443,7 @@ function setPlaybackBlank() {
 		var qr = new QRCode( {
 			  msg : 'http://'+ G.status.ip
 			, dim : 230
-			, pad : 10
+			, pad : 11
 		} );
 		$( '#qrwebui' ).html( qr );
 		$( '.qr' ).removeClass( 'hide' );

@@ -558,15 +558,19 @@ i.map.disabled, .map.disabled i {
 #controls-cover.notime.novolume {
 	width: 50vh;
 }
-#qrip {
-	width: 100%;
-	margin-top: -30px;
-	font-size: 16px;
-	line-height: 20px;
+#qrwebui {
+	height: 230px;
 }
 #qrwebui svg {
 	fill: var( --cg60 );
 	background: #000000;
+}
+#qrip {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	font-size: 16px;
+	line-height: 20px;
 }
 #coverart svg .text {
 	fill: var( --cw ) !important;
