@@ -33,6 +33,4 @@ else
 	chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
 fi
 
-#chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
 #midori -e Fullscreen -a http://localhost
-#firefox -kiosk http://localhost
