@@ -1,5 +1,5 @@
-#listwlscan .fa-lock { font-size: 16px; vertical-align: 1px; }
-
+#listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
+.container .selectric-wrapper { height: 40px }
 .menu {
 	position: absolute;
 	margin-left: 40px;
@@ -99,7 +99,7 @@ pre {
 	margin-bottom: 20px;
 	line-height: 22px;
 	color: var( --cg75 );
-	white-space: normal;
+	white-space: pre-wrap;
 }
 .help-block .fa {
 	width: 20px;
@@ -129,14 +129,10 @@ heading {
 	letter-spacing: 5px;
 }
 heading.sub {
-	margin: 5px 0 5px 0;
+	margin: 5px 0 10px 0;
 	padding-bottom: 5px;
 	line-height: 24px;
 	font-size: 18px;
-}
-heading.noline {
-	margin-bottom: 0;
-	border-bottom: none;
 }
 heading i {
 	width: 50px;
@@ -259,7 +255,7 @@ code {
 }
 .entries {
 	display: block;
-	margin: 0 0 10px 0;
+	margin: -10px 0 10px 0;
 	padding: 0;
 	line-height: 42px;
 	list-style: none;
@@ -283,9 +279,6 @@ code {
 	padding-top: 3px;
 	font-size: 18px;
 	border-bottom: 1px solid var( --cga );
-}
-.entries li:first-of-type {
-	border-top: 1px solid var( --cg );
 }
 .entries li span {
 	float: left;
@@ -396,7 +389,7 @@ input:checked + .switchlabel.disabled:after {
 	text-align: left;
 }
 .qr {
-	margin: 5px 0 10px;
+	margin: 5px 0;
 	width: 130px;
 	height: 130px;
 }
@@ -425,7 +418,7 @@ input:checked + .switchlabel.disabled:after {
 	height: 40px;
 	text-align: right;
 	padding-right: 15px;
-	padding-top: 9px;
+	padding-top: 5px;
 }
 .col-l.text {
 	padding-top: 0;
@@ -444,14 +437,25 @@ input:checked + .switchlabel.disabled:after {
 	vertical-align: 0;
 	text-align: center
 }
-.col-l.single i {
-	vertical-align: -3px;
-}
-.col-l.icon {
-	padding-top: 2px;
-}
 .col-l i.fa-status {
 	font-size: 15px;
+}
+.col-l a {
+	display: inline-block;
+	line-height: 16px;
+	color: var( --cw );
+}
+.col-l gr {
+	display: block;
+	font-weight: 300;
+}
+.col-l.single { padding-top: 9px }
+.col-l.single gr { display: none }
+.col-l.single a { color: var( --cw ) }
+.col-l.single i { vertical-align: -3px }
+
+.col-l.icon {
+	padding-top: 2px;
 }
 .settings i {
 	color: var( --cw );
@@ -459,17 +463,6 @@ input:checked + .switchlabel.disabled:after {
 .w2x {
 	width: 2em;
 	text-align: center;
-}
-.col-l.double {
-	padding-top: 5px;
-}
-.col-l.double gr {
-	font-weight: 300;
-}
-.col-l.double a {
-	display: inline-block;
-	line-height: 16px;
-	color: var( --cw );
 }
 .col-r {
 	width: calc( 100% - 170px );
@@ -579,7 +572,7 @@ input:checked + .switchlabel.disabled:after {
 	}
 }
 @media (max-width: 515px) {
-	.help-block {
+	.col-r .help-block {
 		margin-left: -170px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
@@ -610,6 +603,7 @@ input:checked + .switchlabel.disabled:after {
 	#guide .btn i {
 		margin: 3px auto 0;
 	}
+	.selectric-wrapper + .setting,
 	#guide .btn span {
 		display: none;
 	}
@@ -644,7 +638,7 @@ input:checked + .switchlabel.disabled:after {
 	.title {
 		letter-spacing: 3px;
 	}
-	#mpd .help {
+	#divmpd .help {
 		display: none;
 	}
 }

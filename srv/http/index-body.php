@@ -187,21 +187,12 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$html = menucommon( $mode.'add', $mode.'replace' );
 	$menu.= menudiv( $mode, $html );
 }
-
 $menu.= '</div>';
-$modeicon = '
-	<i id="i-random" class="fa fa-random hide"></i>
-	<i id="i-repeat" class="fa fa-repeat hide"></i>
-	<i id="i-single" class="fa fa-single hide"></i>
-	<i id="i-repeat1" class="fa fa-repeat-single hide"></i>
-	<i id="i-consume" class="fa fa-flash hide"></i>
-	<i id="i-librandom" class="fa fa-dice hide"></i>
-	<i id="i-mute" class="fa fa-mute hide"></i>
-	<i id="i-btclient" class="fa fa-bluetooth-client hide"></i>
-	<i id="i-update" class="fa fa-library blink hide"></i>
-	<i id="i-addons" class="fa fa-jigsaw hide"></i>
-	<i id="i-relays" class="fa fa-relays hide"></i>
-';
+$ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btclient', 'libupdate', 'addons', 'relays' ];
+$modeicon = '';
+foreach( $ids as $id ) {
+	$modeicon.= '<i id="i-'.$id.'" class="fa fa-'.$id.' hide"></i>';
+}
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 ?>

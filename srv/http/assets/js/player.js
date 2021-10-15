@@ -1,34 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.enable' ).click( function() {
-	var idname = {
-		  buffer       : 'Custom Audio Buffer'
-		, bufferoutput : 'Custom Output Buffer'
-		, crossfade    : 'Crossfade'
-		, custom       : "User's Custom Settings"
-		, replaygain   : 'Replay Gain'
-		, soxr         : 'SoXR Custom Settings'
-	}
-	var id = this.id;
-	if ( $( this ).prop( 'checked' ) ) {
-		$( '#setting-'+ id ).click();
-	} else {
-		bash( [ id +'disable' ] );
-		notify( idname[ id ], 'Disable ...', 'mpd' );
-	}
-} );
-$( '.enablenoset' ).click( function() {
-	var idname = {
-		  autoupdate    : 'Auto Update'
-		, equalizer     : 'Equalizer'
-		, ffmpeg        : 'FFmpeg Decoder'
-		, normalization : 'Normalization'
-	}
-	var checked = $( this ).prop( 'checked' );
-	var id = this.id;
-	notify( idname[ id ], checked, 'mpd' );
-	bash( [ id, checked ] );
-} );
 var setmpdconf = '/srv/http/bash/mpd-conf.sh';
 var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
@@ -125,8 +96,8 @@ $( '#novolume' ).click( function() {
 			, title        : 'No Volume'
 			, message      : `\
 No volume</wh> will be disabled on:
-&emsp; &bull; Select a Mixer Control
-&emsp; &bull; Enable any Volume options`
+&emsp; • Select a Mixer Control
+&emsp; • Enable any Volume options`
 			, messagealign : 'left'
 		} );
 		$( this ).prop( 'checked', 1 );
@@ -343,10 +314,7 @@ function renderPage( list ) {
 	}
 	if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 	$( '#statusvalue' ).html( htmlstatus );
-	if ( G.asoundcard == -1 ) {
-		$( '.soundcard' ).addClass( 'hide' );
-	} else {
-		$( '.soundcard' ).removeClass( 'hide' );
+	if ( G.asoundcard != -1 ) {
 		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {

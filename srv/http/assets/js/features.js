@@ -1,75 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-// hostapd
-if ( set ) setTimeout( function() { $( '#'+ set ).click() }, 900 );
-
-$( '#ip' ).html( 'http://'+ location.host +':8000' );
-
-$( '.enable' ).click( function() {
-	var checked = $( this ).prop( 'checked' );
-	if ( $( this ).hasClass( 'disabled' ) ) {
-		$( this ).prop( 'checked', !checked );
-		return
-	}
-	
-	var idname = {
-		  localbrowser : [ 'Browser on RPi',       'chromium' ]
-		, login        : [ 'Password Login',       'lock' ]
-		, mpdscribble  : [ 'Last.fm Scrobbler',    'lastfm' ]
-		, smb          : [ 'Samba - File Sharing', 'networks' ]
-		, snapclient   : [ 'SnapClient Renderer',  'snapcast' ]
-	}
-	var id = this.id;
-	if ( checked ) {
-		$( '#setting-'+ id ).click();
-	} else {
-		if ( id !== 'login' ) {
-			var nameicon = idname[ id ];
-			notify( nameicon[ 0 ], 'Disable ...', nameicon[ 1 ] );
-			bash( [ id +'disable' ] );
-		} else {
-			$( '#login' ).prop( 'checked', G.login );
-			info( {
-				  icon          : 'lock'
-				, title         : 'Password Login'
-				, message       : 'Disable:'
-				, passwordlabel : 'Password'
-				, pwdrequired   : 1
-				, ok            : function() {
-					$.post( 'cmd.php', {
-						  cmd      : 'login'
-						, password : infoVal()
-					}, function( std ) {
-						if ( std ) {
-							notify( 'Password Login', 'Disable ...', 'lock' );
-							bash( [ id +'disable' ] );
-						} else {
-							passwordWrong();
-						}
-					} );
-				}
-			} );
-		}
-	}
-} );
-$( '.enablenoset' ).click( function() {
-	var idname = {
-		  autoplay         : [ 'Play on Startup',                  'play-power' ]
-		, autoplaycd       : [ 'Play on Insert CD',                'play-cd' ]
-		, localbrowser     : [ 'Chromium - Browser on RPi',        'chromium' ]
-		, 'shairport-sync' : [ 'AirPlay Renderer',                 'airplay' ]
-		, snapserver       : [ 'Snapcast - Sync Streaming Server', 'snapcast' ]
-		, spotifyd         : [ 'Spotify Connect',                  'spotify' ]
-		, streaming        : [ 'HTTP Streaming',                   'mpd' ]
-		, upmpdcli         : [ 'UPnP Renderer',                    'upnp' ]
-	}
-	var id = this.id;
-	var checked = $( this ).prop( 'checked' );
-	var nameicon = idname[ id ];
-	notify( nameicon[ 0 ], checked, nameicon[ 1 ] );
-	bash( [ id, checked ] );
-} );
-
 $( '#setting-snapclient' ).click( function() {
 	info( {
 		  icon         : 'snapcast'
@@ -103,12 +33,7 @@ $( '#hostapd' ).click( function() {
 			, message : '<wh>Wi-Fi is currently connected.</wh>'
 						 +'<br>Disconnect and continue?'
 			, cancel  : function() {
-				if ( set ) {
-					loader();
-					location.href = '/settings.php?p=networks';
-				} else {
-					$( '#hostapd' ).prop( 'checked', 0 );
-				}
+				$( '#hostapd' ).prop( 'checked', 0 );
 			}
 			, ok      : function() {
 				$( '#hostapd' ).click();
@@ -134,12 +59,7 @@ $( '#setting-hostapd' ).click( function() {
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : function() {
-			if ( set ) {
-				loader();
-				location.href = '/settings.php?p=networks';
-			} else {
-				$( '#hostapd' ).prop( 'checked', G.hostapd );
-			}
+			$( '#hostapd' ).prop( 'checked', G.hostapd );
 		}
 		, ok           : function() {
 			var values = infoVal();
@@ -156,13 +76,13 @@ $( '#setting-hostapd' ).click( function() {
 } );
 $( '#setting-localbrowser' ).click( function() {
 	info( {
-		  icon         : 'chromium'
+		  icon         : G.browser
 		, title        : 'Browser on RPi'
 		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
 		, selectlabel  : 'Screen rotation'
-		, boxwidth     : 80
+		, boxwidth     : 100
 		, select       : { 'Normal': 'NORMAL', '90°&ensp;&#xf524;': 'CW', '90°&ensp;&#xf523;': 'CCW', '180°': 'UD' } 
-		, checkbox     : [ 'Mouse pointer' ]
+		, checkbox     : [ 'Pointer' ]
 		, order        : [ 'text', 'select', 'checkbox' ]
 		, values       : G.localbrowserconf
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
@@ -193,10 +113,12 @@ $( '#setting-localbrowser' ).click( function() {
 			} else if ( zoom > 2 ) {
 				$input.eq( 1 ).val( 2 );
 			}
-			bash( [ 'localbrowserset', ...infoVal() ], function( reboot ) {
+			var values = infoVal();
+			values[ 1 ] = +values[ 1 ]; // fix: missing leading 0 - '.7' > 0.7
+			bash( [ 'localbrowserset', ...values ], function( reboot ) {
 				if ( reboot ) {
 					info( {
-						  icon    : 'chromium'
+						  icon    :  G.browser
 						, title   : 'Browser on RPi'
 						, message : 'Reboot required for rotate'
 						, okcolor : orange
@@ -207,7 +129,7 @@ $( '#setting-localbrowser' ).click( function() {
 					} );
 				}
 			} );
-			notify( 'Chromium - Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...', 'chromium' );
+			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  G.browser );
 		}
 	} );
 } );
@@ -254,6 +176,32 @@ $( '#setting-mpdscribble' ).click( function() {
 			notify( 'Scrobbler', G.mpdscribble ? 'Change ...' : 'Enable ...', 'lastfm' );
 		}
 	} );
+} );
+$( '#login' ).click( function() {
+	if ( $( this ).prop( 'checked' ) ) {
+		$( '#setting-login' ).click();
+	} else {
+		info( {
+			  icon          : 'lock'
+			, title         : 'Password Login'
+			, message       : 'Disable:'
+			, passwordlabel : 'Password'
+			, pwdrequired   : 1
+			, ok            : function() {
+				$.post( 'cmd.php', {
+					  cmd      : 'login'
+					, password : infoVal()
+				}, function( std ) {
+					if ( std ) {
+						notify( 'Password Login', 'Disable ...', 'lock' );
+						bash( [ id +'disable' ] );
+					} else {
+						passwordWrong();
+					}
+				} );
+			}
+		} );
+	}
 } );
 $( '#setting-login' ).click( function() {
 	info( {

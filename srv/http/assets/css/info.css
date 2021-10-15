@@ -544,7 +544,7 @@ hr {
 }
 @media ( max-width: 330px ) {
 	#infoOverlay {
-		transform: scale( 0.9 ) translateY(2.5%);
+		transform: scale( 0.9 );
 		transform-origin: top;
 		width: calc( 100% / 0.9 );
 		left: calc( -100% / 18 );

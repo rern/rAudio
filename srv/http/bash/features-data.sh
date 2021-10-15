@@ -17,12 +17,9 @@ data+='
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
-	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	hostapdpwd=$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )
-	hostapdconf="[ \"$hostapdip\",\"$hostapdpwd\" ]"
 	data+='
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
-, "hostapdconf"      : '$hostapdconf'
+, "hostapdconf"      : '$( /srv/http/bash/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
 fi
@@ -47,6 +44,7 @@ if [[ -e $xinitrc ]]; then
 		localbrowserconf='[ 0, 1, "NORMAL", false ]'
 	fi
 	data+='
+, "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"
 , "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true || echo false )'
 , "localbrowserconf" : '$localbrowserconf
 fi

@@ -31,9 +31,8 @@ span.timer {
 span.timer i {
 	vertical-align: -2px;
 }
-#gpiosvg {
-	width: 100%;
-	max-width: 393px;
+svg {
+	max-width: 100%;
 }
 #gpiopin,
 #gpiopin1 {
@@ -50,7 +49,6 @@ span.timer i {
 .gpio-float-r {
 	float: left;
 }
-#gpio-name,
 #gpio-name input {
 	width: 120px;
 }
@@ -80,7 +78,6 @@ span.timer i {
 }
 input {
 	margin-bottom: 5px !important;
-	height: 39px !important;
 	padding: 0 10px !important;
 	font-family: Lato;
 	font-size: 15px !important;

@@ -37,11 +37,6 @@ var cmd = {
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
-var pkg = {
-	  localbrowser    : 'chromium'
-	, smb             : 'samba'
-	, snapserver      : 'snapcast'
-}
 
 function codeToggle( id, target ) {
 	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
@@ -51,6 +46,11 @@ function codeToggle( id, target ) {
 	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
 		var i = services.indexOf( id );
 		if ( i !== -1 ) {
+			var pkg = {
+				  localbrowser : G.browser
+				, smb          : 'samba'
+				, snapserver   : 'snapcast'
+			}
 			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
 			if ( id === 'mpdscribble' ) id+= '@mpd';
 			var command = [ 'cmd', 'statuspkg', pkgname, id ];
@@ -282,8 +282,6 @@ document.title = page;
 
 refreshData();
 
-$( '#'+ page ).addClass( 'active' );
-if ( page === 'relays' ) $( '#help' ).addClass( 'hide' );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 $( document ).keyup( function( e ) {
@@ -383,9 +381,14 @@ $( '#help' ).click( function() {
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
-		var visible = $( '.help-block:not(.hide)' ).length > 0;
+		var visible = $( '.help-block:not( .hide )' ).length > 0;
 		$( this ).toggleClass( 'bl', !visible );
-		$( '.help-block' ).toggleClass( 'hide', visible );
+		$( '.section' ).each( function() {
+			if ( $( this ).hasClass( 'hide' ) ) return
+			
+			$( this ).find( '.help-block' ).toggleClass( 'hide', visible );
+		} )
+		
 	} else {
 		var visible = $( '#bar-bottom' ).css( 'display' ) !== 'none';
 		$( '#bar-bottom' ).css( 'display', visible ? '' : 'block' );
@@ -393,8 +396,8 @@ $( '#help' ).click( function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 } );
 $( '.help' ).click( function() {
-	$( this ).parent().parent().find( '.help-block' ).toggleClass( 'hide' );
-	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
+	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
+	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).hasClass( 'help' )
@@ -402,10 +405,36 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
 	) return
 	
-	var datastatus = $( this ).data( 'status' ) || $( this ).parent().data( 'status' );
+	var $this = $( this );
+	var datastatus = $this.data( 'status' ) || $this.parent().data( 'status' );
 	codeToggle( datastatus, e.target );
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
+} );
+$( '.switch' ).click( function() {
+	var id = this.id;
+	if ( id === 'backup' || id === 'restore' ) return
+	
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		$this.prop( 'checked', !checked );
+		return
+	}
+	
+	var label = $this.data( 'label' );
+	var icon = $this.data( 'icon' );
+	var checked = $this.prop( 'checked' );
+	if ( $this.hasClass( 'common' ) ) {
+		if ( checked ) {
+			$( '#setting-'+ id ).click();
+		} else {
+			notify( label, 'Disable ...', icon );
+			bash( [ id +'disable' ] );
+		}
+	} else {
+		notify( label, checked, icon );
+		bash( [ this.id, checked ] );
+	}
 } );

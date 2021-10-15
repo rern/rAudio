@@ -211,7 +211,7 @@ function coverartChange() {
 function coverartDefault() {
 	if ( G.display.vumeter ) return
 	
-	if ( G.display.novu ) {
+	if ( !G.display.covervu ) {
 		$( '#coverart' )
 			.attr( 'src', G.coverdefault )
 			.css( 'border', G.coverdefault === G.coverart ? 'none' : '' )
@@ -273,7 +273,7 @@ function curlPackage( pkg, active, enabled ) {
 	return 'curl -s -X POST http://127.0.0.1/pub?id=package -d \'[ "'+ pkg +'", '+ active +', '+ enabled +' ]\''
 }
 function displayBars() {
-	if ( !$( '#bio' ).hasClass( 'hide' ) || 'coverTL' in G ) return
+	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
 	var wW = document.body.clientWidth;
 	var smallscreen = G.wH < 590 ||wW < 500;
@@ -319,10 +319,7 @@ function displayPlayback() {
 	var time = $time.is( ':visible' );
 	var cover = G.display.cover;
 	var volume = $volume.is( ':visible' );
-	$cover
-		.toggleClass( 'hide', !cover )
-		.toggleClass( 'coversmall', G.display.coversmall );
-	$( '#coverart' ).css( 'width', G.display.coversmall ? 230 : '' );
+	$cover.toggleClass( 'hide', !cover );
 	if ( ( !time || !volume ) && G.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
 		if ( !time && !volume ) {
@@ -514,6 +511,7 @@ function hideGuide() {
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.coveredit' ).css( 'z-index', '' );
+		$( '#coverart' ).css( 'border', '' );
 	}
 }
 function HMS2Second( HMS ) {
@@ -650,9 +648,9 @@ var chkplayback = {
 	, time         : 'Time'
 	, radioelapsed : 'WebRadio time'
 	, cover        : 'Coverart'
-	, vumeter      : 'VU meter'
+	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> VU cover'
 	, volume       : 'Volume'
-	, coversmall   : 'Small coverart'
+	, vumeter      : 'VU meter'
 	, buttons      : 'Buttons'
 	, noswipe      : 'Disable swipe'
 }
@@ -663,8 +661,6 @@ function infoPlayback() {
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );
 	} );
-	keys.push( 'novu' );
-	values.push( G.display.novu )
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback Display'
@@ -672,18 +668,9 @@ function infoPlayback() {
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
-		, radio        : {
-			  '<i class="imgicon iconcover"></i>'              : true
-			, '<img class="imgicon" src="/assets/img/vu.svg">' : false
-		}
-		, radiocolumn  : 1
-		, order        : [ 'checkbox', 'radio' ]
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent tr:last' ).before( '<tr><td colspan="2" class="gr">Default if no coverart found:</td></tr>' );
-			var $coverdefault = $( '#infoContent tr' ).slice( -2 );
-			$coverdefault.toggleClass( 'hide', !G.display.cover || G.display.vumeter );
 			var $chk = $( '#infoContent input' );
 			keys.forEach( function( k, i ) {
 				window[ '$'+ k ] = $chk.eq( i );
@@ -733,22 +720,22 @@ function infoPlayback() {
 				var c = $cover.prop( 'checked' );
 				var v = $volume.prop( 'checked' );
 				if ( c ) {
-					displayCheckboxSet( coversmall, 1 );
 					displayCheckboxSet( vumeter, 1, 0 );
-					$vumeter.prop( 'disabled', 0 );
-					$coverdefault.toggleClass( 'hide', 0 );
+					$covervu.add( $vumeter ).prop( 'disabled', 0 );
 				} else {
-					displayCheckboxSet( coversmall, 0, 0 );
 					displayCheckboxSet( vumeter, 0, 0 );
 					if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
-					$coverdefault.toggleClass( 'hide', true );
+					displayCheckboxSet( covervu, 0, 0 );
+					displayCheckboxSet( vumeter, 0, 0 );
+					$covervu.add( $vumeter ).prop( 'disabled', 1 );
 				}
 				toggleBars( t, c );
 			} );
+			$covervu.change( function() {
+				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( vumeter, 1, 0 );
+			} );
 			$vumeter.change( function() {
-				var checked = $( this ).prop( 'checked' );
-				$coverdefault.toggleClass( 'hide', checked );
-				$( 'input[name=inforadio]' ).val( [ true ] )
+				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( covervu, 1, 0 );
 			} );
 		}
 		, ok           : function () {
@@ -1115,14 +1102,14 @@ function renderLibraryList( data ) {
 function renderPlayback() {
 	local();
 	$volumeRS.setValue( G.status.volume );
-	G.status.volumemute != 0 ? volColorMute( G.status.volumemute ) : volColorUnmute();
+	G.status.volumemute != 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		setPlaybackBlank();
 		return
 	}
 	
-	$( '.emptyadd' ).addClass( 'hide' );
+	$( '.emptyadd, .qr' ).addClass( 'hide' );
 	$( '#coverart' ).css( 'opacity', '' );
 	$( '#divcover .coveredit.cover' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
@@ -1324,26 +1311,26 @@ function setButtonUpdateAddons( updateaddons ) {
 	}
 }
 function setButtonUpdating() {
+	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
 	if ( G.status.updating_db ) {
-		if ( $( '#bar-bottom' ).is( ':visible' ) ) {
-			if ( !G.localhost ) {
-				$( '#library, #button-library' ).addClass( 'blink' );
-			} else {
-				$( '#library, #button-library' )
-					.removeClass( 'fa-library' )
-					.addClass( 'fa-refresh-library' );
-			}
-		} else {
-			$( '#i-update, #ti-update' ).removeClass( 'blink' );
+		$( '#library, #button-library' ).addClass( 'blink' );
+		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-			$( '#'+ prefix +'-update' ).removeClass( 'hide' )
+			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
+		}
+		if ( G.localhost ) {
+			$( '#library, #button-library, #i-libupdate, #ti-libupdate' ).removeClass( 'blink' );
+			$( '#library, #button-library' )
+				.removeClass( 'fa-library' )
+				.addClass( 'fa-refresh-library' );
 		}
 	} else {
-		$( '#library, #button-library, .lib-icon.blink' ).removeClass( 'blink' );
-		$( '#i-update, #ti-update' ).addClass( 'hide' );
-		if ( G.localhost ) $( '#library, #button-library' )
-							.removeClass( 'fa-refresh-library' )
-							.addClass( 'fa-library' );
+		$( '#library, #button-library' ).removeClass( 'blink' );
+		if ( G.localhost ) {
+			$( '#library, #button-library' )
+				.removeClass( 'fa-refresh-library' )
+				.addClass( 'fa-library' );
+		}
 	}
 }
 function setCoverart() {
@@ -1396,7 +1383,7 @@ function setInfo() {
 	$( '#album' ).toggleClass( 'disabled', G.status.Album === '' );
 	setInfoScroll();
 	var sampling = G.status.sampling;
-	if ( G.status.stream ) sampling += ' &bull; '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
+	if ( G.status.stream ) sampling += ' • '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
 	$( '#sampling' ).html( sampling );
 	if ( G.status.icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa fa-', '' ) ) {
 		$( '#playericon' ).removeAttr( 'class' );
@@ -1457,7 +1444,7 @@ function setPlaybackBlank() {
 		var qr = new QRCode( {
 			  msg : 'http://'+ G.status.ip
 			, dim : 230
-			, pad : 10
+			, pad : 11
 		} );
 		$( '#qrwebui' ).html( qr );
 		$( '.qr' ).removeClass( 'hide' );
@@ -1466,7 +1453,6 @@ function setPlaybackBlank() {
 		$( '#sampling' ).empty();
 	} else {
 		$( '#coverart' ).removeClass( 'hide' );
-		$( '#page-playback .emptyadd' ).empty();
 		$( '#sampling' )
 			.css( 'display', 'block' )
 			.html( 'Network not connected:&emsp; <i class="fa fa-networks fa-lg wh"></i>&ensp;Setup' )
@@ -1645,7 +1631,7 @@ function statusRefresh() {
 		delete G.coverTL;
 		G.display = data;
 		G.display.screenoff = G.localhost;
-		G.coverdefault = G.display.novu && !G.display.vumeter ? G.coverart : G.covervu;
+		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 		displaySubMenu();
 	}, 'json' );
 	getPlaybackStatus();
@@ -1705,27 +1691,6 @@ function thumbUpdate( path ) {
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 }
-function volColorMute() {
-	$volumetooltip
-		.text( G.status.volumemute )
-		.addClass( 'bl' );
-	$volumehandle.addClass( 'bgr60' );
-	$( '#volmute' )
-		.removeClass( 'fa-volume' )
-		.addClass( 'fa-mute active' );
-	if ( $( '#volume-knob' ).is( ':hidden' ) ) {
-		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
-	}
-}
-function volColorUnmute() {
-	$volumetooltip.removeClass( 'bl' );
-	$volumehandle.removeClass( 'bgr60' );
-	$( '#volmute' )
-		.removeClass( 'fa-mute active' )
-		.addClass( 'fa-volume' );
-	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
-}
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
@@ -1748,7 +1713,7 @@ function volumeBarSet( pageX ) {
 				  duration: ms
 				, easing: 'linear'
 				, complete: function() {
-					setTimeout( volumeBarHide, 3000 );
+					G.volumebar = setTimeout( volumeBarHide, 3000 );
 				}
 			}
 		);
@@ -1760,6 +1725,39 @@ function volumeBarSet( pageX ) {
 	$( '#volume-text' ).text( G.status.volumemute || vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 	G.status.volume = vol;
+	$volumeRS.setValue( G.status.volume );
+}
+function volumeBarShow() {
+	if ( G.status.volumenone || !$( '#volume-bar' ).hasClass( 'hide' ) ) return
+	
+	G.volumebar = setTimeout( volumeBarHide, 3000 );
+	$( '#volume-text' )
+		.text( G.status.volumemute === 0 ? G.status.volume : G.status.volumemute )
+		.toggleClass( 'bl', G.status.volumemute !== 0 );
+	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+	$( '#volume-band-dn, #volume-band-up' ).removeClass( 'transparent' );
+}
+function volumeColorMute() {
+	$volumetooltip
+		.text( G.status.volumemute )
+		.addClass( 'bl' );
+	$volumehandle.addClass( 'bgr60' );
+	$( '#volmute' )
+		.removeClass( 'fa-volume' )
+		.addClass( 'fa-mute active' );
+	if ( $( '#volume-knob' ).is( ':hidden' ) ) {
+		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	}
+}
+function volumeColorUnmute() {
+	$volumetooltip.removeClass( 'bl' );
+	$volumehandle.removeClass( 'bgr60' );
+	$( '#volmute' )
+		.removeClass( 'fa-mute active' )
+		.addClass( 'fa-volume' );
+	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeDrag( vol ) {
 	if ( G.status.control ) {
@@ -1767,9 +1765,6 @@ function volumeDrag( vol ) {
 	} else {
 		bash( 'mpc volume '+ vol );
 	}
-}
-function volumePushstream() {
-	bash( [ 'volumepushstream' ] );
 }
 function vu() {
 	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).is( ':hidden' ) ) {

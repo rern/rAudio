@@ -448,17 +448,6 @@ i.map.disabled, .map.disabled i {
 	margin-top: 20px;
 	width: 100%;
 }
-.coversmall {
-	width: auto !important;
-	height: auto !important;
-	max-width: 230px !important;
-	max-height: 230px !important;
-	position: absolute; /* vertical align */
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-}
 #time-knob {
 	order: 1;
 	-webkit-order: 1;
@@ -569,15 +558,19 @@ i.map.disabled, .map.disabled i {
 #controls-cover.notime.novolume {
 	width: 50vh;
 }
-#qrip {
-	width: 100%;
-	margin-top: -30px;
-	font-size: 16px;
-	line-height: 20px;
+#qrwebui {
+	height: 230px;
 }
 #qrwebui svg {
 	fill: var( --cg60 );
 	background: #000000;
+}
+#qrip {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	font-size: 16px;
+	line-height: 20px;
 }
 #coverart svg .text {
 	fill: var( --cw ) !important;
@@ -635,9 +628,6 @@ i.map.disabled, .map.disabled i {
 	width: 20px;
 	font-size: 16px;
 	color: var( --cm );
-}
-#ti-update {
-	font-size: 14px;
 }
 #elapsed,
 #total {

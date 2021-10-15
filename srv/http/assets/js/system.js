@@ -5,35 +5,6 @@ var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
-$( '.enable' ).click( function() {
-	var idname = {
-		  bluetooth    : 'Bluetooth'
-		, lcd          : 'TFT LCD'
-		, lcdchar      : 'Character LCD'
-		, mpdoled      : 'Spectrum OLED'
-		, powerbutton  : 'Power Button'
-		, soundprofile : 'Kernel Sound Profile'
-		, vuled        : 'VU LED'
-		, wlan         : 'Wi-Fi'
-	}
-	var id = this.id;
-	if ( $( this ).prop( 'checked' ) ) {
-		$( '#setting-'+ id ).click();
-	} else {
-		bash( [ id +'disable' ] );
-		notify( idname[ id ], 'Disable ...', id );
-	}
-} );
-$( '.enablenoset' ).click( function() {
-	var idname = {
-		  onboardaudio : 'On-board Audio'
-		, relays       : 'GPIO Relay'
-	}
-	var checked = $( this ).prop( 'checked' );
-	var id = this.id;
-	notify( idname[ id ], checked, id );
-	bash( [ id, checked, checked, ( id !== 'relays' ? idname[ id ] : '' ) ] );
-} );
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var txtlcdchar = `\
@@ -94,17 +65,6 @@ $( '#refresh' ).click( function( e ) {
 				renderStatus();
 			}, 'json' );
 		}, 10000 );
-	}
-} );
-$( '#status' ).on( 'click', '.undervoltage', function() {
-	if ( $( '#codeundervoltage' ).is( ':empty' ) ) {
-		bash( 'journalctl -b | grep "Under-voltage detected"', function( log ) {
-			$( '#codeundervoltage' )
-				.html( "# journalctl -b | grep 'Under-voltage detected'\n\n"+ log )
-				.removeClass( 'hide' );
-		} );
-	} else {
-		$( '#codeundervoltage' ).toggleClass( 'hide' );
 	}
 } );
 $( '#addnas' ).click( function() {
@@ -858,22 +818,22 @@ function renderPage( list ) {
 	var cpu = G.soccpu +' <gr>@</gr> ';
 	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 	$( '#systemvalue' ).html(
-		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
-		+'<br>'+ G.kernel
+		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
+		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
+		+'<br>'+ G.firmware
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
-		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
+		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
 		+'<br>'+ cpu
 	);
 	renderStatus();
-	$( '#throttled' ).toggleClass( 'hide', $( '#status .fa-warning' ).length === 0 );
 	var html = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
 			var dataunmounted = '';
-			var dot = '<grn>&ensp;&bull;&ensp;</grn>';
+			var dot = '<grn>&ensp;•&ensp;</grn>';
 		} else {
 			var dataunmounted = ' data-unmounted="1"';
-			var dot = '<red>&ensp;&bull;&ensp;</red>';
+			var dot = '<red>&ensp;•&ensp;</red>';
 		}
 		html += '<li '+ dataunmounted;
 		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
@@ -881,37 +841,12 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	if ( G.bluetooth ) {
-		$( '#bluetooth' ).prop( 'checked', true );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', false );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Bluetooth<br><gr>bluetoothctl<i class="fa fa-status"></i></gr></a><i class="fa fa-bluetooth"></i>' );
-	} else {
-		$( '#bluetooth' ).prop( 'checked', false );
-		$( '#setting-bluetooth' ).toggleClass( 'hide', true );
-		$( '#bt' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Bluetooth<i class="fa fa-bluetooth"></i>' );
-	}
+	$( '#bluetooth' ).prop( 'checked', G.bluetooth );
+	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
+	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' ).prop( 'checked', G.wlan );
-	if ( G.wlan ) {
-		$( '#wlan' ).prop( 'checked', true );
-		$( '#setting-wlan' ).toggleClass( 'hide', false );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l double status' )
-			.html( '<a>Wi-Fi<br><gr>iw<i class="fa fa-status"></i></gr></a><i class="fa fa-wifi"></i>' );
-	} else {
-		$( '#wlan' ).prop( 'checked', false );
-		$( '#setting-wlan' ).toggleClass( 'hide', true );
-		$( '#wl' )
-			.removeAttr( 'class' )
-			.addClass( 'col-l single' )
-			.html( 'Wi-Fi<i class="fa fa-wifi"></i>' );
-	}
+	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
+	$( '#wlan' ).parent().prev().toggleClass( 'single', !G.wlan );
 	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
@@ -944,32 +879,27 @@ function renderPage( list ) {
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	selectricRender();
-	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'powerbutton', 'rfkill', 'soundprofile' ].forEach( function( id ) {
+	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
 		codeToggle( id, 'status' );
 	} );
 	resetLocal();
 	showContent();
 }
 function renderStatus() {
-	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
-	if ( G.cputemp ) {
-		status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
-	} else {
-		$( '#cputemp' ).hide();
-	}
-	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
-			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
+	var status = G.cpuload.replace( / /g, ' <gr>•</gr> ' );
+	status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
+	status += '<br>'+ G.time.replace( ' ', ' <gr>•</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
+			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		status += '<br><span class="undervoltage"><i class="fa fa-warning';
+		status += '<br><i class="fa fa-warning';
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
 		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
 			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
 		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
 			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
-		status += '&emsp;<i class="fa fa-status gr"></i></span></span>';
 	}
 	$( '#status' ).html( status );
 }

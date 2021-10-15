@@ -1,4 +1,4 @@
-// $.fn.press(), $fn.swipe(), info(), banner()
+// $.fn.press(), info(), banner()
 
 // $.fn.press(), $fn.swipe() --------------------------------------------------------
 /*
@@ -32,29 +32,6 @@ $.fn.press = function( arg1, arg2 ) {
 		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
-}
-$.fn.swipe = function( callback ) { // no delegate
-	var xstart = 0;
-	var xend = 0;
-	window.addEventListener( 'touchstart', function( e ) {
-		G.swipe = false;
-		xstart = e.touches[ 0 ].pageX;
-	}, false );
-	window.addEventListener( 'touchmove', function( e ) {
-		xend = e.touches[ 0 ].pageX;
-		G.swipe = Math.abs( xstart - xend ) > 10;
-	}, false );
-	window.addEventListener( 'touchend', function( e ) {
-		if ( !G.swipe ) return
-		
-		G.swipe = false;
-		var diff = xstart - xend;
-		if ( Math.abs( diff ) > 100 ) {
-			e.swipe = diff > 0 ? 'left' : 'right';
-			callback( e );
-		}
-	}, false );
-	return this
 }
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
@@ -538,7 +515,7 @@ function info( json ) {
 		} else {
 			O.boxW = 230;
 		}
-		$( '#infoContent' ).find( 'input:text, input:password, textarea' ).parent().css( 'width', O.boxW );
+		$( '#infoContent' ).find( 'input:text, input:password, textarea select' ).parent().css( 'width', O.boxW );
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;

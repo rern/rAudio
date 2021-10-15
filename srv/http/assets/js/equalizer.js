@@ -1,5 +1,6 @@
 var vflat = '60'.repeat( 10 );
 var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+var timeout;
 var band = [];
 var opthz = '';
 freq.forEach( function( hz, i ) {
@@ -20,7 +21,7 @@ var content = `
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
 function equalizer() {
-	bash( [ 'equalizer' ], function( data ) {
+	bash( [ 'equalizerget' ], function( data ) {
 		G.eqcurrent = data.current;
 		G.vcurrent = data.values.join( '' );
 		var eqbuttons = {}
@@ -50,10 +51,10 @@ function equalizer() {
 					var step = yH / 40;
 					$( '#infoRange input' ).on( 'touchstart', function( e ) {
 						$this = $( this );
-						ystart = e.touches[ 0 ].pageY;
+						ystart = e.changedTouches[ 0 ].pageY;
 						val = +$this.val();
 					} ).on( 'touchmove', function( e ) {
-						var pageY = e.touches[ 0 ].pageY;
+						var pageY = e.changedTouches[ 0 ].pageY;
 						var diff = ystart - pageY;
 						if ( Math.abs( diff ) < step ) return
 						
@@ -146,7 +147,11 @@ function eqButtonSet( changed ) {
 	$( '#eqflat' ).toggleClass( 'disabled', flat );
 }
 function eqValueSet( band, val ) {
+	clearTimeout( timeout );
 	bash( [ 'equalizerupdn', band, val ] );
+	timeout = setTimeout( function() {
+		bash( [ 'equalizerget', 'pushstream' ] );
+	}, 1000 );
 	var vnew = infoVal().slice( 2 ).join( '' );
 	if ( vnew !== G.vcurrent ) {
 		changed = true;

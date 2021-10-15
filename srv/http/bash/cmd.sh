@@ -18,6 +18,25 @@ addonsListGet() {
 	[[ -z $1 ]] && branch=main || branch=$1
 	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
 }
+equalizerGet() {
+	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
+	current=$( cat $dirsystem/equalizer )
+	[[ $current == '(unnamed)' ]] && presets='"(unnamed)",'
+	presets+='"Flat"'
+	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
+	if [[ -n $lines ]]; then
+		for line in "${lines[@]}"; do
+			presets+=',"'$line'"'
+		done
+	fi
+	data='{
+  "current" : "'$current'"
+, "values"  : [ '${val// /,}' ]
+, "presets" : [ '$presets' ]
+}'
+	echo $data
+	[[ $1 == pushstream ]] && pushstream equalizer "$data"
+}
 gifNotify() {
 	pushstreamNotify Thumbnail 'Resize animated GIF ...' coverart
 }
@@ -498,24 +517,10 @@ equalizer )
 	fi
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
 	[[ -n $append && $name != Flat ]] && echo $name^$val >> $dirsystem/equalizer.conf
-	[[ $type == save ]] && exit
-	
-	[[ $name == '(unnamed)' ]] && presets='"(unnamed)",'
-	presets+='"Flat"'
-	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
-	if [[ -n $lines ]]; then
-		for line in "${lines[@]}"; do
-			presets+=',"'$line'"'
-		done
-	fi
-#############
-	data='{
-  "current" : "'$name'"
-, "values"  : [ '${val// /,}' ]
-, "presets" : [ '$presets' ]
-}'
-	[[ -n $type ]] && pushstream equalizer "$data"
-	echo $data
+	[[ $type != save ]] && equalizerGet pushstream
+	;;
+equalizerget )
+	equalizerGet ${args[1]}
 	;;
 equalizerupdn )
 	band=${args[1]}
@@ -877,7 +882,7 @@ stationcoverreset )
 	;;
 statuspkg )
 	echo "$( pacman -Q ${args[1]} )
-$( systemctl status ${args[2]} )"
+$( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
 	;;
 thumbgif )
 	type=${args[1]}

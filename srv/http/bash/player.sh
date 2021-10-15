@@ -118,7 +118,7 @@ count )
 		, "webradio"    : '$( ls -U /srv/http/data/webradios/* 2> /dev/null | wc -l )
 	mpc | grep -q Updating && data+=', "updating_db":1'
 	echo {$data}
-	echo $albumartist $composer $genre > /srv/http/data/system/mpddb
+	echo $albumartist $composer $genre > $dirsystem/mpddb
 	;;
 crossfadedisable )
 	mpc crossfade 0
@@ -216,9 +216,9 @@ hwmixer )
 					| cut -d"'" -f2 \
 					| sort -u \
 					| head -1 )
-		rm -f "/srv/http/data/system/hwmixer-$aplayname"
+		rm -f "$dirsystem/hwmixer-$aplayname"
 	else
-		echo $hwmixer > "/srv/http/data/system/hwmixer-$aplayname"
+		echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
 	fi
 	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync shairport-meta

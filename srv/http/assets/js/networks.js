@@ -4,7 +4,7 @@ var accesspoint = $( '#accesspoint' ).length;
 var timeoutscan;
 $( '.back' ).click( function() {
 	clearTimeout( timeoutscan );
-	$( '#divinterface, #divaccesspoint' ).removeClass( 'hide' );
+	$( '#divinterface' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
@@ -178,7 +178,27 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#setting-accesspoint' ).click( function() {
-	location.href = 'settings.php?p=features&set=setting-hostapd';
+	info( {
+		  icon         : 'accesspoint'
+		, title        : 'Access Point'
+		, footer       : '(8 characters or more)'
+		, textlabel    : [ 'IP', 'Password' ]
+		, values       : G.hostapd.conf
+		, checkchanged : ( G.hostapd ? 1 : 0 )
+		, checkblank   : 1
+		, checklength  : { 1: [ 8, 'min' ] }
+		, ok           : function() {
+			var values = infoVal();
+			var ip = values[ 0 ];
+			var pwd = values[ 1 ];
+			var ips = ip.split( '.' );
+			var ip3 = ips.pop();
+			var ip012 = ips.join( '.' );
+			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
+			bash( [ 'hostapdset', iprange, ip, pwd ] );
+			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+		}
+	} );
 } );
 
 } );
@@ -190,7 +210,7 @@ function btScan() {
 			var htmlbt = '';
 			data.forEach( function( list ) {
 				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i>';
-				if ( list.connected ) htmlbt += '<grn>&bull;&ensp;</grn>';
+				if ( list.connected ) htmlbt += '<grn>•&ensp;</grn>';
 				htmlbt += '<a class="liname wh">'+ list.name +'</a>';
 				if ( list.paired && !list.connected ) htmlbt += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlbt += '</li>';
@@ -345,7 +365,7 @@ function renderBluetooth( listbt ) {
 	var htmlbt = '';
 	listbt.forEach( function( list ) {
 		htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
-		htmlbt += list.connected ? '<grn>&bull;</grn>&ensp;' : '<gr>&bull;</gr>&ensp;'
+		htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 		htmlbt += list.name +'</li>';
 	} );
 	$( '#listbt' ).html( htmlbt );
@@ -367,41 +387,38 @@ function renderPage( list ) {
 			if ( list.dbm ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 				var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
-				htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>&bull;</grn>&ensp;';
+				htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';
 				if ( !G.hostapd ) {
-					htmlwl += list.ssid +'<gr>&ensp;&bull;&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
+					htmlwl += list.ssid +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 				} else {
 					htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 				}
 			} else {
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>&bull;&ensp;</gr>'+ list.ssid +'</li>';
+				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
 			}
 		} );
 	}
 	if ( G.listeth ) {
-		var htmllan = '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>&bull;</grn>&ensp;'+ G.listeth.ip +'</li>';
+		var htmllan = '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>';
 	}
 	if ( G.activebt ) {
 		var active = $( '#listbt grn' ).length > 0;
-		$( '#headbt' )
-			.toggleClass( 'noline', $( '#listbt' ).html() !== '' )
-			.toggleClass( 'status', active );
-		$( '#headbt' ).data( 'status', active ? 'bt' : '' );
-		$( '#headbt .fa-status' ).toggleClass( 'hide', !active );
+		$( '#divbt heading' )
+			.toggleClass( 'status', active )
+			.data( 'status', active ? 'bt' : '' );
+		$( '#divbt .fa-status' ).toggleClass( 'hide', !active );
 		$( '#divbt' ).removeClass( 'hide' );
 	} else {
 		$( '#divbt' ).addClass( 'hide' );
 	}
 	if ( G.activewlan ) {
 		$( '#listwl' ).html( htmlwl );
-		$( '#headwl' ).toggleClass( 'noline', htmlwl !== '' );
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
 		$( '#listlan' ).html( htmllan );
-		$( '#headlan' ).toggleClass( 'noline', htmllan !== '' );
 		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
@@ -435,7 +452,7 @@ function renderQR() {
 		$( '#divwebui' ).addClass( 'hide' );
 	}
 	if ( G.hostapd ) {
-		$( '#ipwebuiap' ).html( '<gr>Web User Interface<br>http://</gr>'+ G.hostapd.ip );
+		$( '#ipwebuiap' ).html( 'Web User Interface<br>http://<wh>'+ G.hostapd.ip +'</wh>' );
 		$( '#ssid' ).text( G.hostapd.ssid );
 		$( '#passphrase' ).text( G.hostapd.passphrase )
 		$( '#qraccesspoint' ).html( qr( 'WIFI:S:'+ G.hostapd.ssid +';T:WPA;P:'+ G.hostapd.passphrase +';' ) );
@@ -454,7 +471,7 @@ function wlanScan() {
 			G.listwlscan.forEach( function( list ) {
 				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
-				if ( list.connected ) htmlwl += '<grn>&bull;</grn>&ensp;';
+				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
 				htmlwl += list.dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
 				htmlwl += '<gr>'+ list.dbm +' dBm</gr>';
