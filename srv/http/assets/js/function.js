@@ -1108,7 +1108,7 @@ function renderPlayback() {
 		return
 	}
 	
-	$( '.emptyadd' ).addClass( 'hide' );
+	$( '.emptyadd, .qr' ).addClass( 'hide' );
 	$( '#coverart' ).css( 'opacity', '' );
 	$( '#divcover .coveredit.cover' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
@@ -1452,7 +1452,6 @@ function setPlaybackBlank() {
 		$( '#sampling' ).empty();
 	} else {
 		$( '#coverart' ).removeClass( 'hide' );
-		$( '#page-playback .emptyadd' ).empty();
 		$( '#sampling' )
 			.css( 'display', 'block' )
 			.html( 'Network not connected:&emsp; <i class="fa fa-networks fa-lg wh"></i>&ensp;Setup' )
