@@ -726,9 +726,10 @@ $( '.map' ).click( function() {
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.covermap, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
-		$( '#guide-bio, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
+		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
+		$( '#coverTL, #coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.playlistlength );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
