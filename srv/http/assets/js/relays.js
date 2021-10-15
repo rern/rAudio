@@ -63,6 +63,7 @@ renderPage = function( list ) {
 		$el0.prev().prev() // 1-prv: sec. suffix; 2-prev: selectric-wrapper delay
 			.addClass( 'disabled' );
 	}
+	if ( !G.enabled ) $( '#save' ).removeClass( 'disabled' );
 	showContent();
 }
 function renderUpdate() {
@@ -87,7 +88,7 @@ function renderUpdate() {
 	}
 	D.val.timer = $( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
-	$( '.infobtn' ).toggleClass( 'disabled', values === D.values );
+	if ( G.enabled ) $( '.infobtn' ).toggleClass( 'disabled', values === D.values );
 	renderPage();
 }
 // disable default > re-enable

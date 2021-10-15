@@ -456,16 +456,10 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 	systemctl enable powerbutton
 	pushRefresh
 	;;
-relays )
-	if [[ ${args[1]} == true ]]; then
-		boolean=true
-		touch $dirsystem/relays
-	else
-		boolean=false
-		rm -f $dirsystem/relays
-	fi
+relaysdisable )
+	rm -f $dirsystem/relays
 	pushRefresh
-	pushstream display '{"submenu":"relays","value":'$boolean'}'
+	pushstream display '{"submenu":"relays","value":false}'
 	;;
 remount )
 	mountpoint=${args[1]}

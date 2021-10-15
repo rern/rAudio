@@ -414,6 +414,9 @@ $( '#bar-bottom div' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '.switch' ).click( function() {
+	var id = this.id;
+	if ( id === 'backup' || id === 'restore' ) return
+	
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', !checked );
@@ -424,7 +427,6 @@ $( '.switch' ).click( function() {
 	var icon = $this.data( 'icon' );
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'common' ) ) {
-		var id = this.id;
 		if ( checked ) {
 			$( '#setting-'+ id ).click();
 		} else {

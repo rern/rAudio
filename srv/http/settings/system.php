@@ -185,7 +185,7 @@ html
 		  'label'   => 'Relay Module'
 		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
-		, 'setting' => 'self'
+		, 'setting' => true
 		, 'help'    => <<<html
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
@@ -271,7 +271,6 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
-		, 'setting' => 'none'
 		, 'help'    => <<<html
 Backup all settings and Library database:
  • Settings
@@ -286,7 +285,6 @@ html
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'setting' => 'none'
 		, 'help'    => <<<html
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 html

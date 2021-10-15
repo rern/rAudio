@@ -65,7 +65,6 @@ $body = [
 		, 'input'       => 'HTML'       // alternative - if not switch
 		, 'setting'     => true         // true = common - setting before enable
 		                                // 'self' = self trigger setting
-		                                // 'none' = self trigger + no settings
 		, 'settingicon' => 'ICON'
 		, 'help'        => <<<html
 HELP - PHP heredoc
