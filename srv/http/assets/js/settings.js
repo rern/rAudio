@@ -381,7 +381,7 @@ $( '#help' ).click( function() {
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
-		var visible = $( '.help-block:not(.hide)' ).length > 0;
+		var visible = $( '.help-block:not( .hide )' ).length > 0;
 		$( this ).toggleClass( 'bl', !visible );
 		$( '.section' ).each( function() {
 			if ( $( this ).hasClass( 'hide' ) ) return
@@ -397,7 +397,7 @@ $( '#help' ).click( function() {
 } );
 $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
-	$( '#help' ).toggleClass( 'blue', $( '.help-block:not(.hide)' ).length !== 0 );
+	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).hasClass( 'help' )
