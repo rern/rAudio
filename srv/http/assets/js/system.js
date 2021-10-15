@@ -818,11 +818,11 @@ function renderPage( list ) {
 	var cpu = G.soccpu +' <gr>@</gr> ';
 	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 	$( '#systemvalue' ).html(
-		  'rAudio '+ G.version +' <gr>&bull; '+ G.versionui +'</gr>'
-		+'<br>'+ G.kernel
+		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
+		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
 		+'<br>'+ G.firmware
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
-		+'<br>'+ G.soc + ' <gr>&bull;</gr> '+ G.socram
+		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
 		+'<br>'+ cpu
 	);
 	renderStatus();
@@ -830,10 +830,10 @@ function renderPage( list ) {
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
 			var dataunmounted = '';
-			var dot = '<grn>&ensp;&bull;&ensp;</grn>';
+			var dot = '<grn>&ensp;•&ensp;</grn>';
 		} else {
 			var dataunmounted = ' data-unmounted="1"';
-			var dot = '<red>&ensp;&bull;&ensp;</red>';
+			var dot = '<red>&ensp;•&ensp;</red>';
 		}
 		html += '<li '+ dataunmounted;
 		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
@@ -886,10 +886,10 @@ function renderPage( list ) {
 	showContent();
 }
 function renderStatus() {
-	var status = G.cpuload.replace( / /g, ' <gr>&bull;</gr> ' );
+	var status = G.cpuload.replace( / /g, ' <gr>•</gr> ' );
 	status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
-	status += '<br>'+ G.time.replace( ' ', ' <gr>&bull;</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
-			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' &bull; ' ) +'</gr></wide>'
+	status += '<br>'+ G.time.replace( ' ', ' <gr>•</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
+			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
