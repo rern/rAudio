@@ -79,7 +79,7 @@ localbrowserdisable )
 	;;
 localbrowserset )
 	newscreenoff=$(( ${args[1]} * 60 ))
-	newzoom=${args[2]}
+	newzoom=$( awk "BEGIN { printf \"%.2f\n\", ${args[2]} / 100 }" | sed 's/\.00$//' )
 	newrotate=${args[3]}
 	newcursor=${args[4]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
@@ -118,10 +118,10 @@ localbrowserset )
 		ply-image /srv/http/assets/img/splash.png
 	fi
 	echo "\
-screenoff=$screenoff
-zoom=$zoom
-rotate=$rotate
-cursor=$cursor
+screenoff=$newscreenoff
+zoom=$newzoom
+rotate=$newrotate
+cursor=$newcursor
 " > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
 		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt

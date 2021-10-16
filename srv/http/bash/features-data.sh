@@ -39,7 +39,7 @@ xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		v=( $( cut -d= -f2 $dirsystem/localbrowser.conf ) )
-		localbrowserconf="[ $(( ${v[0]} / 60 )), ${v[1]}, \"${v[2]}\", ${v[3]} ]"
+		localbrowserconf="[ $(( ${v[0]} / 60 )), $( awk "BEGIN { printf \"%.0f\n\", ${v[1]} * 100 }" ), \"${v[2]}\", ${v[3]} ]"
 	else
 		localbrowserconf='[ 0, 1, "NORMAL", false ]'
 	fi
