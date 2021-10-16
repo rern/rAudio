@@ -621,6 +621,7 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 375px) {
 	.title {
+		margin-left: 10px;
 		letter-spacing: 5px;
 	}
 	heading {
