@@ -755,7 +755,6 @@ $( '.map' ).click( function() {
 		}
 		$( '.coveredit' ).css( 'z-index', 15 );
 		$( '#volume-text, #settings' ).addClass( 'hide' );
-		$( '#coverart' ).css( 'border', 'none' );
 		return
 	}
 	

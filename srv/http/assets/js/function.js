@@ -511,7 +511,6 @@ function hideGuide() {
 		$( '.band, #volbar' ).addClass( 'transparent' );
 		$( '.guide, #volume-bar, #volume-text' ).addClass( 'hide' );
 		$( '.coveredit' ).css( 'z-index', '' );
-		$( '#coverart' ).css( 'border', '' );
 	}
 }
 function HMS2Second( HMS ) {
