@@ -111,7 +111,7 @@ $body = [
 		, 'status'   => 'bluetoothctl'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-Pairing: &emsp; <i class="fa fa-networks"></i> Networks
+Pairing:&emsp;<i class="fa fa-networks"></i> Networks
 HTML
 	]
 	, [

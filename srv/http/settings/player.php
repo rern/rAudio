@@ -42,7 +42,7 @@ HTML
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< HTML
 Available hardware mixers of current device.
-&emsp;<i class="fa fa-volume"></i>Control current mixer device.
+<i class="fa fa-volume"></i>Control current mixer device.
 HTML
 	]
 	, [
@@ -61,7 +61,7 @@ HTML
 		, 'id'      => 'equalizer'
 		, 'help'    => <<< HTML
 10 band graphic equalizer with user presets.
-Control: &emsp; <i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
+Control:&emsp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
  • New: adjust ➤ <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
