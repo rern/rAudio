@@ -26,7 +26,7 @@ matchbox-window-manager -use_cursor $cursor &
 
 if [[ -e /usr/bin/firefox ]]; then
 	dirfirefox=/root/.mozilla/firefox
-	profile=$( grep Default $dirfirefox/installs.ini | cut -d= -f2 )
+	profile=$( grep -m1 Default $dirfirefox/profiles.ini | cut -d= -f2 )
 	echo 'user_pref("layout.css.devPixelsPerPx", "'$zoom'");' > $dirfirefox/$profile/user.js
 	firefox -kiosk http://localhost
 else
