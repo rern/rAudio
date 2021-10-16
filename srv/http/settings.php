@@ -140,9 +140,10 @@ function htmlSetting( $data ) {
 	}
 	$html.= $setting && $setting !== 'none' ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
-	$html.= '</div>';
+	$html.= '</div>
+			 <div style="clear:both"></div>
+			 </div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	$html.= '<div style="clear:both"></div></div>';
 	echo $html;
 }
 function htmlSection( $head, $body ) {

@@ -414,7 +414,7 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-l {
 	display: inline-block;
-	width: 170px;
+	width: 160px;
 	height: 40px;
 	text-align: right;
 	padding-right: 15px;
@@ -573,7 +573,7 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 515px) {
 	.col-r .help-block {
-		margin-left: -170px;
+		margin-left: -160px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}

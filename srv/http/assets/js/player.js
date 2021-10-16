@@ -307,10 +307,9 @@ function renderPage( list ) {
 	}
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
-		var counts = { song: G.counts.song, album: G.counts.album, webradio: G.counts.webradio };
-		$.each( counts, function( k, v ) {
-			htmlstatus += '<i class="fa fa-'+ k +' gr"></i>&ensp;'+ v.toLocaleString() +'&emsp; ';
-		} );
+		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
+					 +'<i class="fa fa-album gr"></i>&ensp;'+ G.counts.album.toLocaleString() +'<wide>&emsp; '
+					 +'<i class="fa fa-webradio gr"></i>&ensp;'+ G.counts.webradio.toLocaleString() +'</wide>';
 	} else {
 		htmlstatus += '<gr>Updating ...</gr>';
 	}
