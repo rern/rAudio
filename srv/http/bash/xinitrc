@@ -25,9 +25,8 @@ fi
 matchbox-window-manager -use_cursor $cursor &
 
 if [[ -e /usr/bin/firefox ]]; then
-	dirfirefox=/root/.mozilla/firefox
-	profile=$( grep -m1 Default $dirfirefox/profiles.ini | cut -d= -f2 )
-	echo 'user_pref("layout.css.devPixelsPerPx", "'$zoom'");' > $dirfirefox/$profile/user.js
+	dirprofile=$( ls -d /root/.mozilla/firefox/*release )
+	echo 'user_pref("layout.css.devPixelsPerPx", "'$zoom'");' > $dirprofile/user.js
 	firefox -kiosk http://localhost
 else
 	chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
