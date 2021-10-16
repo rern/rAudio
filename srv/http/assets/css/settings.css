@@ -550,6 +550,7 @@ input:checked + .switchlabel.disabled:after {
 	}
 	#help::before {
 		content: '\f509';
+		color: var( --cg60 );
 	}
 	#bar-bottom {
 		display: none;
