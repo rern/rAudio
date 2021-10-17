@@ -384,7 +384,6 @@ function renderBluetooth() {
 		htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 		htmlbt += list.name +'</li>';
 	} );
-	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
 	$( '#listbt' ).html( htmlbt );
 }
 function renderPage( list ) {
