@@ -137,7 +137,7 @@ heading.sub {
 heading.status .headtitle::after,
 .col-l.status gr::after {
 	display: inline-block;
-	width: 50px;
+	width: 40px;
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;

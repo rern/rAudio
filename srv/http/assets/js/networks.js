@@ -416,13 +416,13 @@ function renderPage( list ) {
 		$( '#divlan' ).addClass( 'hide' );
 	}
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
-	if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
-	
-	renderQR();
+	if ( G.activebt || G.activewlan || G.activeeth ) {
+		renderQR();
+		[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
+			codeToggle( id, 'status' );
+		} );
+	}
 	bannerHide();
-	[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
 	showContent();
 }
 function qr( msg ) {
