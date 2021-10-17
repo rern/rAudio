@@ -347,7 +347,7 @@ function renderPage( list ) {
 		$.each( G.devices, function() {
 			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
-		$( '#divbtclient' ).toggleClass( 'hide', G.btaplayname === '' )
+		$( '#divbt' ).toggleClass( 'hide', G.btaplayname === '' )
 		$( '#btaplayname' ).html( G.btaplayname ? '<option>'+ G.btaplayname +'</option>' : '' );
 		$( '#audiooutput' )
 			.html( htmldevices )

@@ -26,20 +26,7 @@ $head = [ //////////////////////////////////
 	, 'status' => 'asound'
 ];
 $body = [
-	  [
-		  'label'       => 'Bluetooth'
-		, 'icon'        => 'btclient'
-		, 'id'          => 'btclient'
-		, 'input'       => '<select id="btaplayname"></select>'
-		, 'setting'     => 'self'
-		, 'settingicon' => 'volume'
-		, 'help'        => <<< HTML
-Bluetooth receiver device
-<i class="fa fa-volume"></i>Volume should be at 100% / 0dB
-HTML
-		, 'exist'       => file_exists( '/usr/bin/bluetoothctl' )
-	]
-	, [
+	[
 		  'label' => 'Device'
 		, 'id'    => 'audiooutput'
 		, 'input' => '<select id="audiooutput"></select>'
@@ -85,6 +72,24 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
+
+if ( file_exists( '/usr/bin/bluetoothctl' ) ) {
+	echo '<div id="divbt">';
+	htmlHead( [ //////////////////////////////////
+		  'title'   => 'Bluetooth'
+		, 'subhead' => true
+	] );
+	htmlSetting( [
+			  'label'       => 'Bluetooth'
+			, 'icon'        => 'btclient'
+			, 'id'          => 'btclient'
+			, 'input'       => '<select id="btaplayname"></select>'
+			, 'setting'     => 'self'
+			, 'settingicon' => 'volume'
+	] );
+	echo '</div>';
+}
+
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
