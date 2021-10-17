@@ -38,6 +38,16 @@ $( '#wladd' ).click( function() {
 $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
 } );
+$( '#lanadd' ).click( function() {
+	info( {
+		  icon          : 'lan'
+		, title         : 'New LAN Connection'
+		, textlabel     : [ 'IP', 'Gateway' ]
+		, ok           : function() {
+			editLANSet( infoVal() );
+		}
+	} );
+} );
 $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	G.li = $( this );
 	G.list = G.li.parent().prop( 'id' );
@@ -254,7 +264,7 @@ function editLAN() {
 	var gw = G.listeth.gateway;
 	info( {
 		  icon         : 'lan'
-		, title        : 'LAN'
+		, title        : 'Edit LAN Connection'
 		, textlabel    : [ ( static ? '<gr>Static</gr> IP' : '<gr>DHCP</gr> IP' ), 'Gateway' ]
 		, values       : [ ip, gw ]
 		, checkchanged : 1
@@ -274,24 +284,28 @@ function editLAN() {
 			bash( [ 'editlan' ] );
 		} : '' )
 		, ok           : function() {
-			var values = infoVal();
-			var ip = values[ 0 ];
-			var gateway = values[ 1 ];
-			notify( 'LAN IP Address', 'Change ip to '+ ip, 'lan' );
-			bash( [ 'editlan', ip, gateway ], function( used ) {
-				if ( used == -1 ) {
-					info( {
-						  icon    : 'lan'
-						, title   : 'Duplicate IP'
-						, message : 'IP <wh>'+ ip +'</wh> already in use.'
-						, ok      : function() {
-							editLAN();
-						}
-					} );
-				}
-				bannerHide();
-			} );
+			editLANSet( infoVal() );
 		}
+	} );
+}
+function editLANSet( values ) {
+	var ip = values[ 0 ];
+	var gateway = values[ 1 ];
+	notify( 'IP Address', 'Set ...', 'lan' );
+	bash( [ 'editlan', ip, gateway ], function( used ) {
+		if ( used == -1 ) {
+			info( {
+				  icon    : 'lan'
+				, title   : 'Duplicate IP'
+				, message : 'IP <wh>'+ ip +'</wh> already in use.'
+				, ok      : function() {
+					editLAN();
+				}
+			} );
+		} else {
+			location.href = 'http://'+ ip +'/settings.php?p=networks';
+		}
+		bannerHide();
 	} );
 }
 function editWiFi( add ) {
@@ -411,6 +425,7 @@ function renderPage( list ) {
 	}
 	if ( G.activeeth ) {
 		if ( G.listeth ) $( '#listlan' ).html( '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>' );
+		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
 		$( '#divlan' ).addClass( 'hide' );

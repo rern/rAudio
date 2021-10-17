@@ -412,14 +412,7 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).hasClass( 'help' )
-		|| $( e.target ).hasClass( 'fa-plus-circle' )
-		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
-	) return
-	
-	var $this = $( this );
-	var datastatus = $this.data( 'status' ) || $this.parent().data( 'status' );
-	codeToggle( datastatus, e.target );
+	if ( !$( e.target ).is( 'i' ) ) codeToggle( $( this ).data( 'status' ), e.target );
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();
