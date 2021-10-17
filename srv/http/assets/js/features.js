@@ -256,8 +256,8 @@ function renderPage( list ) {
 	$( '#setting-login' ).toggleClass( 'hide', !G.login );
 	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
 	$( '#autoplay' ).prop( 'checked', G.autoplay );
-	[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
+	$( 'pre.status' ).each( function( el ) {
+		codeToggle( this.id.replace( 'code', '' ), 'status' );
 	} );
 	resetLocal();
 	showContent();

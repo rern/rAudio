@@ -95,7 +95,7 @@ function htmlHead( $data ) {
 	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
 	$html.= isset( $data[ 'back' ] ) ? '<i class="fa fa-arrow-left back"></i>' : '';
 	$html.= '</heading>';
-	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
+	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	
 	echo $html;

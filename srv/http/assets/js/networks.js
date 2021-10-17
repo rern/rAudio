@@ -418,8 +418,8 @@ function renderPage( list ) {
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
 	if ( G.activebt || G.activewlan || G.activeeth ) {
 		renderQR();
-		[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
-			codeToggle( id, 'status' );
+		$( 'pre.status' ).each( function( el ) {
+			codeToggle( this.id.replace( 'code', '' ), 'status' );
 		} );
 	}
 	bannerHide();

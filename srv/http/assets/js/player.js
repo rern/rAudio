@@ -387,8 +387,8 @@ function renderPage( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'asound', 'mpd', 'mpdconf', 'mount' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
+	$( 'pre.status' ).each( function( el ) {
+		codeToggle( this.id.replace( 'code', '' ), 'status' );
 	} );
 	if ( $( '#infoRange .value' ).length ) {
 		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];

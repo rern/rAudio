@@ -879,8 +879,8 @@ function renderPage( list ) {
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	selectricRender();
-	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
+	$( 'pre.status' ).each( function( el ) {
+		codeToggle( this.id.replace( 'code', '' ), 'status' );
 	} );
 	resetLocal();
 	showContent();
