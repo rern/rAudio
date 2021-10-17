@@ -17,7 +17,7 @@ $( '#setting-btclient' ).click( function() {
 			, rangevalue    : vol
 			, footer        : db +' dB'
 			, beforeshow    : function() {
-				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
+				$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
