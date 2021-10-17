@@ -78,14 +78,13 @@ ib {
 i.map.disabled, .map.disabled i {
 	color: var( --cgl );
 }
-@keyframes blinkcg     { 50% { color: var( --cg ); text-shadow: none; } }
-@keyframes blinkcm     { 50% { color: var( --cm ); text-shadow: none; } }
+@keyframes blink { 50% { color: transparent; text-shadow: none; } }
 #library.blink {
-	animation: 1.5s infinite linear blinkcg;
+	animation: 1.5s infinite linear blink;
 }
 #library.active.blink,
 #button-library.active.blink {
-	animation: 1.5s infinite linear blinkcm;
+	animation: 1.5s infinite linear blink;
 }
 #logo {
 	position: absolute;
