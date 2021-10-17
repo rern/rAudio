@@ -213,7 +213,7 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psBluetooth( data ) {
-	renderBluetooth( data );
+	if ( page === 'networks' ) renderBluetooth( data );
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );

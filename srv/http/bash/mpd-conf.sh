@@ -31,19 +31,21 @@ if [[ $1 == bt ]]; then
 	[[ -z $lines ]] && sleep 3 && lines=$( bluetoothctl paired-devices )
 	[[ -z $lines ]] && exit
 	
-	# $( bluealsa-aplay -L ) takes 2 seconds before available
 	readarray -t paired <<< "$lines"
 	for device in "${paired[@]}"; do
 		btmac=$( cut -d' ' -f2 <<< "$device" )
-		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && break || continue
+		if (( $( bluetoothctl info $btmac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )); then
+			btaudio=1
+			break
+		fi
 	done
-	[[ -z $btmac ]] && exit # no Audio Sink bluetooth
+	[[ -z $btaudio ]] && exit # not bluetooth audio device
 	
-	aplaydevice="bluealsa:DEV=$btmac,PROFILE=a2dp"
+	# no mac address needed - bluealsa already has mac of latest connected device
 	btoutput='
 audio_output {
 	name           "'$( cut -d' ' -f3- <<< "$device" )'"
-	device         "'$aplaydevice'"
+	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "software"'
 		[[ -e $dirsystem/btformat ]] && btoutput+='
@@ -236,13 +238,11 @@ $alsa" > /etc/shairport-sync.conf
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -z $aplaydevice ]]; then # no bluetooth
-		cardname=$( aplay -l \
-						| grep "^card $card" \
-						| head -1 \
-						| cut -d' ' -f3 )
-		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
-	fi
+	cardname=$( aplay -l \
+					| grep "^card $card" \
+					| head -1 \
+					| cut -d' ' -f3 )
+	aplaydevice=$( aplay -L | grep "^default.*$cardname" )
 	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
