@@ -36,6 +36,39 @@ function addonsdl( std ) {
 		location.href = '/settings/addons.php';
 	}
 }
+function blinkDot() {
+	if ( !G.localhost ) return
+	
+	$( '.dot' ).css( 'animation', 'none' );
+	var $d1 = $( '.dot1' );
+	var $d2 = $( '.dot2' );
+	var $d3 = $( '.dot3' );
+	G.intBlinkDot = setInterval( function() {
+		$d1.css( 'opacity', 1 );
+		$d2.css( 'opacity', 0.33 );
+		$d3.css( 'opacity', 0.66 );
+		setTimeout( function() {
+			$d1.css( 'opacity', 0.66 );
+			$d2.css( 'opacity', 1 );
+			$d3.css( 'opacity', 0.33 );
+			setTimeout( function() {
+				$d1.css( 'opacity', 0.33 );
+				$d2.css( 'opacity', 0.66 );
+				$d3.css( 'opacity', 1 );
+			}, 800 );
+		}, 800 );
+	}, 2400 );
+}
+function blinkUpdate() {
+	var $icons = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
+	$icons.removeClass( 'blink' );
+	G.intBlinkUpdate = setInterval( function() {
+		$icons.addClass( 'clear' );
+		setTimeout( function() {
+			$icons.removeClass( 'clear' );
+		}, 1500 );
+	}, 2500 );
+}
 function bookmarkeditClear() {
 	if ( !G.bookmarkedit ) return
 	
@@ -49,7 +82,7 @@ function bookmarkeditClear() {
 function clearIntervalAll() {
 	// .btn-cmd[!play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
 	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
-	[ G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
+	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
 		clearInterval( el );
 	} );
 	if ( G.status.state === 'play' && !G.status.stream ) setProgress(); // stop progress animation
@@ -1103,6 +1136,7 @@ function renderPlayback() {
 	$volumeRS.setValue( G.status.volume );
 	G.status.volumemute != 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+	clearInterval( G.intBlinkDot );
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		setPlaybackBlank();
 		return
@@ -1121,6 +1155,7 @@ function renderPlayback() {
 		$( '#elapsed, #total, #progress' ).empty();
 		if ( G.status.state === 'play' ) {
 			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+			blinkDot();
 			if ( G.display.radioelapsed ) {
 				$( '#progress' ).html( istate +'<span></span>' );
 				setProgressElapsed();
@@ -1147,6 +1182,7 @@ function renderPlayback() {
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 	if ( !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+		blinkDot();
 		return
 	}
 	
@@ -1310,26 +1346,17 @@ function setButtonUpdateAddons( updateaddons ) {
 	}
 }
 function setButtonUpdating() {
+	$( '#library, #button-library' ).removeClass( 'blink' );
 	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
+	clearInterval( G.intBlinkUpdate );
 	if ( G.status.updating_db ) {
-		$( '#library, #button-library' ).addClass( 'blink' );
 		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
+		} else {
+			$( '#library, #button-library' ).addClass( 'blink' );
 		}
-		if ( G.localhost ) {
-			$( '#library, #button-library, #i-libupdate, #ti-libupdate' ).removeClass( 'blink' );
-			$( '#library, #button-library' )
-				.removeClass( 'fa-library' )
-				.addClass( 'fa-refresh-library' );
-		}
-	} else {
-		$( '#library, #button-library' ).removeClass( 'blink' );
-		if ( G.localhost ) {
-			$( '#library, #button-library' )
-				.removeClass( 'fa-refresh-library' )
-				.addClass( 'fa-library' );
-		}
+		if ( G.localhost ) blinkUpdate();
 	}
 }
 function setCoverart() {
@@ -1374,6 +1401,7 @@ function setInfo() {
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : '' ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
+			blinkDot();
 			$( '#album' ).text( G.status.Album || G.status.file );
 		}
 	}

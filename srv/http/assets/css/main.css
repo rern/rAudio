@@ -289,6 +289,11 @@ i.map.disabled, .map.disabled i {
 #playlist {
 	background: var( --cg );
 }
+#library.clear,
+#button-library.clear {
+	color: transparent;
+	text-shadow: none;
+}
 #playback {
 	background: var( --cga );
 }

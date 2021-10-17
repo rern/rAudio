@@ -62,6 +62,17 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script>
+var blink;
+if ( [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1 ) {
+	var $icon = $( '#wait i' );
+	$icon.removeClass( 'blink' );
+	blink = setInterval( function() {
+		$icon.addClass( 'clear' );
+		setTimeout( function() {
+			$icon.removeClass( 'clear' );
+		}, 1500 );
+	}, 2500 );
+}
 $( '#close' ).click( function() {
 	$.post( '../cmd.php', {
 		  cmd  : 'bash'
@@ -193,6 +204,7 @@ pclose( $popencmd );
 </div>
 
 <script>
+clearInterval( blink );
 clearInterval( scroll );
 $( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
 $( '#wait' ).remove();

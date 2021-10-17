@@ -43,20 +43,7 @@ var picaOption = { // pica.js
 //	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
 //	, alpha            : true // Default = false (black crop background)
 };
-if ( G.localhost ) {
-	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
-/*	var drag = false, pY; // drag scroll vertically
-	$( 'body' ).on( 'touchmove mousemove', function( e ) {
-		if ( drag ) $( window ).scrollTop( $( window ).scrollTop() + ( pY - e.pageY ) );
-	} ).on( 'mousedown', function( e ) {
-		drag = true;
-		pY = e.pageY;
-	} ).on( 'touchend mouseup mouseleave', function() {
-		drag = false;
-	} );*/
-} else {
-	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-}
+var blinkdot = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
