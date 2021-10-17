@@ -35,7 +35,9 @@ if [[ $1 == bt ]]; then
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
-	# no mac address needed - bluealsa already has mac of latest connected device
+	btvolumefile="$dirsystem/btvolume-$btname"
+	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
+	# no mac address needed - bluealsa already includes mac of latest connected device
 	btoutput='
 audio_output {
 	name           "'$btname'"

@@ -326,6 +326,9 @@ volumebtget )
 		| grep '^\s*Front Left' \
 		| sed 's/.*\[\(.*\)%.*/\1/'
 	;;
+volumebtsave )
+	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
+	;;
 volumeget )
 	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )
 	vol=${vol_db[0]}

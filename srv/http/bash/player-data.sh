@@ -10,8 +10,6 @@ if [[ -e $dirsystem/soxr.conf ]]; then
 else
 	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
 fi
-btaplayname=$( amixer -D bluealsa scontrols 2> /dev/null | cut -d"'" -f2 )
-[[ -n $btaplayname ]] && btclient=true || btclient=false
 
 data='
   "page"             : "player"
@@ -21,8 +19,7 @@ data='
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true || echo false )'
-, "btclient"         : '$btclient'
-, "btaplayname"      : "'$btaplayname'"
+, "btaplayname"      : "'$( amixer -D bluealsa scontrols 2> /dev/null | cut -d"'" -f2 )'"
 , "buffer"           : '$( grep -q '^audio_buffer_size' /etc/mpd.conf && echo true || echo false )'
 , "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
 , "bufferoutput"     : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true || echo false )'

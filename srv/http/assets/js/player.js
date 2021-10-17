@@ -14,8 +14,9 @@ $( '#setting-btclient' ).click( function() {
 			, rangevalue    : vol
 			, beforeshow    : function() {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					var val = $( this ).val();
-					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ val +'%' );
+					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ 'volumebtsave', $( this ).val(), G.btaplayname ] );
 				} );
 			}
 			, okno          : 1
@@ -54,7 +55,7 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input keyup', function() {
 						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ $( this ).val() +'%' );
-					} ).on( 'mouseup touchend keyup', function() {
+					} ).on( 'touchend mouseup keyup', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
@@ -336,8 +337,8 @@ function renderPage( list ) {
 		$.each( G.devices, function() {
 			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
-		$( '#btclient' ).toggleClass( 'hide', !G.btclient )
-		$( '#btaplayname' ).html( G.btclient ? '<option>'+ G.btaplayname +'</option>' : '' );
+		$( '#divbtclient' ).toggleClass( 'hide', G.btaplayname === '' )
+		$( '#btaplayname' ).html( G.btaplayname ? '<option>'+ G.btaplayname +'</option>' : '' );
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.val( G.asoundcard );
@@ -380,15 +381,22 @@ function renderPage( list ) {
 		codeToggle( id, 'status' );
 	} );
 	if ( $( '#infoRange .value' ).length ) {
-		bash( [ 'volumeget', 'db' ], function( voldb ) {
-			var voldb = voldb.split( ' ' );
-			var vol = voldb[ 0 ];
-			var db = voldb[ 1 ];
-			$( '#infoRange .value' ).text( vol );
-			$( '#infoRange input' ).val( vol );
-			$( '.infofooter' ).text( db +' dB' );
-			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
-		} );
+		if ( $( '#infoTitle' ).text() === 'Mixer Device Volume' ) {
+			bash( [ 'volumeget', 'db' ], function( voldb ) {
+				var voldb = voldb.split( ' ' );
+				var vol = voldb[ 0 ];
+				var db = voldb[ 1 ];
+				$( '#infoRange .value' ).text( vol );
+				$( '#infoRange input' ).val( vol );
+				$( '.infofooter' ).text( db +' dB' );
+				$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+			} );
+		} else {
+			bash( [ 'volumebtget' ], function( vol ) {
+				$( '#infoRange .value' ).text( vol );
+				$( '#infoRange input' ).val( vol );
+			}, 'json' );
+		}
 	}
 	resetLocal();
 	showContent();
