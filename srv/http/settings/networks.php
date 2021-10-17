@@ -14,8 +14,8 @@ htmlHead( [ //////////////////////////////////
  • Power on/off paired devices connect/disconnect automatically.
 As receiver (from another device)
  • Pairing - If discoverable turned off on RPi, turn it on.
- • Make pairing/connecting from sender device. No authorization required.
- • Connection from sender start renderer mode automatically.
+ • Pairing / Connecting from sender device - No authorization required.
+ • Connection from sender start Playback in renderer mode automatically.
  • Turn off discoverable to hide from unpaired senders.
 </div>
 </div>
