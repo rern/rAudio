@@ -134,6 +134,22 @@ heading.sub {
 	line-height: 24px;
 	font-size: 18px;
 }
+.col-l.status gr::after,
+heading.status .headtitle::after {
+	display: inline-block;
+	width: 50px;
+	font-family: rern;
+	font-style: normal;
+	font-size: 22px;
+	content: "\f50A";
+	text-align: center;
+	color: var( --cg60 );
+	letter-spacing: normal;
+}
+.col-l.status gr::after {
+	width: 20px;
+	font-size: 15px;
+}
 heading i {
 	width: 50px;
 	font-size: 22px;

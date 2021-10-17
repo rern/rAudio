@@ -89,8 +89,7 @@ function htmlHead( $data ) {
 	
 	$html.= $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
-	$html.= $title;
-	$html.= $status ? '<i class="fa fa-status"></i>' : '';
+	$html.= '<span class="headtitle">'.$title.'</span>';
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
 	$html.= $button1 ? '<i id="'.$button1[ 0 ].'" class="fa fa-'.$button1[ 1 ].'"></i>' : '';
 	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
@@ -118,7 +117,6 @@ function htmlSetting( $data ) {
 	$html.= $status ? ' status" data-status="'.$status.'">' : '">';
 	if ( $sublabel ) {
 		$html.= '<a>'.$label.'<gr>'.$sublabel;
-		$html.= $status ? '<i class="fa fa-status"></i>' : '';
 		$html.= '</gr></a>';
 	} else {
 		$html.= $label;
