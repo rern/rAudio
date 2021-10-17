@@ -134,8 +134,8 @@ heading.sub {
 	line-height: 24px;
 	font-size: 18px;
 }
-.col-l.status gr::after,
-heading.status .headtitle::after {
+heading.status .headtitle::after,
+.col-l.status gr::after {
 	display: inline-block;
 	width: 50px;
 	font-family: rern;
