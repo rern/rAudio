@@ -144,6 +144,12 @@ heading i {
 heading i.back {
 	width: 40px;
 }
+heading i.fa-status {
+	display: none;
+}
+heading.status i.fa-status {
+	display: inline-block;
+}
 heading i.fa-question-circle {
 	float: right;
 	width: 40px;

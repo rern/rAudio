@@ -214,7 +214,10 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psBluetooth( data ) {
-	if ( page === 'networks' ) renderBluetooth( data );
+	if ( page === 'networks' ) {
+		G.listbt = data;
+		renderBluetooth();
+	}
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
@@ -408,7 +411,7 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
-$( '.container' ).on( 'click', '.status', function( e ) {
+$( '.status' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' )
 		|| $( e.target ).hasClass( 'fa-plus-circle' )
 		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1

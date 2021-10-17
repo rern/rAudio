@@ -78,9 +78,10 @@ if ( file_exists( '/usr/bin/bluetoothctl' ) ) {
 	htmlHead( [ //////////////////////////////////
 		  'title'   => 'Bluetooth'
 		, 'subhead' => true
+		, 'status'  => 'bluetooth'
 	] );
 	htmlSetting( [
-			  'label'       => 'Bluetooth'
+			  'label'       => 'Receiver'
 			, 'icon'        => 'btclient'
 			, 'id'          => 'btclient'
 			, 'input'       => '<select id="btaplayname"></select>'
