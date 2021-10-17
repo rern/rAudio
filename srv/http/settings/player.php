@@ -26,7 +26,19 @@ $head = [ //////////////////////////////////
 	, 'status' => 'asound'
 ];
 $body = [
-	[
+	  [
+		  'label'       => 'Bluetooth'
+		, 'icon'        => 'btclient'
+		, 'id'          => 'btclient'
+		, 'input'       => '<select id="btname"></select>'
+		, 'setting'     => 'self'
+		, 'settingicon' => 'volume'
+		, 'help'        => <<< HTML
+HDMI device available only when connected before boot.
+HTML
+		, 'exist'       => file_exists( '/usr/bin/bluetoothctl' )
+	]
+	, [
 		  'label' => 'Device'
 		, 'id'    => 'audiooutput'
 		, 'input' => '<select id="audiooutput"></select>'

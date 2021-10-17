@@ -321,6 +321,11 @@ volume0db )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	rm -f /srv/http/data/shm/mpdvolume
 	;;
+volumebtget )
+	amixer -D bluealsa \
+		| grep '^\s*Front Left' \
+		| sed 's/.*\[\(.*\)%.*/\1/'
+	;;
 volumeget )
 	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )
 	vol=${vol_db[0]}

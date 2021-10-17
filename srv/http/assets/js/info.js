@@ -531,6 +531,11 @@ function info( json ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
+		if ( O.rangevalue ) {
+			$( '#infoRange input' ).on( 'click input keyup', function() {
+				$( '#infoRange .value' ).text( $( this ).val() );
+			} );
+		}
 		// check text input length
 		O.short = false;
 		if ( O.checklength ) {

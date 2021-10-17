@@ -5,6 +5,23 @@ var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
+$( '#setting-btclient' ).click( function() {
+	bash( [ 'volumebtget' ], function( vol ) {
+		info( {
+			  icon          : 'volume'
+			, title         : 'Bluetooth Volume'
+			, message       : G.btaplayname
+			, rangevalue    : vol
+			, beforeshow    : function() {
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					var val = $( this ).val();
+					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ val +'%' );
+				} );
+			}
+			, okno          : 1
+		} );
+	}, 'json' );
+} );
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).val();
 	var dev = G.devices[ card ];
@@ -36,9 +53,7 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
 					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input keyup', function() {
-						var val = $( this ).val();
-						$( '#infoRange .value' ).text( val );
-						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ val +'%' );
+						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ $( this ).val() +'%' );
 					} ).on( 'mouseup touchend keyup', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );
@@ -321,6 +336,8 @@ function renderPage( list ) {
 		$.each( G.devices, function() {
 			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
+		$( '#btclient' ).toggleClass( 'hide', !G.btclient )
+		$( '#btaplayname' ).html( G.btclient ? '<option>'+ G.btaplayname +'</option>' : '' );
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.val( G.asoundcard );

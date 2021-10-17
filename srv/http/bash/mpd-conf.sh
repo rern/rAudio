@@ -34,7 +34,7 @@ if [[ $1 == bt ]]; then
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
-	btname=$( echo "$btaplay" | sed -n 2p | cut -d, -f1 | xargs )
+	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	# no mac address needed - bluealsa already has mac of latest connected device
 	btoutput='
 audio_output {
