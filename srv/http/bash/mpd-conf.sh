@@ -27,24 +27,18 @@ restartMPD() {
 }
 
 if [[ $1 == bt ]]; then
-	lines=$( bluetoothctl paired-devices )
-	[[ -z $lines ]] && sleep 3 && lines=$( bluetoothctl paired-devices )
-	[[ -z $lines ]] && exit
-	
-	readarray -t paired <<< "$lines"
-	for device in "${paired[@]}"; do
-		btmac=$( cut -d' ' -f2 <<< "$device" )
-		if (( $( bluetoothctl info $btmac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )); then
-			btaudio=1
-			break
-		fi
+	for i in {1..5}; do # wait for list available
+		sleep 1
+		btaplay=$( bluealsa-aplay -L )
+		[[ -n $btaplay ]] && break
 	done
-	[[ -z $btaudio ]] && exit # not bluetooth audio device
+	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
+	btname=$( echo "$btaplay" | sed -n 2p | cut -d, -f1 | xargs )
 	# no mac address needed - bluealsa already has mac of latest connected device
 	btoutput='
 audio_output {
-	name           "'$( cut -d' ' -f3- <<< "$device" )'"
+	name           "'$btname'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "software"'
