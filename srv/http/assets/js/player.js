@@ -6,22 +6,32 @@ var warning = `\
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
 $( '#setting-btclient' ).click( function() {
-	bash( [ 'volumebtget' ], function( vol ) {
+	bash( [ 'volumebtget' ], function( voldb ) {
+		var voldb = voldb.split( ' ' );
+		var vol = voldb[ 0 ];
+		var db = voldb[ 1 ];
 		info( {
 			  icon          : 'volume'
 			, title         : 'Bluetooth Volume'
 			, message       : G.btaplayname
 			, rangevalue    : vol
+			, footer        : db +' dB'
 			, beforeshow    : function() {
+				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumebtsave', $( this ).val(), G.btaplayname ] );
 				} );
 			}
+			, buttonnoreset : 1
+			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
+			, button        : function() {
+				bash( [ 'volumebt0db', G.btaplayname ] );
+			}
 			, okno          : 1
 		} );
-	}, 'json' );
+	} );
 } );
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).val();
@@ -381,22 +391,16 @@ function renderPage( list ) {
 		codeToggle( id, 'status' );
 	} );
 	if ( $( '#infoRange .value' ).length ) {
-		if ( $( '#infoTitle' ).text() === 'Mixer Device Volume' ) {
-			bash( [ 'volumeget', 'db' ], function( voldb ) {
-				var voldb = voldb.split( ' ' );
-				var vol = voldb[ 0 ];
-				var db = voldb[ 1 ];
-				$( '#infoRange .value' ).text( vol );
-				$( '#infoRange input' ).val( vol );
-				$( '.infofooter' ).text( db +' dB' );
-				$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
-			} );
-		} else {
-			bash( [ 'volumebtget' ], function( vol ) {
-				$( '#infoRange .value' ).text( vol );
-				$( '#infoRange input' ).val( vol );
-			}, 'json' );
-		}
+		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
+		bash( cmd, function( voldb ) {
+			var voldb = voldb.split( ' ' );
+			var vol = voldb[ 0 ];
+			var db = voldb[ 1 ];
+			$( '#infoRange .value' ).text( vol );
+			$( '#infoRange input' ).val( vol );
+			$( '.infofooter' ).text( db +' dB' );
+			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+		} );
 	}
 	resetLocal();
 	showContent();

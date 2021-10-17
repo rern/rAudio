@@ -30,11 +30,12 @@ $body = [
 		  'label'       => 'Bluetooth'
 		, 'icon'        => 'btclient'
 		, 'id'          => 'btclient'
-		, 'input'       => '<select id="btname"></select>'
+		, 'input'       => '<select id="btaplayname"></select>'
 		, 'setting'     => 'self'
 		, 'settingicon' => 'volume'
 		, 'help'        => <<< HTML
-HDMI device available only when connected before boot.
+Bluetooth receiver device
+<i class="fa fa-volume"></i>Volume should be at 100% / 0dB
 HTML
 		, 'exist'       => file_exists( '/usr/bin/bluetoothctl' )
 	]

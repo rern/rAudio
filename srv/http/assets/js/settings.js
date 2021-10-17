@@ -189,7 +189,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -209,6 +209,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
 		case 'volume':    psVolume( data );    break;
+		case 'volumebt':  psVolumeBt( data );  break;
 		case 'wifi':      psWifi( data );      break;
 	}
 }
@@ -244,6 +245,14 @@ function psVolume( data ) {
 		$( '.warning, #infoButtons a:eq( 0 )' ).addClass( 'hide' );              // ok
 		$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
 	}, 300 );
+}
+function psVolumeBt( data ) {
+	if ( !$( '#infoRange .value' ).text() ) return
+	
+	$( '#infoRange .value' ).text( data.val );
+	$( '#infoRange input' ).val( data.val );
+	$( '.infofooter' ).text( data.db +' dB' );
+	$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
 }
 function psWifi( data ) {
 	info( {

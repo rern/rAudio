@@ -13,6 +13,11 @@ pushRefresh() {
 	data=$( $dirbash/player-data.sh )
 	pushstream refresh "$data"
 }
+volumeBtGet() {
+	voldb=$( amixer -D bluealsa \
+		| grep -m1 '%.*dB' \
+		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
+}
 restartMPD() {
 	$dirbash/mpd-conf.sh
 }
@@ -321,13 +326,19 @@ volume0db )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	rm -f /srv/http/data/shm/mpdvolume
 	;;
+volumebt0db )
+	amixer -D bluealsa -q sset "${args[1]}" 0dB
+	volumeBtGet
+	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
+	;;
 volumebtget )
-	amixer -D bluealsa \
-		| grep '^\s*Front Left' \
-		| sed 's/.*\[\(.*\)%.*/\1/'
+	volumeBtGet
+	echo $voldb
 	;;
 volumebtsave )
 	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
+	volumeBtGet
+	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
 	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )
