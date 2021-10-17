@@ -94,7 +94,7 @@ HTML
 	], [
 		  'label'    => 'Browser on RPi'
 		, 'id'       => 'localbrowser'
-		, 'sublabel' => 'localbrowser'
+		, 'sublabel' => $browser
 		, 'icon'     => $browser
 		, 'status'   => 'localbrowser'
 		, 'setting'  => true
