@@ -1,4 +1,5 @@
 /* banner */
+#banner .fa-firefox::before { color: #000 }
 #banner {
 	position: fixed;
 	min-width: 230px;
