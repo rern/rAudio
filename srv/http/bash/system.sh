@@ -115,9 +115,6 @@ databackup )
 		fi
 	done
 	hostname > $dirsystem/hostname
-	grep ^Server /etc/pacman.d/mirrorlist \
-		| head -1 \
-		| sed 's|.*//\(.*\).mirror.*|\1|' > $dirsystem/mirror
 	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 	if [[ -n $profiles ]]; then
@@ -174,11 +171,13 @@ datarestore )
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
-	mirror=$( cat $dirsystem/mirror )
-	sed -i "0,/^Server/ s|//sg.mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
+	if [[ -e $dirsystem/mirror ]]; then
+		mirror=$( cat $dirsystem/mirror )
+		sed -i "0,/^Server/ s|//mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
+	fi
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
-	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,mirror,netctlprofile,timezone}
+	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
@@ -492,7 +491,13 @@ servers )
 					| head -1 \
 					| sed 's|\.*mirror.*||; s|.*//||' )
 	if [[ $mirror != $prevmirror ]]; then
-		[[ $mirror == 0 ]] && mirror= || mirror+=.
+		if [[ $mirror == 0 ]]; then
+			mirror=
+			rm $dirsystem/mirror
+		else
+			echo $mirror > $dirsystem/mirror
+			mirror+=.
+		fi
 		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 	fi
 	;;
