@@ -4,7 +4,6 @@ dirbash=/srv/http/bash
 dirdata=/srv/http/data
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
-filebootlog=$dirdata/tmp/bootlog
 filereboot=$dirtmp/reboot
 fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
@@ -194,11 +193,11 @@ datarestore )
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
-getjournalctl )
-	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
+journalctlget )
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ -e $filebootlog ]]; then
 		cat "$filebootlog"
 	else
-		pushstreamNotify 'Boot Log' 'Get ...' plus-r
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;

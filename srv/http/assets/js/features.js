@@ -256,9 +256,5 @@ function renderPage( list ) {
 	$( '#setting-login' ).toggleClass( 'hide', !G.login );
 	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
 	$( '#autoplay' ).prop( 'checked', G.autoplay );
-	$( 'pre.status' ).each( function( el ) {
-		codeToggle( this.id.replace( 'code', '' ), 'status' );
-	} );
-	resetLocal();
 	showContent();
 }

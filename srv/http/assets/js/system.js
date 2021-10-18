@@ -878,11 +878,6 @@ function renderPage( list ) {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	selectricRender();
-	$( 'pre.status' ).each( function( el ) {
-		codeToggle( this.id.replace( 'code', '' ), 'status' );
-	} );
-	resetLocal();
 	showContent();
 }
 function renderStatus() {

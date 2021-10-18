@@ -26,7 +26,7 @@ var cmd = {
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ dirbash +'system.sh configtxtget', 'cat /boot/config.txt' ]
 	, iw           : [ 'iw reg get; iw list' ]
-	, journalctl   : [ dirbash +'system.sh getjournalctl', 'journalctl -b' ]
+	, journalctl   : [ dirbash +'system.sh journalctlget', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
@@ -39,7 +39,6 @@ var cmd = {
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
 function codeToggle( id, target ) {
-	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
 	var $el = $( '#code'+ id );
 	if ( target === 'status' && $el.hasClass( 'hide' ) ) return
 	
@@ -61,29 +60,30 @@ function codeToggle( id, target ) {
 			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
 			var systemctl = 0;
 		}
-		
-		if ( id === 'journalctl' || id === 'mpdignore' ) banner( 'Get Data', id, page, -1 );
-		var delay = target === 'status' ? 1000 : 0;
-		setTimeout( function() {
-			bash( command, function( status ) {
-				var status = status
-								.replace( /(active \(running\))/, '<grn>$1</grn>' )
-								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-				if ( systemctl ) status = status
-									.replace( /(.*)\n/, '<grn>$1</grn>\n' )
-									.replace( /(failed)/, '<red>$1</red>' );
-				$el.html( cmdtxt + status ).promise().done( function() {
-					$el.removeClass( 'hide' );
-					if ( id === 'mpdconf' ) {
-						setTimeout( function() {
-							$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-						}, 100 );
-					}
-					if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
-					bannerHide();
-				} );
+		if ( $el.hasClass( 'hide' ) ) {
+			var timeoutGet = setTimeout( function() {
+				banner( 'Get Data', id, page );
+			}, 1000 );
+		}
+		bash( command, function( status ) {
+			clearTimeout( timeoutGet );
+			var status = status
+							.replace( /(active \(running\))/, '<grn>$1</grn>' )
+							.replace( /(inactive \(dead\))/, '<red>$1</red>' )
+			if ( systemctl ) status = status
+								.replace( /(.*)\n/, '<grn>$1</grn>\n' )
+								.replace( /(failed)/, '<red>$1</red>' );
+			$el.html( cmdtxt + status ).promise().done( function() {
+				$el.removeClass( 'hide' );
+				if ( id === 'mpdconf' ) {
+					setTimeout( function() {
+						$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
+					}, 100 );
+				}
+				if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
 			} );
-		}, delay );
+			resetLocal();
+		} );
 	} else {
 		$el.addClass( 'hide' );
 	}
@@ -134,19 +134,21 @@ function refreshData() {
 	} else {
 		bash( dirbash + page +'-data.sh', function( list ) {
 			renderPage( list );
+			$( 'pre.status' ).each( function( el ) {
+				codeToggle( this.id.replace( 'code', '' ), 'status' );
+			} );
 		} );
 	}
 }
-function resetLocal( ms ) {
+function resetLocal() {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
 	
-	setTimeout( function() {
-		$( '#bannerIcon i' ).removeClass( 'blink' );
-		$( '#bannerMessage' ).text( 'Done' );
-	}, ms ? ms - 2000 : 0 );
-	setTimeout( bannerHide, ms || 2000 );
+	$( '#bannerIcon i' ).removeClass( 'blink' );
+	setTimeout( bannerHide, 1000 );
 }
 function showContent() {
+	resetLocal();
+	if ( $( 'select' ).length ) selectricRender();
 	if ( $( '#data' ).hasClass( 'hide' ) ) {
 		setTimeout( function() {
 			loaderHide();

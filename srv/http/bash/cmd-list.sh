@@ -121,4 +121,7 @@ rm -f $dirsystem/{updating,listing}
 if [[ -n $toolarge ]]; then
 	sleep 3
 	notify '{"title":"Update Library Database","text":"Library is too large.<br>Album list cannot be created.","icon":"refresh-library","delay":-1}'
+	exit
 fi
+
+find /mnt/MPD -name .mpdignore | sort -V > $dirmpd/mpdignorelist &

@@ -369,7 +369,6 @@ function renderPage( list ) {
 		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
 		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', device.dop == 1 );
-		selectricRender();
 	}
 	$( '#crossfade' ).prop( 'checked', G.crossfade );
 	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
@@ -387,9 +386,6 @@ function renderPage( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	$( 'pre.status' ).each( function( el ) {
-		codeToggle( this.id.replace( 'code', '' ), 'status' );
-	} );
 	if ( $( '#infoRange .value' ).length ) {
 		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
 		bash( cmd, function( voldb ) {
@@ -402,7 +398,6 @@ function renderPage( list ) {
 			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
-	resetLocal();
 	showContent();
 }
 function setMixerType( mixertype ) {

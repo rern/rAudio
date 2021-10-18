@@ -430,13 +430,7 @@ function renderPage( list ) {
 		$( '#divlan' ).addClass( 'hide' );
 	}
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
-	if ( G.activebt || G.activewlan || G.activeeth ) {
-		renderQR();
-		$( 'pre.status' ).each( function( el ) {
-			codeToggle( this.id.replace( 'code', '' ), 'status' );
-		} );
-	}
-	bannerHide();
+	renderQR();
 	showContent();
 }
 function qr( msg ) {
@@ -448,6 +442,8 @@ function qr( msg ) {
 }
 function renderQR() {
 	var ip = G.listeth ? G.listeth.ip : G.listwl.ip;
+	if ( !ip ) return
+	
 	if ( ip && ip !== G.hostapd.ip ) {
 		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
 		if( G.hostname ) ip += '<br><gr>http://</gr>'+ G.hostname +'.local';

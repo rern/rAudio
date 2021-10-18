@@ -254,7 +254,9 @@ mixertype )
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 mpdignorelist )
-	readarray -t files <<< $( find /mnt/MPD -name .mpdignore | sort -V )
+	file=/srv/http/data/mpd/mpdignorelist
+	[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file
+	readarray -t files < $file
 	for file in "${files[@]}"; do
 		list+="\
 $file
