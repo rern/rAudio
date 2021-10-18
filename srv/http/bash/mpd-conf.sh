@@ -19,6 +19,7 @@ pushstream() {
 }
 restartMPD() {
 	systemctl restart mpd
+	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
@@ -34,11 +35,11 @@ if [[ $1 == bt ]]; then
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
-	[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
 	pushstream btclient true
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
+	echo $btname > $dirtmp/btclient
 fi
 
 . $dirbash/mpd-devices.sh

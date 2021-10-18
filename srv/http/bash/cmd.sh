@@ -325,9 +325,9 @@ bluetoothplayer )
 	fi
 	if [[ $val == 1 || $val == 0 ]]; then
 		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
-		sleep 3 # wait for connect/disconnect to complete
+	else
+		pushstream mpdplayer "$( $dirbash/status.sh )"
 	fi
-	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
 bluetoothplayerstop )
 	systemctl restart bluezdbus
