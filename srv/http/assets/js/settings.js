@@ -134,9 +134,6 @@ function refreshData() {
 	} else {
 		bash( dirbash + page +'-data.sh', function( list ) {
 			renderPage( list );
-			$( 'pre.status' ).each( function( el ) {
-				codeToggle( this.id.replace( 'code', '' ), 'status' );
-			} );
 		} );
 	}
 }
@@ -149,7 +146,11 @@ function resetLocal() {
 function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
-	if ( $( '#data' ).hasClass( 'hide' ) ) {
+	console.log('showContent')
+	$( 'pre.status' ).each( function( el ) {
+		codeToggle( this.id.replace( 'code', '' ), 'status' );
+	} );
+	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
 			loaderHide();
 			$( '.head, .container' ).removeClass( 'hide' );
@@ -416,10 +417,6 @@ $( '.help' ).click( function() {
 $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( !$( e.target ).is( 'i' ) ) codeToggle( $( this ).data( 'status' ), e.target );
 } );
-$( '#bar-bottom div' ).click( function() {
-	loader();
-	location.href = 'settings.php?p='+ this.id;
-} );
 $( '.switch' ).click( function() {
 	var id = this.id;
 	if ( id === 'backup' || id === 'restore' ) return
@@ -444,4 +441,8 @@ $( '.switch' ).click( function() {
 		notify( label, checked, icon );
 		bash( [ this.id, checked ] );
 	}
+} );
+$( '#bar-bottom div' ).click( function() {
+	loader();
+	location.href = 'settings.php?p='+ this.id;
 } );
