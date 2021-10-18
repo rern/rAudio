@@ -67,5 +67,6 @@ $dirbash/mpd-conf.sh
 
 installfinish
 
+# 20211022
 file=/srv/http/data/mpd/mpdignorelist
 [[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file &> /dev/null &
