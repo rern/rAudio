@@ -229,25 +229,30 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
-echo '<div class="section">';
-htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
-htmlHead( [
-	  'title'   => 'Album'
-	, 'status'  => 'albumignore'
-	, 'subhead' => true
-	, 'help'    => <<< HTML
+
+$albumignorefile = file_exists( '/srv/http/data/mpd/albumignore' );
+$mpdignorefile = file_exists( '/srv/http/data/mpd/mpdignorelist' );
+if ( $albumignorefile || $mpdignorefile ) {
+	echo '<div class="section">';
+	htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
+	htmlHead( [
+		  'title'   => 'Album'
+		, 'status'  => 'albumignore'
+		, 'subhead' => true
+		, 'help'    => <<< HTML
 List of albums excluded from Album page.
 To restore:
  • Edit <code>/srv/http/data/mpd/albumignore</code>
  • Remove albums to restore
  • Update Library
 HTML
-] );
-htmlHead( [
-	  'title'   => 'Directory'
-	, 'status'  => 'mpdignore'
-	, 'subhead' => true
-	, 'help'    => <<< HTML
+		, 'exist'   => $albumignorefile
+	] );
+	htmlHead( [
+		  'title'   => 'Directory'
+		, 'status'  => 'mpdignore'
+		, 'subhead' => true
+		, 'help'    => <<< HTML
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:
  • Edit <code>.../.mpdignore</code>
@@ -255,5 +260,7 @@ To restore:
  • Update Library
 </p>
 HTML
-] );
-echo '</div>';
+		, 'exist'   => $mpdignorefile
+	] );
+	echo '</div>';
+}

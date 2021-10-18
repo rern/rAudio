@@ -78,6 +78,8 @@ html
 htmlSection( $head, $body );
 */
 function htmlHead( $data ) {
+	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
+	
 	$title = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
 	$status = $data[ 'status' ] ?? '';

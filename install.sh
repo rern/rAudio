@@ -66,3 +66,6 @@ systemctl daemon-reload
 $dirbash/mpd-conf.sh
 
 installfinish
+
+file=/srv/http/data/mpd/mpdignorelist
+[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file &> /dev/null &
