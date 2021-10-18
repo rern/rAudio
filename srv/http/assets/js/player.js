@@ -347,28 +347,34 @@ function renderPage( list ) {
 		$.each( G.devices, function() {
 			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
-		$( '#divbt' ).toggleClass( 'hide', G.btaplayname === '' )
-		$( '#btaplayname' ).html( G.btaplayname ? '<option>'+ G.btaplayname +'</option>' : '' );
-		$( '#audiooutput' )
-			.html( htmldevices )
-			.val( G.asoundcard );
-		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-		device.mixerdevices.forEach( function( mixer ) {
-			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-		} );
-		$( '#hwmixer' )
-			.html( htmlhwmixer )
-			.val( device.hwmixer );
-		var htmlmixertype = '<option value="none">None / 0dB</option>';
-		if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-		htmlmixertype += '<option value="software">MPD software</option>';
-		$( '#mixertype' )
-			.html( htmlmixertype )
-			.val( device.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
-		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', device.dop == 1 );
+		if ( G.btaplayname ) {
+			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
+			$( '#divbtclient' ).removeClass( 'hide' );
+			$( '#btaplayname' ).html( '<option>'+ G.btaplayname +'</option>' );
+		} else {
+			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
+			$( '#divbtclient' ).addClass( 'hide' );
+			$( '#audiooutput' )
+				.html( htmldevices )
+				.val( G.asoundcard );
+			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			device.mixerdevices.forEach( function( mixer ) {
+				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+			} );
+			$( '#hwmixer' )
+				.html( htmlhwmixer )
+				.val( device.hwmixer );
+			var htmlmixertype = '<option value="none">None / 0dB</option>';
+			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
+			htmlmixertype += '<option value="software">MPD software</option>';
+			$( '#mixertype' )
+				.html( htmlmixertype )
+				.val( device.mixertype );
+			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
+			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
+			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
+			$( '#dop' ).prop( 'checked', device.dop == 1 );
+		}
 	}
 	$( '#crossfade' ).prop( 'checked', G.crossfade );
 	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );

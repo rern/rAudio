@@ -146,8 +146,11 @@ function htmlSetting( $data ) {
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo $html;
 }
-function htmlSection( $head, $body ) {
-	echo '<div class="section">';
+function htmlSection( $head, $body, $id = '' ) {
+	$html = '<div';
+	$html.= $id ? ' id="div'.$id.'"' : '';
+	$html.= ' class="section">';
+	echo $html;
 	htmlHead( $head );
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';

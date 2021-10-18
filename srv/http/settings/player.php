@@ -27,6 +27,19 @@ $head = [ //////////////////////////////////
 ];
 $body = [
 	[
+			  'label'       => 'Bluetooth'
+			, 'sublabel'    => 'bluetoothctl'
+			, 'icon'        => 'btclient'
+			, 'id'          => 'btclient'
+			, 'status'      => 'bluetooth'
+			, 'input'       => '<select id="btaplayname"></select>'
+			, 'setting'     => 'self'
+			, 'settingicon' => 'volume'
+			, 'help'        => <<< HTML
+<i class="fa fa-volume"></i> Should be set at 0dB
+HTML
+	]
+	, [
 		  'label' => 'Device'
 		, 'id'    => 'audiooutput'
 		, 'input' => '<select id="audiooutput"></select>'
@@ -72,25 +85,6 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
-
-if ( file_exists( '/usr/bin/bluetoothctl' ) ) {
-	echo '<div id="divbt">';
-	htmlHead( [ //////////////////////////////////
-		  'title'   => 'Bluetooth'
-		, 'subhead' => true
-		, 'status'  => 'bluetooth'
-	] );
-	htmlSetting( [
-			  'label'       => 'Receiver'
-			, 'icon'        => 'btclient'
-			, 'id'          => 'btclient'
-			, 'input'       => '<select id="btaplayname"></select>'
-			, 'setting'     => 'self'
-			, 'settingicon' => 'volume'
-	] );
-	echo '</div>';
-}
-
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
@@ -117,7 +111,7 @@ For DSD-capable devices without drivers dedicated for native DSD.
 HTML
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'bitperfect' );
 // ----------------------------------------------------------------------------------
 }
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
