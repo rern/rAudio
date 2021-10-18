@@ -38,7 +38,7 @@ var cmd = {
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
-function codeToggle( id, refresh ) {
+function status( id, refresh ) {
 	var $el = $( '#code'+ id );
 	if ( !refresh && !$el.hasClass( 'hide' ) ) {
 		$el.addClass( 'hide' );
@@ -64,7 +64,7 @@ function codeToggle( id, refresh ) {
 	}
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( function() {
-			banner( 'Get Data', id, page );
+			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
 	bash( command, function( status ) {
@@ -146,7 +146,7 @@ function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
 	$( 'pre.status' ).each( function( el ) {
-		if ( !$( this ).hasClass( 'hide' ) ) codeToggle( this.id.replace( 'code', '' ), 'refresh' );
+		if ( !$( this ).hasClass( 'hide' ) ) status( this.id.replace( 'code', '' ), 'refresh' );
 	} );
 	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
@@ -413,7 +413,7 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
-	if ( !$( e.target ).is( 'i' ) ) codeToggle( $( this ).data( 'status' ) );
+	if ( !$( e.target ).is( 'i' ) ) status( $( this ).data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
