@@ -80,6 +80,7 @@ htmlHead( [ //////////////////////////////////
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 </div>
+<div style="clear:both"></div>
 </div>
 <div id="divbluetooth" class="section hide"> <!-- -------------------------------------------------------------- -->
 <?php

@@ -403,9 +403,6 @@ input:checked + .switchlabel.disabled:after {
 .cga {
 	background: var( --cga ) !important;
 }
-#divwebui, #boxqr {
-	height: 180px;
-}
 #boxqr .col-l {
 	padding-top: 0;
 	text-align: left;
