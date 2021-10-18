@@ -38,55 +38,54 @@ var cmd = {
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
-function codeToggle( id, target ) {
+function codeToggle( id, refresh ) {
 	var $el = $( '#code'+ id );
-	if ( target === 'status' && $el.hasClass( 'hide' ) ) return
-	
-	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
-		var i = services.indexOf( id );
-		if ( i !== -1 ) {
-			var pkg = {
-				  localbrowser : G.browser
-				, smb          : 'samba'
-				, snapserver   : 'snapcast'
-			}
-			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
-			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = [ 'cmd', 'statuspkg', pkgname, id ];
-			var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
-			var systemctl = 1;
-		} else {
-			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
-			var systemctl = 0;
-		}
-		if ( $el.hasClass( 'hide' ) ) {
-			var timeoutGet = setTimeout( function() {
-				banner( 'Get Data', id, page );
-			}, 1000 );
-		}
-		bash( command, function( status ) {
-			clearTimeout( timeoutGet );
-			var status = status
-							.replace( /(active \(running\))/, '<grn>$1</grn>' )
-							.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-			if ( systemctl ) status = status
-								.replace( /(.*)\n/, '<grn>$1</grn>\n' )
-								.replace( /(failed)/, '<red>$1</red>' );
-			$el.html( cmdtxt + status ).promise().done( function() {
-				$el.removeClass( 'hide' );
-				if ( id === 'mpdconf' ) {
-					setTimeout( function() {
-						$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-					}, 100 );
-				}
-				if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
-			} );
-			resetLocal();
-		} );
-	} else {
+	if ( !refresh && !$el.hasClass( 'hide' ) ) {
 		$el.addClass( 'hide' );
+		return
 	}
+		
+	var i = services.indexOf( id );
+	if ( i !== -1 ) {
+		var pkg = {
+			  localbrowser : G.browser
+			, smb          : 'samba'
+			, snapserver   : 'snapcast'
+		}
+		var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
+		if ( id === 'mpdscribble' ) id+= '@mpd';
+		var command = [ 'cmd', 'statuspkg', pkgname, id ];
+		var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
+		var systemctl = 1;
+	} else {
+		var command = cmd[ id ][ 0 ] +' 2> /dev/null';
+		var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
+		var systemctl = 0;
+	}
+	if ( $el.hasClass( 'hide' ) ) {
+		var timeoutGet = setTimeout( function() {
+			banner( 'Get Data', id, page );
+		}, 1000 );
+	}
+	bash( command, function( status ) {
+		clearTimeout( timeoutGet );
+		var status = status
+						.replace( /(active \(running\))/, '<grn>$1</grn>' )
+						.replace( /(inactive \(dead\))/, '<red>$1</red>' )
+		if ( systemctl ) status = status
+							.replace( /(.*)\n/, '<grn>$1</grn>\n' )
+							.replace( /(failed)/, '<red>$1</red>' );
+		$el.html( cmdtxt + status ).promise().done( function() {
+			$el.removeClass( 'hide' );
+			if ( id === 'mpdconf' ) {
+				setTimeout( function() {
+					$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
+				}, 100 );
+			}
+			if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
+		} );
+		resetLocal();
+	} );
 }
 function disableSwitch( id, truefalse ) {
 	$( id )
@@ -147,7 +146,7 @@ function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
 	$( 'pre.status' ).each( function( el ) {
-		codeToggle( this.id.replace( 'code', '' ), 'status' );
+		if ( !$( this ).hasClass( 'hide' ) ) codeToggle( this.id.replace( 'code', '' ), 'refresh' );
 	} );
 	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
@@ -414,7 +413,7 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
-	if ( !$( e.target ).is( 'i' ) ) codeToggle( $( this ).data( 'status' ), e.target );
+	if ( !$( e.target ).is( 'i' ) ) codeToggle( $( this ).data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
