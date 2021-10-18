@@ -325,7 +325,7 @@ bluetoothplayer )
 	fi
 	if [[ $val == 1 || $val == 0 ]]; then
 		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
-		sleep 3
+		sleep 3 # wait for connect/disconnect to complete
 	fi
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
