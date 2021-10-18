@@ -173,7 +173,7 @@ datarestore )
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
 	if [[ -e $dirsystem/mirror ]]; then
 		mirror=$( cat $dirsystem/mirror )
-		sed -i "0,/^Server/ s|//mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
+		sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
 	fi
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
