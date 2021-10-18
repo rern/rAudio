@@ -207,8 +207,7 @@ volumeGet() {
 		else
 			control=$( echo "$controls" | sort -u | head -1 )
 			voldb=$( amixer -M sget "$control" \
-				| grep '%.*dB' \
-				| head -1 \
+				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 			if [[ -n $voldb ]]; then
 				volume=${voldb/ *}
@@ -231,6 +230,14 @@ volumeReset() {
 		rm -f $file
 	fi
 }
+volumeSetAt() {
+	val=$1
+	if [[ -z $control ]]; then
+		mpc volume $val
+	else
+		amixer -Mq sset "$control" $val%
+	fi
+}
 volumeSet() {
 	current=$1
 	target=$2
@@ -238,19 +245,19 @@ volumeSet() {
 	diff=$(( $target - $current ))
 	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
-		[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
+		volumeSetAt $target
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			[[ -z $control ]] && mpc volume $i || amixer -Mq sset "$control" $i%
+			volumeSetAt $i
 			sleep 0.2
 		done
 		if (( $i != $target )); then
-			[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
+			volumeSetAt $target
 		fi
 	fi
 	pushstreamVolume disable false
-	[[ -n $control ]] && alsactl store
+	[[ -n $control && ! -e $dirtmp/btclient ]] && alsactl store
 }
 
 case ${args[0]} in
@@ -301,9 +308,10 @@ audiocdtag )
 	;;
 bluetoothplayer )
 	val=${args[1]}
-	if [[ $val == 1 ]]; then # connected
-		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
-		pushstream btclient true
+	if [[ $val == 1 ]]; then # connected - handled by mpd-conf.sh
+#		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
+#		pushstream btclient true
+		true
 	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
@@ -317,7 +325,6 @@ bluetoothplayer )
 	fi
 	if [[ $val == 1 || $val == 0 ]]; then
 		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
-	else
 		pushstream mpdplayer "$( $dirbash/status.sh )"
 	fi
 	;;
