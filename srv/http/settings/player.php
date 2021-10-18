@@ -36,7 +36,10 @@ $body = [
 			, 'setting'     => 'self'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< HTML
-<i class="fa fa-volume"></i> Should be set at 0dB
+<i class="fa fa-volume"></i> Volume setting and control:
+ • Player: Should be set at 0dB
+ • Playback: Should be set at 100%
+ • Use device volume to control level
 HTML
 	]
 	, [
