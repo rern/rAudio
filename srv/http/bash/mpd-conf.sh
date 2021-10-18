@@ -37,17 +37,6 @@ if [[ $1 == bt ]]; then
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
-	# no mac address needed - bluealsa already includes mac of latest connected device
-	btoutput='
-audio_output {
-	name           "'$btname'"
-	device         "bluealsa"
-	type           "alsa"
-	mixer_type     "software"'
-		[[ -e $dirsystem/btformat ]] && btoutput+='
-	format         "44100:16:2"'
-		btoutput+='
-}'
 fi
 
 . $dirbash/mpd-devices.sh
@@ -68,6 +57,7 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/equalizer ]]; then
+		[[ -n $btname ]] && mixertype=software
 ########
 		output+='
 audio_output {
@@ -76,6 +66,20 @@ audio_output {
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
+	elif [[ -n $btname ]]; then
+		# no mac address needed - bluealsa already includes mac of latest connected device
+########
+		output+='
+audio_output {
+	name           "'$btname'"
+	device         "bluealsa"
+	type           "alsa"
+	mixer_type     "software"'
+		if [[ -e $dirsystem/btformat ]]; then
+########
+		output+='
+	format         "44100:16:2"'
+		fi
 	else
 ########
 		output+='
@@ -93,18 +97,18 @@ audio_output {
 	mixer_control  "'$mixercontrol'"
 	mixer_device   "hw:'$card'"'
 		fi
-	fi
-	if [[ $dop == 1 ]]; then
+		if [[ $dop == 1 ]]; then
 ########
-		output+='
+			output+='
 	dop            "yes"'
-	fi
-	mpdcustom=$dirsystem/custom
-	customfile="$mpdcustom-output-$aplayname"
-	if [[ -e $mpdcustom && -e "$customfile" ]]; then
+		fi
+		mpdcustom=$dirsystem/custom
+		customfile="$mpdcustom-output-$aplayname"
+		if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
-		output+="
+			output+="
 $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
+		fi
 	fi
 ########
 	output+='
@@ -190,12 +194,27 @@ pcm.!default {
 	type plug;
 	slave.pcm plugequal;
 }
-pcm.plugequal {
-	type equal;
-	slave.pcm "plughw:'$card',0";
-}
 ctl.equal {
 	type equal;
+}
+pcm.plugequal {
+	type equal;'
+	if [[ -z $btname ]]; then
+		asound+='
+	slave.pcm "plughw:'$card',0";'
+	else
+		asound+='
+	slave.pcm {
+ 		type plug
+ 		slave.pcm {
+ 			type bluealsa;
+ 			device "00:00:00:00:00:00";
+ 			profile "a2dp";
+ 			delay 20000;
+ 		}
+ 	}'
+	fi
+	asound+='
 }'
 fi
 echo "$asound" > /etc/asound.conf

@@ -378,12 +378,14 @@ function infoAccesspoint() {
 function renderBluetooth() {
 	G.btconnected = false;
 	var htmlbt = '';
-	G.listbt.forEach( function( list ) {
-		if ( list.connected ) G.btconnected = true;
-		htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
-		htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
-		htmlbt += list.name +'</li>';
-	} );
+	if ( G.listbt ) {
+		G.listbt.forEach( function( list ) {
+			if ( list.connected ) G.btconnected = true;
+			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
+			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
+			htmlbt += list.name +'</li>';
+		} );
+	}
 	$( '#listbt' ).html( htmlbt );
 }
 function renderPage( list ) {
@@ -394,14 +396,14 @@ function renderPage( list ) {
 		G = list;
 	}
 	if ( G.activebt ) {
-		if ( G.listbt ) renderBluetooth();
+		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );
 	} else {
 		$( '#divbt' ).addClass( 'hide' );
 	}
 	if ( G.activewlan ) {
+		var htmlwl = '';
 		if ( G.listwl ) {
-			var htmlwl = '';
 			G.listwl.forEach( function( list ) {
 				if ( list.dbm ) {
 					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
@@ -423,7 +425,8 @@ function renderPage( list ) {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
-		if ( G.listeth ) $( '#listlan' ).html( '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>' );
+		var htmlwl = G.listeth ? '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>' : '';
+		$( '#listlan' ).html( htmlwl );
 		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
