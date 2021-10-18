@@ -16,7 +16,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamNotify() {
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink"}'
 	pushstream notify "$data"
 }
 pushRefresh() {
