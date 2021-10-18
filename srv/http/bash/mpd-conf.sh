@@ -34,6 +34,8 @@ if [[ $1 == bt ]]; then
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
+	[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
+	pushstream btclient true
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
