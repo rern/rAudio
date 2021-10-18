@@ -146,7 +146,6 @@ function resetLocal() {
 function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
-	console.log('showContent')
 	$( 'pre.status' ).each( function( el ) {
 		codeToggle( this.id.replace( 'code', '' ), 'status' );
 	} );
