@@ -23,7 +23,12 @@ equalizerGet() {
 	current=$( cat $dirsystem/equalizer )
 	[[ $current == '(unnamed)' ]] && presets='"(unnamed)",'
 	presets+='"Flat"'
-	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
+	if [[ -e $dirtmp/btclient ]]; then
+		filepresets="equalizerbt-$( cat $dirtmp/btclient )"
+	else
+		filepresets=equalizer.conf
+	fi
+	readarray -t lines <<< $( cut -d^ -f1 "$dirsystem/$filepresets" | sort )
 	if [[ -n $lines ]]; then
 		for line in "${lines[@]}"; do
 			presets+=',"'$line'"'
@@ -500,12 +505,17 @@ equalizer )
 	name=${args[2]}
 	newname=${args[3]}
 	flat='61 61 61 61 61 61 61 61 61 61' # value 60 > set at 59
+	if [[ -e $dirtmp/btclient ]]; then
+		filepresets="equalizerbt-$( cat $dirtmp/btclient )"
+	else
+		filepresets=equalizer.conf
+	fi
 	if [[ -n $type ]]; then
 		if [[ $type == preset ]]; then
-			[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
+			[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" "$dirsystem/$filepresets" | cut -d^ -f2- ) )
 		else # remove then save again with current values
 			append=1
-			sed -i "/^$name\^/ d" $dirsystem/equalizer.conf
+			sed -i "/^$name\^/ d" "$dirsystem/$filepresets"
 			if [[ $type == delete ]]; then
 				v=( $flat )
 				name=Flat
@@ -524,7 +534,7 @@ equalizer )
 		name=$( cat $dirsystem/equalizer )
 	fi
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
-	[[ -n $append && $name != Flat ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	[[ -n $append && $name != Flat ]] && echo $name^$val >> "$dirsystem/$filepresets"
 	[[ $type != save ]] && equalizerGet pushstream
 	;;
 equalizerget )
