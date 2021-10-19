@@ -140,7 +140,6 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Audio - I²S'
-		, 'id'       => 'i2smodulesw'
 		, 'icon'     => 'i2saudio'
 		, 'input'    => <<< HTML
 <div id="divi2smodulesw">
