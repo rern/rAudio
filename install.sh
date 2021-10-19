@@ -10,6 +10,8 @@ dirsystem=/srv/http/data/system
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
 if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
+	echo -e "$bar Switch from Firefox to Chromium ..."
+	echo This may take a couple minutes to download in some regions.
 	pkg+=' chromium'
 	pacman -R --noconfirm firefox
 fi
