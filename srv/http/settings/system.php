@@ -210,7 +210,7 @@ HTML
 		, 'help'    => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 HTML
-		, 'exist'   => file_exists( '/usr/bin/chromium' )
+		, 'exist'   => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
 		  'label'   => 'VU LED'
