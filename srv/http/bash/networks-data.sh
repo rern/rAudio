@@ -124,4 +124,4 @@ data='
 , "hostapd"    : '$ap'
 , "hostname"   : "'$( hostname )'"'
 
-echo {$data} | sed 's/:\s*,/: false,/g' # sed - false or null
+echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false

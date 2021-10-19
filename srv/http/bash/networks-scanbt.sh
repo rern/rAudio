@@ -26,4 +26,4 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${data:1}] # 'remove leading , | sed - false or null
+echo [${data:1}] # 'remove leading , | sed - null > false

@@ -78,4 +78,4 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${list:1}] | sed 's/:\s*,/: false,/g' # 'remove leading , | sed - false or null
+echo [${list:1}] | sed 's/:\s*,/: false,/g' # 'remove leading , | sed - null > false

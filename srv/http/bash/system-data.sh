@@ -188,4 +188,4 @@ data+='
 , "wlanconf"         : '$wlanconf'
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false ) # last one needs echo false
 
-echo {$data} | sed 's/:\s*,/: false,/g' # sed - false or null
+echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false
