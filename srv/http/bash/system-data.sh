@@ -30,7 +30,7 @@ else
 fi
 bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
-lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true )
+lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt && echo true )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 soccore=${cpu[0]}
 (( $soccore > 1 )) && soccpu="$soccore x ${cpu[1]}" || soccpu=${cpu[1]}
