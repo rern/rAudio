@@ -38,6 +38,16 @@ $( '#wladd' ).click( function() {
 $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
 } );
+$( '#lanadd' ).click( function() {
+	info( {
+		  icon          : 'lan'
+		, title         : 'New LAN Connection'
+		, textlabel     : [ 'IP', 'Gateway' ]
+		, ok           : function() {
+			editLANSet( infoVal() );
+		}
+	} );
+} );
 $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	G.li = $( this );
 	G.list = G.li.parent().prop( 'id' );
@@ -254,7 +264,7 @@ function editLAN() {
 	var gw = G.listeth.gateway;
 	info( {
 		  icon         : 'lan'
-		, title        : 'LAN'
+		, title        : 'Edit LAN Connection'
 		, textlabel    : [ ( static ? '<gr>Static</gr> IP' : '<gr>DHCP</gr> IP' ), 'Gateway' ]
 		, values       : [ ip, gw ]
 		, checkchanged : 1
@@ -274,24 +284,28 @@ function editLAN() {
 			bash( [ 'editlan' ] );
 		} : '' )
 		, ok           : function() {
-			var values = infoVal();
-			var ip = values[ 0 ];
-			var gateway = values[ 1 ];
-			notify( 'LAN IP Address', 'Change ip to '+ ip, 'lan' );
-			bash( [ 'editlan', ip, gateway ], function( used ) {
-				if ( used == -1 ) {
-					info( {
-						  icon    : 'lan'
-						, title   : 'Duplicate IP'
-						, message : 'IP <wh>'+ ip +'</wh> already in use.'
-						, ok      : function() {
-							editLAN();
-						}
-					} );
-				}
-				bannerHide();
-			} );
+			editLANSet( infoVal() );
 		}
+	} );
+}
+function editLANSet( values ) {
+	var ip = values[ 0 ];
+	var gateway = values[ 1 ];
+	notify( 'IP Address', 'Set ...', 'lan' );
+	bash( [ 'editlan', ip, gateway ], function( used ) {
+		if ( used == -1 ) {
+			info( {
+				  icon    : 'lan'
+				, title   : 'Duplicate IP'
+				, message : 'IP <wh>'+ ip +'</wh> already in use.'
+				, ok      : function() {
+					editLAN();
+				}
+			} );
+		} else {
+			location.href = 'http://'+ ip +'/settings.php?p=networks';
+		}
+		bannerHide();
 	} );
 }
 function editWiFi( add ) {
@@ -361,13 +375,17 @@ function infoAccesspoint() {
 		, message : 'Access Point must be disabled.'
 	} );
 }
-function renderBluetooth( listbt ) {
+function renderBluetooth() {
+	G.btconnected = false;
 	var htmlbt = '';
-	listbt.forEach( function( list ) {
-		htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
-		htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
-		htmlbt += list.name +'</li>';
-	} );
+	if ( G.listbt ) {
+		G.listbt.forEach( function( list ) {
+			if ( list.connected ) G.btconnected = true;
+			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
+			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
+			htmlbt += list.name +'</li>';
+		} );
+	}
 	$( '#listbt' ).html( htmlbt );
 }
 function renderPage( list ) {
@@ -377,61 +395,45 @@ function renderPage( list ) {
 	} else {
 		G = list;
 	}
-	var htmlwl = '';
-	if ( G.listbt ) {
-		renderBluetooth( G.listbt );
-		$( '#ifconfig' ).next().find( 'code' ).text( 'ifconfig; bluetoothctl show' );
-	}
-	if ( G.listwl ) {
-		G.listwl.forEach( function( list ) {
-			if ( list.dbm ) {
-				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-				var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
-				htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';
-				if ( !G.hostapd ) {
-					htmlwl += list.ssid +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
-				} else {
-					htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
-				}
-			} else {
-				htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
-			}
-		} );
-	}
-	if ( G.listeth ) {
-		var htmllan = '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>';
-	}
 	if ( G.activebt ) {
-		var active = $( '#listbt grn' ).length > 0;
-		$( '#divbt heading' )
-			.toggleClass( 'status', active )
-			.data( 'status', active ? 'bt' : '' );
-		$( '#divbt .fa-status' ).toggleClass( 'hide', !active );
+		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );
 	} else {
 		$( '#divbt' ).addClass( 'hide' );
 	}
 	if ( G.activewlan ) {
+		var htmlwl = '';
+		if ( G.listwl ) {
+			G.listwl.forEach( function( list ) {
+				if ( list.dbm ) {
+					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+					var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
+					htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';
+					if ( !G.hostapd ) {
+						htmlwl += list.ssid +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
+					} else {
+						htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
+					}
+				} else {
+					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
+				}
+			} );
+		}
 		$( '#listwl' ).html( htmlwl );
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
-		$( '#listlan' ).html( htmllan );
-		$( '#lanadd' ).toggleClass( 'hide', htmllan !== '' );
+		var htmlwl = G.listeth ? '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>' : '';
+		$( '#listlan' ).html( htmlwl );
+		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
 		$( '#divlan' ).addClass( 'hide' );
 	}
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
-	if ( $( '#divinterface' ).hasClass( 'hide' ) ) return
-	
 	renderQR();
-	bannerHide();
-	[ 'bluetooth', 'lan', 'wlan' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
 	showContent();
 }
 function qr( msg ) {
@@ -443,6 +445,8 @@ function qr( msg ) {
 }
 function renderQR() {
 	var ip = G.listeth ? G.listeth.ip : G.listwl.ip;
+	if ( !ip ) return
+	
 	if ( ip && ip !== G.hostapd.ip ) {
 		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );
 		if( G.hostname ) ip += '<br><gr>http://</gr>'+ G.hostname +'.local';

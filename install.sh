@@ -7,7 +7,15 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# > 20211011
+# 20211019
+mv $dirsystem/equalizer.{conf,presets} &> /dev/null
+if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
+	echo -e "$bar Switch from Firefox to Chromium ..."
+	echo This may take a couple minutes to download in some regions.
+	pkg+=' chromium'
+	pacman -R --noconfirm firefox
+fi
+# 20211011
 novu=$( grep novu $dirsystem/display | cut -d: -f2 | tr -d ' ,' )
 if [[ -n $novu ]]; then
 	[[ $novu == true ]] && covervu=false || covervu=true
@@ -66,3 +74,7 @@ systemctl daemon-reload
 $dirbash/mpd-conf.sh
 
 installfinish
+
+# 20211022
+file=/srv/http/data/mpd/mpdignorelist
+[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file &> /dev/null &

@@ -26,7 +26,7 @@ var cmd = {
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
 	, configtxt    : [ dirbash +'system.sh configtxtget', 'cat /boot/config.txt' ]
 	, iw           : [ 'iw reg get; iw list' ]
-	, journalctl   : [ dirbash +'system.sh getjournalctl', 'journalctl -b' ]
+	, journalctl   : [ dirbash +'system.sh journalctlget', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
 	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
@@ -38,55 +38,54 @@ var cmd = {
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
-function codeToggle( id, target ) {
-	id === 'localbrowser' ? resetLocal( 7000 ) : resetLocal();
+function status( id, refresh ) {
 	var $el = $( '#code'+ id );
-	if ( target === 'status' && $el.hasClass( 'hide' ) ) return
-	
-	if ( target === 'status' || $el.hasClass( 'hide' ) ) {
-		var i = services.indexOf( id );
-		if ( i !== -1 ) {
-			var pkg = {
-				  localbrowser : G.browser
-				, smb          : 'samba'
-				, snapserver   : 'snapcast'
-			}
-			var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
-			if ( id === 'mpdscribble' ) id+= '@mpd';
-			var command = [ 'cmd', 'statuspkg', pkgname, id ];
-			var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
-			var systemctl = 1;
-		} else {
-			var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-			var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
-			var systemctl = 0;
-		}
-		
-		if ( id === 'journalctl' || id === 'mpdignore' ) banner( 'Get Data', id, page, -1 );
-		var delay = target === 'status' ? 1000 : 0;
-		setTimeout( function() {
-			bash( command, function( status ) {
-				var status = status
-								.replace( /(active \(running\))/, '<grn>$1</grn>' )
-								.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-				if ( systemctl ) status = status
-									.replace( /(.*)\n/, '<grn>$1</grn>\n' )
-									.replace( /(failed)/, '<red>$1</red>' );
-				$el.html( cmdtxt + status ).promise().done( function() {
-					$el.removeClass( 'hide' );
-					if ( id === 'mpdconf' ) {
-						setTimeout( function() {
-							$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-						}, 100 );
-					}
-					if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
-					bannerHide();
-				} );
-			} );
-		}, delay );
-	} else {
+	if ( !refresh && !$el.hasClass( 'hide' ) ) {
 		$el.addClass( 'hide' );
+		return
 	}
+		
+	var i = services.indexOf( id );
+	if ( i !== -1 ) {
+		var pkg = {
+			  localbrowser : G.browser
+			, smb          : 'samba'
+			, snapserver   : 'snapcast'
+		}
+		var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
+		if ( id === 'mpdscribble' ) id+= '@mpd';
+		var command = [ 'cmd', 'statuspkg', pkgname, id ];
+		var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
+		var systemctl = 1;
+	} else {
+		var command = cmd[ id ][ 0 ] +' 2> /dev/null';
+		var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
+		var systemctl = 0;
+	}
+	if ( $el.hasClass( 'hide' ) ) {
+		var timeoutGet = setTimeout( function() {
+			notify( 'Get Data', id, page );
+		}, 1000 );
+	}
+	bash( command, function( status ) {
+		clearTimeout( timeoutGet );
+		var status = status
+						.replace( /(active \(running\))/, '<grn>$1</grn>' )
+						.replace( /(inactive \(dead\))/, '<red>$1</red>' )
+		if ( systemctl ) status = status
+							.replace( /(.*)\n/, '<grn>$1</grn>\n' )
+							.replace( /(failed)/, '<red>$1</red>' );
+		$el.html( cmdtxt + status ).promise().done( function() {
+			$el.removeClass( 'hide' );
+			if ( id === 'mpdconf' ) {
+				setTimeout( function() {
+					$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
+				}, 100 );
+			}
+			if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
+		} );
+		resetLocal();
+	} );
 }
 function disableSwitch( id, truefalse ) {
 	$( id )
@@ -137,17 +136,19 @@ function refreshData() {
 		} );
 	}
 }
-function resetLocal( ms ) {
+function resetLocal() {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
 	
-	setTimeout( function() {
-		$( '#bannerIcon i' ).removeClass( 'blink' );
-		$( '#bannerMessage' ).text( 'Done' );
-	}, ms ? ms - 2000 : 0 );
-	setTimeout( bannerHide, ms || 2000 );
+	$( '#bannerIcon i' ).removeClass( 'blink' );
+	setTimeout( bannerHide, 1000 );
 }
 function showContent() {
-	if ( $( '#data' ).hasClass( 'hide' ) ) {
+	resetLocal();
+	if ( $( 'select' ).length ) selectricRender();
+	$( 'pre.status' ).each( function( el ) {
+		if ( !$( this ).hasClass( 'hide' ) ) status( this.id.replace( 'code', '' ), 'refresh' );
+	} );
+	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
 			loaderHide();
 			$( '.head, .container' ).removeClass( 'hide' );
@@ -189,7 +190,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -209,11 +210,15 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
 		case 'volume':    psVolume( data );    break;
+		case 'volumebt':  psVolumeBt( data );  break;
 		case 'wifi':      psWifi( data );      break;
 	}
 }
 function psBluetooth( data ) {
-	renderBluetooth( data );
+	if ( page === 'networks' ) {
+		G.listbt = data;
+		renderBluetooth();
+	}
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
@@ -244,6 +249,14 @@ function psVolume( data ) {
 		$( '.warning, #infoButtons a:eq( 0 )' ).addClass( 'hide' );              // ok
 		$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
 	}, 300 );
+}
+function psVolumeBt( data ) {
+	if ( !$( '#infoRange .value' ).text() ) return
+	
+	$( '#infoRange .value' ).text( data.val );
+	$( '#infoRange input' ).val( data.val );
+	$( '.infofooter' ).text( data.db +' dB' );
+	$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
 }
 function psWifi( data ) {
 	info( {
@@ -400,18 +413,7 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).hasClass( 'help' )
-		|| $( e.target ).hasClass( 'fa-plus-circle' )
-		|| [ 'btscan', 'mpdrestart', 'refresh', 'wladd', 'wlscan' ].indexOf( e.target.id ) !== -1
-	) return
-	
-	var $this = $( this );
-	var datastatus = $this.data( 'status' ) || $this.parent().data( 'status' );
-	codeToggle( datastatus, e.target );
-} );
-$( '#bar-bottom div' ).click( function() {
-	loader();
-	location.href = 'settings.php?p='+ this.id;
+	if ( !$( e.target ).is( 'i' ) ) status( $( this ).data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
@@ -437,4 +439,8 @@ $( '.switch' ).click( function() {
 		notify( label, checked, icon );
 		bash( [ this.id, checked ] );
 	}
+} );
+$( '#bar-bottom div' ).click( function() {
+	loader();
+	location.href = 'settings.php?p='+ this.id;
 } );

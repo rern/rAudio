@@ -9,9 +9,9 @@ $body = [
 		, 'sublabel' => 'shairport-sync'
 		, 'icon'     => 'airplay'
 		, 'status'   => 'shairport-sync'
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
@@ -19,10 +19,10 @@ html
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
 	, [
@@ -31,9 +31,9 @@ html
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.(For Premium account only)
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
 	, [
@@ -42,9 +42,9 @@ html
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
 ];
@@ -56,9 +56,9 @@ $body = [
 	, 'id'       => 'streaming'
 	, 'sublabel' => 'MPD httpd'
 	, 'icon'     => 'webradio'
-	, 'help'     => <<<html
+	, 'help'     => <<< HTML
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://$ip:8000</code> (Latency - several seconds)
-html
+HTML
 	]
 	, [
 		  'label'    => 'SnapServer'
@@ -66,10 +66,12 @@ html
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapserver'
-		, 'help'     => <<<html
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
-SnapServer - Clients can be either between RPis or with Snapcast capable devices.
-html
+		, 'help'     => <<< HTML
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
+Control clients:
+ • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
+ • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
+HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
 ];
@@ -84,23 +86,23 @@ $body = [
 		, 'icon'     => 'accesspoint'
 		, 'status'   => 'hostapd'
 		, 'setting'  => 'self'
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
 This should be used only when necessary.
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 	], [
 		  'label'    => 'Browser on RPi'
 		, 'id'       => 'localbrowser'
-		, 'sublabel' => 'localbrowser'
+		, 'sublabel' => $browser
 		, 'icon'     => $browser
 		, 'status'   => 'localbrowser'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • HDMI/LCD display must be connected before boot.
  • TFT 3.5" LCD - rotate needs reboot.
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
@@ -110,11 +112,11 @@ html
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
  • At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
-html
+HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
@@ -124,9 +126,9 @@ html
 		, 'icon'     => 'lastfm'
 		, 'status'   => 'mpdscribble'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://github.com/MusicPlayerDaemon/mpdscribble">mpdscribble</a> - Automatically send listened music data to Last.fm for tracking.
-html
+HTML
 	]
 	, [
 		  'label'    => 'Password Login'
@@ -134,26 +136,26 @@ html
 		, 'sublabel' => 'password_hash'
 		, 'icon'     => 'lock'
 		, 'setting'  => 'self'
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
 Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock"></i>
-html
+HTML
 	]
 	, [
 		  'label' => 'Play on Insert CD'
 		, 'id'    => 'autoplaycd'
 		, 'icon'  => 'play-cd'
-		, 'help'  => <<<html
+		, 'help'  => <<< HTML
 Start playing automatically on audio CD inserting or power on with CD inserted.
-html
+HTML
 	]
 	, [
 		  'label' => 'Play on Startup'
 		, 'id'    => 'autoplay'
 		, 'icon'  => 'play-power'
-		, 'help'  => <<<html
+		, 'help'  => <<< HTML
 Start playing automatically after boot.
-html
+HTML
 	]
 ];
 htmlSection( $head, $body );

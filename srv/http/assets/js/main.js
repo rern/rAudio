@@ -43,20 +43,7 @@ var picaOption = { // pica.js
 //	, quality          : 3    // 0...3 Default = 3 (Lanczos win=3)
 //	, alpha            : true // Default = false (black crop background)
 };
-if ( G.localhost ) {
-	var blinkdot = '<a>·</a>&ensp;<a>·</a>&ensp;<a>·</a>';
-/*	var drag = false, pY; // drag scroll vertically
-	$( 'body' ).on( 'touchmove mousemove', function( e ) {
-		if ( drag ) $( window ).scrollTop( $( window ).scrollTop() + ( pY - e.pageY ) );
-	} ).on( 'mousedown', function( e ) {
-		drag = true;
-		pY = e.pageY;
-	} ).on( 'touchend mouseup mouseleave', function() {
-		drag = false;
-	} );*/
-} else {
-	var blinkdot = '<a class="dot">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-}
+var blinkdot = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
@@ -90,9 +77,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 statusRefresh();
 
-
-if ( navigator.maxTouchPoints ) {
-	// swipe /////////////////////////////////////////////
+if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
@@ -110,7 +95,6 @@ if ( navigator.maxTouchPoints ) {
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
 		xstart = 0;
 	} );
-	//////////////////////////////////////////////////////
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
 }
@@ -755,7 +739,6 @@ $( '.map' ).click( function() {
 		}
 		$( '.coveredit' ).css( 'z-index', 15 );
 		$( '#volume-text, #settings' ).addClass( 'hide' );
-		$( '#coverart' ).css( 'border', 'none' );
 		return
 	}
 	

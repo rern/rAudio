@@ -150,7 +150,7 @@ function eqValueSet( band, val ) {
 	clearTimeout( timeout );
 	bash( [ 'equalizerupdn', band, val ] );
 	timeout = setTimeout( function() {
-		bash( [ 'equalizerget', 'pushstream' ] );
+		bash( [ 'equalizerget', 'pushstream', 'set' ] );
 	}, 1000 );
 	var vnew = infoVal().slice( 2 ).join( '' );
 	if ( vnew !== G.vcurrent ) {

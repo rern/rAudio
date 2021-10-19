@@ -19,11 +19,15 @@ addonsListGet() {
 	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
 }
 equalizerGet() {
-	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
-	current=$( cat $dirsystem/equalizer )
-	[[ $current == '(unnamed)' ]] && presets='"(unnamed)",'
-	presets+='"Flat"'
-	readarray -t lines <<< $( cut -d^ -f1 $dirsystem/equalizer.conf | sort )
+	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+	filepresets=$dirsystem/equalizer.presets
+	[[ -e $dirtmp/btclient ]] && filepresets+="-$( cat $dirtmp/btclient )"
+	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
+	
+	[[ $2 == set ]] && sed -i "1 s/.*/(unnamed)/" "$filepresets"
+	current=$( head -1 "$filepresets" )
+	[[ $current != '(unnamed)' ]] && presets+='"Flat"' || presets+='"(unnamed)","Flat"'
+	readarray -t lines <<< $( sed 1d "$filepresets" | grep -v '^Flat$' | cut -d^ -f1 | sort )
 	if [[ -n $lines ]]; then
 		for line in "${lines[@]}"; do
 			presets+=',"'$line'"'
@@ -34,8 +38,7 @@ equalizerGet() {
 , "values"  : [ '${val// /,}' ]
 , "presets" : [ '$presets' ]
 }'
-	echo $data
-	[[ $1 == pushstream ]] && pushstream equalizer "$data"
+	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
 }
 gifNotify() {
 	pushstreamNotify Thumbnail 'Resize animated GIF ...' coverart
@@ -207,8 +210,7 @@ volumeGet() {
 		else
 			control=$( echo "$controls" | sort -u | head -1 )
 			voldb=$( amixer -M sget "$control" \
-				| grep '%.*dB' \
-				| head -1 \
+				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 			if [[ -n $voldb ]]; then
 				volume=${voldb/ *}
@@ -231,6 +233,14 @@ volumeReset() {
 		rm -f $file
 	fi
 }
+volumeSetAt() {
+	val=$1
+	if [[ -z $control ]]; then
+		mpc volume $val
+	else
+		amixer -Mq sset "$control" $val%
+	fi
+}
 volumeSet() {
 	current=$1
 	target=$2
@@ -238,19 +248,19 @@ volumeSet() {
 	diff=$(( $target - $current ))
 	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
-		[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
+		volumeSetAt $target
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			[[ -z $control ]] && mpc volume $i || amixer -Mq sset "$control" $i%
+			volumeSetAt $i
 			sleep 0.2
 		done
 		if (( $i != $target )); then
-			[[ -z $control ]] && mpc volume $target || amixer -Mq sset "$control" $target%
+			volumeSetAt $target
 		fi
 	fi
 	pushstreamVolume disable false
-	[[ -n $control ]] && alsactl store
+	[[ -n $control && ! -e $dirtmp/btclient ]] && alsactl store
 }
 
 case ${args[0]} in
@@ -301,9 +311,10 @@ audiocdtag )
 	;;
 bluetoothplayer )
 	val=${args[1]}
-	if [[ $val == 1 ]]; then # connected
-		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
-		pushstream btclient true
+	if [[ $val == 1 ]]; then # connected - handled by mpd-conf.sh
+#		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
+#		pushstream btclient true
+		true
 	elif [[ $val == 0 ]]; then # disconnected
 		rm -f $dirtmp/{player-*,btclient}
 		touch $dirtmp/player-mpd
@@ -488,45 +499,44 @@ displaysave )
 	pushstream mpdplayer "$status"
 	;;
 equalizer )
-	type=${args[1]} # none = get values
+	type=${args[1]} # preset, delete, rename, new, save
 	name=${args[2]}
 	newname=${args[3]}
 	flat='61 61 61 61 61 61 61 61 61 61' # value 60 > set at 59
-	if [[ -n $type ]]; then
-		if [[ $type == preset ]]; then
-			[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" $dirsystem/equalizer.conf | cut -d^ -f2- ) )
-		else # remove then save again with current values
-			append=1
-			sed -i "/^$name\^/ d" $dirsystem/equalizer.conf
-			if [[ $type == delete ]]; then
-				v=( $flat )
-				name=Flat
-			elif [[ $type == rename ]]; then
-				name=$newname
-			fi
+	filepresets=$dirsystem/equalizer.presets
+	[[ -e $dirtmp/btclient ]] && filepresets+="-$( cat $dirtmp/btclient )"
+	if [[ $type == preset ]]; then
+		[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" "$filepresets" | cut -d^ -f2- ) )
+	else # remove then save again with current values
+		append=1
+		sed -i "/^$name\^/ d" "$filepresets" 2> /dev/null
+		if [[ $type == delete ]]; then
+			v=( $flat )
+			name=Flat
+		elif [[ $type == rename ]]; then
+			name=$newname
 		fi
+	fi
+	sed -i "1 s/.*/$name/" "$filepresets"
+	if [[ $type == preset || $type == delete ]]; then
 		freq=( 31 63 125 250 500 1 2 4 8 16 )
 		for (( i=0; i < 10; i++ )); do
 			(( i < 5 )) && unit=Hz || unit=kHz
 			band=( "0$i. ${freq[i]} $unit" )
-			[[ -n $v ]] && sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
+			sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
 		done
-		echo $name > $dirsystem/equalizer
-	else
-		name=$( cat $dirsystem/equalizer )
 	fi
-	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: val/ {print $NF}' | xargs )
-	[[ -n $append && $name != Flat ]] && echo $name^$val >> $dirsystem/equalizer.conf
+	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+	[[ -n $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
 	[[ $type != save ]] && equalizerGet pushstream
 	;;
 equalizerget )
-	equalizerGet ${args[1]}
+	equalizerGet ${args[1]} ${args[2]}
 	;;
 equalizerupdn )
 	band=${args[1]}
 	val=${args[2]}
 	sudo -u mpd amixer -D equal sset "$band" $val
-	echo '(unnamed)' > $dirsystem/equalizer
 	;;
 hashFiles )
 	path=/srv/http/assets

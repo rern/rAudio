@@ -1,5 +1,9 @@
 #!/bin/bash
 
+exists() {
+	[[ -e $1 ]] && echo true || echo false
+}
+
 cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
   "page"             : "system"
@@ -17,16 +21,16 @@ data='
 
 dirsystem=/srv/http/data/system
 
-bluetooth=$( systemctl -q is-active bluetooth && echo true || echo false )
-btformat=$( [[ -e $dirsystem/btformat ]] && echo true || echo false )
+bluetooth=$( systemctl -q is-active bluetooth && echo true )
+btformat=$( exists $dirsystem/btformat )
 if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
-	discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
+	discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
 else
 	discoverable=true
 fi
 bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
-lcd=$( grep -q dtoverlay=$lcdmodel /boot/config.txt 2> /dev/null && echo true || echo false )
+lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 soccore=${cpu[0]}
 (( $soccore > 1 )) && soccpu="$soccore x ${cpu[1]}" || soccpu=${cpu[1]}
@@ -144,7 +148,7 @@ else
 fi
 wlanconf="[
  \"$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )\"
-,$( [[ -e $dirsystem/wlannoap ]] && echo false || echo true )
+,$( exists $dirsystem/wlannoap )
 ]"
 
 data+='
@@ -153,35 +157,35 @@ data+='
 , "bluetooth"        : '$bluetooth'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
-, "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
+, "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
-, "lcdchar"          : '$( [[ -e $dirsystem/lcdchar ]] && echo true || echo false )'
+, "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
 , "lcdmodel"         : "'$lcdmodel'"
-, "mpdoled"          : '$( [[ -e $dirsystem/mpdoled ]] && echo true || echo false )'
+, "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
-, "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true || echo false )'
+, "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-, "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true || echo false )'
+, "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
-, "relays"           : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
+, "relays"           : '$( exists $dirsystem/relays )'
 , "rpimodel"         : "'$rpimodel'"
 , "soc"              : "'$soc'"
 , "soccpu"           : "'$soccpu'"
 , "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 , "socspeed"         : "'$socspeed'"
-, "soundprofile"     : '$( [[ -e $dirsystem/soundprofile ]] && echo true || echo false )'
+, "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "version"          : "'$version'"
 , "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
-, "vuled"            : '$( [[ -e $dirsystem/vuled ]] && echo true || echo false )'
+, "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'
-, "wlan"             : '$( rfkill | grep -q wlan && echo true || echo false )'
+, "wlan"             : '$( rfkill | grep -q wlan && echo true )'
 , "wlanconf"         : '$wlanconf'
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false ) # last one needs echo false
 
-echo {$data}
+echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false

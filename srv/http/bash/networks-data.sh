@@ -12,7 +12,7 @@ if systemctl -q is-active bluetooth; then
 		for line in "${lines[@]}"; do
 			mac=${line#*^}
 			name=${line/^*}
-			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
+			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true )
 			listbt+=',{
   "name"      : "'${name//\"/\\\"}'"
 , "connected" : '$connected'
@@ -54,9 +54,9 @@ if [[ -n $ipr ]]; then
 	[[ -n $ipwlan ]] && hostname=$( avahi-resolve -a4 $ipwlan | awk '{print $NF}' )
 	ssid=$( iwgetid wlan0 -r )
 	netctl=$( cat "/etc/netctl/$ssid" )
-	wep=$( [[ $( echo "$netctl" | grep ^Security | cut -d= -f2 ) == wep ]] && echo true || echo false )
+	wep=$( [[ $( echo "$netctl" | grep ^Security | cut -d= -f2 ) == wep ]] && echo true )
 	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
-	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
+	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true )
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ -z $dbm ]] && dbm=0
 	listwl=',{
@@ -77,8 +77,8 @@ if [[ -n $notconnected ]]; then
 	for ssid in "${notconnected[@]}"; do
 		netctl=$( cat "/etc/netctl/$ssid" )
 		static=$( echo "$netctl" | grep -q ^IP=dhcp && echo false || echo true )
-		hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
-		wep=$( echo "$netctl" | grep -q ^Security=wep && echo true || echo false )
+		hidden=$( echo "$netctl" | grep -q ^Hidden && echo true )
+		wep=$( echo "$netctl" | grep -q ^Security=wep && echo true )
 		password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
 		if [[ $static == true ]]; then
 			gateway=$( echo "$netctl" | grep ^Gateway | cut -d= -f2 )
@@ -115,13 +115,13 @@ fi
 
 data='
   "page"       : "networks"
-, "activebt"   : '$( systemctl -q is-active bluetooth && echo true || echo false )'
-, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true || echo false )'
-, "activewlan" : '$( rfkill | grep -q wlan && echo true || echo false )'
-, "listbt"     : '$( [[ -n $listbt ]] && echo $listbt || echo false )'
-, "listeth"    : '$( [[ -n $listeth ]] && echo $listeth || echo false )'
+, "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
+, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
+, "activewlan" : '$( rfkill | grep -q wlan && echo true )'
+, "listbt"     : '$listbt'
+, "listeth"    : '$listeth'
 , "listwl"     : '$listwl'
-, "hostapd"    : '$( [[ -n $ap ]] && echo $ap || echo false )'
+, "hostapd"    : '$ap'
 , "hostname"   : "'$( hostname )'"'
 
-echo {$data}
+echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false

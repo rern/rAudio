@@ -56,12 +56,22 @@ if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw
 	<heading><?=$heading?><i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<wh><?=$title?></wh><br>
-		<i class="fa fa-gear blink"></i>&ensp;<?=$type?> ...
+		<i class="fa fa-gear <?=( $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink' )?>"></i>&nbsp; <?=$type?> ...
 	</p>
 	
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script>
+var blink;
+var $icon = $( '#wait i' );
+if ( !$icon.hasClass( 'blink' ) ) {
+	blink = setInterval( function() {
+		$icon.addClass( 'clear' );
+		setTimeout( function() {
+			$icon.removeClass( 'clear' );
+		}, 1000 );
+	}, 1500 );
+}
 $( '#close' ).click( function() {
 	$.post( '../cmd.php', {
 		  cmd  : 'bash'
@@ -193,6 +203,7 @@ pclose( $popencmd );
 </div>
 
 <script>
+clearInterval( blink );
 clearInterval( scroll );
 $( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
 $( '#wait' ).remove();

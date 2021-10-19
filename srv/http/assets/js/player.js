@@ -5,6 +5,34 @@ var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
+$( '#setting-btclient' ).click( function() {
+	bash( [ 'volumebtget' ], function( voldb ) {
+		var voldb = voldb.split( ' ' );
+		var vol = voldb[ 0 ];
+		var db = voldb[ 1 ];
+		info( {
+			  icon          : 'volume'
+			, title         : 'Bluetooth Volume'
+			, message       : G.btaplayname
+			, rangevalue    : vol
+			, footer        : db +' dB'
+			, beforeshow    : function() {
+				$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ 'volumebtsave', $( this ).val(), G.btaplayname ] );
+				} );
+			}
+			, buttonnoreset : 1
+			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
+			, button        : function() {
+				bash( [ 'volumebt0db', G.btaplayname ] );
+			}
+			, okno          : 1
+		} );
+	} );
+} );
 $( '#audiooutput' ).change( function() {
 	var card = $( this ).val();
 	var dev = G.devices[ card ];
@@ -36,10 +64,8 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
 					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input keyup', function() {
-						var val = $( this ).val();
-						$( '#infoRange .value' ).text( val );
-						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ val +'%' );
-					} ).on( 'mouseup touchend keyup', function() {
+						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ $( this ).val() +'%' );
+					} ).on( 'touchend mouseup keyup', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
@@ -307,8 +333,9 @@ function renderPage( list ) {
 	}
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
-		htmlstatus += G.counts.song.toLocaleString() +'&nbsp;<i class="fa fa-music gr"></i>&emsp;'
-					+ G.counts.webradio.toLocaleString() +'&nbsp;<i class="fa fa-webradio gr"></i>';
+		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
+					 +'<i class="fa fa-album gr"></i>&ensp;'+ G.counts.album.toLocaleString() +'<wide>&emsp; '
+					 +'<i class="fa fa-webradio gr"></i>&ensp;'+ G.counts.webradio.toLocaleString() +'</wide>';
 	} else {
 		htmlstatus += '<gr>Updating ...</gr>';
 	}
@@ -320,27 +347,34 @@ function renderPage( list ) {
 		$.each( G.devices, function() {
 			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
-		$( '#audiooutput' )
-			.html( htmldevices )
-			.val( G.asoundcard );
-		var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-		device.mixerdevices.forEach( function( mixer ) {
-			htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-		} );
-		$( '#hwmixer' )
-			.html( htmlhwmixer )
-			.val( device.hwmixer );
-		var htmlmixertype = '<option value="none">None / 0dB</option>';
-		if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-		htmlmixertype += '<option value="software">MPD software</option>';
-		$( '#mixertype' )
-			.html( htmlmixertype )
-			.val( device.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-		$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
-		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', device.dop == 1 );
-		selectricRender();
+		if ( G.btaplayname ) {
+			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
+			$( '#divbtclient' ).removeClass( 'hide' );
+			$( '#btaplayname' ).html( '<option>'+ G.btaplayname +'</option>' );
+		} else {
+			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
+			$( '#divbtclient' ).addClass( 'hide' );
+			$( '#audiooutput' )
+				.html( htmldevices )
+				.val( G.asoundcard );
+			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			device.mixerdevices.forEach( function( mixer ) {
+				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+			} );
+			$( '#hwmixer' )
+				.html( htmlhwmixer )
+				.val( device.hwmixer );
+			var htmlmixertype = '<option value="none">None / 0dB</option>';
+			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
+			htmlmixertype += '<option value="software">MPD software</option>';
+			$( '#mixertype' )
+				.html( htmlmixertype )
+				.val( device.mixertype );
+			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
+			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
+			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
+			$( '#dop' ).prop( 'checked', device.dop == 1 );
+		}
 	}
 	$( '#crossfade' ).prop( 'checked', G.crossfade );
 	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
@@ -358,11 +392,9 @@ function renderPage( list ) {
 	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
 	$( '#soxr' ).prop( 'checked', G.soxr );
 	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
-	[ 'asound', 'mpd', 'mpdconf', 'mount' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
 	if ( $( '#infoRange .value' ).length ) {
-		bash( [ 'volumeget', 'db' ], function( voldb ) {
+		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
+		bash( cmd, function( voldb ) {
 			var voldb = voldb.split( ' ' );
 			var vol = voldb[ 0 ];
 			var db = voldb[ 1 ];
@@ -372,7 +404,6 @@ function renderPage( list ) {
 			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
-	resetLocal();
 	showContent();
 }
 function setMixerType( mixertype ) {

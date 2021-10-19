@@ -79,7 +79,7 @@ localbrowserdisable )
 	;;
 localbrowserset )
 	newscreenoff=$(( ${args[1]} * 60 ))
-	newzoom=${args[2]}
+	newzoom=$( echo "print ${args[2]} / 100" | perl )
 	newrotate=${args[3]}
 	newcursor=${args[4]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then

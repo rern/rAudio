@@ -134,6 +134,22 @@ heading.sub {
 	line-height: 24px;
 	font-size: 18px;
 }
+heading.status .headtitle::after,
+.col-l.status gr::after {
+	display: inline-block;
+	width: 40px;
+	font-family: rern;
+	font-style: normal;
+	font-size: 22px;
+	content: "\f50A";
+	text-align: center;
+	color: var( --cg60 );
+	letter-spacing: normal;
+}
+.col-l.status gr::after {
+	width: 20px;
+	font-size: 15px;
+}
 heading i {
 	width: 50px;
 	font-size: 22px;
@@ -143,6 +159,12 @@ heading i {
 }
 heading i.back {
 	width: 40px;
+}
+heading i.fa-status {
+	display: none;
+}
+heading.status i.fa-status {
+	display: inline-block;
 }
 heading i.fa-question-circle {
 	float: right;
@@ -381,9 +403,6 @@ input:checked + .switchlabel.disabled:after {
 .cga {
 	background: var( --cga ) !important;
 }
-#divwebui, #boxqr {
-	height: 180px;
-}
 #boxqr .col-l {
 	padding-top: 0;
 	text-align: left;
@@ -414,7 +433,7 @@ input:checked + .switchlabel.disabled:after {
 }
 .col-l {
 	display: inline-block;
-	width: 170px;
+	width: 160px;
 	height: 40px;
 	text-align: right;
 	padding-right: 15px;
@@ -474,10 +493,6 @@ input:checked + .switchlabel.disabled:after {
 	float: left;
 	white-space: nowrap !important;
 	line-height: 26px;
-}
-.col-r i:first-child {
-	position: relative;
-	margin-left: -10px;
 }
 #fliptxt {
 	display: none;
@@ -550,6 +565,7 @@ input:checked + .switchlabel.disabled:after {
 	}
 	#help::before {
 		content: '\f509';
+		color: var( --cg60 );
 	}
 	#bar-bottom {
 		display: none;
@@ -573,7 +589,7 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 515px) {
 	.col-r .help-block {
-		margin-left: -170px;
+		margin-left: -160px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}
@@ -624,6 +640,7 @@ input:checked + .switchlabel.disabled:after {
 }
 @media (max-width: 375px) {
 	.title {
+		margin-left: 10px;
 		letter-spacing: 5px;
 	}
 	heading {

@@ -4,7 +4,6 @@ dirbash=/srv/http/bash
 dirdata=/srv/http/data
 dirsystem=$dirdata/system
 dirtmp=$dirdata/shm
-filebootlog=$dirdata/tmp/bootlog
 filereboot=$dirtmp/reboot
 fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
@@ -16,7 +15,7 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamNotify() {
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink"}'
 	pushstream notify "$data"
 }
 pushRefresh() {
@@ -116,9 +115,6 @@ databackup )
 		fi
 	done
 	hostname > $dirsystem/hostname
-	grep ^Server /etc/pacman.d/mirrorlist \
-		| head -1 \
-		| sed 's|.*//\(.*\).mirror.*|\1|' > $dirsystem/mirror
 	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 	if [[ -n $profiles ]]; then
@@ -175,11 +171,13 @@ datarestore )
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
-	mirror=$( cat $dirsystem/mirror )
-	sed -i "0,/^Server/ s|//sg.mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
+	if [[ -e $dirsystem/mirror ]]; then
+		mirror=$( cat $dirsystem/mirror )
+		sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
+	fi
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
-	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,mirror,netctlprofile,timezone}
+	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	chown -R http:http /srv/http
 	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
@@ -194,11 +192,11 @@ datarestore )
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
-getjournalctl )
-	if grep -q 'Startup finished.*kernel' $filebootlog &> /devnull; then
+journalctlget )
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ -e $filebootlog ]]; then
 		cat "$filebootlog"
 	else
-		pushstreamNotify 'Boot Log' 'Get ...' plus-r
 		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
 	fi
 	;;
@@ -493,7 +491,13 @@ servers )
 					| head -1 \
 					| sed 's|\.*mirror.*||; s|.*//||' )
 	if [[ $mirror != $prevmirror ]]; then
-		[[ $mirror == 0 ]] && mirror= || mirror+=.
+		if [[ $mirror == 0 ]]; then
+			mirror=
+			rm $dirsystem/mirror
+		else
+			echo $mirror > $dirsystem/mirror
+			mirror+=.
+		fi
 		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 	fi
 	;;

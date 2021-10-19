@@ -69,6 +69,10 @@ heading {
 	font-weight: 300;
 	border-bottom: 1px solid var( --cg );
 }
+.clear {
+	color: transparent;
+	text-shadow: none;
+}
 #list {
 	padding-left: 25px;
 	list-style: none;

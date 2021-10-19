@@ -2,6 +2,7 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
+dirtmp=/srv/http/data/shm
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -12,6 +13,11 @@ pushstream() {
 pushRefresh() {
 	data=$( $dirbash/player-data.sh )
 	pushstream refresh "$data"
+}
+volumeBtGet() {
+	voldb=$( amixer -D bluealsa \
+		| grep -m1 '%.*dB' \
+		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 }
 restartMPD() {
 	$dirbash/mpd-conf.sh
@@ -168,6 +174,7 @@ devices )
 	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
 	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
 	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( $dirbash/player.sh amixer )
+	[[ -e /srv/http/data/shm/btclient ]] && devices+=$'\n\n<bl># bluealsa-aplay -L</bl>\n'$( bluealsa-aplay -L )
 	echo "$devices"
 	;;
 dop )
@@ -182,14 +189,14 @@ dop )
 	;;
 equalizer )
 	if [[ ${args[1]} == true ]]; then
-		boolean=true
-		echo enable > $dirsystem/equalizer
+		touch $dirsystem/equalizer
 	else
-		boolean=false
-		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
+		$dirbash/cmd.sh "equalizer
+preset
+Flat"
 		rm -f $dirsystem/equalizer
 	fi
-	pushstream display '{"submenu":"equalizer","value":'$boolean'}'
+	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
 	restartMPD
 	;;
 ffmpeg )
@@ -248,7 +255,9 @@ mixertype )
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 mpdignorelist )
-	readarray -t files <<< $( find /mnt/MPD -name .mpdignore | sort -V )
+	file=/srv/http/data/mpd/mpdignorelist
+	[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file
+	readarray -t files < $file
 	for file in "${files[@]}"; do
 		list+="\
 $file
@@ -319,6 +328,20 @@ volume0db )
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	rm -f /srv/http/data/shm/mpdvolume
+	;;
+volumebt0db )
+	amixer -D bluealsa -q sset "${args[1]}" 0dB
+	volumeBtGet
+	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
+	;;
+volumebtget )
+	volumeBtGet
+	echo $voldb
+	;;
+volumebtsave )
+	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
+	volumeBtGet
+	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
 	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )

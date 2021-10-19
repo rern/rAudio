@@ -87,6 +87,11 @@ pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // suppress on 1st load
 		statusRefresh();
+		if ( O.title === 'Equalizer' ) {
+			bash( [ 'equalizerget' ], function( data ) {
+				psEqualizer( data );
+			}, 'json' );
+		}
 	} else if ( status === 0 ) {
 		G.disconnected = 1;
 		clearIntervalAll();

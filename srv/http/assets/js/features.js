@@ -78,7 +78,7 @@ $( '#setting-localbrowser' ).click( function() {
 	info( {
 		  icon         : G.browser
 		, title        : 'Browser on RPi'
-		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(0.5-2.0)</gr>' ]
+		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(%)</gr>' ]
 		, selectlabel  : 'Screen rotation'
 		, boxwidth     : 100
 		, select       : { 'Normal': 'NORMAL', '90°&ensp;&#xf524;': 'CW', '90°&ensp;&#xf523;': 'CCW', '180°': 'UD' } 
@@ -98,24 +98,14 @@ $( '#setting-localbrowser' ).click( function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 			$( '#infoContent input:eq( 1 )' ).on( 'keyup paste cut', function() {
-				$( this ).val( $( this ).val().replace( /[^0-9.]/, '' ) );
+				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
 		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
-			var $input = $( '#infoContent input' );
-			if ( $input.eq( 0 ).val() === '' ) $input.eq( 0 ).val( 0 );
-			var zoom = $input.eq( 1 ).val();
-			if ( zoom < 0.5 ) {
-				$input.eq( 1 ).val( 0.5 );
-			} else if ( zoom > 2 ) {
-				$input.eq( 1 ).val( 2 );
-			}
-			var values = infoVal();
-			values[ 1 ] = +values[ 1 ]; // fix: missing leading 0 - '.7' > 0.7
-			bash( [ 'localbrowserset', ...values ], function( reboot ) {
+			bash( [ 'localbrowserset', ...infoVal() ], function( reboot ) {
 				if ( reboot ) {
 					info( {
 						  icon    :  G.browser
@@ -266,9 +256,5 @@ function renderPage( list ) {
 	$( '#setting-login' ).toggleClass( 'hide', !G.login );
 	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
 	$( '#autoplay' ).prop( 'checked', G.autoplay );
-	[ 'hostapd', 'localbrowser', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
-	resetLocal();
 	showContent();
 }

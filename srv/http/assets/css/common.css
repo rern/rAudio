@@ -138,8 +138,8 @@ input::-moz-focus-inner {
 .fa-features::before { content: "\f50B" }
 .fa-file-music::before { content: "\f549" }
 .fa-file-playlist::before { content: "\f548" }
-.fa-firefox::before {content: "\f589"; position: absolute; color: var( --cgl ); }
-.fa-firefox::after {content: "\f58A"; position: relative; } /* position: relative - fix order */
+.fa-firefox::before { content: "\f589"; position: absolute; color: var( --cgl ); }
+.fa-firefox::after { content: "\f58A"; position: relative; }
 .fa-flash::before { content: "\f566" }
 .fa-folder::before { content: "\f540" }
 .fa-folder-cascade::before { content: "\f54A" }
@@ -226,6 +226,7 @@ input::-moz-focus-inner {
 .fa-sliders::before { content: "\f50B" }
 .fa-snapcast::before { content: "\f587" }
 .fa-snapclient::before { content: "\f587" }
+.fa-song::before { content: "\f54A" }
 .fa-soundprofile::before { content: "\f576" }
 .fa-source::before { content: "\f529" }
 .fa-spotify::before { content: "\f588" }

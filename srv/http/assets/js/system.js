@@ -878,11 +878,6 @@ function renderPage( list ) {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	selectricRender();
-	[ 'bluetoothctl', 'configtxt', 'iw', 'journalctl', 'rfkill', 'soundprofile' ].forEach( function( id ) {
-		codeToggle( id, 'status' );
-	} );
-	resetLocal();
 	showContent();
 }
 function renderStatus() {

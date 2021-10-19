@@ -110,9 +110,10 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetoothctl'
 		, 'setting'  => true
-		, 'help'     => <<<html
-Pairing: &emsp; <i class="fa fa-networks"></i> Networks
-html
+		, 'help'     => <<< HTML
+<i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
+Pairing:&emsp;<i class="fa fa-networks"></i>Networks
+HTML
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -121,12 +122,12 @@ html
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 Auto start Access Point - On failed connection or no router
 Country of Wi-Fi regulatory domain:
  • 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
  • The connected router may override it to a certain country.
-html
+HTML
 	]
 ];
 htmlSection( $head, $body );
@@ -139,20 +140,19 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Audio - I²S'
-		, 'id'       => 'i2smodulesw'
 		, 'icon'     => 'i2saudio'
-		, 'input'    => <<<html
+		, 'input'    => <<< HTML
 <div id="divi2smodulesw">
 	<input id="i2smodulesw" type="checkbox">
 	<div class="switchlabel" for="i2smodulesw"></div>
 </div>
 <div id="divi2smodule">$selecti2s</div>
-html
-	, 'help'     => <<<html
+HTML
+	, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
 <i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
-html
+HTML
 	]
 	, [
 		  'label'    => 'Character LCD'
@@ -160,11 +160,11 @@ html
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
 <i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
-html
+HTML
 	]
 	, [
 		  'label'    => 'Power Button'
@@ -172,55 +172,55 @@ html
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  • On - Fixed to pin 5
  • Off - Default to pin 5 (single pin on+off)
 If pin 5 is used by DAC or LCD - Set 2 unused pins for:
  • Off (default: 7)
  • Reserved (default: 29)
-html
+HTML
 	]
 	, [
 		  'label'   => 'Relay Module'
 		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
 		, 'setting' => true
-		, 'help'    => <<<html
+		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
-html
+HTML
 	],
 	[
 		  'label'   => 'Spectrum OLED'
 		, 'id'      => 'mpdoled'
 		, 'icon'    => 'mpdoled'
 		, 'setting' => true
-		, 'help'    => <<<html
+		, 'help'    => <<< HTML
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
-html
+HTML
 	]
 	, [
 		  'label'   => 'TFT 3.5" LCD'
 		, 'id'      => 'lcd'
 		, 'icon'    => 'lcd'
 		, 'setting' => true
-		, 'help'    => <<<html
+		, 'help'    => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
-html
-		, 'exist'   => file_exists( '/usr/bin/chromium' )
+HTML
+		, 'exist'   => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
 		  'label'   => 'VU LED'
 		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
 		, 'setting' => true
-		, 'help'    => <<<html
+		, 'help'    => <<< HTML
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  • <bl id="ledcalc">LED resister calculator</bl>
-html
+HTML
 	]
 ];
 htmlSection( $head, $body );
@@ -231,12 +231,12 @@ $body = [
 		, 'id'    => 'hostname'
 		, 'icon'  => 'plus-r'
 		, 'input' => '<input type="text" id="hostname" readonly>'
-		, 'help'  => <<<html
+		, 'help'  => <<< HTML
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  • Web Interface URL: <code id="avahiurl"></code>
  • System hostname
-html
+HTML
 	]
 	, [
 		  'label'    => 'Time Zone'
@@ -246,11 +246,11 @@ html
 		, 'status'   => 'timesyncd'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'self'
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i>Servers:
  • NTP: For time sync
  • Package mirror: For system upgrade <code>pacman -Syu</code>
-html
+HTML
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -259,9 +259,9 @@ html
 		, 'icon'     => 'soundprofile'
 		, 'status'   => 'soundprofile'
 		, 'setting'  => true
-		, 'help'     => <<<html
+		, 'help'     => <<< HTML
 Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
-html
+HTML
 	]
 ];
 htmlSection( $head, $body );
@@ -271,7 +271,7 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
-		, 'help'    => <<<html
+		, 'help'    => <<< HTML
 Backup all settings and Library database:
  • Settings
  • Library database
@@ -279,15 +279,15 @@ Backup all settings and Library database:
  • Bookmarks
  • Lyrics
  • WebRadios
-html
+HTML
 	]
 	, [
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'help'    => <<<html
+		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
-html
+HTML
 	]
 ];
 htmlSection( $head, $body );

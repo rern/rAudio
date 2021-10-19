@@ -78,6 +78,8 @@ html
 htmlSection( $head, $body );
 */
 function htmlHead( $data ) {
+	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
+	
 	$title = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
@@ -89,15 +91,14 @@ function htmlHead( $data ) {
 	
 	$html.= $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
-	$html.= $title;
-	$html.= $status ? '<i class="fa fa-status"></i>' : '';
+	$html.= '<span class="headtitle">'.$title.'</span>';
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
 	$html.= $button1 ? '<i id="'.$button1[ 0 ].'" class="fa fa-'.$button1[ 1 ].'"></i>' : '';
 	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
 	$html.= isset( $data[ 'back' ] ) ? '<i class="fa fa-arrow-left back"></i>' : '';
 	$html.= '</heading>';
-	$html.= $status ? '<pre id="code'.$status.'" class="hide"></pre>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	
 	echo $html;
 }
@@ -118,7 +119,6 @@ function htmlSetting( $data ) {
 	$html.= $status ? ' status" data-status="'.$status.'">' : '">';
 	if ( $sublabel ) {
 		$html.= '<a>'.$label.'<gr>'.$sublabel;
-		$html.= $status ? '<i class="fa fa-status"></i>' : '';
 		$html.= '</gr></a>';
 	} else {
 		$html.= $label;
@@ -140,13 +140,17 @@ function htmlSetting( $data ) {
 	}
 	$html.= $setting && $setting !== 'none' ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
-	$html.= '</div>';
+	$html.= '</div>
+			 <div style="clear:both"></div>
+			 </div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	$html.= '<div style="clear:both"></div></div>';
 	echo $html;
 }
-function htmlSection( $head, $body ) {
-	echo '<div class="section">';
+function htmlSection( $head, $body, $id = '' ) {
+	$html = '<div';
+	$html.= $id ? ' id="div'.$id.'"' : '';
+	$html.= ' class="section">';
+	echo $html;
 	htmlHead( $head );
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';

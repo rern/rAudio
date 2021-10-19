@@ -19,6 +19,7 @@ pushstream() {
 }
 restartMPD() {
 	systemctl restart mpd
+	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
@@ -27,29 +28,18 @@ restartMPD() {
 }
 
 if [[ $1 == bt ]]; then
-	lines=$( bluetoothctl paired-devices )
-	[[ -z $lines ]] && sleep 3 && lines=$( bluetoothctl paired-devices )
-	[[ -z $lines ]] && exit
-	
-	# $( bluealsa-aplay -L ) takes 2 seconds before available
-	readarray -t paired <<< "$lines"
-	for device in "${paired[@]}"; do
-		btmac=$( cut -d' ' -f2 <<< "$device" )
-		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && break || continue
+	for i in {1..5}; do # wait for list available
+		sleep 1
+		btaplay=$( bluealsa-aplay -L )
+		[[ -n $btaplay ]] && break
 	done
-	[[ -z $btmac ]] && exit # no Audio Sink bluetooth
+	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
-	aplaydevice="bluealsa:DEV=$btmac,PROFILE=a2dp"
-	btoutput='
-audio_output {
-	name           "'$( cut -d' ' -f3- <<< "$device" )'"
-	device         "'$aplaydevice'"
-	type           "alsa"
-	mixer_type     "software"'
-		[[ -e $dirsystem/btformat ]] && btoutput+='
-	format         "44100:16:2"'
-		btoutput+='
-}'
+	pushstream btclient true
+	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
+	btvolumefile="$dirsystem/btvolume-$btname"
+	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
+	echo $btname > $dirtmp/btclient
 fi
 
 . $dirbash/mpd-devices.sh
@@ -70,6 +60,7 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/equalizer ]]; then
+		[[ -n $btname ]] && mixertype=software
 ########
 		output+='
 audio_output {
@@ -78,6 +69,20 @@ audio_output {
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
+	elif [[ -n $btname ]]; then
+		# no mac address needed - bluealsa already includes mac of latest connected device
+########
+		output+='
+audio_output {
+	name           "'$btname'"
+	device         "bluealsa"
+	type           "alsa"
+	mixer_type     "software"'
+		if [[ -e $dirsystem/btformat ]]; then
+########
+		output+='
+	format         "44100:16:2"'
+		fi
 	else
 ########
 		output+='
@@ -95,18 +100,18 @@ audio_output {
 	mixer_control  "'$mixercontrol'"
 	mixer_device   "hw:'$card'"'
 		fi
-	fi
-	if [[ $dop == 1 ]]; then
+		if [[ $dop == 1 ]]; then
 ########
-		output+='
+			output+='
 	dop            "yes"'
-	fi
-	mpdcustom=$dirsystem/custom
-	customfile="$mpdcustom-output-$aplayname"
-	if [[ -e $mpdcustom && -e "$customfile" ]]; then
+		fi
+		mpdcustom=$dirsystem/custom
+		customfile="$mpdcustom-output-$aplayname"
+		if [[ -e $mpdcustom && -e "$customfile" ]]; then
 ########
-		output+="
+			output+="
 $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
+		fi
 	fi
 ########
 	output+='
@@ -186,25 +191,42 @@ asound="\
 defaults.pcm.card $card
 defaults.ctl.card $card"
 if [[ -e $dirsystem/equalizer ]]; then
-	preset=$( cat $dirsystem/equalizer )
+	filepresets=$dirsystem/equalizer.presets
+	[[ -e $dirtmp/btclient ]] && filepresets+="-$( cat $dirtmp/btclient )"
+	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
 	asound+='
 pcm.!default {
 	type plug;
 	slave.pcm plugequal;
 }
-pcm.plugequal {
-	type equal;
-	slave.pcm "plughw:'$card',0";
-}
 ctl.equal {
 	type equal;
+}
+pcm.plugequal {
+	type equal;'
+	if [[ -z $btname ]]; then
+		asound+='
+	slave.pcm "plughw:'$card',0";'
+	else
+		asound+='
+	slave.pcm {
+ 		type plug
+ 		slave.pcm {
+ 			type bluealsa;
+ 			device "00:00:00:00:00:00";
+ 			profile "a2dp";
+ 			delay 20000;
+ 		}
+ 	}'
+	fi
+	asound+='
 }'
 fi
 echo "$asound" > /etc/asound.conf
-if [[ $preset == enable ]]; then
-	echo Flat > $dirsystem/equalizer
-	$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
-fi
+[[ -n $preset ]] && $dirbash/cmd.sh "equalizer
+preset
+$preset"
+
 wm5102card=$( aplay -l \
 				| grep snd_rpi_wsp \
 				| cut -c 6 )
@@ -236,13 +258,11 @@ $alsa" > /etc/shairport-sync.conf
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -z $aplaydevice ]]; then # no bluetooth
-		cardname=$( aplay -l \
-						| grep "^card $card" \
-						| head -1 \
-						| cut -d' ' -f3 )
-		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
-	fi
+	cardname=$( aplay -l \
+					| grep "^card $card" \
+					| head -1 \
+					| cut -d' ' -f3 )
+	aplaydevice=$( aplay -L | grep "^default.*$cardname" )
 	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
