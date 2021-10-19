@@ -7,8 +7,12 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211022
+# 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
+if [[ ! -e /usr/bin/chromium ]] && grep -q dtoverlay=$lcdmodel /boot/config.txt; then
+	pkg+=' chromium'
+	pacman -R --noconfirm firefox
+fi
 # 20211011
 novu=$( grep novu $dirsystem/display | cut -d: -f2 | tr -d ' ,' )
 if [[ -n $novu ]]; then
