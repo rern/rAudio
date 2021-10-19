@@ -2,38 +2,42 @@
 
 dirsystem=/srv/http/data/system
 
+exists() {
+	[[ -e $1 ]] && echo true || echo false
+}
+
 readarray -t lines <<< $( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- )
 mpdscribbleconf="[ \"${lines[0]}\", \"${lines[1]}\" ]"
 
 data+='
   "page"             : "features"
-, "autoplay"         : '$( [[ -e $dirsystem/autoplay ]] && echo true || echo false )'
-, "autoplaycd"       : '$( [[ -e $dirsystem/autoplaycd ]] && echo true || echo false )'
+, "autoplay"         : '$( exists $dirsystem/autoplay )'
+, "autoplaycd"       : '$( exists $dirsystem/autoplaycd )'
 , "hostname"         : "'$( hostname )'"
-, "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true || echo false )'
-, "login"            : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
-, "mpdscribble"      : '$( systemctl -q is-active mpdscribble@mpd && echo true || echo false )'
+, "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
+, "login"            : '$( exists $dirsystem/login )'
+, "mpdscribble"      : '$( systemctl -q is-active mpdscribble@mpd && echo true )'
 , "mpdscribbleconf"  : '$mpdscribbleconf'
-, "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true || echo false )
+, "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
 	data+='
-, "hostapd"          : '$( systemctl -q is-active hostapd && echo true || echo false )'
+, "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostapdconf"      : '$( /srv/http/bash/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
-, "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false )
+, "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true || echo false )
+, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
-, "snapserver"       : '$( systemctl -q is-active snapserver && echo true || echo false )'
-, "snapclient"       : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
-, "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null || echo false )
+, "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
+, "snapclient"       : '$( exists $dirsystem/snapclient )'
+, "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true || echo false )
+, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true || echo false )
+, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
@@ -45,7 +49,7 @@ if [[ -e $xinitrc ]]; then
 	fi
 	data+='
 , "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"
-, "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true || echo false )'
+, "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true )'
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then
@@ -53,8 +57,8 @@ if [[ -e /usr/bin/smbd ]]; then
 	grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
-, "smb"              : '$( systemctl -q is-active smb && echo true || echo false )'
+, "smb"              : '$( systemctl -q is-active smb && echo true )'
 , "smbconf"          : '$smbconf
 fi
 	
-echo {$data}
+echo {$data} | sed 's/:\s*,/: false,/g' # sed - false or null

@@ -7,7 +7,9 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# > 20211011
+# 20211022
+mv $dirsystem/equalizer.{conf,presets} &> /dev/null
+# 20211011
 novu=$( grep novu $dirsystem/display | cut -d: -f2 | tr -d ' ,' )
 if [[ -n $novu ]]; then
 	[[ $novu == true ]] && covervu=false || covervu=true
