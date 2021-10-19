@@ -2,6 +2,7 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
+dirtmp=/srv/http/data/shm
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -188,14 +189,14 @@ dop )
 	;;
 equalizer )
 	if [[ ${args[1]} == true ]]; then
-		boolean=true
-		echo enable > $dirsystem/equalizer
+		touch $dirsystem/equalizer
 	else
-		boolean=false
-		$dirbash/cmd.sh equalizer$'\n'preset$'\n'Flat
+		$dirbash/cmd.sh "equalizer
+preset
+Flat"
 		rm -f $dirsystem/equalizer
 	fi
-	pushstream display '{"submenu":"equalizer","value":'$boolean'}'
+	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
 	restartMPD
 	;;
 ffmpeg )
