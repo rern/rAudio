@@ -25,4 +25,5 @@ for line in "${lines[@]}"; do
 , "paired"    : '$paired'
 }'
 done
-echo [${data:1}]
+
+echo [${data:1}] # 'remove leading , | sed - false or null
