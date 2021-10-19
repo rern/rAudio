@@ -9,7 +9,7 @@ dirsystem=/srv/http/data/system
 
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
-if [[ ! -e /usr/bin/chromium ]] && grep -q dtoverlay=$lcdmodel /boot/config.txt; then
+if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
 	pkg+=' chromium'
 	pacman -R --noconfirm firefox
 fi
