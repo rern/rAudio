@@ -77,9 +77,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 statusRefresh();
 
-
-if ( navigator.maxTouchPoints ) {
-	// swipe /////////////////////////////////////////////
+if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
@@ -97,7 +95,6 @@ if ( navigator.maxTouchPoints ) {
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
 		xstart = 0;
 	} );
-	//////////////////////////////////////////////////////
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
 }
