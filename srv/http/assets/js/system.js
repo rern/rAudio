@@ -42,7 +42,7 @@ $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
 } );
 $( 'body' ).on( 'click touchstart', function( e ) {
-	if ( !$( e.target ).closest( '.i2s' ).length && $( '#i2smodule option:selected' ).val() === 'none' ) {
+	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
 	}
