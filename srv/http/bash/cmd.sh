@@ -114,8 +114,8 @@ pladdPlay() {
 		sleep $2
 		mpc play $pos
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
+		$dirbash/cmd-pushstatus.sh
 	fi
-	$dirbash/cmd-pushstatus.sh
 }
 pladdPosition() {
 	if [[ ${1:0:7} == replace ]]; then
