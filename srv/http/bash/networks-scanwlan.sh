@@ -25,14 +25,14 @@ fi
 
 connectedssid=$( iwgetid wlan0 -r )
 
-iwlistscan=$( iwlist wlan0 scan \
-				| grep '^\s*Quality\|^\s*Encryption\|^\s*ESSID' \
-				| sed 's/^\s*Quality.*level\| dBm *$\|^\s*Encryption.*:\|^\s*ESSID.*:\|\\x00//g' \
-				| sed 's/^"\|"$//g' \
-				| tr '\n' '^' \
-				| sed 's/=/\n/g' \
-				| sort -V )
-readarray -t lines <<<"${iwlistscan:1}" # remove leading \n
+readarray -t lines <<< $( iwlist wlan0 scan \
+							| grep '^\s*Quality\|^\s*Encryption\|^\s*ESSID' \
+							| sed 's/^\s*Quality.*level\| dBm *$\|^\s*Encryption.*:\|^\s*ESSID.*:\|\\x00//g' \
+							| sed 's/^"\|"$//g' \
+							| tr '\n' '^' \
+							| sed 's/=/\n/g' \
+							| grep . \
+							| sort -V )
 for line in "${lines[@]}"; do
 	line=$( echo $line | tr '^' '\n' )
 	readarray -t val <<< "$line"
