@@ -32,7 +32,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#wladd' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : editWiFi( 'add' );
+	'ssid' in G ? infoAccesspoint() : editWiFiInfo();
 } );
 $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
@@ -290,16 +290,15 @@ function editLANSet( values ) {
 		bannerHide();
 	} );
 }
-function editWiFi( add ) {
-	if ( add ) {
-		var values = [ '', '', '', '', false, false, false ]
-	} else {
-		var list = G.listwl[ G.li.index() ];
-		var values = [];
-		[ 'ssid', 'ip', 'gateway', 'password', 'static', 'hidden', 'wep' ].forEach( function( k ) {
-			values.push( list[ k ] );
-		} );
-	}
+function editWiFi() {
+	var list = G.listwl[ G.li.index() ];
+	bash( [ 'profileget', list.ssid ], function( data ) {
+		var values = [ list.ssid, list.ip, list.gateway, ...data ];
+		editWiFiInfo( values );
+	}, 'json' );
+}
+function editWiFiInfo( values ) {
+	add = values ? false : true;
 	info( {
 		  icon          : 'wifi'
 		, title         : add ? 'New Wi-Fi Connection' : 'Edit Saved Connection'
@@ -307,7 +306,7 @@ function editWiFi( add ) {
 		, boxwidth      : 180
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
-		, values        : values
+		, values        : add ? [ '', '', '', '', false, false, false ] : values
 		, checkchanged  : add ? 0 : 1
 		, checkblank    : add ? 0 : 1
 		, beforeshow    : function() {
