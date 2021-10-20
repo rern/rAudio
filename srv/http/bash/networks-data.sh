@@ -27,7 +27,7 @@ fi
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ -n $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
-	static=$( [[ $ipr == *"dhcp src $ipeth "* ]] && echo false || echo true )
+	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( echo $ipr | cut -d' ' -f3 )
 	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
 	if [[ -n $ipeth ]]; then
