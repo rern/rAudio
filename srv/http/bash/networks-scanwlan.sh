@@ -55,4 +55,5 @@ echo [${list:1}] \
 	| sed  's/:\s*,/: false,/g
 			s/:\s*}/: false }/g
 			s/\[\s*,/[ false,/g
+			s/,\s*,/, false,/g
 			s/,\s*]/, false ]/g' # sed - null > false

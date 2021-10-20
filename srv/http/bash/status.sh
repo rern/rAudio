@@ -13,6 +13,14 @@ dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 date=$( date +%s )
 
+outputStatus() { # sed - null > false
+	echo {$status} \
+		| sed  's/:\s*,/: false,/g
+				s/:\s*}/: false }/g
+				s/\[\s*,/[ false,/g
+				s/,\s*,/, false,/g
+				s/,\s*]/, false ]/g'
+}
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
 consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
@@ -132,7 +140,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		
 	esac
 # >>>>>>>>>>
-	echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
+	outputStatus
 	exit
 fi
 
@@ -210,7 +218,7 @@ if (( $playlistlength  == 0 )); then
 , "hostname" : "'$hostname'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>>
-	echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
+	outputStatus
 	exit
 fi
 fileheader=${file:0:4}
@@ -348,7 +356,7 @@ $radiosampling" > $dirtmp/radio
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
 # >>>>>>>>>>
-		echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
+		outputStatus
 		exit
 	fi
 	
@@ -475,7 +483,7 @@ if [[ -z $displaycover ]]; then
 # >>>>>>>>>>
 	status+='
 , "elapsed"  : '$elapsed
-	echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
+	outputStatus
 	exit
 fi
 
@@ -495,7 +503,7 @@ status+='
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
-echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
+outputStatus
 
 [[ -n $getcover ]] && exit
 

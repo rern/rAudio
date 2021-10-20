@@ -30,4 +30,5 @@ echo [${data:1}] \
 	| sed  's/:\s*,/: false,/g
 			s/:\s*}/: false }/g
 			s/\[\s*,/[ false,/g
+			s/,\s*,/, false,/g
 			s/,\s*]/, false ]/g' # sed - null > false

@@ -65,4 +65,5 @@ echo {$data} \
 	| sed  's/:\s*,/: false,/g
 			s/:\s*}/: false }/g
 			s/\[\s*,/[ false,/g
+			s/,\s*,/, false,/g
 			s/,\s*]/, false ]/g' # sed - null > false
