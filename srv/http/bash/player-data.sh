@@ -41,4 +41,4 @@ data='
 , "soxrconf"         : '$soxrconf'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
-echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false
+echo {$data} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false

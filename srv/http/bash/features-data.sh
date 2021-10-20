@@ -60,5 +60,5 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smb"              : '$( systemctl -q is-active smb && echo true )'
 , "smbconf"          : '$smbconf
 fi
-	
-echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false
+
+echo {$data} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
