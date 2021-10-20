@@ -50,7 +50,7 @@ ipr=$( ip r | grep "^default.*wlan0" )
 if [[ -n $ipr ]]; then
 	gateway=$( echo $ipr | cut -d' ' -f3 )
 	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet / {print $2}' )
-	static=$( [[ $ipr == *"dhcp src $ipwlan "* ]] && echo false || echo true )
+	static=$( [[ $ipr != *"dhcp src $ipwlan "* ]] && echo true )
 	[[ -n $ipwlan ]] && hostname=$( avahi-resolve -a4 $ipwlan | awk '{print $NF}' )
 	ssid=$( iwgetid wlan0 -r )
 	netctl=$( cat "/etc/netctl/$ssid" )
@@ -76,7 +76,7 @@ readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//'
 if [[ -n $notconnected ]]; then
 	for ssid in "${notconnected[@]}"; do
 		netctl=$( cat "/etc/netctl/$ssid" )
-		static=$( echo "$netctl" | grep -q ^IP=dhcp && echo false || echo true )
+		static=$( ! echo "$netctl" | grep -q ^IP=dhcp && echo true )
 		hidden=$( echo "$netctl" | grep -q ^Hidden && echo true )
 		wep=$( echo "$netctl" | grep -q ^Security=wep && echo true )
 		password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
@@ -98,7 +98,7 @@ if [[ -n $notconnected ]]; then
 }'
 	done
 fi
-[[ -n $listwl ]] && listwl="[ ${listwl:1} ]" || listwl=false
+[[ -n $listwl ]] && listwl="[ ${listwl:1} ]"
 
 # hostapd
 if systemctl -q is-active hostapd; then
