@@ -45,7 +45,7 @@ fi
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 elif [[ -e $dirtmp/btclient ]]; then
-	for i in {1..5}; do
+	for i in {1..5}; do # takes some seconds to be ready
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		[[ -n $volume ]] && break
 		sleep 1
