@@ -26,4 +26,8 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${data:1}] | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
+echo [${data:1}] \
+	| sed  's/:\s*,/: false,/g
+			s/:\s*}/: false }/g
+			s/\[\s*,/[ false,/g
+			s/,\s*]/, false ]/g' # sed - null > false

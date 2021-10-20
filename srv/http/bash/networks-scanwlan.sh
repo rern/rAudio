@@ -51,4 +51,8 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${list:1}] | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
+echo [${list:1}] \
+	| sed  's/:\s*,/: false,/g
+			s/:\s*}/: false }/g
+			s/\[\s*,/[ false,/g
+			s/,\s*]/, false ]/g' # sed - null > false

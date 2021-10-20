@@ -144,10 +144,10 @@ if [[ -e $dirsystem/vuled.conf ]]; then
 else
 	vuledconf='[ 14,15,18,23,24,25,8 ]'
 fi
-wlanconf="[
- \"$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )\"
-,$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
-]"
+wlanconf='[
+  "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
+, '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )'
+]'
 
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
@@ -186,4 +186,8 @@ data+='
 , "wlanconf"         : '$wlanconf'
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 
-echo {$data} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
+echo {$data} \
+	| sed  's/:\s*,/: false,/g
+			s/:\s*}/: false }/g
+			s/\[\s*,/[ false,/g
+			s/,\s*]/, false ]/g' # sed - null > false

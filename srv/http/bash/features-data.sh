@@ -61,4 +61,8 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smbconf"          : '$smbconf
 fi
 
-echo {$data} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
+echo {$data} \
+	| sed  's/:\s*,/: false,/g
+			s/:\s*}/: false }/g
+			s/\[\s*,/[ false,/g
+			s/,\s*]/, false ]/g' # sed - null > false
