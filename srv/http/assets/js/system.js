@@ -52,12 +52,12 @@ $( '#refresh' ).click( function( e ) {
 	
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( intervalcputime );
+		clearInterval( G.intCputime );
 		bannerHide();
 		$this.removeClass( 'blink' );
 	} else {
 		$this.addClass( 'blink' );
-		intervalcputime = setInterval( function() {
+		G.intCputime = setInterval( function() {
 			bash( '/srv/http/bash/system-data.sh status', function( status ) {
 				$.each( status, function( key, val ) {
 					G[ key ] = val;

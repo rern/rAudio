@@ -174,10 +174,10 @@ disconnect = () => {
 }
 hiddenSet = () => {
 	if ( page === 'networks' ) {
-		clearInterval( intervalscan );
+		clearTimeout( G.timeoutScan );
 		$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 	} else if ( page === 'system' ) {
-		clearInterval( intervalcputime );
+		clearInterval( G.intCputime );
 		$( '#refresh' ).removeClass( 'blink' );
 	}
 }
