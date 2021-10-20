@@ -68,10 +68,10 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
 	} else {
-		var connected = G.li.data( 'offline' ) != 1;
+		var notconnected = G.li.hasClass( 'notconnected' );
 		$( '#menu a' ).removeClass( 'hide' );
-		$( '#menu .connect' ).toggleClass( 'hide', connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !connected );
+		$( '#menu .connect' ).toggleClass( 'hide', !notconnected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 	}
 	var menuH = $menu.height();
 	$menu
@@ -415,7 +415,7 @@ function renderPage( list ) {
 						htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 					}
 				} else {
-					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-offline="1"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
+					htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
 				}
 			} );
 		}
