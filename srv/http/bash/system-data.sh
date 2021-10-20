@@ -146,7 +146,7 @@ else
 fi
 wlanconf="[
  \"$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )\"
-,$( exists $dirsystem/wlannoap )
+,$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
 ]"
 
 data+='
