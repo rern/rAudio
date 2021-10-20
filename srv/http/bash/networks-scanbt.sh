@@ -16,8 +16,8 @@ for line in "${lines[@]}"; do
 	(( ${#dash} == 5 )) && continue # filter out unnamed devices
 	
 	mac=${line#*^}
-	connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
-	paired=$( bluetoothctl info $mac | grep -q 'Paired: yes' && echo true || echo false )
+	connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true )
+	paired=$( bluetoothctl info $mac | grep -q 'Paired: yes' && echo true )
 	data+=',{
   "name"      : "'${name//\"/\\\"}'"
 , "mac"       : "'$mac'"
@@ -26,4 +26,4 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${data:1}] # 'remove leading , | sed - null > false
+echo [${data:1}] | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false

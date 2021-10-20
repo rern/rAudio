@@ -42,7 +42,7 @@ $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
 } );
 $( 'body' ).on( 'click touchstart', function( e ) {
-	if ( !$( e.target ).closest( '.i2s' ).length && $( '#i2smodule option:selected' ).val() === 'none' ) {
+	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
 	}
@@ -52,12 +52,12 @@ $( '#refresh' ).click( function( e ) {
 	
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( intervalcputime );
+		clearInterval( G.intCputime );
 		bannerHide();
 		$this.removeClass( 'blink' );
 	} else {
 		$this.addClass( 'blink' );
-		intervalcputime = setInterval( function() {
+		G.intCputime = setInterval( function() {
 			bash( '/srv/http/bash/system-data.sh status', function( status ) {
 				$.each( status, function( key, val ) {
 					G[ key ] = val;
@@ -184,17 +184,23 @@ $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
 	var output = $( this ).find( ':selected' ).text();
 	if ( aplayname !== 'none' ) {
-		$( '#divi2smodulesw' ).addClass( 'hide' );
-		$( '#divi2smodule' ).removeClass( 'hide' );
 		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
 	} else {
 		aplayname = 'onboard';
 		output = '';
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
 		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
+} ).on( 'selectric-close', function() { // fix: toggle switch / select on 'Disable'
+	setTimeout( function() {
+		if ( $( '#i2smodule' ).val() !== 'none' ) {
+			$( '#divi2smodulesw' ).addClass( 'hide' );
+			$( '#divi2smodule' ).removeClass( 'hide' );
+		} else {
+			$( '#divi2smodulesw' ).removeClass( 'hide' );
+			$( '#divi2smodule' ).addClass( 'hide' );
+		}
+	}, 300 );
 } );
 $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {

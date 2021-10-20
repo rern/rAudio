@@ -132,7 +132,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		
 	esac
 # >>>>>>>>>>
-	echo {$status}
+	echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
 	exit
 fi
 
@@ -210,7 +210,7 @@ if (( $playlistlength  == 0 )); then
 , "hostname" : "'$hostname'"
 , "ip"       : "'$ip'"'
 # >>>>>>>>>>
-	echo {$status}
+	echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
 	exit
 fi
 fileheader=${file:0:4}
@@ -348,7 +348,7 @@ $radiosampling" > $dirtmp/radio
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
 # >>>>>>>>>>
-		echo {$status}
+		echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
 		exit
 	fi
 	
@@ -475,7 +475,7 @@ if [[ -z $displaycover ]]; then
 # >>>>>>>>>>
 	status+='
 , "elapsed"  : '$elapsed
-	echo {$status}
+	echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
 	exit
 fi
 
@@ -495,7 +495,7 @@ status+='
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
-echo {$status}
+echo {$status} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g'
 
 [[ -n $getcover ]] && exit
 

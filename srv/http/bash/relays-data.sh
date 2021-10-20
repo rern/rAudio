@@ -14,4 +14,4 @@ data='
 , "timer"   : '$timer'
 , "enabled" : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 
-echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false
+echo {$data} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false

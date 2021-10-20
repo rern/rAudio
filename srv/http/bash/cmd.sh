@@ -114,8 +114,8 @@ pladdPlay() {
 		sleep $2
 		mpc play $pos
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
+		$dirbash/cmd-pushstatus.sh
 	fi
-	$dirbash/cmd-pushstatus.sh
 }
 pladdPosition() {
 	if [[ ${1:0:7} == replace ]]; then
@@ -192,6 +192,11 @@ volumeControls() {
 	fi
 }
 volumeGet() {
+	if [[ -e $dirtmp/btclient ]]; then
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		return
+	fi
+	
 	if ! aplay -l 2> /dev/null | grep -q '^card'; then
 		volume=-1
 		return
@@ -947,6 +952,7 @@ volumeget )
 	[[ ${args[1]} == db ]] && echo $volume $db || echo $volume
 	;;
 volumepushstream )
+	[[ -e $dirtmp/btclient ]] && sleep 1
 	volumeGet
 	pushstream volume '{"val":'$volume'}'
 	[[ -n $control ]] && alsactl store

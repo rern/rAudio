@@ -60,7 +60,7 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/equalizer ]]; then
-		[[ -n $btname ]] && mixertype=software
+		[[ -e $dirtmp/btclient ]] && mixertype=software
 ########
 		output+='
 audio_output {
@@ -191,9 +191,6 @@ asound="\
 defaults.pcm.card $card
 defaults.ctl.card $card"
 if [[ -e $dirsystem/equalizer ]]; then
-	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirtmp/btclient ]] && filepresets+="-$( cat $dirtmp/btclient )"
-	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
 	asound+='
 pcm.!default {
 	type plug;
@@ -204,7 +201,8 @@ ctl.equal {
 }
 pcm.plugequal {
 	type equal;'
-	if [[ -z $btname ]]; then
+	filepresets=$dirsystem/equalizer.presets
+	if [[ ! -e $dirtmp/btclient ]]; then
 		asound+='
 	slave.pcm "plughw:'$card',0";'
 	else
@@ -218,9 +216,11 @@ pcm.plugequal {
  			delay 20000;
  		}
  	}'
+		filepresets+="-$( cat $dirtmp/btclient )"
 	fi
 	asound+='
 }'
+	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
 fi
 echo "$asound" > /etc/asound.conf
 [[ -n $preset ]] && $dirbash/cmd.sh "equalizer

@@ -58,8 +58,6 @@ if ifconfig | grep -q eth0; then
 ,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
 ]"
 	fi
-else
-	soundprofileconf=false
 fi
 version=$( cat $dirsystem/version )
 
@@ -148,7 +146,7 @@ else
 fi
 wlanconf="[
  \"$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )\"
-,$( exists $dirsystem/wlannoap )
+,$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
 ]"
 
 data+='
@@ -181,11 +179,11 @@ data+='
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "version"          : "'$version'"
-, "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null || echo 0 )'
+, "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'
 , "wlan"             : '$( rfkill | grep -q wlan && echo true )'
 , "wlanconf"         : '$wlanconf'
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true || echo false ) # last one needs echo false
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 
-echo {$data} | sed 's/:\s*,/: false,/g' # sed - null > false
+echo {$data} | sed 's/:\s*,/: false,/g; s/:\s*}/: false}/g' # sed - null > false
