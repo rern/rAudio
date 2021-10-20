@@ -84,6 +84,7 @@ Presets:
  • Existing: adjust ➤ <i class="fa fa-save"></i>
  • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
  • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
+ • If distortions occurred, lower all bands collectively and increase volume to fix distortions
 HTML
 	]
 ];

@@ -112,7 +112,8 @@ $body = [
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
-Pairing:&emsp;<i class="fa fa-networks"></i>Networks
+ • Pairing:&emsp;<i class="fa fa-networks"></i>Networks
+ • Button on device can be used for play/pause
 HTML
 	]
 	, [
