@@ -1,3 +1,10 @@
+function addReplace( cmd, command, title, msg ) {
+	if ( cmd === 'addplay' || cmd === 'replaceplay' || cmd === 'replace' ) $( '#stop' ).click();
+	bash( command, function() {
+		if ( G.display.playbackswitch ) $( '#playback' ).click();
+	} );
+	banner( title, msg, 'playlist' );
+}
 function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from server
@@ -614,7 +621,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 						getPlaylist();
 						setButtonControl();
 						banner( title, count +' tracks added.', 'library' );
-						if ( addplay && G.display.playbackswitch ) $( '#playback' ).click();
 					} );
 				}
 			}, 'json' );
@@ -789,20 +795,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	if ( G.display.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
 		infoReplace( function() {
-			$( '#stop' ).click();
-			if ( G.display.playbackswitch ) $( '#playback' ).click();
-			bash( command );
-			banner( title, msg, 'playlist' );
+			addReplace( cmd, command, title, msg );
 		} );
 	} else {
-		if ( cmd === 'addplay' || cmd === 'replaceplay' ) {
-			$( '#stop' ).click();
-			if ( G.display.playbackswitch ) $( '#playback' ).click();
-		}
-		var radioplay = G.mode === 'webradio' && G.status.state === 'play';
-		setTimeout( function() {
-			bash( command );
-		}, radioplay ? 1000 : 0 );
-		banner( title, msg, 'playlist' );
+		addReplace( cmd, command, title, msg );
 	}
 } );
