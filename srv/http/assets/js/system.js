@@ -437,7 +437,7 @@ $( '#setting-vuled' ).click( function() {
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : G.vuledconf
-		, boxwidth     : 60
+		, boxwidth     : 80
 		, beforeshow   : function() {
 			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
 			$( '#infoContent select' ).on( 'change', function() {

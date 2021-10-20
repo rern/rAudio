@@ -298,7 +298,12 @@ function editWiFi() {
 	}, 'json' );
 }
 function editWiFiInfo( values ) {
-	add = values ? false : true;
+	if ( values ) {
+		var add = false;
+	} else {
+		var add = true;
+		values = [ '', '', '', '', false, false, false ];
+	}
 	info( {
 		  icon          : 'wifi'
 		, title         : add ? 'New Wi-Fi Connection' : 'Edit Saved Connection'
@@ -306,7 +311,7 @@ function editWiFiInfo( values ) {
 		, boxwidth      : 180
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
-		, values        : add ? [ '', '', '', '', false, false, false ] : values
+		, values        : values
 		, checkchanged  : add ? 0 : 1
 		, checkblank    : add ? 0 : 1
 		, beforeshow    : function() {
