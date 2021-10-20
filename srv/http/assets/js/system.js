@@ -760,7 +760,7 @@ var htmlmount = `\
 	<td><input type="text"></td>
 </tr>
 <tr class="guest"><td>Password</td>
-	<td><input type="password" checked>&ensp;<i class="fa fa-eye fa-lg"></i></td>
+	<td><input type="password" checked></td><td><i class="fa fa-eye fa-lg"></i></td>
 </tr>
 <tr><td>Options</td>
 	<td><input type="text"></td>
@@ -777,7 +777,7 @@ function infoMount( values ) {
 		, values     : values
 		, beforeshow : function() {
 			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
-			$( '#infoContent td:eq( 1 )' ).css( 'width', 267 );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
