@@ -12,7 +12,7 @@ if systemctl -q is-active bluetooth; then
 		for line in "${lines[@]}"; do
 			mac=${line#*^}
 			name=${line/^*}
-			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true )
+			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
 			listbt+=',{
   "name"      : "'${name//\"/\\\"}'"
 , "connected" : '$connected'

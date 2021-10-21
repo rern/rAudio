@@ -53,6 +53,7 @@ bluetooth )
 	;;
 bluetoothdisable )
 	systemctl disable --now bluetooth
+	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
 	pushRefresh
 	;;
 bluetoothset )
@@ -68,6 +69,7 @@ bluetoothset )
 	if ! systemctl -q is-active bluetooth; then
 		systemctl enable --now bluetooth
 		sleep 3
+		$dirbash/mpd-conf.sh bton
 	fi
 	bluetoothctl discoverable $yesno &
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat

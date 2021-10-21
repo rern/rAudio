@@ -27,7 +27,7 @@ restartMPD() {
 	fi
 }
 
-if [[ $1 == bt ]]; then
+if [[ $1 == bton ]]; then
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btaplay=$( bluealsa-aplay -L )
@@ -35,11 +35,17 @@ if [[ $1 == bt ]]; then
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
-	pushstream btclient true
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
 	echo $btname > $dirtmp/btclient
+	pushstream btclient true
+	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+elif [[ $1 == btoff ]]; then
+	rm -f $dirtmp/{player-*,btclient}
+	touch $dirtmp/player-mpd
+	pushstream btclient false
+	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 fi
 
 . $dirbash/mpd-devices.sh

@@ -315,27 +315,19 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothplayer )
-	val=${args[1]}
-	if [[ $val == 1 ]]; then # connected - handled by mpd-conf.sh
-#		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
-#		pushstream btclient true
-		true
-	elif [[ $val == 0 ]]; then # disconnected
-		rm -f $dirtmp/{player-*,btclient}
+	echo ${args[1]} > $dirtmp/player-bluetooth
+	rm -f $dirtmp/{player-*,btclient}
+	mpc stop
+	sleep 1
+	volume0dB
+	pushstream mpdplayer "$( $dirbash/status.sh )"
+	;;
+bluetoothplayerconnect )
+	if [[ ${args[1]} == 0 ]]; then # disconnected
+		rm -f $dirtmp/player-bluetooth
 		touch $dirtmp/player-mpd
-		pushstream btclient false
-	else
-		mpc stop
-		rm -f $dirtmp/{player-*,btclient}
-		echo $val > $dirtmp/player-bluetooth
-		sleep 1
-		volume0dB
 	fi
-	if [[ $val == 1 || $val == 0 ]]; then
-		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
-	else
-		pushstream mpdplayer "$( $dirbash/status.sh )"
-	fi
+	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )
 	systemctl restart bluezdbus

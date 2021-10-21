@@ -14,17 +14,19 @@ def pushstream( data ):
     requests.post( 'http://127.0.0.1/pub?id=mpdplayer', json=data )
 
 def property_changed( interface, changed, invalidated, path ):
+    if not os.path.isfile( '/srv/http/data/shm/player-bluetooth' ): return
+    
     for name, value in changed.items():
-#        print( name +' = '+ str( value ) )
-        # Connected : 1 | 0
+#        print( name +' = '+ str( value ) )                         (for debug)
         # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (sink not emit this data)
+        # Connected : 1 | 0                                         (1 emitted after Player)
         # Position  : elapsed
         # State     : active | idle | pending
         # Status    : paused | playing | stopped
         # Track     : metadata
         # Type      : dest playerX
         if name == 'Track':
-            Duration= value[ 'Duration' ] or 0
+            Duration = value[ 'Duration' ] or 0
             pushstream( {
                   "Artist" : value[ 'Artist' ]
                 , "Title"  : value[ 'Title' ]
@@ -38,8 +40,10 @@ def property_changed( interface, changed, invalidated, path ):
             pushstream( { "state" : state } )
         elif name == 'Position':
             pushstream( { "elapsed" : value == 0 and 0 or int( round( value / 1000, 0 ) ) } )
-        elif name == 'Player' or name == 'Connected':
-            os.system( "/srv/http/bash/cmd.sh bluetoothplayer$'\n'"+ str( value ) )
+        elif name == 'Player':
+            os.system( "/srv/http/bash/cmd.sh bluetoothplayer$'\n'"+ value )
+        elif name == 'Connected':
+            os.system( "/srv/http/bash/cmd.sh bluetoothplayerconnect$'\n'"+ str( value ) )
             
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )
