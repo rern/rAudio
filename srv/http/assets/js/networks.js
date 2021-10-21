@@ -32,7 +32,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#wladd' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : editWiFiInfo();
+	'ssid' in G ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
@@ -145,7 +145,6 @@ $( '.forget' ).click( function() {
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
 	var ssid = list.ssid;
-	var wpa = list.wpa || 'wep';
 	var data = {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
@@ -158,7 +157,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				, passwordlabel : 'Password'
 				, oklabel       : 'Connect'
 				, ok            : function() {
-					data.Security = wpa;
+					data.Security = list.wep ? 'wep' : 'wpa';
 					data.Key      = infoVal();
 					connectWiFi( data );
 				}
@@ -294,10 +293,17 @@ function editWiFi() {
 	var list = G.listwl[ G.li.index() ];
 	bash( [ 'profileget', list.ssid ], function( data ) {
 		var values = [ list.ssid, list.ip, list.gateway, ...data ];
-		editWiFiInfo( values );
+		infoWiFi( values );
 	}, 'json' );
 }
-function editWiFiInfo( values ) {
+function infoAccesspoint() {
+	info( {
+		  icon    : 'wifi'
+		, title   : 'Wi-Fi'
+		, message : 'Access Point must be disabled.'
+	} );
+}
+function infoWiFi( values ) {
 	if ( values ) {
 		var add = false;
 	} else {
@@ -354,13 +360,6 @@ function editWiFiInfo( values ) {
 		}
 	} );
 }
-function infoAccesspoint() {
-	info( {
-		  icon    : 'wifi'
-		, title   : 'Wi-Fi'
-		, message : 'Access Point must be disabled.'
-	} );
-}
 function renderBluetooth() {
 	G.btconnected = false;
 	var htmlbt = '';
@@ -391,7 +390,7 @@ function renderPage( list ) {
 		var htmlwl = '';
 		if ( G.listwl ) {
 			G.listwl.forEach( function( list ) {
-				if ( list.dbm ) {
+				if ( list.ip ) {
 					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 					var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
 					htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';
