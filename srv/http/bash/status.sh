@@ -43,7 +43,7 @@ if [[ -e $dirtmp/nosound ]]; then
 	volume=false
 elif [[ -e $dirtmp/btclient ]]; then
 	for i in {1..5}; do # takes some seconds to be ready
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 		[[ -n $volume ]] && break
 		sleep 1
 	done
@@ -52,7 +52,6 @@ else
 	control=$( echo $controlvolume | cut -d^ -f1 )
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
-[[ $volume == n/a ]] && volume=false
 
 ########
 	status='

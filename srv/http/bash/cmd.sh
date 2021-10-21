@@ -193,7 +193,7 @@ volumeControls() {
 }
 volumeGet() {
 	if [[ -e $dirtmp/btclient ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 		return
 	fi
 	
@@ -202,11 +202,11 @@ volumeGet() {
 		return
 	fi
 	
-	mixertype=$( sed -n '/^\s*device.*"hw:/,/mixer_type/ p' /etc/mpd.conf \
+	mixertype=$( sed -n '/soxr/,/mixer_type/ p' /etc/mpd.conf \
 					| tail -1 \
 					| cut -d'"' -f2 )
 	if [[ $mixertype == software ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
 		card=$( head -1 /etc/asound.conf | tail -c 2 )
 		volumeControls $card
