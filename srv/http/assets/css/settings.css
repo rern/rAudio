@@ -691,7 +691,7 @@ input:checked + .switchlabel.disabled:after {
 	.setting,
 	.settings,
 	.settingedit,
-	.status,
+	.status:not(pre),
 	.switchlabel,
 	.undervoltage,
 	.wiring,
