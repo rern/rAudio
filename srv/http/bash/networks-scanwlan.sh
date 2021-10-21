@@ -26,8 +26,8 @@ fi
 connectedssid=$( iwgetid wlan0 -r )
 
 readarray -t lines <<< $( iwlist wlan0 scan \
-							| grep '^\s*Quality\|^\s*Encryption\|^\s*ESSID' \
-							| sed 's/^\s*Quality.*level\| dBm *$\|^\s*Encryption.*:\|^\s*ESSID.*:\|\\x00//g' \
+							| grep '^\s*Quality\|^\s*Encryption\|^\s*ESSID\|WPA \|WPA2' \
+							| sed 's/^\s*Quality.*level\| dBm *$\|^\s*Encryption.*:\|^\s*ESSID.*:\|\\x00//g; s/IE: .*\(WPA.*\) .* .*/\1/' \
 							| sed 's/^"\|"$//g' \
 							| tr '\n' '^' \
 							| sed 's/=/\n/g' \
@@ -41,13 +41,14 @@ for line in "${lines[@]}"; do
 	
 	dbm=${val[0]}
 	encrypt=${val[1]}
-	
+	[[ -z ${val[3]} ]] && echo true
 	list+=',{
   "dbm"       : "'$dbm'"
 , "ssid"      : "'$ssid'"
 , "encrypt"   : "'$encrypt'"
 , "profile"   : '$( [[ -e "/etc/netctl/$ssid" ]] && echo true )'
 , "connected" : '$( [[ $ssid == $connectedssid ]] && echo true )'
+, "wep"       : '$wep'
 }'
 done
 
