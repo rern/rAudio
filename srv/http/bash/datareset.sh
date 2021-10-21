@@ -94,6 +94,7 @@ cat << EOF > $dirsystem/display
 	"vumeter": false
 }
 EOF
+rm -rf /root/.config/chromium
 rm -f $dirdata/shm/player-*
 touch $dirdata/shm/player-mpd
 # relays

@@ -7,6 +7,10 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+# 20211021
+rm -rf /root/.config/chromium
+systemctl -q is-active localbrowser && systemctl restart localbrowser
+
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
 if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
