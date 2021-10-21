@@ -55,6 +55,7 @@ else
 	control=$( echo $controlvolume | cut -d^ -f1 )
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
+[[ $volume == n/a ]] && volume=false
 
 ########
 	status='
