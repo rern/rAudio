@@ -21,26 +21,23 @@ outputStatus() { # sed - null > false
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'
 }
-btclient=$( [[ -e $dirtmp/btclient ]] && echo true || echo false )
-consume=$( mpc | grep -q 'consume: on' && echo true || echo false )
-counts=$( cat /srv/http/data/mpd/counts 2> /dev/null || echo false )
-[[ -z $counts ]] && counts=false # fix - sometime blank on startup
-librandom=$( [[ -e $dirsystem/librandom ]] && echo true || echo false )
+btclient=$( [[ -e $dirtmp/btclient ]] && echo true )
+consume=$( mpc | grep -q 'consume: on' && echo true )
+counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )
+librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
 player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
 [[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
 [[ $player != mpd ]] && icon=$player
 playlists=$( ls /srv/http/data/playlists | wc -l )
-relays=$( [[ -e $dirsystem/relays ]] && echo true || echo false )
-relayson=$( [[ -e  $dirtmp/relayson ]] && echo true || echo false )
-updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true || echo false )
+relays=$( [[ -e $dirsystem/relays ]] && echo true )
+relayson=$( [[ -e  $dirtmp/relayson ]] && echo true )
+updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true )
 if [[ -e $dirsystem/updating ]]; then 
 	updating_db=true
 	if ! mpc | grep -q ^Updating; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	fi
-else
-	updating_db=false
 fi
 if [[ -e $dirtmp/nosound ]]; then
 	volume=false
@@ -89,7 +86,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 			status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
 		done
 		start=$( cat $path-start 2> /dev/null || echo 0 )
-		Time=$( cat $path-Time 2> /dev/null || echo false )
+		Time=$( cat $path-Time 2> /dev/null )
 		now=$( date +%s%3N )
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$( printf '%.0f' $(( ( now - start + 500 ) / 1000 )) )
@@ -177,7 +174,7 @@ for line in "${lines[@]}"; do
 			bitrate=$(( val * 1000 ));;
 		# true/false
 		random | repeat | single )
-			[[ $val == 1 ]] && tf=true || tf=false
+			[[ $val == 1 ]] && tf=true
 ########
 			status+='
 , "'$key'" : '$tf
@@ -198,8 +195,6 @@ for line in "${lines[@]}"; do
 done
 
 [[ -z $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
-[[ -z $song ]] && song=false
-[[ -z $Time ]] && Time=false
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
