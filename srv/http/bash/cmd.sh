@@ -315,9 +315,8 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothplayer )
-	echo ${args[1]} > $dirtmp/player-bluetooth
-	rm -f $dirtmp/{player-*,btclient}
 	mpc stop
+	rm -f $dirtmp/{player-*,btclient}
 	sleep 1
 	volume0dB
 	pushstream mpdplayer "$( $dirbash/status.sh )"

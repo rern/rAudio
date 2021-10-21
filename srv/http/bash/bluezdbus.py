@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# RPi as receiver
+
 import os
 import requests
 import dbus
@@ -17,7 +19,6 @@ def property_changed( interface, changed, invalidated, path ):
     if not os.path.isfile( '/srv/http/data/shm/player-bluetooth' ): return
     
     for name, value in changed.items():
-#        print( name +' = '+ str( value ) )                         (for debug)
         # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (sink not emit this data)
         # Connected : 1 | 0                                         (1 emitted after Player)
         # Position  : elapsed
@@ -25,7 +26,19 @@ def property_changed( interface, changed, invalidated, path ):
         # Status    : paused | playing | stopped
         # Track     : metadata
         # Type      : dest playerX
-        if name == 'Track':
+        if name == 'Player':
+            with open( '/srv/http/data/shm/player-bluetooth', 'w' ) as f: f.write( value )
+            os.system( '/srv/http/bash/cmd.sh bluetoothplayer' )
+        elif name == 'Connected':
+            os.system( "/srv/http/bash/cmd.sh bluetoothplayerconnect$'\n'"+ str( value ) )
+        elif name == 'Position':
+            pushstream( { "elapsed" : value == 0 and 0 or int( round( value / 1000, 0 ) ) } )
+        elif name == 'State':
+            state = value == 'idle' and pushstream( { "state" : "pause" } )
+        elif name == 'Status':
+            state = value == 'paused' and 'pause' or ( value == 'playing' and 'play' or 'stop' )
+            pushstream( { "state" : state } )
+        elif name == 'Track':
             Duration = value[ 'Duration' ] or 0
             pushstream( {
                   "Artist" : value[ 'Artist' ]
@@ -33,17 +46,6 @@ def property_changed( interface, changed, invalidated, path ):
                 , "Album"  : value[ 'Album' ]
                 , "Time"   : Duration == 0 and 0 or int( round( Duration / 1000, 0 ) )
             } )
-        elif name == 'State':
-            state = value == 'idle' and pushstream( { "state" : "pause" } )
-        elif name == 'Status':
-            state = value == 'paused' and 'pause' or ( value == 'playing' and 'play' or 'stop' )
-            pushstream( { "state" : state } )
-        elif name == 'Position':
-            pushstream( { "elapsed" : value == 0 and 0 or int( round( value / 1000, 0 ) ) } )
-        elif name == 'Player':
-            os.system( "/srv/http/bash/cmd.sh bluetoothplayer$'\n'"+ value )
-        elif name == 'Connected':
-            os.system( "/srv/http/bash/cmd.sh bluetoothplayerconnect$'\n'"+ str( value ) )
             
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )
