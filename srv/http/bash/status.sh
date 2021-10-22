@@ -20,10 +20,9 @@ outputStatus() { # sed - null > false
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'
-	if [[ -e $dirsystem/onwhileplay ]] && ! grep -q '"state"\s*:\s*"play"' <<< "$status"; then
-		screenoff=$( cat $dirsystem/onwhileplay )
-		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
-	fi
+	[[ ! -e $dirsystem/onwhileplay ]] && exit
+	
+	grep -q '"state"\s*:\s*"play"' <<< "$status" && DISPLAY=:0 xset -dpms || DISPLAY=:0 xset +dpms
 }
 
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true )

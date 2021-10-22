@@ -96,12 +96,7 @@ localbrowserset )
 		[[ $screenoff != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
-	if [[ $newonwhileplay == true ]]; then
-		DISPLAY=:0 xset dpms 0 0 0
-		echo $newscreenoff > $dirsystem/onwhileplay
-	else
-		rm -f $dirsystem/onwhileplay
-	fi
+	[[ $newonwhileplay == true ]] && touch $dirsystem/onwhileplay || rm -f $dirsystem/onwhileplay
 	if [[ -n $changedrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			declare -A deg=( [NORMAL]=0 [CW]=270 [CCW]=90 [UD]=180 )
