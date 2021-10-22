@@ -5,20 +5,15 @@ export XDG_CACHE_HOME="/tmp/.cache"
 file=/srv/http/data/system/localbrowser.conf
 if [[ -e $file ]]; then
 	. $file
-	screenoff=$(( $screenoff * 60 ))
+	off=$(( screenoff * 60 ))
 	zoom=$( echo "print $zoom / 100" | perl )
 else
-	screenoff=0
+	off=0
 	cursor=false
 	zoom=1
 fi
-
-xset dpms $screenoff $screenoff $screenoff
-if (( $screenoff == 0 )); then
-	xset s off
-	xset -dpms
-fi
-
+xset dpms $off $off $off
+(( $off == 0 )) && xset -dpms || xset +dpms
 if [[ $cursor == false ]] && ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet; then
 	cursor=no
 else 
