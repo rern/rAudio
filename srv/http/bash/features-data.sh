@@ -45,7 +45,7 @@ if [[ -e $xinitrc ]]; then
 		v=( $( cut -d= -f2 $dirsystem/localbrowser.conf ) )
 		localbrowserconf="[ $(( ${v[0]} / 60 )), $( echo "print ${v[1]} * 100" | perl ), \"${v[2]}\", ${v[3]} ]"
 	else
-		localbrowserconf='[ 0, 1, "NORMAL", false ]'
+		localbrowserconf='[ 0, 100, "NORMAL", false ]'
 	fi
 	data+='
 , "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"
