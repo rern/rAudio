@@ -20,8 +20,8 @@ outputStatus() { # sed - null > false
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'
-	if [[ -e $dirsystem/playnooff ]] && ! grep -q '"state"\s*:\s*"play"' <<< "$status"; then
-		screenoff=$( cat $dirsystem/playnooff )
+	if [[ -e $dirsystem/onwhileplay ]] && ! grep -q '"state"\s*:\s*"play"' <<< "$status"; then
+		screenoff=$( cat $dirsystem/onwhileplay )
 		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 	fi
 }

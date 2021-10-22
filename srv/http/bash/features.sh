@@ -74,7 +74,7 @@ localbrowserdisable )
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
-	rm -f $dirsystem/playnooff
+	rm -f $dirsystem/onwhileplay
 	pushRefresh
 	pushstream display '{"submenu":"screenoff","value":false}'
 	;;
@@ -82,7 +82,7 @@ localbrowserset )
 	newrotate=${args[1]}
 	newzoom=$( echo "print ${args[2]} / 100" | perl )
 	newscreenoff=$(( ${args[3]} * 60 ))
-	newplaynooff=${args[4]}
+	newonwhileplay=${args[4]}
 	newcursor=${args[5]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		. $dirsystem/localbrowser.conf
@@ -96,11 +96,11 @@ localbrowserset )
 		[[ $screenoff != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
-	if [[ $playnooff == true ]]; then
+	if [[ $onwhileplay == true ]]; then
 		DISPLAY=:0 xset dpms 0 0 0
-		echo $newscreenoff > $dirsystem/playnooff
+		echo $newscreenoff > $dirsystem/onwhileplay
 	else
-		rm -f $dirsystem/playnooff
+		rm -f $dirsystem/onwhileplay
 	fi
 	if [[ -n $changedrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
@@ -129,7 +129,7 @@ localbrowserset )
 rotate=$newrotate
 zoom=$newzoom
 screenoff=$newscreenoff
-playnooff=$newplaynooff
+onwhileplay=$newonwhileplay
 cursor=$newcursor
 " > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
