@@ -366,7 +366,7 @@ function renderBluetooth() {
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
 			if ( list.connected ) G.btconnected = true;
-			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
