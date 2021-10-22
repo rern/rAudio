@@ -96,7 +96,7 @@ localbrowserset )
 		[[ $screenoff != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
-	if [[ $onwhileplay == true ]]; then
+	if [[ $newonwhileplay == true ]]; then
 		DISPLAY=:0 xset dpms 0 0 0
 		echo $newscreenoff > $dirsystem/onwhileplay
 	else
