@@ -42,10 +42,12 @@ fi
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		v=( $( cut -d= -f2 $dirsystem/localbrowser.conf ) )
-		localbrowserconf="[ $(( ${v[0]} / 60 )), $( echo "print ${v[1]} * 100" | perl ), \"${v[2]}\", ${v[3]} ]"
+		conf=$( grep . $dirsystem/localbrowser.conf \
+				| sed 's/^/,"/; s/=/":/' \
+				| sed 's/\(.*rotate.*:\)\(.*\)/\1"\2"/' )
+		localbrowserconf="{${conf:1}}"
 	else
-		localbrowserconf='[ 0, 100, "NORMAL", false ]'
+		localbrowserconf='{ "rotate": "NORMAL", "zoom": 1, "screenoff": 0, "playon": false, "cursor": false }'
 	fi
 	data+='
 , "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"

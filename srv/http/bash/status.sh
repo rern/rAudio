@@ -20,7 +20,12 @@ outputStatus() { # sed - null > false
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'
+	if [[ -e $dirsystem/playnooff ]] && ! grep -q '"state"\s*:\s*"play"' <<< "$status"; then
+		screenoff=$( cat $dirsystem/playnooff )
+		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
+	fi
 }
+
 btclient=$( [[ -e $dirtmp/btclient ]] && echo true )
 consume=$( mpc | grep -q 'consume: on' && echo true )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )

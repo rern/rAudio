@@ -74,17 +74,33 @@ $( '#setting-hostapd' ).click( function() {
 		}
 	} );
 } );
+var content = `
+<table>
+<tr><td>Rotation</td>
+	<td><select>
+		<option value="NORMAL">Normal</option>
+		<option value="CW">90°&ensp;&#xf524;</option>
+		<option value="CCW">90°&ensp;&#xf523;</option>
+		<option value="UD">180°</option>
+		</select>
+	</td><td style="width: 50px"></td></tr>
+<tr><td>Zoom</td>
+	<td><input type="text"></td><td>&nbsp;<gr>(%)</gr></td></tr>
+<tr><td>Sleep</td>
+	<td><input id="screenoff"type="text"></td><td>&nbsp;<gr>(min)</gr></td></tr>
+<tr id="playnooff"><td></td>
+	<td colspan="2"><input type="checkbox">On while playing</td></tr>
+<tr><td></td>
+	<td colspan="2"><input type="checkbox">Mouse pointer</td></tr>
+</table>`;
 $( '#setting-localbrowser' ).click( function() {
+	var v = G.localbrowserconf;
 	info( {
 		  icon         : G.browser
-		, title        : 'Browser on RPi'
-		, textlabel    : [ 'Screen off <gr>(min)</gr>', 'Zoom <gr>(%)</gr>' ]
-		, selectlabel  : 'Screen rotation'
+		, title        : 'Browser Screen'
+		, content      : content
 		, boxwidth     : 100
-		, select       : { 'Normal': 'NORMAL', '90°&ensp;&#xf524;': 'CW', '90°&ensp;&#xf523;': 'CCW', '180°': 'UD' } 
-		, checkbox     : [ 'Pointer' ]
-		, order        : [ 'text', 'select', 'checkbox' ]
-		, values       : G.localbrowserconf
+		, values       : [ v.rotate, v.zoom * 100, v.screenoff / 60, v.playnooff, v.cursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : 1
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
@@ -93,20 +109,26 @@ $( '#setting-localbrowser' ).click( function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
 		, beforeshow   : function() {
+			$( '#playnooff' ).toggleClass( 'hide', v.screenoff === 0 );
 			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
-			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
-				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
-			} );
-			$( '#infoContent input:eq( 1 )' ).on( 'keyup paste cut', function() {
-				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
+			$( '#infoContent input[type=text]' ).on( 'keyup paste cut', function() {
+				var $this = $( this );
+				$this.val( $this.val().replace( /[^0-9]/, '' ) );
+				if ( +$( '#screenoff' ).val() ) {
+					$( '#playnooff' ).removeClass( 'hide' );
+				} else {
+					$( '#playnooff' )
+						.addClass( 'hide' )
+						.find( 'input' ).prop( 'checked', 0 );
+				}
 			} );
 		}
 		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
-			bash( [ 'localbrowserset', ...infoVal() ], function( reboot ) {
-				if ( reboot ) {
+			bash( [ 'localbrowserset', ...infoVal() ], function( std ) {
+				if ( std === 'reboot' ) {
 					info( {
 						  icon    :  G.browser
 						, title   : 'Browser on RPi'

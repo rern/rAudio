@@ -74,25 +74,33 @@ localbrowserdisable )
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
+	rm -f $dirsystem/playnooff
 	pushRefresh
 	pushstream display '{"submenu":"screenoff","value":false}'
 	;;
 localbrowserset )
-	newscreenoff=$(( ${args[1]} * 60 ))
+	newrotate=${args[1]}
 	newzoom=$( echo "print ${args[2]} / 100" | perl )
-	newrotate=${args[3]}
-	newcursor=${args[4]}
+	newscreenoff=$(( ${args[3]} * 60 ))
+	newplaynooff=${args[4]}
+	newcursor=${args[5]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		. $dirsystem/localbrowser.conf
-		[[ $screenoff != $newscreenoff ]] && changedscreenoff=1
-		[[ $zoom != $newzoom ]] && changedzoom=1
 		[[ $rotate != $newrotate ]] && changedrotate=1
-		[[ $cursor != $newcursor ]] && changedcursor=1
+		[[ $zoom != $newzoom ]] && changed=1
+		[[ $screenoff != $newscreenoff ]] && changedscreenoff=1
+		[[ $cursor != $newcursor ]] && changed=1
 	fi
 	if [[ -n $changedscreenoff ]]; then
 		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
 		[[ $screenoff != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
+	fi
+	if [[ $playnooff == true ]]; then
+		DISPLAY=:0 xset dpms 0 0 0
+		echo $newscreenoff > $dirsystem/playnooff
+	else
+		rm -f $dirsystem/playnooff
 	fi
 	if [[ -n $changedrotate ]]; then
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
@@ -118,9 +126,10 @@ localbrowserset )
 		ply-image /srv/http/assets/img/splash.png
 	fi
 	echo "\
-screenoff=$newscreenoff
-zoom=$newzoom
 rotate=$newrotate
+zoom=$newzoom
+screenoff=$newscreenoff
+playnooff=$newplaynooff
 cursor=$newcursor
 " > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
@@ -131,7 +140,7 @@ cursor=$newcursor
 		echo reboot
 	else
 		systemctl -q is-active localbrowser && active=1
-		if [[ -z $active || -n $changedzoom || -n $changedrotate || -n $changedcursor ]]; then
+		if [[ -z $active || -n $changed || -n $changedrotate ]]; then
 			systemctl restart bootsplash localbrowser
 			systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
 		fi
