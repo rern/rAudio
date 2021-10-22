@@ -12,11 +12,14 @@ if systemctl -q is-active bluetooth; then
 		for line in "${lines[@]}"; do
 			mac=${line#*^}
 			name=${line/^*}
-			connected=$( bluetoothctl info $mac | grep -q 'Connected: yes' && echo true || echo false )
+			info=$( bluetoothctl info $mac )
+			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
+			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
 			listbt+=',{
-  "name"      : "'${name//\"/\\\"}'"
-, "connected" : '$connected'
+  "connected" : '$connected'
 , "mac"       : "'$mac'"
+, "name"      : "'${name//\"/\\\"}'"
+, "sink"      : '$sink'
 }'
 		done
 		listbt="[ ${listbt:1} ]"
