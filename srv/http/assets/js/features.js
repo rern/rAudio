@@ -88,8 +88,8 @@ var content = `
 	<td><input type="text"></td><td>&nbsp;<gr>(%)</gr></td></tr>
 <tr><td>Sleep</td>
 	<td><input id="screenoff"type="text"></td><td>&nbsp;<gr>(min)</gr></td></tr>
-<tr id="onwhileplay"><td></td>
-	<td colspan="2"><input type="checkbox">On while playing</td></tr>
+<tr><td></td>
+	<td colspan="2"><input type="checkbox" id="onwhileplay">On while playing</td></tr>
 <tr><td></td>
 	<td colspan="2"><input type="checkbox">Mouse pointer</td></tr>
 </table>`;
@@ -100,7 +100,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, title        : 'Browser Screen'
 		, content      : content
 		, boxwidth     : 100
-		, values       : [ v.rotate, v.zoom * 100, v.screenoff / 60, v.onwhileplay, v.cursor ]
+		, values       : [ v.rotate, v.zoom, v.screenoff, v.onwhileplay, v.cursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, checkblank   : 1
 		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
@@ -109,17 +109,18 @@ $( '#setting-localbrowser' ).click( function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
 		, beforeshow   : function() {
-			$( '#onwhileplay' ).toggleClass( 'hide', v.screenoff === 0 );
+			var $onwhileplay
+			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
 			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
 			$( '#infoContent input[type=text]' ).on( 'keyup paste cut', function() {
 				var $this = $( this );
 				$this.val( $this.val().replace( /[^0-9]/, '' ) );
 				if ( +$( '#screenoff' ).val() ) {
-					$( '#onwhileplay' ).removeClass( 'hide' );
+					$( '#onwhileplay' ).prop( 'disabled', 0 );
 				} else {
 					$( '#onwhileplay' )
-						.addClass( 'hide' )
-						.find( 'input' ).prop( 'checked', 0 );
+						.prop( 'checked', 0 )
+						.prop( 'disabled', 1 );
 				}
 			} );
 		}

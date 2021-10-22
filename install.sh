@@ -8,8 +8,18 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211029
-DISPLAY=:0 xset s off
-grep -q onwhileplay $dirsystem/localbrowser.conf || echo onwhileplay=false >> $dirsystem/localbrowser.conf
+file=$dirsystem/localbrowser.conf
+if ! grep -q onwhileplay $file; then
+	DISPLAY=:0 xset s off
+	. $file
+	echo "\
+rotate=$rotate
+zoom=$( echo "print $zoom * 100" | perl )
+screenoff=$(( $screenoff / 60 ))
+onwhileplay=false
+cursor=$cursor
+" > $dirsystem/localbrowser.conf
+fi
 # 20211022
 echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules

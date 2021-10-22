@@ -80,8 +80,8 @@ localbrowserdisable )
 	;;
 localbrowserset )
 	newrotate=${args[1]}
-	newzoom=$( echo "print ${args[2]} / 100" | perl )
-	newscreenoff=$(( ${args[3]} * 60 ))
+	newzoom=${args[2]}
+	newscreenoff=${args[3]}
 	newonwhileplay=${args[4]}
 	newcursor=${args[5]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
@@ -92,8 +92,9 @@ localbrowserset )
 		[[ $cursor != $newcursor ]] && changed=1
 	fi
 	if [[ -n $changedscreenoff ]]; then
-		DISPLAY=:0 xset dpms $screenoff $screenoff $screenoff
-		[[ $screenoff != 0 ]] && boolean=true || boolean=false
+		off=$(( newscreenoff * 60 ))
+		DISPLAY=:0 xset dpms $off $off $off
+		[[ $off != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
 	[[ $newonwhileplay == true ]] && touch $dirsystem/onwhileplay || rm -f $dirsystem/onwhileplay
