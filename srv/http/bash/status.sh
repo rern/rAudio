@@ -21,7 +21,7 @@ outputStatus() { # sed - null > false
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'
 	if [[ -e $dirsystem/onwhileplay ]]; then
-		grep -q '"state"\s*:\s*"play"' <<< "$status" && DISPLAY=:0 xset -dpms || DISPLAY=:0 xset +dpms
+		grep -q '"state"\s*:\s*"play"' <<< "$status" && xset -dpms || xset +dpms
 	fi
 }
 

@@ -93,7 +93,7 @@ localbrowserset )
 	fi
 	if [[ -n $changedscreenoff ]]; then
 		off=$(( newscreenoff * 60 ))
-		DISPLAY=:0 xset dpms $off $off $off
+		xset dpms $off $off $off
 		[[ $off != 0 ]] && boolean=true || boolean=false
 		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
 	fi
