@@ -193,7 +193,7 @@ volumeControls() {
 }
 volumeGet() {
 	if [[ -e $dirtmp/btclient ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 		return
 	fi
 	
@@ -202,11 +202,11 @@ volumeGet() {
 		return
 	fi
 	
-	mixertype=$( sed -n '/^\s*device.*"hw:/,/mixer_type/ p' /etc/mpd.conf \
+	mixertype=$( sed -n '/soxr/,/mixer_type/ p' /etc/mpd.conf \
 					| tail -1 \
 					| cut -d'"' -f2 )
 	if [[ $mixertype == software ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
 		card=$( head -1 /etc/asound.conf | tail -c 2 )
 		volumeControls $card
@@ -315,27 +315,18 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothplayer )
-	val=${args[1]}
-	if [[ $val == 1 ]]; then # connected - handled by mpd-conf.sh
-#		[[ ! -e $dirtmp/player-bluetooth ]] && touch $dirtmp/btclient
-#		pushstream btclient true
-		true
-	elif [[ $val == 0 ]]; then # disconnected
-		rm -f $dirtmp/{player-*,btclient}
+	mpc stop
+	rm -f $dirtmp/{player-*,btclient}
+	sleep 1
+	volume0dB
+	pushstream mpdplayer "$( $dirbash/status.sh )"
+	;;
+bluetoothplayerconnect )
+	if [[ ${args[1]} == 0 ]]; then # disconnected
+		rm -f $dirtmp/player-bluetooth
 		touch $dirtmp/player-mpd
-		pushstream btclient false
-	else
-		mpc stop
-		rm -f $dirtmp/{player-*,btclient}
-		echo $val > $dirtmp/player-bluetooth
-		sleep 1
-		volume0dB
 	fi
-	if [[ $val == 1 || $val == 0 ]]; then
-		pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
-	else
-		pushstream mpdplayer "$( $dirbash/status.sh )"
-	fi
+	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )
 	systemctl restart bluezdbus

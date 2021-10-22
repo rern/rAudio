@@ -151,11 +151,12 @@ profileconnect )
 	netctlSwitch ${args[1]}
 	;;
 profileget )
-	value=$( cat "/etc/netctl/${args[1]}" \
-				| grep . \
-				| tr -d '"' \
-				| sed 's/^/"/ ;s/=/":"/; s/$/",/' )
-	echo {${value:0:-1}}
+	netctl=$( cat "/etc/netctl/${args[1]}" )
+	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
+	static=$( echo "$netctl" | grep -q ^IP=dhcp && echo false || echo true )
+	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
+	wep=$( [[ $( echo "$netctl" | grep ^Security | cut -d= -f2 ) == wep ]] && echo true || echo false )
+	echo '[ "'$password'", '$static', '$hidden', '$wep' ]'
 	;;
 profileremove )
 	ssid=${args[1]}

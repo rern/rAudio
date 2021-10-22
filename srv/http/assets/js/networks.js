@@ -32,7 +32,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#wladd' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : editWiFi( 'add' );
+	'ssid' in G ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : wlanStatus();
@@ -145,7 +145,6 @@ $( '.forget' ).click( function() {
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
 	var ssid = list.ssid;
-	var wpa = list.wpa || 'wep';
 	var data = {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
@@ -158,7 +157,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				, passwordlabel : 'Password'
 				, oklabel       : 'Connect'
 				, ok            : function() {
-					data.Security = wpa;
+					data.Security = list.wep ? 'wep' : 'wpa';
 					data.Key      = infoVal();
 					connectWiFi( data );
 				}
@@ -290,15 +289,26 @@ function editLANSet( values ) {
 		bannerHide();
 	} );
 }
-function editWiFi( add ) {
-	if ( add ) {
-		var values = [ '', '', '', '', false, false, false ]
+function editWiFi() {
+	var list = G.listwl[ G.li.index() ];
+	bash( [ 'profileget', list.ssid ], function( data ) {
+		var values = [ list.ssid, list.ip, list.gateway, ...data ];
+		infoWiFi( values );
+	}, 'json' );
+}
+function infoAccesspoint() {
+	info( {
+		  icon    : 'wifi'
+		, title   : 'Wi-Fi'
+		, message : 'Access Point must be disabled.'
+	} );
+}
+function infoWiFi( values ) {
+	if ( values ) {
+		var add = false;
 	} else {
-		var list = G.listwl[ G.li.index() ];
-		var values = [];
-		[ 'ssid', 'ip', 'gateway', 'password', 'static', 'hidden', 'wep' ].forEach( function( k ) {
-			values.push( list[ k ] );
-		} );
+		var add = true;
+		values = [ '', '', '', '', false, false, false ];
 	}
 	info( {
 		  icon          : 'wifi'
@@ -350,20 +360,13 @@ function editWiFi( add ) {
 		}
 	} );
 }
-function infoAccesspoint() {
-	info( {
-		  icon    : 'wifi'
-		, title   : 'Wi-Fi'
-		, message : 'Access Point must be disabled.'
-	} );
-}
 function renderBluetooth() {
 	G.btconnected = false;
 	var htmlbt = '';
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
 			if ( list.connected ) G.btconnected = true;
-			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
@@ -387,7 +390,7 @@ function renderPage( list ) {
 		var htmlwl = '';
 		if ( G.listwl ) {
 			G.listwl.forEach( function( list ) {
-				if ( list.dbm ) {
+				if ( list.ip ) {
 					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 					var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
 					htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';

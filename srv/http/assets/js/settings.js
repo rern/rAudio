@@ -24,7 +24,7 @@ var cmd = {
 	, avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
-	, configtxt    : [ dirbash +'system.sh configtxtget', 'cat /boot/config.txt' ]
+	, configtxt    : [ dirbash +'system.sh configtxtget', -1 ]
 	, iw           : [ 'iw reg get; iw list' ]
 	, journalctl   : [ dirbash +'system.sh journalctlget', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]

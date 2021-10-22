@@ -393,17 +393,6 @@ function info( json ) {
 			O.passwordlabel.forEach( function( lbl ) {
 				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
-			$( '#infoContent' ).on( 'click', '.fa-eye', function() {
-				var $this = $( this );
-				var $pwd = $this.parent().prev().find( 'input' );
-				if ( $pwd.prop( 'type' ) === 'text' ) {
-					$this.removeClass( 'bl' );
-					$pwd.prop( 'type', 'password' );
-				} else {
-					$this.addClass( 'bl' );
-					$pwd.prop( 'type', 'text' );
-				}
-			} );
 		}
 		if ( O.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
@@ -603,6 +592,17 @@ function info( json ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
 		}
+		$( '#infoContent' ).on( 'click', '.fa-eye', function() {
+			var $this = $( this );
+			var $pwd = $this.parent().prev().find( 'input' );
+			if ( $pwd.prop( 'type' ) === 'text' ) {
+				$this.removeClass( 'bl' );
+				$pwd.prop( 'type', 'password' );
+			} else {
+				$this.addClass( 'bl' );
+				$pwd.prop( 'type', 'text' );
+			}
+		} );
 		// custom function before show
 		if ( 'beforeshow' in O ) O.beforeshow();
 		$( 'html, body' ).scrollTop( 0 );

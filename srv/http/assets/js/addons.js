@@ -1,8 +1,7 @@
-function branchtest( alias, type, message, install ) {
+function branchtest( alias, type, install ) {
 	info( {
 		  icon      : 'jigsaw'
 		, title     : title
-		, message   : message
 		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
 		, ok        : function() {
@@ -244,14 +243,14 @@ $( '.boxed-group .infobtn' ).click( function () {
 					opt = [ alias, type, rollback ];
 					postcmd();
 				} else {
-					branchtest( alias, type, 'Upgrade / Downgrade to ?' );
+					branchtest( alias, type );
 				}
 			}
 		} );
 	} else if ( type === 'Install' ) {
-		branchtest( alias, type, 'Install version?', 'install' );
+		branchtest( alias, type, 'install' );
 	} else {
-		branchtest( alias, type, 'Install version?' );
+		branchtest( alias, type );
 	}
 } );
 $( '.thumbnail' ).click( function() {

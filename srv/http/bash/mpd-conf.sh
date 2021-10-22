@@ -27,7 +27,7 @@ restartMPD() {
 	fi
 }
 
-if [[ $1 == bt ]]; then
+if [[ $1 == bton ]]; then
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btaplay=$( bluealsa-aplay -L )
@@ -35,11 +35,17 @@ if [[ $1 == bt ]]; then
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
-	pushstream btclient true
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
 	echo $btname > $dirtmp/btclient
+	pushstream btclient true
+	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+elif [[ $1 == btoff ]]; then
+	rm -f $dirtmp/{player-*,btclient}
+	touch $dirtmp/player-mpd
+	pushstream btclient false
+	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 fi
 
 . $dirbash/mpd-devices.sh
@@ -193,27 +199,27 @@ defaults.ctl.card $card"
 if [[ -e $dirsystem/equalizer ]]; then
 	asound+='
 pcm.!default {
-	type plug;
-	slave.pcm plugequal;
+	type plug
+	slave.pcm plugequal
 }
 ctl.equal {
-	type equal;
+	type equal
 }
 pcm.plugequal {
-	type equal;'
+	type equal'
 	filepresets=$dirsystem/equalizer.presets
 	if [[ ! -e $dirtmp/btclient ]]; then
 		asound+='
-	slave.pcm "plughw:'$card',0";'
+	slave.pcm "plughw:'$card',0"'
 	else
 		asound+='
 	slave.pcm {
  		type plug
  		slave.pcm {
- 			type bluealsa;
- 			device "00:00:00:00:00:00";
- 			profile "a2dp";
- 			delay 20000;
+ 			type bluealsa
+ 			device "00:00:00:00:00:00"
+ 			profile "a2dp"
+ 			delay 20000
  		}
  	}'
 		filepresets+="-$( cat $dirtmp/btclient )"

@@ -7,6 +7,12 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+# 20211021
+echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
+ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
+udevadm control --reload-rules && udevadm trigger
+rm -rf /root/.config/chromium
+systemctl -q is-active localbrowser && systemctl restart localbrowser
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
 if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
