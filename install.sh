@@ -7,7 +7,9 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211021
+#20211029
+grep -q onwhileplay $dirsystem/localbrowser.conf || echo onwhileplay=false >> $dirsystem/localbrowser.conf
+# 20211022
 echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
 udevadm control --reload-rules && udevadm trigger
