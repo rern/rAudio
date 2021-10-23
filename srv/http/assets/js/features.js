@@ -87,15 +87,16 @@ var content = `
 <tr><td>Zoom <gr>(%)</gr></td>
 	<td><input id="zoom" type="text" disabled></td>
 	<td class="pointer">&emsp;<i class="up fa fa-plus-circle fa-lg"></i> &emsp;<i class="dn fa fa-minus-circle fa-lg"></i></td></tr>
-<tr><td>Screenoff</td>
+<tr><td>Screen off <gr>(min)</gr></td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
+		<option value="1">1</option>
 		<option value="2">2</option>
 		<option value="5">5</option>
 		<option value="10">10</option>
 		<option value="15">15</option>
 		</select>
-	</td><td>&nbsp;<gr>(min)</gr></td></tr>
+	</td><td></td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr><td></td>
