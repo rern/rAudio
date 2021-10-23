@@ -13,7 +13,7 @@ else
 fi
 /srv/http/bash/features.sh localbrowserxset$'\n'$screenoff
 [[ $cursor == false ]] && cursor=no || cursor=yes
-ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet && cursor=yes # no network connection
+ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet || cursor=yes # no network connection
 matchbox-window-manager -use_cursor $cursor &
 
 if [[ -e /usr/bin/firefox ]]; then
