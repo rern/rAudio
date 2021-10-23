@@ -4,9 +4,7 @@
 # initial page load / refresh > status.sh
 # changes:
 #    - mpdidle.sh > cmd-pushstatus.sh
-#    - radioparadize / radiofrance - no stream update
-#        - radioparadize > radioparadise.service > status-radioparadise.sh
-#        - radiofrance   > radiofrance.service > status-radiofrance.sh
+#    - radioparadize / radiofrance - no stream update - status-radio.sh
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system

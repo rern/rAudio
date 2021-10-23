@@ -326,6 +326,7 @@ function psMpdPlayer( data ) {
 			setPlaylistScroll();
 		}
 		bannerHide();
+		if ( G.display.onwhileplay ) bash( [ 'localdisplay', G.status.state ] );
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {

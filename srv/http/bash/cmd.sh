@@ -467,6 +467,7 @@ displayget )
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"  : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
+, "onwhileplay" : '$( [[ -e $dirsystem/onwhileplay ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "screenoff"  : '$( grep -q screenoff=0 $dirsystem/localbrowser.conf && echo false || echo true )'
@@ -579,6 +580,15 @@ librandom )
 	;;
 list )
 	list
+	;;
+localdisplay )
+	export DISPLAY=:0
+	if [[ ${args[1]} == play ]]; then
+		xset -dpms
+		xset dpms force on
+	else
+		xset +dpms
+	fi
 	;;
 lyrics )
 	artist=${args[1]}

@@ -1653,6 +1653,7 @@ function setTrackCoverart() {
 function statusRefresh() {
 	bash( [ 'displayget' ], data => {
 		delete G.coverTL;
+		if ( !G.localhost ) data.onwhileplay = false;
 		G.display = data;
 		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 		displaySubMenu();

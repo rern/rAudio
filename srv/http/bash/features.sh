@@ -22,6 +22,14 @@ featureSet() {
 	systemctl -q is-active $@ && systemctl enable $@
 	pushRefresh
 }
+localbrowserXset() {
+	export DISPLAY=:0
+	off=$(( $1 * 60 ))
+	xset s off
+	xset dpms $off $off $off
+	[[ $off == 0 ]] && xset -dpms || xset +dpms
+	xset dpms force on # must be after +-
+}
 
 case ${args[0]} in
 
@@ -134,19 +142,17 @@ cursor=$newcursor
 	if [[ -n $restart ]] || ! systemctl -q is-active localbrowser; then
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
-	else
-		if [[ -n $changedscreenoff ]]; then
-			off=$(( newscreenoff * 60 ))
-			xset s off
-			xset dpms $off $off $off
-			[[ $off == 0 ]] && xset -dpms || xset +dpms
-			if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
-				[[ $off == 0 ]] && tf=false || tf=true
-				pushstream display '{"submenu":"screenoff","value":'$tf'}'
-			fi
+	elif [[ -n $changedscreenoff ]]; then
+		localbrowserXset $newscreenoff
+		if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
+			[[ $off == 0 ]] && tf=false || tf=true
+			pushstream display '{"submenu":"screenoff","value":'$tf'}'
 		fi
 	fi
 	pushRefresh
+	;;
+localbrowserxset )
+	localbrowserXset ${args[1]}
 	;;
 logindisable )
 	rm -f $dirsystem/login*

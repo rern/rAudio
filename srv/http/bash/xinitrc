@@ -5,21 +5,15 @@ export XDG_CACHE_HOME="/tmp/.cache"
 file=/srv/http/data/system/localbrowser.conf
 if [[ -e $file ]]; then
 	. $file
-	off=$(( screenoff * 60 ))
 	zoom=$( echo "print $zoom / 100" | perl )
 else
-	off=0
+	screenoff=0
 	cursor=false
 	zoom=1
 fi
-xset s off
-xset dpms $off $off $off
-[[ $off == 0 ]] && xset -dpms || xset +dpms
-if [[ $cursor == false ]] && ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet; then
-	cursor=no
-else 
-	cursor=yes
-fi
+/srv/http/bash/features.sh localbrowserxset$'\n'$screenoff
+[[ $cursor == false ]] && cursor=no || cursor=yes
+ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet && cursor=yes # no network connection
 matchbox-window-manager -use_cursor $cursor &
 
 if [[ -e /usr/bin/firefox ]]; then
