@@ -327,7 +327,7 @@ function psMpdPlayer( data ) {
 			setPlaylistScroll();
 		}
 		bannerHide();
-		if ( G.display.onwhileplay && prevstate !== G.status.state ) bash( [ 'localdisplayscreenoff', G.status.state === 'play' ? '-dpms' : '+dpms' );
+		if ( G.display.onwhileplay && prevstate !== G.status.state ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' );
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {

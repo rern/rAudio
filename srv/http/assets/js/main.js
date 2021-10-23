@@ -178,7 +178,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			} );
 			break;
 		case 'screenoff':
-			bash( [ 'screenoff' ] );
+			bash( [ 'screenoff', 'dpms force off' ] );
 			G.screenoff = 1;
 			break;
 		case 'displaycolor':

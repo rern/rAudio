@@ -563,9 +563,6 @@ ignoredir )
 	mpc update "$mpdpath" #1 get .mpdignore into database
 	mpc update "$mpdpath" #2 after .mpdignore was in database
 	;;
-localdisplayscreenoff )
-	DISPLAY=:0 xset ${args[1]}
-	;;
 librandom )
 	enable=${args[1]}
 	if [[ $enable == false ]]; then
@@ -884,7 +881,7 @@ rotateSplash )
 	rotateSplash ${args[1]}
 	;;
 screenoff )
-	DISPLAY=:0 xset dpms force off
+	DISPLAY=:0 xset ${args[1]}
 	;;
 stationcoverreset )
 	coverfile=${args[1]}
