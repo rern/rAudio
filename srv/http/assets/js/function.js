@@ -45,15 +45,15 @@ function blinkDot() {
 	var $d3 = $( '.dot3' );
 	G.intBlinkDot = setInterval( function() {
 		$d1.css( 'opacity', 1 );
-		$d2.css( 'opacity', 0.33 );
-		$d3.css( 'opacity', 0.66 );
+		$d2.css( 'opacity', 0.1 );
+		$d3.css( 'opacity', 0.50 );
 		setTimeout( function() {
-			$d1.css( 'opacity', 0.66 );
+			$d1.css( 'opacity', 0.50 );
 			$d2.css( 'opacity', 1 );
-			$d3.css( 'opacity', 0.33 );
+			$d3.css( 'opacity', 0.1 );
 			setTimeout( function() {
-				$d1.css( 'opacity', 0.33 );
-				$d2.css( 'opacity', 0.66 );
+				$d1.css( 'opacity', 0.1 );
+				$d2.css( 'opacity', 0.50 );
 				$d3.css( 'opacity', 1 );
 			}, 1000 );
 		}, 1000 );
