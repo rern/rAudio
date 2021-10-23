@@ -55,9 +55,9 @@ function blinkDot() {
 				$d1.css( 'opacity', 0.33 );
 				$d2.css( 'opacity', 0.66 );
 				$d3.css( 'opacity', 1 );
-			}, 800 );
-		}, 800 );
-	}, 2400 );
+			}, 1000 );
+		}, 1000 );
+	}, 3000 );
 }
 function blinkUpdate() {
 	var $icons = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
