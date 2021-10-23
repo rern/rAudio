@@ -518,12 +518,16 @@ soundprofiledisable )
 	pushRefresh
 	;;
 soundprofileget )
-	val+=$( sysctl kernel.sched_latency_ns )$'\n'
-	val+=$( sysctl vm.swappiness )$'\n'
-	ifconfig | grep -q eth0 && val+=$( ifconfig eth0 \
-										| grep 'mtu\|txq' \
-										| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )
-	echo "${val:0:-1}"
+	echo "\
+<bl># sysctl kernel.sched_latency_ns
+# sysctl vm.swappiness
+# ifconfig eth0 | grep 'mtu\\|txq'</bl>
+
+$( sysctl kernel.sched_latency_ns )
+$( sysctl vm.swappiness )
+$( ifconfig eth0 \
+	| grep 'mtu\|txq' \
+	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
 	if [[ ${args[@]:1:4} == '18000000 60 1500 1000' ]]; then

@@ -32,7 +32,7 @@ var cmd = {
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
 	, mpdignore    : [ dirbash +'player.sh mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
 	, rfkill       : [ 'rfkill' ]
-	, soundprofile : [ dirbash +'system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
+	, soundprofile : [ dirbash +'system.sh soundprofileget', -1 ]
 	, timesyncd    : [ 'systemctl status systemd-timesyncd' ]
 	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
 }
