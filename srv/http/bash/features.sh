@@ -27,8 +27,13 @@ localbrowserXset() {
 	off=$(( $1 * 60 ))
 	xset s off
 	xset dpms $off $off $off
-	[[ $off == 0 ]] && xset -dpms || xset +dpms
-	xset dpms force on # must be after +-
+	if [[ $off == 0 ]]; then
+		xset -dpms
+	elif [[ -e $dirsystem/onwhileplay ]]; then
+		[[ $( status.sh | jq -r .state ) == play ]] && xset -dpms || xset +dpms
+	else
+		xset +dpms
+	fi
 }
 
 case ${args[0]} in

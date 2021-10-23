@@ -581,15 +581,6 @@ librandom )
 list )
 	list
 	;;
-localdisplay )
-	export DISPLAY=:0
-	if [[ ${args[1]} == play ]]; then
-		xset -dpms
-		xset dpms force on
-	else
-		xset +dpms
-	fi
-	;;
 lyrics )
 	artist=${args[1]}
 	title=${args[2]}

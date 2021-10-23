@@ -327,7 +327,10 @@ function psMpdPlayer( data ) {
 			setPlaylistScroll();
 		}
 		bannerHide();
-		if ( G.display.onwhileplay && prevstate !== G.status.state ) bash( [ 'localdisplay', G.status.state ] );
+		if ( G.display.onwhileplay && prevstate !== G.status.state ) {
+			var cmd = 'DISPLAY=:0 xset '+ ( G.status.state === 'play' ? '-dpms' : '+dpms' );
+			bash( cmd );
+		}
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
