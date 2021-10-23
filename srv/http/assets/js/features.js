@@ -84,20 +84,28 @@ var content = `
 		<option value="UD">180°</option>
 		</select>
 	</td><td style="width: 50px"></td></tr>
-<tr><td>Zoom</td>
-	<td><input type="text"></td><td>&nbsp;<gr>(%)</gr></td></tr>
-<tr><td>Sleep</td>
-	<td><input id="screenoff"type="text"></td><td>&nbsp;<gr>(min)</gr></td></tr>
+<tr><td>Zoom <gr>(%)</gr></td>
+	<td><input id="zoom" type="text" disabled></td>
+	<td class="pointer">&emsp;<i class="up fa fa-plus-circle fa-lg"></i> &emsp;<i class="dn fa fa-minus-circle fa-lg"></i></td></tr>
+<tr><td>Screenoff</td>
+	<td><select id="screenoff">
+		<option value="0">Disable</option>
+		<option value="2">2</option>
+		<option value="5">5</option>
+		<option value="10">10</option>
+		<option value="15">15</option>
+		</select>
+	</td><td>&nbsp;<gr>(min)</gr></td></tr>
 <tr><td></td>
-	<td colspan="2"><input type="checkbox" id="onwhileplay">On while playing</td></tr>
+	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr><td></td>
-	<td colspan="2"><input type="checkbox">Mouse pointer</td></tr>
+	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 </table>`;
 $( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
 	info( {
 		  icon         : G.browser
-		, title        : 'Browser Screen'
+		, title        : 'Browser Display'
 		, content      : content
 		, boxwidth     : 100
 		, values       : [ v.rotate, v.zoom, v.screenoff, v.onwhileplay, v.cursor ]
@@ -109,13 +117,15 @@ $( '#setting-localbrowser' ).click( function() {
 			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 		}
 		, beforeshow   : function() {
-			var $onwhileplay
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
 			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
-			$( '#infoContent input[type=text]' ).on( 'keyup paste cut', function() {
-				var $this = $( this );
-				$this.val( $this.val().replace( /[^0-9]/, '' ) );
-				if ( +$( '#screenoff' ).val() ) {
+			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
+				var up = $( this ).hasClass( 'up' );
+				var zoom = +$( '#zoom' ).val();
+				if ( ( up && zoom < 300 ) || ( !up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
+			} );
+			$( '#screenoff' ).change( function() {
+				if ( $( this ).val() != 0 ) {
 					$( '#onwhileplay' ).prop( 'disabled', 0 );
 				} else {
 					$( '#onwhileplay' )
