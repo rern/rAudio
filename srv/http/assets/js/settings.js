@@ -18,23 +18,26 @@ function bash( command, callback, json ) {
 	);
 }
 var dirbash = '/srv/http/bash/';
+var playersh = dirbash +'player.sh ';
+var networkssh = dirbash +'networks.sh ';
+var systemsh = dirbash +'system.sh ';
 var cmd = {
 	  albumignore  : [ 'cat /srv/http/data/mpd/albumignore' ]
-	, asound       : [ dirbash +'player.sh devices', -1 ]
-	, avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
+	, asound       : [ playersh +'devices', -1 ]
+	, avahi        : [ networkssh +'avahi', -1 ]
 	, bluetooth    : [ 'bluetoothctl info' ]
 	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
-	, configtxt    : [ dirbash +'system.sh configtxtget', -1 ]
+	, configtxt    : [ systemsh +'configtxtget', -1 ]
 	, iw           : [ 'iw reg get; iw list' ]
-	, journalctl   : [ dirbash +'system.sh journalctlget', 'journalctl -b' ]
+	, journalctl   : [ systemsh +'journalctlget', 'journalctl -b' ]
 	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
-	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
+	, mount        : [ systemsh +'fstabget', -1 ]
 	, mpdconf      : [ 'cat /etc/mpd.conf' ]
-	, mpdignore    : [ dirbash +'player.sh mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
+	, mpdignore    : [ playersh +'mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
 	, rfkill       : [ 'rfkill' ]
-	, soundprofile : [ dirbash +'system.sh soundprofileget', -1 ]
+	, soundprofile : [ systemsh +'soundprofileget', -1 ]
 	, timesyncd    : [ 'systemctl status systemd-timesyncd' ]
-	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
+	, wlan         : [ networkssh +'ifconfigget', -1 ]
 }
 var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 

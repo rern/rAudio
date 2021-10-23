@@ -201,13 +201,15 @@ datarestore )
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
-journalctlget )
-	filebootlog=$dirdata/tmp/bootlog
-	if [[ -e $filebootlog ]]; then
-		cat "$filebootlog"
-	else
-		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
-	fi
+fstabget )
+	echo -e "\
+<bl># cat /etc/fstab</bl>
+
+$( cat /etc/fstab )
+
+<bl># mount | grep ^/dev</bl>
+
+$( mount | grep ^/dev | sort )"
 	;;
 hostname )
 	hostname=${args[1]}
@@ -247,6 +249,14 @@ dtparam=audio=on"
 	echo $output > $dirsystem/audio-output
 	echo 'Audio I&#178;S module' >> $filereboot
 	pushRefresh
+	;;
+journalctlget )
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ -e $filebootlog ]]; then
+		cat "$filebootlog"
+	else
+		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
+	fi
 	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )

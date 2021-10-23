@@ -39,8 +39,16 @@ netctlSwitch() {
 case ${args[0]} in
 
 avahi )
-	lines=$( timeout 1 avahi-browse -arp )
-	echo "$lines" | cut -d';' -f7,8 | grep . | grep -v 127.0.0.1 | sed 's/;/ : /' | sort -u
+	hostname=$( hostname )
+	echo "\
+<bl># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bl>
+
+$( timeout 1 avahi-browse -arp \
+	| cut -d';' -f7,8 \
+	| grep $hostname \
+	| grep -v 127.0.0.1 \
+	| sed 's/;/ : /' \
+	| sort -u )"
 	;;
 btdisconnect )
 	bluetoothctl disconnect ${args[1]}
@@ -138,6 +146,14 @@ editwifidhcp )
 	cp "$file" "/etc/netctl/$ssid"
 	netctl start "$ssid"
 	pushRefresh
+	;;
+ifconfigget )
+	echo "\
+<bl># ifconfig wlan0
+# iwconfig wlan0</bl>
+
+$( ifconfig wlan0 | grep -v 'RX\\|TX')
+$( iwconfig wlan0 | grep . )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
