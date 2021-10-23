@@ -192,6 +192,8 @@ mpdscribbleset )
 	pushRefresh
 	;;
 screenofftoggle )
+#	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
+#	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is On' && toggle=off || toggle=on
 	xset dpms force $toggle
