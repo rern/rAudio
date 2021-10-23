@@ -86,7 +86,7 @@ var content = `
 	</td><td style="width: 50px"></td></tr>
 <tr><td>Zoom <gr>(%)</gr></td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td class="pointer">&nbsp;<i class="up fa fa-plus-circle fa-lg"></i><i class="dn fa fa-minus-circle fa-lg"></i></td></tr>
+	<td class="pointer">&nbsp;<i class="dn fa fa-minus-circle fa-lg"></i><i class="up fa fa-plus-circle fa-lg"></i></td></tr>
 <tr><td>Screen off <gr>(min)</gr></td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>

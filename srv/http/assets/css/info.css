@@ -472,6 +472,7 @@ hr {
 #infoContent input[type=text]:disabled {
 	background: none !important;
 	outline: none;
+	opacity: 1;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
