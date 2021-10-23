@@ -9,7 +9,7 @@ dirsystem=/srv/http/data/system
 
 #20211029
 file=$dirsystem/localbrowser.conf
-if ! grep -q onwhileplay $file; then
+if [[ -e $file ]] && ! grep -q onwhileplay $file; then
 	. $file
 	echo "\
 rotate=$rotate
