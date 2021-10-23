@@ -314,7 +314,6 @@ function psMpdPlayer( data ) {
 			delete data.control;
 			delete data.volume;
 		}
-		var prevstate = G.status.state;
 		$.each( data, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -327,7 +326,7 @@ function psMpdPlayer( data ) {
 			setPlaylistScroll();
 		}
 		bannerHide();
-		if ( G.display.onwhileplay && prevstate !== G.status.state ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
+		if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
