@@ -564,7 +564,8 @@ hr {
 	#infoContent label,
 	input[type=checkbox],
 	input[type=radio],
-	.fa-eye {
+	.fa-eye,
+	.pointer {
 		cursor: pointer;
 	}
 	.infobtn-primary:hover {
