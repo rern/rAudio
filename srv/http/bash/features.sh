@@ -76,7 +76,6 @@ localbrowserdisable )
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
 	pushRefresh
-	pushstream display '{"submenu":"screenoff","value":false}'
 	;;
 localbrowserset )
 	newrotate=${args[1]}
@@ -86,42 +85,14 @@ localbrowserset )
 	newcursor=${args[5]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		. $dirsystem/localbrowser.conf
-		[[ $rotate != $newrotate ]] && changedrotate=1
-		[[ $zoom != $newzoom ]] && changed=1
-		[[ $screenoff != $newscreenoff ]] && changedscreenoff=1
-		[[ $cursor != $newcursor ]] && changed=1
-	fi
-	if [[ -n $changedscreenoff ]]; then
-		off=$(( newscreenoff * 60 ))
-		xset dpms $off $off $off
-		[[ $off != 0 ]] && boolean=true || boolean=false
-		pushstream display '{"submenu":"screenoff","value":'$boolean'}'
+		[[ $rotate != $newrotate ]] && changedrotate=1          # [reboot] / [restart]
+		[[ $zoom != $newzoom ]] && restart=1                    # [restart]
+		[[ $cursor != $newcursor ]] && restart=1                # [restart]
+		[[ $screenoff != $newscreenoff ]] && changedscreenoff=1 # xset dpms
+		# onwhileplay                                           # flag file
 	fi
 	[[ $newonwhileplay == true ]] && touch $dirsystem/onwhileplay || rm -f $dirsystem/onwhileplay
-	if [[ -n $changedrotate ]]; then
-		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
-			declare -A deg=( [NORMAL]=0 [CW]=270 [CCW]=90 [UD]=180 )
-			degree=${deg[$rotate]}
-			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
-			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
-			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
-			reboot=1
-		else
-			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-			if [[ $rotate == NORMAL ]]; then
-				rm -f $rotateconf
-			else
-				declare -A matrix=( [CW]='0 1 0 -1 0 1 0 0 1'
-									[CCW]='0 -1 1 1 0 0 0 0 1'
-									[UD]='-1 0 1 0 -1 1 0 0 1' )
-				sed -e "s/ROTATION_SETTING/$rotate/
-				" -e "s/MATRIX_SETTING/${matrix[$rotate]}/" /etc/X11/xinit/rotateconf > $rotateconf
-			fi
-		fi
-		$dirbash/cmd.sh rotateSplash$'\n'$rotate
-		ply-image /srv/http/assets/img/splash.png
-	fi
-	echo "\
+	echo -n "\
 rotate=$newrotate
 zoom=$newzoom
 screenoff=$newscreenoff
@@ -132,13 +103,47 @@ cursor=$newcursor
 		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 		systemctl disable --now getty@tty1
 	fi
-	if [[ -n $reboot ]]; then
-		echo reboot
+
+	if [[ -n $changedrotate ]]; then
+		$dirbash/cmd.sh rotateSplash$'\n'$newrotate # after set new data in conf file
+		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
+			case $newrotate in
+				NORMAL ) degree=0;;
+				CCW )    degree=270;;
+				CW )     degree=90;;
+				UD )     degree=180;;
+			esac
+			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
+			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
+			pushRefresh
+			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
+			echo reboot
+			exit
+		fi
+		
+		restart=1
+		rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
+		case $newrotate in
+			NORMAL ) rm -f $rotateconf;;
+			CW )  matrix='0 1 0 -1 0 1 0 0 1';;
+			CCW ) matrix='0 -1 1 1 0 0 0 0 1';;
+			UD )  matrix='-1 0 1 0 -1 1 0 0 1';;
+		esac
+		[[ -n matrix ]] && sed "s/ROTATION_SETTING/$newrotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+	fi
+	if [[ -n $restart ]] || ! systemctl -q is-active localbrowser; then
+		systemctl restart bootsplash localbrowser
+		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
 	else
-		systemctl -q is-active localbrowser && active=1
-		if [[ -z $active || -n $changed || -n $changedrotate ]]; then
-			systemctl restart bootsplash localbrowser
-			systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+		if [[ -n $changedscreenoff ]]; then
+			off=$(( newscreenoff * 60 ))
+			xset s off
+			xset dpms $off $off $off
+			[[ $off == 0 ]] && xset -dpms || xset +dpms
+			if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
+				[[ $off == 0 ]] && tf=false || tf=true
+				pushstream display '{"submenu":"screenoff","value":'$tf'}'
+			fi
 		fi
 	fi
 	pushRefresh

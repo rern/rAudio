@@ -12,8 +12,9 @@ else
 	cursor=false
 	zoom=1
 fi
+xset s off
 xset dpms $off $off $off
-(( $off == 0 )) && xset -dpms || xset +dpms
+[[ $off == 0 ]] && xset -dpms || xset +dpms
 if [[ $cursor == false ]] && ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet; then
 	cursor=no
 else 

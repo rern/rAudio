@@ -10,7 +10,6 @@ dirsystem=/srv/http/data/system
 #20211029
 file=$dirsystem/localbrowser.conf
 if ! grep -q onwhileplay $file; then
-	DISPLAY=:0 xset s off
 	. $file
 	echo "\
 rotate=$rotate

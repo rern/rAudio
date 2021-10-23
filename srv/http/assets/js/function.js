@@ -395,7 +395,9 @@ function displaySave( keys ) {
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
-	[ 'lock', 'equalizer', 'snapclient', 'relays', 'screenoff' ].forEach( function( el ) {
+	var submenu = [ 'lock', 'equalizer', 'snapclient', 'relays' ];
+	if ( G.localhost ) submenu.push( 'screenoff' );
+	submenu.forEach( function( el ) {
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );  // submenu toggled by css .settings + .submenu
 }
@@ -1652,7 +1654,6 @@ function statusRefresh() {
 	bash( [ 'displayget' ], data => {
 		delete G.coverTL;
 		G.display = data;
-		G.display.screenoff = G.localhost;
 		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 		displaySubMenu();
 	}, 'json' );
