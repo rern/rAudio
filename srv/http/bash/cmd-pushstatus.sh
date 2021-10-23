@@ -28,7 +28,14 @@ if [[ -e $dirtmp/status ]]; then
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-
+if [[ -e $dirsystem/onwhileplay ]]; then
+	if [[ $state == play ]]; then
+		xset dpms force on
+		xset +dpms
+	else
+		xset -dpms
+	fi
+fi
 echo "$statusdata" > $dirtmp/status
 
 [[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
