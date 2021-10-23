@@ -86,7 +86,7 @@ var content = `
 	</td><td style="width: 50px"></td></tr>
 <tr><td>Zoom <gr>(%)</gr></td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td class="pointer">&nbsp;<i class="dn fa fa-minus-circle fa-lg"></i><i class="up fa fa-plus-circle fa-lg"></i></td></tr>
+	<td>&nbsp;<i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
 <tr><td>Screen off <gr>(min)</gr></td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
@@ -101,6 +101,8 @@ var content = `
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr><td></td>
+	<td colspan="2"><i class="refresh fa fa-redo btnicon"></i><i class="screenoff fa fa-screenoff btnicon"></i></td></tr>
 </table>`;
 $( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
@@ -111,14 +113,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, boxwidth     : 100
 		, values       : [ v.rotate, v.zoom, v.screenoff, v.onwhileplay, v.cursor ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
-		, checkblank   : 1
-		, buttonlabel  : '<i class="fa fa-redo"></i>Refresh'
-		, buttoncolor  : orange
-		, button       : function() {
-			bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
-		}
 		, beforeshow   : function() {
-			$( '.up, .dn' ).css( { width: '40px', 'text-align': 'center' } );
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
 			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
@@ -134,6 +129,12 @@ $( '#setting-localbrowser' ).click( function() {
 						.prop( 'checked', 0 )
 						.prop( 'disabled', 1 );
 				}
+			} );
+			$( '.refresh' ).click( function() {
+				bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
+			} );
+			$( '.screenoff' ).click( function() {
+				bash( [ 'screenofftoggle' ] );
 			} );
 		}
 		, cancel       : function() {

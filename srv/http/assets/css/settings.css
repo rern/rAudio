@@ -494,6 +494,12 @@ input:checked + .switchlabel.disabled:after {
 	white-space: nowrap !important;
 	line-height: 26px;
 }
+.btnicon {
+	width: 40px;
+	font-size: 22px;
+	text-align: center;
+	cursor: pointer;
+}
 #fliptxt {
 	display: none;
 	color: var( --cw );

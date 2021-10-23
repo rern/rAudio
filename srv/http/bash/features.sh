@@ -191,6 +191,11 @@ mpdscribbleset )
 	fi
 	pushRefresh
 	;;
+screenofftoggle )
+	export DISPLAY=:0
+	xset q | grep -q 'Monitor is On' && toggle=off || toggle=on
+	xset dpms force $toggle
+	;;
 shairport-sync | spotifyd | upmpdcli )
 	service=${args[0]}
 	enable=${args[1]}
