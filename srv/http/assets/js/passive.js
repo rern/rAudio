@@ -129,7 +129,7 @@ function psAirplay( data ) {
 	} );
 	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	renderPlayback();
-	clearTimeout( G.debounce );
+	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 }
 function psBtClient( connected ) {
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
@@ -532,6 +532,7 @@ function psSpotify( data ) {
 	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	renderPlayback();
 	setButtonControl();
+	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
