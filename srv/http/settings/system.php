@@ -264,6 +264,14 @@ HTML
 Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
 HTML
 	]
+	, [
+		  'label'    => 'HDMI Hotplug'
+		, 'id'       => 'hdmihotplug'
+		, 'icon'     => 'hdmi'
+		, 'help'     => <<< HTML
+Plug and Play HDMI devices. No reboot needed if plugged after boot.
+HTML
+	]
 ];
 htmlSection( $head, $body );
 $head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////

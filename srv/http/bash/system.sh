@@ -18,6 +18,12 @@ pushstreamNotify() {
 	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink"}'
 	pushstream notify "$data"
 }
+pushReboot() {
+	pushRefresh
+	data='{"title":"'$1'","text":"Reboot required.","icon":"'$2'","hold":5000}'
+	pushstream notify "$data"
+	echo $1 >> $filereboot
+}
 pushRefresh() {
 	data=$( $dirbash/system-data.sh )
 	pushstream refresh "$data"
@@ -211,6 +217,16 @@ $( cat /etc/fstab )
 
 $( mount | grep ^/dev | sort )"
 	;;
+hdmihotplug )
+	if [[ ${args[1]} == true ]]; then
+		echo hdmi_force_hotplug=1 >> $fileconfig
+		echo HDMI Hotplug >> /srv/http/data/shm/reboot
+		pushReboot 'HDMI Hotplug' hdmi
+	else
+		sed -i '/hdmi_force_hotplug/ d' $fileconfig
+		pushRefresh
+	fi
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
@@ -247,8 +263,7 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo 'Audio I&#178;S module' >> $filereboot
-	pushRefresh
+	pushReboot 'Audio I&#178;S module' i2saudio
 	;;
 journalctlget )
 	filebootlog=$dirdata/tmp/bootlog
@@ -286,7 +301,6 @@ lcdcharset )
 cols=${args[1]}
 charmap=${args[2]}"
 	if [[ ${args[3]} == i2c ]]; then
-		! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 		conf+="
 address=${args[4]}
 chip=${args[5]}"
@@ -295,6 +309,7 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
+		! grep -q 'dtparam=i2c_arm=on' $fileconfig && reboot=1
 	else
 		conf+="
 pin_rs=${args[6]}
@@ -310,7 +325,7 @@ backlight=${args[13]}"
 	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
-	pushRefresh
+	[[ -n reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
@@ -341,8 +356,7 @@ i2c-dev
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	echo 'TFT 3.5" LCD' >> $filereboot
-	pushRefresh
+	pushReboot 'TFT 3.5" LCD' lcd
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -445,9 +459,8 @@ i2c-dev" >> $filemodule
 		echo "\
 dtparam=spi=on" >> $fileconfig
 	fi
-	echo 'Spectrum OLED' >> $filereboot
 	touch $dirsystem/mpdoled
-	pushRefresh
+	pushReboot 'Spectrum OLED' mpdoled
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
@@ -465,13 +478,14 @@ led=$led
 reserved=$reserved" > $dirsystem/powerbutton.conf
 	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 	sed -i '/gpio-shutdown/ d' $fileconfig
-	if [[ $sw != 5 ]]; then
-		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-		[[ $reserved != $prevreserved ]] && echo 'Power Button' >> $filereboot
-	fi
 	systemctl restart powerbutton
 	systemctl enable powerbutton
-	pushRefresh
+	if [[ $sw == 5 ]]; then
+		pushRefresh
+	else
+		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
+		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button' power
+	fi
 	;;
 relaysdisable )
 	rm -f $dirsystem/relays

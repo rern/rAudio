@@ -76,9 +76,8 @@ $( '#infoContent' ).click( function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
 
-var bannertimeout;
 function banner( title, message, icon, delay ) {
-	clearTimeout( bannertimeout );
+	clearTimeout( G.timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
 					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
@@ -86,12 +85,19 @@ function banner( title, message, icon, delay ) {
 	$( '#bannerTitle' ).html( title );
 	$( '#bannerMessage' ).html( message );
 	$( '#banner' ).removeClass( 'hide' );
-	if ( delay !== -1 ) bannertimeout = setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
 	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( G.bannerhold ) {
+		setTimeout( function() {
+			G.bannerhold = 0;
+			bannerHide();
+		}, G.bannerhold );
+		return
+	}
 	
-	clearTimeout( bannertimeout );
+	clearTimeout( G.timeoutbanner );
 	$( '#banner' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' );

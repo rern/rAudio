@@ -90,11 +90,6 @@ function status( id, refresh ) {
 		resetLocal();
 	} );
 }
-function disableSwitch( id, truefalse ) {
-	$( id )
-		.prop( 'disabled', truefalse )
-		.next().toggleClass( 'disabled', truefalse );
-}
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
@@ -224,6 +219,7 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
+	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {

@@ -374,13 +374,13 @@ input:checked + .switchlabel:after {
 .switchlabel:active:after {
 	width: 40px;
 }
-input:checked + .switchlabel.disabled:after {
+input:checked:disabled + .switchlabel:after {
 	background-color: var( --cmd );
 }
-.switchlabel.disabled {
+input:disabled + .switchlabel {
 	background-color: var( --cga );
 }
-.switchlabel.disabled:after {
+input:disabled + .switchlabel:after {
 	background-color: var( --cgd );
 }
 .setting,

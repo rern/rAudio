@@ -140,20 +140,7 @@ $( '#setting-localbrowser' ).click( function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
-			bash( [ 'localbrowserset', ...infoVal() ], function( std ) {
-				if ( std === 'reboot' ) {
-					info( {
-						  icon    :  G.browser
-						, title   : 'Browser on RPi'
-						, message : 'Reboot required for rotate'
-						, okcolor : orange
-						, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-						, ok      : function() {
-							bash( [ 'cmd', 'power', 'reboot' ] );
-						}
-					} );
-				}
-			} );
+			bash( [ 'localbrowserset', ...infoVal() ] );
 			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  G.browser );
 		}
 	} );
@@ -272,13 +259,15 @@ function renderPage( list ) {
 	}
 	$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
 	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
-	$( '#snapclient' ).prop( 'checked', G.snapclient );
-	disableSwitch( '#snapclient', G.snapserver );
+	$( '#snapclient' )
+		.prop( 'checked', G.snapclient )
+		.prop( 'checked', G.snapserver );
 	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
 	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 	$( '#streaming' ).prop( 'checked', G.streaming );
-	$( '#snapserver' ).prop( 'checked', G.snapserver );
-	disableSwitch( '#snapserver', G.snapclient );
+	$( '#snapserver' )
+		.prop( 'checked', G.snapserver )
+		.prop( 'disabled', G.snapclient );
 	$( '#hostapd' ).prop( 'checked', G.hostapd );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );

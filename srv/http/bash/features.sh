@@ -130,7 +130,8 @@ cursor=$newcursor
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			pushRefresh
 			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
-			echo reboot
+			data='{"title":"Rotate GPIO LCD screen","text":"Reboot needed.","icon":"chromium","hold":5000}'
+			pushstream notify "$data"
 			exit
 		fi
 		

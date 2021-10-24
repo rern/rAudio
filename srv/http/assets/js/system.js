@@ -852,10 +852,11 @@ function renderPage( list ) {
 	$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
 	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
-	$( '#wlan' ).prop( 'checked', G.wlan );
+	$( '#wlan' )
+		.prop( 'checked', G.wlan )
+		.prop( 'disabled', G.hostapd || G.wlanconnected )
+		.parent().prev().toggleClass( 'single', !G.wlan );
 	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
-	$( '#wlan' ).parent().prev().toggleClass( 'single', !G.wlan );
-	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
 		var $this = $( this );
@@ -881,6 +882,9 @@ function renderPage( list ) {
 	} else {
 		$( '#divsoundprofile' ).addClass( 'hide' );
 	}
+	$( '#hdmihotplug' )
+		.prop( 'checked', G.hdmihotplug )
+		.prop( 'disabled', G.lcd );
 	$( '#vuled' ).prop( 'checked', G.vuled );
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
