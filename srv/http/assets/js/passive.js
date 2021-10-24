@@ -341,6 +341,7 @@ function psMpdRadio( data ) {
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
+	if ( G.display.onwhileplay ) bash( [ 'screenoff', '-dpms' ] );
 }	
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );

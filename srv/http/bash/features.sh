@@ -196,8 +196,7 @@ screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
-	xset q | grep -q 'Monitor is Off' && toggle=on || toggle=off
-	xset dpms force $toggle
+	xset q | grep -q 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
 shairport-sync | spotifyd | upmpdcli )
 	service=${args[0]}
