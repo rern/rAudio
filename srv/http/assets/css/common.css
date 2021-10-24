@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern-20211015.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern.2021102400.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -152,6 +152,7 @@ input::-moz-focus-inner {
 .fa-globe::before { content: "\f575" }
 .fa-gpiopins::before { content: "\f572" }
 .fa-guide::before { content: "\f579" }
+.fa-hdmi::after { content: "\f58B" }
 .fa-hide:before { content: "\f575" }
 .fa-i2saudio::before { content: "\f571" }
 .fa-info-circle::before { content: "\f561" }
