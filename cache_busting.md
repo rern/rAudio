@@ -1,4 +1,5 @@
-### JS and CSS upgrade needs relevant files edited
+### JS plugins and fonts upgrade
+Needs relevant files edited:
 
 `assets/js/plugin/*.js`
 - index.php
