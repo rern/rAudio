@@ -6,5 +6,6 @@ Changed of `assets/js/plugin/*.js`
 - settings.php
 - settings/addons.php
 - settings/addons-progress.php
+- 
 Changed of `assets/fonts/*.woff2`
 - assets/css/common.css
