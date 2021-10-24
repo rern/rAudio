@@ -578,22 +578,9 @@ function info( json ) {
 		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
 		// check changed values
 		if ( O.values && O.checkchanged ) {
-			function checkChanged() {
-				setTimeout( function() { // force after check length
-					if ( O.short || O.blank ) return
-					
-					var values = infoVal();
-					if ( typeof values !== 'object' ) values = [ values ];
-					var val;
-					var changed = false;
-					changed = values.some( function( v, i ) {
-						val = O.values[ i ];
-						if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
-						if ( v != val ) return true
-					} );
-					$( '#infoOk' ).toggleClass( 'disabled', !changed );
-				}, 50 );
-			}
+			setTimeout( function() { // force after check length
+				if ( !O.short && !O.blank ) checkChanged();
+			}, 50 );
 			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
 			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
@@ -617,6 +604,18 @@ function info( json ) {
 	}, 0 );
 }
 
+function checkChanged() {
+	var values = infoVal();
+	if ( typeof values !== 'object' ) values = [ values ];
+	var val;
+	var changed = false;
+	changed = values.some( function( v, i ) {
+		val = O.values[ i ];
+		if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
+		if ( v != val ) return true
+	} );
+	$( '#infoOk' ).toggleClass( 'disabled', !changed );
+}
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 	var $this, type, val;

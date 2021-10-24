@@ -121,6 +121,7 @@ $( '#setting-localbrowser' ).click( function() {
 				var up = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( !up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
+				checkChanged();
 			} );
 			$( '#screenoff' ).change( function() {
 				if ( $( this ).val() != 0 ) {
