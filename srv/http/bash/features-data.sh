@@ -47,7 +47,7 @@ if [[ -e $xinitrc ]]; then
 				| sed 's/\(.*rotate.*:\)\(.*\)/\1"\2"/' )
 		localbrowserconf="{${conf:1}}"
 	else
-		localbrowserconf='{ "rotate": "NORMAL", "zoom": 1, "screenoff": 0, "playon": false, "cursor": false }'
+		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false }'
 	fi
 	data+='
 , "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"
