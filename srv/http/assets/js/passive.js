@@ -128,7 +128,8 @@ function psAirplay( data ) {
 		G.status[ key ] = value;
 	} );
 	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
-	renderPlayback();
+	setButtonControl();
+	if ( G.playback ) renderPlayback();
 	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 }
 function psBtClient( connected ) {
@@ -519,19 +520,19 @@ function psSpotify( data ) {
 		G.status.player = 'spotify';
 		displayBottom();
 	}
-	if ( !G.playback ) return
-	
-	if ( 'pause' in data ) {
-		G.status.state = 'pause'
-		G.status.elapsed = data.pause;
-	} else {
-		$.each( data, function( key, value ) {
-			G.status[ key ] = value;
-		} );
-	}
 	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
-	renderPlayback();
 	setButtonControl();
+	if ( G.playback ) {
+		if ( 'pause' in data ) {
+			G.status.state = 'pause'
+			G.status.elapsed = data.pause;
+		} else {
+			$.each( data, function( key, value ) {
+				G.status[ key ] = value;
+			} );
+		}
+		renderPlayback();
+	}
 	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 }
 function psVolume( data ) {
