@@ -437,17 +437,8 @@ $( '#setting-vuled' ).click( function() {
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : G.vuledconf
+		, checkchanged : 1
 		, boxwidth     : 80
-		, beforeshow   : function() {
-			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
-			$( '#infoContent select' ).on( 'change', function() {
-				var v = infoVal();
-				var changed = G.vuled && v.join( ' ' ) === G.vuledconf.join( ' ' );
-				var duplicate = new Set( v ).size !== v.length;
-				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
-				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
-			} );
-		}
 		, cancel        : function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
 		}
