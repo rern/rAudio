@@ -257,6 +257,7 @@ hr {
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;
+	box-shadow: 1px -1px 5px var( --cga );
 }
 #infoOverlay a,
 #infoBox i,
@@ -270,7 +271,6 @@ hr {
 	width: 100%;
 	height: 40px;
 	border-radius: 10px 10px 0 0;
-	border: 1px solid var( --cga );
 	border-bottom: none;
 	background: black;
 }
