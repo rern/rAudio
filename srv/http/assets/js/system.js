@@ -571,6 +571,8 @@ $( '#setting-soundprofile' ).click( function() {
 			var $radio = $( '#infoContent input:radio' );
 			$radio.last().prop( 'disabled', true );
 			$text.keyup( function() {
+				var $this = $( this )
+				$this.val( $this.val().replace( /[^0-9]/, '' ) );
 				values = infoVal().slice( 0, -1 ).join( ' ' );
 				if ( radioval.indexOf( values ) === -1 ) values = 0;
 				$radio.val( [ values ] );
