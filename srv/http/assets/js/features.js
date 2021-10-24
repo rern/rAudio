@@ -76,14 +76,14 @@ $( '#setting-hostapd' ).click( function() {
 } );
 var content = `
 <table>
-<tr><td>Rotation</td>
+<tr><td style="width:130px">Rotation</td>
 	<td><select>
 		<option value="NORMAL">Normal</option>
 		<option value="CW">90°&ensp;&#xf524;</option>
 		<option value="CCW">90°&ensp;&#xf523;</option>
 		<option value="UD">180°</option>
 		</select>
-	</td><td style="width: 50px"></td></tr>
+	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
 	<td>&nbsp;<gr>%</gr><i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
@@ -102,7 +102,7 @@ var content = `
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 </table>
-<i class="refresh fa fa-redo btnicon"></i><i class="screenoff fa fa-screenoff btnicon"></i>`;
+<div id="btnicon">&nbsp;<gr>Reload<i class="refresh fa fa-redo btnicon wh"></i><i class="screenoff fa fa-screenoff btnicon wh"></i>On/Off</gr></div>`;
 $( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
 	info( {
@@ -114,7 +114,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
-			$( '#infoButtons .extrabtn' ).toggleClass( 'disabled', !G.localbrowser );
+			$( '#btnicon' ).toggleClass( 'hide', !G.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
 				var up = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();

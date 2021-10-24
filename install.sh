@@ -7,7 +7,7 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20211029
+#20211024
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]] && ! grep -q onwhileplay $file; then
 	. $file
@@ -19,10 +19,11 @@ onwhileplay=false
 cursor=$cursor
 " > $dirsystem/localbrowser.conf
 fi
-# 20211022
-echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
+if ! grep -q bton /etc/udev/rules.d/bluetooth.rules; then
+	echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
-udevadm control --reload-rules && udevadm trigger
+	udevadm control --reload-rules && udevadm trigger
+fi
 rm -rf /root/.config/chromium
 systemctl -q is-active localbrowser && systemctl restart localbrowser
 # 20211019
