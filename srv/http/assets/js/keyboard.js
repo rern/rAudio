@@ -85,7 +85,11 @@ $( 'body' ).on( 'click', inputs, function() {
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
 } ).on( 'click touchstart', function( e ) {
-	if ( !$kb.hasClass( 'hide' ) && !$( e.target ).is( inputs ) )  hideKeyboard();
+	if ( !$kb.hasClass( 'hide' )
+		&& !$( e.target ).is( inputs )
+		&& !$( e.target ).parents( '#keyboard' ).length
+		&& e.target.id !== 'keyboard'
+	)  hideKeyboard();
 } );
 
 function hideKeyboard() {
