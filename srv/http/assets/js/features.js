@@ -249,7 +249,7 @@ function renderPage( list ) {
 		.prop( 'disabled', G.snapclient );
 	$( '#hostapd' )
 		.prop( 'checked', G.hostapd )
-		.prop( 'disabled', G.wlanconnect );
+		.prop( 'disabled', G.wlanconnected );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );

@@ -25,7 +25,7 @@ if [[ -e /usr/bin/hostapd ]]; then
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostapdconf"      : '$( /srv/http/bash/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
-, "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true )
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
