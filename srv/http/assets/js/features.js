@@ -84,10 +84,10 @@ var content = `
 		<option value="UD">180°</option>
 		</select>
 	</td><td style="width: 50px"></td></tr>
-<tr><td>Zoom <gr>(%)</gr></td>
+<tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
-<tr><td>Screen off <gr>(min)</gr></td>
+	<td>&nbsp;<gr>%</gr><i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
+<tr><td>Screen off</td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
 		<option value="1">1</option>
@@ -96,14 +96,13 @@ var content = `
 		<option value="10">10</option>
 		<option value="15">15</option>
 		</select>
-	</td><td></td></tr>
+	</td><td>&nbsp;<gr>minutes</gr></td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
-<tr><td></td>
-	<td colspan="2"><i class="refresh fa fa-redo btnicon"></i><i class="screenoff fa fa-screenoff btnicon"></i></td></tr>
-</table>`;
+</table>
+<i class="refresh fa fa-redo btnicon"></i><i class="screenoff fa fa-screenoff btnicon"></i>`;
 $( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
 	info( {

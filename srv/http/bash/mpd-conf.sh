@@ -264,11 +264,15 @@ $alsa" > /etc/shairport-sync.conf
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	cardname=$( aplay -l \
-					| grep "^card $card" \
-					| head -1 \
-					| cut -d' ' -f3 )
-	aplaydevice=$( aplay -L | grep "^default.*$cardname" )
+	if [[ -z $btname ]]; then
+		cardname=$( aplay -l \
+						| grep "^card $card" \
+						| head -1 \
+						| cut -d' ' -f3 )
+		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
+	else
+		aplaydevice=bluealsa
+	fi
 	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi

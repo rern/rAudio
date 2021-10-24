@@ -100,8 +100,9 @@ HTML
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
- • HDMI/LCD display must be connected before boot.
- • TFT 3.5" LCD - rotate needs reboot.
+ • TFT 3.5" LCD: Rotate needs reboot.
+ • Screen off: Blank screen - backlight still on
+ • HDMI display: Must be connected before boot.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
