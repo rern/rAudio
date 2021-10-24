@@ -326,7 +326,8 @@ hr {
 	display: inline-block;
 	width: calc( 100% - 45px );
 	margin-left: 10px;
-	font-size: 18px;
+	font-size: 20px;
+	font-weight: 300;
 	line-height: 40px;
 	white-space: nowrap;
 	overflow: hidden;
