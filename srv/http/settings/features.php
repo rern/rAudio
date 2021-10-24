@@ -85,7 +85,7 @@ $body = [
 		, 'sublabel' => 'hostapd'
 		, 'icon'     => 'accesspoint'
 		, 'status'   => 'hostapd'
-		, 'setting'  => 'self'
+		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
 This should be used only when necessary.

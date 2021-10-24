@@ -24,30 +24,6 @@ $( '#setting-snapclient' ).click( function() {
 		}
 	} );
 } );
-$( '#hostapd' ).click( function() {
-	var checked = $( this ).prop( 'checked' );
-	if ( !G.hostapd && G.wlanconnect && checked ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Access Point'
-			, message : '<wh>Wi-Fi is currently connected.</wh>'
-						 +'<br>Disconnect and continue?'
-			, cancel  : function() {
-				$( '#hostapd' ).prop( 'checked', 0 );
-			}
-			, ok      : function() {
-				$( '#hostapd' ).click();
-			}
-		} );
-	} else {
-		if ( checked ) {
-			$( '#setting-hostapd' ).click();
-		} else {
-			notify( 'Access Point', 'Disable ...', 'accesspoint' );
-			bash( [ 'hostapddisable' ] );
-		}
-	}
-} );
 $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'
@@ -271,7 +247,9 @@ function renderPage( list ) {
 	$( '#snapserver' )
 		.prop( 'checked', G.snapserver )
 		.prop( 'disabled', G.snapclient );
-	$( '#hostapd' ).prop( 'checked', G.hostapd );
+	$( '#hostapd' )
+		.prop( 'checked', G.hostapd )
+		.prop( 'disabled', G.wlanconnect );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
