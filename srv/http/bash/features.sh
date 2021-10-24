@@ -93,9 +93,9 @@ localbrowserdisable )
 localbrowserset )
 	newrotate=${args[1]}
 	newzoom=${args[2]}
-	newscreenoff=${args[3]}
-	newonwhileplay=${args[4]}
-	newcursor=${args[5]}
+	newcursor=${args[3]}
+	newscreenoff=${args[4]}
+	newonwhileplay=${args[5]}
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		. $dirsystem/localbrowser.conf
 		[[ $rotate != $newrotate ]] && changedrotate=1          # [reboot] / [restart]

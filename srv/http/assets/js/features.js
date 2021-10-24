@@ -87,6 +87,9 @@ var content = `
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
 	<td>&nbsp;<gr>%</gr><i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
+<tr><td></td>
+	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr style="height: 10px"></tr>
 <tr><td>Screen off</td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
@@ -99,8 +102,7 @@ var content = `
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
-<tr><td></td>
-	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
+<tr style="height: 10px"></tr>
 </table>
 <div id="btnicon">&nbsp;<gr>Reload<i class="refresh fa fa-redo btnicon wh"></i><i class="screenoff fa fa-screenoff btnicon wh"></i>On/Off</gr></div>`;
 $( '#setting-localbrowser' ).click( function() {
@@ -110,7 +112,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, title        : 'Browser Display'
 		, content      : content
 		, boxwidth     : 100
-		, values       : [ v.rotate, v.zoom, v.screenoff, v.onwhileplay, v.cursor ]
+		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
