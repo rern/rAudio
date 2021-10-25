@@ -2,6 +2,7 @@
 
 : >/dev/tcp/8.8.8.8/53 || exit # online check
 
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirtmp=/srv/http/data/shm
 
@@ -124,7 +125,7 @@ false
 $( date +%s%3N )
 true"
 		readarray -t data <<< "${statusdata//\"/\\\"}"
-		/srv/http/bash/lcdchar.py "${data[@]}" &
+		$dirbash/lcdchar.py "${data[@]}" &
 	fi
 	if [[ -e $dirtmp/snapclientip ]]; then
 		readarray -t clientip < $dirtmp/snapclientip
@@ -132,7 +133,7 @@ true"
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
 		done
 	fi
-	/srv/http/bash/cmd.sh coverfileslimit
+	$dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

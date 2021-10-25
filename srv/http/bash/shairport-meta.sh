@@ -1,5 +1,12 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
+dirtmp=/srv/http/data/shm
+
+pushstreamAirplay() {
+	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
+}
+
 for pid in $( pgrep shairport-sync ); do
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null
@@ -15,9 +22,8 @@ control=$( amixer -c $card scontents \
 			| head -1 \
 			| cut -d"'" -f2 )
 
-dirtmp=/srv/http/data/shm
-
 cat /tmp/shairport-sync-metadata | while read line; do
+	code=
 	# remove Artist+Genre line
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue
 	
@@ -44,7 +50,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirtmp/airplay-coverart.jpg
 		data=/data/shm/airplay-coverart.$( date +%s ).jpg
-		curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"coverart":"'$data'","file":""}'
+		pushstreamAirplay '{"coverart":"'$data'","file":""}'
 	else
 		data=$( echo $base64 | base64 --decode 2> /dev/null )
 		if [[ $code == Time ]]; then # format: start/elapsed/end @44100
@@ -55,7 +61,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
 			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
-			curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"elapsed":'$elapsed'}'
+			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirtmp/airplay-start
@@ -64,21 +70,20 @@ cat /tmp/shairport-sync-metadata | while read line; do
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
 			echo $data > $dirtmp/airplay-volume
-			curl -s -X POST http://127.0.0.1/pub?id=airplay -d '{"volume":'$data'}'
+			pushstreamAirplay '{"volume":'$data'}'
 		else
 			echo $data > $dirtmp/airplay-$code
 		fi
 		
 		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'${data//\"/\\\"}'"'
 		
-		curl -s -X POST http://127.0.0.1/pub?id=airplay -d "{$status}"
+		pushstreamAirplay "{$status}"
 	fi
-	code= # reset code= and start over
 	if [[ -e /srv/http/data/system/lcdchar ]]; then
 		killall lcdchar.py &> /dev/null
-		readarray -t data <<< $( /srv/http/bash/status.sh \
+		readarray -t data <<< $( $dirbash/status.sh \
 									| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
 									| sed 's/null//' )
-		/srv/http/bash/lcdchar.py "${data[@]}" &
+		$dirbash/lcdchar.py "${data[@]}" &
 	fi
 done
