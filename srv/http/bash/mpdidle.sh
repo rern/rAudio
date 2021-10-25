@@ -11,21 +11,21 @@ pushstream() {
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 
 mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
-			if [[ -e $dirtmp/player-upnp ]]; then
-				echo 5 > $dirtmp/vol
+			if [[ -e $dirshm/player-upnp ]]; then
+				echo 5 > $dirshm/vol
 				( for (( i=0; i < 5; i++ )); do
 					sleep 0.1
-					s=$(( $( cat $dirtmp/vol ) - 1 )) # debounce volume long-press on client
+					s=$(( $( cat $dirshm/vol ) - 1 )) # debounce volume long-press on client
 					(( $s == 4 )) && i=0
 					if (( $s > 0 )); then
-						echo $s > $dirtmp/vol
+						echo $s > $dirshm/vol
 					else
-						rm -f $dirtmp/vol
+						rm -f $dirshm/vol
 						pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
 					fi
 				done ) &> /dev/null &
@@ -39,7 +39,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		player )
-			if [[ ! -e $dirtmp/radio && ! -e $dirtmp/nostatus ]]; then
+			if [[ ! -e $dirshm/radio && ! -e $dirshm/nostatus ]]; then
 				killall cmd-pushstatus.sh &> /dev/null
 				$dirbash/cmd-pushstatus.sh
 			fi
@@ -47,8 +47,8 @@ mpc idleloop | while read changed; do
 		update )
 			sleep 1
 			if [[ -e $dirsystem/updating ]] && ! mpc | grep -q '^Updating'; then
-				if [[ -e $dirtmp/updatingusb ]]; then
-					rm $dirtmp/updatingusb
+				if [[ -e $dirshm/updatingusb ]]; then
+					rm $dirshm/updatingusb
 					echo USB > $dirsystem/updating
 					mpc update USB
 				else
