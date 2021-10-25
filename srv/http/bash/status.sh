@@ -8,7 +8,7 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 date=$( date +%s )
 
 outputStatus() { # sed - null > false
@@ -20,16 +20,16 @@ outputStatus() { # sed - null > false
 				s/,\s*]/, false ]/g'
 }
 
-btclient=$( [[ -e $dirtmp/btclient ]] && echo true )
+btclient=$( [[ -e $dirshm/btclient ]] && echo true )
 consume=$( mpc | grep -q 'consume: on' && echo true )
 counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )
 librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
-player=$( ls $dirtmp/player-* 2> /dev/null | cut -d- -f2  )
-[[ -z $player ]] && player=mpd && touch $dirtmp/player-mpd
+player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2  )
+[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
 [[ $player != mpd ]] && icon=$player
 playlists=$( ls /srv/http/data/playlists | wc -l )
 relays=$( [[ -e $dirsystem/relays ]] && echo true )
-relayson=$( [[ -e  $dirtmp/relayson ]] && echo true )
+relayson=$( [[ -e  $dirshm/relayson ]] && echo true )
 updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true )
 if [[ -e $dirsystem/updating ]]; then 
 	updating_db=true
@@ -38,9 +38,9 @@ if [[ -e $dirsystem/updating ]]; then
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	fi
 fi
-if [[ -e $dirtmp/nosound ]]; then
+if [[ -e $dirshm/nosound ]]; then
 	volume=false
-elif [[ -e $dirtmp/btclient ]]; then
+elif [[ -e $dirshm/btclient ]]; then
 	for i in {1..5}; do # takes some seconds to be ready
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 		[[ -n $volume ]] && break
@@ -76,7 +76,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	case $player in
 
 	airplay )
-		path=$dirtmp/airplay
+		path=$dirshm/airplay
 		for item in Artist Album coverart Title; do
 			val=$( cat $path-$item 2> /dev/null )
 			[[ -z $val ]] && continue
@@ -89,7 +89,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 		if [[ -n $start && -n $Time ]]; then
 			elapsed=$( printf '%.0f' $(( ( now - start + 500 ) / 1000 )) )
 		fi
-		[[ -e $dirtmp/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirshm/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
 	########
 		status+='
 	, "coverart"  : "'$coverart'"
@@ -105,14 +105,14 @@ if [[ $player != mpd && $player != upnp ]]; then
 		;;
 	snapclient )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
-		snapserverip=$( cat $dirtmp/snapserverip 2> /dev/null )
+		snapserverip=$( cat $dirshm/snapserverip 2> /dev/null )
 		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh \
 								| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 	########
 		status+=${snapserverstatus:1:-1}
 		;;
 	spotify )
-		path=$dirtmp/spotify
+		path=$dirshm/spotify
 		elapsed=$( cat $path-elapsed 2> /dev/null || echo 0 )
 		state=$( cat $path-state )
 		now=$( date +%s%3N )
@@ -225,7 +225,7 @@ fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
-	discid=$( cat $dirtmp/audiocd 2> /dev/null )
+	discid=$( cat $dirshm/audiocd 2> /dev/null )
 	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
 		track=${file/*\/}
 		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$discid | tr ^ '\n' )
@@ -260,7 +260,7 @@ elif [[ -n $stream ]]; then
 		# fetched coverart
 		if [[ -n $displaycover ]]; then
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-			onlinefile=$( ls $dirtmp/online-$covername.* 2> /dev/null | head -1 )
+			onlinefile=$( ls $dirshm/online-$covername.* 2> /dev/null | head -1 )
 			[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
 		fi
 	else
@@ -285,16 +285,16 @@ elif [[ -n $stream ]]; then
 			fi
 			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				stationname=${station/* - }
-				if [[ ! -e $dirtmp/radio || -z $( head -3 $dirtmp/status 2> /dev/null ) ]]; then
+				if [[ ! -e $dirshm/radio || -z $( head -3 $dirshm/status 2> /dev/null ) ]]; then
 					echo "\
 $file
 $stationname
 $id
-$radiosampling" > $dirtmp/radio
-					rm -f $dirtmp/status
+$radiosampling" > $dirshm/radio
+					rm -f $dirshm/status
 					systemctl start radio
 				else
-					readarray -t tmpstatus <<< $( cat $dirtmp/status 2> /dev/null | sed 's/"/\\"/g' )
+					readarray -t tmpstatus <<< $( cat $dirshm/status 2> /dev/null | sed 's/"/\\"/g' )
 					Artist=${tmpstatus[0]}
 					Title=${tmpstatus[1]}
 					Album=${tmpstatus[2]}
@@ -309,10 +309,10 @@ $radiosampling" > $dirtmp/radio
 				# fetched coverart
 				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
-				coverfile=$( ls $dirtmp/webradio-$covername.* 2> /dev/null | head -1 )
+				coverfile=$( ls $dirshm/webradio-$covername.* 2> /dev/null | head -1 )
 				if [[ -n $coverfile ]]; then
 					coverart=/data/shm/$( basename $coverfile )
-					Album=$( cat $dirtmp/webradio-$covername 2> /dev/null )
+					Album=$( cat $dirshm/webradio-$covername 2> /dev/null )
 				fi
 			fi
 		fi
@@ -377,10 +377,10 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-samplingfile=$dirtmp/sampling-$( echo $file | tr -d ' "`?/#&'"'_.\-" )
+samplingfile=$dirshm/sampling-$( echo $file | tr -d ' "`?/#&'"'_.\-" )
 samplingSave() {
 	echo $sampling > $samplingfile
-	files=$( ls -1t $dirtmp/sampling-* 2> /dev/null )
+	files=$( ls -1t $dirshm/sampling-* 2> /dev/null )
 	(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 }
 samplingLine() {

@@ -2,9 +2,8 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
+dirshm=$dirdata/shm
 dirsystem=$dirdata/system
-dirtmp=$dirdata/shm
-filereboot=$dirtmp/reboot
 fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
 
@@ -22,7 +21,7 @@ pushReboot() {
 	pushRefresh
 	data='{"title":"'$1'","text":"Reboot required.","icon":"'$2'","hold":5000}'
 	pushstream notify "$data"
-	echo $1 >> $filereboot
+	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
 	data=$( $dirbash/system-data.sh )
@@ -220,7 +219,6 @@ $( mount | grep ^/dev | sort )"
 hdmihotplug )
 	if [[ ${args[1]} == true ]]; then
 		echo hdmi_force_hotplug=1 >> $fileconfig
-		echo HDMI Hotplug >> /srv/http/data/shm/reboot
 		pushReboot 'HDMI Hotplug' hdmi
 	else
 		sed -i '/hdmi_force_hotplug/ d' $fileconfig

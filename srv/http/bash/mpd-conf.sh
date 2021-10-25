@@ -10,7 +10,7 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
@@ -38,12 +38,12 @@ if [[ $1 == bton ]]; then
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
-	echo $btname > $dirtmp/btclient
+	echo $btname > $dirshm/btclient
 	pushstream btclient true
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 elif [[ $1 == btoff ]]; then
-	rm -f $dirtmp/{player-*,btclient}
-	touch $dirtmp/player-mpd
+	rm -f $dirshm/{player-*,btclient}
+	touch $dirshm/player-mpd
 	pushstream btclient false
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 fi
@@ -54,9 +54,9 @@ output=
 if [[ $i != -1 ]]; then
 	if [[ $1 == add ]]; then
 		i=-1
-		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirtmp/asound
+		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirshm/asound
 	elif [[ $1 == remove ]]; then
-		i=$( cat $dirtmp/asound )
+		i=$( cat $dirshm/asound )
 	fi
 	aplayname=${Aaplayname[$i]}
 	card=${Acard[$i]}
@@ -66,7 +66,7 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/equalizer ]]; then
-		[[ -e $dirtmp/btclient ]] && mixertype=software
+		[[ -e $dirshm/btclient ]] && mixertype=software
 ########
 		output+='
 audio_output {
@@ -208,7 +208,7 @@ ctl.equal {
 pcm.plugequal {
 	type equal'
 	filepresets=$dirsystem/equalizer.presets
-	if [[ ! -e $dirtmp/btclient ]]; then
+	if [[ ! -e $dirshm/btclient ]]; then
 		asound+='
 	slave.pcm "plughw:'$card',0"'
 	else
@@ -222,7 +222,7 @@ pcm.plugequal {
  			delay 20000
  		}
  	}'
-		filepresets+="-$( cat $dirtmp/btclient )"
+		filepresets+="-$( cat $dirshm/btclient )"
 	fi
 	asound+='
 }'

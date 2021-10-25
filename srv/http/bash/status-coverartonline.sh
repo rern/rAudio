@@ -9,7 +9,6 @@ arg1=${args[1]}
 type=${args[2]}
 discid=${args[3]}
 
-dirtmp=/srv/http/data/shm
 name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 
 ### 1 - lastfm ##################################################
@@ -68,7 +67,7 @@ data='
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > $dirtmp/webradio-$name
+	echo $Album > /srv/http/data/shm/webradio-$name
 	data+='
 , "Album" : "'$Album'"'
 fi
