@@ -3,7 +3,7 @@
 dirdata=/srv/http/data
 diraddons=$dirdata/addons
 dirsystem=$dirdata/system
-dirtmp=$dirdata/shm
+dirshm=$dirdata/shm
 
 systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
@@ -95,8 +95,8 @@ cat << EOF > $dirsystem/display
 }
 EOF
 rm -rf /root/.config/chromium
-rm -f $dirdata/shm/player-*
-touch $dirdata/shm/player-mpd
+rm -f $dirshm/player-*
+touch $dirshm/player-mpd
 # relays
 cat << EOF > $dirsystem/relays.conf
 pin='[ 11,13,15,16 ]'

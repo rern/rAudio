@@ -13,7 +13,6 @@ if [[ -z $1 ]]; then
 else
 	mpdpathlist=$( find "/mnt/MPD/$1" -type d | cut -c10- )
 fi
-dirtmp=/srv/http/data/shm
 unsharp=0x.5
 color=( K R G Y B M C W Gr )
 cL=${#color[@]}

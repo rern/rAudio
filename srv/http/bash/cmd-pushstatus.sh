@@ -2,9 +2,9 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 
-#[[ $( sed -n 6p $dirtmp/status ) == pause ]] && sleep 0.1 # fix: vumeter - resume with wrong track
+#[[ $( sed -n 6p $dirshm/status ) == pause ]] && sleep 0.1 # fix: vumeter - resume with wrong track
 
 status=$( $dirbash/status.sh )
 statusdata=$( echo $status \
@@ -14,8 +14,8 @@ readarray -t data <<< "$statusdata"
 state=${data[5]}
 webradio=${data[9]}
 
-if [[ -e $dirtmp/status ]]; then
-	dataprev=$( cat $dirtmp/status )
+if [[ -e $dirshm/status ]]; then
+	dataprev=$( cat $dirshm/status )
 	if [[ $webradio == false ]]; then
 		datanew=${data[@]:0:8}
 		dataprev=$( head -8 <<< $dataprev | tr -d '\n ' )
@@ -28,7 +28,7 @@ if [[ -e $dirtmp/status ]]; then
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
-echo "$statusdata" > $dirtmp/status
+echo "$statusdata" > $dirshm/status
 
 [[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
 
@@ -55,9 +55,9 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	fi
 fi
 
-if [[ -e $dirtmp/snapclientip ]]; then
+if [[ -e $dirshm/snapclientip ]]; then
 	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
-	readarray -t clientip < $dirtmp/snapclientip
+	readarray -t clientip < $dirshm/snapclientip
 	for ip in "${clientip[@]}"; do
 		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
