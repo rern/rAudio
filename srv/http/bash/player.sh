@@ -1,8 +1,8 @@
 #!/bin/bash
 
 dirbash=/srv/http/bash
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -32,7 +32,7 @@ scontrols() {
 }
 update() { # for /etc/conf.d/devmon - devmon@http.service
 	if [[ -e $dirsystem/updating ]]; then
-		/srv/http/data/shm/updatingusb
+		$dirshm/updatingusb
 	else
 		echo USB > $dirsystem/updating
 		mpc update USB
@@ -174,7 +174,7 @@ devices )
 	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
 	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
 	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( $dirbash/player.sh amixer )
-	[[ -e /srv/http/data/shm/btclient ]] && devices+=$'\n\n<bl># bluealsa-aplay -L</bl>\n'$( bluealsa-aplay -L )
+	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bl># bluealsa-aplay -L</bl>\n'$( bluealsa-aplay -L )
 	echo "$devices"
 	;;
 dop )
@@ -242,7 +242,7 @@ mixertype )
 			amixer -Mq sset "$hwmixer" $vol%
 		else
 			amixer -Mq sset "$hwmixer" 0dB
-			rm -f /srv/http/data/shm/mpdvolume
+			rm -f $dirshm/mpdvolume
 		fi
 	fi
 	if [[ $mixertype == hardware ]]; then
@@ -284,7 +284,7 @@ novolume )
 	mpc crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} /srv/http/data/shm/mpdvolume
+	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
@@ -327,7 +327,7 @@ volume0db )
 	amixer -Mq sset "${args[1]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
-	rm -f /srv/http/data/shm/mpdvolume
+	rm -f $dirshm/mpdvolume
 	;;
 volumebt0db )
 	amixer -D bluealsa -q sset "${args[1]}" 0dB

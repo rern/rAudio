@@ -1,7 +1,7 @@
 #!/bin/bash
 
 dirbash=/srv/http/bash
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
@@ -48,7 +48,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	# var: code base64 - make json for curl
 	if [[ $code == coverart ]]; then
-		base64 -d <<< $base64 > $dirtmp/airplay-coverart.jpg
+		base64 -d <<< $base64 > $dirshm/airplay-coverart.jpg
 		data=/data/shm/airplay-coverart.$( date +%s ).jpg
 		pushstreamAirplay '{"coverart":"'$data'","file":""}'
 	else
@@ -64,15 +64,15 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
-			echo $starttime > $dirtmp/airplay-start
+			echo $starttime > $dirshm/airplay-start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
 			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
-			echo $data > $dirtmp/airplay-volume
+			echo $data > $dirshm/airplay-volume
 			pushstreamAirplay '{"volume":'$data'}'
 		else
-			echo $data > $dirtmp/airplay-$code
+			echo $data > $dirshm/airplay-$code
 		fi
 		
 		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'${data//\"/\\\"}'"'
