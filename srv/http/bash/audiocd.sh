@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 diraudiocd=/srv/http/data/audiocd
 
 pushstream() {
@@ -34,7 +34,7 @@ input { #cdio0\
 	restartMPD
 	exit
 elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playlist
-	rm -f $dirtmp/audiocd
+	rm -f $dirshm/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
 		pushstreamNotify 'Removed from Playlist.'
@@ -104,7 +104,7 @@ trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
   mpc add cdda:///$i
 done
-echo $discid > $dirtmp/audiocd
+echo $discid > $dirshm/audiocd
 pushstreamPlaylist
 
 if [[ -n $autoplaycd ]]; then

@@ -5,8 +5,8 @@ diraddons=$dirdata/addons
 dirbash=/srv/http/bash
 dirimg=/srv/http/assets/img
 dirmpd=$dirdata/mpd
+dirshm=$dirdata/shm
 dirsystem=$dirdata/system
-dirtmp=$dirdata/shm
 dirwebradios=$dirdata/webradios
 
 # convert each line to each args
@@ -21,7 +21,7 @@ addonsListGet() {
 equalizerGet() {
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirtmp/btclient ]] && filepresets+="-$( cat $dirtmp/btclient )"
+	[[ -e $dirshm/btclient ]] && filepresets+="-$( cat $dirshm/btclient )"
 	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
 	
 	[[ $2 == set ]] && sed -i "1 s/.*/(unnamed)/" "$filepresets"
@@ -192,7 +192,7 @@ volumeControls() {
 	fi
 }
 volumeGet() {
-	if [[ -e $dirtmp/btclient ]]; then
+	if [[ -e $dirshm/btclient ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 		return
 	fi
@@ -227,7 +227,7 @@ volumeGet() {
 	fi
 }
 volumeReset() {
-	file=$dirtmp/mpdvolume
+	file=$dirshm/mpdvolume
 	if [[ -e $file ]]; then
 		volumeGet
 		vol_db=( $( cat $file ) )
@@ -265,7 +265,7 @@ volumeSet() {
 		fi
 	fi
 	pushstreamVolume disable false
-	[[ -n $control && ! -e $dirtmp/btclient ]] && alsactl store
+	[[ -n $control && ! -e $dirshm/btclient ]] && alsactl store
 }
 
 case ${args[0]} in
@@ -316,22 +316,22 @@ audiocdtag )
 	;;
 bluetoothplayer )
 	mpc stop
-	rm -f $dirtmp/{player-*,btclient}
+	rm -f $dirshm/{player-*,btclient}
 	sleep 1
 	volume0dB
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
 bluetoothplayerconnect )
 	if [[ ${args[1]} == 0 ]]; then # disconnected
-		rm -f $dirtmp/player-bluetooth
-		touch $dirtmp/player-mpd
+		rm -f $dirshm/player-bluetooth
+		touch $dirshm/player-mpd
 	fi
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )
 	systemctl restart bluezdbus
-	rm -f $dirtmp/player-bluetooth
-	touch $dirtmp/player-mpd
+	rm -f $dirshm/player-bluetooth
+	touch $dirshm/player-mpd
 	volumeReset
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
@@ -411,7 +411,7 @@ coverartreset )
 	rm -f "$coverfile" \
 		"$dir/coverart".* \
 		"$dir/thumb".* \
-		$dirtmp/local-$covername \
+		$dirshm/local-$covername \
 		$dirdata/embedded/$covername*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
@@ -440,7 +440,7 @@ coverexists )
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		files=$( ls -1t $dirtmp/$type-* 2> /dev/null )
+		files=$( ls -1t $dirshm/$type-* 2> /dev/null )
 		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 	done
 	;;
@@ -450,10 +450,10 @@ coversave )
 	covername=${args[3]}
 	coverfile="$path/cover.jpg"
 	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f $dirtmp/local-$covername*
+	rm -f $dirshm/local-$covername*
 	;;
 displayget )
-	if [[ -e $dirtmp/nosound ]]; then
+	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
 		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
@@ -502,7 +502,7 @@ equalizer )
 	newname=${args[3]}
 	flat='61 61 61 61 61 61 61 61 61 61' # value 60 > set at 59
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirtmp/btclient ]] && filepresets+="-$( cat $dirtmp/btclient )"
+	[[ -e $dirshm/btclient ]] && filepresets+="-$( cat $dirshm/btclient )"
 	if [[ $type == preset ]]; then
 		[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" "$filepresets" | cut -d^ -f2- ) )
 	else # remove then save again with current values
@@ -639,20 +639,20 @@ mpcplayback )
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
-		[[ $command == stop ]] && rm -f $dirtmp/status
+		[[ $command == stop ]] && rm -f $dirshm/status
 	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirtmp/status
-	touch $dirtmp/nostatus
+	rm -f $dirshm/status
+	touch $dirshm/nostatus
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc stop
-		rm -f $dirtmp/nostatus
+		rm -f $dirshm/nostatus
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -667,7 +667,7 @@ mpcprevnext )
 		fi
 	fi
 	if [[ -z $playing ]]; then
-		rm -f $dirtmp/nostatus
+		rm -f $dirshm/nostatus
 		mpc stop
 	else
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotify 'Audio CD' 'Change track ...' audiocd
@@ -678,10 +678,10 @@ mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
 	if [[ $state == stop ]]; then
-		touch $dirtmp/nostatus
+		touch $dirshm/nostatus
 		mpc play
 		mpc pause
-		rm $dirtmp/nostatus
+		rm $dirshm/nostatus
 	fi
 	mpc seek $seek
 	;;
@@ -845,7 +845,7 @@ power )
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc del $cdda
-	if [[ -e $dirtmp/relayson ]]; then
+	if [[ -e $dirshm/relayson ]]; then
 		$dirbash/relays.sh
 		sleep 2
 	fi
@@ -864,7 +864,7 @@ power )
 	[[ -n $reboot ]] && reboot || poweroff
 	;;
 rebootlist )
-	[[ -e $dirtmp/reboot ]] && cat $dirtmp/reboot \
+	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot \
 								| sort -u \
 								| tr '\n' ^ \
 								| head -c -1
@@ -930,7 +930,7 @@ volume )
 	;;
 volume0db )
 	volume0dB
-	[[ ${args[1]} == spotifyd ]] && echo $volume $db  > $dirtmp/mpdvolume
+	[[ ${args[1]} == spotifyd ]] && echo $volume $db  > $dirshm/mpdvolume
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -945,7 +945,7 @@ volumeget )
 	[[ ${args[1]} == db ]] && echo $volume $db || echo $volume
 	;;
 volumepushstream )
-	[[ -e $dirtmp/btclient ]] && sleep 1
+	[[ -e $dirshm/btclient ]] && sleep 1
 	volumeGet
 	pushstream volume '{"val":'$volume'}'
 	[[ -n $control ]] && alsactl store

@@ -4,9 +4,9 @@
 
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 
-readarray -t tmpradio < $dirtmp/radio
+readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]}
 station=${station//\"/\\\"}
@@ -85,7 +85,7 @@ metadataGet() {
 
 	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
-		coverfile=$dirtmp/webradio-$name.jpg
+		coverfile=$dirshm/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
 		coverart=/data/shm/webradio-$name.jpg
 	fi
@@ -93,7 +93,7 @@ metadataGet() {
 $artist
 $title
 $album
-$coverart" > $dirtmp/status
+$coverart" > $dirshm/status
 	artist=${artist//\"/\\\"}
 	title=${title//\"/\\\"}
 	album=${album//\"/\\\"}
@@ -127,8 +127,8 @@ true"
 		readarray -t data <<< "${statusdata//\"/\\\"}"
 		$dirbash/lcdchar.py "${data[@]}" &
 	fi
-	if [[ -e $dirtmp/snapclientip ]]; then
-		readarray -t clientip < $dirtmp/snapclientip
+	if [[ -e $dirshm/snapclientip ]]; then
+		readarray -t clientip < $dirshm/snapclientip
 		for ip in "${clientip[@]}"; do
 			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
 		done
