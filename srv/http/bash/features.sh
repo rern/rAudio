@@ -187,8 +187,8 @@ scrobbledisable )
 scrobbleset )
 	username=${args[1]}
 	password=${args[2]}
-	apikey=$apikey
-	sharedsecret=$sharedsecret
+	apikey=d666cd06ec4fcf84c3b86279831a1c8e
+	sharedsecret=390372d3a1f60d4030e2a612260060e0
 	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
 				| iconv -t utf8 \
 				| md5sum \
