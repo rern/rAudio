@@ -887,9 +887,9 @@ scrobble )
 	artist=${args[1]}
 	track=${args[2]}
 	album=${args[3]}
-	timestamp=$( date +%s )
 	elapsed=${args[4]}
-	[[ -n $elapsed && $elapsed != false ]] && timestamp=$(( timestamp - elapsed ))
+	[[ -z $elapsed || $elapsed == false ]] && elspased=60
+	timestamp=$(( $( date +%s ) - $elapsed ))
 	apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 	sharedsecret=390372d3a1f60d4030e2a612260060e0
 	sk=$( cat $dirsystem/scrobble )
