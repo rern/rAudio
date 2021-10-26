@@ -63,30 +63,24 @@ function bookmarkCover( url, path ) {
 function changedStatus() { // onwhileplay, scrobble
 	var status = G.prevstatus;
 	if ( G.display.onwhileplay ) bash( [ 'screenoff', status.state === 'play' ? '-dpms' : '+dpms' ] );
-	if ( G.scrobble
-		&& !G.status.webradio
-		&& status.Artist
-		&& status.Title
-		&& ( status.Artist !== G.status.Artist || status.Title !== G.status.Title || status.Album !== G.status.Album )
-	) {
+	if ( G.scrobble ) {
 		bash( [ 'scrobble', status.Artist, status.Title, status.Album, status.elapsed ], function( response ) {
 			if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
 		}, 'json' );
 	}
 }
 function refreshStatus( data ) {
-	G.prevstatus = {}
-	if ( G.display.onwhileplay ) G.prevstatus.state = G.status.state;
-	var time = G.status.Time;
-	var elapsed = G.status.elapsed;
-	if ( G.status.scrobble && time > 30 && ( elapsed > 240 || ( elapsed / time ) > 0.5 ) ) {
-		G.scrobble = 1;
-		G.prevstatus.Artist = G.status.Artist
-		G.prevstatus.Title = G.status.Title
-		G.prevstatus.Album = G.status.Album
-		G.prevstatus.elapsed = G.status.elapsed
-	} else {
-		G.scrobble = 0;
+	G.prevstatus = {};
+	[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( k ) {
+		this[ k ] = G.prevstatus[ k ] = G.status[ k ];
+	} );
+	G.scrobble = 0;
+	if ( G.status.scrobble && !G.status.webradio && Artist && Title ) {
+		if ( data.state === 'stop' && elapsed ) {
+			if ( Time > 30 && ( ( elapsed / Time ) > 0.5 || elapsed > 240 ) ) G.scrobble = 1;
+		} else {
+			if ( status.Artist !== Artist || status.Title !== Title || status.Album !== Album ) G.scrobble = 1;
+		}
 	}
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
