@@ -244,34 +244,33 @@ fi
 restartMPD
 
 if [[ -e /usr/bin/shairport-sync ]]; then
-	hwmixer="${Ahwmixer[$card]}"
-	if [[ -n $hwmixer ]]; then
-		alsa='alsa = {
-	output_device = "hw:'$card'";
-	mixer_control_name = "'$hwmixer'";
-}'
+	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+alsa = {"
+	if [[ -n $btname ]]; then
+		conf+='
+	output_device = "bluealsa";'
 	else
-		alsa='alsa = {
-	output_device = "hw:'$card'";
-}'
+		conf+='
+	output_device = "hw:'$card'";'
+	[[ -n $hwmixer ]] && conf+='
+	mixer_control_name = "'$hwmixer'";'
 	fi
-	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-	echo "\
-$conf
-$alsa" > /etc/shairport-sync.conf
+	conf+='
+}'
+	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -z $btname ]]; then
+	if [[ -n $btname ]]; then
+		aplaydevice=bluealsa
+	else
 		cardname=$( aplay -l \
 						| grep "^card $card" \
 						| head -1 \
 						| cut -d' ' -f3 )
 		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
-	else
-		aplaydevice=bluealsa
 	fi
 	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
 	systemctl try-restart spotifyd
