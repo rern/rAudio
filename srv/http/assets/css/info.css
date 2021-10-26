@@ -217,6 +217,11 @@
 	margin-right: 5px;
 	vertical-align: -2px !important;
 }
+.btnbottom span {
+	color: var( --cg60 );
+	cursor: pointer;
+}
+.btnbottom i,
 .btnicon {
 	width: 40px;
 	font-size: 22px;

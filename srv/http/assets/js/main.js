@@ -381,24 +381,24 @@ $( '#title, #guide-lyrics' ).click( function() {
 			lyricsShow( data );
 			return
 		}
-		
 		var noparen = title.slice( -1 ) !== ')';
-		var titlenoparen = title.replace( / $| \(.*$/, '' );
+		var titlenoparen = title.replace( / $|\(.*$/, '' );
+		var paren = title.replace( /^.*\(/, '(' );
 		var content = `\
 <table>
 <tr><td><i class="fa fa-artist wh"></i></td><td><input type="text"></td></tr>
 <tr><td><i class="fa fa-music wh"></i></td><td><input type="text"></td></tr>
-<tr id="paren"><td></td><td><label><input type="checkbox">Title with parentheses content</label></td></tr>
+<tr id="paren"><td></td><td><label><input type="checkbox"><gr>Include</gr> ${ paren }</label></td></tr>
 <tr style="height: 10px;"></tr>
 <tr><td colspan="2" class="gr">
-	<i class="fa fa-lyrics btnicon wh"></i> Lyrics
-	&emsp;<i class="fa fa-bio btnicon wh"></i> Bio
-	&emsp;<i class="fa fa-lastfm btnicon wh"></i> Scrobble
+	<span class="lyrics btnbottom"><i class="fa fa-lyrics"></i> Lyrics</span>
+	<span class="bio btnbottom">&emsp;<i class="fa fa-bio"></i> Bio</span>
+	<span class="scrobble btnbottom">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
 	</td></tr>
 </table>`;
 		info( {
 			  icon        : 'lyrics'
-			, title       : 'Lyrics / Bio'
+			, title       : 'Lyrics'
 			, content     : content
 			, boxwidth    : 320
 			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
@@ -410,36 +410,27 @@ $( '#title, #guide-lyrics' ).click( function() {
 						$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 					} );
 				}
-				$( '#infoContent' ).on( 'click', '.fa-lyrics', function() {
-					var values = infoVal();
-					G.lyricsArtist = values[ 0 ];
-					G.lyricsTitle = values[ 1 ];
-					bash( [ 'lyrics', G.lyricsArtist, G.lyricsTitle ], function( data ) {
-						lyricsShow( data );
-					} );
-					banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
-					$( '#infoX' ).click();
-				} );
-				$( '#infoContent' ).on( 'click', '.btnicon', function() {
+				$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble );
+				$( '#infoContent' ).on( 'click', '.btnbottom', function() {
 					var values = infoVal();
 					var artist = values[ 0 ]
 					var title = values[ 1 ]
 					var $this = $( this );
-					if ( $this.hasClass( 'fa-lyrics' ) ) {
+					if ( $this.hasClass( 'lyrics' ) ) {
 						G.lyricsArtist = artist;
 						G.lyricsTitle = title;
 						bash( [ 'lyrics', artist, title ], function( data ) {
 							lyricsShow( data );
 						} );
 						banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
-					} else if ( $this.hasClass( 'fa-bio' ) ) {
+					} else if ( $this.hasClass( 'bio' ) ) {
 						if ( $( '#bio legend' ).text() != G.status.Artist ) {
 							getBio( artist );
 						} else {
 							$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 							$( '#bio' ).removeClass( 'hide' );
 						}
-					} else if ( $this.hasClass( 'fa-lastfm' ) ) {
+					} else if ( $this.hasClass( 'scrobble' ) ) {
 						bash( [ 'scrobble', artist, title, G.status.Album, 0 ], function( response ) {
 							if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
 							bannerHide();
@@ -1571,17 +1562,17 @@ $( '#button-pl-librandom' ).click( function() {
 	if ( G.status.librandom ) {
 		G.status.librandom = false;
 		$this.removeClass( 'bl' );
-		banner( 'Roll The Dice', 'Off ...', 'dice' );
+		banner( 'Roll The Dice', 'Off ...', 'librandom' );
 		bash( [ 'librandom', false ] );
 	} else {
 		info( {
-			  icon    : 'dice'
+			  icon    : 'librandom'
 			, title   : 'Roll The Dice'
 			, message : 'Randomly add songs and play continuously?'
 			, ok      : function() {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
-				banner( 'Roll The Dice', 'Add+play ...', 'dice' );
+				banner( 'Roll The Dice', 'Add+play ...', 'librandom' );
 				bash( [ 'librandom', true ] );
 			}
 		} );

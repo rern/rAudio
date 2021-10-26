@@ -368,7 +368,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 			<i id="button-pl-open" class="fa fa-folder-open"></i>
 			<i id="button-pl-save" class="fa fa-save pllength"></i>
 			<i id="button-pl-consume" class="fa fa-flash"></i>
-			<i id="button-pl-librandom" class="fa fa-dice"></i>
+			<i id="button-pl-librandom" class="fa fa-librandom"></i>
 			<i id="button-pl-shuffle" class="fa fa-shuffle pllength"></i>
 			<i id="button-pl-clear" class="fa fa-minus-circle pllength"></i>
 		</div>

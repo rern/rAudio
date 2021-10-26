@@ -80,7 +80,10 @@ var content = `
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr style="height: 10px"></tr>
 </table>
-<div id="btnicon">&nbsp;<gr>Reload<i class="refresh fa fa-redo btnicon wh"></i><i class="screenoff fa fa-screenoff btnicon wh"></i>On/Off</gr></div>`;
+<div class="btnbottom">
+	&nbsp;<span class="refload">Reload<i class="fa fa-redo"></i></span>
+	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
+</div>`;
 $( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
 	info( {
@@ -92,7 +95,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
-			$( '#btnicon' ).toggleClass( 'hide', !G.localbrowser );
+			$( '.btnbottom' ).toggleClass( 'hide', !G.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
 				var up = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
@@ -108,7 +111,7 @@ $( '#setting-localbrowser' ).click( function() {
 						.prop( 'disabled', 1 );
 				}
 			} );
-			$( '.refresh' ).click( function() {
+			$( '.reload' ).click( function() {
 				bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
 			} );
 			$( '.screenoff' ).click( function() {
