@@ -597,7 +597,7 @@ function info( json ) {
 			}
 		} );
 		// custom function before show
-		if ( 'beforeshow' in O ) O.beforeshow();
+		if ( O.beforeshow ) O.beforeshow();
 		$( 'html, body' ).scrollTop( 0 );
 		} );
 	//////////////////////////////////////////////////////////////////////////

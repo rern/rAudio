@@ -23,12 +23,11 @@ apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sGk -m 5 \
 	--data-urlencode "artist=$artist" \
 	--data-urlencode "$param" \
-	--data-urlencode "$method" \
-	--data-urlencode "api_key=$apikey" \
-	--data-urlencode "autocorrect=1" \
-	--data-urlencode "format=json" \
-	http://ws.audioscrobbler.com/2.0/ )
-[[ $( jq -r .error <<< "$data" ) != null ]] && exit
+	--data "$method" \
+	--data "api_key=$apikey" \
+	--data "format=json" \
+	http://ws.audioscrobbler.com/2.0 )
+[[ $data =~ error ]] && exit
 
 if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< "$data" )

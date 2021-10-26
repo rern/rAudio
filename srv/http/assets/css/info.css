@@ -217,6 +217,14 @@
 	margin-right: 5px;
 	vertical-align: -2px !important;
 }
+.btnicon {
+	width: 40px;
+	font-size: 22px;
+	text-align: center;
+	color: var( --cw );
+	cursor: pointer;
+}
+
 hr {
 	border: none;
 	border-bottom: 1px solid var( --cg );

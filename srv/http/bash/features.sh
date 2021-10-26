@@ -187,19 +187,19 @@ scrobbledisable )
 scrobbleset )
 	username=${args[1]}
 	password=${args[2]}
-	apikey=d666cd06ec4fcf84c3b86279831a1c8e
+	apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 	sharedsecret=390372d3a1f60d4030e2a612260060e0
 	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
 				| iconv -t utf8 \
 				| md5sum \
 				| cut -c1-32 )
 	reponse=$( curl -sX POST \
-		--data-urlencode "api_key=$apikey" \
-		--data-urlencode "method=auth.getMobileSession" \
+		--data "api_key=$apikey" \
+		--data "method=auth.getMobileSession" \
 		--data-urlencode "password=$password" \
 		--data-urlencode "username=$username" \
-		--data-urlencode "api_sig=$apisig" \
-		--data-urlencode "format=json" \
+		--data "api_sig=$apisig" \
+		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse && exit
 		
