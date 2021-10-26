@@ -60,12 +60,12 @@ function bookmarkCover( url, path ) {
 		}
 	} );
 }
-function changedStatus() {
+function changedStatus() { // onwhileplay, scrobble
 	var status = G.prevstatus;
 	if ( G.display.onwhileplay ) bash( [ 'screenoff', status.state === 'play' ? '-dpms' : '+dpms' ] );
-	if ( !G.status.scrobble ) return
-	
-	if ( status.Artist
+	if ( G.scrobble
+		&& !G.status.webradio
+		&& status.Artist
 		&& status.Title
 		&& ( status.Artist !== G.status.Artist || status.Title !== G.status.Title || status.Album !== G.status.Album )
 	) {
@@ -74,7 +74,7 @@ function changedStatus() {
 		}, 'json' );
 	}
 }
-function previousStatus() {
+function refreshStatus( data ) {
 	G.prevstatus = {
 		  Artist  : G.status.Artist
 		, Title   : G.status.Title
@@ -82,19 +82,16 @@ function previousStatus() {
 		, elapsed : G.status.elapsed
 		, state   : G.status.state
 	}
-}
-function onWhileplay( state ) {
-	if ( G.display.onwhileplay && state ) bash( [ 'screenoff', state === 'play' ? '-dpms' : '+dpms' ] );
-	
-}
-function scrobble( data ) { // [ artist, title, album ]
-	if ( !data.Artist
-		|| !data.Title
-		|| ( data.Artist === G.status.Artist && data.Title === G.status.Title && data.Album === G.status.Album )
-	) return
-	
-	bash( [ 'scrobble', data.Artist, data.Title, data.Album, data.elapsed ], function( std ) {
-		if ( std != 1 ) banner( 'Last.fm Scrobble', 'Failed.', 'lastfm' );
+	if ( G.status.scrobble
+		&& G.status.Time > 30
+		&& ( G.status.elapsed > 240 || ( G.status.elapsed / G.status.Time ) > 0.5 )
+	) {
+		G.scrobble = 1;
+	} else {
+		G.scrobble = 0;
+	}
+	$.each( data, function( key, value ) {
+		G.status[ key ] = value;
 	} );
 }
 function webradioIcon( srcnoext ) {
@@ -161,13 +158,11 @@ pushstream.onmessage = ( data, id, channel ) => {
 	}
 }
 function psAirplay( data ) {
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
+	refreshStatus( data );
 	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
 	setButtonControl();
 	if ( G.playback ) renderPlayback();
-	onWhileplay( data.state );
+	changedStatus();
 }
 function psBtClient( connected ) {
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
@@ -347,30 +342,12 @@ function psEqualizer( data ) {
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		previousStatus();
 		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;
 		}
-		var prevdata = {}
-		if ( G.status.scrobble
-			&& G.status.Time > 30
-			&& ( G.status.elapsed > 240 || ( G.status.elapsed / G.status.Time ) > 0.5 )
-		) {
-			var prevdata = {
-				  Artist  : G.status.Artist
-				, Title   : G.status.Title
-				, Album   : G.status.Album
-				, elapsed : G.status.elapsed
-				, state   : G.status.state
-			}
-		} else {
-			var prevdata = '';
-		}
-		$.each( data, function( key, value ) {
-			G.status[ key ] = value;
-		} );
+		refreshStatus( data );
 		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 		setButtonControl();
 		if ( G.playback ) {
@@ -380,14 +357,11 @@ function psMpdPlayer( data ) {
 			setPlaylistScroll();
 		}
 		bannerHide();
-		onWhileplay( { state: state } );
-		if ( prevdata ) scrobble( prevdata );
+		changedStatus();
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
+	refreshStatus( data );
 	if ( G.playback ) {
 		setButtonControl();
 		setInfo();
@@ -395,7 +369,7 @@ function psMpdRadio( data ) {
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
-	onWhileplay( data.state );
+	changedStatus();
 }	
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
@@ -576,19 +550,14 @@ function psSpotify( data ) {
 		displayBottom();
 	}
 	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
+	refreshStatus( data );
 	setButtonControl();
-	if ( G.playback ) {
-		if ( 'pause' in data ) {
-			G.status.state = 'pause'
-			G.status.elapsed = data.pause;
-		} else {
-			$.each( data, function( key, value ) {
-				G.status[ key ] = value;
-			} );
-		}
-		renderPlayback();
+	if ( G.playback ) renderPlayback();
+	if ( 'pause' in data ) {
+		G.status.state = 'pause'
+		G.status.elapsed = data.pause;
 	}
-	onWhileplay( data.state );
+	changedStatus();
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
