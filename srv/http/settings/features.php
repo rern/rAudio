@@ -121,11 +121,9 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label'    => 'Last.fm Scrobbler'
-		, 'id'       => 'mpdscribble'
-		, 'sublabel' => 'mpdscribble'
+		  'label'    => 'Last.fm Scrobble'
+		, 'id'       => 'scrobble'
 		, 'icon'     => 'lastfm'
-		, 'status'   => 'mpdscribble'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://github.com/MusicPlayerDaemon/mpdscribble">mpdscribble</a> - Automatically send listened music data to Last.fm for tracking.

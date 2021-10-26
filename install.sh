@@ -8,6 +8,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211024
+systemctl disable --now mpdscribble@mpd
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]] && ! grep -q onwhileplay $file; then
 	. $file

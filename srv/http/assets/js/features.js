@@ -141,30 +141,30 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-mpdscribble' ).click( function() {
+$( '#setting-scrobble' ).click( function() {
 	info( {
 		  icon          : 'lastfm'
-		, title         : 'Last.fm Scrobbler'
+		, title         : 'Last.fm Scrobble'
 		, textlabel     : 'User'
 		, passwordlabel : 'Password'
-		, values        : G.mpdscribbleconf
-		, checkchanged  : ( G.mpdscribble ? 1 : 0 )
+		, values        : G.scrobbleconf
+		, checkchanged  : ( G.scrobble ? 1 : 0 )
 		, checkblank    : 1
 		, cancel        : function() {
-			$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
+			$( '#scrobble' ).prop( 'checked', G.scrobble );
 		}
 		, ok            : function() {
-			bash( [ 'mpdscribbleset', ...infoVal() ], function( std ) {
-				if ( std == -1 ) {
+			bash( [ 'scrobbleset', ...infoVal() ], function( response ) {
+				if ( 'error' in response ) {
 					info( {
 						  icon    : 'lastfm'
-						, title   : 'Last.fm Scrobbler'
-						, message : 'Last.fm Login failed.'
+						, title   : 'Last.fm Scrobble'
+						, message : response.message
 					} );
-					$( '#mpdscribble' ).prop( 'checked', 0 );
+					$( '#scrobble' ).prop( 'checked', 0 );
 				}
-			} );
-			notify( 'Scrobbler', G.mpdscribble ? 'Change ...' : 'Enable ...', 'lastfm' );
+			}, 'json' );
+			notify( 'Last.fm Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
 		}
 	} );
 } );
@@ -255,8 +255,8 @@ function renderPage( list ) {
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
 	$( '#smb' ).prop( 'checked', G.smb );
 	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
-	$( '#mpdscribble' ).prop( 'checked', G.mpdscribble );
-	$( '#setting-mpdscribble' ).toggleClass( 'hide', !G.mpdscribble );
+	$( '#scrobble' ).prop( 'checked', G.scrobble );
+	$( '#setting-scrobble' ).toggleClass( 'hide', !G.scrobble );
 	$( '#login' ).prop( 'checked', G.login );
 	$( '#setting-login' ).toggleClass( 'hide', !G.login );
 	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );

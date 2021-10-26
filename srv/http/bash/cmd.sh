@@ -883,6 +883,32 @@ rotateSplash )
 screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
+scrobble )
+	artist=${args[1]}
+	track=${args[2]}
+	album=${args[3]}
+	apikey=d666cd06ec4fcf84c3b86279831a1c8e
+	sharedsecret=390372d3a1f60d4030e2a612260060e0
+	sk=$( cat $dirsystem/scrobble )
+	timestamp=$( date +%s )
+	apisigscrobble=$( echo -n "album${album}api_key${apikey}artist${artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${track}${sharedsecret}" \
+				| iconv -t utf8 \
+				| md5sum \
+				| cut -c1-32 )
+	reponse=$( curl -sX POST \
+		--data-urlencode "album=$album" \
+		--data-urlencode "api_key=$apikey" \
+		--data-urlencode "artist=$artist" \
+		--data-urlencode "method=track.scrobble" \
+		--data-urlencode "sk=$sk" \
+		--data-urlencode "timestamp=$timestamp" \
+		--data-urlencode "track=$track" \
+		--data-urlencode "api_sig=$apisigscrobble" \
+		--data-urlencode "format=json" \
+		http://ws.audioscrobbler.com/2.0 \
+		| sed 's/.*accepted":"//; s/".*//' )
+	[[ $reponse =~ error ]] && echo $reponse
+	;;
 stationcoverreset )
 	coverfile=${args[1]}
 	rm -f "$coverfile".* "$coverfile-thumb".*

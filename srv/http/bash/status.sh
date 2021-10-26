@@ -51,6 +51,7 @@ else
 	control=$( echo $controlvolume | cut -d^ -f1 )
 	volume=$( echo $controlvolume | cut -d^ -f2 )
 fi
+scrobble=$( [[ -e $dirsystem/scrobble ]] && echo true )
 
 ########
 	status='
@@ -65,6 +66,7 @@ fi
 , "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
+, "scrobble"       : '$scrobble'
 , "stream"         : false
 , "updateaddons"   : '$updateaddons'
 , "updating_db"    : '$updating_db'

@@ -39,7 +39,7 @@ var cmd = {
 	, timesyncd    : [ 'systemctl status systemd-timesyncd' ]
 	, wlan         : [ networkssh +'ifconfigget', -1 ]
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
 function status( id, refresh ) {
 	var $el = $( '#code'+ id );
@@ -56,7 +56,6 @@ function status( id, refresh ) {
 			, snapserver   : 'snapcast'
 		}
 		var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
-		if ( id === 'mpdscribble' ) id+= '@mpd';
 		var command = [ 'cmd', 'statuspkg', pkgname, id ];
 		var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
 		var systemctl = 1;

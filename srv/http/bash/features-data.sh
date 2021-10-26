@@ -7,7 +7,6 @@ exists() {
 }
 
 readarray -t lines <<< $( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- )
-mpdscribbleconf="[ \"${lines[0]}\", \"${lines[1]}\" ]"
 
 data+='
   "page"             : "features"
@@ -16,8 +15,7 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
-, "mpdscribble"      : '$( systemctl -q is-active mpdscribble@mpd && echo true )'
-, "mpdscribbleconf"  : '$mpdscribbleconf'
+, "scrobble"         : '$( [[ -e $dirsystem/scribble ]] && echo true )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then

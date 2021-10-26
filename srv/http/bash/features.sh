@@ -174,29 +174,37 @@ loginset )
 	pushRefresh
 	pushstream display '{"submenu":"lock","value":true}'
 	;;
-mpdscribbledisable )
-	systemctl disable --now mpdscribble@mpd
-	pushRefresh
-	;;
-mpdscribbleset )
-	user=${args[1]}
-	pwd=${args[2]}
-	sed -i -e "s/^\(username =\).*/\1 $user/
-	" -e "s/^\(password =\).*/\1 $pwd/
-	" /etc/mpdscribble.conf
-	if systemctl restart mpdscribble@mpd; then
-		systemctl enable mpdscribble@mpd
-	else
-		systemctl disable mpdscribble@mpd
-		echo -1
-	fi
-	pushRefresh
-	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is Off' && xset dpms force on || xset dpms force off
+	;;
+scrobbledisable )
+	rm -f $dirsystem/scrobble
+	pushRefresh
+	;;
+scrobbleset )
+	username=${args[1]}
+	password=${args[2]}
+	apikey=$apikey
+	sharedsecret=$sharedsecret
+	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
+				| iconv -t utf8 \
+				| md5sum \
+				| cut -c1-32 )
+	reponse=$( curl -sX POST \
+		--data-urlencode "api_key=$apikey" \
+		--data-urlencode "method=auth.getMobileSession" \
+		--data-urlencode "password=$password" \
+		--data-urlencode "username=$username" \
+		--data-urlencode "api_sig=$apisig" \
+		--data-urlencode "format=json" \
+		http://ws.audioscrobbler.com/2.0 )
+	[[ $reponse =~ error ]] && echo $reponse && exit
+		
+	echo $reponse | sed 's/.*key":"//; s/".*//' > $dirsystem/scrobble
+	pushRefresh
 	;;
 shairport-sync | spotifyd | upmpdcli )
 	service=${args[0]}
