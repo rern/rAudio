@@ -1386,9 +1386,6 @@ function setCoverart() {
 	}
 }
 function setInfo() {
-	G.prevartist = $( '#artist' ).text();
-	G.prevtitle = $( '#title' ).text();
-	G.prevalbum = $( '#album' ).text();
 	if ( !G.status.stream ) {
 		$( '#artist' ).text( G.status.Artist );
 		$( '#title' )
@@ -1423,9 +1420,9 @@ function setInfo() {
 function setInfoScroll() {
 	var wW = document.body.clientWidth;
 	if ( wW === G.wW
-		&& $( '#artist' ).text() === G.prevartist
-		&& $( '#title' ).text() === G.prevtitle
-		&& $( '#album' ).text() === G.prevalbum
+		&& $( '#artist' ).text() === G.prevstatus.Artist
+		&& $( '#title' ).text() === G.prevstatus.Title
+		&& $( '#album' ).text() === G.prevstatus.Album
 	) return // suppress multiple fires, skip if same width and same data
 	
 	G.wW = wW;
