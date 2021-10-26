@@ -75,22 +75,18 @@ function changedStatus() { // onwhileplay, scrobble
 	}
 }
 function refreshStatus( data ) {
-	if ( G.display.onwhileplay || G.status.scrobble ) {
-		G.prevstatus = {
-			  Artist  : G.status.Artist
-			, Title   : G.status.Title
-			, Album   : G.status.Album
-			, elapsed : G.status.elapsed
-			, state   : G.status.state
-		}
-		if ( G.status.scrobble
-			&& G.status.Time > 30
-			&& ( G.status.elapsed > 240 || ( G.status.elapsed / G.status.Time ) > 0.5 )
-		) {
-			G.scrobble = 1;
-		} else {
-			G.scrobble = 0;
-		}
+	G.prevstatus = {}
+	if ( G.display.onwhileplay ) G.prevstatus.state = G.status.state;
+	var time = G.status.Time;
+	var elapsed = G.status.elapsed;
+	if ( G.status.scrobble && time > 30 && ( elapsed > 240 || ( elapsed / time ) > 0.5 ) ) {
+		G.scrobble = 1;
+		G.prevstatus.Artist = G.status.Artist
+		G.prevstatus.Title = G.status.Title
+		G.prevstatus.Album = G.status.Album
+		G.prevstatus.elapsed = G.status.elapsed
+	} else {
+		G.scrobble = 0;
 	}
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
