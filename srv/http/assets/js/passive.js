@@ -543,12 +543,8 @@ function psRestore( data ) {
 	}
 }
 function psSpotify( data ) {
-	if ( G.status.player !== 'spotify' ) {
-		G.status.player = 'spotify';
-		displayBottom();
-	}
-	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	refreshStatus( data );
+	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	setButtonControl();
 	if ( G.playback ) renderPlayback();
 	if ( 'pause' in data ) {

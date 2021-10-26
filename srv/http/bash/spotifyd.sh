@@ -61,7 +61,8 @@ fi
 
 ########
 status='
-  "state"    : "'$( cat $file-state )'"'
+  "player"   : "spotify"
+, "state"    : "'$( cat $file-state )'"'
 
 trackidfile=$file-trackid
 if [[ $( cat $trackidfile 2> /dev/null ) == $TRACK_ID ]]; then
