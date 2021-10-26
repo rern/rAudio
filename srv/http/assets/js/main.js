@@ -431,7 +431,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 							$( '#bio' ).removeClass( 'hide' );
 						}
 					} else if ( $this.hasClass( 'scrobble' ) ) {
-						bash( [ 'scrobble', artist, title, G.status.Album, 0 ], function( response ) {
+						bash( [ 'scrobble', artist, title, G.status.Album, 60 ], function( response ) {
 							if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
 							bannerHide();
 						}, 'json' );
