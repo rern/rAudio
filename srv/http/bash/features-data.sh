@@ -6,8 +6,6 @@ exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
 
-readarray -t lines <<< $( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- )
-
 data+='
   "page"             : "features"
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -15,7 +13,7 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
-, "scrobble"         : '$( [[ -e $dirsystem/scribble ]] && echo true )'
+, "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
