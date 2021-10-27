@@ -374,13 +374,13 @@ input:checked + .switchlabel:after {
 .switchlabel:active:after {
 	width: 40px;
 }
-input:checked.disabled + .switchlabel:after {
+input:checked:disabled + .switchlabel:after {
 	background-color: var( --cmd );
 }
-input.disabled + .switchlabel {
+input:disabled + .switchlabel {
 	background-color: var( --cga );
 }
-input.disabled + .switchlabel:after {
+input:disabled + .switchlabel:after {
 	background-color: var( --cgd );
 }
 .setting,
@@ -702,6 +702,9 @@ input.disabled + .switchlabel:after {
 	#help,
 	#menu {
 		cursor: pointer;
+	}
+	input:disabled {
+		cursor: not-allowed !important;
 	}
 	.switchlabel.focus {
 		box-shadow: 0 0 2px 2px var( --cg75 ) !important;

@@ -268,7 +268,6 @@ HTML
 		  'label'    => 'HDMI Hotplug'
 		, 'id'       => 'hdmihotplug'
 		, 'icon'     => 'hdmi'
-		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
 Plug and Play HDMI devices. No reboot needed if plugged after boot.
 HTML
@@ -281,7 +280,6 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
-		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Backup all settings and Library database:
  • Settings
@@ -296,7 +294,6 @@ HTML
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 HTML

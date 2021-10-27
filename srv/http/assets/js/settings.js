@@ -415,7 +415,14 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
+	if ( id === 'backup' || id === 'restore' ) return
+	
 	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		$this.prop( 'checked', !checked );
+		return
+	}
+	
 	var label = $this.data( 'label' );
 	var icon = $this.data( 'icon' );
 	var checked = $this.prop( 'checked' );
