@@ -256,6 +256,7 @@ function renderPage( list ) {
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
+	$( '#lyricsembedded' ).prop( 'checked', G.lyricsembedded );
 	$( '#smb' ).prop( 'checked', G.smb );
 	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
 	$( '#scrobble' ).prop( 'checked', G.scrobble );

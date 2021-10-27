@@ -600,7 +600,15 @@ lyrics )
 		echo -e "$data" > "$lyricsfile"
 	elif [[ $cmd == delete ]]; then
 		rm "$lyricsfile"
+	elif [[ -e "$lyricsfile" ]]; then
+		cat "$lyricsfile"
 	else
+		if [[ -e $dirsystem/lyricsembedded ]]; then
+			file=$cmd
+			lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
+			[[ -n $lyrics ]] && echo "$lyrics" && exit
+		fi
+		
 		artist=$( echo $artist | sed 's/^A \|^The \|\///g' )
 		title=${title//\/}
 		query=$( echo $artist/$title \
@@ -613,20 +621,6 @@ lyrics )
 				| grep -v '^<' \
 				| tee "$lyricsfile"
 		fi
-	fi
-	;;
-lyricsexist )
-	artist=${args[1]}
-	title=${args[2]}
-	file=${args[3]}
-	name="$artist - $title"
-	name=${name//\/}
-	lyricsfile="$dirdata/lyrics/${name,,}.txt"
-	if [[ -e "$lyricsfile" ]]; then
-		cat "$lyricsfile"
-	else
-		kid3-cli -c "select \"$file\"" \
-				 -c "get lyrics"
 	fi
 	;;
 mpcoption )

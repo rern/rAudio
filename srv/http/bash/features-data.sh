@@ -13,6 +13,7 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
+, "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd

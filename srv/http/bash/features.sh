@@ -174,6 +174,10 @@ loginset )
 	pushRefresh
 	pushstream display '{"submenu":"lock","value":true}'
 	;;
+lyricsembedded )
+	[[ ${args[1]} == true ]] && touch $dirsystem/lyricsembedded || rm -f $dirsystem/lyricsembedded
+	pushRefresh
+	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi

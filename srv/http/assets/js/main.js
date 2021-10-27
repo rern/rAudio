@@ -365,27 +365,25 @@ $( '#artist, #guide-bio' ).click( function() {
 } );
 $( '#title, #guide-lyrics' ).click( function() {
 	var artist = $( '#artist' ).text();
-	if ( artist === $( '#lyricsartist' ).text() && title === $( '#lyricstitle' ).text() && G.lyrics ) {
+	var title = $( '#title' ).text();
+	if ( G.lyrics
+		&& !G.status.webradio
+		&& artist === $( '#lyricsartist' ).text()
+		&& title === $( '#lyricstitle' ).text()
+	) {
 		lyricsShow( 'current' );
 		return
 	}
 	
 	artist = artist.replace( /(["`])/g, '\\$1' );
-	var title = $( '#title' ).text().replace( /(["`])/g, '\\$1' );
+	title = title.replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
 	var src = $( '#coverart' ).attr( 'src' );
 	G.lyricsCover = src.slice( 0, 7 ) === '/asses' ? '' : src;
-	bash( [ 'lyricsexist', artist, title, file ], function( data ) {
-		if ( data ) {
-			G.lyricsTitle = title;
-			G.lyricsArtist = artist;
-			lyricsShow( data );
-			return
-		}
-		var noparen = title.slice( -1 ) !== ')';
-		var titlenoparen = title.replace( / $|\(.*$/, '' );
-		var paren = title.replace( /^.*\(/, '(' );
-		var content = `\
+	var noparen = title.slice( -1 ) !== ')';
+	var titlenoparen = title.replace( / $|\(.*$/, '' );
+	var paren = title.replace( /^.*\(/, '(' );
+	var content = `\
 <table>
 <tr><td><i class="fa fa-artist wh"></i></td><td><input type="text"></td></tr>
 <tr><td><i class="fa fa-music wh"></i></td><td><input type="text"></td></tr>
@@ -397,52 +395,51 @@ $( '#title, #guide-lyrics' ).click( function() {
 	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
 	</td></tr>
 </table>`;
-		info( {
-			  icon        : 'lyrics'
-			, title       : 'Lyrics'
-			, content     : content
-			, boxwidth    : 320
-			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
-			, beforeshow  : function() {
-				if ( noparen ) {
-					$( '#paren' ).addClass( 'hide' );
-				} else {
-					$( '#infoContent input' ).change( function() {
-						$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
-					} );
-				}
-				$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble );
-				$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
-					var values = infoVal();
-					var artist = values[ 0 ]
-					var title = values[ 1 ]
-					var $this = $( this );
-					if ( $this.hasClass( 'lyrics' ) ) {
-						G.lyricsArtist = artist;
-						G.lyricsTitle = title;
-						bash( [ 'lyrics', artist, title ], function( data ) {
-							lyricsShow( data );
-						} );
-						banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
-					} else if ( $this.hasClass( 'bio' ) ) {
-						if ( $( '#bio legend' ).text() != G.status.Artist ) {
-							getBio( artist );
-						} else {
-							$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
-							$( '#bio' ).removeClass( 'hide' );
-						}
-					} else if ( $this.hasClass( 'scrobble' ) ) {
-						bash( [ 'scrobble', artist, title, G.status.Album, 60 ], function( response ) {
-							if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
-							bannerHide();
-						}, 'json' );
-						banner( 'Scrobble', 'Send ...', 'lastfm blink' );
-					}
-					$( '#infoX' ).click();
+	info( {
+		  icon        : 'lyrics'
+		, title       : 'Lyrics'
+		, content     : content
+		, boxwidth    : 320
+		, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
+		, beforeshow  : function() {
+			if ( noparen ) {
+				$( '#paren' ).addClass( 'hide' );
+			} else {
+				$( '#infoContent input' ).change( function() {
+					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			, okno        : 1
-		} );
+			$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble );
+			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
+				var values = infoVal();
+				var artist = values[ 0 ]
+				var title = values[ 1 ]
+				var $this = $( this );
+				if ( $this.hasClass( 'lyrics' ) ) {
+					G.lyricsArtist = artist;
+					G.lyricsTitle = title;
+					bash( [ 'lyrics', artist, title, file ], function( data ) {
+						lyricsShow( data );
+					} );
+					banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
+				} else if ( $this.hasClass( 'bio' ) ) {
+					if ( $( '#bio legend' ).text() != G.status.Artist ) {
+						getBio( artist );
+					} else {
+						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
+						$( '#bio' ).removeClass( 'hide' );
+					}
+				} else if ( $this.hasClass( 'scrobble' ) ) {
+					bash( [ 'scrobble', artist, title, G.status.Album, 60 ], function( response ) {
+						if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
+						bannerHide();
+					}, 'json' );
+					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
+				}
+				$( '#infoX' ).click();
+			} );
+		}
+		, okno        : 1
 	} );
 } );
 $( '#album, #guide-album' ).click( function() {

@@ -110,6 +110,16 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
+		  'label' => 'Embedded Lyrics'
+		, 'id'    => 'lyricsembedded'
+		, 'icon'  => 'lyrics'
+		, 'help'  => <<< HTML
+ • Search embedded lyrics in local files (0.5 - 1 second for each song)
+ • Search online if not found.
+ • Enable if certain that most lyrics are embedded.
+HTML
+	]
+	, [
 		  'label'    => 'File Sharing'
 		, 'id'       => 'smb'
 		, 'sublabel' => 'smb'
