@@ -326,7 +326,9 @@ function info( json ) {
 				+'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 				+ ( O.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
-		$( '#infoOk' ).html( O.fileoklabel );
+		$( '#infoOk' )
+			.html( O.fileoklabel )
+			.addClass( 'hide' );
 		$( '#infoFileLabel' ).click( function() {
 			$( '#infoFileBox' ).click();
 		} );
