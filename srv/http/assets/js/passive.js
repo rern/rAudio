@@ -60,25 +60,26 @@ function bookmarkCover( url, path ) {
 		}
 	} );
 }
-function changedStatus() { // onwhileplay, scrobble
-	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.prev.state === 'play' ? '-dpms' : '+dpms' ] );
-	if ( G.scrobble ) {
-		bash( [ 'scrobble', G.prev.Artist, G.prev.Title, G.prev.Album, G.prev.elapsed ], function( response ) {
-			if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
-		}, 'json' );
-	}
-}
 function refreshStatus( data ) {
-	G.prev = {};
-	[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
-		G.prev[ key ] = G.status[ key ];
-	} );
+	if ( G.status.scrobble ) {
+		G.prev = {};
+		[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
+			G.prev[ key ] = G.status[ key ];
+		} );
+	} else if ( G.display.onwhileplay ) {
+		G.prev = { state: G.status.state }
+	}
+	
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
-	G.scrobble = 0;
+	
+	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+	setButtonControl();
+	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 	if ( !G.status.scrobble || G.status.webradio ) return
 	
+	G.scrobble = 0;
 	if ( G.prev.elapsed
 		&& G.prev.Artist
 		&& G.prev.Title
@@ -94,6 +95,11 @@ function refreshStatus( data ) {
 			) G.scrobble = 1;
 		}
 	}
+	if ( !G.scrobble ) return
+	
+	bash( [ 'scrobble', G.prev.Artist, G.prev.Title, G.prev.Album, G.prev.elapsed ], function( response ) {
+		if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
+	}, 'json' );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -160,10 +166,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 }
 function psAirplay( data ) {
 	refreshStatus( data );
-	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
-	setButtonControl();
 	if ( G.playback ) renderPlayback();
-	changedStatus();
 }
 function psBtClient( connected ) {
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
@@ -349,8 +352,6 @@ function psMpdPlayer( data ) {
 			delete data.volume;
 		}
 		refreshStatus( data );
-		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
-		setButtonControl();
 		if ( G.playback ) {
 			displayPlayback();
 			renderPlayback();
@@ -358,19 +359,16 @@ function psMpdPlayer( data ) {
 			setPlaylistScroll();
 		}
 		bannerHide();
-		changedStatus();
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
 	refreshStatus( data );
 	if ( G.playback ) {
-		setButtonControl();
 		setInfo();
 		setCoverart();
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}
-	changedStatus();
 }	
 function psMpdUpdate( data ) {
 	var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
@@ -548,9 +546,6 @@ function psRestore( data ) {
 function psSpotify( data ) {
 	refreshStatus( data );
 	if ( G.playback ) renderPlayback();
-	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
-	setButtonControl();
-	changedStatus();
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
