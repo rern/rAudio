@@ -563,6 +563,13 @@ ignoredir )
 	mpc update "$mpdpath" #1 get .mpdignore into database
 	mpc update "$mpdpath" #2 after .mpdignore was in database
 	;;
+lcdcharrefresh )
+	killall lcdchar.py &> /dev/null
+	readarray -t data <<< $( $dirbash/status.sh \
+								| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
+								| sed 's/null//' )
+	$dirbash/lcdchar.py "${data[@]}" &
+	;;
 librandom )
 	enable=${args[1]}
 	if [[ $enable == false ]]; then

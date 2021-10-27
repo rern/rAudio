@@ -23,11 +23,10 @@ control=$( amixer -c $card scontents \
 			| cut -d"'" -f2 )
 
 cat /tmp/shairport-sync-metadata | while read line; do
-	code=
-	# remove Artist+Genre line
+	# no value / double values > [next line]
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue
 	
-	# var: (none) - get matched hex code line
+	##### code ##### matched hex code > [next line] (is value line)
 	[[ $line =~ '>61736172<' ]] && code=Artist   && continue
 	[[ $line =~ '>6d696e6d<' ]] && code=Title    && continue
 	[[ $line =~ '>6173616c<' ]] && code=Album    && continue
@@ -35,24 +34,23 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ '>70726772<' ]] && code=Time     && timestamp=$( date +%s%3N ) && continue
 	[[ $line =~ '>70766f6c<' ]] && code=volume   && continue
 	
-	# var: code - next line if no code yet
+	# no line with code found yet > [next line]
 	[[ -z $code ]] && continue
 	
-	base64=${line/<\/data><\/item>}
-	base64=$( echo $base64 | tr -d '\000' ) # remove null bytes
-	# null or not base64 string - reset code= and next line
+	##### value #### base64 decode
+	base64=$( echo ${line/<\/data><\/item>} | tr -d '\000' ) # remove tags and null bytes
+	# null or not base64 string - reset code= > [next line]
 	if [[ -z $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
-		code= # reset code= and start over
+		code=
 		continue
 	fi
 	
-	# var: code base64 - make json for curl
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirshm/airplay-coverart.jpg
 		data=/data/shm/airplay-coverart.$( date +%s ).jpg
 		pushstreamAirplay '{"coverart":"'$data'","file":""}'
 	else
-		data=$( echo $base64 | base64 --decode 2> /dev/null )
+		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == Time ]]; then # format: start/elapsed/end @44100
 			start=${data/\/*}
 			current=$( echo $data | cut -d/ -f2 )
@@ -79,11 +77,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		
 		pushstreamAirplay "{$status}"
 	fi
-	if [[ -e /srv/http/data/system/lcdchar ]]; then
-		killall lcdchar.py &> /dev/null
-		readarray -t data <<< $( $dirbash/status.sh \
-									| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
-									| sed 's/null//' )
-		$dirbash/lcdchar.py "${data[@]}" &
-	fi
+	[[ -e /srv/http/data/system/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
+	code= # reset after $code + $data were complete
 done

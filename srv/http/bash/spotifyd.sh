@@ -111,10 +111,4 @@ fi
 
 pushstreamSpotify "{$status}"
 
-if [[ -e /srv/http/data/system/lcdchar ]]; then
-	readarray -t data <<< $( echo "{$status}" \
-								| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
-								| sed 's/^$\|null/false/' )
-	killall lcdchar.py &> /dev/null
-	$dirbash/lcdchar.py "${data[@]}" &
-fi
+[[ -e /srv/http/data/system/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
