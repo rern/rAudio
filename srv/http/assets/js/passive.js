@@ -79,7 +79,10 @@ function refreshStatus( data ) {
 		if ( data.state === 'stop' && elapsed ) {
 			if ( Time > 30 && ( ( elapsed / Time ) > 0.5 || elapsed > 240 ) ) G.scrobble = 1;
 		} else {
-			if ( status.Artist !== Artist || status.Title !== Title || status.Album !== Album ) G.scrobble = 1;
+			if ( ( status.Artist && status.Artist !== Artist )
+				|| ( status.Title && status.Title !== Title )
+				|| ( status.Album && status.Album !== Album )
+			) G.scrobble = 1;
 		}
 	}
 	$.each( data, function( key, value ) {
