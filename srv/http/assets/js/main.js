@@ -2,6 +2,7 @@ var G = {
 	  addplay       : 0
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
+	, sharedsecret  : '390372d3a1f60d4030e2a612260060e0'
 	, bookmarkedit  : 0
 	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0

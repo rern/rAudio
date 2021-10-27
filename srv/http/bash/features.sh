@@ -187,8 +187,9 @@ scrobbledisable )
 scrobbleset )
 	username=${args[1]}
 	password=${args[2]}
-	apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
-	sharedsecret=390372d3a1f60d4030e2a612260060e0
+	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	apikey=${keys[0]}
+	sharedsecret=${keys[1]}
 	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
 				| iconv -t utf8 \
 				| md5sum \

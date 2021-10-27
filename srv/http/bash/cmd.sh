@@ -897,41 +897,29 @@ scrobble )
 	elapsed=${args[4]}
 	[[ -z $elapsed || $elapsed == false ]] && elspased=60
 	timestamp=$(( $( date +%s ) - $elapsed ))
-	apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
-	sharedsecret=390372d3a1f60d4030e2a612260060e0
+	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	apikey=${keys[0]}
+	sharedsecret=${keys[1]}
 	sk=$( cat $dirsystem/scrobble )
 	if [[ -n $album ]]; then
-		apisig=$( echo -n "album${album}api_key${apikey}artist${artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${track}${sharedsecret}" \
-					| iconv -t utf8 \
-					| md5sum \
-					| cut -c1-32 )
-		reponse=$( curl -sX POST \
-			--data-urlencode "album=$album" \
-			--data "api_key=$apikey" \
-			--data-urlencode "artist=$artist" \
-			--data "method=track.scrobble" \
-			--data "sk=$sk" \
-			--data "timestamp=$timestamp" \
-			--data-urlencode "track=$track" \
-			--data "api_sig=$apisig" \
-			--data "format=json" \
-			http://ws.audioscrobbler.com/2.0 )
-	else
-		apisig=$( echo -n "api_key${apikey}artist${artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${track}${sharedsecret}" \
-					| iconv -t utf8 \
-					| md5sum \
-					| cut -c1-32 )
-		reponse=$( curl -sX POST \
-			--data "api_key=$apikey" \
-			--data-urlencode "artist=$artist" \
-			--data "method=track.scrobble" \
-			--data "sk=$sk" \
-			--data "timestamp=$timestamp" \
-			--data-urlencode "track=$track" \
-			--data "api_sig=$apisig" \
-			--data "format=json" \
-			http://ws.audioscrobbler.com/2.0 )
+		sigalbum="album${album}"
+		dataalbum="album=$album"
 	fi
+	apisig=$( echo -n "${sigalbum}api_key${apikey}artist${artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${track}${sharedsecret}" \
+				| iconv -t utf8 \
+				| md5sum \
+				| cut -c1-32 )
+	reponse=$( curl -sX POST \
+		--data-urlencode "$dataalbum" \
+		--data "api_key=$apikey" \
+		--data-urlencode "artist=$artist" \
+		--data "method=track.scrobble" \
+		--data "sk=$sk" \
+		--data "timestamp=$timestamp" \
+		--data-urlencode "track=$track" \
+		--data "api_sig=$apisig" \
+		--data "format=json" \
+		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse
 	;;
 stationcoverreset )
