@@ -60,7 +60,7 @@ function bookmarkCover( url, path ) {
 		}
 	} );
 }
-function refreshStatus( data ) {
+function statusUpdate( data ) {
 	if ( G.status.scrobble ) {
 		G.prev = {};
 		[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
@@ -163,7 +163,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 	}
 }
 function psAirplay( data ) {
-	refreshStatus( data );
+	statusUpdate( data );
 	if ( G.playback ) renderPlayback();
 }
 function psBtClient( connected ) {
@@ -349,7 +349,7 @@ function psMpdPlayer( data ) {
 			delete data.control;
 			delete data.volume;
 		}
-		refreshStatus( data );
+		statusUpdate( data );
 		if ( G.playback ) {
 			displayPlayback();
 			renderPlayback();
@@ -360,7 +360,7 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
-	refreshStatus( data );
+	statusUpdate( data );
 	if ( G.playback ) {
 		setInfo();
 		setCoverart();
@@ -542,7 +542,7 @@ function psRestore( data ) {
 	}
 }
 function psSpotify( data ) {
-	refreshStatus( data );
+	statusUpdate( data );
 	if ( G.playback ) renderPlayback();
 }
 function psVolume( data ) {
