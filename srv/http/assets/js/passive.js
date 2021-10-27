@@ -66,16 +66,14 @@ function refreshStatus( data ) {
 		[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
 			G.prev[ key ] = G.status[ key ];
 		} );
-	} else if ( G.display.onwhileplay ) {
-		G.prev = { state: G.status.state }
 	}
-	
+	// --------------------------------------------------------------------
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
-	
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
+	// --------------------------------------------------------------------
 	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 	if ( !G.status.scrobble || G.status.webradio ) return
 	
