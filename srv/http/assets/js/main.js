@@ -449,7 +449,15 @@ $( '#album, #guide-album' ).click( function() {
 	window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
 } );
 $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
-	bash( '/srv/http/bash/audiocd.sh ejectwithicon' );
+	info( {
+		  icon    : 'audiocd'
+		, title   : 'Audio CD'
+		, oklabel : '<i class="fa fa-minus-circle"></i>Eject'
+		, okcolor : red
+		, ok      : function() {
+			bash( '/srv/http/bash/audiocd.sh ejectwithicon' );
+		}
+	} );
 } );
 $( '#elapsed' ).click( function() {
 	G.status.state === 'play' ? $( '#pause' ).click() : $( '#play' ).click();
