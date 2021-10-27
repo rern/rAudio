@@ -97,20 +97,28 @@ $( '.disconnect' ).click( function() {
 		var list = G.listbt[ G.li.index() ]
 		var name = list.name;
 		var icon = 'bluetooth';
-	} else {
-		var name = G.li.data( 'ssid' );
-		var icon = 'wifi';
+		notify( list.name, 'Disconnect ...', 'bluetooth' );
+		bash( [ 'btdisconnect' ] )
+		return
 	}
+		
+	var name = G.li.data( 'ssid' );
+	var icon = 'wifi';
+	if ( G.listeth.ip ) {
+		notify( name, 'Disconnect ...', icon );
+		bash( [ 'disconnect' ] )
+		return
+	}
+	
 	info( {
 		  icon    : icon
 		, title   : name
-		, message : 'Disconnect?'
-		, oklabel : '<i class="fa fa-times"></i>OK'
+		, message : '<i class="fa fa-warning"></i> No network connections after this.'
+		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
-			clearTimeout( G.timeoutScan );
 			notify( name, 'Disconnect ...', icon );
-			bash( [ icon === 'wifi' ? 'disconnect' : 'btdisconnect' ] )
+			bash( [ 'disconnect' ] )
 		}
 	} );
 } );
@@ -124,21 +132,30 @@ $( '.forget' ).click( function() {
 		var name = list.name;
 		var mac = list.mac;
 		var icon = 'bluetooth';
-	} else {
-		var name = G.li.data( 'ssid' );
-		var icon = 'wifi';
-		if ( !$( '#listlan li' ).data( 'ip' ) ) connectedlan = '<i class="fa fa-warning red"></i> Network connection will be lost.<br>';
+		info( {
+			  icon    : icon
+			, title   : name
+			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
+			, okcolor : red
+			, ok      : function() {
+				notify( name, 'Forget ...', icon );
+				bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
+			}
+		} );
+		return
 	}
+	
+	var name = G.li.data( 'ssid' );
+	var icon = 'wifi';
 	info( {
 		  icon    : icon
 		, title   : name
-		, message : connectedlan + 'Forget?'
-		, oklabel : '<i class="fa fa-minus-circle"></i>OK'
+		, message : G.listeth.ip ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
-			clearTimeout( G.timeoutScan );
 			notify( name, 'Forget ...', icon );
-			icon === 'wifi' ? bash( [ 'profileremove', name ] ) : bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
+			bash( [ 'profileremove', name ] );
 		}
 	} );
 } );
