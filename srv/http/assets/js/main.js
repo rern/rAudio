@@ -391,10 +391,10 @@ $( '#title, #guide-lyrics' ).click( function() {
 <tr><td><i class="fa fa-music wh"></i></td><td><input type="text"></td></tr>
 <tr id="paren"><td></td><td><label><input type="checkbox"><gr>Include</gr> ${ paren }</label></td></tr>
 <tr style="height: 10px;"></tr>
-<tr><td colspan="2" class="gr">
-	<span class="lyrics btnbottom"><i class="fa fa-lyrics"></i> Lyrics</span>
-	<span class="bio btnbottom">&emsp;<i class="fa fa-bio"></i> Bio</span>
-	<span class="scrobble btnbottom">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
+<tr><td colspan="2" class="btnbottom">
+	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
+	<span class="bio">&emsp;<i class="fa fa-bio"></i> Bio</span>
+	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
 	</td></tr>
 </table>`;
 		info( {
@@ -412,7 +412,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 					} );
 				}
 				$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble );
-				$( '#infoContent' ).on( 'click', '.btnbottom', function() {
+				$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 					var values = infoVal();
 					var artist = values[ 0 ]
 					var title = values[ 1 ]
