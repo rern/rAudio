@@ -126,7 +126,14 @@ HTML
 		, 'icon'     => 'lastfm'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-<a href="https://github.com/MusicPlayerDaemon/mpdscribble">mpdscribble</a> - Automatically send listened music data to Last.fm for tracking.
+Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
+ • All played tracks:
+ &emsp; • Longer than 30 seconds
+ &emsp; • Played more than half longer than 4 minutes of that track
+ • Tracks by all renderers are supported as well
+ • WebRadio tracks:
+ &emsp; • Normally not scrobble
+ &emsp; • To scrobble a track: Tap track title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [
