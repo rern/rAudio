@@ -61,27 +61,33 @@ function bookmarkCover( url, path ) {
 	} );
 }
 function changedStatus() { // onwhileplay, scrobble
-	var status = G.prevstatus;
-	if ( G.display.onwhileplay ) bash( [ 'screenoff', status.state === 'play' ? '-dpms' : '+dpms' ] );
+	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.prev.state === 'play' ? '-dpms' : '+dpms' ] );
 	if ( G.scrobble ) {
-		bash( [ 'scrobble', status.Artist, status.Title, status.Album, status.elapsed ], function( response ) {
+		bash( [ 'scrobble', G.prev.Artist, G.prev.Title, G.prev.Album, G.prev.elapsed ], function( response ) {
 			if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
 		}, 'json' );
 	}
 }
 function refreshStatus( data ) {
-	G.prevstatus = {};
-	[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( k ) {
-		this[ k ] = G.prevstatus[ k ] = G.status[ k ];
+	G.prev = {};
+	[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
+		G.prev[ key ] = G.status[ key ];
 	} );
 	G.scrobble = 0;
-	if ( G.status.scrobble && !G.status.webradio && Artist && Title ) {
-		if ( data.state === 'stop' && elapsed ) {
-			if ( Time > 30 && ( ( elapsed / Time ) > 0.5 || elapsed > 240 ) ) G.scrobble = 1;
+	if ( G.status.scrobble
+		&& !G.status.webradio
+		&& G.prev.elapsed
+		&& G.prev.Artist
+		&& G.prev.Title
+	) {
+		if ( 'state' in data && data.state === 'stop' ) {
+			if ( G.prev.Time > 30
+				&& ( ( G.prev.elapsed / G.prev.Time ) > 0.5 || G.prev.elapsed > 240 )
+			) G.scrobble = 1;
 		} else {
-			if ( ( status.Artist && status.Artist !== Artist )
-				|| ( status.Title && status.Title !== Title )
-				|| ( status.Album && status.Album !== Album )
+			if ( ( 'Artist' in data && data.Artist !== G.prev.Artist )
+				|| ( 'Title' in data && data.Title !== G.prev.Title )
+				|| ( 'Album' in data && data.Album !== G.prev.Album )
 			) G.scrobble = 1;
 		}
 	}
