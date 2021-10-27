@@ -51,7 +51,7 @@ else
 	if [[ -e $file-start ]]; then
 		start=$( cat $file-start )
 		elapsed=$(( elapsed + timestamp - start ))
-		pushstreamSpotify '{"pause":'$(( ( elapsed + 500 ) / 1000 ))'}'
+		pushstreamSpotify '{"state":"pause","elapsed":'$(( ( elapsed + 500 ) / 1000 ))'}'
 		echo $elapsed > $file-elapsed
 		exit
 	else

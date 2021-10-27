@@ -73,27 +73,27 @@ function refreshStatus( data ) {
 	[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
 		G.prev[ key ] = G.status[ key ];
 	} );
+	$.each( data, function( key, value ) {
+		G.status[ key ] = value;
+	} );
 	G.scrobble = 0;
-	if ( G.status.scrobble
-		&& !G.status.webradio
-		&& G.prev.elapsed
+	if ( !G.status.scrobble || G.status.webradio ) return
+	
+	if ( G.prev.elapsed
 		&& G.prev.Artist
 		&& G.prev.Title
 	) {
-		if ( 'state' in data && data.state === 'stop' ) {
+		if ( G.status.state === 'stop' ) {
 			if ( G.prev.Time > 30
 				&& ( ( G.prev.elapsed / G.prev.Time ) > 0.5 || G.prev.elapsed > 240 )
 			) G.scrobble = 1;
 		} else {
-			if ( ( 'Artist' in data && data.Artist !== G.prev.Artist )
-				|| ( 'Title' in data && data.Title !== G.prev.Title )
-				|| ( 'Album' in data && data.Album !== G.prev.Album )
+			if ( G.status.Artist !== G.prev.Artist
+				|| G.status.Title !== G.prev.Title
+				|| G.status.Album !== G.prev.Album
 			) G.scrobble = 1;
 		}
 	}
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -547,13 +547,9 @@ function psRestore( data ) {
 }
 function psSpotify( data ) {
 	refreshStatus( data );
+	if ( G.playback ) renderPlayback();
 	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
 	setButtonControl();
-	if ( G.playback ) renderPlayback();
-	if ( 'pause' in data ) {
-		G.status.state = 'pause'
-		G.status.elapsed = data.pause;
-	}
 	changedStatus();
 }
 function psVolume( data ) {
