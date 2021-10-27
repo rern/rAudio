@@ -19,6 +19,7 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'setting'  => true
+		, 'disabled' => 'SnapServer is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
@@ -66,6 +67,7 @@ HTML
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapserver'
+		, 'disabled' => 'SnapClient is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 Control clients:
@@ -86,6 +88,7 @@ $body = [
 		, 'icon'     => 'accesspoint'
 		, 'status'   => 'hostapd'
 		, 'setting'  => true
+		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
 This should be used only when necessary.

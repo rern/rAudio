@@ -65,7 +65,9 @@ $body = [
 		, 'input'       => 'HTML'       // alternative - if not switch
 		, 'setting'     => true         // true = common - setting before enable
 		                                // 'self' = self trigger setting
+		                                // 'none' = no setting - self trigger script
 		, 'settingicon' => 'ICON'
+		, 'disable'     => 'MESSAGE'    // set data-diabled
 		, 'help'        => <<<html
 HELP - PHP heredoc
 html
@@ -113,6 +115,7 @@ function htmlSetting( $data ) {
 	$input = $data[ 'input' ] ?? '';
 	$setting = $data[ 'setting' ] ?? '';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
+	$disabled = $data[ 'disabled' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$html = '<div id="div'.$id.'"><div class="col-l';
 	$html.= $sublabel ? '' : ' single';
@@ -134,6 +137,7 @@ function htmlSetting( $data ) {
 	if ( !$input ) {
 		$html.= '<input type="checkbox" id="'.$id.'"';
 		$html.= $setting === 'self' || $setting === 'none' ? '' : ( $setting ? ' class="switch common"' : ' class="switch"' );
+		$html.= $disabled ? ' data-disabled="'.$disabled.'"' : '';
 		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;

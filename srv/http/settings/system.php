@@ -123,6 +123,7 @@ HTML
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
 		, 'setting'  => true
+		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
 Auto start Access Point - On failed connection or no router
 Country of Wi-Fi regulatory domain:
@@ -268,6 +269,7 @@ HTML
 		  'label'    => 'HDMI Hotplug'
 		, 'id'       => 'hdmihotplug'
 		, 'icon'     => 'hdmi'
+		, 'disabled' => 'TFT 3.5" LCD is currently enabled.'
 		, 'help'     => <<< HTML
 Plug and Play HDMI devices. No reboot needed if plugged after boot.
 HTML

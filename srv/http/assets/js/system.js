@@ -846,7 +846,6 @@ function renderPage( list ) {
 	$( '#wlan' )
 		.prop( 'checked', G.wlan )
 		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
-		.data( 'disabled', 'Wi-Fi is currently connected.' )
 		.parent().prev().toggleClass( 'single', !G.wlan );
 	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
 	$( '#i2smodule' ).val( 'none' );
@@ -876,8 +875,7 @@ function renderPage( list ) {
 	}
 	$( '#hdmihotplug' )
 		.prop( 'checked', G.hdmihotplug )
-		.toggleClass( 'disabled', G.lcd )
-		.data( 'disabled', 'TFT 3.5" LCD is currently enabled.' );
+		.toggleClass( 'disabled', G.lcd );
 	$( '#vuled' ).prop( 'checked', G.vuled );
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );
