@@ -1228,7 +1228,9 @@ function renderPlaylist( data ) {
 	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disable' );
 	$( '#button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
-	$( '#button-pl-librandom' ).toggleClass( 'bl', G.status.librandom );
+	$( '#button-pl-librandom' )
+		.toggleClass( 'bl', G.status.librandom )
+		.toggleClass( 'disabled', G.status.counts.song === 0 );
 	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		setPlaylistScroll();
 		imageLoad( 'pl-list' );
