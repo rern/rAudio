@@ -243,16 +243,19 @@ function renderPage( list ) {
 	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
 	$( '#snapclient' )
 		.prop( 'checked', G.snapclient )
-		.prop( 'checked', G.snapserver );
+		.toggleClass( 'disabled', G.snapserver )
+		.data( 'disabled', 'SnapServer is currently enabled' );
 	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
 	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 	$( '#streaming' ).prop( 'checked', G.streaming );
 	$( '#snapserver' )
 		.prop( 'checked', G.snapserver )
-		.prop( 'disabled', G.snapclient );
+		.toggleClass( 'disabled', G.snapclient )
+		.data( 'disabled', 'SnapSClient is currently enabled' );
 	$( '#hostapd' )
 		.prop( 'checked', G.hostapd )
-		.prop( 'disabled', G.wlanconnected );
+		.toggleClass( 'disabled', G.wlanconnected )
+		.data( 'disabled', 'Wi-Fi is currently connected' );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );

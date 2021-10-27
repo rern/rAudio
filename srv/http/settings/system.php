@@ -280,6 +280,7 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
+		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Backup all settings and Library database:
  • Settings
@@ -294,6 +295,7 @@ HTML
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
+		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 HTML

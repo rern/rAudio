@@ -415,17 +415,20 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
-	if ( id === 'backup' || id === 'restore' ) return
-	
 	var $this = $( this );
+	var checked = $this.prop( 'checked' );
+	var label = $this.data( 'label' );
+	var icon = $this.data( 'icon' );
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', !checked );
+		info( {
+			  icon    : icon
+			, title   : label
+			, message : $this.data( 'disabled' )
+		} );
 		return
 	}
 	
-	var label = $this.data( 'label' );
-	var icon = $this.data( 'icon' );
-	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'common' ) ) {
 		if ( checked ) {
 			$( '#setting-'+ id ).click();
