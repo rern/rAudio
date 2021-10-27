@@ -35,6 +35,15 @@ if [[ $1 == bton ]]; then
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	
+	asoundbt='
+pcm.bluealsa {
+	type plug
+	slave.pcm {
+		type bluealsa
+		device 00:00:00:00:00:00
+		profile "a2dp"
+	}
+}'
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
@@ -190,14 +199,20 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-[[ -z $Acard ]] && restartMPD && exit
+[[ -z $Acard && -z $btname ]] && restartMPD && exit
 
 [[ -n $Acard ]] && card=$card || card=0
-asound="\
-defaults.pcm.card $card
-defaults.ctl.card $card"
+
 if [[ -e $dirsystem/equalizer ]]; then
-	asound+='
+	filepresets=$dirsystem/equalizer.presets
+	if [[ -n $btname ]]; then
+		slavepcm=bluealsa
+		filepresets+="-$btname"
+	else
+		slavepcm='"plughw:'$card',0"'
+	fi
+	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
+	asoundeq="
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -206,29 +221,18 @@ ctl.equal {
 	type equal
 }
 pcm.plugequal {
-	type equal'
-	filepresets=$dirsystem/equalizer.presets
-	if [[ ! -e $dirshm/btclient ]]; then
-		asound+='
-	slave.pcm "plughw:'$card',0"'
-	else
-		asound+='
-	slave.pcm {
- 		type plug
- 		slave.pcm {
- 			type bluealsa
- 			device "00:00:00:00:00:00"
- 			profile "a2dp"
- 			delay 20000
- 		}
- 	}'
-		filepresets+="-$( cat $dirshm/btclient )"
-	fi
-	asound+='
-}'
-	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
+	type equal
+	slave.pcm $slavepcm
+}"
 fi
-echo "$asound" > /etc/asound.conf
+
+echo "\
+defaults.pcm.card $card
+defaults.ctl.card $card
+$asoundbt
+$asoundeq
+" > /etc/asound.conf
+
 [[ -n $preset ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
