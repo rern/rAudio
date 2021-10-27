@@ -142,7 +142,17 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-wlan' ).click( function() {
+$( '#wlan' ).click( function() {
+	if ( G.hostapd || G.wlanconnected ) {
+		info( {
+			  icon    : 'wifi'
+			, title   : 'Wi-Fi'
+			, message : 'Wi-Fi is currently connected.'
+		} );
+		$( this ).prop( 'checked', 1 );
+		return
+	}
+	
 	bash( 'cat /srv/http/settings/regdomcodes.json', function( list ) {
 		var options = '';
 		$.each( list, function( k, v ) {
@@ -583,6 +593,22 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 	} );
 } );
+$( '#hdmihotplug' ).click( function() {
+	var $this = $( this );
+	if ( G.lcd ) {
+		info( {
+			  icon    : 'hdmi'
+			, title   : 'HDMI Hotplug'
+			, message : 'TFT 3.5" LCD is currently enabled.'
+		} );
+		$this.prop( 'checked', 1 );
+		return
+	}
+	
+	var checked = $this.prop( 'checked' );
+	notify( 'SnapServer', checked, 'snapcast' );
+	bash( [ 'snapserver', checked ] );
+} );
 $( '#backup' ).click( function() {
 	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
@@ -845,7 +871,7 @@ function renderPage( list ) {
 	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' )
 		.prop( 'checked', G.wlan )
-		.prop( 'disabled', G.hostapd || G.wlanconnected )
+		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
 		.parent().prev().toggleClass( 'single', !G.wlan );
 	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
 	$( '#i2smodule' ).val( 'none' );
@@ -875,7 +901,7 @@ function renderPage( list ) {
 	}
 	$( '#hdmihotplug' )
 		.prop( 'checked', G.hdmihotplug )
-		.prop( 'disabled', G.lcd );
+		.toggleClass( 'disabled', G.lcd );
 	$( '#vuled' ).prop( 'checked', G.vuled );
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );

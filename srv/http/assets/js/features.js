@@ -1,6 +1,16 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#setting-snapclient' ).click( function() {
+	if ( G.snapserver ) {
+		info( {
+			  icon    : 'snapcast'
+			, title   : 'SnapClient'
+			, message : 'SnapServer is currently enabled.'
+		} );
+		$( '#snapclient' ).prop( 'checked', 0 );
+		return
+	}
+	
 	info( {
 		  icon         : 'snapcast'
 		, title        : 'SnapClient'
@@ -24,7 +34,32 @@ $( '#setting-snapclient' ).click( function() {
 		}
 	} );
 } );
+$( '#snapserver' ).click( function() {
+	if ( G.snapclient ) {
+		info( {
+			  icon    : 'snapcast'
+			, title   : 'SnapServer'
+			, message : 'SnapClient is currently enabled.'
+		} );
+		$( '#snapserver' ).prop( 'checked', 0 );
+		return
+	}
+	
+	var checked = $( this ).prop( 'checked' );
+	notify( 'SnapServer', checked, 'snapcast' );
+	bash( [ 'snapserver', checked ] );
+} );
 $( '#setting-hostapd' ).click( function() {
+	if ( G.wlanconnected ) {
+		info( {
+			  icon    : 'accesspoint'
+			, title   : 'Access Point'
+			, message : 'Wi-Fi is currently connected.'
+		} );
+		$( '#hostapd' ).prop( 'checked', G.hostapd );
+		return
+	}
+	
 	info( {
 		  icon         : 'accesspoint'
 		, title        : 'Access Point'
@@ -243,16 +278,16 @@ function renderPage( list ) {
 	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
 	$( '#snapclient' )
 		.prop( 'checked', G.snapclient )
-		.prop( 'checked', G.snapserver );
+		.toggleClass( 'disabled', G.snapserver );
 	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
 	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 	$( '#streaming' ).prop( 'checked', G.streaming );
 	$( '#snapserver' )
 		.prop( 'checked', G.snapserver )
-		.prop( 'disabled', G.snapclient );
+		.toggleClass( 'disabled', G.snapclient );
 	$( '#hostapd' )
 		.prop( 'checked', G.hostapd )
-		.prop( 'disabled', G.wlanconnected );
+		.toggleClass( 'disabled', G.wlanconnected );
 	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
 	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
