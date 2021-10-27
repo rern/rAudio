@@ -33,7 +33,7 @@ input { #cdio0\
 ' /etc/mpd.conf
 	restartMPD
 	exit
-elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playlist
+elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
 	rm -f $dirshm/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
@@ -50,6 +50,8 @@ elif [[ $1 == eject || $1 == off ]]; then # eject/off : remove tracks from playl
 	if [[ $1 == off ]]; then
 		sed -i '/#cdio/,/^$/ d' /etc/mpd.conf
 		restartMPD
+	elif [[ $1 == ejectwithicon ]]; then
+		eject
 	fi
 	exit
 fi
