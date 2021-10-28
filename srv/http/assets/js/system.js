@@ -873,9 +873,6 @@ function renderPage( list ) {
 	} else {
 		$( '#divsoundprofile' ).addClass( 'hide' );
 	}
-	$( '#hdmihotplug' )
-		.prop( 'checked', G.hdmihotplug )
-		.toggleClass( 'disabled', G.lcd );
 	$( '#vuled' ).prop( 'checked', G.vuled );
 	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
 	$( '#hostname' ).val( G.hostname );

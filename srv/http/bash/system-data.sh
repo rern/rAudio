@@ -155,7 +155,6 @@ data+='
 , "bluetooth"        : '$bluetooth'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
-, "hdmihotplug"      : '$( grep -q hdmi_force_hotplug /boot/config.txt && echo true )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"

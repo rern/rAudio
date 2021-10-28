@@ -216,15 +216,6 @@ $( cat /etc/fstab )
 
 $( mount | grep ^/dev | sort )"
 	;;
-hdmihotplug )
-	if [[ ${args[1]} == true ]]; then
-		echo hdmi_force_hotplug=1 >> $fileconfig
-		pushReboot 'HDMI Hotplug' hdmi
-	else
-		sed -i '/hdmi_force_hotplug/ d' $fileconfig
-		pushRefresh
-	fi
-	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
