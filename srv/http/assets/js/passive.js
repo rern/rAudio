@@ -61,9 +61,12 @@ function bookmarkCover( url, path ) {
 	} );
 }
 function statusUpdate( data ) {
-	if ( G.status.scrobble ) {
+	var prevstate = G.status.state;
+	var scrobble = 0;
+	if ( G.status.scrobble && !G.status.webradio && !G.status.librandom ) {
+		scrobble = 1;
 		G.prev = {};
-		[ 'elapsed', 'Album', 'Artist', 'state', 'Time', 'Title' ].forEach( function( key ) {
+		[ 'elapsed', 'Album', 'Artist', 'Time', 'Title' ].forEach( function( key ) {
 			G.prev[ key ] = G.status[ key ];
 		} );
 	}
@@ -74,26 +77,32 @@ function statusUpdate( data ) {
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	// --------------------------------------------------------------------
-	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
-	if ( !G.status.scrobble || G.status.webradio ) return
+	if ( G.display.onwhileplay ) {
+		if ( G.status.state === 'play' ) {
+			if ( prevstate !== 'play' ) bash( [ 'screenoff', '-dpms' ] );
+		} else {
+			bash( [ 'screenoff', '+dpms' ] );
+		}
+	}
+	if ( !scrobble ) return
 	
-	G.scrobble = 0;
+	scrobble = 0;
 	if ( G.prev.elapsed
-		&& G.prev.Artist
 		&& G.prev.Title
+		&& G.prev.Artist
 	) {
 		if ( G.status.state === 'stop' ) {
 			if ( G.prev.Time > 30
 				&& ( ( G.prev.elapsed / G.prev.Time ) > 0.5 || G.prev.elapsed > 240 )
-			) G.scrobble = 1;
+			) scrobble = 1;
 		} else {
-			if ( G.status.Artist !== G.prev.Artist
-				|| G.status.Title !== G.prev.Title
+			if ( G.status.Title !== G.prev.Title
+				|| G.status.Artist !== G.prev.Artist
 				|| G.status.Album !== G.prev.Album
-			) G.scrobble = 1;
+			) scrobble = 1;
 		}
 	}
-	if ( !G.scrobble ) return
+	if ( !scrobble ) return
 	
 	bash( [ 'scrobble', G.prev.Artist, G.prev.Title, G.prev.Album, G.prev.elapsed ], function( response ) {
 		if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
