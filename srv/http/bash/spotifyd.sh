@@ -116,7 +116,7 @@ else
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "Time"     : '$Time'
 , "Title"    : "'$Title'"'
-	[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient ]] && dataprev=$( cat $filestatus )
+	[[ -e $dirsystem/scrobble ]] && dataprev=$( cat $filestatus )
 	echo $metadata > $filestatus
 	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
 	(( $elapsed > $Time )) && elapsed=0

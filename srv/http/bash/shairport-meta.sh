@@ -65,7 +65,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
-			[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient && $starttime != $( cat $dirairplay/start ) ]] && dataprev=$( cat $dirairplay/status )
+			[[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]] && dataprev=$( cat $dirairplay/status )
 			echo $data > $dirairplay/Time
 			echo $starttime > $dirairplay/start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
