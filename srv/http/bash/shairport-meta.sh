@@ -5,8 +5,7 @@
 
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
-file=$dirshm/airplay
-touch $file
+dirairplay/=$dirshm/airplay
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
@@ -51,8 +50,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	fi
 	
 	if [[ $code == coverart ]]; then
-		base64 -d <<< $base64 > $file-coverart.jpg
-		data=/data/shm/airplay-coverart.$( date +%s ).jpg
+		base64 -d <<< $base64 > $dirairplay/coverart.jpg
+		data=/data/shm/airplay/coverart.$( date +%s ).jpg
 		pushstreamAirplay '{"coverart":"'$data'","file":""}'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
@@ -61,23 +60,23 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			current=$( echo $data | cut -d/ -f2 )
 			end=${data/*\/}
 			data=$(( ( end - start + 22050 ) / 44100 ))
-			
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
 			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
-			[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient && $starttime != $( cat $file-start ) ]] && dataprev=$( cat $file )
-			echo $starttime > $file-start
+			[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient && $starttime != $( cat $dirairplay/start ) ]] && dataprev=$( cat $dirairplay/status )
+			echo $data > $dirairplay/Time
+			echo $starttime > $dirairplay/start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
 			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
-			echo $data > $file-volume
+			echo $data > $dirairplay/volume
 			pushstreamAirplay '{"volume":'$data'}'
 		else
 			data=${data//\"/\\\"}
-			sed -i 's/^,\s*"'$code'".*/,"'$code'":"'$data'"/' $file
+			sed -i 's/^,\s*"'$code'".*/,"'$code'":"'$data'"/' $dirairplay/status
 		fi
 		
 		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'$data'"'

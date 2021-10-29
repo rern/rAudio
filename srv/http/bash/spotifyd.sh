@@ -6,14 +6,33 @@
 
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
-
+dirspotify=$dirshm/spotify
+mkdir -p $dirspotify
+fileelapsed=$dirspotify/elapsed
+fileexpire=$dirspotify/expire
+filestart=$dirspotify/start
+filestate=$dirspotify/state
+filestatus=$dirspotify/status
+filetoken=$dirspotify/token
+filetrackid=$dirspotify/trackid
+##### stop
 if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
-	rm -f $dirshm/player-* $dirshm/spotify-start
+	rm -f $dirshm/player-* $filestart
 	touch $dirshm/player-mpd
 	$dirbash/cmd.sh volumereset
 	$dirbash/cmd-pushstatus.sh
 	exit
+fi
+##### start
+if [[ ! -e $filestart ]]; then
+	mpc stop
+	rm -f $dirshm/player-*
+	touch $dirshm/player-spotify
+	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
+	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
+	(( $elapsed > 0 )) && echo pause > $filestate
+	$dirbash/cmd.sh volume0db$'\n'spotifyd
 fi
 
 pushstreamSpotify() {
@@ -33,71 +52,54 @@ client_secret=6b7f533b66cb4a338716344de966dde1
 # $VOLUME
 
 timestamp=$(( $( date +%s%3N ) - 1000 ))
-file=$dirshm/spotify
-touch $file
-
-if [[ ! -e $file-start ]]; then
-	mpc stop
-	rm -f $dirshm/player-*
-	touch $dirshm/player-spotify
-	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
-	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	(( $elapsed > 0 )) && echo pause > $file-state
-	$dirbash/cmd.sh volume0db$'\n'spotifyd
-fi
 
 if [[ $PLAYER_EVENT != stop ]]; then
 	state=play
-	echo $timestamp > $file-start
-	[[ $PLAYER_EVENT == change ]] && echo 0 > $file-elapsed
-	echo play > $file-state
+	echo $timestamp > $filestart
+	[[ $PLAYER_EVENT == change ]] && echo 0 > $fileelapsed
+	echo play > $filestate
 else
-	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
+	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
 	[[ $elapsed > 0 ]] && state=pause || state=stop
-	echo $state > $file-state
-	if [[ -e $file-start ]]; then
-		start=$( cat $file-start )
+	echo $state > $filestate
+	if [[ -e $filestart ]]; then
+		start=$( cat $filestart )
 		elapsed+=$(( timestamp - start ))
 		pushstreamSpotify '{"state":"pause","elapsed":'$(( ( elapsed + 500 ) / 1000 ))'}'
-		echo $elapsed > $file-elapsed
+		echo $elapsed > $fileelapsed
 		exit
 	else
-		echo $timestamp > $file-start
+		echo $timestamp > $filestart
 	fi
 fi
 
 ########
 status='
   "player"   : "spotify"
-, "state"    : "'$( cat $file-state )'"'
+, "state"    : "'$( cat $filestate )'"'
 
-trackidfile=$file-trackid
-if [[ $( cat $trackidfile 2> /dev/null ) == $TRACK_ID ]]; then
+if [[ $( cat $filetrackid 2> /dev/null ) == $TRACK_ID ]]; then
 ########
-	start=$( cat $file-start )
+	start=$( cat $filestart )
 	now=$( date +%s%3N )
-	elapsedprev=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	elapsedprev+=$(( now - start ))
-	echo $elapsed > $file-elapsed
+	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
+	elapsed+=$(( now - start ))
+	echo $elapsed > $fileelapsed
 ########
-	status+=$( cat $file )
+	status+=$( cat $filestatus )
 	status+='
 , "elapsed" : '$(( ( elapsed + 500 ) / 1000 ))
 else
-	echo $TRACK_ID > $trackidfile
-	
-	tokenfile=$file-token
-	expirefile=$file-expire
-	
-	if [[ -e $expirefile && $( cat $expirefile ) -gt $timestamp ]]; then
-		token=$( cat $tokenfile )
+	echo $TRACK_ID > $filetrackid
+	if [[ -e $fileexpire && $( cat $fileexpire ) -gt $timestamp ]]; then
+		token=$( cat $filetoken )
 	else
 		token=$( curl -s -X POST -u $client_id:$client_secret -d grant_type=client_credentials https://accounts.spotify.com/api/token \
 			| sed 's/.*access_token":"\(.*\)","token_type.*/\1/' )
 		[[ -z $token ]] && exit
 		expire=$(( $( date +%s%3N ) + 3590000 ))
-		echo $token > $tokenfile
-		echo $expire > $expirefile
+		echo $token > $filetoken
+		echo $expire > $fileexpire
 	fi
 	
 	data=$( curl -s -X GET "https://api.spotify.com/v1/tracks/$TRACK_ID" -H "Authorization: Bearer $token" )
@@ -114,8 +116,8 @@ else
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "Time"     : '$Time'
 , "Title"    : "'$Title'"'
-	[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient ]] && dataprev=$( cat $file )
-	echo $metadata > $file
+	[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient ]] && dataprev=$( cat $filestatus )
+	echo $metadata > $filestatus
 	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
 	(( $elapsed > $Time )) && elapsed=0
 ########

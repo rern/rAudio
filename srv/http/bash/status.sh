@@ -86,15 +86,15 @@ if [[ $player != mpd && $player != upnp ]]; then
 	case $player in
 
 	airplay )
-		path=$dirshm/airplay
-		start=$( cat $path-start 2> /dev/null || echo 0 )
-		Time=$( cat $path-Time 2> /dev/null )
+		dirairplay=$dirshm/airplay
+		start=$( cat $dirairplay/start 2> /dev/null || echo 0 )
+		Time=$( cat $dirairplay/Time 2> /dev/null )
 		timestamp=$( date +%s%3N )
 		[[ -n $start && -n $Time ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
-		[[ -e $dirshm/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
+		[[ -e $dirshm/airplay/coverart.jpg ]] && coverart=/data/shm/airplay/coverart.$( date +%s ).jpg
 ########
 		status+="
-, $( cat $path )"
+, $( cat $dirairplay/status )"
 		status+='
 , "coverart"  : "'$coverart'"
 , "elapsed"   : '$elapsed'
@@ -117,15 +117,15 @@ $( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapc
 	| sed 's|"coverart" : "|&http://'$snapserverip'/|; s/^{\|}$//g' )"
 		;;
 	spotify )
-		path=$dirshm/spotify
-		elapsed=$( cat $path-elapsed 2> /dev/null || echo 0 )
-		state=$( cat $path-state )
+		dirspotify=$dirshm/spotify
+		elapsed=$( cat $dirspotify/elapsed 2> /dev/null || echo 0 )
+		state=$( cat $dirspotify/state )
 		timestamp=$( date +%s%3N )
-		[[ $state == play ]] && elapsed+=$(( timestamp - $( cat $path-start ) ))
+		[[ $state == play ]] && elapsed+=$(( timestamp - $( cat $dirspotify/start ) ))
 		elapsed=$( printf '%.0f' $(( ( elapsed + 500 ) / 1000 )) )
 ########
 		status+="
-, $( cat $path )"
+, $( cat $dirspotify/status )"
 	status+='
 , "elapsed"   : '$elapsed'
 , "state"     : "'$state'"
