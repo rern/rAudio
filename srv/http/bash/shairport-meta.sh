@@ -73,7 +73,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
-			echo $data > $dirsystem/volume-airplay
 			pushstreamAirplay '{"volume":'$data'}'
 		else
 			data=${data//\"/\\\"}

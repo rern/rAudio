@@ -962,8 +962,11 @@ volume )
 	volumeSet "$current" $target "$control" # $current may be blank
 	;;
 volume0db )
+	if [[ -e $dirshm/player-airplay || -e $dirshm/player-spotify ]]; then
+		volumeGet
+		echo $volume $db  > $dirshm/mpdvolume
+	fi
 	volume0dB
-	[[ ${args[1]} == spotifyd ]] && echo $volume $db  > $dirshm/mpdvolume
 	;;
 volumecontrols )
 	volumeControls ${args[1]}

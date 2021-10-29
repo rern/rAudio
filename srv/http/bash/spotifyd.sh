@@ -21,6 +21,7 @@ if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
 	rm -f $dirshm/player-* $filestart
 	touch $dirshm/player-mpd
+	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"Spotify","text":"Stop ...","icon":"spotify blink","delay":-1}'
 	$dirbash/cmd.sh volumereset
 	$dirbash/cmd-pushstatus.sh
 	exit
@@ -33,11 +34,11 @@ if [[ ! -e $filestart ]]; then
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
 	(( $elapsed > 0 )) && echo pause > $filestate
-	$dirbash/cmd.sh volume0db$'\n'spotifyd
+	$dirbash/cmd.sh volume0db
 fi
 
 pushstreamSpotify() {
-	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
+	curl -s -X POST http://127.0.0.1/pub?id=spotify -d "$1"
 }
 
 # get from: https://developer.spotify.com/dashboard/applications
