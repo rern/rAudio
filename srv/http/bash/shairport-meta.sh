@@ -5,7 +5,7 @@
 
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
-dirairplay/=$dirshm/airplay
+dirairplay=$dirshm/airplay
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
