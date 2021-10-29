@@ -64,15 +64,18 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
 			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
-			
 			starttime=$(( timestamp - elapsedms ))
-			# $dirairplay/start - exist after 1st track changed
-			if [[ -e $dirsystem/scrobble && -e $dirairplay/start && $starttime != $( cat $dirairplay/start ) ]]; then
-				$dirbash/cmd.sh "scrobble
+			
+			if [[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]]; then
+				filescrobble=$dirairplay/scrobble
+				[[ -e $filescrobble ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null & # exist after 1st track changed
+				echo "\
+scrobble
 $( cat $dirairplay/Artist )
 $( cat $dirairplay/Title )
-$( cat $dirairplay/Album )" &> /dev/null &
+$( cat $dirairplay/Album )" > $filescrobble
 			fi
+			
 			echo $data > $dirairplay/Time
 			echo $starttime > $dirairplay/start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL

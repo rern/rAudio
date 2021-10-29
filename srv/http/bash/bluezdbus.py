@@ -34,8 +34,7 @@ def property_changed( interface, changed, invalidated, path ):
         # Track     : metadata
         # Type      : dest playerX
         if name == 'Player':
-            with open( '/srv/http/data/shm/player-bluetooth', 'w' ) as f: f.write( value )
-            subprocess.Popen( [ cmdsh, 'bluetoothplayer' ] )
+            subprocess.Popen( [ cmdsh, 'bluetoothplayer\n'+ value ] )
         elif name == 'Connected':
             subprocess.Popen( [ cmdsh, 'bluetoothplayerconnect\n'+ str( value ) ] )
         elif name == 'Position':
@@ -58,7 +57,11 @@ def property_changed( interface, changed, invalidated, path ):
                 , "Time"   : Time
             } )
             if os.path.isfile( '/srv/http/data/system/scrobble' ):
-                subprocess.Popen( [ cmdsh, 'scrobble\n'+ Artist +'\n'+ Title +'\n'+ Album ] )
+                filescrobble = '/srv/http/data/shm/bluetooth/scrobble'
+                if os.path.isfile( filescrobble ):
+                    with open( filescrobble ) as f: data = f.read()
+                    subprocess.Popen( [ cmdsh, data ] )
+                with open( filescrobble, 'w' ) as f: f.write( 'scrobble\n'+ Artist +'\n'+ Title +'\n'+ Album )
             
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )

@@ -9,7 +9,7 @@ dirairplay=$dirshm/airplay
 
 ##### stop
 if (( $# > 0 )); then
-	rm -f $dirshm/player-* $dirairplay/start
+	rm -f $dirshm/player-* $dirairplay/{scrobble,start}
 	touch $dirshm/player-mpd
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
 	$dirbash/cmd.sh volumereset

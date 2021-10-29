@@ -11,6 +11,7 @@ dirspotify=$dirshm/spotify
 mkdir -p $dirspotify
 fileelapsed=$dirspotify/elapsed
 fileexpire=$dirspotify/expire
+filescrobble=$dirspotify/scrobble
 filestart=$dirspotify/start
 filestate=$dirspotify/state
 filestatus=$dirspotify/status
@@ -19,7 +20,7 @@ filetrackid=$dirspotify/trackid
 ##### stop
 if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
-	rm -f $dirshm/player-* $filestart
+	rm -f $dirshm/player-* $dirspotify/{scrobble,start}
 	touch $dirshm/player-mpd
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"Spotify","text":"Stop ...","icon":"spotify blink","delay":-1}'
 	$dirbash/cmd.sh volumereset
@@ -118,21 +119,22 @@ else
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "Time"     : '$Time'
 , "Title"    : "'$Title'"'
-	if [[ -e $dirsystem/scrobble ]]; then # exist after 1st track changed
-		if [[ -e $filestatus-scrobble ]]; then
-			$dirbash/cmd.sh "scrobble
-$( cat $filestatus-scrobble )" &> /dev/null &
-		fi
+
+	if [[ -e $dirsystem/scrobble ]]; then
+		[[ -e $filescrobble ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null & # exist after 1st track changed
 		echo "\
+scrobble
 $Artist
 $Title
-$Album" > $filestatus-scrobble
+$Album" > $filescrobble
 	fi
+	
 	echo $metadata > $filestatus
 	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
 	(( $elapsed > $Time )) && elapsed=0
 ########
-	status+=",$metadata"
+	status+="
+, $metadata"
 	status+='
 , "elapsed" : '$elapsed
 fi

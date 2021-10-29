@@ -314,23 +314,27 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
-bluetoothplayer )
+bluetoothplayer ) # init
 	mpc stop
-	rm -f $dirshm/{player-*,btclient}
+	mkdir -p $dirshm/bluetooth
+	echo ${args[1]} > $dirshm/bluetooth/dest
 	sleep 1
 	volume0dB
-	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
 bluetoothplayerconnect )
 	if [[ ${args[1]} == 0 ]]; then # disconnected
 		rm -f $dirshm/player-*
 		touch $dirshm/player-mpd
+	else
+		rm -f $dirshm/{player-*,btclient}
+		touch $dirshm/player-bluetooth
 	fi
+	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )
 	systemctl restart bluezdbus
-	rm -f $dirshm/player-*
+	rm -f $dirshm/player-* $dirshm/bluetooth/scrobble
 	touch $dirshm/player-mpd
 	volumeReset
 	pushstream mpdplayer "$( $dirbash/status.sh )"
