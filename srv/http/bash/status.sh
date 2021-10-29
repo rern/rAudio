@@ -20,38 +20,45 @@ outputStatus() { # sed - null > false
 				s/,\s*]/, false ]/g'
 }
 
-btclient=$( [[ -e $dirshm/btclient ]] && echo true )
-consume=$( mpc | grep -q 'consume: on' && echo true )
-counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )
-librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
-player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2  )
-[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
-[[ $player != mpd ]] && icon=$player
-playlists=$( ls /srv/http/data/playlists | wc -l )
-relays=$( [[ -e $dirsystem/relays ]] && echo true )
-relayson=$( [[ -e  $dirshm/relayson ]] && echo true )
-updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true )
-if [[ -e $dirsystem/updating ]]; then 
-	updating_db=true
-	if ! mpc | grep -q ^Updating; then
-		path=$( cat $dirsystem/updating )
-		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-	fi
-fi
-if [[ -e $dirshm/nosound ]]; then
-	volume=false
-elif [[ -e $dirshm/btclient ]]; then
-	for i in {1..5}; do # takes some seconds to be ready
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
-		[[ -n $volume ]] && break
-		sleep 1
-	done
+if (( $# != 0 )); then # snapclient
+	player=mpd
+########
+	status='
+  "player" : "snapclient"
+, "icon"   : "snapclient"'
 else
-	controlvolume=$( $dirbash/cmd.sh volumecontrolget )
-	control=$( echo $controlvolume | cut -d^ -f1 )
-	volume=$( echo $controlvolume | cut -d^ -f2 )
-fi
-scrobble=$( [[ -e $dirsystem/scrobble ]] && echo true )
+	btclient=$( [[ -e $dirshm/btclient ]] && echo true )
+	consume=$( mpc | grep -q 'consume: on' && echo true )
+	counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )
+	librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
+	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2  )
+	[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
+	[[ $player != mpd ]] && icon=$player
+	playlists=$( ls /srv/http/data/playlists | wc -l )
+	relays=$( [[ -e $dirsystem/relays ]] && echo true )
+	relayson=$( [[ -e  $dirshm/relayson ]] && echo true )
+	updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true )
+	if [[ -e $dirsystem/updating ]]; then 
+		updating_db=true
+		if ! mpc | grep -q ^Updating; then
+			path=$( cat $dirsystem/updating )
+			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+		fi
+	fi
+	if [[ -e $dirshm/nosound ]]; then
+		volume=false
+	elif [[ -e $dirshm/btclient ]]; then
+		for i in {1..5}; do # takes some seconds to be ready
+			volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
+			[[ -n $volume ]] && break
+			sleep 1
+		done
+	else
+		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
+		control=$( echo $controlvolume | cut -d^ -f1 )
+		volume=$( echo $controlvolume | cut -d^ -f2 )
+	fi
+	scrobble=$( [[ -e $dirsystem/scrobble ]] && echo true )
 
 ########
 	status='
@@ -73,6 +80,7 @@ scrobble=$( [[ -e $dirsystem/scrobble ]] && echo true )
 , "volume"         : '$volume'
 , "volumemute"     : 0
 , "webradio"       : false'
+fi
 
 if [[ $player != mpd && $player != upnp ]]; then
 	case $player in
@@ -108,10 +116,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 	snapclient )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 		snapserverip=$( cat $dirshm/snapserverip 2> /dev/null )
-		snapserverstatus+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh \
-								| sed 's|"coverart" : "|&http://'$snapserverip'/|' )
 	########
-		status+=${snapserverstatus:1:-1}
+		status+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapclient \
+								| sed 's|"coverart" : "|&http://'$snapserverip'/|; s/^{\|}$//g' )
 		;;
 	spotify )
 		path=$dirshm/spotify
@@ -144,7 +151,8 @@ fi
 
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
-filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^playlistlength\|^random\|^repeat\|^single\|^song:\|^state\|^Time\|^Title'
+filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^song:\|^state\|^Time\|^Title'
+(( $# == 0 )) && filter='\|^playlistlength\|^random\|^repeat\|^single' # not snapclient
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \

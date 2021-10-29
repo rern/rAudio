@@ -51,7 +51,7 @@ else # sshpass from snapclient
 	[[ -s $snapclientfile ]] || rm $snapclientfile
 	if [[ -n $snapserverip ]]; then
 		echo $snapclientip >> $snapclientfile
-		status=$( /srv/http/bash/status.sh | sed 's/"player" :.*"single" : false , /"player" : "snapclient" , /; s|"coverart" : "|&http://'$snapserverip'/|' )
+		status=$( /srv/http/bash/status.sh snapclient )
 		curl -s -X POST http://$snapclientip/pub?id=mpdplayer -d "$status"
 	fi
 fi
