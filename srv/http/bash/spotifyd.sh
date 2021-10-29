@@ -118,7 +118,10 @@ else
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "Time"     : '$Time'
 , "Title"    : "'$Title'"'
-	[[ -e $dirsystem/scrobble ]] && dataprev=$( cat $filestatus )
+	if [[ -e $dirsystem/scrobble ]]; then
+		mv $filestatus{,prev} # jq in cmd.sh to avoid delay
+		$dirbash/cmd.sh scrobble &> /dev/null &
+	fi
 	echo $metadata > $filestatus
 	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
 	(( $elapsed > $Time )) && elapsed=0
@@ -131,9 +134,3 @@ fi
 pushstreamSpotify "{$status}"
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
-
-[[ -z $dataprev ]] && exit
-
-data=$( echo {$dataprev} | jq -r .Artist,.Title,.Album )
-$dirbash/cmd.sh "scrobble
-$data"

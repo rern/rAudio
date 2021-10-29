@@ -885,6 +885,14 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
+	if [[ -z ${args[1]} ]]; then # from spotifyd.sh
+		file=$dirshm/spotify/statusprev
+		[[ ! -e $file ]] && exit
+		
+		dataprev=$( cat $file )
+		readarray -t args <<< $( echo {$dataprev} | jq -r .Time,.Artist,.Title,.Album ) # .Time as placeholder
+		rm $file
+	fi
 	artist=${args[1]}
 	title=${args[2]}
 	album=${args[3]}

@@ -9,13 +9,13 @@ dirairplay=$dirshm/airplay
 
 ##### stop
 if (( $# > 0 )); then
-	systemctl restart shairport-sync
-	systemctl stop shairport-meta
 	rm -f $dirshm/player-*
 	touch $dirshm/player-mpd
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
 	$dirbash/cmd.sh volumereset
 	$dirbash/cmd-pushstatus.sh
+	systemctl restart shairport-sync
+	systemctl stop shairport-meta
 ##### start
 else
 	rm -f $dirshm/player-*
@@ -25,13 +25,7 @@ else
 	systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
 	systemctl start shairport-meta
 	$dirbash/cmd.sh volume0db
-	if [[ ! -e $dirairplay/status ]]; then
-		mkdir -p $dirairplay
-		echo '
- "Album"  : ""
-,"Artist" : ""
-,"Title"  : ""' > $dirairplay/status
-	fi
+	mkdir -p $dirairplay
 	sleep 2
 	$dirbash/cmd-pushstatus.sh
 fi

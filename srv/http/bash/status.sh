@@ -31,7 +31,7 @@ else
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )
 	librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
-	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2  )
+	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
 	[[ $player != mpd ]] && icon=$player
 	playlists=$( ls /srv/http/data/playlists | wc -l )
@@ -93,9 +93,10 @@ if [[ $player != mpd && $player != upnp ]]; then
 		[[ -n $start && -n $Time ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
 		[[ -e $dirshm/airplay/coverart.jpg ]] && coverart=/data/shm/airplay/coverart.$( date +%s ).jpg
 ########
-		status+="
-, $( cat $dirairplay/status )"
 		status+='
+, "Album"     : "'$( cat $dirairplay/Album 2> /dev/null )'"
+, "Artist"    : "'$( cat $dirairplay/Artist 2> /dev/null )'"
+, "Title"     : "'$( cat $dirairplay/Title 2> /dev/null )'"
 , "coverart"  : "'$coverart'"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"

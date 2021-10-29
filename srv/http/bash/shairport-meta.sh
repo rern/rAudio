@@ -66,7 +66,12 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
-			[[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]] && dataprev=$( cat $dirairplay/status )
+			if [[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]]; then
+				$dirbash/cmd.sh "scrobble
+$( cat $dirairplay/Artist )
+$( cat $dirairplay/Title )
+$( cat $dirairplay/Album )" &> /dev/null &
+			fi
 			echo $data > $dirairplay/Time
 			echo $starttime > $dirairplay/start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
@@ -75,8 +80,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 						| head -1 )
 			pushstreamAirplay '{"volume":'$data'}'
 		else
+			echo $data > $dirairplay/$code
 			data=${data//\"/\\\"}
-			sed -i 's/^,\s*"'$code'".*/,"'$code'":"'$data'"/' $dirairplay/status
 		fi
 		
 		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'$data'"'
@@ -85,12 +90,5 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	fi
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 	code= # reset after $code + $data were complete
-	
-	if [[ -n $dataprev ]]; then
-		data=$( echo {$dataprev} | jq -r .Artist,.Title,.Album )
-$dirbash/cmd.sh "scrobble
-$data"
-		dataprev=
-	fi
 done
 
