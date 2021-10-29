@@ -3,6 +3,7 @@
 # shairport-sync.conf > this:
 #    - start / stop
 
+dirshm=/srv/http/data/shm
 rm -f $dirshm/player-*
 ##### stop
 if (( $# > 0 )); then
