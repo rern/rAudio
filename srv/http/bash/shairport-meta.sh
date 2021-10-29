@@ -66,7 +66,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
-			if [[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]]; then
+			# $dirairplay/start - exist after 1st track changed
+			if [[ -e $dirsystem/scrobble && -e $dirairplay/start && $starttime != $( cat $dirairplay/start ) ]]; then
 				$dirbash/cmd.sh "scrobble
 $( cat $dirairplay/Artist )
 $( cat $dirairplay/Title )

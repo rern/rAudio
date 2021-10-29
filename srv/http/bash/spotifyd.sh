@@ -118,9 +118,15 @@ else
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "Time"     : '$Time'
 , "Title"    : "'$Title'"'
-	if [[ -e $dirsystem/scrobble ]]; then
-		mv $filestatus{,prev} # jq in cmd.sh to avoid delay
-		$dirbash/cmd.sh scrobble &> /dev/null &
+	if [[ -e $dirsystem/scrobble ]]; then # exist after 1st track changed
+		if [[ -e $filestatus-scrobble ]]; then
+			$dirbash/cmd.sh "scrobble
+$( cat $filestatus-scrobble )" &> /dev/null &
+		fi
+		echo "\
+$Artist
+$Title
+$Album" > $filestatus-scrobble
 	fi
 	echo $metadata > $filestatus
 	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
