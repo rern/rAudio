@@ -323,14 +323,14 @@ bluetoothplayer )
 	;;
 bluetoothplayerconnect )
 	if [[ ${args[1]} == 0 ]]; then # disconnected
-		rm -f $dirshm/player-bluetooth
+		rm -f $dirshm/player-*
 		touch $dirshm/player-mpd
 	fi
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )
 	systemctl restart bluezdbus
-	rm -f $dirshm/player-bluetooth
+	rm -f $dirshm/player-*
 	touch $dirshm/player-mpd
 	volumeReset
 	pushstream mpdplayer "$( $dirbash/status.sh )"
@@ -886,15 +886,15 @@ screenoff )
 	;;
 scrobble )
 	artist=${args[1]}
-	track=${args[2]}
+	title=${args[2]}
 	album=${args[3]}
-	elapsed=${args[4]}
-	[[ -z $elapsed || $elapsed == false ]] && elspased=60
-	timestamp=$(( $( date +%s ) - $elapsed ))
+	[[ -z $artist || -z $title ]] && exit
+	
 	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
 	sk=$( cat $dirsystem/scrobble )
+	timestamp=$( date +%s )
 	if [[ -n $album ]]; then
 		sigalbum="album${album}"
 		dataalbum="album=$album"
@@ -910,7 +910,7 @@ scrobble )
 		--data "method=track.scrobble" \
 		--data "sk=$sk" \
 		--data "timestamp=$timestamp" \
-		--data-urlencode "track=$track" \
+		--data-urlencode "track=$title" \
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )

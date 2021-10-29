@@ -1,13 +1,14 @@
 #!/usr/bin/python
 
-# RPi as receiver
+# RPi as renderer: bluezdbus.service > this > pushstream
 
-import os
-import requests
 import dbus
 import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
+import os
+import requests
+import subprocess
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 path = '/test/autoagent'
@@ -18,6 +19,7 @@ def pushstream( data ):
 def property_changed( interface, changed, invalidated, path ):
     if not os.path.isfile( '/srv/http/data/shm/player-bluetooth' ): return
     
+    cmdsh = '/srv/http/bash/cmd.sh'
     for name, value in changed.items():
         # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (sink not emit this data)
         # Connected : 1 | 0                                         (1 emitted after Player)
@@ -28,9 +30,9 @@ def property_changed( interface, changed, invalidated, path ):
         # Type      : dest playerX
         if name == 'Player':
             with open( '/srv/http/data/shm/player-bluetooth', 'w' ) as f: f.write( value )
-            os.system( '/srv/http/bash/cmd.sh bluetoothplayer' )
+            subprocess.Popen( [ cmdsh, 'bluetoothplayer' ] )
         elif name == 'Connected':
-            os.system( "/srv/http/bash/cmd.sh bluetoothplayerconnect$'\n'"+ str( value ) )
+            subprocess.Popen( [ cmdsh, 'bluetoothplayerconnect\n'+ str( value ) ] )
         elif name == 'Position':
             pushstream( { "elapsed" : value == 0 and 0 or int( round( value / 1000, 0 ) ) } )
         elif name == 'State':
@@ -39,13 +41,19 @@ def property_changed( interface, changed, invalidated, path ):
             state = value == 'paused' and 'pause' or ( value == 'playing' and 'play' or 'stop' )
             pushstream( { "state" : state } )
         elif name == 'Track':
+            Artist = value[ 'Artist' ]
+            Title = value[ 'Title' ]
+            Album = value[ 'Album' ]
             Duration = value[ 'Duration' ] or 0
+            Time = Duration == 0 and 0 or int( round( Duration / 1000, 0 ) )
             pushstream( {
-                  "Artist" : value[ 'Artist' ]
-                , "Title"  : value[ 'Title' ]
-                , "Album"  : value[ 'Album' ]
-                , "Time"   : Duration == 0 and 0 or int( round( Duration / 1000, 0 ) )
+                  "Artist" : Artist
+                , "Title"  : Title
+                , "Album"  : Album
+                , "Time"   : Time
             } )
+            if os.path.isfile( '/srv/http/data/system/scrobble' ):
+                subprocess.Popen( [ cmdsh, 'scrobble\n'+ Artist +'\n'+ Title +'\n'+ Album ] )
             
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )

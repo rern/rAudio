@@ -15,7 +15,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 	sleep 2
 	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )
 	if [[ -n $serverip ]]; then
-		mv $dirshm/player-{*,snapclient}
+		rm -f $dirshm/player-*
+		touch $dirshm/player-snapclient
 		echo $serverip > $snapserverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		snapserverpw=$( cat $snapclientpwfile 2> /dev/null || echo ros )
@@ -27,7 +28,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 	fi
 elif [[ $1 == stop ]]; then # client stop - delete server ip, curl remove client ip
 	systemctl stop snapclient
-	mv $dirshm/player-{*,mpd}
+	rm -f $dirshm/player-*
+	touch $dirshm/player-mpd
 	curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$( /srv/http/bash/status.sh )"
 	serverip=$( cat $snapserverfile )
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )

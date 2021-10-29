@@ -5,8 +5,8 @@ dirshm=/srv/http/data/shm
 
 if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
-	rm -f $dirshm/spotify-start
-	mv $dirshm/player-{*,mpd}
+	rm -f $dirshm/player-* $dirshm/spotify-start
+	touch $dirshm/player-mpd
 	$dirbash/cmd.sh volumereset
 	$dirbash/cmd-pushstatus.sh
 	exit
@@ -32,7 +32,8 @@ timestamp=$(( $( date +%s%3N ) - 1000 ))
 file=$dirshm/spotify
 if [[ ! -e $file-start ]]; then
 	mpc stop
-	mv $dirshm/player-{*,spotify}
+	rm -f $dirshm/player-*
+	touch $dirshm/player-spotify
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
 	(( $elapsed > 0 )) && echo pause > $file-state
