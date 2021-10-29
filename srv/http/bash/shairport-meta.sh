@@ -68,7 +68,11 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			
 			if [[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]]; then
 				filescrobble=$dirairplay/scrobble
-				[[ -e $filescrobble ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null & # exist after 1st track changed
+				if [[ -e $filescrobble ]]; then # exist after 1st track changed
+					duration=$( cat $dirairplay/Time )
+					played=$(( ( $( date +%s%3N ) - $( cat $dirairplay/start ) + 500 ) / 1000 ))
+					[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null &
+				fi
 				echo "\
 scrobble
 $( cat $dirairplay/Artist )

@@ -60,5 +60,9 @@ fi
 
 [[ ! -e $dirsystem/scrobble || $webradio == true || -e $dirshm/player-snapclient ]] && exit
 
-$dirbash/cmd.sh "scrobble
+time=$( sed -n 7,9p <<< "$dataprev" )
+duration=${time[0]}
+start=$(( ${time[2]} - ${time[1]} )) # timestamp - elapsed
+played=$(( $( date +%s%3N ) - $start ))
+[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "scrobble
 $( head -3 <<< "$dataprev" )"

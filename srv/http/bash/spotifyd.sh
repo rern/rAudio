@@ -9,14 +9,11 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirspotify=$dirshm/spotify
 mkdir -p $dirspotify
-fileelapsed=$dirspotify/elapsed
-fileexpire=$dirspotify/expire
-filescrobble=$dirspotify/scrobble
-filestart=$dirspotify/start
-filestate=$dirspotify/state
-filestatus=$dirspotify/status
-filetoken=$dirspotify/token
-filetrackid=$dirspotify/trackid
+
+# var fileKEY=$dirspotify/KEY
+for key in elapsed expire scrobble start state status token time trackid; do
+	printf -v file$key '%s' $dirspotify/$key
+done
 ##### stop
 if [[ $1 == stop ]]; then
 	systemctl restart spotifyd
@@ -121,12 +118,17 @@ else
 , "Title"    : "'$Title'"'
 
 	if [[ -e $dirsystem/scrobble ]]; then
-		[[ -e $filescrobble ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null & # exist after 1st track changed
+		if [[ -e $filescrobble ]]; then # exist after 1st track changed
+			duration=$( cat $filetime )
+			played=$(( ( $( date +%s%3N ) - $( cat $filestart ) + 500 ) / 1000 ))
+			[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null &
+		fi
 		echo "\
 scrobble
 $Artist
 $Title
 $Album" > $filescrobble
+		echo $Time > $filetime
 	fi
 	
 	echo $metadata > $filestatus
