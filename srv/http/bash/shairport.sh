@@ -28,9 +28,9 @@ else
 	if [[ ! -e $dirairplay/status ]]; then
 		mkdir -p $dirairplay
 		echo '
-  "Album"  : ""
-, "Artist" : ""
-, "Title"  : ""' > $dirairplay/status
+ "Album"  : ""
+,"Artist" : ""
+,"Title"  : ""' > $dirairplay/status
 	fi
 	sleep 2
 	$dirbash/cmd-pushstatus.sh
