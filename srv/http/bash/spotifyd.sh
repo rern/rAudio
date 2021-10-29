@@ -6,6 +6,7 @@
 
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
+dirsystem=/srv/http/data/system
 dirspotify=$dirshm/spotify
 mkdir -p $dirspotify
 fileelapsed=$dirspotify/elapsed
@@ -128,7 +129,7 @@ fi
 
 pushstreamSpotify "{$status}"
 
-[[ -e /srv/http/data/system/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
+[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 
 [[ -z $dataprev ]] && exit
 

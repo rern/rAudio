@@ -5,6 +5,7 @@
 
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
+dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
 
 pushstreamAirplay() {
@@ -72,7 +73,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
-			echo $data > $dirairplay/volume
+			echo $data > $dirsystem/volume-airplay
 			pushstreamAirplay '{"volume":'$data'}'
 		else
 			data=${data//\"/\\\"}
@@ -83,7 +84,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		
 		pushstreamAirplay "{$status}"
 	fi
-	[[ -e /srv/http/data/system/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
+	[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 	code= # reset after $code + $data were complete
 	
 	if [[ -n $dataprev ]]; then
