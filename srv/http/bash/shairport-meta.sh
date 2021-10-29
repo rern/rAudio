@@ -7,6 +7,8 @@ dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
+filestart=$dirairplay/start
+filetime=$dirairplay/time
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
@@ -66,11 +68,11 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			starttime=$(( timestamp - elapsedms ))
 			
-			if [[ -e $dirsystem/scrobble && $starttime != $( cat $dirairplay/start ) ]]; then
+			if [[ -e $dirsystem/scrobble && $starttime != $( cat $filestart ) ]]; then
 				filescrobble=$dirairplay/scrobble
 				if [[ -e $filescrobble ]]; then # exist after 1st track changed
-					duration=$( cat $dirairplay/Time )
-					played=$(( ( $( date +%s%3N ) - $( cat $dirairplay/start ) + 500 ) / 1000 ))
+					duration=$( cat $filetime )
+					played=$(( ( $( date +%s%3N ) - $( cat $filestart ) + 500 ) / 1000 ))
 					[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null &
 				fi
 				echo "\
@@ -80,8 +82,8 @@ $( cat $dirairplay/Title )
 $( cat $dirairplay/Album )" > $filescrobble
 			fi
 			
-			echo $data > $dirairplay/Time
-			echo $starttime > $dirairplay/start
+			echo $data > $filetime
+			echo $starttime > $filestart
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
 			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \

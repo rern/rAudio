@@ -27,6 +27,9 @@ def property_changed( interface, changed, invalidated, path ):
     
     cmdsh = '/srv/http/bash/cmd.sh'
     dirbluetooth = '/srv/http/data/shm/bluetooth/'
+    filestart = dirbluetooth +'start'
+    filescrobble = dirbluetooth +'scrobble'
+    filetime = dirbluetooth +'time'
     for name, value in changed.items():
         # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (sink not emit this data)
         # Connected : 1 | 0                                         (1 emitted after Player)
@@ -43,7 +46,7 @@ def property_changed( interface, changed, invalidated, path ):
             elapsed = value == 0 and 0 or int( round( value / 1000, 0 ) )
             pushstream( { "elapsed" : elapsed } )
             start = int( time.time() ) - elapsed
-            with open( dirbluetooth +'start', 'w' ) as f: f.write( start )
+            with open( filestart, 'w' ) as f: f.write( start )
         elif name == 'State':
             state = value == 'idle' and pushstream( { "state" : "pause" } )
         elif name == 'Status':
@@ -62,16 +65,15 @@ def property_changed( interface, changed, invalidated, path ):
                 , "Time"   : Time
             } )
             if os.path.isfile( '/srv/http/data/system/scrobble' ):
-                filescrobble = dirbluetooth +'scrobble'
                 if os.path.isfile( filescrobble ):
-                    with open( dirbluetooth +'Time' ) as f: duration = int( f.read() )
-                    with open( dirbluetooth +'start' ) as f: start = int( f.read() )
+                    with open( filetime ) as f: duration = int( f.read() )
+                    with open( filestart ) as f: start = int( f.read() )
                     played = int( time.time() ) - start
                     if duration > 30 and ( played * 2 > duration or played > 240 ):
                         with open( filescrobble ) as f: data = f.read()
                         subprocess.Popen( [ cmdsh, data ] )
                 with open( filescrobble, 'w' ) as f: f.write( 'scrobble\n'+ Artist +'\n'+ Title +'\n'+ Album )
-                with open( dirbluetooth +'Time', 'w' ) as f: f.write( Time )
+                with open( filetime, 'w' ) as f: f.write( Time )
             
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )
