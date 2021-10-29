@@ -10,21 +10,14 @@ status=$( $dirbash/status.sh )
 statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
 	| sed 's/null//' )
-readarray -t data <<< "$statusdata"
-state=${data[5]}
-webradio=${data[9]}
-
+state=$( sed -n 6p <<< "$statusdata" )
+webradio=$( sed -n 10p <<< "$statusdata" )
 if [[ -e $dirshm/status ]]; then
 	dataprev=$( cat $dirshm/status )
-	if [[ $webradio == false ]]; then
-		datanew=${data[@]:0:8}
-		dataprev=$( head -8 <<< $dataprev | tr -d '\n ' )
-		[[ ${datanew// } == $dataprev ]] && exit
-	else
-		datanew=${data[@]:0:3}
-		dataprev=$( head -3 <<< $dataprev | tr -d '\n ' )
-		[[ ${data[3]} == play && ${datanew// } == $dataprev ]] && exit
-	fi
+	[[ $webradio == false ]] && n=8 || n=3
+	datanew=$( head -$n <<< $statusdata | tr -d '\n ' )
+	dataprev=$( head -$n <<< $dataprev | tr -d '\n ' )
+	[[ $datanew == $dataprev ]] && exit
 fi
 
 curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
@@ -64,3 +57,8 @@ if [[ -e $dirshm/snapclientip ]]; then
 fi
 
 [[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
+
+[[ ! -e $dirsystem/scrobble || $webradio == true || -e $dirshm/player-snapclient ]] && exit
+
+$dirbash/cmd.sh "scrobble
+$( head -3 <<< "$dataprev" )"

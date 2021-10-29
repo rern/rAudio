@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# shairport-sync.conf > this:
+#    - start / stop
+
 playerfile=/srv/http/data/shm/player
 
 if (( $# > 0 )); then # stop
@@ -14,6 +17,11 @@ else
 	systemctl stop snapclient 2> /dev/null
 	systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
 	systemctl start shairport-meta
+	file=/srv/http/data/shm/airplay
+	[[ ! -e $file ]] && echo '
+  "Album"  : ""
+, "Artist" : ""
+, "Title"  : ""' > $file
 	sleep 2
 	/srv/http/bash/cmd-pushstatus.sh
 fi

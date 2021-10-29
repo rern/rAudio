@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# RPi as renderer - status.sh > this:
+#    - retreive current status from dbus
+
 dest=$( cat /srv/http/data/shm/player-bluetooth )
 data=$( dbus-send \
 			--system \

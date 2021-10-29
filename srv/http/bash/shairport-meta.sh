@@ -1,7 +1,12 @@
 #!/bin/bash
 
+# shairport-meta.service > this:
+#    - /tmp/shairport-sync-metadata emits data
+
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
+file=$dirshm/airplay
+touch $file
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
@@ -46,7 +51,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	fi
 	
 	if [[ $code == coverart ]]; then
-		base64 -d <<< $base64 > $dirshm/airplay-coverart.jpg
+		base64 -d <<< $base64 > $file-coverart.jpg
 		data=/data/shm/airplay-coverart.$( date +%s ).jpg
 		pushstreamAirplay '{"coverart":"'$data'","file":""}'
 	else
@@ -62,21 +67,31 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			
 			starttime=$(( timestamp - elapsedms ))
-			echo $starttime > $dirshm/airplay-start
+			[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient && $starttime != $( cat $file-start ) ]] && dataprev=$( cat $file )
+			echo $starttime > $file-start
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
 			data=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
-			echo $data > $dirshm/airplay-volume
+			echo $data > $file-volume
 			pushstreamAirplay '{"volume":'$data'}'
 		else
-			echo $data > $dirshm/airplay-$code
+			data=${data//\"/\\\"}
+			sed -i 's/^,\s*"'$code'".*/,"'$code'":"'$data'"/' $file
 		fi
 		
-		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'${data//\"/\\\"}'"'
+		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'$data'"'
 		
 		pushstreamAirplay "{$status}"
 	fi
 	[[ -e /srv/http/data/system/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 	code= # reset after $code + $data were complete
+	
+	if [[ -n $dataprev ]]; then
+		data=$( echo {$dataprev} | jq -r .Artist,.Title,.Album )
+$dirbash/cmd.sh "scrobble
+$data"
+		dataprev=
+	fi
 done
+

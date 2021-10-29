@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# spotifyd.conf > this:
+#    - spotifyd emits events and data
+#    - called on each
+
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 
@@ -30,6 +34,8 @@ client_secret=6b7f533b66cb4a338716344de966dde1
 
 timestamp=$(( $( date +%s%3N ) - 1000 ))
 file=$dirshm/spotify
+touch $file
+
 if [[ ! -e $file-start ]]; then
 	mpc stop
 	rm -f $dirshm/player-*
@@ -51,7 +57,7 @@ else
 	echo $state > $file-state
 	if [[ -e $file-start ]]; then
 		start=$( cat $file-start )
-		elapsed=$(( elapsed + timestamp - start ))
+		elapsed+=$(( timestamp - start ))
 		pushstreamSpotify '{"state":"pause","elapsed":'$(( ( elapsed + 500 ) / 1000 ))'}'
 		echo $elapsed > $file-elapsed
 		exit
@@ -71,7 +77,7 @@ if [[ $( cat $trackidfile 2> /dev/null ) == $TRACK_ID ]]; then
 	start=$( cat $file-start )
 	now=$( date +%s%3N )
 	elapsedprev=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	elapsed=$(( now - start + elapsedprev ))
+	elapsedprev+=$(( now - start ))
 	echo $elapsed > $file-elapsed
 ########
 	status+=$( cat $file )
@@ -95,21 +101,35 @@ else
 	fi
 	
 	data=$( curl -s -X GET "https://api.spotify.com/v1/tracks/$TRACK_ID" -H "Authorization: Bearer $token" )
+	Album=$( jq -r .album.name <<< $data )
+	Artist=$( jq -r .album.artists[0].name <<< $data )
+	coverart=$( jq -r .album.images[0].url <<< $data )
+	Time=$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))
+	Title=$( jq -r .name <<< $data )
 	metadata='
-, "Album"    : '$( jq .album.name <<< $data )'
-, "Artist"   : '$( jq .album.artists[0].name <<< $data )'
-, "coverart" : '$( jq .album.images[0].url <<< $data )'
+  "Album"    : "'$Album'"
+, "Artist"   : "'$Artist'"
+, "coverart" : "'$coverart'"
 , "file"     : ""
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
-, "Time"     : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
-, "Title"    : '$( jq .name <<< $data )
+, "Time"     : '$Time'
+, "Title"    : "'$Title'"'
+	[[ -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient ]] && dataprev=$( cat $file )
 	echo $metadata > $file
+	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
+	(( $elapsed > $Time )) && elapsed=0
 ########
-	status+=$metadata
+	status+=",$metadata"
 	status+='
-, "elapsed" : '$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
+, "elapsed" : '$elapsed
 fi
 
 pushstreamSpotify "{$status}"
 
 [[ -e /srv/http/data/system/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
+
+[[ -z $dataprev ]] && exit
+
+data=$( echo {$dataprev} | jq -r .Artist,.Title,.Album )
+$dirbash/cmd.sh "scrobble
+$data"

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# as server - features.sh > this:
+#    - force clients stop on disabled
+#    - data for sshpass from snapclient
+# as client - main.js > this:
+#    - connect / disconnect
+
+
 dirshm=/srv/http/data/shm
 snapserverfile=$dirshm/snapserverip
 snapclientfile=$dirshm/snapclientip

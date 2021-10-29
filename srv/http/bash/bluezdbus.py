@@ -1,6 +1,11 @@
 #!/usr/bin/python
 
-# RPi as renderer: bluezdbus.service > this > pushstream
+# RPi as renderer - bluezdbus.service > this:
+#    - init:        set player-bluetooth
+#    - start:       cmd.sh bluetoothplayer
+#    - connect:     cmd.sh bluetoothplayerconnect
+#    - status:      dbus emits events and data
+#    - disconnect : cmd.sh bluetoothplayerconnect
 
 import dbus
 import dbus.service

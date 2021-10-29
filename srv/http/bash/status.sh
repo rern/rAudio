@@ -87,60 +87,49 @@ if [[ $player != mpd && $player != upnp ]]; then
 
 	airplay )
 		path=$dirshm/airplay
-		for item in Artist Album coverart Title; do
-			val=$( cat $path-$item 2> /dev/null )
-			[[ -z $val ]] && continue
-	########
-			status+=', "'$item'":"'${val//\"/\\\"}'"' # escape " for json - no need for ' : , [ {
-		done
 		start=$( cat $path-start 2> /dev/null || echo 0 )
 		Time=$( cat $path-Time 2> /dev/null )
-		now=$( date +%s%3N )
-		if [[ -n $start && -n $Time ]]; then
-			elapsed=$( printf '%.0f' $(( ( now - start + 500 ) / 1000 )) )
-		fi
+		timestamp=$( date +%s%3N )
+		[[ -n $start && -n $Time ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
 		[[ -e $dirshm/airplay-coverart.jpg ]] && coverart=/data/shm/airplay-coverart.$( date +%s ).jpg
-	########
+########
+		status+="
+, $( cat $path )"
 		status+='
-	, "coverart"  : "'$coverart'"
-	, "elapsed"   : '$elapsed'
-	, "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
-	, "state"     : "play"
-	, "Time"      : '$Time'
-	, "timestamp" : '$now
+, "coverart"  : "'$coverart'"
+, "elapsed"   : '$elapsed'
+, "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
+, "state"     : "play"
+, "Time"      : '$Time'
+, "timestamp" : '$timestamp
 		;;
 	bluetooth )
-	########
-		status+=$( $dirbash/status-bluetooth.sh )
+########
+		status+="
+$( $dirbash/status-bluetooth.sh )"
 		;;
 	snapclient )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
 		snapserverip=$( cat $dirshm/snapserverip 2> /dev/null )
-	########
-		status+=$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapclient \
-								| sed 's|"coverart" : "|&http://'$snapserverip'/|; s/^{\|}$//g' )
+########
+		status+="
+$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapclient \
+	| sed 's|"coverart" : "|&http://'$snapserverip'/|; s/^{\|}$//g' )"
 		;;
 	spotify )
 		path=$dirshm/spotify
 		elapsed=$( cat $path-elapsed 2> /dev/null || echo 0 )
 		state=$( cat $path-state )
-		now=$( date +%s%3N )
-		if [[ $state == play ]]; then
-			start=$( cat $path-start )
-			elapsed=$(( now - start + elapsed ))
-			time=$( sed 's/.*"Time"\s*:\s*\(.*\)\s*,\s*"Title".*/\1/' < $path )
-			if (( $elapsed > $(( time * 1000 )) )); then
-				elapsed=0
-				echo 0 > $path-elapsed
-			fi
-		fi
+		timestamp=$( date +%s%3N )
+		[[ $state == play ]] && elapsed+=$(( timestamp - $( cat $path-start ) ))
 		elapsed=$( printf '%.0f' $(( ( elapsed + 500 ) / 1000 )) )
-	########
-		status+=$( cat $path )
-		status+='
-	, "elapsed"   : '$elapsed'
-	, "state"     : "'$state'"
-	, "timestamp" : '$now
+########
+		status+="
+, $( cat $path )"
+	status+='
+, "elapsed"   : '$elapsed'
+, "state"     : "'$state'"
+, "timestamp" : '$timestamp
 		;;
 		
 	esac

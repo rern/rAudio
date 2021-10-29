@@ -141,12 +141,9 @@ HTML
 		, 'help'     => <<< HTML
 Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  • All played tracks:
- &emsp; • Longer than 30 seconds
- &emsp; • Played more than half longer than 4 minutes of that track
- • Tracks by all renderers are supported as well
- • WebRadio tracks:
- &emsp; • Normally not scrobble
- &emsp; • To scrobble a track: Tap track title > <i class="fa fa-lastfm"></i>Scrobble
+ &emsp; • Include tracks on all renderers
+ &emsp; • Except WebRadio and SnapClient (already scrobbled by SnapServer)
+ &emsp; • To scrobble WebRadio tracks: Tap track title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [
