@@ -314,16 +314,16 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
-bluetoothplayer ) # init
-	mpc stop
-	mkdir -p $dirshm/bluetooth
-	echo ${args[1]} > $dirshm/bluetooth/dest
-	sleep 1
-	volume0dB
-	;;
-bluetoothplayerconnect )
+bluetoothplayer )
 	rm -f $dirshm/{player-*,scrobble}
-	[[ ${args[1]} == 1 ]] && touch $dirshm/player-bluetooth || touch $dirshm/player-mpd
+	if [[ ${args[1]} == 1 ]]; then
+		mpc stop
+		touch $dirshm/player-bluetooth
+		mkdir -p $dirshm/bluetooth
+		volume0dB
+	else
+		touch $dirshm/player-mpd
+	fi
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )

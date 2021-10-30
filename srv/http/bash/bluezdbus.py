@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
 # RPi as renderer - bluezdbus.service > this:
-#    - init:        set player-bluetooth
-#    - start:       cmd.sh bluetoothplayer
-#    - connect:     cmd.sh bluetoothplayerconnect
+#    - start:       set Player dest file
+#    - connect:     cmd.sh bluetoothplayer 1
 #    - status:      dbus emits events and data
-#    - disconnect : cmd.sh bluetoothplayerconnect
+#    - disconnect : cmd.sh bluetoothplayer 0
 
 import dbus
 import dbus.service
@@ -20,8 +19,9 @@ AGENT_INTERFACE = 'org.bluez.Agent1'
 path = '/test/autoagent'
 cmdsh = '/srv/http/bash/cmd.sh'
 dirshm = '/srv/http/data/shm/'
-filestart = dirshm +'bluetooth/start'
-filestate = dirshm +'bluetooth/state'
+dirbluetooth = dirshm +'bluetooth/'
+filestart = dirbluetooth +'start'
+filestate = dirbluetooth +'state'
 
 def fread( file ):
     with open( file ) as f: return f.read()
@@ -42,9 +42,9 @@ def property_changed( interface, changed, invalidated, path ):
         # Track     : metadata
         # Type      : dest playerX
         if name == 'Player':
-            subprocess.Popen( [ cmdsh, 'bluetoothplayer\n'+ value ] )
+            fwrite( dirbluetooth +'dest', value )
         elif name == 'Connected':
-            subprocess.Popen( [ cmdsh, 'bluetoothplayerconnect\n'+ str( value ) ] )
+            subprocess.Popen( [ cmdsh, 'bluetoothplayer\n'+ str( value ) ] )
         elif name == 'Position':
             elapsed = value == 0 and 0 or round( value / 1000, 0 )
             pushstream( { "elapsed" : elapsed } )
