@@ -12,12 +12,8 @@ dirairplay=$dirshm/airplay
 if (( $# > 0 )); then
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
 	systemctl stop shairport-meta
-	systemctl restart shairport-sync
 	$dirbash/cmd.sh scrobble stop
-	rm -f $dirshm/{player-*,scrobble} $dirairplay/start
-	touch $dirshm/player-mpd
-	$dirbash/cmd.sh volumereset
-	sleep 2
+	echo stop > $dirairplay/state
 	$dirbash/cmd-pushstatus.sh
 ##### start
 else
@@ -30,5 +26,6 @@ else
 	$dirbash/cmd.sh volume0db
 	mkdir -p $dirairplay
 	sleep 2
+	echo play > $dirairplay/state
 	$dirbash/cmd-pushstatus.sh
 fi

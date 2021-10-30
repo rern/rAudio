@@ -933,6 +933,16 @@ scrobble )
 	sleep 10
 	rm $dirshm/scrobblesent
 	;;
+shairportstop )
+	pushstreamNotify AirPlay 'Stop ...' 'airplay blink'
+	systemctl stop shairport-meta
+	$dirbash/cmd.sh scrobble stop
+	systemctl restart shairport-sync
+	rm -f $dirshm/{player-*,scrobble} $dirshm/airplay/start
+	touch $dirshm/player-mpd
+	$dirbash/cmd.sh volumereset
+	$dirbash/cmd-pushstatus.sh
+	;;
 stationcoverreset )
 	coverfile=${args[1]}
 	rm -f "$coverfile".* "$coverfile-thumb".*

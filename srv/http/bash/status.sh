@@ -88,6 +88,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 	airplay )
 		dirairplay=$dirshm/airplay
 		start=$( cat $dirairplay/start 2> /dev/null || echo 0 )
+		state=$( cat $dirairplay/state 2> /dev/null || echo play )
 		Time=$( cat $dirairplay/Time 2> /dev/null )
 		timestamp=$( date +%s%3N )
 		[[ -n $start && -n $Time ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
@@ -100,7 +101,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 , "coverart"  : "'$coverart'"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
-, "state"     : "play"
+, "state"     : "'$state'"
 , "Time"      : '$Time'
 , "timestamp" : '$timestamp
 		;;

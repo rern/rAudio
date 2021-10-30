@@ -899,7 +899,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
 			if ( G.status.player === 'airplay' ) {
-				bash( '/srv/http/bash/shairport.sh stop' );
+				bash( [ 'shairportstop' ] );
 			} else if ( G.status.player === 'bluetooth' ) {
 				bash( [ 'bluetoothplayerstop' ] );
 			} else if ( G.status.player === 'snapclient' ) {
