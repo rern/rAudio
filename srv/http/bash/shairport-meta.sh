@@ -70,13 +70,16 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			
 			if [[ -e $dirsystem/scrobble && $starttime != $( cat $filestart ) ]]; then
 				$dirbash/cmd.sh scrobble
+				for key in Artist Title Album Time start; do
+					printf -v $key '%s' $( cat $dirairplay/$key )
+				done
 				echo "\
-Artist=$( cat $dirairplay/Artist )
-Title=$( cat $dirairplay/Title )
-Album=$( cat $dirairplay/Album )
+Artist=$Artist
+Title=$Title
+Album=$Album
 state=play
-Time=$( cat $filetime )
-start=$(( ( $( cat $filestart ) + 500 ) / 1000 ))" > $dirshm/scrobble
+Time=$Time
+start=$(( ( $start + 500 ) / 1000 ))" > $dirshm/scrobble
 			fi
 			
 			echo $data > $filetime
