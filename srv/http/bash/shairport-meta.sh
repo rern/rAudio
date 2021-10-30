@@ -76,7 +76,7 @@ Title=$( cat $dirairplay/Title )
 Album=$( cat $dirairplay/Album )
 state=play
 Time=$( cat $filetime )
-start=$( cat $filestart )" > $dirshm/scrobble
+start=$(( ( $( cat $filestart ) + 500 ) / 1000 ))" > $dirshm/scrobble
 			fi
 			
 			echo $data > $filetime
