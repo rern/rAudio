@@ -19,14 +19,14 @@ scrobble() {
 	[[ -z $changedArtist || -z $changedTitle ]] && return
 	
 	$dirbash/cmd.sh scrobble
-	for key in Artist Title Album Time start; do
+	for key in Artist Title Album state Time start; do
 		printf -v $key '%s' "$( cat $dirairplay/$key )"
 	done
 	cat << EOF > $dirshm/scrobble
 Artist="$Artist"
 Title="$Title"
 Album="$Album"
-state=play
+state=$state
 Time=$Time
 start=$(( ( $start + 500 ) / 1000 ))
 EOF
