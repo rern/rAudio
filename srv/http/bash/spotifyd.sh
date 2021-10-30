@@ -134,9 +134,9 @@ pushstreamSpotify "{$status}"
 if [[ -n $data && -e $dirsystem/scrobble ]]; then
 	$dirbash/cmd.sh scrobble
 	echo "\
-Artist=$Artist
-Title=$Title
-Album=$Album
+Artist='$Artist'
+Title='$Title'
+Album='$Album'
 state=$( cat $filestate )
 Time=$Time
 start=$( cat $filestart )" > $dirshm/scrobble
