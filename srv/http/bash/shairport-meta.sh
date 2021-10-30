@@ -8,7 +8,7 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
 filestart=$dirairplay/start
-filetime=$dirairplay/time
+filetime=$dirairplay/Time
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
