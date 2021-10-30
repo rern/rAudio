@@ -21,9 +21,9 @@ if (( $# > 0 )); then
 ##### start
 else
 	if [[ ! -e $dirshm/player-airplay ]] ;then
+		mpc stop
 		rm -f $dirshm/{player-*,scrobble} $dirairplay/start
 		touch $dirshm/player-airplay
-		mpc stop
 		systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
 		$dirbash/cmd.sh volume0db
 		mkdir -p $dirairplay

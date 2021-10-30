@@ -320,6 +320,7 @@ bluetoothplayer )
 		mpc stop
 		touch $dirshm/player-bluetooth
 		mkdir -p $dirshm/bluetooth
+		systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
 		volume0dB
 	else
 		touch $dirshm/player-mpd
