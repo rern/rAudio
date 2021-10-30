@@ -54,7 +54,8 @@ ib {
 	line-height: 34px;
 }
 .disable,
-.disabled {
+.disabled,
+.disabled i {
 	pointer-events: none;
 	color: var( --cg60 ) !important;
 }

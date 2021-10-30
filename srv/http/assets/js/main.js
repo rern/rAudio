@@ -366,6 +366,7 @@ $( '#artist, #guide-bio' ).click( function() {
 $( '#title, #guide-lyrics' ).click( function() {
 	var artist = $( '#artist' ).text();
 	var title = $( '#title' ).text();
+	var album = $( '#album' ).text();
 	if ( G.lyrics
 		&& !G.status.webradio
 		&& artist === $( '#lyricsartist' ).text()
@@ -385,9 +386,10 @@ $( '#title, #guide-lyrics' ).click( function() {
 	var paren = title.replace( /^.*\(/, '(' );
 	var content = `\
 <table>
-<tr><td><i class="fa fa-artist wh"></i></td><td><input type="text"></td></tr>
-<tr><td><i class="fa fa-music wh"></i></td><td><input type="text"></td></tr>
-<tr id="paren"><td></td><td><label><input type="checkbox"><gr>Include</gr> ${ paren }</label></td></tr>
+<tr><td><i class="fa fa-artist wh"></i></td><td><input class="required" type="text"></td></tr>
+<tr><td><i class="fa fa-music wh"></i></td><td><input class="required" type="text"></td></tr>
+<tr class="album"><td><i class="fa fa-album wh"></i></td><td><input type="text"></td></tr>
+<tr id="paren"><td></td><td><label><input type="checkbox"><gr>Title includes:</gr>&emsp;${ paren }</label></td></tr>
 <tr style="height: 10px;"></tr>
 <tr><td colspan="2" class="btnbottom">
 	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
@@ -400,7 +402,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 		, title       : 'Lyrics'
 		, content     : content
 		, boxwidth    : 320
-		, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
+		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
 		, beforeshow  : function() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
@@ -409,6 +411,12 @@ $( '#title, #guide-lyrics' ).click( function() {
 					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
+			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {
+				var $this = $( this );
+				$this.css( 'border-color', $this.val() ? '' : 'red' );
+				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
+			} );
+			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
 			$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble || !G.status.webradio );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
@@ -430,7 +438,13 @@ $( '#title, #guide-lyrics' ).click( function() {
 						$( '#bio' ).removeClass( 'hide' );
 					}
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', artist, title, G.status.Album, 60 ], function( response ) {
+					var values = infoVal();
+					if ( !values[ 0 ] || !values[ 1 ] ) {
+						banner( 'Last.fm Scrobble', 'Artist and Title cannot be blank.', 'lastfm' );
+						return
+					}
+					
+					bash( [ 'scrobble', ...values ], function( response ) {
 						if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
 						bannerHide();
 					}, 'json' );
