@@ -8,7 +8,7 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
 
-##### stop
+##### stop (no paused state)
 if (( $# > 0 )); then
 	$dirbash/cmd.sh scrobble stop
 	rm -f $dirshm/{player-*,scrobble} $dirairplay/start
