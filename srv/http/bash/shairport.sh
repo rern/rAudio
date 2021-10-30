@@ -5,11 +5,13 @@
 
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
+dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
 
 ##### stop
 if (( $# > 0 )); then
-	rm -f $dirshm/player-* $dirairplay/{scrobble,start}
+	$dirbash/cmd.sh scrobble stop
+	rm -f $dirshm/{player-*,scrobble} $dirairplay/start
 	touch $dirshm/player-mpd
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
 	$dirbash/cmd.sh volumereset
@@ -18,7 +20,7 @@ if (( $# > 0 )); then
 	systemctl stop shairport-meta
 ##### start
 else
-	rm -f $dirshm/player-*
+	rm -f $dirshm/{player-*,scrobble} $dirairplay/start
 	touch $dirshm/player-airplay
 	mpc stop
 	systemctl stop snapclient 2> /dev/null

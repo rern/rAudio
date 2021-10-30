@@ -322,19 +322,14 @@ bluetoothplayer ) # init
 	volume0dB
 	;;
 bluetoothplayerconnect )
-	if [[ ${args[1]} == 0 ]]; then # disconnected
-		rm -f $dirshm/player-*
-		touch $dirshm/player-mpd
-	else
-		rm -f $dirshm/{player-*,btclient}
-		touch $dirshm/player-bluetooth
-	fi
-	pushstream mpdplayer "$( $dirbash/status.sh )"
+	rm -f $dirshm/{player-*,scrobble}
+	[[ ${args[1]} == 1 ]] && touch $dirshm/player-bluetooth || touch $dirshm/player-mpd
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
 	;;
 bluetoothplayerstop )
+	$dirbash/cmd.sh scrobble stop
 	systemctl restart bluezdbus
-	rm -f $dirshm/player-* $dirshm/bluetooth/scrobble
+	rm -f $dirshm/{player-*,scrobble}
 	touch $dirshm/player-mpd
 	volumeReset
 	pushstream mpdplayer "$( $dirbash/status.sh )"
@@ -889,32 +884,45 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	artist=${args[1]}
-	title=${args[2]}
-	album=${args[3]}
-	[[ -z $artist || -z $title ]] && exit
-	
+	if [[ -n ${args[2]} ]]; then # webradio - at least 2 args
+		Artist=${args[1]}
+		Title=${args[2]}
+		Album=${args[3]}
+	else
+		[[ ! -e $dirshm/scrobble ]] && exit # file not yet exist on initial play
+		
+		. $dirshm/scrobble # Artist, Title, Album, state, Time, start
+		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time < 30 ) ]] && exit
+		
+		if [[ $state == stop || ${args[1]} == stop ]]; then # args1 on stop: airplay bluetooth, spotify
+			[[ -z $Time || -z $start ]] && exit
+			
+			elapsed=$(( $( date +%s ) - $start ))
+			(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
+			
+		fi
+	fi
 	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
 	sk=$( cat $dirsystem/scrobble )
 	timestamp=$( date +%s )
 	if [[ -n $album ]]; then
-		sigalbum="album${album}"
-		dataalbum="album=$album"
+		sigalbum="album${Album}"
+		dataalbum="album=$Album"
 	fi
-	apisig=$( echo -n "${sigalbum}api_key${apikey}artist${artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${track}${sharedsecret}" \
+	apisig=$( echo -n "${sigalbum}api_key${apikey}artist${Artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${Title}${sharedsecret}" \
 				| iconv -t utf8 \
 				| md5sum \
 				| cut -c1-32 )
 	reponse=$( curl -sX POST \
 		--data-urlencode "$dataalbum" \
 		--data "api_key=$apikey" \
-		--data-urlencode "artist=$artist" \
+		--data-urlencode "artist=$Artist" \
 		--data "method=track.scrobble" \
 		--data "sk=$sk" \
 		--data "timestamp=$timestamp" \
-		--data-urlencode "track=$title" \
+		--data-urlencode "track=$Title" \
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )

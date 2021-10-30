@@ -69,17 +69,14 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			starttime=$(( timestamp - elapsedms ))
 			
 			if [[ -e $dirsystem/scrobble && $starttime != $( cat $filestart ) ]]; then
-				filescrobble=$dirairplay/scrobble
-				if [[ -e $filescrobble ]]; then # exist after 1st track changed
-					duration=$( cat $filetime )
-					played=$(( ( $( date +%s%3N ) - $( cat $filestart ) + 500 ) / 1000 ))
-					[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null &
-				fi
+				$dirbash/cmd.sh scrobble
 				echo "\
-scrobble
-$( cat $dirairplay/Artist )
-$( cat $dirairplay/Title )
-$( cat $dirairplay/Album )" > $filescrobble
+Artist=$( cat $dirairplay/Artist )
+Title=$( cat $dirairplay/Title )
+Album=$( cat $dirairplay/Album )
+state=play
+Time=$( cat $filetime )
+start=$( cat $filestart )" > $dirshm/scrobble
 			fi
 			
 			echo $data > $filetime
@@ -101,4 +98,3 @@ $( cat $dirairplay/Album )" > $filescrobble
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 	code= # reset after $code + $data were complete
 done
-

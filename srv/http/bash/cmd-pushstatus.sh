@@ -10,8 +10,9 @@ status=$( $dirbash/status.sh )
 statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
 	| sed 's/null//' )
-state=$( sed -n 6p <<< "$statusdata" )
-webradio=$( sed -n 10p <<< "$statusdata" )
+readarray -t data <<< "$statusdata"
+state=${data[5]}
+webradio=${data[9]}
 if [[ -e $dirshm/status ]]; then
 	dataprev=$( cat $dirshm/status )
 	[[ $webradio == false ]] && n=8 || n=3
@@ -60,9 +61,11 @@ fi
 
 [[ ! -e $dirsystem/scrobble || $webradio == true || -e $dirshm/player-snapclient ]] && exit
 
-time=$( sed -n 7,9p <<< "$dataprev" )
-duration=${time[0]}
-start=$(( ${time[2]} - ${time[1]} )) # timestamp - elapsed
-played=$(( $( date +%s%3N ) - $start ))
-[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "scrobble
-$( head -3 <<< "$dataprev" )"
+$dirbash/cmd.sh scrobble
+echo "\
+Artist=${data[0]}
+Title=${data[1]}
+Album=${data[2]}
+state=${data[5]}
+Time=${data[6]}
+start=$(( ${data[8]} - ${data[7]} ))" > $dirshm/scrobble

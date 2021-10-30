@@ -11,13 +11,14 @@ dirspotify=$dirshm/spotify
 mkdir -p $dirspotify
 
 # var fileKEY=$dirspotify/KEY
-for key in elapsed expire scrobble start state status token time trackid; do
+for key in elapsed expire start state status token trackid; do
 	printf -v file$key '%s' $dirspotify/$key
 done
 ##### stop
 if [[ $1 == stop ]]; then
+	$dirbash/cmd.sh scrobble stop
 	systemctl restart spotifyd
-	rm -f $dirshm/player-* $dirspotify/{scrobble,start}
+	rm -f $dirshm/{player-*,scrobble} $dirspotify/start
 	touch $dirshm/player-mpd
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"Spotify","text":"Stop ...","icon":"spotify blink","delay":-1}'
 	$dirbash/cmd.sh volumereset
@@ -27,7 +28,7 @@ fi
 ##### start
 if [[ ! -e $filestart ]]; then
 	mpc stop
-	rm -f $dirshm/player-*
+	rm -f $dirshm/{player-*,scrobble} $dirspotify/start
 	touch $dirshm/player-spotify
 	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
 	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
@@ -116,22 +117,6 @@ else
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "Time"     : '$Time'
 , "Title"    : "'$Title'"'
-
-	if [[ -e $dirsystem/scrobble ]]; then
-		if [[ -e $filescrobble ]]; then # exist after 1st track changed
-			duration=$( cat $filetime )
-			played=$(( ( $( date +%s%3N ) - $( cat $filestart ) + 500 ) / 1000 ))
-			[[ $duration > 30 && ( $played * 2 > $duration || $played > 240 ) ]] && $dirbash/cmd.sh "$( cat $filescrobble )" &> /dev/null &
-		fi
-		echo "\
-scrobble
-$Artist
-$Title
-$Album" > $filescrobble
-		echo $Time > $filetime
-	fi
-	
-	echo $metadata > $filestatus
 	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
 	(( $elapsed > $Time )) && elapsed=0
 ########
@@ -139,8 +124,20 @@ $Album" > $filescrobble
 , $metadata"
 	status+='
 , "elapsed" : '$elapsed
+	echo $metadata > $filestatus
 fi
 
 pushstreamSpotify "{$status}"
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
+
+if [[ -n $data && -e $dirsystem/scrobble ]]; then
+	$dirbash/cmd.sh scrobble
+	echo "\
+Artist=$Artist
+Title=$Title
+Album=$Album
+state=$( cat $filestate )
+Time=$Time
+start=$( cat $filestart )" > $dirshm/scrobble
+fi
