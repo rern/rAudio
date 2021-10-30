@@ -13,6 +13,26 @@ filetime=$dirairplay/Time
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
 }
+scrobble() {
+	[[ $code == Artist && $data != $( cat $dirairplay/Artist ) ]] && changedArtist=1
+	[[ $code == Title && $data != $( cat $dirairplay/Title ) ]] && changedTitle=1
+	[[ -z $changedArtist || -z $changedTitle ]] && return
+	
+	$dirbash/cmd.sh scrobble
+	for key in Artist Title Album Time start; do
+		printf -v $key '%s' "$( cat $dirairplay/$key )"
+	done
+	cat << EOF > $dirshm/scrobble
+Artist="$Artist"
+Title="$Title"
+Album="$Album"
+state=play
+Time=$Time
+start=$(( ( $start + 500 ) / 1000 ))
+EOF
+	changedArtist=
+	changedTitle=
+}
 
 for pid in $( pgrep shairport-sync ); do
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
@@ -67,22 +87,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
 			pushstreamAirplay '{"elapsed":'$elapsed'}'
 			starttime=$(( timestamp - elapsedms ))
-			
-			if [[ -e $dirsystem/scrobble && $starttime != $( cat $filestart ) ]]; then
-				$dirbash/cmd.sh scrobble
-				for key in Artist Title Album Time start; do
-					printf -v $key '%s' $( cat $dirairplay/$key )
-				done
-				cat << EOF > $dirshm/scrobble
-Artist="$Artist"
-Title="$Title"
-Album="$Album"
-state=play
-Time=$Time
-start=$(( ( $start + 500 ) / 1000 ))
-EOF
-			fi
-			
 			echo $data > $filetime
 			echo $starttime > $filestart
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
@@ -92,6 +96,7 @@ EOF
 			pushstreamAirplay '{"volume":'$data'}'
 		else
 			echo $data > $dirairplay/$code
+			[[ -e $dirshm/scrobble ]] && scrobble
 			data=${data//\"/\\\"}
 		fi
 		
