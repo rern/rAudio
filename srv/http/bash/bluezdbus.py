@@ -72,9 +72,9 @@ def property_changed( interface, changed, invalidated, path ):
                 start = fread( filestart )
                 state = fread( filestate )
                 fwrite( dirshm +'scrobble', f'''\
-Artist='{ Artist }'
-Title='{ Title }'
-Album='{ Album }'
+Artist="{ Artist }"
+Title="{ Title }"
+Album="{ Album }"
 state={ state }
 Time={ Time }
 start={ start }''' )

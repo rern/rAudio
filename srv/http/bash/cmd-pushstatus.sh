@@ -62,10 +62,11 @@ fi
 [[ ! -e $dirsystem/scrobble || $webradio == true || -e $dirshm/player-snapclient ]] && exit
 
 $dirbash/cmd.sh scrobble
-echo "\
-Artist='${data[0]}'
-Title='${data[1]}'
-Album='${data[2]}'
+cat << EOF > $dirshm/scrobble
+Artist="${data[0]}"
+Title="${data[1]}"
+Album="${data[2]}"
 state=${data[5]}
 Time=${data[6]}
-start=$(( ${data[8]} - ${data[7]} ))" > $dirshm/scrobble
+start=$(( ${data[8]} - ${data[7]} ))
+EOF

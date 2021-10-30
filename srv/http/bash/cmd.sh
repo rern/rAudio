@@ -884,6 +884,8 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
+	[[ -e $dirshm/scrobblesent ]] && exit # limit 10 seconds
+	
 	if [[ -n ${args[2]} ]]; then # webradio - at least 2 args
 		Artist=${args[1]}
 		Title=${args[2]}
@@ -892,7 +894,7 @@ scrobble )
 		[[ ! -e $dirshm/scrobble ]] && exit # file not yet exist on initial play
 		
 		. $dirshm/scrobble # Artist, Title, Album, state, Time, start
-		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time < 30 ) ]] && exit
+		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
 		if [[ $state == stop || ${args[1]} == stop ]]; then # args1 on stop: airplay bluetooth, spotify
 			[[ -z $Time || -z $start ]] && exit
@@ -927,6 +929,9 @@ scrobble )
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse
+	touch $dirshm/scrobblesent
+	sleep 10
+	rm $dirshm/scrobblesent
 	;;
 stationcoverreset )
 	coverfile=${args[1]}

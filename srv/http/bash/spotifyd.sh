@@ -131,13 +131,14 @@ pushstreamSpotify "{$status}"
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 
-if [[ -n $data && -e $dirsystem/scrobble ]]; then
-	$dirbash/cmd.sh scrobble
-	echo "\
-Artist='$Artist'
-Title='$Title'
-Album='$Album'
+[[ -z $data || ! -e $dirsystem/scrobble ]] && exit
+
+$dirbash/cmd.sh scrobble
+cat << EOF > $dirshm/scrobble
+Artist="$Artist"
+Title="$Title"
+Album="$Album"
 state=$( cat $filestate )
 Time=$Time
-start=$( cat $filestart )" > $dirshm/scrobble
-fi
+start=$( cat $filestart )
+EOF

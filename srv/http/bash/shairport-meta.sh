@@ -73,13 +73,14 @@ cat /tmp/shairport-sync-metadata | while read line; do
 				for key in Artist Title Album Time start; do
 					printf -v $key '%s' $( cat $dirairplay/$key )
 				done
-				echo "\
-Artist='$Artist'
-Title='$Title'
-Album='$Album'
+				cat << EOF > $dirshm/scrobble
+Artist="$Artist"
+Title="$Title"
+Album="$Album"
 state=play
 Time=$Time
-start=$(( ( $start + 500 ) / 1000 ))" > $dirshm/scrobble
+start=$(( ( $start + 500 ) / 1000 ))
+EOF
 			fi
 			
 			echo $data > $filetime
