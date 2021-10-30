@@ -8,12 +8,15 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
 
-##### stop (no paused state)
+##### pause
 if (( $# > 0 )); then
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
-	systemctl stop shairport-meta
+	systemctl pause shairport-meta
 	$dirbash/cmd.sh scrobble stop
 	echo stop > $dirairplay/state
+	start=$( cat $dirairplay/start 2> /dev/null )
+	timestamp=$( date +%s%3N )
+	[[ -n $start ]] && printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) > $dirairplay/elapsed
 	$dirbash/cmd-pushstatus.sh
 ##### start
 else

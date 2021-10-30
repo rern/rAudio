@@ -1293,7 +1293,7 @@ function setButtonControl() {
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
-		$( '#pause' ).toggleClass( 'hide', G.status.stream || G.status.player === 'airplay' );
+		$( '#pause' ).toggleClass( 'hide', G.status.stream );
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ G.status.state ).addClass( 'active' );
 	}

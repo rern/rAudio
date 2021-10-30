@@ -91,7 +91,11 @@ if [[ $player != mpd && $player != upnp ]]; then
 		state=$( cat $dirairplay/state 2> /dev/null || echo play )
 		Time=$( cat $dirairplay/Time 2> /dev/null )
 		timestamp=$( date +%s%3N )
-		[[ -n $start && -n $Time ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
+		if [[ $state == pause ]]; then
+			elapsed=$( cat $dirairplay/elapsed 2> /dev/null )
+		else
+			[[ -n $start ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
+		fi
 		[[ -e $dirshm/airplay/coverart.jpg ]] && coverart=/data/shm/airplay/coverart.$( date +%s ).jpg
 ########
 		status+='
