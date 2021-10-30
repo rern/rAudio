@@ -20,15 +20,16 @@ if (( $# > 0 )); then
 	$dirbash/cmd-pushstatus.sh
 ##### start
 else
-	rm -f $dirshm/{player-*,scrobble} $dirairplay/start
-	touch $dirshm/player-airplay
-	mpc stop
-	systemctl stop snapclient 2> /dev/null
-	systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
+	if [[ ! -e $dirshm/player-airplay ]] ;then
+		rm -f $dirshm/{player-*,scrobble} $dirairplay/start
+		touch $dirshm/player-airplay
+		mpc stop
+		systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
+		$dirbash/cmd.sh volume0db
+		mkdir -p $dirairplay
+	fi
 	systemctl start shairport-meta
-	$dirbash/cmd.sh volume0db
-	mkdir -p $dirairplay
-	sleep 2
+#	sleep 2
 	echo play > $dirairplay/state
 	$dirbash/cmd-pushstatus.sh
 fi
