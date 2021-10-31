@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirshm=/srv/http/data/shm
+dirscrobble=$dirsystem/scrobble.conf
 
 #[[ $( sed -n 6p $dirshm/status ) == pause ]] && sleep 0.1 # fix: vumeter - resume with wrong track
 
@@ -59,10 +60,10 @@ fi
 
 [[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
 
-[[ ! -e $dirsystem/scrobble || $webradio == true || -e $dirshm/player-snapclient ]] && exit
-
-$dirbash/cmd.sh scrobble
-cat << EOF > $dirshm/scrobble
+if [[ $webradio == false && -e $dirscrobble/scrobble && ! -e $dirshm/player-snapclient ]]; then
+	[[ -e $dirshm/player-upnp && ! -e $dirscrobble/upnp ]] && exit
+	$dirbash/cmd.sh scrobble
+	cat << EOF > $dirshm/scrobble
 Artist="${data[0]}"
 Title="${data[1]}"
 Album="${data[2]}"
@@ -70,3 +71,4 @@ state=${data[5]}
 Time=${data[6]}
 start=$(( ${data[8]} - ${data[7]} ))
 EOF
+fi

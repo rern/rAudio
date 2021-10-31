@@ -875,7 +875,7 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	[[ -e $dirshm/scrobblesent ]] && exit # limit 10 seconds
+	[[ -e $dirshm/scrobblesent ]] && exit # 10s debounce
 	
 	if [[ -n ${args[2]} ]]; then # webradio - at least 2 args
 		Artist=${args[1]}
@@ -898,7 +898,7 @@ scrobble )
 	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
-	sk=$( cat $dirsystem/scrobblekey )
+	sk=$( cat $dirsystem/scrobble/key )
 	timestamp=$( date +%s )
 	if [[ -n $album ]]; then
 		sigalbum="album${Album}"

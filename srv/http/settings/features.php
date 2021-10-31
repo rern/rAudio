@@ -139,7 +139,7 @@ HTML
 		  'label'    => 'Last.fm Scrobble'
 		, 'id'       => 'scrobble'
 		, 'icon'     => 'lastfm'
-		, 'setting'  => 'self'
+		, 'setting'  => true
 		, 'help'     => <<< HTML
 Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  • Include: All renderers except SnapClient (already scrobbled by SnapServer)

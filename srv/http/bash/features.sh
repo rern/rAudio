@@ -41,7 +41,7 @@ case ${args[0]} in
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
-autoplay|autoplaycd|lyricsembedded|scrobble|streaming )
+autoplay|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
@@ -179,9 +179,29 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
+scrobbledisable )
+	rm -f $dirsystem/scrobble
+	pushRefresh
+	;;
 scrobbleset )
+	dirscrobble=$dirsystem/scrobble.conf
+	mkdir -p $dirscrobble
+	keys=( airplay bluetooth spotify upnp )
+	vals=( ${args[@]:3:6} )
+	for(( i=0; i < 4; i++ )); do
+		fileconf=$dirscrobble/${keys[ i ]}
+		[[ ${vals[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
+	done
 	username=${args[1]}
 	password=${args[2]}
+	if [[ -z $password \
+		&& -e $dirscrobble/key \
+		&& $username == $( cat $dirscrobble/user ) ]]; then
+		touch $dirsystem/scrobble
+		pushRefresh
+		exit
+	fi
+	
 	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
@@ -199,9 +219,9 @@ scrobbleset )
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse && exit
 	
-	echo $username > $dirsystem/scrobbleuser
-	echo $reponse | sed 's/.*key":"//; s/".*//' > $dirsystem/scrobblekey
-	touch $dirsystem/scrobble
+	echo $username >> $dirscrobble/user
+	echo $reponse | sed 's/.*key":"//; s/".*//' > $dirscrobble/key
+	touch touch $dirsystem/scrobble
 	pushRefresh
 	;;
 shairport-sync | spotifyd | upmpdcli )

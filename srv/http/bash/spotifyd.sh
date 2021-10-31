@@ -7,6 +7,7 @@
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
+dirscrobble=$dirsystem/scrobble.conf
 dirspotify=$dirshm/spotify
 mkdir -p $dirspotify
 
@@ -122,10 +123,9 @@ pushstreamSpotify "{$status}"
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 
-[[ -z $data || ! -e $dirsystem/scrobble ]] && exit
-
-$dirbash/cmd.sh scrobble
-cat << EOF > $dirshm/scrobble
+if [[ -n $data && -e $dirscrobble/scrobble && -e $dirscrobble/spotify ]]; then
+	$dirbash/cmd.sh scrobble
+	cat << EOF > $dirshm/scrobble
 Artist="$Artist"
 Title="$Title"
 Album="$Album"
@@ -133,3 +133,4 @@ state=$( cat $filestate )
 Time=$Time
 start=$( cat $filestart )
 EOF
+fi

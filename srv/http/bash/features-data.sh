@@ -6,6 +6,12 @@ exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
 
+dirscrobble=$dirsystem/scrobble.conf
+scrobbleconf='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
+for key in airplay bluetooth spotify upnp; do
+	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo ,true || echo ,false )
+done
+
 data+='
   "page"             : "features"
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
@@ -14,8 +20,8 @@ data+='
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
-, "scrobble"         : '$( [[ -e $dirsystem/scrobble && -e $dirsystem/scrobblekey ]] && echo true )'
-, "scrobbleuser"     : "'$( [[ -e $dirsystem/scrobblekey ]] && cat $dirsystem/scrobbleuser 2> /dev/null )'"
+, "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
+, "scrobbleconf"     : ['$scrobbleconf']
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
