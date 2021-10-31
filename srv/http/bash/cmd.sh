@@ -921,8 +921,7 @@ scrobble )
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse
 	touch $dirshm/scrobblesent
-	sleep 10
-	rm $dirshm/scrobblesent
+	( sleep 10 && rm $dirshm/scrobblesent ) &> /dev/null &
 	;;
 stationcoverreset )
 	coverfile=${args[1]}
