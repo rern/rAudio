@@ -14,26 +14,17 @@ mkdir -p $dirspotify
 for key in elapsed expire start state status token trackid; do
 	printf -v file$key '%s' $dirspotify/$key
 done
-##### stop
-if [[ $1 == stop ]]; then
-	$dirbash/cmd.sh scrobble stop
-	systemctl restart spotifyd
-	rm -f $dirshm/{player-*,scrobble} $dirspotify/start
-	touch $dirshm/player-mpd
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"Spotify","text":"Stop ...","icon":"spotify blink","delay":-1}'
-	$dirbash/cmd.sh volumereset
-	$dirbash/cmd-pushstatus.sh
-	exit
-fi
 ##### start
 if [[ ! -e $filestart ]]; then
-	mpc stop
-	rm -f $dirshm/{player-*,scrobble} $dirspotify/start
-	touch $dirshm/player-spotify
-	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
-	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
-	(( $elapsed > 0 )) && echo pause > $filestate
-	$dirbash/cmd.sh volume0db
+	if [[ ! -e $dirshm/player-spotify ]] ;then
+		mpc stop
+		rm -f $dirshm/{player-*,scrobble} $dirspotify/start
+		touch $dirshm/player-spotify
+		systemctl try-restart bluezdbus shairport-sync snapclient upmpdcli &> /dev/null
+#		elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
+#		(( $elapsed > 0 )) && echo pause > $filestate
+		$dirbash/cmd.sh volume0db
+	fi
 fi
 
 pushstreamSpotify() {

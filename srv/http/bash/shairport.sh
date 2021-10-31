@@ -24,7 +24,7 @@ else
 		mpc stop
 		rm -f $dirshm/{player-*,scrobble} $dirairplay/start
 		touch $dirshm/player-airplay
-		systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
+		systemctl try-restart bluezdbus snapclient spotifyd upmpdcli &> /dev/null
 		$dirbash/cmd.sh volume0db
 		mkdir -p $dirairplay
 	fi

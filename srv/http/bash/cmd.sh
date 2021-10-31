@@ -315,25 +315,15 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothplayer )
-	rm -f $dirshm/{player-*,scrobble}
-	if [[ ${args[1]} == 1 ]]; then
+	if [[ ${args[1]} == 1 && ! -e $dirshm/player-bluetooth ]]; then
 		mpc stop
+		rm -f $dirshm/{player-*,scrobble} $dirshm/bluetooth/start
 		touch $dirshm/player-bluetooth
 		mkdir -p $dirshm/bluetooth
-		systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
+		systemctl try-restart shairport-sync snapclient spotifyd upmpdcli &> /dev/null
 		volume0dB
-	else
-		touch $dirshm/player-mpd
 	fi
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
-	;;
-bluetoothplayerstop )
-	$dirbash/cmd.sh scrobble stop
-	systemctl restart bluezdbus
-	rm -f $dirshm/{player-*,scrobble}
-	touch $dirshm/player-mpd
-	volumeReset
-	pushstream mpdplayer "$( $dirbash/status.sh )"
 	;;
 bookmarkreset )
 	mpdpath=${args[1]}
@@ -934,16 +924,6 @@ scrobble )
 	sleep 10
 	rm $dirshm/scrobblesent
 	;;
-shairportstop )
-	pushstreamNotify AirPlay 'Stop ...' 'airplay blink'
-	systemctl stop shairport-meta
-	$dirbash/cmd.sh scrobble stop
-	systemctl restart shairport-sync
-	rm -f $dirshm/{player-*,scrobble} $dirshm/airplay/start
-	touch $dirshm/player-mpd
-	$dirbash/cmd.sh volumereset
-	$dirbash/cmd-pushstatus.sh
-	;;
 stationcoverreset )
 	coverfile=${args[1]}
 	rm -f "$coverfile".* "$coverfile-thumb".*
@@ -952,6 +932,38 @@ stationcoverreset )
 statuspkg )
 	echo "$( pacman -Q ${args[1]} )
 $( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
+	;;
+stopplayer )
+	player=${args[1]}
+	case ${args[1]} in
+		airplay )
+			service=shairport-sync
+			systemctl stop shairport-meta;;
+		bluetooth )
+			service=bluezdbus;;
+		snapcast )
+			service=snapclient
+			sshpass -p ros \
+				ssh -q root@$( cat $dirshm/snapserverip ) \
+				"/srv/http/bash/snapcast.sh $( ifconfig | awk '/inet .*broadcast/ {print $2}' )"
+			rm $dirshm/snapserverip;;
+		spotify )
+			service=spotifyd;;
+		upnp )
+			service=upmpdcli
+			mpc stop
+			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
+			for i in $tracks; do
+				mpc del $i
+			done;;
+	esac
+	pushstreamNotify  ${player^} 'Stop ...' $player
+	$dirbash/cmd.sh scrobble stop
+	systemctl restart $service
+	rm -f $dirshm/{player-*,scrobble} $dirshm/$player/start
+	touch $dirshm/player-mpd
+	[[ $player != snapcast && $player != upnp ]] && volumeReset
+	$dirbash/cmd-pushstatus.sh
 	;;
 thumbgif )
 	type=${args[1]}
