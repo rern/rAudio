@@ -15,9 +15,9 @@ pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
 }
 scrobble() {
-	[[ $code == Artist && $data != $( cat $dirairplay/Artist ) ]] && changedArtist=1
-	[[ $code == Title && $data != $( cat $dirairplay/Title ) ]] && changedTitle=1
-	[[ -z $changedArtist || -z $changedTitle ]] && return
+	[[ $code == Artist && $data != $( cat $dirairplay/Artist ) ]] && changed=1
+	[[ $code == Title && $data != $( cat $dirairplay/Title ) ]] && changed=1
+	[[ -z $changed ]] && return
 	
 	$dirbash/cmd.sh scrobble
 	for key in Artist Title Album state Time start; do
@@ -31,8 +31,7 @@ state=$state
 Time=$Time
 start=$(( ( $start + 500 ) / 1000 ))
 EOF
-	changedArtist=
-	changedTitle=
+	changed=
 }
 
 for pid in $( pgrep shairport-sync ); do
