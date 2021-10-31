@@ -7,7 +7,7 @@ dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirairplay=$dirshm/airplay
-dirscrobble=$dirsystem/scrobble.conf
+filescrobble=$dirsystem/scrobble
 filestart=$dirairplay/start
 filetime=$dirairplay/Time
 
@@ -95,7 +95,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 						| head -1 )
 			pushstreamAirplay '{"volume":'$data'}'
 		else
-			[[ -e $dirsystem/scrobble && -e $dirscrobble/airplay ]] && scrobble
+			[[ -e $filescrobble && -e $filescrobble.conf/airplay ]] && scrobble
 			echo $data > $dirairplay/$code
 			data=${data//\"/\\\"}
 		fi

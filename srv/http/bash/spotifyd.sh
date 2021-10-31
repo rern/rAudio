@@ -7,9 +7,9 @@
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
-dirscrobble=$dirsystem/scrobble.conf
 dirspotify=$dirshm/spotify
 mkdir -p $dirspotify
+filescrobble=$dirsystem/scrobble
 
 # var fileKEY=$dirspotify/KEY
 for key in elapsed expire start state status token trackid; do
@@ -123,7 +123,7 @@ pushstreamSpotify "{$status}"
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 
-if [[ -n $data && -e $dirsystem/scrobble && -e $dirscrobble/spotify ]]; then
+if [[ -n $data && -e $filescrobble && -e $filescrobble.conf/spotify ]]; then
 	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
 	cat << EOF > $dirshm/scrobble
 Artist="$Artist"

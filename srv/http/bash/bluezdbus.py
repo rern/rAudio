@@ -69,7 +69,7 @@ def property_changed( interface, changed, invalidated, path ):
                 , "Time"   : Time
             } )
             if os.path.isfile( filescrobble ) and os.path.isfile( filescrobble +'.conf/bluetooth' ):
-                if os.path.isfile( '/srv/http/data/shm/scrobble' ): subprocess.Popen( [ cmdsh, 'scrobble' ] )
+                if os.path.isfile( dirshm +'scrobble' ): subprocess.Popen( [ cmdsh, 'scrobble' ] )
                 start = fread( filestart )
                 state = fread( filestate )
                 fwrite( dirshm +'scrobble', f'''\
