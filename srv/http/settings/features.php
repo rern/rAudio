@@ -114,9 +114,11 @@ HTML
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'
 		, 'help'  => <<< HTML
- • Search embedded lyrics in local files (0.5 - 1 second for each song)
+ • Search embedded lyrics in local files
  • Search online if not found.
- • Enable if certain that most lyrics are embedded.
+ • Disable if most lyrics are not embedded:
+ &emsp; • Search online only.
+ &emsp; • Online fetched lyrics are saved as separate files, not embedded.
 HTML
 	]
 	, [
@@ -137,13 +139,12 @@ HTML
 		  'label'    => 'Last.fm Scrobble'
 		, 'id'       => 'scrobble'
 		, 'icon'     => 'lastfm'
-		, 'setting'  => true
+		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
 Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
- • All played tracks:
- &emsp; • Include tracks on all renderers
- &emsp; • Except WebRadio and SnapClient (already scrobbled by SnapServer)
- &emsp; • To scrobble WebRadio tracks: Tap track title > <i class="fa fa-lastfm"></i>Scrobble
+ • Include: AirPlay, Bluetooth, Spotify, UPnP
+ • SnapClient: Scrobbled by SnapServer
+ • WebRadio tracks: Tap track title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [

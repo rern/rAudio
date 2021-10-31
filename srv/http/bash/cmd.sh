@@ -589,7 +589,7 @@ lyrics )
 	if [[ $cmd == save ]]; then
 		echo -e "$data" > "$lyricsfile"
 	elif [[ $cmd == delete ]]; then
-		rm "$lyricsfile"
+		rm -f "$lyricsfile"
 	elif [[ -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
@@ -898,7 +898,7 @@ scrobble )
 	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
-	sk=$( cat $dirsystem/scrobble )
+	sk=$( cat $dirsystem/scrobblekey )
 	timestamp=$( date +%s )
 	if [[ -n $album ]]; then
 		sigalbum="album${Album}"

@@ -41,12 +41,11 @@ case ${args[0]} in
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
-autoplay )
-	[[ ${args[1]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
-	pushRefresh
-	;;
-autoplaycd )
-	[[ ${args[1]} == true ]] && touch $dirsystem/autoplaycd || rm -f $dirsystem/autoplaycd
+autoplay|autoplaycd|lyricsembedded|scrobble|streaming )
+	feature=${args[0]}
+	filefeature=$dirsystem/$feature
+	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
+	[[ $feature == streaming ]] && $dirbash/mpd-conf.sh
 	pushRefresh
 	;;
 hostapddisable )
@@ -174,19 +173,11 @@ loginset )
 	pushRefresh
 	pushstream display '{"submenu":"lock","value":true}'
 	;;
-lyricsembedded )
-	[[ ${args[1]} == true ]] && touch $dirsystem/lyricsembedded || rm -f $dirsystem/lyricsembedded
-	pushRefresh
-	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is Off' && xset dpms force on || xset dpms force off
-	;;
-scrobbledisable )
-	rm -f $dirsystem/scrobble
-	pushRefresh
 	;;
 scrobbleset )
 	username=${args[1]}
@@ -207,8 +198,10 @@ scrobbleset )
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse && exit
-		
-	echo $reponse | sed 's/.*key":"//; s/".*//' > $dirsystem/scrobble
+	
+	echo $username > $dirsystem/scrobbleuser
+	echo $reponse | sed 's/.*key":"//; s/".*//' > $dirsystem/scrobblekey
+	touch $dirsystem/scrobble
 	pushRefresh
 	;;
 shairport-sync | spotifyd | upmpdcli )
@@ -250,11 +243,6 @@ snapserver )
 		systemctl disable --now snapserver
 		$dirbash/snapcast.sh serverstop
 	fi
-	$dirbash/mpd-conf.sh
-	pushRefresh
-	;;
-streaming )
-	[[ ${args[1]} == true ]] && touch $dirsystem/streaming || rm -f $dirsystem/streaming
 	$dirbash/mpd-conf.sh
 	pushRefresh
 	;;

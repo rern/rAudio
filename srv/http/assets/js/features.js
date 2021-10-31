@@ -144,13 +144,21 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
+$( '#scrobble' ).click( function() {
+	if ( G.scrobbleuser ) {
+		bash( [ 'scrobble', G.scrobble ? 'false' : 'true' ] );
+		notify( 'Last.fm Scrobble', G.scrobble ? 'Disable ...' : 'Enable ...', 'lastfm' );
+	} else {
+		$( '#setting-scrobble' ).click();
+	}
+} );
 $( '#setting-scrobble' ).click( function() {
 	info( {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobble'
 		, textlabel     : 'User'
 		, passwordlabel : 'Password'
-		, values        : G.scrobbleconf
+		, values        : [ G.scrobbleuser, '' ]
 		, checkchanged  : ( G.scrobble ? 1 : 0 )
 		, checkblank    : 1
 		, cancel        : function() {

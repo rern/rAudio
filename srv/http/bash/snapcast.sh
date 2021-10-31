@@ -21,7 +21,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 	sleep 2
 	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )
 	if [[ -n $serverip ]]; then
-		rm -f $dirshm/player-*
+		rm -f $dirshm/{player-*,scrobble}
 		touch $dirshm/player-snapclient
 		echo $serverip > $serverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
