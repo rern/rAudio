@@ -142,9 +142,8 @@ HTML
 		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
 Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
- • Include: AirPlay, Bluetooth, Spotify, UPnP
- • SnapClient: Scrobbled by SnapServer
- • WebRadio tracks: Tap track title > <i class="fa fa-lastfm"></i>Scrobble
+ • Include: All renderers except SnapClient (already scrobbled by SnapServer)
+ • WebRadio: Each track title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [
