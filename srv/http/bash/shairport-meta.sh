@@ -19,7 +19,7 @@ scrobble() {
 	[[ $code == Title && $data != $( cat $dirairplay/Title ) ]] && changed=1
 	[[ -z $changed ]] && return
 	
-	$dirbash/cmd.sh scrobble
+	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
 	for key in Artist Title Album state Time start; do
 		printf -v $key '%s' "$( cat $dirairplay/$key )"
 	done
@@ -95,8 +95,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 						| head -1 )
 			pushstreamAirplay '{"volume":'$data'}'
 		else
+			[[ -e $dirsystem/scrobble && -e $dirscrobble/airplay ]] && scrobble
 			echo $data > $dirairplay/$code
-			[[ -e $dirscrobble/scrobble && -e $dirscrobble/airplay ]] && scrobble
 			data=${data//\"/\\\"}
 		fi
 		

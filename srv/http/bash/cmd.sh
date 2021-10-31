@@ -882,8 +882,6 @@ scrobble )
 		Title=${args[2]}
 		Album=${args[3]}
 	else
-		[[ ! -e $dirshm/scrobble ]] && exit # file not yet exist on initial play
-		
 		. $dirshm/scrobble # Artist, Title, Album, state, Time, start
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		

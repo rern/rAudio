@@ -20,7 +20,7 @@ path = '/test/autoagent'
 cmdsh = '/srv/http/bash/cmd.sh'
 dirshm = '/srv/http/data/shm/'
 dirbluetooth = dirshm +'bluetooth/'
-dirscrobble = '/srv/http/data/system/scrobble.conf/'
+filescrobble = '/srv/http/data/system/scrobble'
 filestart = dirbluetooth +'start'
 filestate = dirbluetooth +'state'
 
@@ -68,8 +68,8 @@ def property_changed( interface, changed, invalidated, path ):
                 , "Album"  : Album
                 , "Time"   : Time
             } )
-            if os.path.isfile( '/srv/http/data/system/scrobble' ) and os.path.isfile( '/srv/http/data/system/scrobble/bluetooth' ):
-                subprocess.Popen( [ cmdsh, 'scrobble' ] )
+            if os.path.isfile( filescrobble ) and os.path.isfile( filescrobble +'.conf/bluetooth' ):
+                if os.path.isfile( '/srv/http/data/shm/scrobble' ): subprocess.Popen( [ cmdsh, 'scrobble' ] )
                 start = fread( filestart )
                 state = fread( filestate )
                 fwrite( dirshm +'scrobble', f'''\

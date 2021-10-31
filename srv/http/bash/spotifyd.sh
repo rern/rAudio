@@ -123,8 +123,8 @@ pushstreamSpotify "{$status}"
 
 [[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
 
-if [[ -n $data && -e $dirscrobble/scrobble && -e $dirscrobble/spotify ]]; then
-	$dirbash/cmd.sh scrobble
+if [[ -n $data && -e $dirsystem/scrobble && -e $dirscrobble/spotify ]]; then
+	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
 	cat << EOF > $dirshm/scrobble
 Artist="$Artist"
 Title="$Title"
