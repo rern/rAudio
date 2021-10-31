@@ -3,7 +3,7 @@
 # RPi as renderer - status.sh > this:
 #    - retreive current status from dbus
 
-dest=$( cat /srv/http/data/shm/bluetooth/dest )
+dest=$( cat /srv/http/data/shm/bluetoothdest )
 data=$( dbus-send \
 			--system \
 			--type=method_call \

@@ -34,6 +34,11 @@ if [[ $1 == bton ]]; then
 		[[ -n $btaplay ]] && break
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
+	readarray -t paired <<< $( bluetoothctl paired-devices | cut -d' ' -f2 )
+	for mac in "${paired[@]}"; do
+		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && sink=1 && break
+	done
+	[[ -z $sink ]] && exit
 	
 	asoundbt='
 pcm.bluealsa {

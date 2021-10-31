@@ -8,7 +8,6 @@ dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirspotify=$dirshm/spotify
-mkdir -p $dirspotify
 filescrobble=$dirsystem/scrobble
 
 # var fileKEY=$dirspotify/KEY

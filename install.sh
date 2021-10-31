@@ -7,7 +7,12 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20211024
+#20211101
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+grep -q battery $file || sed -i '/ExecStartPost/ i\
+ExecStart=\
+ExecStart=/usr/lib/bluetooth/bluetoothd -P battery' $file
+mkdir -p /srv/http/data/shm/{airplay,spotify}
 systemctl disable --now mpdscribble@mpd
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]] && ! grep -q onwhileplay $file; then

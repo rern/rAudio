@@ -314,17 +314,13 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
-bluetoothplayer )
-	if [[ ${args[1]} == 1 && ! -e $dirshm/player-bluetooth ]]; then
-		mpc stop
-		rm -f $dirshm/{player-*,scrobble} $dirshm/bluetooth/start
-		touch $dirshm/player-bluetooth
-		mkdir -p $dirshm/bluetooth
-		systemctl stop snapclient
-		systemctl try-restart mpd shairport-sync spotifyd upmpdcli &> /dev/null
-		volume0dB
-	fi
-	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+bluetoothrenderer ) # start
+	mpc stop
+	rm -f $dirshm/{player-*,scrobble}
+	touch $dirshm/player-bluetooth
+	systemctl stop snapclient
+	systemctl try-restart mpd shairport-sync spotifyd upmpdcli &> /dev/null
+	$dirbash/cmd-pushstatus.sh
 	;;
 bookmarkreset )
 	mpdpath=${args[1]}
@@ -933,7 +929,7 @@ $( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xk
 	;;
 stopplayer )
 	player=${args[1]}
-	case ${args[1]} in
+	case $player in
 		airplay )
 			service=shairport-sync
 			systemctl stop shairport-meta;;
@@ -960,7 +956,7 @@ stopplayer )
 	systemctl restart $service
 	rm -f $dirshm/{player-*,scrobble} $dirshm/$player/start
 	touch $dirshm/player-mpd
-	[[ $player != snapcast && $player != upnp ]] && volumeReset
+	[[ $player == airplay || $player != spotify ]] && volumeReset
 	$dirbash/cmd-pushstatus.sh
 	;;
 thumbgif )

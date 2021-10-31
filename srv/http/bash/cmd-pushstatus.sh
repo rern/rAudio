@@ -29,8 +29,8 @@ echo "$statusdata" > $dirshm/status
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	killall lcdchar.py &> /dev/null
-	readarray -t data <<< "${statusdata//\"/\\\"}"
-	$dirbash/lcdchar.py "${data[@]}" &
+	readarray -t lcddata <<< "${statusdata//\"/\\\"}"
+	$dirbash/lcdchar.py "${lcddata[@]}" &
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then

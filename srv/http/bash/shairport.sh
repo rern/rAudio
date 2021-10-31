@@ -27,7 +27,6 @@ else
 		systemctl stop snapclient
 		systemctl try-restart bluezdbus mpd spotifyd upmpdcli &> /dev/null
 		$dirbash/cmd.sh volume0db
-		mkdir -p $dirairplay
 	fi
 	systemctl start shairport-meta
 	echo play > $dirairplay/state

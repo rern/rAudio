@@ -59,7 +59,7 @@ if [[ -e /boot/wifi ]]; then
 	netctl enable "$ssid"
 fi
 # ----------------------------------------------------------------------------
-
+mkdir $dirdata/shm/{airplay,spotify}
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
