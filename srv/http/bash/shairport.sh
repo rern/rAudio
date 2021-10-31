@@ -21,6 +21,7 @@ if (( $# > 0 )); then
 ##### start
 else
 	if [[ ! -e $dirshm/player-airplay ]] ;then
+		mpc stop
 		rm -f $dirshm/{player-*,scrobble} $dirairplay/start
 		touch $dirshm/player-airplay
 		systemctl stop snapclient
