@@ -21,7 +21,8 @@ if [[ ! -e $filestart ]]; then
 		mpc stop
 		rm -f $dirshm/{player-*,scrobble} $dirspotify/start
 		touch $dirshm/player-spotify
-		systemctl try-restart bluezdbus shairport-sync snapclient upmpdcli &> /dev/null
+		systemctl stop snapclient
+		systemctl try-restart bluezdbus mpd shairport-sync upmpdcli &> /dev/null
 #		elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
 #		(( $elapsed > 0 )) && echo pause > $filestate
 		$dirbash/cmd.sh volume0db

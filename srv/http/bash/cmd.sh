@@ -320,7 +320,8 @@ bluetoothplayer )
 		rm -f $dirshm/{player-*,scrobble} $dirshm/bluetooth/start
 		touch $dirshm/player-bluetooth
 		mkdir -p $dirshm/bluetooth
-		systemctl try-restart shairport-sync snapclient spotifyd upmpdcli &> /dev/null
+		systemctl stop snapclient
+		systemctl try-restart mpd shairport-sync spotifyd upmpdcli &> /dev/null
 		volume0dB
 	fi
 	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
