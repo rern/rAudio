@@ -8,15 +8,14 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
-	<div class="help-block hide">As sender (to another device)
- • Pairing - Turn on discovery mode on receiver device.
+	<div class="help-block hide">As sender <gr>(to another device)</gr>
+ • Pairing to receiver device - Turn on discovery mode on receiver device.
  • Search the device on RPi and connect.
  • Power on/off paired devices connect/disconnect automatically.
-As receiver (from another device)
+As receiver <gr>(from another device)</gr>
  • Pairing - If discoverable turned off on RPi, turn it on.
- • Pairing / Connecting from sender device - No authorization required.
- • Connection from sender start Playback in renderer mode automatically.
- • Turn off discoverable to hide from unpaired senders.
+ • Start pairing from sender device - No authorization required.
+ • Forget/remove should be done on both sender and RPi to avoid failed pairing.
 </div>
 </div>
 <div id="divwl" class="section">
