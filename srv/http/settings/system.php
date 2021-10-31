@@ -110,6 +110,7 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetoothctl'
 		, 'setting'  => true
+		, 'disabled' => 'Bluetooth is currently active.'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
  • Pairing:&emsp;<i class="fa fa-networks"></i>Networks

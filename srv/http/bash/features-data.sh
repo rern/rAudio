@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 exists() {
@@ -33,15 +34,20 @@ if [[ -e /usr/bin/hostapd ]]; then
 fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )
+, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )'
+, "shairportactive"  : '$( [[ -e $dirshm/player-airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
+, "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
+, "snapclientactive" : '$( [[ -e $dirshm/player-snapclient ]] && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )
+, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
+, "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )
+, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
+, "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then

@@ -245,17 +245,23 @@ function renderPage( list ) {
 	} else {
 		G = list;
 	}
-	$( '#shairport-sync' ).prop( 'checked', G[ 'shairport-sync' ] );
-	$( '#spotifyd' ).prop( 'checked', G.spotifyd );
+	$( '#shairport-sync' )
+		.prop( 'checked', G[ 'shairport-sync' ] )
+		.toggleClass( 'disabled', G.shairportactive );
+	$( '#spotifyd' )
+		.prop( 'checked', G.spotifyd )
+		.toggleClass( 'disabled', G.spotifydactive );
 	$( '#snapclient' )
 		.prop( 'checked', G.snapclient )
-		.toggleClass( 'disabled', G.snapserver );
+		.toggleClass( 'disabled', G.snapserver || G.snapclientactive );
 	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
-	$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
+	$( '#upmpdcli' )
+		.prop( 'checked', G.upmpdcli )
+		.toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#streaming' ).prop( 'checked', G.streaming );
 	$( '#snapserver' )
 		.prop( 'checked', G.snapserver )
-		.toggleClass( 'disabled', G.snapclient );
+		.toggleClass( 'disabled', G.snapclient || G.snapserveractive );
 	$( '#hostapd' )
 		.prop( 'checked', G.hostapd )
 		.toggleClass( 'disabled', G.wlanconnected );

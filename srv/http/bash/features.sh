@@ -231,8 +231,6 @@ shairport-sync | spotifyd | upmpdcli )
 		systemctl enable --now $service
 	else
 		systemctl disable --now $service
-		rm -f $dirshm/{player-*,scrobble}
-		touch $dirshm/player-mpd
 	fi
 	pushRefresh
 	;;

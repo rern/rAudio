@@ -840,7 +840,9 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#bluetooth' ).prop( 'checked', G.bluetooth );
+	$( '#bluetooth' )
+		.prop( 'checked', G.bluetooth )
+		.toggleClass( 'disabled', G.bluetoothactive );
 	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
 	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' )
