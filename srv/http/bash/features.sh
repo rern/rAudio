@@ -227,8 +227,13 @@ scrobbleset )
 shairport-sync | spotifyd | upmpdcli )
 	service=${args[0]}
 	enable=${args[1]}
-	[[ $enable == true ]] && enable=enable || enable=disable
-	systemctl $enable --now $service
+	if [[ $enable == true ]]; then
+		systemctl enable --now $service
+	else
+		systemctl disable --now $service
+		rm -f $dirshm/{player-*,scrobble}
+		touch $dirshm/player-mpd
+	fi
 	pushRefresh
 	;;
 smbdisable )
