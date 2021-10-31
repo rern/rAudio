@@ -194,11 +194,11 @@ scrobbleset )
 	done
 	username=${args[1]}
 	password=${args[2]}
-	if [[ -z $password \
-		&& -e $dirscrobble/key \
-		&& $username == $( cat $dirscrobble/user ) ]]; then
-		touch $dirsystem/scrobble
-		pushRefresh
+	if [[ -z $password ]]; then
+		if [[ -e $dirscrobble/key && $username == $( cat $dirscrobble/user ) ]]; then
+			touch $dirsystem/scrobble
+			pushRefresh
+		fi
 		exit
 	fi
 	

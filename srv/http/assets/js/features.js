@@ -158,6 +158,7 @@ $( '#setting-scrobble' ).click( function() {
 		]
 		, values        : G.scrobbleconf
 		, checkchanged  : ( G.scrobble ? 1 : 0 )
+		, checkblank    : [ 0 ]
 		, cancel        : function() {
 			$( '#scrobble' ).prop( 'checked', G.scrobble );
 		}
