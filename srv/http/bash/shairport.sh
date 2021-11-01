@@ -16,7 +16,6 @@ if (( $# > 0 )); then
 	timestamp=$( date +%s%3N )
 	[[ -n $start ]] && echo $(( timestamp - start - 7500 )) > $dirairplay/elapsed # delayed 7s
 	$dirbash/cmd-pushstatus.sh
-	rm -f $dirairplay/start
 ##### start
 else
 	if [[ ! -e $dirshm/player-airplay ]] ;then
