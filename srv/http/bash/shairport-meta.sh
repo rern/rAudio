@@ -20,22 +20,25 @@ control=$( amixer -c $card scontents \
 			| cut -d"'" -f2 )
 
 cat /tmp/shairport-sync-metadata | while read line; do
-	# no value / double values > [next line]
-	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue
+	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
 	
-	##### code ##### matched hex code > [next line] (is value line)
-	[[ $line =~ '>61736172<' ]] && code=Artist   && continue
-	[[ $line =~ '>6d696e6d<' ]] && code=Title    && continue
-	[[ $line =~ '>6173616c<' ]] && code=Album    && continue
-	[[ $line =~ '>50494354<' ]] && code=coverart && continue
-	[[ $line =~ '>70726772<' ]] && code=progress && continue
-	[[ $line =~ '>70766f6c<' ]] && code=volume   && continue
+	hex=$( echo $line | sed 's|.*code>\(.*\)</code.*|\1|' )
+	if [[ -n $hex ]]; then # found code > [next line]
+		case $hex in
+			61736172 ) code=Artist   && continue;;
+			6d696e6d ) code=Title    && continue;;
+			6173616c ) code=Album    && continue;;
+			50494354 ) code=coverart && continue;;
+			70726772 ) code=progress && continue;;
+			70766f6c ) code=volume   && continue;;
+		esac
+	fi
 	
 	# no line with code found yet > [next line]
 	[[ -z $code ]] && continue
 	
 	##### value #### base64 decode
-	base64=$( echo ${line/<\/data><\/item>} | tr -d '\000' ) # remove tags and null bytes
+	base64=$( echo ${line/<\/data*} | tr -d '\000' ) # remove tags and null bytes
 	# null or not base64 string - reset code= > [next line]
 	if [[ -z $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
 		code=
