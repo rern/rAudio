@@ -929,7 +929,7 @@ $( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xk
 	;;
 stopplayer )
 	player=${args[1]}
-	rm -f $dirshm/{player-*,scrobble} $dirshm/$player/start
+	rm -f $dirshm/{player-*,scrobble}
 	touch $dirshm/player-mpd
 	$dirbash/cmd-pushstatus.sh
 	case $player in
@@ -949,6 +949,7 @@ stopplayer )
 			;;
 		spotify )
 			service=spotifyd
+			rm -f $dirshm/spotify/start
 			;;
 		upnp )
 			service=upmpdcli
