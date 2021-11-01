@@ -22,6 +22,7 @@ control=$( amixer -c $card scontents \
 cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
 	
+	##### code - hex matched
 	hex=$( echo $line | sed 's|.*code>\(.*\)</code.*|\1|' )
 	if [[ -n $hex ]]; then # found code > [next line]
 		case $hex in
@@ -37,7 +38,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	# no line with code found yet > [next line]
 	[[ -z $code ]] && continue
 	
-	##### value #### base64 decode
+	##### value - base64 decode
 	base64=$( echo ${line/<*} | tr -d '\000' ) # remove tags and null bytes
 	# null or not base64 string - reset code= > [next line]
 	if [[ -z $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
