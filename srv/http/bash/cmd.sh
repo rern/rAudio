@@ -874,6 +874,9 @@ screenoff )
 scrobble )
 	[[ -e $dirshm/scrobblesent ]] && exit # 10s debounce
 	
+	touch $dirshm/scrobblesent
+	( sleep 10 && rm $dirshm/scrobblesent ) &> /dev/null &
+	
 	if [[ -n ${args[2]} ]]; then # webradio - at least 2 args
 		Artist=${args[1]}
 		Title=${args[2]}
@@ -915,8 +918,6 @@ scrobble )
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse
-	touch $dirshm/scrobblesent
-	( sleep 10 && rm $dirshm/scrobblesent ) &> /dev/null &
 	;;
 stationcoverreset )
 	coverfile=${args[1]}
