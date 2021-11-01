@@ -3,41 +3,11 @@
 # shairport-meta.service > this:
 #    - /tmp/shairport-sync-metadata emits data
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
-dirairplay=$dirshm/airplay
-filescrobble=$dirsystem/scrobble
-filestart=$dirairplay/start
-filetime=$dirairplay/Time
+dirairplay=/srv/http/data/shm/airplay
 
 pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
 }
-scrobble() {
-	[[ $code == Artist && $data != $( cat $dirairplay/Artist ) ]] && changed=1
-	[[ $code == Title && $data != $( cat $dirairplay/Title ) ]] && changed=1
-	[[ -z $changed ]] && return
-	
-	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
-	for key in Artist Title Album state Time start; do
-		printf -v $key '%s' "$( cat $dirairplay/$key )"
-	done
-	cat << EOF > $dirshm/scrobble
-Artist="$Artist"
-Title="$Title"
-Album="$Album"
-state=$state
-Time=$Time
-start=$(( ( $start + 500 ) / 1000 ))
-EOF
-	changed=
-}
-
-for pid in $( pgrep shairport-sync ); do
-	ionice -c 0 -n 0 -p $pid &> /dev/null 
-	renice -n -19 -p $pid &> /dev/null
-done
 
 card=$( head -1 /etc/asound.conf | tail -c 2 )
 control=$( amixer -c $card scontents \
@@ -58,7 +28,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ '>6d696e6d<' ]] && code=Title    && continue
 	[[ $line =~ '>6173616c<' ]] && code=Album    && continue
 	[[ $line =~ '>50494354<' ]] && code=coverart && continue
-	[[ $line =~ '>70726772<' ]] && code=Time     && timestamp=$( date +%s%3N ) && continue
+	[[ $line =~ '>70726772<' ]] && code=progress && timestamp=$( date +%s%3N ) && continue
 	[[ $line =~ '>70766f6c<' ]] && code=volume   && continue
 	
 	# no line with code found yet > [next line]
@@ -76,34 +46,32 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
 		data=/data/shm/airplay/coverart.$( date +%s ).jpg
 		pushstreamAirplay '{"coverart":"'$data'","file":""}'
+		echo $data > $dirairplay/coverart
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
-		if [[ $code == Time ]]; then # format: start/elapsed/end @44100
-			start=${data/\/*}
-			current=$( echo $data | cut -d/ -f2 )
-			end=${data/*\/}
-			data=$(( ( end - start + 22050 ) / 44100 ))
+		if [[ $code == progress ]]; then # format: start/elapsed/end @44100
+			progress=( ${data//\// } ) # format: start/elapsed/end @44100/second
+			start=${progress[0]}
+			current=${progress[1]}
+			end=${progress[2]}
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
-			(( $elapsedms > 0 )) && elapsed=$(( ( elapsedms + 500 ) / 1000 )) || elapsed=0
-			pushstreamAirplay '{"elapsed":'$elapsed'}'
+			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
+			Time=$(( ( end - start + 22050 ) / 44100 ))
+			pushstreamAirplay '{"elapsed":'$elapsed',"Time":'$Time'}'
 			starttime=$(( timestamp - elapsedms ))
-			echo $data > $filetime
-			echo $starttime > $filestart
+			echo $starttime > $dirairplay/start
+			echo $Time > $dirairplay/Time
+			/srv/http/bash/cmd-pushstatus.sh
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
-			data=$( amixer -M -c $card sget "$control" \
+			vol=$( amixer -M -c $card sget "$control" \
 						| awk -F'[%[]' '/%/ {print $2}' \
 						| head -1 )
-			pushstreamAirplay '{"volume":'$data'}'
+			curl -s -X POST http://127.0.0.1/pub?id=volume '{"val":'$vol'}'
 		else
-			[[ -e $filescrobble && -e $filescrobble.conf/airplay ]] && scrobble
+			pushdata='{"'$code'":"'${data//\"/\\\"}'"}' # data may contains spaces
+			pushstreamAirplay "$pushdata"
 			echo $data > $dirairplay/$code
-			data=${data//\"/\\\"}
 		fi
-		
-		[[ ' start Time volume ' =~ " $code " ]] && status='"'$code'":'$data || status='"'$code'":"'$data'"'
-		
-		pushstreamAirplay "{$status}"
 	fi
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
-	code= # reset after $code + $data were complete
+	code= # reset after $code + $data were set
 done

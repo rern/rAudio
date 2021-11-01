@@ -8,7 +8,6 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211101
-[[ ! -e /usr/bin/bc ]] && pacman -S --noconfirm bc
 file=/etc/systemd/system/bluetooth.service.d/override.conf
 grep -q battery $file || sed -i '/ExecStartPost/ i\
 ExecStart=\

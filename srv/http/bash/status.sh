@@ -91,18 +91,15 @@ if [[ $player != mpd && $player != upnp ]]; then
 		state=$( cat $dirairplay/state 2> /dev/null || echo play )
 		Time=$( cat $dirairplay/Time 2> /dev/null )
 		timestamp=$( date +%s%3N )
-		if [[ $state == pause ]]; then
-			elapsed=$( cat $dirairplay/elapsed 2> /dev/null )
-		else
-			[[ -n $start ]] && elapsed=$( printf '%.0f' $(( ( timestamp - start + 500 ) / 1000 )) )
-		fi
-		[[ -e $dirshm/airplay/coverart.jpg ]] && coverart=/data/shm/airplay/coverart.$( date +%s ).jpg
+		elapsedms=$(( timestamp - start ))
+		[[ $state == pause ]] && elapsedms=$( cat $dirairplay/elapsed 2> /dev/null )
+		elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 ########
 		status+='
 , "Album"     : "'$( cat $dirairplay/Album 2> /dev/null )'"
 , "Artist"    : "'$( cat $dirairplay/Artist 2> /dev/null )'"
 , "Title"     : "'$( cat $dirairplay/Title 2> /dev/null )'"
-, "coverart"  : "'$coverart'"
+, "coverart"  : "/data/shm/airplay/coverart.'$date'.jpg"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
@@ -124,14 +121,15 @@ $( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapc
 		;;
 	spotify )
 		dirspotify=$dirshm/spotify
-		elapsed=$( cat $dirspotify/elapsed 2> /dev/null || echo 0 )
+		elapsedms=$( cat $dirspotify/elapsed 2> /dev/null || echo 0 )
+		start=$( cat $dirspotify/start )
 		state=$( cat $dirspotify/state )
 		timestamp=$( date +%s%3N )
-		[[ $state == play ]] && elapsed+=$(( timestamp - $( cat $dirspotify/start ) ))
-		elapsed=$( printf '%.0f' $(( ( elapsed + 500 ) / 1000 )) )
+		[[ $state == play ]] && elapsedms=$(( elapsedms + timestamp - start ))
+		elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 ########
 		status+="
-, $( cat $dirspotify/status )"
+$( cat $dirspotify/status )"
 	status+='
 , "elapsed"   : '$elapsed'
 , "state"     : "'$state'"
@@ -399,6 +397,7 @@ samplingLine() {
 	else
 		[[ $bitdepth == dsd ]] && bitrate=$(( bitrate / 2 ))
 		rate="$( awk "BEGIN { printf \"%.2f\n\", $bitrate / 1000000 }" ) Mbit/s"
+#		rate=$( echo "print $bitrate / 1000000" | perl )' Mbit/s'
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
@@ -406,6 +405,7 @@ samplingLine() {
 	else
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
+#		sample=$( echo "print $samplerate / 1000" | perl )' kHz'
 		if [[ -n $bitdepth && $ext != Radio && $ext != MP3 && $ext != AAC ]]; then
 			sampling="$bitdepth bit $sample $rate"
 		else # lossy has no bitdepth
@@ -448,6 +448,7 @@ else
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
+#				bitrate=$( echo "print $dsd * 44100 / 1000000" | perl )
 				sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
 			else
 				data=( $( ffprobe -v quiet -select_streams a:0 \

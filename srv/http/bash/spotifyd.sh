@@ -8,7 +8,6 @@ dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirspotify=$dirshm/spotify
-filescrobble=$dirsystem/scrobble
 
 # var fileKEY=$dirspotify/KEY
 for key in elapsed expire start state status token trackid; do
@@ -28,10 +27,6 @@ if [[ ! -e $filestart ]]; then
 	fi
 fi
 
-pushstreamSpotify() {
-	curl -s -X POST http://127.0.0.1/pub?id=spotify -d "$1"
-}
-
 # get from: https://developer.spotify.com/dashboard/applications
 client_id=2df4633bcacf4474aa031203d423f2d8
 client_secret=6b7f533b66cb4a338716344de966dde1
@@ -46,43 +41,33 @@ client_secret=6b7f533b66cb4a338716344de966dde1
 
 timestamp=$(( $( date +%s%3N ) - 1000 ))
 
-if [[ $PLAYER_EVENT != stop ]]; then
+if [[ $PLAYER_EVENT != stop ]]; then # play
 	state=play
 	echo $timestamp > $filestart
 	[[ $PLAYER_EVENT == change ]] && echo 0 > $fileelapsed
 	echo play > $filestate
-else
+else # pause / stop
 	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
 	[[ $elapsed > 0 ]] && state=pause || state=stop
 	echo $state > $filestate
 	if [[ -e $filestart ]]; then
 		start=$( cat $filestart )
-		elapsed+=$(( timestamp - start ))
-		pushstreamSpotify '{"state":"pause","elapsed":'$(( ( elapsed + 500 ) / 1000 ))'}'
+		elapsed=$(( elapsed + timestamp - start ))
+		$dirbash/cmd-pushstatus.sh
 		echo $elapsed > $fileelapsed
 		exit
 	else
-		echo $timestamp > $filestart
+		echo $timestamp > $filestart # ms
 	fi
 fi
 
-########
-status='
-  "player"   : "spotify"
-, "state"    : "'$( cat $filestate )'"'
-
 if [[ $( cat $filetrackid 2> /dev/null ) == $TRACK_ID ]]; then
-########
 	start=$( cat $filestart )
 	now=$( date +%s%3N )
 	elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
-	elapsed+=$(( now - start ))
-	echo $elapsed > $fileelapsed
-########
-	status+=$( cat $filestatus )
-	status+='
-, "elapsed" : '$(( ( elapsed + 500 ) / 1000 ))
-else
+	elapsed=$(( elapsed + now - start ))
+	echo $elapsed > $fileelapsed # ms
+else # track changed
 	echo $TRACK_ID > $filetrackid
 	if [[ -e $fileexpire && $( cat $fileexpire ) -gt $timestamp ]]; then
 		token=$( cat $filetoken )
@@ -99,38 +84,17 @@ else
 	Album=$( jq -r .album.name <<< $data )
 	Artist=$( jq -r .album.artists[0].name <<< $data )
 	coverart=$( jq -r .album.images[0].url <<< $data )
-	Time=$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))
+	Time=$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 )) # second
 	Title=$( jq -r .name <<< $data )
-	metadata='
-  "Album"    : "'$Album'"
-, "Artist"   : "'$Artist'"
-, "coverart" : "'$coverart'"
+	cat << EOF > $filestatus
+, "Album"    : "$Album"
+, "Artist"   : "$Artist"
+, "coverart" : "$coverart"
 , "file"     : ""
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
-, "Time"     : '$Time'
-, "Title"    : "'$Title'"'
-	elapsed=$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
-	(( $elapsed > $Time )) && elapsed=0
-########
-	status+="
-, $metadata"
-	status+='
-, "elapsed" : '$elapsed
-	echo $metadata > $filestatus
-fi
-
-pushstreamSpotify "{$status}"
-
-[[ -e $dirsystem/lcdchar ]] && $dirbash/cmd.sh lcdcharrefresh
-
-if [[ -n $data && -e $filescrobble && -e $filescrobble.conf/spotify ]]; then
-	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
-	cat << EOF > $dirshm/scrobble
-Artist="$Artist"
-Title="$Title"
-Album="$Album"
-state=$( cat $filestate )
-Time=$Time
-start=$( cat $filestart )
+, "Time"     : $Time
+, "Title"    : "$Title"
 EOF
 fi
+
+$dirbash/cmd-pushstatus.sh

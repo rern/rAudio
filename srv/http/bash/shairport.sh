@@ -15,7 +15,7 @@ if (( $# > 0 )); then
 	echo pause > $dirairplay/state
 	start=$( cat $dirairplay/start 2> /dev/null )
 	timestamp=$( date +%s%3N )
-	[[ -n $start ]] && printf '%.0f' $(( ( timestamp - start - 7000 ) / 1000 )) > $dirairplay/elapsed
+	[[ -n $start ]] && $(( timestamp - start )) > $dirairplay/elapsed
 	$dirbash/cmd-pushstatus.sh
 	rm -f $dirairplay/start
 ##### start

@@ -87,7 +87,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -126,7 +126,6 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'playlist':  psPlaylist( data );  break;
 		case 'reload':    psReload( data );    break;
 		case 'restore':   psRestore( data );   break;
-		case 'spotify':   psSpotify( data );   break;
 		case 'volume':    psVolume( data );    break;
 		case 'vumeter':   psVUmeter( data );   break;
 		case 'webradio':  psWebradio( data );  break;
@@ -510,10 +509,6 @@ function psRestore( data ) {
 		loader();
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
-}
-function psSpotify( data ) {
-	statusUpdate( data );
-	if ( G.playback ) renderPlayback();
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {

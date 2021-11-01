@@ -929,33 +929,38 @@ $( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xk
 	;;
 stopplayer )
 	player=${args[1]}
+	rm -f $dirshm/{player-*,scrobble} $dirshm/$player/start
+	touch $dirshm/player-mpd
+	$dirbash/cmd-pushstatus.sh
 	case $player in
 		airplay )
 			service=shairport-sync
-			systemctl stop shairport-meta;;
+			systemctl stop shairport-meta
+			;;
 		bluetooth )
-			service=bluezdbus;;
+			service=bluezdbus
+			;;
 		snapcast )
 			service=snapclient
 			sshpass -p ros \
 				ssh -q root@$( cat $dirshm/snapserverip ) \
 				"/srv/http/bash/snapcast.sh $( ifconfig | awk '/inet .*broadcast/ {print $2}' )"
-			rm $dirshm/snapserverip;;
+			rm $dirshm/snapserverip
+			;;
 		spotify )
-			service=spotifyd;;
+			service=spotifyd
+			;;
 		upnp )
 			service=upmpdcli
 			mpc stop
 			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
 			for i in $tracks; do
 				mpc del $i
-			done;;
+			done
+			;;
 	esac
-	pushstreamNotify  ${player^} 'Stop ...' $player
 	$dirbash/cmd.sh scrobble stop
 	systemctl restart $service
-	rm -f $dirshm/{player-*,scrobble} $dirshm/$player/start
-	touch $dirshm/player-mpd
 	[[ $player == airplay || $player != spotify ]] && volumeReset
 	$dirbash/cmd-pushstatus.sh
 	;;

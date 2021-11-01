@@ -7,6 +7,10 @@ filescrobble=$dirsystem/scrobble
 
 #[[ $( sed -n 6p $dirshm/status ) == pause ]] && sleep 0.1 # fix: vumeter - resume with wrong track
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
+
 status=$( $dirbash/status.sh )
 statusdata=$( echo $status \
 	| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
@@ -22,7 +26,7 @@ if [[ -e $dirshm/status ]]; then
 	[[ $datanew == $dataprev ]] && exit
 fi
 
-curl -s -X POST http://127.0.0.1/pub?id=mpdplayer -d "$status"
+pushstream mpdplayer "$status"
 echo "$statusdata" > $dirshm/status
 
 [[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
@@ -40,7 +44,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		fi
 	else
 		killall cava &> /dev/null
-		curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":0}'
+		pushstream vumeter '{"val":0}'
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( cat $dirsystem/vuled.conf )
 			for i in $p; do
@@ -54,14 +58,16 @@ if [[ -e $dirshm/snapclientip ]]; then
 	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
 	readarray -t clientip < $dirshm/snapclientip
 	for ip in "${clientip[@]}"; do
-		[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+		[[ -n $ip ]] && pushstream mpdplayer "$status"
 	done
 fi
 
 [[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
 
 if [[ $webradio == false && -e $filescrobble && ! -e $dirshm/player-snapclient ]]; then
-	[[ -e $dirshm/player-upnp && ! -e $filescrobble.conf/upnp ]] && exit
+	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
+	[[ $player != mpd && ! -e $filescrobble.conf/$player ]] && exit
+	
 	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
 	cat << EOF > $dirshm/scrobble
 Artist="${data[0]}"
