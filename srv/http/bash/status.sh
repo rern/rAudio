@@ -87,15 +87,16 @@ if [[ $player != mpd && $player != upnp ]]; then
 
 	airplay )
 		dirairplay=$dirshm/airplay
-		start=$( cat $dirairplay/start 2> /dev/null )
 		state=$( cat $dirairplay/state 2> /dev/null )
-		if [[ -n $start ]]; then
-			Time=$( cat $dirairplay/Time 2> /dev/null )
-			timestamp=$( date +%s%3N )
+		Time=$( cat $dirairplay/Time 2> /dev/null )
+		timestamp=$( date +%s%3N )
+		if [[ $state == pause ]]; then
+			elapsedms=$( cat $dirairplay/elapsed 2> /dev/null )
+		else
+			start=$( cat $dirairplay/start 2> /dev/null )
 			elapsedms=$(( timestamp - start ))
-			[[ $state == pause ]] && elapsedms=$( cat $dirairplay/elapsed 2> /dev/null )
-			elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 		fi
+		elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 ########
 		status+='
 , "Album"     : "'$( cat $dirairplay/Album 2> /dev/null )'"
