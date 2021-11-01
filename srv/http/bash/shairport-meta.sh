@@ -28,7 +28,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ '>6d696e6d<' ]] && code=Title    && continue
 	[[ $line =~ '>6173616c<' ]] && code=Album    && continue
 	[[ $line =~ '>50494354<' ]] && code=coverart && continue
-	[[ $line =~ '>70726772<' ]] && code=progress && timestamp=$( date +%s%3N ) && continue
+	[[ $line =~ '>70726772<' ]] && code=progress && continue
 	[[ $line =~ '>70766f6c<' ]] && code=volume   && continue
 	
 	# no line with code found yet > [next line]
@@ -57,6 +57,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
 			pushstreamAirplay '{"elapsed":'$elapsed',"Time":'$Time'}'
+			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
