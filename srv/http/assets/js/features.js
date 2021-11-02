@@ -145,30 +145,33 @@ $( '#setting-smb' ).click( function() {
 	} );
 } );
 $( '#setting-scrobble' ).click( function() {
+	var content = `\
+<table>
+<tr><td></td><td><label><input type="checkbox"><i class="fa fa-airplay"></i> AirPlay</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"><i class="fa fa-bluetooth"></i> Bluetooth</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"><i class="fa fa-spotify"></i> Spotify</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"> <i class="fa fa-upnp"></i>UPnP</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">Notify each scrobble</label></td></tr>
+<tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
+<tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
+</table>`;
 	info( {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobble'
-		, textlabel     : 'User'
-		, passwordlabel : 'Password'
-		, checkbox      : [
-			  '<i class="fa fa-airplay"></i> AirPlay'
-			, '<i class="fa fa-bluetooth"></i> Bluetooth'
-			, '<i class="fa fa-spotify"></i> Spotify'
-			, ' <i class="fa fa-upnp"></i>UPnP'
-			, 'Notify each scrobble'
-		]
-		, footer        : G.scrobblekey ? '<div class="btnbottom"><span class="user">Change user<i class="fa fa-minus-circle"></i></span></div>' : ''
-		, footeralign   : 'right'
+		, content       : content
+		, boxwidth      : 180
 		, values        : G.scrobbleconf
 		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
 		, checkchanged  : G.scrobble ? 1 : 0
 		, beforeshow    : function() {
-			$( '#infoContent input:eq( 0 )' ).prop( 'disabled', G.scrobblekey );
-			$( '#infoContent tr:eq( 1 )' ).toggleClass( 'hide', G.scrobblekey );
-			$( '.btnbottom .user' ).click( function() {
+			var $user = $( '#infoContent input[type=text]' );
+			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
+			$user.prop( 'disabled', G.scrobblekey );
+			$pwd.toggleClass( 'hide', G.scrobblekey );
+			$( '.scrobbleuser' ).click( function() {
 				$( this ).remove();
-				$( '#infoContent input:eq( 0 )' ).prop( 'disabled', false );
-				$( '#infoContent tr:eq( 1 )' ).toggleClass( 'hide', false );
+				$user.prop( 'disabled', false );
+				$pwd.toggleClass( 'hide', false );
 				$( '#infoOk' ).addClass( 'disabled' );
 				checkBlank();
 				checkChanged();

@@ -8,10 +8,10 @@ exists() {
 }
 
 dirscrobble=$dirsystem/scrobble.conf
-scrobbleconf='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
 for key in airplay bluetooth spotify upnp notify; do
-	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo ,true || echo ,false )
+	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
 done
+scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
 
 data+='
   "page"             : "features"
@@ -23,6 +23,7 @@ data+='
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
+, "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then

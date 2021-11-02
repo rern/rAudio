@@ -184,16 +184,16 @@ scrobbledisable )
 	pushRefresh
 	;;
 scrobbleset )
+	conf=( ${args[@]:1:5} )
+	username=${args[6]}
+	password=${args[7]}
 	dirscrobble=$dirsystem/scrobble.conf
 	mkdir -p $dirscrobble
 	keys=( airplay bluetooth spotify upnp notify )
-	vals=( ${args[@]:2} )
 	for(( i=0; i < 5; i++ )); do
 		fileconf=$dirscrobble/${keys[ i ]}
-		[[ ${vals[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
+		[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
 	done
-	username=${args[1]}
-	password=${args[2]}
 	if [[ -z $password ]]; then
 		if [[ -e $dirscrobble/key && $username == $( cat $dirscrobble/user ) ]]; then
 			touch $dirsystem/scrobble
