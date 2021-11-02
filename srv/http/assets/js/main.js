@@ -438,16 +438,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 						$( '#bio' ).removeClass( 'hide' );
 					}
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					var values = infoVal();
-					if ( !values[ 0 ] || !values[ 1 ] ) {
-						banner( 'Last.fm Scrobble', 'Artist and Title cannot be blank.', 'lastfm' );
-						return
-					}
-					
-					bash( [ 'scrobble', ...values ], function( response ) {
-						if ( 'error' in response ) banner( 'Last.fm Scrobble', '<i class="fa fa-warning"></i> Error: '+ response.message, 'lastfm', 5000 );
-						bannerHide();
-					}, 'json' );
+					bash( [ 'scrobble', ...infoVal() ] );
 					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
 				}
 				$( '#infoX' ).click();

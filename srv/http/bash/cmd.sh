@@ -872,11 +872,6 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	[[ -e $dirshm/scrobblesent ]] && exit # 10s debounce
-	
-	touch $dirshm/scrobblesent
-	( sleep 10 && rm -f $dirshm/scrobblesent ) &> /dev/null &
-	
 	if [[ -n ${args[2]} ]]; then # webradio - at least 2 args
 		Artist=${args[1]}
 		Title=${args[2]}
@@ -886,10 +881,10 @@ scrobble )
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
 		if [[ $state == stop || ${args[1]} == stop ]]; then # args1 on stop: airplay bluetooth, spotify
-			[[ -z $Time || -z $start ]] && rm -f $dirshm/scrobblesent && exit
+			[[ -z $Time || -z $start ]] && exit
 			
 			elapsed=$(( $( date +%s ) - $start ))
-			(( $elapsed < $Time / 2 && $elapsed < 240 )) && rm -f $dirshm/scrobblesent && exit
+			(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
 			
 		fi
 	fi
@@ -917,7 +912,12 @@ scrobble )
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
-	[[ $reponse =~ error ]] && echo $reponse && rm -f $dirshm/scrobblesent
+	if [[ $reponse =~ error ]]; then
+		msg="Error:<br>$( jq -r .message <<< $response )"
+	elif [[ -e $dirsystem/scrobble.conf/notify ]]; then
+		msg="Scrobbled:<br>$Title"
+	fi
+	[[ -n $msg ]] && pushstreamNotify 'Last.fm Scrobble' "$msg" lastfm
 	;;
 stationcoverreset )
 	coverfile=${args[1]}

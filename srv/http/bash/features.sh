@@ -186,9 +186,9 @@ scrobbledisable )
 scrobbleset )
 	dirscrobble=$dirsystem/scrobble.conf
 	mkdir -p $dirscrobble
-	keys=( airplay bluetooth spotify upnp )
-	vals=( ${args[@]:3:6} )
-	for(( i=0; i < 4; i++ )); do
+	keys=( airplay bluetooth spotify upnp notify )
+	vals=( ${args[@]:2} )
+	for(( i=0; i < 5; i++ )); do
 		fileconf=$dirscrobble/${keys[ i ]}
 		[[ ${vals[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
 	done

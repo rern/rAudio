@@ -154,11 +154,26 @@ $( '#setting-scrobble' ).click( function() {
 			  '<i class="fa fa-airplay"></i> AirPlay'
 			, '<i class="fa fa-bluetooth"></i> Bluetooth'
 			, '<i class="fa fa-spotify"></i> Spotify'
-			, '<i class="fa fa-upnp"></i> UPnP'
+			, ' <i class="fa fa-upnp"></i>UPnP'
+			, 'Notify each scrobble'
 		]
+		, footer        : G.scrobblekey ? '<div class="btnbottom"><span class="user">Change user<i class="fa fa-minus-circle"></i></span></div>' : ''
+		, footeralign   : 'right'
 		, values        : G.scrobbleconf
-		, checkchanged  : ( G.scrobble ? 1 : 0 )
-		, checkblank    : [ 0 ]
+		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
+		, checkchanged  : G.scrobble ? 1 : 0
+		, beforeshow    : function() {
+			$( '#infoContent input:eq( 0 )' ).prop( 'disabled', G.scrobblekey );
+			$( '#infoContent tr:eq( 1 )' ).toggleClass( 'hide', G.scrobblekey );
+			$( '.btnbottom .user' ).click( function() {
+				$( this ).remove();
+				$( '#infoContent input:eq( 0 )' ).prop( 'disabled', false );
+				$( '#infoContent tr:eq( 1 )' ).toggleClass( 'hide', false );
+				$( '#infoOk' ).addClass( 'disabled' );
+				checkBlank();
+				checkChanged();
+			} );
+		}
 		, cancel        : function() {
 			$( '#scrobble' ).prop( 'checked', G.scrobble );
 		}

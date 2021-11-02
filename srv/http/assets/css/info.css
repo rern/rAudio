@@ -215,7 +215,6 @@
 .infobtn i {
 	font-size: 18px;
 	margin-right: 5px;
-	vertical-align: -2px !important;
 }
 .btnbottom span {
 	color: var( --cg60 );
@@ -225,6 +224,7 @@
 .btnicon {
 	width: 40px;
 	font-size: 22px;
+	vertical-align: -3px;
 	text-align: center;
 	color: var( --cw );
 	cursor: pointer;
@@ -251,7 +251,7 @@ hr {
 	-webkit-user-select: none;
 }
 #infoOverlay .fa {
-	vertical-align: -1px;
+	vertical-align: -2px;
 }
 #infoOverlay a {
 	height: 40px;

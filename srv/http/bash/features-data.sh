@@ -9,7 +9,7 @@ exists() {
 
 dirscrobble=$dirsystem/scrobble.conf
 scrobbleconf='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
-for key in airplay bluetooth spotify upnp; do
+for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo ,true || echo ,false )
 done
 
