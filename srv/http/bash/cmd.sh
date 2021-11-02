@@ -917,8 +917,10 @@ scrobble )
 	elif [[ -e $dirsystem/scrobble.conf/notify ]]; then
 		msg="$Title"
 	fi
-	[[ -n $msg ]] && curl -s -X POST http://127.0.0.1/pub?id=notify \
-							 -d '{"title":"Last.fm Scrobble","text":"'$msg'","icon":"lastfm"}'
+	[[ -z $msg ]] && exit
+	
+	data='{"title":"Last.fm Scrobble","text":"'$msg'","icon":"lastfm"}'
+	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$data"
 	;;
 stationcoverreset )
 	coverfile=${args[1]}
