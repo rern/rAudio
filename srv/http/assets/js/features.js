@@ -174,8 +174,8 @@ $( '#setting-scrobble' ).click( function() {
 				$user.prop( 'disabled', false );
 				$pwd.toggleClass( 'hide', false );
 				$( '#infoOk' ).addClass( 'disabled' );
+				$( '#infoContent input' ).off( 'change keyup paste cut' );
 				checkBlank();
-				checkChanged();
 			} );
 		}
 		, cancel        : function() {
