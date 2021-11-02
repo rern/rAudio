@@ -132,9 +132,11 @@ HTML
 		, 'icon'     => 'lastfm'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
- • Include: All renderers except SnapClient (already scrobbled by SnapServer)
- • WebRadio: Each track title > <i class="fa fa-lastfm"></i>Scrobble
+ • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
+ • Required Last.fm account.
+ • Include all renderers.
+ • SnapClient already scrobbled by SnapServer.
+ • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [
