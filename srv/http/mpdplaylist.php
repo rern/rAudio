@@ -3,7 +3,6 @@ include '/srv/http/indexbar.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $dirplaylists = '/srv/http/data/playlists/';
-$dirtmp = '/srv/http/data/shm';
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current, delete, edit, get, list, load, save
@@ -279,10 +278,7 @@ function playlist() { // current playlist
 	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
-	if ( !count( $lists ) ) {
-		@unlink( '/srv/http/data/shm/playlist' );
-		exit( '-1' );
-	}
+	if ( !count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
 	foreach( $lists as $list ) {

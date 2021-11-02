@@ -299,9 +299,7 @@ $( '#playlist' ).click( function() {
 		$( '.menu' ).addClass( 'hide' );
 	} else {
 		switchPage( 'playlist' );
-		if ( !G.savedlist && !G.savedplaylist ) {
-			G.status.playlistlength ? getPlaylist() : renderPlaylist( -1 );
-		}
+		if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
