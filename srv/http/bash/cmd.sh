@@ -913,11 +913,12 @@ scrobble )
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
 	if [[ $reponse =~ error ]]; then
-		msg="Error:<br>$( jq -r .message <<< $response )"
+		msg="Error: $( jq -r .message <<< $response )"
 	elif [[ -e $dirsystem/scrobble.conf/notify ]]; then
-		msg="Scrobbled:<br>$Title"
+		msg="$Title"
 	fi
-	[[ -n $msg ]] && pushstreamNotify 'Last.fm Scrobble' "$msg" lastfm
+	[[ -n $msg ]] && curl -s -X POST http://127.0.0.1/pub?id=notify \
+							 -d '{"title":"Last.fm Scrobble","text":"'$msg'","icon":"lastfm"}'
 	;;
 stationcoverreset )
 	coverfile=${args[1]}
