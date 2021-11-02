@@ -67,10 +67,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			echo $Time > $dirairplay/Time
 			/srv/http/bash/cmd-pushstatus.sh
 		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
-			vol=$( amixer -M -c $card sget "$control" \
-						| awk -F'[%[]' '/%/ {print $2}' \
-						| head -1 )
-			curl -s -X POST http://127.0.0.1/pub?id=volume '{"val":'$vol'}'
+			vol=$( /srv/http/bash/cmd.sh volumepushstream )
 		else
 			pushdata='{"'$code'":"'${data//\"/\\\"}'"}' # data may contains spaces
 			pushstreamAirplay "$pushdata"
