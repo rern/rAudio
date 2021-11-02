@@ -219,7 +219,7 @@ scrobbleset )
 		http://ws.audioscrobbler.com/2.0 )
 	[[ $reponse =~ error ]] && echo $reponse && exit
 	
-	echo $username >> $dirscrobble/user
+	echo $username > $dirscrobble/user
 	echo $reponse | sed 's/.*key":"//; s/".*//' > $dirscrobble/key
 	touch touch $dirsystem/scrobble
 	pushRefresh

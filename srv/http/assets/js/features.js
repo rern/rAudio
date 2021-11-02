@@ -168,6 +168,7 @@ $( '#setting-scrobble' ).click( function() {
 			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
 			$user.prop( 'disabled', G.scrobblekey );
 			$pwd.toggleClass( 'hide', G.scrobblekey );
+			$( '.scrobbleuser' ).toggleClass( 'hide', !G.scrobblekey )
 			$( '.scrobbleuser' ).click( function() {
 				$( this ).remove();
 				$user.prop( 'disabled', false );
