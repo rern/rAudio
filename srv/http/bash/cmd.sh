@@ -880,9 +880,11 @@ scrobble )
 		. $dirshm/scrobble # Artist, Title, Album, state, Time, start
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
-		if [[ $state == stop || ${args[1]} == stop ]]; then # args1 on stop: airplay bluetooth, spotify
+		# args1 on stop: airplay bluetooth, spotify || airplay: scrobble fires before airplay pause
+		if [[ $state == stop || ${args[1]} == stop || -e $dirshm/player-airplay ]]; then
 			[[ -z $Time || -z $start ]] && exit
 			
+			[[ -e $dirshm/player-airplay || -e $dirshm/player-spotify ]] && start=$(( ( start + 500 ) / 1000 )) # ms > s
 			elapsed=$(( $( date +%s ) - $start ))
 			(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
 			
@@ -914,8 +916,9 @@ scrobble )
 		http://ws.audioscrobbler.com/2.0 )
 	if [[ $reponse =~ error ]]; then
 		msg="Error: $( jq -r .message <<< $response )"
-	elif [[ -e $dirsystem/scrobble.conf/notify ]]; then
-		msg="$Title"
+	else
+		rm -f $dirshm/scrobble
+		[[ -e $dirsystem/scrobble.conf/notify ]] && msg="$Title"
 	fi
 	[[ -z $msg ]] && exit
 	
