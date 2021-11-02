@@ -23,7 +23,7 @@ if [[ ! -e $filestart ]]; then
 		systemctl try-restart bluezdbus mpd shairport-sync upmpdcli &> /dev/null
 #		elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
 #		(( $elapsed > 0 )) && echo pause > $filestate
-		$dirbash/cmd.sh volume0db
+		$dirbash/cmd.sh volumesave
 	fi
 fi
 

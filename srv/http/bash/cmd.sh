@@ -222,6 +222,7 @@ volumeGet() {
 				db=${voldb/* }
 			else
 				volume=100
+				[[ $1 == save ]] && echo $volume > $dirshm/mpdvolume
 			fi
 		fi
 	fi
@@ -320,6 +321,7 @@ bluetoothrenderer ) # start
 	touch $dirshm/player-bluetooth
 	systemctl stop snapclient
 	systemctl try-restart mpd shairport-sync spotifyd upmpdcli &> /dev/null
+	volumeGet save
 	$dirbash/cmd-pushstatus.sh
 	;;
 bookmarkreset )
@@ -968,7 +970,7 @@ stopplayer )
 	esac
 	$dirbash/cmd.sh scrobble stop
 	systemctl restart $service
-	[[ $player == airplay || $player != spotify ]] && volumeReset
+	[[ $player != mpd || $player != upnp ]] && volumeReset
 	$dirbash/cmd-pushstatus.sh
 	;;
 thumbgif )
@@ -1034,6 +1036,9 @@ volumepushstream )
 	;;
 volumereset )
 	volumeReset
+	;;
+volumesave )
+	volumeGet save
 	;;
 volumeupdown )
 	updn=${args[1]}

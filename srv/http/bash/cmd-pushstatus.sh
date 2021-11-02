@@ -68,7 +68,7 @@ if [[ $webradio == false && -e $filescrobble && ! -e $dirshm/player-snapclient ]
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	[[ $player != mpd && ! -e $filescrobble.conf/$player ]] && exit
 	
-	scrobblenew=$( echo ${data[@]:0:3} | xargs )
+	scrobblenew=$( echo ${data[@]:0:3} | tr -d ' ' )
 	scrobbleprev=$( head -3 $dirshm/scrobble | cut -d= -f2- | tr -d '\n "' )
 	[[ $scrobblenew == $scrobbleprev ]] && exit
 	
