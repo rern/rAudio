@@ -881,7 +881,7 @@ scrobble )
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
 		# args1 on stop: airplay bluetooth, spotify || airplay: scrobble fires before airplay pause
-		if [[ $state == stop || ${args[1]} == stop ]]; then
+		if [[ $state == stop || ${args[1]} == stop || -e $dirshm/player-airplay ]]; then
 			[[ -z $Time || -z $start ]] && exit
 			
 			elapsed=$(( $( date +%s ) - $start ))
@@ -916,7 +916,6 @@ scrobble )
 	if [[ $reponse =~ error ]]; then
 		msg="Error: $( jq -r .message <<< $response )"
 	else
-		rm -f $dirshm/scrobble
 		[[ -e $dirsystem/scrobble.conf/notify ]] && msg="$Title"
 	fi
 	[[ -z $msg ]] && exit
@@ -942,6 +941,7 @@ stopplayer )
 		airplay )
 			service=shairport-sync
 			systemctl stop shairport-meta
+			rm -f $dirshm/airplay/start
 			;;
 		bluetooth )
 			service=bluezdbus

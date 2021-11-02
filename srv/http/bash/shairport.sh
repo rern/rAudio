@@ -20,7 +20,7 @@ if (( $# > 0 )); then
 else
 	if [[ ! -e $dirshm/player-airplay ]] ;then
 		mpc stop
-		rm -f $dirshm/{player-*,scrobble}
+		rm -f $dirshm/{player-*,scrobble} $dirshm/airplay/start
 		touch $dirshm/player-airplay
 		systemctl stop snapclient
 		systemctl try-restart bluezdbus mpd spotifyd upmpdcli &> /dev/null
