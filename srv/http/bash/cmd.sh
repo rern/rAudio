@@ -222,8 +222,8 @@ volumeGet() {
 				db=${voldb/* }
 			else
 				volume=100
-				[[ $1 == save ]] && echo $volume > $dirshm/mpdvolume
 			fi
+			[[ $1 == save ]] && echo $volume > $dirshm/mpdvolume
 		fi
 	fi
 }
