@@ -151,7 +151,7 @@ $( '#setting-scrobble' ).click( function() {
 <tr><td></td><td><label><input type="checkbox"><i class="fa fa-bluetooth"></i> Bluetooth</label></td></tr>
 <tr><td></td><td><label><input type="checkbox"><i class="fa fa-spotify"></i> Spotify</label></td></tr>
 <tr><td></td><td><label><input type="checkbox"> <i class="fa fa-upnp"></i>UPnP</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">Notify each scrobble</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
 <tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
 <tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
 </table>`;
@@ -159,7 +159,7 @@ $( '#setting-scrobble' ).click( function() {
 		  icon          : 'lastfm'
 		, title         : 'Last.fm Scrobble'
 		, content       : content
-		, boxwidth      : 180
+		, boxwidth      : 170
 		, values        : G.scrobbleconf
 		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
 		, checkchanged  : G.scrobble ? 1 : 0
