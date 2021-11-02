@@ -881,10 +881,9 @@ scrobble )
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
 		# args1 on stop: airplay bluetooth, spotify || airplay: scrobble fires before airplay pause
-		if [[ $state == stop || ${args[1]} == stop || -e $dirshm/player-airplay ]]; then
+		if [[ $state == stop || ${args[1]} == stop ]]; then
 			[[ -z $Time || -z $start ]] && exit
 			
-			[[ -e $dirshm/player-airplay || -e $dirshm/player-spotify ]] && start=$(( ( start + 500 ) / 1000 )) # ms > s
 			elapsed=$(( $( date +%s ) - $start ))
 			(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
 			
