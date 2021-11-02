@@ -113,18 +113,6 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
-		  'label' => 'Embedded Lyrics'
-		, 'id'    => 'lyricsembedded'
-		, 'icon'  => 'lyrics'
-		, 'help'  => <<< HTML
- • Search embedded lyrics in local files
- • Search online if not found.
- • Disable if most lyrics are not embedded:
- &emsp; • Search online only.
- &emsp; • Online fetched lyrics are saved as separate files, not embedded.
-HTML
-	]
-	, [
 		  'label'    => 'File Sharing'
 		, 'id'       => 'smb'
 		, 'sublabel' => 'smb'
@@ -147,6 +135,17 @@ HTML
 Automatically send listened music data to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  • Include: All renderers except SnapClient (already scrobbled by SnapServer)
  • WebRadio: Each track title > <i class="fa fa-lastfm"></i>Scrobble
+HTML
+	]
+	, [
+		  'label' => 'Lyrics-embedded'
+		, 'id'    => 'lyricsembedded'
+		, 'icon'  => 'lyrics'
+		, 'help'  => <<< HTML
+ • Get embedded lyrics from local files.
+ • Search online if not available.
+ • Should be disable if most lyrics are not embedded.
+ • Online fetched lyrics are saved as separate files, not embedded.
 HTML
 	]
 	, [
