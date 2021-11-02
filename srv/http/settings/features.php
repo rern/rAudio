@@ -138,7 +138,7 @@ Automatically send listened music data to <a href="https://www.last.fm/">Last.fm
 HTML
 	]
 	, [
-		  'label' => 'Lyrics-embedded'
+		  'label' => 'Lyrics in File'
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'
 		, 'help'  => <<< HTML
