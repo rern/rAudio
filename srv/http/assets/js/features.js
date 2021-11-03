@@ -157,7 +157,7 @@ $( '#setting-scrobble' ).click( function() {
 </table>`;
 	info( {
 		  icon          : 'lastfm'
-		, title         : 'Last.fm Scrobble'
+		, title         : 'Scrobble'
 		, content       : content
 		, boxwidth      : 170
 		, values        : G.scrobbleconf
@@ -186,13 +186,13 @@ $( '#setting-scrobble' ).click( function() {
 				if ( 'error' in response ) {
 					info( {
 						  icon    : 'lastfm'
-						, title   : 'Last.fm Scrobble'
+						, title   : 'Scrobble'
 						, message : response.message
 					} );
 					$( '#scrobble' ).prop( 'checked', 0 );
 				}
 			}, 'json' );
-			notify( 'Last.fm Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
+			notify( 'Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
 		}
 	} );
 } );
