@@ -68,11 +68,13 @@ if [[ $webradio == false && -e $filescrobble && ! -e $dirshm/player-snapclient ]
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	[[ $player != mpd && ! -e $filescrobble.conf/$player ]] && exit
 	
-	scrobblenew=$( echo ${data[@]:0:3} | tr -d ' ' )
-	scrobbleprev=$( head -3 $dirshm/scrobble | cut -d= -f2- | tr -d '\n "' )
-	[[ $scrobblenew == $scrobbleprev ]] && exit
-	
-	[[ -e $dirshm/scrobble ]] && $dirbash/cmd.sh scrobble # file not yet exist on initial play
+	if [[ -e $dirshm/scrobble ]]; then
+		scrobblenew=$( echo ${data[@]:0:3} | tr -d ' ' )
+		scrobbleprev=$( head -3 $dirshm/scrobble | cut -d= -f2- | tr -d '\n "' )
+		[[ $scrobblenew == $scrobbleprev ]] && exit
+		
+		$dirbash/cmd.sh scrobble # file not yet exist on initial play
+	fi
 	timestamp=$(( ( ${data[8]} + 500 ) / 1000 )) # ms > s
 	cat << EOF > $dirshm/scrobble
 Artist="${data[0]}"
