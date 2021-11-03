@@ -9,7 +9,7 @@ for pid in $( pgrep upmpdcli ); do
 	renice -n -19 -p $pid &> /dev/null
 done
 #sudo mv $playerfile-{*,upnp} # sudo - fix permission on start
-mpc stop
+mpc -q stop
 rm -f $dirshm/{player-*,scrobble}
 touch $dirshm/player-upnp
 systemctl try-restart bluezdbus shairport-sync snapclient spotifyd &> /dev/null

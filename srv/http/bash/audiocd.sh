@@ -38,12 +38,12 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
 		pushstreamNotify 'Removed from Playlist.'
-		[[ $( mpc | head -c 4 ) == cdda ]] && mpc stop
+		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
 		tracktop=$( echo "$tracks" | head -1 )
-		mpc del $tracks
+		mpc -q del $tracks
 		if (( $tracktop > 1 )); then
-			mpc play $(( tracktop - 1 ))
-			mpc stop
+			mpc -q play $(( tracktop - 1 ))
+			mpc -q stop
 		fi
 		pushstreamPlaylist
 	fi
@@ -104,7 +104,7 @@ fi
 pushstreamNotify 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
-  mpc add cdda:///$i
+  mpc -q add cdda:///$i
 done
 echo $discid > $dirshm/audiocd
 pushstreamPlaylist

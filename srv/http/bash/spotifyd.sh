@@ -16,7 +16,7 @@ done
 ##### start
 if [[ ! -e $filestart ]]; then
 	if [[ ! -e $dirshm/player-spotify ]] ;then
-		mpc stop
+		mpc -q stop
 		rm -f $dirshm/{player-*,scrobble} $dirspotify/start
 		touch $dirshm/player-spotify
 		systemctl stop snapclient

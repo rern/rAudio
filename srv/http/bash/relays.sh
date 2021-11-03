@@ -30,7 +30,7 @@ pushstreamRelays() {
 	pushstream relays "$1"
 }
 
-mpc stop
+mpc -q stop
 systemctl stop radio
 rm -f $dirshm/status
 

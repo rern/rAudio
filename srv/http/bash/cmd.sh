@@ -112,14 +112,14 @@ pladdPlay() {
 	pushstreamPlaylist
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
-		mpc play $pos
+		mpc -q play $pos
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 		$dirbash/cmd-pushstatus.sh
 	fi
 }
 pladdPosition() {
 	if [[ ${1:0:7} == replace ]]; then
-		mpc clear
+		mpc -q clear
 		pos=1
 	else
 		pos=$(( $( mpc playlist | wc -l ) + 1 ))
@@ -242,7 +242,7 @@ volumeReset() {
 volumeSetAt() {
 	val=$1
 	if [[ -z $control ]]; then
-		mpc volume $val
+		mpc -q volume $val
 	else
 		amixer -Mq sset "$control" $val%
 	fi
@@ -316,7 +316,7 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothrenderer ) # start
-	mpc stop
+	mpc -q stop
 	rm -f $dirshm/{player-*,scrobble}
 	touch $dirshm/player-bluetooth
 	systemctl stop snapclient
@@ -549,8 +549,8 @@ ignoredir )
 	mpdpath=$( dirname "$path" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
 	pushstream mpdupdate 1
-	mpc update "$mpdpath" #1 get .mpdignore into database
-	mpc update "$mpdpath" #2 after .mpdignore was in database
+	mpc -q update "$mpdpath" #1 get .mpdignore into database
+	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 lcdcharrefresh )
 	killall lcdchar.py &> /dev/null
@@ -564,12 +564,12 @@ librandom )
 	if [[ $enable == false ]]; then
 		rm -f $dirsystem/librandom
 	else
-		mpc random 0
+		mpc -q random 0
 		plL=$( mpc playlist | wc -l )
 		$dirbash/cmd-librandom.sh start
 		touch $dirsystem/librandom
 		sleep 1
-		mpc play $(( plL + 1 ))
+		mpc -q play $(( plL + 1 ))
 	fi
 	pushstream option '{ "librandom": '$enable' }'
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -615,7 +615,7 @@ lyrics )
 mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
-	mpc $option $onoff
+	mpc -q $option $onoff
 	pushstream option '{"'$option'":'$onoff'}'
 	;;
 mpcplayback )
@@ -623,7 +623,7 @@ mpcplayback )
 	pos=${args[2]}
 	systemctl stop radio mpd_oled
 	mpc | grep -q '^\[paused\]' && pause=1
-	mpc $command $pos
+	mpc -q $command $pos
 	if [[ $command == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotify 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
@@ -641,24 +641,24 @@ mpcprevnext )
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
-		mpc stop
+		mpc -q stop
 		rm -f $dirshm/nostatus
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
-		mpc play $pos
+		mpc -q play $pos
 	else
 		if [[ $command == next ]]; then
-			(( $current != $length )) && mpc play $(( current + 1 )) || mpc play 1
-			mpc | grep -q 'consume: on' && mpc del $current
+			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
+			mpc | grep -q 'consume: on' && mpc -q del $current
 			[[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
 		else
-			(( $current != 1 )) && mpc play $(( current - 1 )) || mpc play $length
+			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
 	fi
 	if [[ -z $playing ]]; then
 		rm -f $dirshm/nostatus
-		mpc stop
+		mpc -q stop
 	else
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotify 'Audio CD' 'Change track ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
@@ -669,11 +669,11 @@ mpcseek )
 	state=${args[2]}
 	if [[ $state == stop ]]; then
 		touch $dirshm/nostatus
-		mpc play
-		mpc pause
+		mpc -q play
+		mpc -q pause
 		rm $dirshm/nostatus
 	fi
-	mpc seek $seek
+	mpc -q seek $seek
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -713,24 +713,24 @@ pladd )
 	cmd=${args[2]}
 	delay=${args[3]}
 	pladdPosition $cmd
-	mpc add "$item"
+	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
 plcrop )
 	if mpc | grep -q playing; then
-		mpc crop
+		mpc -q crop
 	else
-		mpc play
-		mpc crop
-		mpc stop
+		mpc -q play
+		mpc -q crop
+		mpc -q stop
 	fi
 	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
 	$dirbash/cmd-pushstatus.sh
 	pushstreamPlaylist
 	;;
 plcurrent )
-	mpc play ${args[1]}
-	mpc stop
+	mpc -q play ${args[1]}
+	mpc -q stop
 	$dirbash/cmd-pushstatus.sh
 	;;
 plfindadd )
@@ -739,7 +739,7 @@ plfindadd )
 		string=${args[2]}
 		cmd=${args[3]}
 		pladdPosition $cmd
-		mpc findadd $type "$string"
+		mpc -q findadd $type "$string"
 	else
 		type=${args[2]}
 		string=${args[3]}
@@ -747,7 +747,7 @@ plfindadd )
 		string2=${args[5]}
 		cmd=${args[6]}
 		pladdPosition $cmd
-		mpc findadd $type "$string" $type2 "$string2"
+		mpc -q findadd $type "$string" $type2 "$string2"
 	fi
 	pladdPlay $cmd $delay
 	;;
@@ -756,7 +756,7 @@ plload )
 	cmd=${args[2]}
 	delay=${args[3]}
 	pladdPosition $cmd
-	mpc load "$playlist"
+	mpc -q load "$playlist"
 	pladdPlay $cmd $delay
 	;;
 plloadrange )
@@ -765,7 +765,7 @@ plloadrange )
 	cmd=${args[3]}
 	delay=${args[4]}
 	pladdPosition $cmd
-	mpc --range=$range load "$playlist"
+	mpc -q --range=$range load "$playlist"
 	pladdPlay $cmd $delay
 	;;
 plls )
@@ -775,26 +775,26 @@ plls )
 	pladdPosition $cmd
 	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
 	if [[ -z $cuefiles ]]; then
-		mpc ls "$dir" | mpc add &> /dev/null
+		mpc ls "$dir" | mpc -q add &> /dev/null
 	else
 		for cuefile in "${cuefiles[@]}"; do
-			mpc load "$cuefile"
+			mpc -q load "$cuefile"
 		done
 	fi
 	pladdPlay $cmd $delay
 	;;
 plorder )
-	mpc move ${args[1]} ${args[2]}
+	mpc -q move ${args[1]} ${args[2]}
 	pushstreamPlaylist
 	;;
 plremove )
 	pos=${args[1]}
 	activenext=${args[2]}
 	if [[ -n $pos ]]; then
-		mpc del $pos
-		[[ -n $activenext ]] && mpc play $activenext && mpc stop
+		mpc -q del $pos
+		[[ -n $activenext ]] && mpc -q play $activenext && mpc -q stop
 	else
-		mpc clear
+		mpc -q clear
 	fi
 	$dirbash/cmd-pushstatus.sh
 	pushstreamPlaylist
@@ -804,7 +804,7 @@ plrename )
 	pushstreamPlaylist
 	;;
 plshuffle )
-	mpc shuffle
+	mpc -q shuffle
 	pushstreamPlaylist
 	;;
 plsimilar )
@@ -823,18 +823,18 @@ plsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	echo "$list" | awk 'NF' | mpc add
+	echo "$list" | awk 'NF' | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	[[ -n $pos ]] && mpc -q play $pos
 	;;
 power )
 	reboot=${args[1]}
-	mpc stop
+	mpc -q stop
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ -n $cdda ]] && mpc del $cdda
+	[[ -n $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
 		$dirbash/relays.sh
 		sleep 2
@@ -983,10 +983,10 @@ stopplayer )
 			;;
 		upnp )
 			service=upmpdcli
-			mpc stop
+			mpc -q stop
 			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
 			for i in $tracks; do
-				mpc del $i
+				mpc -q del $i
 			done
 			;;
 	esac
@@ -1065,7 +1065,7 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	[[ -z $control ]] && mpc volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
+	[[ -z $control ]] && mpc -q volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
 	volumeGet
 	pushstreamVolume updn $volume
 	;;

@@ -16,7 +16,7 @@ pushstream() {
 }
 
 if [[ $1 == start ]]; then # client start - save server ip
-	mpc stop
+	mpc -q stop
 	systemctl start snapclient
 	sleep 2
 	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )

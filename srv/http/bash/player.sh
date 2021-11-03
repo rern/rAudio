@@ -35,7 +35,7 @@ update() { # for /etc/conf.d/devmon - devmon@http.service
 		$dirshm/updatingusb
 	else
 		echo USB > $dirsystem/updating
-		mpc update USB
+		mpc -q update USB
 	fi
 	sleep 1
 	pushRefresh
@@ -127,12 +127,12 @@ count )
 	echo $albumartist $composer $genre > $dirsystem/mpddb
 	;;
 crossfadedisable )
-	mpc crossfade 0
+	mpc -q crossfade 0
 	pushRefresh
 	;;
 crossfadeset )
 	crossfade=${args[1]}
-	mpc crossfade $crossfade
+	mpc -q crossfade $crossfade
 	echo $crossfade > $dirsystem/crossfade.conf
 	touch $dirsystem/crossfade
 	pushRefresh
@@ -236,7 +236,7 @@ mixertype )
 	aplayname=${args[2]}
 	hwmixer=${args[3]}
 	if [[ -n $hwmixer ]]; then # set 0dB
-		mpc stop
+		mpc -q stop
 		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		if [[ $mixertype == hardware ]];then
 			amixer -Mq sset "$hwmixer" $vol%
@@ -251,7 +251,7 @@ mixertype )
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
-	[[ $mixertype == software ]] && mpc volume $vol
+	[[ $mixertype == software ]] && mpc -q volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 mpdignorelist )
@@ -285,7 +285,7 @@ novolume )
 	sed -i -e '/volume_normalization/ d
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
-	mpc crossfade 0
+	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
