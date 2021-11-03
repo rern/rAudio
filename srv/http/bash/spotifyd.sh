@@ -17,13 +17,13 @@ done
 if [[ ! -e $filestart ]]; then
 	if [[ ! -e $dirshm/player-spotify ]] ;then
 		mpc stop
+		$dirbash/cmd.sh volumesave
 		rm -f $dirshm/{player-*,scrobble} $dirspotify/start
 		touch $dirshm/player-spotify
 		systemctl stop snapclient
 		systemctl try-restart bluezdbus mpd shairport-sync upmpdcli &> /dev/null
 #		elapsed=$( cat $fileelapsed 2> /dev/null || echo 0 )
 #		(( $elapsed > 0 )) && echo pause > $filestate
-		$dirbash/cmd.sh volumesave
 	fi
 fi
 

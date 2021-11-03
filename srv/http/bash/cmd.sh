@@ -931,8 +931,30 @@ stationcoverreset )
 	pushstream coverart '{"url":"'$coverfile'","type":"webradioreset"}'
 	;;
 statuspkg )
-	echo "$( pacman -Q ${args[1]} )
-$( systemctl status ${args[2]} | grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
+	id=${args[1]}
+	pkg=$id
+	case $id in
+		hostapd )
+			conf=/etc/hostapd/$id.conf;;
+		snapclient|snapserver )
+			conf=/etc/default/$id
+			pkg=snapcast;;
+		smb )
+			conf=/etc/samba/$id.conf
+			pkg=samba;;
+		* )
+			conf=/etc/$id.conf;;
+	esac
+	[[ -e $conf ]] && status="\
+<grn>$( pacman -Q $pkg )</grn>
+$( cat $conf )
+
+"
+	status+="\
+$( systemctl status $id \
+	| sed '1 s|^.* \(.*service\)|<grn>\1</grn>|' \
+	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
+	echo "$status"
 	;;
 stopplayer )
 	player=${args[1]}

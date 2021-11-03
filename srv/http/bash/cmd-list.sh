@@ -124,4 +124,7 @@ if [[ -n $toolarge ]]; then
 	exit
 fi
 
-find /mnt/MPD -name .mpdignore | sort -V > $dirmpd/mpdignorelist &
+(
+	list=$( find /mnt/MPD -name .mpdignore | sort -V )
+	[[ -n $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+) &

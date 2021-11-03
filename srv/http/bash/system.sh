@@ -61,6 +61,12 @@ bluetoothdisable )
 	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
 	pushRefresh
 	;;
+bluetoothstatus )
+	echo "\
+<bll># bluetoothctl show</bll>
+
+$( bluetoothctl show )"
+	;;
 bluetoothset )
 	btdiscoverable=${args[1]}
 	btformat=${args[2]}
@@ -82,11 +88,11 @@ bluetoothset )
 	;;
 configtxtget )
 	config="\
-<bl># cat /boot/cmdline.txt</bl>
+<bll># cat /boot/cmdline.txt</bll>
 
 $( cat /boot/cmdline.txt )
 
-<bl># cat /boot/config.txt</bl>
+<bll># cat /boot/config.txt</bll>
 
 $( cat /boot/config.txt )
 "
@@ -208,11 +214,11 @@ datarestore )
 	;;
 fstabget )
 	echo -e "\
-<bl># cat /etc/fstab</bl>
+<bll># cat /etc/fstab</bll>
 
 $( cat /etc/fstab )
 
-<bl># mount | grep ^/dev</bl>
+<bll># mount | grep ^/dev</bll>
 
 $( mount | grep ^/dev | sort )"
 	;;
@@ -257,10 +263,15 @@ dtparam=audio=on"
 journalctlget )
 	filebootlog=$dirdata/tmp/bootlog
 	if [[ -e $filebootlog ]]; then
-		cat "$filebootlog"
+		journal=$( cat $filebootlog )
 	else
-		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
+		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
+		echo "$journal" > $filebootlog
 	fi
+	echo "\
+<bll># journalctl -b</bll>
+
+$journal"
 	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
@@ -532,9 +543,9 @@ soundprofiledisable )
 	;;
 soundprofileget )
 	echo "\
-<bl># sysctl kernel.sched_latency_ns
+<bll># sysctl kernel.sched_latency_ns
 # sysctl vm.swappiness
-# ifconfig eth0 | grep 'mtu\\|txq'</bl>
+# ifconfig eth0 | grep 'mtu\\|txq'</bll>
 
 $( sysctl kernel.sched_latency_ns )
 $( sysctl vm.swappiness )

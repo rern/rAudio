@@ -41,7 +41,7 @@ case ${args[0]} in
 avahi )
 	hostname=$( hostname )
 	echo "\
-<bl># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bl>
+<bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
 
 $( timeout 1 avahi-browse -arp \
 	| cut -d';' -f7,8 \
@@ -147,10 +147,16 @@ editwifidhcp )
 	netctl start "$ssid"
 	pushRefresh
 	;;
-ifconfigget )
+ifconfigeth )
 	echo "\
-<bl># ifconfig wlan0
-# iwconfig wlan0</bl>
+<bll># ifconfig eth0</bll>
+
+$( ifconfig eth0 | grep -v 'RX\\|TX' | grep . )"
+	;;
+ifconfigwlan )
+	echo "\
+<bll># ifconfig wlan0
+# iwconfig wlan0</bll>
 
 $( ifconfig wlan0 | grep -v 'RX\\|TX')
 $( iwconfig wlan0 | grep . )"

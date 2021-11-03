@@ -171,10 +171,10 @@ customset )
 	fi
 	;;
 devices )
-	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( $dirbash/player.sh amixer )
-	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bl># bluealsa-aplay -L</bl>\n'$( bluealsa-aplay -L )
+	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
+	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
+	devices+=$'\n\n<bll># amixer scontrols</bll>\n'$( $dirbash/player.sh amixer )
+	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
 	echo "$devices"
 	;;
 dop )
@@ -256,8 +256,12 @@ mixertype )
 	;;
 mpdignorelist )
 	file=/srv/http/data/mpd/mpdignorelist
-	[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file
 	readarray -t files < $file
+	list="\
+<bll># find /mnt/MPD -name .mpdignore</bll>
+
+
+"
 	for file in "${files[@]}"; do
 		list+="\
 $file

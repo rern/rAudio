@@ -8,7 +8,7 @@ dirshm=/srv/http/data/shm
 dirairplay=$dirshm/airplay
 
 ##### pause
-if (( $# > 0 )); then
+if (( $1 == playend )); then
 	systemctl stop shairport-meta
 	$dirbash/cmd.sh scrobble stop
 	echo pause > $dirairplay/state
@@ -20,11 +20,11 @@ if (( $# > 0 )); then
 else
 	if [[ ! -e $dirshm/player-airplay ]] ;then
 		mpc stop
+		$dirbash/cmd.sh volumesave
 		rm -f $dirshm/{player-*,scrobble} $dirshm/airplay/start
 		touch $dirshm/player-airplay
 		systemctl stop snapclient
 		systemctl try-restart bluezdbus mpd spotifyd upmpdcli &> /dev/null
-		$dirbash/cmd.sh volumesave
 	fi
 	systemctl start shairport-meta
 	echo play > $dirairplay/state

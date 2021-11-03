@@ -127,19 +127,6 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label'    => 'Last.fm Scrobble'
-		, 'id'       => 'scrobble'
-		, 'icon'     => 'lastfm'
-		, 'setting'  => true
-		, 'help'     => <<< HTML
- • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
- • Required Last.fm account.
- • Option to include renderers - Exclude if already scrobbleed by sender devices.
- • SnapClient already scrobbled by SnapServer.
- • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
-HTML
-	]
-	, [
 		  'label' => 'Lyrics in File'
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'
@@ -175,6 +162,19 @@ HTML
 		, 'icon'  => 'play-power'
 		, 'help'  => <<< HTML
 Start playing automatically after boot.
+HTML
+	]
+	, [
+		  'label'    => 'Scrobble'
+		, 'id'       => 'scrobble'
+		, 'icon'     => 'lastfm'
+		, 'setting'  => true
+		, 'help'     => <<< HTML
+ • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
+ • Required Last.fm account.
+ • Option to include renderers - Exclude if already scrobbleed by sender devices.
+ • SnapClient already scrobbled by SnapServer.
+ • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 ];

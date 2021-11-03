@@ -148,10 +148,7 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
-$head = [ //////////////////////////////////
-	  'title'  => 'Options'
-	, 'status' => 'mpdconf'
-];
+$head = [ 'title' => 'Options' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Buffer - Audio'

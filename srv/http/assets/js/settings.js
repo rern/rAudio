@@ -22,24 +22,23 @@ var playersh = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
 var systemsh = dirbash +'system.sh ';
 var cmd = {
-	  albumignore  : [ 'cat /srv/http/data/mpd/albumignore' ]
-	, asound       : [ playersh +'devices', -1 ]
-	, avahi        : [ networkssh +'avahi', -1 ]
-	, bluetooth    : [ 'bluetoothctl info' ]
-	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
-	, configtxt    : [ systemsh +'configtxtget', -1 ]
-	, iw           : [ 'iw reg get; iw list' ]
-	, journalctl   : [ systemsh +'journalctlget', 'journalctl -b' ]
-	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
-	, mount        : [ systemsh +'fstabget', -1 ]
-	, mpdconf      : [ 'cat /etc/mpd.conf' ]
-	, mpdignore    : [ playersh +'mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
-	, rfkill       : [ 'rfkill' ]
-	, soundprofile : [ systemsh +'soundprofileget', -1 ]
-	, timesyncd    : [ 'systemctl status systemd-timesyncd' ]
-	, wlan         : [ networkssh +'ifconfigget', -1 ]
+	  albumignore  : 'cat /srv/http/data/mpd/albumignore'
+	, asound       : playersh +'devices'
+	, avahi        : networkssh +'avahi'
+	, bluetooth    : 'bluetoothctl info'
+	, bluetoothctl : systemsh +'bluetoothstatus'
+	, configtxt    : systemsh +'configtxtget'
+	, iw           : 'iw reg get; iw list'
+	, journalctl   : systemsh +'journalctlget'
+	, lan          : networkssh +'ifconfigeth'
+	, mount        : systemsh +'fstabget'
+	, mpdconf      : 'cat /etc/mpd.conf'
+	, mpdignore    : playersh +'mpdignorelist'
+	, rfkill       : 'rfkill'
+	, soundprofile : systemsh +'soundprofileget'
+	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'systemd-timesyncd', 'upmpdcli' ];
 
 function status( id, refresh ) {
 	var $el = $( '#code'+ id );
@@ -48,36 +47,20 @@ function status( id, refresh ) {
 		return
 	}
 		
-	var i = services.indexOf( id );
-	if ( i !== -1 ) {
-		var pkg = {
-			  localbrowser : G.browser
-			, smb          : 'samba'
-			, snapserver   : 'snapcast'
-		}
-		var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
-		var command = [ 'cmd', 'statuspkg', pkgname, id ];
-		var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
-		var systemctl = 1;
-	} else {
-		var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-		var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
-		var systemctl = 0;
-	}
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( function() {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
+	if ( id === 'timesyncd' ) id = 'systemd-timesyncd';
+	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'statuspkg', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );
 		var status = status
 						.replace( /(active \(running\))/, '<grn>$1</grn>' )
 						.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-		if ( systemctl ) status = status
-							.replace( /(.*)\n/, '<grn>$1</grn>\n' )
-							.replace( /(failed)/, '<red>$1</red>' );
-		$el.html( cmdtxt + status ).promise().done( function() {
+						.replace( /(failed)/, '<red>$1</red>' );
+		$el.html( status ).promise().done( function() {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {
 				setTimeout( function() {
