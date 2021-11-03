@@ -223,7 +223,7 @@ volumeGet() {
 			else
 				volume=100
 			fi
-			[[ $1 == save ]] && echo $volume > $dirshm/mpdvolume
+			echo $volume > $dirshm/mpdvolume
 		fi
 	fi
 }

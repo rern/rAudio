@@ -31,7 +31,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			6173616c ) code=Album    && continue;;
 			50494354 ) code=coverart && continue;;
 			70726772 ) code=progress && continue;;
-#			70766f6c ) code=volume   && continue;;
 		esac
 	fi
 	
@@ -66,8 +65,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
 			/srv/http/bash/cmd-pushstatus.sh
-#		elif [[ $code == volume ]]; then # format: airplay,current,limitH,limitL
-#			vol=$( /srv/http/bash/cmd.sh volumepushstream )
 		else
 			pushdata='{"'$code'":"'${data//\"/\\\"}'"}' # data may contains spaces
 			pushstreamAirplay "$pushdata"
