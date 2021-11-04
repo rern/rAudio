@@ -19,11 +19,7 @@ $( '#setting-spotifyd' ).click( function() {
 		info( {
 			  icon        : 'spotify'
 			, title       : 'Spotify Authorization'
-			, message     : re +'Authorize rAudio to access playing status.'
-			, buttonlabel : '<i class="fa fa-minus-circle"></i>Remove'
-			, button      : !G.spotifydcode ? '' : function() {
-				bash( [ 'spotifyddisable', 'removecode' ] );
-			}
+			, message     : re +'Authorize rAudio to access playing status?'
 			, cancel      : function() {
 				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
 			}
