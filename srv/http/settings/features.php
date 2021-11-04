@@ -1,4 +1,12 @@
 <?php
+if ( isset( $_GET[ 'code' ] ) ) {
+	$code = $_GET[ 'code' ];
+	if ( $code ) {
+		file_put_contents( '/srv/http/data/system/spotifycode', $code );
+		exec( '/usr/bin/sudo /usr/bin/systemctl enable --now spotifyd' );
+	}
+	echo '<a class="spotifycode hide" data-error="'.$_GET[ 'error' ].'"></a>';
+}
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
 $head = [ 'title' => 'Renderers' ]; //////////////////////////////////
@@ -33,9 +41,13 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
+		, 'setting'  => true
 		, 'disabled' => 'Spotify is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.(For Premium account only)
+ • Require user's authorization to access playing status.
+ • Save only authorization code. No password saved.
+ • Remove authorization: spotify.com > Profile > Account > Apps
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -172,6 +184,7 @@ HTML
 		, 'help'     => <<< HTML
  • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  • Required Last.fm account.
+ • Save only scrobble code. No username and password saved.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
  • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble

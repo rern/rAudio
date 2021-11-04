@@ -1,5 +1,45 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+if ( $( '.spotifycode' ).length ) {
+	window.history.replaceState( 'page', 'normal', 'http://192.168.1.3/settings.php?p=features' );
+	var error = $( '.spotifycode' ).data( 'error' );
+	if ( error ) {
+		info( {
+			  icon    : 'spotify'
+			, title   : 'Spotify'
+			, message : '<i class="fa fa-warning"></i> Authorization failed:<br>'+ error
+		} );
+	}
+}
+$( '#setting-spotifyd' ).click( function() {
+	if ( !G.spotifyd && G.spotifydcode ) {
+		bash( [ 'spotifyd', true ] );
+	} else {
+		var re = G.spotifydcode ? 'Re-' : '';
+		info( {
+			  icon        : 'spotify'
+			, title       : 'Spotify Authorization'
+			, message     : re +'Authorize rAudio to access playing status.'
+			, buttonlabel : '<i class="fa fa-minus-circle"></i>Remove'
+			, button      : !G.spotifydcode ? '' : function() {
+				bash( [ 'spotifyddisable', 'removecode' ] );
+			}
+			, cancel      : function() {
+				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
+			}
+			, ok          : function() {
+				var data = {
+					  response_type : 'code'
+					, client_id     : '46e13d511bf1435097527e53cf5df5af'
+					, scope         : 'user-read-playback-position'
+					, redirect_uri  : 'https://rern.github.io/auth.html'
+					, state         : window.location.hostname
+				}
+				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
+			}
+		} );
+	}
+} );
 $( '#setting-snapclient' ).click( function() {
 	info( {
 		  icon         : 'snapcast'
@@ -267,13 +307,14 @@ function renderPage( list ) {
 	$( '#shairport-sync' )
 		.prop( 'checked', G[ 'shairport-sync' ] )
 		.toggleClass( 'disabled', G.shairportactive );
-	$( '#spotifyd' )
-		.prop( 'checked', G.spotifyd )
-		.toggleClass( 'disabled', G.spotifydactive );
 	$( '#snapclient' )
 		.prop( 'checked', G.snapclient )
 		.toggleClass( 'disabled', G.snapserver || G.snapclientactive );
 	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
+	$( '#spotifyd' )
+		.prop( 'checked', G.spotifyd )
+		.toggleClass( 'disabled', G.spotifydactive );
+	$( '#setting-spotifyd' ).toggleClass( 'hide', !G.spotifyd );
 	$( '#upmpdcli' )
 		.prop( 'checked', G.upmpdcli )
 		.toggleClass( 'disabled', G.upmpdcliactive );

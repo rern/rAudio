@@ -275,5 +275,8 @@ snapserver )
 	$dirbash/mpd-conf.sh
 	pushRefresh
 	;;
+spotifyddisable )
+	systemctl disable --now spotifyd
+	pushRefresh
 	
 esac
