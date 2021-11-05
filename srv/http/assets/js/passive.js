@@ -541,7 +541,19 @@ function psVUmeter( data ) {
 }
 function psWebradio( data ) {
 	$( '#mode-webradio gr' ).text( data )
-	if ( G.librarylist ) $( '#mode-webradio gr' ).click();
-	if ( G.playlist && !G.local ) getPlaylist();
+	if ( G.librarylist ) {
+		var query = G.query[ G.query.length - 1 ];
+		if ( query.path ) {
+			list( query, function( data ) {
+				data.path = query.path;
+				data.modetitle = query.modetitle;
+				renderLibraryList( data );
+			} );
+		} else {
+			$( '#mode-webradio gr' ).click();
+		}
+	} else if ( G.playlist && !G.local ) {
+		getPlaylist();
+	}
 }
 
