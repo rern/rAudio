@@ -35,11 +35,11 @@ else
 				-H "Authorization: Basic $base64client" \
 				-d grant_type=refresh_token \
 				-d refresh_token=$refreshtoken \
-				| grep access_token
+				| grep access_token \
 				| cut -d'"' -f4 )
 	[[ -z $token ]] && exit
 	
-	echo $(( $( date +%s ) + 3550 )) > $fileexpire
+	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 	echo $token > $filetoken
 fi
 readarray -t status <<< $( curl -X GET https://api.spotify.com/v1/me/player/currently-playing \
