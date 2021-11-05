@@ -618,7 +618,10 @@ function checkLength( k, v ) {
 	var L = v[ 0 ];
 	var cond = v[ 1 ];
 	var diff = O.inputs.eq( k ).val().trim().length - L;
-	if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && diff !== 0 ) ) O.short = true;
+	if ( ( cond === 'equal' && diff !== 0 )
+		|| ( cond === 'min' && diff < 0 )
+		|| ( cond === 'max' && diff > 0 )
+	) O.short = true;
 }
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
