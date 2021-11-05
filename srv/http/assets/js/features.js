@@ -30,12 +30,13 @@ $( '#setting-spotifyd' ).click( function() {
 			} );
 		} else {
 			info( {
-				  icon       : 'spotify'
-				, title      : 'Spotify Client'
-				, textlabel  : [ 'ID', 'Secret' ]
-				, boxwidth   : 320
-				, checkblank : 1
-				, cancel     : function() {
+				  icon        : 'spotify'
+				, title       : 'Spotify Client'
+				, textlabel   : [ 'ID', 'Secret' ]
+				, footer      : '(From private app)'
+				, boxwidth    : 320
+				, checklength : { 0: 32, 1: 32 }
+				, cancel      : function() {
 					$( '#spotifyd' ).prop( 'checked', G.spotifyd );
 				}
 				, ok         : function() {
