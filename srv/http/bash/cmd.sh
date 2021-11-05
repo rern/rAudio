@@ -927,9 +927,10 @@ scrobble )
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$data"
 	;;
 stationcoverreset )
-	coverfile=${args[1]}
-	rm -f "$coverfile".* "$coverfile-thumb".*
-	pushstream coverart '{"url":"'$coverfile'","type":"webradioreset"}'
+	coverart=${args[1]}
+	cover=${coverart:0:-15} # remove .1234567890.jpg
+	rm -f "/srv/http$cover"{,-thumb}.*
+	pushstream coverart '{"url":"'$coverart'","type":"webradioreset"}'
 	;;
 statuspkg )
 	id=${args[1]}
@@ -1073,7 +1074,11 @@ volumeupdown )
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
-	filewebradio=$dirwebradios/${url//\//|}
+	dir=${args[3]}
+	urlname=${url//\//|}
+	file=$dirwebradios
+	[[ -n $dir ]] && file="$file/$dir"
+	file="$file/$urlname"
 	ext=${url/*.}
 	if [[ $ext == m3u ]]; then
 		url=$( curl -s $url | grep ^http | head -1 )
@@ -1082,17 +1087,23 @@ webradioadd )
 	fi
 	[[ -z $url ]] && exit -1
 	
-	echo $name > $filewebradio
-	chown http:http $filewebradio # for edit in php
+	echo $name > "$file"
+	chown http:http "$file" # for edit in php
 	count=$(( $( jq .webradio $dirmpd/counts ) + 1 ))
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 	;;
 webradiodelete )
 	url=${args[1]}
+	dir=${args[2]}
 	urlname=${url//\//|}
-	rm $dirwebradios/$urlname
-	rm -f ${dirwebradios}img/$urlname{,-thumb}.jpg
+	file=$dirwebradios
+	fileimg=${file}img
+	if [[ -n $dir ]]; then
+		file="$file/$dir"
+		fileimg="$fileimg/$dir"
+	fi
+	rm -f "$file/$urlname" "$fileimg/$urlname"{,-thumb}.*
 	count=$(( $( jq .webradio $dirmpd/counts ) - 1 ))
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
@@ -1102,21 +1113,28 @@ webradioedit ) # name, newname, url, newurl
 	namenew=${args[2]}
 	url=${args[3]}
 	urlnew=$( urldecode ${args[4]} )
+	dir=${args[5]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
-	filewebradio=$dirwebradios/$urlname
-	filewebradionew=$dirwebradios/$urlnamenew
+	file=$dirwebradios
+	fileimg=${file}img
+	if [[ -n $dir ]]; then
+		file="$file/$dir"
+		fileimg="$fileimg/$dir"
+	fi
+	file="$file/$urlname"
+	filenew="$file/$urlnamenew"
 	if [[ $name != $namenew ]]; then
-		if [[ -s $filewebradio ]]; then
-			sed -i "1 c$namenew" $filewebradio
+		if [[ -s $file ]]; then
+			sed -i "1 c$namenew" $file
 		else
-			echo $namenew > $filewebradio
+			echo $namenew > $file
 		fi
 	fi
 	if [[ $url != $urlnew ]]; then
-		mv $filewebradio $filewebradionew
-		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
-		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
+		mv $file $filenew
+		mv $fileimg/{$urlname,$urlnamenew}.jpg 
+		mv $fileimg/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
 	;;
 	

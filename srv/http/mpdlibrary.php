@@ -187,10 +187,28 @@ case 'track': // for tag editor
 	break;
 case 'webradio':
 	$dirwebradios = '/srv/http/data/webradios';
+	if ( $string !== '' ) $dirwebradios.= '/'.$string;
 	$lists = array_slice( scandir( $dirwebradios ), 2 );
-	if ( !count( $lists ) ) exit( '-1' );
-	
+	$subdirs = [];
+	$files = [];
+	$html = '';
 	foreach( $lists as $list ) {
+		if ( is_dir( $dirwebradios.'/'.$list ) ) {
+			$subdirs[] = $list;
+		} else {
+			$files[] = $list;
+		}
+	}
+	if ( count( $subdirs ) ) {
+		foreach( $subdirs as $each ) {
+			$html.= '<li class="dir">'
+						.'<i class="lib-icon fa fa-folder"></i>'
+						.'<a class="lipath">'.$each.'</a>'
+						.'<span class="single">'.$each.'</span>'
+					.'</li>';
+		}
+	}
+	foreach( $files as $list ) {
 		$each = ( object )[];
 		$name = exec( "sed -n 1p '$dirwebradios/$list'" );
 		$each->name  = $name;
@@ -202,7 +220,6 @@ case 'webradio':
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
 	$time = time();
-	$html = '';
 	foreach( $array as $each ) {
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;

@@ -1061,7 +1061,9 @@ $( '#button-lib-back' ).click( function() {
 		delete G.gmode;
 	}
 	$( '.menu' ).addClass( 'hide' );
-	if ( G.query.length < 2 || G.mode === 'webradio' ) {
+	if ( G.query.length < 2
+		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).text() === 'WEBRADIO' )
+	) {
 		$( '#button-library' ).click();
 		return
 	}
@@ -1129,6 +1131,7 @@ $( '.mode' ).click( function() {
 		var query = {
 			  query  : 'webradio'
 		}
+		path = '';
 	} else { // browse by modes
 		var query = {
 			  query  : 'list'
@@ -1426,7 +1429,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	} else if ( $target.hasClass( 'lialbum' ) ) {
 		window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
 		return
-	} else if ( $this.find( '.fa-music' ).length || G.mode === 'webradio' || $target.data( 'target' ) ) {
+	} else if ( $this.find( '.fa-music' ).length || $target.data( 'target' ) ) {
 		contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1444,6 +1447,17 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 			, format : [ 'file' ]
 		}
 		var modetitle = path;
+	} else if ( G.mode === 'webradio' ) {
+		if ( $( this ).hasClass( 'dir' ) ) {
+			var query = {
+				  query  : 'webradio'
+				, string : path
+			}
+			var modetitle = path;
+		} else {
+			contextmenuLibrary( $this, $target );
+			return
+		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
 		if ( [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ) {
 			var format = [ 'album', 'artist' ];
