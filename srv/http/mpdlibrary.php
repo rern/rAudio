@@ -200,19 +200,19 @@ case 'webradio':
 		}
 	}
 	if ( count( $subdirs ) ) {
-		foreach( $subdirs as $each ) {
+		foreach( $subdirs as $dir ) {
 			$html.= '<li class="dir">'
 						.'<i class="lib-icon fa fa-folder"></i>'
-						.'<a class="lipath">'.$each.'</a>'
-						.'<span class="single">'.$each.'</span>'
+						.'<a class="lipath">'.$dir.'</a>'
+						.'<span class="single">'.$dir.'</span>'
 					.'</li>';
 		}
 	}
-	foreach( $files as $list ) {
+	foreach( $files as $file ) {
 		$each = ( object )[];
-		$name = exec( "sed -n 1p '$dirwebradios/$list'" );
+		$name = exec( "sed -n 1p '$dirwebradios/$file'" );
 		$each->name  = $name;
-		$each->url   = str_replace( '|', '/', $list );
+		$each->url   = str_replace( '|', '/', $file );
 		$each->sort  = stripSort( $name );
 		$array[] = $each;
 	}
