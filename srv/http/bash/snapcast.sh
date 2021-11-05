@@ -46,9 +46,10 @@ else # sshpass from client
 	serverip=$2
 	sed -i "/$clientip/ d" $clientfile &> /dev/null
 	[[ -s $clientfile ]] || rm $clientfile
-	if [[ -n $serverip ]]; then
+	if [[ -n $serverip ]]; then # initial connect
 		echo $clientip >> $clientfile
 		status=$( /srv/http/bash/status.sh snapclient )
 		curl -s -X POST http://$clientip/pub?id=mpdplayer -d "$status"
+		pushstream player '{"player":"snapcast","active":true}'
 	fi
 fi

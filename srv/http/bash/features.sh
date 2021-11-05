@@ -283,21 +283,22 @@ spotifyddisable )
 spotifytoken )
 	code=${args[1]}
 	. $dirsystem/spotify
-	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
+	readarray -t tokens <<< $( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$code" \
 				-d grant_type=authorization_code \
 				--data-urlencode 'redirect_uri=https://rern.github.io/auth.html' \
-				| jq -r .access_token,.refresh_token,.error_description )
-	if [[ -n $tokens ]]; then
-		echo "$tokens" | sed -n 1p > $dirshm/spotify/token
-		echo "refreshtoken=$( sed -n 2p <<< "$tokens" )" >> $dirsystem/spotify
+				| jq -r .refresh_token,.access_token,.error_description )
+	refreshtoken==$( ${tokens[0]} )
+	if [[ -n $refreshtoken ]]; then
+		echo refreshtoken=$refreshtoken >> $dirsystem/spotify
+		echo ${tokens[1]} > $dirshm/spotify/token
 		echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
 		systemctl start spotifyd
 		systemctl -q is-active spotifyd && systemctl enable spotifyd
 	else
-		data='{"title":"Spotify Authorization","text":"Error: '$( echo "$tokens" | sed -n 3p )'","icon":"spotify"}'
+		data='{"title":"Spotify Authorization","text":"Error: '${tokens[2]}'","icon":"spotify"}'
 		pushstream notify "$data"
 	fi
 	;;

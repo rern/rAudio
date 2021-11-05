@@ -24,6 +24,7 @@ else
 		touch $dirshm/player-airplay
 		systemctl stop snapclient
 		systemctl try-restart bluezdbus mpd spotifyd upmpdcli &> /dev/null
+		pushstream player '{"player":"airplay","active":true}'
 	fi
 	systemctl start shairport-meta
 	echo play > $dirairplay/state

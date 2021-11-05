@@ -13,3 +13,5 @@ mpc -q stop
 rm -f $dirshm/{player-*,scrobble}
 touch $dirshm/player-upnp
 systemctl try-restart bluezdbus shairport-sync snapclient spotifyd &> /dev/null
+$dirbash/cmd-pushstatus.sh
+pushstream player '{"player":"upnp","active":true}'

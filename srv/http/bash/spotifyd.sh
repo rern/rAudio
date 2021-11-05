@@ -19,31 +19,38 @@ for key in elapsed expire start state status token; do
 	printf -v file$key '%s' $dirspotify/$key
 done
 
+pushstream() {
+	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+}
+
 ##### start
 if [[ ! -e $dirshm/player-spotify ]] ;then
-	start=1
 	mpc -q stop
 	rm -f $dirshm/{player-*,scrobble}
 	touch $dirshm/player-spotify
 	systemctl stop snapclient
 	systemctl try-restart bluezdbus mpd shairport-sync upmpdcli &> /dev/null
+	pushstream player '{"player":"spotify","active":true}'
 fi
-if [[ -e $fileexpire && $( cat $fileexpire ) -gt $( date +%s ) ]]; then
+if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
 else
 	. $dirsystem/spotify # base64client, refreshtoken
-	token=$( curl -X POST https://accounts.spotify.com/api/token \
+	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-d grant_type=refresh_token \
 				-d refresh_token=$refreshtoken \
 				| grep access_token \
 				| cut -d'"' -f4 )
-	[[ -z $token ]] && exit
+	if [[ -z $token ]]; then
+		pushstream notify '{"title":"Spotify","text":"Access token renewal failed.","icon":"spotify"}'
+		exit
+	fi
 	
-	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 	echo $token > $filetoken
+	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi
-readarray -t status <<< $( curl -X GET https://api.spotify.com/v1/me/player/currently-playing \
+readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
 							-H "Authorization: Bearer $token" \
 							| jq '.item.album.name,
 								.item.album.artists[0].name,
@@ -53,7 +60,7 @@ readarray -t status <<< $( curl -X GET https://api.spotify.com/v1/me/player/curr
 								.item.name,
 								.progress_ms,
 								.timestamp' ) # not -r to keep escaped characters
-[[ ${status[3]} == true || -n $start ]] && state=play || state=pause
+[[ ${status[3]} == true ]] && state=play || state=pause
 cat << EOF > $filestatus
 , "Album"    : ${status[0]}
 , "Artist"   : ${status[1]}

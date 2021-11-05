@@ -72,6 +72,17 @@ function status( id, refresh ) {
 		resetLocal();
 	} );
 }
+function infoPlayerActive( $this ) {
+	var $switch = $this.prev().prev();
+	if ( $switch.hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : $switch.data( 'icon' )
+			, title   : $switch.data( 'label' )
+			, message : $switch.data( 'disabled' )
+		} );
+		return true
+	}
+}
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
@@ -170,7 +181,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -187,6 +198,7 @@ pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'notify':    psNotify( data );    break;
+		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
 		case 'volume':    psVolume( data );    break;
@@ -210,6 +222,16 @@ function psNotify( data ) {
 		}
 		loader();
 	}
+}
+function psPlayer( data ) {
+	var player_id = {
+		  airplay   : 'shairport-sync'
+		, bluetooth : 'bluetooth'
+		, snapcast  : 'snapserver'
+		, spotify   : 'spotifyd'
+		, upnp      : 'upmpdcli'
+	}
+	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
 	if ( data.page === page ) renderPage( data );

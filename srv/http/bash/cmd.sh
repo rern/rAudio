@@ -323,6 +323,7 @@ bluetoothrenderer ) # start
 	systemctl try-restart mpd shairport-sync spotifyd upmpdcli &> /dev/null
 	volumeGet save
 	$dirbash/cmd-pushstatus.sh
+	pushstream player '{"player":"bluetooth","active":true}'
 	;;
 bookmarkreset )
 	mpdpath=${args[1]}
@@ -993,7 +994,7 @@ stopplayer )
 	$dirbash/cmd.sh scrobble stop
 	systemctl restart $service
 	[[ $player != mpd || $player != upnp ]] && volumeReset
-	$dirbash/cmd-pushstatus.sh
+	pushstream player '{"player":"'$player'","active":false}'
 	;;
 thumbgif )
 	type=${args[1]}

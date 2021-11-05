@@ -127,6 +127,9 @@ $( '#list' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
+	var active = infoPlayerActive( $( this ) );
+	if ( active ) return
+	
 	info( {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'

@@ -12,6 +12,9 @@ if ( $( '.spotifycode' ).length ) {
 	}
 }
 $( '#setting-spotifyd' ).click( function() {
+	var active = infoPlayerActive( $( this ) );
+	if ( active ) return
+	
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
 	} else {
