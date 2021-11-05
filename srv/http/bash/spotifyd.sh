@@ -21,6 +21,7 @@ done
 
 ##### start
 if [[ ! -e $dirshm/player-spotify ]] ;then
+	start=1
 	mpc -q stop
 	rm -f $dirshm/{player-*,scrobble}
 	touch $dirshm/player-spotify
@@ -52,7 +53,7 @@ readarray -t status <<< $( curl -X GET https://api.spotify.com/v1/me/player/curr
 								.item.name,
 								.progress_ms,
 								.timestamp' ) # not -r to keep escaped characters
-[[ ${status[3]} == true ]] && state=play || state=pause
+[[ ${status[3]} == true || -n $start ]] && state=play || state=pause
 cat << EOF > $filestatus
 , "Album"    : ${status[0]}
 , "Artist"   : ${status[1]}

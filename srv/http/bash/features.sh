@@ -304,6 +304,7 @@ spotifytoken )
 spotifytokenreset )
 	systemctl stop spotifyd
 	rm $dirsystem/spotify $dirshm/spotify/{expire,token}
+	pushRefresh
 	;;
 	
 esac

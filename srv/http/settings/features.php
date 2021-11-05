@@ -43,7 +43,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • <code>ID</code> <code>Secret</code> : Private Client for playing status access
+ • <code>ID</code> <code>Secret</code> : Private app keys for playing status access
  &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Developer account</a> > <code>LOGIN</code>
  &emsp; &emsp; - With normal Spotify account
  &emsp; • <code>CREATE AN APP</code>

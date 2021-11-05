@@ -19,12 +19,10 @@ $( '#setting-spotifyd' ).click( function() {
 			info( {
 				  icon    : 'spotify'
 				, title   : 'Spotify Client'
-				, message : 'Reset client setting?'
+				, message : 'Reset private app keys?'
 				, oklabel : '<i class="fa fa-minus-circle"></i>Reset'
 				, okcolor : orange
 				, ok      : function() {
-					G.spotifytoken = false;
-					$( '#setting-spotifyd' ).click();
 					bash( [ 'spotifytokenreset' ] );
 				}
 			} );
@@ -33,7 +31,7 @@ $( '#setting-spotifyd' ).click( function() {
 				  icon        : 'spotify'
 				, title       : 'Spotify Client'
 				, textlabel   : [ 'ID', 'Secret' ]
-				, footer      : '(From private app)'
+				, footer      : '(Keys from private app)'
 				, boxwidth    : 320
 				, checklength : { 0: 32, 1: 32 }
 				, cancel      : function() {
