@@ -1,11 +1,8 @@
 <?php
 if ( isset( $_GET[ 'code' ] ) ) {
 	$code = $_GET[ 'code' ];
-	if ( $code ) {
-		file_put_contents( '/srv/http/data/system/spotifycode', $code );
-		exec( '/usr/bin/sudo /usr/bin/systemctl enable --now spotifyd' );
-	}
-	echo '<a class="spotifycode hide" data-error="'.$_GET[ 'error' ].'"></a>';
+	if ( $code ) exec( "/usr/bin/sudo /srv/http/bash/features.sh spotifytoken$'\n'".$code );
+	echo '<a id="spotifycode hide">'.( $_GET[ 'error' ] ?? '' ).'</a>';
 }
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
@@ -44,10 +41,20 @@ HTML
 		, 'setting'  => true
 		, 'disabled' => 'Spotify is currently active.'
 		, 'help'     => <<< HTML
-<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.(For Premium account only)
- • Require user's authorization to access playing status.
- • Save only authorization code. No password saved.
- • Remove authorization: spotify.com > Profile > Account > Apps
+<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
+ • Require Premium account.
+ • <code>ID</code> <code>Secret</code> : Create a private app to get playing status
+ &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Developer account</a> > <code>LOGIN</code> > <code>CREATE AN APP</code>
+ &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
+ &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
+ &emsp; • <code>EDIT SETTINGS</code> > 
+ &emsp; &emsp; - <WH>Redirect URIs:</WH> https://rern.github.io/auth.html
+ &emsp; • <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
+ &emsp; &emsp; - <wh>Name:</wh> <gr>(any)</gr>
+ &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)
+ &emsp; • rAudio <code>Spotify</code>
+ &emsp; &emsp; - Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the private app
+ &emsp; &emsp; - No Spotify password saved on rAudio.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -183,8 +190,8 @@ HTML
 		, 'setting'  => true
 		, 'help'     => <<< HTML
  • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
- • Required Last.fm account.
- • Save only scrobble code. No username and password saved.
+ • Require Last.fm account.
+ • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
  • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble

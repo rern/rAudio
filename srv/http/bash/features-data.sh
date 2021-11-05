@@ -44,9 +44,9 @@ fi
 , "snapclientactive" : '$( [[ -e $dirshm/player-snapclient ]] && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( [[ -e $dirsystem/spotifycode ]] && systemctl -q is-active spotifyd && echo true )'
-, "spotifydcode"     : '$( [[ -e $dirsystem/spotifycode ]] && echo true )'
-, "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )
+, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
+, "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
+, "spotifytoken"     : '$( [[ -e $dirsystem/spotify ]] && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
 , "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )

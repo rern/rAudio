@@ -1,6 +1,7 @@
 #!/bin/bash
 
 dirbash=/srv/http/bash
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 # convert each line to each args
@@ -128,7 +129,7 @@ cursor=$newcursor
 			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			pushRefresh
-			echo Rotate GPIO LCD screen >> /srv/http/data/shm/reboot
+			echo Rotate GPIO LCD screen >> $dirshm/reboot
 			data='{"title":"Rotate GPIO LCD screen","text":"Reboot needed.","icon":"chromium","hold":5000}'
 			pushstream notify "$data"
 			exit
@@ -278,5 +279,31 @@ snapserver )
 spotifyddisable )
 	systemctl disable --now spotifyd
 	pushRefresh
+	;;
+spotifytoken )
+	code=${args[1]}
+	. $dirsystem/spotify
+	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
+				-H "Authorization: Basic $base64client" \
+				-H 'Content-Type: application/x-www-form-urlencoded' \
+				-d "code=$code" \
+				-d grant_type=authorization_code \
+				--data-urlencode 'redirect_uri=https://rern.github.io/auth.html' \
+				| jq -r .access_token,.refresh_token,.error_description )
+	if [[ -n $tokens ]]; then
+		echo "$tokens" | sed -n 1p > $dirshm/spotify/token
+		echo "refreshtoken=$( sed -n 2p <<< "$tokens" )" >> $dirsystem/spotify
+		echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
+		systemctl start spotifyd
+		systemctl -q is-active spotifyd && systemctl enable spotifyd
+	else
+		data='{"title":"Spotify Authorization","text":"Error: '$( echo "$tokens" | sed -n 3p )'","icon":"spotify"}'
+		pushstream notify "$data"
+	fi
+	;;
+spotifytokenreset )
+	systemctl stop spotifyd
+	rm $dirsystem/spotify $dirshm/spotify/{expire,token}
+	;;
 	
 esac

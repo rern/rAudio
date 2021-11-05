@@ -123,20 +123,14 @@ $( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapc
 	| sed 's|"coverart" : "|&http://'$snapserverip'/|; s/^{\|}$//g' )"
 		;;
 	spotify )
-		dirspotify=$dirshm/spotify
-		elapsedms=$( cat $dirspotify/elapsed 2> /dev/null || echo 0 )
-		start=$( cat $dirspotify/start )
-		state=$( cat $dirspotify/state )
-		timestamp=$( date +%s%3N )
-		[[ $state == play ]] && elapsedms=$(( elapsedms + timestamp - start ))
-		elapsed=$(( ( elapsedms + 500 ) / 1000 ))
+		. $dirshm/spotify/state
+		[[ $state == play ]] && elapsed=$(( $( date +%s ) - start + 1 )) # 1s delayed
 ########
 		status+="
-$( cat $dirspotify/status )"
+$( cat $dirshm/spotify/status )"
 	status+='
-, "elapsed"   : '$elapsed'
-, "state"     : "'$state'"
-, "timestamp" : '$timestamp
+, "elapsed" : '$elapsed'
+, "timestamp" : '$( date +%s%3N )
 		;;
 		
 	esac

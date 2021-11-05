@@ -2,7 +2,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( $( '.spotifycode' ).length ) {
 	window.history.replaceState( 'page', 'normal', 'http://192.168.1.3/settings.php?p=features' );
-	var error = $( '.spotifycode' ).data( 'error' );
+	var error = $( '#spotifycode' ).text();
 	if ( error ) {
 		info( {
 			  icon    : 'spotify'
@@ -12,28 +12,46 @@ if ( $( '.spotifycode' ).length ) {
 	}
 }
 $( '#setting-spotifyd' ).click( function() {
-	if ( !G.spotifyd && G.spotifydcode ) {
+	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
 	} else {
-		var re = G.spotifydcode ? 'Re-' : '';
-		info( {
-			  icon        : 'spotify'
-			, title       : 'Spotify Authorization'
-			, message     : re +'Authorize rAudio to access playing status?'
-			, cancel      : function() {
-				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
-			}
-			, ok          : function() {
-				var data = {
-					  response_type : 'code'
-					, client_id     : '46e13d511bf1435097527e53cf5df5af'
-					, scope         : 'user-read-playback-position'
-					, redirect_uri  : 'https://rern.github.io/auth.html'
-					, state         : window.location.hostname
+		if ( G.spotifytoken ) {
+			info( {
+				  icon    : 'spotify'
+				, title   : 'Spotify Client'
+				, message : 'Reset client setting?'
+				, oklabel : '<i class="fa fa-minus-circle"></i>Reset'
+				, okcolor : orange
+				, ok      : function() {
+					G.spotifytoken = false;
+					$( '#setting-spotifyd' ).click();
+					bash( [ 'spotifytokenreset' ] );
 				}
-				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
-			}
-		} );
+			} );
+		} else {
+			info( {
+				  icon       : 'spotify'
+				, title      : 'Spotify Client'
+				, textlabel  : [ 'ID', 'Secret' ]
+				, boxwidth   : 320
+				, checkblank : 1
+				, cancel     : function() {
+					$( '#spotifyd' ).prop( 'checked', G.spotifyd );
+				}
+				, ok         : function() {
+					var values = infoVal();
+					bash( 'echo "base64client='+ btoa( values.join( ':' ) ) +'" > /srv/http/data/system/spotify' );
+					var data = {
+						  response_type : 'code'
+						, client_id     : values[ 0 ]
+						, scope         : 'user-read-currently-playing user-read-playback-position'
+						, redirect_uri  : 'https://rern.github.io/auth.html'
+						, state         : window.location.hostname
+					}
+					window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
+				}
+			} );
+		}
 	}
 } );
 $( '#setting-snapclient' ).click( function() {

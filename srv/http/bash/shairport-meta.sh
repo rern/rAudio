@@ -66,7 +66,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			echo $Time > $dirairplay/Time
 			/srv/http/bash/cmd-pushstatus.sh
 		else
-			pushdata='{"'$code'":"'${data//\"/\\\"}'"}' # data may contains spaces
+			data=${data//\"/\\\"}
+			pushdata='{"'$code'":"'$data'"}' # data may contains spaces
 			pushstreamAirplay "$pushdata"
 			echo $data > $dirairplay/$code
 		fi
