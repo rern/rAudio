@@ -32,7 +32,7 @@ ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff
 	udevadm control --reload-rules && udevadm trigger
 fi
 rm -rf /root/.config/chromium
-systemctl -q is-active localbrowser && systemctl restart localbrowser
+systemctl try-restart localbrowser shairport-sync
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
 if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
