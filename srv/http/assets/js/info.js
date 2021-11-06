@@ -474,7 +474,7 @@ function info( json ) {
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields - omit .selectric-input for select
-		$inputs_txt = $( '#infoContent' ).find( 'input[type=text], input[type=password], textarea' );
+		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
@@ -533,40 +533,10 @@ function info( json ) {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
 		}
-		// check text input length
-		O.short = false;
-		if ( O.checklength ) {
-			$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
-			$inputs_txt.on( 'keyup paste cut', function() {
-				setTimeout( function() { // paste cut on touch devices
-					if ( O.blank ) return
-					
-					O.short = false;
-					$.each( O.checklength, function( k, v ) { checkLength( k, v ) } );
-					$( '#infoOk' ).toggleClass( 'disabled', O.short );
-				}, 0 ); // 0-checklength > 100-checkblank > 200-checkchange
-			} );
-		}
-		// check text input not blank
-		O.blank = false;
-		if ( O.checkblank ) {
-			if ( typeof O.checkblank !== 'object' ) {
-				$inputs_txt.each( function() { if ( $( this ).val() === '' ) O.blank = true } );
-			} else {
-				O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val() === '' ) O.blank = true } );
-			}
-			checkBlank();
-		}
-		$( '#infoOk' ).toggleClass( 'disabled', O.short || O.blank ); // initial
-		// check changed values
-		if ( O.values && O.checkchanged ) {
-			setTimeout( function() { // force after check length
-				if ( !O.short && !O.blank ) checkChanged();
-			}, 50 );
-			$( '#infoOk' ).addClass( 'disabled' );
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', checkChanged );
-			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', checkChanged );
-		}
+		// custom function before show
+		if ( O.beforeshow ) O.beforeshow();
+		$( 'html, body' ).scrollTop( 0 );
+		} );
 		$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 			var $this = $( this );
 			var $pwd = $this.parent().prev().find( 'input' );
@@ -578,50 +548,53 @@ function info( json ) {
 				$pwd.prop( 'type', 'text' );
 			}
 		} );
-		// custom function before show
-		if ( O.beforeshow ) O.beforeshow();
-		$( 'html, body' ).scrollTop( 0 );
-		} );
+		// check inputs: blank / length / change
+		if ( O.checkblank ) {
+			if ( typeof O.checkblank !== 'object' ) O.checkblank = [ ...Array( $inputs_txt.length - 1 ).keys() ];
+			checkBlank();
+		} else {
+			O.blank = false;
+		}
+		if ( O.checklength ) {
+			checkLength();
+		} else {
+			O.short = false;
+		}
+		O.nochange = O.values && O.checkchanged ? true : false;
+		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
+		
+		if ( O.checkblank || O.checklength || O.checkchanged ) {
+			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', function() {
+				if ( O.checkblank ) checkBlank();
+				if ( O.checklength ) checkLength();
+				if ( O.checkchanged ) O.nochange = O.values.join( '' ) === infoVal().join( '' );
+				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+			} );
+		}
+		if ( O.checkchanged ) {
+			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
+				O.nochange = O.values.join( '' ) === infoVal().join( '' );
+				$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
+			} );
+		}
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
 
 function checkBlank() {
-	$inputs_txt.on( 'keyup paste cut', function() {
-		setTimeout( function() {
-			if ( O.short ) return
-			
-			O.blank = false;
-			if ( typeof O.checkblank !== 'object' ) {
-				$inputs_txt.each( function() { if ( $( this ).val().trim() === '' ) O.blank = true } );
-			} else {
-				O.checkblank.forEach( function( v ) { if ( O.inputs.eq( v ).val().trim() === '' ) O.blank = true } );
-			}
-			$( '#infoOk' ).toggleClass( 'disabled', O.blank );
-		}, 25 );
+	O.blank = false;
+	O.blank = O.checkblank.some( function( i ) {
+		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }
-function checkChanged() {
-	var values = infoVal();
-	if ( typeof values !== 'object' ) values = [ values ];
-	var val;
-	var changed = false;
-	changed = values.some( function( v, i ) {
-		val = O.values[ i ];
-		if ( O.textarea ) val = O.values[ i ].replace( /\n/g, '\\n' ); 
-		if ( v != val ) return true
+function checkLength() {
+	O.short = false;
+	$.each( O.checklength, function( i, L ) {
+		if ( $( '#infoContent input' ).eq( i ).val().trim().length !== L ) {
+			O.short = true;
+			return false
+		}
 	} );
-	$( '#infoOk' ).toggleClass( 'disabled', !changed );
-}
-function checkLength( k, v ) {
-	if ( typeof v !== 'object' ) v = [ v, 'equal' ];
-	var L = v[ 0 ];
-	var cond = v[ 1 ];
-	var diff = O.inputs.eq( k ).val().trim().length - L;
-	if ( ( cond === 'equal' && diff !== 0 )
-		|| ( cond === 'min' && diff < 0 )
-		|| ( cond === 'max' && diff > 0 )
-	) O.short = true;
 }
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
