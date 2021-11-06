@@ -62,6 +62,14 @@ base64client=${ btoa( id +':'+ secret ) }`;
 		} );
 	}
 } );
+$( '.screenshot' ).click( function() {
+	info( {
+		  icon        : 'spotify'
+		, title       : 'Spotify for Developers'
+		, message     : '<img src="https://raw.githubusercontent.com/rern/_assets/master/guide/spotify.gif" style="width: 450px; max-width: 100%; height: 100%; margin-bottom: 0;">'
+		, okno        : 1
+	} );
+} );
 $( '#setting-snapclient' ).click( function() {
 	info( {
 		  icon         : 'snapcast'

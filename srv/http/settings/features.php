@@ -44,9 +44,8 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • <code>ID</code> <code>Secret</code> : Client keys for playing status access
- &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Developer account</a> > <code>LOGIN</code>
- &emsp; &emsp; - With normal Spotify account
+ • Get <code>ID</code> <code>Secret</code> : (for playing status access)
+ &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
  &emsp; • <code>CREATE AN APP</code>
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
@@ -57,6 +56,7 @@ HTML
  &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)
  &emsp; • rAudio <code>Spotify</code>
  &emsp; &emsp; - Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the app
+ • <bll class="screenshot pointer">Screenshots</bll>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
