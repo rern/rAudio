@@ -3,7 +3,6 @@
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
-spotifyredirect=https://rern.github.io/raudio/spotify
 
 exists() {
 	[[ -e $1 ]] && echo true || echo false
@@ -14,11 +13,6 @@ for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
 done
 scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
-if [[ -e $dirsystem/spotify ]]; then
-	spotifytoken=$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
-	spotifykey=$( head -2 $dirsystem/spotify | cut -d= -f2 )
-	spotifykey='["'$( echo $spotifykey | sed 's/ /","/' )'"]'
-fi
 
 data+='
   "page"             : "features"
@@ -50,12 +44,15 @@ fi
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( [[ -e $dirshm/player-snapclient ]] && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
-[[ -e /usr/bin/spotifyd ]] && data+='
+if [[ -e /usr/bin/spotifyd ]]; then
+	spotifykey=$( head -2 $dirsystem/spotify | cut -d= -f2 )
+	data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
-, "spotifykey"       : '$spotifykey'
-, "spotifyredirect"  : "'$spotifyredirect'"
-, "spotifytoken"     : '$spotifytoken
+, "spotifykey"       : ["'$( echo $spotifykey | sed 's/ /","/' )'"]
+, "spotifyredirect"  : "https://rern.github.io/raudio/spotify"
+, "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
+fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
 , "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )

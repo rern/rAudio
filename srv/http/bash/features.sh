@@ -299,14 +299,12 @@ spotifytoken )
 	[[ -z $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
-	spotifyredirect=$( grep ^spotifyredirect $dirbash/features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$code" \
 				-d grant_type=authorization_code \
-				--data-urlencode "redirect_uri=$spotifyredirect" )
-	echo "$tokens"
+				--data-urlencode "redirect_uri=https://rern.github.io/raudio/spotify" )
 	if grep -q error <<< "$tokens"; then
 		spotifyReset "Error: $( echo $token | jq -r .error )"
 		exit
