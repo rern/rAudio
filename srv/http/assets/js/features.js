@@ -54,7 +54,7 @@ base64client=${ btoa( id +':'+ secret ) }`;
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : 'https://rern.github.io/spotifyauth.html'
+					, redirect_uri  : G.spotifyredirect
 					, state         : window.location.hostname
 				}
 				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -337,6 +337,7 @@ function renderPage( list ) {
 		.prop( 'checked', G.spotifyd )
 		.toggleClass( 'disabled', G.spotifydactive );
 	$( '#setting-spotifyd' ).toggleClass( 'hide', !G.spotifyd );
+	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' )
 		.prop( 'checked', G.upmpdcli )
 		.toggleClass( 'disabled', G.upmpdcliactive );

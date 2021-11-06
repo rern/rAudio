@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
+spotifyredirect=https://rern.github.io/raudio/spotify
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -41,11 +42,14 @@ localbrowserXset() {
 	fi
 }
 spotifyReset() {
+	pushstreamNotify 'Spotify Client' "$1" spotify
 	rm -f $dirshm/{player-*,scrobble}
 	touch $dirshm/player-mpd
 	$dirbash/cmd-pushstatus.sh
+	echo xxx
 	rm -f $dirsystem/spotify $dirshm/spotify/*
 	systemctl disable --now spotifyd
+	pushRefresh
 }
 
 case ${args[0]} in
@@ -296,30 +300,28 @@ spotifytoken )
 	[[ -z $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
-	readarray -t tokens <<< $( curl -X POST https://accounts.spotify.com/api/token \
+	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$code" \
 				-d grant_type=authorization_code \
-				--data-urlencode 'redirect_uri=https://rern.github.io/auth.html' \
-				| jq -r .refresh_token,.access_token,.error_description )
-	refreshtoken==$( ${tokens[0]} )
-	if [[ -n $refreshtoken ]]; then
-		echo refreshtoken=$refreshtoken >> $dirsystem/spotify
-		echo ${tokens[1]} > $dirshm/spotify/token
-		echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
-		systemctl start spotifyd
-		systemctl -q is-active spotifyd && systemctl enable spotifyd
-	else
-		pushstreamNotify 'Spotify Client' "Error: ${tokens[2]}" spotify
-		spotifyReset
+				--data-urlencode "redirect_uri=$spotifyredirect" )
+	echo "$tokens"
+	if grep -q error <<< "$tokens"; then
+		spotifyReset "Error: $( echo $token | jq -r .error )"
+		exit
 	fi
+	
+	tokens=( $( echo $tokens | jq -r .refresh_token,.access_token ) )
+	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotify
+	echo ${tokens[1]} > $dirshm/spotify/token
+	echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
+	systemctl start spotifyd
+	systemctl -q is-active spotifyd && systemctl enable spotifyd
 	pushRefresh
 	;;
 spotifytokenreset )
-	pushstreamNotify 'Spotify Client' 'Reset ...' spotify
-	spotifyReset
-	pushRefresh
+	spotifyReset 'Reset ...'
 	;;
 	
 esac

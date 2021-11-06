@@ -1,5 +1,6 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
@@ -34,7 +35,7 @@ data+='
 if [[ -e /usr/bin/hostapd ]]; then
 	data+='
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
-, "hostapdconf"      : '$( /srv/http/bash/features.sh hostapdget )'
+, "hostapdconf"      : '$( $dirbash/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
@@ -52,6 +53,7 @@ fi
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
 , "spotifykey"       : '$spotifykey'
+, "spotifyredirect"  : "'$( grep ^spotifyredirect $dirbash/features.sh | cut -d= -f2 )'"
 , "spotifytoken"     : '$spotifytoken
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'

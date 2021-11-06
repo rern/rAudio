@@ -2,10 +2,11 @@
 if ( isset( $_GET[ 'code' ] ) ) {
 	$code = $_GET[ 'code' ];
 	exec( "/usr/bin/sudo /srv/http/bash/features.sh spotifytoken$'\n'".$code );
-	echo '<a id="spotifycode hide">'.( $_GET[ 'error' ] ?? '' ).'</a>';
+	echo '<a class="spotifycode hide">'.( $_GET[ 'error' ] ?? '' ).'</a>';
 }
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
+
 $head = [ 'title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
@@ -50,7 +51,7 @@ HTML
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
  &emsp; • <code>EDIT SETTINGS</code>
- &emsp; &emsp; - <WH>Redirect URIs:</WH> https://rern.github.io/rAudio/spotify
+ &emsp; &emsp; - <WH>Redirect URIs:</WH> <span id="redirecturi"></span>
  &emsp; • <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
  &emsp; &emsp; - <wh>Name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)
