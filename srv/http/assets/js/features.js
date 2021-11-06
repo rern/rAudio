@@ -2,7 +2,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( $( '.spotifycode' ).length ) {
 	window.history.replaceState( 'page', 'normal', 'http://192.168.1.3/settings.php?p=features' );
-	var error = $( '#spotifycode' ).text();
+	var error = $( '.spotifycode' ).text();
 	if ( error ) {
 		info( {
 			  icon    : 'spotify'
