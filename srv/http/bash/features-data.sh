@@ -45,11 +45,14 @@ fi
 , "snapclientactive" : '$( [[ -e $dirshm/player-snapclient ]] && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
 if [[ -e /usr/bin/spotifyd ]]; then
-	spotifykey=$( head -2 $dirsystem/spotify | cut -d= -f2 )
+	if [[ -e $dirsystem/spotify ]]; then
+		spotifykey=$( head -2 $dirsystem/spotify | cut -d= -f2 )
+		spotifykey='["'$( echo $spotifykey | sed 's/ /","/' )'"]'
+	fi
 	data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
-, "spotifykey"       : ["'$( echo $spotifykey | sed 's/ /","/' )'"]
+, "spotifykey"       : '$spotifykey'
 , "spotifyredirect"  : "https://rern.github.io/raudio/spotify"
 , "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 fi
