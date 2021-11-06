@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
+spotifyredirect=https://rern.github.io/raudio/spotify
 
 exists() {
 	[[ -e $1 ]] && echo true || echo false
@@ -53,7 +54,7 @@ fi
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
 , "spotifykey"       : '$spotifykey'
-, "spotifyredirect"  : "'$( grep ^spotifyredirect $dirbash/features.sh | cut -d= -f2 )'"
+, "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$spotifytoken
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
