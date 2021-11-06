@@ -50,7 +50,7 @@ HTML
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
  &emsp; • <code>EDIT SETTINGS</code>
- &emsp; &emsp; - <WH>Redirect URIs:</WH> https://rern.github.io/spotifyauth.html
+ &emsp; &emsp; - <WH>Redirect URIs:</WH> https://rern.github.io/rAudio/spotify
  &emsp; • <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
  &emsp; &emsp; - <wh>Name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)
