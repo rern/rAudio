@@ -17,6 +17,17 @@ $( '#setting-spotifyd' ).click( function() {
 	
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
+	} else if ( G.spotifytoken ) {
+		info( {
+			  icon    : 'spotify'
+			, title   : 'Spotify Client'
+			, message : 'Reset client keys?'
+			, oklabel : '<i class="help fa fa-minus-circle"></i>Reset'
+			, okcolor : red
+			, ok      : function() {
+				bash( [ 'spotifytokenreset' ] );
+			}
+		} );
 	} else {
 		info( {
 			  icon         : 'spotify'
@@ -24,19 +35,12 @@ $( '#setting-spotifyd' ).click( function() {
 			, textlabel    : [ 'ID', 'Secret' ]
 			, footer       : 'Keys from private app: <i class="help fa fa-question-circle"></i>'
 			, boxwidth     : 320
-			, values       : G.spotifykey
-			, checkchanged : G.spotifytoken ? 1 : ''
 			, checklength  : { 0: 32, 1: 32 }
 			, beforeshow   : function() {
 				$( '#infoContent .help' ).click( function() {
 					$( '.container .help:eq( 0 )' ).click();
 					$( '#infoX' ).click();
 				} );
-			}
-			, buttonlabel  : '<i class="help fa fa-minus-circle"></i>Reset'
-			, buttoncolor  : red
-			, button       : !G.spotifykey ? '' : function() {
-				bash( [ 'spotifytokenreset' ] );
 			}
 			, cancel       : function() {
 				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
@@ -45,11 +49,7 @@ $( '#setting-spotifyd' ).click( function() {
 				var values = infoVal();
 				var id = values[ 0 ];
 				var secret = values[ 1 ];
-				var data = `\
-clientid=${ id }
-clientsecret=${ secret }
-base64client=${ btoa( id +':'+ secret ) }`;
-				bash( 'echo "'+ data +'" > /srv/http/data/system/spotify' );
+				bash( 'echo "base64client='+ btoa( id +':'+ secret ) +'" > /srv/http/data/system/spotify' );
 				var data = {
 					  response_type : 'code'
 					, client_id     : id

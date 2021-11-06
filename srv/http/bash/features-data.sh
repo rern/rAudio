@@ -3,6 +3,7 @@
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
+spotifyredirect=https://rern.github.io/raudio/spotify
 
 exists() {
 	[[ -e $1 ]] && echo true || echo false
@@ -45,15 +46,10 @@ fi
 , "snapclientactive" : '$( [[ -e $dirshm/player-snapclient ]] && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -e $dirsystem/spotify ]]; then
-		spotifykey=$( head -2 $dirsystem/spotify | cut -d= -f2 )
-		spotifykey='["'$( echo $spotifykey | sed 's/ /","/' )'"]'
-	fi
 	data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
-, "spotifykey"       : '$spotifykey'
-, "spotifyredirect"  : "https://rern.github.io/raudio/spotify"
+, "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
