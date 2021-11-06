@@ -12,6 +12,11 @@ for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
 done
 scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
+if [[ -e $dirsystem/spotify ]]; then
+	spotifytoken=$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
+	spotifykey=$( head -2 $dirsystem/spotify | cut -d= -f2 )
+	spotifykey='["'$( echo $spotifykey | sed 's/ /","/' )'"]'
+fi
 
 data+='
   "page"             : "features"
@@ -46,7 +51,8 @@ fi
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
-, "spotifytoken"     : '$( [[ -e $dirsystem/spotify ]] && echo true )
+, "spotifykey"       : '$spotifykey'
+, "spotifytoken"     : '$spotifytoken
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
 , "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )

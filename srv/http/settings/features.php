@@ -1,7 +1,7 @@
 <?php
 if ( isset( $_GET[ 'code' ] ) ) {
 	$code = $_GET[ 'code' ];
-	if ( $code ) exec( "/usr/bin/sudo /srv/http/bash/features.sh spotifytoken$'\n'".$code );
+	exec( "/usr/bin/sudo /srv/http/bash/features.sh spotifytoken$'\n'".$code );
 	echo '<a id="spotifycode hide">'.( $_GET[ 'error' ] ?? '' ).'</a>';
 }
 $hostname = getHostName();
@@ -50,7 +50,7 @@ HTML
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
  &emsp; • <code>EDIT SETTINGS</code>
- &emsp; &emsp; - <WH>Redirect URIs:</WH> https://rern.github.io/auth.html
+ &emsp; &emsp; - <WH>Redirect URIs:</WH> https://rern.github.io/spotifyauth.html
  &emsp; • <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
  &emsp; &emsp; - <wh>Name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)

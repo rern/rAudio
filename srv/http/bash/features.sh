@@ -282,6 +282,8 @@ spotifyddisable )
 	;;
 spotifytoken )
 	code=${args[1]}
+	[[ -z $code ]] && rm -f $dirsystem/spotify && exit
+	
 	. $dirsystem/spotify
 	readarray -t tokens <<< $( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
@@ -300,6 +302,8 @@ spotifytoken )
 	else
 		data='{"title":"Spotify Authorization","text":"Error: '${tokens[2]}'","icon":"spotify"}'
 		pushstream notify "$data"
+		rm -f $dirsystem/spotify
+		systemctl disable --now spotifyd
 	fi
 	;;
 spotifytokenreset )
