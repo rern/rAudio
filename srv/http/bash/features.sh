@@ -18,6 +18,10 @@ pushRefreshNetworks() {
 	data=$( $dirbash/networks-data.sh )
 	pushstream refresh "$data"
 }
+pushstreamNotify() {
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
+	pushstream notify "$data"
+}
 featureSet() {
 	systemctl restart $@
 	systemctl -q is-active $@ && systemctl enable $@
@@ -35,6 +39,13 @@ localbrowserXset() {
 	else
 		xset +dpms
 	fi
+}
+spotifyReset() {
+	rm -f $dirshm/{player-*,scrobble}
+	touch $dirshm/player-mpd
+	$dirbash/cmd-pushstatus.sh
+	rm -f $dirsystem/spotify $dirshm/spotify/*
+	systemctl disable --now spotifyd
 }
 
 case ${args[0]} in
@@ -300,15 +311,14 @@ spotifytoken )
 		systemctl start spotifyd
 		systemctl -q is-active spotifyd && systemctl enable spotifyd
 	else
-		data='{"title":"Spotify Authorization","text":"Error: '${tokens[2]}'","icon":"spotify"}'
-		pushstream notify "$data"
-		rm -f $dirsystem/spotify
-		systemctl disable --now spotifyd
+		pushstreamNotify 'Spotify Client' "Error: ${tokens[2]}" spotify
+		spotifyReset
 	fi
+	pushRefresh
 	;;
 spotifytokenreset )
-	systemctl stop spotifyd
-	rm $dirsystem/spotify $dirshm/spotify/{expire,token}
+	pushstreamNotify 'Spotify Client' 'Reset ...' spotify
+	spotifyReset
 	pushRefresh
 	;;
 	

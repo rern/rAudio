@@ -22,11 +22,22 @@ $( '#setting-spotifyd' ).click( function() {
 			  icon         : 'spotify'
 			, title        : 'Spotify Client'
 			, textlabel    : [ 'ID', 'Secret' ]
-			, footer       : '(Keys from private app)'
+			, footer       : 'Keys from private app: <i class="help fa fa-question-circle"></i>'
 			, boxwidth     : 320
 			, values       : G.spotifykey
 			, checkchanged : G.spotifytoken ? 1 : ''
 			, checklength  : { 0: 32, 1: 32 }
+			, beforeshow   : function() {
+				$( '#infoContent .help' ).click( function() {
+					$( '.container .help:eq( 0 )' ).click();
+					$( '#infoX' ).click();
+				} );
+			}
+			, buttonlabel  : '<i class="help fa fa-minus-circle"></i>Reset'
+			, buttoncolor  : red
+			, button       : !G.spotifykey ? '' : function() {
+				bash( [ 'spotifytokenreset' ] );
+			}
 			, cancel       : function() {
 				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
 			}
