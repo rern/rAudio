@@ -187,27 +187,32 @@ case 'track': // for tag editor
 	break;
 case 'webradio':
 	$dirwebradios = '/srv/http/data/webradios/';
-	$path = $string !== '' ? $string.'/' : '';
-	$dirwebradios.= $path;
-	$lists = array_slice( scandir( $dirwebradios ), 2 );
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
 	$html = '';
-	foreach( $lists as $list ) {
-		if ( is_dir( $dirwebradios.$list ) ) {
-			$subdirs[] = $list;
-		} else {
-			$files[] = $list;
+	if ( $mode === 'search' ) {
+		exec( "grep -ril '".$string."' ".$dirwebradios." | sed 's|^".$dirwebradios."||'"
+			, $files );
+	} else {
+		$path = $string !== '' ? $string.'/' : '';
+		$dirwebradios.= $path;
+		$lists = array_slice( scandir( $dirwebradios ), 2 );
+		foreach( $lists as $list ) {
+			if ( is_dir( $dirwebradios.$list ) ) {
+				$subdirs[] = $list;
+			} else {
+				$files[] = $list;
+			}
 		}
-	}
-	if ( count( $subdirs ) ) {
-		foreach( $subdirs as $dir ) {
-			$html.= '<li class="file">'
-						.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
-						.'<a class="lipath">'.$path.$dir.'</a>'
-						.'<span class="single">'.$dir.'</span>'
-					.'</li>';
+		if ( count( $subdirs ) ) {
+			foreach( $subdirs as $dir ) {
+				$html.= '<li class="file">'
+							.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
+							.'<a class="lipath">'.$path.$dir.'</a>'
+							.'<span class="single">'.$dir.'</span>'
+						.'</li>';
+			}
 		}
 	}
 	if ( count( $files ) ) {
@@ -238,7 +243,11 @@ case 'webradio':
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$array = [ 'html' => $html, 'index' => $indexbar ];
+	if ( $mode !== 'search' ) {
+		$array = [ 'html' => $html, 'index' => $indexbar ];
+	} else {
+		$array = [ 'html' => $html, 'count' => count( $array ) ];
+	}
 	break;
 }
 

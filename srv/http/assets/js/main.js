@@ -1001,8 +1001,6 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 	} );
 } );
 $( '#button-lib-search' ).click( function() { // icon
-	if ( $( '#lib-path .lipath' ).text() === 'Webradio' ) return
-	
 	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
@@ -1014,11 +1012,19 @@ $( '#lib-search-btn' ).click( function() { // search
 	if ( !keyword ) {
 		$( '#lib-search-close' ).click();
 	} else {
-		var query = {
-			  query  : 'search'
-			, string : keyword
+		if ( G.mode !== 'webradio' ) {
+			var query = {
+				  query  : 'search'
+				, string : keyword
+				, gmode  : G.mode
+			}
+		} else {
+			var query = {
+				  query  : 'webradio'
+				, string : keyword
+				, mode   : 'search'
+			}
 		}
-		query.gmode = G.mode;
 		list( query, function( data ) {
 			if ( data != -1 ) {
 				data.modetitle = 'search';
