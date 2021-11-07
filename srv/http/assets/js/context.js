@@ -451,9 +451,7 @@ function webRadioEdit() {
 				webRadioExists( $exist.next().text(), newurl );
 			} else {
 				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioedit', name, newname, url, newurl, lipath ], function() {
-					$( '#mode-webradio' ).click();
-				} );
+				bash( [ 'webradioedit', name, newname, url, newurl, lipath ] );
 			}
 		}
 	} );

@@ -1136,6 +1136,7 @@ webradioedit ) # name, newname, url, newurl
 		mv $fileimg/{$urlname,$urlnamenew}.jpg 
 		mv $fileimg/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
+	pushstream webradio -1
 	;;
 wrdirdelete )
 	path=${args[1]}
