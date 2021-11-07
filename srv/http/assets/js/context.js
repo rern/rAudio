@@ -490,7 +490,9 @@ function webRadioNew( name, url ) {
 					, textlabel  : 'Name'
 					, checkblank : 1
 					, ok         : function() {
-						bash( [ 'wrdirnew', infoVal() ] );
+						var path = $( '#lib-path .lipath' ).text().replace( 'WEBRADIO', '' );
+						path += path ? '/' : '';
+						bash( [ 'wrdirnew', path + infoVal() ] );
 					}
 				} );
 			} );
@@ -728,7 +730,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 							info( {
 								  icon    : 'webradio'
 								, title   : 'WebRadio Delete'
-								, message : name +'not empty.'
+								, message : 'Folder <wh>'+ path +'</wh> not empty.'
 							} );
 						}
 					} );
@@ -736,9 +738,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'wrdirrename':
-			var path = G.list.li.find( '.lipath' ).text()
-			var pathlist = path.split( '/' );
-			var name = pathlist.pop();
+			var path = G.list.li.find( '.lipath' ).text().split( '/' );
+			var name = path.pop();
+			var path = path.join( '/' );
 			info( {
 				  icon        : 'webradio'
 				, title       : 'WebRadio Rename'
@@ -748,7 +750,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, checkchange : 1
 				, oklabel     : 'Rename'
 				, ok          : function() {
-					bash( [ 'wrdirrename', path, pathlist +'/'+ infoVal() ] );
+					bash( [ 'wrdirrename', path, name, infoVal() ] );
 				}
 			} );
 			return

@@ -184,7 +184,7 @@ $menu.= menudiv( 'playlist', $html );
 
 $menudiv = '';
 $html = '';
-$html.= menuli( 'wrdirrename', 'edit-circle',  'Edit' );
+$html.= menuli( 'wrdirrename', 'edit-circle',  'Rename' );
 $html.= menuli( 'wrdirdelete', 'minus-circle', 'Delete' );
 $menu.= menudiv( 'wrdir', $html );
 

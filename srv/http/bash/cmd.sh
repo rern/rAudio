@@ -1138,22 +1138,25 @@ webradioedit ) # name, newname, url, newurl
 	fi
 	;;
 wrdirdelete )
-	dir=${args[1]}
-	if [[ -n $( ls -A "$dirwebradios/$dir" ) ]]; then
+	path=${args[1]}
+	if [[ -n $( ls -A "$dirwebradios/$path" ) ]]; then
 		echo -1
 	else
-		rm -rf "$dirwebradios/$dir" "${dirwebradios}img/$dir"
+		rm -rf "$dirwebradios/$path" "${dirwebradios}img/$path"
 		pushstream webradio $count -1
 	fi
 	;;
 wrdirnew )
-	dir=${args[1]}
-	mkdir -p "$dirwebradios/$dir" "${dirwebradios}img/$dir"
+	path=${args[1]}
+	mkdir -p "$dirwebradios/$path" "${dirwebradios}img/$path"
 	pushstream webradio $count -1
 	;;
 wrdirrename )
-	dir=${args[1]}
-	mv -f "$dirwebradios/$dir" "${dirwebradios}img/$dir"
+	path=${args[1]}
+	name=${args[2]}
+	newname=${args[3]}
+	mv -f "$dirwebradios/$path/$name" "$dirwebradios/$path/$newname"
+	mv -f "${dirwebradios}img/$path/$name" "${dirwebradios}img/$path/$newname"
 	pushstream webradio $count -1
 	;;
 	
