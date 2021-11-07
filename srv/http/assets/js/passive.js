@@ -540,7 +540,7 @@ function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
-	$( '#mode-webradio gr' ).text( data )
+	if ( data != -1 ) $( '#mode-webradio gr' ).text( data )
 	if ( G.librarylist ) {
 		var query = G.query[ G.query.length - 1 ];
 		if ( query.path ) {
@@ -548,7 +548,7 @@ function psWebradio( data ) {
 				data.path = query.path;
 				data.modetitle = query.modetitle;
 				renderLibraryList( data );
-			} );
+			}, 'json' );
 		} else {
 			$( '#mode-webradio gr' ).click();
 		}

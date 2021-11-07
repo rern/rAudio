@@ -962,7 +962,6 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 			, string : path
 		}
 	} else {
-		G.mode = 'file';
 		var query = {
 			  query  : 'ls'
 			, string : path
@@ -971,6 +970,7 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
+		if ( !path && G.mode === 'webradio' ) path = 'WEBRADIO';
 		data.path = path;
 		data.modetitle = path;
 		renderLibraryList( data );
@@ -1075,12 +1075,10 @@ $( '#button-lib-back' ).click( function() {
 		return
 	}
 	
-	if ( [ 'file', 'nas', 'sd', 'usb', 'webradio' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
-		if ( $( '#lib-breadcrumbs a' ).length > 1 ) {
-			$( '#lib-breadcrumbs a' ).eq( -2 ).click();
-		} else {
-			$( '#button-library' ).click();
-		}
+	var $breadcrumbs = $( '#lib-breadcrumbs a' );
+	var bL = $breadcrumbs.length
+	if ( bL && G.query[ 0 ] !== 'playlist' ) {
+		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
 		var query = G.query[ G.query.length - 1 ];

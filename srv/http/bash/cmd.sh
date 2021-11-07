@@ -1137,5 +1137,24 @@ webradioedit ) # name, newname, url, newurl
 		mv $fileimg/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
 	;;
+wrdirdelete )
+	dir=${args[1]}
+	if [[ -n $( ls -A "$dirwebradios/$dir" ) ]]; then
+		echo -1
+	else
+		rm -rf "$dirwebradios/$dir" "${dirwebradios}img/$dir"
+		pushstream webradio $count -1
+	fi
+	;;
+wrdirnew )
+	dir=${args[1]}
+	mkdir -p "$dirwebradios/$dir" "${dirwebradios}img/$dir"
+	pushstream webradio $count -1
+	;;
+wrdirrename )
+	dir=${args[1]}
+	mv -f "$dirwebradios/$dir" "${dirwebradios}img/$dir"
+	pushstream webradio $count -1
+	;;
 	
 esac

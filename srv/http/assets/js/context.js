@@ -479,8 +479,22 @@ function webRadioNew( name, url ) {
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : ( name || url ? [ name, url ] : '' )
 		, checkblank   : 1
-		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
+		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
+		, footeralign  : 'right'
 		, boxwidth     : 'max'
+		, beforeshow   : function() {
+			$( '#infoContent .addwebradiodir' ).click( function() {
+				info( {
+					  icon       : 'webradio'
+					, title      : 'Add New Folder'
+					, textlabel  : 'Name'
+					, checkblank : 1
+					, ok         : function() {
+						bash( [ 'wrdirnew', infoVal() ] );
+					}
+				} );
+			} );
+		}
 		, ok           : function() {
 			var values = infoVal();
 			var name = values[ 0 ];
@@ -698,6 +712,45 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'update':
 			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
 			infoUpdate( G.list.path );
+			return
+		case 'wrdirdelete':
+			var path = G.list.li.find( '.lipath' ).text();
+			info( {
+				  icon    : 'webradio'
+				, title   : 'WebRadio Delete'
+				, message : 'Folder:'
+							+'<br><wh>'+ path +'</wh>'
+				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
+				, okcolor : red
+				, ok      : function() {
+					bash( [ 'wrdirdelete', path ], function( std ) {
+						if ( std == -1 ) {
+							info( {
+								  icon    : 'webradio'
+								, title   : 'WebRadio Delete'
+								, message : name +'not empty.'
+							} );
+						}
+					} );
+				}
+			} );
+			return
+		case 'wrdirrename':
+			var path = G.list.li.find( '.lipath' ).text()
+			var pathlist = path.split( '/' );
+			var name = pathlist.pop();
+			info( {
+				  icon        : 'webradio'
+				, title       : 'WebRadio Rename'
+				, textlabel   : 'Name'
+				, values      : name
+				, checkblank  : 1
+				, checkchange : 1
+				, oklabel     : 'Rename'
+				, ok          : function() {
+					bash( [ 'wrdirrename', path, pathlist +'/'+ infoVal() ] );
+				}
+			} );
 			return
 		case 'wrsave':
 			webRadioSave( G.list.li.find( '.lipath' ).text() );

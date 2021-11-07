@@ -204,7 +204,7 @@ case 'webradio':
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $dir ) {
 			$html.= '<li class="file">'
-						.'<i class="lib-icon fa fa-folder"></i>'
+						.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
 						.'<a class="lipath">'.$path.$dir.'</a>'
 						.'<span class="single">'.$dir.'</span>'
 					.'</li>';

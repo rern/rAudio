@@ -550,7 +550,7 @@ function info( json ) {
 		} );
 		// check inputs: blank / length / change
 		if ( O.checkblank ) {
-			if ( typeof O.checkblank !== 'object' ) O.checkblank = [ ...Array( $inputs_txt.length - 1 ).keys() ];
+			if ( typeof O.checkblank !== 'object' ) O.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
 			checkBlank();
 		} else {
 			O.blank = false;

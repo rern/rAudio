@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern.2021102400.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern.2021110800.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -145,6 +145,7 @@ input::-moz-focus-inner {
 .fa-folder-cascade::before { content: "\f54A" }
 .fa-folder-forbid::before { content: "\f537" }
 .fa-folder-open::before { content: "\f541" }
+.fa-folder-plus::before { content: "\f54D" }
 .fa-gear::before { content: "\f509" }
 .fa-gears::before { content: "\f50A" }
 .fa-genre::before { content: "\f55A" }

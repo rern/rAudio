@@ -182,6 +182,12 @@ $html.= menuli( 'plrename', 'edit-circle',  'Rename' );
 $html.= menuli( 'pldelete', 'minus-circle', 'Delete' );
 $menu.= menudiv( 'playlist', $html );
 
+$menudiv = '';
+$html = '';
+$html.= menuli( 'wrdirrename', 'edit-circle',  'Edit' );
+$html.= menuli( 'wrdirdelete', 'minus-circle', 'Delete' );
+$menu.= menudiv( 'wrdir', $html );
+
 foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {
 	$menudiv = '';
 	$html = menucommon( $mode.'add', $mode.'replace' );
