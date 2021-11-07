@@ -954,13 +954,20 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
-	G.mode = 'file';
 	if ( G.query.length > 1 ) G.scrolltop[ G.query[ G.query.length - 1 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
-	var query = {
-		  query  : 'ls'
-		, string : path
-		, format : [ 'file' ]
+	if ( G.mode === 'webradio' ) {
+		var query = {
+			  query  : 'webradio'
+			, string : path
+		}
+	} else {
+		G.mode = 'file';
+		var query = {
+			  query  : 'ls'
+			, string : path
+			, format : [ 'file' ]
+		}
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
@@ -1068,7 +1075,7 @@ $( '#button-lib-back' ).click( function() {
 		return
 	}
 	
-	if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
+	if ( [ 'file', 'nas', 'sd', 'usb', 'webradio' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
 		if ( $( '#lib-breadcrumbs a' ).length > 1 ) {
 			$( '#lib-breadcrumbs a' ).eq( -2 ).click();
 		} else {
@@ -1131,7 +1138,6 @@ $( '.mode' ).click( function() {
 		var query = {
 			  query  : 'webradio'
 		}
-		path = '';
 	} else { // browse by modes
 		var query = {
 			  query  : 'list'
@@ -1145,7 +1151,7 @@ $( '.mode' ).click( function() {
 		data.modetitle = path;
 		renderLibraryList( data );
 	}, 'json' );
-	query.path = path;
+	query.path = G.mode === 'webradio' ? '' : path;
 	query.modetitle = path;
 	G.query.push( query );
 } );
@@ -1448,7 +1454,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 		}
 		var modetitle = path;
 	} else if ( G.mode === 'webradio' ) {
-		if ( $( this ).hasClass( 'dir' ) ) {
+		if ( $( this ).hasClass( 'file' ) ) {
 			var query = {
 				  query  : 'webradio'
 				, string : path

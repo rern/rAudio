@@ -1070,21 +1070,17 @@ function renderLibraryList( data ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
-	} else if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( G.mode ) === -1 ) {
+	} else if ( data.path === 'WEBRADIO' ) {
+		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">'
+					  + 'WEBRADIO</span>&ensp;<i class="button-webradio-new fa fa-plus-circle"></i>';
+	} else if ( [ 'file', 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
-		if ( G.mode === 'webradio' ) {
-			var radioclass = ' class="radiomodetitle"';
-			var radiobtn = '&ensp;<i class="button-webradio-new fa fa-plus-circle"></i>';
-		} else {
-			var radioclass = '';
-			var radiobtn = '';
-		}
-		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"'+ radioclass +'>'+ data.modetitle +'</span>'+ radiobtn;
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
-		var htmlpath = '<i class="fa fa-'+ dir0.toLowerCase() +'"></i>';
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
@@ -1092,6 +1088,7 @@ function renderLibraryList( data ) {
 			lidir += '/'+ dir[ i ];
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
+		if ( G.mode === 'webradio' ) htmlpath += '&ensp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	}
 	if ( htmlpath ) $( '#lib-breadcrumbs' )
 						.html( htmlpath )
