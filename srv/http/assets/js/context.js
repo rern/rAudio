@@ -404,7 +404,7 @@ function webRadioCoverart() {
 				var url = G.list.li.find( '.lipath' ).text().replace( /.*(http.*:)/, '$1' );
 				var imagefilenoext = '/data/webradiosimg/'+ url.replace( /\//g, '|' );
 			}
-			imageReplace( imagefilenoext, 'webradio' );
+			imageReplace( '/srv/http'+ imagefilenoext, 'webradio' );
 		}
 	} );
 }

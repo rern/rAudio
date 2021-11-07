@@ -197,10 +197,10 @@ function coverartChange() {
 		var artist = $( '.licover .liartist' ).text();
 	}
 	if ( 'discid' in G.status ) {
-		var imagefile = '/srv/http/data/audiocd/'+ G.status.discid; // no ext
+		var imagefilenoext = '/srv/http/data/audiocd/'+ G.status.discid;
 		var type = 'audiocd';
 	} else {
-		var imagefile = '/mnt/MPD/'+ path +'/cover' // no ext
+		var imagefilenoext = '/mnt/MPD/'+ path +'/cover';
 		var type = 'coverart';
 	}
 	if ( G.playback ) {
@@ -234,10 +234,10 @@ function coverartChange() {
 		, buttoncolor : !coverartlocal ? '' : red
 		, button      : !coverartlocal ? '' : function() {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
-			bash( [ 'coverartreset', imagefile +'.'+ ext, path, artist, album ] );
+			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album ] );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, type, covername );
+			imageReplace( imagefilenoext, type, covername );
 		}
 	} );
 }
