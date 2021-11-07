@@ -232,7 +232,7 @@ case 'webradio':
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
 			$name = str_replace( '/', '|', $each->url );
-			$thumbsrc = '/data/webradiosimg/'.$path.$name.'-thumb.'.$time.'.jpg';
+			$thumbsrc = '/data/webradiosimg/'.$name.'-thumb.'.$time.'.jpg';
 			$html.= '<li class="file" data-index="'.$index.'">'
 						.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
 						.'<a class="lipath">'.$path.$each->url.'</a>'

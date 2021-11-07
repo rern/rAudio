@@ -926,12 +926,6 @@ scrobble )
 	data='{"title":"Scrobble","text":"'$msg'","icon":"lastfm"}'
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$data"
 	;;
-stationcoverreset )
-	coverart=${args[1]}
-	cover=${coverart:0:-15} # remove .1234567890.jpg
-	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"url":"'$coverart'","type":"webradioreset"}'
-	;;
 statuspkg )
 	id=${args[1]}
 	pkg=$id
@@ -1089,9 +1083,15 @@ webradioadd )
 	
 	echo $name > "$file"
 	chown http:http "$file" # for edit in php
-	count=$(( $( jq .webradio $dirmpd/counts ) + 1 ))
+	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	;;
+webradiocoverreset )
+	coverart=${args[1]}
+	cover=${coverart:0:-15} # remove .1234567890.jpg
+	rm -f "/srv/http$cover"{,-thumb}.*
+	pushstream coverart '{"url":"'$coverart'","type":"webradioreset"}'
 	;;
 webradiodelete )
 	url=${args[1]}
@@ -1104,7 +1104,7 @@ webradiodelete )
 		fileimg="$fileimg/$dir"
 	fi
 	rm -f "$file/$urlname" "$fileimg/$urlname"{,-thumb}.*
-	count=$(( $( jq .webradio $dirmpd/counts ) - 1 ))
+	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 	;;
@@ -1118,10 +1118,7 @@ webradioedit ) # name, newname, url, newurl
 	urlnamenew=${urlnew//\//|}
 	file=$dirwebradios
 	fileimg=${file}img
-	if [[ -n $dir ]]; then
-		file="$file/$dir"
-		fileimg="$fileimg/$dir"
-	fi
+	[[ -n $dir ]] && file="$file/$dir"
 	file="$file/$urlname"
 	filenew="$file/$urlnamenew"
 	if [[ $name != $namenew ]]; then
@@ -1143,13 +1140,13 @@ wrdirdelete )
 	if [[ -n $( ls -A "$dirwebradios/$path" ) ]]; then
 		echo -1
 	else
-		rm -rf "$dirwebradios/$path" "${dirwebradios}img/$path"
+		rm -rf "$dirwebradios/$path"
 		pushstream webradio $count -1
 	fi
 	;;
 wrdirnew )
 	path=${args[1]}
-	mkdir -p "$dirwebradios/$path" "${dirwebradios}img/$path"
+	mkdir -p "$dirwebradios/$path"
 	pushstream webradio $count -1
 	;;
 wrdirrename )
@@ -1157,7 +1154,6 @@ wrdirrename )
 	name=${args[2]}
 	newname=${args[3]}
 	mv -f "$dirwebradios/$path/$name" "$dirwebradios/$path/$newname"
-	mv -f "${dirwebradios}img/$path/$name" "${dirwebradios}img/$path/$newname"
 	pushstream webradio $count -1
 	;;
 	

@@ -231,24 +231,18 @@ function psCoverart( data ) {
 					.removeClass( 'hide' );
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			}
-			if ( G.librarylist && G.mode === 'webradio' ) {
-				var srcnoext = src.slice( 0, -15 );
-				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
-				var $el = webradioIcon( srcnoext );
-				$el.replaceWith( '<img class="lazyload iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
+			} else if ( G.librarylist && G.mode === 'webradio' ) {
+				psWebradio( -1 );
 			}
 			break;
 		case 'webradioreset':
 			G.status.stationcover = '';
 			if ( G.playback ) {
-				coverartDefault();
+				if ( G.status.coverart === src ) coverartDefault();
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			}
-			if ( G.mode === 'webradio' ) {
-				var $el = webradioIcon( src );
-				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
+			} else if ( G.librarylist && G.mode === 'webradio' ) {
+				psWebradio( -1 );
 			}
 			break;
 	}

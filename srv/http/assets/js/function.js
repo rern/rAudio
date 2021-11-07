@@ -554,24 +554,6 @@ function HMS2Second( HMS ) {
 	if ( !hhmmss[ 2 ] ) return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60;
 	return +hhmmss[ 0 ] + hhmmss[ 1 ] * 60 + hhmmss[ 2 ] * 3600;
 }
-function imageReplace( imagefile, type, covername ) {
-	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';;
-	var data = {
-		  cmd       : 'imagereplace'
-		, type      : type
-		, imagefile : imagefile +'.'+ ext
-		, covername : covername || ''
-	}
-	if ( ext === 'gif' ) {
-		data.file = G.infofile;
-	} else {
-		data.base64 = $( '.infoimgnew' )
-						.attr( 'src' )
-						.split( ',' )
-						.pop();
-	}
-	$.post( cmdphp, data );
-}
 function imageLoad( list ) {
 	var $lazyload = $( '#'+ list +' .lazyload' );
 	if ( !$lazyload.length ) return
@@ -597,6 +579,24 @@ function imageLoad( list ) {
 			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	}
+}
+function imageReplace( imagefilenoext, type, covername ) {
+	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';;
+	var data = {
+		  cmd       : 'imagereplace'
+		, type      : type
+		, imagefile : imagefilenoext +'.'+ ext
+		, covername : covername || ''
+	}
+	if ( ext === 'gif' ) {
+		data.file = G.infofile;
+	} else {
+		data.base64 = $( '.infoimgnew' )
+						.attr( 'src' )
+						.split( ',' )
+						.pop();
+	}
+	$.post( cmdphp, data );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'

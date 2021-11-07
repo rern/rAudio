@@ -395,10 +395,16 @@ function webRadioCoverart() {
 		, buttonlabel : radioicon ? '' : '<i class="fa fa-webradio"></i>Default'
 		, buttoncolor : radioicon ? '' : orange
 		, button      : radioicon ? '' : function() {
-			bash( [ 'stationcoverreset', coverart ] );
+			bash( [ 'webradiocoverreset', coverart ] );
 		}
 		, ok          : function() {
-			imageReplace( coverart, 'webradio' );
+			if ( coverart !== G.coverdefault ) {
+				var imagefilenoext = coverart.slice( 0, -15 );
+			} else {
+				var url = G.list.li.find( '.lipath' ).text().replace( /.*(http.*:)/, '$1' );
+				var imagefilenoext = '/data/webradiosimg/'+ url.replace( /\//g, '|' );
+			}
+			imageReplace( imagefilenoext, 'webradio' );
 		}
 	} );
 }
@@ -406,7 +412,6 @@ function webRadioDelete() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path;
-	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Delete WebRadio'
@@ -427,8 +432,7 @@ function webRadioDelete() {
 function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url = G.list.path.replace( /.*http/, 'http' );
-	var urlname = url.toString().replace( /\//g, '|' );
+	var url = G.list.path.replace( /.*(http.*:)/, '$1' )
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
@@ -772,8 +776,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	
 	// replaceplay|replace|addplay|add //////////////////////////////////////////
-	var webradio = G.list.path.slice( 0, 4 ) === 'http';
-	var path = G.list.path;
+	var path = G.mode !== 'webradio' ? G.list.path : G.list.path.replace( /.*(http.*:)/, '$1' );
 	var mpccmd;
 	// must keep order otherwise replaceplay -> play, addplay -> play
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
@@ -786,7 +789,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				} else {
 					mpccmd = [ 'plload', path ];
 				}
-			} else if ( G.list.singletrack || webradio ) { // single track
+			} else if ( G.list.singletrack || G.mode === 'webradio' ) { // single track
 				mpccmd = [ 'pladd', path ];
 			} else if ( $( '.licover' ).length && !$( '.licover .lipath' ).length ) {
 				mpccmd = [ 'plfindadd', 'multi', G.mode, path, 'album', G.list.album ];
@@ -824,7 +827,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];
-	var sleep = webradio ? 1 : 0.2;
+	var sleep = G.mode === 'webradio' ? 1 : 0.2;
 	var contextCommand = {
 		  add         : mpccmd
 		, addplay     : mpccmd.concat( [ 'addplay', sleep ] )
