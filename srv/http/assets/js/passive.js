@@ -371,6 +371,7 @@ function psNotify( data ) {
 			$( '#loader' ).addClass( 'splash' );
 			setTimeout( bannerHide, 10000 );
 		}
+		switchPage( 'playback' );
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
