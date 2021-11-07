@@ -427,7 +427,7 @@ function webRadioDelete() {
 function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url = G.list.path;
+	var url = G.list.path.replace( /.*http/, 'http' );
 	var urlname = url.toString().replace( /\//g, '|' );
 	info( {
 		  icon         : 'webradio'
