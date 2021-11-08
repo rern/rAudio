@@ -18,14 +18,7 @@ if (( $# > 0 )); then
 	$dirbash/cmd-pushstatus.sh
 ##### start
 else
-	if [[ ! -e $dirshm/player-airplay ]] ;then
-		mpc -q stop
-		rm -f $dirshm/{player-*,scrobble} $dirshm/airplay/start
-		touch $dirshm/player-airplay
-		systemctl stop snapclient
-		systemctl try-restart bluezdbus mpd spotifyd upmpdcli &> /dev/null
-		pushstream player '{"player":"airplay","active":true}'
-	fi
+	[[ ! -e $dirshm/player-airplay ]] && $dirbash/cmd.sh playerstart airplay
 	systemctl start shairport-meta
 	echo play > $dirairplay/state
 	$dirbash/cmd-pushstatus.sh

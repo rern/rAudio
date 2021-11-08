@@ -21,8 +21,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 	sleep 2
 	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )
 	if [[ -n $serverip ]]; then
-		rm -f $dirshm/{player-*,scrobble}
-		touch $dirshm/player-snapclient
+		[[ ! -e $dirshm/player-snapclient ]] && $dirbash/cmd.sh playerstart snapcast
 		echo $serverip > $serverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		sshpass -p ros \
@@ -50,6 +49,5 @@ else # sshpass from client
 		echo $clientip >> $clientfile
 		status=$( /srv/http/bash/status.sh snapclient )
 		curl -s -X POST http://$clientip/pub?id=mpdplayer -d "$status"
-		pushstream player '{"player":"snapcast","active":true}'
 	fi
 fi

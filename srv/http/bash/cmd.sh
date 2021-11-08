@@ -316,14 +316,9 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothrenderer ) # start
-	mpc -q stop
-	rm -f $dirshm/{player-*,scrobble}
-	touch $dirshm/player-bluetooth
-	systemctl stop snapclient
-	systemctl try-restart mpd shairport-sync spotifyd upmpdcli &> /dev/null
+	[[ ! -e $dirshm/player-bluetooth ]] && $dirbash/cmd.sh playerstart bluetooth
 	volumeGet save
 	$dirbash/cmd-pushstatus.sh
-	pushstream player '{"player":"bluetooth","active":true}'
 	;;
 bookmarkreset )
 	mpdpath=${args[1]}
@@ -717,6 +712,61 @@ pladd )
 	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
+playerstart )
+	newplayer=${args[1]}
+	mpc -q stop
+	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
+	rm -f $dirshm/{player-*,scrobble}
+	touch $dirshm/player-$newplayer
+	case $player in
+		airplay )   systemctl restart shairport-sync;;
+		bluetooth ) systemctl restart bluezdbus;;
+		mpd|upnp )  systemctl restart mpd;;
+		snapcast )  systemctl stop snapclient;;
+		spotify )   systemctl restart spotifyd;;
+	esac
+	pushstream player '{"player":"'$newplayer'","active":true}'
+	;;
+playerstop )
+	player=${args[1]}
+	rm -f $dirshm/{player-*,scrobble}
+	touch $dirshm/player-mpd
+	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
+	case $player in
+		airplay )
+			service=shairport-sync
+			systemctl stop shairport-meta
+			rm -f $dirshm/airplay/start
+			;;
+		bluetooth )
+			service=bluezdbus
+			;;
+		snapcast )
+			service=snapclient
+			sshpass -p ros \
+				ssh -q root@$( cat $dirshm/snapserverip ) \
+				"/srv/http/bash/snapcast.sh $( ifconfig | awk '/inet .*broadcast/ {print $2}' )"
+			rm $dirshm/snapserverip
+			;;
+		spotify )
+			service=spotifyd
+			rm -f $dirshm/spotify/start
+			;;
+		upnp )
+			service=upmpdcli
+			mpc -q stop
+			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
+			for i in $tracks; do
+				mpc -q del $i
+			done
+			$dirbash/cmd-pushstatus.sh
+			;;
+	esac
+	$dirbash/cmd.sh scrobble stop
+	systemctl restart $service
+	[[ $player != mpd || $player != upnp ]] && volumeReset
+	pushstream player '{"player":"'$player'","active":false}'
+	;;
 plcrop )
 	if mpc | grep -q playing; then
 		mpc -q crop
@@ -954,46 +1004,6 @@ $( systemctl status $id \
 	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
 	echo "$status"
 	;;
-stopplayer )
-	player=${args[1]}
-	rm -f $dirshm/{player-*,scrobble}
-	touch $dirshm/player-mpd
-	$dirbash/cmd-pushstatus.sh
-	case $player in
-		airplay )
-			service=shairport-sync
-			systemctl stop shairport-meta
-			rm -f $dirshm/airplay/start
-			;;
-		bluetooth )
-			service=bluezdbus
-			;;
-		snapcast )
-			service=snapclient
-			sshpass -p ros \
-				ssh -q root@$( cat $dirshm/snapserverip ) \
-				"/srv/http/bash/snapcast.sh $( ifconfig | awk '/inet .*broadcast/ {print $2}' )"
-			rm $dirshm/snapserverip
-			;;
-		spotify )
-			service=spotifyd
-			rm -f $dirshm/spotify/start
-			;;
-		upnp )
-			service=upmpdcli
-			mpc -q stop
-			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
-			for i in $tracks; do
-				mpc -q del $i
-			done
-			$dirbash/cmd-pushstatus.sh
-			;;
-	esac
-	$dirbash/cmd.sh scrobble stop
-	systemctl restart $service
-	[[ $player != mpd || $player != upnp ]] && volumeReset
-	pushstream player '{"player":"'$player'","active":false}'
-	;;
 thumbgif )
 	type=${args[1]}
 	source=${args[2]}
@@ -1005,6 +1015,12 @@ thumbjpg )
 	source=${args[2]}
 	target=${args[3]}
 	jpgThumbnail "$type" "$source" "$target"
+	;;
+upnpnice )
+	for pid in $( pgrep upmpdcli ); do
+		ionice -c 0 -n 0 -p $pid &> /dev/null 
+		renice -n -19 -p $pid &> /dev/null
+	done
 	;;
 volume )
 	current=${args[1]}

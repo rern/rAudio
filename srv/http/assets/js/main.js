@@ -889,7 +889,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
 			if ( G.status.player !== 'mpd' ) {
-				bash( [ 'stopplayer', G.status.player ] );
+				bash( [ 'playerstop', G.status.player ] );
 				return
 			}
 			

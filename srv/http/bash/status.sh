@@ -379,9 +379,11 @@ fi
 
 samplingfile=$dirshm/sampling-$( echo $file | tr -d ' "`?/#&'"'_.\-" )
 samplingSave() {
-	echo $sampling > $samplingfile
-	files=$( ls -1t $dirshm/sampling-* 2> /dev/null )
-	(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+	if [[ $player != upnp ]]; then
+		echo $sampling > $samplingfile
+		files=$( ls -1t $dirshm/sampling-* 2> /dev/null )
+		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+	fi
 }
 samplingLine() {
 	bitdepth=$1
@@ -430,7 +432,7 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
-	[[ $player != upnp ]] && samplingSave &
+	samplingSave &
 else
 	if [[ $ext == Radio ]]; then
 		sampling="$radiosampling"

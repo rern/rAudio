@@ -24,14 +24,7 @@ pushstream() {
 }
 
 ##### start
-if [[ ! -e $dirshm/player-spotify ]] ;then
-	mpc -q stop
-	rm -f $dirshm/{player-*,scrobble}
-	touch $dirshm/player-spotify
-	systemctl stop snapclient
-	systemctl try-restart bluezdbus mpd shairport-sync upmpdcli &> /dev/null
-	pushstream player '{"player":"spotify","active":true}'
-fi
+[[ ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart spotify
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
 else
