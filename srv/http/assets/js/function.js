@@ -1400,7 +1400,7 @@ function setInfo() {
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
-	if ( !G.status.stream && G.status.player !== 'upnp' ) {
+	if ( !G.status.stream || G.status.player === 'upnp' ) {
 		$( '#artist' ).text( G.status.Artist );
 		$( '#title' )
 			.text( G.status.Title )
