@@ -27,7 +27,7 @@ restartMPD() {
 	fi
 }
 
-if [[ $1 == bton ]]; then
+if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btaplay=$( bluealsa-aplay -L )
