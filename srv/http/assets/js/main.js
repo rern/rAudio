@@ -1189,7 +1189,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		}
 		var mode = 'webradio'
 	}
-	query.gmode = G.mode;
 	list( query, function( data ) {
 		data.path = path;
 		data.modetitle = path;
