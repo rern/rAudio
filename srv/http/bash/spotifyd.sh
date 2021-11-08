@@ -24,7 +24,7 @@ pushstream() {
 }
 
 ##### start
-[[ ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart spotify
+[[ ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
 else

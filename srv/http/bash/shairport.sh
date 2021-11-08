@@ -18,7 +18,7 @@ if (( $# > 0 )); then
 	$dirbash/cmd-pushstatus.sh
 ##### start
 else
-	[[ ! -e $dirshm/player-airplay ]] && $dirbash/cmd.sh playerstart airplay
+	[[ ! -e $dirshm/player-airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport-meta
 	echo play > $dirairplay/state
 	$dirbash/cmd-pushstatus.sh

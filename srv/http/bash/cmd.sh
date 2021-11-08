@@ -316,7 +316,7 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bluetoothrenderer ) # start
-	[[ ! -e $dirshm/player-bluetooth ]] && $dirbash/cmd.sh playerstart bluetooth
+	[[ ! -e $dirshm/player-bluetooth ]] && $dirbash/cmd.sh playerstart$'\n'bluetooth
 	volumeGet save
 	$dirbash/cmd-pushstatus.sh
 	;;

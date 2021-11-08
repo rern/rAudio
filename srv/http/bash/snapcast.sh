@@ -21,7 +21,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 	sleep 2
 	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )
 	if [[ -n $serverip ]]; then
-		[[ ! -e $dirshm/player-snapclient ]] && $dirbash/cmd.sh playerstart snapcast
+		[[ ! -e $dirshm/player-snapclient ]] && $dirbash/cmd.sh playerstart$'\n'snapcast
 		echo $serverip > $serverfile
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		sshpass -p ros \
