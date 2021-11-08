@@ -8,9 +8,9 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211101
-file=/etc/systemd/system/upmpdcli.service.d/override.conf
-if ! grep -q root $file; then
-	sed -i 's/User.*/User=root/' $file
+dir=/etc/systemd/system/upmpdcli.service.d
+if [[ -e $dir ]]; then
+	rm -rf $dir
 	systemctl stop upmpdcli
 fi
 [[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd

@@ -986,6 +986,7 @@ stopplayer )
 			for i in $tracks; do
 				mpc -q del $i
 			done
+			$dirbash/cmd-pushstatus.sh
 			;;
 	esac
 	$dirbash/cmd.sh scrobble stop

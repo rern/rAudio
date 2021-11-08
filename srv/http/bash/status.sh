@@ -430,7 +430,7 @@ elif [[ $state != stop ]]; then
 			sampling=$radiosampling
 		fi
 	fi
-	samplingSave &
+	[[ $player != upnp ]] && samplingSave &
 else
 	if [[ $ext == Radio ]]; then
 		sampling="$radiosampling"

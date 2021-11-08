@@ -14,4 +14,4 @@ rm -f $dirshm/{player-*,scrobble}
 touch $dirshm/player-upnp
 systemctl try-restart bluezdbus shairport-sync snapclient spotifyd &> /dev/null
 /srv/http/bash/cmd-pushstatus.sh
-pushstream player '{"player":"upnp","active":true}'
+curl -s -X POST http://127.0.0.1/pub?id=player -d '{"player":"upnp","active":true}'
