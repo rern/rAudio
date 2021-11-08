@@ -880,6 +880,8 @@ scrobble )
 		Title=${args[2]}
 		Album=${args[3]}
 	else
+		[[ ! -e $dirshm/scrobble ]] && exit
+		
 		. $dirshm/scrobble # Artist, Title, Album, state, Time, start
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
