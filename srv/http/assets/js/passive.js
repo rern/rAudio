@@ -140,8 +140,6 @@ function psBtClient( connected ) {
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
-	if ( G.bookmarkedit ) return
-	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		if ( 'html' in data ) {
@@ -156,6 +154,8 @@ function psBookmark( data ) {
 				$bookmark.find( '.bklabel' ).text( data.name );
 			}
 		}
+		renderLibrary();
+		$( '.mode-bookmark, .bklabel' ).removeAttr( 'style' );
 		if ( 'order' in data ) G.display.order = data.order;
 	}, G.debouncems );
 }
