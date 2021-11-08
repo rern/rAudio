@@ -895,8 +895,19 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	if ( !G.display.order ) return
-	
+	if ( $( '.bkcoverart' ).length ) {
+		$( '.bkcoverart' ).off( 'error' ).on( 'error', function() {
+			var $this = $( this );
+			var src = $this.attr( 'src' );
+			if ( src.slice( -3 ) === 'jpg' ) {
+				$this.attr( 'src', src.slice( 0, -3 ) + 'gif' );
+			} else {
+				var iconhtml = '<i class="fa fa-bookmark"></i><div class="divbklabel">'
+							  +'<span class="bklabel label">'+ $this.data( 'label' ) +'</span></div>';
+				$this.replaceWith( iconhtml );
+			}
+		} );
+	}
 	$.each( G.display.order, function( i, name ) {
 		var $libmode = $( '.lib-mode' ).filter( function() {
 			return $( this ).find( '.lipath' ).text() === name;
@@ -1052,7 +1063,7 @@ function renderLibrary() {
 		.add( '.coverart img' ).css( 'opacity', '' );
 	$( '.bkedit' ).remove();
 	$( '#liimg' ).css( 'opacity', '' );
-	orderLibrary();
+	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
 }
 function renderLibraryList( data ) {

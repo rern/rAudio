@@ -124,6 +124,7 @@ $( '#coverart' ).on( 'load', function() {
 	}
 	loaderHide();
 } ).on( 'error', coverartDefault );
+
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // from info.js
 	location.reload();
