@@ -66,11 +66,11 @@ var pagenext = {
 	, playlist : [ 'playback', 'library' ]
 	, library  : [ 'playlist', 'playback' ]
 }
-var nameplayer = {
+var icon_player = {
 	  airplay    : 'AirPlay'
-	, bluetooth  : 'Bluetooth Renderer'
-	, snapclient : 'Snapcast Client'
-	, spotify    : 'Spotify Connect'
+	, bluetooth  : 'Bluetooth'
+	, snapclient : 'Snapcast'
+	, spotify    : 'Spotify'
 	, upnp       : 'UPnP'
 }
 
@@ -890,6 +890,7 @@ $( '.btn-cmd' ).click( function() {
 			clearInterval( G.intElapsed );
 			if ( G.status.player !== 'mpd' ) {
 				bash( [ 'playerstop', G.status.player ] );
+				banner( icon_player[ G.status.icon ], 'Stop ...', G.status.icon );
 				return
 			}
 			
