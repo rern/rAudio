@@ -12,7 +12,6 @@ import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
 import os
-import subprocess
 import time
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
@@ -30,12 +29,12 @@ def property_changed( interface, changed, invalidated, path ):
         if name == 'Player':
             with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
         elif name == 'Connected':
-            subprocess.Popen( [ '/srv/http/bash/networks-data.sh', 'bt' ] )
+            os.system( '/srv/http/bash/networks-data.sh bt' )
         elif name == 'Position' or name == 'Track':
             os.system( '/srv/http/bash/cmd-pushstatus.sh' )
         elif name == 'Status':
             if value == 'playing' and not os.path.isfile( '/srv/http/data/shm/player-bluetooth' ):
-                subprocess.Popen( [ '/srv/http/bash/cmd.sh', 'playerstart\nbluetooth' ] )
+                os.system( "/srv/http/bash/cmd.sh playerstart$'\n'bluetooth" )
             os.system( '/srv/http/bash/cmd-pushstatus.sh' )
 
 class Agent( dbus.service.Object ):
