@@ -192,9 +192,11 @@ case 'webradio':
 	$indexes = [];
 	$html = '';
 	if ( $mode === 'search' ) {
+		$searchmode = 1;
 		exec( "grep -ril '".$string."' ".$dirwebradios." | sed 's|^".$dirwebradios."||'"
 			, $files );
 	} else {
+		$searchmode = 0;
 		$path = $string !== '' ? $string.'/' : '';
 		$dirwebradios.= $path;
 		$lists = array_slice( scandir( $dirwebradios ), 2 );
@@ -231,13 +233,15 @@ case 'webradio':
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
-			$name = str_replace( '/', '|', $each->url );
-			$thumbsrc = '/data/webradiosimg/'.$name.'-thumb.'.$time.'.jpg';
+			$urlname = str_replace( '/', '|', $each->url );
+			$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
+			$liname = $each->name;
+			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file" data-index="'.$index.'">'
 						.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
 						.'<a class="lipath">'.$path.$each->url.'</a>'
-						.'<a class="liname">'.$each->name.'</a>'
-						.'<div class="li1">'.$each->name.'</div>'
+						.'<a class="liname">'.$liname.'</a>'
+						.'<div class="li1">'.$name.'</div>'
 						.'<div class="li2">'.$each->url.'</div>'
 					.'</li>';
 		}
