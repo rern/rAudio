@@ -1162,7 +1162,7 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
-	if ( G.status.stream ) {
+	if ( !G.status.elapsed ) {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 		if ( G.status.state === 'play' ) {
@@ -1197,7 +1197,6 @@ function renderPlayback() {
 		blinkDot();
 		return
 	}
-	
 	if ( G.status.elapsed ) {
 		var elapsedhms = second2HMS( G.status.elapsed );
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
@@ -1401,7 +1400,7 @@ function setInfo() {
 	G.prevartist = $( '#artist' ).text();
 	G.prevtitle = $( '#title' ).text();
 	G.prevalbum = $( '#album' ).text();
-	if ( !G.status.stream ) {
+	if ( !G.status.stream && G.status.player !== 'upnp' ) {
 		$( '#artist' ).text( G.status.Artist );
 		$( '#title' )
 			.text( G.status.Title )
@@ -1586,7 +1585,7 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( G.status.state !== 'play' || G.status.stream ) clearInterval( G.intElapsed );
+	if ( G.status.state !== 'play' || !G.status.elapsed ) clearInterval( G.intElapsed );
 	if ( position !== 0 ) position = G.status.elapsed;
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
@@ -1605,7 +1604,7 @@ function setProgressElapsed() {
 	
 	clearInterval( G.intElapsed );
 	var elapsedhms;
-	var $elapsed = G.status.stream ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
+	var $elapsed = !G.status.elapsed ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
 	if ( G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );
 	if ( G.status.Time ) {
 		var time = G.status.Time;

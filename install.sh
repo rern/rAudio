@@ -8,7 +8,12 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211101
-systemctl stop spotifyd
+file=/etc/systemd/system/upmpdcli.service.d/override.conf
+if ! grep -q root $file; then
+	sed -i 's/User.*/User=root/' $file
+	systemctl stop upmpdcli
+fi
+[[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
 file=/etc/systemd/system/bluetooth.service.d/override.conf
 grep -q battery $file || sed -i '/ExecStartPost/ i\
 ExecStart=\
