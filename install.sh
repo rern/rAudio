@@ -12,6 +12,7 @@ dir=/etc/systemd/system/upmpdcli.service.d
 if [[ -e $dir ]]; then
 	rm -rf $dir
 	systemctl stop upmpdcli
+	echo 'upmpdcli ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/upmpdcli
 fi
 [[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
 file=/etc/systemd/system/bluetooth.service.d/override.conf
