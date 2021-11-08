@@ -54,12 +54,11 @@ pcm.bluealsa {
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
 	echo $btname > $dirshm/btclient
 	pushstream btclient true
-	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+	$dirbash/networks-data.sh bt
 elif [[ $1 == btoff ]]; then
-	rm -f $dirshm/{player-*,btclient}
-	touch $dirshm/player-mpd
+	rm -f $dirshm/btclient
 	pushstream btclient false
-	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+	$dirbash/networks-data.sh bt
 fi
 
 . $dirbash/mpd-devices.sh
