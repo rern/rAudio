@@ -4,7 +4,7 @@
 #   - start: set Player dest file
 #   - connect/disconnect: networks-data.sh bt
 #   - status: dbus emits events and data
-#       start play - cmd.sh bluetoothrenderer
+#       start play - cmd.sh playerstart\nbluetooth
 #       changed - cmd-pushstatus.sh
 
 import dbus
@@ -35,9 +35,8 @@ def property_changed( interface, changed, invalidated, path ):
             os.system( '/srv/http/bash/cmd-pushstatus.sh' )
         elif name == 'Status':
             if value == 'playing' and not os.path.isfile( '/srv/http/data/shm/player-bluetooth' ):
-                subprocess.Popen( [ '/srv/http/bash/cmd.sh', 'bluetoothrenderer' ] )
-            else:
-                os.system( '/srv/http/bash/cmd-pushstatus.sh' )
+                subprocess.Popen( [ '/srv/http/bash/cmd.sh', 'playerstart\nbluetooth' ] )
+            os.system( '/srv/http/bash/cmd-pushstatus.sh' )
 
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )

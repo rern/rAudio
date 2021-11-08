@@ -315,11 +315,6 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
-bluetoothrenderer ) # start
-	[[ ! -e $dirshm/player-bluetooth ]] && $dirbash/cmd.sh playerstart$'\n'bluetooth
-	volumeGet save
-	$dirbash/cmd-pushstatus.sh
-	;;
 bookmarkreset )
 	mpdpath=${args[1]}
 	rm -f "/mnt/MPD/$mpdpath/"coverart.*
@@ -714,6 +709,7 @@ pladd )
 	;;
 playerstart )
 	newplayer=${args[1]}
+	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	rm -f $dirshm/{player-*,scrobble}
