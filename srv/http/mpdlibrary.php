@@ -199,7 +199,8 @@ case 'webradio':
 		$searchmode = 0;
 		$path = $string !== '' ? $string.'/' : '';
 		$dirwebradios.= $path;
-		$lists = array_slice( scandir( $dirwebradios ), 2 );
+		exec( 'ls -1 "'.$dirwebradios.'" | grep -v "\....$"'
+			, $lists );
 		foreach( $lists as $list ) {
 			if ( is_dir( $dirwebradios.$list ) ) {
 				$subdirs[] = $list;

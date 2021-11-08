@@ -78,9 +78,17 @@ $dir = $dirdata.'bookmarks';
 $files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 if ( count( $files ) ) {
 	foreach( $files as $name ) {
-		$mpdpath = rtrim( file_get_contents( "$dir/$name" ) );
-		$path = '/mnt/MPD/'.$mpdpath;
-		$pathcoverart = $path.'/coverart.';
+		$bkpath = rtrim( file_get_contents( "$dir/$name" ) );
+		$prefix = preg_replace( '/\/.*/', '', $bkpath );
+		if ( in_array( $prefix, [ 'NAS', 'SD', 'USB' ] ) ) {
+			$path = '/mnt/MPD/'.$bkpath;
+			$srccoverart = $path.'/coverart.';
+			$pathcoverart = $srccoverart;
+		} else {
+			$path = '/data/'.$bkpath;
+			$srccoverart = $path.'/coverart.';
+			$pathcoverart = '/srv/http'.$srccoverart;
+		}
 		$ext = '';
 		$dataalbum = '';
 		if ( file_exists( $pathcoverart.'gif' ) ) {
@@ -89,7 +97,7 @@ if ( count( $files ) ) {
 			$ext = '.jpg';
 		}
 		if ( $ext ) {
-			$iconhtml = '<img class="bkcoverart" src="'.rawurlencode( $pathcoverart ).time().$ext.'">';
+			$iconhtml = '<img class="bkcoverart" src="'.rawurlencode( $srccoverart ).time().$ext.'">';
 			if ( file_exists( $path.'/thumb'.$ext ) ) $dataalbum = 'data-album="1"';
 		} else {
 			$iconhtml = '<i class="fa fa-bookmark"></i>'
@@ -98,7 +106,7 @@ if ( count( $files ) ) {
 		$modehtml.= '
 			<div class="lib-mode bookmark">
 				<div class="mode mode-bookmark" data-mode="bookmark" '.$dataalbum.'>
-					<a class="lipath">'.$mpdpath.'</a>
+					<a class="lipath">'.$bkpath.'</a>
 					'.$iconhtml.'
 				</div>
 			</div>

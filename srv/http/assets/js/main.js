@@ -1258,20 +1258,22 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
+		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 				  +'<p class="infoimgname">'+ name +'</p>';
 	} else {
-		var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
+		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
+					+'<br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
 	}
 	// [imagereplace]
 	// select file
 	//    - gif    > [file]   - no canvas
 	//    - others > [base64] - data:image/jpeg;base64,...
-	var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
+	var imagefile = [ 'NAS', 'SD', 'USB' ].indexOf( path.split( '/' )[ 0 ] ) !== -1 ? '/mnt/MPD/' : '/srv/http/data/';
+	imagefile += path +'/coverart'; // no ext
 	info( {
 		  icon        : 'bookmark'
 		, title       : 'Change Bookmark Thumbnail'
-		, message     : icon
+		, message     : message
 		, filelabel   : '<i class="fa fa-folder-open"></i> File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
