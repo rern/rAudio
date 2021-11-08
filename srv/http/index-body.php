@@ -184,8 +184,9 @@ $menu.= menudiv( 'playlist', $html );
 
 $menudiv = '';
 $html = '';
-$html.= menuli( 'wrdirrename', 'edit-circle',  'Rename' );
-$html.= menuli( 'wrdirdelete', 'minus-circle', 'Delete' );
+$html.= menuli( 'bookmark', 'star',         'Bookmark' );
+$html.= menuli( 'wrdirdelete',   'minus-circle', 'Delete' );
+$html.= menuli( 'wrdirrename',   'edit-circle',  'Rename' );
 $menu.= menudiv( 'wrdir', $html );
 
 foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {

@@ -154,7 +154,7 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	
-	var modes = [ 'file', 'nas', 'sd', 'usb' ];
+	var modes = [ 'file', 'nas', 'sd', 'usb', 'webradio' ];
 	var filemode = modes.indexOf( G.mode ) !== -1;
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );

@@ -13,6 +13,7 @@ function bookmarkNew() {
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
+	if ( G.mode === 'webradio' ) path = 'webradios/'+ path;
 	var $el = $( '.mode-bookmark' );
 	if ( $el.length ) {
 		var $exist = $el.filter( function() {
@@ -60,13 +61,11 @@ function bookmarkIcon( path ) {
 	info( {
 		  icon       : 'bookmark'
 		, title      : 'Add Bookmark'
-		, width      : 500
 		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
 						+'<br><wh>'+ path +'</wh>'
 		, textlabel  : 'As:'
 		, values     : path.split( '/' ).pop()
 		, checkblank : 1
-		, boxwidth   : 'max'
 		, ok         : function() {
 			$.post( cmdphp, {
 				  cmd  : 'bookmark'

@@ -1174,16 +1174,26 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var path = $( this ).find( '.lipath' ).text();
 	if ( G.bookmarkedit ) return
 	
-	var query = {
-		  query  : 'ls'
-		, string : path
-		, format : [ 'file' ]
+	if ( path.slice( 0, 10 ) !== 'webradios/' ) {
+		var query = {
+			  query  : 'ls'
+			, string : path
+			, format : [ 'file' ]
+		}
+		var mode = path.split( '/' )[ 0 ].toLowerCase();
+	} else {
+		path = path.slice( 10 );
+		var query = {
+			  query  : 'webradio'
+			, string : path
+		}
+		var mode = 'webradio'
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
 		data.path = path;
 		data.modetitle = path;
-		G.mode = 'file';
+		G.mode = mode;
 		renderLibraryList( data );
 	}, 'json' );
 	query.path = path;
