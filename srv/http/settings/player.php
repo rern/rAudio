@@ -180,7 +180,7 @@ HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Sources update.
 Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
-<div id="divfiletype" class="hide" style="margin-left: 20px"><?=( shell_exec( '/srv/http/bash/player.sh filetype' ) )?></div>
+<div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 HTML
 	]
 	, [
