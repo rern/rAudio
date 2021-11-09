@@ -49,10 +49,4 @@ data='
 	, "Time"      : '$Time'
 	, "timestamp" : '$timestamp
 
-echo $data
-
-if [[ -e /srv/http/data/system/lcdchar ]]; then
-	data=( "$Artist" "$Title" "$Album" '' '' $state $Time $elapsed $timestamp false )
-	killall lcdchar.py &> /dev/null
-	/srv/http/bash/lcdchar.py "${data[@]}" &
-fi
+echo "$data"

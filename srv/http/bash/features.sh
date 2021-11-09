@@ -42,10 +42,6 @@ localbrowserXset() {
 }
 spotifyReset() {
 	pushstreamNotify 'Spotify Client' "$1" spotify
-	rm -f $dirshm/{player-*,scrobble}
-	touch $dirshm/player-mpd
-	$dirbash/cmd-pushstatus.sh
-	echo xxx
 	rm -f $dirsystem/spotify $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh

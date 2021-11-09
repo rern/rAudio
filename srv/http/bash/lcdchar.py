@@ -51,7 +51,10 @@ if charmap == 'A00':
     import unicodedata
     noaccented = True
     
-field = [ '', 'artist', 'title', 'album', 'station', 'file', 'state', 'total', 'elapsed', 'timestamp', 'webradio' ]
+sys.path.append( '/srv/http/data/shm' )
+from statuslcd import *
+
+field = [ '', 'Artist', 'Title', 'Album', 'station', 'file', 'state', 'Time', 'elapsed', 'timestamp', 'webradio' ]
 for i in range( 1, 11 ):
     val = sys.argv[ i ].rstrip()
     if val and i < 6:
@@ -61,58 +64,58 @@ for i in range( 1, 11 ):
         val = val[ :cols ].replace( 'º', '°' ).replace( "'", "\\'" )
     exec( field[ i ] +" = '"+ val +"'" )
     
-if webradio == 'true':
+if webradio:
     if state != 'play':
-        artist = station
-        album = file
+        Artist = station
+        Album = file
     else:
-        if not artist and not title: artist = station
-        if not album: album = station or file
+        if not Artist and not Title: Artist = station
+        if not Album: Album = station or file
         
-if not artist: artist = idots
-if not title: title = idots
-if not album: album = idots
+if not Artist: Artist = idots
+if not Title: Title = idots
+if not Album: Album = idots
 if rows == 2:
     if state == 'stop' or state == 'pause':
-        if backlight == 'true':
+        if backlight:
             os.system( '/srv/http/bash/lcdchartimer.sh &' )
         lcd.close()
         quit()
         
     else:
-        lines = title
+        lines = Title
 else:
-    lines = artist + rn + title + rn + album
+    lines = Artist + rn + Title + rn + Album
 
-if elapsed != 'false':
+if not elapsed:
     elapsed = round( float( elapsed ) )
     elapsedhhmmss = elapsed > 0 and second2hhmmss( elapsed ) or ''
 else:
     elapsedhhmmss = ''
 
-if total != 'false':
+if not Time:
     if elapsedhhmmss:
-        totalhhmmss = cols > 16 and ' / ' or '/'
+        Timehhmmss = cols > 16 and ' / ' or '/'
     else:
-        totalhhmmss = ''
-    total = round( float( total ) )
-    totalhhmmss += second2hhmmss( total )
+        Timehhmmss = ''
+    Time = round( float( Time ) )
+    Timehhmmss += second2hhmmss( Time )
 else:
-    totalhhmmss = ''
+    Timehhmmss = ''
     
-progress = state == 'stop' and totalhhmmss or elapsedhhmmss + totalhhmmss
+progress = state == 'stop' and Timehhmmss or elapsedhhmmss + Timehhmmss
 progress = ( progress + ' ' * cols )[ :cols - 4 ]
 
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
-    if backlight == 'true':
+    if backlight:
         os.system( '/srv/http/bash/lcdchartimer.sh &' )
     lcd.close()
     quit()
 
 # play
-if elapsed == 'false': quit()
+if not elapsed: quit()
 
 import time
 
@@ -124,7 +127,7 @@ iplay = icon[ 'play' ]
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
     lcd.cursor_pos = ( row, 0 )
-    lcd.write_string( iplay + second2hhmmss( elapsed ) + totalhhmmss )
+    lcd.write_string( iplay + second2hhmmss( elapsed ) + Timehhmmss )
     elapsed += 1
     time.sleep( sl )
     

@@ -294,12 +294,8 @@ $radiosampling" > $dirshm/radio
 					rm -f $dirshm/status
 					systemctl start radio
 				else
-					readarray -t tmpstatus <<< $( cat $dirshm/status 2> /dev/null | sed 's/"/\\"/g' )
-					Artist=${tmpstatus[0]}
-					Title=${tmpstatus[1]}
-					Album=${tmpstatus[2]}
-					[[ -n $displaycover ]] && coverart=${tmpstatus[3]}
-					station=$stationname
+					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
+					[[ -z $displaycover ]] && coverart=
 				fi
 			elif [[ -n $Title && -n $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)

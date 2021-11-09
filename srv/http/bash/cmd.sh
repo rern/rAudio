@@ -707,25 +707,28 @@ pladd )
 	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
-playerstart )
+playerstart ) # sudo - for upmpdcli
 	newplayer=${args[1]}
+	pushstatus=${args[2]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	rm -f $dirshm/{player-*,scrobble}
+	sudo rm -f $dirshm/player-*
 	touch $dirshm/player-$newplayer
 	case $player in
-		airplay )   systemctl restart shairport-sync;;
-		bluetooth ) systemctl restart bluezdbus;;
-		mpd|upnp )  systemctl restart mpd;;
-		snapcast )  systemctl stop snapclient;;
-		spotify )   systemctl restart spotifyd;;
+		airplay )   restart=shairport-sync;;
+		bluetooth ) restart=bluezdbus;;
+		mpd|upnp )  restart=mpd;;
+		snapcast )  stop=snapclient;;
+		spotify )   restart=spotifyd;;
 	esac
+	[[ -n $stop ]] && sudo systemctl stop $stop || sudo systemctl restart $restart
 	pushstream player '{"player":"'$newplayer'","active":true}'
+	[[ -n $pushstatus ]] && $dirbash/cmd-pushstatus.sh
 	;;
 playerstop )
 	player=${args[1]}
-	rm -f $dirshm/{player-*,scrobble}
+	rm -f $dirshm/player-*
 	touch $dirshm/player-mpd
 	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
 	case $player in
@@ -926,15 +929,16 @@ scrobble )
 		Title=${args[2]}
 		Album=${args[3]}
 	else
-		[[ ! -e $dirshm/scrobble ]] && exit
+		[[ ! -e $dirshm/status ]] && exit
 		
-		. $dirshm/scrobble # Artist, Title, Album, state, Time, start
+		. $dirshm/status
 		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 		
-		# args1 on stop: airplay bluetooth, spotify || airplay: scrobble fires before airplay pause
+		# args1 on stop: bluetooth, spotify || airplay: scrobble fires before airplay pause
 		if [[ $state == stop || ${args[1]} == stop || -e $dirshm/player-airplay ]]; then
-			[[ -z $Time || -z $start ]] && exit
+			[[ -z $Time || -z $elapsed ]] && exit
 			
+			start=$(( timestamp / 1000 - elapsed ))
 			elapsed=$(( $( date +%s ) - $start ))
 			(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
 			

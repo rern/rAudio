@@ -11,30 +11,29 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 
-status=$( $dirbash/status.sh )
-statusdata=$( echo $status \
-	| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
-	| sed 's/null//' )
-readarray -t data <<< "$statusdata"
-state=${data[5]}
-webradio=${data[9]}
-if [[ -e $dirshm/status ]]; then
-	dataprev=$( cat $dirshm/status )
-	[[ $webradio == false ]] && n=8 || n=3
-	datanew=$( head -$n <<< $statusdata | tr -d '\n ' )
-	dataprev=$( head -$n <<< $dataprev | tr -d '\n ' )
-	[[ $datanew == $dataprev ]] && exit
+if [[ $1 != statusradio ]]; then # from status-radio.sh
+	status=$( $dirbash/status.sh | jq )
+	echo "$status" \
+		| grep '^  "Artist\|^  "Title\|^  "Album\|^  "station"\|^  "file\|^  "state\|^  "Time\|^  "elapsed\|^  "timestamp\|^  "webradio' \
+		| sed 's/^  "\(.*\)": \(.*\),$/\1=\2/' \
+		> $dirshm/statusnew
+	grep -q 'webradio.*true' <<< "$Status" && webradio=1
+	if [[ -e $dirshm/status ]]; then
+		filter='^Artist\|^Title\|^Album'
+		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
+		[[ $( grep "$filter" $dirshm/statusnew ) == $( grep "$filter" $dirshm/status ) ]] && exit
+		
+		mv -f $dirshm/status{new,}
+	fi
+	pushstream mpdplayer "$status"
 fi
-
-pushstream mpdplayer "$status"
-echo "$statusdata" > $dirshm/status
 
 [[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
 
 if [[ -e $dirsystem/lcdchar ]]; then
+	sed 's/=true$/=True/; s/=false/=False/' $dirshm/status > $dirshm/statuslcd.py
 	killall lcdchar.py &> /dev/null
-	readarray -t lcddata <<< "${statusdata//\"/\\\"}"
-	$dirbash/lcdchar.py "${lcddata[@]}" &
+	$dirbash/lcdchar.py &
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
@@ -55,33 +54,18 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 fi
 
 if [[ -e $dirshm/snapclientip ]]; then
-	status=$( echo $status | jq . | sed '/"player":/,/"single":/ d' )
-	readarray -t clientip < $dirshm/snapclientip
+	status=$( echo "$status" | sed '/"player":/,/"single":/ d' )
+	clientip=( $( cat $dirshm/snapclientip ) )
 	for ip in "${clientip[@]}"; do
-		[[ -n $ip ]] && pushstream mpdplayer "$status"
+		pushstream mpdplayer "$status"
 	done
 fi
 
-[[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
+[[ -e $dirsystem/librandom && -z $webradio ]] && $dirbash/cmd-librandom.sh
 
-if [[ $webradio == false && -e $filescrobble && ! -e $dirshm/player-snapclient ]]; then
+if [[ -z $webradio && -e $filescrobble && ! -e $dirshm/player-snapclient ]]; then
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	[[ $player != mpd && ! -e $filescrobble.conf/$player ]] && exit
 	
-	if [[ -e $dirshm/scrobble ]]; then
-		scrobblenew=$( echo ${data[@]:0:3} | tr -d ' ' )
-		scrobbleprev=$( head -3 $dirshm/scrobble | cut -d= -f2- | tr -d '\n "' )
-		[[ $scrobblenew == $scrobbleprev ]] && exit
-		
-		$dirbash/cmd.sh scrobble # file not yet exist on initial play
-	fi
-	timestamp=$(( ( ${data[8]} + 500 ) / 1000 )) # ms > s
-	cat << EOF > $dirshm/scrobble
-Artist="${data[0]}"
-Title="${data[1]}"
-Album="${data[2]}"
-state=${data[5]}
-Time=${data[6]}
-start=$(( timestamp - ${data[7]} ))
-EOF
+	$dirbash/cmd.sh scrobble # file not yet exist on initial play
 fi
