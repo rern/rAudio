@@ -277,16 +277,13 @@ $( '#login' ).click( function() {
 			, passwordlabel : 'Password'
 			, pwdrequired   : 1
 			, ok            : function() {
+				notify( 'Password Login', 'Disable ...', 'lock' );
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
+					, disable  : 1
 					, password : infoVal()
 				}, function( std ) {
-					if ( std ) {
-						notify( 'Password Login', 'Disable ...', 'lock' );
-						bash( [ id +'disable' ] );
-					} else {
-						passwordWrong();
-					}
+					if ( std == -1 ) passwordWrong();
 				} );
 			}
 		} );

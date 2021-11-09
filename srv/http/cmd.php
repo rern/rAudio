@@ -126,7 +126,12 @@ case 'login':
 	$passwordfile = $dirsystem.'loginset';
 	if ( file_exists( $passwordfile ) ) {
 		$hash = file_get_contents( $passwordfile );
-		if ( !password_verify( $_POST[ 'password' ], $hash ) ) die();
+		if ( !password_verify( $_POST[ 'password' ], $hash ) ) die( -1 );
+	}
+	
+	if ( isset( $_POST[ 'disable' ] ) ) {
+		exec( $sudo.'/srv/http/bash/features.sh logindisable' );
+		exit();
 	}
 	
 	$pwdnew ??= $_POST[ 'pwdnew' ];
