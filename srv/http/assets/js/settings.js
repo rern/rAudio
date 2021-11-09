@@ -53,13 +53,9 @@ function status( id, refresh ) {
 		}, 1000 );
 	}
 	if ( id === 'timesyncd' ) id = 'systemd-timesyncd';
-	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'statuspkg', id ] : cmd[ id ]+' 2> /dev/null';
+	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );
-		var status = status
-						.replace( /(active \(running\))/, '<grn>$1</grn>' )
-						.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-						.replace( /(failed)/, '<red>$1</red>' );
 		$el.html( status ).promise().done( function() {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {

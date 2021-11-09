@@ -691,6 +691,35 @@ ordersave )
 	pushstream order "$data"
 	echo "$data" > $dirsystem/order
 	;;
+pkgstatus )
+	id=${args[1]}
+	pkg=$id
+	case $id in
+		hostapd )
+			conf=/etc/hostapd/$id.conf;;
+		snapclient|snapserver )
+			conf=/etc/default/$id
+			pkg=snapcast;;
+		smb )
+			conf=/etc/samba/$id.conf
+			pkg=samba;;
+		* )
+			conf=/etc/$id.conf;;
+	esac
+	status="\
+$( systemctl status $id \
+	| sed '1 s|^.* \(.*service\)|<grn>\1</grn>|; s|\(active (running)\)|<grn>\1</grn>|; s#\(inactive (dead)\)\|\((failed)\)#<red>\1</red>#' \
+	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
+	grep -q '<red>' <<< "$status" && dot='<red>●</red>' || dot='<grn>●</grn>'
+	if [[ -e $conf ]]; then
+		status="\
+<grn>$( pacman -Q $pkg )</grn>
+$( cat $conf )
+
+$dot $status"
+	fi
+	echo "$status"
+	;;
 partexpand )
 	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
 	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
@@ -977,32 +1006,6 @@ scrobble )
 	
 	data='{"title":"Scrobble","text":"'$msg'","icon":"lastfm"}'
 	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$data"
-	;;
-statuspkg )
-	id=${args[1]}
-	pkg=$id
-	case $id in
-		hostapd )
-			conf=/etc/hostapd/$id.conf;;
-		snapclient|snapserver )
-			conf=/etc/default/$id
-			pkg=snapcast;;
-		smb )
-			conf=/etc/samba/$id.conf
-			pkg=samba;;
-		* )
-			conf=/etc/$id.conf;;
-	esac
-	[[ -e $conf ]] && status="\
-<grn>$( pacman -Q $pkg )</grn>
-$( cat $conf )
-
-"
-	status+="\
-$( systemctl status $id \
-	| sed '1 s|^.* \(.*service\)|<grn>\1</grn>|' \
-	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
-	echo "$status"
 	;;
 thumbgif )
 	type=${args[1]}
