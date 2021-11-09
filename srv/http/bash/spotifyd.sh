@@ -11,21 +11,15 @@
 # $VOLUME
 
 # currently not available on spotifyd
-[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bbash/cmd.sh volumepushstream && exit
+[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream && exit
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 dirspotify=$dirshm/spotify
 
 # var fileKEY=$dirspotify/KEY
 for key in elapsed expire start state status token; do
 	printf -v file$key '%s' $dirspotify/$key
 done
-
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 
 ##### start
 [[ $PLAYER_EVENT == start && ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify

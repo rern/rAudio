@@ -1,15 +1,10 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 pushRefresh() {
 	data=$( $dirbash/player-data.sh )
 	pushstream refresh "$data"
@@ -114,14 +109,14 @@ count )
 		, "albumartist" : '$albumartist'
 		, "artist"      : '$( echo $count | cut -d' ' -f1 )'
 		, "composer"    : '$composer'
-		, "coverart"    : '$( ls -1q /srv/http/data/coverarts | wc -l )'
+		, "coverart"    : '$( ls -1q $dirdata/coverarts | wc -l )'
 		, "date"        : '$( mpc list date | awk NF | wc -l )'
 		, "genre"       : '$genre'
 		, "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
 		, "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
 		, "song"        : '$( echo $count | cut -d' ' -f3 )'
 		, "usb"         : '$( mpc ls USB 2> /dev/null | wc -l )'
-		, "webradio"    : '$( ls -U /srv/http/data/webradios/* 2> /dev/null | wc -l )
+		, "webradio"    : '$( ls -U $dirwebradios/* 2> /dev/null | wc -l )
 	mpc | grep -q Updating && data+=', "updating_db":1'
 	echo {$data}
 	echo $albumartist $composer $genre > $dirsystem/mpddb
@@ -255,7 +250,7 @@ mixertype )
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 mpdignorelist )
-	file=/srv/http/data/mpd/mpdignorelist
+	file=$dirmpd/mpdignorelist
 	readarray -t files < $file
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>

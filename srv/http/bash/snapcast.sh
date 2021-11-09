@@ -7,13 +7,10 @@
 #    - connect / disconnect
 
 
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
 serverfile=$dirshm/serverip
 clientfile=$dirshm/clientip
 
-pushstream() {
-	curl -s -X POST http://$1/pub?id=snapcast -d "$2"
-}
 
 if [[ $1 == start ]]; then # client start - save server ip
 	mpc -q stop
@@ -26,7 +23,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		sshpass -p ros \
 			ssh -qo StrictHostKeyChecking=no root@$serverip \
-			"/srv/http/bash/snapcast.sh $clientip $serverip"
+			"$dirbash/snapcast.sh $clientip $serverip"
 		systemctl try-restart bluezdbus shairport-sync spotifyd upmpdcli &> /dev/null
 	else
 		systemctl stop snapclient
@@ -47,7 +44,7 @@ else # sshpass from client
 	[[ -s $clientfile ]] || rm $clientfile
 	if [[ -n $serverip ]]; then # initial connect
 		echo $clientip >> $clientfile
-		status=$( /srv/http/bash/status.sh snapclient )
+		status=$( $dirbash/status.sh snapclient )
 		curl -s -X POST http://$clientip/pub?id=mpdplayer -d "$status"
 	fi
 fi

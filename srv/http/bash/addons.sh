@@ -1,5 +1,8 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+addonsjson=$diraddons/addons-list.json
+
 # default variables and functions for addons install/uninstall scripts
 tty -s && col=$( tput cols ) || col=80 # [[ -t 1 ]] not work
 lcolor() {
@@ -21,9 +24,6 @@ bar=$( tcolor ' . ' 6 6 )   # [   ]     (cyan on cyan)
 info=$( tcolor ' i ' 0 3 )  # [ i ]     (black on yellow)
 yn=$( tcolor ' ? ' 0 3 )  # [ i ]       (black on yellow)
 warn=$( tcolor ' ! ' 7 1 )  # [ ! ]     (white on red)
-diraddons=/srv/http/data/addons
-dirsystem=/srv/http/data/system
-addonsjson=$diraddons/addons-list.json
 
 title() {
 	local ctop=6
@@ -103,11 +103,11 @@ getinstallzip() {
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
 	chown -R http:http /srv/http
-	chown -R mpd:audio /srv/http/data/mpd
-	chmod 755 /srv/http/* /srv/http/bash/* /srv/http/settings/* /usr/local/bin/* 2> /dev/null
-	chmod 777 /srv/http/data/tmp
+	chown -R mpd:audio $dirmpd
+	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/* /usr/local/bin/* 2> /dev/null
+	chmod 777 $dirdata/tmp
 	
-	[[ -e /srv/http/data/system/color ]] && /srv/http/bash/cmd.sh color
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 }
 installstart() { # $1-'u'=update
 	rm $0
@@ -141,8 +141,8 @@ installfinish() {
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-	elif [[ -e $dirsystem/listing || ! -e /srv/http/data/mpd/counts ]]; then
-		/srv/http/bash/cmd-list.sh &> dev/null &
+	elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
+		$dirbash/cmd-list.sh &> dev/null &
 	fi
 }
 uninstallstart() {

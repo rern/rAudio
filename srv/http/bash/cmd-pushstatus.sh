@@ -1,15 +1,9 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
 filescrobble=$dirsystem/scrobble
 
-#[[ $( sed -n 6p $dirshm/status ) == pause ]] && sleep 0.1 # fix: vumeter - resume with wrong track
-
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
+#grep -q '"state".*pause' $dirshm/status && sleep 0.1 # fix: vumeter - resume with wrong track
 
 if [[ $1 != statusradio ]]; then # from status-radio.sh
 	status=$( $dirbash/status.sh | jq )

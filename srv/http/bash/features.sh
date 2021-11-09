@@ -1,15 +1,10 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 pushRefresh() {
 	data=$( $dirbash/features-data.sh )
 	pushstream refresh "$data"
@@ -17,10 +12,6 @@ pushRefresh() {
 pushRefreshNetworks() {
 	data=$( $dirbash/networks-data.sh )
 	pushstream refresh "$data"
-}
-pushstreamNotify() {
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
-	pushstream notify "$data"
 }
 featureSet() {
 	systemctl restart $@
@@ -41,7 +32,7 @@ localbrowserXset() {
 	fi
 }
 spotifyReset() {
-	pushstreamNotify 'Spotify Client' "$1" spotify
+	pushstreamNotifyBlink 'Spotify Client' "$1" spotify
 	rm -f $dirsystem/spotify $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh

@@ -1,18 +1,12 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
-timerfile=/srv/http/data/shm/relaystimer
+. /srv/http/bash/common.sh
+timerfile=$dirshm/relaystimer
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
 cmd=${args[0]}
-
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 
 if [[ $cmd == relaysset ]]; then
 	data=${args[1]}

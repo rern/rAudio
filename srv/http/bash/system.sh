@@ -1,22 +1,12 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirdata=/srv/http/data
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
+. /srv/http/bash/common.sh
 fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
-pushstreamNotify() {
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink"}'
-	pushstream notify "$data"
-}
 pushReboot() {
 	pushRefresh
 	data='{"title":"'$1'","text":"Reboot required.","icon":"'$2'","hold":5000}'
@@ -365,7 +355,7 @@ mirrorlist )
 				| sed 's|\.*mirror.*||; s|.*//||' )
 	[[ -z $current ]] && current=0
 	if ! grep -q '^###' $file; then
-		pushstreamNotify 'Mirror List' 'Get ...' globe
+		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
 	fi
 	readarray -t lines <<< $( grep . $file \
@@ -590,11 +580,11 @@ unmount )
 	pushRefresh
 	;;
 usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotify 'USB Drive' Connected. usbdrive
+	pushstreamNotifyBlink 'USB Drive' Connected. usbdrive
 	update
 	;;
 usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotify 'USB Drive' Removed usbdrive
+	pushstreamNotifyBlink 'USB Drive' Removed usbdrive
 	update
 	;;
 vuleddisable )

@@ -8,15 +8,10 @@
 # - mixer_device  - card index
 # - dop           - if set
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 restartMPD() {
 	systemctl restart mpd
 	pushstream mpdplayer "$( $dirbash/status.sh )"

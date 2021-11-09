@@ -7,8 +7,9 @@
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
 
 dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirshm=/srv/http/data/shm
+dirdata=/srv/http/data
+dirsystem=$dirdata/system
+dirshm=$dirdata/shm
 date=$( date +%s )
 
 outputStatus() { # sed - null > false
@@ -29,15 +30,15 @@ if (( $# != 0 )); then # snapclient
 else
 	btclient=$( [[ -e $dirshm/btclient ]] && echo true )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
-	counts=$( cat /srv/http/data/mpd/counts 2> /dev/null )
+	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
 	[[ $player != mpd ]] && icon=$player
-	playlists=$( ls /srv/http/data/playlists | wc -l )
+	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( [[ -e $dirsystem/relays ]] && echo true )
 	relayson=$( [[ -e  $dirshm/relayson ]] && echo true )
-	updateaddons=$( [[ -e /srv/http/data/addons/update ]] && echo true )
+	updateaddons=$( [[ -e $dirdata/addons/update ]] && echo true )
 	if [[ -e $dirsystem/updating ]]; then 
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
@@ -226,15 +227,15 @@ if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
 	discid=$( cat $dirshm/audiocd 2> /dev/null )
-	if [[ -n $discid && -e /srv/http/data/audiocd/$discid ]]; then
+	if [[ -n $discid && -e $dirdata/audiocd/$discid ]]; then
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n ${track}p /srv/http/data/audiocd/$discid | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed -n ${track}p $dirdata/audiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
 		if [[ -n $displaycover ]]; then
-			coverfile=$( ls /srv/http/data/audiocd/$discid.* 2> /dev/null | head -1 )
+			coverfile=$( ls $dirdata/audiocd/$discid.* 2> /dev/null | head -1 )
 			[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 		fi
 	else
@@ -268,7 +269,7 @@ elif [[ -n $stream ]]; then
 		icon=webradio
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
-		radiofile=/srv/http/data/webradios/$urlname
+		radiofile=$dirdata/webradios/$urlname
 		if [[ -e "$radiofile" ]]; then
 			radiodata=$( cat $radiofile )
 			station=$( sed -n 1p <<< "$radiodata" )

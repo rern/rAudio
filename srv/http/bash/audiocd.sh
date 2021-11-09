@@ -1,28 +1,18 @@
 #!/bin/bash
 
-dirshm=/srv/http/data/shm
-diraudiocd=/srv/http/data/audiocd
+. /srv/http/bash/common.sh
+diraudiocd=$dirdata/audiocd
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
-pushstreamNotify() { # double quote "$1" needed
-	if [[ -n $2 ]]; then
-		pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd blink","delay":-1}'
-	else
-		pushstream notify '{"title":"Audio CD","text":"'"$1"'","icon":"audiocd"}'
-	fi
-}
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 }
 restartMPD() {
 	systemctl restart mpd
-	data=$( /srv/http/bash/player-data.sh )
+	data=$( $dirbash/player-data.sh )
 	pushstream refresh "$data"
 }
 
-[[ -n $1 ]] && pushstreamNotify "USB CD $1"
+[[ -n $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
 
 if [[ $1 == on ]]; then
 	sed -i '/^decoder/ i\
@@ -37,7 +27,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 	rm -f $dirshm/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ -n $tracks ]]; then
-		pushstreamNotify 'Removed from Playlist.'
+		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
 		tracktop=$( echo "$tracks" | head -1 )
 		mpc -q del $tracks
@@ -64,7 +54,7 @@ cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2
 discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
-	pushstreamNotify 'Search CD data ...' -1
+	pushstreamNotifyBlink 'Audio CD' 'Search CD data ...' audiocd
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
@@ -76,7 +66,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
 	if [[ -n $genre_id ]]; then
-		pushstreamNotify 'Fetch CD data ...' -1
+		pushstreamNotifyBlink 'Audio CD' 'Fetch CD data ...' audiocd
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
 		artist=${artist_album[0]}
@@ -96,12 +86,12 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	echo "$tracks" > $diraudiocd/$discid
 fi
 # suppress getPlaybackStatus in passive.js
-if [[ -e /srv/http/data/system/autoplaycd ]]; then
+if [[ -e $dirsystem/autoplaycd ]]; then
 	autoplaycd=1
 	pushstream playlist '{"autoplaycd":1}'
 fi
 # add tracks to playlist
-pushstreamNotify 'Add tracks to Playlist ...'
+pushstreamNotify 'Audio CD' 'Add tracks to Playlist ...' audiocd
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
   mpc -q add cdda:///$i
@@ -111,7 +101,7 @@ pushstreamPlaylist
 
 if [[ -n $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))
-	/srv/http/bash/cmd.sh "mpcplayback
+	$dirbash/cmd.sh "mpcplayback
 play
 $cdtrack1"
 fi
@@ -129,4 +119,4 @@ $artist
 $album
 audiocd
 $discid"
-/srv/http/bash/status-coverartonline.sh "$args" &> /dev/null &
+$dirbash/status-coverartonline.sh "$args" &> /dev/null &

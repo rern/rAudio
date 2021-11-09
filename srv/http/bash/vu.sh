@@ -1,9 +1,11 @@
 #!/bin/bash
 
-[[ -e /srv/http/data/system/vumeter ]] && vumeter=1
-if [[ -e /srv/http/data/system/vuled ]]; then
+dirsystem=/srv/http/data/system
+
+[[ -e $dirsystem/vumeter ]] && vumeter=1
+if [[ -e $dirsystem/vuled ]]; then
 	vuled=1
-	p=( $( cat /srv/http/data/system/vuled.conf ) )
+	p=( $( cat $dirsystem/vuled.conf ) )
 	for i in ${p[@]}; do
 		gpio export $i out
 	done

@@ -1,9 +1,6 @@
 #!/bin/bash
 
-dirdata=/srv/http/data
-diraddons=$dirdata/addons
-dirsystem=$dirdata/system
-dirshm=$dirdata/shm
+. /srv/http/bash/common.sh
 
 systemctl stop mpd
 rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
@@ -136,9 +133,9 @@ systemctl -q disable --now bluetooth hostapd mpdscribble shairport-sync smb snap
 
 # set permissions and ownership
 chown -R http:http /srv/http
-chown -R mpd:audio $dirdata/mpd /mnt/MPD
-chmod 755 /srv/http/* /srv/http/bash/* /srv/http/settings/*
-chmod 777 /srv/http/data/tmp
+chown -R mpd:audio $dirmpd /mnt/MPD
+chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
+chmod 777 $dirdata/tmp
 
 # symlink /mnt for coverart files
 ln -sf /mnt /srv/http/

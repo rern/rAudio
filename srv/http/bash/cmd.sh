@@ -1,13 +1,7 @@
 #!/bin/bash
 
-dirdata=/srv/http/data
-diraddons=$dirdata/addons
-dirbash=/srv/http/bash
+. /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
-dirmpd=$dirdata/mpd
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
-dirwebradios=$dirdata/webradios
 
 # convert each line to each args
 readarray -t args <<< "$1"
@@ -41,7 +35,7 @@ equalizerGet() {
 	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
 }
 gifNotify() {
-	pushstreamNotify Thumbnail 'Resize animated GIF ...' coverart
+	pushstreamNotifyBlink Thumbnail 'Resize animated GIF ...' coverart
 }
 gifThumbnail() {
 	type=$1
@@ -124,16 +118,6 @@ pladdPosition() {
 	else
 		pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	fi
-}
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
-pushstreamNotify() {
-	if [[ $1 == Power ]]; then
-		[[ $3 == power ]] && power=',"power":"off"' || power=',"power":"reboot"'
-	fi
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1'$power'}'
-	pushstream notify "$data"
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -470,7 +454,7 @@ displaysave )
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
-		pushstreamNotify 'Playback' 'VU meter disable...' 'playback'
+		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
 	fi
 	$dirbash/mpd-conf.sh
 	status=$( $dirbash/status.sh )
@@ -616,7 +600,7 @@ mpcplayback )
 	mpc | grep -q '^\[paused\]' && pause=1
 	mpc -q $command $pos
 	if [[ $command == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotify 'Audio CD' 'Start play ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		killall cava &> /dev/null
@@ -651,7 +635,7 @@ mpcprevnext )
 		rm -f $dirshm/nostatus
 		mpc -q stop
 	else
-		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotify 'Audio CD' 'Change track ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	fi
 	;;
@@ -921,10 +905,11 @@ power )
 		sleep 2
 	fi
 	if [[ -n $reboot ]]; then
-		pushstreamNotify Power 'Reboot ...' reboot
+		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
-		pushstreamNotify Power 'Off ...' power
+		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"power"}'
 	fi
+	pushstream notify "$data"
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
