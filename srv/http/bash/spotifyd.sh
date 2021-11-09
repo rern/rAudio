@@ -1,19 +1,22 @@
 #!/bin/bash
 
 # spotifyd.conf > this:
-#    - spotifyd emits events on play/pause/track changed
+#    - spotifyd 'onevent' hook
 # env var:
-# $PLAYER_EVENT: start/stop/load/play/pause/preload/endoftrack/volumeset
+# $PLAYER_EVENT: change/endoftrack/load/pause/play/preload/start/stop/volumeset
 # $TRACK_ID
 # $PLAY_REQUEST_ID
 # $POSITION_MS
 # $DURATION_MS
 # $VOLUME
 
+[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bbash/cmd.sh volumepushstream && exit
+
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 dirspotify=$dirshm/spotify
+
 # var fileKEY=$dirspotify/KEY
 for key in elapsed expire start state status token; do
 	printf -v file$key '%s' $dirspotify/$key
@@ -24,7 +27,7 @@ pushstream() {
 }
 
 ##### start
-[[ ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
+[[ $PLAYER_EVENT == start && ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
 else

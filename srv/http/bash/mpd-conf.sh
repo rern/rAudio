@@ -272,14 +272,23 @@ fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ -n $btname ]]; then
-		aplaydevice=bluealsa
+		device=bluealsa
+		mixer=PCM
 	else
 		cardname=$( aplay -l \
 						| grep "^card $card" \
 						| head -1 \
 						| cut -d' ' -f3 )
-		aplaydevice=$( aplay -L | grep "^default.*$cardname" )
+		device=$( aplay -L | grep "^default.*$cardname" )
+		mixer=$( $dirbash/cmd.sh volumecontrols$'\n'$card | head -1 )
 	fi
-	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
+	cat << EOF > /etc/spotifyd.conf
+[global]
+device = "$device"
+mixer = "$mixer"
+volume_controller = "alsa"
+bitrate = 320
+onevent = "/srv/http/bash/spotifyd.sh"
+EOF
 	systemctl try-restart spotifyd
 fi
