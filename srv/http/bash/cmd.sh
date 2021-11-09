@@ -713,7 +713,7 @@ $( systemctl status $id \
 	grep -q '<red>' <<< "$status" && dot='<red>●</red>' || dot='<grn>●</grn>'
 	if [[ -e $conf ]]; then
 		status="\
-<code>$( pacman -Q $pkg )</code>
+$dot <code>$( pacman -Q $pkg )</code>
 $( cat $conf )
 
 $dot $status"
