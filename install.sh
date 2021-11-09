@@ -102,6 +102,8 @@ installstart "$1"
 
 getinstallzip
 
+[[ $( uname -m ) == armv6l ]] && sed -i 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
+
 systemctl daemon-reload
 
 $dirbash/mpd-conf.sh
