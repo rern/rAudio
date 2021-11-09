@@ -31,14 +31,15 @@ screenoff=$(( $screenoff / 60 ))
 onwhileplay=false
 cursor=$cursor
 " > $dirsystem/localbrowser.conf
+	rm -rf /root/.config/chromium
+	systemctl try-restart localbrowser
 fi
 if ! grep -q bton /etc/udev/rules.d/bluetooth.rules; then
 	echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
 	udevadm control --reload-rules && udevadm trigger
 fi
-rm -rf /root/.config/chromium
-systemctl try-restart localbrowser shairport-sync
+systemctl try-restart shairport-sync
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
 if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
