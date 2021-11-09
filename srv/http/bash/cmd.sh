@@ -741,6 +741,7 @@ playerstart ) # sudo - for upmpdcli
 	pushstatus=${args[2]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
+	rm -f $dirshm/radio
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 	sudo rm -f $dirshm/player-*
 	touch $dirshm/player-$newplayer
