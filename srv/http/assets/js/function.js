@@ -539,7 +539,7 @@ function hideGuide() {
 	if ( G.guide ) {
 		G.guide = 0;
 		var barsvisible = $( '#bar-top' ).is( ':visible' );
-		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !barsvisible );
+		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !barsvisible && G.status.player === 'mpd' );
 		$( '.map' ).removeClass( 'mapshow' );
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( !barsvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
