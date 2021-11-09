@@ -102,7 +102,7 @@ installstart "$1"
 
 getinstallzip
 
-[[ $( uname -m ) == armv6l ]] && sed -i 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
+[[ $( uname -m ) == armv6l ]] && sed -i -e 's|/usr/bin/taskset -c 3 ||' -e '/upnpnice/ d' /etc/systemd/system/upmpdcli.service
 
 systemctl daemon-reload
 
