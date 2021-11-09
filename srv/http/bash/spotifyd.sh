@@ -10,6 +10,7 @@
 # $DURATION_MS
 # $VOLUME
 
+# currently not available on spotifyd
 [[ $PLAYER_EVENT == volumeset ]] && /srv/http/bbash/cmd.sh volumepushstream && exit
 
 dirbash=/srv/http/bash
