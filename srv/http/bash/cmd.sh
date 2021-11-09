@@ -736,7 +736,7 @@ pladd )
 	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
-playerstart ) # sudo - for upmpdcli
+playerstart )
 	newplayer=${args[1]}
 	pushstatus=${args[2]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
@@ -744,7 +744,7 @@ playerstart ) # sudo - for upmpdcli
 	systemctl stop radio mpd_oled
 	rm -f $dirshm/{radio,status}
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	sudo rm -f $dirshm/player-*
+	rm -f $dirshm/player-*
 	touch $dirshm/player-$newplayer
 	case $player in
 		airplay )   restart=shairport-sync;;
@@ -753,7 +753,7 @@ playerstart ) # sudo - for upmpdcli
 		snapcast )  stop=snapclient;;
 		spotify )   restart=spotifyd;;
 	esac
-	[[ -n $stop ]] && sudo systemctl stop $stop || sudo systemctl restart $restart
+	[[ -n $stop ]] && systemctl stop $stop || systemctl restart $restart
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	[[ -n $pushstatus ]] && $dirbash/cmd-pushstatus.sh
 	;;

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-/srv/http/bash/cmd.sh playerstart upnp
+# upmpdcli run onstart as user "upmpdcli" - needs sudo
+/usr/bin/sudo /srv/http/bash/cmd.sh playerstart$'\n'upnp
