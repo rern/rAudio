@@ -15,16 +15,16 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	status=$( $dirbash/status.sh | jq )
 	echo "$status" \
 		| grep '^  "Artist\|^  "Title\|^  "Album\|^  "station"\|^  "file\|^  "state\|^  "Time\|^  "elapsed\|^  "timestamp\|^  "webradio' \
-		| sed 's/^  "\(.*\)": \(.*\),$/\1=\2/' \
+		|  sed 's/^ *"\|,$//g; s/": /=/' \
 		> $dirshm/statusnew
 	grep -q 'webradio.*true' <<< "$Status" && webradio=1
 	if [[ -e $dirshm/status ]]; then
 		filter='^Artist\|^Title\|^Album'
 		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
 		[[ $( grep "$filter" $dirshm/statusnew ) == $( grep "$filter" $dirshm/status ) ]] && exit
-		
-		mv -f $dirshm/status{new,}
 	fi
+	
+	mv -f $dirshm/status{new,}
 	pushstream mpdplayer "$status"
 fi
 
