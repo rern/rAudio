@@ -741,7 +741,7 @@ playerstart )
 	;;
 playerstop )
 	player=${args[1]}
-	rm -f $dirshm/player-*
+	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd
 	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
 	case $player in
