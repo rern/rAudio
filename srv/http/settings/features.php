@@ -23,8 +23,10 @@ HTML
 	]
 	, [
 		  'label'    => 'SnapClient'
+		, 'sublabel' => 'snapclient'
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
+		, 'status'   => 'snapclient'
 		, 'setting'  => true
 		, 'disabled' => 'SnapServer is currently active/enabled.'
 		, 'help'     => <<< HTML
@@ -91,7 +93,7 @@ HTML
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapserver'
-		, 'disabled' => 'SnapClient is currently active/enabled.'
+		, 'disabled' => 'SnapClient is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 Control clients:

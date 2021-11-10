@@ -43,7 +43,7 @@ fi
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientactive" : '$( [[ -e $dirshm/player-snapclient ]] && echo true )'
+, "snapclientactive" : '$( [[ -e $dirshm/player-snapcast ]] && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
 if [[ -e /usr/bin/spotifyd ]]; then
 	data+='

@@ -38,7 +38,7 @@ var cmd = {
 	, soundprofile : systemsh +'soundprofileget'
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'systemd-timesyncd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'systemd-timesyncd', 'upmpdcli' ];
 
 function status( id, refresh ) {
 	var $el = $( '#code'+ id );

@@ -69,7 +69,7 @@ var pagenext = {
 var icon_player = {
 	  airplay    : 'AirPlay'
 	, bluetooth  : 'Bluetooth'
-	, snapclient : 'Snapcast'
+	, snapcast   : 'Snapcast'
 	, spotify    : 'Spotify'
 	, upnp       : 'UPnP'
 }
@@ -158,7 +158,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			equalizer();
 			break;
 		case 'snapclient':
-			var startstop = G.status.player === 'snapclient' ? 'stop' : 'start';
+			var active = G.status.player === 'snapcast';
+			var startstop = active ? 'stop' : 'start';
 			bash( '/srv/http/bash/snapcast.sh '+ startstop, function( data ) {
 				bannerHide();
 				if ( data == -1 ) {
@@ -169,7 +170,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					} );
 				}
 			} );
-			banner( 'Snapcast - Sync Streaming Client', ( G.status.player === 'snapclient' ? 'Stop ...' : 'Start ...' ), 'snapcast blink', -1 );
+			banner( 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), 'snapcast blink', -1 );
 			break;
 		case 'update':
 			infoUpdate( '' );
@@ -890,7 +891,7 @@ $( '.btn-cmd' ).click( function() {
 			clearInterval( G.intElapsed );
 			if ( G.status.player !== 'mpd' ) {
 				bash( [ 'playerstop', G.status.player ] );
-				banner( icon_player[ G.status.icon ], 'Stop ...', G.status.icon );
+				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}
 			
