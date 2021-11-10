@@ -159,17 +159,20 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'snapclient':
 			var active = G.status.player === 'snapcast';
-			var startstop = active ? 'stop' : 'start';
-			bash( '/srv/http/bash/snapcast.sh '+ startstop, function( data ) {
-				bannerHide();
-				if ( data == -1 ) {
-					info( {
-						  icon    : 'snapcast'
-						, title   : 'Snapcast'
-						, message : 'Snapcast server not available'
-					} );
-				}
-			} );
+			if ( active ) {
+				$( '#stop' ).click();
+			} else {
+				bash( '/srv/http/bash/snapcast.sh start', function( data ) {
+					bannerHide();
+					if ( data == -1 ) {
+						info( {
+							  icon    : 'snapcast'
+							, title   : 'Snapcast'
+							, message : 'Snapcast server not available'
+						} );
+					}
+				} );
+			}
 			banner( 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), 'snapcast blink', -1 );
 			break;
 		case 'update':

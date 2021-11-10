@@ -218,7 +218,7 @@ volumeReset() {
 		vol_db=( $( cat $file ) )
 		vol=${vol_db[0]}
 		db=${vol_db[1]}
-		volumeSet $volume $vol $control
+		volumeSet $volume $vol "$control"
 		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
 		rm -f $file
 	fi
@@ -755,10 +755,12 @@ playerstop )
 			;;
 		snapcast )
 			service=snapclient
+			systemctl stop snapclient
+			clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 			sshpass -p ros \
-				ssh -q root@$( cat $dirshm/snapserverip ) \
-				"/srv/http/bash/snapcast.sh $( ifconfig | awk '/inet .*broadcast/ {print $2}' )"
-			rm $dirshm/snapserverip
+				ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
+				"/srv/http/bash/snapcast.sh $clientip"
+			rm $dirshm/serverip
 			;;
 		spotify )
 			service=spotifyd
@@ -775,8 +777,8 @@ playerstop )
 			;;
 	esac
 	$dirbash/cmd.sh scrobble stop
-	systemctl restart $service
-	[[ $player != mpd || $player != upnp ]] && volumeReset
+	[[ $service != snapclient ]] && systemctl restart $service
+	[[ -e $dirshm/mpdvolume ]] && volumeReset
 	pushstream player '{"player":"'$player'","active":false}'
 	;;
 plcrop )

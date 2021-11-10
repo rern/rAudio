@@ -28,12 +28,6 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl stop snapclient
 		echo -1
 	fi
-elif [[ $1 == stop ]]; then # client stop
-	sshpass -p ros \
-		ssh -qo StrictHostKeyChecking=no root@$( cat $serverfile ) \
-		"$dirbash/snapcast.sh removeip $clientip"
-	$dirbash/cmd.sh playerstop$'\n'snapcast
-	$dirbash/cmd-pushstatus.sh
 elif [[ $1 == serverstop ]]; then # server force stop clients
 	[[ ! -e $clientfile ]] && exit
 	

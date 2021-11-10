@@ -272,7 +272,6 @@ snapserver )
 		systemctl enable --now snapserver
 	else
 		systemctl disable --now snapserver
-		$dirbash/snapcast.sh serverstop
 	fi
 	$dirbash/mpd-conf.sh
 	pushRefresh
