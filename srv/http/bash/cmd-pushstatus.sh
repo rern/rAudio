@@ -47,7 +47,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	fi
 fi
 
-if [[ -e $dirshm/snapclientip ]]; then
+if [[ -e $dirshm/clientip ]]; then
 	status=$( echo "$status" | sed '/"player":/,/"single":/ d' )
 	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
