@@ -11,7 +11,7 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 		| grep '^  "Artist\|^  "Title\|^  "Album\|^  "station"\|^  "file\|^  "state\|^  "Time\|^  "elapsed\|^  "timestamp\|^  "webradio' \
 		|  sed 's/^ *"\|,$//g; s/": /=/' \
 		> $dirshm/statusnew
-	grep -q 'webradio.*true' <<< "$Status" && webradio=1
+	grep -q 'webradio.*true' <<< "$status" && webradio=1
 	if [[ -e $dirshm/status ]]; then
 		filter='^Artist\|^Title\|^Album'
 		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
@@ -46,9 +46,9 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		fi
 	fi
 fi
-
 if [[ -e $dirshm/clientip ]]; then
-	status=$( echo "$status" | sed '/"player":/,/"single":/ d' )
+	serverip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+	status=$( echo "$status" | sed -e '/"player":/,/"single":/ d' -e 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#' )
 	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
