@@ -51,7 +51,7 @@ if [[ -e $dirshm/snapclientip ]]; then
 	status=$( echo "$status" | sed '/"player":/,/"single":/ d' )
 	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
-		pushstream mpdplayer "$status"
+		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 fi
 
