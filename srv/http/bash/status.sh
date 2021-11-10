@@ -117,7 +117,7 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( sshpass -p "$snapserverpw" ssh -q root@$serverip $dirbash/status.sh snapclient \
-	| sed 's|"coverart" : "|&http://'$serverip'/|; s/^{\|}$//g' )"
+	| sed 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#; s/^{\|}$//g' )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
