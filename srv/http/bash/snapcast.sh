@@ -15,15 +15,17 @@ if [[ $1 == start ]]; then # client start - save server ip
 	mpc -q stop
 	systemctl start snapclient
 	sleep 2
-	serverip=$( journalctl -u snapclient | grep 'Connected to' | tail -1 | awk '{print $NF}' )
+	serverip=$( journalctl -b -r -u snapclient.service \
+					| grep -m 1 'Connected to' \
+					| awk '{print $NF}' )
 	if [[ -n $serverip ]]; then
 		echo $serverip > $serverfile
+		$dirbash/cmd.sh playerstart$'\n'snapcast
+		$dirbash/cmd-pushstatus.sh
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		sshpass -p ros \
 			ssh -qo StrictHostKeyChecking=no root@$serverip \
 			"$dirbash/snapcast.sh $clientip"
-		$dirbash/cmd.sh playerstart$'\n'snapcast
-		$dirbash/cmd-pushstatus.sh
 	else
 		systemctl stop snapclient
 		echo -1
