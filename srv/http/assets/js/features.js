@@ -71,11 +71,6 @@ $( '.screenshot' ).click( function() {
 	} );
 } );
 $( '#setting-snapclient' ).click( function() {
-	var disabledtxt = G.snapclientactive ? 'SnapClient is currently active.' : 'SnapServer is currently enable.';
-	$( '#snapclient' ).data( 'disabled', disabledtxt );
-	var active = infoPlayerActive( $( this ) );
-	if ( active ) return
-	
 	info( {
 		  icon         : 'snapcast'
 		, title        : 'SnapClient'
