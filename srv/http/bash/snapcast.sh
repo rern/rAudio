@@ -2,9 +2,9 @@
 
 # as server - features.sh > this:
 #    - force clients stop on disabled
-#    - data for sshpass from snapclient
 # as client - main.js > this:
-#    - connect / disconnect
+#    - connect
+#    - disconnect
 
 
 . /srv/http/bash/common.sh
