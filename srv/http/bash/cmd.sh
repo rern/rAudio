@@ -722,7 +722,6 @@ pladd )
 	;;
 playerstart )
 	newplayer=${args[1]}
-	pushstatus=${args[2]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	systemctl stop radio mpd_oled
@@ -739,7 +738,6 @@ playerstart )
 	esac
 	[[ -n $stop ]] && systemctl stop $stop || systemctl restart $restart
 	pushstream player '{"player":"'$newplayer'","active":true}'
-	[[ -n $pushstatus ]] && $dirbash/cmd-pushstatus.sh
 	;;
 playerstop )
 	player=${args[1]}

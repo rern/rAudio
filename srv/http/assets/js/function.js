@@ -1309,7 +1309,7 @@ function setButtonControl() {
 }
 function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
-	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapclient' );
+	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapcast' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var timevisible = $( '#time-knob' ).is( ':visible' );
 	var prefix = timevisible ? 'ti' : 'i';

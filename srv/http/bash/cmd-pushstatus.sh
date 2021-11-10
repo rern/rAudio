@@ -49,7 +49,7 @@ fi
 
 if [[ -e $dirshm/snapclientip ]]; then
 	status=$( echo "$status" | sed '/"player":/,/"single":/ d' )
-	clientip=( $( cat $dirshm/snapclientip ) )
+	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
 		pushstream mpdplayer "$status"
 	done

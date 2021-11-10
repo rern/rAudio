@@ -113,11 +113,11 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
-		snapserverip=$( cat $dirshm/serverip )
+		serverip=$( cat $dirshm/serverip )
 ########
 		status+="
-$( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapclient \
-	| sed 's|"coverart" : "|&http://'$snapserverip'/|; s/^{\|}$//g' )"
+$( sshpass -p "$snapserverpw" ssh -q root@$serverip $dirbash/status.sh snapclient \
+	| sed 's|"coverart" : "|&http://'$serverip'/|; s/^{\|}$//g' )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
