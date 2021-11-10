@@ -23,6 +23,9 @@ outputStatus() { # sed - null > false
 
 if (( $# != 0 )); then # snapclient
 	player=mpd
+########
+	status='
+  "0":0' # dummy for jq to multiple lines
 else
 	btclient=$( [[ -e $dirshm/btclient ]] && echo true )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
@@ -117,7 +120,9 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( sshpass -p "$snapserverpw" ssh -q root@$serverip $dirbash/status.sh snapclient \
-	| sed 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#; s/^{\|}$//g' )"
+	| jq \
+	| sed -e 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#; s/^{\|}$//g
+		' -e 's/"0":.*/,/' )"
 		;;
 	spotify )
 		. $dirshm/spotify/state
