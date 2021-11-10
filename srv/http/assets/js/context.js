@@ -410,7 +410,7 @@ function webRadioCoverart() {
 function webRadioDelete() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url = G.list.path;
+	var url = G.list.li.find( '.li2' ).text();
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Delete WebRadio'
@@ -422,7 +422,6 @@ function webRadioDelete() {
 		, okcolor : red
 		, ok      : function() {
 			G.list.li.remove();
-			if ( !$( '#lib-list li' ).length ) $( '#button-library' ).click();
 			var lipath = $( '#lib-path .lipath' ).text();
 			bash( ['webradiodelete', url, lipath ] );
 		}
