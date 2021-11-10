@@ -69,7 +69,7 @@ var pagenext = {
 var icon_player = {
 	  airplay    : 'AirPlay'
 	, bluetooth  : 'Bluetooth'
-	, snapcast   : 'Snapcast'
+	, snapclient : 'Snapcast'
 	, spotify    : 'Spotify'
 	, upnp       : 'UPnP'
 }
@@ -890,7 +890,7 @@ $( '.btn-cmd' ).click( function() {
 			clearInterval( G.intElapsed );
 			if ( G.status.player !== 'mpd' ) {
 				bash( [ 'playerstop', G.status.player ] );
-				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
+				banner( icon_player[ G.status.icon ], 'Stop ...', G.status.icon );
 				return
 			}
 			
