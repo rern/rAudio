@@ -416,6 +416,7 @@ function psPlaylist( data ) {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
+		$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
 	}, G.debouncems );
 }
 function psRelays( response ) {
