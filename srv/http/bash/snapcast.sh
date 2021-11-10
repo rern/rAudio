@@ -14,10 +14,7 @@ clientfile=$dirshm/clientip
 if [[ $1 == start ]]; then # client start - save server ip
 	mpc -q stop
 	systemctl start snapclient
-	sleep 2
-	serverip=$( journalctl -b -r -u snapclient.service \
-					| grep -m 1 'Connected to' \
-					| awk '{print $NF}' )
+	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ -n $serverip ]]; then
 		echo $serverip > $serverfile
 		$dirbash/cmd.sh playerstart$'\n'snapcast
