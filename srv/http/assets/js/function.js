@@ -364,7 +364,6 @@ function displayPlayback() {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	$( '#play-group, #vol-group' ).toggleClass( 'hide', G.status.player !== 'mpd' || !G.display.buttons );
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
@@ -1316,8 +1315,6 @@ function setButtonOptions() {
 	var prefix = timevisible ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
-	if ( G.status.player !== 'mpd' ) return
-	
 	if ( !G.status.stream ) {
 		if ( $( '#play-group' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', G.status.random );
