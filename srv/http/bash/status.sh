@@ -23,10 +23,6 @@ outputStatus() { # sed - null > false
 
 if (( $# != 0 )); then # snapclient
 	player=mpd
-########
-	status='
-  "player" : "snapclient"
-, "icon"   : "snapclient"'
 else
 	btclient=$( [[ -e $dirshm/btclient ]] && echo true )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
@@ -115,9 +111,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 		status+="
 $( $dirbash/status-bluetooth.sh )"
 		;;
-	snapclient )
+	snapcast )
 		[[ -e $dirsystem/snapserverpw ]] && snapserverpw=$( cat $dirsystem/snapserverpw ) || snapserverpw=ros
-		snapserverip=$( cat $dirshm/snapserverip 2> /dev/null )
+		snapserverip=$( cat $dirshm/serverip )
 ########
 		status+="
 $( sshpass -p "$snapserverpw" ssh -q root@$snapserverip $dirbash/status.sh snapclient \
