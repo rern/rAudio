@@ -1106,13 +1106,8 @@ webradiodelete )
 	url=${args[1]}
 	dir=${args[2]}
 	urlname=${url//\//|}
-	file=$dirwebradios
-	fileimg=${file}img
-	if [[ -n $dir ]]; then
-		file="$file/$dir"
-		fileimg="$fileimg/$dir"
-	fi
-	rm -f "$file/$urlname" "$fileimg/$urlname"{,-thumb}.*
+	[[ -n $dir ]] && dir="$dir/"
+	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
 	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
@@ -1125,22 +1120,14 @@ webradioedit ) # name, newname, url, newurl
 	dir=${args[5]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
-	file=$dirwebradios
-	fileimg=${file}img
-	[[ -n $dir ]] && file="$file/$dir"
-	file="$file/$urlname"
-	filenew="$file/$urlnamenew"
-	if [[ $name != $namenew ]]; then
-		if [[ -s $file ]]; then
-			sed -i "1 c$namenew" $file
-		else
-			echo $namenew > $file
-		fi
-	fi
+	[[ -n $dir ]] && dir="$dir/"
+	fileprev="$dirwebradios/$dir$urlname"
+	filenew="$dirwebradios/$dir$urlnamenew"
+	[[ $name != $namenew ]] && sed -i "1 c$namenew" "$fileprev"
 	if [[ $url != $urlnew ]]; then
-		mv $file $filenew
-		mv $fileimg/{$urlname,$urlnamenew}.jpg 
-		mv $fileimg/{$urlname,$urlnamenew}-thumb.jpg 
+		mv "$fileprev" "$filenew"
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
 	pushstream webradio -1
 	;;
