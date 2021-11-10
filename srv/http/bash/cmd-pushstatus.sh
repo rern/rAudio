@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-filescrobble=$dirsystem/scrobble
 
 #grep -q '"state".*pause' $dirshm/status && sleep 0.1 # fix: vumeter - resume with wrong track
 
@@ -15,7 +14,7 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	if [[ -e $dirshm/status ]]; then
 		filter='^Artist\|^Title\|^Album'
 		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
-		[[ $( grep "$filter" $dirshm/statusnew ) == $( grep "$filter" $dirshm/status ) ]] && exit
+		[[ $( grep "$filter" $dirshm/statusnew | sort ) == $( grep "$filter" $dirshm/status | sort ) ]] && exit
 	fi
 	
 	mv -f $dirshm/status{new,}
@@ -57,9 +56,9 @@ fi
 
 [[ -e $dirsystem/librandom && -z $webradio ]] && $dirbash/cmd-librandom.sh
 
-if [[ -z $webradio && -e $filescrobble && ! -e $dirshm/player-snapclient ]]; then
+if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapclient ]]; then
 	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	[[ $player != mpd && ! -e $filescrobble.conf/$player ]] && exit
+	[[ $player != mpd && ! -e $dirsystem/scrobble.conf/$player ]] && exit
 	
 	$dirbash/cmd.sh scrobble # file not yet exist on initial play
 fi
