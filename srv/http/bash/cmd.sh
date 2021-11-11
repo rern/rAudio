@@ -741,7 +741,7 @@ playerstart )
 	;;
 playerstop )
 	player=${args[1]}
-	if [[ -e $dirsystem/scrobble && $player != snapcast ]]; then
+	if [[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]]; then
 		mv -f $dirshm/{status,scrobble}
 		$dirbash/scrobble.sh &> /dev/null &
 	fi
