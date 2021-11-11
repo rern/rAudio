@@ -44,6 +44,8 @@ disconnect = () => {
 	}
 }
 function bookmarkCover( url, path ) {
+	var url = url.replace( '/srv/http', '' );
+	var path = path.replace( '/srv/http/data/', '' );
 	$( '.bookmark' ).each( function() {
 		var $this = $( this );
 		if ( $this.find( '.lipath' ).text() === path ) {

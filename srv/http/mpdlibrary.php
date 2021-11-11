@@ -199,7 +199,7 @@ case 'webradio':
 		$searchmode = 0;
 		$path = $string !== '' ? $string.'/' : '';
 		$dirwebradios.= $path;
-		exec( 'ls -1 "'.$dirwebradios.'" | grep -v "\....$"'
+		exec( 'ls -1 "'.$dirwebradios.'" | grep -v "\.jpg$\|\.gif$"'
 			, $lists );
 		foreach( $lists as $list ) {
 			if ( is_dir( $dirwebradios.$list ) ) {

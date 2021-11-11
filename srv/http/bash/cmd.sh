@@ -300,9 +300,9 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bookmarkreset )
-	mpdpath=${args[1]}
-	rm -f "/mnt/MPD/$mpdpath/"coverart.*
-	data='{"url":"'/mnt/MPD/$mpdpath/none'","type":"bookmark"}'
+	imagepath=${args[1]}
+	rm -f "$imagepath/coverart".*
+	data='{"url":"'$imagepath/none'","type":"bookmark"}'
 	pushstream coverart "$data"
 	;;
 bookmarkthumb )

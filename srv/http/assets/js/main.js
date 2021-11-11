@@ -1274,8 +1274,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	// select file
 	//    - gif    > [file]   - no canvas
 	//    - others > [base64] - data:image/jpeg;base64,...
-	var imagefile = [ 'NAS', 'SD', 'USB' ].indexOf( path.split( '/' )[ 0 ] ) !== -1 ? '/mnt/MPD/' : '/srv/http/data/';
-	imagefile += path +'/coverart'; // no ext
+	var imagepath = path.slice( 0, 9 ) !== 'webradios' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : 'bookmark'
 		, title       : 'Change Bookmark Thumbnail'
@@ -1286,10 +1285,10 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : !thumbnail ? '' : orange
 		, button      : !thumbnail ? '' : function() {
-			bash( [ 'bookmarkreset', path ] );
+			bash( [ 'bookmarkreset', imagepath ] );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'bookmark' );
+			imageReplace( imagepath +'/coverart', 'bookmark' ); // no ext
 		}
 	} );
 } ).press( '.mode-bookmark', function() {
