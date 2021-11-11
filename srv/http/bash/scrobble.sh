@@ -8,8 +8,7 @@
 rm -f $dirshm/scrobble
 [[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
 
-# args1 on stop: bluetooth, spotify || airplay: scrobble fires before airplay pause
-if [[ $state == stop || -e $dirshm/player-airplay ]]; then
+if [[ $state == stop || $1 == stop ]]; then # $1 == stop: cmd.sh playerstop
 	[[ -z $Time || -z $elapsed ]] && exit
 	
 	start=$(( timestamp / 1000 - elapsed ))
