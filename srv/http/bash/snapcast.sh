@@ -20,8 +20,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/cmd-pushstatus.sh
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-		sshpass -p ros \
-			ssh -qo StrictHostKeyChecking=no root@$serverip \
+		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$serverip \
 			"$dirbash/snapcast.sh $clientip"
 	else
 		systemctl stop snapclient

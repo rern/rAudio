@@ -757,8 +757,7 @@ playerstop )
 			service=snapclient
 			systemctl stop snapclient
 			clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-			sshpass -p ros \
-				ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
+			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
 				"/srv/http/bash/snapcast.sh remove $clientip"
 			rm $dirshm/serverip
 			;;
