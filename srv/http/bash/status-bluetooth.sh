@@ -39,14 +39,14 @@ Time=$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Dur
 timestamp=$( date +%s%3N )
 
 data='
-	, "Artist"    : "'$Artist'"
-	, "Title"     : "'$Title'"
-	, "Album"     : "'$Album'"
-	, "coverart"  : "'$coverart'"
-	, "elapsed"   : '$elapsed'
-	, "sampling"  : "Bluetooth"
-	, "state"     : "'$state'"
-	, "Time"      : '$Time'
-	, "timestamp" : '$timestamp
+, "Artist"    : "'$Artist'"
+, "Title"     : "'$Title'"
+, "Album"     : "'$Album'"
+, "coverart"  : "'$coverart'"
+, "elapsed"   : '$elapsed'
+, "sampling"  : "Bluetooth"
+, "state"     : "'$state'"
+, "Time"      : '$Time'
+, "timestamp" : '$timestamp
 
 echo "$data"
