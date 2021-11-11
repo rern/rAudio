@@ -741,6 +741,10 @@ playerstart )
 	;;
 playerstop )
 	player=${args[1]}
+	if [[ -e $dirsystem/scrobble ]]; then
+		cp $dirshm/{status,scrobble}
+		$dirbash/scrobble.sh &> /dev/null &
+	fi
 	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd
 	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
@@ -775,7 +779,6 @@ playerstop )
 			$dirbash/cmd-pushstatus.sh
 			;;
 	esac
-	$dirbash/cmd.sh scrobble stop
 	[[ $service != snapclient ]] && systemctl restart $service
 	[[ -e $dirshm/mpdvolume ]] && volumeReset
 	pushstream player '{"player":"'$player'","active":false}'
@@ -939,59 +942,13 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	if [[ -n ${args[2]} ]]; then # webradio - at least 2 args
-		Artist=${args[1]}
-		Title=${args[2]}
-		Album=${args[3]}
-	else
-		[[ ! -e $dirshm/status ]] && exit
-		
-		. $dirshm/status
-		[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
-		
-		# args1 on stop: bluetooth, spotify || airplay: scrobble fires before airplay pause
-		if [[ $state == stop || ${args[1]} == stop || -e $dirshm/player-airplay ]]; then
-			[[ -z $Time || -z $elapsed ]] && exit
-			
-			start=$(( timestamp / 1000 - elapsed ))
-			elapsed=$(( $( date +%s ) - $start ))
-			(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
-			
-		fi
-	fi
-	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
-	apikey=${keys[0]}
-	sharedsecret=${keys[1]}
-	sk=$( cat $dirsystem/scrobble.conf/key )
-	timestamp=$( date +%s )
-	if [[ -n $album ]]; then
-		sigalbum="album${Album}"
-		dataalbum="album=$Album"
-	fi
-	apisig=$( echo -n "${sigalbum}api_key${apikey}artist${Artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${Title}${sharedsecret}" \
-				| iconv -t utf8 \
-				| md5sum \
-				| cut -c1-32 )
-	reponse=$( curl -sX POST \
-		--data-urlencode "$dataalbum" \
-		--data "api_key=$apikey" \
-		--data-urlencode "artist=$Artist" \
-		--data "method=track.scrobble" \
-		--data "sk=$sk" \
-		--data "timestamp=$timestamp" \
-		--data-urlencode "track=$Title" \
-		--data "api_sig=$apisig" \
-		--data "format=json" \
-		http://ws.audioscrobbler.com/2.0 )
-	if [[ $reponse =~ error ]]; then
-		msg="Error: $( jq -r .message <<< $response )"
-	else
-		[[ -e $dirsystem/scrobble.conf/notify ]] && msg="$Title"
-	fi
-	[[ -z $msg ]] && exit
-	
-	data='{"title":"Scrobble","text":"'$msg'","icon":"lastfm"}'
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$data"
+	cat << EOF > $dirshm/scrobble
+Artist="${args[1]}"
+Title="${args[2]}"
+Album="${args[3]}"
+state=play
+EOF
+	$dirbash/scrobble.sh
 	;;
 thumbgif )
 	type=${args[1]}

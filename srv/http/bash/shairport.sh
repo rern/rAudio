@@ -10,7 +10,6 @@ dirairplay=$dirshm/airplay
 ##### pause
 if (( $# > 0 )); then
 	systemctl stop shairport-meta
-	$dirbash/cmd.sh scrobble stop
 	echo pause > $dirairplay/state
 	start=$( cat $dirairplay/start 2> /dev/null )
 	timestamp=$( date +%s%3N )
