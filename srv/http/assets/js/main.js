@@ -1475,7 +1475,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 		}
 		var modetitle = path;
 	} else if ( G.mode === 'webradio' ) {
-		if ( $( this ).hasClass( 'file' ) ) {
+		if ( $( this ).hasClass( 'dir' ) ) {
 			var query = {
 				  query  : 'webradio'
 				, string : path
