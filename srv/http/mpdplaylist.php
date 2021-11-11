@@ -310,7 +310,8 @@ function playlist() { // current playlist
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$radiofile = '/srv/http/data/webradios/'.str_replace( '/', '|', $each->file );
+			$urlname = str_replace( '/', '|', $each->file );
+			$radiofile = exec( 'find /srv/http/data/webradios -name "'.$urlname.'"' );
 			$name = file( $radiofile, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$each->Name = explode( '^^', $name )[ 0 ];
 		}
