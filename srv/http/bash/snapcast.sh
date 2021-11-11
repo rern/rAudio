@@ -35,9 +35,9 @@ elif [[ $1 == serverstop ]]; then # server force stop clients
 		curl -s -X POST http://$ip/pub?id=snapcast -d -1
 	done
 	rm -f $clientfile
-elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
+elif [[ 1 == remove ]]; then # sshpass remove clientip from disconnected client
 	sed -i "$2 d" $clientfile
-	[[ -s $clientfile ]] && rm -f $clientfile
+	[[ -s $clientfile ]] || rm -f $clientfile
 else # sshpass add clientip from connected client
 	clientip=$1
 	echo "\

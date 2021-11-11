@@ -675,6 +675,14 @@ ordersave )
 	pushstream order "$data"
 	echo "$data" > $dirsystem/order
 	;;
+partexpand )
+	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
+	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
+		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
+		partprobe $dev
+		resize2fs ${dev}p2
+	fi
+	;;
 pkgstatus )
 	id=${args[1]}
 	pkg=$id
@@ -703,14 +711,6 @@ $( cat $conf )
 $dot $status"
 	fi
 	echo "$status"
-	;;
-partexpand )
-	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
-	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
-		partprobe $dev
-		resize2fs ${dev}p2
-	fi
 	;;
 pladd )
 	item=${args[1]}
@@ -759,7 +759,7 @@ playerstop )
 			clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 			sshpass -p ros \
 				ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
-				"/srv/http/bash/snapcast.sh $clientip"
+				"/srv/http/bash/snapcast.sh remove $clientip"
 			rm $dirshm/serverip
 			;;
 		spotify )
