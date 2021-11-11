@@ -15,8 +15,14 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 		filter='^Artist\|^Title\|^Album'
 		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
 		[[ $( grep "$filter" $dirshm/statusnew | sort ) == $( grep "$filter" $dirshm/status | sort ) ]] && exit
-	else
-		playerstart=1
+		
+		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast ]]; then
+			player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
+			if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
+				mv -f $dirshm/{status,scrobble}
+				$dirbash/scrobble.sh &> /dev/null &
+			fi
+		fi
 	fi
 	
 	mv -f $dirshm/status{new,}
@@ -58,14 +64,3 @@ if [[ -e $dirshm/clientip ]]; then
 fi
 
 [[ -e $dirsystem/librandom && -z $webradio ]] && $dirbash/cmd-librandom.sh
-
-if [[ -z $webradio \
-		&& -e $dirsystem/scrobble \
-		&& -z $playerstart \
-		&& ! -e $dirshm/player-snapclient ]]; then
-	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	[[ $player != mpd && ! -e $dirsystem/scrobble.conf/$player ]] && exit
-	
-	cp $dirshm/{status,scrobble}
-	$dirbash/scrobble.sh &> /dev/null &
-fi
