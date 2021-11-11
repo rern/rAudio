@@ -270,7 +270,8 @@ elif [[ -n $stream ]]; then
 		# before webradios play: no 'Name:' - use station name from file instead
 		urlname=${file//\//|}
 		radiofile=$dirdata/webradios/$urlname
-		if [[ -e "$radiofile" ]]; then
+		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradios -name "$urlname" )
+		if [[ -e $radiofile ]]; then
 			radiodata=$( cat $radiofile )
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
