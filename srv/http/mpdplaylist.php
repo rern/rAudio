@@ -247,7 +247,8 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$stationname = $list->Name;
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-icon="webradio" data-src="/data/webradiosimg/'.$list->urlname.'-thumb.'.$time.'.jpg" data-target="#menu-filesavedpl">';
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$list->urlname.'-thumb.'.$time.'.jpg"'
+						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
