@@ -245,18 +245,17 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countupnp++;
 		} else {
 			$stationname = $list->Name;
-			$notsaved = $stationname === '';
-			$file = preg_replace( '/\?.*$/', '', $file );
-			$urlname = str_replace( '/', '|', $file );
-			if ( !$notsaved ) {
-				$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
+			if ( $stationname !== '' ) {
+				$notsaved = 0;
+				$thumbsrc = '/data/webradiosimg/'.$list->urlname.'-thumb.'.$time.'.jpg';
 				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-icon="webradio" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
+				$notsaved = 1;
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li class="webradio'.( $notsaved ? ' notsaved' : '' ).'">'
 						.$icon
-						.'<a class="lipath">'.$file.'</a>'
+						.'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<div class="li1"><span class="name">'.$stationname.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>'
@@ -319,6 +318,7 @@ function playlist() { // current playlist
 				$radiofile = exec( 'find /srv/http/data/webradios -name "'.$urlname.'"' );
 			}
 			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
+			$each->urlname = $urlname;
 		}
 		$array[] = $each;
 	}
