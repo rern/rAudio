@@ -1351,7 +1351,7 @@ function setButtonOptions() {
 	setButtonUpdateAddons();
 	setButtonUpdating();
 	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
-	$( '#time, #play-group .btn, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
+	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
 }
 function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {
@@ -1367,8 +1367,6 @@ function setButtonUpdateAddons( updateaddons ) {
 	}
 }
 function setButtonUpdating() {
-	$( '#library, #button-library' ).removeClass( 'blink' );
-	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
 	clearInterval( G.intBlinkUpdate );
 	if ( G.status.updating_db ) {
 		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
@@ -1378,6 +1376,11 @@ function setButtonUpdating() {
 			$( '#library, #button-library' ).addClass( 'blink' );
 		}
 		if ( G.localhost ) blinkUpdate();
+		$( '#update' ).addClass( 'on' );
+	} else {
+		$( '#library, #button-library' ).removeClass( 'blink' );
+		$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
+		$( '#update' ).removeClass( 'on' );
 	}
 }
 function setCoverart() {
