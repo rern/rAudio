@@ -580,11 +580,11 @@ unmount )
 	pushRefresh
 	;;
 usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotifyBlink 'USB Drive' Connected. usbdrive
+	pushstreamNotify 'USB Drive' Connected. usbdrive
 	update
 	;;
 usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotifyBlink 'USB Drive' Removed usbdrive
+	pushstreamNotify 'USB Drive' Removed. usbdrive
 	update
 	;;
 vuleddisable )
