@@ -312,9 +312,13 @@ function playlist() { // current playlist
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$radiofile = '/srv/http/data/webradios/'.str_replace( '/', '|', $each->file );
-			$name = file( $radiofile, FILE_IGNORE_NEW_LINES )[ 0 ];
-			$each->Name = explode( '^^', $name )[ 0 ];
+			$urlname = str_replace( '/', '|', $each->file );
+			$radiofile = '/srv/http/data/webradios/'.$urlname;
+			if ( !file_exists( $radiofile ) ) {
+				$radiofile = '';
+				$radiofile = exec( 'find /srv/http/data/webradios -name "'.$urlname.'"' );
+			}
+			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
 		}
 		$array[] = $each;
 	}
