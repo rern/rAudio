@@ -574,8 +574,7 @@ function imageLoad( list ) {
 	} else {
 		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			var icon = $this.hasClass( 'webradio' ) ? 'webradio' : 'music';
-			$this.replaceWith( '<i class="fa fa-'+ icon +' pl-icon" data-target="#menu-filesavedpl"></i>' );
+			$this.replaceWith( '<i class="fa fa-'+ $this.data( 'icon' ) +' pl-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	}
 }

@@ -211,15 +211,17 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg'; // replaced with icon on load error(faster than existing check)
+				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.'.jpg' ; // replaced with icon on load error(faster than existing check)
+				$icon = 'music';
 			} else {
 				$class = 'audiocd';
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
+				$icon = 'audiocd';
 			}
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
-						.'<img class="lazyload iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
+						.'<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
 						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>'
@@ -248,7 +250,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$urlname = str_replace( '/', '|', $file );
 			if ( !$notsaved ) {
 				$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-icon="webradio" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
@@ -310,8 +312,7 @@ function playlist() { // current playlist
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$urlname = str_replace( '/', '|', $each->file );
-			$radiofile = exec( 'find /srv/http/data/webradios -name "'.$urlname.'"' );
+			$radiofile = '/srv/http/data/webradios/'.str_replace( '/', '|', $each->file );
 			$name = file( $radiofile, FILE_IGNORE_NEW_LINES )[ 0 ];
 			$each->Name = explode( '^^', $name )[ 0 ];
 		}
