@@ -272,7 +272,7 @@ elif [[ -n $stream ]]; then
 		radiofile=$dirdata/webradios/$urlname
 		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradios -name "$urlname" )
 		if [[ -e $radiofile ]]; then
-			radiodata=$( cat $radiofile )
+			radiodata=$( cat "$radiofile" )
 			station=$( sed -n 1p <<< "$radiodata" )
 			radiosampling=$( sed -n 2p <<< "$radiodata" )
 		fi
