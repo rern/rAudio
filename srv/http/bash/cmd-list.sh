@@ -92,7 +92,9 @@ for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
 done
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find $dirdata/webradios -type f | wc -l )
+webradio=$( find $dirdata/webradios -type f \
+				| grep -v '.jpg$\|.gif$' \
+				| wc -l )
 counts='
   "album"       : '$album'
 , "albumartist" : '$albumartist'
