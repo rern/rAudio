@@ -169,7 +169,15 @@ $( '#setting-replaygain' ).click( function() {
 	} );
 } );
 $( '#filetype' ).click( function() {
-	$( '#divfiletype' ).toggleClass( 'hide' );
+	if ( $( '#divfiletype' ).is( ':empty' ) ) {
+		bash( [ 'filetype' ], function( data ) {
+			$( '#divfiletype' )
+				.html( data )
+				.toggleClass( 'hide' );
+		} );
+	} else {
+		$( '#divfiletype' ).toggleClass( 'hide' );
+	}
 } );
 $( '#setting-buffer' ).click( function() {
 	info( {

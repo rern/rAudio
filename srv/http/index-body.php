@@ -78,28 +78,22 @@ $dir = $dirdata.'bookmarks';
 $files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 if ( count( $files ) ) {
 	foreach( $files as $name ) {
-		$mpdpath = rtrim( file_get_contents( "$dir/$name" ) );
-		$path = '/mnt/MPD/'.$mpdpath;
-		$pathcoverart = $path.'/coverart.';
-		$ext = '';
-		$dataalbum = '';
-		if ( file_exists( $pathcoverart.'gif' ) ) {
-			$ext = '.gif';
-		} else if ( file_exists( $pathcoverart.'jpg' ) ) {
-			$ext = '.jpg';
-		}
-		if ( $ext ) {
-			$iconhtml = '<img class="bkcoverart" src="'.rawurlencode( $pathcoverart ).time().$ext.'">';
-			if ( file_exists( $path.'/thumb'.$ext ) ) $dataalbum = 'data-album="1"';
+		$bkpath = rtrim( file_get_contents( "$dir/$name" ) );
+		$prefix = preg_replace( '/\/.*/', '', $bkpath );
+		if ( in_array( $prefix, [ 'NAS', 'SD', 'USB' ] ) ) {
+			$path = '/mnt/MPD/'.$bkpath;
+			$srccoverart = $path.'/coverart.';
+			$pathcoverart = $srccoverart;
 		} else {
-			$iconhtml = '<i class="fa fa-bookmark"></i>'
-					   .'<div class="divbklabel"><span class="bklabel label">'.str_replace( '|', '/', $name ).'</span></div>';
+			$path = '/data/'.$bkpath;
+			$srccoverart = $path.'/coverart.';
+			$pathcoverart = '/srv/http'.$srccoverart;
 		}
 		$modehtml.= '
 			<div class="lib-mode bookmark">
 				<div class="mode mode-bookmark" data-mode="bookmark" '.$dataalbum.'>
-					<a class="lipath">'.$mpdpath.'</a>
-					'.$iconhtml.'
+					<a class="lipath">'.$bkpath.'</a>
+					<img class="bkcoverart lazyload" data-src="'.rawurlencode( $srccoverart ).time().'.jpg" data-label="'.$name.'">
 				</div>
 			</div>
 		';
@@ -181,6 +175,13 @@ $html = menucommon( 'pladd', 'plreplace' );
 $html.= menuli( 'plrename', 'edit-circle',  'Rename' );
 $html.= menuli( 'pldelete', 'minus-circle', 'Delete' );
 $menu.= menudiv( 'playlist', $html );
+
+$menudiv = '';
+$html = '';
+$html.= menuli( 'bookmark', 'star',         'Bookmark' );
+$html.= menuli( 'wrdirdelete',   'minus-circle', 'Delete' );
+$html.= menuli( 'wrdirrename',   'edit-circle',  'Rename' );
+$menu.= menudiv( 'wrdir', $html );
 
 foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {
 	$menudiv = '';
@@ -368,7 +369,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 			<i id="button-pl-open" class="fa fa-folder-open"></i>
 			<i id="button-pl-save" class="fa fa-save pllength"></i>
 			<i id="button-pl-consume" class="fa fa-flash"></i>
-			<i id="button-pl-librandom" class="fa fa-dice"></i>
+			<i id="button-pl-librandom" class="fa fa-librandom"></i>
 			<i id="button-pl-shuffle" class="fa fa-shuffle pllength"></i>
 			<i id="button-pl-clear" class="fa fa-minus-circle pllength"></i>
 		</div>

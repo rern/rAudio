@@ -1,19 +1,12 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirdata=/srv/http/data
-diraddons=$dirdata/addons
-dirmpd=$dirdata/mpd
-dirsystem=$dirdata/system
+. /srv/http/bash/common.sh
 
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
 		sleep $2
 	done
-}
-pushNotify() {
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"NAS", "text":"'"$1"'", "icon":"nas", "delay":-1}'
 }
 
 revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
@@ -59,7 +52,7 @@ if [[ -e /boot/wifi ]]; then
 	netctl enable "$ssid"
 fi
 # ----------------------------------------------------------------------------
-
+mkdir $dirdata/shm/{airplay,spotify}
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
@@ -88,7 +81,7 @@ if [[ -n $nas ]]; then
 			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 				mount "$mountpoint" && break
 			else
-				(( i == 10 )) && pushNotify "NAS @$ip cannot be reached."
+				(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
 				sleep 2
 			fi
 		done

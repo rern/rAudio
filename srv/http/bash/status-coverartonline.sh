@@ -9,7 +9,6 @@ arg1=${args[1]}
 type=${args[2]}
 discid=${args[3]}
 
-dirtmp=/srv/http/data/shm
 name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
 
 ### 1 - lastfm ##################################################
@@ -24,12 +23,11 @@ apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sGk -m 5 \
 	--data-urlencode "artist=$artist" \
 	--data-urlencode "$param" \
-	--data-urlencode "$method" \
-	--data-urlencode "api_key=$apikey" \
-	--data-urlencode "autocorrect=1" \
-	--data-urlencode "format=json" \
-	http://ws.audioscrobbler.com/2.0/ )
-[[ $( jq -r .error <<< "$data" ) != null ]] && exit
+	--data "$method" \
+	--data "api_key=$apikey" \
+	--data "format=json" \
+	http://ws.audioscrobbler.com/2.0 )
+[[ $data =~ error ]] && exit
 
 if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< "$data" )
@@ -51,13 +49,13 @@ if [[ -n $image || $image != null ]]; then
 fi
 [[ -z $url || $url == null ]] && exit
 
-ext=${url/*.}
 if [[ $type == audiocd ]]; then
 	urlname=/data/audiocd/$discid
 else
 	[[ -n $type ]] && prefix=$type || prefix=online
 	urlname=/data/shm/$prefix-$name
 fi
+ext=${url/*.}
 coverart=$urlname.$ext
 coverfile=/srv/http$coverart
 curl -sL $url -o $coverfile
@@ -68,7 +66,7 @@ data='
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > $dirtmp/webradio-$name
+	echo $Album > /srv/http/data/shm/webradio-$name
 	data+='
 , "Album" : "'$Album'"'
 fi

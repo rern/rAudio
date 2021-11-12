@@ -7,7 +7,7 @@ config.read( '/srv/http/data/system/lcdchar.conf' )
 section = 'var'
 cols = int( config.get( section, 'cols' ) )
 charmap = config.get( section, 'charmap' )
-backlight = config.get( section, 'backlight' )
+backlight = config.get( section, 'backlight' ) == 'true' and True or False
 rows = cols == 16 and 2 or 4
 
 if config.has_option( section, 'address' ): # i2c

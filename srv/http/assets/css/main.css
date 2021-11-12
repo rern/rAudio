@@ -54,11 +54,12 @@ ib {
 	line-height: 34px;
 }
 .disable,
-.disabled {
+.disabled,
+.disabled i {
 	pointer-events: none;
 	color: var( --cg60 ) !important;
 }
-#play-group .disabled {
+#time-knob.disabled .btn {
 	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {

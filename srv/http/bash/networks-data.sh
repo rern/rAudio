@@ -2,16 +2,14 @@
 
 # bluetooth
 if systemctl -q is-active bluetooth; then
-	readarray -t lines <<< $( bluetoothctl paired-devices | cut -d' ' -f2,3- )
+	readarray -t lines <<< $( bluetoothctl paired-devices \
+								| cut -d' ' -f2,3- \
+								| grep . \
+								| sort -k2 -fh )
 	if [[ -n $lines ]]; then
 		for line in "${lines[@]}"; do
-			devices+="
-		${line#* }^${line/ *}"
-		done
-		readarray -t lines <<< "$( echo "$devices" | sort -f | grep . )"
-		for line in "${lines[@]}"; do
-			mac=${line#*^}
-			name=${line/^*}
+			mac=${line/ *}
+			name=${line#* }
 			info=$( bluetoothctl info $mac )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
 			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
@@ -25,14 +23,17 @@ if systemctl -q is-active bluetooth; then
 		listbt="[ ${listbt:1} ]"
 	fi
 fi
-[[ $1 == bt ]] && echo $listbt && exit
+[[ $1 == bt ]] && curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt" && exit
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ -n $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( echo $ipr | cut -d' ' -f3 )
-	[[ -z $gateway ]] && gateway=$( ip r | grep ^default | head -1 | cut -d' ' -f3 )
+	[[ -z $gateway ]] && gateway=$( ip r \
+									| grep ^default \
+									| head -1 \
+									| cut -d' ' -f3 )
 	if [[ -n $ipeth ]]; then
 		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
 		if [[ -z $hostname ]]; then
@@ -68,8 +69,13 @@ readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//'
 if [[ -n $notconnected ]]; then
 	for ssid in "${notconnected[@]}"; do
 		if [[ $static == true ]]; then
-			gateway=$( echo "$netctl" | grep ^Gateway | cut -d= -f2 )
-			ip=$( echo "$netctl" | grep ^Address | cut -d= -f2 | cut -d/ -f1 )
+			gateway=$( echo "$netctl" \
+						| grep ^Gateway \
+						| cut -d= -f2 )
+			ip=$( echo "$netctl" \
+					| grep ^Address \
+					| cut -d= -f2 \
+					| cut -d/ -f1 )
 		else
 			gateway=
 			ip=

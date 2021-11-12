@@ -1,6 +1,9 @@
 #!/bin/bash
 
-dest=$( cat /srv/http/data/shm/player-bluetooth )
+# RPi as renderer - status.sh > this:
+#    - retreive current status from dbus
+
+dest=$( cat /srv/http/data/shm/bluetoothdest )
 data=$( dbus-send \
 			--system \
 			--type=method_call \
@@ -36,20 +39,14 @@ Time=$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Dur
 timestamp=$( date +%s%3N )
 
 data='
-	, "Artist"    : "'$Artist'"
-	, "Title"     : "'$Title'"
-	, "Album"     : "'$Album'"
-	, "coverart"  : "'$coverart'"
-	, "elapsed"   : '$elapsed'
-	, "sampling"  : "Bluetooth"
-	, "state"     : "'$state'"
-	, "Time"      : '$Time'
-	, "timestamp" : '$timestamp
+, "Artist"    : "'$Artist'"
+, "Title"     : "'$Title'"
+, "Album"     : "'$Album'"
+, "coverart"  : "'$coverart'"
+, "elapsed"   : '$elapsed'
+, "sampling"  : "Bluetooth"
+, "state"     : "'$state'"
+, "Time"      : '$Time'
+, "timestamp" : '$timestamp
 
-echo $data
-
-if [[ -e /srv/http/data/system/lcdchar ]]; then
-	data=( "$Artist" "$Title" "$Album" '' '' $state $Time $elapsed $timestamp false )
-	killall lcdchar.py &> /dev/null
-	/srv/http/bash/lcdchar.py "${data[@]}" &
-fi
+echo "$data"

@@ -1,0 +1,11 @@
+[Unit]
+Description=UPnP Renderer front-end to MPD
+After=mpd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/taskset -c 3 /usr/bin/upmpdcli -c /etc/upmpdcli.conf
+ExecStartPost=/srv/http/bash/cmd.sh upnpnice
+
+[Install]
+WantedBy=multi-user.target

@@ -1,15 +1,10 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+. /srv/http/bash/common.sh
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 pushRefresh() {
 	data=$( $dirbash/player-data.sh )
 	pushstream refresh "$data"
@@ -32,10 +27,10 @@ scontrols() {
 }
 update() { # for /etc/conf.d/devmon - devmon@http.service
 	if [[ -e $dirsystem/updating ]]; then
-		/srv/http/data/shm/updatingusb
+		$dirshm/updatingusb
 	else
 		echo USB > $dirsystem/updating
-		mpc update USB
+		mpc -q update USB
 	fi
 	sleep 1
 	pushRefresh
@@ -114,25 +109,25 @@ count )
 		, "albumartist" : '$albumartist'
 		, "artist"      : '$( echo $count | cut -d' ' -f1 )'
 		, "composer"    : '$composer'
-		, "coverart"    : '$( ls -1q /srv/http/data/coverarts | wc -l )'
+		, "coverart"    : '$( ls -1q $dirdata/coverarts | wc -l )'
 		, "date"        : '$( mpc list date | awk NF | wc -l )'
 		, "genre"       : '$genre'
 		, "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
 		, "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
 		, "song"        : '$( echo $count | cut -d' ' -f3 )'
 		, "usb"         : '$( mpc ls USB 2> /dev/null | wc -l )'
-		, "webradio"    : '$( ls -U /srv/http/data/webradios/* 2> /dev/null | wc -l )
+		, "webradio"    : '$( ls -U $dirwebradios/* 2> /dev/null | wc -l )
 	mpc | grep -q Updating && data+=', "updating_db":1'
 	echo {$data}
 	echo $albumartist $composer $genre > $dirsystem/mpddb
 	;;
 crossfadedisable )
-	mpc crossfade 0
+	mpc -q crossfade 0
 	pushRefresh
 	;;
 crossfadeset )
 	crossfade=${args[1]}
-	mpc crossfade $crossfade
+	mpc -q crossfade $crossfade
 	echo $crossfade > $dirsystem/crossfade.conf
 	touch $dirsystem/crossfade
 	pushRefresh
@@ -171,10 +166,10 @@ customset )
 	fi
 	;;
 devices )
-	devices=$'<bl># cat /etc/asound.conf</bl>\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n<bl># aplay -l | grep ^card</bl>\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n<bl># amixer scontrols</bl>\n'$( $dirbash/player.sh amixer )
-	[[ -e /srv/http/data/shm/btclient ]] && devices+=$'\n\n<bl># bluealsa-aplay -L</bl>\n'$( bluealsa-aplay -L )
+	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
+	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
+	devices+=$'\n\n<bll># amixer scontrols</bll>\n'$( $dirbash/player.sh amixer )
+	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
 	echo "$devices"
 	;;
 dop )
@@ -236,13 +231,13 @@ mixertype )
 	aplayname=${args[2]}
 	hwmixer=${args[3]}
 	if [[ -n $hwmixer ]]; then # set 0dB
-		mpc stop
+		mpc -q stop
 		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		if [[ $mixertype == hardware ]];then
 			amixer -Mq sset "$hwmixer" $vol%
 		else
 			amixer -Mq sset "$hwmixer" 0dB
-			rm -f /srv/http/data/shm/mpdvolume
+			rm -f $dirshm/mpdvolume
 		fi
 	fi
 	if [[ $mixertype == hardware ]]; then
@@ -251,13 +246,17 @@ mixertype )
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
-	[[ $mixertype == software ]] && mpc volume $vol
+	[[ $mixertype == software ]] && mpc -q volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 mpdignorelist )
-	file=/srv/http/data/mpd/mpdignorelist
-	[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file
+	file=$dirmpd/mpdignorelist
 	readarray -t files < $file
+	list="\
+<bll># find /mnt/MPD -name .mpdignore</bll>
+
+
+"
 	for file in "${files[@]}"; do
 		list+="\
 $file
@@ -281,10 +280,10 @@ novolume )
 	sed -i -e '/volume_normalization/ d
 	' -e '/^replaygain/ s/".*"/"off"/
 	' /etc/mpd.conf
-	mpc crossfade 0
+	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} /srv/http/data/shm/mpdvolume
+	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
@@ -327,7 +326,7 @@ volume0db )
 	amixer -Mq sset "${args[1]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
-	rm -f /srv/http/data/shm/mpdvolume
+	rm -f $dirshm/mpdvolume
 	;;
 volumebt0db )
 	amixer -D bluealsa -q sset "${args[1]}" 0dB

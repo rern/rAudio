@@ -18,25 +18,27 @@ function bash( command, callback, json ) {
 	);
 }
 var dirbash = '/srv/http/bash/';
+var playersh = dirbash +'player.sh ';
+var networkssh = dirbash +'networks.sh ';
+var systemsh = dirbash +'system.sh ';
 var cmd = {
-	  albumignore  : [ 'cat /srv/http/data/mpd/albumignore' ]
-	, asound       : [ dirbash +'player.sh devices', -1 ]
-	, avahi        : [ dirbash +'networks.sh avahi', "avahi-browse -arp | cut -d';' -f7,8" ]
-	, bluetooth    : [ 'bluetoothctl info' ]
-	, bluetoothctl : [ 'systemctl -q is-active bluetooth && bluetoothctl show', 'bluetoothctl show' ]
-	, configtxt    : [ dirbash +'system.sh configtxtget', -1 ]
-	, iw           : [ 'iw reg get; iw list' ]
-	, journalctl   : [ dirbash +'system.sh journalctlget', 'journalctl -b' ]
-	, lan          : [ "ifconfig eth0 | grep -v 'RX\\|TX' | grep .", 'ifconfig eth0' ]
-	, mount        : [ 'cat /etc/fstab; echo -e "\n<bll># mount | grep ^/dev</bll>\n"; mount | grep ^/dev | sort', 'cat /etc/fstab' ]
-	, mpdconf      : [ 'cat /etc/mpd.conf' ]
-	, mpdignore    : [ dirbash +'player.sh mpdignorelist', 'find /mnt/MPD -name .mpdignore' ]
-	, rfkill       : [ 'rfkill' ]
-	, soundprofile : [ dirbash +'system.sh soundprofileget', "sysctl kernel.sched_latency_ns<br># sysctl vm.swappiness<br># ifconfig eth0 | grep 'mtu\\|txq'" ]
-	, timesyncd    : [ 'systemctl status systemd-timesyncd' ]
-	, wlan         : [ "{ ifconfig wlan0 | grep -v 'RX\\|TX'; iwconfig wlan0 | grep .; }", 'ifconfig wlan0<br># iwconfig wlan0' ]
+	  albumignore  : 'cat /srv/http/data/mpd/albumignore'
+	, asound       : playersh +'devices'
+	, avahi        : networkssh +'avahi'
+	, bluetooth    : 'bluetoothctl info'
+	, bluetoothctl : systemsh +'bluetoothstatus'
+	, configtxt    : systemsh +'configtxtget'
+	, iw           : 'iw reg get; iw list'
+	, journalctl   : systemsh +'journalctlget'
+	, lan          : networkssh +'ifconfigeth'
+	, mount        : systemsh +'fstabget'
+	, mpdconf      : 'cat /etc/mpd.conf'
+	, mpdignore    : playersh +'mpdignorelist'
+	, rfkill       : 'rfkill'
+	, soundprofile : systemsh +'soundprofileget'
+	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'mpdscribble', 'shairport-sync', 'smb', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'systemd-timesyncd', 'upmpdcli' ];
 
 function status( id, refresh ) {
 	var $el = $( '#code'+ id );
@@ -45,37 +47,16 @@ function status( id, refresh ) {
 		return
 	}
 		
-	var i = services.indexOf( id );
-	if ( i !== -1 ) {
-		var pkg = {
-			  localbrowser : G.browser
-			, smb          : 'samba'
-			, snapserver   : 'snapcast'
-		}
-		var pkgname = Object.keys( pkg ).indexOf( id ) == -1 ? id : pkg[ id ];
-		if ( id === 'mpdscribble' ) id+= '@mpd';
-		var command = [ 'cmd', 'statuspkg', pkgname, id ];
-		var cmdtxt = '<bl># pacman -Q '+ pkgname +'; systemctl status '+ id +'</bl><br><br>';
-		var systemctl = 1;
-	} else {
-		var command = cmd[ id ][ 0 ] +' 2> /dev/null';
-		var cmdtxt = cmd[ id ][ 1 ] !== -1 ? '<bll># '+ ( cmd[ id ][ 1 ] || cmd[ id ][ 0 ] ) +'</bll><br><br>' : '';
-		var systemctl = 0;
-	}
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( function() {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
+	if ( id === 'timesyncd' ) id = 'systemd-timesyncd';
+	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );
-		var status = status
-						.replace( /(active \(running\))/, '<grn>$1</grn>' )
-						.replace( /(inactive \(dead\))/, '<red>$1</red>' )
-		if ( systemctl ) status = status
-							.replace( /(.*)\n/, '<grn>$1</grn>\n' )
-							.replace( /(failed)/, '<red>$1</red>' );
-		$el.html( cmdtxt + status ).promise().done( function() {
+		$el.html( status ).promise().done( function() {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {
 				setTimeout( function() {
@@ -87,10 +68,16 @@ function status( id, refresh ) {
 		resetLocal();
 	} );
 }
-function disableSwitch( id, truefalse ) {
-	$( id )
-		.prop( 'disabled', truefalse )
-		.next().toggleClass( 'disabled', truefalse );
+function infoPlayerActive( $this ) {
+	var $switch = $this.prev().prev();
+	if ( $switch.hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : $switch.data( 'icon' )
+			, title   : $switch.data( 'label' )
+			, message : $switch.data( 'disabled' )
+		} );
+		return true
+	}
 }
 function list2JSON( list ) {
 	try {
@@ -190,7 +177,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'bluetooth', 'notify', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -207,6 +194,7 @@ pushstream.onmessage = function( data, id, channel ) {
 	switch( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'notify':    psNotify( data );    break;
+		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
 		case 'volume':    psVolume( data );    break;
@@ -221,6 +209,7 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
+	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
 		if ( data.power === 'off' ) {
@@ -229,6 +218,16 @@ function psNotify( data ) {
 		}
 		loader();
 	}
+}
+function psPlayer( data ) {
+	var player_id = {
+		  airplay   : 'shairport-sync'
+		, bluetooth : 'bluetooth'
+		, snapcast  : 'snapserver'
+		, spotify   : 'spotifyd'
+		, upnp      : 'upmpdcli'
+	}
+	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
 	if ( data.page === page ) renderPage( data );
@@ -417,17 +416,20 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
-	if ( id === 'backup' || id === 'restore' ) return
-	
 	var $this = $( this );
+	var checked = $this.prop( 'checked' );
+	var label = $this.data( 'label' );
+	var icon = $this.data( 'icon' );
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', !checked );
+		info( {
+			  icon    : icon
+			, title   : label
+			, message : $this.data( 'disabled' )
+		} );
 		return
 	}
 	
-	var label = $this.data( 'label' );
-	var icon = $this.data( 'icon' );
-	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'common' ) ) {
 		if ( checked ) {
 			$( '#setting-'+ id ).click();

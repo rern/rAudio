@@ -8,15 +8,10 @@
 # - mixer_device  - card index
 # - dop           - if set
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+. /srv/http/bash/common.sh
 
 ! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 restartMPD() {
 	systemctl restart mpd
 	pushstream mpdplayer "$( $dirbash/status.sh )"
@@ -27,25 +22,38 @@ restartMPD() {
 	fi
 }
 
-if [[ $1 == bton ]]; then
+if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btaplay=$( bluealsa-aplay -L )
 		[[ -n $btaplay ]] && break
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
+	readarray -t paired <<< $( bluetoothctl paired-devices | cut -d' ' -f2 )
+	for mac in "${paired[@]}"; do
+		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && sink=1 && break
+	done
+	[[ -z $sink ]] && exit
 	
+	asoundbt='
+pcm.bluealsa {
+	type plug
+	slave.pcm {
+		type bluealsa
+		device 00:00:00:00:00:00
+		profile "a2dp"
+	}
+}'
 	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
-	echo $btname > $dirtmp/btclient
+	echo $btname > $dirshm/btclient
 	pushstream btclient true
-	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+	$dirbash/networks-data.sh bt
 elif [[ $1 == btoff ]]; then
-	rm -f $dirtmp/{player-*,btclient}
-	touch $dirtmp/player-mpd
+	rm -f $dirshm/btclient
 	pushstream btclient false
-	pushstream bluetooth "$( $dirbash/networks-data.sh bt )"
+	$dirbash/networks-data.sh bt
 fi
 
 . $dirbash/mpd-devices.sh
@@ -54,9 +62,9 @@ output=
 if [[ $i != -1 ]]; then
 	if [[ $1 == add ]]; then
 		i=-1
-		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirtmp/asound
+		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirshm/asound
 	elif [[ $1 == remove ]]; then
-		i=$( cat $dirtmp/asound )
+		i=$( cat $dirshm/asound )
 	fi
 	aplayname=${Aaplayname[$i]}
 	card=${Acard[$i]}
@@ -66,7 +74,7 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/equalizer ]]; then
-		[[ -e $dirtmp/btclient ]] && mixertype=software
+		[[ -e $dirshm/btclient ]] && mixertype=software
 ########
 		output+='
 audio_output {
@@ -190,14 +198,20 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-[[ -z $Acard ]] && restartMPD && exit
+[[ -z $Acard && -z $btname ]] && restartMPD && exit
 
 [[ -n $Acard ]] && card=$card || card=0
-asound="\
-defaults.pcm.card $card
-defaults.ctl.card $card"
+
 if [[ -e $dirsystem/equalizer ]]; then
-	asound+='
+	filepresets=$dirsystem/equalizer.presets
+	if [[ -n $btname ]]; then
+		slavepcm=bluealsa
+		filepresets+="-$btname"
+	else
+		slavepcm='"plughw:'$card',0"'
+	fi
+	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
+	asoundeq="
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -206,29 +220,18 @@ ctl.equal {
 	type equal
 }
 pcm.plugequal {
-	type equal'
-	filepresets=$dirsystem/equalizer.presets
-	if [[ ! -e $dirtmp/btclient ]]; then
-		asound+='
-	slave.pcm "plughw:'$card',0"'
-	else
-		asound+='
-	slave.pcm {
- 		type plug
- 		slave.pcm {
- 			type bluealsa
- 			device "00:00:00:00:00:00"
- 			profile "a2dp"
- 			delay 20000
- 		}
- 	}'
-		filepresets+="-$( cat $dirtmp/btclient )"
-	fi
-	asound+='
-}'
-	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
+	type equal
+	slave.pcm $slavepcm
+}"
 fi
-echo "$asound" > /etc/asound.conf
+
+echo "\
+defaults.pcm.card $card
+defaults.ctl.card $card
+$asoundbt
+$asoundeq
+" > /etc/asound.conf
+
 [[ -n $preset ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
@@ -244,31 +247,43 @@ fi
 restartMPD
 
 if [[ -e /usr/bin/shairport-sync ]]; then
-	hwmixer="${Ahwmixer[$card]}"
-	if [[ -n $hwmixer ]]; then
-		alsa='alsa = {
-	output_device = "hw:'$card'";
-	mixer_control_name = "'$hwmixer'";
-}'
+	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+alsa = {"
+	if [[ -n $btname ]]; then
+		conf+='
+	output_device = "bluealsa";'
 	else
-		alsa='alsa = {
-	output_device = "hw:'$card'";
-}'
+		conf+='
+	output_device = "hw:'$card'";'
+	[[ -n $hwmixer ]] && conf+='
+	mixer_control_name = "'$hwmixer'";'
 	fi
-	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-	echo "\
-$conf
-$alsa" > /etc/shairport-sync.conf
+	conf+='
+}'
+	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	cardname=$( aplay -l \
-					| grep "^card $card" \
-					| head -1 \
-					| cut -d' ' -f3 )
-	aplaydevice=$( aplay -L | grep "^default.*$cardname" )
-	sed -i 's/^device =.*/device = "'$aplaydevice'"/' /etc/spotifyd.conf
+	if [[ -n $btname ]]; then
+		device=bluealsa
+		mixer=PCM
+	else
+		cardname=$( aplay -l \
+						| grep "^card $card" \
+						| head -1 \
+						| cut -d' ' -f3 )
+		device=$( aplay -L | grep "^default.*$cardname" )
+		mixer=$( $dirbash/cmd.sh volumecontrols$'\n'$card | head -1 )
+	fi
+	cat << EOF > /etc/spotifyd.conf
+[global]
+device = "$device"
+mixer = "$mixer"
+volume_controller = "alsa"
+bitrate = 320
+onevent = "/srv/http/bash/spotifyd.sh"
+EOF
 	systemctl try-restart spotifyd
 fi

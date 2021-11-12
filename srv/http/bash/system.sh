@@ -1,22 +1,17 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirdata=/srv/http/data
-dirsystem=$dirdata/system
-dirtmp=$dirdata/shm
-filereboot=$dirtmp/reboot
+. /srv/http/bash/common.sh
 fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
-pushstreamNotify() {
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink"}'
+pushReboot() {
+	pushRefresh
+	data='{"title":"'$1'","text":"Reboot required.","icon":"'$2'","hold":5000}'
 	pushstream notify "$data"
+	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
 	data=$( $dirbash/system-data.sh )
@@ -56,6 +51,12 @@ bluetoothdisable )
 	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
 	pushRefresh
 	;;
+bluetoothstatus )
+	echo "\
+<bll># bluetoothctl show</bll>
+
+$( bluetoothctl show )"
+	;;
 bluetoothset )
 	btdiscoverable=${args[1]}
 	btformat=${args[2]}
@@ -77,11 +78,11 @@ bluetoothset )
 	;;
 configtxtget )
 	config="\
-<bl># cat /boot/cmdline.txt</bl>
+<bll># cat /boot/cmdline.txt</bll>
 
 $( cat /boot/cmdline.txt )
 
-<bl># cat /boot/config.txt</bl>
+<bll># cat /boot/config.txt</bll>
 
 $( cat /boot/config.txt )
 "
@@ -201,13 +202,15 @@ datarestore )
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
-journalctlget )
-	filebootlog=$dirdata/tmp/bootlog
-	if [[ -e $filebootlog ]]; then
-		cat "$filebootlog"
-	else
-		journalctl -b | sed -n '1,/Startup finished.*kernel/ p' | tee $filebootlog
-	fi
+fstabget )
+	echo -e "\
+<bll># cat /etc/fstab</bll>
+
+$( cat /etc/fstab )
+
+<bll># mount | grep ^/dev</bll>
+
+$( mount | grep ^/dev | sort )"
 	;;
 hostname )
 	hostname=${args[1]}
@@ -245,8 +248,20 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	echo 'Audio I&#178;S module' >> $filereboot
-	pushRefresh
+	pushReboot 'Audio I&#178;S module' i2saudio
+	;;
+journalctlget )
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ -e $filebootlog ]]; then
+		journal=$( cat $filebootlog )
+	else
+		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
+		echo "$journal" > $filebootlog
+	fi
+	echo "\
+<bll># journalctl -b</bll>
+
+$journal"
 	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
@@ -276,7 +291,6 @@ lcdcharset )
 cols=${args[1]}
 charmap=${args[2]}"
 	if [[ ${args[3]} == i2c ]]; then
-		! grep -q 'dtparam=i2c_arm=on' $fileconfig && echo 'Character LCD' >> $filereboot
 		conf+="
 address=${args[4]}
 chip=${args[5]}"
@@ -285,6 +299,7 @@ dtparam=i2c_arm=on" >> $fileconfig
 		echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
+		! grep -q 'dtparam=i2c_arm=on' $fileconfig && reboot=1
 	else
 		conf+="
 pin_rs=${args[6]}
@@ -300,7 +315,7 @@ backlight=${args[13]}"
 	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
-	pushRefresh
+	[[ -n reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
@@ -331,8 +346,7 @@ i2c-dev
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
-	echo 'TFT 3.5" LCD' >> $filereboot
-	pushRefresh
+	pushReboot 'TFT 3.5" LCD' lcd
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -341,7 +355,7 @@ mirrorlist )
 				| sed 's|\.*mirror.*||; s|.*//||' )
 	[[ -z $current ]] && current=0
 	if ! grep -q '^###' $file; then
-		pushstreamNotify 'Mirror List' 'Get ...' globe
+		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
 	fi
 	readarray -t lines <<< $( grep . $file \
@@ -435,9 +449,8 @@ i2c-dev" >> $filemodule
 		echo "\
 dtparam=spi=on" >> $fileconfig
 	fi
-	echo 'Spectrum OLED' >> $filereboot
 	touch $dirsystem/mpdoled
-	pushRefresh
+	pushReboot 'Spectrum OLED' mpdoled
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
@@ -455,13 +468,14 @@ led=$led
 reserved=$reserved" > $dirsystem/powerbutton.conf
 	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 	sed -i '/gpio-shutdown/ d' $fileconfig
-	if [[ $sw != 5 ]]; then
-		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-		[[ $reserved != $prevreserved ]] && echo 'Power Button' >> $filereboot
-	fi
 	systemctl restart powerbutton
 	systemctl enable powerbutton
-	pushRefresh
+	if [[ $sw == 5 ]]; then
+		pushRefresh
+	else
+		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
+		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button' power
+	fi
 	;;
 relaysdisable )
 	rm -f $dirsystem/relays
@@ -518,12 +532,16 @@ soundprofiledisable )
 	pushRefresh
 	;;
 soundprofileget )
-	val+=$( sysctl kernel.sched_latency_ns )$'\n'
-	val+=$( sysctl vm.swappiness )$'\n'
-	ifconfig | grep -q eth0 && val+=$( ifconfig eth0 \
-										| grep 'mtu\|txq' \
-										| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )
-	echo "${val:0:-1}"
+	echo "\
+<bll># sysctl kernel.sched_latency_ns
+# sysctl vm.swappiness
+# ifconfig eth0 | grep 'mtu\\|txq'</bll>
+
+$( sysctl kernel.sched_latency_ns )
+$( sysctl vm.swappiness )
+$( ifconfig eth0 \
+	| grep 'mtu\|txq' \
+	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
 	if [[ ${args[@]:1:4} == '18000000 60 1500 1000' ]]; then
@@ -566,7 +584,7 @@ usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
 	update
 	;;
 usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotify 'USB Drive' Removed usbdrive
+	pushstreamNotify 'USB Drive' Removed. usbdrive
 	update
 	;;
 vuleddisable )

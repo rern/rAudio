@@ -215,8 +215,21 @@
 .infobtn i {
 	font-size: 18px;
 	margin-right: 5px;
-	vertical-align: -2px !important;
 }
+.btnbottom span {
+	color: var( --cg60 );
+	cursor: pointer;
+}
+.btnbottom i,
+.btnicon {
+	width: 40px;
+	font-size: 22px;
+	vertical-align: -3px;
+	text-align: center;
+	color: var( --cw );
+	cursor: pointer;
+}
+
 hr {
 	border: none;
 	border-bottom: 1px solid var( --cg );
@@ -238,7 +251,7 @@ hr {
 	-webkit-user-select: none;
 }
 #infoOverlay .fa {
-	vertical-align: -1px;
+	vertical-align: -2px;
 }
 #infoOverlay a {
 	height: 40px;
@@ -257,6 +270,7 @@ hr {
 	padding-bottom: 15px;
 	background: var( --cga );
 	border-radius: 10px;
+	box-shadow: 1px -1px 5px var( --cga );
 }
 #infoOverlay a,
 #infoBox i,
@@ -270,7 +284,6 @@ hr {
 	width: 100%;
 	height: 40px;
 	border-radius: 10px 10px 0 0;
-	border: 1px solid var( --cga );
 	border-bottom: none;
 	background: black;
 }
@@ -326,7 +339,8 @@ hr {
 	display: inline-block;
 	width: calc( 100% - 45px );
 	margin-left: 10px;
-	font-size: 18px;
+	font-size: 20px;
+	font-weight: 300;
 	line-height: 40px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -472,6 +486,7 @@ hr {
 #infoContent input[type=text]:disabled {
 	background: none !important;
 	outline: none;
+	opacity: 1;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
@@ -564,7 +579,8 @@ hr {
 	#infoContent label,
 	input[type=checkbox],
 	input[type=radio],
-	.fa-eye {
+	.fa-eye,
+	.pointer {
 		cursor: pointer;
 	}
 	.infobtn-primary:hover {

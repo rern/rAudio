@@ -2,10 +2,11 @@
 
 : >/dev/tcp/8.8.8.8/53 || exit # online check
 
+dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
+dirshm=/srv/http/data/shm
 
-readarray -t tmpradio < $dirtmp/radio
+readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]}
 station=${station//\"/\\\"}
@@ -65,9 +66,9 @@ radiofranceData() {
 }
 metadataGet() {
 	[[ $id < 4 ]] && radioparadiseData || radiofranceData
-	artist=${metadata[0]}
-	title=${metadata[1]}
-	album=${metadata[2]}
+	artist=${metadata[0]//\"/\\\"}
+	title=${metadata[1]//\"/\\\"}
+	album=${metadata[2]//\"/\\\"}
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
 	if [[ -z $album && -z $title ]]; then
@@ -83,19 +84,11 @@ metadataGet() {
 	fi
 
 	if [[ -n $coverurl ]]; then
-		name=$( echo $artist$title | tr -d ' "`?/#&'"'" )
-		coverfile=$dirtmp/webradio-$name.jpg
+		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+		coverfile=$dirshm/webradio-$name.jpg
 		curl -s $coverurl -o $coverfile
 		coverart=/data/shm/webradio-$name.jpg
 	fi
-	echo "\
-$artist
-$title
-$album
-$coverart" > $dirtmp/status
-	artist=${artist//\"/\\\"}
-	title=${title//\"/\\\"}
-	album=${album//\"/\\\"}
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
   "Album"    : "'$album'"
@@ -111,28 +104,21 @@ $coverart" > $dirtmp/status
 , "Title"    : "'$title'"
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
-	if [[ -e $dirsystem/lcdchar ]]; then
-		statusdata="\
-$artist
-$title
-$album
-$station
-$file
-play
-false
-1
-$( date +%s%3N )
-true"
-		readarray -t data <<< "${statusdata//\"/\\\"}"
-		/srv/http/bash/lcdchar.py "${data[@]}" &
-	fi
-	if [[ -e $dirtmp/snapclientip ]]; then
-		readarray -t clientip < $dirtmp/snapclientip
-		for ip in "${clientip[@]}"; do
-			[[ -n $ip ]] && curl -s -X POST http://$ip/pub?id=mpdplayer -d "$data"
-		done
-	fi
-	/srv/http/bash/cmd.sh coverfileslimit
+	cat << EOF > $dirshm/status
+Artist="$artist"
+Title="$title"
+Album="$album"
+coverart="$coverart"
+station="$station"
+file="$file"
+state="play"
+Time=false
+elapsed=1
+timestamp=$( date +%s%3N )
+webradio=true"
+EOF
+	$dirbash/cmd-pushstatus.sh statusradio # for: mpdoled, lcdchar, vumeter, snapclient
+	$dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

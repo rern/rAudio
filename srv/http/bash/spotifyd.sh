@@ -1,112 +1,74 @@
 #!/bin/bash
 
-if [[ $1 == stop ]]; then
-	systemctl restart spotifyd
-	rm -f /srv/http/data/shm/spotify-start
-	mv /srv/http/data/shm/player-{*,mpd}
-	/srv/http/bash/cmd.sh volumereset
-	/srv/http/bash/cmd-pushstatus.sh
-	exit
-fi
-
-# get from: https://developer.spotify.com/dashboard/applications
-client_id=2df4633bcacf4474aa031203d423f2d8
-client_secret=6b7f533b66cb4a338716344de966dde1
-
+# spotifyd.conf > this:
+#    - spotifyd 'onevent' hook
 # env var:
-# $PLAYER_EVENT: start/stop/load/play/pause/preload/endoftrack/volumeset
+# $PLAYER_EVENT: change/endoftrack/load/pause/play/preload/start/stop/volumeset
 # $TRACK_ID
 # $PLAY_REQUEST_ID
 # $POSITION_MS
 # $DURATION_MS
 # $VOLUME
 
-timestamp=$(( $( date +%s%3N ) - 1000 ))
-file=/srv/http/data/shm/spotify
-if [[ ! -e $file-start ]]; then
-	mpc stop
-	mv /srv/http/data/shm/player-{*,spotify}
-	systemctl try-restart shairport-sync snapclient upmpdcli &> /dev/null
-	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	(( $elapsed > 0 )) && echo pause > $file-state
-	/srv/http/bash/cmd.sh volume0db$'\n'spotifyd
-fi
+# currently not available on spotifyd
+[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream && exit
 
-if [[ $PLAYER_EVENT != stop ]]; then
-	state=play
-	echo $timestamp > $file-start
-	[[ $PLAYER_EVENT == change ]] && echo 0 > $file-elapsed
-	echo play > $file-state
+. /srv/http/bash/common.sh
+dirspotify=$dirshm/spotify
+
+# var fileKEY=$dirspotify/KEY
+for key in elapsed expire start state status token; do
+	printf -v file$key '%s' $dirspotify/$key
+done
+
+##### start
+[[ $PLAYER_EVENT == start && ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
+if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
+	token=$( cat $filetoken )
 else
-	elapsed=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	[[ $elapsed > 0 ]] && state=pause || state=stop
-	echo $state > $file-state
-	if [[ -e $file-start ]]; then
-		start=$( cat $file-start )
-		elapsed=$(( elapsed + timestamp - start ))
-		curl -s -X POST http://127.0.0.1/pub?id=spotify -d '{"pause":'$(( ( elapsed + 500 ) / 1000 ))'}'
-		echo $elapsed > $file-elapsed
+	. $dirsystem/spotify # base64client, refreshtoken
+	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
+				-H "Authorization: Basic $base64client" \
+				-d grant_type=refresh_token \
+				-d refresh_token=$refreshtoken \
+				| grep access_token \
+				| cut -d'"' -f4 )
+	if [[ -z $token ]]; then
+		pushstream notify '{"title":"Spotify","text":"Access token renewal failed.","icon":"spotify"}'
 		exit
-	else
-		echo $timestamp > $file-start
 	fi
+	
+	echo $token > $filetoken
+	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi
-
-########
-status='
-  "state"    : "'$( cat $file-state )'"'
-
-trackidfile=$file-trackid
-if [[ $( cat $trackidfile 2> /dev/null ) == $TRACK_ID ]]; then
-########
-	start=$( cat $file-start )
-	now=$( date +%s%3N )
-	elapsedprev=$( cat $file-elapsed 2> /dev/null || echo 0 )
-	elapsed=$(( now - start + elapsedprev ))
-	echo $elapsed > $file-elapsed
-########
-	status+=$( cat $file )
-	status+='
-, "elapsed" : '$(( ( elapsed + 500 ) / 1000 ))
-else
-	echo $TRACK_ID > $trackidfile
-	
-	tokenfile=$file-token
-	expirefile=$file-expire
-	
-	if [[ -e $expirefile && $( cat $expirefile ) -gt $timestamp ]]; then
-		token=$( cat $tokenfile )
-	else
-		token=$( curl -s -X POST -u $client_id:$client_secret -d grant_type=client_credentials https://accounts.spotify.com/api/token \
-			| sed 's/.*access_token":"\(.*\)","token_type.*/\1/' )
-		[[ -z $token ]] && exit
-		expire=$(( $( date +%s%3N ) + 3590000 ))
-		echo $token > $tokenfile
-		echo $expire > $expirefile
-	fi
-	
-	data=$( curl -s -X GET "https://api.spotify.com/v1/tracks/$TRACK_ID" -H "Authorization: Bearer $token" )
-	metadata='
-, "Album"    : '$( jq .album.name <<< $data )'
-, "Artist"   : '$( jq .album.artists[0].name <<< $data )'
-, "coverart" : '$( jq .album.images[0].url <<< $data )'
+readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
+							-H "Authorization: Bearer $token" \
+							| jq '.item.album.name,
+								.item.album.artists[0].name,
+								.item.album.images[0].url,
+								.is_playing,
+								.item.duration_ms,
+								.item.name,
+								.progress_ms,
+								.timestamp' ) # not -r to keep escaped characters
+[[ ${status[3]} == true ]] && state=play || state=pause
+cat << EOF > $filestatus
+, "Album"    : ${status[0]}
+, "Artist"   : ${status[1]}
+, "coverart" : ${status[2]}
 , "file"     : ""
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
-, "Time"     : '$(( ( $( jq .duration_ms <<< $data ) + 500 ) / 1000 ))'
-, "Title"    : '$( jq .name <<< $data )
-	echo $metadata > $file
-########
-	status+=$metadata
-	status+='
-, "elapsed" : '$(( ( $(( $( date +%s%3N ) - $timestamp )) + 500 ) / 1000 ))
-fi
+, "state"    : "$state"
+, "Time"     : $(( ( ${status[4]} + 500 ) / 1000 ))
+, "Title"    : ${status[5]}
+EOF
+progress=${status[6]}
+timestamp=${status[7]}
+diff=$(( $( date +%s%3N ) - timestamp ))
+cat << EOF > $filestate
+elapsed=$(( ( progress + 500 ) / 1000 ))
+start=$(( ( timestamp + diff - progress + 500 ) / 1000 ))
+state=$state
+EOF
 
-curl -s -X POST http://127.0.0.1/pub?id=spotify -d "{$status}"
-
-if [[ -e /srv/http/data/system/lcdchar ]]; then
-	readarray -t data <<< $( echo "{$status}" \
-								| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
-								| sed 's/^$\|null/false/' )
-	killall lcdchar.py &> /dev/null
-	/srv/http/bash/lcdchar.py "${data[@]}" &
-fi
+$dirbash/cmd-pushstatus.sh

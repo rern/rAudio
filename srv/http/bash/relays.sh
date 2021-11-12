@@ -1,18 +1,12 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirtmp=/srv/http/data/shm
-timerfile=/srv/http/data/shm/relaystimer
+. /srv/http/bash/common.sh
+timerfile=$dirshm/relaystimer
 
 # convert each line to each args
 readarray -t args <<< "$1"
 
 cmd=${args[0]}
-
-pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
-}
 
 if [[ $cmd == relaysset ]]; then
 	data=${args[1]}
@@ -30,9 +24,9 @@ pushstreamRelays() {
 	pushstream relays "$1"
 }
 
-mpc stop
+mpc -q stop
 systemctl stop radio
-rm -f $dirtmp/status
+rm -f $dirshm/status
 
 if [[ $cmd == true ]]; then
 	pushstreamRelays '{"state": true, "order": '"$onorder"'}'
@@ -45,7 +39,7 @@ if [[ $cmd == true ]]; then
 		(( $i > 0 )) && pushstreamRelays '{"on": '$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
-	touch $dirtmp/relayson
+	touch $dirshm/relayson
 	if [[ $timer > 0 ]]; then
 		echo $timer > $timerfile
 		$dirbash/relaystimer.sh &> /dev/null &
@@ -64,7 +58,7 @@ else
 		(( $i > 0 )) && pushstreamRelays '{"off": '$(( i + 1 ))'}'
 		sleep ${offd[$i]} &> /dev/null
 	done
-	rm -f $dirtmp/relayson
+	rm -f $dirshm/relayson
 fi
 
 sleep 1

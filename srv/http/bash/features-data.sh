@@ -1,13 +1,19 @@
 #!/bin/bash
 
+dirbash=/srv/http/bash
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
+spotifyredirect=https://rern.github.io/raudio/spotify
 
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
 
-readarray -t lines <<< $( grep '^username\|^password' /etc/mpdscribble.conf | cut -d' ' -f3- )
-mpdscribbleconf="[ \"${lines[0]}\", \"${lines[1]}\" ]"
+dirscrobble=$dirsystem/scrobble.conf
+for key in airplay bluetooth spotify upnp notify; do
+	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
+done
+scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
 
 data+='
   "page"             : "features"
@@ -16,36 +22,49 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
-, "mpdscribble"      : '$( systemctl -q is-active mpdscribble@mpd && echo true )'
-, "mpdscribbleconf"  : '$mpdscribbleconf'
+, "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
+, "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
+, "scrobbleconf"     : ['$scrobbleconf']
+, "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then
 	data+='
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
-, "hostapdconf"      : '$( /srv/http/bash/features.sh hostapdget )'
+, "hostapdconf"      : '$( $dirbash/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
-, "wlanconnect"      : '$( ip r | grep -q "^default.*wlan0" && echo true )
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )
+, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )'
+, "shairportactive"  : '$( [[ -e $dirshm/player-airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
+, "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
+, "snapclientactive" : '$( systemctl -q is-active snapclient && echo true )'
 , "snapcastconf"     : '$( grep OPTS= /etc/default/snapclient | sed 's/.*latency=\(.*\)"/\1/' 2> /dev/null )
-[[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )
+if [[ -e /usr/bin/spotifyd ]]; then
+	data+='
+, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
+, "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
+, "spotifyredirect"  : "'$spotifyredirect'"
+, "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
+fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )
+, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
+, "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		v=( $( cut -d= -f2 $dirsystem/localbrowser.conf ) )
-		localbrowserconf="[ $(( ${v[0]} / 60 )), $( echo "print ${v[1]} * 100" | perl ), \"${v[2]}\", ${v[3]} ]"
+		conf=$( grep . $dirsystem/localbrowser.conf \
+				| sed 's/^/,"/; s/=/":/' \
+				| sed 's/\(.*rotate.*:\)\(.*\)/\1"\2"/' )
+		localbrowserconf="{${conf:1}}"
 	else
-		localbrowserconf='[ 0, 1, "NORMAL", false ]'
+		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false }'
 	fi
 	data+='
 , "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"

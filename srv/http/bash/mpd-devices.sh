@@ -10,17 +10,18 @@
 #    - from file if manually set
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ -z $aplay ]]; then
 	i=-1
 	devices=false
-	touch /srv/http/data/shm/nosound
+	touch $dirshm/nosound
 	return
 fi
 
-rm -f /srv/http/data/shm/nosound
+rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
 audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )

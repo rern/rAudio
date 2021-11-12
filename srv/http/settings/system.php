@@ -110,6 +110,7 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetoothctl'
 		, 'setting'  => true
+		, 'disabled' => 'Bluetooth is currently active.'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
  • Pairing:&emsp;<i class="fa fa-networks"></i>Networks
@@ -123,6 +124,7 @@ HTML
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
 		, 'setting'  => true
+		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
 Auto start Access Point - On failed connection or no router
 Country of Wi-Fi regulatory domain:
@@ -272,6 +274,7 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
+		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Backup all settings and Library database:
  • Settings
@@ -286,6 +289,7 @@ HTML
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
+		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 HTML

@@ -2,6 +2,7 @@ var G = {
 	  addplay       : 0
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
+	, sharedsecret  : '390372d3a1f60d4030e2a612260060e0'
 	, bookmarkedit  : 0
 	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
@@ -65,11 +66,11 @@ var pagenext = {
 	, playlist : [ 'playback', 'library' ]
 	, library  : [ 'playlist', 'playback' ]
 }
-var nameplayer = {
+var icon_player = {
 	  airplay    : 'AirPlay'
-	, bluetooth  : 'Bluetooth Renderer'
-	, snapclient : 'Snapcast Client'
-	, spotify    : 'Spotify Connect'
+	, bluetooth  : 'Bluetooth'
+	, snapcast   : 'Snapcast'
+	, spotify    : 'Spotify'
 	, upnp       : 'UPnP'
 }
 
@@ -123,6 +124,7 @@ $( '#coverart' ).on( 'load', function() {
 	}
 	loaderHide();
 } ).on( 'error', coverartDefault );
+
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
 $( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // from info.js
 	location.reload();
@@ -156,18 +158,22 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			equalizer();
 			break;
 		case 'snapclient':
-			var startstop = G.status.player === 'snapclient' ? 'stop' : 'start';
-			bash( '/srv/http/bash/snapcast.sh '+ startstop, function( data ) {
-				bannerHide();
-				if ( data == -1 ) {
-					info( {
-						  icon    : 'snapcast'
-						, title   : 'Snapcast'
-						, message : 'Snapcast server not available'
-					} );
-				}
-			} );
-			banner( 'Snapcast - Sync Streaming Client', ( G.status.player === 'snapclient' ? 'Stop ...' : 'Start ...' ), 'snapcast blink', -1 );
+			var active = G.status.player === 'snapcast';
+			if ( active ) {
+				$( '#stop' ).click();
+			} else {
+				bash( '/srv/http/bash/snapcast.sh start', function( data ) {
+					bannerHide();
+					if ( data == -1 ) {
+						info( {
+							  icon    : 'snapcast'
+							, title   : 'Snapcast'
+							, message : 'Snapcast server not available'
+						} );
+					}
+				} );
+			}
+			banner( 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), 'snapcast blink', -1 );
 			break;
 		case 'update':
 			infoUpdate( '' );
@@ -178,7 +184,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			} );
 			break;
 		case 'screenoff':
-			bash( [ 'screenoff' ] );
+			bash( [ 'screenoff', 'dpms force off' ] );
 			G.screenoff = 1;
 			break;
 		case 'displaycolor':
@@ -298,9 +304,7 @@ $( '#playlist' ).click( function() {
 		$( '.menu' ).addClass( 'hide' );
 	} else {
 		switchPage( 'playlist' );
-		if ( !G.savedlist && !G.savedplaylist ) {
-			G.status.playlistlength ? getPlaylist() : renderPlaylist( -1 );
-		}
+		if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
@@ -364,63 +368,101 @@ $( '#artist, #guide-bio' ).click( function() {
 } );
 $( '#title, #guide-lyrics' ).click( function() {
 	var artist = $( '#artist' ).text();
-	if ( artist === $( '#lyricsartist' ).text() && title === $( '#lyricstitle' ).text() && G.lyrics ) {
+	var title = $( '#title' ).text();
+	var album = $( '#album' ).text();
+	if ( G.lyrics
+		&& !G.status.webradio
+		&& artist === $( '#lyricsartist' ).text()
+		&& title === $( '#lyricstitle' ).text()
+	) {
 		lyricsShow( 'current' );
 		return
 	}
 	
 	artist = artist.replace( /(["`])/g, '\\$1' );
-	var title = $( '#title' ).text().replace( /(["`])/g, '\\$1' );
+	title = title.replace( /(["`])/g, '\\$1' );
 	file = G.status.player === 'mpd' ? '/mnt/MPD/'+ G.status.file : '';
 	var src = $( '#coverart' ).attr( 'src' );
 	G.lyricsCover = src.slice( 0, 7 ) === '/asses' ? '' : src;
-	bash( [ 'lyricsexist', artist, title, file ], function( data ) {
-		if ( data ) {
-			G.lyricsTitle = title;
-			G.lyricsArtist = artist;
-			lyricsShow( data );
-			return
-		}
-		
-		var noparen = title.slice( -1 ) !== ')';
-		var titlenoparen = title.replace( / $| \(.*$/, '' );
-		info( {
-			  icon        : 'lyrics'
-			, title       : 'Bio / Lyrics'
-			, textlabel   : [ '<i class="fa fa-artist wh"></i>', '<i class="fa fa-music wh"></i>' ]
-			, values      : noparen ? [ artist, title ] : [ artist, titlenoparen ]
-			, boxwidth    : 320
-			, checkbox    : noparen ? '' : [ 'Title with parentheses content' ]
-			, beforeshow  : noparen ? '' : function() {
+	var noparen = title.slice( -1 ) !== ')';
+	var titlenoparen = title.replace( / $|\(.*$/, '' );
+	var paren = title.replace( /^.*\(/, '(' );
+	var content = `\
+<table>
+<tr><td><i class="fa fa-artist wh"></i></td><td><input class="required" type="text"></td></tr>
+<tr><td><i class="fa fa-music wh"></i></td><td><input class="required" type="text"></td></tr>
+<tr class="album"><td><i class="fa fa-album wh"></i></td><td><input type="text"></td></tr>
+<tr id="paren"><td></td><td><label><input type="checkbox"><gr>Title includes:</gr>&emsp;${ paren }</label></td></tr>
+<tr style="height: 10px;"></tr>
+<tr><td colspan="2" class="btnbottom">
+	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
+	<span class="bio">&emsp;<i class="fa fa-bio"></i> Bio</span>
+	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
+	</td></tr>
+</table>`;
+	info( {
+		  icon        : 'lyrics'
+		, title       : 'Lyrics'
+		, content     : content
+		, boxwidth    : 320
+		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
+		, beforeshow  : function() {
+			if ( noparen ) {
+				$( '#paren' ).addClass( 'hide' );
+			} else {
 				$( '#infoContent input' ).change( function() {
 					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
-			, buttonlabel : 'Bio'
-			, buttoncolor : orange
-			, button      : function() {
-				if ( $( '#bio legend' ).text() != G.status.Artist ) {
-					getBio( infoVal()[ 0 ] );
-				} else {
-					$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
-					$( '#bio' ).removeClass( 'hide' );
-				}
-			}
-			, oklabel     : 'Lyrics'
-			, ok          : function() {
+			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {
+				var $this = $( this );
+				$this.css( 'border-color', $this.val() ? '' : 'red' );
+				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
+			} );
+			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
+			$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble || !G.status.webradio );
+			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
-				G.lyricsArtist = values[ 0 ];
-				G.lyricsTitle = values[ 1 ];
-				bash( [ 'lyrics', G.lyricsArtist, G.lyricsTitle ], function( data ) {
-					lyricsShow( data );
-				} );
-				banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
-			}
-		} );
+				var artist = values[ 0 ]
+				var title = values[ 1 ]
+				var $this = $( this );
+				if ( $this.hasClass( 'lyrics' ) ) {
+					G.lyricsArtist = artist;
+					G.lyricsTitle = title;
+					bash( [ 'lyrics', artist, title, file ], function( data ) {
+						lyricsShow( data );
+					} );
+					banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
+				} else if ( $this.hasClass( 'bio' ) ) {
+					if ( $( '#bio legend' ).text() != G.status.Artist ) {
+						getBio( artist );
+					} else {
+						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
+						$( '#bio' ).removeClass( 'hide' );
+					}
+				} else if ( $this.hasClass( 'scrobble' ) ) {
+					bash( [ 'scrobble', ...infoVal() ] );
+					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
+				}
+				$( '#infoX' ).click();
+			} );
+		}
+		, okno        : 1
 	} );
 } );
 $( '#album, #guide-album' ).click( function() {
 	window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
+} );
+$( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
+	info( {
+		  icon    : 'audiocd'
+		, title   : 'Audio CD'
+		, oklabel : '<i class="fa fa-minus-circle"></i>Eject'
+		, okcolor : red
+		, ok      : function() {
+			bash( '/srv/http/bash/audiocd.sh ejectwithicon' );
+		}
+	} );
 } );
 $( '#elapsed' ).click( function() {
 	G.status.state === 'play' ? $( '#pause' ).click() : $( '#play' ).click();
@@ -850,19 +892,9 @@ $( '.btn-cmd' ).click( function() {
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
-			if ( G.status.player === 'airplay' ) {
-				bash( '/srv/http/bash/shairport.sh stop' );
-			} else if ( G.status.player === 'bluetooth' ) {
-				bash( [ 'bluetoothplayerstop' ] );
-			} else if ( G.status.player === 'snapclient' ) {
-				bash( '/srv/http/bash/snapcast.sh stop' );
-			} else if ( G.status.player === 'spotify' ) {
-				bash( '/srv/http/bash/spotifyd.sh stop' );
-			} else if ( G.status.player === 'upnp' ) {
-				bash( '/srv/http/bash/upmpdcli.sh stop' );
-			}
 			if ( G.status.player !== 'mpd' ) {
-				banner( nameplayer[ G.status.player ], 'Stop ...', G.status.player +' blink', -1 );
+				bash( [ 'playerstop', G.status.player ] );
+				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}
 			
@@ -928,16 +960,23 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
-	G.mode = 'file';
 	if ( G.query.length > 1 ) G.scrolltop[ G.query[ G.query.length - 1 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
-	var query = {
-		  query  : 'ls'
-		, string : path
-		, format : [ 'file' ]
+	if ( G.mode === 'webradio' ) {
+		var query = {
+			  query  : 'webradio'
+			, string : path
+		}
+	} else {
+		var query = {
+			  query  : 'ls'
+			, string : path
+			, format : [ 'file' ]
+		}
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
+		if ( !path && G.mode === 'webradio' ) path = 'WEBRADIO';
 		data.path = path;
 		data.modetitle = path;
 		renderLibraryList( data );
@@ -968,8 +1007,6 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 	} );
 } );
 $( '#button-lib-search' ).click( function() { // icon
-	if ( $( '#lib-path .lipath' ).text() === 'Webradio' ) return
-	
 	$( '#lib-path span, #button-lib-back, #button-lib-search' ).addClass( 'hide' );
 	$( '#lib-search, #lib-search-btn' ).removeClass( 'hide' );
 	$( '#lib-search-close' ).empty();
@@ -981,11 +1018,19 @@ $( '#lib-search-btn' ).click( function() { // search
 	if ( !keyword ) {
 		$( '#lib-search-close' ).click();
 	} else {
-		var query = {
-			  query  : 'search'
-			, string : keyword
+		if ( G.mode !== 'webradio' ) {
+			var query = {
+				  query  : 'search'
+				, string : keyword
+				, gmode  : G.mode
+			}
+		} else {
+			var query = {
+				  query  : 'webradio'
+				, string : keyword
+				, mode   : 'search'
+			}
 		}
-		query.gmode = G.mode;
 		list( query, function( data ) {
 			if ( data != -1 ) {
 				data.modetitle = 'search';
@@ -1035,17 +1080,17 @@ $( '#button-lib-back' ).click( function() {
 		delete G.gmode;
 	}
 	$( '.menu' ).addClass( 'hide' );
-	if ( G.query.length < 2 || G.mode === 'webradio' ) {
+	if ( G.query.length < 2
+		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).text() === 'WEBRADIO' )
+	) {
 		$( '#button-library' ).click();
 		return
 	}
 	
-	if ( [ 'file', 'nas', 'sd', 'usb' ].indexOf( G.mode ) !== -1 && G.query[ 0 ] !== 'playlist' ) {
-		if ( $( '#lib-breadcrumbs a' ).length > 1 ) {
-			$( '#lib-breadcrumbs a' ).eq( -2 ).click();
-		} else {
-			$( '#button-library' ).click();
-		}
+	var $breadcrumbs = $( '#lib-breadcrumbs a' );
+	var bL = $breadcrumbs.length
+	if ( bL && G.query[ 0 ] !== 'playlist' ) {
+		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
 		var query = G.query[ G.query.length - 1 ];
@@ -1116,7 +1161,7 @@ $( '.mode' ).click( function() {
 		data.modetitle = path;
 		renderLibraryList( data );
 	}, 'json' );
-	query.path = path;
+	query.path = G.mode === 'webradio' ? '' : path;
 	query.modetitle = path;
 	G.query.push( query );
 } );
@@ -1135,16 +1180,25 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var path = $( this ).find( '.lipath' ).text();
 	if ( G.bookmarkedit ) return
 	
-	var query = {
-		  query  : 'ls'
-		, string : path
-		, format : [ 'file' ]
+	if ( path.slice( 0, 10 ) !== 'webradios/' ) {
+		var query = {
+			  query  : 'ls'
+			, string : path
+			, format : [ 'file' ]
+		}
+		var mode = path.split( '/' )[ 0 ].toLowerCase();
+	} else {
+		path = path.slice( 10 );
+		var query = {
+			  query  : 'webradio'
+			, string : path
+		}
+		var mode = 'webradio'
 	}
-	query.gmode = G.mode;
 	list( query, function( data ) {
 		data.path = path;
 		data.modetitle = path;
-		G.mode = 'file';
+		G.mode = mode;
 		renderLibraryList( data );
 	}, 'json' );
 	query.path = path;
@@ -1210,30 +1264,31 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
+		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 				  +'<p class="infoimgname">'+ name +'</p>';
 	} else {
-		var icon = '<div class="infobookmark"><i class="fa fa-bookmark"></i><br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
+		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
+					+'<br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
 	}
 	// [imagereplace]
 	// select file
 	//    - gif    > [file]   - no canvas
 	//    - others > [base64] - data:image/jpeg;base64,...
-	var imagefile = '/mnt/MPD/'+ path +'/coverart'; // no ext
+	var imagepath = path.slice( 0, 9 ) !== 'webradios' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : 'bookmark'
 		, title       : 'Change Bookmark Thumbnail'
-		, message     : icon
+		, message     : message
 		, filelabel   : '<i class="fa fa-folder-open"></i> File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
 		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : !thumbnail ? '' : orange
 		, button      : !thumbnail ? '' : function() {
-			bash( [ 'bookmarkreset', path ] );
+			bash( [ 'bookmarkreset', imagepath ] );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'bookmark' );
+			imageReplace( imagepath +'/coverart', 'bookmark' ); // no ext
 		}
 	} );
 } ).press( '.mode-bookmark', function() {
@@ -1246,10 +1301,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		var path = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		bash( [ 'coverexists', path ], function( cover ) {
-			if ( !cover ) buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
-			$this.append( buttonhtml );
-		} );
+		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )
@@ -1400,7 +1453,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	} else if ( $target.hasClass( 'lialbum' ) ) {
 		window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
 		return
-	} else if ( $this.find( '.fa-music' ).length || G.mode === 'webradio' || $target.data( 'target' ) ) {
+	} else if ( $this.find( '.fa-music' ).length || $target.data( 'target' ) ) {
 		contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1418,6 +1471,17 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 			, format : [ 'file' ]
 		}
 		var modetitle = path;
+	} else if ( G.mode === 'webradio' ) {
+		if ( $( this ).hasClass( 'dir' ) ) {
+			var query = {
+				  query  : 'webradio'
+				, string : path
+			}
+			var modetitle = path;
+		} else {
+			contextmenuLibrary( $this, $target );
+			return
+		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
 		if ( [ 'genre', 'composer', 'date' ].indexOf( G.mode ) !== -1 ) {
 			var format = [ 'album', 'artist' ];
@@ -1537,17 +1601,17 @@ $( '#button-pl-librandom' ).click( function() {
 	if ( G.status.librandom ) {
 		G.status.librandom = false;
 		$this.removeClass( 'bl' );
-		banner( 'Roll The Dice', 'Off ...', 'dice' );
+		banner( 'Roll The Dice', 'Off ...', 'librandom' );
 		bash( [ 'librandom', false ] );
 	} else {
 		info( {
-			  icon    : 'dice'
+			  icon    : 'librandom'
 			, title   : 'Roll The Dice'
 			, message : 'Randomly add songs and play continuously?'
 			, ok      : function() {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
-				banner( 'Roll The Dice', 'Add+play ...', 'dice' );
+				banner( 'Roll The Dice', 'Add+play ...', 'librandom' );
 				bash( [ 'librandom', true ] );
 			}
 		} );

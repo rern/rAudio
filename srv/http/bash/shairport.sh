@@ -1,19 +1,24 @@
 #!/bin/bash
 
-playerfile=/srv/http/data/shm/player
+# shairport-sync.conf > this:
+#    - start / stop
 
-if (( $# > 0 )); then # stop
-	mv $playerfile-{*,mpd}
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d '{"title":"AirPlay","text":"Stop ...","icon":"airplay blink","delay":-1}'
-	/srv/http/bash/cmd-pushstatus.sh
+dirbash=/srv/http/bash
+dirshm=/srv/http/data/shm
+dirairplay=$dirshm/airplay
+
+##### pause
+if (( $# > 0 )); then
 	systemctl stop shairport-meta
-	systemctl restart shairport-sync
+	echo pause > $dirairplay/state
+	start=$( cat $dirairplay/start 2> /dev/null )
+	timestamp=$( date +%s%3N )
+	echo $(( timestamp - start - 7500 )) > $dirairplay/elapsed # delayed 7s
+	$dirbash/cmd-pushstatus.sh
+##### start
 else
-	mv $playerfile-{*,airplay}
-	mpc stop
-	systemctl stop snapclient 2> /dev/null
-	systemctl try-restart snapclient spotifyd upmpdcli &> /dev/null
+	[[ ! -e $dirshm/player-airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport-meta
-	sleep 2
-	/srv/http/bash/cmd-pushstatus.sh
+	echo play > $dirairplay/state
+	$dirbash/cmd-pushstatus.sh
 fi

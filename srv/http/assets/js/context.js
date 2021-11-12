@@ -13,6 +13,7 @@ function bookmarkNew() {
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
+	if ( G.mode === 'webradio' ) path = 'webradios/'+ path;
 	var $el = $( '.mode-bookmark' );
 	if ( $el.length ) {
 		var $exist = $el.filter( function() {
@@ -60,13 +61,11 @@ function bookmarkIcon( path ) {
 	info( {
 		  icon       : 'bookmark'
 		, title      : 'Add Bookmark'
-		, width      : 500
 		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
 						+'<br><wh>'+ path +'</wh>'
 		, textlabel  : 'As:'
 		, values     : path.split( '/' ).pop()
 		, checkblank : 1
-		, boxwidth   : 'max'
 		, ok         : function() {
 			$.post( cmdphp, {
 				  cmd  : 'bookmark'
@@ -377,9 +376,6 @@ function tagEditor() {
 	}, 'json' );
 }
 function webRadioCoverart() {
-	var path = G.library ? G.list.path : G.status.file;
-	var radiopath = '/data/webradiosimg/'+ path.replace( /\//g, '|' );
-	var imagefile = '/srv/http'+ radiopath; //no ext
 	if ( G.playback ) {
 		var coverart = G.status.stationcover || G.coverdefault;
 	} else {
@@ -398,18 +394,23 @@ function webRadioCoverart() {
 		, buttonlabel : radioicon ? '' : '<i class="fa fa-webradio"></i>Default'
 		, buttoncolor : radioicon ? '' : orange
 		, button      : radioicon ? '' : function() {
-			bash( [ 'stationcoverreset', imagefile ] );
+			bash( [ 'webradiocoverreset', coverart ] );
 		}
 		, ok          : function() {
-			imageReplace( imagefile, 'webradio' );
+			if ( coverart !== G.coverdefault ) {
+				var imagefilenoext = coverart.slice( 0, -15 );
+			} else {
+				var url = G.list.li.find( '.lipath' ).text().replace( /.*(http.*:)/, '$1' );
+				var imagefilenoext = '/data/webradiosimg/'+ url.replace( /\//g, '|' );
+			}
+			imageReplace( '/srv/http'+ imagefilenoext, 'webradio' );
 		}
 	} );
 }
 function webRadioDelete() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url = G.list.path;
-	var urlname = url.toString().replace( /\//g, '|' );
+	var url = G.list.li.find( '.li2' ).text();
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Delete WebRadio'
@@ -421,16 +422,15 @@ function webRadioDelete() {
 		, okcolor : red
 		, ok      : function() {
 			G.list.li.remove();
-			if ( !$( '#lib-list li' ).length ) $( '#button-library' ).click();
-			bash( ['webradiodelete', url ] );
+			var lipath = $( '#lib-path .lipath' ).text();
+			bash( ['webradiodelete', url, lipath ] );
 		}
 	} );
 }
 function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url = G.list.path;
-	var urlname = url.toString().replace( /\//g, '|' );
+	var url = G.list.path.replace( /.*(http.*:)/, '$1' )
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
@@ -452,9 +452,8 @@ function webRadioEdit() {
 			if ( $exist.length ) {
 				webRadioExists( $exist.next().text(), newurl );
 			} else {
-				bash( [ 'webradioedit', name, newname, url, newurl ], function() {
-					$( '#mode-webradio' ).click();
-				} );
+				var lipath = $( '#lib-path .lipath' ).text();
+				bash( [ 'webradioedit', name, newname, url, newurl, lipath ] );
 			}
 		}
 	} );
@@ -480,8 +479,24 @@ function webRadioNew( name, url ) {
 		, textlabel    : [ 'Name', 'URL' ]
 		, values       : ( name || url ? [ name, url ] : '' )
 		, checkblank   : 1
-		, footer       : '( Some <code>*.m3u</code> or <code>*.pls</code> might be applicable )'
+		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
+		, footeralign  : 'right'
 		, boxwidth     : 'max'
+		, beforeshow   : function() {
+			$( '#infoContent .addwebradiodir' ).click( function() {
+				info( {
+					  icon       : 'webradio'
+					, title      : 'Add New Folder'
+					, textlabel  : 'Name'
+					, checkblank : 1
+					, ok         : function() {
+						var path = $( '#lib-path .lipath' ).text().replace( 'WEBRADIO', '' );
+						path += path ? '/' : '';
+						bash( [ 'wrdirnew', path + infoVal() ] );
+					}
+				} );
+			} );
+		}
 		, ok           : function() {
 			var values = infoVal();
 			var name = values[ 0 ];
@@ -493,7 +508,8 @@ function webRadioNew( name, url ) {
 				webRadioExists( $exist.next().text(), url, name );
 			} else {
 				if ( [ 'm3u', 'pls' ].indexOf( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
-				bash( [ 'webradioadd', name, url ], function( data ) {
+				var lipath = $( '#lib-path .lipath' ).text();
+				bash( [ 'webradioadd', name, url, lipath ], function( data ) {
 					if ( data == -1 ) {
 						info( {
 							  icon    : 'webradio'
@@ -699,6 +715,45 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
 			infoUpdate( G.list.path );
 			return
+		case 'wrdirdelete':
+			var path = G.list.li.find( '.lipath' ).text();
+			info( {
+				  icon    : 'webradio'
+				, title   : 'WebRadio Delete'
+				, message : 'Folder:'
+							+'<br><wh>'+ path +'</wh>'
+				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
+				, okcolor : red
+				, ok      : function() {
+					bash( [ 'wrdirdelete', path ], function( std ) {
+						if ( std == -1 ) {
+							info( {
+								  icon    : 'webradio'
+								, title   : 'WebRadio Delete'
+								, message : 'Folder <wh>'+ path +'</wh> not empty.'
+							} );
+						}
+					} );
+				}
+			} );
+			return
+		case 'wrdirrename':
+			var path = G.list.li.find( '.lipath' ).text().split( '/' );
+			var name = path.pop();
+			var path = path.join( '/' );
+			info( {
+				  icon        : 'webradio'
+				, title       : 'WebRadio Rename'
+				, textlabel   : 'Name'
+				, values      : name
+				, checkblank  : 1
+				, checkchange : 1
+				, oklabel     : 'Rename'
+				, ok          : function() {
+					bash( [ 'wrdirrename', path, name, infoVal() ] );
+				}
+			} );
+			return
 		case 'wrsave':
 			webRadioSave( G.list.li.find( '.lipath' ).text() );
 			return
@@ -719,8 +774,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	
 	// replaceplay|replace|addplay|add //////////////////////////////////////////
-	var webradio = G.list.path.slice( 0, 4 ) === 'http';
-	var path = G.list.path;
+	var path = G.mode !== 'webradio' ? G.list.path : G.list.path.replace( /.*(http.*:)/, '$1' );
 	var mpccmd;
 	// must keep order otherwise replaceplay -> play, addplay -> play
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
@@ -733,7 +787,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				} else {
 					mpccmd = [ 'plload', path ];
 				}
-			} else if ( G.list.singletrack || webradio ) { // single track
+			} else if ( G.list.singletrack || G.mode === 'webradio' ) { // single track
 				mpccmd = [ 'pladd', path ];
 			} else if ( $( '.licover' ).length && !$( '.licover .lipath' ).length ) {
 				mpccmd = [ 'plfindadd', 'multi', G.mode, path, 'album', G.list.album ];
@@ -771,7 +825,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];
-	var sleep = webradio ? 1 : 0.2;
+	var sleep = G.mode === 'webradio' ? 1 : 0.2;
 	var contextCommand = {
 		  add         : mpccmd
 		, addplay     : mpccmd.concat( [ 'addplay', sleep ] )

@@ -44,6 +44,8 @@ disconnect = () => {
 	}
 }
 function bookmarkCover( url, path ) {
+	var url = url.replace( '/srv/http', '' );
+	var path = path.replace( '/srv/http/data/', '' );
 	$( '.bookmark' ).each( function() {
 		var $this = $( this );
 		if ( $this.find( '.lipath' ).text() === path ) {
@@ -59,6 +61,15 @@ function bookmarkCover( url, path ) {
 			return false
 		}
 	} );
+}
+function statusUpdate( data ) {
+	var prevstate = G.status.state;
+	$.each( data, function( key, value ) {
+		G.status[ key ] = value;
+	} );
+	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+	setButtonControl();
+	if ( G.localhost && G.display.onwhileplay && G.status.state !== prevstate ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -78,7 +89,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'spotify', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -117,27 +128,20 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'playlist':  psPlaylist( data );  break;
 		case 'reload':    psReload( data );    break;
 		case 'restore':   psRestore( data );   break;
-		case 'spotify':   psSpotify( data );   break;
 		case 'volume':    psVolume( data );    break;
 		case 'vumeter':   psVUmeter( data );   break;
 		case 'webradio':  psWebradio( data );  break;
 	}
 }
 function psAirplay( data ) {
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
-	if ( !$( '#playback' ).hasClass( 'fa-airplay' ) ) displayBottom();
-	renderPlayback();
-	clearTimeout( G.debounce );
+	statusUpdate( data );
+	if ( G.playback ) renderPlayback();
 }
 function psBtClient( connected ) {
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
-	if ( G.bookmarkedit ) return
-	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		if ( 'html' in data ) {
@@ -152,6 +156,8 @@ function psBookmark( data ) {
 				$bookmark.find( '.bklabel' ).text( data.name );
 			}
 		}
+		renderLibrary();
+		$( '.mode-bookmark, .bklabel' ).removeAttr( 'style' );
 		if ( 'order' in data ) G.display.order = data.order;
 	}, G.debouncems );
 }
@@ -227,24 +233,18 @@ function psCoverart( data ) {
 					.removeClass( 'hide' );
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			}
-			if ( G.librarylist && G.mode === 'webradio' ) {
-				var srcnoext = src.slice( 0, -15 );
-				var srcthumb = srcnoext +'-thumb'+ src.slice( -15 );
-				var $el = webradioIcon( srcnoext );
-				$el.replaceWith( '<img class="lazyload iconthumb lib-icon loaded" data-target="#menu-webradio" data-ll-status="loaded" src="'+ srcthumb +'">' );
+			} else if ( G.librarylist && G.mode === 'webradio' ) {
+				psWebradio( -1 );
 			}
 			break;
 		case 'webradioreset':
 			G.status.stationcover = '';
 			if ( G.playback ) {
-				coverartDefault();
+				if ( G.status.coverart === src ) coverartDefault();
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			}
-			if ( G.mode === 'webradio' ) {
-				var $el = webradioIcon( src );
-				$el.replaceWith( '<i class="fa fa-webradio lib-icon" data-target="#menu-webradio"></i>' );
+			} else if ( G.librarylist && G.mode === 'webradio' ) {
+				psWebradio( -1 );
 			}
 			break;
 	}
@@ -314,11 +314,7 @@ function psMpdPlayer( data ) {
 			delete data.control;
 			delete data.volume;
 		}
-		$.each( data, function( key, value ) {
-			G.status[ key ] = value;
-		} );
-		if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
-		setButtonControl();
+		statusUpdate( data );
 		if ( G.playback ) {
 			displayPlayback();
 			renderPlayback();
@@ -329,11 +325,8 @@ function psMpdPlayer( data ) {
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
-	} );
+	statusUpdate( data );
 	if ( G.playback ) {
-		setButtonControl();
 		setInfo();
 		setCoverart();
 	} else if ( G.playlist ) {
@@ -380,6 +373,7 @@ function psNotify( data ) {
 			$( '#loader' ).addClass( 'splash' );
 			setTimeout( bannerHide, 10000 );
 		}
+		switchPage( 'playback' );
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
@@ -424,6 +418,7 @@ function psPlaylist( data ) {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
+		$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
 	}, G.debouncems );
 }
 function psRelays( response ) {
@@ -513,25 +508,6 @@ function psRestore( data ) {
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
 }
-function psSpotify( data ) {
-	if ( G.status.player !== 'spotify' ) {
-		G.status.player = 'spotify';
-		displayBottom();
-	}
-	if ( !G.playback ) return
-	
-	if ( 'pause' in data ) {
-		G.status.state = 'pause'
-		G.status.elapsed = data.pause;
-	} else {
-		$.each( data, function( key, value ) {
-			G.status[ key ] = value;
-		} );
-	}
-	if ( !$( '#playback' ).hasClass( 'fa-spotify' ) ) displayBottom();
-	renderPlayback();
-	setButtonControl();
-}
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
 		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
@@ -562,8 +538,20 @@ function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
 }
 function psWebradio( data ) {
-	$( '#mode-webradio gr' ).text( data )
-	if ( G.librarylist ) $( '#mode-webradio gr' ).click();
-	if ( G.playlist && !G.local ) getPlaylist();
+	if ( data != -1 ) $( '#mode-webradio gr' ).text( data );
+	if ( G.librarylist && G.mode === 'webradio' ) {
+		var query = G.query[ G.query.length - 1 ];
+		if ( query.path ) {
+			list( query, function( data ) {
+				data.path = query.path;
+				data.modetitle = query.modetitle;
+				renderLibraryList( data );
+			}, 'json' );
+		} else {
+			$( '#mode-webradio gr' ).click();
+		}
+	} else if ( G.playlist && !G.local ) {
+		getPlaylist();
+	}
 }
 

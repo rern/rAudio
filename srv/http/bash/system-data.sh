@@ -19,6 +19,7 @@ data='
 # for interval refresh
 (( $# > 0 )) && echo {$data} && exit
 
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 bluetooth=$( systemctl -q is-active bluetooth && echo true )
@@ -153,6 +154,7 @@ data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "bluetooth"        : '$bluetooth'
+, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || -e $dirshm/player-bluetooth ]] && echo true )'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'

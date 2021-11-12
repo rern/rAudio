@@ -7,12 +7,39 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211021
-echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
+#20211101
+dir=/etc/systemd/system/upmpdcli.service.d
+if [[ -e $dir ]]; then
+	rm -rf $dir
+	systemctl stop upmpdcli
+	echo 'upmpdcli ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/upmpdcli
+fi
+[[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+grep -q battery $file || sed -i '/ExecStartPost/ i\
+ExecStart=\
+ExecStart=/usr/lib/bluetooth/bluetoothd -P battery' $file
+mkdir -p /srv/http/data/shm/{airplay,spotify}
+systemctl disable --now mpdscribble@mpd
+file=$dirsystem/localbrowser.conf
+if [[ -e $file ]] && ! grep -q onwhileplay $file; then
+	. $file
+	echo "\
+rotate=$rotate
+zoom=$( echo "print $zoom * 100" | perl )
+screenoff=$(( $screenoff / 60 ))
+onwhileplay=false
+cursor=$cursor
+" > $dirsystem/localbrowser.conf
+	rm -rf /root/.config/chromium
+	systemctl try-restart localbrowser
+fi
+if ! grep -q bton /etc/udev/rules.d/bluetooth.rules; then
+	echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
-udevadm control --reload-rules && udevadm trigger
-rm -rf /root/.config/chromium
-systemctl -q is-active localbrowser && systemctl restart localbrowser
+	udevadm control --reload-rules && udevadm trigger
+fi
+systemctl try-restart shairport-sync
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
 if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
@@ -74,6 +101,8 @@ done
 installstart "$1"
 
 getinstallzip
+
+[[ $( uname -m ) == armv6l ]] && sed -i -e 's|/usr/bin/taskset -c 3 ||' -e '/upnpnice/ d' /etc/systemd/system/upmpdcli.service
 
 systemctl daemon-reload
 

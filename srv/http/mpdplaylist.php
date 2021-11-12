@@ -3,7 +3,6 @@ include '/srv/http/indexbar.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $dirplaylists = '/srv/http/data/playlists/';
-$dirtmp = '/srv/http/data/shm';
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current, delete, edit, get, list, load, save
@@ -212,15 +211,17 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg'; // replaced with icon on load error(faster than existing check)
+				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.'.jpg' ; // replaced with icon on load error(faster than existing check)
+				$icon = 'music';
 			} else {
 				$class = 'audiocd';
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
 				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
+				$icon = 'audiocd';
 			}
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
-						.'<img class="lazyload iconthumb pl-icon" data-src="'.rawurlencode( $thumbsrc ).'" data-target="#menu-filesavedpl">'
+						.'<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
 						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>'
@@ -244,18 +245,17 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countupnp++;
 		} else {
 			$stationname = $list->Name;
-			$notsaved = $stationname === '';
-			$file = preg_replace( '/\?.*$/', '', $file );
-			$urlname = str_replace( '/', '|', $file );
-			if ( !$notsaved ) {
-				$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
+			if ( $stationname !== '' ) {
+				$notsaved = 0;
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$list->urlname.'-thumb.'.$time.'.jpg"'
+						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
+				$notsaved = 1;
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li class="webradio'.( $notsaved ? ' notsaved' : '' ).'">'
 						.$icon
-						.'<a class="lipath">'.$file.'</a>'
+						.'<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>'
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<div class="li1"><span class="name">'.$stationname.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>'
@@ -279,10 +279,7 @@ function playlist() { // current playlist
 	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
-	if ( !count( $lists ) ) {
-		@unlink( '/srv/http/data/shm/playlist' );
-		exit( '-1' );
-	}
+	if ( !count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
 	foreach( $lists as $list ) {
@@ -314,9 +311,14 @@ function playlist() { // current playlist
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$radiofile = '/srv/http/data/webradios/'.str_replace( '/', '|', $each->file );
-			$name = file( $radiofile, FILE_IGNORE_NEW_LINES )[ 0 ];
-			$each->Name = explode( '^^', $name )[ 0 ];
+			$urlname = str_replace( '/', '|', $each->file );
+			$radiofile = '/srv/http/data/webradios/'.$urlname;
+			if ( !file_exists( $radiofile ) ) {
+				$radiofile = '';
+				$radiofile = exec( 'find /srv/http/data/webradios -name "'.$urlname.'"' );
+			}
+			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
+			$each->urlname = $urlname;
 		}
 		$array[] = $each;
 	}

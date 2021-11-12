@@ -7,16 +7,9 @@
 #    - updating - resume mpc update
 #    - listing  - resume without mpc update
 
-dirdata=/srv/http/data
-diraddons=$dirdata/addons
-dirmpd=$dirdata/mpd
-dirsystem=$dirdata/system
+. /srv/http/bash/common.sh
 
 touch $dirsystem/listing
-
-notify() {
-	curl -s -X POST http://127.0.0.1/pub?id=notify -d "$1"
-}
 
 listAlbums() {
 	albums=$1
@@ -92,14 +85,14 @@ for mode in album albumartist artist composer conductor genre date; do
 	else
 		printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dircount | wc -l )
 	fi
-	(( $mode > 0 )) && php /srv/http/bash/cmd-listsort.php $dircount
+	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $dircount
 done
 ##### count #############################################
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
 done
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( ls -1q $dirdata/webradios | wc -l )
+webradio=$( find $dirdata/webradios -type f | wc -l )
 counts='
   "album"       : '$album'
 , "albumartist" : '$albumartist'
@@ -120,8 +113,11 @@ rm -f $dirsystem/{updating,listing}
 
 if [[ -n $toolarge ]]; then
 	sleep 3
-	notify '{"title":"Update Library Database","text":"Library is too large.<br>Album list cannot be created.","icon":"refresh-library","delay":-1}'
+	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
 	exit
 fi
 
-find /mnt/MPD -name .mpdignore | sort -V > $dirmpd/mpdignorelist &
+(
+	list=$( find /mnt/MPD -name .mpdignore | sort -V )
+	[[ -n $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+) &

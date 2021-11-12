@@ -127,6 +127,9 @@ $( '#list' ).on( 'click', 'li', function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
+	var active = infoPlayerActive( $( this ) );
+	if ( active ) return
+	
 	info( {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
@@ -437,17 +440,8 @@ $( '#setting-vuled' ).click( function() {
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : G.vuledconf
+		, checkchanged : 1
 		, boxwidth     : 80
-		, beforeshow   : function() {
-			$( '#infoOk' ).toggleClass( 'disabled', G.vuled );
-			$( '#infoContent select' ).on( 'change', function() {
-				var v = infoVal();
-				var changed = G.vuled && v.join( ' ' ) === G.vuledconf.join( ' ' );
-				var duplicate = new Set( v ).size !== v.length;
-				$( '#infoOk' ).toggleClass( 'disabled', changed || duplicate );
-				if ( duplicate ) banner( 'VU LED', 'Duplicate pins', 'led' );
-			} );
-		}
 		, cancel        : function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
 		}
@@ -571,6 +565,8 @@ $( '#setting-soundprofile' ).click( function() {
 			var $radio = $( '#infoContent input:radio' );
 			$radio.last().prop( 'disabled', true );
 			$text.keyup( function() {
+				var $this = $( this )
+				$this.val( $this.val().replace( /[^0-9]/, '' ) );
 				values = infoVal().slice( 0, -1 ).join( ' ' );
 				if ( radioval.indexOf( values ) === -1 ) values = 0;
 				$radio.val( [ values ] );
@@ -847,13 +843,16 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#bluetooth' ).prop( 'checked', G.bluetooth );
+	$( '#bluetooth' )
+		.prop( 'checked', G.bluetooth )
+		.toggleClass( 'disabled', G.bluetoothactive );
 	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
 	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
-	$( '#wlan' ).prop( 'checked', G.wlan );
+	$( '#wlan' )
+		.prop( 'checked', G.wlan )
+		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
+		.parent().prev().toggleClass( 'single', !G.wlan );
 	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
-	$( '#wlan' ).parent().prev().toggleClass( 'single', !G.wlan );
-	disableSwitch( '#wlan', G.hostapd || G.wlanconnected );
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
 		var $this = $( this );
