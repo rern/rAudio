@@ -371,6 +371,7 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
+	$( '#play-group, #vol-group' ).toggleClass( 'hide', !G.display.buttons );
 	if ( G.display.vumeter ) {
 		var aligntop = 'stretch';
 	} else if ( $( '.btn-group' ).is( ':hidden' ) ) {
@@ -725,7 +726,6 @@ function infoPlayback() {
 				displayCheckboxSet( buttons );
 			}
 			if ( !G.display.time && !G.display.cover ) displayCheckboxSet( bars, 0, 1 );
-			if ( G.status.player !== 'mpd' ) displayCheckboxSet( buttons );
 			$time.add( $volume ).change( function() {
 				var t = $time.prop( 'checked' );
 				var c = $cover.prop( 'checked' );
