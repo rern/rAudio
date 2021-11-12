@@ -1093,8 +1093,8 @@ function renderLibraryList( data ) {
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( data.path === 'WEBRADIO' ) {
-		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">'
-					  + 'WEBRADIO</span>'+ radiobtn;
+		$( '#lib-path .lipath' ).empty();
+		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>'+ radiobtn;
 	} else if ( [ 'file', 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
