@@ -1064,6 +1064,18 @@ function renderLibrary() {
 	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
+	$( '#lib-mode-list .lazyload' ).off( 'error' ).on( 'error', function() {
+		var $this = $( this );
+		var src = $this.attr( 'src' );
+		if ( src.slice( -3 ) === 'jpg' ) {
+			$this.attr( 'src', src.slice( 0, -3 ) + 'gif' );
+		} else if ( src.slice( 0, -3 ) + 'gif' ) {
+			$this.replaceWith(
+				'<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label">'
+				+ $this.data( 'label' ) +'</span></div>'
+			);
+		}
+	} );
 }
 function renderLibraryList( data ) {
 	if ( data == -1 ) {

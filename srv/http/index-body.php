@@ -89,25 +89,11 @@ if ( count( $files ) ) {
 			$srccoverart = $path.'/coverart.';
 			$pathcoverart = '/srv/http'.$srccoverart;
 		}
-		$ext = '';
-		$dataalbum = '';
-		if ( file_exists( $pathcoverart.'gif' ) ) {
-			$ext = '.gif';
-		} else if ( file_exists( $pathcoverart.'jpg' ) ) {
-			$ext = '.jpg';
-		}
-		if ( $ext ) {
-			$iconhtml = '<img class="bkcoverart" src="'.rawurlencode( $srccoverart ).time().$ext.'">';
-			if ( file_exists( $path.'/thumb'.$ext ) ) $dataalbum = 'data-album="1"';
-		} else {
-			$iconhtml = '<i class="fa fa-bookmark"></i>'
-					   .'<div class="divbklabel"><span class="bklabel label">'.str_replace( '|', '/', $name ).'</span></div>';
-		}
 		$modehtml.= '
 			<div class="lib-mode bookmark">
 				<div class="mode mode-bookmark" data-mode="bookmark" '.$dataalbum.'>
 					<a class="lipath">'.$bkpath.'</a>
-					'.$iconhtml.'
+					<img class="bkcoverart lazyload" data-src="'.rawurlencode( $srccoverart ).time().'.jpg" data-label="'.$name.'">
 				</div>
 			</div>
 		';
