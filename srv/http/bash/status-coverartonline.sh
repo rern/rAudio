@@ -49,13 +49,13 @@ if [[ -n $image || $image != null ]]; then
 fi
 [[ -z $url || $url == null ]] && exit
 
-ext=${url/*.}
 if [[ $type == audiocd ]]; then
 	urlname=/data/audiocd/$discid
 else
 	[[ -n $type ]] && prefix=$type || prefix=online
 	urlname=/data/shm/$prefix-$name
 fi
+ext=${url/*.}
 coverart=$urlname.$ext
 coverfile=/srv/http$coverart
 curl -sL $url -o $coverfile
