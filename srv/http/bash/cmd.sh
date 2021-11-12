@@ -396,12 +396,6 @@ $mpdpath" )
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;
-coverexists )
-	ls -1 "/mnt/MPD/${args[1]}" \
-		| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
-		| grep -i '.gif$\|.jpg$\|.png$' \
-		| head -1
-	;;
 coverfileslimit )
 	for type in local online webradio; do
 		files=$( ls -1t $dirshm/$type-* 2> /dev/null )

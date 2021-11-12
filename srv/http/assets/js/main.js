@@ -1301,10 +1301,8 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		var path = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		bash( [ 'coverexists', path ], function( cover ) {
-			if ( !cover ) buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
-			$this.append( buttonhtml );
-		} );
+		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )
