@@ -6,7 +6,11 @@
 
 . $dirshm/scrobble
 rm -f $dirshm/scrobble
-[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
+if [[ -z $Artist || -z $Title || $state == pause ]] \
+	|| ( [[ -n $elapsed ]] && (( $elapsed < $Time / 2 && $elapsed < 240 )) ) \
+	|| ( [[ -n $Time ]] && (( $Time < 30 )) ); then
+	exit
+fi
 
 if [[ $state == stop || $1 == stop ]]; then # $1 == stop: cmd.sh playerstop
 	[[ -z $Time || -z $elapsed ]] && exit
