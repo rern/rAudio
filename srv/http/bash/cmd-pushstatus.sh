@@ -13,13 +13,19 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	grep -q 'webradio.*true' <<< "$status" && webradio=1
 	if [[ -e $dirshm/status ]]; then
 		filter='^Artist\|^Title\|^Album'
-		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
-		[[ $( grep "$filter" $dirshm/statusnew | sort ) == $( grep "$filter" $dirshm/status | sort ) ]] && exit
+		[[ "$( grep "$filter" $dirshm/statusnew | sort )" != "$( grep "$filter" $dirshm/status | sort )" ]] && trackchanged=1
+		if [[ -n $webradio ]]; then
+			[[ -z $trackchanged  ]] && exit
+		else
+			filter='^state\|^elapsed'
+			[[ "$( grep "$filter" $dirshm/statusnew | sort )" != "$( grep "$filter" $dirshm/status | sort )" ]] && statuschanged=1
+			[[ -z $trackchanged && -z $statuschanged ]] && exit
+		fi
 		
 		if [[ -z $webradio \
 			&& -e $dirsystem/scrobble \
 			&& ! -e $dirshm/player-snapcast \
-			&& ! -e $dirshm/prevnextseek ]]; then
+			&& ( -n $trackchanged || -e $dirshm/elapsedscrobble ) ]]; then
 			player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 			if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
 				mv -f $dirshm/{status,scrobble}
