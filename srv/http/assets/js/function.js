@@ -367,7 +367,7 @@ function displayPlayback() {
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
-	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' || G.status.player !== 'upnp' );
+	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', !G.display.buttons );
