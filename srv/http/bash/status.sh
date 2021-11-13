@@ -281,11 +281,10 @@ elif [[ -n $stream ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $icon == radiofrance || $icon == radioparadise ]]; then
+			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				id=$( basename ${file/-*} )
-				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
-			fi
-			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
+				[[ ${id:0:13} == francemusique ]] && id=${id:13}
+				[[ -z $id ]] && id=francemusique
 				stationname=${station/* - }
 				if [[ ! -e $dirshm/radio || -z $( head -3 $dirshm/status 2> /dev/null ) ]]; then
 					echo "\
