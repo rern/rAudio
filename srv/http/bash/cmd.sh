@@ -637,7 +637,7 @@ mpcprevnext )
 	fi
 	;;
 mpcseek )
-	seek=${args[1]}
+	elapsed=${args[1]}
 	state=${args[2]}
 	if [[ $state == stop ]]; then
 		touch $dirshm/nostatus
@@ -645,7 +645,8 @@ mpcseek )
 		mpc -q pause
 		rm $dirshm/nostatus
 	fi
-	mpc -q seek $seek
+	sed -i "s/^elapsed=.*/elapsed=$elapsed/" $dirshm/status
+	mpc -q seek $elapsed
 	;;
 mpcupdate )
 	path=${args[1]}

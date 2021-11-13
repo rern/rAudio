@@ -7,7 +7,7 @@
 . /srv/http/bash/common.sh
 
 . $dirshm/scrobble
-[[ -z $Artist || -z $Title ]] && exit
+[[ -z $Artist || -z $Title || $state == pause ]] && exit
 
 if [[ $state == play ]]; then # skip if start playing
 	statuselapsed=$( grep ^elapsed= $dirshm/status | cut -d= -f2 )
