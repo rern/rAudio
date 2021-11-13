@@ -7,17 +7,20 @@
 . /srv/http/bash/common.sh
 
 . $dirshm/scrobble
-[[ -z $Artist || -z $Title || $state == pause ]] && exit
+[[ -z $Artist || -z $Title || ( $state == pause && ! -e $dirshm/elapsedscrobble ) ]] && exit
 
 if [[ $state == play ]]; then # skip if start playing
 	statuselapsed=$( grep ^elapsed= $dirshm/status | cut -d= -f2 )
 	diff=$(( statuselapsed - elapsed ))
 	(( ${diff/-} < 5 )) && exit
-elif [[ $state == stop ]]; then
-	[[ -z $Time || -z $elapsed ]] && exit
-	(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
 fi
 
+if [[ -e $dirshm/elapsedscrobble ]]; then
+	elapsed=$( cat $dirshm/elapsedscrobble )
+	(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
+else
+	[[ -z $webradio ]] && exit
+fi
 keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 apikey=${keys[0]}
 sharedsecret=${keys[1]}

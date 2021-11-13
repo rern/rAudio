@@ -18,7 +18,8 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 		
 		if [[ -z $webradio \
 			&& -e $dirsystem/scrobble \
-			&& ! -e $dirshm/player-snapcast ]]; then
+			&& ! -e $dirshm/player-snapcast \
+			&& ! -e $dirshm/prevnextseek ]]; then
 			player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 			if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
 				mv -f $dirshm/{status,scrobble}

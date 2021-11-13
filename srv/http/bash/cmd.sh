@@ -589,7 +589,7 @@ mpcoption )
 	;;
 mpcplayback )
 	command=${args[1]}
-	pos=${args[2]} # if pause / stop - elapsed=${args[2]}
+	pos=${args[2]} # if stop = elapsed
 	systemctl stop radio mpd_oled
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
@@ -597,17 +597,17 @@ mpcplayback )
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
+		[[ -e $dirsystem/scrobble && $command == stop && -n $pos ]] && echo $pos > $dirshm/elapsedscrobble
 		mpc -q $command
-		elapsed=$pos
-		[[ -z $elapsed ]] && elapsed=false
 		killall cava &> /dev/null
-		sed -i -e "s/^state=.*/state=$command/" -e "s/^elapsed=.*/elapsed=$elapsed/" $dirshm/status
 	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
+	touch $dirshm/prevnextseek
+	( sleep 5 && rm -f $dirshm/prevnextseek ) &> /dev/null &
 	rm -f $dirshm/status
 	touch $dirshm/nostatus
 	systemctl stop radio mpd_oled
@@ -637,16 +637,17 @@ mpcprevnext )
 	fi
 	;;
 mpcseek )
-	elapsed=${args[1]}
+	seek=${args[1]}
 	state=${args[2]}
+	touch $dirshm/prevnextseek
+	( sleep 5 && rm -f $dirshm/prevnextseek ) &> /dev/null &
 	if [[ $state == stop ]]; then
 		touch $dirshm/nostatus
 		mpc -q play
 		mpc -q pause
 		rm $dirshm/nostatus
 	fi
-	sed -i "s/^elapsed=.*/elapsed=$elapsed/" $dirshm/status
-	mpc -q seek $elapsed
+	mpc -q seek $seek
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -740,13 +741,8 @@ playerstart )
 playerstop )
 	player=${args[1]}
 	elapsed=${args[2]}
-	[[ -z $elapsed ]] && elapsed=false
 	killall cava &> /dev/null
-	sed -i -e 's/^state=.*/state=stop/' -e "s/^elapsed=.*/elapsed=$elapsed/" $dirshm/status
-	if [[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]]; then
-		mv -f $dirshm/{status,scrobble}
-		$dirbash/scrobble.sh &> /dev/null &
-	fi
+	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player && -n $elapsed ]] && echo $elapsed > $dirshm/elapsedscrobble
 	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd
 	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
@@ -948,7 +944,7 @@ scrobble )
 Artist="${args[1]}"
 Title="${args[2]}"
 Album="${args[3]}"
-state=play
+webradio=true
 EOF
 	$dirbash/scrobble.sh
 	;;
