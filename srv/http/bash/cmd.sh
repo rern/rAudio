@@ -596,7 +596,9 @@ mpcplayback )
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
+		rm -f $dirshm/prevnextseek
 	else
+		rm -f $dirshm/prevnextseek
 		[[ -e $dirsystem/scrobble && $command == stop && -n $pos ]] && echo $pos > $dirshm/elapsedscrobble
 		mpc -q $command
 		killall cava &> /dev/null
@@ -606,8 +608,7 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	touch $dirshm/prevnextseek
-	( sleep 5 && rm -f $dirshm/prevnextseek ) &> /dev/null &
+	[[ -e $dirsystem/scrobble ]] && touch $dirshm/prevnextseek
 	rm -f $dirshm/status
 	touch $dirshm/nostatus
 	systemctl stop radio mpd_oled
@@ -639,8 +640,7 @@ mpcprevnext )
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
-	touch $dirshm/prevnextseek
-	( sleep 5 && rm -f $dirshm/prevnextseek ) &> /dev/null &
+	[[ -e $dirsystem/scrobble ]] && touch $dirshm/prevnextseek
 	if [[ $state == stop ]]; then
 		touch $dirshm/nostatus
 		mpc -q play
