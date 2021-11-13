@@ -1172,7 +1172,7 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
-	if ( !G.status.elapsed ) {
+	if ( G.status.elapsed === false ) {
 		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 		if ( G.status.state === 'play' ) {
