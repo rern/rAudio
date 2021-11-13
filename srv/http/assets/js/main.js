@@ -1081,7 +1081,7 @@ $( '#button-lib-back' ).click( function() {
 	}
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.query.length < 2
-		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).text() === 'WEBRADIO' )
+		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).is( ':empty' ) )
 	) {
 		$( '#button-library' ).click();
 		return
