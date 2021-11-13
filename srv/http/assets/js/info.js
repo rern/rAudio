@@ -566,14 +566,16 @@ function info( json ) {
 		if ( O.checkblank || O.checklength || O.checkchanged ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', function() {
 				if ( O.checkblank ) checkBlank();
-				if ( O.checklength ) checkLength();
+				if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
 				if ( O.checkchanged ) {
 					var prevval = O.values.join( '' );
 					var values = infoVal();
 					var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 					O.nochange = prevval === val;
 				}
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+				setTimeout( function() { // ios: force after checkLength
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+				}, 50 );
 			} );
 		}
 		if ( O.checkchanged ) {
