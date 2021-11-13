@@ -43,6 +43,6 @@ reponse=$( curl -sX POST \
 if [[ $reponse =~ error ]]; then
 	msg="Error: $( jq -r .message <<< $response )"
 else
-	[[ -e $dirsystem/scrobble.conf/notify ]] && msg="$Title"
+	[[ -e $dirsystem/scrobble.conf/notify ]] && msg="${Title//\"/\\\"}"
 fi
 [[ -n $msg ]] && pushstreamNotify Scrobble "$msg" lastfm
