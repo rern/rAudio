@@ -16,7 +16,10 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
 		[[ $( grep "$filter" $dirshm/statusnew | sort ) == $( grep "$filter" $dirshm/status | sort ) ]] && exit
 		
-		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast ]]; then
+		if [[ -z $webradio \
+			&& -e $dirsystem/scrobble \
+			&& ! -e $dirshm/player-snapcast ]] \
+			&& ! grep -q 'state=pause' $dirshm/status; then
 			player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 			if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
 				mv -f $dirshm/{status,scrobble}

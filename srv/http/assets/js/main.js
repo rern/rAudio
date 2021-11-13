@@ -893,7 +893,7 @@ $( '.btn-cmd' ).click( function() {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
 			if ( G.status.player !== 'mpd' ) {
-				bash( [ 'playerstop', G.status.player ] );
+				bash( [ 'playerstop', G.status.player, G.status.elapsed ] );
 				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}
@@ -901,7 +901,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#title' ).removeClass( 'gr' );
 			if ( !G.status.playlistlength ) return
 			
-			bash( [ 'mpcplayback', 'stop' ] );
+			bash( [ 'mpcplayback', 'stop', G.status.elapsed ] );
 			$( '#pl-list .elapsed' ).empty();
 			if ( G.playback ) {
 				$( '#total' ).empty();
@@ -928,7 +928,7 @@ $( '.btn-cmd' ).click( function() {
 			if ( G.status.state === 'stop' ) return
 			
 			G.status.state = cmd;
-			bash( [ 'mpcplayback', 'pause' ] );
+			bash( [ 'mpcplayback', 'pause', G.status.elapsed ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );

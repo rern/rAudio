@@ -589,16 +589,19 @@ mpcoption )
 	;;
 mpcplayback )
 	command=${args[1]}
-	pos=${args[2]}
+	pos=${args[2]} # if pause / stop - elapsed=${args[2]}
 	systemctl stop radio mpd_oled
-	mpc | grep -q '^\[paused\]' && pause=1
-	mpc -q $command $pos
 	if [[ $command == play ]]; then
+		mpc | grep -q '^\[paused\]' && pause=1
+		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
+		mpc -q $command
+		elapsed=$pos
+		[[ -z $elapsed ]] && elapsed=false
 		killall cava &> /dev/null
-		[[ $command == stop ]] && rm -f $dirshm/status
+		sed -i -e "s/^state=.*/state=$command/" -e "s/^elapsed=.*/elapsed=$elapsed/" $dirshm/status
 	fi
 	;;
 mpcprevnext )
@@ -735,9 +738,13 @@ playerstart )
 	;;
 playerstop )
 	player=${args[1]}
+	elapsed=${args[2]}
+	[[ -z $elapsed ]] && elapsed=false
+	killall cava &> /dev/null
+	sed -i -e 's/^state=.*/state=stop/' -e "s/^elapsed=.*/elapsed=$elapsed/" $dirshm/status
 	if [[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]]; then
 		mv -f $dirshm/{status,scrobble}
-		$dirbash/scrobble.sh stop &> /dev/null &
+		$dirbash/scrobble.sh &> /dev/null &
 	fi
 	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd

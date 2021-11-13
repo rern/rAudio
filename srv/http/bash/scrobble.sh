@@ -1,25 +1,23 @@
 #!/bin/bash
 
-# from: cmd.sh playerstop/scrobble(by webradio), cmd-pushstatus.sh
+# from:
+#    - cmd-pushstatus.sh
+#    - cmd.sh scrobble(by webradio)
 
 . /srv/http/bash/common.sh
 
 . $dirshm/scrobble
-rm -f $dirshm/scrobble
-if [[ -z $Artist || -z $Title || $state == pause ]] \
-	|| ( [[ -n $elapsed ]] && (( $elapsed < $Time / 2 && $elapsed < 240 )) ) \
-	|| ( [[ -n $Time ]] && (( $Time < 30 )) ); then
-	exit
+[[ -z $Artist || -z $Title ]] && exit
+
+if [[ $state == play ]]; then # skip if start playing
+	statuselapsed=$( grep ^elapsed= $dirshm/status | cut -d= -f2 )
+	diff=$(( statuselapsed - elapsed ))
+	(( ${diff/-} < 5 )) && exit
+elif [[ $state == stop ]]; then
+	[[ -z $Time || -z $elapsed ]] && exit
+	(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
 fi
 
-if [[ $state == stop || $1 == stop ]]; then # $1 == stop: cmd.sh playerstop
-	[[ -z $Time || -z $elapsed ]] && exit
-	
-	start=$(( timestamp / 1000 - elapsed ))
-	elapsed=$(( $( date +%s ) - $start ))
-	(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
-	
-fi
 keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 apikey=${keys[0]}
 sharedsecret=${keys[1]}
