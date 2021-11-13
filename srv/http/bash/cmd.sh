@@ -606,13 +606,14 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirshm/status
-	touch $dirshm/nostatus
+	elapsed=${args[4]}
+	[[ -e $dirsystem/scrobble && -n $elapsed ]] && echo $elapsed > $dirshm/elapsedscrobble
+	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
 		playing=1
 		mpc -q stop
-		rm -f $dirshm/nostatus
+		rm -f $dirshm/prevnextseek
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -627,7 +628,7 @@ mpcprevnext )
 		fi
 	fi
 	if [[ -z $playing ]]; then
-		rm -f $dirshm/nostatus
+		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	else
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
@@ -638,10 +639,10 @@ mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
 	if [[ $state == stop ]]; then
-		touch $dirshm/nostatus
+		touch $dirshm/prevnextseek
 		mpc -q play
 		mpc -q pause
-		rm $dirshm/nostatus
+		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $seek
 	;;

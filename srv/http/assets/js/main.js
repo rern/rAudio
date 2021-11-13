@@ -892,9 +892,9 @@ $( '.btn-cmd' ).click( function() {
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
-			elapsedstop = G.status.elapsed || '';
+			elapsedscrobble = G.status.elapsed || '';
 			if ( G.status.player !== 'mpd' ) {
-				bash( [ 'playerstop', G.status.player, elapsedstop ] );
+				bash( [ 'playerstop', G.status.player, elapsedscrobble ] );
 				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}
@@ -902,7 +902,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#title' ).removeClass( 'gr' );
 			if ( !G.status.playlistlength ) return
 			
-			bash( [ 'mpcplayback', 'stop', elapsedstop ] );
+			bash( [ 'mpcplayback', 'stop', elapsedscrobble ] );
 			$( '#pl-list .elapsed' ).empty();
 			if ( G.playback ) {
 				$( '#total' ).empty();
@@ -939,7 +939,8 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			bash( [ 'mpcprevnext', cmd, song, pllength ] );
+			elapsedscrobble = G.status.elapsed || '';
+			bash( [ 'mpcprevnext', cmd, song, pllength, elapsedscrobble ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )
