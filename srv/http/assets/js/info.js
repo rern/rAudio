@@ -594,13 +594,6 @@ function checkBlank() {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }
-function checkLength( k, v ) {
-	if ( typeof v !== 'object' ) v = [ v, 'equal' ];
-	var L = v[ 0 ];
-	var cond = v[ 1 ];
-	var diff = O.inputs.eq( k ).val().trim().length - L;
-	if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) O.short = true;
-}
 function checkLength() {
 	O.short = false;
 	$.each( O.checklength, function( k, v ) {
@@ -612,7 +605,7 @@ function checkLength() {
 			var cond = v[ 1 ];
 		}
 		var diff = O.inputs.eq( k ).val().trim().length - L;
-		if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) {
+		if ( ( cond === 'equal' && diff !== 0 ) || ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) ) {
 			O.short = true;
 			return false
 		}
