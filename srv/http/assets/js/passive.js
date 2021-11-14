@@ -329,6 +329,7 @@ function psMpdRadio( data ) {
 	if ( G.playback ) {
 		setInfo();
 		setCoverart();
+		if ( !$( '#elapsed .dot' ).length ) setBlinkDot();
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
 	}

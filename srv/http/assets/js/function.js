@@ -1172,16 +1172,7 @@ function renderPlayback() {
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
 	if ( G.status.elapsed === false ) {
-		setProgress( 0 );
-		$( '#elapsed, #total, #progress' ).empty();
-		if ( G.status.state === 'play' ) {
-			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			blinkDot();
-			if ( G.display.radioelapsed ) {
-				$( '#progress' ).html( istate +'<span></span>' );
-				setProgressElapsed();
-			}
-		}
+		setBlinkDot();
 		return
 	}
 	
@@ -1302,6 +1293,18 @@ function second2HMS( second ) {
 	if ( mm < 10 ) mm = '0'+ mm;
 	var hh = Math.floor( second / 3600 );
 	return hh  +':'+ mm +':'+ ss;
+}
+function setBlinkDot() {
+	setProgress( 0 );
+	$( '#elapsed, #total, #progress' ).empty();
+	if ( G.status.state === 'play' ) {
+		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+		blinkDot();
+		if ( G.display.radioelapsed ) {
+			$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i><span></span>' );
+			setProgressElapsed();
+		}
+	}
 }
 function setButtonControl() {
 	if ( $( '#bar-top' ).is( ':visible' ) ) {

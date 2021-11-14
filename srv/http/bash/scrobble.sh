@@ -12,7 +12,7 @@
 if [[ -e $dirshm/elapsedscrobble ]]; then
 	elapsed=$( cat $dirshm/elapsedscrobble )
 	rm -f $dirshm/elapsedscrobble
-	(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
+	( [[ -z $elapsed ]] || (( $elapsed < $Time / 2 && $elapsed < 240 )) ) && exit
 fi
 
 keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
