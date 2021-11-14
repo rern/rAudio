@@ -367,9 +367,8 @@ function displayPlayback() {
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
-	$( '#time-knob, .covermap' ).toggleClass( 'disabled', [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
+	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
-	$( '.covermap.r1, #coverB' ).removeClass( 'disabled' );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', !G.display.buttons );
 	if ( G.display.vumeter ) {
@@ -1093,8 +1092,8 @@ function renderLibraryList( data ) {
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( data.path === 'WEBRADIO' ) {
-		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">'
-					  + 'WEBRADIO</span>'+ radiobtn;
+		$( '#lib-path .lipath' ).empty();
+		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>'+ radiobtn;
 	} else if ( [ 'file', 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
@@ -1172,17 +1171,8 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
-	if ( !G.status.elapsed ) {
-		setProgress( 0 );
-		$( '#elapsed, #total, #progress' ).empty();
-		if ( G.status.state === 'play' ) {
-			$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
-			blinkDot();
-			if ( G.display.radioelapsed ) {
-				$( '#progress' ).html( istate +'<span></span>' );
-				setProgressElapsed();
-			}
-		}
+	if ( G.status.elapsed === false ) {
+		setBlinkDot();
 		return
 	}
 	
@@ -1304,6 +1294,21 @@ function second2HMS( second ) {
 	var hh = Math.floor( second / 3600 );
 	return hh  +':'+ mm +':'+ ss;
 }
+function setBlinkDot() {
+	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( function( el ) {
+		clearInterval( el );
+	} );
+	$( '#vuneedle' ).css( 'transform', '' );
+	$( '#elapsed, #total, #progress' ).empty();
+	if ( G.status.state === 'play' ) {
+		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
+		blinkDot();
+		if ( G.display.radioelapsed ) {
+			$( '#progress' ).html( '<i class="fa fa-'+ G.status.state +'"></i><span></span>' );
+			setProgressElapsed();
+		}
+	}
+}
 function setButtonControl() {
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].indexOf( G.status.player ) !== -1;
@@ -1351,7 +1356,6 @@ function setButtonOptions() {
 	setButtonUpdateAddons();
 	setButtonUpdating();
 	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
-	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || G.status.player !== 'mpd' );
 }
 function setButtonUpdateAddons( updateaddons ) {
 	if ( G.status.updateaddons ) {

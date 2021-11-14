@@ -1,21 +1,20 @@
 #!/bin/bash
 
-# from: cmd.sh playerstop/scrobble(by webradio), cmd-pushstatus.sh
+# from:
+#    - cmd-pushstatus.sh
+#    - cmd.sh scrobble(by webradio)
 
 . /srv/http/bash/common.sh
 
 . $dirshm/scrobble
-rm -f $dirshm/scrobble
-[[ -z $Artist || -z $Title || $state == pause || ( -n $Time && $Time -lt 30 ) ]] && exit
+[[ -z $Artist || -z $Title ]] && exit
 
-if [[ $state == stop || $1 == stop ]]; then # $1 == stop: cmd.sh playerstop
-	[[ -z $Time || -z $elapsed ]] && exit
-	
-	start=$(( timestamp / 1000 - elapsed ))
-	elapsed=$(( $( date +%s ) - $start ))
-	(( $elapsed < $Time / 2 && $elapsed < 240 )) && exit
-	
+if [[ -e $dirshm/elapsedscrobble ]]; then
+	elapsed=$( cat $dirshm/elapsedscrobble )
+	rm -f $dirshm/elapsedscrobble
+	( [[ -z $elapsed ]] || (( $elapsed < $Time / 2 && $elapsed < 240 )) ) && exit
 fi
+
 keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 apikey=${keys[0]}
 sharedsecret=${keys[1]}
@@ -43,6 +42,6 @@ reponse=$( curl -sX POST \
 if [[ $reponse =~ error ]]; then
 	msg="Error: $( jq -r .message <<< $response )"
 else
-	[[ -e $dirsystem/scrobble.conf/notify ]] && msg="$Title"
+	[[ -e $dirsystem/scrobble.conf/notify ]] && msg="${Title//\"/\\\"}"
 fi
 [[ -n $msg ]] && pushstreamNotify Scrobble "$msg" lastfm

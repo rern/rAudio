@@ -566,14 +566,16 @@ function info( json ) {
 		if ( O.checkblank || O.checklength || O.checkchanged ) {
 			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', function() {
 				if ( O.checkblank ) checkBlank();
-				if ( O.checklength ) checkLength();
+				if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
 				if ( O.checkchanged ) {
 					var prevval = O.values.join( '' );
 					var values = infoVal();
 					var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 					O.nochange = prevval === val;
 				}
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+				setTimeout( function() { // ios: force after checkLength
+					$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+				}, 50 );
 			} );
 		}
 		if ( O.checkchanged ) {
@@ -592,10 +594,25 @@ function checkBlank() {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }
+function checkLength( k, v ) {
+	if ( typeof v !== 'object' ) v = [ v, 'equal' ];
+	var L = v[ 0 ];
+	var cond = v[ 1 ];
+	var diff = O.inputs.eq( k ).val().trim().length - L;
+	if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) O.short = true;
+}
 function checkLength() {
 	O.short = false;
-	$.each( O.checklength, function( i, L ) {
-		if ( $( '#infoContent input' ).eq( i ).val().trim().length !== L ) {
+	$.each( O.checklength, function( k, v ) {
+		if ( typeof v !== 'object' ) {
+			var L = v
+			var cond = 'equal';
+		} else {
+			var L = v[ 0 ];
+			var cond = v[ 1 ];
+		}
+		var diff = O.inputs.eq( k ).val().trim().length - L;
+		if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) {
 			O.short = true;
 			return false
 		}

@@ -589,29 +589,31 @@ mpcoption )
 	;;
 mpcplayback )
 	command=${args[1]}
-	pos=${args[2]}
+	pos=${args[2]} # if stop = elapsed
 	systemctl stop radio mpd_oled
-	mpc | grep -q '^\[paused\]' && pause=1
-	mpc -q $command $pos
 	if [[ $command == play ]]; then
+		mpc | grep -q '^\[paused\]' && pause=1
+		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
+		[[ -e $dirsystem/scrobble && $command == stop ]] && echo $pos > $dirshm/elapsedscrobble
+		mpc -q $command
 		killall cava &> /dev/null
-		[[ $command == stop ]] && rm -f $dirshm/status
 	fi
 	;;
 mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	rm -f $dirshm/status
-	touch $dirshm/nostatus
+	state=${args[4]}
+	elapsed=${args[5]}
+	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prevnext} # flag - no scrobble
+	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
-	if mpc | grep -q '^\[playing\]'; then
-		playing=1
+	if [[ $state == play ]]; then
 		mpc -q stop
-		rm -f $dirshm/nostatus
+		rm -f $dirshm/prevnextseek
 	fi
 	if mpc | grep -q 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -625,24 +627,32 @@ mpcprevnext )
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
 	fi
-	if [[ -z $playing ]]; then
-		rm -f $dirshm/nostatus
-		mpc -q stop
-	else
+	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
+	else
+		rm -f $dirshm/prevnextseek
+		mpc -q stop
+	fi
+	if [[ $state == play && -n $elapsed && -e $dirshm/statusprevnext ]]; then
+		sleep 2
+		mv -f $dirshm/{statusprevnext,scrobble}
+		echo $elapsed > $dirshm/elapsedscrobble
+		$dirbash/scrobble.sh
 	fi
 	;;
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
+	touch $dirshm/statusprevnext flag - no scrobble
 	if [[ $state == stop ]]; then
-		touch $dirshm/nostatus
+		touch $dirshm/prevnextseek
 		mpc -q play
 		mpc -q pause
-		rm $dirshm/nostatus
+		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $seek
+	rm $dirshm/statusprevnext
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -735,10 +745,9 @@ playerstart )
 	;;
 playerstop )
 	player=${args[1]}
-	if [[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]]; then
-		mv -f $dirshm/{status,scrobble}
-		$dirbash/scrobble.sh stop &> /dev/null &
-	fi
+	elapsed=${args[2]}
+	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && echo $elapsed > $dirshm/elapsedscrobble
+	killall cava &> /dev/null
 	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd
 	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
@@ -940,7 +949,6 @@ scrobble )
 Artist="${args[1]}"
 Title="${args[2]}"
 Album="${args[3]}"
-state=play
 EOF
 	$dirbash/scrobble.sh
 	;;

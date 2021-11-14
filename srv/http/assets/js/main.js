@@ -892,8 +892,9 @@ $( '.btn-cmd' ).click( function() {
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
+			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed;
 			if ( G.status.player !== 'mpd' ) {
-				bash( [ 'playerstop', G.status.player ] );
+				bash( [ 'playerstop', G.status.player, elapsedscrobble ] );
 				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}
@@ -901,7 +902,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#title' ).removeClass( 'gr' );
 			if ( !G.status.playlistlength ) return
 			
-			bash( [ 'mpcplayback', 'stop' ] );
+			bash( [ 'mpcplayback', 'stop', elapsedscrobble ] );
 			$( '#pl-list .elapsed' ).empty();
 			if ( G.playback ) {
 				$( '#total' ).empty();
@@ -938,7 +939,11 @@ $( '.btn-cmd' ).click( function() {
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
-			bash( [ 'mpcprevnext', cmd, song, pllength ] );
+			clearIntervalAll();
+			$timeRS.setValue( 0 );
+			$( '#elapsed, #total, #progress' ).empty();
+			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed || '';
+			bash( [ 'mpcprevnext', cmd, song, pllength, G.status.state, elapsedscrobble ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )
@@ -1081,7 +1086,7 @@ $( '#button-lib-back' ).click( function() {
 	}
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.query.length < 2
-		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).text() === 'WEBRADIO' )
+		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).is( ':empty' ) )
 	) {
 		$( '#button-library' ).click();
 		return

@@ -6,21 +6,33 @@
 
 if [[ $1 != statusradio ]]; then # from status-radio.sh
 	status=$( $dirbash/status.sh | jq )
-	echo "$status" \
+	statusnew=$( echo "$status" \
 		| grep '^  "Artist\|^  "Title\|^  "Album\|^  "station"\|^  "file\|^  "state\|^  "Time\|^  "elapsed\|^  "timestamp\|^  "webradio' \
-		|  sed 's/^ *"\|,$//g; s/": /=/' \
-		> $dirshm/statusnew
-	grep -q 'webradio.*true' <<< "$status" && webradio=1
+		|  sed 's/^ *"\|,$//g; s/": /=/' )
+	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
+		statusprev=$( cat $dirshm/status )
 		filter='^Artist\|^Title\|^Album'
-		[[ -z $webradio ]] && filter+='\|^file\|^state\|^Time\|^elapsed'
-		[[ $( grep "$filter" $dirshm/statusnew | sort ) == $( grep "$filter" $dirshm/status | sort ) ]] && exit
+		[[ "$( grep "$filter" <<< "$statusnew" | sort )" != "$( grep "$filter" <<< "$statusprev" | sort )" ]] && trackchanged=1
+		grep -q 'webradio.*true' <<< "$statusprev" && webradio=1
+		if [[ -n $webradio ]]; then
+			[[ -z $trackchanged  ]] && exit
+		else
+			filter='^state\|^elapsed'
+			[[ "$( grep "$filter" <<< "$statusnew" | sort )" != "$( grep "$filter" <<< "$statusprev" | sort )" ]] && statuschanged=1
+			[[ -z $trackchanged && -z $statuschanged ]] && exit
+		fi
 		
-		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast ]]; then
-			player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-			if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
+		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast && ! -e $dirshm/statusprevnext ]]; then
+			if [[ -e $dirshm/elapsedscrobble ]]; then # stop - not at track end
 				mv -f $dirshm/{status,scrobble}
 				$dirbash/scrobble.sh &> /dev/null &
+			elif [[ -n $trackchanged ]]; then # play - track end
+				player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
+				if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
+					mv -f $dirshm/{status,scrobble}
+					$dirbash/scrobble.sh &> /dev/null &
+				fi
 			fi
 		fi
 	fi

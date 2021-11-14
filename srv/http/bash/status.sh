@@ -143,7 +143,7 @@ fi
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
 filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^song:\|^state\|^Time\|^Title'
-(( $# == 0 )) && filter='\|^playlistlength\|^random\|^repeat\|^single' # not snapclient
+[[ -z $snapclient ]] && filter+='\|^playlistlength\|^random\|^repeat\|^single'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -281,11 +281,10 @@ elif [[ -n $stream ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $icon == radiofrance || $icon == radioparadise ]]; then
+			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
 				id=$( basename ${file/-*} )
-				[[ $id != fip && $id != francemusique ]] && id=$( echo $id | sed 's/fip\|francemusique//' )
-			fi
-			if [[ -n $id ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
+				[[ ${id:0:13} == francemusique ]] && id=${id:13}
+				[[ -z $id ]] && id=francemusique
 				stationname=${station/* - }
 				if [[ ! -e $dirshm/radio || -z $( head -3 $dirshm/status 2> /dev/null ) ]]; then
 					echo "\
