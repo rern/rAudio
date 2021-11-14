@@ -606,15 +606,12 @@ mpcprevnext )
 	command=${args[1]}
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
-	elapsed=${args[4]}
-	if [[ -e $dirsystem/scrobble ]]; then
-		echo $elapsed > $dirshm/elapsedscrobble
-		cp $dirshm/{status,scrobble}
-		$dirbash/scrobble.sh &> /dev/null &
-	fi
+	state=${args[4]}
+	elapsed=${args[5]}
+	[[ -e $dirsystem/scrobble ]] && echo $elapsed > $dirshm/elapsedscrobble
 	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
-	if mpc | grep -q '^\[playing\]'; then
+	if [[ $state == play ]]; then
 		playing=1
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
@@ -631,12 +628,12 @@ mpcprevnext )
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
 	fi
-	if [[ -z $playing ]]; then
-		rm -f $dirshm/prevnextseek
-		mpc -q stop
-	else
+	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
+	else
+		rm -f $dirshm/prevnextseek
+		mpc -q stop
 	fi
 	;;
 mpcseek )

@@ -943,7 +943,7 @@ $( '.btn-cmd' ).click( function() {
 			$timeRS.setValue( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed || '';
-			bash( [ 'mpcprevnext', cmd, song, pllength, elapsedscrobble ] );
+			bash( [ 'mpcprevnext', cmd, song, pllength, G.status.state, elapsedscrobble ] );
 			if ( G.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )
