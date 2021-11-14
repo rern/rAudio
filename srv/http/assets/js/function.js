@@ -1295,7 +1295,10 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setBlinkDot() {
-	setProgress( 0 );
+	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( function( el ) {
+		clearInterval( el );
+	} );
+	$( '#vuneedle' ).css( 'transform', '' );
 	$( '#elapsed, #total, #progress' ).empty();
 	if ( G.status.state === 'play' ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );

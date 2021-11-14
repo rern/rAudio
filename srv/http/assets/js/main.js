@@ -940,6 +940,8 @@ $( '.btn-cmd' ).click( function() {
 			if ( pllength < 2 ) return
 			
 			clearIntervalAll();
+			$timeRS.setValue( 0 );
+			$( '#elapsed, #total, #progress' ).empty();
 			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed || '';
 			bash( [ 'mpcprevnext', cmd, song, pllength, elapsedscrobble ] );
 			if ( G.playlist ) {

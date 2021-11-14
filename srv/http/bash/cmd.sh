@@ -607,7 +607,11 @@ mpcprevnext )
 	current=$(( ${args[2]} + 1 ))
 	length=${args[3]}
 	elapsed=${args[4]}
-	[[ -e $dirsystem/scrobble ]] && echo $elapsed > $dirshm/elapsedscrobble
+	if [[ -e $dirsystem/scrobble ]]; then
+		echo $elapsed > $dirshm/elapsedscrobble
+		cp $dirshm/{status,scrobble}
+		$dirbash/scrobble.sh &> /dev/null &
+	fi
 	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
 	if mpc | grep -q '^\[playing\]'; then
