@@ -608,11 +608,10 @@ mpcprevnext )
 	length=${args[3]}
 	state=${args[4]}
 	elapsed=${args[5]}
-	[[ -e $dirsystem/scrobble ]] && echo $elapsed > $dirshm/elapsedscrobble
+	[[ -e $dirsystem/scrobble && $state == play && -n $elapsed ]] && cp -f $dirshm/status{,scrobble}
 	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
 	if [[ $state == play ]]; then
-		playing=1
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
 	fi
@@ -635,10 +634,17 @@ mpcprevnext )
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
+	if [[ -e $dirshm/statusscrobble ]]; then
+		sleep 2
+		mv -f $dirshm/{statusscrobble,scrobble}
+		echo $elapsed > $dirshm/elapsedscrobble
+		$dirbash/scrobble.sh
+	fi
 	;;
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
+	touch $dirshm/statusscrobble
 	if [[ $state == stop ]]; then
 		touch $dirshm/prevnextseek
 		mpc -q play
@@ -646,6 +652,7 @@ mpcseek )
 		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $seek
+	rm $dirshm/statusscrobble
 	;;
 mpcupdate )
 	path=${args[1]}

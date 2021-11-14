@@ -23,11 +23,11 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 			[[ -z $trackchanged && -z $statuschanged ]] && exit
 		fi
 		
-		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast  ]]; then
-			if [[ -e $dirshm/elapsedscrobble ]]; then
+		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast && ! -e $dirshm/statusscrobble ]]; then # statusscrobble from prev/next
+			if [[ -e $dirshm/elapsedscrobble ]]; then # stop - not at track end
 				mv -f $dirshm/{status,scrobble}
 				$dirbash/scrobble.sh &> /dev/null &
-			elif [[ -n $trackchanged ]]; then
+			elif [[ -n $trackchanged ]]; then # play - track end
 				player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 				if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
 					mv -f $dirshm/{status,scrobble}
