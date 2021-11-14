@@ -594,10 +594,25 @@ function checkBlank() {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }
+function checkLength( k, v ) {
+	if ( typeof v !== 'object' ) v = [ v, 'equal' ];
+	var L = v[ 0 ];
+	var cond = v[ 1 ];
+	var diff = O.inputs.eq( k ).val().trim().length - L;
+	if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) O.short = true;
+}
 function checkLength() {
 	O.short = false;
-	$.each( O.checklength, function( i, L ) {
-		if ( $( '#infoContent input' ).eq( i ).val().trim().length !== L ) {
+	$.each( O.checklength, function( k, v ) {
+		if ( typeof v !== 'object' ) {
+			var L = v
+			var cond = 'equal';
+		} else {
+			var L = v[ 0 ];
+			var cond = v[ 1 ];
+		}
+		var diff = O.inputs.eq( k ).val().trim().length - L;
+		if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) {
 			O.short = true;
 			return false
 		}
