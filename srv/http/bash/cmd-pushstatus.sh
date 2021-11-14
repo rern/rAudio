@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-#grep -q '"state".*pause' $dirshm/status && sleep 0.1 # fix: vumeter - resume with wrong track
-
 if [[ $1 != statusradio ]]; then # from status-radio.sh
 	status=$( $dirbash/status.sh | jq )
 	statusnew=$( echo "$status" \
@@ -23,15 +21,17 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 			[[ -z $trackchanged && -z $statuschanged ]] && exit
 		fi
 		
-		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast && ! -e $dirshm/statusprevnext ]]; then
-			if [[ -e $dirshm/elapsedscrobble ]]; then # stop - not at track end
-				mv -f $dirshm/{status,scrobble}
-				$dirbash/scrobble.sh &> /dev/null &
-			elif [[ -n $trackchanged ]]; then # play - track end
+		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast && ! -e $dirshm/scrobble ]]; then
+			if [[ -n $trackchanged ]]; then # play - track end
 				player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 				if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
-					mv -f $dirshm/{status,scrobble}
-					$dirbash/scrobble.sh &> /dev/null &
+					. $dirshm/status
+					if (( $Time > 30 )) && [[ -n $Artist && -n $Title ]]; then
+						$dirbash/scrobble.sh "\
+$Artist
+$Title
+$Album" &> /dev/null &
+					fi
 				fi
 			fi
 		fi

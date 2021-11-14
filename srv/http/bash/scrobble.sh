@@ -1,19 +1,15 @@
 #!/bin/bash
 
-# from:
-#    - cmd-pushstatus.sh
-#    - cmd.sh scrobble(by webradio)
+# track end       - cmd-pushstatus.sh
+# stop / prevnext - cmd.sh mpcplayback / mpcprevnext
+# webradio        - cmd.sh scrobble
 
 . /srv/http/bash/common.sh
 
-. $dirshm/scrobble
-[[ -z $Artist || -z $Title ]] && exit
-
-if [[ -e $dirshm/elapsedscrobble ]]; then
-	elapsed=$( cat $dirshm/elapsedscrobble )
-	rm -f $dirshm/elapsedscrobble
-	( [[ -z $elapsed ]] || (( $elapsed < $Time / 2 && $elapsed < 240 )) ) && exit
-fi
+readarray -t args <<< "$1"
+Artist=${args[0]}
+Title=${args[1]}
+Album=${args[2]}
 
 keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 apikey=${keys[0]}

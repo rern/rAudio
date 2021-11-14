@@ -146,6 +146,17 @@ rotateSplash() {
 		-extent 1920x1080 \
 		$dirimg/splash.png
 }
+scrobbleOnStop() {
+	. $dirshm/scrobble
+	elapsed=$1
+	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ -n $Artist && -n $Title ]]; then
+		$dirbash/scrobble.sh "\
+$Artist
+$Title
+$Album"
+	fi
+	rm -f $dirshm/scrobble
+}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -597,9 +608,10 @@ mpcplayback )
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
-		[[ -e $dirsystem/scrobble && $command == stop ]] && echo $pos > $dirshm/elapsedscrobble
+		[[ -e $dirsystem/scrobble && $command == stop && -n $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
+		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
 	;;
 mpcprevnext )
@@ -608,7 +620,7 @@ mpcprevnext )
 	length=${args[3]}
 	state=${args[4]}
 	elapsed=${args[5]}
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prevnext} # flag - no scrobble
+	[[ -e $dirsystem/scrobble && $state == play && -n $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
 	if [[ $state == play ]]; then
@@ -634,17 +646,15 @@ mpcprevnext )
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
-	if [[ $state == play && -n $elapsed && -e $dirshm/statusprevnext ]]; then
+	if [[ -e $dirshm/scrobble ]]; then
 		sleep 2
-		mv -f $dirshm/{statusprevnext,scrobble}
-		echo $elapsed > $dirshm/elapsedscrobble
-		$dirbash/scrobble.sh
+		scrobbleOnStop $elapsed
 	fi
 	;;
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
-	touch $dirshm/statusprevnext flag - no scrobble
+	touch $dirshm/scrobble
 	if [[ $state == stop ]]; then
 		touch $dirshm/prevnextseek
 		mpc -q play
@@ -652,7 +662,7 @@ mpcseek )
 		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $seek
-	rm $dirshm/statusprevnext
+	rm $dirshm/scrobble
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -945,12 +955,10 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	cat << EOF > $dirshm/scrobble
-Artist="${args[1]}"
-Title="${args[2]}"
-Album="${args[3]}"
-EOF
-	$dirbash/scrobble.sh
+	$dirbash/scrobble.sh "\
+${args[1]}
+${args[2]}
+${args[3]}"
 	;;
 thumbgif )
 	type=${args[1]}
