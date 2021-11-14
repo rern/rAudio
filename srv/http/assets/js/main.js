@@ -1085,12 +1085,7 @@ $( '#button-lib-back' ).click( function() {
 		delete G.gmode;
 	}
 	$( '.menu' ).addClass( 'hide' );
-	if ( G.mode === 'webradio' ) {
-		if ( $( '#lib-path .lipath' ).is( ':empty' ) ) {
-			$( '#button-library' ).click();
-			return
-		}
-	} else if ( G.query.length < 2 ) {
+	if ( $( '#lib-breadcrumbs a' ).length < 2 ) {
 		$( '#button-library' ).click();
 		return
 	}
