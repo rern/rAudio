@@ -158,10 +158,10 @@ function contextmenuLibrary( $li, $target ) {
 	var filemode = modes.indexOf( G.mode ) !== -1;
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', ...modes ].indexOf( G.mode ) === -1 );
+	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && !filemode && G.mode !== 'album' );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || G.mode !== 'file' );
+	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
