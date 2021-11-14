@@ -949,7 +949,6 @@ scrobble )
 Artist="${args[1]}"
 Title="${args[2]}"
 Album="${args[3]}"
-webradio=true
 EOF
 	$dirbash/scrobble.sh
 	;;
