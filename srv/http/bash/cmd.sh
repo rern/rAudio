@@ -634,7 +634,7 @@ mpcprevnext )
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
-	if [[ -e $dirshm/statusprevnext && $state == play && -n $elapsed ]]; then
+	if [[ $state == play && -n $elapsed && -e $dirshm/statusprevnext ]]; then
 		sleep 2
 		mv -f $dirshm/{statusprevnext,scrobble}
 		echo $elapsed > $dirshm/elapsedscrobble
