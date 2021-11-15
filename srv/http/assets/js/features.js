@@ -172,7 +172,7 @@ $( '#setting-localbrowser' ).click( function() {
 				if ( ( up && zoom < 300 ) || ( !up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
 				checkChanged();
 			} );
-			$( '#screenoff' ).change( function() {
+			$( '#infoContent' ).on( 'change', '#screenoff', function() {
 				if ( $( this ).val() != 0 ) {
 					$( '#onwhileplay' ).prop( 'disabled', 0 );
 				} else {
