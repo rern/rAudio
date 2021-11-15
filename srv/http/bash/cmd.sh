@@ -153,7 +153,7 @@ scrobbleOnStop() {
 		$dirbash/scrobble.sh "\
 $Artist
 $Title
-$Album"
+$Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
@@ -756,7 +756,10 @@ playerstart )
 playerstop )
 	player=${args[1]}
 	elapsed=${args[2]}
-	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && echo $elapsed > $dirshm/elapsedscrobble
+	if [[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]]; then
+		cp -f $dirshm/{status,scrobble}
+		scrobbleOnStop $elapsed
+	fi
 	killall cava &> /dev/null
 	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd
