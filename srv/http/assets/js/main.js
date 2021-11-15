@@ -1085,7 +1085,11 @@ $( '#button-lib-back' ).click( function() {
 		delete G.gmode;
 	}
 	$( '.menu' ).addClass( 'hide' );
-	if ( $( '#lib-breadcrumbs a' ).length < 2 ) {
+	var breadcrumbsL = $( '#lib-breadcrumbs a' ).length;
+	if ( ( breadcrumbsL && breadcrumbsL < 2 )
+		|| ( G.mode === 'album' && $( '#mode-title' ).text() === 'ALBUM' )
+		|| G.query.length === 1
+	) {
 		$( '#button-library' ).click();
 		return
 	}
