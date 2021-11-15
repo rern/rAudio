@@ -475,6 +475,7 @@ function info( json ) {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields - omit .selectric-input for select
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
+		$inputs_nontxt = $( '#infoContent' ).find( 'input:radio, input:checkbox, select' );
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
@@ -592,7 +593,7 @@ function checkLength() {
 }
 function infoCheckSet() {
 	if ( O.checkblank || O.checklength || O.checkchanged ) {
-		$inputs_txt.on( 'keyup paste cut', function() {
+		$inputs_txt.off( 'keyup paste cut' ).on( 'keyup paste cut', function() {
 			if ( O.checkblank ) checkBlank();
 			if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
 			if ( O.checkchanged ) {
@@ -607,7 +608,7 @@ function infoCheckSet() {
 		} );
 	}
 	if ( O.checkchanged ) {
-		$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
+		$inputs_nontxt.off( 'change' ).on( 'change', function() {
 			O.nochange = O.values.join( '' ) === infoVal().join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
 		} );
