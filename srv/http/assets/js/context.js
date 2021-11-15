@@ -275,25 +275,6 @@ function tagEditor() {
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
-				$( '.infomessage' ).click( function() {
-					if ( G.library ) return
-					
-					G.mode = 'file';
-					var path = $( '.tagpath' ).text();
-					path = path.substr( 0, path.lastIndexOf( '/' ) );
-					var query = {
-						  query  : 'ls'
-						, string : path
-						, format : [ 'file' ]
-					}
-					list( query, function( data ) {
-						data.path = path;
-						data.modetitle = path;
-						$( '#infoX' ).click();
-						$( '#library' ).click();
-						renderLibraryList( data );
-					}, 'json' );
-				} );
 				var $td = $( '#infoContent td:first-child' );
 				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );

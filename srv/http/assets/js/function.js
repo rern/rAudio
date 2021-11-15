@@ -154,8 +154,7 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	
-	var modes = [ 'file', 'nas', 'sd', 'usb', 'webradio' ];
-	var filemode = modes.indexOf( G.mode ) !== -1;
+	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].indexOf( G.mode ) !== -1;
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && !filemode && G.mode !== 'album' );
@@ -1094,7 +1093,7 @@ function renderLibraryList( data ) {
 	} else if ( data.path === 'WEBRADIO' ) {
 		$( '#lib-path .lipath' ).empty();
 		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>'+ radiobtn;
-	} else if ( [ 'file', 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
+	} else if ( [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
@@ -1118,7 +1117,7 @@ function renderLibraryList( data ) {
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		imageLoad( 'lib-list' );
 		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
-		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
+		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) !== -1 );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');

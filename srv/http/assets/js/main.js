@@ -1340,7 +1340,7 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 	var query = {
 		  query  : 'ls'
 		, format : [ 'file' ]
-		, gmode  : 'file'
+		, gmode  : path.replace( /\/.*/, '' ).toLowerCase()
 		, mode   : 'album'
 		, string : path
 	}
@@ -1437,8 +1437,8 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 			getBio( name );
 		} else if ( $target.is( '.liinfopath' ) ) {
 			G.gmode = G.mode;
-			G.mode = 'file';
 			var path = $target.text();
+			G.mode = path.replace( /\/.*/, '' ).toLowerCase();
 			var query = {
 				  query  : 'ls'
 				, string : path
@@ -1466,8 +1466,8 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
-	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
-	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
+	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
+	if ( [ 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
 		var query = {
 			  query  : 'ls'
 			, string : path
