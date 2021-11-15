@@ -714,11 +714,6 @@ var btnctrl = {
 	, coverBL : 'random'
 	, coverB  : 'stop'
 	, coverBR : 'repeat'
-//	, volT    : 'volup'
-//	, volL    : 'voldn'
-//	, volM    : 'volmute'
-//	, volR    : 'volup'
-//	, volB    : 'voldn'
 }
 $( '.map' ).click( function() {
 	if ( G.press ) return
