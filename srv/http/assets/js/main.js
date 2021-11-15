@@ -1089,7 +1089,7 @@ $( '#button-lib-back' ).click( function() {
 	var bL = $breadcrumbs.length
 	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
 		|| ( bL && bL < 2 )
-		|| !bL && G.query.length === 1
+		|| ( !bL && G.query.length === 1 )
 	) {
 		$( '#button-library' ).click();
 		return
