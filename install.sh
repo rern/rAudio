@@ -7,7 +7,10 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20211101
+#20121115
+player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
+[[ -n $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
+#2021112
 dir=/etc/systemd/system/upmpdcli.service.d
 if [[ -e $dir ]]; then
 	rm -rf $dir
