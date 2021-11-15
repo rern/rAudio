@@ -6,8 +6,8 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \
 		| sed '/^.*"counts"/,/}/ d' \
-		| grep '^.*"Artist\|^ .*"Title\|^.*"Album\|^.*"station"\|^.*"file\|^.*"state\|^.*"Time\|^.*"elapsed\|^.*"timestamp\|^.*"webradio' \
-		|  sed 's/^, *"//g; s/" *: */=/' )
+		| grep '^.*"Artist\|^ .*"Title\|^.*"Album\|^.*"station"\|^.*"file\|^.*"state\|^.*"Time\|^.*"elapsed\|^.*"timestamp\|^.*"webradio\|^.*"player"' \
+		|  sed 's/^,* *"//g; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
@@ -22,18 +22,22 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 			[[ -z $trackchanged && -z $statuschanged ]] && exit
 		fi
 		
-		if [[ -z $webradio && -e $dirsystem/scrobble && ! -e $dirshm/player-snapcast && ! -e $dirshm/scrobble ]]; then
-			if [[ -n $trackchanged ]] && grep -q '^state=.*play' <<< "$statusnew"; then # track end + playing
-				player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-				if [[ $player == mpd || -e $dirsystem/scrobble.conf/$player ]]; then
-					. $dirshm/status
-					if (( $Time > 30 )) && [[ -n $Artist && -n $Title ]]; then
-						$dirbash/scrobble.sh "\
+		if [[ -e $dirsystem/scrobble \
+			&& -z $webradio \
+			&& -n $trackchanged \
+			&& ! -e $dirshm/player-snapcast \
+			&& ! -e $dirshm/scrobble ]]; then
+			
+			. $dirshm/status
+			if [[ ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
+				&& $state == play \
+				&& -n $Artist \
+				&& -n $Title ]] \
+				&& (( $Time > 30 )); then
+				$dirbash/scrobble.sh "\
 $Artist
 $Title
 $Album" &> /dev/null &
-					fi
-				fi
 			fi
 		fi
 	fi
