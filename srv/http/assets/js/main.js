@@ -1085,17 +1085,16 @@ $( '#button-lib-back' ).click( function() {
 		delete G.gmode;
 	}
 	$( '.menu' ).addClass( 'hide' );
-	var breadcrumbsL = $( '#lib-breadcrumbs a' ).length;
-	if ( ( breadcrumbsL && breadcrumbsL < 2 )
-		|| ( G.mode === 'album' && $( '#mode-title' ).text() === 'ALBUM' )
-		|| G.query.length === 1
+	var $breadcrumbs = $( '#lib-breadcrumbs a' );
+	var bL = $breadcrumbs.length
+	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
+		|| ( bL && bL < 2 )
+		|| !bL && G.query.length === 1
 	) {
 		$( '#button-library' ).click();
 		return
 	}
 	
-	var $breadcrumbs = $( '#lib-breadcrumbs a' );
-	var bL = $breadcrumbs.length
 	if ( bL && G.query[ 0 ] !== 'playlist' ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
