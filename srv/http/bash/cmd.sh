@@ -740,9 +740,8 @@ playerstart )
 	mpc -q stop
 	systemctl stop radio mpd_oled
 	rm -f $dirshm/{radio,status}
-	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	rm -f $dirshm/player-*
-	touch $dirshm/player-$newplayer
+	player=$( cat $dirshm/player )
+	echo $newplayer > $dirshm/player
 	case $player in
 		airplay )   restart=shairport-sync;;
 		bluetooth ) restart=bluezdbus;;
@@ -758,8 +757,7 @@ playerstop )
 	elapsed=${args[2]}
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
-	rm -f $dirshm/{player-*,status}
-	touch $dirshm/player-mpd
+	echo mpd > $dirshm/player
 	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
 	case $player in
 		airplay )
@@ -1004,7 +1002,8 @@ volume )
 	volumeSet "$current" $target "$control" # $current may be blank
 	;;
 volume0db )
-	if [[ -e $dirshm/player-airplay || -e $dirshm/player-spotify ]]; then
+	player=$( cat $dirshm/player )
+	if [[ $player == airplay || $player == spotify ]]; then
 		volumeGet
 		echo $volume $db  > $dirshm/mpdvolume
 	fi

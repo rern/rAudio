@@ -22,7 +22,7 @@ for key in elapsed expire start state status token; do
 done
 
 ##### start
-[[ $PLAYER_EVENT == start && ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
+[[ $PLAYER_EVENT == start && $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
 else

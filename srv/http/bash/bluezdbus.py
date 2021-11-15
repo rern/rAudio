@@ -33,7 +33,8 @@ def property_changed( interface, changed, invalidated, path ):
         elif name == 'Position' or name == 'Track':
             os.system( '/srv/http/bash/cmd-pushstatus.sh' )
         elif name == 'Status':
-            if value == 'playing' and not os.path.isfile( '/srv/http/data/shm/player-bluetooth' ):
+            with open( '/srv/http/data/shm/player' ) as f: player = f.read().rstrip()
+            if value == 'playing' and player != 'bluetooth':
                 os.system( "/srv/http/bash/cmd.sh playerstart$'\n'bluetooth" )
             os.system( '/srv/http/bash/cmd-pushstatus.sh' )
 

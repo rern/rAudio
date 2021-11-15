@@ -38,7 +38,7 @@ fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )'
-, "shairportactive"  : '$( [[ -e $dirshm/player-airplay ]] && echo true )
+, "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
@@ -48,13 +48,13 @@ fi
 if [[ -e /usr/bin/spotifyd ]]; then
 	data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
-, "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
+, "spotifydactive"   : '$( [[ $( cat $dirshm/player ) == spotify ]] && echo true )'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
-, "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )
+, "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then

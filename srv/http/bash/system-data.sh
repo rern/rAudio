@@ -154,7 +154,7 @@ data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || -e $dirshm/player-bluetooth ]] && echo true )'
+, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'

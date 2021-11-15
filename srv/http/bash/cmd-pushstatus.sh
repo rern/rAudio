@@ -25,7 +25,7 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 		if [[ -e $dirsystem/scrobble \
 			&& -z $webradio \
 			&& -n $trackchanged \
-			&& ! -e $dirshm/player-snapcast \
+			&& $( cat $dirshm/player ) != snapcast \
 			&& ! -e $dirshm/scrobble ]]; then
 			
 			. $dirshm/status

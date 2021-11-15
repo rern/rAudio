@@ -32,8 +32,8 @@ else
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
-	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
+	player=$( cat $dirshm/player )
+	[[ -z $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( [[ -e $dirsystem/relays ]] && echo true )

@@ -10,7 +10,7 @@ done
 mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
-			if [[ -e $dirshm/player-upnp ]]; then
+			if [[ $( cat $dirshm/player ) == upnp ]]; then
 				echo 5 > $dirshm/vol
 				( for (( i=0; i < 5; i++ )); do
 					sleep 0.1

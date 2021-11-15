@@ -92,8 +92,7 @@ cat << EOF > $dirsystem/display
 }
 EOF
 rm -rf /root/.config/chromium
-rm -f $dirshm/player-*
-touch $dirshm/player-mpd
+echo mpd > $dirshm/player
 # relays
 cat << EOF > $dirsystem/relays.conf
 pin='[ 11,13,15,16 ]'
