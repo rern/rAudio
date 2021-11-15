@@ -1120,8 +1120,11 @@ function renderLibraryList( data ) {
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) !== -1 );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
-			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
-			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $img0.data( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
+			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="/assets/img/coverart.svg"><i class="fa fa-refresh-l"></i></span>' );
+			$( '#lib-list img:eq( 0 )' ).on( 'load', function() {
+				var src = $( this ).attr( 'src' );
+				if ( src.slice( -3 ) === 'jpg' ) $( '#lib-breadcrumbs img' ).attr( 'src', src );
+			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );
 		} else {
