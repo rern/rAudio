@@ -4,6 +4,8 @@
 # stop / prevnext - cmd.sh mpcplayback / mpcprevnext
 # webradio        - cmd.sh scrobble
 
+sleep 2 # wait - after track change pushstream
+
 . /srv/http/bash/common.sh
 
 readarray -t args <<< "$1"

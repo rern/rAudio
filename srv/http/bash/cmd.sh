@@ -957,7 +957,7 @@ scrobble )
 	$dirbash/scrobble.sh "\
 ${args[1]}
 ${args[2]}
-${args[3]}"
+${args[3]}" &> /dev/null &
 	;;
 thumbgif )
 	type=${args[1]}
