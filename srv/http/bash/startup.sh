@@ -53,7 +53,7 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 echo mpd > $dirshm/player
-mkdir $dirdshm/{airplay,spotify}
+mkdir $dirdshm/{airplay,spotify,local,online,webradio}
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard

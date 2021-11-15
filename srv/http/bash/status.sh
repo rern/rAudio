@@ -262,8 +262,8 @@ elif [[ -n $stream ]]; then
 		# fetched coverart
 		if [[ -n $displaycover ]]; then
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-			onlinefile=$( ls $dirshm/online-$covername.* 2> /dev/null | head -1 )
-			[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
+			[[ -n $onlinefile ]] && coverart=/data/shm/online/$covername.$date.${onlinefile/*.}
 		fi
 	else
 		ext=Radio
@@ -307,10 +307,10 @@ $radiosampling" > $dirshm/radio
 				# fetched coverart
 				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
-				coverfile=$( ls $dirshm/webradio-$covername.* 2> /dev/null | head -1 )
+				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ -n $coverfile ]]; then
 					coverart=/data/shm/$( basename $coverfile )
-					Album=$( cat $dirshm/webradio-$covername 2> /dev/null )
+					Album=$( cat $dirshm/webradio/$covername 2> /dev/null )
 				fi
 			fi
 		fi

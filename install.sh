@@ -8,6 +8,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121115
+mkdir -p /srv/http/data/shm/{local,online,webradio}
 player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 [[ -n $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
 #2021112

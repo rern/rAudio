@@ -120,7 +120,7 @@ case 'imagereplace':
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
 	}
-	if ( $covername ) exec( 'rm -f /srv/http/data/shm/local-'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
+	if ( $covername ) exec( 'rm -f /srv/http/data/shm/local/'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';

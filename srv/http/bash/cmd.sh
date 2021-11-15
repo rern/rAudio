@@ -386,7 +386,7 @@ coverartreset )
 	rm -f "$coverfile" \
 		"$dir/coverart".* \
 		"$dir/thumb".* \
-		$dirshm/local-$covername \
+		$dirshm/local/$covername \
 		$dirdata/embedded/$covername*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
@@ -409,7 +409,7 @@ $mpdpath" )
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		files=$( ls -1t $dirshm/$type-* 2> /dev/null )
+		files=$( ls -1t $dirshm/$type )
 		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 	done
 	;;
@@ -419,7 +419,7 @@ coversave )
 	covername=${args[3]}
 	coverfile="$path/cover.jpg"
 	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f $dirshm/local-$covername*
+	rm -f $dirshm/local/$covername*
 	;;
 displayget )
 	if [[ -e $dirshm/nosound ]]; then

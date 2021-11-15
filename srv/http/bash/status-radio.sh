@@ -85,9 +85,9 @@ metadataGet() {
 
 	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
-		coverfile=$dirshm/webradio-$name.jpg
+		coverfile=$dirshm/webradio/$name.jpg
 		curl -s $coverurl -o $coverfile
-		coverart=/data/shm/webradio-$name.jpg
+		coverart=/data/shm/webradio/$name.jpg
 	fi
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
