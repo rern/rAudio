@@ -108,7 +108,7 @@ counts='
 , "usb"         : '$USB'
 , "song"        : '$song'
 , "webradio"    : '$webradio
-echo {$counts} | jq . > $dirmpd/counts
+echo { $counts } | jq > $dirmpd/counts
 curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "{$counts}"
 chown -R mpd:audio $dirmpd
 rm -f $dirsystem/{updating,listing}
