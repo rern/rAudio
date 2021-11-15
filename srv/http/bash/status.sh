@@ -131,7 +131,7 @@ $( sshpass -p ros ssh -q root@$serverip $dirbash/status.sh snapclient \
 		status+="
 $( cat $dirshm/spotify/status )"
 	status+='
-, "elapsed" : '$elapsed'
+, "elapsed"   : '$elapsed'
 , "timestamp" : '$( date +%s%3N )
 		;;
 		
@@ -323,6 +323,7 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
+		status=$( grep -v '^, *"webradio"' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"
