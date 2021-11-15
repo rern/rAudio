@@ -662,7 +662,7 @@ mpcseek )
 		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $seek
-	rm $dirshm/scrobble
+	rm -f $dirshm/scrobble
 	;;
 mpcupdate )
 	path=${args[1]}
