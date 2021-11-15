@@ -620,7 +620,7 @@ mpcprevnext )
 	length=${args[3]}
 	state=${args[4]}
 	elapsed=${args[5]}
-	[[ -e $dirsystem/scrobble && $state == play && -n $elapsed ]] && cp -f $dirshm/{status,scrobble}
+	[[ -e $dirsystem/scrobble && -n $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
 	systemctl stop radio mpd_oled
 	if [[ $state == play ]]; then
@@ -756,10 +756,7 @@ playerstart )
 playerstop )
 	player=${args[1]}
 	elapsed=${args[2]}
-	if [[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]]; then
-		cp -f $dirshm/{status,scrobble}
-		scrobbleOnStop $elapsed
-	fi
+	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	rm -f $dirshm/{player-*,status}
 	touch $dirshm/player-mpd
@@ -798,6 +795,7 @@ playerstop )
 	[[ $service != snapclient ]] && systemctl restart $service
 	[[ -e $dirshm/mpdvolume ]] && volumeReset
 	pushstream player '{"player":"'$player'","active":false}'
+	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
 plcrop )
 	if mpc | grep -q playing; then
