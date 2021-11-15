@@ -598,12 +598,12 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	G.start = G.drag = 0;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
-$( '#volmute' ).click( function() {
+$( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
 } );
-$( '#volup, #voldn' ).click( function() {
-	var voldn = this.id === 'voldn';
+$( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function() {
+	var voldn = [ 'voldn', 'volB', 'volL' ].indexOf( e.currentTarget.id ) !== -1;
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
 	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
@@ -616,6 +616,7 @@ $( '#volup, #voldn' ).click( function() {
 } ).press( function( e ) {
 	G.volhold = 1;
 	var voldn = e.currentTarget.id === 'voldn';
+	var voldn = [ 'voldn', 'volB', 'volL' ].indexOf( e.currentTarget.id ) !== -1;
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
@@ -713,11 +714,11 @@ var btnctrl = {
 	, coverBL : 'random'
 	, coverB  : 'stop'
 	, coverBR : 'repeat'
-	, volT    : 'volup'
-	, volL    : 'voldn'
-	, volM    : 'volmute'
-	, volR    : 'volup'
-	, volB    : 'voldn'
+//	, volT    : 'volup'
+//	, volL    : 'voldn'
+//	, volM    : 'volmute'
+//	, volR    : 'volup'
+//	, volB    : 'voldn'
 }
 $( '.map' ).click( function() {
 	if ( G.press ) return
