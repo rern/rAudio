@@ -3,12 +3,13 @@
 alias=r1
 
 dirbash=/srv/http/bash
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
 #20121115
-mkdir -p /srv/http/data/shm/{local,online,webradio}
+mkdir -p $dirshm/{local,online,webradio}
 player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 [[ -n $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
 #2021112
@@ -23,7 +24,7 @@ file=/etc/systemd/system/bluetooth.service.d/override.conf
 grep -q battery $file || sed -i '/ExecStartPost/ i\
 ExecStart=\
 ExecStart=/usr/lib/bluetooth/bluetoothd -P battery' $file
-mkdir -p /srv/http/data/shm/{airplay,spotify}
+mkdir -p $dirshm/{airplay,spotify}
 systemctl disable --now mpdscribble@mpd
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]] && ! grep -q onwhileplay $file; then
