@@ -562,28 +562,7 @@ function info( json ) {
 		}
 		O.nochange = O.values && O.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
-		
-		if ( O.checkblank || O.checklength || O.checkchanged ) {
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', function() {
-				if ( O.checkblank ) checkBlank();
-				if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
-				if ( O.checkchanged ) {
-					var prevval = O.values.join( '' );
-					var values = infoVal();
-					var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
-					O.nochange = prevval === val;
-				}
-				setTimeout( function() { // ios: force after checkLength
-					$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
-				}, 50 );
-			} );
-		}
-		if ( O.checkchanged ) {
-			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
-				O.nochange = O.values.join( '' ) === infoVal().join( '' );
-				$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
-			} );
-		}
+		infoCheckSet();
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
@@ -610,6 +589,29 @@ function checkLength() {
 			return false
 		}
 	} );
+}
+function infoCheckSet() {
+	if ( O.checkblank || O.checklength || O.checkchanged ) {
+		$inputs_txt.on( 'keyup paste cut', function() {
+			if ( O.checkblank ) checkBlank();
+			if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
+			if ( O.checkchanged ) {
+				var prevval = O.values.join( '' );
+				var values = infoVal();
+				var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
+				O.nochange = prevval === val;
+			}
+			setTimeout( function() { // ios: force after checkLength
+				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+			}, 50 );
+		} );
+	}
+	if ( O.checkchanged ) {
+		$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
+			O.nochange = O.values.join( '' ) === infoVal().join( '' );
+			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
+		} );
+	}
 }
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];

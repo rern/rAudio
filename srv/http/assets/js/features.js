@@ -214,58 +214,6 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-scrobble' ).click( function() {
-	var content = `\
-<table>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-airplay"></i> AirPlay</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-bluetooth"></i> Bluetooth</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-spotify"></i> Spotify</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"> <i class="fa fa-upnp"></i>UPnP</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
-<tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
-<tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
-</table>`;
-	info( {
-		  icon          : 'lastfm'
-		, title         : 'Scrobble'
-		, content       : content
-		, boxwidth      : 170
-		, values        : G.scrobbleconf
-		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
-		, checkchanged  : G.scrobble ? 1 : 0
-		, beforeshow    : function() {
-			var $user = $( '#infoContent input[type=text]' );
-			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
-			$user.prop( 'disabled', G.scrobblekey );
-			$pwd.toggleClass( 'hide', G.scrobblekey );
-			$( '.scrobbleuser' ).toggleClass( 'hide', !G.scrobblekey )
-			$( '.scrobbleuser' ).click( function() {
-				$( this ).remove();
-				$user.prop( 'disabled', false );
-				$pwd.toggleClass( 'hide', false );
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoContent input' ).off( 'change keyup paste cut' );
-				checkBlank();
-			} );
-		}
-		, cancel        : function() {
-			$( '#scrobble' ).prop( 'checked', G.scrobble );
-		}
-		, ok            : function() {
-			bash( [ 'scrobbleset', ...infoVal() ], function( response ) {
-				if ( 'error' in response ) {
-					info( {
-						  icon    : 'lastfm'
-						, title   : 'Scrobble'
-						, message : response.message
-					} );
-					$( '#scrobble' ).prop( 'checked', 0 );
-				}
-			}, 'json' );
-			notify( 'Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
-		}
-	} );
-} );
 $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();
@@ -314,6 +262,59 @@ $( '#setting-login' ).click( function() {
 	} );
 } );
 
+} );
+$( '#setting-scrobble' ).click( function() {
+	var content = `\
+<table>
+<tr><td></td><td><label><input type="checkbox"><i class="fa fa-airplay"></i> AirPlay</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"><i class="fa fa-bluetooth"></i> Bluetooth</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"><i class="fa fa-spotify"></i> Spotify</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"> <i class="fa fa-upnp"></i>UPnP</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
+<tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
+<tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
+</table>`;
+	info( {
+		  icon          : 'lastfm'
+		, title         : 'Scrobble'
+		, content       : content
+		, boxwidth      : 170
+		, values        : G.scrobbleconf
+		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
+		, checkchanged  : G.scrobble ? 1 : 0
+		, beforeshow    : function() {
+			var $user = $( '#infoContent input[type=text]' );
+			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
+			$user.prop( 'disabled', G.scrobblekey );
+			$pwd.toggleClass( 'hide', G.scrobblekey );
+			$( '.scrobbleuser' ).toggleClass( 'hide', !G.scrobblekey )
+			$( '.scrobbleuser' ).click( function() {
+				$( this ).remove();
+				$user.prop( 'disabled', false );
+				$pwd.toggleClass( 'hide', false );
+				$( '#infoOk' ).addClass( 'disabled' );
+				$( '#infoContent input' ).off( 'change keyup paste cut' );
+				O.checkblank = [ 0, 1 ];
+				infoCheckSet();
+			} );
+		}
+		, cancel        : function() {
+			$( '#scrobble' ).prop( 'checked', G.scrobble );
+		}
+		, ok            : function() {
+			bash( [ 'scrobbleset', ...infoVal() ], function( response ) {
+				if ( 'error' in response ) {
+					info( {
+						  icon    : 'lastfm'
+						, title   : 'Scrobble'
+						, message : response.message
+					} );
+					$( '#scrobble' ).prop( 'checked', 0 );
+				}
+			}, 'json' );
+			notify( 'Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
+		}
+	} );
 } );
 
 function passwordWrong() {
