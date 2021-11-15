@@ -53,12 +53,6 @@ if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.tx
 	pacman -R --noconfirm firefox
 	pacman -Sy --noconfirm chromium
 fi
-# 20211011
-novu=$( grep novu $dirsystem/display | cut -d: -f2 | tr -d ' ,' )
-if [[ -n $novu ]]; then
-	[[ $novu == true ]] && covervu=false || covervu=true
-	sed -i '/novu/ s/.*/  "covervu": '$covervu',/' $dirsystem/display
-fi
 
 installstart "$1"
 
