@@ -110,7 +110,7 @@ fi
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
 
-[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
+[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
 if [[ -n $connected ]]; then
 	rfkill | grep -q wlan && iw wlan0 set power_save off

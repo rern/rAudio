@@ -14,11 +14,11 @@ if (( $# > 0 )); then
 	start=$( cat $dirairplay/start 2> /dev/null )
 	timestamp=$( date +%s%3N )
 	echo $(( timestamp - start - 7500 )) > $dirairplay/elapsed # delayed 7s
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 ##### start
 else
 	[[ $( cat $dirshm/player ) != airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport-meta
 	echo play > $dirairplay/state
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 fi

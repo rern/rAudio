@@ -5,7 +5,7 @@
 #   - connect/disconnect: networks-data.sh bt
 #   - status: dbus emits events and data
 #       start play - cmd.sh playerstart$'\n'bluetooth
-#       changed - cmd-pushstatus.sh
+#       changed - status-push.sh
 
 import dbus
 import dbus.service
@@ -31,12 +31,12 @@ def property_changed( interface, changed, invalidated, path ):
         elif name == 'Connected':
             os.system( '/srv/http/bash/networks-data.sh bt' )
         elif name == 'Position' or name == 'Track':
-            os.system( '/srv/http/bash/cmd-pushstatus.sh' )
+            os.system( '/srv/http/bash/status-push.sh' )
         elif name == 'Status':
             with open( '/srv/http/data/shm/player' ) as f: player = f.read().rstrip()
             if value == 'playing' and player != 'bluetooth':
                 os.system( "/srv/http/bash/cmd.sh playerstart$'\n'bluetooth" )
-            os.system( '/srv/http/bash/cmd-pushstatus.sh' )
+            os.system( '/srv/http/bash/status-push.sh' )
 
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )

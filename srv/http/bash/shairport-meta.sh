@@ -64,7 +64,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
-			/srv/http/bash/cmd-pushstatus.sh
+			/srv/http/bash/status-push.sh
 		else
 			data=${data//\"/\\\"}
 			pushdata='{"'$code'":"'$data'"}' # data may contains spaces

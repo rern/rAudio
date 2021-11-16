@@ -3,7 +3,7 @@
 # file mode
 # initial page load / refresh > status.sh
 # changes:
-#    - mpdidle.sh > cmd-pushstatus.sh
+#    - mpdidle.sh > status-push.sh
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
 
 dirbash=/srv/http/bash
@@ -282,7 +282,7 @@ elif [[ -n $stream ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
+			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				id=$( basename ${file/-*} )
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
 				[[ -z $id ]] && id=francemusique

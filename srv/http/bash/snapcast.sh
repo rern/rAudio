@@ -18,7 +18,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 	if [[ -n $serverip ]]; then
 		echo $serverip > $serverfile
 		$dirbash/cmd.sh playerstart$'\n'snapcast
-		$dirbash/cmd-pushstatus.sh
+		$dirbash/status-push.sh
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$serverip \
 			"$dirbash/snapcast.sh $clientip"

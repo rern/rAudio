@@ -71,4 +71,4 @@ start=$(( ( timestamp + diff - progress + 500 ) / 1000 ))
 state=$state
 EOF
 
-$dirbash/cmd-pushstatus.sh
+$dirbash/status-push.sh

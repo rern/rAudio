@@ -62,5 +62,5 @@ else
 fi
 
 sleep 1
-$dirbash/cmd-pushstatus.sh
+$dirbash/status-push.sh
 pushstreamRelays '{"done":1}'

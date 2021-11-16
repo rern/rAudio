@@ -108,7 +108,7 @@ pladdPlay() {
 		sleep $2
 		mpc -q play $pos
 		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
-		$dirbash/cmd-pushstatus.sh
+		$dirbash/status-push.sh
 	fi
 }
 pladdPosition() {
@@ -759,7 +759,7 @@ playerstop )
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
-	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
+	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
 			service=shairport-sync
@@ -788,7 +788,7 @@ playerstop )
 			for i in $tracks; do
 				mpc -q del $i
 			done
-			$dirbash/cmd-pushstatus.sh
+			$dirbash/status-push.sh
 			;;
 	esac
 	[[ $service != snapclient ]] && systemctl restart $service
@@ -805,13 +805,13 @@ plcrop )
 		mpc -q stop
 	fi
 	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 plcurrent )
 	mpc -q play ${args[1]}
 	mpc -q stop
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 	;;
 plfindadd )
 	if [[ ${args[1]} != multi ]]; then
@@ -876,7 +876,7 @@ plremove )
 	else
 		mpc -q clear
 	fi
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 plrename )
