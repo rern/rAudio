@@ -714,9 +714,10 @@ pkgstatus )
 	esac
 	status="\
 $( systemctl status $id \
-	| sed '1 s|^.* \(.*service\)|<code>\1</code>|; s|\(active (running)\)|<grn>\1</grn>|; s#\(inactive (dead)\)\|\((*failed)*\)#<red>\1</red>#' \
+	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
+	| sed '/^\s*Active:/ s|\( active (.*)\)|<grn>\1</grn>|; s|\( inactive (.*)\)|<red>\1</red>|; s|\(failed\)|<red>\1</red>|ig' \
 	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
-	grep -q '<red>' <<< "$status" && dot='<red>●</red>' || dot='<grn>●</grn>'
+	grep -q '<grn>' <<< "$status" && dot='<grn>●</grn>' || dot='<red>●</red>'
 	if [[ -e $conf ]]; then
 		status="\
 $dot <code>$( pacman -Q $pkg )</code>
