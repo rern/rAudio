@@ -42,9 +42,11 @@ $Album" &> /dev/null &
 	pushstream mpdplayer "$status"
 fi
 
+. <( echo "$statusnew" )
+
 if [[ -e $dirsystem/onwhileplay ]]; then
 	export DISPLAY=:0
-	grep -q 'state="play"' $dirshm/status && sudo xset -dpms || sudo xset +dpms
+	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
 
 [[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
@@ -73,7 +75,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 fi
 if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-	[[ -z $status ]] && status=$( $dirbash/status.sh | jq ) # status-radio.sh
+	[[ -z $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( echo "$status" | sed -e '/"player":/,/"single":/ d' -e 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#' )
 	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
