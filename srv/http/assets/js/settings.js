@@ -32,7 +32,6 @@ var cmd = {
 	, journalctl   : systemsh +'journalctlget'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
-	, mpdconf      : 'cat /etc/mpd.conf'
 	, mpdignore    : playersh +'mpdignorelist'
 	, rfkill       : 'rfkill'
 	, soundprofile : systemsh +'soundprofileget'
