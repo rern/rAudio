@@ -11,11 +11,11 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
+		. <( echo "$statusprev" )
 		compare='^Artist\|^Title\|^Album'
 		if [[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]]; then
 			trackchanged=1
 			if [[ -e $dirsystem/scrobble && ! -e $dirshm/scrobble && ! -e $dirshm/statusscrobble ]]; then
-				. <( echo "$statusprev" )
 				[[ $webradio == false \
 					&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
 					&& $player != snapcast \
