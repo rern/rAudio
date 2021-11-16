@@ -1,0 +1,4 @@
+http           ALL=(ALL) NOPASSWD: ALL
+mpd            ALL=(ALL) NOPASSWD: /srv/http/bash/*
+shairport-sync ALL=(ALL) NOPASSWD: /srv/http/bash/*
+upmpdcli       ALL=(ALL) NOPASSWD: /srv/http/bash/*
