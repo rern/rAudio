@@ -63,13 +63,12 @@ function bookmarkCover( url, path ) {
 	} );
 }
 function statusUpdate( data ) {
-	var prevstate = G.status.state;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
-	if ( G.localhost && G.display.onwhileplay && G.status.state !== prevstate ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
+	if ( G.display.onwhileplay ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
