@@ -293,7 +293,6 @@ $file
 $stationname
 $id
 $radiosampling" > $dirshm/radio
-					rm -f $dirshm/status
 					systemctl start radio
 				else
 					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
