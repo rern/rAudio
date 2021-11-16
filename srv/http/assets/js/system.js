@@ -369,11 +369,11 @@ $( '#setting-mpdoled' ).click( function() {
 		, title        : 'Spectrum OLED'
 		, selectlabel  : 'Type'
 		, select        : {
-			  'Adafruit SPI'      : 1
-			, 'Adafruit I&#178;C' : 3
-			, 'Seeed I&#178;C'    : 4
-			, 'SH1106 I&#178;C'   : 6
-			, 'SH1106 SPI'        : 7
+			  'SSD130x SPI'      : 1
+			, 'SSD130x I&#178;C' : 3
+			, 'Seeed I&#178;C'   : 4
+			, 'SH1106 I&#178;C'  : 6
+			, 'SH1106 SPI'       : 7
 		}
 		, values       : G.mpdoledconf
 		, checkchanged : ( G.mpdoled ? 1 : 0 )
