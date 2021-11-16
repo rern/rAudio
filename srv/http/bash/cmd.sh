@@ -432,15 +432,16 @@ displayget )
 	fi
 	data=$( head -n -1 $dirsystem/display )
 	data+='
-, "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
-, "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
-, "equalizer"  : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
-, "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
-, "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
-, "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "screenoff"  : '$( grep -q screenoff=0 $dirsystem/localbrowser.conf && echo false || echo true )'
-, "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
-, "volumenone" : '$volumenone'
+, "audiocd"     : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
+, "color"       : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "equalizer"   : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
+, "lock"        : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
+, "order"       : '$( cat $dirsystem/order 2> /dev/null || echo false )'
+, "relays"      : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
+, "onwhileplay" : '$( [[ -e $dirsystem/onwhileplay ]] && echo true || echo false )'
+, "screenoff"   : '$( grep -q screenoff=0 $dirsystem/localbrowser.conf && echo false || echo true )'
+, "snapclient"  : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
+, "volumenone"  : '$volumenone'
 }'
 	echo "$data"
 	;;
