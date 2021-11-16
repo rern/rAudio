@@ -42,6 +42,11 @@ $Album" &> /dev/null &
 	pushstream mpdplayer "$status"
 fi
 
+if [[ -e $dirsystem/onwhileplay ]]; then
+	export DISPLAY=:0
+	grep -q 'state="play"' $dirshm/status && sudo xset -dpms || sudo xset +dpms
+fi
+
 [[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
 
 if [[ -e $dirsystem/lcdchar ]]; then
