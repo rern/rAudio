@@ -13,33 +13,29 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 		statusprev=$( cat $dirshm/status )
 		. <( echo "$statusprev" )
 		compare='^Artist\|^Title\|^Album'
-		if [[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]]; then
-			trackchanged=1
-			if [[ -e $dirsystem/scrobble && ! -e $dirshm/scrobble && ! -e $dirshm/statusscrobble ]]; then
-				[[ $webradio == false \
-					&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
-					&& $player != snapcast \
-					&& -n $Artist \
-					&& -n $Title ]] \
-					&& (( $Time > 30 )) && cp -f $dirshm/status{,scrobble}
-			fi
-		fi
+		[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		if [[ $webradio == true ]]; then
-			[[ -z $trackchanged  ]] && exit
+			[[ -z $trackchanged ]] && exit
+			
 		else
 			compare='^state\|^elapsed'
 			[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
 			[[ -z $trackchanged && -z $statuschanged ]] && exit
+			
 		fi
-		
-		if [[ -e $dirshm/statusscrobble ]]; then
-			. $dirshm/statusscrobble
-			$dirbash/scrobble.sh "\
+		[[ -n $trackchanged \
+			&& $webradio == false \
+			&& -e $dirsystem/scrobble \
+			&& ! -e $dirshm/scrobble \
+			&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
+			&& $player != snapcast \
+			&& -n $Artist \
+			&& -n $Title ]] \
+			&& (( $Time > 30 )) \
+			&& $dirbash/scrobble.sh "\
 $Artist
 $Title
 $Album" &> /dev/null &
-			rm -f $dirshm/statusscrobble
-		fi
 	fi
 	
 	mv -f $dirshm/status{new,}
