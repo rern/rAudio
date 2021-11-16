@@ -151,7 +151,7 @@ var content = `
 <tr style="height: 10px"></tr>
 </table>
 <div class="btnbottom">
-	&nbsp;<span class="refload">Reload<i class="fa fa-redo"></i></span>
+	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
 </div>`;
 $( '#setting-localbrowser' ).click( function() {
