@@ -25,17 +25,23 @@ systemctl try-restart shairport-sync
 
 file=$dirsystem/localbrowser.conf
 if [[ -e $file ]] && ! grep -q onwhileplay $file; then
-	echo "onwhileplay=false" > $dirsystem/localbrowser.conf
-	rm -rf /root/.config/chromium
-	systemctl try-restart localbrowser
-else
-	echo "\
+	. $file
+	cat << EOF > $file
 rotate=$rotate
 zoom=$( echo "print $zoom * 100" | perl )
 screenoff=$(( $screenoff / 60 ))
 onwhileplay=false
 cursor=$cursor
-" > $dirsystem/localbrowser.conf
+EOF
+	rm -rf /root/.config/chromium
+	systemctl try-restart localbrowser
+else
+	echo "\
+rotate=NORMAL
+zoom=100
+screenoff=1
+onwhileplay=true
+cursor=false" > $file
 fi
 
 #2021112
