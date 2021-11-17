@@ -54,6 +54,7 @@ fi
 # ----------------------------------------------------------------------------
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,spotify,local,online,webradio}
+chmod -R 777 $dirshm
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
