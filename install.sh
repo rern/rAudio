@@ -24,7 +24,14 @@ chmod -R 777 $dirshm
 systemctl try-restart shairport-sync
 
 file=$dirsystem/localbrowser.conf
-if [[ -e $file ]] && ! grep -q onwhileplay $file; then
+if [[ ! -e $file ]]; then
+	echo "\
+rotate=NORMAL
+zoom=100
+screenoff=1
+onwhileplay=true
+cursor=false" > $file
+elif ! grep -q onwhileplay $file; then
 	. $file
 	cat << EOF > $file
 rotate=$rotate
@@ -35,13 +42,6 @@ cursor=$cursor
 EOF
 	rm -rf /root/.config/chromium
 	systemctl try-restart localbrowser
-else
-	echo "\
-rotate=NORMAL
-zoom=100
-screenoff=1
-onwhileplay=true
-cursor=false" > $file
 fi
 
 #2021112
