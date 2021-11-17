@@ -23,33 +23,30 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 			[[ -z $trackchanged && -z $statuschanged ]] && exit
 			
 		fi
-		[[ -n $trackchanged \
-			&& $webradio == false \
-			&& -e $dirsystem/scrobble \
-			&& ! -e $dirshm/scrobble \
-			&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
-			&& $player != snapcast \
-			&& -n $Artist \
-			&& -n $Title ]] \
-			&& (( $Time > 30 )) \
-			&& $dirbash/scrobble.sh "\
-$Artist
-$Title
-$Album" &> /dev/null &
 	fi
-	
 	mv -f $dirshm/status{new,}
 	pushstream mpdplayer "$status"
 fi
 
-. <( echo "$statusnew" )
+grep -q 'state="play"' <<< "$statusnew" && play=1
+
+[[ -n $trackchanged && -n $play \
+	&& $webradio == false && $player != snapcast \
+	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble \
+	&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
+	&& -n $Artist && -n $Title ]] \
+	&& (( $Time > 30 )) \
+	&& $dirbash/scrobble.sh "\
+$Artist
+$Title
+$Album" &> /dev/null &
 
 if [[ -e $dirsystem/onwhileplay ]]; then
 	export DISPLAY=:0
-	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
+	[[ -n $play ]] && sudo xset -dpms || sudo xset +dpms
 fi
 
-[[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
+[[ -e $dirsystem/mpdoled && -z $play ]] && systemctl stop mpd_oled
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed 's/=true$/=True/; s/=false/=False/' $dirshm/status > $dirshm/statuslcd.py
@@ -58,7 +55,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-	if [[ $state == play ]]; then
+	if [[ -n $play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		fi
