@@ -718,7 +718,7 @@ pkgstatus )
 $( systemctl status $id \
 	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
 	| sed '/^\s*Active:/ s|\( active (.*)\)|<grn>\1</grn>|; s|\( inactive (.*)\)|<red>\1</red>|; s|\(failed\)|<red>\1</red>|ig' \
-	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
+	| grep -v 'Could not resolve keysym\|Address family not supported by protocol' )" # omit warning by xkeyboard | chromium
 	grep -q '<grn>' <<< "$status" && dot='<grn>●</grn>' || dot='<red>●</red>'
 	if [[ -e $conf ]]; then
 		status="\
