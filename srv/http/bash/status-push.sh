@@ -11,9 +11,9 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
-		. <( echo "$statusprev" )
 		compare='^Artist\|^Title\|^Album'
 		[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
+		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
 			[[ -z $trackchanged ]] && exit
 			
@@ -28,14 +28,15 @@ if [[ $1 != statusradio ]]; then # from status-radio.sh
 	pushstream mpdplayer "$status"
 fi
 
-grep -q 'state="play"' <<< "$statusnew" && play=1
+[[ -n $trackchanged && $state == play \
+	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
 if [[ -e $dirsystem/onwhileplay ]]; then
 	export DISPLAY=:0
-	[[ -n $play ]] && sudo xset -dpms || sudo xset +dpms
+	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
 
-[[ -e $dirsystem/mpdoled && -z $play ]] && systemctl stop mpd_oled
+[[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed 's/=true$/=True/; s/=false/=False/' $dirshm/status > $dirshm/statuslcd.py
@@ -44,7 +45,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
-	if [[ -n $play ]]; then
+	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
 			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		fi
@@ -69,9 +70,12 @@ if [[ -e $dirshm/clientip ]]; then
 	done
 fi
 
-[[ -n $trackchanged && -n $play \
-	&& $webradio == false && $player != snapcast \
-	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble \
+[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd-librandom.sh
+
+[[ -z $scrobble ]] && exit # must be last for $statusprev - webradio and state
+
+. <( echo "$statusprev" )
+[[ $webradio == false && $player != snapcast \
 	&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
 	&& -n $Artist && -n $Title ]] \
 	&& (( $Time > 30 )) \
@@ -79,5 +83,3 @@ fi
 $Artist
 $Title
 $Album" &> /dev/null &
-
-[[ -e $dirsystem/librandom && -z $webradio ]] && $dirbash/cmd-librandom.sh
