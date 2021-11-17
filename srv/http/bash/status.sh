@@ -174,7 +174,7 @@ for line in "${lines[@]}"; do
 			bitrate=$(( val * 1000 ));;
 		# true/false
 		random | repeat | single )
-			[[ $val == 1 ]] && tf=true
+			[[ $val == 1 ]] && tf=true || tf=false
 ########
 			status+='
 , "'$key'" : '$tf
