@@ -9,6 +9,12 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121115
+file=/etc/systemd/system/shairport-sync.service.d/override.conf
+if ! grep -q root $file; then
+	echo "\
+User=root
+Group=root" >> $file
+fi
 [[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}
 mkdir -p $dirshm/{local,online,webradio}
 player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )

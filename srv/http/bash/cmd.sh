@@ -701,12 +701,15 @@ pkgstatus )
 	pkg=$id
 	case $id in
 		hostapd )
-			conf=/etc/hostapd/$id.conf;;
+			conf=/etc/hostapd/hostapd.conf;;
+		localbrowser )
+			conf=/srv/http/data/system/localbrowser.conf
+			pkg=chromium;;
 		snapclient|snapserver )
 			conf=/etc/default/$id
 			pkg=snapcast;;
 		smb )
-			conf=/etc/samba/$id.conf
+			conf=/etc/samba/smb.conf
 			pkg=samba;;
 		* )
 			conf=/etc/$id.conf;;
