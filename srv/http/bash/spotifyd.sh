@@ -49,10 +49,12 @@ if [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then # prev / next
 		( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 	fi
 fi
+curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
+							-H "Authorization: Bearer $token" > $dirshm/spotifystatus
 readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
 							-H "Authorization: Bearer $token" \
 							| jq '.item.album.name,
-								.item.album.artists[0].name,
+								.item.artists[0].name,
 								.item.album.images[0].url,
 								.is_playing,
 								.item.duration_ms,
