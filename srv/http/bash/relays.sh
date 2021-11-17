@@ -24,10 +24,6 @@ pushstreamRelays() {
 	pushstream relays "$1"
 }
 
-mpc -q stop
-systemctl stop radio
-rm -f $dirshm/status
-
 if [[ $cmd == true ]]; then
 	pushstreamRelays '{"state": true, "order": '"$onorder"'}'
 	for i in 0 1 2 3; do
