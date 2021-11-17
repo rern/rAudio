@@ -293,7 +293,7 @@ $( '#setting-scrobble' ).click( function() {
 				$user.prop( 'disabled', false );
 				$pwd.toggleClass( 'hide', false );
 				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoContent input' ).off( 'change keyup paste cut' );
+				$( '#infoContent input' ).off( 'keyup paste cut' );
 				O.checkblank = [ 0, 1 ];
 				infoCheckSet();
 			} );

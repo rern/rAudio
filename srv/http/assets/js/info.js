@@ -593,7 +593,7 @@ function checkLength() {
 }
 function infoCheckSet() {
 	if ( O.checkblank || O.checklength || O.checkchanged ) {
-		$inputs_txt.off( 'keyup paste cut' ).on( 'keyup paste cut', function() {
+		$inputs_txt.on( 'keyup paste cut', function() {
 			if ( O.checkblank ) checkBlank();
 			if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
 			if ( O.checkchanged ) {
@@ -608,7 +608,7 @@ function infoCheckSet() {
 		} );
 	}
 	if ( O.checkchanged ) {
-		$inputs_nontxt.off( 'change' ).on( 'change', function() {
+		$inputs_nontxt.on( 'change', function() {
 			O.nochange = O.values.join( '' ) === infoVal().join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
 		} );
