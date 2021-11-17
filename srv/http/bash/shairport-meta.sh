@@ -51,8 +51,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		pushstreamAirplay '{"coverart":"'$src'","file":""}'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
-		if [[ $code == progress ]]; then # format: start/elapsed/end @44100
-			progress=( ${data//\// } ) # format: start/elapsed/end @44100/second
+		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
+			progress=( ${data//\// } )
 			start=${progress[0]}
 			current=${progress[1]}
 			end=${progress[2]}
