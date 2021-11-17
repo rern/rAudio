@@ -9,6 +9,11 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121115
+if ! grep -r chromium /etc/pacman.conf; then
+	sed -i '/^#IgnorePkg/ a\
+IgnorePkg   = xorg-server xf86-input-evdev xf86-video-fbdev chromium' /etc/pacman.conf
+fi
+
 file=/etc/systemd/system/shairport-sync.service.d/override.conf
 if ! grep -q root $file; then
 	echo "\
