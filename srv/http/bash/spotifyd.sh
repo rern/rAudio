@@ -41,7 +41,7 @@ else
 	echo $token > $filetoken
 	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi
-if [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then
+if [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then # prev / next
 	. $filestate
 	elapsed=$(( $( date +%s ) - start ))
 	if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
