@@ -44,7 +44,7 @@ fi
 if [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then
 	. $filestate
 	elapsed=$(( $( date +%s ) - start ))
-	if (( $elapsed < 240 && $elapsed < $Time / 2 )); then
+	if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
 		touch $dirshm/scrobble
 		( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 	fi
