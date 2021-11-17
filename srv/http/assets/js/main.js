@@ -152,6 +152,7 @@ $( '.settings:not( :last )' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'relays':
+			$( '#stop' ).click();
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
 		case 'equalizer':
