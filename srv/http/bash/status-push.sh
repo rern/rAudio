@@ -30,17 +30,6 @@ fi
 
 grep -q 'state="play"' <<< "$statusnew" && play=1
 
-[[ -n $trackchanged && -n $play \
-	&& $webradio == false && $player != snapcast \
-	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble \
-	&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
-	&& -n $Artist && -n $Title ]] \
-	&& (( $Time > 30 )) \
-	&& $dirbash/scrobble.sh "\
-$Artist
-$Title
-$Album" &> /dev/null &
-
 if [[ -e $dirsystem/onwhileplay ]]; then
 	export DISPLAY=:0
 	[[ -n $play ]] && sudo xset -dpms || sudo xset +dpms
@@ -79,5 +68,16 @@ if [[ -e $dirshm/clientip ]]; then
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 fi
+
+[[ -n $trackchanged && -n $play \
+	&& $webradio == false && $player != snapcast \
+	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble \
+	&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
+	&& -n $Artist && -n $Title ]] \
+	&& (( $Time > 30 )) \
+	&& $dirbash/scrobble.sh "\
+$Artist
+$Title
+$Album" &> /dev/null &
 
 [[ -e $dirsystem/librandom && -z $webradio ]] && $dirbash/cmd-librandom.sh
