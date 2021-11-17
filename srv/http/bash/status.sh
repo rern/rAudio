@@ -15,13 +15,14 @@ date=$( date +%s )
 outputStatus() {
 	[[ -n $snapclient ]] && echo "$status" && exit # - no braces
 	
-	echo "{ $status }" \
-		| sed  's/:\s*$/:false/
-				s/:\s*}$/:false }/
-				s/\[\s*,/[ false,/g
-				s/,\s*,/, false,/g
-				s/,\s*]/, false ]/g'
-	# "k": > "k":false # "k":} > "k":false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	echo "{
+$status
+}" | sed 's/:\s*$/:false/
+		s/:\s*}$/:false }/
+		s/\[\s*,/[ false,/g
+		s/,\s*,/, false,/g
+		s/,\s*]/, false ]/g'
+# "k": > "k":false # "k":} > "k":false} # [, > [false, # ,, > ,false, # ,] > ,false]
 }
 
 if (( $# > 0 )); then # snapclient
