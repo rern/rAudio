@@ -41,6 +41,14 @@ else
 	echo $token > $filetoken
 	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi
+if [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then
+	. $filestate
+	elapsed=$(( $( date +%s ) - start ))
+	if (( $elapsed < 240 && $elapsed < $Time / 2 )); then
+		touch $dirshm/scrobble
+		( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+	fi
+fi
 readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
 							-H "Authorization: Bearer $token" \
 							| jq '.item.album.name,
@@ -52,6 +60,7 @@ readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/c
 								.progress_ms,
 								.timestamp' ) # not -r to keep escaped characters
 [[ ${status[3]} == true ]] && state=play || state=pause
+Time=$(( ( ${status[4]} + 500 ) / 1000 ))
 cat << EOF > $filestatus
 , "Album"    : ${status[0]}
 , "Artist"   : ${status[1]}
@@ -59,7 +68,7 @@ cat << EOF > $filestatus
 , "file"     : ""
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "state"    : "$state"
-, "Time"     : $(( ( ${status[4]} + 500 ) / 1000 ))
+, "Time"     : $Time
 , "Title"    : ${status[5]}
 EOF
 progress=${status[6]}
@@ -69,6 +78,7 @@ cat << EOF > $filestate
 elapsed=$(( ( progress + 500 ) / 1000 ))
 start=$(( ( timestamp + diff - progress + 500 ) / 1000 ))
 state=$state
+Time=$Time
 EOF
 
 $dirbash/status-push.sh
