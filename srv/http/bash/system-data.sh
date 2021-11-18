@@ -103,7 +103,7 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ -n $lines ]]; then
-		i2caddr=$( echo "$lines" \
+		i2caddress=$( echo "$lines" \
 						| grep -v '^\s' \
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
@@ -161,7 +161,7 @@ data+='
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
-, "lcdcharaddr"      : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
+, "lcdcharaddr"      : "'$( [[ -n $i2caddress ]] && echo 0x$i2caddress || echo 0x27 0x3F )'"
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
 , "lcdmodel"         : "'$lcdmodel'"

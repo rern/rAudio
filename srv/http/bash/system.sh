@@ -222,11 +222,6 @@ hostname )
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport-meta spotifyd upmpdcli
 	pushRefresh
 	;;
-i2caddress )
-	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-	i2cdetect -y $dev 2> /dev/null \
-		| sed '/^[0-9]/ s| \([0-9a-f]\+\)| <grn>\1</grn>|g'
-	;;
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}

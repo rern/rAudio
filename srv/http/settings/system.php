@@ -198,10 +198,8 @@ HTML
 	],
 	[
 		  'label'    => 'Spectrum OLED'
-		, 'sublabel' => 'i2cdetect'
 		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
-		, 'status'   => 'i2coled'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
@@ -209,10 +207,8 @@ HTML
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
-		, 'sublabel' => 'i2cdetect'
 		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
-		, 'status'   => 'i2ctft'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
