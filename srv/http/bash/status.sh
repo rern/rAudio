@@ -6,23 +6,12 @@
 #    - mpdidle.sh > status-push.sh
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
 
-dirbash=/srv/http/bash
-dirdata=/srv/http/data
-dirsystem=$dirdata/system
-dirshm=$dirdata/shm
+. /srv/http/bash/common.sh
+
 date=$( date +%s )
 
 outputStatus() {
-	[[ -n $snapclient ]] && echo "$status" && exit # - no braces
-	
-	echo "{
-$status
-}" | sed 's/:\s*$/:false/
-		s/:\s*}$/:false }/
-		s/\[\s*,/[ false,/g
-		s/,\s*,/, false,/g
-		s/,\s*]/, false ]/g'
-# "k": > "k":false # "k":} > "k":false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	[[ -z $snapclient ]] && data2json "$status" || echo "$status" # - no braces
 }
 
 if (( $# > 0 )); then # snapclient

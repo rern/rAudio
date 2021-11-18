@@ -197,23 +197,27 @@ On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays">
 HTML
 	],
 	[
-		  'label'   => 'Spectrum OLED'
-		, 'id'      => 'mpdoled'
-		, 'icon'    => 'mpdoled'
-		, 'setting' => true
-		, 'help'    => <<< HTML
+		  'label'    => 'Spectrum OLED'
+		, 'sublabel' => 'i2cdetect'
+		, 'id'       => 'mpdoled'
+		, 'icon'     => 'mpdoled'
+		, 'status'   => 'i2coled'
+		, 'setting'  => true
+		, 'help'     => <<< HTML
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 HTML
 	]
 	, [
-		  'label'   => 'TFT 3.5" LCD'
-		, 'id'      => 'lcd'
-		, 'icon'    => 'lcd'
-		, 'setting' => true
-		, 'help'    => <<< HTML
+		  'label'    => 'TFT 3.5" LCD'
+		, 'sublabel' => 'i2cdetect'
+		, 'id'       => 'lcd'
+		, 'icon'     => 'lcd'
+		, 'status'   => 'i2ctft'
+		, 'setting'  => true
+		, 'help'     => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 HTML
-		, 'exist'   => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
+		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
 	]
 	, [
 		  'label'   => 'VU LED'

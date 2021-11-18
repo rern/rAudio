@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
 # bluetooth
 if systemctl -q is-active bluetooth; then
 	readarray -t lines <<< $( bluetoothctl paired-devices \
@@ -98,7 +100,7 @@ if systemctl -q is-active hostapd; then
   "ssid"       : "'${ssid//\"/\\\"}'"
 , "passphrase" : "'${passphrase//\"/\\\"}'"
 , "ip"         : "'$ip'"
-, "conf"       : '$( /srv/http/bash/features.sh hostapdget )'
+, "conf"       : '$( $dirbash/features.sh hostapdget )'
 }'
 fi
 
@@ -113,9 +115,4 @@ data='
 , "hostapd"    : '$ap'
 , "hostname"   : "'$( hostname )'"'
 
-echo {$data} \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"

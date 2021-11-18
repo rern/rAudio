@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 file=$dirsystem/relays.conf
 . $file
 data='
@@ -14,9 +14,4 @@ data='
 , "timer"   : '$timer'
 , "enabled" : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 
-echo {$data} \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"

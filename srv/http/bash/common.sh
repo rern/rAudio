@@ -19,3 +19,12 @@ pushstreamNotifyBlink() { # title text icon [hide]
 	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1}'
 	pushstream notify "$data"
 }
+data2json() { # "k": > "k":false # "k":} > "k":false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	echo "{
+$1
+}" | sed 's/:\s*$/:false/
+		s/:\s*}$/:false }/
+		s/\[\s*,/[ false,/g
+		s/,\s*,/, false,/g
+		s/,\s*]/, false ]/g'
+}

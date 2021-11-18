@@ -1,8 +1,8 @@
 #!/bin/bash
 
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 
-. /srv/http/bash/mpd-devices.sh
+. $dirbash/mpd-devices.sh
 
 exists() {
 	[[ -e $1 ]] && echo true || echo false
@@ -28,7 +28,7 @@ data='
 , "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
 , "bufferoutput"     : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true )'
 , "bufferoutputconf" : '$( cat $dirsystem/bufferoutput.conf 2> /dev/null || echo 8192 )'
-, "counts"           : '$( cat /srv/http/data/mpd/counts 2> /dev/null )'
+, "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
 , "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
 , "custom"           : '$( exists $dirsystem/custom )'
@@ -41,9 +41,4 @@ data='
 , "soxrconf"         : '$soxrconf'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
-echo {$data} \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"

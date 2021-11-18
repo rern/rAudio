@@ -1,8 +1,6 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
 
 exists() {
@@ -80,9 +78,4 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smbconf"          : '$smbconf
 fi
 
-echo {$data} \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"
