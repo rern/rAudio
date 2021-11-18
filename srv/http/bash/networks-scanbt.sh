@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
 bluetoothctl --timeout=10 scan on &> /dev/null
 
 readarray -t lines <<< $( bluetoothctl devices | cut -d' ' -f2,3- )
@@ -26,9 +28,4 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${data:1}] \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"

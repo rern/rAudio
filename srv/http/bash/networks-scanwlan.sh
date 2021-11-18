@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
 ifconfig wlan0 up
 
 listProfile() {
@@ -42,7 +44,7 @@ for line in "${lines[@]}"; do
 	dbm=${val[0]}
 	encrypt=${val[1]}
 	[[ -z ${val[3]} ]] && echo true
-	list+=',{
+	data+=',{
   "dbm"       : "'$dbm'"
 , "ssid"      : "'$ssid'"
 , "encrypt"   : "'$encrypt'"
@@ -52,9 +54,4 @@ for line in "${lines[@]}"; do
 }'
 done
 
-echo [${list:1}] \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"
