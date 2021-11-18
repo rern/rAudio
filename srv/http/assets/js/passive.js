@@ -68,6 +68,7 @@ function statusUpdate( data ) {
 	} );
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
+	setButtonOptions();
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -457,14 +458,12 @@ function psRelays( response ) {
 			if ( delay ) {
 				$( '.infomessage .wh' ).text( delay-- );
 			} else {
-				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
 				$( '#relays' ).removeClass( 'on' );
 				$( '#i-relays, #ti-relays' ).addClass( 'hide' );
 			}
 		}, 1000 );
 	} else {
-		G.status.relayson = state;
 		if ( !state ) $( '#infoX' ).click();
 		var devices = '';
 		$.each( response.order, function( i, val ) {

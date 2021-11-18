@@ -25,6 +25,7 @@ pushstreamRelays() {
 }
 
 if [[ $cmd == true ]]; then
+	touch $dirshm/relayson
 	pushstreamRelays '{"state": true, "order": '"$onorder"'}'
 	for i in 0 1 2 3; do
 		pin=${on[$i]}
@@ -35,12 +36,12 @@ if [[ $cmd == true ]]; then
 		(( $i > 0 )) && pushstreamRelays '{"on": '$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
-	touch $dirshm/relayson
 	if [[ $timer > 0 ]]; then
 		echo $timer > $timerfile
 		$dirbash/relaystimer.sh &> /dev/null &
 	fi
 else
+	rm -f $dirshm/relayson
 	if [[ -e $timerfile ]]; then
 		rm $timerfile
 		killall relaystimer.sh &> /dev/null &
@@ -54,7 +55,6 @@ else
 		(( $i > 0 )) && pushstreamRelays '{"off": '$(( i + 1 ))'}'
 		sleep ${offd[$i]} &> /dev/null
 	done
-	rm -f $dirshm/relayson
 fi
 
 sleep 1
