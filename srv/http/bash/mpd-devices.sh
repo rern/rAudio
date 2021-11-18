@@ -13,7 +13,7 @@
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
-aplay=$( aplay -l 2> /dev/null | grep '^card' )
+aplay=$( aplay -l 2> /dev/null | grep '^card' | grep -v Loopback )
 if [[ -z $aplay ]]; then
 	i=-1
 	devices=false

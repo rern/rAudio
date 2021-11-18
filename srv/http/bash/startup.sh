@@ -107,7 +107,10 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py
 fi
-[[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
+if [[ -e $dirsystem/mpdoled ]]; then
+	$dirbash/cmd.sh mpdoledlogo
+#	modprobe snd-aloop
+fi
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
 

@@ -167,7 +167,7 @@ customset )
 	;;
 devices )
 	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
+	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card  | grep -v Loopback )
 	devices+=$'\n\n<bll># amixer scontrols</bll>\n'$( $dirbash/player.sh amixer )
 	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
 	echo "$devices"
