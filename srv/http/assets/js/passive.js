@@ -427,6 +427,9 @@ function psRelays( response ) {
 	} else if ( 'off' in response ) {
 		$( '#device'+ response.off ).addClass( 'gr' );
 	} else if ( 'done' in response ) {
+		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
+		$( '#relays' ).toggleClass( 'on', G.status.relayson );
 		$( '#infoX' ).click();
 	}
 	if ( !( 'state' in response ) ) return
