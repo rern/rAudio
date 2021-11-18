@@ -100,14 +100,12 @@ mpdoledLogo() {
 	systemctl stop mpd_oled
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
-	( sleep 60 && mpd_oled -o $type ) &
 }
 pladdPlay() {
 	pushstreamPlaylist
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
-		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 		$dirbash/status-push.sh
 	fi
 }
@@ -600,12 +598,11 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
-	systemctl stop radio mpd_oled
+	systemctl stop radio
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
-		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && -n $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
@@ -621,7 +618,7 @@ mpcprevnext )
 	elapsed=${args[5]}
 	[[ -e $dirsystem/scrobble && -n $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
-	systemctl stop radio mpd_oled
+	systemctl stop radio
 	if [[ $state == play ]]; then
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
@@ -640,7 +637,6 @@ mpcprevnext )
 	fi
 	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
-		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
@@ -741,7 +737,7 @@ playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
-	systemctl stop radio mpd_oled
+	systemctl stop radio
 	rm -f $dirshm/{radio,status}
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player

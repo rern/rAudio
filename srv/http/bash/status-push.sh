@@ -37,7 +37,9 @@ if [[ -e $dirsystem/onwhileplay ]]; then
 	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
 
-[[ -e $dirsystem/mpdoled && $state != play ]] && systemctl stop mpd_oled
+if [[ -e $dirsystem/mpdoled ]]; then
+	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
+fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed 's/=true$/=True/; s/=false/=False/' $dirshm/status > $dirshm/statuslcd.py
