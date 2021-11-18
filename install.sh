@@ -9,7 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121115
-if ! grep -r chromium /etc/pacman.conf; then
+if ! grep -q chromium /etc/pacman.conf; then
 	sed -i '/^#IgnorePkg/ a\
 IgnorePkg   = xorg-server xf86-input-evdev xf86-video-fbdev chromium' /etc/pacman.conf
 fi
