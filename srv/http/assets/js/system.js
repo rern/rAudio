@@ -863,15 +863,16 @@ function renderPage( list ) {
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
-	$( '#lcd' ).prop( 'checked', G.lcd );
-	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
 	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
 	$( '#relays' ).prop( 'checked', G.relays );
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
-	$( '#onboardaudio' ).prop( 'checked', G.onboardaudio );
+	$( '#mpdoled' ).parent().prev().toggleClass( 'single', !G.mpdoled );
+	$( '#lcd' ).prop( 'checked', G.lcd );
+	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
+	$( '#lcd' ).parent().prev().toggleClass( 'single', !G.lcd );
 	if ( G.soundprofileconf ) {
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );

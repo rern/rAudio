@@ -28,6 +28,8 @@ var cmd = {
 	, bluetooth    : 'bluetoothctl info'
 	, bluetoothctl : systemsh +'bluetoothstatus'
 	, configtxt    : systemsh +'configtxtget'
+	, i2coled      : systemsh +'i2caddress'
+	, i2ctft       : systemsh +'i2caddress'
 	, iw           : 'iw reg get; iw list'
 	, journalctl   : systemsh +'journalctlget'
 	, lan          : networkssh +'ifconfigeth'
@@ -411,7 +413,8 @@ $( '.help' ).click( function() {
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
 $( '.container' ).on( 'click', '.status', function( e ) {
-	if ( !$( e.target ).is( 'i' ) ) status( $( this ).data( 'status' ) );
+	var $this = $( this );
+	if ( !$( e.target ).is( 'i' ) && !$this.hasClass( 'single' ) ) status( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
