@@ -82,7 +82,6 @@ configtxtget )
 $( cat /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-
 $( cat /boot/config.txt )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( cat $file )
@@ -208,11 +207,9 @@ datarestore )
 fstabget )
 	echo -e "\
 <bll># cat /etc/fstab</bll>
-
 $( cat /etc/fstab )
 
 <bll># mount | grep ^/dev</bll>
-
 $( mount | grep ^/dev | sort )"
 	;;
 hostname )
@@ -263,7 +260,6 @@ journalctlget )
 	fi
 	echo "\
 <bll># journalctl -b</bll>
-
 $journal"
 	;;
 lcdcalibrate )
