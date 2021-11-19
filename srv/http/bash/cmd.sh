@@ -920,7 +920,7 @@ power )
 	if [[ -n $reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
-		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"power"}'
+		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	fi
 	pushstream notify "$data"
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
