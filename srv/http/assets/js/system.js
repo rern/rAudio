@@ -371,14 +371,14 @@ $( '#setting-mpdoled' ).click( function() {
 		, content      : `\
 <table>
 <tr><td>Controller</td>
-<td><select>
+<td><select class="oledchip">
 	<option value="1">SSD130x SPI</option>
 	<option value="3">SSD130x I²C</option>
 	<option value="4">Seeed I²C</option>
 	<option value="6">SH1106 I²C</option>
 	<option value="7">SH1106 SPI</option>
 </select></td></tr>
-<tr><td>Refresh <gr>(baud)</gr></td>
+<tr class="baud"><td>Refresh <gr>(baud)</gr></td>
 <td><select>
 	<option value="400000">400000</option>
 	<option value="800000">800000</option>
@@ -388,8 +388,16 @@ $( '#setting-mpdoled' ).click( function() {
 		, values       : G.mpdoledconf
 		, checkchanged : ( G.mpdoled ? 1 : 0 )
 		, boxwidth     : 140
-		, buttonlabel   : '<i class="fa fa-plus-r"></i>Logo'
-		, button        : !G.mpdoled ? '' : function() {
+		, beforeshow   : function() {
+			var i2c = !G.mpdoled || ( G.mpdoled && G.mpdoledconf[ 1 ] );
+			$( '.baud' ).toggleClass( 'hide', !i2c );
+			$( '.oledchip' ).change( function() {
+				var val = $( this ).val();
+				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
+			} );
+		}
+		, buttonlabel  : '<i class="fa fa-plus-r"></i>Logo'
+		, button       : !G.mpdoled ? '' : function() {
 			bash( '/srv/http/bash/cmd.sh mpdoledlogo' );
 		}
 		, ok           : function() {
@@ -879,10 +887,8 @@ function renderPage( list ) {
 	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
 	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
-	$( '#mpdoled' ).parent().prev().toggleClass( 'single', !G.mpdoled );
 	$( '#lcd' ).prop( 'checked', G.lcd );
 	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
-	$( '#lcd' ).parent().prev().toggleClass( 'single', !G.lcd );
 	if ( G.soundprofileconf ) {
 		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );

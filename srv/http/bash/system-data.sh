@@ -130,11 +130,10 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
-if [[ -e $dirsystem/mpdoled ]]; then
-	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
-	mpdoledconf='[ "'$chip'", '$baud' ]'
-fi
+oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
+[[ -z $baudrate ]] && baudrate=400000
+mpdoledconf='[ "'$oledchip'", '$baudrate' ]'
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else
