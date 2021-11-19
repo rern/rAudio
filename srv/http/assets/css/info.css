@@ -215,6 +215,7 @@
 .infobtn i {
 	font-size: 18px;
 	margin-right: 5px;
+	vertical-align: middle;
 }
 .btnbottom span {
 	color: var( --cg60 );
