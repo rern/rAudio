@@ -11,10 +11,11 @@ dirsystem=/srv/http/data/system
 #20121120
 if [[ $( cat /srv/http/data/addons/r1 ) < 20121120 ]]; then
 	dirbookmarks=/srv/http/data/bookmarks
-	readarray -t bookmarks <<< $( ls -1 $dirbookmarks )
-	if [[ -n $bookmarks ]]; then
-		for name in "${bookmarks[@]}"; do
-			file="$dirbookmarks/$name"
+	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
+	if [[ -n $files ]]; then
+		for file in "${files[@]}"; do
+			(( $( wc -l < "$file" ) > 1 )) && continue
+			
 			path=$( cat "$file" )
 			[[ ${path:0:5} == '/data' ]] && continue
 			
