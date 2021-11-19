@@ -79,20 +79,23 @@ bluetoothset )
 configtxtget )
 	config="\
 <bll># cat /boot/cmdline.txt</bll>
-
 $( cat /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
 
-$( cat /boot/config.txt )
-"
+$( cat /boot/config.txt )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( cat $file )
 	if [[ -n $raspberrypiconf ]]; then
 		config+="
-# $file
 
+<bll># $file</bll>
 $raspberrypiconf"
+		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
+		[[ -n $dev ]] && config+="
+		
+<bll># i2cdetect -y $dev</bll>
+$(  i2cdetect -y $dev )"
 	fi
 	echo "$config"
 	;;
