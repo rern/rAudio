@@ -209,11 +209,13 @@ $( '#power' ).click( function() {
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
+			$( '#stop' ).click();
 			bash( [ 'power', 'reboot' ] );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
+			$( '#stop' ).click();
 			bash( [ 'power' ] );
 		}
 	} );
