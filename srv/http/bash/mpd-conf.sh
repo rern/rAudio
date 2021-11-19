@@ -226,12 +226,14 @@ pcm.plugequal {
 }"
 fi
 
-echo "\
+asound="\
 defaults.pcm.card $card
-defaults.ctl.card $card
-$asoundbt
-$asoundeq
-" > /etc/asound.conf
+defaults.ctl.card $card"
+[[ -n $asoundbt ]] && asound+="
+$asoundbt"
+[[ -n $asoundeq ]] && asound+="
+$asoundeq"
+echo "$asound" > /etc/asound.conf
 
 [[ -n $preset ]] && $dirbash/cmd.sh "equalizer
 preset
