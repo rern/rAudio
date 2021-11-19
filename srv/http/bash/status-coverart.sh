@@ -24,7 +24,7 @@ done
 # cover file
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
-coverfile=$( ls -1 "$path" \
+coverfile=$( ls -1X "$path" \
 				| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 				| grep -i '.gif$\|.jpg$\|.png$' \
 				| head -1 )
