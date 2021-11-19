@@ -18,17 +18,17 @@ if (( $# > 0 )); then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btclient=$( [[ -e $dirshm/btclient ]] && echo true )
+	btclient=$( exists $dirshm/btclient )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
-	librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
+	librandom=$( exists $dirsystem/librandom )
 	player=$( cat $dirshm/player )
 	[[ -z $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	playlists=$( ls $dirdata/playlists | wc -l )
-	relays=$( [[ -e $dirsystem/relays ]] && echo true )
-	relayson=$( [[ -e  $dirshm/relayson ]] && echo true )
-	updateaddons=$( [[ -e $dirdata/addons/update ]] && echo true )
+	relays=$( exists $dirsystem/relays )
+	relayson=$( exists $dirshm/relayson )
+	updateaddons=$( exists $dirdata/addons/update )
 	if [[ -e $dirsystem/updating ]]; then 
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
@@ -49,7 +49,7 @@ else
 		control=$( echo $controlvolume | cut -d^ -f1 )
 		volume=$( echo $controlvolume | cut -d^ -f2 )
 	fi
-	scrobble=$( [[ -e $dirsystem/scrobble ]] && echo true )
+	scrobble=$( exists $dirsystem/scrobble )
 
 ########
 	status='
