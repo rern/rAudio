@@ -2,7 +2,9 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 != statusradio ]]; then # from status-radio.sh
+if [[ $1 == statusradio ]]; then # from status-radio.sh
+	state=play
+else
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \
 		| sed '/^.*"counts"/,/}/ d' \
