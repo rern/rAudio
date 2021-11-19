@@ -4,10 +4,6 @@
 
 . $dirbash/mpd-devices.sh
 
-exists() {
-	[[ -e $1 ]] && echo true || echo false
-}
-
 active=$( mpc &> /dev/null && echo true )
 if [[ -e $dirsystem/soxr.conf ]]; then
 	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"

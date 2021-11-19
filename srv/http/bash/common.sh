@@ -29,6 +29,9 @@ ${data:1}
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'
 }
+exists() {
+	[[ -e $1 ]] && echo true || echo false
+}
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }

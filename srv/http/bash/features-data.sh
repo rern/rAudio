@@ -3,10 +3,6 @@
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-exists() {
-	[[ -e $1 ]] && echo true || echo false
-}
-
 dirscrobble=$dirsystem/scrobble.conf
 for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )

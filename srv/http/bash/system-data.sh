@@ -2,10 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-exists() {
-	[[ -e $1 ]] && echo true || echo false
-}
-
 cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
   "page"             : "system"
@@ -134,6 +130,11 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
+if [[ -e $dirsystem/mpdoled ]]; then
+	chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+	baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
+	mpdoledconf='[ "'$chip'", '$baud' ]'
+fi
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else
@@ -166,7 +167,7 @@ data+='
 , "list"             : '$list'
 , "lcdmodel"         : "'$lcdmodel'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
-, "mpdoledconf"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
+, "mpdoledconf"      : '$mpdoledconf'
 , "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true )'

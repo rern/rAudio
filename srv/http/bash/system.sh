@@ -435,14 +435,15 @@ mpdoleddisable )
 	pushRefresh
 	;;
 mpdoledset )
-	type=${args[1]}
-	sed -i "s/-o ./-o $type/" /etc/systemd/system/mpd_oled.service
+	chip=${args[1]}
+	baud=${args[2]}
+	sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
 	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=.*_baudrate/ d' $fileconfig
 	sed -i '/i2c-dev/ d' $filemodule
-	if [[ $type != 1 && $type != 7 ]]; then
+	if [[ $chip != 1 && $chip != 7 ]]; then
 		echo "\
 dtparam=i2c_arm=on
-dtparam=i2c_arm_baudrate=1200000" >> $fileconfig
+dtparam=i2c_arm_baudrate=$baud" >> $fileconfig
 		echo "\
 i2c-dev" >> $filemodule
 	else
