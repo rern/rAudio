@@ -51,23 +51,25 @@ case 'bookmark':
 		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
 	} else {
 		$basename = basename( $path );
-		file_put_contents( $dirbookmarks.$basename, $path );
-		$coverartfile = '/mnt/MPD/'.$path.'/coverart.';
-		$src = $coverartfile.time();
-		if ( file_exists( $coverartfile.'jpg' ) ) {
-			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.jpg">';
-		} else if ( file_exists( $coverartfile.'gif' ) ) {
-			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.gif">';
+		$coverart = $_POST[ 'coverart' ];
+		$coverpath = '/mnt/MPD/'.$path;
+		$coverfile = $coverpath.'/'.$coverart;
+		$covername = substr( $coverart, 0, -4 );
+		if ( $covername === 'coverart' ) {
+			$coverartfile = $coverfile;
 		} else {
-			$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$basename.'</span></div>';
+			$ext = substr( $coverart, -4 );
+			$coverartfile = $coverpath.'/coverart'.$ext;
+			exec( $sudobin.'cp "'.$coverfile.'" "'.$coverartfile.'"' );
 		}
+		file_put_contents( $dirbookmarks.$basename, $path."\n".$coverartfile );
+		$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverartfile ).'">';
 	}
-	$dataalbum = substr( $icon, 1, 3 ) === 'img' ? 'data-album="1"' : '';
 	$data = [
 		  'path' => $path
 		, 'html' => '
 			<div class="lib-mode bookmark">
-				<div class="mode mode-bookmark" '.$dataalbum.'>
+				<div class="mode mode-bookmark">
 				<a class="lipath">'.$path.'</a>
 				'.$icon.'
 			</div></div>'

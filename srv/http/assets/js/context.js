@@ -38,56 +38,40 @@ function bookmarkNew() {
 		}
 	}
 	
-	if ( G.list.licover ) {
-		if ( $( '.licover img' ).attr( 'src' ).slice( -3 ) !== 'svg' ) {
-			bookmarkThumb( path, $( '.licover img' ).attr( 'src' ) );
+	bash( [ 'coverartget', '/mnt/MPD/'+ path ], function( coverart ) {
+		if ( coverart ) {
+			info( {
+				  icon    : 'bookmark'
+				, title   : 'Add Bookmark'
+				, message : '<img src="'+ encodeURI( '/mnt/MPD/'+ path ) +'/'+ coverart +'">'
+						   +'<br><wh>'+ path +'</wh>'
+				, ok      : function() {
+					$.post( cmdphp, {
+						  cmd      : 'bookmark'
+						, path     : path
+						, coverart : coverart
+					} );
+					banner( 'Bookmark Added', path, 'bookmark' );
+				}
+			} );
 		} else {
-			bookmarkIcon( path );
-		}
-	} else if ( G.list.li.find( '.iconthumb' ).length ) {
-		var ext = G.list.li.find( '.iconthumb' ).attr( 'src' ).slice( -3 );
-		bookmarkThumb( path, '/mnt/MPD/'+ encodeURI( path ) +'/coverart.'+ ext );
-	} else {
-		bash( [ 'bookmarkthumb', path ], function( ext ) {
-			if ( ext ) {
-				bookmarkThumb( path, '/mnt/MPD/'+ encodeURI( path ) +'/coverart.'+ ext );
-			} else {
-				bookmarkIcon( path );
-			}
-		} );
-	}
-}
-function bookmarkIcon( path ) {
-	info( {
-		  icon       : 'bookmark'
-		, title      : 'Add Bookmark'
-		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
-						+'<br><wh>'+ path +'</wh>'
-		, textlabel  : 'As:'
-		, values     : path.split( '/' ).pop()
-		, checkblank : 1
-		, ok         : function() {
-			$.post( cmdphp, {
-				  cmd  : 'bookmark'
-				, path : path
-				, name : infoVal()
+			info( {
+				  icon       : 'bookmark'
+				, title      : 'Add Bookmark'
+				, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
+								+'<br><wh>'+ path +'</wh>'
+				, textlabel  : 'As:'
+				, values     : path.split( '/' ).pop()
+				, checkblank : 1
+				, ok         : function() {
+					$.post( cmdphp, {
+						  cmd  : 'bookmark'
+						, path : path
+						, name : infoVal()
+					} );
+					banner( 'Bookmark Added', path, 'bookmark' );
+				}
 			} );
-			banner( 'Bookmark Added', path, 'bookmark' );
-		}
-	} );
-}
-function bookmarkThumb( path, coverart ) {
-	info( {
-		  icon    : 'bookmark'
-		, title   : 'Add Bookmark'
-		, message : '<img src="'+ coverart +'">'
-				   +'<br><wh>'+ path +'</wh>'
-		, ok      : function() {
-			$.post( cmdphp, {
-				  cmd  : 'bookmark'
-				, path : path
-			} );
-			banner( 'Bookmark Added', path, 'bookmark' );
 		}
 	} );
 }

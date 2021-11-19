@@ -8,7 +8,24 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20121115
+#20121120
+if [[ $( cat /srv/http/data/addons/r1 ) < 20121120 ]]; then
+	dirbookmarks=/srv/http/data/bookmarks
+	readarray -t bookmarks <<< $( ls -1 $dirbookmarks )
+	if [[ -n $bookmarks ]]; then
+		for name in "${bookmarks[@]}"; do
+			file="$dirbookmarks/$name"
+			path=$( cat "$file" )
+			[[ ${path:0:5} == '/data' ]] && continue
+			
+			coverartfile=$( ls -1X "/mnt/MPD/$path/coverart."{gif,jpg} 2> /dev/null | head -1 )
+			[[ -n $coverartfile ]] && echo "\
+$path
+$coverartfile"> "$file"
+		done
+	fi
+fi
+
 if ! grep -q xf86-video-vesa /etc/pacman.conf; then
 	sed -i -e '/^IgnorePkg/ d
 ' -e '/^#IgnorePkg/ a\

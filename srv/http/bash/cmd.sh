@@ -365,6 +365,19 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 count )
 	count
 	;;
+coverartget )
+	path=${args[1]}
+	coverartfile=$( ls -1X "$path/coverart."{gif,jpg} 2> /dev/null | head -1 )
+	if [[ -n $coverart ]]; then
+		coverart=$( basename "$coverartfile" )
+	else
+		coverart=$( ls -1X "$path" \
+					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
+					| grep -i '.gif$\|.jpg$\|.png$' \
+					| head -1 )
+	fi
+	echo $coverart
+	;;
 coverartreset )
 	coverfile=${args[1]}
 	mpdpath=${args[2]}

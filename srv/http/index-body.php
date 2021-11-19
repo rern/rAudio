@@ -78,22 +78,14 @@ $dir = $dirdata.'bookmarks';
 $files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 if ( count( $files ) ) {
 	foreach( $files as $name ) {
-		$bkpath = rtrim( file_get_contents( "$dir/$name" ) );
-		$prefix = preg_replace( '/\/.*/', '', $bkpath );
-		if ( in_array( $prefix, [ 'NAS', 'SD', 'USB' ] ) ) {
-			$path = '/mnt/MPD/'.$bkpath;
-			$srccoverart = $path.'/coverart.';
-			$pathcoverart = $srccoverart;
-		} else {
-			$path = '/data/'.$bkpath;
-			$srccoverart = $path.'/coverart.';
-			$pathcoverart = '/srv/http'.$srccoverart;
-		}
+		$data = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES );
+		$bkpath = $data[ 0 ];
+		$srccoverart = $data[ 1 ];
 		$modehtml.= '
 			<div class="lib-mode bookmark">
-				<div class="mode mode-bookmark" data-mode="bookmark" '.$dataalbum.'>
+				<div class="mode mode-bookmark" data-mode="bookmark">
 					<a class="lipath">'.$bkpath.'</a>
-					<img class="bkcoverart lazyload" data-src="'.rawurlencode( $srccoverart ).time().'.jpg" data-label="'.$name.'">
+					<img class="bkcoverart" src="'.rawurlencode( $srccoverart ).'" data-label="'.$name.'">
 				</div>
 			</div>
 		';
