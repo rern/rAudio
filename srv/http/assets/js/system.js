@@ -368,13 +368,23 @@ $( '#setting-mpdoled' ).click( function() {
 		  icon         : 'mpdoled'
 		, title        : 'Spectrum OLED'
 		, selectlabel  : 'Type'
-		, select        : {
-			  'SSD130x SPI'      : 1
-			, 'SSD130x I&#178;C' : 3
-			, 'Seeed I&#178;C'   : 4
-			, 'SH1106 I&#178;C'  : 6
-			, 'SH1106 SPI'       : 7
-		}
+		, content      : `\
+<table>
+<tr><td>Controller</td>
+<td><select>
+	<option value="1">SSD130x SPI</option>
+	<option value="3">SSD130x I²C</option>
+	<option value="4">Seeed I²C</option>
+	<option value="6">SH1106 I²C</option>
+	<option value="7">SH1106 SPI</option>
+</select></td></tr>
+<tr><td>Refresh <gr>(baud)</gr></td>
+<td><select>
+	<option value="400000">400000</option>
+	<option value="800000">800000</option>
+	<option value="1200000">1200000</option>
+</select></td></tr>
+</table>`
 		, values       : G.mpdoledconf
 		, checkchanged : ( G.mpdoled ? 1 : 0 )
 		, boxwidth     : 140
@@ -384,7 +394,7 @@ $( '#setting-mpdoled' ).click( function() {
 		}
 		, ok           : function() {
 			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
-			bash( [ 'mpdoledset', infoVal() ] );
+			bash( [ 'mpdoledset', ...infoVal() ] );
 		}
 	} );
 } );
