@@ -1316,7 +1316,7 @@ function setButtonControl() {
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
+		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', !mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', G.status.stream && G.status.player !== 'upnp' );
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ G.status.state ).addClass( 'active' );
