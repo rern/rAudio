@@ -431,6 +431,7 @@ mpdoleddisable )
 	fi
 	sed -i '/dtparam=.*_baudrate/ d' $fileconfig
 	rm $dirsystem/mpdoled
+	$dirbash/mpd-conf.sh
 	pushRefresh
 	;;
 mpdoledset )
