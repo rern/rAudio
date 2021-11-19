@@ -1192,7 +1192,7 @@ function renderPlayback() {
 	}
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-	if ( !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
+	if ( !G.status.elapsed || !G.status.Time || !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 		blinkDot();
 		return
