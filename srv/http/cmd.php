@@ -54,10 +54,10 @@ case 'bookmark':
 		file_put_contents( $dirbookmarks.$basename, $path );
 		$coverartfile = '/mnt/MPD/'.$path.'/coverart.';
 		$src = $coverartfile.time();
-		if ( file_exists( $coverartfile.'gif' ) ) {
-			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.gif">';
-		} else if ( file_exists( $coverartfile.'jpg' ) ) {
+		if ( file_exists( $coverartfile.'jpg' ) ) {
 			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.jpg">';
+		} else if ( file_exists( $coverartfile.'gif' ) ) {
+			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.gif">';
 		} else {
 			$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$basename.'</span></div>';
 		}
