@@ -29,7 +29,7 @@ fi
 if ! grep -q xf86-video-vesa /etc/pacman.conf; then
 	sed -i -e '/^IgnorePkg/ d
 ' -e '/^#IgnorePkg/ a\
-IgnorePkg   = xf86-input-evdev xf86-video-fbdev xf86-video-vesa xorg-server chromium' /etc/pacman.conf
+IgnorePkg   = chromium' /etc/pacman.conf
 fi
 
 file=/etc/systemd/system/shairport-sync.service.d/override.conf
