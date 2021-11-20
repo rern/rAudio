@@ -42,29 +42,20 @@ case 'exec': // single / one-line command - return array of lines to js
 	
 case 'bookmark':
 	$path = $_POST[ 'path' ];
+	$coverart ??= $_POST[ 'coverart' ];
+	$name = $_POST[ 'name' ];
 	$fileorder = $dirsystem.'order';
 	$order = json_decode( file_get_contents( $fileorder ) );
 	$order[] = $path;
-	$name ??= $_POST[ 'name' ];
-	if ( $name ) {
-		file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $path );
-		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
+	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
+	if ( $coverart ) {
+		$content = $path."\n".$coverart;
+		$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'">';
 	} else {
-		$basename = basename( $path );
-		$coverart = $_POST[ 'coverart' ];
-		$coverpath = '/mnt/MPD/'.$path;
-		$coverfile = $coverpath.'/'.$coverart;
-		$covername = substr( $coverart, 0, -4 );
-		if ( $covername === 'coverart' ) {
-			$coverartfile = $coverfile;
-		} else {
-			$ext = substr( $coverart, -4 );
-			$coverartfile = $coverpath.'/coverart'.$ext;
-			exec( $sudobin.'cp "'.$coverfile.'" "'.$coverartfile.'"' );
-		}
-		file_put_contents( $dirbookmarks.$basename, $path."\n".$coverartfile );
-		$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverartfile ).'">';
+		$content = $path;
+		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
 	}
+	file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $content );
 	$data = [
 		  'path' => $path
 		, 'html' => '
@@ -75,7 +66,6 @@ case 'bookmark':
 			</div></div>'
 		, 'order' => $order
 	];
-	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
 	pushstream( 'bookmark', $data );
 	break;
 case 'bookmarkremove':

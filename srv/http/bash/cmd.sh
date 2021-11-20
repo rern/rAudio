@@ -367,16 +367,21 @@ count )
 	;;
 coverartget )
 	path=${args[1]}
-	coverartfile=$( ls -1X "$path/coverart."{gif,jpg} 2> /dev/null | head -1 )
-	if [[ -n $coverart ]]; then
-		coverart=$( basename "$coverartfile" )
-	else
-		coverart=$( ls -1X "$path" \
+	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
+						| grep -i '.gif$\|.jpg$\|.png$' \
+						| head -1 ) # full path
+	[[ -n $coverartfile ]] && echo $coverartfile && exit
+	
+	coverfile=$( ls -1X "$path" \
 					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 					| grep -i '.gif$\|.jpg$\|.png$' \
-					| head -1 )
+					| head -1 ) # filename only
+	if [[ -n $coverfile ]]; then
+		ext=${coverfile: -3}
+		coverartfile="$path/coverart.${ext,,}"
+		ln -s "$path/$coverfile" "$coverartfile"
+		echo $coverartfile
 	fi
-	echo $coverart
 	;;
 coverartreset )
 	coverfile=${args[1]}

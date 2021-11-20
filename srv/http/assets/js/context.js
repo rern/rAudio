@@ -39,40 +39,28 @@ function bookmarkNew() {
 	}
 	
 	bash( [ 'coverartget', '/mnt/MPD/'+ path ], function( coverart ) {
-		if ( coverart ) {
-			info( {
-				  icon    : 'bookmark'
-				, title   : 'Add Bookmark'
-				, message : '<img src="'+ encodeURI( '/mnt/MPD/'+ path ) +'/'+ coverart +'">'
-						   +'<br><wh>'+ path +'</wh>'
-				, ok      : function() {
-					$.post( cmdphp, {
-						  cmd      : 'bookmark'
-						, path     : path
-						, coverart : coverart
-					} );
-					banner( 'Bookmark Added', path, 'bookmark' );
-				}
-			} );
-		} else {
-			info( {
-				  icon       : 'bookmark'
-				, title      : 'Add Bookmark'
-				, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
-								+'<br><wh>'+ path +'</wh>'
-				, textlabel  : 'As:'
-				, values     : path.split( '/' ).pop()
-				, checkblank : 1
-				, ok         : function() {
-					$.post( cmdphp, {
-						  cmd  : 'bookmark'
-						, path : path
-						, name : infoVal()
-					} );
-					banner( 'Bookmark Added', path, 'bookmark' );
-				}
-			} );
-		}
+		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
+		info( {
+			  icon       : 'bookmark'
+			, title      : 'Add Bookmark'
+			, message    : icon
+						  +'<br><wh>'+ path +'</wh>'
+			, textlabel  : 'As:'
+			, values     : path.split( '/' ).pop()
+			, checkblank : coverart ? '' : 1
+			, beforeshow : function() {
+				$( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' );
+			}
+			, ok         : function() {
+				$.post( cmdphp, {
+					  cmd      : 'bookmark'
+					, path     : path
+					, name     : infoVal()
+					, coverart : coverart
+				} );
+				banner( 'Bookmark Added', path, 'bookmark' );
+			}
+		} );
 	} );
 }
 function infoReplace( callback ) {

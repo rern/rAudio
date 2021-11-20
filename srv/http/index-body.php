@@ -80,13 +80,19 @@ if ( count( $files ) ) {
 	foreach( $files as $name ) {
 		$data = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES );
 		$bkpath = $data[ 0 ];
-		$srccoverart = $data[ 1 ];
+		$coverart ??= $data[ 1 ];
+		if ( $coverart && file_exists( $coverart ) ) {
+			$coverart = substr( $coverart, 0, -3 ).$time.substr( $coverart, -4 );
+			$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'" data-label="'.$name.'">';
+		} else {
+			$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
+		}
 		$modehtml.= '
 			<div class="lib-mode bookmark">
 				<div class="mode mode-bookmark" data-mode="bookmark">
-					<a class="lipath">'.$bkpath.'</a>
-					<img class="bkcoverart" src="'.rawurlencode( $srccoverart ).'" data-label="'.$name.'">
-				</div>
+					<a class="lipath">'.$bkpath.'</a>'
+					.$icon.
+				'</div>
 			</div>
 		';
 	}
