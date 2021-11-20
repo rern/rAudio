@@ -80,7 +80,7 @@ if ( count( $files ) ) {
 	foreach( $files as $name ) {
 		$data = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES );
 		$bkpath = $data[ 0 ];
-		$coverart ??= $data[ 1 ];
+		$coverart = $data[ 1 ] ?? '';
 		if ( $coverart ) {
 			$coverart = substr( $coverart, 0, -3 ).$time.substr( $coverart, -4 );
 			$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'" data-label="'.$name.'">';
