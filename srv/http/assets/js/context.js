@@ -38,7 +38,8 @@ function bookmarkNew() {
 		}
 	}
 	
-	bash( [ 'coverartget', '/mnt/MPD/'+ path ], function( coverart ) {
+	var bkpath = path.slice( 0, 9 ) === 'webradios' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
+	bash( [ 'coverartget', bkpath ], function( coverart ) {
 		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
 		info( {
 			  icon       : 'bookmark'
