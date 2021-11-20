@@ -42,7 +42,7 @@ case 'exec': // single / one-line command - return array of lines to js
 	
 case 'bookmark':
 	$path = $_POST[ 'path' ];
-	$coverart ??= $_POST[ 'coverart' ];
+	$coverart = $_POST[ 'coverart' ] ?? '';
 	$name = $_POST[ 'name' ];
 	$fileorder = $dirsystem.'order';
 	$order = json_decode( file_get_contents( $fileorder ) );
@@ -126,7 +126,7 @@ case 'login':
 		exit();
 	}
 	
-	$pwdnew ??= $_POST[ 'pwdnew' ];
+	$pwdnew = $_POST[ 'pwdnew' ] ?? '';
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		echo file_put_contents( $passwordfile, $hash );
