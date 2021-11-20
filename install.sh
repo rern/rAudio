@@ -16,9 +16,8 @@ if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20
 			(( $( wc -l < "$file" ) > 1 )) && continue
 			
 			path=$( cat "$file" )
-			[[ ${path:0:5} == '/data' ]] && continue
-			
-			coverartfile=$( $dirbash/cmd.sh coverartget$'\n'"/mnt/MPD/$path" )
+			[[ ${path:0:9} == webradios ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
+			coverartfile=$( $dirbash/cmd.sh coverartget$'\n'"$coverpath" )
 			[[ -n $coverartfile ]] && echo "\
 $path
 $coverartfile"> "$file"
