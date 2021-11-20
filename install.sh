@@ -9,8 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121120
-if [[ $( cat /srv/http/data/addons/r1 ) < 20121120 ]]; then
-	dirbookmarks=/srv/http/data/bookmarks
+if [[ $( cat /srv/http/data/addons/r1 ) < 20211120 ]]; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
 	if [[ -n $files ]]; then
 		for file in "${files[@]}"; do
@@ -19,7 +18,7 @@ if [[ $( cat /srv/http/data/addons/r1 ) < 20121120 ]]; then
 			path=$( cat "$file" )
 			[[ ${path:0:5} == '/data' ]] && continue
 			
-			coverartfile=$( ls -1X "/mnt/MPD/$path/coverart."{gif,jpg} 2> /dev/null | head -1 )
+			coverartfile=$( $dirbash/cmd.sh coverartget$'\n'"/mnt/MPD/$path" )
 			[[ -n $coverartfile ]] && echo "\
 $path
 $coverartfile"> "$file"
