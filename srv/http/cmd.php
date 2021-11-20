@@ -112,7 +112,13 @@ case 'imagereplace':
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
 	}
-	if ( $covername ) exec( 'rm -f /srv/http/data/shm/local/'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
+	if ( $type === 'bookmark' ) {
+		$coverart = preg_replace( '#^/srv/http#', '', $imagefile );
+		$name = basename( dirname( $imagefile ) );
+		file_put_contents( $dirbookmarks.$name, $coverart, FILE_APPEND );
+	} else if ( $covername ) {
+		exec( 'rm -f /srv/http/data/shm/local/'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
+	}
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';

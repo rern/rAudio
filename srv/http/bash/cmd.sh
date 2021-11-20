@@ -310,6 +310,8 @@ audiocdtag )
 	;;
 bookmarkreset )
 	imagepath=${args[1]}
+	name=${args[2]}
+	sed -i '2d' "$dirdata/bookmarks/$name"
 	rm -f "$imagepath/coverart".*
 	data='{"url":"'$imagepath/none'","type":"bookmark"}'
 	pushstream coverart "$data"
