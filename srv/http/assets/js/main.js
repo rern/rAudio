@@ -1266,14 +1266,14 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 } ).on( 'click', '.bk-cover .iconcover', function() {
 	var $this = $( this ).parent().parent();
 	var path = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 				  +'<p class="infoimgname">'+ name +'</p>';
 	} else {
 		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
-					+'<br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
+					+'<br><span class="bklabel">'+ name +'</span></div>';
 	}
 	// [imagereplace]
 	// select file
@@ -1282,7 +1282,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var imagepath = path.slice( 0, 9 ) !== 'webradios' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : 'bookmark'
-		, title       : 'Change Bookmark Thumbnail'
+		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, filelabel   : '<i class="fa fa-folder-open"></i> File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
@@ -1290,7 +1290,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : !thumbnail ? '' : orange
 		, button      : !thumbnail ? '' : function() {
-			bash( [ 'bookmarkreset', imagepath ] );
+			bash( [ 'bookmarkreset', imagepath, name ] );
 		}
 		, ok          : function() {
 			imageReplace( imagepath +'/coverart', 'bookmark' ); // no ext
