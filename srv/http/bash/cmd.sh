@@ -372,7 +372,10 @@ coverartget )
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
 						| grep -i '.gif$\|.jpg$\|.png$' \
 						| head -1 ) # full path
-	[[ -n $coverartfile ]] && echo $coverartfile && exit
+	if [[ -n $coverartfile ]]; then
+		echo $coverartfile | sed 's|^/srv/http||'
+		exit
+	fi
 	
 	coverfile=$( ls -1X "$path" \
 					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
