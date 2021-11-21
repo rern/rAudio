@@ -38,9 +38,11 @@ gifNotify() {
 	pushstreamNotifyBlink Thumbnail 'Resize animated GIF ...' coverart
 }
 gifThumbnail() {
-	type=$1
-	source=$2
-	target=$3
+	args="$1"
+	type=${args[1]}
+	source=${args[2]}
+	target=${args[3]}
+	covername=${args[4]}
 	imgwh=( $( gifsicle -I "$source" | awk 'NR < 3 {print $NF}' ) )
 	[[ ${imgwh[0]} == images ]] && animated=1
 	case $type in
@@ -54,10 +56,13 @@ gifThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls "$dir/cover".* | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
+			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
+			
 			[[ -n $animated ]] && gifNotify
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
+			rm -f "/srv/http/data/shm/local/$covername" "/srv/http/data/embedded/$covername"
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -70,9 +75,11 @@ gifThumbnail() {
 	pushstreamThumb gif $type
 }
 jpgThumbnail() {
-	type=$1
-	source=$2
-	target=$3
+	args="$1"
+	type=${args[1]}
+	source=${args[2]}
+	target=${args[3]}
+	covername=${args[4]}
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
@@ -84,8 +91,12 @@ jpgThumbnail() {
 			coverfile=$( ls "$dir/cover".* | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			cp -f "$source" "$target" # already resized from client
+			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
+			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+			echo rm -f "/srv/http/data/shm/local/$covername" "/srv/http/data/embedded/$covername" > $dirshm/x
+			rm -f "/srv/http/data/shm/local/$covername" "/srv/http/data/embedded/$covername"
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -386,8 +397,8 @@ coverartget )
 	if [[ -n $coverfile ]]; then
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
-		ln -s "$path/$coverfile" "$coverartfile"
-		echo $coverartfile
+		ln -s "$path/$coverfile" "$coverartfile" 2> /dev/null
+		[[ -e $coverartfile ]] && echo $coverartfile
 	fi
 	;;
 coverartreset )
@@ -984,16 +995,10 @@ ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
 thumbgif )
-	type=${args[1]}
-	source=${args[2]}
-	target=${args[3]}
-	gifThumbnail "$type" "$source" "$target"
+	gifThumbnail "$args"
 	;;
 thumbjpg )
-	type=${args[1]}
-	source=${args[2]}
-	target=${args[3]}
-	jpgThumbnail "$type" "$source" "$target"
+	jpgThumbnail "$args"
 	;;
 upnpnice )
 	for pid in $( pgrep upmpdcli ); do

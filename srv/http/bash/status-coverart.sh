@@ -24,13 +24,12 @@ done
 # cover file
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
-coverfile=$( ls -1X "$path" \
-				| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
-				| grep -i '.gif$\|.jpg$\|.png$' \
-				| head -1 )
+coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
+[[ -z $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
+										| grep -i '/album\....$\|/folder\....$\|/front\....$' \
+										| head -1 )
 if [[ -n $coverfile ]]; then
-#	jq -Rr @uri <<< "$path/${coverfile/.*}.$date.${coverfile/*.}" | tee $dirshm/$covername
-	echo $path/${coverfile/.*}.$date.${coverfile/*.} | tee $dirshm/local/$covername
+	echo ${coverfile/.*}.$date.${coverfile/*.} | tee $dirshm/local/$covername
 	coverFilesLimit
 	exit
 fi
