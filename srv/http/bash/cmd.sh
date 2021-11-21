@@ -377,6 +377,8 @@ coverartget )
 		exit
 	fi
 	
+	[[ ${path:0:4} == /srv ]] && exit
+	
 	coverfile=$( ls -1X "$path" \
 					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 					| grep -i '.gif$\|.jpg$\|.png$' \
