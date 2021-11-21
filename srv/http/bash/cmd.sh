@@ -397,7 +397,7 @@ coverartget )
 	if [[ -n $coverfile ]]; then
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
-		ln -s "$path/$coverfile" "$coverartfile" 2> /dev/null
+		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
 		[[ -e $coverartfile ]] && echo $coverartfile
 	fi
 	;;

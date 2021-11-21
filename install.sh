@@ -31,7 +31,7 @@ if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20
 				if [[ -n $coverfile ]]; then
 					ext=${coverfile: -3}
 					coverartfile="$coverpath/coverart.${ext,,}"
-					ln -s "$coverpath/$coverfile" "$coverartfile" 2> /dev/null
+					cp "$coverpath/$coverfile" "$coverartfile" 2> /dev/null
 					[[ -e $coverartfile ]] || coverartfile=
 				fi
 			fi
