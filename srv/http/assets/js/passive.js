@@ -141,24 +141,23 @@ function psBtClient( connected ) {
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
-	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
-		if ( 'html' in data ) {
-			$( '#lib-mode-list' ).append( data.html );
+	if ( 'html' in data ) {
+		$( '#lib-mode-list' ).append( data.html );
+	} else {
+		var $bookmark = $( '.lib-mode' ).filter( function() {
+			return $( this ).find( '.lipath' ) === data.path;
+		} );
+		if ( data.type === 'delete' ) {
+			$bookmark.remove();
 		} else {
-			var $bookmark = $( '.lib-mode' ).filter( function() {
-				return $( this ).find( '.lipath' ) === data.path;
-			} );
-			if ( data.type === 'delete' ) {
-				$bookmark.remove();
-			} else {
-				$bookmark.find( '.bklabel' ).text( data.name );
-			}
+			$bookmark.find( '.bklabel' ).text( data.name );
 		}
-		renderLibrary();
-		$( '.mode-bookmark, .bklabel' ).removeAttr( 'style' );
-		if ( 'order' in data ) G.display.order = data.order;
-	}, G.debouncems );
+	}
+	$( '.mode-bookmark, .bklabel' ).removeAttr( 'style' );
+	if ( 'order' in data ) {
+		G.display.order = data.order;
+		orderLibrary();
+	}
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
