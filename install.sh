@@ -9,7 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121120
-if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20211120 ]]; then
+if [[ $( ls /srv/http/data/bookmarks ) ]] && ! grep -r 'cp "\$path' $dirbash/cmd.sh; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
 	if [[ -n $files ]]; then
 		for file in "${files[@]}"; do
@@ -31,7 +31,7 @@ if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20
 				if [[ -n $coverfile ]]; then
 					ext=${coverfile: -3}
 					coverartfile="$coverpath/coverart.${ext,,}"
-					ln -s "$coverpath/$coverfile" "$coverartfile" 2> /dev/null
+					cp "$coverpath/$coverfile" "$coverartfile" 2> /dev/null
 					[[ -e $coverartfile ]] || coverartfile=
 				fi
 			fi
