@@ -36,7 +36,7 @@ if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20
 			fi
 			[[ -n $coverartfile ]] && echo "\
 $path
-$coverartfile"> "$file"
+$coverartfile" > "$file"
 		done
 	fi
 fi
