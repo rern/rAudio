@@ -41,9 +41,11 @@ case 'exec': // single / one-line command - return array of lines to js
 	break;
 	
 case 'bookmark':
+	$name = $_POST[ 'name' ];
+	if ( file_exists( $dirbookmarks.$name ) ) exit( '-1' );
+	
 	$path = $_POST[ 'path' ];
 	$coverart = $_POST[ 'coverart' ] ?? '';
-	$name = $_POST[ 'name' ];
 	$fileorder = $dirsystem.'order';
 	$order = json_decode( file_get_contents( $fileorder ) );
 	$order[] = $path;

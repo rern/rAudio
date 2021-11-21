@@ -14,30 +14,6 @@ function bookmarkNew() {
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
 	if ( G.mode === 'webradio' ) path = 'webradios/'+ path;
-	var $el = $( '.mode-bookmark' );
-	if ( $el.length ) {
-		var $exist = $el.filter( function() {
-			return $( this ).find( '.lipath' ).text() === path;
-		} );
-		if ( $exist.length ) {
-			if ( $exist.find( '.fa-bookmark' ).length ) {
-				var msghtml = '<i class="fa fa-bookmark bookmark bl"></i>'
-							  +'<br><a class="bklabel">'+ $exist.find( '.bklabel' ).text() +'</a>'
-							  +'<br>'+ path;
-			} else {
-				var msghtml = '<img src="'+ $exist.find( 'img' ).attr( 'src' ) +'">'
-							  +'<br><wh>'+ path +'</wh>';
-			}
-			info( {
-				  icon    : 'bookmark'
-				, title   : 'Add Bookmark'
-				, message : msghtml
-							+'<br><br>Already exists.'
-			} );
-			return
-		}
-	}
-	
 	var bkpath = path.slice( 0, 9 ) === 'webradios' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	bash( [ 'coverartget', bkpath ], function( coverart ) {
 		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
@@ -53,11 +29,23 @@ function bookmarkNew() {
 				$( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' );
 			}
 			, ok         : function() {
+				var name = infoVal();
 				$.post( cmdphp, {
 					  cmd      : 'bookmark'
 					, path     : path
-					, name     : infoVal()
+					, name     : name
 					, coverart : coverart
+				}, function( std ) {
+					if ( std == -1 ) {
+						bannerHide();
+						info( {
+							  icon    : 'bookmark'
+							, title   : 'Add Bookmark'
+							, message : icon
+										+'<br><wh>'+ path +'</wh>'
+										+'<br><br><wh>'+ name +'</wh> already exists.'
+						} );
+					}
 				} );
 				banner( 'Bookmark Added', path, 'bookmark' );
 			}

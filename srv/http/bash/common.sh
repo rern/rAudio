@@ -25,6 +25,7 @@ ${data:1}
 	echo "$data" \
 		| sed  's/:\s*$/:false/
 				s/:\s*}$/:false }/
+				s/^,\s*$/, false/
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
 				s/,\s*]/, false ]/g'

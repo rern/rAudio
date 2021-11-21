@@ -154,7 +154,7 @@ $( '#setting-wlan' ).click( function() {
 		var infowifi = `\
 <table>
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
-<tr><td></td><td><label><input type="checkbox"></label>Auto start Access Point</td></tr>
+<tr><td></td><td><label><input type="checkbox">Auto start Access Point</label></td></tr>
 </table>`;
 		info( {
 			  icon         : 'wifi'

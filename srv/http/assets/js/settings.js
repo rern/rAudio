@@ -149,6 +149,7 @@ connect = () => {
 	if ( !active ) {
 		active = 1;
 		pushstream.connect();
+		refreshData();
 		$( '#scanning-bt, #scanning-wifi' ).addClass( 'blink' );
 	}
 }

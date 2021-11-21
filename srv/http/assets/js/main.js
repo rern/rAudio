@@ -1186,19 +1186,21 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	if ( G.bookmarkedit ) return
 	
 	if ( path.slice( 0, 10 ) !== 'webradios/' ) {
+		var mode = path.split( '/' )[ 0 ].toLowerCase();
 		var query = {
 			  query  : 'ls'
 			, string : path
 			, format : [ 'file' ]
+			, gmode  : mode
 		}
-		var mode = path.split( '/' )[ 0 ].toLowerCase();
 	} else {
 		path = path.slice( 10 );
+		var mode = 'webradio';
 		var query = {
 			  query  : 'webradio'
 			, string : path
+			, gmode  : mode
 		}
-		var mode = 'webradio'
 	}
 	list( query, function( data ) {
 		data.path = path;
