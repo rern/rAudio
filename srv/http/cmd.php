@@ -94,32 +94,31 @@ case 'datarestore':
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type = $_POST[ 'type' ];
-	$covername = $_POST[ 'covername' ];
-	$base64 = isset( $_POST[ 'base64' ] );
+	$covername = $_POST[ 'covername' ] ?? '';
+	$base64 = $_POST[ 'base64' ] ?? '';
 	$ext = $base64 ? '.jpg' : '.gif';
 	if ( $type === 'audiocd' ) {
 		$filenoext = substr( $imagefile, 0, -3 );
 		exec( 'rm -f '.$filenoext.'*' );
-		$content = $base64 ? base64_decode( $_POST[ 'base64' ] ) : $_FILES[ 'file' ][ 'tmp_name' ];
+		$content = $base64 ? base64_decode( $base64 ) : $_FILES[ 'file' ][ 'tmp_name' ];
 		file_put_contents( $imagefile, $content );
 		$coverfile = substr( $filenoext, 9 ).time().$ext; // remove /srv/http
 		pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"coverart"}' ) );
 	} else if ( $base64 ) { // jpg/png - album coverart(path /mnt/...) needs sudo
 		$tmpfile = $dirdata.'shm/binary';
-		file_put_contents( $tmpfile, base64_decode( $_POST[ 'base64' ] ) );
-		cmdsh( [ 'thumbjpg', $type, $tmpfile, $imagefile ] );
+		file_put_contents( $tmpfile, base64_decode( $base64 ) );
+		cmdsh( [ 'thumbjpg', $type, $tmpfile, $imagefile, $covername ] );
 	} else { // gif passed as file
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
-		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
+		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile, $covername ] );
 	}
 	if ( $type === 'bookmark' ) {
 		$coverart = preg_replace( '#^/srv/http#', '', $imagefile );
-		$path = dirname( $imagefile );
+		$path = dirname( $coverart );
 		$bkpath = str_replace( '/srv/http/data/', '', $path );
 		$name = basename( $path );
-		file_put_contents( $dirbookmarks.$name, $bkpath."\n".$coverart );
-	} else if ( $covername ) {
-		exec( 'rm -f /srv/http/data/shm/local/'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
+		if ( file_exists( $imagefile ) ) $bkpath.= "\n".$coverart;
+		file_put_contents( $dirbookmarks.$name, $bkpath );
 	}
 	break;
 case 'login':
