@@ -9,7 +9,7 @@ readarray -t args <<< "$1"
 
 pushReboot() {
 	pushRefresh
-	data='{"title":"'$1'","text":"Reboot required.","icon":"'$2'","hold":5000}'
+	data='{"title":"'${1//\"/\\\"}'","text":"Reboot required.","icon":"'$2'","hold":5000}'
 	pushstream notify "$data"
 	echo $1 >> $dirshm/reboot
 }
