@@ -114,8 +114,10 @@ case 'imagereplace':
 	}
 	if ( $type === 'bookmark' ) {
 		$coverart = preg_replace( '#^/srv/http#', '', $imagefile );
-		$name = basename( dirname( $imagefile ) );
-		file_put_contents( $dirbookmarks.$name, $coverart, FILE_APPEND );
+		$path = dirname( $imagefile );
+		$bkpath = str_replace( '/srv/http/data/', '', $path );
+		$name = basename( $path );
+		file_put_contents( $dirbookmarks.$name, $bkpath."\n".$coverart );
 	} else if ( $covername ) {
 		exec( 'rm -f /srv/http/data/shm/local/'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
 	}
