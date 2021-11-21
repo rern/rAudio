@@ -9,6 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20121120
+rm -rf /etc/systemd/system/upmpdcli.service.d
 if [[ $( ls /srv/http/data/bookmarks ) ]]; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
 	if [[ -n $files ]]; then
