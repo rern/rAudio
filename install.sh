@@ -16,26 +16,27 @@ if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20
 			(( $( wc -l < "$file" ) > 1 )) && continue
 			
 			path=$( cat "$file" )
-			[[ ${path:0:9} == webradios ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
+			[[ ${path:0:9} == webradios ]] && webradio=1
+			[[ -n $webradio ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
 			coverartfile=$( ls -1X "$coverpath"/coverart.* 2> /dev/null \
 								| grep -i '.gif$\|.jpg$\|.png$' \
 								| head -1 ) # full path
 			if [[ -n $coverartfile ]]; then
 				coverartfile=$( echo $coverartfile | sed 's|^/srv/http||' )
-			else
+			elif [[ -z $webradio ]]; then
 				coverfile=$( ls -1X "$coverpath" \
 								| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 								| grep -i '.gif$\|.jpg$\|.png$' \
 								| head -1 ) # filename only
 				if [[ -n $coverfile ]]; then
 					ext=${coverfile: -3}
-					coverartfile="$path/coverart.${ext,,}"
-					ln -s "$path/$coverfile" "$coverartfile"
+					coverartfile="$coverpath/coverart.${ext,,}"
+					ln -s "$coverpath/$coverfile" "$coverartfile"
 				fi
 			fi
 			[[ -n $coverartfile ]] && echo "\
 $path
-$coverartfile"> "$file"
+$coverartfile" > "$file"
 		done
 	fi
 fi
