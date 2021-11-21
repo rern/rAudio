@@ -3,100 +3,107 @@
 alias=r1
 
 dirbash=/srv/http/bash
+dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20211101
-dir=/etc/systemd/system/upmpdcli.service.d
-if [[ -e $dir ]]; then
-	rm -rf $dir
-	systemctl stop upmpdcli
-	echo 'upmpdcli ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/upmpdcli
+#20121120
+if [[ $( ls /srv/http/data/bookmarks ) && $( cat /srv/http/data/addons/r1 ) < 20211120 ]]; then
+	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
+	if [[ -n $files ]]; then
+		for file in "${files[@]}"; do
+			(( $( wc -l < "$file" ) > 1 )) && continue
+			
+			path=$( cat "$file" )
+			[[ ${path:0:9} == webradios ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
+			coverartfile=$( ls -1X "$coverpath"/coverart.* 2> /dev/null \
+								| grep -i '.gif$\|.jpg$\|.png$' \
+								| head -1 ) # full path
+			if [[ -n $coverartfile ]]; then
+				coverartfile=$( echo $coverartfile | sed 's|^/srv/http||' )
+			else
+				coverfile=$( ls -1X "$coverpath" \
+								| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
+								| grep -i '.gif$\|.jpg$\|.png$' \
+								| head -1 ) # filename only
+				if [[ -n $coverfile ]]; then
+					ext=${coverfile: -3}
+					coverartfile="$path/coverart.${ext,,}"
+					ln -s "$path/$coverfile" "$coverartfile"
+				fi
+			fi
+			[[ -n $coverartfile ]] && echo "\
+$path
+$coverartfile"> "$file"
+		done
+	fi
 fi
-[[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
-file=/etc/systemd/system/bluetooth.service.d/override.conf
-grep -q battery $file || sed -i '/ExecStartPost/ i\
-ExecStart=\
-ExecStart=/usr/lib/bluetooth/bluetoothd -P battery' $file
-mkdir -p /srv/http/data/shm/{airplay,spotify}
-systemctl disable --now mpdscribble@mpd
-file=$dirsystem/localbrowser.conf
-if [[ -e $file ]] && ! grep -q onwhileplay $file; then
-	. $file
+
+if ! grep -q xf86-video-vesa /etc/pacman.conf; then
+	sed -i -e '/^IgnorePkg/ d
+' -e '/^#IgnorePkg/ a\
+IgnorePkg   = chromium' /etc/pacman.conf
+fi
+
+file=/etc/systemd/system/shairport-sync.service.d/override.conf
+if ! grep -q root $file; then
 	echo "\
+User=root
+Group=root" >> $file
+fi
+[[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}
+
+mkdir -p $dirshm/{airplay,spotify,local,online,webradio}
+player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
+[[ -n $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
+chmod -R 777 $dirshm
+systemctl try-restart shairport-sync
+
+file=$dirsystem/localbrowser.conf
+if [[ ! -e $file ]]; then
+	echo "\
+rotate=NORMAL
+zoom=100
+screenoff=1
+onwhileplay=true
+cursor=false" > $file
+elif ! grep -q onwhileplay $file; then
+	. $file
+	cat << EOF > $file
 rotate=$rotate
 zoom=$( echo "print $zoom * 100" | perl )
 screenoff=$(( $screenoff / 60 ))
 onwhileplay=false
 cursor=$cursor
-" > $dirsystem/localbrowser.conf
+EOF
 	rm -rf /root/.config/chromium
 	systemctl try-restart localbrowser
 fi
+
+#2021112
+[[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
+systemctl disable --now mpdscribble@mpd
+
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+grep -q battery $file || sed -i '/ExecStartPost/ i\
+ExecStart=\
+ExecStart=/usr/lib/bluetooth/bluetoothd -P battery' $file
+
 if ! grep -q bton /etc/udev/rules.d/bluetooth.rules; then
 	echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
 	udevadm control --reload-rules && udevadm trigger
 fi
-systemctl try-restart shairport-sync
+
 # 20211019
 mv $dirsystem/equalizer.{conf,presets} &> /dev/null
-if [[ ! -e /usr/bin/chromium ]] && grep -q 'dtoverlay=.*rotate=' /boot/config.txt; then
+if [[ ! -e /usr/bin/chromium ]] && grep -q console=tty3 /boot/cmdline.txt; then
 	echo -e "$bar Switch from Firefox to Chromium ..."
 	echo This may take a couple minutes to download in some regions.
-	pkg+=' chromium'
 	pacman -R --noconfirm firefox
+	pacman -Sy --noconfirm chromium
 fi
-# 20211011
-novu=$( grep novu $dirsystem/display | cut -d: -f2 | tr -d ' ,' )
-if [[ -n $novu ]]; then
-	[[ $novu == true ]] && covervu=false || covervu=true
-	sed -i '/novu/ s/.*/  "covervu": '$covervu',/' $dirsystem/display
-fi
-# 20210927
-grep -q '^mpd.*bash$' /etc/passwd || chsh -s /bin/bash mpd
-[[ ! -e /lib/alsa-lib/libasound_module_ctl_equal.so ]] && pkg+=' alsaequal'
-# 20210924
-[[ ! -e /usr/bin/ntpdate ]] && pkg+=' ntp'
-# 20200921
-if [[ -e $dirsystem/relays && -e /etc/relays.conf ]]; then
-	names=$( jq .name /etc/relays.conf )
-	pin=$( jq -r 'keys[]' <<< $names )
-	pin="pin='[ "$( echo $pin | tr ' ' , )" ]'"
-	name=$( jq .[] <<< $names )
-	name="name='[ "$( echo $name | tr ' ' , )" ]'"
-	echo "\
-$pin
-$name
-$( sed -n '/^onorder/,/^timer/ p' $dirsystem/relays )" > $dirsystem/relays.conf
-	> $dirsystem/relays
-	rm /etc/relays.conf
-elif [[ ! -e $dirsystem/relays.conf ]]; then
-	cat << EOF > $dirsystem/relays.conf
-pin='[ 11,13,15,16 ]'
-name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
-onorder='[ "DAC","PreAmp","Amp","Subwoofer" ]'
-offorder='[ "Subwoofer","Amp","PreAmp", "DAC" ]'
-on=( 11 13 15 16 )
-ond=( 2 2 2 )
-off=( 16 15 13 11 )
-offd=( 2 2 2 )
-timer=5
-EOF
-fi
-for name in lcdchar localbrowser powerbutton; do
-	mv -f /etc/$name.conf $dirsystem &> /dev/null
-done
-
-for name in bufferset bufferoutputset crossfadeset lcdcharval localbrowserval powerbuttonpins relayspins replaygainset soundprofileval soxr vuledpins; do
-	newname=$( echo $name | sed 's/pins\|set\|val//' )
-	mv -f $dirsystem/{$name,$newname.conf} &> /dev/null
-done
-# 20210911
-! grep -q noswipe $dirsystem/display && sed -i '/radioelapsed/ i\  "noswipe": false,' $dirsystem/display
-
-[[ -n $pkg ]] && pacman -Sy --noconfirm $pkg
 
 installstart "$1"
 

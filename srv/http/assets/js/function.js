@@ -154,14 +154,13 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	
-	var modes = [ 'file', 'nas', 'sd', 'usb', 'webradio' ];
-	var filemode = modes.indexOf( G.mode ) !== -1;
+	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].indexOf( G.mode ) !== -1;
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && [ 'album', ...modes ].indexOf( G.mode ) === -1 );
+	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && !filemode && G.mode !== 'album' );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || G.mode !== 'file' );
+	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
@@ -892,19 +891,6 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	if ( $( '.bkcoverart' ).length ) {
-		$( '.bkcoverart' ).off( 'error' ).on( 'error', function() {
-			var $this = $( this );
-			var src = $this.attr( 'src' );
-			if ( src.slice( -3 ) === 'jpg' ) {
-				$this.attr( 'src', src.slice( 0, -3 ) + 'gif' );
-			} else {
-				var iconhtml = '<i class="fa fa-bookmark"></i><div class="divbklabel">'
-							  +'<span class="bklabel label">'+ $this.data( 'label' ) +'</span></div>';
-				$this.replaceWith( iconhtml );
-			}
-		} );
-	}
 	$.each( G.display.order, function( i, name ) {
 		var $libmode = $( '.lib-mode' ).filter( function() {
 			return $( this ).find( '.lipath' ).text() === name;
@@ -1094,7 +1080,7 @@ function renderLibraryList( data ) {
 	} else if ( data.path === 'WEBRADIO' ) {
 		$( '#lib-path .lipath' ).empty();
 		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>'+ radiobtn;
-	} else if ( [ 'file', 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
+	} else if ( [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
@@ -1118,11 +1104,12 @@ function renderLibraryList( data ) {
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		imageLoad( 'lib-list' );
 		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
-		$( '.liinfopath' ).toggleClass( 'hide', G.mode === 'file' );
+		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) !== -1 );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
-			$img0 = $( '#lib-list img[data-src$=".jpg"]:eq( 0 )');
-			$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $img0.data( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
+			$( '#lib-list img:eq( 0 )' ).on( 'load', function() {
+				$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
+			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );
 		} else {
@@ -1192,7 +1179,7 @@ function renderPlayback() {
 	}
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-	if ( !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
+	if ( !G.status.elapsed || !G.status.Time || !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 		blinkDot();
 		return
@@ -1316,7 +1303,7 @@ function setButtonControl() {
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#play, #pause' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
+		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', !mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', G.status.stream && G.status.player !== 'upnp' );
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#'+ G.status.state ).addClass( 'active' );
@@ -1678,7 +1665,6 @@ function setTrackCoverart() {
 function statusRefresh() {
 	bash( [ 'displayget' ], data => {
 		delete G.coverTL;
-		if ( !G.localhost ) data.onwhileplay = false;
 		G.display = data;
 		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 		displaySubMenu();

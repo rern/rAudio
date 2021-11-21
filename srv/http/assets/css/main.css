@@ -632,7 +632,7 @@ i.map.disabled, .map.disabled i {
 #timeicon i {
 	width: 20px;
 	font-size: 16px;
-	color: var( --cm );
+	color: var( --cm ) !important;
 }
 #elapsed,
 #total {

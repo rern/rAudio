@@ -91,9 +91,17 @@ cat << EOF > $dirsystem/display
 	"vumeter": false
 }
 EOF
-rm -rf /root/.config/chromium
-rm -f $dirshm/player-*
-touch $dirshm/player-mpd
+# localbrowser
+if [[ -e /usr/bin/chromium ]]; then
+	rm -rf /root/.config/chromium
+	echo "\
+rotate=NORMAL
+zoom=100
+screenoff=1
+onwhileplay=true
+cursor=false" > $dirsystem/localbrowser.conf
+fi
+echo mpd > $dirshm/player
 # relays
 cat << EOF > $dirsystem/relays.conf
 pin='[ 11,13,15,16 ]'

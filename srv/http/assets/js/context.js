@@ -38,57 +38,30 @@ function bookmarkNew() {
 		}
 	}
 	
-	if ( G.list.licover ) {
-		if ( $( '.licover img' ).attr( 'src' ).slice( -3 ) !== 'svg' ) {
-			bookmarkThumb( path, $( '.licover img' ).attr( 'src' ) );
-		} else {
-			bookmarkIcon( path );
-		}
-	} else if ( G.list.li.find( '.iconthumb' ).length ) {
-		var ext = G.list.li.find( '.iconthumb' ).attr( 'src' ).slice( -3 );
-		bookmarkThumb( path, '/mnt/MPD/'+ encodeURI( path ) +'/coverart.'+ ext );
-	} else {
-		bash( [ 'bookmarkthumb', path ], function( ext ) {
-			if ( ext ) {
-				bookmarkThumb( path, '/mnt/MPD/'+ encodeURI( path ) +'/coverart.'+ ext );
-			} else {
-				bookmarkIcon( path );
+	var bkpath = path.slice( 0, 9 ) === 'webradios' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
+	bash( [ 'coverartget', bkpath ], function( coverart ) {
+		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
+		info( {
+			  icon       : 'bookmark'
+			, title      : 'Add Bookmark'
+			, message    : icon
+						  +'<br><wh>'+ path +'</wh>'
+			, textlabel  : 'As:'
+			, values     : path.split( '/' ).pop()
+			, checkblank : coverart ? '' : 1
+			, beforeshow : function() {
+				$( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' );
+			}
+			, ok         : function() {
+				$.post( cmdphp, {
+					  cmd      : 'bookmark'
+					, path     : path
+					, name     : infoVal()
+					, coverart : coverart
+				} );
+				banner( 'Bookmark Added', path, 'bookmark' );
 			}
 		} );
-	}
-}
-function bookmarkIcon( path ) {
-	info( {
-		  icon       : 'bookmark'
-		, title      : 'Add Bookmark'
-		, message    : '<i class="fa fa-bookmark bookmark bl"></i>'
-						+'<br><wh>'+ path +'</wh>'
-		, textlabel  : 'As:'
-		, values     : path.split( '/' ).pop()
-		, checkblank : 1
-		, ok         : function() {
-			$.post( cmdphp, {
-				  cmd  : 'bookmark'
-				, path : path
-				, name : infoVal()
-			} );
-			banner( 'Bookmark Added', path, 'bookmark' );
-		}
-	} );
-}
-function bookmarkThumb( path, coverart ) {
-	info( {
-		  icon    : 'bookmark'
-		, title   : 'Add Bookmark'
-		, message : '<img src="'+ coverart +'">'
-				   +'<br><wh>'+ path +'</wh>'
-		, ok      : function() {
-			$.post( cmdphp, {
-				  cmd  : 'bookmark'
-				, path : path
-			} );
-			banner( 'Bookmark Added', path, 'bookmark' );
-		}
 	} );
 }
 function infoReplace( callback ) {
@@ -275,25 +248,6 @@ function tagEditor() {
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
-				$( '.infomessage' ).click( function() {
-					if ( G.library ) return
-					
-					G.mode = 'file';
-					var path = $( '.tagpath' ).text();
-					path = path.substr( 0, path.lastIndexOf( '/' ) );
-					var query = {
-						  query  : 'ls'
-						, string : path
-						, format : [ 'file' ]
-					}
-					list( query, function( data ) {
-						data.path = path;
-						data.modetitle = path;
-						$( '#infoX' ).click();
-						$( '#library' ).click();
-						renderLibraryList( data );
-					}, 'json' );
-				} );
 				var $td = $( '#infoContent td:first-child' );
 				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );

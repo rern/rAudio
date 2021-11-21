@@ -475,6 +475,7 @@ function info( json ) {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields - omit .selectric-input for select
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
+		$inputs_nontxt = $( '#infoContent' ).find( 'input:radio, input:checkbox, select' );
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
@@ -562,28 +563,7 @@ function info( json ) {
 		}
 		O.nochange = O.values && O.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
-		
-		if ( O.checkblank || O.checklength || O.checkchanged ) {
-			$( '#infoContent' ).find( 'input:text, input:password, textarea' ).on( 'keyup paste cut', function() {
-				if ( O.checkblank ) checkBlank();
-				if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
-				if ( O.checkchanged ) {
-					var prevval = O.values.join( '' );
-					var values = infoVal();
-					var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
-					O.nochange = prevval === val;
-				}
-				setTimeout( function() { // ios: force after checkLength
-					$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
-				}, 50 );
-			} );
-		}
-		if ( O.checkchanged ) {
-			$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
-				O.nochange = O.values.join( '' ) === infoVal().join( '' );
-				$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
-			} );
-		}
+		infoCheckSet();
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
@@ -593,13 +573,6 @@ function checkBlank() {
 	O.blank = O.checkblank.some( function( i ) {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
-}
-function checkLength( k, v ) {
-	if ( typeof v !== 'object' ) v = [ v, 'equal' ];
-	var L = v[ 0 ];
-	var cond = v[ 1 ];
-	var diff = O.inputs.eq( k ).val().trim().length - L;
-	if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) O.short = true;
 }
 function checkLength() {
 	O.short = false;
@@ -612,11 +585,34 @@ function checkLength() {
 			var cond = v[ 1 ];
 		}
 		var diff = O.inputs.eq( k ).val().trim().length - L;
-		if ( ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) || ( cond === 'equal' && !diff ) ) {
+		if ( ( cond === 'equal' && diff !== 0 ) || ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) ) {
 			O.short = true;
 			return false
 		}
 	} );
+}
+function infoCheckSet() {
+	if ( O.checkblank || O.checklength || O.checkchanged ) {
+		$inputs_txt.on( 'keyup paste cut', function() {
+			if ( O.checkblank ) checkBlank();
+			if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
+			if ( O.checkchanged ) {
+				var prevval = O.values.join( '' );
+				var values = infoVal();
+				var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
+				O.nochange = prevval === val;
+			}
+			setTimeout( function() { // ios: force after checkLength
+				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
+			}, 50 );
+		} );
+	}
+	if ( O.checkchanged ) {
+		$inputs_nontxt.on( 'change', function() {
+			O.nochange = O.values.join( '' ) === infoVal().join( '' );
+			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
+		} );
+	}
 }
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];

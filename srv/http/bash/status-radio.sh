@@ -85,9 +85,9 @@ metadataGet() {
 
 	if [[ -n $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
-		coverfile=$dirshm/webradio-$name.jpg
+		coverfile=$dirshm/webradio/$name.jpg
 		curl -s $coverurl -o $coverfile
-		coverart=/data/shm/webradio-$name.jpg
+		coverart=/data/shm/webradio/$name.jpg
 	fi
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	data='{
@@ -115,9 +115,10 @@ state="play"
 Time=false
 elapsed=1
 timestamp=$( date +%s%3N )
-webradio=true"
+webradio=true
+player=mpd
 EOF
-	$dirbash/cmd-pushstatus.sh statusradio # for: mpdoled, lcdchar, vumeter, snapclient
+	$dirbash/status-push.sh statusradio # for: mpdoled, lcdchar, vumeter, snapclient
 	$dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay

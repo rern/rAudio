@@ -20,6 +20,7 @@ restartMPD() {
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 	fi
+	( sleep 2 && systemctl try-restart snapclient ) &> /dev/null &
 }
 
 if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
@@ -225,12 +226,14 @@ pcm.plugequal {
 }"
 fi
 
-echo "\
+asound="\
 defaults.pcm.card $card
-defaults.ctl.card $card
-$asoundbt
-$asoundeq
-" > /etc/asound.conf
+defaults.ctl.card $card"
+[[ -n $asoundbt ]] && asound+="
+$asoundbt"
+[[ -n $asoundeq ]] && asound+="
+$asoundeq"
+echo "$asound" > /etc/asound.conf
 
 [[ -n $preset ]] && $dirbash/cmd.sh "equalizer
 preset

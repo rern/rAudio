@@ -280,7 +280,7 @@ function directoryList( $lists ) {
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
-		$html.=  '<li data-mode="file" data-index="'.$index.'">'
+		$html.=  '<li data-mode="'.$gmode.'" data-index="'.$index.'">'
 				.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">'
 				.'<a class="lipath">'.$path.'</a>'
 				.'<span class="single">'.$each->dir.'</span>'
@@ -346,7 +346,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		}
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
-			$datamode = 'file';
+			$datamode = $mode;
 		} else {
 			$path = $val1;
 			$datamode = 'album';
@@ -453,7 +453,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		if ( !$title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$li0 = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
 		$i++;
-		$html.= '<li data-mode="file" '.$datatrack.$li0.'>'
+		$html.= '<li data-mode="'.$gmode.'" '.$datatrack.$li0.'>'
 					.'<a class="lipath">'.$path.'</a>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-file"></i>'
 					.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>'
@@ -486,7 +486,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
-		$coverhtml = '<li data-mode="file" class="licover">'
+		$coverhtml = '<li data-mode="'.$gmode.'" class="licover">'
 					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo '.$mode.'">'

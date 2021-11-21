@@ -19,14 +19,15 @@ featureSet() {
 	pushRefresh
 }
 localbrowserXset() {
+	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( $1 * 60 ))
+	off=$(( $screenoff * 60 ))
 	xset s off
 	xset dpms $off $off $off
 	if [[ $off == 0 ]]; then
 		xset -dpms
 	elif [[ -e $dirsystem/onwhileplay ]]; then
-		[[ $( status.sh | jq -r .state ) == play ]] && xset -dpms || xset +dpms
+		grep -q '^state="play"' $dirshm/status && xset -dpms || xset +dpms
 	else
 		xset +dpms
 	fi

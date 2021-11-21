@@ -152,6 +152,7 @@ $( '.settings:not( :last )' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'relays':
+			$( '#stop' ).click();
 			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
 		case 'equalizer':
@@ -208,11 +209,13 @@ $( '#power' ).click( function() {
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
+			$( '#stop' ).click();
 			bash( [ 'power', 'reboot' ] );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
+			$( '#stop' ).click();
 			bash( [ 'power' ] );
 		}
 	} );
@@ -598,12 +601,12 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	G.start = G.drag = 0;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
-$( '#volmute' ).click( function() {
+$( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
 } );
-$( '#volup, #voldn' ).click( function() {
-	var voldn = this.id === 'voldn';
+$( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function() {
+	var voldn = [ 'voldn', 'volB', 'volL' ].indexOf( e.currentTarget.id ) !== -1;
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
 	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
@@ -616,6 +619,7 @@ $( '#volup, #voldn' ).click( function() {
 } ).press( function( e ) {
 	G.volhold = 1;
 	var voldn = e.currentTarget.id === 'voldn';
+	var voldn = [ 'voldn', 'volB', 'volL' ].indexOf( e.currentTarget.id ) !== -1;
 	var vol = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && !voldn ) ) return
 	
@@ -713,11 +717,6 @@ var btnctrl = {
 	, coverBL : 'random'
 	, coverB  : 'stop'
 	, coverBR : 'repeat'
-	, volT    : 'volup'
-	, volL    : 'voldn'
-	, volM    : 'volmute'
-	, volR    : 'volup'
-	, volB    : 'voldn'
 }
 $( '.map' ).click( function() {
 	if ( G.press ) return
@@ -1085,15 +1084,16 @@ $( '#button-lib-back' ).click( function() {
 		delete G.gmode;
 	}
 	$( '.menu' ).addClass( 'hide' );
-	if ( G.query.length < 2
-		|| ( G.mode === 'webradio' && $( '#lib-path .lipath' ).is( ':empty' ) )
+	var $breadcrumbs = $( '#lib-breadcrumbs a' );
+	var bL = $breadcrumbs.length
+	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
+		|| ( bL && bL < 2 )
+		|| ( !bL && G.query.length === 1 )
 	) {
 		$( '#button-library' ).click();
 		return
 	}
 	
-	var $breadcrumbs = $( '#lib-breadcrumbs a' );
-	var bL = $breadcrumbs.length
 	if ( bL && G.query[ 0 ] !== 'playlist' ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
@@ -1266,14 +1266,14 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 } ).on( 'click', '.bk-cover .iconcover', function() {
 	var $this = $( this ).parent().parent();
 	var path = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 				  +'<p class="infoimgname">'+ name +'</p>';
 	} else {
 		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
-					+'<br><span class="bklabel">'+ $this.find( '.bklabel' ).text() +'</span></div>';
+					+'<br><span class="bklabel">'+ name +'</span></div>';
 	}
 	// [imagereplace]
 	// select file
@@ -1282,7 +1282,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var imagepath = path.slice( 0, 9 ) !== 'webradios' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : 'bookmark'
-		, title       : 'Change Bookmark Thumbnail'
+		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, filelabel   : '<i class="fa fa-folder-open"></i> File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
@@ -1290,7 +1290,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : !thumbnail ? '' : orange
 		, button      : !thumbnail ? '' : function() {
-			bash( [ 'bookmarkreset', imagepath ] );
+			bash( [ 'bookmarkreset', imagepath, name ] );
 		}
 		, ok          : function() {
 			imageReplace( imagepath +'/coverart', 'bookmark' ); // no ext
@@ -1342,7 +1342,7 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 	var query = {
 		  query  : 'ls'
 		, format : [ 'file' ]
-		, gmode  : 'file'
+		, gmode  : path.replace( /\/.*/, '' ).toLowerCase()
 		, mode   : 'album'
 		, string : path
 	}
@@ -1439,8 +1439,8 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 			getBio( name );
 		} else if ( $target.is( '.liinfopath' ) ) {
 			G.gmode = G.mode;
-			G.mode = 'file';
 			var path = $target.text();
+			G.mode = path.replace( /\/.*/, '' ).toLowerCase();
 			var query = {
 				  query  : 'ls'
 				, string : path
@@ -1468,8 +1468,8 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
-	// modes: file, sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
-	if ( [ 'file', 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
+	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
+	if ( [ 'sd', 'nas', 'usb' ].indexOf( mode ) !== -1 ) { // list by directory
 		var query = {
 			  query  : 'ls'
 			, string : path

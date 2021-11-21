@@ -1,13 +1,7 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
+. /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
-
-exists() {
-	[[ -e $1 ]] && echo true || echo false
-}
 
 dirscrobble=$dirsystem/scrobble.conf
 for key in airplay bluetooth spotify upnp notify; do
@@ -38,7 +32,7 @@ fi
 # renderer
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )'
-, "shairportactive"  : '$( [[ -e $dirshm/player-airplay ]] && echo true )
+, "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
@@ -48,13 +42,13 @@ fi
 if [[ -e /usr/bin/spotifyd ]]; then
 	data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
-, "spotifydactive"   : '$( [[ -e $dirshm/player-spotify ]] && echo true )'
+, "spotifydactive"   : '$( [[ $( cat $dirshm/player ) == spotify ]] && echo true )'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
-, "upmpdcliactive"   : '$( [[ -e $dirshm/player-upnp ]] && echo true )
+, "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then
@@ -80,9 +74,4 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smbconf"          : '$smbconf
 fi
 
-echo {$data} \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"

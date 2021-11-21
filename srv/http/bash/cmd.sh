@@ -100,15 +100,13 @@ mpdoledLogo() {
 	systemctl stop mpd_oled
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
-	( sleep 60 && mpd_oled -o $type ) &
 }
 pladdPlay() {
 	pushstreamPlaylist
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
-		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
-		$dirbash/cmd-pushstatus.sh
+		$dirbash/status-push.sh
 	fi
 }
 pladdPosition() {
@@ -145,6 +143,17 @@ rotateSplash() {
 		-background '#000' \
 		-extent 1920x1080 \
 		$dirimg/splash.png
+}
+scrobbleOnStop() {
+	. $dirshm/scrobble
+	elapsed=$1
+	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ -n $Artist && -n $Title ]]; then
+		$dirbash/scrobble.sh "\
+$Artist
+$Title
+$Album" &> /dev/null &
+	fi
+	rm -f $dirshm/scrobble
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
@@ -301,6 +310,8 @@ audiocdtag )
 	;;
 bookmarkreset )
 	imagepath=${args[1]}
+	name=${args[2]}
+	sed -i '2d' "$dirdata/bookmarks/$name"
 	rm -f "$imagepath/coverart".*
 	data='{"url":"'$imagepath/none'","type":"bookmark"}'
 	pushstream coverart "$data"
@@ -356,6 +367,27 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 count )
 	count
 	;;
+coverartget )
+	path=${args[1]}
+	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
+						| grep -i '.gif$\|.jpg$\|.png$' \
+						| head -1 ) # full path
+	if [[ -n $coverartfile ]]; then
+		echo $coverartfile | sed 's|^/srv/http||'
+		exit
+	fi
+	
+	coverfile=$( ls -1X "$path" \
+					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
+					| grep -i '.gif$\|.jpg$\|.png$' \
+					| head -1 ) # filename only
+	if [[ -n $coverfile ]]; then
+		ext=${coverfile: -3}
+		coverartfile="$path/coverart.${ext,,}"
+		ln -s "$path/$coverfile" "$coverartfile"
+		echo $coverartfile
+	fi
+	;;
 coverartreset )
 	coverfile=${args[1]}
 	mpdpath=${args[2]}
@@ -375,7 +407,7 @@ coverartreset )
 	rm -f "$coverfile" \
 		"$dir/coverart".* \
 		"$dir/thumb".* \
-		$dirshm/local-$covername \
+		$dirshm/local/$covername \
 		$dirdata/embedded/$covername*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
@@ -398,7 +430,7 @@ $mpdpath" )
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		files=$( ls -1t $dirshm/$type-* 2> /dev/null )
+		files=$( ls -1t $dirshm/$type )
 		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 	done
 	;;
@@ -408,7 +440,7 @@ coversave )
 	covername=${args[3]}
 	coverfile="$path/cover.jpg"
 	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f $dirshm/local-$covername*
+	rm -f $dirshm/local/$covername*
 	;;
 displayget )
 	if [[ -e $dirshm/nosound ]]; then
@@ -425,7 +457,6 @@ displayget )
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"  : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
 , "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
-, "onwhileplay" : '$( [[ -e $dirsystem/onwhileplay ]] && echo true || echo false )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
 , "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
 , "screenoff"  : '$( grep -q screenoff=0 $dirsystem/localbrowser.conf && echo false || echo true )'
@@ -437,7 +468,7 @@ displayget )
 displaysave )
 	data=${args[1]}
 	pushstream display "$data"
-	jq . <<< $data > $dirsystem/display
+	jq <<< $data > $dirsystem/display
 	grep -q '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
@@ -590,16 +621,16 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
-	systemctl stop radio mpd_oled
+	systemctl stop radio
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
-		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
-		[[ -e $dirsystem/scrobble && $command == stop ]] && echo $pos > $dirshm/elapsedscrobble
+		[[ -e $dirsystem/scrobble && $command == stop && -n $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
+		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
 	;;
 mpcprevnext )
@@ -608,9 +639,9 @@ mpcprevnext )
 	length=${args[3]}
 	state=${args[4]}
 	elapsed=${args[5]}
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/status{,prevnext} # flag - no scrobble
+	[[ -e $dirsystem/scrobble && -n $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
-	systemctl stop radio mpd_oled
+	systemctl stop radio
 	if [[ $state == play ]]; then
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
@@ -629,22 +660,19 @@ mpcprevnext )
 	fi
 	if [[ $state == play ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
-		[[ -e $dirsystem/mpdoled ]] && systemctl start mpd_oled
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
-	if [[ $state == play && -n $elapsed && -e $dirshm/statusprevnext ]]; then
+	if [[ -e $dirshm/scrobble ]]; then
 		sleep 2
-		mv -f $dirshm/{statusprevnext,scrobble}
-		echo $elapsed > $dirshm/elapsedscrobble
-		$dirbash/scrobble.sh
+		scrobbleOnStop $elapsed
 	fi
 	;;
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
-	touch $dirshm/statusprevnext flag - no scrobble
+	touch $dirshm/scrobble
 	if [[ $state == stop ]]; then
 		touch $dirshm/prevnextseek
 		mpc -q play
@@ -652,7 +680,7 @@ mpcseek )
 		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $seek
-	rm $dirshm/statusprevnext
+	rm -f $dirshm/scrobble
 	;;
 mpcupdate )
 	path=${args[1]}
@@ -675,7 +703,7 @@ nicespotify )
 	done
 	;;
 ordersave )
-	data=$( jq . <<< ${args[1]} )
+	data=$( jq <<< ${args[1]} )
 	pushstream order "$data"
 	echo "$data" > $dirsystem/order
 	;;
@@ -692,21 +720,25 @@ pkgstatus )
 	pkg=$id
 	case $id in
 		hostapd )
-			conf=/etc/hostapd/$id.conf;;
+			conf=/etc/hostapd/hostapd.conf;;
+		localbrowser )
+			conf=/srv/http/data/system/localbrowser.conf
+			pkg=chromium;;
 		snapclient|snapserver )
 			conf=/etc/default/$id
 			pkg=snapcast;;
 		smb )
-			conf=/etc/samba/$id.conf
+			conf=/etc/samba/smb.conf
 			pkg=samba;;
 		* )
 			conf=/etc/$id.conf;;
 	esac
 	status="\
 $( systemctl status $id \
-	| sed '1 s|^.* \(.*service\)|<code>\1</code>|; s|\(active (running)\)|<grn>\1</grn>|; s#\(inactive (dead)\)\|\((*failed)*\)#<red>\1</red>#' \
-	| grep -v 'Could not resolve keysym' )" # omit xkeyboard warning
-	grep -q '<red>' <<< "$status" && dot='<red>●</red>' || dot='<grn>●</grn>'
+	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
+	| sed '/^\s*Active:/ s|\( active (.*)\)|<grn>\1</grn>|; s|\( inactive (.*)\)|<red>\1</red>|; s|\(failed\)|<red>\1</red>|ig' \
+	| grep -v 'Could not resolve keysym\|Address family not supported by protocol\|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
+	grep -q '<grn>' <<< "$status" && dot='<grn>●</grn>' || dot='<red>●</red>'
 	if [[ -e $conf ]]; then
 		status="\
 $dot <code>$( pacman -Q $pkg )</code>
@@ -728,11 +760,10 @@ playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
-	systemctl stop radio mpd_oled
+	systemctl stop radio
 	rm -f $dirshm/{radio,status}
-	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	rm -f $dirshm/player-*
-	touch $dirshm/player-$newplayer
+	player=$( cat $dirshm/player )
+	echo $newplayer > $dirshm/player
 	case $player in
 		airplay )   restart=shairport-sync;;
 		bluetooth ) restart=bluezdbus;;
@@ -746,11 +777,10 @@ playerstart )
 playerstop )
 	player=${args[1]}
 	elapsed=${args[2]}
-	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && echo $elapsed > $dirshm/elapsedscrobble
+	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
-	rm -f $dirshm/{player-*,status}
-	touch $dirshm/player-mpd
-	[[ $player != upnp ]] && $dirbash/cmd-pushstatus.sh
+	echo mpd > $dirshm/player
+	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
 			service=shairport-sync
@@ -779,12 +809,13 @@ playerstop )
 			for i in $tracks; do
 				mpc -q del $i
 			done
-			$dirbash/cmd-pushstatus.sh
+			$dirbash/status-push.sh
 			;;
 	esac
 	[[ $service != snapclient ]] && systemctl restart $service
 	[[ -e $dirshm/mpdvolume ]] && volumeReset
 	pushstream player '{"player":"'$player'","active":false}'
+	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
 plcrop )
 	if mpc | grep -q playing; then
@@ -795,13 +826,13 @@ plcrop )
 		mpc -q stop
 	fi
 	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 plcurrent )
 	mpc -q play ${args[1]}
 	mpc -q stop
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 	;;
 plfindadd )
 	if [[ ${args[1]} != multi ]]; then
@@ -866,7 +897,7 @@ plremove )
 	else
 		mpc -q clear
 	fi
-	$dirbash/cmd-pushstatus.sh
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 plrename )
@@ -912,7 +943,7 @@ power )
 	if [[ -n $reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
-		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"power"}'
+		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	fi
 	pushstream notify "$data"
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
@@ -945,12 +976,10 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	cat << EOF > $dirshm/scrobble
-Artist="${args[1]}"
-Title="${args[2]}"
-Album="${args[3]}"
-EOF
-	$dirbash/scrobble.sh
+	$dirbash/scrobble.sh "\
+${args[1]}
+${args[2]}
+${args[3]}" &> /dev/null &
 	;;
 thumbgif )
 	type=${args[1]}
@@ -995,7 +1024,8 @@ volume )
 	volumeSet "$current" $target "$control" # $current may be blank
 	;;
 volume0db )
-	if [[ -e $dirshm/player-airplay || -e $dirshm/player-spotify ]]; then
+	player=$( cat $dirshm/player )
+	if [[ $player == airplay || $player == spotify ]]; then
 		volumeGet
 		echo $volume $db  > $dirshm/mpdvolume
 	fi

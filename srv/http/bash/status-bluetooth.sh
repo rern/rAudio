@@ -28,9 +28,9 @@ case $Status in
 esac
 
 name=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-onlinefile=$( ls /srv/http/data/shm/online-$name.* 2> /dev/null ) # jpg / png
+onlinefile=$( ls /srv/http/data/shm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
-	coverart=/data/shm/online-$name.$( date +%s ).${onlinefile/*.}
+	coverart=/data/shm/online/$name.$( date +%s ).${onlinefile/*.}
 else
 	/srv/http/bash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi

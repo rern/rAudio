@@ -1,8 +1,6 @@
 #!/bin/bash
 
-exists() {
-	[[ -e $1 ]] && echo true || echo false
-}
+. /srv/http/bash/common.sh
 
 cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
@@ -18,9 +16,6 @@ data='
 
 # for interval refresh
 (( $# > 0 )) && echo {$data} && exit
-
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
 
 bluetooth=$( systemctl -q is-active bluetooth && echo true )
 btformat=$( exists $dirsystem/btformat )
@@ -104,7 +99,7 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ -n $lines ]]; then
-		i2caddr=$( echo "$lines" \
+		i2caddress=$( echo "$lines" \
 						| grep -v '^\s' \
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
@@ -135,6 +130,10 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 else
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
+oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
+[[ -z $baudrate ]] && baudrate=400000
+mpdoledconf='[ "'$oledchip'", '$baudrate' ]'
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else
@@ -154,7 +153,7 @@ data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || -e $dirshm/player-bluetooth ]] && echo true )'
+, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
@@ -162,12 +161,12 @@ data+='
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
-, "lcdcharaddr"      : "'$( [[ -n $i2caddr ]] && echo 0x$i2caddr || echo 0x27 0x3F )'"
+, "lcdcharaddr"      : "'$( [[ -n $i2caddress ]] && echo 0x$i2caddress || echo 0x27 0x3F )'"
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
 , "lcdmodel"         : "'$lcdmodel'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
-, "mpdoledconf"      : '$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )'
+, "mpdoledconf"      : '$mpdoledconf'
 , "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true )'
@@ -181,16 +180,11 @@ data+='
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "version"          : "'$version'"
-, "versionui"        : '$( cat /srv/http/data/addons/r$version 2> /dev/null )'
+, "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'
 , "wlan"             : '$( rfkill | grep -q wlan && echo true )'
 , "wlanconf"         : '$wlanconf'
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 
-echo {$data} \
-	| sed  's/:\s*,/: false,/g
-			s/:\s*}/: false }/g
-			s/\[\s*,/[ false,/g
-			s/,\s*,/, false,/g
-			s/,\s*]/, false ]/g' # sed - null > false
+data2json "$data"

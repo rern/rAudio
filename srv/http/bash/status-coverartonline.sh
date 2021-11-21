@@ -53,7 +53,7 @@ if [[ $type == audiocd ]]; then
 	urlname=/data/audiocd/$discid
 else
 	[[ -n $type ]] && prefix=$type || prefix=online
-	urlname=/data/shm/$prefix-$name
+	urlname=/data/shm/$prefix/$name
 fi
 ext=${url/*.}
 coverart=$urlname.$ext
@@ -66,7 +66,7 @@ data='
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > /srv/http/data/shm/webradio-$name
+	echo $Album > /srv/http/data/shm/webradio/$name
 	data+='
 , "Album" : "'$Album'"'
 fi

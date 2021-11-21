@@ -52,7 +52,9 @@ if [[ -e /boot/wifi ]]; then
 	netctl enable "$ssid"
 fi
 # ----------------------------------------------------------------------------
-mkdir $dirdata/shm/{airplay,spotify}
+echo mpd > $dirshm/player
+mkdir $dirshm/{airplay,spotify,local,online,webradio}
+chmod -R 777 $dirshm
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
@@ -105,11 +107,14 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py
 fi
-[[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
+if [[ -e $dirsystem/mpdoled ]]; then
+	$dirbash/cmd.sh mpdoledlogo
+#	modprobe snd-aloop
+fi
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
 
-[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/cmd-pushstatus.sh
+[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
 if [[ -n $connected ]]; then
 	rfkill | grep -q wlan && iw wlan0 set power_save off

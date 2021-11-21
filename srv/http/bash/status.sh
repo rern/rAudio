@@ -3,41 +3,32 @@
 # file mode
 # initial page load / refresh > status.sh
 # changes:
-#    - mpdidle.sh > cmd-pushstatus.sh
+#    - mpdidle.sh > status-push.sh
 #    - radioparadize / radiofrance - no stream update - status-radio.sh
 
-dirbash=/srv/http/bash
-dirdata=/srv/http/data
-dirsystem=$dirdata/system
-dirshm=$dirdata/shm
+. /srv/http/bash/common.sh
+
 date=$( date +%s )
 
 outputStatus() {
-	[[ -n $snapclient ]] && echo "$status" && exit # multiline - no braces
-	
-	echo {$status} \
-		| sed  's/:\s*,/: false,/g
-				s/:\s*}/: false }/g
-				s/\[\s*,/[ false,/g
-				s/,\s*,/, false,/g
-				s/,\s*]/, false ]/g' # null > false
+	[[ -z $snapclient ]] && data2json "$status" || echo "$status" # - no braces
 }
 
 if (( $# > 0 )); then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btclient=$( [[ -e $dirshm/btclient ]] && echo true )
+	btclient=$( exists $dirshm/btclient )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
-	librandom=$( [[ -e $dirsystem/librandom ]] && echo true )
-	player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-	[[ -z $player ]] && player=mpd && touch $dirshm/player-mpd
+	librandom=$( exists $dirsystem/librandom )
+	player=$( cat $dirshm/player )
+	[[ -z $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	playlists=$( ls $dirdata/playlists | wc -l )
-	relays=$( [[ -e $dirsystem/relays ]] && echo true )
-	relayson=$( [[ -e  $dirshm/relayson ]] && echo true )
-	updateaddons=$( [[ -e $dirdata/addons/update ]] && echo true )
+	relays=$( exists $dirsystem/relays )
+	relayson=$( exists $dirshm/relayson )
+	updateaddons=$( exists $dirdata/addons/update )
 	if [[ -e $dirsystem/updating ]]; then 
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
@@ -58,7 +49,7 @@ else
 		control=$( echo $controlvolume | cut -d^ -f1 )
 		volume=$( echo $controlvolume | cut -d^ -f2 )
 	fi
-	scrobble=$( [[ -e $dirsystem/scrobble ]] && echo true )
+	scrobble=$( exists $dirsystem/scrobble )
 
 ########
 	status='
@@ -130,7 +121,7 @@ $( sshpass -p ros ssh -q root@$serverip $dirbash/status.sh snapclient \
 		status+="
 $( cat $dirshm/spotify/status )"
 	status+='
-, "elapsed" : '$elapsed'
+, "elapsed"   : '$elapsed'
 , "timestamp" : '$( date +%s%3N )
 		;;
 		
@@ -173,7 +164,7 @@ for line in "${lines[@]}"; do
 			bitrate=$(( val * 1000 ));;
 		# true/false
 		random | repeat | single )
-			[[ $val == 1 ]] && tf=true
+			[[ $val == 1 ]] && tf=true || tf=false
 ########
 			status+='
 , "'$key'" : '$tf
@@ -261,8 +252,8 @@ elif [[ -n $stream ]]; then
 		# fetched coverart
 		if [[ -n $displaycover ]]; then
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-			onlinefile=$( ls $dirshm/online-$covername.* 2> /dev/null | head -1 )
-			[[ -n $onlinefile ]] && coverart=/data/shm/online-$covername.$date.${onlinefile/*.}
+			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
+			[[ -n $onlinefile ]] && coverart=/data/shm/online/$covername.$date.${onlinefile/*.}
 		fi
 	else
 		ext=Radio
@@ -281,7 +272,7 @@ elif [[ -n $stream ]]; then
 		if [[ $state != play ]]; then
 			Title=
 		else
-			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by cmd-pushstatus.sh
+			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				id=$( basename ${file/-*} )
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
 				[[ -z $id ]] && id=francemusique
@@ -292,7 +283,6 @@ $file
 $stationname
 $id
 $radiosampling" > $dirshm/radio
-					rm -f $dirshm/status
 					systemctl start radio
 				else
 					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
@@ -306,10 +296,10 @@ $radiosampling" > $dirshm/radio
 				# fetched coverart
 				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
-				coverfile=$( ls $dirshm/webradio-$covername.* 2> /dev/null | head -1 )
+				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ -n $coverfile ]]; then
 					coverart=/data/shm/$( basename $coverfile )
-					Album=$( cat $dirshm/webradio-$covername 2> /dev/null )
+					Album=$( cat $dirshm/webradio/$covername 2> /dev/null )
 				fi
 			fi
 		fi
@@ -322,6 +312,7 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
+		status=$( grep -v '^, *"webradio"' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"

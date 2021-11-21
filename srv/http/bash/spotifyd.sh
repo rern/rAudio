@@ -3,7 +3,7 @@
 # spotifyd.conf > this:
 #    - spotifyd 'onevent' hook
 # env var:
-# $PLAYER_EVENT: change/endoftrack/load/pause/play/preload/start/stop/volumeset
+# $PLAYER_EVENT: change/start/stop(pause) (not yet available: endoftrack/load/preload/volumeset)
 # $TRACK_ID
 # $PLAY_REQUEST_ID
 # $POSITION_MS
@@ -22,7 +22,18 @@ for key in elapsed expire start state status token; do
 done
 
 ##### start
-[[ $PLAYER_EVENT == start && ! -e $dirshm/player-spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
+[[ $PLAYER_EVENT == start && $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
+# play / pause
+if [[ $PLAYER_EVENT == play || $PLAYER_EVENT == stop ]]; then
+	touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+elif [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then # prev / next
+	. $filestate
+	elapsed=$(( $( date +%s ) - start ))
+	if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
+		touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+	fi
+fi
+# token
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
 else
@@ -41,10 +52,11 @@ else
 	echo $token > $filetoken
 	echo $(( $( date +%s ) + 3550 )) > $fileexpire # 10s before 3600s
 fi
+# data
 readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/currently-playing \
 							-H "Authorization: Bearer $token" \
 							| jq '.item.album.name,
-								.item.album.artists[0].name,
+								.item.artists[0].name,
 								.item.album.images[0].url,
 								.is_playing,
 								.item.duration_ms,
@@ -52,6 +64,7 @@ readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/c
 								.progress_ms,
 								.timestamp' ) # not -r to keep escaped characters
 [[ ${status[3]} == true ]] && state=play || state=pause
+Time=$(( ( ${status[4]} + 500 ) / 1000 ))
 cat << EOF > $filestatus
 , "Album"    : ${status[0]}
 , "Artist"   : ${status[1]}
@@ -59,7 +72,7 @@ cat << EOF > $filestatus
 , "file"     : ""
 , "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
 , "state"    : "$state"
-, "Time"     : $(( ( ${status[4]} + 500 ) / 1000 ))
+, "Time"     : $Time
 , "Title"    : ${status[5]}
 EOF
 progress=${status[6]}
@@ -69,6 +82,7 @@ cat << EOF > $filestate
 elapsed=$(( ( progress + 500 ) / 1000 ))
 start=$(( ( timestamp + diff - progress + 500 ) / 1000 ))
 state=$state
+Time=$Time
 EOF
 
-$dirbash/cmd-pushstatus.sh
+$dirbash/status-push.sh

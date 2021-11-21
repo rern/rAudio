@@ -32,7 +32,6 @@ var cmd = {
 	, journalctl   : systemsh +'journalctlget'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
-	, mpdconf      : 'cat /etc/mpd.conf'
 	, mpdignore    : playersh +'mpdignorelist'
 	, rfkill       : 'rfkill'
 	, soundprofile : systemsh +'soundprofileget'
@@ -411,8 +410,10 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
-$( '.container' ).on( 'click', '.status', function( e ) {
-	if ( !$( e.target ).is( 'i' ) ) status( $( this ).data( 'status' ) );
+$( '.status' ).click( function( e ) {
+	var $this = $( this );
+	var datastatus = $this.data( 'status' );
+	if ( !$( e.target ).is( 'i' ) && !$this.hasClass( 'single' ) ) status( datastatus );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;

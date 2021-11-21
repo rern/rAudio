@@ -51,20 +51,23 @@ cat /tmp/shairport-sync-metadata | while read line; do
 		pushstreamAirplay '{"coverart":"'$src'","file":""}'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
-		if [[ $code == progress ]]; then # format: start/elapsed/end @44100
-			progress=( ${data//\// } ) # format: start/elapsed/end @44100/second
+		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
+			progress=( ${data//\// } )
 			start=${progress[0]}
 			current=${progress[1]}
 			end=${progress[2]}
 			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
+			if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
+				touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+			fi
 			pushstreamAirplay '{"elapsed":'$elapsed',"Time":'$Time'}'
 			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
-			/srv/http/bash/cmd-pushstatus.sh
+			/srv/http/bash/status-push.sh
 		else
 			data=${data//\"/\\\"}
 			pushdata='{"'$code'":"'$data'"}' # data may contains spaces

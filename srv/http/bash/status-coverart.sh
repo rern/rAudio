@@ -13,24 +13,24 @@ coverFilesLimit() {
 	/srv/http/bash/cmd.sh coverfileslimit
 }
 # already got path in temp file
-[[ -e $dirshm/local-$covername ]] && cat $dirshm/local-$covername && exit
+[[ -e $dirshm/local/$covername ]] && cat $dirshm/local/$covername && exit
 # already got embedded
 [[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
 # already got online
 for ext in jpg png; do
-	[[ -e $dirshm/online-$covername.$ext ]] && echo ${coverfile/.*}.$date.$ext && exit
+	[[ -e $dirshm/online/$covername.$ext ]] && echo ${coverfile/.*}.$date.$ext && exit
 done
 
 # cover file
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
-coverfile=$( ls -1 "$path" \
+coverfile=$( ls -1X "$path" \
 				| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 				| grep -i '.gif$\|.jpg$\|.png$' \
 				| head -1 )
 if [[ -n $coverfile ]]; then
 #	jq -Rr @uri <<< "$path/${coverfile/.*}.$date.${coverfile/*.}" | tee $dirshm/$covername
-	echo $path/${coverfile/.*}.$date.${coverfile/*.} | tee $dirshm/local-$covername
+	echo $path/${coverfile/.*}.$date.${coverfile/*.} | tee $dirshm/local/$covername
 	coverFilesLimit
 	exit
 fi
@@ -44,7 +44,7 @@ kid3-cli -c "cd \"$dir\"" \
 		-c "select \"$filename\"" \
 		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 if [[ -e $coverfile ]]; then
-	echo /data/embedded/$covername.$date.jpg | tee $dirshm/local-$covername
+	echo /data/embedded/$covername.$date.jpg | tee $dirshm/local/$covername
 	coverFilesLimit
 	exit
 fi

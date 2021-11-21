@@ -63,13 +63,12 @@ function bookmarkCover( url, path ) {
 	} );
 }
 function statusUpdate( data ) {
-	var prevstate = G.status.state;
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
-	if ( G.localhost && G.display.onwhileplay && G.status.state !== prevstate ) bash( [ 'screenoff', G.status.state === 'play' ? '-dpms' : '+dpms' ] );
+	setButtonOptions();
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -459,14 +458,12 @@ function psRelays( response ) {
 			if ( delay ) {
 				$( '.infomessage .wh' ).text( delay-- );
 			} else {
-				G.status.relayson = false;
 				clearInterval( G.intRelaysTimer );
 				$( '#relays' ).removeClass( 'on' );
 				$( '#i-relays, #ti-relays' ).addClass( 'hide' );
 			}
 		}, 1000 );
 	} else {
-		G.status.relayson = state;
 		if ( !state ) $( '#infoX' ).click();
 		var devices = '';
 		$.each( response.order, function( i, val ) {

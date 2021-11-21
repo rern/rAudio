@@ -42,38 +42,30 @@ case 'exec': // single / one-line command - return array of lines to js
 	
 case 'bookmark':
 	$path = $_POST[ 'path' ];
+	$coverart = $_POST[ 'coverart' ] ?? '';
+	$name = $_POST[ 'name' ];
 	$fileorder = $dirsystem.'order';
 	$order = json_decode( file_get_contents( $fileorder ) );
 	$order[] = $path;
-	$name ??= $_POST[ 'name' ];
-	if ( $name ) {
-		file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $path );
-		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
+	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
+	if ( $coverart ) {
+		$content = $path."\n".$coverart;
+		$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'">';
 	} else {
-		$basename = basename( $path );
-		file_put_contents( $dirbookmarks.$basename, $path );
-		$coverartfile = '/mnt/MPD/'.$path.'/coverart.';
-		$src = $coverartfile.time();
-		if ( file_exists( $coverartfile.'gif' ) ) {
-			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.gif">';
-		} else if ( file_exists( $coverartfile.'jpg' ) ) {
-			$icon = '<img class="bkcoverart" src="'.rawurlencode( $src ).'.jpg">';
-		} else {
-			$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$basename.'</span></div>';
-		}
+		$content = $path;
+		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
 	}
-	$dataalbum = substr( $icon, 1, 3 ) === 'img' ? 'data-album="1"' : '';
+	file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $content );
 	$data = [
 		  'path' => $path
 		, 'html' => '
 			<div class="lib-mode bookmark">
-				<div class="mode mode-bookmark" '.$dataalbum.'>
+				<div class="mode mode-bookmark">
 				<a class="lipath">'.$path.'</a>
 				'.$icon.'
 			</div></div>'
 		, 'order' => $order
 	];
-	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
 	pushstream( 'bookmark', $data );
 	break;
 case 'bookmarkremove':
@@ -120,7 +112,13 @@ case 'imagereplace':
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile ] );
 	}
-	if ( $covername ) exec( 'rm -f /srv/http/data/shm/local-'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
+	if ( $type === 'bookmark' ) {
+		$coverart = preg_replace( '#^/srv/http#', '', $imagefile );
+		$name = basename( dirname( $imagefile ) );
+		file_put_contents( $dirbookmarks.$name, $coverart, FILE_APPEND );
+	} else if ( $covername ) {
+		exec( 'rm -f /srv/http/data/shm/local/'.$covername.'* /srv/http/data/embedded/'.$covername.'.jpg' );
+	}
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';
@@ -134,7 +132,7 @@ case 'login':
 		exit();
 	}
 	
-	$pwdnew ??= $_POST[ 'pwdnew' ];
+	$pwdnew = $_POST[ 'pwdnew' ] ?? '';
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		echo file_put_contents( $passwordfile, $hash );
