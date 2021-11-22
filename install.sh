@@ -56,12 +56,6 @@ if ! grep -q xf86-video-vesa /etc/pacman.conf; then
 IgnorePkg   = chromium' /etc/pacman.conf
 fi
 
-file=/etc/systemd/system/shairport-sync.service.d/override.conf
-if ! grep -q root $file; then
-	echo "\
-User=root
-Group=root" >> $file
-fi
 [[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}
 
 mkdir -p $dirshm/{airplay,spotify,local,online,webradio}
