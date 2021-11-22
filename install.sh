@@ -8,7 +8,15 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20121120
+# 20211125
+file=$dirsystem/lcdchar.conf
+if [[ -e $file ]] && ! grep -q inf $file; then
+	grep -q chip $file && inf=i2c || inf=gpio
+	sed -i -e 's/"//g; s/0x27/39/; s/0x3f/63/
+' -e "3 a\inf=$inf
+" $dirsystem/lcdchar.conf
+fi
+# 20121122
 rm -rf /etc/systemd/system/upmpdcli.service.d
 if [[ $( ls /srv/http/data/bookmarks ) ]]; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )

@@ -258,8 +258,8 @@ $( '#setting-lcdchar' ).click( function() {
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
 	var radioaddr = '<td>Address</td>';
-	G.lcdcharaddr.split( ' ' ).forEach( function( el ) {
-		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
+	G.lcdcharaddr.forEach( function( el ) {
+		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
 	var optpins = '<select>';
 	$.each( pin2gpio, function( k, v ) {

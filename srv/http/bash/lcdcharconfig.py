@@ -11,7 +11,7 @@ backlight = config.get( section, 'backlight' ) == 'true' and True or False
 rows = cols == 16 and 2 or 4
 
 if config.has_option( section, 'address' ): # i2c
-    address = int( config.get( section, 'address' ), 16 ) # base 16 string > integer ( can be hex or int )
+    address = int( config.get( section, 'address' ) )
     chip = config.get( section, 'chip' )
     from RPLCD.i2c import CharLCD
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, address=address, i2c_expander=chip )
