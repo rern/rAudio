@@ -105,6 +105,8 @@ function notify( title, message, icon, delay ) {
 	banner( title, message, icon +' blink', delay || -1 );
 }
 function refreshData() {
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	
 	if ( page === 'networks' ) {
 		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
 			wlanStatus();
@@ -149,7 +151,6 @@ connect = () => {
 	if ( !active ) {
 		active = 1;
 		pushstream.connect();
-		refreshData();
 		$( '#scanning-bt, #scanning-wifi' ).addClass( 'blink' );
 	}
 }
@@ -185,7 +186,7 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		bannerHide();
-		if ( !$.isEmptyObject( G ) ) refreshData();
+		refreshData();
 	} else if ( status === 0 ) { // disconnected
 		hiddenSet();
 	}
@@ -291,8 +292,6 @@ var $focus;
 var selectchange = 0;
 
 document.title = page;
-
-refreshData();
 
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 

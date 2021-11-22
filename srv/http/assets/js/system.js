@@ -277,7 +277,10 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : G.lcdcharconf
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent .gpio td:even' ).css( 'width', 60 );
+			$( '#infoContent .gpio td:even' )
+				.css( 'width', 60 )
+				.find( '.selectric-wrapper, .selectric' )
+				.css( 'width', 60 );
 			$( '#infoContent .gpio td:odd' ).css( {
 				  width           : 25
 				, 'padding-right' : 1
