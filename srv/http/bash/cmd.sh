@@ -945,7 +945,7 @@ plsimilar )
 power )
 	reboot=${args[1]}
 	mpc -q stop
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py
+	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ -n $cdda ]] && mpc -q del $cdda

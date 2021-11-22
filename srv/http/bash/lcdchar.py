@@ -16,22 +16,19 @@ idots = '\x05  \x05  \x05'
 rn = '\r\n'
 
 spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
-splash = rows > 2 and rn or ''
-splash += spaces + irr + rn + spaces +'rAudio'
+logo = rows > 2 and rn or ''
+logo += spaces + irr + rn + spaces +'rAudio'
 
 argvL = len( sys.argv )
-if argvL == 1: # no argument
-    lcd.write_string( splash )
-    lcd.close()
-    quit()
-
 if argvL == 2: # 1 argument
     val = sys.argv[ 1 ]
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
+    elif val == 'logo':
+        lcd.write_string( logo )
     else:            # string
         lcd.write_string( val.replace( '\n', rn ) )
-        lcd.close()
+    lcd.close()
     quit()
     
 import math
@@ -47,22 +44,21 @@ def second2hhmmss( sec ):
     SS = mm > 0 and ( ss > 9 and sst or '0'+ sst ) or sst
     return HH + MM + SS
     
-if charmap == 'A00':
-    import unicodedata
-    noaccented = True
-    
 sys.path.append( '/srv/http/data/shm' )
 from statuslcd import *
+print( 'xxx' )
 
-field = [ '', 'Artist', 'Title', 'Album', 'station', 'file', 'state', 'Time', 'elapsed', 'timestamp', 'webradio' ]
-for i in range( 1, 11 ):
-    val = sys.argv[ i ].rstrip()
-    if val and i < 6:
-        if noaccented:
-            val = ''.join( c for c in unicodedata.normalize( 'NFD', val )
-                           if unicodedata.category( c ) != 'Mn' )
-        val = val[ :cols ].replace( 'º', '°' ).replace( "'", "\\'" )
-    exec( field[ i ] +" = '"+ val +"'" )
+if charmap == 'A00':
+    import unicodedata
+    def normalize( str ):
+        return ''.join( c for c in unicodedata.normalize( 'NFD', str )
+                        if unicodedata.category( c ) != 'Mn' )
+                        
+    Artist = normalize( Artist )
+    Title = normalize( Title )
+    Album = normalize( Album )
+    station = normalize( station )
+    file = normalize( file )
     
 if webradio:
     if state != 'play':

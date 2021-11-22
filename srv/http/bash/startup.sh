@@ -105,7 +105,7 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
-	$dirbash/lcdchar.py
+	$dirbash/lcdchar.py logo
 fi
 if [[ -e $dirsystem/mpdoled ]]; then
 	$dirbash/cmd.sh mpdoledlogo

@@ -116,7 +116,7 @@ Time=false
 elapsed=1
 timestamp=$( date +%s%3N )
 webradio=true
-player=mpd
+player="mpd"
 EOF
 	$dirbash/status-push.sh statusradio # for: mpdoled, lcdchar, vumeter, snapclient
 	$dirbash/cmd.sh coverfileslimit
