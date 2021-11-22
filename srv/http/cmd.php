@@ -115,12 +115,10 @@ case 'imagereplace':
 		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile, $covername ] );
 	}
 	if ( $type === 'bookmark' ) {
-		$coverart = preg_replace( '#^/srv/http#', '', $imagefile );
-		$path = dirname( $coverart );
-		$bkpath = str_replace( '/srv/http/data/', '', $path );
-		$name = basename( $path );
-		if ( file_exists( $imagefile ) ) $bkpath.= "\n".$coverart;
-		file_put_contents( $dirbookmarks.$name, $bkpath );
+		$coverart = preg_replace( '#^/srv/http#', '', $imagefile ); // webradio
+		$path = exec( 'head -1 "'.$dirbookmarks.$covername.'"' );
+		if ( file_exists( $imagefile ) ) $path.= "\n".$coverart;
+		file_put_contents( $dirbookmarks.$covername, $path );
 	}
 	break;
 case 'login':

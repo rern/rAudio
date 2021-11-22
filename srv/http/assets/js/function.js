@@ -237,6 +237,7 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefilenoext, type, covername );
+			banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>' );
 		}
 	} );
 }
