@@ -46,7 +46,6 @@ def second2hhmmss( sec ):
     
 sys.path.append( '/srv/http/data/shm' )
 from statuslcd import *
-print( 'xxx' )
 
 if charmap == 'A00':
     import unicodedata
@@ -60,6 +59,12 @@ if charmap == 'A00':
     station = normalize( station )
     file = normalize( file )
     
+Artist = Artist[ :cols ]
+Title = Title[ :cols ]
+Album = Album[ :cols ]
+station = station[ :cols ]
+file = file[ :cols ]
+
 if webradio:
     if state != 'play':
         Artist = station
@@ -83,13 +88,13 @@ if rows == 2:
 else:
     lines = Artist + rn + Title + rn + Album
 
-if not elapsed:
+if elapsed:
     elapsed = round( float( elapsed ) )
     elapsedhhmmss = elapsed > 0 and second2hhmmss( elapsed ) or ''
 else:
     elapsedhhmmss = ''
 
-if not Time:
+if Time:
     if elapsedhhmmss:
         Timehhmmss = cols > 16 and ' / ' or '/'
     else:
@@ -117,7 +122,7 @@ import time
 
 row = rows - 1
 starttime = time.time()
-elapsed += round( starttime - int( timestamp ) / 1000 )
+elapsed += round( starttime - timestamp / 1000 )
 iplay = icon[ 'play' ]
 
 while True:
