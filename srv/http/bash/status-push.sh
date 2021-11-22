@@ -44,7 +44,7 @@ if [[ -e $dirsystem/mpdoled ]]; then
 fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed 's/=true$/=True/; s/=false/=False/' $dirshm/status > $dirshm/statuslcd.py
+	sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
 	killall lcdchar.py &> /dev/null
 	$dirbash/lcdchar.py &
 fi
