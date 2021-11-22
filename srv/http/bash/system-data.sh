@@ -110,24 +110,25 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 fi
 if [[ -e $dirsystem/lcdchar.conf ]]; then
 	vals=$( cat $dirsystem/lcdchar.conf )
-	keys=( cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight )
-	if (( $( echo "$vals" | wc -l ) == 6 )); then
-		declare -A default=( [inf]=i2c [pin_rs]=15 [pin_rw]=18 [pin_e]=16 [pins_data]=21,22,23,24 )
+	if (( $( wc -l <<< "$vals" ) == 6 )); then
+		inf=i2c
+		keys='cols charmap inf address chip backlight'
 	else
-		declare -A default=( [inf]=gpio [address]=0x27 [chip]=PCF8574 )
+		inf=gpio
+		keys='cols charmap inf pin_rs pin_rw pin_e pins_data backlight'
 	fi
-	kL=${#keys[@]}
-	for (( i=0; i < $kL; i++ )); do
-		k=${keys[$i]}
-		line=$( grep $k <<< "$vals" )
-		if (( i > 0 && i < 5 )); then
-			[[ -n $line ]] && pins+=",\"${line/*=}\"" || pins+=",\"${default[$k]}\""
-		else
-			[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
-		fi
+	for k in $keys; do
+		[[ $k == inf ]] && v+=',"'$inf'"' && continue
+		
+		[[ $k == pin_rs ]] && v+=',"0x27","PCF8574"'
+		val=$( grep $k <<< "$vals" | cut -d= -f2 )
+		[[ $k == pins_data ]] && val=$( echo $val | tr -d '][' )
+		v+=','$val
+		[[ $k == chip ]] && v+=,15,18,16,21,22,23,24
 	done
-	lcdcharconf="[ ${pins:1} ]" # need a space before end bracket
+	lcdcharconf=$( echo $v | sed 's/^,/[ /; s/\(True\|False\)$/\L\1 ]/' )
 else
+	# cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
