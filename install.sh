@@ -15,7 +15,7 @@ if [[ $( ls /srv/http/data/bookmarks ) ]]; then
 	if [[ -n $files ]]; then
 		for file in "${files[@]}"; do
 			path=$( head -1 "$file" )
-			[[ ${path:0:9} == webradios ]] && webradio=1
+			[[ ${path:0:9} == webradios ]] && webradio=1 || webradio=
 			[[ -n $webradio ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
 			coverartfile=$( ls -1X "$coverpath"/coverart.* 2> /dev/null \
 								| grep -i '.gif$\|.jpg$\|.png$' \
