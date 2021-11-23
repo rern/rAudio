@@ -78,8 +78,8 @@ for mpdpath in "${lines[@]}"; do
 			convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg"
 		fi
 		if [[ ! -e "$dir/coverart.jpg" ]]; then
-			echo "$padR Unable to create thumbnails on:"
-			ls -ld "$dir" | awk '{print $NF" ("$1")"}'
+			title -nb "$padR Unable to create thumbnails on:"
+			title -nt "$( ls -ld "$dir" | awk '{print $NF" ("$1")"}' )"
 			exit
 		fi
 		
