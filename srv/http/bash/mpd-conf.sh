@@ -45,7 +45,9 @@ pcm.bluealsa {
 		profile "a2dp"
 	}
 }'
-	btname=$( amixer -D bluealsa scontrols | cut -d"'" -f2 )
+	btname=$( amixer -D bluealsa scontrols \
+				| head -1 \
+				| cut -d"'" -f2 )
 	btvolumefile="$dirsystem/btvolume-$btname"
 	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
 	echo $btname > $dirshm/btclient
