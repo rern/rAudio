@@ -9,6 +9,8 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20211125
+rm -f $dirshm/local/*
+
 file=$dirsystem/lcdchar.conf
 if [[ -e $file ]] && ! grep -q inf $file; then
 	grep -q chip $file && inf=i2c || inf=gpio
