@@ -596,9 +596,13 @@ hr {
 	#infoX:active {
 		color: var( --cma );
 	}
-	input:not( [type=range] ):focus,
-	.infobtn.active {
+	input[type=radio]:focus,
+	input[type=checkbox]:focus {
 		box-shadow: 0 0 2px 4px #000000 !important;
-
+	}
+	input[type=text]:focus,
+	input[type=password]:focus,
+	.infobtn.active {
+		box-shadow: 0 0 2px 0 var( --cgl ) !important;
 	}
 }
