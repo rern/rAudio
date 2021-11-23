@@ -2,7 +2,15 @@
 
 . /srv/http/bash/addons.sh
 
+warningWrite() {
+	title "$warn Unable to create thumbnails."
+	echo "Directory:  $( tcolor "$1" )"
+	echo -e "Permission: $( ls -ld "$1" | cut -d' ' -f1 | sed 's/r-/r\\e[31m-\\e[0m/g' )\n"
+}
+
 title "$bar Update Album Thumbnails ..."
+
+[[ ! -w "/mnt/MPD/$1" ]] && warningWrite "$1" && exit
 
 SECONDS=0
 
@@ -77,11 +85,7 @@ for mpdpath in "${lines[@]}"; do
 			convert "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
 			convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg"
 		fi
-		if [[ ! -e "$dir/coverart.jpg" ]]; then
-			title -nb "$padR Unable to create thumbnails on:"
-			title -nt "$( ls -ld "$dir" | awk '{print $NF" ("$1")"}' )"
-			exit
-		fi
+		[[ ! -e "$dir/coverart.jpg" ]] && warningWrite "$dir" && exit
 		
 		(( thumb++ ))
 		echo "   $padG #$thumb - Thumbnail created."
