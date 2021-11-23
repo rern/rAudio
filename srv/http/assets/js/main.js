@@ -605,7 +605,7 @@ $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
 } );
-$( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function() {
+$( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].indexOf( e.currentTarget.id ) !== -1;
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
