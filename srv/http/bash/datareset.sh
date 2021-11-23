@@ -8,8 +8,8 @@ rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,cross
 # lcd
 file=/etc/modules-load.d/raspberrypi.conf
 [[ -e $file ]] && sed -i '/i2c-bcm2708\|i2c-dev/ d' $file
-file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
-[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
+#file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
+#[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
 if [[ -n $1 ]]; then # from create-ros.sh
 	version=$1
