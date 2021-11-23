@@ -15,6 +15,11 @@ else
 fi
 unsharp=0x.5
 
+if [[ -z $mpdpathlist ]]; then
+	echo "$padW No albums found in database."
+	exit
+fi
+
 readarray -t lines <<< "$mpdpathlist"
 
 count=${#lines[@]}
@@ -73,7 +78,8 @@ for mpdpath in "${lines[@]}"; do
 			convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg"
 		fi
 		if [[ ! -e "$dir/coverart.jpg" ]]; then
-			echo "   $padR Unable to create thumbnails on $dir"
+			echo "$padR Unable to create thumbnails on:"
+			ls -ld "$dir" | awk '{print $NF" ("$1")"}'
 			exit
 		fi
 		
