@@ -85,7 +85,7 @@ fi
 
 #2021112
 [[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
-systemctl disable --now mpdscribble@mpd
+systemctl disable --now mpdscribble@mpd 2> /dev/null
 
 file=/etc/systemd/system/bluetooth.service.d/override.conf
 grep -q battery $file || sed -i '/ExecStartPost/ i\
