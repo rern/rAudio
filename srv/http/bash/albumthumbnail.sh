@@ -14,11 +14,6 @@ else
 	mpdpathlist=$( find "/mnt/MPD/$1" -type d | cut -c10- )
 fi
 unsharp=0x.5
-color=( K R G Y B M C W Gr )
-cL=${#color[@]}
-for (( i=1; i < $cL; i++ )); do
-	printf -v pad${color[$i]} '%s' "$( tcolor . $i $i )"
-done
 
 readarray -t lines <<< "$mpdpathlist"
 
@@ -77,6 +72,11 @@ for mpdpath in "${lines[@]}"; do
 			convert "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
 			convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg"
 		fi
+		if [[ ! -e "$dir/coverart.jpg" ]]; then
+			echo "   $padR Unable to create thumbnails on $dir"
+			exit
+		fi
+		
 		(( thumb++ ))
 		echo "   $padG #$thumb - Thumbnail created."
 	else
