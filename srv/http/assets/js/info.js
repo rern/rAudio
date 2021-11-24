@@ -609,8 +609,7 @@ function infoCheckSet() {
 	}
 	if ( O.checkchanged ) {
 		$inputs_nontxt.on( 'change', function() {
-			var values = infoVal();
-			if ( $inputs_nontxt.length === 1 ) values = [ values ];
+			var values = $inputs_nontxt.length > 1 ? infoVal() : [ infoVal() ];
 			O.nochange = O.values.join( '' ) === values.join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
 		} );
