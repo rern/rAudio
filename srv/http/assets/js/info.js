@@ -609,7 +609,9 @@ function infoCheckSet() {
 	}
 	if ( O.checkchanged ) {
 		$inputs_nontxt.on( 'change', function() {
-			O.nochange = O.values.join( '' ) === infoVal().join( '' );
+			var values = infoVal();
+			if ( $inputs_nontxt.length === 1 ) values = [ values ];
+			O.nochange = O.values.join( '' ) === values.join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
 		} );
 	}
