@@ -48,7 +48,8 @@ if [[ -e /usr/bin/spotifyd ]]; then
 fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
-, "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )
+, "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )'
+, "upmpdcliownqueue" : '$( grep -q 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 # features
 xinitrc=/etc/X11/xinit/xinitrc
 if [[ -e $xinitrc ]]; then

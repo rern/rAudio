@@ -94,6 +94,22 @@ $( '#setting-snapclient' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-upmpdcli' ).click( function() {
+	info( {
+		  icon         : 'upnp'
+		, title        : 'UPnP'
+		, checkbox     : [ 'Clear Playlist on start' ]
+		, values       : [ G.upmpdcliownqueue ]
+		, checkchanged : ( G.upmpdcli ? 1 : 0 )
+		, cancel       : function() {
+			$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
+		}
+		, ok           : function() {
+			bash( [ 'upmpdcliset', infoVal() ] );
+			notify( 'UPnP', G.upmpdcli ? 'Change ...' : 'Enable ...', 'upnp' );
+		}
+	} );
+} );
 $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'
@@ -344,6 +360,7 @@ function renderPage( list ) {
 		.prop( 'checked', G.spotifyd )
 		.toggleClass( 'disabled', G.spotifydactive );
 	$( '#setting-spotifyd' ).toggleClass( 'hide', !G.spotifyd );
+	$( '#setting-upmpdcli' ).toggleClass( 'hide', !G.upmpdcli );
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' )
 		.prop( 'checked', G.upmpdcli )
