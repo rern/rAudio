@@ -137,7 +137,7 @@ curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.ta
 [[ ! -e $dirdata/mpd/counts ]] && echo '{"webradio":'$( ls -1q $dirdata/webradios | wc -l )'}' > $dirdata/mpd/counts
 
 # services
-systemctl -q disable --now bluetooth hostapd mpdscribble shairport-sync smb snapclient snapserver spotifyd upmpdcli
+systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spotifyd upmpdcli
 
 # set permissions and ownership
 chown -R http:http /srv/http
