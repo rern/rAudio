@@ -212,6 +212,11 @@ $( cat /etc/fstab )
 <bll># mount | grep ^/dev</bll>
 $( mount | grep ^/dev | sort )"
 	;;
+hdparm )
+	duration=${args[1]}
+	dev=${args[1]}
+	hdparm -S $duration $dev
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname

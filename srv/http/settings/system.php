@@ -342,3 +342,10 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 	<a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 	</div>
 </div>
+
+<div id="menu" class="menu hide">
+<a data-cmd="mount"><i class="fa fa-check"></i>Re-mount</a>
+<a data-cmd="umount"><i class="fa fa-times"></i>Unmount</a>
+<a data-cmd="remove"><i class="fa fa-minus-circle"></i>Remove</a>
+<a data-cmd="hdparm"><i class="fa fa-screenoff"></i>Standby</a>
+</div>

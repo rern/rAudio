@@ -126,6 +126,40 @@ $( '#list' ).on( 'click', 'li', function() {
 		} );
 	}
 } );
+$( '#menu a' ).click( function() {
+	var $this = $( this );
+	var cmd = $this.data( 'cmd' );
+	var mountpoint = $this.find( '.mountpoint' ).text();
+	if ( mountpoint === '/' ) return
+	
+	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
+		var icon = 'networks';
+		var title = 'Network Mount';
+	} else {
+		var icon = 'usbdrive';
+		var title = 'Local Mount';
+	}
+	if ( cmd === 'mount' ) {
+		notify( title, 'Remount ...', icon );
+		bash( [ 'remount', mountpoint, $this.find( '.source' ).text() ] );
+	} else if ( cmd === 'umount' ) {
+		notify( title, 'Unmount ...', icon )
+		bash( [ 'unmount', mountpoint ] );
+	} else if ( cmd === 'remove' ) {
+		notify( title, 'Remove ...', icon );
+		bash( [ 'remove', mountpoint ] );
+	} else if ( cmd === 'hdparm' ) {
+		info( {
+			  icon      : icon
+			, title     : title
+			, textlabel : 'Standby <gr>(m)</gr>'
+			, ok        : function() {
+				notify( title, 'Set standby ...', icon )
+				bash( [ 'hdparm', infoVal(), mountpoint ] );
+			}
+		} );
+	}
+} );
 $( '#setting-bluetooth' ).click( function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
