@@ -332,6 +332,28 @@ $( '#setting-scrobble' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-stoptimer' ).click( function() {
+	info( {
+		  icon         : 'stopwatch'
+		, title        : 'Stop Timer'
+		, radio        : { Disable: 'false', '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
+		, checkbox     : [ 'Power off on stop' ]
+		, values       : G.stoptimerconf
+		, checkchanged : 1
+		, beforeshow   : function() {
+			$( '#infoContent tr:last' ).css( 'height', '60px' );
+			$( '#infoContent input:radio' ).change( function() {
+				var valfalse = $( this ).val() === 'false';
+				if ( valfalse ) $( '#infoContent input:checkbox' ).prop( 'checked', false );
+				$( '#infoContent input:checkbox' ).prop( 'disabled', valfalse );
+			} );
+		}
+		, ok           : function() {
+			bash( [ 'stoptimerset', ...infoVal() ] );
+			notify( 'Scrobble', G.stoptimer ? 'Change ...' : 'Enable ...', 'stopwatch' );
+		}
+	} );
+} );
 
 function passwordWrong() {
 	info( {

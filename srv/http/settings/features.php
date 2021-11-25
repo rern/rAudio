@@ -202,5 +202,14 @@ HTML
  • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
+	, [
+		  'label'   => 'Stop Timer'
+		, 'id'      => 'stoptimer'
+		, 'icon'    => 'stopwatch'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Stop timer.
+HTML
+	]
 ];
 htmlSection( $head, $body );

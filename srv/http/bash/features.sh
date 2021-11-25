@@ -306,6 +306,23 @@ spotifytoken )
 spotifytokenreset )
 	spotifyReset 'Reset ...'
 	;;
+stoptimerdisable )
+	killall stoptimer.sh &> /dev/null
+	rm -f $dirshm/stoptimer
+	pushRefresh
+	;;
+stoptimerset )
+	min=${args[1]}
+	poweroff=${args[2]}
+	[[ $poweroff == true ]] && off=poweroff
+	killall stoptimer.sh &> /dev/null
+	rm -f $dirshm/stoptimer
+	if [[ $min != false ]]; then
+		$dirbash/stoptimer.sh $min $off &> /dev/null &
+		echo "[ $min, $poweroff ]" > $dirshm/stoptimer
+	fi
+	pushRefresh
+	;;
 upmpdclidisable )
 	systemctl disable --now upmpdcli
 	pushRefresh
