@@ -62,7 +62,7 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '\/$' ) )
 	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 fi
-usb=$( fdisk -lo device | grep ^/dev/sd )
+usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ -n $usb ]]; then
 	readarray -t usb <<< "$usb"
 	for source in "${usb[@]}"; do
@@ -153,6 +153,7 @@ data+='
 , "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
+, "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"

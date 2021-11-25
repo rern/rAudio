@@ -93,6 +93,7 @@ mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bl
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
+<pre id="codehddinfo"></pre>
 </div>
 <?php
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
@@ -314,6 +315,7 @@ foreach( $listui as $name => $link ) {
 	$uihtml.= $localhost ? $name.'<br>' : '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
+$hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 ?>
 <div class="section">
 	<heading>About</heading>
@@ -344,8 +346,9 @@ $version = file_get_contents( '/srv/http/data/system/version' );
 </div>
 
 <div id="menu" class="menu hide">
-<a data-cmd="mount"><i class="fa fa-check"></i>Re-mount</a>
-<a data-cmd="umount"><i class="fa fa-times"></i>Unmount</a>
-<a data-cmd="remove"><i class="fa fa-minus-circle"></i>Remove</a>
-<a data-cmd="hdparm"><i class="fa fa-screenoff"></i>Standby</a>
+<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
+<a class="unmount"><i class="fa fa-times"></i>Unmount</a>
+<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
+<a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
+<a class="spindown"<?=$hdparmhide?>><i class="fa fa-screenoff"></i>Spindown</a>
 </div>

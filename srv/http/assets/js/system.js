@@ -72,66 +72,39 @@ $( '#addnas' ).click( function() {
 } );
 $( '#list' ).on( 'click', 'li', function() {
 	var $this = $( this );
+	G.li = $this;
 	var mountpoint = $this.find( '.mountpoint' ).text();
 	if ( mountpoint === '/' ) return
 	
-	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon = 'networks';
-		var title = 'Network Mount';
-	} else {
-		var icon = 'usbdrive';
-		var title = 'Local Mount';
+	var active = $this.hasClass( 'active' );
+	$( 'li' ).removeClass( 'active' );
+	$this.addClass( 'active' );
+	var $menu = $( '#menu' );
+	if ( !$menu.hasClass( 'hide' ) ) {
+		$menu.addClass( 'hide' );
+		if ( active ) return
 	}
-	var source = $this.find( '.source' ).text();
-	if ( !$this.data( 'unmounted' ) ) {
-		info( {
-			  icon    : icon
-			, title   : title
-			, message : '<wh>'+ mountpoint +'</wh>'
-			, oklabel : 'Unmount'
-			, okcolor : orange
-			, ok      : function() {
-				notify( title, 'Unmount ...', icon )
-				bash( [ 'unmount', mountpoint ], function() {
-					refreshData();
-					$( '#refreshing' ).addClass( 'hide' );
-				} );
-				$( '#refreshing' ).removeClass( 'hide' );
-			}
-		} );
-	} else { // remove / remount
-		info( {
-			  icon        : icon
-			, title       : title
-			, message     : '<wh>'+ mountpoint +'</wh>'
-			, buttonlabel : 'Remove'
-			, buttoncolor : red
-			, button      : function() {
-				notify( title, 'Remove ...', icon );
-				bash( [ 'remove', mountpoint ], function() {
-					refreshData();
-					$( '#refreshing' ).addClass( 'hide' );
-				} );
-				$( '#refreshing' ).removeClass( 'hide' );
-			}
-			, oklabel     : 'Remount'
-			, ok          : function() {
-				notify( title, 'Remount ...', icon );
-				bash( [ 'remount', mountpoint, source ], function() {
-					refreshData();
-					$( '#refreshing' ).addClass( 'hide' );
-				} );
-				$( '#refreshing' ).removeClass( 'hide' );
-			}
-		} );
+	
+	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
+	var menuH = $menu.height();
+	$menu
+		.removeClass( 'hide' )
+		.css( 'top', $this.position().top + 48 );
+	var targetB = $menu.offset().top + menuH;
+	var wH = window.innerHeight;
+	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+} );
+$( 'body' ).click( function( e ) {
+	if ( !$( e.target ).parents( '#list' ).length ) {
+		$( '#menu, #codehddinfo' ).addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
 	}
 } );
 $( '#menu a' ).click( function() {
 	var $this = $( this );
-	var cmd = $this.data( 'cmd' );
-	var mountpoint = $this.find( '.mountpoint' ).text();
-	if ( mountpoint === '/' ) return
-	
+	var cmd = $this.prop( 'class' );
+	var source = G.li.find( '.source' ).text();
+	var mountpoint = G.li.find( '.mountpoint' ).text();
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon = 'networks';
 		var title = 'Network Mount';
@@ -139,23 +112,47 @@ $( '#menu a' ).click( function() {
 		var icon = 'usbdrive';
 		var title = 'Local Mount';
 	}
-	if ( cmd === 'mount' ) {
+	if ( cmd === 'remount' ) {
 		notify( title, 'Remount ...', icon );
-		bash( [ 'remount', mountpoint, $this.find( '.source' ).text() ] );
-	} else if ( cmd === 'umount' ) {
+		bash( [ 'remount', mountpoint, source ] );
+	} else if ( cmd === 'unmount' ) {
 		notify( title, 'Unmount ...', icon )
 		bash( [ 'unmount', mountpoint ] );
-	} else if ( cmd === 'remove' ) {
-		notify( title, 'Remove ...', icon );
+	} else if ( cmd === 'forget' ) {
+		notify( title, 'Forget ...', icon );
 		bash( [ 'remove', mountpoint ] );
-	} else if ( cmd === 'hdparm' ) {
+	} else if ( cmd === 'info' ) {
+		var $code = $( '#codehddinfo' );
+		if ( $code.is( ':empty' ) ) {
+			bash( 'hdparm -I '+ source, function( data ) {
+				$code
+					.html( data )
+					.removeClass( 'hide' );
+			} );
+		} else {
+			$code.removeClass( 'hide' );
+		}
+	} else if ( cmd === 'spindown' ) {
 		info( {
-			  icon      : icon
-			, title     : title
-			, textlabel : 'Standby <gr>(m)</gr>'
-			, ok        : function() {
-				notify( title, 'Set standby ...', icon )
-				bash( [ 'hdparm', infoVal(), mountpoint ] );
+			  icon         : 'usbdrive'
+			, title        : 'USB Drive'
+			, message      : 'Force spindown when idle:'
+			, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+			, values       : G.hddspindown
+			, checkchanged : 1
+			, ok           : function() {
+				var val = infoVal()
+				notify( 'USB Drive Spindown', ( val === 0 ? 'Disable ...' : 'Idle: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
+				bash( [ 'hddspindown', val, source ], function( std ) {
+					if ( std == -1 ) {
+						info( {
+							  icon         : 'usbdrive'
+							, title        : 'USB Drive'
+							, message      : '<wh>'+ source +'</wh> not support spindown.'
+						} );
+						bannerHide();
+					}
+				} );
 			}
 		} );
 	}

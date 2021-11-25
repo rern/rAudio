@@ -212,10 +212,21 @@ $( cat /etc/fstab )
 <bll># mount | grep ^/dev</bll>
 $( mount | grep ^/dev | sort )"
 	;;
-hdparm )
+hddspindown )
 	duration=${args[1]}
-	dev=${args[1]}
-	hdparm -S $duration $dev
+	dev=${args[2]}
+	grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && echo -1 && exit
+	
+	if [[ $duration == 0 ]]; then
+		apm=128
+		rm -f $dirsystem/hddspindown
+	else
+		apm=127
+		echo "$duration" > $dirsystem/hddspindown
+	fi
+	hdparm -q -B $apm $dev
+	hdparm -q -S $duration $dev
+	pushRefresh
 	;;
 hostname )
 	hostname=${args[1]}
@@ -589,11 +600,13 @@ unmount )
 	;;
 usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
 	pushstreamNotify 'USB Drive' Connected. usbdrive
-	update
+	pushRefresh
+	$dirbash/cmd.sh mpcupdate
 	;;
 usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	pushstreamNotify 'USB Drive' Removed. usbdrive
-	update
+	pushRefresh
+	$dirbash/cmd.sh mpcupdate
 	;;
 vuleddisable )
 	rm -f $dirsystem/vuled

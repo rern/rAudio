@@ -132,3 +132,17 @@ else
 		systemctl -q disable hostapd
 	fi
 fi
+
+if [[ -e $dirsystem/hddspindown ]]; then
+	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
+	if [[ -n $usb ]]; then
+		duration=$( cat $dirsystem/hddspindown )
+		readarray -t usb <<< "$usb"
+		for dev in "${usb[@]}"; do
+			grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && continue
+			
+			hdparm -q -B 127 $dev
+			hdparm -q -S $duration $dev
+		done
+	fi
+fi
