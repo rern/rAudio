@@ -1158,12 +1158,14 @@ function renderPlayback() {
 	$timeRS.option( 'max', time || 100 );
 	if ( G.status.state === 'stop' ) {
 		setProgress( 0 );
+		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
-		$( '#elapsed' )
-			.text( timehms )
-			.addClass( 'gr' );
-		$( '#total' ).empty();
-		$( '#progress' ).html( istate +'<span></span>'+ timehms );
+		if ( timehms ) {
+			$( '#progress' ).html( istate +'<span></span>'+ timehms );
+			$( '#elapsed' )
+				.text( timehms )
+				.addClass( 'gr' );
+		}
 		return
 	}
 	
@@ -1173,6 +1175,7 @@ function renderPlayback() {
 		blinkDot();
 		return
 	}
+
 	if ( G.status.elapsed ) {
 		var elapsedhms = second2HMS( G.status.elapsed );
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
