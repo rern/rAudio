@@ -208,7 +208,11 @@ HTML
 		, 'icon'    => 'stopwatch'
 		, 'setting' => true
 		, 'help'    => <<< HTML
-Stop timer.
+Stop timer:
+ • Gradually lower volume to 0.
+ • Stop player.
+ • Restore volume to previous level.
+ • If set, power off.
 HTML
 	]
 ];
