@@ -488,7 +488,7 @@ function info( json ) {
 			}
 		} );
 		// assign values
-		if ( O.values ) infoSetValues();
+		if ( 'values' in O && O.values !== '' ) infoSetValues();
 		
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
