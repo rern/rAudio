@@ -392,12 +392,6 @@ function renderBluetooth() {
 	$( '#listbt' ).html( htmlbt );
 }
 function renderPage( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
 	if ( G.activebt ) {
 		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );

@@ -3,22 +3,14 @@ $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.gpio-no' ).addClass( 'hide' );
 
 renderPage = function( list ) {
-	if ( list ) {
-		if ( typeof list === 'string' ) { // on load, try catching any errors
-			var list2G = list2JSON( list );
-			if ( !list2G ) return
-		} else {
-			G = list;
-		}
-		D = { val : {}, key : {} };
-		D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-		D.keys.forEach( function( k ) {
-			D.val[ k ] = G[ k ];
-		} );
-		D.val.timer = G.timer;
-		D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
-		$( '.infobtn' ).addClass( 'disabled' )
-	}
+	D = { val : {}, key : {} };
+	D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+	D.keys.forEach( function( k ) {
+		D.val[ k ] = G[ k ];
+	} );
+	D.val.timer = G.timer;
+	D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
+	$( '.infobtn' ).addClass( 'disabled' )
 	var optnamepin = '<option value="0">--- none ---</option>';
 	for ( i = 0; i < 4; i++ ) optnamepin += '<option value="'+ D.val.pin[ i ] +'">'+ D.val.name[ i ] || '(no name)' +'</option>';
 	var htmlon = '';

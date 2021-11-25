@@ -102,7 +102,6 @@ function playlistNew() {
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
 		, checkblank   : 1
-		, boxwidth     : 'max'
 		, ok           : function() {
 			playlistSave( infoVal() );
 		}
@@ -113,10 +112,8 @@ function playlistRename() {
 	info( {
 		  icon         : 'playlist'
 		, title        : 'Rename Playlist'
-		, message      : 'Rename:'
-						+'<br><wh>'+ name +'</wh>'
-						+'<br>To:'
-		, boxwidth     : 'max'
+		, message      : 'From: <wh>'+ name +'</wh>'
+		, textlabel    : 'To'
 		, values       : name
 		, checkchanged : 1
 		, checkblank   : 1

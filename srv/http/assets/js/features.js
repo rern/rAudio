@@ -342,47 +342,14 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', G.login );
 }
 function renderPage( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
-	$( '#shairport-sync' )
-		.prop( 'checked', G[ 'shairport-sync' ] )
-		.toggleClass( 'disabled', G.shairportactive );
+	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
 	$( '#snapclient' )
-		.prop( 'checked', G.snapclient )
 		.toggleClass( 'disabled', G.snapserver || G.snapclientactive )
 		.parent().prev().toggleClass( 'single', !G.snapclientactive );
-	$( '#setting-snapclient' ).toggleClass( 'hide', !G.snapclient );
-	$( '#spotifyd' )
-		.prop( 'checked', G.spotifyd )
-		.toggleClass( 'disabled', G.spotifydactive );
-	$( '#setting-spotifyd' ).toggleClass( 'hide', !G.spotifyd );
-	$( '#setting-upmpdcli' ).toggleClass( 'hide', !G.upmpdcli );
+	$( '#spotifyd' ).toggleClass( 'disabled', G.spotifydactive );
 	$( '#redirecturi' ).text( G.spotifyredirect );
-	$( '#upmpdcli' )
-		.prop( 'checked', G.upmpdcli )
-		.toggleClass( 'disabled', G.upmpdcliactive );
-	$( '#streaming' ).prop( 'checked', G.streaming );
-	$( '#snapserver' )
-		.prop( 'checked', G.snapserver )
-		.toggleClass( 'disabled', G.snapclient || G.snapserveractive );
-	$( '#hostapd' )
-		.prop( 'checked', G.hostapd )
-		.toggleClass( 'disabled', G.wlanconnected );
-	$( '#setting-hostapd' ).toggleClass( 'hide', !G.hostapd );
-	$( '#localbrowser' ).prop( 'checked', G.localbrowser );
-	$( '#setting-localbrowser' ).toggleClass( 'hide', !G.localbrowser );
-	$( '#lyricsembedded' ).prop( 'checked', G.lyricsembedded );
-	$( '#smb' ).prop( 'checked', G.smb );
-	$( '#setting-smb' ).toggleClass( 'hide', !G.smb );
-	$( '#scrobble' ).prop( 'checked', G.scrobble );
-	$( '#setting-scrobble' ).toggleClass( 'hide', !G.scrobble );
-	$( '#login' ).prop( 'checked', G.login );
-	$( '#setting-login' ).toggleClass( 'hide', !G.login );
-	$( '#autoplaycd' ).prop( 'checked', G.autoplaycd );
-	$( '#autoplay' ).prop( 'checked', G.autoplay );
+	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
+	$( '#snapserver' ).toggleClass( 'disabled', G.snapclient || G.snapserveractive );
+	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	showContent();
 }

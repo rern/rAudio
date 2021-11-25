@@ -110,19 +110,33 @@ function refreshData() {
 	if ( page === 'networks' ) {
 		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
 			wlanStatus();
+			resetLocal();
+			return
 		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
 			btScan();
+			resetLocal();
+			return
+		}
+	}
+	
+	bash( dirbash + page +'-data.sh', function( list ) {
+		if ( typeof list === 'string' ) { // on load, try catching any errors
+			var list2G = list2JSON( list );
+			if ( !list2G ) return
 		} else {
-			bash( dirbash +'networks-data.sh', function( list ) {
-				renderPage( list );
+			G = list;
+		}
+		if ( page !== 'networks' && page !== 'relays' ) {
+			$( '.switch' ).each( function() {
+				$( this ).prop( 'checked', G[ this.id ] );
+			} );
+			$( '.setting' ).each( function() {
+				var sw = this.id.replace( 'setting-', '' );
+				$( this ).toggleClass( 'hide', !G[ sw ] );
 			} );
 		}
-		resetLocal();
-	} else {
-		bash( dirbash + page +'-data.sh', function( list ) {
-			renderPage( list );
-		} );
-	}
+		renderPage( list );
+	} );
 }
 function resetLocal() {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return

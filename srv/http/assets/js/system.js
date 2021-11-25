@@ -863,12 +863,6 @@ function infoMount( values ) {
 	} );
 }
 function renderPage( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
 	var cpu = G.soccpu +' <gr>@</gr> ';
 	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 	$( '#systemvalue' ).html(
@@ -896,15 +890,11 @@ function renderPage( list ) {
 	} );
 	$( '#list' ).html( html );
 	$( '#bluetooth' )
-		.prop( 'checked', G.bluetooth )
-		.toggleClass( 'disabled', G.bluetoothactive );
-	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
+		.toggleClass( 'disabled', G.bluetoothactive )
+		.parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' )
-		.prop( 'checked', G.wlan )
 		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
 		.parent().prev().toggleClass( 'single', !G.wlan );
-	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
 		var $this = $( this );
@@ -913,24 +903,7 @@ function renderPage( list ) {
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
-	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
-	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-	$( '#relays' ).prop( 'checked', G.relays );
-	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
-	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
-	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
-	$( '#lcd' ).prop( 'checked', G.lcd );
-	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
-	if ( G.soundprofileconf ) {
-		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
-	} else {
-		$( '#divsoundprofile' ).addClass( 'hide' );
-	}
-	$( '#vuled' ).prop( 'checked', G.vuled );
-	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
+	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
