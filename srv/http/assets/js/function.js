@@ -1147,7 +1147,7 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
-	if ( G.status.elapsed === false ) {
+	if ( G.status.elapsed === false || G.status.webradio ) {
 		setBlinkDot();
 		return
 	}
@@ -1626,6 +1626,9 @@ function setProgressElapsed() {
 			}
 		}, 1000 );
 	} else if ( G.display.radioelapsed ) {
+		$( '#elapsed' ).html( blinkdot );
+		$elapsed = $( '#total, #progress span' );
+		$elapsed.text( second2HMS( G.status.elapsed ) );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			elapsedhms = second2HMS( G.status.elapsed );
