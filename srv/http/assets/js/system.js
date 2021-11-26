@@ -134,7 +134,7 @@ $( '#menu a' ).click( function() {
 		info( {
 			  icon         : 'usbdrive'
 			, title        : 'USB Drive'
-			, message      : 'Force spindown when idle:'
+			, message      : 'Spindown when idle:'
 			, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
 			, values       : G.hddspindown
 			, checkchanged : 1

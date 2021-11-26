@@ -209,7 +209,7 @@ HTML
 		, 'setting' => true
 		, 'help'    => <<< HTML
 Stop timer:
- • Gradually lower volume to 0.
+ • Lower volume to 0 (Mute).
  • Stop player.
  • Restore volume to previous level.
  • If set, power off.

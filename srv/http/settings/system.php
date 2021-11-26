@@ -79,7 +79,9 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries"></ul>
-	<div class="help-block hide">Available sources, local USB and NAS mounts, for Library.
+	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Spindown
+
+Available sources, local USB and NAS mounts, for Library.
  • USB drive will be found and mounted automatically.
  • Network shares must be manually configured.
  • If mount failed, try in SSH terminal:
@@ -346,8 +348,8 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 </div>
 
 <div id="menu" class="menu hide">
-<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
 <a class="unmount"><i class="fa fa-times"></i>Unmount</a>
+<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
 <a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 <a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
 <a class="spindown"<?=$hdparmhide?>><i class="fa fa-screenoff"></i>Spindown</a>
