@@ -341,11 +341,13 @@ $( '#setting-stoptimer' ).click( function() {
 		, values       : G.stoptimerconf
 		, checkchanged : 1
 		, beforeshow   : function() {
+			var $poweroff = $( '#infoContent input:checkbox' );
+			$poweroff.prop( 'disabled', !G.stoptimerconf );
 			$( '#infoContent tr:last' ).css( 'height', '60px' );
 			$( '#infoContent input:radio' ).change( function() {
 				var valfalse = $( this ).val() === 'false';
-				if ( valfalse ) $( '#infoContent input:checkbox' ).prop( 'checked', false );
-				$( '#infoContent input:checkbox' ).prop( 'disabled', valfalse );
+				if ( valfalse ) $poweroff.prop( 'checked', false );
+				$poweroff.prop( 'disabled', valfalse );
 			} );
 		}
 		, ok           : function() {
