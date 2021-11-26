@@ -126,16 +126,8 @@ function refreshData() {
 		} else {
 			G = list;
 		}
-		if ( page !== 'networks' && page !== 'relays' ) {
-			$( '.switch' ).each( function() {
-				$( this ).prop( 'checked', G[ this.id ] );
-			} );
-			$( '.setting' ).each( function() {
-				var sw = this.id.replace( 'setting-', '' );
-				$( this ).toggleClass( 'hide', !G[ sw ] );
-			} );
-		}
-		renderPage( list );
+		setSwitch();
+		renderPage();
 	} );
 }
 function resetLocal() {
@@ -143,6 +135,17 @@ function resetLocal() {
 	
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	setTimeout( bannerHide, 1000 );
+}
+function setSwitch() {
+	if ( page !== 'networks' && page !== 'relays' ) {
+		$( '.switch' ).each( function() {
+			$( this ).prop( 'checked', G[ this.id ] );
+		} );
+		$( '.setting' ).each( function() {
+			var sw = this.id.replace( 'setting-', '' );
+			$( this ).toggleClass( 'hide', !G[ sw ] );
+		} );
+	}
 }
 function showContent() {
 	resetLocal();
@@ -245,7 +248,11 @@ function psPlayer( data ) {
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
-	if ( data.page === page ) renderPage( data );
+	if ( data.page === page ) {
+		G = data;
+		renderPage();
+		setSwitch();
+	}
 }
 function psReload() {
 	if ( localhost ) location.reload();
