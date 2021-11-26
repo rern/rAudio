@@ -73,6 +73,7 @@ $( '#addnas' ).click( function() {
 $( '#list' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	G.li = $this;
+	$( '#menu, #codehddinfo' ).addClass( 'hide' );
 	var mountpoint = $this.find( '.mountpoint' ).text();
 	if ( mountpoint === '/' ) return
 	
@@ -80,10 +81,7 @@ $( '#list' ).on( 'click', 'li', function() {
 	$( 'li' ).removeClass( 'active' );
 	$this.addClass( 'active' );
 	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) ) {
-		$menu.addClass( 'hide' );
-		if ( active ) return
-	}
+	if ( !$menu.hasClass( 'hide' ) && active ) return
 	
 	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
 	var menuH = $menu.height();
@@ -95,7 +93,7 @@ $( '#list' ).on( 'click', 'li', function() {
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( 'body' ).click( function( e ) {
-	if ( !$( e.target ).parents( '#list' ).length ) {
+	if ( this.id !== 'codehddinfo' && !$( e.target ).parents( '#list' ).length ) {
 		$( '#menu, #codehddinfo' ).addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	}
@@ -123,14 +121,14 @@ $( '#menu a' ).click( function() {
 		bash( [ 'remove', mountpoint ] );
 	} else if ( cmd === 'info' ) {
 		var $code = $( '#codehddinfo' );
-		if ( $code.is( ':empty' ) ) {
+		if ( $code.hasClass( 'hide' ) ) {
 			bash( 'hdparm -I '+ source, function( data ) {
 				$code
 					.html( data )
 					.removeClass( 'hide' );
 			} );
 		} else {
-			$code.removeClass( 'hide' );
+			$code.addClass( 'hide' );
 		}
 	} else if ( cmd === 'spindown' ) {
 		info( {
