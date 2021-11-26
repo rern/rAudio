@@ -68,6 +68,7 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
+		, 'setting'  => true
 		, 'disabled' => 'UPnP is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
@@ -199,6 +200,19 @@ HTML
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
  • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
+HTML
+	]
+	, [
+		  'label'   => 'Stop Timer'
+		, 'id'      => 'stoptimer'
+		, 'icon'    => 'stopwatch'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Stop timer:
+ • Lower volume to 0 (Mute).
+ • Stop player.
+ • Restore volume to previous level.
+ • If set, power off.
 HTML
 	]
 ];

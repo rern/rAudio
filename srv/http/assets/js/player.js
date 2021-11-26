@@ -333,12 +333,6 @@ $( '#setting-custom' ).click( function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function renderPage( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
@@ -384,22 +378,6 @@ function renderPage( list ) {
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
 		}
 	}
-	$( '#crossfade' ).prop( 'checked', G.crossfade );
-	$( '#setting-crossfade' ).toggleClass( 'hide', !G.crossfade );
-	$( '#normalization' ).prop( 'checked', G.normalization );
-	$( '#replaygain' ).prop( 'checked', G.replaygain );
-	$( '#setting-replaygain' ).toggleClass( 'hide', !G.replaygain );
-	$( '#equalizer' ).prop( 'checked', G.equalizer );
-	$( '#buffer' ).prop( 'checked', G.buffer );
-	$( '#setting-buffer' ).toggleClass( 'hide', !G.buffer );
-	$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
-	$( '#setting-bufferoutput' ).toggleClass( 'hide', !G.bufferoutput );
-	$( '#ffmpeg' ).prop( 'checked', G.ffmpeg );
-	$( '#autoupdate' ).prop( 'checked', G.autoupdate );
-	$( '#custom' ).prop( 'checked', G.custom );
-	$( '#setting-custom' ).toggleClass( 'hide', !G.custom );
-	$( '#soxr' ).prop( 'checked', G.soxr );
-	$( '#setting-soxr' ).toggleClass( 'hide', !G.soxr );
 	if ( $( '#infoRange .value' ).length ) {
 		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
 		bash( cmd, function( voldb ) {

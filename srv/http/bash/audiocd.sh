@@ -98,6 +98,7 @@ for i in $( seq 1 $trackL ); do
 done
 echo $discid > $dirshm/audiocd
 pushstreamPlaylist
+eject -x 4
 
 if [[ -n $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))

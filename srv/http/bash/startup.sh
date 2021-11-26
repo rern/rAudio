@@ -105,7 +105,7 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
-	$dirbash/lcdchar.py
+	$dirbash/lcdchar.py logo
 fi
 if [[ -e $dirsystem/mpdoled ]]; then
 	$dirbash/cmd.sh mpdoledlogo
@@ -130,5 +130,19 @@ else
 		modprobe brcmfmac &> /dev/null 
 		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
 		systemctl -q disable hostapd
+	fi
+fi
+
+if [[ -e $dirsystem/hddspindown ]]; then
+	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
+	if [[ -n $usb ]]; then
+		duration=$( cat $dirsystem/hddspindown )
+		readarray -t usb <<< "$usb"
+		for dev in "${usb[@]}"; do
+			grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && continue
+			
+			hdparm -q -B 127 $dev
+			hdparm -q -S $duration $dev
+		done
 	fi
 fi

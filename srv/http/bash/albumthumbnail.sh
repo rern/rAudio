@@ -2,7 +2,15 @@
 
 . /srv/http/bash/addons.sh
 
+warningWrite() {
+	title "$warn Unable to create thumbnails."
+	echo "Directory:  $( tcolor "$1" )"
+	echo -e "Permission: $( ls -ld "$1" | cut -d' ' -f1 | sed 's/r-/r\\e[31m-\\e[0m/g' )\n"
+}
+
 title "$bar Update Album Thumbnails ..."
+
+[[ ! -w "/mnt/MPD/$1" ]] && warningWrite "$1" && exit
 
 SECONDS=0
 
@@ -14,11 +22,11 @@ else
 	mpdpathlist=$( find "/mnt/MPD/$1" -type d | cut -c10- )
 fi
 unsharp=0x.5
-color=( K R G Y B M C W Gr )
-cL=${#color[@]}
-for (( i=1; i < $cL; i++ )); do
-	printf -v pad${color[$i]} '%s' "$( tcolor . $i $i )"
-done
+
+if [[ -z $mpdpathlist ]]; then
+	echo "$padW No albums found in database."
+	exit
+fi
 
 readarray -t lines <<< "$mpdpathlist"
 
@@ -77,6 +85,8 @@ for mpdpath in "${lines[@]}"; do
 			convert "$coverfile" -thumbnail 200x200\> -unsharp $unsharp "$dir/coverart.jpg"
 			convert "$coverfile" -thumbnail 80x80\> -unsharp $unsharp "$dir/thumb.jpg"
 		fi
+		[[ ! -e "$dir/coverart.jpg" ]] && warningWrite "$dir" && exit
+		
 		(( thumb++ ))
 		echo "   $padG #$thumb - Thumbnail created."
 	else

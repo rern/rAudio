@@ -235,6 +235,7 @@ input::-moz-focus-inner {
 .fa-star::before { content: '\f550' }
 .fa-status::before { content: '\f50A' }
 .fa-stop::before { content: '\f502' }
+.fa-stoptimer::before { content: '\f570' }
 .fa-stopwatch::before { content: '\f570' }
 .fa-system::before { content: '\f590' }
 .fa-tag::before { content: '\f55B' }

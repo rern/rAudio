@@ -90,10 +90,15 @@ metadataGet() {
 		coverart=/data/shm/webradio/$name.jpg
 	fi
 	[[ -e $dirsystem/vumeter ]] && coverart=
+	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| grep ^elapsed \
+				| cut -d' ' -f2 ) )
 	data='{
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
+, "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"
@@ -113,10 +118,10 @@ station="$station"
 file="$file"
 state="play"
 Time=false
-elapsed=1
+elapsed=$elapsed
 timestamp=$( date +%s%3N )
 webradio=true
-player=mpd
+player="mpd"
 EOF
 	$dirbash/status-push.sh statusradio # for: mpdoled, lcdchar, vumeter, snapclient
 	$dirbash/cmd.sh coverfileslimit

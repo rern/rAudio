@@ -252,9 +252,7 @@ smbset )
 	sed -i '/read only = no/ d' $smbconf
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
-	systemctl restart smb
-	systemctl -q is-active smb && systemctl enable smb
-	pushRefresh
+	featureSet smb
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient
@@ -303,12 +301,36 @@ spotifytoken )
 	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotify
 	echo ${tokens[1]} > $dirshm/spotify/token
 	echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
-	systemctl start spotifyd
-	systemctl -q is-active spotifyd && systemctl enable spotifyd
-	pushRefresh
+	featureSet spotifyd
 	;;
 spotifytokenreset )
 	spotifyReset 'Reset ...'
+	;;
+stoptimerdisable )
+	killall stoptimer.sh &> /dev/null
+	rm -f $dirshm/stoptimer
+	pushRefresh
+	;;
+stoptimerset )
+	min=${args[1]}
+	poweroff=${args[2]}
+	[[ $poweroff == true ]] && off=poweroff
+	killall stoptimer.sh &> /dev/null
+	rm -f $dirshm/stoptimer
+	if [[ $min != false ]]; then
+		$dirbash/stoptimer.sh $min $off &> /dev/null &
+		echo "[ $min, $poweroff ]" > $dirshm/stoptimer
+	fi
+	pushRefresh
+	;;
+upmpdclidisable )
+	systemctl disable --now upmpdcli
+	pushRefresh
+	;;
+upmpdcliset )
+	[[ ${args[1]} == true ]] && val=1 || val=0
+	sed -i "s/\(ownqueue = \)./\1$val/" /etc/upmpdcli.conf
+	featureSet upmpdcli
 	;;
 	
 esac

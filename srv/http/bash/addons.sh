@@ -16,9 +16,9 @@ tcolor() {
 	[[ $3 ]] && back=$3
 	echo -e "\e[38;5;${color}m\e[48;5;${back}m${1}\e[0m"
 }
-pad=( '' R G Y B M C )
-for i in 1 2 3 4 5 6; do
-	printf -v pad${pad[$i]} '%s' $( echo -e "\e[3${i}m\e[4${i}m.\e[0m" )
+pad=( K R G Y B M C W Gr )
+for i in {1..8}; do
+	printf -v pad${pad[$i]} '%s' "$( tcolor . $i $i )"
 done
 bar=$( tcolor ' . ' 6 6 )   # [   ]     (cyan on cyan)
 info=$( tcolor ' i ' 0 3 )  # [ i ]     (black on yellow)

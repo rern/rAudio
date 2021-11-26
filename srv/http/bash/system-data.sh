@@ -62,7 +62,7 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '\/$' ) )
 	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 fi
-usb=$( fdisk -lo device | grep ^/dev/sd )
+usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ -n $usb ]]; then
 	readarray -t usb <<< "$usb"
 	for source in "${usb[@]}"; do
@@ -106,28 +106,25 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 						| grep -v UU \
 						| grep . \
 						| sort -u )
+		i2caddress="[ $(( "0x$i2caddress" )) ]"
+	else
+		i2caddress=false
 	fi
+else
+	i2caddress='[ 39,63 ]'
 fi
 if [[ -e $dirsystem/lcdchar.conf ]]; then
-	vals=$( cat $dirsystem/lcdchar.conf )
-	keys=( cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight )
-	if (( $( echo "$vals" | wc -l ) == 6 )); then
-		declare -A default=( [inf]=i2c [pin_rs]=15 [pin_rw]=18 [pin_e]=16 [pins_data]=21,22,23,24 )
+	vals=$( cat $dirsystem/lcdchar.conf \
+				| grep -v '\[var]' \
+				| sed -e '/charmap\|inf\|chip/ s/.*=\(.*\)/"\1"/; s/.*=//' \
+					  -e 's/[][]//g; s/,/ /g; s/\(True\|False\)/\l\1/' )
+	if grep -q i2c <<< "$vals"; then
+		vals=$( echo $vals | sed 's/\(true\|false\)$/15 18 16 21 22 23 24 \1/' )
 	else
-		declare -A default=( [inf]=gpio [address]=0x27 [chip]=PCF8574 )
+		vals=$( echo $vals | sed 's/\("gpio"\)/\1 39 "PCF8574"/' )
 	fi
-	kL=${#keys[@]}
-	for (( i=0; i < $kL; i++ )); do
-		k=${keys[$i]}
-		line=$( grep $k <<< "$vals" )
-		if (( i > 0 && i < 5 )); then
-			[[ -n $line ]] && pins+=",\"${line/*=}\"" || pins+=",\"${default[$k]}\""
-		else
-			[[ -n $line ]] && pins+=",${line/*=}" || pins+=",${default[$k]}"
-		fi
-	done
-	lcdcharconf="[ ${pins:1} ]" # need a space before end bracket
-else
+	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
+else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
@@ -156,12 +153,13 @@ data+='
 , "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
 , "bluetoothconf"    : '$bluetoothconf'
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
+, "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
-, "lcdcharaddr"      : "'$( [[ -n $i2caddress ]] && echo 0x$i2caddress || echo 0x27 0x3F )'"
+, "lcdcharaddr"      : '$i2caddress'
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
 , "lcdmodel"         : "'$lcdmodel'"

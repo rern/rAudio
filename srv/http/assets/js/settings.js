@@ -105,28 +105,47 @@ function notify( title, message, icon, delay ) {
 	banner( title, message, icon +' blink', delay || -1 );
 }
 function refreshData() {
+	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	
 	if ( page === 'networks' ) {
 		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
 			wlanStatus();
+			resetLocal();
+			return
 		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
 			btScan();
-		} else {
-			bash( dirbash +'networks-data.sh', function( list ) {
-				renderPage( list );
-			} );
+			resetLocal();
+			return
 		}
-		resetLocal();
-	} else {
-		bash( dirbash + page +'-data.sh', function( list ) {
-			renderPage( list );
-		} );
 	}
+	
+	bash( dirbash + page +'-data.sh', function( list ) {
+		if ( typeof list === 'string' ) { // on load, try catching any errors
+			var list2G = list2JSON( list );
+			if ( !list2G ) return
+		} else {
+			G = list;
+		}
+		setSwitch();
+		renderPage();
+	} );
 }
 function resetLocal() {
 	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
 	
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	setTimeout( bannerHide, 1000 );
+}
+function setSwitch() {
+	if ( page !== 'networks' && page !== 'relays' ) {
+		$( '.switch' ).each( function() {
+			$( this ).prop( 'checked', G[ this.id ] );
+		} );
+		$( '.setting' ).each( function() {
+			var sw = this.id.replace( 'setting-', '' );
+			$( this ).toggleClass( 'hide', !G[ sw ] );
+		} );
+	}
 }
 function showContent() {
 	resetLocal();
@@ -149,7 +168,6 @@ connect = () => {
 	if ( !active ) {
 		active = 1;
 		pushstream.connect();
-		refreshData();
 		$( '#scanning-bt, #scanning-wifi' ).addClass( 'blink' );
 	}
 }
@@ -185,7 +203,7 @@ pushstream.connect();
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {
 		bannerHide();
-		if ( !$.isEmptyObject( G ) ) refreshData();
+		refreshData();
 	} else if ( status === 0 ) { // disconnected
 		hiddenSet();
 	}
@@ -230,7 +248,11 @@ function psPlayer( data ) {
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
-	if ( data.page === page ) renderPage( data );
+	if ( data.page === page ) {
+		G = data;
+		renderPage();
+		setSwitch();
+	}
 }
 function psReload() {
 	if ( localhost ) location.reload();
@@ -291,8 +313,6 @@ var $focus;
 var selectchange = 0;
 
 document.title = page;
-
-refreshData();
 
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 

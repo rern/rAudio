@@ -18,7 +18,7 @@ coverFilesLimit() {
 [[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
 # already got online
 for ext in jpg png; do
-	[[ -e $dirshm/online/$covername.$ext ]] && echo ${coverfile/.*}.$date.$ext && exit
+	[[ -e $dirshm/online/$covername.$ext ]] && echo ${coverfile:0:-4}.$date.$ext && exit
 done
 
 # cover file
@@ -29,7 +29,7 @@ coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 										| grep -i '/album\....$\|/folder\....$\|/front\....$' \
 										| head -1 )
 if [[ -n $coverfile ]]; then
-	echo ${coverfile/.*}.$date.${coverfile/*.} | tee $dirshm/local/$covername
+	echo ${coverfile:0:-4}.$date.${coverfile: -3} | tee $dirshm/local/$covername
 	coverFilesLimit
 	exit
 fi

@@ -9,7 +9,7 @@ readarray -t args <<< "$1"
 
 pushReboot() {
 	pushRefresh
-	data='{"title":"'$1'","text":"Reboot required.","icon":"'$2'","hold":5000}'
+	data='{"title":"'${1//\"/\\\"}'","text":"Reboot required.","icon":"'$2'","hold":5000}'
 	pushstream notify "$data"
 	echo $1 >> $dirshm/reboot
 }
@@ -212,6 +212,22 @@ $( cat /etc/fstab )
 <bll># mount | grep ^/dev</bll>
 $( mount | grep ^/dev | sort )"
 	;;
+hddspindown )
+	duration=${args[1]}
+	dev=${args[2]}
+	grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && echo -1 && exit
+	
+	if [[ $duration == 0 ]]; then
+		apm=128
+		rm -f $dirsystem/hddspindown
+	else
+		apm=127
+		echo "$duration" > $dirsystem/hddspindown
+	fi
+	hdparm -q -B $apm $dev
+	hdparm -q -S $duration $dev
+	pushRefresh
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
@@ -291,6 +307,7 @@ cols=${args[1]}
 charmap=${args[2]}"
 	if [[ ${args[3]} == i2c ]]; then
 		conf+="
+inf=i2c
 address=${args[4]}
 chip=${args[5]}"
 		echo "\
@@ -301,26 +318,27 @@ i2c-dev" >> $filemodule
 		! grep -q 'dtparam=i2c_arm=on' $fileconfig && reboot=1
 	else
 		conf+="
+inf=gpio
 pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
-pins_data=$( echo ${args[@]:9:4} | tr ' ' , )"
+pins_data=[$( echo ${args[@]:9:4} | tr ' ' , )]"
 		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
 		fi
 	fi
 	conf+="
-backlight=${args[13]}"
+backlight=${args[13]^}"
 	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
-	[[ -n reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
+	[[ -n $reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
 	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+#	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	pushRefresh
 	;;
 lcdset )
@@ -343,7 +361,7 @@ i2c-bcm2708
 i2c-dev
 " >> $filemodule
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+#	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
 	pushReboot 'TFT 3.5" LCD' lcd
 	;;
@@ -582,11 +600,13 @@ unmount )
 	;;
 usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
 	pushstreamNotify 'USB Drive' Connected. usbdrive
-	update
+	pushRefresh
+	$dirbash/cmd.sh mpcupdate
 	;;
 usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	pushstreamNotify 'USB Drive' Removed. usbdrive
-	update
+	pushRefresh
+	$dirbash/cmd.sh mpcupdate
 	;;
 vuleddisable )
 	rm -f $dirsystem/vuled

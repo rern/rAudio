@@ -605,7 +605,7 @@ $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disable' );
 	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
 } );
-$( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function() {
+$( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].indexOf( e.currentTarget.id ) !== -1;
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
@@ -1271,9 +1271,11 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
+		var icon = '<i class="iconcover"></i>';
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 				  +'<p class="infoimgname">'+ name +'</p>';
 	} else {
+		var icon = 'bookmark';
 		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
 					+'<br><span class="bklabel">'+ name +'</span></div>';
 	}
@@ -1283,7 +1285,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	//    - others > [base64] - data:image/jpeg;base64,...
 	var imagepath = path.slice( 0, 9 ) !== 'webradios' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
-		  icon        : 'bookmark'
+		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
 		, filelabel   : '<i class="fa fa-folder-open"></i> File'
@@ -1295,7 +1297,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			bash( [ 'bookmarkreset', imagepath, name ] );
 		}
 		, ok          : function() {
-			imageReplace( imagepath +'/coverart', 'bookmark' ); // no ext
+			imageReplace( imagepath +'/coverart', 'bookmark', name ); // no ext
 		}
 	} );
 } ).press( '.mode-bookmark', function() {

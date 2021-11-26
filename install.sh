@@ -8,7 +8,17 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-#20121120
+# 20211125
+rm -f $dirshm/local/*
+
+file=$dirsystem/lcdchar.conf
+if [[ -e $file ]] && ! grep -q inf $file; then
+	grep -q chip $file && inf=i2c || inf=gpio
+	sed -i -e 's/"//g; s/0x27/39/; s/0x3f/63/; s/\(true\|false\)/\u\1/
+' -e "3 a\inf=$inf
+" $dirsystem/lcdchar.conf
+fi
+# 20121122
 rm -rf /etc/systemd/system/upmpdcli.service.d
 if [[ $( ls /srv/http/data/bookmarks ) ]]; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
@@ -48,12 +58,6 @@ if ! grep -q xf86-video-vesa /etc/pacman.conf; then
 IgnorePkg   = chromium' /etc/pacman.conf
 fi
 
-file=/etc/systemd/system/shairport-sync.service.d/override.conf
-if ! grep -q root $file; then
-	echo "\
-User=root
-Group=root" >> $file
-fi
 [[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}
 
 mkdir -p $dirshm/{airplay,spotify,local,online,webradio}

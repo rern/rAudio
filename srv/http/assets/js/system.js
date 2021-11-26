@@ -72,9 +72,37 @@ $( '#addnas' ).click( function() {
 } );
 $( '#list' ).on( 'click', 'li', function() {
 	var $this = $( this );
+	G.li = $this;
+	$( '#menu, #codehddinfo' ).addClass( 'hide' );
 	var mountpoint = $this.find( '.mountpoint' ).text();
 	if ( mountpoint === '/' ) return
 	
+	var active = $this.hasClass( 'active' );
+	$( 'li' ).removeClass( 'active' );
+	$this.addClass( 'active' );
+	var $menu = $( '#menu' );
+	if ( !$menu.hasClass( 'hide' ) && active ) return
+	
+	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
+	var menuH = $menu.height();
+	$menu
+		.removeClass( 'hide' )
+		.css( 'top', $this.position().top + 48 );
+	var targetB = $menu.offset().top + menuH;
+	var wH = window.innerHeight;
+	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+} );
+$( 'body' ).click( function( e ) {
+	if ( this.id !== 'codehddinfo' && !$( e.target ).parents( '#list' ).length ) {
+		$( '#menu, #codehddinfo' ).addClass( 'hide' );
+		$( 'li' ).removeClass( 'active' );
+	}
+} );
+$( '#menu a' ).click( function() {
+	var $this = $( this );
+	var cmd = $this.prop( 'class' );
+	var source = G.li.find( '.source' ).text();
+	var mountpoint = G.li.find( '.mountpoint' ).text();
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon = 'networks';
 		var title = 'Network Mount';
@@ -82,46 +110,47 @@ $( '#list' ).on( 'click', 'li', function() {
 		var icon = 'usbdrive';
 		var title = 'Local Mount';
 	}
-	var source = $this.find( '.source' ).text();
-	if ( !$this.data( 'unmounted' ) ) {
+	if ( cmd === 'remount' ) {
+		notify( title, 'Remount ...', icon );
+		bash( [ 'remount', mountpoint, source ] );
+	} else if ( cmd === 'unmount' ) {
+		notify( title, 'Unmount ...', icon )
+		bash( [ 'unmount', mountpoint ] );
+	} else if ( cmd === 'forget' ) {
+		notify( title, 'Forget ...', icon );
+		bash( [ 'remove', mountpoint ] );
+	} else if ( cmd === 'info' ) {
+		var $code = $( '#codehddinfo' );
+		if ( $code.hasClass( 'hide' ) ) {
+			bash( 'hdparm -I '+ source, function( data ) {
+				$code
+					.html( data )
+					.removeClass( 'hide' );
+			} );
+		} else {
+			$code.addClass( 'hide' );
+		}
+	} else if ( cmd === 'spindown' ) {
 		info( {
-			  icon    : icon
-			, title   : title
-			, message : '<wh>'+ mountpoint +'</wh>'
-			, oklabel : 'Unmount'
-			, okcolor : orange
-			, ok      : function() {
-				notify( title, 'Unmount ...', icon )
-				bash( [ 'unmount', mountpoint ], function() {
-					refreshData();
-					$( '#refreshing' ).addClass( 'hide' );
+			  icon         : 'usbdrive'
+			, title        : 'USB Drive'
+			, message      : 'Spindown when idle:'
+			, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+			, values       : G.hddspindown
+			, checkchanged : 1
+			, ok           : function() {
+				var val = infoVal()
+				notify( 'USB Drive Spindown', ( val === 0 ? 'Disable ...' : 'Idle: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
+				bash( [ 'hddspindown', val, source ], function( std ) {
+					if ( std == -1 ) {
+						info( {
+							  icon         : 'usbdrive'
+							, title        : 'USB Drive'
+							, message      : '<wh>'+ source +'</wh> not support spindown.'
+						} );
+						bannerHide();
+					}
 				} );
-				$( '#refreshing' ).removeClass( 'hide' );
-			}
-		} );
-	} else { // remove / remount
-		info( {
-			  icon        : icon
-			, title       : title
-			, message     : '<wh>'+ mountpoint +'</wh>'
-			, buttonlabel : 'Remove'
-			, buttoncolor : red
-			, button      : function() {
-				notify( title, 'Remove ...', icon );
-				bash( [ 'remove', mountpoint ], function() {
-					refreshData();
-					$( '#refreshing' ).addClass( 'hide' );
-				} );
-				$( '#refreshing' ).removeClass( 'hide' );
-			}
-			, oklabel     : 'Remount'
-			, ok          : function() {
-				notify( title, 'Remount ...', icon );
-				bash( [ 'remount', mountpoint, source ], function() {
-					refreshData();
-					$( '#refreshing' ).addClass( 'hide' );
-				} );
-				$( '#refreshing' ).removeClass( 'hide' );
 			}
 		} );
 	}
@@ -258,8 +287,8 @@ $( '#setting-lcdchar' ).click( function() {
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
 	var radioaddr = '<td>Address</td>';
-	G.lcdcharaddr.split( ' ' ).forEach( function( el ) {
-		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">'+ el +'</label></td>';
+	G.lcdcharaddr.forEach( function( el ) {
+		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
 	var optpins = '<select>';
 	$.each( pin2gpio, function( k, v ) {
@@ -277,7 +306,10 @@ $( '#setting-lcdchar' ).click( function() {
 		, values        : G.lcdcharconf
 		, checkchanged  : ( G.lcdchar ? 1 : 0 )
 		, beforeshow    : function() {
-			$( '#infoContent .gpio td:even' ).css( 'width', 60 );
+			$( '#infoContent .gpio td:even' )
+				.css( 'width', 60 )
+				.find( '.selectric-wrapper, .selectric' )
+				.css( 'width', 60 );
 			$( '#infoContent .gpio td:odd' ).css( {
 				  width           : 25
 				, 'padding-right' : 1
@@ -302,7 +334,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-screenoff"></i>Sleep' ]
 		, buttoncolor   : [ '', orange ]
 		, button        : !G.lcdchar ? '' : [ 
-			  function() { bash( '/srv/http/bash/lcdchar.py' ) }
+			  function() { bash( '/srv/http/bash/lcdchar.py logo' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
 		]
 		, buttonnoreset : 1
@@ -829,12 +861,6 @@ function infoMount( values ) {
 	} );
 }
 function renderPage( list ) {
-	if ( typeof list === 'string' ) { // on load, try catching any errors
-		var list2G = list2JSON( list );
-		if ( !list2G ) return
-	} else {
-		G = list;
-	}
 	var cpu = G.soccpu +' <gr>@</gr> ';
 	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 	$( '#systemvalue' ).html(
@@ -862,15 +888,11 @@ function renderPage( list ) {
 	} );
 	$( '#list' ).html( html );
 	$( '#bluetooth' )
-		.prop( 'checked', G.bluetooth )
-		.toggleClass( 'disabled', G.bluetoothactive );
-	$( '#setting-bluetooth' ).toggleClass( 'hide', !G.bluetooth );
-	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
+		.toggleClass( 'disabled', G.bluetoothactive )
+		.parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' )
-		.prop( 'checked', G.wlan )
 		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
 		.parent().prev().toggleClass( 'single', !G.wlan );
-	$( '#setting-wlan' ).toggleClass( 'hide', !G.wlan );
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
 		var $this = $( this );
@@ -879,24 +901,7 @@ function renderPage( list ) {
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
-	$( '#lcdchar' ).prop( 'checked', G.lcdchar );
-	$( '#setting-lcdchar' ).toggleClass( 'hide', !G.lcdchar );
-	$( '#powerbutton' ).prop( 'checked', G.powerbutton );
-	$( '#setting-powerbutton' ).toggleClass( 'hide', !G.powerbutton );
-	$( '#relays' ).prop( 'checked', G.relays );
-	$( '#setting-relays' ).toggleClass( 'hide', !G.relays );
-	$( '#mpdoled' ).prop( 'checked', G.mpdoled );
-	$( '#setting-mpdoled' ).toggleClass( 'hide', !G.mpdoled );
-	$( '#lcd' ).prop( 'checked', G.lcd );
-	$( '#setting-lcd' ).toggleClass( 'hide', !G.lcd );
-	if ( G.soundprofileconf ) {
-		$( '#soundprofile' ).prop( 'checked', G.soundprofile );
-		$( '#setting-soundprofile' ).toggleClass( 'hide', !G.soundprofile );
-	} else {
-		$( '#divsoundprofile' ).addClass( 'hide' );
-	}
-	$( '#vuled' ).prop( 'checked', G.vuled );
-	$( '#setting-vuled' ).toggleClass( 'hide', !G.vuled );
+	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );

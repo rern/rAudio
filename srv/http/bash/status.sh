@@ -10,6 +10,12 @@
 
 date=$( date +%s )
 
+elapsedGet() {
+	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| grep ^elapsed \
+				| cut -d' ' -f2 ) )
+}
 outputStatus() {
 	[[ -z $snapclient ]] && data2json "$status" || echo "$status" # - no braces
 }
@@ -28,6 +34,7 @@ else
 	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( exists $dirsystem/relays )
 	relayson=$( exists $dirshm/relayson )
+	stoptimer=$( exists $dirshm/stoptimer )
 	updateaddons=$( exists $dirdata/addons/update )
 	if [[ -e $dirsystem/updating ]]; then 
 		updating_db=true
@@ -65,6 +72,7 @@ else
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
 , "scrobble"       : '$scrobble'
+, "stoptimer"      : '$stoptimer'
 , "stream"         : false
 , "updateaddons"   : '$updateaddons'
 , "updating_db"    : '$updating_db'
@@ -325,10 +333,7 @@ $radiosampling" > $dirshm/radio
 , "webradio"     : true'
 	if [[ -n $id ]]; then
 		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
-		elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| grep ^elapsed \
-					| cut -d' ' -f2 ) )
+		elapsedGet
 ########
 		status+='
 , "coverart"     : "'$coverart'"
@@ -463,10 +468,7 @@ status+='
 , "sampling" : "'$sampling'"'
 
 if [[ -z $displaycover ]]; then
-	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep ^elapsed \
-				| cut -d' ' -f2 ) )
+	elapsedGet
 # >>>>>>>>>>
 	status+='
 , "elapsed"  : '$elapsed
@@ -481,10 +483,7 @@ $AlbumArtist
 $Album
 $file0" )
 fi
-elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-			| telnet 127.0.0.1 6600 2> /dev/null \
-			| grep ^elapsed \
-			| cut -d' ' -f2 ) )
+elapsedGet
 ########
 status+='
 , "elapsed"  : '$elapsed'

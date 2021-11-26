@@ -237,6 +237,7 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefilenoext, type, covername );
+			banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>' );
 		}
 	} );
 }
@@ -1048,18 +1049,6 @@ function renderLibrary() {
 	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
-	$( '#lib-mode-list .lazyload' ).off( 'error' ).on( 'error', function() {
-		var $this = $( this );
-		var src = $this.attr( 'src' );
-		if ( src.slice( -3 ) === 'jpg' ) {
-			$this.attr( 'src', src.slice( 0, -3 ) + 'gif' );
-		} else if ( src.slice( 0, -3 ) + 'gif' ) {
-			$this.replaceWith(
-				'<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label">'
-				+ $this.data( 'label' ) +'</span></div>'
-			);
-		}
-	} );
 }
 function renderLibraryList( data ) {
 	if ( data == -1 ) {
@@ -1158,7 +1147,7 @@ function renderPlayback() {
 	setInfo();
 	setCoverart();
 	var istate = '<i class="fa fa-'+ G.status.state +'"></i>';
-	if ( G.status.elapsed === false ) {
+	if ( G.status.elapsed === false || G.status.webradio ) {
 		setBlinkDot();
 		return
 	}
@@ -1169,12 +1158,14 @@ function renderPlayback() {
 	$timeRS.option( 'max', time || 100 );
 	if ( G.status.state === 'stop' ) {
 		setProgress( 0 );
+		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
-		$( '#elapsed' )
-			.text( timehms )
-			.addClass( 'gr' );
-		$( '#total' ).empty();
-		$( '#progress' ).html( istate +'<span></span>'+ timehms );
+		if ( timehms ) {
+			$( '#progress' ).html( istate +'<span></span>'+ timehms );
+			$( '#elapsed' )
+				.text( timehms )
+				.addClass( 'gr' );
+		}
 		return
 	}
 	
@@ -1184,6 +1175,7 @@ function renderPlayback() {
 		blinkDot();
 		return
 	}
+
 	if ( G.status.elapsed ) {
 		var elapsedhms = second2HMS( G.status.elapsed );
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
@@ -1318,6 +1310,7 @@ function setButtonOptions() {
 	var prefix = timevisible ? 'ti' : 'i';
 	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
+	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', !G.status.stoptimer );
 	if ( !G.status.stream && G.status.player === 'mpd' ) {
 		if ( $( '#play-group' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', G.status.random );
@@ -1634,6 +1627,9 @@ function setProgressElapsed() {
 			}
 		}, 1000 );
 	} else if ( G.display.radioelapsed ) {
+		$( '#elapsed' ).html( blinkdot );
+		$elapsed = $( '#total, #progress span' );
+		$elapsed.text( second2HMS( G.status.elapsed ) );
 		G.intElapsed = setInterval( function() {
 			G.status.elapsed++;
 			elapsedhms = second2HMS( G.status.elapsed );
