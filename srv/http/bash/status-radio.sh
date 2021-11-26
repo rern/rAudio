@@ -41,12 +41,6 @@ case $id in
 esac
 [[ $id < 4 ]] && icon=radioparadise || icon=radiofrance
 
-elapsedGet() {
-	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep ^elapsed \
-				| cut -d' ' -f2 ) )
-}
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "chan=$id" \
@@ -96,10 +90,15 @@ metadataGet() {
 		coverart=/data/shm/webradio/$name.jpg
 	fi
 	[[ -e $dirsystem/vumeter ]] && coverart=
+	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| grep ^elapsed \
+				| cut -d' ' -f2 ) )
 	data='{
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
+, "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"
@@ -110,7 +109,6 @@ metadataGet() {
 , "Title"    : "'$title'"
 }'
 	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
-	elapsedGet
 	cat << EOF > $dirshm/status
 Artist="$artist"
 Title="$title"
