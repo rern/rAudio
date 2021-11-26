@@ -34,6 +34,7 @@ else
 	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( exists $dirsystem/relays )
 	relayson=$( exists $dirshm/relayson )
+	stoptimer=$( exists $dirshm/stoptimer )
 	updateaddons=$( exists $dirdata/addons/update )
 	if [[ -e $dirsystem/updating ]]; then 
 		updating_db=true
@@ -71,6 +72,7 @@ else
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
 , "scrobble"       : '$scrobble'
+, "stoptimer"      : '$stoptimer'
 , "stream"         : false
 , "updateaddons"   : '$updateaddons'
 , "updating_db"    : '$updating_db'
