@@ -306,7 +306,7 @@ $radiosampling" > $dirshm/radio
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ -n $coverfile ]]; then
-					coverart=/data/shm/$( basename $coverfile )
+					coverart=/data/shm/webradio/$( basename $coverfile )
 					Album=$( cat $dirshm/webradio/$covername 2> /dev/null )
 				fi
 			fi
