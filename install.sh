@@ -8,7 +8,13 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211125
+# 20211203
+file=$( ls /etc/systemd/network/eth* )
+grep -q RequiredForOnline=no $file || echo "
+[Link]
+RequiredForOnline=no" >> $file
+
+# 20211126
 rm -f $dirshm/local/*
 
 file=$dirsystem/lcdchar.conf
@@ -18,6 +24,7 @@ if [[ -e $file ]] && ! grep -q inf $file; then
 ' -e "3 a\inf=$inf
 " $dirsystem/lcdchar.conf
 fi
+
 # 20121122
 rm -rf /etc/systemd/system/upmpdcli.service.d
 if [[ $( ls /srv/http/data/bookmarks ) ]]; then
