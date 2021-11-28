@@ -27,7 +27,7 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btaplay=$( bluealsa-aplay -L )
-		[[ -n $btaplay ]] && break
+		[[ $btaplay ]] && break
 	done
 	[[ -z $btaplay ]] && exit # not bluetooth audio device
 	readarray -t paired <<< $( bluetoothctl paired-devices | cut -d' ' -f2 )
@@ -86,7 +86,7 @@ audio_output {
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
-	elif [[ -n $btname ]]; then
+	elif [[ $btname ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
 ########
 		output+='
@@ -203,11 +203,11 @@ if [[ $1 == add || $1 == remove ]]; then
 fi
 [[ -z $Acard && -z $btname ]] && restartMPD && exit
 
-[[ -n $Acard ]] && card=$card || card=0
+[[ $Acard ]] && card=$card || card=0
 
 if [[ -e $dirsystem/equalizer ]]; then
 	filepresets=$dirsystem/equalizer.presets
-	if [[ -n $btname ]]; then
+	if [[ $btname ]]; then
 		slavepcm=bluealsa
 		filepresets+="-$btname"
 	else
@@ -231,20 +231,20 @@ fi
 asound="\
 defaults.pcm.card $card
 defaults.ctl.card $card"
-[[ -n $asoundbt ]] && asound+="
+[[ $asoundbt ]] && asound+="
 $asoundbt"
-[[ -n $asoundeq ]] && asound+="
+[[ $asoundeq ]] && asound+="
 $asoundeq"
 echo "$asound" > /etc/asound.conf
 
-[[ -n $preset ]] && $dirbash/cmd.sh "equalizer
+[[ $preset ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
 
 wm5102card=$( aplay -l \
 				| grep snd_rpi_wsp \
 				| cut -c 6 )
-if [[ -n $wm5102card ]]; then
+if [[ $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
 	$dirbash/mpd-wm5102.sh $wm5102card $output
 fi
@@ -254,13 +254,13 @@ restartMPD
 if [[ -e /usr/bin/shairport-sync ]]; then
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ -n $btname ]]; then
+	if [[ $btname ]]; then
 		conf+='
 	output_device = "bluealsa";'
 	else
 		conf+='
 	output_device = "hw:'$card'";'
-	[[ -n $hwmixer ]] && conf+='
+	[[ $hwmixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
 	fi
 	conf+='
@@ -271,7 +271,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -n $btname ]]; then
+	if [[ $btname ]]; then
 		device=bluealsa
 		mixer=PCM
 	else

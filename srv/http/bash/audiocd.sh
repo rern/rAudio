@@ -12,7 +12,7 @@ restartMPD() {
 	pushstream refresh "$data"
 }
 
-[[ -n $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
+[[ $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
 
 if [[ $1 == on ]]; then
 	sed -i '/^decoder/ i\
@@ -26,7 +26,7 @@ input { #cdio0\
 elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
 	rm -f $dirshm/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	if [[ -n $tracks ]]; then
+	if [[ $tracks ]]; then
 		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
 		tracktop=$( echo "$tracks" | head -1 )
@@ -46,7 +46,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 	exit
 fi
 
-! : >/dev/tcp/8.8.8.8/53 || [[ -n $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
+! : >/dev/tcp/8.8.8.8/53 || [[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 [[ -z $cddiscid ]] && exit
@@ -65,7 +65,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	elif (( $code == 200 )); then
 	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
 	fi
-	if [[ -n $genre_id ]]; then
+	if [[ $genre_id ]]; then
 		pushstreamNotifyBlink 'Audio CD' 'Fetch CD data ...' audiocd
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
@@ -100,7 +100,7 @@ echo $discid > $dirshm/audiocd
 pushstreamPlaylist
 eject -x 4
 
-if [[ -n $autoplaycd ]]; then
+if [[ $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))
 	$dirbash/cmd.sh "mpcplayback
 play

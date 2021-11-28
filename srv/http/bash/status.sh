@@ -48,7 +48,7 @@ else
 	elif [[ -e $dirshm/btclient ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
-			[[ -n $volume ]] && break
+			[[ $volume ]] && break
 			sleep 1
 		done
 	else
@@ -205,7 +205,7 @@ status+='
 
 if (( $playlistlength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
-	[[ -n $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
+	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
 , "coverart" : ""
@@ -226,16 +226,16 @@ if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
 	discid=$( cat $dirshm/audiocd 2> /dev/null )
-	if [[ -n $discid && -e $dirdata/audiocd/$discid ]]; then
+	if [[ $discid && -e $dirdata/audiocd/$discid ]]; then
 		track=${file/*\/}
 		readarray -t audiocd <<< $( sed -n ${track}p $dirdata/audiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
-		if [[ -n $displaycover ]]; then
+		if [[ $displaycover ]]; then
 			coverfile=$( ls $dirdata/audiocd/$discid.* 2> /dev/null | head -1 )
-			[[ -n $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+			[[ $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 		fi
 	else
 		[[ $state == stop ]] && Time=0
@@ -247,10 +247,10 @@ if [[ $fileheader == cdda ]]; then
 , "discid" : "'$discid'"
 , "Time"   : '$Time'
 , "Title"  : "'$Title'"'
-elif [[ -n $stream ]]; then
+elif [[ $stream ]]; then
 	if [[ $player == upnp ]]; then # internal ip
 		ext=UPnP
-		[[ -n $duration ]] && duration=$( printf '%.0f\n' $duration )
+		[[ $duration ]] && duration=$( printf '%.0f\n' $duration )
 ########
 		status+='
 , "Album"  : "'$Album'"
@@ -258,10 +258,10 @@ elif [[ -n $stream ]]; then
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
 		# fetched coverart
-		if [[ -n $displaycover ]]; then
+		if [[ $displaycover ]]; then
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
-			[[ -n $onlinefile ]] && coverart=/data/shm/webradio/online/$covername.$date.${onlinefile/*.}
+			[[ $onlinefile ]] && coverart=/data/shm/webradio/online/$covername.$date.${onlinefile/*.}
 		fi
 	else
 		ext=Radio
@@ -296,7 +296,7 @@ $radiosampling" > $dirshm/radio
 					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
 					[[ -z $displaycover ]] && coverart=
 				fi
-			elif [[ -n $Title && -n $displaycover ]]; then
+			elif [[ $Title && $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
 				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
 				Artist=${radioname[0]}
@@ -305,13 +305,13 @@ $radiosampling" > $dirshm/radio
 				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
 				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
-				if [[ -n $coverfile ]]; then
+				if [[ $coverfile ]]; then
 					coverart=/data/shm/webradio/$( basename $coverfile )
 					Album=$( cat $dirshm/webradio/$covername 2> /dev/null )
 				fi
 			fi
 		fi
-		if [[ -n $displaycover ]]; then
+		if [[ $displaycover ]]; then
 			filenoext=/data/webradiosimg/$urlname
 			pathnoext=/srv/http$filenoext
 			if [[ -e $pathnoext.gif ]]; then
@@ -331,7 +331,7 @@ $radiosampling" > $dirshm/radio
 , "Time"         : false
 , "Title"        : "'$Title'"
 , "webradio"     : true'
-	if [[ -n $id ]]; then
+	if [[ $id ]]; then
 		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
 		elapsedGet
 ########
@@ -398,7 +398,7 @@ samplingLine() {
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
 #		sample=$( echo "print $samplerate / 1000" | perl )' kHz'
-		if [[ -n $bitdepth && $ext != Radio && $ext != MP3 && $ext != AAC ]]; then
+		if [[ $bitdepth && $ext != Radio && $ext != MP3 && $ext != AAC ]]; then
 			sampling="$bitdepth bit $sample $rate"
 		else # lossy has no bitdepth
 			sampling="$sample $rate"
@@ -418,7 +418,7 @@ elif [[ $state != stop ]]; then
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
 	else
-		if [[ -n $bitrate && $bitrate != 0 ]]; then
+		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
 		else
@@ -436,7 +436,7 @@ else
 			if [[ $ext == DSF || $ext == DFF ]]; then
 				# DSF: byte# 56+4 ? DSF: byte# 60+4
 				[[ $ext == DSF ]] && byte=56 || byte=60;
-				[[ -n $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
+				[[ $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
@@ -467,7 +467,7 @@ status+='
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
-if [[ -n $coverart || -z $displaycover ]]; then # webradio $coverart exists
+if [[ $coverart || -z $displaycover ]]; then # webradio $coverart exists
 	elapsedGet
 # >>>>>>>>>>
 	status+='
@@ -491,22 +491,22 @@ status+='
 # >>>>>>>>>>
 outputStatus
 
-[[ -n $getcover ]] && exit
+[[ $getcover ]] && exit
 
 [[ -z $AlbumArtist ]] && AlbumArtist=$Artist
 [[ -z $AlbumArtist ]] && exit
 
-if [[ -n $stream && $state == play && -n $Title ]]; then
+if [[ $stream && $state == play && $Title ]]; then
 	args="\
 $AlbumArtist
 ${Title/ (*}
 webradio"
-elif [[ -n $Album ]]; then
+elif [[ $Album ]]; then
 	args="\
 $AlbumArtist
 $Album"
 fi
-if [[ -n $args ]]; then
+if [[ $args ]]; then
 	killall status-coverartonline.sh &> /dev/null # new track - kill if still running
 	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
 fi

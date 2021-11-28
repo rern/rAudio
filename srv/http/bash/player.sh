@@ -150,13 +150,13 @@ customset )
 	global=${args[1]}
 	output=${args[2]}
 	aplayname=${args[3]}
-	[[ -n $global ]] && echo -e "$global" > $file-global || rm -f $file-global
-	if [[ -n $output ]]; then
+	[[ $global ]] && echo -e "$global" > $file-global || rm -f $file-global
+	if [[ $output ]]; then
 		echo -e "$output" > "$file-output-$aplayname"
 	else
 		rm -f "$file-output-$aplayname"
 	fi
-	[[ -n $global || -n $output ]] && touch $file
+	[[ $global || $output ]] && touch $file
 	restartMPD
 	if ! systemctl -q is-active mpd; then
 		sed -i '/ #custom$/ d' /etc/mpd.conf
@@ -206,7 +206,7 @@ filetype )
 	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
 	for i in {a..z}; do
 		line=$( grep ^$i <<<"$type" | tr '\n' ' ' )
-		[[ -n $line ]] && list+=${line:0:-1}'<br>'
+		[[ $line ]] && list+=${line:0:-1}'<br>'
 	done
 	echo "${list:0:-4}"
 	;;
@@ -230,7 +230,7 @@ mixertype )
 	mixertype=${args[1]}
 	aplayname=${args[2]}
 	hwmixer=${args[3]}
-	if [[ -n $hwmixer ]]; then # set 0dB
+	if [[ $hwmixer ]]; then # set 0dB
 		mpc -q stop
 		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		if [[ $mixertype == hardware ]];then

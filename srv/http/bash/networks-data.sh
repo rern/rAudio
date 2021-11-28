@@ -8,7 +8,7 @@ if systemctl -q is-active bluetooth; then
 								| cut -d' ' -f2,3- \
 								| grep . \
 								| sort -k2 -fh )
-	if [[ -n $lines ]]; then
+	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do
 			mac=${line/ *}
 			name=${line#* }
@@ -28,7 +28,7 @@ fi
 [[ $1 == bt ]] && curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt" && exit
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
-if [[ -n $ipeth ]]; then
+if [[ $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( echo $ipr | cut -d' ' -f3 )
@@ -36,7 +36,7 @@ if [[ -n $ipeth ]]; then
 									| grep ^default \
 									| head -1 \
 									| cut -d' ' -f3 )
-	if [[ -n $ipeth ]]; then
+	if [[ $ipeth ]]; then
 		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
 		if [[ -z $hostname ]]; then
 			systemctl restart avahi-daemon
@@ -53,7 +53,7 @@ fi
 
 ifconfig wlan0 up &> /dev/null # force up
 ipr=$( ip r | grep "^default.*wlan0" )
-if [[ -n $ipr ]]; then
+if [[ $ipr ]]; then
 	gateway=$( echo $ipr | cut -d' ' -f3 )
 	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet / {print $2}' )
 	ssid=$( iwgetid wlan0 -r )
@@ -68,7 +68,7 @@ if [[ -n $ipr ]]; then
 fi
 
 readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//' )
-if [[ -n $notconnected ]]; then
+if [[ $notconnected ]]; then
 	for ssid in "${notconnected[@]}"; do
 		if [[ $static == true ]]; then
 			gateway=$( echo "$netctl" \
@@ -89,7 +89,7 @@ if [[ -n $notconnected ]]; then
 }'
 	done
 fi
-[[ -n $listwl ]] && listwl="[ ${listwl:1} ]"
+[[ $listwl ]] && listwl="[ ${listwl:1} ]"
 
 # hostapd
 if systemctl -q is-active hostapd; then

@@ -6,7 +6,7 @@ cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
 data='
   "page"             : "system"
 , "cpuload"          : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
-, "cputemp"          : '$( [[ -n $cputemp ]] && echo $cputemp || echo 0 )'
+, "cputemp"          : '$( [[ $cputemp ]] && echo $cputemp || echo 0 )'
 , "startup"          : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
 , "throttled"        : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 , "time"             : "'$( date +'%T %F' )'"
@@ -63,13 +63,13 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
-if [[ -n $usb ]]; then
+if [[ $usb ]]; then
 	readarray -t usb <<< "$usb"
 	for source in "${usb[@]}"; do
 		mountpoint=$( df -l --output=target,source \
 						| grep "$source" \
 						| sed "s| *$source||" )
-		if [[ -n $mountpoint ]]; then
+		if [[ $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
@@ -80,13 +80,13 @@ if [[ -n $usb ]]; then
 	done
 fi
 nas=$( awk '/\/mnt\/MPD\/NAS/ {print $1" "$2}' /etc/fstab )
-if [[ -n $nas ]]; then
+if [[ $nas ]]; then
 	readarray -t nas <<< "$nas"
 	for line in "${nas[@]}"; do
 		source=$( echo $line | cut -d' ' -f1 | sed 's/\\040/ /g' )
 		mountpoint=$( echo $line | cut -d' ' -f2 | sed 's/\\040/ /g' )
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
-		if [[ -n $used_size ]]; then
+		if [[ $used_size ]]; then
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
 			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
@@ -98,7 +98,7 @@ list="[ ${list:1} ]"
 if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
-	if [[ -n $lines ]]; then
+	if [[ $lines ]]; then
 		i2caddress=$( echo "$lines" \
 						| grep -v '^\s' \
 						| cut -d' ' -f2- \

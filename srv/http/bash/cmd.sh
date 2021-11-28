@@ -22,7 +22,7 @@ equalizerGet() {
 	current=$( head -1 "$filepresets" )
 	[[ $current != '(unnamed)' ]] && presets+='"Flat"' || presets+='"(unnamed)","Flat"'
 	readarray -t lines <<< $( sed 1d "$filepresets" | grep -v '^Flat$' | cut -d^ -f1 | sort )
-	if [[ -n $lines ]]; then
+	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do
 			presets+=',"'$line'"'
 		done
@@ -48,7 +48,7 @@ gifThumbnail() {
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
-			[[ -n $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
+			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
 			;;
 		coverart )
@@ -58,7 +58,7 @@ gifThumbnail() {
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
-			[[ -n $animated ]] && gifNotify
+			[[ $animated ]] && gifNotify
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
@@ -67,7 +67,7 @@ gifThumbnail() {
 		webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
-			[[ -n $animated ]] && gifNotify
+			[[ $animated ]] && gifNotify
 			gifsicle -O3 --resize-fit 200x200 $source > $target
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
@@ -158,7 +158,7 @@ rotateSplash() {
 scrobbleOnStop() {
 	. $dirshm/scrobble
 	elapsed=$1
-	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ -n $Artist && -n $Title ]]; then
+	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ $Artist && $Title ]]; then
 		$dirbash/scrobble.sh "\
 $Artist
 $Title
@@ -221,7 +221,7 @@ volumeGet() {
 			voldb=$( amixer -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
-			if [[ -n $voldb ]]; then
+			if [[ $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
@@ -270,7 +270,7 @@ volumeSet() {
 		fi
 	fi
 	pushstreamVolume disable false
-	[[ -n $control && ! -e $dirshm/btclient ]] && alsactl store
+	[[ $control && ! -e $dirshm/btclient ]] && alsactl store
 }
 
 case ${args[0]} in
@@ -285,12 +285,12 @@ addonslist )
 	addonsListGet ${args[1]}
 	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
-	if [[ -n $bash ]]; then
+	if [[ $bash ]]; then
 		eval "$bash" || exit
 	fi
 	
 	url=$( jq -r .push.url $diraddons/addons-list.json ) # push download
-	[[ -n $url ]] && bash <( curl -sL $url )
+	[[ $url ]] && bash <( curl -sL $url )
 	;;
 addonsupdates )
 	addonsListGet
@@ -303,7 +303,7 @@ addonsupdates )
 			[[ $verinstalled != $verlist ]] && count=1 && break
 		fi
 	done
-	[[ -n $count ]] && touch $diraddons/update || rm -f $diraddons/update
+	[[ $count ]] && touch $diraddons/update || rm -f $diraddons/update
 	;;
 albumignore )
 	album=${args[1]}
@@ -335,7 +335,7 @@ bookmarkthumb )
 color )
 	hsl=${args[1]}
 	file=$dirsystem/color
-	if [[ -n $hsl ]]; then # omit call from addons.sh / datarestore
+	if [[ $hsl ]]; then # omit call from addons.sh / datarestore
 		[[ $hsl == reset ]] && rm -f $file || echo $hsl > $file
 	fi
 	if [[ -e $file ]]; then
@@ -383,7 +383,7 @@ coverartget )
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
 						| grep -i '.gif$\|.jpg$\|.png$' \
 						| head -1 ) # full path
-	if [[ -n $coverartfile ]]; then
+	if [[ $coverartfile ]]; then
 		echo $coverartfile | sed 's|^/srv/http||'
 		exit
 	fi
@@ -394,7 +394,7 @@ coverartget )
 					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 					| grep -i '.gif$\|.jpg$\|.png$' \
 					| head -1 ) # filename only
-	if [[ -n $coverfile ]]; then
+	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
 		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
@@ -486,7 +486,7 @@ displaysave )
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
 	
-	if [[ -n $vumeter ]]; then
+	if [[ $vumeter ]]; then
 		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
 	else
@@ -527,7 +527,7 @@ equalizer )
 		done
 	fi
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
-	[[ -n $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
+	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
 	[[ $type != save ]] && equalizerGet pushstream
 	;;
 equalizerget )
@@ -608,7 +608,7 @@ lyrics )
 		if [[ -e $dirsystem/lyricsembedded ]]; then
 			file=$cmd
 			lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
-			[[ -n $lyrics ]] && echo "$lyrics" && exit
+			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
 		
 		artist=$( echo $artist | sed 's/^A \|^The \|\///g' )
@@ -616,7 +616,7 @@ lyrics )
 		query=$( echo $artist/$title \
 					| tr -d " '\-\"\!*\(\);:@&=+$,?#[]." )
 		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html )
-		if [[ -n $lyrics ]]; then
+		if [[ $lyrics ]]; then
 			echo "$lyrics" \
 				| sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' \
 				| sed -e '/^\s*$/ d' -e '/\/div>/,/<br>/ {N;d}' -e 's/<br>//' -e 's/&quot;/"/g' \
@@ -640,7 +640,7 @@ mpcplayback )
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 	else
-		[[ -e $dirsystem/scrobble && $command == stop && -n $pos ]] && cp -f $dirshm/{status,scrobble}
+		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
@@ -652,7 +652,7 @@ mpcprevnext )
 	length=${args[3]}
 	state=${args[4]}
 	elapsed=${args[5]}
-	[[ -e $dirsystem/scrobble && -n $elapsed ]] && cp -f $dirshm/{status,scrobble}
+	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
 	systemctl stop radio
 	if [[ $state == play ]]; then
@@ -784,7 +784,7 @@ playerstart )
 		snapcast )  stop=snapclient;;
 		spotify )   restart=spotifyd;;
 	esac
-	[[ -n $stop ]] && systemctl stop $stop || systemctl restart $restart
+	[[ $stop ]] && systemctl stop $stop || systemctl restart $restart
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )
@@ -904,9 +904,9 @@ plorder )
 plremove )
 	pos=${args[1]}
 	activenext=${args[2]}
-	if [[ -n $pos ]]; then
+	if [[ $pos ]]; then
 		mpc -q del $pos
-		[[ -n $activenext ]] && mpc -q play $activenext && mpc -q stop
+		[[ $activenext ]] && mpc -q play $activenext && mpc -q stop
 	else
 		mpc -q clear
 	fi
@@ -940,7 +940,7 @@ plsimilar )
 	echo "$list" | awk 'NF' | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
-	[[ -n $pos ]] && mpc -q play $pos
+	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
 	reboot=${args[1]}
@@ -948,12 +948,12 @@ power )
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
-	[[ -n $cdda ]] && mpc -q del $cdda
+	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
 		$dirbash/relays.sh
 		sleep 2
 	fi
-	if [[ -n $reboot ]]; then
+	if [[ $reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
 		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
@@ -966,7 +966,7 @@ power )
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ -z $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
-	[[ -n $reboot ]] && reboot || poweroff
+	[[ $reboot ]] && reboot || poweroff
 	;;
 rebootlist )
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot \
@@ -1054,7 +1054,7 @@ volumepushstream )
 	[[ -e $dirshm/btclient ]] && sleep 1
 	volumeGet
 	pushstream volume '{"val":'$volume'}'
-	[[ -n $control ]] && alsactl store
+	[[ $control ]] && alsactl store
 	;;
 volumereset )
 	volumeReset
@@ -1075,7 +1075,7 @@ webradioadd )
 	dir=${args[3]}
 	urlname=${url//\//|}
 	file=$dirwebradios
-	[[ -n $dir ]] && file="$file/$dir"
+	[[ $dir ]] && file="$file/$dir"
 	file="$file/$urlname"
 	ext=${url/*.}
 	if [[ $ext == m3u ]]; then
@@ -1101,7 +1101,7 @@ webradiodelete )
 	url=${args[1]}
 	dir=${args[2]}
 	urlname=${url//\//|}
-	[[ -n $dir ]] && dir="$dir/"
+	[[ $dir ]] && dir="$dir/"
 	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
 	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
 	pushstream webradio $count
@@ -1115,7 +1115,7 @@ webradioedit ) # name, newname, url, newurl
 	dir=${args[5]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
-	[[ -n $dir ]] && dir="$dir/"
+	[[ $dir ]] && dir="$dir/"
 	fileprev="$dirwebradios/$dir$urlname"
 	filenew="$dirwebradios/$dir$urlnamenew"
 	[[ $name != $namenew ]] && sed -i "1 c$namenew" "$fileprev"
@@ -1128,7 +1128,7 @@ webradioedit ) # name, newname, url, newurl
 	;;
 wrdirdelete )
 	path=${args[1]}
-	if [[ -n $( ls -A "$dirwebradios/$path" ) ]]; then
+	if [[ $( ls -A "$dirwebradios/$path" ) ]]; then
 		echo -1
 	else
 		rm -rf "$dirwebradios/$path"

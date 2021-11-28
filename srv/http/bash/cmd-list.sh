@@ -40,7 +40,7 @@ if (( $? != 0 )); then # very large database
 		albums=$( mpc list album )
 		(( $? == 0 )) && break
 	done
-	if [[ -n $albums ]]; then
+	if [[ $albums ]]; then
 		listAlbums "$albums"
 		echo $buffer > $dirsystem/bufferoutput.conf
 	else
@@ -54,16 +54,16 @@ readarray -t dirwav <<< $( mpc listall \
 							| grep .wav$ \
 							| sed 's|/[^/]*$||' \
 							| sort -u )
-if [[ -n $dirwav ]]; then
+if [[ $dirwav ]]; then
 	for dir in "${dirwav[@]}"; do
 		file="/mnt/MPD/$( mpc ls "$dir" | head -1 )"
 		kid=$( kid3-cli -c 'get album' -c 'get albumartist' -c 'get artist' "$file" )
-		if [[ -n $kid ]]; then
+		if [[ $kid ]]; then
 			albumwav=$( echo "$kid" \
 									| head -2 \
 									| awk 1 ORS='^^' \
 									| sed "s|$|$dir|" )
-			if [[ -n $albumwav ]]; then
+			if [[ $albumwav ]]; then
 				album_artist_file=$( sed "\|$dir$| d" <<< "$album_artist_file" )
 				album_artist_file+=$'\n'$albumwav$'\n'
 			fi
@@ -113,7 +113,7 @@ curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "{$counts}"
 chown -R mpd:audio $dirmpd
 rm -f $dirsystem/{updating,listing}
 
-if [[ -n $toolarge ]]; then
+if [[ $toolarge ]]; then
 	sleep 3
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
 	exit
@@ -121,5 +121,5 @@ fi
 
 (
 	list=$( find /mnt/MPD -name .mpdignore | sort -V )
-	[[ -n $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
+	[[ $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
 ) &

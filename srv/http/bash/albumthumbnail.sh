@@ -75,7 +75,7 @@ for mpdpath in "${lines[@]}"; do
 			fi
 		done
 	fi
-	if [[ -n $coverfile ]]; then
+	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
 		if [[ $ext == gif ]]; then
 			[[ $( gifsicle -I "$coverfile" | awk 'NR==1 {print $NF}' ) == images ]] && echo "     Resize aninated GIF ..."

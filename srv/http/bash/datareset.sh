@@ -11,7 +11,7 @@ file=/etc/modules-load.d/raspberrypi.conf
 #file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
 #[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
-if [[ -n $1 ]]; then # from create-ros.sh
+if [[ $1 ]]; then # from create-ros.sh
 	version=$1
 	revision=$2
 else                 # restore
@@ -48,7 +48,7 @@ fi
 mkdir -p $dirdata/{addons,audiocd,bookmarks,embedded,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 # addons - new/restore
-if [[ -n $version ]]; then # from create-ros.sh
+if [[ $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
 	echo $revision > $diraddons/r$version
 else
@@ -148,7 +148,7 @@ chmod 777 $dirdata/tmp
 # symlink /mnt for coverart files
 ln -sf /mnt /srv/http/
 
-[[ -n $version ]] && exit
+[[ $version ]] && exit
 
 systemctl start mpd
 

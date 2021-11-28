@@ -85,13 +85,13 @@ $( cat /boot/cmdline.txt )
 $( cat /boot/config.txt )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( cat $file )
-	if [[ -n $raspberrypiconf ]]; then
+	if [[ $raspberrypiconf ]]; then
 		config+="
 
 <bll># $file</bll>
 $raspberrypiconf"
 		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		[[ -n $dev ]] && config+="
+		[[ $dev ]] && config+="
 		
 <bll># i2cdetect -y $dev</bll>
 $(  i2cdetect -y $dev )"
@@ -129,7 +129,7 @@ databackup )
 	hostname > $dirsystem/hostname
 	timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-	if [[ -n $profiles ]]; then
+	if [[ $profiles ]]; then
 		cp -r /etc/netctl $dirconfig/etc
 		for profile in "${profiles[@]}"; do
 			if [[ $( netctl is-enabled "$profile" ) == enabled ]]; then
@@ -145,8 +145,8 @@ databackup )
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
-	[[ -n $enable ]] && echo $enable > $dirsystem/enable
-	[[ -n $disable ]] && echo $disable > $dirsystem/disable
+	[[ $enable ]] && echo $enable > $dirsystem/enable
+	[[ $disable ]] && echo $disable > $dirsystem/disable
 	
 	bsdtar \
 		--exclude './addons' \
@@ -196,7 +196,7 @@ datarestore )
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
-	if [[ -n $mountpoints ]]; then
+	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
 			mkdir -p "$mountpoint"
 		done
@@ -283,7 +283,7 @@ lcdcalibrate )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
-	if [[ -n $value ]]; then
+	if [[ $value ]]; then
 		sed -i "s/\(Calibration\"  \"\).*/\1$value\"/" /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser
 	fi
@@ -332,7 +332,7 @@ backlight=${args[13]^}"
 	echo "$conf" > $dirsystem/lcdchar.conf
 	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
-	[[ -n $reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
+	[[ $reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
@@ -387,7 +387,7 @@ mirrorlist )
 		elif [[ ${line:0:3} == '## ' ]];then
 			city=${line:3}
 		else
-			[[ -n $city ]] && cc="$country - $city" || cc=$country
+			[[ $city ]] && cc="$country - $city" || cc=$country
 			clist+=',"'$cc'"'
 			codelist+=',"'$line'"'
 		fi
@@ -429,7 +429,7 @@ mount )
 		source="$ip:$directory"
 		options=defaults,noauto,bg,soft,timeo=5
 	fi
-	[[ -n $extraoptions ]] && options+=,$extraoptions
+	[[ $extraoptions ]] && options+=,$extraoptions
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	mount "$mountpoint" 2> /dev/null
 	if [[ $? == 0 ]]; then

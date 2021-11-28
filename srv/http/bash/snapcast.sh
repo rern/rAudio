@@ -15,7 +15,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 	mpc -q stop
 	systemctl start snapclient
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
-	if [[ -n $serverip ]]; then
+	if [[ $serverip ]]; then
 		echo $serverip > $serverfile
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/status-push.sh

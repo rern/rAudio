@@ -30,7 +30,7 @@ else
 	pushstream mpdplayer "$status"
 fi
 
-[[ -n $trackchanged && $state == play \
+[[ $trackchanged && $state == play \
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
 if [[ -e $dirsystem/onwhileplay ]]; then
@@ -82,7 +82,7 @@ fi
 . <( echo "$statusprev" )
 [[ $webradio == false && $player != snapcast \
 	&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
-	&& -n $Artist && -n $Title ]] \
+	&& $Artist && $Title ]] \
 	&& (( $Time > 30 )) \
 	&& $dirbash/scrobble.sh "\
 $Artist

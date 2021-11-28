@@ -17,7 +17,7 @@ listProfile() {
 }
 listProfile
 
-if [[ -n $netctllist ]]; then
+if [[ $netctllist ]]; then
 	readarray -t netctllist_ar <<<"$netctllist"
 	# pre-scan saved profile to force display hidden ssid
 	for name in "${netctllist_ar[@]}"; do

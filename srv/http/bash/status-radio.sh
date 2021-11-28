@@ -83,7 +83,7 @@ metadataGet() {
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
 
-	if [[ -n $coverurl ]]; then
+	if [[ $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
 		coverfile=$dirshm/webradio/$name.jpg
 		curl -s $coverurl -o $coverfile

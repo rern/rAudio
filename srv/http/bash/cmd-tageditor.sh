@@ -42,7 +42,7 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 			val=${args[$i]}
 			[[ -z $val ]] && continue
 			
-			[[ -n ${lines[$i]} ]] && sed -i "/^${lines[$i]}/ d" "$path"
+			[[ ${lines[$i]} ]] && sed -i "/^${lines[$i]}/ d" "$path"
 			[[ $val == -1 ]] && continue
 			
 			case $i in

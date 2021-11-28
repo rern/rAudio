@@ -119,7 +119,7 @@ cursor=$newcursor
 		systemctl disable --now getty@tty1
 	fi
 
-	if [[ -n $changedrotate ]]; then
+	if [[ $changedrotate ]]; then
 		$dirbash/cmd.sh rotateSplash$'\n'$newrotate # after set new data in conf file
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			case $newrotate in
@@ -145,12 +145,12 @@ cursor=$newcursor
 			CCW ) matrix='0 -1 1 1 0 0 0 0 1';;
 			UD )  matrix='-1 0 1 0 -1 1 0 0 1';;
 		esac
-		[[ -n matrix ]] && sed "s/ROTATION_SETTING/$newrotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+		[[ matrix ]] && sed "s/ROTATION_SETTING/$newrotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 	fi
-	if [[ -n $restart ]] || ! systemctl -q is-active localbrowser; then
+	if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
-	elif [[ -n $changedscreenoff ]]; then
+	elif [[ $changedscreenoff ]]; then
 		localbrowserXset $newscreenoff
 		if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
 			[[ $off == 0 ]] && tf=false || tf=true

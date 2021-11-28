@@ -28,7 +28,7 @@ coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 [[ -z $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
 										| grep -i '/album\....$\|/folder\....$\|/front\....$' \
 										| head -1 )
-if [[ -n $coverfile ]]; then
+if [[ $coverfile ]]; then
 	echo ${coverfile:0:-4}.$date.${coverfile: -3} | tee $dirshm/local/$covername
 	coverFilesLimit
 	exit

@@ -18,7 +18,7 @@ netctlSwitch() {
 	for i in {1..10}; do
 		sleep 1
 		if [[ $( netctl is-active "$ssid" ) == active ]]; then
-			[[ -n $connected ]] && netctl disable "$connected"
+			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
 			active=1
 			break
@@ -75,7 +75,7 @@ Connection=wireless
 ESSID=\"$ESSID\"
 IP=$( jq -r .IP <<< $data )
 "
-	if [[ -n $Key ]]; then
+	if [[ $Key ]]; then
 		profile+="\
 Security=$( jq -r .Security <<< $data )
 Key=\"$Key\"

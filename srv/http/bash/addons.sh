@@ -88,7 +88,7 @@ getinstallzip() {
 	mkdir -p $tmpdir
 	filelist=$( bsdtar tf $installfile )
 	uninstallfile=$( grep uninstall_.*sh <<< "$filelist" )
-	if [[ -n $uninstallfile ]]; then
+	if [[ $uninstallfile ]]; then
 		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
 		chmod 755 /usr/local/bin/$uninstallfile
 	fi
