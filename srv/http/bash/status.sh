@@ -463,11 +463,11 @@ pos="$(( song + 1 ))/$playlistlength"
 sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"
-, "coverart" : ""
+, "coverart" : "'$coverart'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
-if [[ -z $displaycover ]]; then
+if [[ -n $coverart || -z $displaycover ]]; then # webradio $coverart exists
 	elapsedGet
 # >>>>>>>>>>
 	status+='
