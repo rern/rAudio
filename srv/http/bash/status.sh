@@ -261,7 +261,7 @@ elif [[ -n $stream ]]; then
 		if [[ -n $displaycover ]]; then
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
-			[[ -n $onlinefile ]] && coverart=/data/shm/online/$covername.$date.${onlinefile/*.}
+			[[ -n $onlinefile ]] && coverart=/data/shm/webradio/online/$covername.$date.${onlinefile/*.}
 		fi
 	else
 		ext=Radio
