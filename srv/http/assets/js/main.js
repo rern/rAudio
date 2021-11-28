@@ -107,7 +107,8 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
+	if ( G.status.file
+		&& G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
 		$( '#divcover' ).append( icoversave );
