@@ -95,7 +95,7 @@ mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bl
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
-<pre id="codehddinfo"></pre>
+<pre id="codehddinfo" class="hide"></pre>
 </div>
 <?php
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
