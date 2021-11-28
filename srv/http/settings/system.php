@@ -247,9 +247,9 @@ HTML
 	, [
 		  'label'    => 'Time Zone'
 		, 'id'       => 'timezone'
-		, 'sublabel' => 'timesyncd'
+		, 'sublabel' => 'timedatectl'
 		, 'icon'     => 'globe'
-		, 'status'   => 'timesyncd'
+		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'self'
 		, 'help'     => <<< HTML

@@ -35,9 +35,10 @@ var cmd = {
 	, mpdignore    : playersh +'mpdignorelist'
 	, rfkill       : 'rfkill'
 	, soundprofile : systemsh +'soundprofileget'
+	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'systemd-timesyncd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
 function status( id, refresh ) {
 	var $el = $( '#code'+ id );
