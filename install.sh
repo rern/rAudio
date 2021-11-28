@@ -52,7 +52,7 @@ $coverartfile"
 	fi
 fi
 
-if ! grep -q xf86-video-vesa /etc/pacman.conf; then
+if ! grep -q 'chromium$' /etc/pacman.conf; then
 	sed -i -e '/^IgnorePkg/ d
 ' -e '/^#IgnorePkg/ a\
 IgnorePkg   = chromium' /etc/pacman.conf
