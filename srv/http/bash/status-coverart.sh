@@ -13,13 +13,6 @@ covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
 # already got path in temp file
 [[ -e $dirshm/local/$covername ]] && cat $dirshm/local/$covername && exit
 
-# already got embedded
-[[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
-
-# already got online
-coverfile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
-[[ -e $coverfile ]] && echo ${coverfile:9} && exit
-
 # cover file
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
@@ -32,6 +25,13 @@ if [[ $coverfile ]]; then
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
+
+# already got embedded
+[[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
+
+# already got online
+coverfile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
+[[ -e $coverfile ]] && echo ${coverfile:9} && exit
 
 # embedded
 path="/mnt/MPD/$file"
