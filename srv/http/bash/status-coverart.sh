@@ -14,12 +14,13 @@ coverFilesLimit() {
 }
 # already got path in temp file
 [[ -e $dirshm/local/$covername ]] && cat $dirshm/local/$covername && exit
+
 # already got embedded
 [[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
+
 # already got online
-for ext in jpg png; do
-	[[ -e $dirshm/online/$covername.$ext ]] && echo ${coverfile:0:-4}.$date.$ext && exit
-done
+coverfile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
+[[ -e $coverfile ]] && echo ${coverfile:9} && exit
 
 # cover file
 path="/mnt/MPD/$file"
@@ -43,7 +44,7 @@ kid3-cli -c "cd \"$dir\"" \
 		-c "select \"$filename\"" \
 		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 if [[ -e $coverfile ]]; then
-	echo /data/embedded/$covername.$date.jpg | tee $dirshm/local/$covername
+	echo ${coverfile:9:-4}.$date.jpg | tee $dirshm/local/$covername
 	coverFilesLimit
 	exit
 fi
