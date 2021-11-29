@@ -49,20 +49,18 @@ if [[ $image || $image != null ]]; then
 fi
 [[ -z $url || $url == null ]] && exit
 
+ext=${url/*.}
 if [[ $type == audiocd ]]; then
-	urlname=/data/audiocd/$discid
+	coverfile=/srv/http/data/audiocd/$discid.$ext
 else
 	[[ $type ]] && prefix=$type || prefix=online
-	urlname=/data/shm/$prefix/$name
+	coverfile=/srv/http/data/shm/$prefix/$name.$ext
 fi
-ext=${url/*.}
-coverart=$urlname.$ext
-coverfile=/srv/http$coverart
 curl -sL $url -o $coverfile
 [[ ! -e $coverfile ]] && exit
 
 data='
-  "url"   : "'$coverart'"
+  "url"   : "'${coverfile:9}'"
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
