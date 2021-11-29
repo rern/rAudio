@@ -302,8 +302,7 @@ $radiosampling" > $dirshm/radio
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				# fetched coverart
-				artisttitle="$Artist${Title/ (*}" # remove ' (extra tag)' for coverart search
-				covername=$( echo $artisttitle | tr -d ' "`?/#&'"'" )
+				covername=$( echo "$Artist${Title/ (*}" | tr -d ' "`?/#&'"'" ) # remove ' (extra tag)'
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart=${coverfile:9}
@@ -497,9 +496,10 @@ outputStatus
 [[ -z $AlbumArtist ]] && exit
 
 if [[ $stream && $state == play && $Title ]]; then
+	[[ $ext == Radio ]] && Title=${Title/ (*} # remove ' (extra tag)'
 	args="\
 $AlbumArtist
-${Title/ (*}
+$Title
 webradio"
 elif [[ $Album ]]; then
 	args="\
