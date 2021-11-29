@@ -37,14 +37,14 @@ fi
 [[ $album == null ]] && exit
 
 image=$( jq -r .image <<< "$album" )
-if [[ $image || $image != null ]]; then
+if [[ $image && $image != null ]]; then
 	extralarge=$( jq -r '.[3]."#text"' <<<  $image )
 	if [[ $extralarge ]]; then
 		url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
 	else
 ### 2 - coverartarchive.org #####################################
 		mbid=$( jq -r .mbid <<< "$album" )
-		[[ $mbid || $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
+		[[ $mbid && $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
 	fi
 fi
 [[ -z $url || $url == null ]] && exit

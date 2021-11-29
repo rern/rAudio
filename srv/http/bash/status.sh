@@ -506,7 +506,4 @@ elif [[ $Album ]]; then
 $AlbumArtist
 $Album"
 fi
-if [[ $args ]]; then
-	killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
-fi
+[[ $args ]] && $dirbash/status-coverartonline.sh "$args" &> /dev/null &

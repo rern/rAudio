@@ -411,8 +411,11 @@ coverartreset )
 		filename=$( basename "$coverfile" )
 		id=${filename/.*}
 		rm -f "$coverfile"
-		killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-		$dirbash/status-coverartonline.sh "$artist"$'\n'"$album"$'\naudiocd\n'$id &> /dev/null &
+		$dirbash/status-coverartonline.sh "\
+$artist
+$album
+audiocd
+$id" &> /dev/null &
 		exit
 	fi
 	

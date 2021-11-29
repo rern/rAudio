@@ -6,12 +6,10 @@ album=${args[1]}
 file=${args[2]}
 type=${args[3]}
 date=$( date +%s )
+dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
 
-coverFilesLimit() {
-	/srv/http/bash/cmd.sh coverfileslimit
-}
 # already got path in temp file
 [[ -e $dirshm/local/$covername ]] && cat $dirshm/local/$covername && exit
 
@@ -31,7 +29,7 @@ coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 										| head -1 )
 if [[ $coverfile ]]; then
 	echo ${coverfile:0:-4}.$date.${coverfile: -3} | tee $dirshm/local/$covername
-	coverFilesLimit
+	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
 
@@ -45,11 +43,11 @@ kid3-cli -c "cd \"$dir\"" \
 		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
 if [[ -e $coverfile ]]; then
 	echo ${coverfile:9:-4}.$date.jpg | tee $dirshm/local/$covername
-	coverFilesLimit
+	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
 
 # online
-killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-$dirbash/status-coverartonline.sh "$artist
+$dirbash/status-coverartonline.sh "\
+$artist
 $album" &> /dev/null &
