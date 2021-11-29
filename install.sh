@@ -29,29 +29,29 @@ fi
 rm -rf /etc/systemd/system/upmpdcli.service.d
 if [[ $( ls /srv/http/data/bookmarks ) ]]; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
-	if [[ -n $files ]]; then
+	if [[ $files ]]; then
 		for file in "${files[@]}"; do
 			path=$( head -1 "$file" )
 			[[ ${path:0:9} == webradios ]] && webradio=1 || webradio=
-			[[ -n $webradio ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
+			[[ $webradio ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
 			coverartfile=$( ls -1X "$coverpath"/coverart.* 2> /dev/null \
 								| grep -i '.gif$\|.jpg$\|.png$' \
 								| head -1 ) # full path
-			if [[ -n $coverartfile ]]; then
+			if [[ $coverartfile ]]; then
 				coverartfile=$( echo $coverartfile | sed 's|^/srv/http||' )
 			elif [[ -z $webradio ]]; then
 				coverfile=$( ls -1X "$coverpath" \
 								| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 								| grep -i '.gif$\|.jpg$\|.png$' \
 								| head -1 ) # filename only
-				if [[ -n $coverfile ]]; then
+				if [[ $coverfile ]]; then
 					ext=${coverfile: -3}
 					coverartfile="$coverpath/coverart.${ext,,}"
 					cp "$coverpath/$coverfile" "$coverartfile" 2> /dev/null
 					[[ -e $coverartfile ]] || coverartfile=
 				fi
 			fi
-			[[ -n $coverartfile ]] && path="\
+			[[ $coverartfile ]] && path="\
 $path
 $coverartfile"
 			echo "$path" > "$file"
@@ -69,7 +69,7 @@ fi
 
 mkdir -p $dirshm/{airplay,spotify,local,online,webradio}
 player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-[[ -n $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
+[[ $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
 chmod -R 777 $dirshm
 systemctl try-restart shairport-sync
 
