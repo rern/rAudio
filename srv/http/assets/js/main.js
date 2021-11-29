@@ -374,6 +374,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 	var artist = $( '#artist' ).text();
 	var title = $( '#title' ).text();
 	var album = $( '#album' ).text();
+	if ( album.indexOf( '://' ) !== -1 ) album = '';
 	if ( G.lyrics
 		&& !G.status.webradio
 		&& artist === $( '#lyricsartist' ).text()
