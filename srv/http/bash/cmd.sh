@@ -39,10 +39,10 @@ gifNotify() {
 }
 gifThumbnail() {
 	args="$1"
-	type=${args[1]}
-	source=${args[2]}
-	target=${args[3]}
-	covername=${args[4]}
+	type=${args[0]}
+	source=${args[1]}
+	target=${args[2]}
+	covername=${args[3]}
 	imgwh=( $( gifsicle -I "$source" | awk 'NR < 3 {print $NF}' ) )
 	[[ ${imgwh[0]} == images ]] && animated=1
 	case $type in
@@ -54,7 +54,7 @@ gifThumbnail() {
 		coverart )
 			dir=$( dirname "$target" )
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls "$dir/cover".* | head -1 )
+			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
@@ -62,7 +62,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
-			rm -f "/srv/http/data/shm/local/$covername" "/srv/http/data/embedded/$covername"
+			rm -f /srv/http/data/shm/embedded/$covername.* /srv/http/data/shm/local/$covername.*
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -76,10 +76,10 @@ gifThumbnail() {
 }
 jpgThumbnail() {
 	args="$1"
-	type=${args[1]}
-	source=${args[2]}
-	target=${args[3]}
-	covername=${args[4]}
+	type=${args[0]}
+	source=${args[1]}
+	target=${args[2]}
+	covername=${args[3]}
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
@@ -88,15 +88,14 @@ jpgThumbnail() {
 		coverart )
 			dir=$( dirname "$target" )
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls "$dir/cover".* | head -1 )
+			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f "$source" "$target" # already resized from client
+			cp -f "$source" "$target/cover.jpg" # already resized from client
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			echo rm -f "/srv/http/data/shm/local/$covername" "/srv/http/data/embedded/$covername" > $dirshm/x
-			rm -f "/srv/http/data/shm/local/$covername" "/srv/http/data/embedded/$covername"
+			rm -f /srv/http/data/shm/embedded/$covername.* /srv/http/data/shm/local/$covername.*
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -998,10 +997,10 @@ ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
 thumbgif )
-	gifThumbnail "$args"
+	gifThumbnail "${args:1}"
 	;;
 thumbjpg )
-	jpgThumbnail "$args"
+	jpgThumbnail "{$args:1}"
 	;;
 upnpnice )
 	for pid in $( pgrep upmpdcli ); do

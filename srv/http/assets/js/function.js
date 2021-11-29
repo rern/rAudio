@@ -282,7 +282,7 @@ function coverartSave() {
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
 		, ok      : function() {
-			bash( [ 'coversave', '/srv/http'+ src.slice( 0, -15 ) + src.slice( -4 ), path, covername ] );
+			bash( [ 'coversave', '/srv/http'+ src, path, covername ] );
 		}
 	} );
 }
