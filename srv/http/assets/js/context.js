@@ -585,60 +585,6 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'tag':
 			tagEditor();
 			return
-		case 'tag':
-			var discid = G.list.li.data( 'discid' );
-			var artist = G.list.li.find( '.artist' ).text();
-			var album = G.list.li.find( '.album' ).text();
-			var title = G.list.li.find( '.name' ).text();
-			var time = G.list.li.find( '.time' ).data( 'time' );
-			var track = G.list.li.find( '.track' ).text() ;
-			var src = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-			var values = [ artist, album, title ];
-			info( {
-				  icon         : 'audiocd'
-				, title        : 'Tag Editor'
-				, width        : 500
-				, message      : '<img src="'+ src +'">'
-								+'<br># '+ track +' • '+ second2HMS( time )
-				, messagealign : 'left'
-				, footer       : '<br><span id="taglabel"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag label</span>'
-				, footeralign  : 'right'
-				, textlabel    : [
-					  '<span class="taglabel gr hide">Artist</span> <i class="fa fa-artist"></i>'
-					, '<span class="taglabel gr hide">Album</span> <i class="fa fa-album"></i>'
-					, '<span class="taglabel gr hide">Title</span> <i class="fa fa-music"></i>'
-				]
-				, boxwidth     : 'max'
-				, values       : values
-				, checkchanged : 1
-				, beforeshow   : function() {
-					$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
-					labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
-					$( '.taglabel' ).addClass( 'hide' );
-					var $text = $( '#infoContent input' );
-					setTimeout( function() {
-						var boxW = parseInt( $text.css( 'width' ) );
-						var boxS = boxW - labelW - 6;
-						$( '#infoContent' ).on( 'click', '#taglabel', function() {
-							if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-								$( '.taglabel' ).removeClass( 'hide' );
-								$text.css( 'width', boxS );
-							} else {
-								$( '.taglabel' ).addClass( 'hide' );
-								$text.css( 'width', boxW );
-							}
-						} );
-					}, 600 );
-				}
-				, ok           : function() {
-					var values = infoVal();
-					var data = values.join( '^' ) +'^'+ time;
-					data = data.replace( /'/g, "\\'" );
-					bash( [ 'audiocdtag', track, data, discid ] );
-					banner( 'Audio CD', 'Tag Changed', 'audiocd' );
-				}
-			} );
-			return
 		case 'thumb':
 			info( {
 				  icon    : '<i class="iconcover"></i>'
