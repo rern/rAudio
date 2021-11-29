@@ -48,6 +48,7 @@ if [[ -e $coverfile ]]; then
 fi
 
 # online
+kill -9 $( pgrep status-coverartonline ) &> /dev/null
 $dirbash/status-coverartonline.sh "\
 $artist
 $album" &> /dev/null &

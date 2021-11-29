@@ -569,7 +569,7 @@ ignoredir )
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 lcdcharrefresh )
-	killall lcdchar.py &> /dev/null
+	kill -9 $( pgrep lcdchar ) &> /dev/null
 	readarray -t data <<< $( $dirbash/status.sh \
 								| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
 								| sed 's/null//' )
@@ -981,7 +981,7 @@ refreshbrowser )
 	pushstream reload 1
 	;;
 relaystimerreset )
-	killall relaystimer.sh &> /dev/null
+	kill -9 $( pgrep relaystimer ) &> /dev/null
 	$dirbash/relaystimer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;

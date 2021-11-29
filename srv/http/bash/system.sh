@@ -626,7 +626,7 @@ vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
 	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
-	killall cava &> /dev/null
+	kill -9 $( pgrep cava ) &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh
 	;;

@@ -4,7 +4,7 @@ from lcdcharconfig import *
 import sys
 import os
 
-os.system( 'killall lcdchartimer.sh &> /dev/null' )
+os.system( 'kill -9 $( pgrep lcdchartimer ) &> /dev/null' )
 
 icon = {
       'pause' : '\x00 '

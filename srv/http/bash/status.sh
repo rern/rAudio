@@ -506,4 +506,7 @@ elif [[ $Album ]]; then
 $AlbumArtist
 $Album"
 fi
-[[ $args ]] && $dirbash/status-coverartonline.sh "$args" &> /dev/null &
+if [[ $args ]]; then
+	kill -9 $( pgrep status-coverartonline ) &> /dev/null
+	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+fi

@@ -315,7 +315,7 @@ stoptimerset )
 	min=${args[1]}
 	poweroff=${args[2]}
 	[[ $poweroff == true ]] && off=poweroff
-	killall stoptimer.sh &> /dev/null
+	kill -9 $( pgrep stoptimer ) &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ $min != false ]]; then
 		$dirbash/stoptimer.sh $min $off &> /dev/null &

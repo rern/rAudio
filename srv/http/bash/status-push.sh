@@ -45,7 +45,7 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
-	killall lcdchar.py &> /dev/null
+	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 fi
 
