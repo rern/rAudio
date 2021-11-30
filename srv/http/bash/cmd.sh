@@ -38,11 +38,10 @@ gifNotify() {
 	pushstreamNotifyBlink Thumbnail 'Resize animated GIF ...' coverart
 }
 gifThumbnail() {
-	args="$1"
-	type=${args[0]}
-	source=${args[1]}
-	target=${args[2]}
-	covername=${args[3]}
+	type=$1
+	source=$2
+	target=$3
+	covername=$4
 	imgwh=( $( gifsicle -I "$source" | awk 'NR < 3 {print $NF}' ) )
 	[[ ${imgwh[0]} == images ]] && animated=1
 	case $type in
@@ -62,7 +61,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
-			rm -f /srv/http/data/shm/embedded/$covername.* /srv/http/data/shm/local/$covername.*
+			rm -f /srv/http/data/shm/embedded/$covername /srv/http/data/shm/local/$covername
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -75,11 +74,10 @@ gifThumbnail() {
 	pushstreamThumb gif $type
 }
 jpgThumbnail() {
-	args="$1"
-	type=${args[0]}
-	source=${args[1]}
-	target=${args[2]}
-	covername=${args[3]}
+	type=$1
+	source=$2
+	target=$3
+	covername=$4
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
@@ -90,12 +88,12 @@ jpgThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f "$source" "$target/cover.jpg" # already resized from client
+			cp -f "$source" "$dir/cover.jpg" # already resized from client
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f /srv/http/data/shm/embedded/$covername.* /srv/http/data/shm/local/$covername.*
+			rm -f /srv/http/data/shm/embedded/$covername /srv/http/data/shm/local/$covername
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -423,17 +421,18 @@ $id" &> /dev/null &
 		"$dir/coverart".* \
 		"$dir/thumb".* \
 		$dirshm/local/$covername \
-		$dirdata/embedded/$covername*
+		$dirdata/embedded/$covername
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
-		restorefile=${backupfile%%.backup}
-		ext=${restorefile: -3}
-		if [[ $ext != gif ]]; then
-			jpgThumbnail coverart "$backupfile" "$restorefile"
+		restorefile=${backupfile:0:-7}
+		mv "$backupfile" "$restorefile"
+		if [[ ${restorefile: -3} != gif ]]; then
+			convert "$restorefile" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		else
-			gifThumbnail coverart "$backupfile" "$restorefile"
+			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
+			gifsicle -O3 --resize-fit 80x80 "$restorefile" > "$dir/thumb.gif"
 		fi
-		rm "$backupfile"
 	fi
 	url=$( $dirbash/status-coverart.sh "\
 $artist
@@ -997,10 +996,10 @@ ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
 thumbgif )
-	gifThumbnail "${args:1}"
+	gifThumbnail "${args[@]:1}"
 	;;
 thumbjpg )
-	jpgThumbnail "{$args:1}"
+	jpgThumbnail "${args[@]:1}"
 	;;
 upnpnice )
 	for pid in $( pgrep upmpdcli ); do
