@@ -27,14 +27,13 @@ var cmd = {
 	, avahi        : networkssh +'avahi'
 	, bluetooth    : 'bluetoothctl info'
 	, bluetoothctl : systemsh +'bluetoothstatus'
-	, configtxt    : systemsh +'configtxtget'
 	, iw           : 'iw reg get; iw list'
-	, journalctl   : systemsh +'journalctlget'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
 	, rfkill       : 'rfkill'
 	, soundprofile : systemsh +'soundprofileget'
+	, system       : systemsh +'statussystem'
 	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
 	, wlan         : networkssh +'ifconfigwlan'
 }
@@ -52,7 +51,6 @@ function status( id, refresh ) {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
-	if ( id === 'timesyncd' ) id = 'systemd-timesyncd';
 	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );

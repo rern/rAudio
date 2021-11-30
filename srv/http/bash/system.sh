@@ -76,28 +76,6 @@ bluetoothset )
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 	pushRefresh
 	;;
-configtxtget )
-	config="\
-<bll># cat /boot/cmdline.txt</bll>
-$( cat /boot/cmdline.txt )
-
-<bll># cat /boot/config.txt</bll>
-$( cat /boot/config.txt )"
-	file=/etc/modules-load.d/raspberrypi.conf
-	raspberrypiconf=$( cat $file )
-	if [[ $raspberrypiconf ]]; then
-		config+="
-
-<bll># $file</bll>
-$raspberrypiconf"
-		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		[[ $dev ]] && config+="
-		
-<bll># i2cdetect -y $dev</bll>
-$(  i2cdetect -y $dev )"
-	fi
-	echo "$config"
-	;;
 databackup )
 	dirconfig=$dirdata/config
 	backupfile=$dirdata/tmp/backup.gz
@@ -265,18 +243,6 @@ dtparam=audio=on"
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
 	pushReboot 'Audio I&#178;S module' i2saudio
-	;;
-journalctlget )
-	filebootlog=$dirdata/tmp/bootlog
-	if [[ -e $filebootlog ]]; then
-		journal=$( cat $filebootlog )
-	else
-		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		echo "$journal" > $filebootlog
-	fi
-	echo "\
-<bll># journalctl -b</bll>
-$journal"
 	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
@@ -583,6 +549,38 @@ statusonboard )
 		echo '<hr>'
 		bluetoothctl show | sed 's/^\(Controller.*\)/bluetooth: \1/'
 	fi
+	;;
+statussystem )
+	status="\
+<bll># cat /boot/cmdline.txt</bll>
+$( cat /boot/cmdline.txt )
+
+<bll># cat /boot/config.txt</bll>
+$( cat /boot/config.txt )"
+	file=/etc/modules-load.d/raspberrypi.conf
+	raspberrypiconf=$( cat $file )
+	if [[ $raspberrypiconf ]]; then
+		status+="
+
+<bll># $file</bll>
+$raspberrypiconf"
+		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
+		[[ $dev ]] && status+="
+		
+<bll># i2cdetect -y $dev</bll>
+$(  i2cdetect -y $dev )"
+	fi
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ -e $filebootlog ]]; then
+		journal=$( cat $filebootlog )
+	else
+		journal='Booting ...'
+	fi
+	status+="
+	
+<bll># journalctl -b</bll>
+$journal"
+	echo "$status"
 	;;
 timezone )
 	timezone=${args[1]}

@@ -140,3 +140,5 @@ if [[ -e $dirsystem/hddspindown ]]; then
 		done
 	fi
 fi
+
+journalctl -b | sed -n '1,/Startup finished.*kernel/ p' > $dirdata/tmp/bootlog

@@ -23,8 +23,7 @@ echo '
 <div class="section">';
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
-	, 'status' => 'journalctl'
-	, 'nohelp' => true
+	, 'status' => 'system'
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
@@ -37,6 +36,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
+	<pre id="codesystem" class="hide"></pre>
 </div>
 <div class="section">
 <?php
@@ -141,7 +141,6 @@ htmlSection( $head, $body );
 }
 $head = [ //////////////////////////////////
 	  'title'  => 'GPIO Devices'
-	, 'status' => 'configtxt'
 ];
 $body = [
 	[
