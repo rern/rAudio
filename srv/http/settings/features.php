@@ -105,7 +105,6 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
-$browser = file_exists( '/usr/bin/firefox' ) ? 'firefox' : 'chromium';
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
@@ -124,8 +123,8 @@ HTML
 	], [
 		  'label'    => 'Browser on RPi'
 		, 'id'       => 'localbrowser'
-		, 'sublabel' => $browser
-		, 'icon'     => $browser
+		, 'sublabel' => 'chromium'
+		, 'icon'     => 'chromium'
 		, 'status'   => 'localbrowser'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
@@ -134,7 +133,7 @@ HTML
  • Screen off: Blank screen - backlight still on (no energy saved)
  • HDMI display: Must be connected before boot.
 HTML
-		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
+		, 'exist'    => file_exists( '/usr/bin/chromium' )
 	]
 	, [
 		  'label'    => 'File Sharing'
