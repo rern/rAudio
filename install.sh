@@ -9,11 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20211203
-if ! grep -q 'icu' /etc/pacman.conf; then
-	sed -i -e '/^IgnorePkg/ d
-' -e '/^#IgnorePkg/ a\
-IgnorePkg   = chromium icu' /etc/pacman.conf
-fi
+sed -i '/chromium/ d' /etc/pacman.conf
 
 file=$( ls /etc/systemd/network/eth* )
 grep -q RequiredForOnline=no $file || echo "
