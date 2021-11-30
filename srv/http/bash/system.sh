@@ -244,6 +244,18 @@ dtparam=audio=on"
 	echo $output > $dirsystem/audio-output
 	pushReboot 'Audio I&#178;S module' i2saudio
 	;;
+journalctl )
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ -e $filebootlog ]]; then
+		journal=$( cat $filebootlog )
+	else
+		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
+		echo "$journal" > $filebootlog
+	fi
+	echo "\
+<bll># journalctl -b</bll>
+$journal"
+	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
@@ -550,8 +562,8 @@ statusonboard )
 		bluetoothctl show | sed 's/^\(Controller.*\)/bluetooth: \1/'
 	fi
 	;;
-statussystem )
-	status="\
+systemconfig )
+	config="\
 <bll># cat /boot/cmdline.txt</bll>
 $( cat /boot/cmdline.txt )
 
@@ -560,27 +572,17 @@ $( cat /boot/config.txt )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( cat $file )
 	if [[ $raspberrypiconf ]]; then
-		status+="
+		config+="
 
 <bll># $file</bll>
 $raspberrypiconf"
 		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
-		[[ $dev ]] && status+="
+		[[ $dev ]] && config+="
 		
 <bll># i2cdetect -y $dev</bll>
 $(  i2cdetect -y $dev )"
 	fi
-	filebootlog=$dirdata/tmp/bootlog
-	if [[ -e $filebootlog ]]; then
-		journal=$( cat $filebootlog )
-	else
-		journal='Booting ...'
-	fi
-	status+="
-	
-<bll># journalctl -b</bll>
-$journal"
-	echo "$status"
+	echo "$config"
 	;;
 timezone )
 	timezone=${args[1]}

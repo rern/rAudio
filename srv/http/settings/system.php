@@ -42,6 +42,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
+	, 'status' => 'journalctl'
 	, 'button' => [ 'refresh', 'refresh' ]
 ] );
 ?>

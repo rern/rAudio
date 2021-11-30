@@ -28,12 +28,13 @@ var cmd = {
 	, bluetooth    : 'bluetoothctl info'
 	, bluetoothctl : systemsh +'bluetoothstatus'
 	, iw           : 'iw reg get; iw list'
+	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
 	, rfkill       : 'rfkill'
 	, soundprofile : systemsh +'soundprofileget'
-	, system       : systemsh +'statussystem'
+	, system       : systemsh +'systemconfig'
 	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
 	, wlan         : networkssh +'ifconfigwlan'
 }
