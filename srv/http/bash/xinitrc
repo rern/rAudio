@@ -11,12 +11,4 @@ zoom=$( echo "print $zoom / 100" | perl )
 ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet || cursor=yes # no network connection
 matchbox-window-manager -use_cursor $cursor &
 
-if [[ -e /usr/bin/firefox ]]; then
-	dirprofile=$( ls -d /root/.mozilla/firefox/*release )
-	echo 'user_pref("layout.css.devPixelsPerPx", "'$zoom'");' > $dirprofile/user.js
-	firefox -kiosk http://localhost
-else
-	chromium localhost --kiosk --incognito --no-sandbox --no-xshm --force-device-scale-factor=$zoom
-fi
-
-#midori -e Fullscreen -a http://localhost
+chromium localhost --kiosk --incognito --disable_gpu --disable-software-rasterizer --no-sandbox --no-xshm --force-device-scale-factor=$zoom
