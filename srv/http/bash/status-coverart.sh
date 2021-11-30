@@ -17,7 +17,7 @@ covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-[[ -z $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
+[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
 										| grep -i '/album\....$\|/folder\....$\|/front\....$' \
 										| head -1 )
 if [[ $coverfile ]]; then

@@ -47,7 +47,7 @@ if [[ $image && $image != null ]]; then
 		[[ $mbid && $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
 	fi
 fi
-[[ -z $url || $url == null ]] && exit
+[[ ! $url || $url == null ]] && exit
 
 ext=${url/*.}
 if [[ $type == audiocd ]]; then

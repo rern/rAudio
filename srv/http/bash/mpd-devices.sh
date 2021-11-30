@@ -14,7 +14,7 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 aplay=$( aplay -l 2> /dev/null | grep '^card' | grep -v Loopback )
-if [[ -z $aplay ]]; then
+if [[ ! $aplay ]]; then
 	i=-1
 	devices=false
 	touch $dirshm/nosound
@@ -42,7 +42,7 @@ for line in "${lines[@]}"; do
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
 	controls=$( /srv/http/bash/cmd.sh volumecontrols$'\n'$card )
-	if [[ -z $controls ]]; then
+	if [[ ! $controls ]]; then
 		mixerdevices=['"( not available )"']
 		mixers=0
 	else

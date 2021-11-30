@@ -71,13 +71,13 @@ metadataGet() {
 	album=${metadata[2]//\"/\\\"}
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
-	if [[ -z $album && -z $title ]]; then
+	if [[ ! $album && ! $title ]]; then
 		sleep 5
 		metadataGet
 		return
 	fi
 	
-	if [[ -z $countdown ]]; then
+	if [[ ! $countdown ]]; then
 		countdown=5
 	elif [[ ${#metadata[@]} == 6 ]]; then
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance

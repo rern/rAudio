@@ -9,6 +9,12 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20211203
+if ! grep -q 'icu' /etc/pacman.conf; then
+	sed -i -e '/^IgnorePkg/ d
+' -e '/^#IgnorePkg/ a\
+IgnorePkg   = chromium icu' /etc/pacman.conf
+fi
+
 file=$( ls /etc/systemd/network/eth* )
 grep -q RequiredForOnline=no $file || echo "
 [Link]
@@ -57,12 +63,6 @@ $coverartfile"
 			echo "$path" > "$file"
 		done
 	fi
-fi
-
-if ! grep -q 'chromium$' /etc/pacman.conf; then
-	sed -i -e '/^IgnorePkg/ d
-' -e '/^#IgnorePkg/ a\
-IgnorePkg   = chromium' /etc/pacman.conf
 fi
 
 [[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}

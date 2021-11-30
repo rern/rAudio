@@ -74,7 +74,7 @@ if [[ $usb ]]; then
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 		else
 			label=$( e2label $source )
-			[[ -z $label ]] && label=?
+			[[ ! $label ]] && label=?
 			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
 	done
@@ -129,7 +129,7 @@ else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
-[[ -z $baudrate ]] && baudrate=400000
+[[ ! $baudrate ]] && baudrate=400000
 mpdoledconf='[ "'$oledchip'", '$baudrate' ]'
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"

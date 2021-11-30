@@ -29,12 +29,12 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 		btaplay=$( bluealsa-aplay -L )
 		[[ $btaplay ]] && break
 	done
-	[[ -z $btaplay ]] && exit # not bluetooth audio device
+	[[ ! $btaplay ]] && exit # not bluetooth audio device
 	readarray -t paired <<< $( bluetoothctl paired-devices | cut -d' ' -f2 )
 	for mac in "${paired[@]}"; do
 		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && sink=1 && break
 	done
-	[[ -z $sink ]] && exit
+	[[ ! $sink ]] && exit
 	
 	asoundbt='
 pcm.bluealsa {
@@ -159,11 +159,11 @@ audio_output {
 	always_on      "yes"
 }'
 fi
-if [[ -z $output || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
+if [[ ! $output || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
 ########
 		output+='
 audio_output {
-	name           "'$( [[ -z $output ]] && echo '(no sound device)' || echo '(visualizer)' )'"
+	name           "'$( [[ ! $output ]] && echo '(no sound device)' || echo '(visualizer)' )'"
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
 	format         "44100:16:1"
@@ -193,7 +193,7 @@ $btoutput" > /etc/mpd.conf
 if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
-	[[ -z $name ]] && name='(No sound device)'
+	[[ ! $name ]] && name='(No sound device)'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
 	prevvolumenone=$( echo "$conf" \
 					| sed -n "$line,$ p" \
@@ -201,7 +201,7 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-[[ -z $Acard && -z $btname ]] && restartMPD && exit
+[[ ! $Acard && ! $btname ]] && restartMPD && exit
 
 [[ $Acard ]] && card=$card || card=0
 

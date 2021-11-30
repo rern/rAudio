@@ -197,7 +197,7 @@ scrobbleset )
 		fileconf=$dirscrobble/${keys[ i ]}
 		[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
 	done
-	if [[ -z $password ]]; then
+	if [[ ! $password ]]; then
 		if [[ -e $dirscrobble/key && $username == $( cat $dirscrobble/user ) ]]; then
 			touch $dirsystem/scrobble
 			pushRefresh
@@ -282,7 +282,7 @@ spotifyddisable )
 	;;
 spotifytoken )
 	code=${args[1]}
-	[[ -z $code ]] && rm -f $dirsystem/spotify && exit
+	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
 	spotifyredirect=$( grep ^spotifyredirect $dirbash/features-data.sh | cut -d= -f2 )

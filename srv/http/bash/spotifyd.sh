@@ -44,7 +44,7 @@ else
 				-d refresh_token=$refreshtoken \
 				| grep access_token \
 				| cut -d'"' -f4 )
-	if [[ -z $token ]]; then
+	if [[ ! $token ]]; then
 		pushstream notify '{"title":"Spotify","text":"Access token renewal failed.","icon":"spotify"}'
 		exit
 	fi

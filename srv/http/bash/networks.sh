@@ -24,7 +24,7 @@ netctlSwitch() {
 			break
 		fi
 	done
-	[[ -z $active ]] && netctl switch-to "$connected" && sleep 2
+	[[ ! $active ]] && netctl switch-to "$connected" && sleep 2
 	pushRefresh
 	if systemctl -q is-active hostapd; then
 		data=$( $dirbash/features-data.sh )
@@ -117,7 +117,7 @@ Name=eth0
 [Network]
 DNSSEC=no
 "
-	if [[ -z $ip ]];then
+	if [[ ! $ip ]];then
 		eth0+="\
 DHCP=yes
 "

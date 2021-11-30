@@ -9,7 +9,7 @@ readarray -t args <<< "$1"
 addonsListGet() {
 	: >/dev/tcp/8.8.8.8/53 || exit -2 # online check
 	
-	[[ -z $1 ]] && branch=main || branch=$1
+	[[ ! $1 ]] && branch=main || branch=$1
 	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
 }
 equalizerGet() {
@@ -181,13 +181,13 @@ volumeControls() {
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
 				| sed 's/--/\n/g' )
-	[[ -z $amixer ]] && control= && return
+	[[ ! $amixer ]] && control= && return
 	
 	controls=$( echo "$amixer" \
 					| grep 'volume.*pswitch' \
 					| grep -v Mic \
 					| cut -d"'" -f2 )
-	if [[ -z $controls ]]; then
+	if [[ ! $controls ]]; then
 		controls=$( echo "$amixer" \
 						| grep volume \
 						| grep -v Mic \
@@ -213,7 +213,7 @@ volumeGet() {
 	else
 		card=$( head -1 /etc/asound.conf | tail -c 2 )
 		volumeControls $card
-		if [[ -z $controls ]]; then
+		if [[ ! $controls ]]; then
 			volume=100
 		else
 			control=$( echo "$controls" | sort -u | head -1 )
@@ -244,7 +244,7 @@ volumeReset() {
 }
 volumeSetAt() {
 	val=$1
-	if [[ -z $control ]]; then
+	if [[ ! $control ]]; then
 		mpc -q volume $val
 	else
 		amixer -Mq sset "$control" $val%
@@ -370,7 +370,7 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 	sed "s|\(path{fill:hsl\).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
-	[[ -z $rotate ]] && rotate=NORMAL
+	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
 	pushstream reload 1
 	;;
@@ -439,7 +439,7 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ -z $url ]] && url=/mnt/MPD/$mpdpath/none
+	[[ ! $url ]] && url=/mnt/MPD/$mpdpath/none
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;
@@ -640,7 +640,7 @@ mpcplayback )
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
-		[[ $( mpc | head -c 4 ) == cdda && -z $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
@@ -890,7 +890,7 @@ plls )
 	delay=${args[3]}
 	pladdPosition $cmd
 	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
-	if [[ -z $cuefiles ]]; then
+	if [[ ! $cuefiles ]]; then
 		mpc ls "$dir" | mpc -q add &> /dev/null
 	else
 		for cuefile in "${cuefiles[@]}"; do
@@ -931,10 +931,10 @@ plsimilar )
 		artist=${args[$i]}
 		(( i++ ))
 		title=${args[$i]}
-		[[ -z $artist || -z $title ]] && continue
+		[[ ! $artist || ! $title ]] && continue
 		
 		file=$( mpc find artist "$artist" title "$title" )
-		[[ -z $file ]] && continue
+		[[ ! $file ]] && continue
 		
 		list+="$( mpc find artist "$artist" title "$title" )
 "
@@ -967,7 +967,7 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ -z $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
+	[[ ! $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ $reboot ]] && reboot || poweroff
 	;;
 rebootlist )
@@ -1067,7 +1067,7 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	[[ -z $control ]] && mpc -q volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
+	[[ ! $control ]] && mpc -q volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
 	volumeGet
 	pushstreamVolume updn $volume
 	;;
@@ -1085,7 +1085,7 @@ webradioadd )
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url | grep ^File | head -1 | cut -d= -f2 )
 	fi
-	[[ -z $url ]] && exit -1
+	[[ ! $url ]] && exit -1
 	
 	echo $name > "$file"
 	chown http:http "$file" # for edit in php

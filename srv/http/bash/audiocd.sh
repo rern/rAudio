@@ -49,7 +49,7 @@ fi
 ! : >/dev/tcp/8.8.8.8/53 || [[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
-[[ -z $cddiscid ]] && exit
+[[ ! $cddiscid ]] && exit
 
 discid=${cddiscid[0]}
 
@@ -108,12 +108,12 @@ $cdtrack1"
 fi
 
 # coverart
-if [[ -z $artist || -z $album ]]; then
+if [[ ! $artist || ! $album ]]; then
 	artist_album=$( head -1 $diraudiocd/$discid )
 	artist=$( echo $artist_album | cut -d^ -f1 )
 	album=$( echo $artist_album | cut -d^ -f2 )
 fi
-[[ -z $artist || -z $album ]] && exit
+[[ ! $artist || ! $album ]] && exit
 
 args="\
 $artist

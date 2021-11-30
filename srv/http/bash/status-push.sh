@@ -17,12 +17,12 @@ else
 		[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
-			[[ -z $trackchanged ]] && exit
+			[[ ! $trackchanged ]] && exit
 			
 		else
 			compare='^state\|^elapsed'
 			[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
-			[[ -z $trackchanged && -z $statuschanged ]] && exit
+			[[ ! $trackchanged && ! $statuschanged ]] && exit
 			
 		fi
 	fi
@@ -34,7 +34,7 @@ fi
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
 if [[ -e $dirsystem/onwhileplay ]]; then
-	[[ -z $state ]] && state=$( awk -F'"' '/^state/ {print $2}' $dirshm/status ) # $1 == statusradio
+	[[ ! $state ]] && state=$( awk -F'"' '/^state/ {print $2}' $dirshm/status ) # $1 == statusradio
 	export DISPLAY=:0
 	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
@@ -67,7 +67,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 fi
 if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-	[[ -z $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
+	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( echo "$status" | sed -e '/"player":/,/"single":/ d' -e 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#' )
 	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
@@ -77,7 +77,7 @@ fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd-librandom.sh
 
-[[ -z $scrobble ]] && exit # must be last for $statusprev - webradio and state
+[[ ! $scrobble ]] && exit # must be last for $statusprev - webradio and state
 
 . <( echo "$statusprev" )
 [[ $webradio == false && $player != snapcast \

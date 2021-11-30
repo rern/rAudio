@@ -370,7 +370,7 @@ mirrorlist )
 	current=$( grep ^Server $file \
 				| head -1 \
 				| sed 's|\.*mirror.*||; s|.*//||' )
-	[[ -z $current ]] && current=0
+	[[ ! $current ]] && current=0
 	if ! grep -q '^###' $file; then
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
@@ -419,7 +419,7 @@ mount )
 	if [[ $protocol == cifs ]]; then
 		source="//$ip/$directory"
 		options=noauto
-		if [[ -z $user ]]; then
+		if [[ ! $user ]]; then
 			options+=,username=guest
 		else
 			options+=",username=$user,password=$password"

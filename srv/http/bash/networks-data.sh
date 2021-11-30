@@ -32,13 +32,13 @@ if [[ $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( echo $ipr | cut -d' ' -f3 )
-	[[ -z $gateway ]] && gateway=$( ip r \
+	[[ ! $gateway ]] && gateway=$( ip r \
 									| grep ^default \
 									| head -1 \
 									| cut -d' ' -f3 )
 	if [[ $ipeth ]]; then
 		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-		if [[ -z $hostname ]]; then
+		if [[ ! $hostname ]]; then
 			systemctl restart avahi-daemon
 			hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
 		fi
@@ -58,7 +58,7 @@ if [[ $ipr ]]; then
 	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet / {print $2}' )
 	ssid=$( iwgetid wlan0 -r )
 	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
-	[[ -z $dbm ]] && dbm=0
+	[[ ! $dbm ]] && dbm=0
 	listwl=',{
   "dbm"      : '$dbm'
 , "gateway"  : "'$gateway'"

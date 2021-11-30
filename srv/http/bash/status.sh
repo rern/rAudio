@@ -17,7 +17,7 @@ elapsedGet() {
 				| cut -d' ' -f2 ) )
 }
 outputStatus() {
-	[[ -z $snapclient ]] && data2json "$status" || echo "$status" # - no braces
+	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
 }
 
 if (( $# > 0 )); then # snapclient
@@ -29,7 +29,7 @@ else
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
 	player=$( cat $dirshm/player )
-	[[ -z $player ]] && player=mpd && echo mpd > $dirshm/player
+	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( exists $dirsystem/relays )
@@ -142,7 +142,7 @@ fi
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
 filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^song:\|^state\|^Time\|^Title'
-[[ -z $snapclient ]] && filter+='\|^playlistlength\|^random\|^repeat\|^single'
+[[ ! $snapclient ]] && filter+='\|^playlistlength\|^random\|^repeat\|^single'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
@@ -192,7 +192,7 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-[[ -z $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
+[[ ! $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
 volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
@@ -283,9 +283,9 @@ elif [[ $stream ]]; then
 			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				id=$( basename ${file/-*} )
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
-				[[ -z $id ]] && id=francemusique
+				[[ ! $id ]] && id=francemusique
 				stationname=${station/* - }
-				if [[ ! -e $dirshm/radio || -z $( head -3 $dirshm/status 2> /dev/null ) ]]; then
+				if [[ ! -e $dirshm/radio || ! $( head -3 $dirshm/status 2> /dev/null ) ]]; then
 					echo "\
 $file
 $stationname
@@ -294,7 +294,7 @@ $radiosampling" > $dirshm/radio
 					systemctl start radio
 				else
 					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
-					[[ -z $displaycover ]] && coverart=
+					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
@@ -356,11 +356,11 @@ else
 	fi
 	ext=${ext^^}
 	# missing id3tags
-	[[ -z $Album ]] && Album=
-	[[ -z $AlbumArtist ]] && AlbumArtist=$Artist
-	[[ -z $Artist ]] && Artist=$AlbumArtist
-	[[ -z $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
-	[[ -z $Title ]] && filename=${file/*\/} && Title=${filename%.*}
+	[[ ! $Album ]] && Album=
+	[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
+	[[ ! $Artist ]] && Artist=$AlbumArtist
+	[[ ! $Artist ]] && dirname=${file%\/*} && Artist=${dirname/*\/}
+	[[ ! $Title ]] && filename=${file/*\/} && Title=${filename%.*}
 ########
 	status+='
 , "Album"  : "'$Album'"
@@ -382,7 +382,7 @@ samplingLine() {
 	samplerate=$2
 	bitrate=$3
 	ext=$4
-	[[ $bitrate -eq 0 || -z $bitrate ]] && bitrate=$(( bitdepth * samplerate * 2 ))
+	[[ $bitrate -eq 0 || ! $bitrate ]] && bitrate=$(( bitdepth * samplerate * 2 ))
 	if (( $bitrate < 1000000 )); then
 		rate="$(( bitrate / 1000 )) kbit/s"
 	else
@@ -466,7 +466,7 @@ status+='
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
-if [[ $coverart || -z $displaycover ]]; then # webradio $coverart exists
+if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	elapsedGet
 # >>>>>>>>>>
 	status+='
@@ -475,7 +475,7 @@ if [[ $coverart || -z $displaycover ]]; then # webradio $coverart exists
 	exit
 fi
 
-if [[ $ext != CD && -z $stream ]]; then
+if [[ $ext != CD && ! $stream ]]; then
 	getcover=1
 	coverart=$( $dirbash/status-coverart.sh "\
 $AlbumArtist
@@ -492,8 +492,8 @@ outputStatus
 
 [[ $getcover ]] && exit
 
-[[ -z $AlbumArtist ]] && AlbumArtist=$Artist
-[[ -z $AlbumArtist ]] && exit
+[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
+[[ ! $AlbumArtist ]] && exit
 
 if [[ $stream && $state == play && $Title ]]; then
 	[[ $ext == Radio ]] && Title=${Title/ (*} # remove ' (extra tag)'
