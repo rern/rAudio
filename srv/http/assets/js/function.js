@@ -1130,6 +1130,7 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	local();
+	if ( G.status.state === 'stop' ) setProgress( 0 );
 	$volumeRS.setValue( G.status.volume );
 	G.status.volumemute != 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
@@ -1157,7 +1158,6 @@ function renderPlayback() {
 	$( '#total' ).text( timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( G.status.state === 'stop' ) {
-		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
 		if ( timehms ) {
