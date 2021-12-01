@@ -27,12 +27,12 @@ var cmd = {
 	, avahi        : networkssh +'avahi'
 	, bluetooth    : 'bluetoothctl info'
 	, bluetoothctl : systemsh +'bluetoothstatus'
-	, iw           : 'iw reg get; iw list'
+	, iw           : "echo '<bll># iw reg get</bll>'; iw reg get; echo '<bll># iw list</bll>';  iw list"
 	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
-	, rfkill       : 'rfkill'
+	, rfkill       : "echo '<bll># rfkill</bll>'; rfkill"
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'
 	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
