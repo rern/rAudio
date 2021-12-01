@@ -183,9 +183,10 @@ $( '#setting-buffer' ).click( function() {
 	info( {
 		  icon         : 'mpd'
 		, title        : 'Custom Audio Buffer'
-		, message      : '<code>audio_buffer_size</code> (default: 4096)'
-		, textlabel    : 'Size <gr>(kB)</gr>'
-		, boxwidth     : 125
+		, textlabel    : 'audio_buffer_size <gr>(kB)</gr>'
+		, footer       : '(default: 4096)'
+		, footeralign  : 'right'
+		, boxwidth     : 110
 		, values       : G.bufferconf
 		, checkchanged : ( G.buffer ? 1 : 0 )
 		, checkblank   : 1
@@ -202,9 +203,10 @@ $( '#setting-bufferoutput' ).click( function() {
 	info( {
 		  icon         : 'mpd'
 		, title        : 'Custom Output Buffer'
-		, message      : '<code>max_output_buffer_size</code> (default: 8192)'
-		, textlabel    : 'Size <gr>(kB)</gr>'
-		, boxwidth     : 125
+		, textlabel    : 'max_output_buffer_size <gr>(kB)</gr>'
+		, footer       : '(default: 8192)'
+		, footeralign  : 'right'
+		, boxwidth     : 110
 		, values       : G.bufferoutputconf
 		, checkchanged : ( G.bufferoutput ? 1 : 0 )
 		, checkblank   : 1
@@ -229,7 +231,7 @@ var soxrinfo = `\
 		</select></td><td>&nbsp;<gr>bit</gr></td>
 </tr>
 <tr><td>Phase Response</td>
-	<td><input type="text"></td><td>&nbsp;<gr>0-100</gr></td>
+	<td><input type="text"></td><td style="width: 115px">&nbsp;<gr>0-100</gr></td>
 </tr>
 <tr><td>Passband End</td>
 	<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
@@ -265,7 +267,7 @@ $( '#setting-soxr' ).click( function() {
 			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
 			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
 		}
-		, boxwidth      : 80
+		, boxwidth      : 70
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
