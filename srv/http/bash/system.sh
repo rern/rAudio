@@ -250,11 +250,18 @@ journalctl )
 		journal=$( cat $filebootlog )
 	else
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		echo "$journal" > $filebootlog
+		if grep -q 'Startup finished.*kernel' <<< "$journal"; then
+			echo "$journal" > $filebootlog
+		else
+			journal+='
+(Starting ...)
+'
+		fi
 	fi
 	echo "\
 <bll># journalctl -b</bll>
-$journal"
+$journal
+"
 	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
