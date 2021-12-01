@@ -97,8 +97,8 @@ if [[ -e /usr/bin/chromium ]]; then
 	echo "\
 rotate=NORMAL
 zoom=100
-screenoff=1
-onwhileplay=true
+screenoff=0
+onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
 fi
 echo mpd > $dirshm/player
