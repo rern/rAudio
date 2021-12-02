@@ -11,6 +11,13 @@ switch( $cmd ) {
 case 'current':
 	$lists = playlist();
 	$array = htmlPlaylist( $lists );
+	$cmd = <<< CMD
+/usr/bin/printf '%.0f' $( { echo status; sleep 0.05; } \
+	| telnet 127.0.0.1 6600 2> /dev/null \
+	| grep ^elapsed \
+	| cut -d' ' -f2 )
+CMD;
+	$array[ 'elapsed' ] = intVal( exec( $cmd ) );
 	echo json_encode( $array );
 	break;
 case 'delete':

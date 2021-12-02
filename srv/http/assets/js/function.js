@@ -1196,6 +1196,7 @@ function renderPlayback() {
 function renderPlaylist( data ) {
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
+	G.status.elapsed = data.elapsed;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-open' ).toggleClass( 'disable', G.status.playlists === 0 );

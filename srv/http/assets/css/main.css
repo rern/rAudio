@@ -1827,7 +1827,7 @@ li.active .li1 bl {
 	color: var( --cw );
 }
 #pl-list .elapsed i {
-	margin-right: 5px;
+	margin: 0 10px 0 5px;
 	line-height: 17px; /* for ios */
 }
 #pl-list .elapsed {
