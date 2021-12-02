@@ -486,18 +486,17 @@ $file0" )
 	outputStatus
 fi
 
-[[ ! $AlbumArtist ]] && AlbumArtist=$Artist
-[[ ! $AlbumArtist ]] && exit
+[[ ! $Artist ]] && exit
 
 if [[ $stream && $state == play && $Title ]]; then
 	[[ $ext == Radio ]] && Title=${Title/ (*} # remove ' (extra tag)'
 	args="\
-$AlbumArtist
+$Artist
 $Title
 webradio"
 elif [[ $Album ]]; then
 	args="\
-$AlbumArtist
+$Artist
 $Album"
 fi
 if [[ $args ]]; then
