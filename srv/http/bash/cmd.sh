@@ -172,7 +172,7 @@ volume0dB(){
 	amixer -c $card -Mq sset "$control" 0dB
 }
 volumeControls() {
-	[[ ! $( aplay -l 2> /dev/null | grep -q '^card' ) ]] && return
+	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
 	amixer=$( amixer -c $1 scontents \
 				| grep -A1 ^Simple \
