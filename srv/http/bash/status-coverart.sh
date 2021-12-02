@@ -9,13 +9,20 @@ date=$( date +%s )
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
-
-# already got path in temp file
-[[ -e $dirshm/local/$covername ]] && cat $dirshm/local/$covername && exit
-
-# cover file
 path="/mnt/MPD/$file"
-[[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
+[[ -f "$path" ]] && path=$( dirname "$path" )
+
+# found cover file
+localfile=$dirshm/local/$covername
+[[ -e $localfile ]] && cat $localfile && exit
+# found embedded
+embeddedfile=/srv/http/data/embedded/$covername.jpg
+[[ -e "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
+# found online
+onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
+[[ -e $onlinefile ]] && echo ${onlinefile:9} && exit
+
+##### cover file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 [[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
 										| grep -i '/album\....$\|/folder\....$\|/front\....$' \
@@ -26,28 +33,17 @@ if [[ $coverfile ]]; then
 	exit
 fi
 
-# already got embedded
-[[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
-
-# already got online
-coverfile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
-[[ -e $coverfile ]] && echo ${coverfile:9} && exit
-
-# embedded
-path="/mnt/MPD/$file"
-dir=$( dirname "$path" )
-filename=$( basename "$path" )
-coverfile=/srv/http/data/embedded/$covername.jpg
-kid3-cli -c "cd \"$dir\"" \
+##### embedded
+filename=$( basename "$file" )
+kid3-cli -c "cd \"$path\"" \
 		-c "select \"$filename\"" \
-		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
-if [[ -e $coverfile ]]; then
-	echo ${coverfile:9:-4}.$date.jpg | tee $dirshm/local/$covername
-	$dirbash/cmd.sh coverfileslimit
+		-c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
+if [[ -e $embeddedfile ]]; then
+	echo ${embeddedfile:9:-4}.$date.jpg
 	exit
 fi
 
-# online
+##### online
 kill -9 $( pgrep status-coverartonline ) &> /dev/null
 $dirbash/status-coverartonline.sh "\
 $artist
