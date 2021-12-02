@@ -12,9 +12,8 @@ date=$( date +%s )
 
 elapsedGet() {
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep ^elapsed \
-				| cut -d' ' -f2 ) )
+								| telnet 127.0.0.1 6600 2> /dev/null \
+								| awk '/^elapsed/ {print $NF}' ) )
 }
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
