@@ -17,6 +17,7 @@ elapsedGet() {
 }
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
+	[[ $1 != noexit ]] && exit
 }
 
 if (( $# > 0 )); then # snapclient
@@ -135,7 +136,6 @@ $( cat $dirshm/spotify/status )"
 	esac
 # >>>>>>>>>>
 	outputStatus
-	exit
 fi
 
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
@@ -212,7 +212,6 @@ if (( $playlistlength  == 0 )); then
 , "ip"       : "'$ip'"'
 # >>>>>>>>>>
 	outputStatus
-	exit
 fi
 fileheader=${file:0:4}
 if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
@@ -342,7 +341,6 @@ $radiosampling" > $dirshm/radio
 , "song"         : '$song
 # >>>>>>>>>>
 		outputStatus
-		exit
 	fi
 	
 	fi
@@ -471,7 +469,6 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	status+='
 , "elapsed"  : '$elapsed
 	outputStatus
-	exit
 fi
 
 if [[ $ext != CD && ! $stream ]]; then
@@ -487,7 +484,7 @@ elapsedGet
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
-outputStatus
+outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 
 [[ $getcover || ! $Artist ]] && exit
 
