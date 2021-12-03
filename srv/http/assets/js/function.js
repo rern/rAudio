@@ -203,11 +203,11 @@ function coverartChange() {
 		var type = 'coverart';
 	}
 	if ( G.playback ) {
-		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
+		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
 		var pbcoverdefault = $( '#coverart' ).attr( 'src' ) === G.coverdefault;
 	} else {
-		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
+		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded';
 		var lionlinefetched = $( '.licover .cover-save' ).length;
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
 	}
