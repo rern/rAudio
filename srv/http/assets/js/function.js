@@ -614,11 +614,11 @@ var chklibrary = {
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'
-	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
+	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
@@ -1644,7 +1644,6 @@ function setTrackCoverart() {
 	
 	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
 		$( 'html, body' ).scrollTop( 0 );
-		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) $( '#liimg' ).after( icoversave );
 	} ).off( 'error' ).on( 'error', function() {
 		$( this ).attr( 'src', G.coverdefault );
 	} );

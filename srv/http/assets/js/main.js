@@ -729,7 +729,7 @@ $( '.map' ).click( function() {
 		volumeBarHide();
 		return
 		
-	} else if ( $( '#divcover .coveredit' ).length ) {
+	} else if ( $( '.coveredit.cover' ).length ) {
 		$( '#divcover .coveredit.cover' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 		return
