@@ -107,10 +107,8 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	var srcsplit = G.status.coverart.split( '/' );
 	if ( G.status.file
-		&& srcsplit[ 3 ] !== 'embedded'
-		&& srcsplit[ 0 ] === 'data'
+		&& G.status.coverart.slice( 10, 16 ) === 'online'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
 		$( '#divcover' ).append( icoversave );
