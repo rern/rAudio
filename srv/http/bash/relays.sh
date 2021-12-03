@@ -44,7 +44,7 @@ else
 	rm -f $dirshm/relayson
 	if [[ -e $timerfile ]]; then
 		rm $timerfile
-		killall relaystimer.sh &> /dev/null &
+		kill -9 $( pgrep relaystimer ) &> /dev/null
 	fi
 	pushstreamRelays '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do

@@ -16,14 +16,14 @@ SECONDS=0
 
 albumfile=/srv/http/data/mpd/album
 
-if [[ -z $1 ]]; then
+if [[ ! $1 ]]; then
 	mpdpathlist=$( cat $albumfile | cut -d^ -f7 )
 else
 	mpdpathlist=$( find "/mnt/MPD/$1" -type d | cut -c10- )
 fi
 unsharp=0x.5
 
-if [[ -z $mpdpathlist ]]; then
+if [[ ! $mpdpathlist ]]; then
 	echo "$padW No albums found in database."
 	exit
 fi
@@ -62,7 +62,7 @@ for mpdpath in "${lines[@]}"; do
 		done
 		coverfile=
 	done
-	if [[ -z $coverfile ]]; then # embedded
+	if [[ ! $coverfile ]]; then # embedded
 		files=$( mpc ls "$mpdpath" 2> /dev/null )
 		readarray -t files <<<"$files"
 		for file in "${files[@]}"; do
@@ -75,7 +75,7 @@ for mpdpath in "${lines[@]}"; do
 			fi
 		done
 	fi
-	if [[ -n $coverfile ]]; then
+	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
 		if [[ $ext == gif ]]; then
 			[[ $( gifsicle -I "$coverfile" | awk 'NR==1 {print $NF}' ) == images ]] && echo "     Resize aninated GIF ..."

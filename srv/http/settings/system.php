@@ -23,8 +23,7 @@ echo '
 <div class="section">';
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
-	, 'status' => 'journalctl'
-	, 'nohelp' => true
+	, 'status' => 'system'
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
@@ -37,11 +36,13 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
+	<pre id="codesystem" class="hide"></pre>
 </div>
 <div class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
+	, 'status' => 'journalctl'
 	, 'button' => [ 'refresh', 'refresh' ]
 ] );
 ?>
@@ -95,7 +96,7 @@ mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bl
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
-<pre id="codehddinfo"></pre>
+<pre id="codehddinfo" class="hide"></pre>
 </div>
 <?php
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
@@ -141,7 +142,6 @@ htmlSection( $head, $body );
 }
 $head = [ //////////////////////////////////
 	  'title'  => 'GPIO Devices'
-	, 'status' => 'configtxt'
 ];
 $body = [
 	[
@@ -216,7 +216,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 HTML
-		, 'exist'    => file_exists( '/usr/bin/firefox' ) || file_exists( '/usr/bin/chromium' )
+		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
 		  'label'   => 'VU LED'
@@ -247,9 +247,9 @@ HTML
 	, [
 		  'label'    => 'Time Zone'
 		, 'id'       => 'timezone'
-		, 'sublabel' => 'timesyncd'
+		, 'sublabel' => 'timedatectl'
 		, 'icon'     => 'globe'
-		, 'status'   => 'timesyncd'
+		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'self'
 		, 'help'     => <<< HTML

@@ -182,7 +182,10 @@ function psCoverart( data ) {
 				if ( path === '/data/audiocd' ) return
 				
 				if ( $( '.licover' ).length ) {
-					if ( path === $( '.licover .lipath' ).text() ) {
+					var covername = url.split( '/' ).pop().slice( 0, -4 );
+					var artistalbum = $( '.liinfo .liartist' ).text() + $( '.liinfo .lialbum' ).text();
+					artistalbum = artistalbum.replace( / "`?\/#&'/g, '' );
+					if ( covername === artistalbum ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' );

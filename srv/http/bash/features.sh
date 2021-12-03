@@ -119,7 +119,7 @@ cursor=$newcursor
 		systemctl disable --now getty@tty1
 	fi
 
-	if [[ -n $changedrotate ]]; then
+	if [[ $changedrotate ]]; then
 		$dirbash/cmd.sh rotateSplash$'\n'$newrotate # after set new data in conf file
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			case $newrotate in
@@ -145,12 +145,12 @@ cursor=$newcursor
 			CCW ) matrix='0 -1 1 1 0 0 0 0 1';;
 			UD )  matrix='-1 0 1 0 -1 1 0 0 1';;
 		esac
-		[[ -n matrix ]] && sed "s/ROTATION_SETTING/$newrotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+		[[ matrix ]] && sed "s/ROTATION_SETTING/$newrotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 	fi
-	if [[ -n $restart ]] || ! systemctl -q is-active localbrowser; then
+	if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 		systemctl restart bootsplash localbrowser
 		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
-	elif [[ -n $changedscreenoff ]]; then
+	elif [[ $changedscreenoff ]]; then
 		localbrowserXset $newscreenoff
 		if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
 			[[ $off == 0 ]] && tf=false || tf=true
@@ -197,7 +197,7 @@ scrobbleset )
 		fileconf=$dirscrobble/${keys[ i ]}
 		[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
 	done
-	if [[ -z $password ]]; then
+	if [[ ! $password ]]; then
 		if [[ -e $dirscrobble/key && $username == $( cat $dirscrobble/user ) ]]; then
 			touch $dirsystem/scrobble
 			pushRefresh
@@ -282,7 +282,7 @@ spotifyddisable )
 	;;
 spotifytoken )
 	code=${args[1]}
-	[[ -z $code ]] && rm -f $dirsystem/spotify && exit
+	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
 	spotifyredirect=$( grep ^spotifyredirect $dirbash/features-data.sh | cut -d= -f2 )
@@ -315,7 +315,7 @@ stoptimerset )
 	min=${args[1]}
 	poweroff=${args[2]}
 	[[ $poweroff == true ]] && off=poweroff
-	killall stoptimer.sh &> /dev/null
+	kill -9 $( pgrep stoptimer ) &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ $min != false ]]; then
 		$dirbash/stoptimer.sh $min $off &> /dev/null &

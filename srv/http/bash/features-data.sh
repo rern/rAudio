@@ -64,7 +64,6 @@ if [[ -e $xinitrc ]]; then
 		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false }'
 	fi
 	data+='
-, "browser"          : "'$( [[ -e /usr/bin/firefox ]] && echo firefox || echo chromium )'"
 , "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true )'
 , "localbrowserconf" : '$localbrowserconf
 fi

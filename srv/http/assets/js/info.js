@@ -593,8 +593,8 @@ function checkLength() {
 function infoCheckSet() {
 	if ( O.checkblank || O.checklength || O.checkchanged ) {
 		$inputs_txt.on( 'keyup paste cut', function() {
-			if ( O.checkblank ) checkBlank();
-			if ( O.checklength ) setTimeout( checkLength, 0 ); // ios: wait for value
+			if ( O.checkblank ) setTimeout( checkBlank, 0 ); // ios: wait for value
+			if ( O.checklength ) setTimeout( checkLength, 25 );
 			if ( O.checkchanged ) {
 				var prevval = O.values.join( '' );
 				var values = infoVal();

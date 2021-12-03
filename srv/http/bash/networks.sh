@@ -18,13 +18,13 @@ netctlSwitch() {
 	for i in {1..10}; do
 		sleep 1
 		if [[ $( netctl is-active "$ssid" ) == active ]]; then
-			[[ -n $connected ]] && netctl disable "$connected"
+			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
 			active=1
 			break
 		fi
 	done
-	[[ -z $active ]] && netctl switch-to "$connected" && sleep 2
+	[[ ! $active ]] && netctl switch-to "$connected" && sleep 2
 	pushRefresh
 	if systemctl -q is-active hostapd; then
 		data=$( $dirbash/features-data.sh )
@@ -38,7 +38,6 @@ avahi )
 	hostname=$( hostname )
 	echo "\
 <bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
-
 $( timeout 1 avahi-browse -arp \
 	| cut -d';' -f7,8 \
 	| grep $hostname \
@@ -75,7 +74,7 @@ Connection=wireless
 ESSID=\"$ESSID\"
 IP=$( jq -r .IP <<< $data )
 "
-	if [[ -n $Key ]]; then
+	if [[ $Key ]]; then
 		profile+="\
 Security=$( jq -r .Security <<< $data )
 Key=\"$Key\"
@@ -117,7 +116,7 @@ Name=eth0
 [Network]
 DNSSEC=no
 "
-	if [[ -z $ip ]];then
+	if [[ ! $ip ]];then
 		eth0+="\
 DHCP=yes
 "
@@ -146,14 +145,11 @@ editwifidhcp )
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-
 $( ifconfig eth0 | grep -v 'RX\\|TX' | grep . )"
 	;;
 ifconfigwlan )
 	echo "\
-<bll># ifconfig wlan0
-# iwconfig wlan0</bll>
-
+<bll># ifconfig wlan0</bll>
 $( ifconfig wlan0 | grep -v 'RX\\|TX')
 $( iwconfig wlan0 | grep . )"
 	;;

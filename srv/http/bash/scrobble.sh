@@ -20,7 +20,7 @@ apikey=${keys[0]}
 sharedsecret=${keys[1]}
 sk=$( cat $dirsystem/scrobble.conf/key )
 timestamp=$( date +%s )
-if [[ -n $album ]]; then
+if [[ $album ]]; then
 	sigalbum="album${Album}"
 	dataalbum="album=$Album"
 fi
@@ -44,4 +44,4 @@ if [[ $reponse =~ error ]]; then
 else
 	[[ -e $dirsystem/scrobble.conf/notify ]] && msg="${Title//\"/\\\"}"
 fi
-[[ -n $msg ]] && pushstreamNotify Scrobble "$msg" lastfm
+[[ $msg ]] && pushstreamNotify Scrobble "$msg" lastfm

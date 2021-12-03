@@ -37,32 +37,30 @@ fi
 [[ $album == null ]] && exit
 
 image=$( jq -r .image <<< "$album" )
-if [[ -n $image || $image != null ]]; then
+if [[ $image && $image != null ]]; then
 	extralarge=$( jq -r '.[3]."#text"' <<<  $image )
-	if [[ -n $extralarge ]]; then
+	if [[ $extralarge ]]; then
 		url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
 	else
 ### 2 - coverartarchive.org #####################################
 		mbid=$( jq -r .mbid <<< "$album" )
-		[[ -n $mbid || $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
+		[[ $mbid && $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
 	fi
 fi
-[[ -z $url || $url == null ]] && exit
+[[ ! $url || $url == null ]] && exit
 
-if [[ $type == audiocd ]]; then
-	urlname=/data/audiocd/$discid
-else
-	[[ -n $type ]] && prefix=$type || prefix=online
-	urlname=/data/shm/$prefix/$name
-fi
 ext=${url/*.}
-coverart=$urlname.$ext
-coverfile=/srv/http$coverart
+if [[ $type == audiocd ]]; then
+	coverfile=/srv/http/data/audiocd/$discid.$ext
+else
+	[[ $type ]] && prefix=$type || prefix=online
+	coverfile=/srv/http/data/shm/$prefix/$name.$ext
+fi
 curl -sL $url -o $coverfile
 [[ ! -e $coverfile ]] && exit
 
 data='
-  "url"   : "'$coverart'"
+  "url"   : "'${coverfile:9}'"
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )

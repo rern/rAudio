@@ -13,7 +13,7 @@ if [[ $cue == false ]]; then
 		keys+=( title track )
 		for i in {0..8}; do
 			val=${args[$i]//\"/\\\"}
-			[[ -z $val ]] && continue
+			[[ ! $val ]] && continue
 			
 			[[ $val == -1 ]] && val=
 			kid3-cli -c "set ${keys[$i]} \"$val\"" "$path"
@@ -22,7 +22,7 @@ if [[ $cue == false ]]; then
 	else
 		for i in {0..6}; do
 			val=${args[$i]//\"/\\\"}
-			[[ -z $val ]] && continue
+			[[ ! $val ]] && continue
 			
 			[[ $val == -1 ]] && val=
 			kid3-cli -c "set ${keys[$i]} \"$val\"" "$path/"*.*
@@ -40,9 +40,9 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 		lines=( 'TITLE' 'PERFORMER' '' 'REM COMPOSER' 'REM CONDUCTOR' 'REM DATE' 'REM GENRE' )
 		for i in {0..6}; do
 			val=${args[$i]}
-			[[ -z $val ]] && continue
+			[[ ! $val ]] && continue
 			
-			[[ -n ${lines[$i]} ]] && sed -i "/^${lines[$i]}/ d" "$path"
+			[[ ${lines[$i]} ]] && sed -i "/^${lines[$i]}/ d" "$path"
 			[[ $val == -1 ]] && continue
 			
 			case $i in

@@ -6,49 +6,46 @@ album=${args[1]}
 file=${args[2]}
 type=${args[3]}
 date=$( date +%s )
+dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
-
-coverFilesLimit() {
-	/srv/http/bash/cmd.sh coverfileslimit
-}
-# already got path in temp file
-[[ -e $dirshm/local/$covername ]] && cat $dirshm/local/$covername && exit
-# already got embedded
-[[ -e /srv/http/data/embedded/$covername.jpg ]] && echo /data/embedded/$covername.jpg && exit
-# already got online
-for ext in jpg png; do
-	[[ -e $dirshm/online/$covername.$ext ]] && echo ${coverfile:0:-4}.$date.$ext && exit
-done
-
-# cover file
+filename=$( basename "$file" )
 path="/mnt/MPD/$file"
-[[ -f "$path" ]] && path=$( dirname "$path" ) # from status.sh as file
+[[ -f "$path" ]] && path=$( dirname "$path" )
+
+# found cover file
+localfile=$dirshm/local/$covername
+[[ -e $localfile ]] && cat $localfile && exit
+# found embedded
+embeddedname=$( echo ${filename%.*} | tr -d ' "`?/#&'"'" )
+embeddedfile=$dirshm/embedded/$embeddedname.jpg
+[[ -e "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
+# found online
+onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
+[[ -e $onlinefile ]] && echo ${onlinefile:9} && exit
+
+##### cover file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-[[ -z $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
-										| grep -i '/album\....$\|/folder\....$\|/front\....$' \
+[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
+										| grep -i '/album\....$\|cover\....$\|/folder\....$\|/front\....$' \
 										| head -1 )
-if [[ -n $coverfile ]]; then
+if [[ $coverfile ]]; then
 	echo ${coverfile:0:-4}.$date.${coverfile: -3} | tee $dirshm/local/$covername
-	coverFilesLimit
+	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
 
-# embedded
-path="/mnt/MPD/$file"
-dir=$( dirname "$path" )
-filename=$( basename "$path" )
-coverfile=/srv/http/data/embedded/$covername.jpg
-kid3-cli -c "cd \"$dir\"" \
+##### embedded
+kid3-cli -c "cd \"$path\"" \
 		-c "select \"$filename\"" \
-		-c "get picture:$coverfile" &> /dev/null # suppress '1 space' stdout
-if [[ -e $coverfile ]]; then
-	echo /data/embedded/$covername.$date.jpg | tee $dirshm/local/$covername
-	coverFilesLimit
+		-c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
+if [[ -e $embeddedfile ]]; then
+	echo ${embeddedfile:9}
 	exit
 fi
 
-# online
-killall status-coverartonline.sh &> /dev/null # new track - kill if still running
-$dirbash/status-coverartonline.sh "$artist
+##### online
+kill -9 $( pgrep status-coverartonline ) &> /dev/null
+$dirbash/status-coverartonline.sh "\
+$artist
 $album" &> /dev/null &

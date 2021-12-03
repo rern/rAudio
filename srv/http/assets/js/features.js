@@ -66,7 +66,7 @@ $( '.screenshot' ).click( function() {
 	info( {
 		  icon        : 'spotify'
 		, title       : 'Spotify for Developers'
-		, message     : '<img src="https://raw.githubusercontent.com/rern/_assets/master/guide/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
+		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
 		, okno        : 1
 	} );
 } );

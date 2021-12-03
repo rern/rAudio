@@ -107,7 +107,10 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( G.status.coverart.slice( 0, 9 ) === '/data/shm'
+	var srcsplit = G.status.coverart.split( '/' );
+	if ( G.status.file
+		&& srcsplit[ 3 ] !== 'embedded'
+		&& srcsplit[ 0 ] === 'data'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {
 		$( '#divcover' ).append( icoversave );
@@ -373,6 +376,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 	var artist = $( '#artist' ).text();
 	var title = $( '#title' ).text();
 	var album = $( '#album' ).text();
+	if ( album.indexOf( '://' ) !== -1 ) album = '';
 	if ( G.lyrics
 		&& !G.status.webradio
 		&& artist === $( '#lyricsartist' ).text()
@@ -727,7 +731,7 @@ $( '.map' ).click( function() {
 		volumeBarHide();
 		return
 		
-	} else if ( $( '#divcover .coveredit' ).length ) {
+	} else if ( $( '.coveredit.cover' ).length ) {
 		$( '#divcover .coveredit.cover' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 		return

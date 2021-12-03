@@ -8,7 +8,18 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211125
+# 20211203
+rm -rf /srv/http/data/embedded
+mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+
+sed -i '/chromium/ d' /etc/pacman.conf
+
+file=$( ls /etc/systemd/network/eth* )
+grep -q RequiredForOnline=no $file || echo "
+[Link]
+RequiredForOnline=no" >> $file
+
+# 20211126
 rm -f $dirshm/local/*
 
 file=$dirsystem/lcdchar.conf
@@ -18,33 +29,34 @@ if [[ -e $file ]] && ! grep -q inf $file; then
 ' -e "3 a\inf=$inf
 " $dirsystem/lcdchar.conf
 fi
+
 # 20121122
 rm -rf /etc/systemd/system/upmpdcli.service.d
 if [[ $( ls /srv/http/data/bookmarks ) ]]; then
 	readarray -t files <<< $( ls -d1 /srv/http/data/bookmarks/* )
-	if [[ -n $files ]]; then
+	if [[ $files ]]; then
 		for file in "${files[@]}"; do
 			path=$( head -1 "$file" )
 			[[ ${path:0:9} == webradios ]] && webradio=1 || webradio=
-			[[ -n $webradio ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
+			[[ $webradio ]] && coverpath="/srv/http/data/$path" || coverpath="/mnt/MPD/$path"
 			coverartfile=$( ls -1X "$coverpath"/coverart.* 2> /dev/null \
 								| grep -i '.gif$\|.jpg$\|.png$' \
 								| head -1 ) # full path
-			if [[ -n $coverartfile ]]; then
+			if [[ $coverartfile ]]; then
 				coverartfile=$( echo $coverartfile | sed 's|^/srv/http||' )
 			elif [[ -z $webradio ]]; then
 				coverfile=$( ls -1X "$coverpath" \
 								| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
 								| grep -i '.gif$\|.jpg$\|.png$' \
 								| head -1 ) # filename only
-				if [[ -n $coverfile ]]; then
+				if [[ $coverfile ]]; then
 					ext=${coverfile: -3}
 					coverartfile="$coverpath/coverart.${ext,,}"
 					cp "$coverpath/$coverfile" "$coverartfile" 2> /dev/null
 					[[ -e $coverartfile ]] || coverartfile=
 				fi
 			fi
-			[[ -n $coverartfile ]] && path="\
+			[[ $coverartfile ]] && path="\
 $path
 $coverartfile"
 			echo "$path" > "$file"
@@ -52,17 +64,10 @@ $coverartfile"
 	fi
 fi
 
-if ! grep -q 'chromium$' /etc/pacman.conf; then
-	sed -i -e '/^IgnorePkg/ d
-' -e '/^#IgnorePkg/ a\
-IgnorePkg   = chromium' /etc/pacman.conf
-fi
-
 [[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}
 
-mkdir -p $dirshm/{airplay,spotify,local,online,webradio}
 player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
-[[ -n $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
+[[ $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
 chmod -R 777 $dirshm
 systemctl try-restart shairport-sync
 
@@ -100,15 +105,6 @@ if ! grep -q bton /etc/udev/rules.d/bluetooth.rules; then
 	echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
 ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
 	udevadm control --reload-rules && udevadm trigger
-fi
-
-# 20211019
-mv $dirsystem/equalizer.{conf,presets} &> /dev/null
-if [[ ! -e /usr/bin/chromium ]] && grep -q console=tty3 /boot/cmdline.txt; then
-	echo -e "$bar Switch from Firefox to Chromium ..."
-	echo This may take a couple minutes to download in some regions.
-	pacman -R --noconfirm firefox
-	pacman -Sy --noconfirm chromium
 fi
 
 installstart "$1"

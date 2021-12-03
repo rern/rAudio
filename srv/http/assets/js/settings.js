@@ -27,17 +27,18 @@ var cmd = {
 	, avahi        : networkssh +'avahi'
 	, bluetooth    : 'bluetoothctl info'
 	, bluetoothctl : systemsh +'bluetoothstatus'
-	, configtxt    : systemsh +'configtxtget'
-	, iw           : 'iw reg get; iw list'
-	, journalctl   : systemsh +'journalctlget'
+	, iw           : "echo '<bll># iw reg get</bll>'; iw reg get; echo '<bll># iw list</bll>';  iw list"
+	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
-	, rfkill       : 'rfkill'
+	, rfkill       : "echo '<bll># rfkill</bll>'; rfkill"
 	, soundprofile : systemsh +'soundprofileget'
+	, system       : systemsh +'systemconfig'
+	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'systemd-timesyncd', 'upmpdcli' ];
+var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
 function status( id, refresh ) {
 	var $el = $( '#code'+ id );
@@ -51,7 +52,6 @@ function status( id, refresh ) {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
-	if ( id === 'timesyncd' ) id = 'systemd-timesyncd';
 	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );

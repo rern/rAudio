@@ -24,7 +24,7 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	[[ -z $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -33,9 +33,9 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 lcd=$( ls /boot/lcd* 2> /dev/null )
-if [[ -n $lcd ]]; then
+if [[ $lcd ]]; then
 	model=${lcd/*lcd}
-	[[ -z $model ]] && model=tft35a
+	[[ ! $model ]] && model=tft35a
 	rm /boot/lcd*
 	$dirbash/system.sh lcdset$'\n'$model
 	systemctl enable localbrowser
@@ -53,7 +53,7 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 echo mpd > $dirshm/player
-mkdir $dirshm/{airplay,spotify,local,online,webradio}
+mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
@@ -61,20 +61,20 @@ $dirbash/mpd-conf.sh # mpd.service started by this script
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
 (( $( rfkill | grep wlan | wc -l ) > 1 )) && usbwifi=1
-if [[ -z $profiles && -z $hostapd ]] || [[ -n $usbwifi ]]; then
+if [[ ! $profiles && ! $hostapd ]] || [[ $usbwifi ]]; then
 	rmmod brcmfmac &> /dev/null
 fi
-if [[ -z $onboardwireless ]]; then # usb bluetooth
+if [[ ! $onboardwireless ]]; then # usb bluetooth
 	rfkill | grep -q bluetooth && systemctl enable --now bluetooth || systemctl disable --now bluetooth
 fi
 
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
-[[ -z $connected && -n $profiles && -z $hostapd ]] && connectedCheck 30 3
+[[ ! $connected && $profiles && ! $hostapd ]] && connectedCheck 30 3
 
-[[ -n $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
-if [[ -n $nas ]]; then
+[[ $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
+if [[ $nas ]]; then
 	for mountpoint in "${nas[@]}"; do # ping target before mount
 		ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
 				| cut -d' ' -f1 \
@@ -116,15 +116,9 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
-if [[ -n $connected ]]; then
+if [[ $connected ]]; then
 	rfkill | grep -q wlan && iw wlan0 set power_save off
-	if : >/dev/tcp/8.8.8.8/53; then
-		$dirbash/cmd.sh addonsupdates
-		if ! ifconfig | grep -A1 ^eth | grep -q 'inet.*broadcast'; then # not by eth
-			server=$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )
-			ntpdate $server # fix wlan time sync
-		fi
-	fi
+	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
 else
 	if [[ ! -e $dirsystem/wlannoap ]]; then
 		modprobe brcmfmac &> /dev/null 
@@ -135,7 +129,7 @@ fi
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
-	if [[ -n $usb ]]; then
+	if [[ $usb ]]; then
 		duration=$( cat $dirsystem/hddspindown )
 		readarray -t usb <<< "$usb"
 		for dev in "${usb[@]}"; do

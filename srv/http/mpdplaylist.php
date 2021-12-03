@@ -11,6 +11,8 @@ switch( $cmd ) {
 case 'current':
 	$lists = playlist();
 	$array = htmlPlaylist( $lists );
+	$elapsed = exec( '{ echo status; sleep 0.05; } | telnet 127.0.0.1 6600 2> /dev/null | grep ^elapsed' );
+	$array[ 'elapsed' ] = $elapsed !== '' ? round( substr( $elapsed, 9 ) ) : false;
 	echo json_encode( $array );
 	break;
 case 'delete':

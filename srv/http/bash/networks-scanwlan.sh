@@ -17,7 +17,7 @@ listProfile() {
 }
 listProfile
 
-if [[ -n $netctllist ]]; then
+if [[ $netctllist ]]; then
 	readarray -t netctllist_ar <<<"$netctllist"
 	# pre-scan saved profile to force display hidden ssid
 	for name in "${netctllist_ar[@]}"; do
@@ -39,11 +39,11 @@ for line in "${lines[@]}"; do
 	line=$( echo $line | tr '^' '\n' )
 	readarray -t val <<< "$line"
 	ssid=${val[2]}
-	[[ -z $ssid ]] && continue
+	[[ ! $ssid ]] && continue
 	
 	dbm=${val[0]}
 	encrypt=${val[1]}
-	[[ -z ${val[3]} ]] && echo true
+	[[ ! ${val[3]} ]] && echo true
 	data+=',{
   "dbm"       : "'$dbm'"
 , "ssid"      : "'$ssid'"

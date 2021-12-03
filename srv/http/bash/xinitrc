@@ -3,12 +3,22 @@
 export XDG_CACHE_HOME="/tmp/.cache"
 
 . /srv/http/data/system/localbrowser.conf
-zoom=$( echo "print $zoom / 100" | perl )
 
 /srv/http/bash/features.sh localbrowserxset
 
-[[ $cursor == false ]] && cursor=no || cursor=yes
-ifconfig | grep -A1 'eth0\|wlan0' | grep -q inet || cursor=yes # no network connection
+if ifconfig | grep -q broadcast; then
+	[[ $cursor == false ]] && cursor=no || cursor=yes
+else # no network connection
+	cursor=yes
+fi
 matchbox-window-manager -use_cursor $cursor &
 
-chromium localhost --kiosk --incognito --disable_gpu --disable-software-rasterizer --no-sandbox --no-xshm --force-device-scale-factor=$zoom
+zoom=$( echo "print $zoom / 100" | perl )
+[[ $zoom != 1 ]] && scalefactor="--force-device-scale-factor=$zoom"
+chromium localhost $scalefactor \
+	--kiosk \
+	--incognito \
+	--disable_gpu \
+	--disable-software-rasterizer \
+	--no-sandbox \
+	--no-xshm

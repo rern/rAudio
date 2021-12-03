@@ -34,8 +34,8 @@ if [[ -e $onlinefile ]]; then
 else
 	/srv/http/bash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
-elapsed=$( [[ -z $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
-Time=$( [[ -z $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )
+elapsed=$( [[ ! $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
+Time=$( [[ ! $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )
 timestamp=$( date +%s%3N )
 
 data='

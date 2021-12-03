@@ -18,7 +18,7 @@ fi
 j=0
 while read vu; do
 	v=${vu:0:-1}
-	if [[ -n $vuled ]]; then
+	if [[ $vuled ]]; then
 		l=$(( v / 6 ))
 		if (( $l < 7 )); then
 			for i in ${off[$l]}; do
@@ -31,7 +31,7 @@ while read vu; do
 			done
 		fi
 	fi
-	if [[ -n $vumeter ]]; then
+	if [[ $vumeter ]]; then
 		(( j++ ))
 		if (( $j == 10 )); then # framerate throttle - 60 to 6
 			curl -s -X POST http://127.0.0.1/pub?id=vumeter -d '{"val":'$v'}'

@@ -203,18 +203,17 @@ function coverartChange() {
 		var type = 'coverart';
 	}
 	if ( G.playback ) {
-		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
 		var pbcoverdefault = $( '#coverart' ).attr( 'src' ) === G.coverdefault;
+		var embedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	} else {
-		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 2 ] === 'embedded';
 		var lionlinefetched = $( '.licover .cover-save' ).length;
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
+		var embedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	}
-	var coverartlocal = ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
+	var coverartlocal = ( G.playback && !embedded && !pbonlinefetched && !pbcoverdefault )
 						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
-	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
 		  icon        : '<i class="iconcover"></i>'
@@ -222,7 +221,7 @@ function coverartChange() {
 		, message     : '<img class="imgold">'
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
-		, footer      : footer
+		, footer      : embedded
 		, beforeshow  : function() { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );
 		}
@@ -282,7 +281,7 @@ function coverartSave() {
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
 		, ok      : function() {
-			bash( [ 'coversave', '/srv/http'+ src.slice( 0, -15 ) + src.slice( -4 ), path, covername ] );
+			bash( [ 'coversave', '/srv/http'+ src, path, covername ] );
 		}
 	} );
 }
@@ -614,11 +613,11 @@ var chklibrary = {
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'
-	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
 	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
+	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
@@ -635,8 +634,8 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home Display' : 'Library/Playlist Options'
-		, message      : page1 ? '1/2 - Show selected items:' : '2/2 - Options:'
+		, title        : page1 ? 'Library Home' : 'Library/Playlist Options'
+		, message      : page1 ? '1/2 - Show:' : '2/2 - Options:'
 		, messagealign : 'left'
 		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
 		, arrowleft    : page1 ? '' : infoLibrary
@@ -647,7 +646,7 @@ function infoLibrary( page2 ) {
 		, beforeshow   : function() {
 			$( '#infoContent' ).css( 'height', 340 );
 			if ( page1 ) {
-				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
+				$( '#infoContent tr' ).last().before( '<tr><td style="height: 16px" colspan="2"><hr></td></tr>' );
 			} else {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
@@ -680,7 +679,7 @@ var chkplayback = {
 	, time         : 'Time'
 	, radioelapsed : 'WebRadio time'
 	, cover        : 'Coverart'
-	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> VU cover'
+	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
 	, volume       : 'Volume'
 	, vumeter      : 'VU meter'
 	, buttons      : 'Buttons'
@@ -695,8 +694,8 @@ function infoPlayback() {
 	} );
 	info( {
 		  icon         : 'playback'
-		, title        : 'Playback Display'
-		, message      : 'Show selected items:'
+		, title        : 'Playback'
+		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
@@ -1130,6 +1129,7 @@ function renderLibraryList( data ) {
 }
 function renderPlayback() {
 	local();
+	if ( G.status.state === 'stop' ) setProgress( 0 );
 	$volumeRS.setValue( G.status.volume );
 	G.status.volumemute != 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
@@ -1157,7 +1157,6 @@ function renderPlayback() {
 	$( '#total' ).text( timehms );
 	$timeRS.option( 'max', time || 100 );
 	if ( G.status.state === 'stop' ) {
-		setProgress( 0 );
 		$( '#elapsed, #total, #progress' ).empty();
 		$( '#title' ).removeClass( 'gr' );
 		if ( timehms ) {
@@ -1196,6 +1195,7 @@ function renderPlayback() {
 function renderPlaylist( data ) {
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
+	G.status.elapsed = data.elapsed;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-open' ).toggleClass( 'disable', G.status.playlists === 0 );
@@ -1643,7 +1643,6 @@ function setTrackCoverart() {
 	
 	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
 		$( 'html, body' ).scrollTop( 0 );
-		if ( $( '#liimg' ).attr( 'src' ).slice( 0, 9 ) === '/data/shm' ) $( '#liimg' ).after( icoversave );
 	} ).off( 'error' ).on( 'error', function() {
 		$( this ).attr( 'src', G.coverdefault );
 	} );
