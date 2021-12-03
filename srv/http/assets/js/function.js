@@ -203,18 +203,17 @@ function coverartChange() {
 		var type = 'coverart';
 	}
 	if ( G.playback ) {
-		var pbembedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded';
 		var pbonlinefetched = $( '#divcover .cover-save' ).length;
 		var pbcoverdefault = $( '#coverart' ).attr( 'src' ) === G.coverdefault;
+		var embedded = $( '#coverart' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	} else {
-		var liembedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded';
 		var lionlinefetched = $( '.licover .cover-save' ).length;
 		var licoverdefault = $( '.licoverimg img' ).attr( 'src' ) === G.coverdefault;
+		var embedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	}
-	var coverartlocal = ( G.playback && !pbembedded && !pbonlinefetched && !pbcoverdefault )
+	var coverartlocal = ( G.playback && !embedded && !pbonlinefetched && !pbcoverdefault )
 						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
-	var footer = ( G.playback && pbembedded ) || ( G.library && liembedded ) ? '(Embedded)' : '';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
 		  icon        : '<i class="iconcover"></i>'
@@ -222,7 +221,7 @@ function coverartChange() {
 		, message     : '<img class="imgold">'
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
-		, footer      : footer
+		, footer      : embedded
 		, beforeshow  : function() { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );
 		}
