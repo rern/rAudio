@@ -17,7 +17,8 @@ path="/mnt/MPD/$file"
 localfile=$dirshm/local/$covername
 [[ -e $localfile ]] && cat $localfile && exit
 # found embedded
-embeddedfile=$dirshm/embedded/$( echo ${filename%.*} | tr -d ' "`?/#&'"'" ).jpg
+embeddedname=$( echo ${filename%.*} | tr -d ' "`?/#&'"'" )
+embeddedfile=$dirshm/embedded/$embeddedname.jpg
 [[ -e "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
 onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
