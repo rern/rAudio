@@ -366,12 +366,12 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-samplingfile=$dirshm/sampling-$( echo $file | tr -d ' "`?/#&'"'_.\-" )
+samplingfile=$dirshm/sampling/$( echo $file | tr -d ' "`?/#&'"'_.\-" )
 samplingSave() {
 	if [[ $player != upnp ]]; then
 		echo $sampling > $samplingfile
-		files=$( ls -1t $dirshm/sampling-* 2> /dev/null )
-		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+		files=$( ls -1t $dirshm/sampling 2> /dev/null )
+		(( $( echo "$files" | wc -l ) > 20 )) && rm -f "$( echo "$files" | tail -1 )"
 	fi
 }
 samplingLine() {

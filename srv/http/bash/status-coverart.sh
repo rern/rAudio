@@ -9,6 +9,7 @@ date=$( date +%s )
 dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
+filename=$( basename "$file" )
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" )
 
@@ -16,7 +17,7 @@ path="/mnt/MPD/$file"
 localfile=$dirshm/local/$covername
 [[ -e $localfile ]] && cat $localfile && exit
 # found embedded
-embeddedfile=/srv/http/data/embedded/$covername.jpg
+embeddedfile="$dirshm/embedded/$filename.jpg"
 [[ -e "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
 onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
@@ -34,12 +35,11 @@ if [[ $coverfile ]]; then
 fi
 
 ##### embedded
-filename=$( basename "$file" )
 kid3-cli -c "cd \"$path\"" \
 		-c "select \"$filename\"" \
-		-c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
+		-c "get picture:\"$embeddedfile\"" &> /dev/null # suppress '1 space' stdout
 if [[ -e $embeddedfile ]]; then
-	echo ${embeddedfile:9:-4}.$date.jpg
+	echo ${embeddedfile:9}
 	exit
 fi
 

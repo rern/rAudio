@@ -9,6 +9,9 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20211203
+rm -rf /srv/http/data/embedded
+mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+
 sed -i '/chromium/ d' /etc/pacman.conf
 
 file=$( ls /etc/systemd/network/eth* )
@@ -63,7 +66,6 @@ fi
 
 [[ -e /etc/sudoers.d/http ]] && rm -f /etc/sudoers.d/{http,shairport-sync,upmpdcli}
 
-mkdir -p $dirshm/{airplay,spotify,local,online,webradio}
 player=$( ls $dirshm/player-* 2> /dev/null | cut -d- -f2 )
 [[ $player ]] && echo $player > $dirshm/player && rm -f $dirshm/player-*
 chmod -R 777 $dirshm

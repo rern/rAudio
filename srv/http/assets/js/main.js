@@ -108,6 +108,7 @@ $( '#loader' ).click( function() {
 } );
 $( '#coverart' ).on( 'load', function() {
 	if ( G.status.file
+		&& G.status.coverart.slice( 0, 18 ) !== '/data/shm/embedded'
 		&& G.status.coverart.slice( 0, 9 ) === '/data/shm'
 		&& [ 'NAS', 'SD/', 'USB' ].indexOf( G.status.file.slice( 0, 3 ) ) !== -1
 	) {

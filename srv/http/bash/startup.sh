@@ -53,7 +53,7 @@ if [[ -e /boot/wifi ]]; then
 fi
 # ----------------------------------------------------------------------------
 echo mpd > $dirshm/player
-mkdir $dirshm/{airplay,spotify,local,online,webradio}
+mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 $dirbash/mpd-conf.sh # mpd.service started by this script
 

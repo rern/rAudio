@@ -61,7 +61,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
-			rm -f /srv/http/data/shm/embedded/$covername /srv/http/data/shm/local/$covername
+			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -93,7 +93,7 @@ jpgThumbnail() {
 			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f /srv/http/data/shm/embedded/$covername /srv/http/data/shm/local/$covername
+			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		webradio )
 			filenoext=${target:0:-4}
@@ -420,8 +420,8 @@ $id" &> /dev/null &
 	rm -f "$coverfile" \
 		"$dir/coverart".* \
 		"$dir/thumb".* \
-		$dirshm/local/$covername \
-		$dirdata/embedded/$covername
+		$dirshm/embedded/* \
+		$dirshm/local/$covername
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
