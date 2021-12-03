@@ -635,8 +635,8 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home Display' : 'Library/Playlist Options'
-		, message      : page1 ? '1/2 - Show selected items:' : '2/2 - Options:'
+		, title        : page1 ? 'Library Home' : 'Library/Playlist Options'
+		, message      : page1 ? '1/2 - Show / Hide:' : '2/2 - Options:'
 		, messagealign : 'left'
 		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
 		, arrowleft    : page1 ? '' : infoLibrary
@@ -680,7 +680,7 @@ var chkplayback = {
 	, time         : 'Time'
 	, radioelapsed : 'WebRadio time'
 	, cover        : 'Coverart'
-	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> VU cover'
+	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
 	, volume       : 'Volume'
 	, vumeter      : 'VU meter'
 	, buttons      : 'Buttons'
@@ -695,8 +695,8 @@ function infoPlayback() {
 	} );
 	info( {
 		  icon         : 'playback'
-		, title        : 'Playback Display'
-		, message      : 'Show selected items:'
+		, title        : 'Playback'
+		, message      : 'Show / Hide: &emsp; &emsp; &emsp; &emsp; Options:'
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
