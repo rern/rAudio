@@ -17,7 +17,7 @@ path="/mnt/MPD/$file"
 localfile=$dirshm/local/$covername
 [[ -e $localfile ]] && cat $localfile && exit
 # found embedded
-embeddedfile="$dirshm/embedded/$filename.jpg"
+embeddedfile=$dirshm/embedded/$( echo ${filename%.*} | tr -d ' "`?/#&'"'" ).jpg
 [[ -e "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
 onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
@@ -37,7 +37,7 @@ fi
 ##### embedded
 kid3-cli -c "cd \"$path\"" \
 		-c "select \"$filename\"" \
-		-c "get picture:\"$embeddedfile\"" &> /dev/null # suppress '1 space' stdout
+		-c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
 if [[ -e $embeddedfile ]]; then
 	echo ${embeddedfile:9}
 	exit
