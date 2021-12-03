@@ -17,7 +17,6 @@ elapsedGet() {
 }
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
-	exit
 }
 
 if (( $# > 0 )); then # snapclient
@@ -136,6 +135,7 @@ $( cat $dirshm/spotify/status )"
 	esac
 # >>>>>>>>>>
 	outputStatus
+	exit
 fi
 
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
@@ -212,6 +212,7 @@ if (( $playlistlength  == 0 )); then
 , "ip"       : "'$ip'"'
 # >>>>>>>>>>
 	outputStatus
+	exit
 fi
 fileheader=${file:0:4}
 if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
@@ -341,6 +342,7 @@ $radiosampling" > $dirshm/radio
 , "song"         : '$song
 # >>>>>>>>>>
 		outputStatus
+		exit
 	fi
 	
 	fi
@@ -469,6 +471,7 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	status+='
 , "elapsed"  : '$elapsed
 	outputStatus
+	exit
 fi
 
 if [[ $ext != CD && ! $stream ]]; then
@@ -477,16 +480,16 @@ if [[ $ext != CD && ! $stream ]]; then
 $AlbumArtist
 $Album
 $file0" )
-	elapsedGet
+fi
+elapsedGet
 ########
 	status+='
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
 # >>>>>>>>>>
-	outputStatus
-fi
+outputStatus
 
-[[ ! $Artist ]] && exit
+[[ $getcover || ! $Artist ]] && exit
 
 if [[ $stream && $state == play && $Title ]]; then
 	[[ $ext == Radio ]] && Title=${Title/ (*} # remove ' (extra tag)'
