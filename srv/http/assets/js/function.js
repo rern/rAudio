@@ -636,7 +636,7 @@ function infoLibrary( page2 ) {
 	info( {
 		  icon         : 'library'
 		, title        : page1 ? 'Library Home' : 'Library/Playlist Options'
-		, message      : page1 ? '1/2 - Show / Hide:' : '2/2 - Options:'
+		, message      : page1 ? '1/2 - Show:' : '2/2 - Options:'
 		, messagealign : 'left'
 		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
 		, arrowleft    : page1 ? '' : infoLibrary
@@ -647,7 +647,7 @@ function infoLibrary( page2 ) {
 		, beforeshow   : function() {
 			$( '#infoContent' ).css( 'height', 340 );
 			if ( page1 ) {
-				$( '#infoContent tr' ).last().before( '<tr><td colspan="2"><hr></td></tr>' );
+				$( '#infoContent tr' ).last().before( '<tr><td style="height: 16px" colspan="2"><hr></td></tr>' );
 			} else {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
@@ -696,7 +696,7 @@ function infoPlayback() {
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback'
-		, message      : 'Show / Hide: &emsp; &emsp; &emsp; &emsp; Options:'
+		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
 		, checkcolumn  : 1
