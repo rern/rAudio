@@ -140,3 +140,10 @@ if [[ -e $dirsystem/hddspindown ]]; then
 		done
 	fi
 fi
+
+readarray -t pairedmac <<< $( bluetoothctl paired-devices 2> /dev/null | cut -d' ' -f2 )
+if [[ $pairedmac ]]; then
+	for mac in "${pairedmac[@]}"; do
+		bluetoothctl connect $mac &> /dev/null
+	done
+fi
