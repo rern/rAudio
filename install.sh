@@ -14,12 +14,12 @@ mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 
 sed -i '/chromium/ d' /etc/pacman.conf
 
-file=$( ls /etc/systemd/network/eth* )
-if [[ $file ]]; then
+files=( $( ls /etc/systemd/network/eth* ) )
+for file in "${files[@]}"; do
 	grep -q RequiredForOnline=no $file || echo "
 [Link]
 RequiredForOnline=no" >> $file
-fi
+done
 
 # 20211126
 rm -f $dirshm/local/*
