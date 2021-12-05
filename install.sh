@@ -8,6 +8,12 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+#20211210
+file=/srv/http/data/mpd/counts
+grep -q playlist $file || sed -i '/genre/ a\
+  "playlist": '$( ls -1 $dirdata/playlists | wc -l )',
+' $file
+
 # 20211203
 rm -rf /srv/http/data/embedded
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
@@ -120,7 +126,3 @@ systemctl daemon-reload
 $dirbash/mpd-conf.sh
 
 installfinish
-
-# 20211022
-file=/srv/http/data/mpd/mpdignorelist
-[[ ! -e $file ]] && find /mnt/MPD -name .mpdignore | sort -V > $file &> /dev/null &

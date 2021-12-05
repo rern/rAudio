@@ -58,7 +58,7 @@ $color = file_exists( $dirsystem.'color' );
 $filecounts = $dirdata.'mpd/counts';
 $counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre' ];
+$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlist' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );
@@ -66,7 +66,7 @@ foreach( $modes as $mode ) {
 		<div class="lib-mode">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
-				<i class="fa fa-'.$modeLC.'"></i>
+				<i class="fa fa-'.( $modeLC === 'playlist' ? 'file-' : '' ).$modeLC.'"></i>
 				'.( $counts && $counts->$modeLC ? '<gr>'.number_format( $counts->$modeLC ).'</gr>' : '<gr></gr>' ).'
 				<a class="label">'.$mode.'</a>
 			</div>

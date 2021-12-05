@@ -65,6 +65,7 @@ cat << EOF > $dirsystem/display
 	"conductor": true,
 	"date": true,
 	"genre": true,
+	"playlist": true,
 	"nas": true,
 	"sd": true,
 	"usb": true,

@@ -1137,6 +1137,12 @@ $( '.mode' ).click( function() {
 	G.modescrolltop = $( window ).scrollTop();
 	if ( G.mode === 'bookmark' ) return
 	
+	if ( G.mode === 'playlist' ) {
+		$( '#button-pl-open' ).click();
+		$( '#playlist' ).click();
+		return
+	}
+	
 	var path = G.mode.toUpperCase();
 	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
 	// ( coverart, bookmark by other functions )
