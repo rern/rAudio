@@ -145,7 +145,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
- • At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
+ • At address bar of Windows File Explorer: <code>\\\\$ip</code> or <code>\\\\$hostname</code>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
