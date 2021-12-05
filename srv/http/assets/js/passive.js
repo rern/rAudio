@@ -527,7 +527,7 @@ function psRestore( data ) {
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
-		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
+		$( '#volume-knob, #vol-group i' ).toggleClass( 'disabled', data.val );
 		return
 	}
 	
