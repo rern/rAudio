@@ -24,18 +24,16 @@ restartMPD() {
 }
 
 if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
+	(( $( bluetoothctl info | grep 'Connected: yes\|Audio Sink' | wc -l ) < 2 )) && exit # not bluetooth audio device
+	
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btaplay=$( bluealsa-aplay -L )
 		[[ $btaplay ]] && break
 	done
-	[[ ! $btaplay ]] && exit # not bluetooth audio device
-	readarray -t paired <<< $( bluetoothctl paired-devices | cut -d' ' -f2 )
-	for mac in "${paired[@]}"; do
-		(( $( bluetoothctl info $mac | grep 'Connected: yes\|Audio Sink' | wc -l ) == 2 )) && sink=1 && break
-	done
-	[[ ! $sink ]] && exit
+	[[ ! $btaplay ]] && exit # no bluealsa device found
 	
+	pushstreamNotify 'Bluetooth' "$( bluetoothctl info | grep 'Name: ' | sed 's/.*Name: //' )" 'bluetooth'
 	asoundbt='
 pcm.bluealsa {
 	type plug
