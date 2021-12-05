@@ -530,7 +530,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, ok      : function() {
 					G.pladd.index = G.list.li.index();
 					G.pladd.name = G.list.name;
-					$( '#button-pl-open' ).click();
+					$( '#button-pl-playlists' ).click();
 				}
 			} );
 			return

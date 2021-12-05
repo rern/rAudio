@@ -1177,7 +1177,7 @@ function renderPlaylist( data ) {
 	G.status.elapsed = data.elapsed;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
-	$( '#button-pl-open' ).toggleClass( 'disabled', G.status.counts.playlists === 0 );
+	$( '#button-pl-playlists' ).toggleClass( 'disabled', G.status.counts.playlists === 0 );
 	if ( data == -1 ) {
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );

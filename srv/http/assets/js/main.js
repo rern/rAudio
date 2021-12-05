@@ -1157,7 +1157,7 @@ $( '.mode' ).click( function() {
 	
 	if ( G.mode === 'playlists' ) {
 		if ( $( this ).find( 'gr' ).text() ) {
-			$( '#button-pl-open' ).click();
+			$( '#button-pl-playlists' ).click();
 			$( '#playlist' ).click();
 		}
 		return
@@ -1590,12 +1590,12 @@ $( '#button-playlist' ).click( function() {
 $( '#button-pl-back' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
 	if ( G.savedplaylist ) {
-		$( '#button-pl-open' ).click();
+		$( '#button-pl-playlists' ).click();
 	} else {
 		getPlaylist();
 	}
 } );
-$( '#button-pl-open' ).click( function() {
+$( '#button-pl-playlists' ).click( function() {
 	G.savedlist = 1;
 	G.savedplaylist = 0;
 	renderPlaylistList();

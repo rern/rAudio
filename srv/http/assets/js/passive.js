@@ -426,15 +426,15 @@ function psPlaylist( data ) {
 				} ).remove();
 			} else {
 				$( '#playlist' ).click();
-				$( '#button-pl-open' ).addClass( 'disabled' );
+				$( '#button-pl-playlists' ).addClass( 'disabled' );
 			}
 			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists || '' );
 		} else if ( data.playlist === 'rename' ) {
-			if ( G.savedlist ) $( '#button-pl-open' ).click();
+			if ( G.savedlist ) $( '#button-pl-playlists' ).click();
 		} else if ( data.playlist === 'save' ) {
-			if ( G.savedlist ) $( '#button-pl-open' ).click();
+			if ( G.savedlist ) $( '#button-pl-playlists' ).click();
 			G.status.counts.playlists++;
-			$( '#button-pl-open' ).removeClass( 'disabled' );
+			$( '#button-pl-playlists' ).removeClass( 'disabled' );
 			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
