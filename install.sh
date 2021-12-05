@@ -9,6 +9,14 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211210
+file=/etc/samba/smb.conf
+if ! grep -q 'force user' $file; then
+	sed -i '/map to guest/ a\
+	force user = mpd
+' $file
+	systemctl try-restart smb
+fi
+
 file=/srv/http/data/mpd/counts
 grep -q playlists $file || sed -i '/genre/ a\
   "playlists": '$( ls -1 $dirdata/playlists | wc -l )',

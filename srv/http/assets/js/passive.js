@@ -429,6 +429,8 @@ function psPlaylist( data ) {
 				$( '#button-pl-open' ).addClass( 'disabled' );
 			}
 			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists || '' );
+		} else if ( data.playlist === 'rename' ) {
+			if ( G.savedlist ) $( '#button-pl-open' ).click();
 		} else if ( data.playlist === 'save' ) {
 			if ( G.savedlist ) $( '#button-pl-open' ).click();
 			G.status.counts.playlists++;

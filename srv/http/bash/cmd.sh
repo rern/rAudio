@@ -918,10 +918,6 @@ plremove )
 	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
-plrename )
-	mv "$dirdata/playlists/${args[1]}" "$dirdata/playlists/${args[2]}"
-	pushstreamPlaylist
-	;;
 plshuffle )
 	mpc -q shuffle
 	pushstreamPlaylist

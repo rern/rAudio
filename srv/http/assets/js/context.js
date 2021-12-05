@@ -114,13 +114,12 @@ function playlistRename() {
 		, ok           : function() {
 			var newname = infoVal();
 			playlistSave( newname, name );
-			G.list.li.find( '.plname' ).text( newname );
 		}
 	} );
 }
 function playlistSave( name, oldname ) {
 	if ( oldname ) {
-		bash( [ 'plrename', oldname, name ] );
+		list( { cmd: 'rename', oldname: oldname, name: name } );
 	} else {
 		list( { cmd: 'save', name: name }, function( data ) {
 			if ( data == -1 ) {

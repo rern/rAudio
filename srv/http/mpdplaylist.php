@@ -5,7 +5,8 @@ $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $dirplaylists = '/srv/http/data/playlists/';
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
-// current, delete, edit, get, list, load, save
+// current playlist
+// saved playlists: delete, edit, get, list, load, rename, save
 switch( $cmd ) {
 	
 case 'current':
@@ -164,6 +165,10 @@ case 'load': // load saved playlist to current
 	
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
+	break;
+case 'rename':
+	exec( '/usr/bin/sudo /usr/bin/mv /srv/http/data/playlists/{"'.$_POST[ 'oldname' ].'","'.$_POST[ 'name' ].'"}' );
+	pushstream( 'playlist', [ 'playlist' => 'rename' ] );
 	break;
 case 'save':
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
