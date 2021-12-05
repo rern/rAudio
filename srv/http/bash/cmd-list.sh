@@ -93,7 +93,7 @@ for mode in NAS SD USB; do
 done
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 webradio=$( find $dirdata/webradios -type f \
-				| grep -v '.jpg$\|.gif$' \
+				| grep -v '\.jpg$\|\.gif$' \
 				| wc -l )
 counts='
   "album"       : '$album'
