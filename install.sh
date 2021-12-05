@@ -10,8 +10,8 @@ dirsystem=/srv/http/data/system
 
 #20211210
 file=/srv/http/data/mpd/counts
-grep -q playlist $file || sed -i '/genre/ a\
-  "playlist": '$( ls -1 $dirdata/playlists | wc -l )',
+grep -q playlists $file || sed -i '/genre/ a\
+  "playlists": '$( ls -1 $dirdata/playlists | wc -l )',
 ' $file
 
 # 20211203

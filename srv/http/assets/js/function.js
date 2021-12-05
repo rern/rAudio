@@ -607,7 +607,7 @@ var chklibrary = {
 	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
-	, playlist       : '<i class="fa fa-file-playlist wh"></i><gr>Playlist</gr>'
+	, playlists      : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
 	, count          : 'Count'
 	, label          : 'Label'
 }

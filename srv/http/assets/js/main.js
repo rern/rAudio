@@ -1137,7 +1137,7 @@ $( '.mode' ).click( function() {
 	G.modescrolltop = $( window ).scrollTop();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( G.mode === 'playlist' ) {
+	if ( G.mode === 'playlists' ) {
 		$( '#button-pl-open' ).click();
 		$( '#playlist' ).click();
 		return
