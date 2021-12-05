@@ -773,22 +773,6 @@ function infoPlayback() {
 		}
 	} );
 }
-function infoNoData() {
-	if ( G.mode === 'nas' ) {
-		var message = 'Network storage not available.'
-					 +'<br>To setup:'
-					 +'<br>Settings > System - Storage - <i class="fa fa-plus-circle wh"></i>';
-	} else {
-		var message = 'Database not available for this location.'
-					 +'<br>To populate new files to database:'
-					 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
-	}
-	info( {
-		  icon      : 'library'
-		, title     : 'Library Database'
-		, message   : message
-	} );
-}
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
 		info( {
@@ -1050,11 +1034,6 @@ function renderLibrary() {
 	$( 'html, body' ).scrollTop( G.modescrolltop );
 }
 function renderLibraryList( data ) {
-	if ( data == -1 ) {
-		infoNoData();
-		return
-	}
-	
 	G.librarylist = 1;
 	var radiobtn = '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );

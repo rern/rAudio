@@ -1129,6 +1129,24 @@ $( '#lib-mode-list' ).contextmenu( function( e ) { // disable default image cont
 $( '.mode' ).click( function() {
 	G.mode = $( this ).data( 'mode' );
 	$( '#lib-search-close' ).click();
+	if ( !G.status.counts[ G.mode ] ) {
+		if ( G.mode === 'nas' ) {
+			var message = 'No network storage.';
+		} else if ( G.mode === 'playlists' ) {
+			var message = 'No saved playlists.';
+		} else {
+			var message = 'Database not available for this mode.'
+						 +'<br>To populate new data:'
+						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
+		}
+		info( {
+			  icon      : 'library'
+			, title     : 'Library Database'
+			, message   : message
+		} );
+		return
+	}
+	
 	if ( !G.color && !G.status.counts[ G.mode ] && G.status.updating_db ) {
 		infoUpdate();
 		return
@@ -1146,14 +1164,9 @@ $( '.mode' ).click( function() {
 	}
 	
 	var path = G.mode.toUpperCase();
-	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre
+	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre, playlists
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].indexOf( G.mode ) !== -1 ) { // browse by directory
-		if ( !G.status.counts[ G.mode ] ) {
-			infoNoData();
-			return
-		}
-		
 		var query = {
 			  query  : 'ls'
 			, string : path
