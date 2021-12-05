@@ -138,12 +138,12 @@ fi
 
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
-filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^song:\|^state\|^Time\|^Title'
-[[ ! $snapclient ]] && filter+='\|^playlistlength\|^random\|^repeat\|^single'
+filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
+[[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
-		| grep "$filter" )
+		| grep -E "$filter" )
 }
 mpdStatus currentsong
 # 'file:' missing / blank
@@ -289,7 +289,7 @@ $id
 $radiosampling" > $dirshm/radio
 					systemctl start radio
 				else
-					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
+					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
