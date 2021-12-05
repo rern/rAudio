@@ -69,13 +69,6 @@ function playlistDelete() {
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
 		, ok      : function() {
-			G.status.playlists--;
-			if ( G.status.playlists ) {
-				G.list.li.remove();
-				$( '#pl-savedlist-count' ).text( G.status.playlists );
-			} else {
-				$( '#playlist' ).click();
-			}
 			list( { cmd: 'delete', name: G.list.name } );
 		}
 	} );
@@ -144,9 +137,7 @@ function playlistSave( name, oldname ) {
 					}
 				} );
 			} else {
-				G.status.playlists++;
 				banner( 'Playlist Saved', name, 'playlist' );
-				$( '#button-pl-open' ).removeClass( 'disable' );
 			}
 		} );
 	}

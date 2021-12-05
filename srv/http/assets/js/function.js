@@ -1198,11 +1198,11 @@ function renderPlaylist( data ) {
 	G.status.elapsed = data.elapsed;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
-	$( '#button-pl-open' ).toggleClass( 'disable', G.status.playlists === 0 );
+	$( '#button-pl-open' ).toggleClass( 'disabled', G.status.counts.playlists === 0 );
 	if ( data == -1 ) {
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
-		$( '.pllength' ).addClass( 'disable' );
+		$( '.pllength' ).addClass( 'disabled' );
 		$( '#pl-search-close' ).click();
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
@@ -1213,8 +1213,8 @@ function renderPlaylist( data ) {
 	$( '.playlist' ).removeClass( 'hide' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
-	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disable' );
-	$( '#button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
+	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disabled' );
+	$( '#button-pl-shuffle' ).toggleClass( 'disabled', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )

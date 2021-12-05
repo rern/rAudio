@@ -31,7 +31,6 @@ else
 	player=$( cat $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( exists $dirsystem/relays )
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
@@ -68,7 +67,6 @@ else
 , "file"           : ""
 , "icon"           : "'$icon'"
 , "librandom"      : '$librandom'
-, "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
 , "scrobble"       : '$scrobble'

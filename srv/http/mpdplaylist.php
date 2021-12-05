@@ -16,7 +16,10 @@ case 'current':
 	echo json_encode( $array );
 	break;
 case 'delete':
-	unlink( $dirplaylists.$_POST[ 'name' ] );
+	$name = $_POST[ 'name' ];
+	unlink( $dirplaylists.$name );
+	pushstream( 'playlist', [ 'playlist' => 'delete', 'name' => $name ] );
+	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
 	break;
 case 'edit':
 	$name = $_POST[ 'name' ];
@@ -170,6 +173,7 @@ case 'save':
 	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
 	file_put_contents( $file, $list );
 	pushstream( 'playlist', [ 'playlist' => 'save' ] );
+	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
 	break;
 	
 }

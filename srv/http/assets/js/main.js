@@ -1138,8 +1138,10 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	if ( G.mode === 'playlists' ) {
-		$( '#button-pl-open' ).click();
-		$( '#playlist' ).click();
+		if ( $( this ).find( 'gr' ).text() ) {
+			$( '#button-pl-open' ).click();
+			$( '#playlist' ).click();
+		}
 		return
 	}
 	

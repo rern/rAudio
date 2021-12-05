@@ -417,13 +417,27 @@ function psPlaylist( data ) {
 			} else if ( G.playlist ) {
 				if ( !G.plremove ) renderPlaylist( data );
 			}
+			$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
+		} else if ( data.playlist === 'delete' ) {
+			G.status.counts.playlists--;
+			if ( G.status.counts.playlists ) {
+				$( '#pl-savedlist li' ).filter( function() {
+					if ( $( this ).find( '.lipath' ).text() === data.name ) return
+				} ).remove();
+			} else {
+				$( '#playlist' ).click();
+				$( '#button-pl-open' ).addClass( 'disabled' );
+			}
+			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists || '' );
 		} else if ( data.playlist === 'save' ) {
 			if ( G.savedlist ) $( '#button-pl-open' ).click();
+			G.status.counts.playlists++;
+			$( '#button-pl-open' ).removeClass( 'disabled' );
+			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
-		$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
 	}, G.debouncems );
 }
 function psRelays( response ) {

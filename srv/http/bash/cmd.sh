@@ -831,6 +831,10 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
+plcount )
+	playlists=$( ls -1 $dirdata/playlists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
+	;;
 plcrop )
 	if mpc | grep -q playing; then
 		mpc -q crop
