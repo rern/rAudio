@@ -14,7 +14,9 @@
 
 restartMPD() {
 	systemctl restart mpd
-	[[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]] && mpc -q play
+	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
+		mpc | grep -q '\[playing\]' || $dirbash/cmd.sh mpcplayback$'\n'play
+	fi
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
 	if [[ -e $dirsystem/updating ]]; then
@@ -53,6 +55,7 @@ pcm.bluealsa {
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
 elif [[ $1 == btoff ]]; then
+	$dirbash/cmd.sh mpcplayback$'\n'stop
 	rm -f $dirshm/btclient
 	pushstream btclient false
 	$dirbash/networks-data.sh bt
