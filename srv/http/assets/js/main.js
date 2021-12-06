@@ -1127,8 +1127,11 @@ $( '#lib-mode-list' ).contextmenu( function( e ) { // disable default image cont
 	e.preventDefault();
 } );
 $( '.mode' ).click( function() {
-	G.mode = $( this ).data( 'mode' );
+	var $this = $( this );
+	G.mode = $this.data( 'mode' );
 	$( '#lib-search-close' ).click();
+	if ( G.mode === 'bookmark' ) return
+	
 	if ( !G.status.counts[ G.mode ] ) {
 		if ( G.mode === 'nas' ) {
 			var message = 'No network storage.';
@@ -1153,7 +1156,6 @@ $( '.mode' ).click( function() {
 	}
 	
 	G.modescrolltop = $( window ).scrollTop();
-	if ( G.mode === 'bookmark' ) return
 	
 	if ( G.mode === 'playlists' ) {
 		if ( $( this ).find( 'gr' ).text() ) {
