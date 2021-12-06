@@ -14,9 +14,9 @@
 
 restartMPD() {
 	systemctl restart mpd
+	[[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]] && mpc -q play
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
-	[[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]] && mpc -q play
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
