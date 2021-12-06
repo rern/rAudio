@@ -440,7 +440,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	$html = '';
 	foreach( $array as $each ) {
 		$path = $cue ? $file0 : $each->file;
-		$litime += HMS2second( $each->time );
+		$litime += HMS2second( $each->time ?: 0 );
 		$title = $each->title;
 		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
