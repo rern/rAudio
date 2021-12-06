@@ -603,6 +603,6 @@ hr {
 	input[type=text]:focus,
 	input[type=password]:focus,
 	.infobtn.active {
-		box-shadow: 0 0 2px 0 var( --cgl ) !important;
+		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}
 }
