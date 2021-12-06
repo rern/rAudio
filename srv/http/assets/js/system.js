@@ -887,9 +887,7 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#bluetooth' )
-		.toggleClass( 'disabled', G.bluetoothactive )
-		.parent().prev().toggleClass( 'single', !G.bluetooth );
+	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
 	$( '#wlan' )
 		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
 		.parent().prev().toggleClass( 'single', !G.wlan );
