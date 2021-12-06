@@ -15,7 +15,7 @@
 restartMPD() {
 	systemctl restart mpd
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
-		mpc | grep -q '\[playing\]' || $dirbash/cmd.sh mpcplayback$'\n'play
+		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"

@@ -836,7 +836,7 @@ plcount )
 	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
 	;;
 plcrop )
-	if mpc | grep -q playing; then
+	if mpc | grep -q '\[playing'; then
 		mpc -q crop
 	else
 		mpc -q play
