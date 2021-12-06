@@ -19,7 +19,7 @@ case 'current':
 case 'delete':
 	$name = $_POST[ 'name' ];
 	unlink( $dirplaylists.$name );
-	pushstream( 'playlist', [ 'playlist' => 'delete', 'name' => $name ] );
+	pushstream( 'playlists', listPlaylists() );
 	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
 	break;
 case 'edit':
@@ -57,41 +57,8 @@ case 'get':
 	echo json_encode( $array );
 	break;
 case 'list':
-	include '/srv/http/bash/cmd-listsort.php';
-	$lists = array_slice( scandir( $dirplaylists ), 2 );
-	$count = count( $lists );
-	if ( !$count ) exit( '-1' );
-	
-	foreach( $lists as $list ) {
-		$each = ( object )[];
-		$each->name = $list;
-		$each->sort = stripSort( $list );
-		$array[] = $each;
-	}
-	usort( $array, function( $a, $b ) {
-		return strnatcasecmp( $a->sort, $b->sort );
-	} );
-	$html = '';
-	foreach( $array as $each ) {
-		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-		$indexes[] = $index;
-		$html.= '<li class="pl-folder" data-index="'.$index.'">'
-					.'<i class="fa fa-playlists pl-icon" data-target="#menu-playlist">'
-					.'<a class="liname">'.$each->name.'</a></i>'
-					.'<a class="lipath">'.$each->name.'</a></i>'
-					.'<span class="plname">'.$each->name.'</span>'
-			 	.'</li>';
-	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$counthtml = '&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; '
-				.'<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>'
-				.'<i class="fa fa-file-playlist"></i>';
-	echo json_encode( [
-		  'html'      => $html
-		, 'index'     => $indexbar
-		, 'counthtml' => $counthtml
-		, 'indexes'   => $indexes
-	] );
+	$array = listPlaylists();
+	echo json_encode( $array );
 	break;
 case 'load': // load saved playlist to current
 	// load normal and individual cue tracks - use only file and track
@@ -168,7 +135,7 @@ case 'load': // load saved playlist to current
 	break;
 case 'rename':
 	exec( '/usr/bin/sudo /usr/bin/mv /srv/http/data/playlists/{"'.$_POST[ 'oldname' ].'","'.$_POST[ 'name' ].'"}' );
-	pushstream( 'playlist', [ 'playlist' => 'rename' ] );
+	pushstream( 'playlists', listPlaylists() );
 	break;
 case 'save':
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
@@ -177,13 +144,52 @@ case 'save':
 	
 	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
 	file_put_contents( $file, $list );
-	pushstream( 'playlist', [ 'playlist' => 'save' ] );
+	pushstream( 'playlists', listPlaylists() );
 	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
 	break;
 	
 }
 
 //-------------------------------------------------------------------------------------
+function listPlaylists() {
+	include '/srv/http/bash/cmd-listsort.php';
+	global $dirplaylists;
+	$lists = array_slice( scandir( $dirplaylists ), 2 );
+	$count = count( $lists );
+	if ( !$count ) exit( '-1' );
+	
+	foreach( $lists as $list ) {
+		$each = ( object )[];
+		$each->name = $list;
+		$each->sort = stripSort( $list );
+		$array[] = $each;
+	}
+	usort( $array, function( $a, $b ) {
+		return strnatcasecmp( $a->sort, $b->sort );
+	} );
+	$html = '';
+	foreach( $array as $each ) {
+		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+		$indexes[] = $index;
+		$html.= '<li class="pl-folder" data-index="'.$index.'">'
+					.'<i class="fa fa-playlists pl-icon" data-target="#menu-playlist">'
+					.'<a class="liname">'.$each->name.'</a></i>'
+					.'<a class="lipath">'.$each->name.'</a></i>'
+					.'<span class="plname">'.$each->name.'</span>'
+			 	.'</li>';
+	}
+	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	$counthtml = '&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; '
+				.'<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>'
+				.'<i class="fa fa-file-playlist"></i>';
+	return [
+		  'html'      => $html
+		, 'index'     => $indexbar
+		, 'counthtml' => $counthtml
+		, 'indexes'   => $indexes
+		, 'count'     => $count
+	];
+}
 function htmlPlaylist( $lists, $plname = '' ) {
 	global $headers;
 	$count = count( $lists );

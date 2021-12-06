@@ -88,7 +88,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'playlists', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -125,6 +125,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'option':    psOption( data );    break;
 		case 'order':     psOrder( data );     break;
 		case 'playlist':  psPlaylist( data );  break;
+		case 'playlists': psPlaylists( data ); break;
 		case 'reload':    psReload( data );    break;
 		case 'restore':   psRestore( data );   break;
 		case 'volume':    psVolume( data );    break;
@@ -418,29 +419,17 @@ function psPlaylist( data ) {
 				if ( !G.plremove ) renderPlaylist( data );
 			}
 			$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
-		} else if ( data.playlist === 'delete' ) {
-			G.status.counts.playlists--;
-			if ( G.status.counts.playlists ) {
-				$( '#pl-savedlist li' ).filter( function() {
-					if ( $( this ).find( '.lipath' ).text() === data.name ) return
-				} ).remove();
-			} else {
-				$( '#playlist' ).click();
-				$( '#button-pl-playlists' ).addClass( 'disabled' );
-			}
-			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists || '' );
-		} else if ( data.playlist === 'rename' ) {
-			if ( G.savedlist ) $( '#button-pl-playlists' ).click();
-		} else if ( data.playlist === 'save' ) {
-			if ( G.savedlist ) $( '#button-pl-playlists' ).click();
-			G.status.counts.playlists++;
-			$( '#button-pl-playlists' ).removeClass( 'disabled' );
-			$( '#pl-savedlist-count, #mode-playlists gr' ).text( G.status.counts.playlists );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
 	}, G.debouncems );
+}
+function psPlaylists( data ) {
+	if ( G.savedlist ) renderPlaylistList( data );
+	$( '#button-pl-playlists' ).toggleClass( 'disabled', data.count === 0 );
+	$( '#mode-playlists gr' ).text( data.count || '' );
+	G.status.counts.playlists = data.count;
 }
 function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );

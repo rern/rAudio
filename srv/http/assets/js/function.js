@@ -1204,23 +1204,21 @@ function renderPlaylist( data ) {
 		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 	} );
 }
-function renderPlaylistList() {
-	list( { cmd: 'list' }, function( data ) {
-		$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
-		$( '#menu-plaction' ).addClass( 'hide' );
-		
-		$( '#pl-path' ).html( data.counthtml );
-		$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
-		$( '.emptyadd' ).addClass( 'hide' );
-		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
-			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
-			$( '#pl-savedlist' ).css( 'width', '' );
-			$( '#pl-index' ).html( data.index[ 0 ] );
-			$( '#pl-index1' ).html( data.index[ 1 ] );
-			$( 'html, body' ).scrollTop( 0 );
-		} );
-	}, 'json' );
+function renderPlaylistList( data ) {
+	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
+	$( '#menu-plaction' ).addClass( 'hide' );
+	
+	$( '#pl-path' ).html( data.counthtml );
+	$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
+	$( '.emptyadd' ).addClass( 'hide' );
+	$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
+	$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
+		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+		$( '#pl-savedlist' ).css( 'width', '' );
+		$( '#pl-index' ).html( data.index[ 0 ] );
+		$( '#pl-index1' ).html( data.index[ 1 ] );
+		$( 'html, body' ).scrollTop( 0 );
+	} );
 }
 function renderSavedPlaylist( name ) {
 	$( '.menu' ).addClass( 'hide' );
