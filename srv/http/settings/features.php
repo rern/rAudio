@@ -120,7 +120,20 @@ $body = [
 This should be used only when necessary.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/hostapd' )
-	], [
+	]
+	, [
+		  'label'   => 'AutoPlay'
+		, 'id'      => 'autoplay'
+		, 'icon'    => 'play'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Start playing automatically on:
+ • Bluetooth connected
+ • Audio CD inserting
+ • Power on / Reboot
+HTML
+	]
+	, [
 		  'label'    => 'Browser on RPi'
 		, 'id'       => 'localbrowser'
 		, 'sublabel' => 'chromium'
@@ -169,22 +182,6 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
 Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock"></i>
-HTML
-	]
-	, [
-		  'label' => 'Play on Insert CD'
-		, 'id'    => 'autoplaycd'
-		, 'icon'  => 'play-cd'
-		, 'help'  => <<< HTML
-Start playing automatically on audio CD inserting or power on with CD inserted.
-HTML
-	]
-	, [
-		  'label' => 'Play on Startup'
-		, 'id'    => 'autoplay'
-		, 'icon'  => 'play-power'
-		, 'help'  => <<< HTML
-Start playing automatically after boot.
 HTML
 	]
 	, [

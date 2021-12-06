@@ -44,11 +44,21 @@ case ${args[0]} in
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
-autoplay|autoplaycd|lyricsembedded|streaming )
+autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
 	[[ $feature == streaming ]] && $dirbash/mpd-conf.sh
+	pushRefresh
+	;;
+autoplaydisable )
+	rm -f $dirsystem/autoplay*
+	pushRefresh
+	;;
+autoplayset )
+	[[ ${args[1]} == true ]] && touch $dirsystem/autoplaybt || rm -f $dirsystem/autoplaybt
+	[[ ${args[2]} == true ]] && touch $dirsystem/autoplaycd || rm -f $dirsystem/autoplaycd
+	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
 hostapddisable )

@@ -11,8 +11,8 @@ scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
 
 data+='
   "page"             : "features"
-, "autoplay"         : '$( exists $dirsystem/autoplay )'
-, "autoplaycd"       : '$( exists $dirsystem/autoplaycd )'
+, "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
+, "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "hostname"         : "'$( hostname )'"
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'

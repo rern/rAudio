@@ -136,6 +136,22 @@ $( '#setting-hostapd' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-autoplay' ).click( function() {
+	info( {
+		  icon         : 'play'
+		, title        : 'AutoPlay'
+		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
+		, values       : G.autoplayconf
+		, checkchanged : ( G.autoplay ? 1 : 0 )
+		, cancel       : function() {
+			$( '#autoplay' ).prop( 'checked', G.autoplay );
+		}
+		, ok           : function() {
+			bash( [ 'autoplayset', ...infoVal() ] );
+			notify( 'AutoPlay', G.autoplay ? 'Change ...' : 'Enable ...', 'play' );
+		}
+	} );
+} );
 var content = `
 <table>
 <tr><td style="width:130px">Rotation</td>
