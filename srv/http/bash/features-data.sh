@@ -21,7 +21,7 @@ data+='
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
-, "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null )'
+, "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then

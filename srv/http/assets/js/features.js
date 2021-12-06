@@ -358,7 +358,7 @@ $( '#setting-stoptimer' ).click( function() {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			var $poweroff = $( '#infoContent input:checkbox' );
-			$poweroff.prop( 'disabled', !G.stoptimerconf );
+			$poweroff.prop( 'disabled', !G.stoptimerconf[ 1 ] );
 			$( '#infoContent tr:last' ).css( 'height', '60px' );
 			$( '#infoContent input:radio' ).change( function() {
 				var valfalse = $( this ).val() === 'false';
