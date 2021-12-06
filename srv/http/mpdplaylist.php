@@ -19,8 +19,8 @@ case 'current':
 case 'delete':
 	$name = $_POST[ 'name' ];
 	unlink( $dirplaylists.$name );
-	pushstream( 'playlists', listPlaylists() );
 	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
+	pushstream( 'playlists', listPlaylists() );
 	break;
 case 'edit':
 	$name = $_POST[ 'name' ];
@@ -144,8 +144,8 @@ case 'save':
 	
 	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
 	file_put_contents( $file, $list );
-	pushstream( 'playlists', listPlaylists() );
 	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
+	pushstream( 'playlists', listPlaylists() );
 	break;
 	
 }
