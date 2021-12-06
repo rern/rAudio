@@ -426,10 +426,15 @@ function psPlaylist( data ) {
 	}, G.debouncems );
 }
 function psPlaylists( data ) {
-	if ( G.savedlist ) renderPlaylistList( data );
-	$( '#button-pl-playlists' ).toggleClass( 'disabled', data.count === 0 );
-	$( '#mode-playlists gr' ).text( data.count || '' );
-	G.status.counts.playlists = data.count;
+	var count = data.count;
+	G.status.counts.playlists = count;
+	if ( G.savedlist ) {
+		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
+	} else if ( G.savedplaylist ) {
+		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).click();
+	}
+	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
+	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );

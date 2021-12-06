@@ -20,7 +20,9 @@ case 'delete':
 	$name = $_POST[ 'name' ];
 	unlink( $dirplaylists.$name );
 	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
-	pushstream( 'playlists', listPlaylists() );
+	$array = listPlaylists();
+	$array[ 'delete' ] = $name;
+	pushstream( 'playlists', $array );
 	break;
 case 'edit':
 	$name = $_POST[ 'name' ];
@@ -156,7 +158,7 @@ function listPlaylists() {
 	global $dirplaylists;
 	$lists = array_slice( scandir( $dirplaylists ), 2 );
 	$count = count( $lists );
-	if ( !$count ) exit( '-1' );
+	if ( !$count ) return [ 'count' => 0 ];
 	
 	foreach( $lists as $list ) {
 		$each = ( object )[];
