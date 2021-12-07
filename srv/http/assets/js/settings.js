@@ -433,10 +433,7 @@ $( '.help' ).click( function() {
 } );
 $( '.status' ).click( function( e ) {
 	var $this = $( this );
-	if ( !$( e.target ).is( 'i' )
-		&& !$this.hasClass( 'single' )
-		&& $this.hasClass( 'status' )
-	) status( $this.data( 'status' ) );
+	if ( !$this.hasClass( 'single' ) && $this.hasClass( 'status' ) ) status( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
