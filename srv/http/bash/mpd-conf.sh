@@ -36,7 +36,9 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	done
 	[[ ! $btaplay ]] && exit # no bluealsa device found
 	
-	pushstreamNotify 'Bluetooth' "$( bluetoothctl info | grep 'Name: ' | sed 's/.*Name: //' )" 'bluetooth'
+	btalias=$( bluetoothctl info | grep 'Alias: ' | sed 's/.*: //' )
+	[[ ! $btalias ]] && btalias=$( bluetoothctl info | grep 'Name: ' | sed 's/.*: //' )
+	pushstreamNotify 'Bluetooth' "$btalias" 'bluetooth'
 	asoundbt='
 pcm.bluealsa {
 	type plug
@@ -46,12 +48,12 @@ pcm.bluealsa {
 		profile "a2dp"
 	}
 }'
-	btname=$( amixer -D bluealsa scontrols \
+	btmixer=$( amixer -D bluealsa scontrols \
 				| head -1 \
 				| cut -d"'" -f2 )
-	btvolumefile="$dirsystem/btvolume-$btname"
-	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btname" $( cat "$btvolumefile" )%
-	echo $btname > $dirshm/btclient
+	btvolumefile="$dirsystem/btvolume-$btmixer"
+	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btmixer" $( cat "$btvolumefile" )%
+	echo $btmixer > $dirshm/btclient
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
 elif [[ $1 == btoff ]]; then
@@ -88,12 +90,12 @@ audio_output {
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
-	elif [[ $btname ]]; then
+	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
 ########
 		output+='
 audio_output {
-	name           "'$btname'"
+	name           "'$btalias'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "software"'
@@ -203,15 +205,15 @@ if [[ $1 == add || $1 == remove ]]; then
 	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
-[[ ! $Acard && ! $btname ]] && restartMPD && exit
+[[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
 [[ $Acard ]] && card=$card || card=0
 
 if [[ -e $dirsystem/equalizer ]]; then
 	filepresets=$dirsystem/equalizer.presets
-	if [[ $btname ]]; then
+	if [[ $btmixer ]]; then
 		slavepcm=bluealsa
-		filepresets+="-$btname"
+		filepresets+="-$btalias"
 	else
 		slavepcm='"plughw:'$card',0"'
 	fi
@@ -256,7 +258,7 @@ restartMPD
 if [[ -e /usr/bin/shairport-sync ]]; then
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ $btname ]]; then
+	if [[ $btmixer ]]; then
 		conf+='
 	output_device = "bluealsa";'
 	else
@@ -273,7 +275,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $btname ]]; then
+	if [[ $btmixer ]]; then
 		device=bluealsa
 		mixer=PCM
 	else
