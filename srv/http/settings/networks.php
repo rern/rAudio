@@ -9,13 +9,13 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="listbt" class="entries"></ul>
 	<div class="help-block hide">As sender <gr>(to another device)</gr>
- • Pairing to receiver device - Turn on discovery mode on receiver device.
- • Search the device on RPi and connect.
- • Power on/off paired devices connect/disconnect automatically.
+ • Receiver device - Turn on discovery mode.
+ • rAudio - Search the device > connect.
+ • Power on/off already paired devices connect/disconnect automatically.
 As receiver <gr>(from another device)</gr>
- • Pairing - If discoverable turned off on RPi, turn it on.
- • Start pairing from sender device - No authorization required.
- • Forget/remove should be done on both sender and RPi to avoid failed pairing.
+ • rAudio - If discoverable turned off, turn it on.
+ • Sender device - Search rAudio > connect (No authorization required.)
+ • To forget/remove - Do it both on sender and rAudio to avoid failed re-pairing.
 </div>
 </div>
 <div id="divwl" class="section">
