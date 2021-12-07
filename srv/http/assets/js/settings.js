@@ -431,9 +431,9 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( '.container' ).on( 'click', '.status', function() {
 	var $this = $( this );
-	if ( !$this.hasClass( 'single' ) && $this.hasClass( 'status' ) ) status( $this.data( 'status' ) );
+	if ( !$this.hasClass( 'single' ) ) status( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
