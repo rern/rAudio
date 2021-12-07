@@ -274,6 +274,7 @@ elif [[ $stream ]]; then
 		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
 		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
 		if [[ $state != play ]]; then
+			state=stop
 			Title=
 		else
 			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
@@ -315,13 +316,14 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
-		status=$( grep -v '^, *"webradio"' <<< "$status" )
+		status=$( grep -v '^, *"state"\|^, *"webradio"' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
 , "stationcover" : "'$stationcover'"
 , "Name"         : "'$Name'"
+, "state"        : "'$state'"
 , "station"      : "'$station'"
 , "Time"         : false
 , "Title"        : "'$Title'"
