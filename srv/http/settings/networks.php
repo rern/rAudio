@@ -11,7 +11,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="help-block hide">As sender <gr>(to another device)</gr>
  • Receiver device - Turn on discovery mode.
  • rAudio - Search the device > connect.
- • Power on/off already paired devices connect/disconnect automatically.
+ • Power on/off already paired devices - Connect/disconnect automatically.
 As receiver <gr>(from another device)</gr>
  • rAudio - If discoverable turned off, turn it on.
  • Sender device - Search rAudio > connect (No authorization required.)
