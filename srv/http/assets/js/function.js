@@ -1269,7 +1269,6 @@ function setButtonControl() {
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].indexOf( G.status.player ) !== -1;
 		var noprevnext = G.status.playlistlength < 2 || !mpd_upnp;
-		if ( G.status.webradio && G.status.state !== 'play' ) G.status.state = 'stop';
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
