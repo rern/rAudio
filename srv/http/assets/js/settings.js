@@ -431,7 +431,9 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
-$( '.container' ).on( 'click', '.status', function() {
+$( '.container' ).on( 'click', '.status', function( e ) {
+	if ( $( e.target ).is( 'i' ) ) return
+	
 	var $this = $( this );
 	if ( !$this.hasClass( 'single' ) ) status( $this.data( 'status' ) );
 } );
