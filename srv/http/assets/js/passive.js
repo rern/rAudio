@@ -328,6 +328,7 @@ function psMpdPlayer( data ) {
 }
 function psMpdRadio( data ) {
 	statusUpdate( data );
+	setProgress( 0 );
 	if ( G.playback ) {
 		setInfo();
 		setCoverart();
