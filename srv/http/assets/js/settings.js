@@ -109,11 +109,11 @@ function refreshData() {
 	
 	if ( page === 'networks' ) {
 		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
-			wlanStatus();
+			scanWlan();
 			resetLocal();
 			return
 		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
-			btScan();
+			scanBluetooth();
 			resetLocal();
 			return
 		}
