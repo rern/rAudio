@@ -1,5 +1,5 @@
 #!/bin/bash
-
+ 
 export XDG_CACHE_HOME="/tmp/.cache"
 
 . /srv/http/data/system/localbrowser.conf
