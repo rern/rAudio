@@ -8,11 +8,14 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
-	<div class="help-block hide">As sender <gr>(to another device)</gr>
+	<div class="help-block hide">rAudio as sender:
  • Receiver device - Turn on discovery mode.
  • rAudio - Search the device > connect.
- • Power on/off already paired devices - Connect/disconnect automatically.
-As receiver <gr>(from another device)</gr>
+ • Power on / off already paired devices - Connect / disconnect automatically.
+ • Receiver buttons - <a href="settings.php?p=features">Browser on RPi</a> must be enabled.
+ &emsp; • Play / Pause - main button
+ &emsp; • Previous / Next - long-press volume down / up
+rAudio as receiver:
  • rAudio - If discoverable turned off, turn it on.
  • Sender device - Search rAudio > connect (No authorization required.)
  • To forget/remove - Do it both on sender and rAudio to avoid failed re-pairing.
