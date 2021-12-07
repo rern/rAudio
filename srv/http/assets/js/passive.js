@@ -329,13 +329,14 @@ function psMpdPlayer( data ) {
 function psMpdRadio( data ) {
 	statusUpdate( data );
 	setProgress( 0 );
-	setBlinkDot();
 	if ( G.playback ) {
 		setInfo();
 		setCoverart();
-		if ( G.display.radioelapsed && $( '#total' ).is( ':empty' ) ) {
+		if ( G.display.radioelapsed ) {
 			$( '#progress' ).html( '<i class="fa fa-play"></i><span></span>' );
 			setProgressElapsed();
+		} else {
+			setBlinkDot();
 		}
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
