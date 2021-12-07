@@ -1571,9 +1571,9 @@ function setProgressAnimate() {
 	$( '#time-bar' ).css( 'width', '100%' );
 }
 function setProgressElapsed() {
+	clearInterval( G.intElapsed );
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
-	clearInterval( G.intElapsed );
 	var elapsedhms;
 	var $elapsed = !G.status.elapsed ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
 	if ( G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );
