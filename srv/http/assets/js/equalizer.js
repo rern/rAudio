@@ -74,7 +74,7 @@ function equalizer() {
 				$( '#eqname' ).on( 'keyup paste cut', function( e ) {
 					var val = $( this ).val().trim();
 					var blank = val === '';
-					var exists = data.presets.indexOf( val ) !== -1;
+					var exists = data.presets.includes( val );
 					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
 						var changed = !blank && !exists && val !== G.eqcurrent;
 					} else { // new

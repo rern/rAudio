@@ -341,8 +341,8 @@ function info( json ) {
 				if ( O.filetype === 'image/*' ) {
 					O.filechecked = G.infofile.type.slice( 0, 5 ) === 'image';
 				} else {
-					var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
-					O.filechecked = O.filetype.indexOf( ext ) !== -1;
+					var ext = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
+					O.filechecked = O.filetype.includes( ext );
 				}
 			}
 			if ( !O.filechecked ) {

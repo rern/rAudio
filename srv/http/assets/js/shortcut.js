@@ -85,7 +85,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 		, MediaTrackPrevious : 'previous'
 		, MediaTrackNext     : 'next'
 	}
-	if ( ( key === ' ' && [ 'input', 'password', 'textarea' ].indexOf( e.target.localName ) === -1 ) || key === 'MediaPlayPause' ) {
+	if ( ( key === ' ' && ![ 'input', 'password', 'textarea' ].includes( e.target.localName ) ) || key === 'MediaPlayPause' ) {
 		var btn = G.status.state === 'play' ? ( G.status.webradio ? 'stop' : 'pause' ) : 'play';
 		$( '#'+ btn ).click();
 		e.preventDefault();

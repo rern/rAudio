@@ -226,7 +226,7 @@ function tagEditor() {
 				var $td = $( '#infoContent td:first-child' );
 				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
-					if ( [ 'title', 'track' ].indexOf( mode ) !== -1 ) {
+					if ( [ 'title', 'track' ].includes( mode ) ) {
 						if ( G.library ) {
 							banner( 'Browse Mode', 'Already here', 'library' );
 							$( '#infoX' ).click();
@@ -248,7 +248,7 @@ function tagEditor() {
 							  query  : 'find'
 							, mode   : mode
 							, string : path
-							, format : [ 'genre', 'composer', 'conductor', 'date' ].indexOf( mode ) !== -1 ? [ 'album', 'artist' ] : [ 'album' ]
+							, format : [ 'genre', 'composer', 'conductor', 'date' ].includes( mode ) ? [ 'album', 'artist' ] : [ 'album' ]
 						}
 					} else {
 						if ( G.library ) {
@@ -436,7 +436,7 @@ function webRadioNew( name, url ) {
 			if ( $exist.length ) {
 				webRadioExists( $exist.next().text(), url, name );
 			} else {
-				if ( [ 'm3u', 'pls' ].indexOf( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
+				if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
 				var lipath = $( '#lib-path .lipath' ).text();
 				bash( [ 'webradioadd', name, url, lipath ], function( data ) {
 					if ( data == -1 ) {
@@ -482,7 +482,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	$( '.menu' ).addClass( 'hide' );
 	$( 'li.updn' ).removeClass( 'updn' );
 	// playback //////////////////////////////////////////////////////////////
-	if ( [ 'play', 'pause', 'stop' ].indexOf( cmd ) !== -1 ) {
+	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		if ( cmd === 'play' ) {
 			if ( G.status.player !== 'mpd' ) {
 				$( '#stop' ).click();
@@ -709,7 +709,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	cmd = cmd.replace( /album|albumartist|artist|composer|conductor|date|genre/, '' );
 	var command = contextCommand[ cmd ];
-	if ( [ 'add', 'addplay' ].indexOf( cmd ) !== -1 ) {
+	if ( [ 'add', 'addplay' ].includes( cmd ) ) {
 		var title = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
 	} else {
 		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );

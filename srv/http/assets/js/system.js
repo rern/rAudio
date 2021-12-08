@@ -596,7 +596,7 @@ $( '#setting-soundprofile' ).click( function() {
 	}
 	var soundprofileconf = G.soundprofileconf.join( ' ' );
 	var radioval = Object.values( radio );
-	var rchecked = radioval.indexOf( soundprofileconf ) !== -1 ? soundprofileconf : '0';
+	var rchecked = radioval.includes( soundprofileconf ) ? soundprofileconf : '0';
 	G.soundprofileconf.push( rchecked );
 	info( {
 		  icon         : 'sliders'
@@ -618,7 +618,7 @@ $( '#setting-soundprofile' ).click( function() {
 				var $this = $( this )
 				$this.val( $this.val().replace( /[^0-9]/, '' ) );
 				values = infoVal().slice( 0, -1 ).join( ' ' );
-				if ( radioval.indexOf( values ) === -1 ) values = 0;
+				if ( !radioval.includes( values ) ) values = 0;
 				$radio.val( [ values ] );
 			} );
 			var iL = textlabel.length;
@@ -777,7 +777,7 @@ $( '.list' ).on( 'click', 'bl', function() {
 	
 	var pkg = $( this ).text();
 	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager'
-			, 'mpdscribble', 'nginx-mainline-pushstream', 'snapcast', 'upmpdcli' ].indexOf( pkg ) !== -1 ) {
+			, 'mpdscribble', 'nginx-mainline-pushstream', 'snapcast', 'upmpdcli' ].includes( pkg ) ) {
 		if ( pkg === 'bluez-alsa' ) pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
 		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
 	} else {

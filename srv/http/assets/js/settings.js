@@ -52,7 +52,7 @@ function status( id, refresh ) {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
-	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( function() {
@@ -298,7 +298,7 @@ var dirsystem = '/srv/http/data/system';
 var intervalcputime;
 var intervalscan;
 var local = 0;
-var localhost = [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1;
+var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var red = '#bb2828';
