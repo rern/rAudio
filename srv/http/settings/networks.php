@@ -12,9 +12,6 @@ htmlHead( [ //////////////////////////////////
  • Receiver device - Turn on discovery mode.
  • rAudio - Search the device > connect.
  • Power on / off already paired devices - Connect / disconnect automatically.
- • Receiver buttons - <a href="settings.php?p=features">Browser on RPi</a> must be enabled.
- &emsp; • Play / Pause - main button
- &emsp; • Previous / Next - long-press volume down / up
 rAudio as receiver:
  • rAudio - If discoverable turned off, turn it on.
  • Sender device - Search rAudio > connect (No authorization required.)
