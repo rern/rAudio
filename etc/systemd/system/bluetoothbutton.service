@@ -1,0 +1,6 @@
+[Unit]
+Description=Bluetooth buttons
+
+[Service]
+Type=simple
+ExecStart=/srv/http/bash/bluetoothbutton.sh

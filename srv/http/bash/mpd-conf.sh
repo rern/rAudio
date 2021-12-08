@@ -56,11 +56,13 @@ pcm.bluealsa {
 	echo $btmixer > $dirshm/btclient
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
+	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
 elif [[ $1 == btoff ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	rm -f $dirshm/btclient
 	pushstream btclient false
 	$dirbash/networks-data.sh bt
+	systemctl stop bluetoothbutton
 fi
 
 . $dirbash/mpd-devices.sh
