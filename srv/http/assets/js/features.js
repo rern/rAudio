@@ -33,6 +33,16 @@ $( '#setting-spotifyd' ).click( function() {
 			}
 		} );
 	} else {
+		if ( navigator.userAgent.includes( 'Firefox' ) ) {
+			info( {
+				  icon    : 'spotify'
+				, title   : 'Spotify Client'
+				, message : '<i class="fa fa-warning"></i> Authorization cannot run on <wh>Firefox</wh>.'
+			} );
+			$( '#spotifyd' ).prop( 'checked', false );
+			return
+		}
+		
 		info( {
 			  icon         : 'spotify'
 			, title        : 'Spotify Client'
