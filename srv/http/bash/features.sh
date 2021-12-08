@@ -303,7 +303,7 @@ spotifytoken )
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q error <<< "$tokens"; then
-		spotifyReset "Error: $( echo $token | jq -r .error )"
+		spotifyReset "Error: $( echo $tokens | jq -r .error )"
 		exit
 	fi
 	
