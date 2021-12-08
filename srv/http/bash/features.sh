@@ -100,6 +100,7 @@ localbrowserdisable )
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
+	[[ -e $dirshm/btclient ]] && systemctl start bluetoothbutton
 	pushRefresh
 	;;
 localbrowserset )
@@ -159,7 +160,10 @@ cursor=$newcursor
 	fi
 	if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 		systemctl restart bootsplash localbrowser
-		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+		if systemctl -q is-active localbrowser; then
+			systemctl enable bootsplash localbrowser
+			systemctl stop bluetoothbutton
+		fi
 	elif [[ $changedscreenoff ]]; then
 		localbrowserXset $newscreenoff
 		if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
