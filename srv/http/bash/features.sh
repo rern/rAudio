@@ -301,7 +301,7 @@ spotifytoken )
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$code" \
 				-d grant_type=authorization_code \
-				--data-urlencode "redirect_uri=https://rern.github.io/raudio/spotify" )
+				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q error <<< "$tokens"; then
 		spotifyReset "Error: $( echo $token | jq -r .error )"
 		exit

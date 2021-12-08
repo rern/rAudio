@@ -1,15 +1,19 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( $( '.spotifycode' ).length ) {
-	window.history.replaceState( '', '', 'http://192.168.1.3/settings.php?p=features' );
-	var error = $( '.spotifycode' ).text();
-	if ( error ) {
-		info( {
-			  icon    : 'spotify'
-			, title   : 'Spotify'
-			, message : '<i class="fa fa-warning"></i> Authorization failed:<br>'+ error
-		} );
-	}
+// spotify api response
+var url = new URL( window.location.href );
+var code = url.searchParams.get( 'code' );
+var error = url.searchParams.get( 'error' );
+if ( code ) {
+	bash( [ 'spotifytoken', code ] );
+	window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );
+} else if ( error ) {
+	info( {
+		  icon    : 'spotify'
+		, title   : 'Spotify'
+		, message : '<i class="fa fa-warning"></i> Authorization failed:'
+					+'<br>'+ error
+	} );
 }
 $( '#setting-spotifyd' ).click( function() {
 	var active = infoPlayerActive( $( this ) );

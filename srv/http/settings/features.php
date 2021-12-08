@@ -1,9 +1,4 @@
 <?php
-if ( isset( $_GET[ 'code' ] ) ) {
-	$code = $_GET[ 'code' ];
-	exec( "/usr/bin/sudo /srv/http/bash/features.sh spotifytoken$'\n'".$code );
-	echo '<a class="spotifycode hide">'.( $_GET[ 'error' ] ?? '' ).'</a>';
-}
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
 
@@ -46,7 +41,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • Get <code>ID</code> <code>Secret</code> : (for playing status access)
+ • Get <code>ID</code> and <code>Secret</code> : (Firefox doesn't work with this procedure.)
  &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
  &emsp; • <code>CREATE AN APP</code>
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
