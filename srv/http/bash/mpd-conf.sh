@@ -117,10 +117,9 @@ audio_output {
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-			mixercontrol=$hwmixer
 ########
 			output+='
-	mixer_control  "'$mixercontrol'"
+	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$card'"'
 		fi
 		if [[ $dop == 1 ]]; then
@@ -279,19 +278,17 @@ fi
 if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ $btmixer ]]; then
 		device=bluealsa
-		mixer=PCM
 	else
 		cardname=$( aplay -l \
 						| grep "^card $card" \
 						| head -1 \
 						| cut -d' ' -f3 )
 		device=$( aplay -L | grep "^default.*$cardname" )
-		mixer=$( $dirbash/cmd.sh volumecontrols$'\n'$card | head -1 )
 	fi
 	cat << EOF > /etc/spotifyd.conf
 [global]
 device = "$device"
-mixer = "$mixer"
+mixer = "PCM"
 volume_controller = "alsa"
 bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
