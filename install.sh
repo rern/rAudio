@@ -15,6 +15,7 @@ if [[ -e /usr/bin/spotifyd && $( spotifyd -V ) != 'spotifyd 0.3.3' ]]; then
 	sed -i '/ExecStart/ i\
 Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket"
 ' /lib/systemd/system/spotifyd.service
+	systemctl restart dbus
 fi
 file=/etc/samba/smb.conf
 if [[ -e $file ]] && ! grep -q 'force user' $file; then
