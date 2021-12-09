@@ -9,8 +9,14 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211210
+file=/lib/systemd/system/spotifyd.service
+if [[ -e $file ]] && ! grep -q Environment $file: then
+	sed -i '/ExecStart/ i\
+Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket"
+' /lib/systemd/system/spotifyd.service
+fi
 file=/etc/samba/smb.conf
-if ! grep -q 'force user' $file; then
+if [[ -e $file ]] && ! grep -q 'force user' $file; then
 	sed -i '/map to guest/ a\
 	force user = mpd
 ' $file

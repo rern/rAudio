@@ -21,6 +21,7 @@ $( '#setting-spotifyd' ).click( function() {
 	
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
+		notify( 'Spotify', 'Enable ...', 'spotify' );
 	} else if ( G.spotifytoken ) {
 		info( {
 			  icon    : 'spotify'
