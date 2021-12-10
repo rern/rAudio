@@ -1,6 +1,6 @@
 r A u d i o &ensp; 1
 ---
-Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
+Audio player for all Raspberry Pis: `4` `3` `2` `1` `Zero` `Zero 2`
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
