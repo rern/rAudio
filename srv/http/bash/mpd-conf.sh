@@ -290,9 +290,10 @@ if [[ -e /usr/bin/spotifyd ]]; then
 backend = "alsa"
 device = "$device"
 mixer = "$hwmixer"
-volume_controller = "alsa"
+control = "hw:$card"
 bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
+use_mpris = false
 EOF
 	systemctl try-restart spotifyd
 fi
