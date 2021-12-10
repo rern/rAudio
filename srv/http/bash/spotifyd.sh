@@ -15,7 +15,7 @@
 ##### start
 [[ $PLAYER_EVENT == start && $( cat /srv/http/data/shm/player ) != spotify ]] && /srv/http/bash/cmd.sh playerstart$'\n'spotify && exit
 
-[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream && exit
+#[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream && exit
 
 . /srv/http/bash/common.sh
 
