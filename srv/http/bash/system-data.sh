@@ -39,7 +39,15 @@ else
 	case ${revision: -4:1} in
 		0 ) soc=BCM2835;;
 		1 ) soc=BCM2836;;
-		2 ) [[ ${revision: -3:2} > 08 ]] && soc=BCM2837B0 || soc=BCM2837;;
+		2 ) BB=${revision: -3:2}
+			if [[ $BB == 12 ]]; then
+				soc=BCM2710A1
+			elif [[ $BB > 08 ]]; then
+				soc=BCM2837B0
+			else
+				soc=BCM2837
+			fi
+			;;
 		3 ) soc=BCM2711;;
 	esac
 fi
