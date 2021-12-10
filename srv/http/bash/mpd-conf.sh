@@ -291,6 +291,7 @@ backend = "alsa"
 device = "$device"
 mixer = "$hwmixer"
 control = "hw:$card"
+volume_controller = "alsa"
 bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
