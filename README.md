@@ -105,7 +105,7 @@ Audio player for all **Raspberry Pi**s:
 		- Expand `root` partition:
 			- By default, `root` partition will be expaned on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
-		- GPIO 3.5" LCD display (Not for Zero and 1)
+		- GPIO 3.5" LCD display (Not for `1`, `Zero`)
 			- Create a blank file in `BOOT` named as:
 				- Generic display - `lcd`
 				- Waveshare 35a   - `lcd35a`
