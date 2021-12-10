@@ -1,6 +1,9 @@
 r A u d i o &ensp; 1
 ---
-Audio player for all **Raspberry Pi**s: `4` `3` `2` `1` `Zero` `Zero 2`
+Audio player for all **Raspberry Pi**s:
+- 64bit: `4` `3` `2` `Zero 2`
+- 32bit: `2 (BCM2836)`
+- Legacy: `1` `Zero`
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
