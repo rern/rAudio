@@ -10,7 +10,7 @@ connectedCheck() {
 }
 
 revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-[[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11)$ ]] && onboardwireless=1
+[[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11|12)$ ]] && onboardwireless=1
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
