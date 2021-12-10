@@ -104,7 +104,7 @@ $( '.disconnect' ).click( function() {
 		
 	var name = G.li.data( 'ssid' );
 	var icon = 'wifi';
-	if ( G.listeth.ip ) {
+	if ( G.ipeth ) {
 		notify( name, 'Disconnect ...', icon );
 		bash( [ 'disconnect' ] )
 		return
@@ -150,7 +150,7 @@ $( '.forget' ).click( function() {
 	info( {
 		  icon    : icon
 		, title   : name
-		, message : G.listeth.ip ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+		, message : G.ipeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
@@ -258,7 +258,7 @@ function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:...,
 }
 function editLAN() {
 	var static = G.listeth.static;
-	var ip = G.listeth.ip;
+	var ip = G.ipeth;
 	var gw = G.listeth.gateway;
 	info( {
 		  icon         : 'lan'
@@ -422,7 +422,7 @@ function renderPage( list ) {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
-		var htmlwl = G.listeth ? '<li data-ip="'+ G.listeth.ip +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.listeth.ip +'</li>' : '';
+		var htmlwl = G.listeth ? '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth +'</li>' : '';
 		$( '#listlan' ).html( htmlwl );
 		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
