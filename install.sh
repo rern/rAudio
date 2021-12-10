@@ -9,6 +9,9 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211210
+revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+[[ ${revision: -3:2} == 12 ]] && echo dtparam=krnbt=on >> /boot/config.txt
+
 file=/etc/samba/smb.conf
 if [[ -e $file ]] && ! grep -q 'force user' $file; then
 	sed -i '/map to guest/ a\
