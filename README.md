@@ -181,7 +181,7 @@ Audio player for all **Raspberry Pi**s:
 - Connect to rAudio with IP address instead of raudio.local
 	- Get IP address: Menu > Network > Network Interfaces list
 - Backup SD card which already setup
-	- On Linux: `bash <( wget -qO - https://github.com/rern/rOS/raw/main/imagecreate.sh )`
+	- On Linux: `bash <( curl -sL https://github.com/rern/rOS/raw/main/imagecreate.sh )`
 		- Shrink ROOT partition to minimum
 		- Create and compress image file
 - Custom startup / shutdown script
