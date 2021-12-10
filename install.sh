@@ -9,14 +9,6 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211210
-if [[ -e /usr/bin/spotifyd && $( spotifyd -V ) != 'spotifyd 0.3.3' ]]; then
-	pacman -Sy --noconfirm spotifyd
-	mv /lib/systemd/{user,system}/spotifyd.service
-	sed -i '/ExecStart/ i\
-Environment="DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket"
-' /lib/systemd/system/spotifyd.service
-	systemctl restart dbus
-fi
 file=/etc/samba/smb.conf
 if [[ -e $file ]] && ! grep -q 'force user' $file; then
 	sed -i '/map to guest/ a\
