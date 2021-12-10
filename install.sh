@@ -9,8 +9,6 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 #20211210
-[[ -e /etc/systemd/system/spotifyd.service ]] || mv /{lib,etc}/systemd/system/spotifyd.service
-
 file=/etc/samba/smb.conf
 if [[ -e $file ]] && ! grep -q 'force user' $file; then
 	sed -i '/map to guest/ a\
