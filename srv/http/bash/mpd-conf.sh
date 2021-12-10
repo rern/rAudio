@@ -287,8 +287,9 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	fi
 	cat << EOF > /etc/spotifyd.conf
 [global]
+backend = "alsa"
 device = "$device"
-mixer = "PCM"
+mixer = "$hwmixer"
 volume_controller = "alsa"
 bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"

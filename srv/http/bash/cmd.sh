@@ -1011,6 +1011,7 @@ volume )
 	current=${args[1]}
 	target=${args[2]}
 	control=${args[3]}
+	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
 		type=set

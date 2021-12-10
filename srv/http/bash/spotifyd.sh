@@ -3,28 +3,28 @@
 # spotifyd.conf > this:
 #    - spotifyd 'onevent' hook
 # env var:
-# $PLAYER_EVENT: change/start/stop(pause) (not yet available: endoftrack/load/preload/volumeset)
+# $PLAYER_EVENT: load/preload/change/start/play/pause/volumeset
 # $TRACK_ID
 # $PLAY_REQUEST_ID
 # $POSITION_MS
 # $DURATION_MS
 # $VOLUME
 
-# currently not available on spotifyd
+[[ $PLAYER_EVENT == load || $PLAYER_EVENT == preload ]] && exit
+
+##### start
+[[ $PLAYER_EVENT == start && $( cat /srv/http/data/shm/player ) != spotify ]] && /srv/http/bash/cmd.sh playerstart$'\n'spotify && exit
+
 [[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream && exit
 
 . /srv/http/bash/common.sh
-dirspotify=$dirshm/spotify
 
-# var fileKEY=$dirspotify/KEY
-for key in elapsed expire start state status token; do
+dirspotify=$dirshm/spotify
+for key in elapsed expire start state status token; do # var fileKEY=$dirspotify/KEY
 	printf -v file$key '%s' $dirspotify/$key
 done
-
-##### start
-[[ $PLAYER_EVENT == start && $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
-# play / pause
-if [[ $PLAYER_EVENT == play || $PLAYER_EVENT == stop ]]; then
+# play / change
+if [[ $PLAYER_EVENT == play ]]; then
 	touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 elif [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then # prev / next
 	. $filestate
