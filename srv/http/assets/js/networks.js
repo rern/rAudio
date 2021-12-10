@@ -441,7 +441,7 @@ function qr( msg ) {
 	} );
 }
 function renderQR() {
-	var ip = G.listeth ? G.listeth.ip : G.listwl.ip;
+	var ip = G.ipeth || G.ipwlan;
 	if ( !ip ) return
 	
 	if ( ip && ip !== G.hostapd.ip ) {

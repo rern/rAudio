@@ -109,6 +109,8 @@ data='
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
 , "activewlan" : '$( rfkill | grep -q wlan && echo true )'
+, "ipeth"      : "'$ipeth'"
+, "ipwlan"     : "'$ipwlan'"
 , "listbt"     : '$listbt'
 , "listeth"    : '$listeth'
 , "listwl"     : '$listwl'
