@@ -861,15 +861,13 @@ function infoMount( values ) {
 	} );
 }
 function renderPage( list ) {
-	var cpu = G.soccpu +' <gr>@</gr> ';
-	cpu += G.socspeed < 1000 ? G.socspeed +'MHz' : G.socspeed / 1000 +'GHz';
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
 		+'<br>'+ G.firmware
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
 		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
-		+'<br>'+ cpu
+		+'<br>'+ G.soccpu
 	);
 	renderStatus();
 	var html = '';

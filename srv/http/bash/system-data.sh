@@ -28,9 +28,12 @@ bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
-soccore=${cpu[0]}
-(( $soccore > 1 )) && soccpu="$soccore x ${cpu[1]}" || soccpu=${cpu[1]}
-socspeed=${cpu[2]/.*}
+cpu=${cpu[0]}
+core=${cpu[1]}
+speed=${cpu[2]/.*}
+(( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
+(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
+soccpu+=" @ $speed"
 rpimodel=$( cat /proc/device-tree/model | tr -d '\0' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
