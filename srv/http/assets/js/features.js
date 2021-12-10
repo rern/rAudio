@@ -1,15 +1,19 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-if ( $( '.spotifycode' ).length ) {
-	window.history.replaceState( '', '', 'http://192.168.1.3/settings.php?p=features' );
-	var error = $( '.spotifycode' ).text();
-	if ( error ) {
-		info( {
-			  icon    : 'spotify'
-			, title   : 'Spotify'
-			, message : '<i class="fa fa-warning"></i> Authorization failed:<br>'+ error
-		} );
-	}
+// spotify api response
+var url = new URL( window.location.href );
+var code = url.searchParams.get( 'code' );
+var error = url.searchParams.get( 'error' );
+if ( code ) {
+	bash( [ 'spotifytoken', code ] );
+	window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );
+} else if ( error ) {
+	info( {
+		  icon    : 'spotify'
+		, title   : 'Spotify'
+		, message : '<i class="fa fa-warning"></i> Authorization failed:'
+					+'<br>'+ error
+	} );
 }
 $( '#setting-spotifyd' ).click( function() {
 	var active = infoPlayerActive( $( this ) );
@@ -17,6 +21,7 @@ $( '#setting-spotifyd' ).click( function() {
 	
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
+		notify( 'Spotify', 'Enable ...', 'spotify' );
 	} else if ( G.spotifytoken ) {
 		info( {
 			  icon    : 'spotify'
@@ -29,6 +34,16 @@ $( '#setting-spotifyd' ).click( function() {
 			}
 		} );
 	} else {
+		if ( navigator.userAgent.includes( 'Firefox' ) ) {
+			info( {
+				  icon    : 'spotify'
+				, title   : 'Spotify Client'
+				, message : '<i class="fa fa-warning"></i> Authorization cannot run on <wh>Firefox</wh>.'
+			} );
+			$( '#spotifyd' ).prop( 'checked', false );
+			return
+		}
+		
 		info( {
 			  icon         : 'spotify'
 			, title        : 'Spotify Client'
@@ -133,6 +148,22 @@ $( '#setting-hostapd' ).click( function() {
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapdset', iprange, ip, pwd ] );
 			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+		}
+	} );
+} );
+$( '#setting-autoplay' ).click( function() {
+	info( {
+		  icon         : 'play'
+		, title        : 'AutoPlay'
+		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
+		, values       : G.autoplayconf
+		, checkchanged : ( G.autoplay ? 1 : 0 )
+		, cancel       : function() {
+			$( '#autoplay' ).prop( 'checked', G.autoplay );
+		}
+		, ok           : function() {
+			bash( [ 'autoplayset', ...infoVal() ] );
+			notify( 'AutoPlay', G.autoplay ? 'Change ...' : 'Enable ...', 'play' );
 		}
 	} );
 } );
@@ -342,7 +373,7 @@ $( '#setting-stoptimer' ).click( function() {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			var $poweroff = $( '#infoContent input:checkbox' );
-			$poweroff.prop( 'disabled', !G.stoptimerconf );
+			$poweroff.prop( 'disabled', !G.stoptimerconf[ 1 ] );
 			$( '#infoContent tr:last' ).css( 'height', '60px' );
 			$( '#infoContent input:radio' ).change( function() {
 				var valfalse = $( this ).val() === 'false';

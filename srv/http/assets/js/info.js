@@ -49,7 +49,7 @@ $( 'body' ).prepend( `
 	<div id="bannerTitle"></div>
 	<div id="bannerMessage"></div>
 </div>
-` );
+` ); // enable e.which keypress (#infoOverlay needs tabindex="1")
 
 $( '#banner' ).click( bannerHide );
 $( '#infoOverlay' ).keyup( function( e ) {
@@ -251,9 +251,8 @@ function info( json ) {
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		$( '#infoContent input:eq( 0 )' ).focus();
 		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
@@ -342,8 +341,8 @@ function info( json ) {
 				if ( O.filetype === 'image/*' ) {
 					O.filechecked = G.infofile.type.slice( 0, 5 ) === 'image';
 				} else {
-					var ext = filename.indexOf( '.' ) !== -1 ? filename.split( '.' ).pop() : 'none';
-					O.filechecked = O.filetype.indexOf( ext ) !== -1;
+					var ext = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
+					O.filechecked = O.filetype.includes( ext );
 				}
 			}
 			if ( !O.filechecked ) {
@@ -489,9 +488,8 @@ function info( json ) {
 		// assign values
 		if ( 'values' in O && O.values !== '' ) infoSetValues();
 		
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.focus(); // enable e.which keypress (#infoOverlay needs tabindex="1")
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		$( '#infoContent input:eq( 0 )' ).focus();
 			
 		// set width: button
 		if ( !O.buttonfit ) {

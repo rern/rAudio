@@ -73,7 +73,9 @@ bluetoothset )
 		$dirbash/mpd-conf.sh bton
 	fi
 	bluetoothctl discoverable $yesno &
+	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
+	[[ $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh
 	pushRefresh
 	;;
 databackup )

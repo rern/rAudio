@@ -138,8 +138,6 @@ input::-moz-focus-inner {
 .fa-features::before { content: '\f50B' }
 .fa-file-music::before { content: '\f549' }
 .fa-file-playlist::before { content: '\f548' }
-.fa-firefox::before { content: '\f589'; position: absolute; color: var( --cgl ); }
-.fa-firefox::after { content: '\f58A'; position: relative; }
 .fa-flash::before { content: '\f566' }
 .fa-folder::before { content: '\f540' }
 .fa-folder-cascade::before { content: '\f54A' }
@@ -184,6 +182,7 @@ input::-moz-focus-inner {
 .fa-play::before { content: '\f503' }
 .fa-playback::before { content: '\f507' }
 .fa-playlist::before { content: '\f508' }
+.fa-playlists::before { content: '\f548' }
 .fa-player::before { content: '\f582' }
 .fa-play-cd::before { content: '\f539' }
 .fa-play-plus::before { content: '\f532' }

@@ -378,7 +378,7 @@ count )
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
-						| grep -i '.gif$\|.jpg$\|.png$' \
+						| grep -i '\.gif$\|\.jpg$\|\.png$' \
 						| head -1 ) # full path
 	if [[ $coverartfile ]]; then
 		echo $coverartfile | sed 's|^/srv/http||'
@@ -389,7 +389,7 @@ coverartget )
 	
 	coverfile=$( ls -1X "$path" \
 					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
-					| grep -i '.gif$\|.jpg$\|.png$' \
+					| grep -i '\.gif$\|\.jpg$\|\.png$' \
 					| head -1 ) # filename only
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
@@ -831,8 +831,12 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
+plcount )
+	playlists=$( ls -1 $dirdata/playlists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
+	;;
 plcrop )
-	if mpc | grep -q playing; then
+	if mpc | grep -q '\[playing'; then
 		mpc -q crop
 	else
 		mpc -q play
@@ -912,10 +916,6 @@ plremove )
 		mpc -q clear
 	fi
 	$dirbash/status-push.sh
-	pushstreamPlaylist
-	;;
-plrename )
-	mv "$dirdata/playlists/${args[1]}" "$dirdata/playlists/${args[2]}"
 	pushstreamPlaylist
 	;;
 plshuffle )
@@ -1011,6 +1011,7 @@ volume )
 	current=${args[1]}
 	target=${args[2]}
 	control=${args[3]}
+	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
 		type=set

@@ -53,7 +53,6 @@ ib {
 #infoIcon.fa-bookmark {
 	line-height: 34px;
 }
-.disable,
 .disabled,
 .disabled i {
 	pointer-events: none;

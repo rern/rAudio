@@ -439,6 +439,8 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	$i = 0;
 	$html = '';
 	foreach( $array as $each ) {
+		if ( !$each->time ) continue;
+		
 		$path = $cue ? $file0 : $each->file;
 		$litime += HMS2second( $each->time );
 		$title = $each->title;

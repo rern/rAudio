@@ -691,7 +691,7 @@ input.disabled + .switchlabel:after {
 	.setting,
 	.settings,
 	.settingedit,
-	.status:not(pre),
+	.status:not(pre,.single),
 	.switchlabel,
 	.undervoltage,
 	.wiring,

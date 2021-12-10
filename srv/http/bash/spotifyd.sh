@@ -3,36 +3,26 @@
 # spotifyd.conf > this:
 #    - spotifyd 'onevent' hook
 # env var:
-# $PLAYER_EVENT: change/start/stop(pause) (not yet available: endoftrack/load/preload/volumeset)
+# $PLAYER_EVENT: load/preload/change/start/play/pause/volumeset
 # $TRACK_ID
 # $PLAY_REQUEST_ID
 # $POSITION_MS
 # $DURATION_MS
 # $VOLUME
 
-# currently not available on spotifyd
+[[ $PLAYER_EVENT == load || $PLAYER_EVENT == preload ]] && exit
+
+##### start
+[[ $PLAYER_EVENT == start && $( cat /srv/http/data/shm/player ) != spotify ]] && /srv/http/bash/cmd.sh playerstart$'\n'spotify && exit
+
 [[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream && exit
 
 . /srv/http/bash/common.sh
-dirspotify=$dirshm/spotify
 
-# var fileKEY=$dirspotify/KEY
-for key in elapsed expire start state status token; do
+dirspotify=$dirshm/spotify
+for key in elapsed expire start state status token; do # var fileKEY=$dirspotify/KEY
 	printf -v file$key '%s' $dirspotify/$key
 done
-
-##### start
-[[ $PLAYER_EVENT == start && $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify
-# play / pause
-if [[ $PLAYER_EVENT == play || $PLAYER_EVENT == stop ]]; then
-	touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
-elif [[ $PLAYER_EVENT == change && -e $dirsystem/scrobble ]]; then # prev / next
-	. $filestate
-	elapsed=$(( $( date +%s ) - start ))
-	if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
-		touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
-	fi
-fi
 # token
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
 	token=$( cat $filetoken )
@@ -78,11 +68,24 @@ EOF
 progress=${status[6]}
 timestamp=${status[7]}
 diff=$(( $( date +%s%3N ) - timestamp ))
-cat << EOF > $filestate
 elapsed=$(( ( progress + 500 ) / 1000 ))
 start=$(( ( timestamp + diff - progress + 500 ) / 1000 ))
+cat << EOF > $filestate
+elapsed=$elapsed
+start=$start
 state=$state
 Time=$Time
 EOF
 
 $dirbash/status-push.sh
+
+# scrobble
+if [[ -e $dirsystem/scrobble ]]; then
+	if [[ $PLAYER_EVENT == play ]]; then
+		touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+	elif [[ $PLAYER_EVENT == change ]]; then # prev / next
+		if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
+			touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+		fi
+	fi
+fi

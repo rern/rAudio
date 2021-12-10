@@ -20,9 +20,9 @@ else                 # restore
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
 	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
 dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes"
-	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	revision=${revision: -3:2}
-	[[ $revision =~ ^(04|08|0d|0e|11)$ ]] && cmdline+=' isolcpus=3'
+	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	hwrevision=${hwrevision: -3:2}
+	[[ $hwrevision =~ ^(04|08|0d|0e|11|12)$ ]] && cmdline+=' isolcpus=3'
 	if systemctl is-enabled localbrowser &> /dev/null; then
 		config+=' console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
 	else
@@ -36,9 +36,9 @@ max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on"
-	[[ -e /boot/kernel8.img || $revision =~ ^(08|0c|0d|0e|11)$ ]] && config+="
+	[[ -e /boot/kernel8.img || $hwrevision =~ ^(08|0c|0d|0e|11|12)$ ]] && config+="
 dtparam=krnbt=on"
-	[[ $revision =~ ^(09|0c)$ ]] && config+="
+	[[ $hwrevision =~ ^(09|0c)$ ]] && config+="
 force_turbo=1
 hdmi_drive=2
 over_voltage=2"
@@ -65,6 +65,7 @@ cat << EOF > $dirsystem/display
 	"conductor": true,
 	"date": true,
 	"genre": true,
+	"playlists": true,
 	"nas": true,
 	"sd": true,
 	"usb": true,

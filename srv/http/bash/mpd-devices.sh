@@ -34,7 +34,7 @@ for line in "${lines[@]}"; do
 	aplayname=$( echo $line \
 					| awk -F'[][]' '{print $2}' \
 					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
-	[[ $aplayname == wsp ]] && aplayname=rpi-cirrus-wm5102
+	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
 	if [[ $aplayname == $audioaplayname ]]; then
 		name=$( cat $dirsystem/audio-output )
 	else

@@ -44,11 +44,21 @@ case ${args[0]} in
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
-autoplay|autoplaycd|lyricsembedded|streaming )
+autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
 	[[ $feature == streaming ]] && $dirbash/mpd-conf.sh
+	pushRefresh
+	;;
+autoplaydisable )
+	rm -f $dirsystem/autoplay*
+	pushRefresh
+	;;
+autoplayset )
+	[[ ${args[1]} == true ]] && touch $dirsystem/autoplaybt || rm -f $dirsystem/autoplaybt
+	[[ ${args[2]} == true ]] && touch $dirsystem/autoplaycd || rm -f $dirsystem/autoplaycd
+	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
 hostapddisable )
@@ -90,6 +100,7 @@ localbrowserdisable )
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
+	[[ -e $dirshm/btclient ]] && systemctl start bluetoothbutton
 	pushRefresh
 	;;
 localbrowserset )
@@ -149,7 +160,10 @@ cursor=$newcursor
 	fi
 	if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 		systemctl restart bootsplash localbrowser
-		systemctl -q is-active localbrowser && systemctl enable bootsplash localbrowser
+		if systemctl -q is-active localbrowser; then
+			systemctl enable bootsplash localbrowser
+			systemctl stop bluetoothbutton
+		fi
 	elif [[ $changedscreenoff ]]; then
 		localbrowserXset $newscreenoff
 		if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
@@ -291,9 +305,9 @@ spotifytoken )
 				-H 'Content-Type: application/x-www-form-urlencoded' \
 				-d "code=$code" \
 				-d grant_type=authorization_code \
-				--data-urlencode "redirect_uri=https://rern.github.io/raudio/spotify" )
+				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q error <<< "$tokens"; then
-		spotifyReset "Error: $( echo $token | jq -r .error )"
+		spotifyReset "Error: $( echo $tokens | jq -r .error )"
 		exit
 	fi
 	

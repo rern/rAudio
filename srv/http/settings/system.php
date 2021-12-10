@@ -100,7 +100,7 @@ mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll
 </div>
 <?php
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11' ] ) ) {
+if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Wireless'

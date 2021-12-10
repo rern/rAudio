@@ -28,7 +28,7 @@ fi
 connectedssid=$( iwgetid wlan0 -r )
 
 readarray -t lines <<< $( iwlist wlan0 scan \
-							| grep '^\s*Quality\|^\s*Encryption\|^\s*ESSID\|WPA \|WPA2' \
+							| grep -E '^\s*Quality|^\s*Encryption|^\s*ESSID|WPA |WPA2' \
 							| sed 's/^\s*Quality.*level\| dBm *$\|^\s*Encryption.*:\|^\s*ESSID.*:\|\\x00//g; s/IE: .*\(WPA.*\) .* .*/\1/' \
 							| sed 's/^"\|"$//g' \
 							| tr '\n' '^' \

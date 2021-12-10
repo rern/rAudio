@@ -1,9 +1,4 @@
 <?php
-if ( isset( $_GET[ 'code' ] ) ) {
-	$code = $_GET[ 'code' ];
-	exec( "/usr/bin/sudo /srv/http/bash/features.sh spotifytoken$'\n'".$code );
-	echo '<a class="spotifycode hide">'.( $_GET[ 'error' ] ?? '' ).'</a>';
-}
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
 
@@ -46,7 +41,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • Get <code>ID</code> <code>Secret</code> : (for playing status access)
+ • Get <code>ID</code> and <code>Secret</code> : (Firefox doesn't work with this procedure.)
  &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
  &emsp; • <code>CREATE AN APP</code>
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
@@ -120,7 +115,20 @@ $body = [
 This should be used only when necessary.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/hostapd' )
-	], [
+	]
+	, [
+		  'label'   => 'AutoPlay'
+		, 'id'      => 'autoplay'
+		, 'icon'    => 'play'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Start playing automatically on:
+ • Bluetooth connected
+ • Audio CD inserting
+ • Power on / Reboot
+HTML
+	]
+	, [
 		  'label'    => 'Browser on RPi'
 		, 'id'       => 'localbrowser'
 		, 'sublabel' => 'chromium'
@@ -145,7 +153,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
- • At address bar of Windows File Explorer: <code>$ip</code> or <code>$hostname</code>
+ • At address bar of Windows File Explorer: <code>\\\\$ip</code> or <code>\\\\$hostname</code>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -169,22 +177,6 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
 Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock"></i>
-HTML
-	]
-	, [
-		  'label' => 'Play on Insert CD'
-		, 'id'    => 'autoplaycd'
-		, 'icon'  => 'play-cd'
-		, 'help'  => <<< HTML
-Start playing automatically on audio CD inserting or power on with CD inserted.
-HTML
-	]
-	, [
-		  'label' => 'Play on Startup'
-		, 'id'    => 'autoplay'
-		, 'icon'  => 'play-power'
-		, 'help'  => <<< HTML
-Start playing automatically after boot.
 HTML
 	]
 	, [

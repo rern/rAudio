@@ -11,8 +11,8 @@ scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
 
 data+='
   "page"             : "features"
-, "autoplay"         : '$( exists $dirsystem/autoplay )'
-, "autoplaycd"       : '$( exists $dirsystem/autoplaycd )'
+, "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
+, "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "hostname"         : "'$( hostname )'"
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
@@ -21,7 +21,7 @@ data+='
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
-, "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null )'
+, "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 # hostapd
 if [[ -e /usr/bin/hostapd ]]; then

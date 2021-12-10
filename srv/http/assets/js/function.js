@@ -154,7 +154,7 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	
-	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].indexOf( G.mode ) !== -1;
+	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].includes( G.mode );
 	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
 	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && !filemode && G.mode !== 'album' );
@@ -366,7 +366,7 @@ function displayPlayback() {
 	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
-	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1 );
+	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || ![ 'mpd', 'upnp' ].includes( G.status.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', !G.display.buttons );
@@ -489,7 +489,7 @@ function getPlaybackStatus() {
 			var status = JSON.parse( list );
 		} catch( e ) {
 			var msg = e.message;
-			if ( msg.indexOf( 'position' ) !== -1 ) {
+			if ( msg.includes( 'position' ) ) {
 				var pos = msg.replace( /.* position /, '' );
 			} else {
 				var pos = msg.replace( /.* column (.*) of .*/, '$1' );
@@ -607,7 +607,7 @@ var chklibrary = {
 	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
-	, '-'            : ''
+	, playlists      : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
 	, count          : 'Count'
 	, label          : 'Label'
 }
@@ -771,22 +771,6 @@ function infoPlayback() {
 		, ok           : function () {
 			displaySave( keys );
 		}
-	} );
-}
-function infoNoData() {
-	if ( G.mode === 'nas' ) {
-		var message = 'Network storage not available.'
-					 +'<br>To setup:'
-					 +'<br>Settings > System - Storage - <i class="fa fa-plus-circle wh"></i>';
-	} else {
-		var message = 'Database not available for this location.'
-					 +'<br>To populate new files to database:'
-					 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
-	}
-	info( {
-		  icon      : 'library'
-		, title     : 'Library Database'
-		, message   : message
 	} );
 }
 function infoUpdate( path ) {
@@ -1050,11 +1034,6 @@ function renderLibrary() {
 	$( 'html, body' ).scrollTop( G.modescrolltop );
 }
 function renderLibraryList( data ) {
-	if ( data == -1 ) {
-		infoNoData();
-		return
-	}
-	
 	G.librarylist = 1;
 	var radiobtn = '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
@@ -1068,7 +1047,7 @@ function renderLibraryList( data ) {
 	} else if ( data.path === 'WEBRADIO' ) {
 		$( '#lib-path .lipath' ).empty();
 		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>'+ radiobtn;
-	} else if ( [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) === -1 ) {
+	} else if ( ![ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
@@ -1092,7 +1071,7 @@ function renderLibraryList( data ) {
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		imageLoad( 'lib-list' );
 		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
-		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].indexOf( G.mode ) !== -1 );
+		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$( '#lib-list img:eq( 0 )' ).on( 'load', function() {
@@ -1198,11 +1177,11 @@ function renderPlaylist( data ) {
 	G.status.elapsed = data.elapsed;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
-	$( '#button-pl-open' ).toggleClass( 'disable', G.status.playlists === 0 );
+	$( '#button-pl-playlists' ).toggleClass( 'disabled', G.status.counts.playlists === 0 );
 	if ( data == -1 ) {
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
-		$( '.pllength' ).addClass( 'disable' );
+		$( '.pllength' ).addClass( 'disabled' );
 		$( '#pl-search-close' ).click();
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
@@ -1213,8 +1192,8 @@ function renderPlaylist( data ) {
 	$( '.playlist' ).removeClass( 'hide' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
-	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disable' );
-	$( '#button-pl-shuffle' ).toggleClass( 'disable', G.status.playlistlength < 2 );
+	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disabled' );
+	$( '#button-pl-shuffle' ).toggleClass( 'disabled', G.status.playlistlength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
@@ -1225,23 +1204,21 @@ function renderPlaylist( data ) {
 		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
 	} );
 }
-function renderPlaylistList() {
-	list( { cmd: 'list' }, function( data ) {
-		$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
-		$( '#menu-plaction' ).addClass( 'hide' );
-		
-		$( '#pl-path' ).html( data.counthtml );
-		$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
-		$( '.emptyadd' ).addClass( 'hide' );
-		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
-			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
-			$( '#pl-savedlist' ).css( 'width', '' );
-			$( '#pl-index' ).html( data.index[ 0 ] );
-			$( '#pl-index1' ).html( data.index[ 1 ] );
-			$( 'html, body' ).scrollTop( 0 );
-		} );
-	}, 'json' );
+function renderPlaylistList( data ) {
+	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
+	$( '#menu-plaction' ).addClass( 'hide' );
+	
+	$( '#pl-path' ).html( data.counthtml );
+	$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
+	$( '.emptyadd' ).addClass( 'hide' );
+	$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
+	$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
+		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+		$( '#pl-savedlist' ).css( 'width', '' );
+		$( '#pl-index' ).html( data.index[ 0 ] );
+		$( '#pl-index1' ).html( data.index[ 1 ] );
+		$( 'html, body' ).scrollTop( 0 );
+	} );
 }
 function renderSavedPlaylist( name ) {
 	$( '.menu' ).addClass( 'hide' );
@@ -1290,7 +1267,7 @@ function setBlinkDot() {
 }
 function setButtonControl() {
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
-		var mpd_upnp = [ 'mpd', 'upnp' ].indexOf( G.status.player ) !== -1;
+		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
 		var noprevnext = G.status.playlistlength < 2 || !mpd_upnp;
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
@@ -1514,7 +1491,7 @@ function setPlaylistScroll() {
 		|| !G.status.playlistlength
 		|| G.plremove
 		|| G.sortable
-		|| [ 'mpd', 'upnp' ].indexOf( G.status.player ) === -1
+		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| $( '#pl-list li' ).length < G.status.song + 1 // on eject cd G.status.song not yet refreshed
 	) return
@@ -1594,9 +1571,9 @@ function setProgressAnimate() {
 	$( '#time-bar' ).css( 'width', '100%' );
 }
 function setProgressElapsed() {
+	clearInterval( G.intElapsed );
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
-	clearInterval( G.intElapsed );
 	var elapsedhms;
 	var $elapsed = !G.status.elapsed ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
 	if ( G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );

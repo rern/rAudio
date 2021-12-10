@@ -25,7 +25,7 @@ var cmd = {
 	  albumignore  : 'cat /srv/http/data/mpd/albumignore'
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : 'bluetoothctl info'
+	, bluetooth    : "echo '<bll># bluetoothctl info</bll>'; bluetoothctl info"
 	, bluetoothctl : systemsh +'bluetoothstatus'
 	, iw           : "echo '<bll># iw reg get</bll>'; iw reg get; echo '<bll># iw list</bll>';  iw list"
 	, journalctl   : systemsh +'journalctl'
@@ -52,7 +52,7 @@ function status( id, refresh ) {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
-	var command = services.indexOf( id ) !== -1 ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( function() {
@@ -109,11 +109,11 @@ function refreshData() {
 	
 	if ( page === 'networks' ) {
 		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
-			wlanStatus();
+			scanWlan();
 			resetLocal();
 			return
 		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
-			btScan();
+			scanBluetooth();
 			resetLocal();
 			return
 		}
@@ -298,7 +298,7 @@ var dirsystem = '/srv/http/data/system';
 var intervalcputime;
 var intervalscan;
 var local = 0;
-var localhost = [ 'localhost', '127.0.0.1' ].indexOf( location.hostname ) !== -1;
+var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var red = '#bb2828';
@@ -431,10 +431,11 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide )' ).length !== 0 );
 } );
-$( '.status' ).click( function( e ) {
+$( '.container' ).on( 'click', '.status', function( e ) {
+	if ( $( e.target ).is( 'i' ) ) return
+	
 	var $this = $( this );
-	var datastatus = $this.data( 'status' );
-	if ( !$( e.target ).is( 'i' ) && !$this.hasClass( 'single' ) ) status( datastatus );
+	if ( !$this.hasClass( 'single' ) ) status( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;

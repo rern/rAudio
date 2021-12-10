@@ -31,7 +31,6 @@ else
 	player=$( cat $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	playlists=$( ls $dirdata/playlists | wc -l )
 	relays=$( exists $dirsystem/relays )
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
@@ -68,7 +67,6 @@ else
 , "file"           : ""
 , "icon"           : "'$icon'"
 , "librandom"      : '$librandom'
-, "playlists"      : '$playlists'
 , "relays"         : '$relays'
 , "relayson"       : '$relayson'
 , "scrobble"       : '$scrobble'
@@ -140,12 +138,12 @@ fi
 
 (( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
-filter='^Album\|^AlbumArtist\|^Artist\|^audio\|^bitrate\|^duration\|^file\|^Name\|^song:\|^state\|^Time\|^Title'
-[[ ! $snapclient ]] && filter+='\|^playlistlength\|^random\|^repeat\|^single'
+filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
+[[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
-		| grep "$filter" )
+		| grep -E "$filter" )
 }
 mpdStatus currentsong
 # 'file:' missing / blank
@@ -276,6 +274,7 @@ elif [[ $stream ]]; then
 		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
 		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
 		if [[ $state != play ]]; then
+			state=stop
 			Title=
 		else
 			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
@@ -291,7 +290,7 @@ $id
 $radiosampling" > $dirshm/radio
 					systemctl start radio
 				else
-					. <( grep '^Artist\|^Album\|^Title\|^coverart\|^station' $dirshm/status )
+					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
@@ -317,13 +316,14 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
-		status=$( grep -v '^, *"webradio"' <<< "$status" )
+		status=$( grep -v '^, *"state"\|^, *"webradio"' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
 , "stationcover" : "'$stationcover'"
 , "Name"         : "'$Name'"
+, "state"        : "'$state'"
 , "station"      : "'$station'"
 , "Time"         : false
 , "Title"        : "'$Title'"

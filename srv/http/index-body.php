@@ -58,7 +58,7 @@ $color = file_exists( $dirsystem.'color' );
 $filecounts = $dirdata.'mpd/counts';
 $counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre' ];
+$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );
@@ -364,7 +364,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 		</form>
 		<div id="pl-search-close" class="hide"></div>
 		<div id="pl-manage" class="playlist">
-			<i id="button-pl-open" class="fa fa-folder-open"></i>
+			<i id="button-pl-playlists" class="fa fa-playlists"></i>
 			<i id="button-pl-save" class="fa fa-save pllength"></i>
 			<i id="button-pl-consume" class="fa fa-flash"></i>
 			<i id="button-pl-librandom" class="fa fa-librandom"></i>

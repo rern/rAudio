@@ -88,7 +88,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'relays', 'reload', 'volume', 'webradio' ];
+	'notify', 'option', 'order', 'playlist', 'playlists', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -125,6 +125,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'option':    psOption( data );    break;
 		case 'order':     psOrder( data );     break;
 		case 'playlist':  psPlaylist( data );  break;
+		case 'playlists': psPlaylists( data ); break;
 		case 'reload':    psReload( data );    break;
 		case 'restore':   psRestore( data );   break;
 		case 'volume':    psVolume( data );    break;
@@ -327,12 +328,15 @@ function psMpdPlayer( data ) {
 }
 function psMpdRadio( data ) {
 	statusUpdate( data );
+	setProgress( 0 );
 	if ( G.playback ) {
 		setInfo();
 		setCoverart();
-		if ( G.display.radioelapsed && $( '#total' ).is( ':empty' ) ) {
+		if ( G.display.radioelapsed ) {
 			$( '#progress' ).html( '<i class="fa fa-play"></i><span></span>' );
 			setProgressElapsed();
+		} else {
+			setBlinkDot();
 		}
 	} else if ( G.playlist ) {
 		setPlaylistScroll();
@@ -417,14 +421,23 @@ function psPlaylist( data ) {
 			} else if ( G.playlist ) {
 				if ( !G.plremove ) renderPlaylist( data );
 			}
-		} else if ( data.playlist === 'save' ) {
-			if ( G.savedlist ) $( '#button-pl-open' ).click();
+			$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
-		$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
 	}, G.debouncems );
+}
+function psPlaylists( data ) {
+	var count = data.count;
+	G.status.counts.playlists = count;
+	if ( G.savedlist ) {
+		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
+	} else if ( G.savedplaylist ) {
+		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).click();
+	}
+	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
+	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );
@@ -513,7 +526,7 @@ function psRestore( data ) {
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
-		$( '#volume-knob, #vol-group i' ).toggleClass( 'disable', data.val );
+		$( '#volume-knob, #vol-group i' ).toggleClass( 'disabled', data.val );
 		return
 	}
 	
