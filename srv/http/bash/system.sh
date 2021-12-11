@@ -67,15 +67,22 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
+	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 	if ! systemctl -q is-active bluetooth; then
 		systemctl enable --now bluetooth
 		sleep 3
-		$dirbash/mpd-conf.sh bton
+		if [[ $( bluetoothctl show ) == 'No default controller available' ]]; then
+			reboot=1
+			pushReboot Bluetooth bluetooth
+		else
+			mpdrestart=1
+		fi
 	fi
-	bluetoothctl discoverable $yesno &
-	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
-	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh
+	if [[ ! $reboot ]]; then
+		bluetoothctl discoverable $yesno &
+		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
+		[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
+	fi
 	pushRefresh
 	;;
 databackup )
