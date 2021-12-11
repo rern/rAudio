@@ -10,13 +10,13 @@
 # $DURATION_MS
 # $VOLUME
 
-##### start
-[[ $( cat /srv/http/data/shm/player ) != spotify ]] && /srv/http/bash/cmd.sh playerstart$'\n'spotify && exit
-
-[[ $PLAYER_EVENT == volumeset ]] && /srv/http/bash/cmd.sh volumepushstream
-
 . /srv/http/bash/common.sh
-pushstreamNotify Spotify $PLAYER_EVENT spotify
+
+##### start
+[[ $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify && exit
+
+[[ $PLAYER_EVENT == volumeset ]] && $dirbash/cmd.sh volumepushstream
+
 dirspotify=$dirshm/spotify
 for key in elapsed expire start state status token; do # var fileKEY=$dirspotify/KEY
 	printf -v file$key '%s' $dirspotify/$key
