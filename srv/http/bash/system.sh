@@ -71,7 +71,8 @@ bluetoothset )
 	if ! systemctl -q is-active bluetooth; then
 		systemctl enable --now bluetooth
 		sleep 3
-		if [[ $( bluetoothctl show ) == 'No default controller available' ]]; then
+		btshow=$( timeout 1 bluetoothctl show )
+		if [[ ! $btshow || $btshow == 'No default controller available' ]]; then
 			reboot=1
 			pushReboot Bluetooth bluetooth
 		else
