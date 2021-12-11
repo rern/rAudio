@@ -10,7 +10,7 @@
 # $DURATION_MS
 # $VOLUME
 
-[[ $PLAYER_EVENT == load || $PLAYER_EVENT == preload ]] && exit
+#[[ $PLAYER_EVENT == load || $PLAYER_EVENT == preload ]] && exit
 
 ##### start
 [[ $PLAYER_EVENT == start && $( cat /srv/http/data/shm/player ) != spotify ]] && /srv/http/bash/cmd.sh playerstart$'\n'spotify && exit
