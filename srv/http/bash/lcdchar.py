@@ -4,8 +4,6 @@ from lcdcharconfig import *
 import sys
 import os
 
-os.system( 'kill -9 $( pgrep lcdchartimer ) &> /dev/null' )
-
 icon = {
       'pause' : '\x00 '
     , 'play'  : '\x01 '
@@ -32,7 +30,15 @@ if argvL == 2: # 1 argument
     quit()
     
 import math
+import time
 
+def backlightOff( backlight ):
+    if backlight:
+        time.sleep( 60 )
+        lcd.backlight_enabled = False
+    lcd.close()
+    quit()
+    
 def second2hhmmss( sec ):
     hh = math.floor( sec / 3600 )
     mm = math.floor( ( sec % 3600 ) / 60 )
@@ -78,11 +84,7 @@ if not Title: Title = idots
 if not Album: Album = idots
 if rows == 2:
     if state == 'stop' or state == 'pause':
-        if backlight:
-            os.system( '/srv/http/bash/lcdchartimer.sh &' )
-        lcd.close()
-        quit()
-        
+        backlightOff( backlight )
     else:
         lines = Title
 else:
@@ -110,15 +112,9 @@ progress = ( progress + ' ' * cols )[ :cols - 4 ]
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
-    if backlight:
-        os.system( '/srv/http/bash/lcdchartimer.sh &' )
-    lcd.close()
-    quit()
-
+    backlightOff( backlight )
 # play
 if not elapsed: quit()
-
-import time
 
 row = rows - 1
 starttime = time.time()
