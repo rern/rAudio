@@ -107,18 +107,6 @@ function notify( title, message, icon, delay ) {
 function refreshData() {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
-	if ( page === 'networks' ) {
-		if ( !$( '#divwifi' ).hasClass( 'hide' ) ) {
-			scanWlan();
-			resetLocal();
-			return
-		} else if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) {
-			scanBluetooth();
-			resetLocal();
-			return
-		}
-	}
-	
 	bash( dirbash + page +'-data.sh', function( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );

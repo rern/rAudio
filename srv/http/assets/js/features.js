@@ -1,20 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-// spotify api response
-var url = new URL( window.location.href );
-var code = url.searchParams.get( 'code' );
-var error = url.searchParams.get( 'error' );
-if ( code ) {
-	bash( [ 'spotifytoken', code ] );
-	window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );
-} else if ( error ) {
-	info( {
-		  icon    : 'spotify'
-		, title   : 'Spotify'
-		, message : '<i class="fa fa-warning"></i> Authorization failed:'
-					+'<br>'+ error
-	} );
-}
 $( '#setting-spotifyd' ).click( function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
@@ -406,5 +391,25 @@ function renderPage( list ) {
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#snapserver' ).toggleClass( 'disabled', G.snapclient || G.snapserveractive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
+	if ( /code|error/.test( window.location.href ) ) {
+		var url = new URL( window.location.href );
+		var code = url.searchParams.get( 'code' );
+		var error = url.searchParams.get( 'error' );
+		if ( code ) {
+			bash( [ 'spotifytoken', code ], function() {
+				showContent();
+			} );
+			window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );
+			return
+			
+		} else if ( error ) {
+			info( {
+				  icon    : 'spotify'
+				, title   : 'Spotify'
+				, message : '<i class="fa fa-warning"></i> Authorization failed:'
+							+'<br>'+ error
+			} );
+		}
+	}
 	showContent();
 }
