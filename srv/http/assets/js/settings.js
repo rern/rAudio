@@ -179,11 +179,18 @@ disconnect = () => {
 }
 hiddenSet = () => {
 	if ( page === 'networks' ) {
-		clearTimeout( G.timeoutScan );
-		$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
+		if ( !$( '#divbluetooth' ).hasClass( 'hide' ) || !$( '#divwifi' ).hasClass( 'hide' ) ) {
+			bash( 'killall -q networks-scanbt.sh; killall -q networks-scanwlan.sh' );
+			clearTimeout( G.timeoutScan );
+			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
+			$( '.back' ).click();
+		}
 	} else if ( page === 'system' ) {
-		clearInterval( G.intCputime );
-		$( '#refresh' ).removeClass( 'blink' );
+		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
+			bash( 'killall -q system-data.sh' );
+			clearInterval( G.intCputime );
+			$( '#refresh' ).removeClass( 'blink' );
+		}
 	}
 }
 document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
