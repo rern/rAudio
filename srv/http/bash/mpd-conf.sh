@@ -277,7 +277,7 @@ fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ $btmixer ]]; then
-		device=bluealsa
+		device=$( bluealsa-aplay -L | head -1 )
 	else
 		cardname=$( aplay -l \
 						| grep "^card $card" \
@@ -285,7 +285,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 						| cut -d' ' -f3 )
 		device=$( aplay -L | grep "^default.*$cardname" )
 	fi
-	cat << EOF > /etc/spotifyd.conf
+	conf=$( cat << EOF
 [global]
 backend = "alsa"
 device = "$device"
@@ -296,5 +296,8 @@ bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 EOF
+)
+	[[ $btmixer ]] && conf=$( echo "$conf" | grep -v '^mixer\|^control\|^volume' )
+	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
