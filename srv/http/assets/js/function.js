@@ -1640,9 +1640,9 @@ function statusRefresh() {
 		G.display = data;
 		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
 		displaySubMenu();
+		getPlaybackStatus();
+		bannerHide();
 	}, 'json' );
-	getPlaybackStatus();
-	bannerHide();
 }
 function stopAirplay() {
 	info( {
