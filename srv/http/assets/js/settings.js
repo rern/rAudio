@@ -25,7 +25,6 @@ var cmd = {
 	  albumignore  : 'cat /srv/http/data/mpd/albumignore'
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : "echo '<bll># bluetoothctl info</bll>'; bluetoothctl info"
 	, bluetoothctl : systemsh +'bluetoothstatus'
 	, iw           : "echo '<bll># iw reg get</bll>'; iw reg get; echo '<bll># iw list</bll>';  iw list"
 	, journalctl   : systemsh +'journalctl'
