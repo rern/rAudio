@@ -389,6 +389,7 @@ function renderBluetooth() {
 		} );
 		$( '#listbt' ).html( htmlbt );
 	}
+	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
 }
 function renderPage( list ) {
 	if ( G.activebt ) {

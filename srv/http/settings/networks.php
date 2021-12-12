@@ -3,6 +3,7 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
+	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan', 'search wh' ]
 ] );
 ?>
