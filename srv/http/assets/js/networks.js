@@ -415,8 +415,8 @@ function renderPage( list ) {
 					htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
 				}
 			} );
+			$( '#listwl' ).html( htmlwl );
 		}
-		$( '#listwl' ).html( htmlwl );
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
 		$( '#divwl' ).addClass( 'hide' );
