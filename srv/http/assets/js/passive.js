@@ -96,7 +96,7 @@ streams.forEach( stream => {
 pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // suppress on 1st load
-		statusRefresh();
+		getPlaybackStatus( 'withdisplay' );
 		if ( O.title === 'Equalizer' ) {
 			bash( [ 'equalizerget' ], function( data ) {
 				psEqualizer( data );

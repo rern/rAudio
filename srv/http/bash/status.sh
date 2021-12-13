@@ -20,10 +20,32 @@ outputStatus() {
 	[[ $1 != noexit ]] && exit
 }
 
-if (( $# > 0 )); then # snapclient
+if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
+	if [[ $1 == withdisplay ]]; then
+		if [[ -e $dirshm/nosound ]]; then
+			volumenone=true
+		else
+			card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+			volumenone=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
+						| grep -q 'mixer_type.*none' \
+						&& echo true )
+		fi
+		display=$( head -n -1 $dirsystem/display )
+		display+='
+, "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true )'
+, "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "equalizer"  : '$( exists $dirsystem/equalizer )'
+, "lock"       : '$( exists $dirsystem/login )'
+, "order"      : '$( cat $dirsystem/order 2> /dev/null )'
+, "relays"     : '$( exists $dirsystem/relays )'
+, "screenoff"  : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf && echo true )'
+, "snapclient" : '$( exists $dirsystem/snapclient )'
+, "volumenone" : '$volumenone'
+}'
+	fi
 	btclient=$( exists $dirshm/btclient )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
@@ -64,6 +86,7 @@ else
 , "consume"        : '$consume'
 , "control"        : "'$control'"
 , "counts"         : '$counts'
+, "display"        : '$display'
 , "file"           : ""
 , "icon"           : "'$icon'"
 , "librandom"      : '$librandom'

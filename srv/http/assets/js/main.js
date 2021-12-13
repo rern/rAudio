@@ -76,7 +76,7 @@ var icon_player = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-statusRefresh();
+getPlaybackStatus( 'withdisplay' );
 
 if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;

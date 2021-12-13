@@ -481,8 +481,8 @@ function getBio( artist ) {
 		} );
 	} );
 }
-function getPlaybackStatus() {
-	bash( '/srv/http/bash/status.sh', function( list ) {
+function getPlaybackStatus( withdisplay ) {
+	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
 		if ( !list ) return
 		
 		try {
@@ -503,6 +503,14 @@ function getPlaybackStatus() {
 			return false
 		}
 		
+		if ( 'display' in status ) {
+			G.display = status.display;
+			G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
+			delete status.display;
+			delete G.coverTL;
+			displaySubMenu();
+			bannerHide();
+		}
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -1633,16 +1641,6 @@ function setTrackCoverart() {
 		$( '.licover' ).addClass( 'nofixed' );
 		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
 	}
-}
-function statusRefresh() {
-	bash( [ 'displayget' ], data => {
-		delete G.coverTL;
-		G.display = data;
-		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
-		displaySubMenu();
-		getPlaybackStatus();
-		bannerHide();
-	}, 'json' );
 }
 function stopAirplay() {
 	info( {
