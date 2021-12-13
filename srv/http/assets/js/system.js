@@ -73,16 +73,16 @@ $( '#addnas' ).click( function() {
 $( '#list' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	G.li = $this;
-	$( '#menu, #codehddinfo' ).addClass( 'hide' );
+	$( '#codehddinfo' ).addClass( 'hide' );
 	var mountpoint = $this.find( '.mountpoint' ).text();
-	if ( mountpoint === '/' ) return
-	
-	var active = $this.hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
-	$this.addClass( 'active' );
 	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) && active ) return
+	if ( !$menu.hasClass( 'hide' ) || mountpoint === '/' ) {
+		$( '#menu, #codehddinfo' ).addClass( 'hide' );
+		return
+	}
 	
+	$this.addClass( 'active' );
 	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
 	var menuH = $menu.height();
 	$menu
