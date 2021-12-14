@@ -511,6 +511,7 @@ function getPlaybackStatus( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
+		var pllength = G.status.playlistlength;
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
@@ -533,6 +534,7 @@ function getPlaybackStatus( withdisplay ) {
 			getPlaylist();
 		}
 		setButtonUpdating();
+		if ( !pllength && !G.playback ) renderPlayback();
 	} );
 }
 function getPlaylist() {
