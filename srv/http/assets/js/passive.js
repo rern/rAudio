@@ -407,13 +407,12 @@ function psPlaylist( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		if ( data == -1 ) {
-			if ( G.playlist ) renderPlaylist( -1 );
+			setPlaybackBlank();
+			renderPlaylist( -1 );
 		} else if ( 'autoplaycd' in data ) {
 			G.autoplaycd = 1;
 			setTimeout( function() { delete G.autoplaycd }, 5000 );
 		} else if ( 'html' in data ) {
-			$( '#playback-controls' ).toggleClass( 'hide', data.playlistlength === 0 )
-			$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
 			if ( G.playlist && !G.plremove ) renderPlaylist( data );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();

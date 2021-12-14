@@ -511,15 +511,12 @@ function getPlaybackStatus( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
-		var pllength = G.status.playlistlength;
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
 		displayBars();
 		if ( G.playback ) {
-			setButtonControl();
 			displayPlayback();
-			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
 			if ( !G.librarylist && G.status.counts ) {
@@ -533,8 +530,9 @@ function getPlaybackStatus( withdisplay ) {
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
+		renderPlayback();
+		setButtonControl();
 		setButtonUpdating();
-		if ( !pllength && !G.playback ) renderPlayback();
 	} );
 }
 function getPlaylist() {

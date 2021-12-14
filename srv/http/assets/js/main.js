@@ -1678,7 +1678,6 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : red
 			, ok          : function() {
 				bash( [ 'plremove' ] );
-				setPlaybackBlank();
 			}
 		} );
 	} else {
