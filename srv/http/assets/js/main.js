@@ -1678,6 +1678,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : red
 			, ok          : function() {
 				bash( [ 'plremove' ] );
+				banner( 'Playlist', 'Clear ...', 'playlist blink', -1 );
 			}
 		} );
 	} else {

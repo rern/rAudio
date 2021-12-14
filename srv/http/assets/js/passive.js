@@ -409,6 +409,7 @@ function psPlaylist( data ) {
 		if ( data == -1 ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
+			bannerHide();
 		} else if ( 'autoplaycd' in data ) {
 			G.autoplaycd = 1;
 			setTimeout( function() { delete G.autoplaycd }, 5000 );
