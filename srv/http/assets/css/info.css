@@ -180,10 +180,6 @@
 .infobtn {
 	box-shadow: -2px 2px 3px 1px #000000;
 }
-#infoOverlay input[type=radio]:focus,
-#infoOverlay input[type=checkbox]:focus {
-	outline: none;
-}
 .infobtn {
 	display: inline-block;
 	margin: 0 5px;
@@ -598,7 +594,8 @@ hr {
 	}
 	input[type=radio]:focus,
 	input[type=checkbox]:focus {
-		box-shadow: 0 0 2px 4px #000000 !important;
+		outline: 2px solid var( --cgl ) !important;
+		outline-offset: 1px;
 	}
 	input[type=text]:focus,
 	input[type=password]:focus,
