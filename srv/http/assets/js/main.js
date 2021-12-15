@@ -967,6 +967,7 @@ $( '#biocontent' ).on( 'click', '.bioback', function() {
 	getBio( artist );
 } );
 $( '#bio' ).on( 'click', '.closebio', function() {
+	G.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	displayBars();
 } );

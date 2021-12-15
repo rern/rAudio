@@ -405,13 +405,13 @@ function displaySubMenu() {
 	return [ iso1, iso0 ];
 }*/
 function getBio( artist ) {
+	G.bioartist.push( artist );
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 		$( '#bio' ).removeClass( 'hide' );
 		return
 	}
 	
-	G.bioartist.push( artist );
 	loader();
 	var url = 'http://ws.audioscrobbler.com/2.0/'
 			+'?autocorrect=1'
