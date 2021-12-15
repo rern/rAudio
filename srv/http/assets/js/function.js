@@ -463,15 +463,14 @@ function getBio( artist ) {
 				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) {
 					$( '#biobanner' )
-						.attr( 'src', data.musicbanner[ 0 ].url.replace( '//assets.', '//' ) )
+						.attr( 'src', data.musicbanner[ 0 ].url )
 						.removeClass( 'hide' );
 				}
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var url = '';
 					var images = '';
 					data.artistthumb.forEach( function( el ) {
-						url = el.url.replace( '//assets.', '//' );
-						images += '<a href="'+ url +'" target="_blank"><img src="'+ url.replace( '/fanart/', '/preview/' ) +'"></a>';
+						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
 					$( '#bioimg' )
 						.html( images )
