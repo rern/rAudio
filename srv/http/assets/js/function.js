@@ -411,6 +411,7 @@ function getBio( artist ) {
 		return
 	}
 	
+	G.bioartist.push( artist );
 	loader();
 	var url = 'http://ws.audioscrobbler.com/2.0/'
 			+'?autocorrect=1'
@@ -432,7 +433,7 @@ function getBio( artist ) {
 		var data = data.artist;
 		var content = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
 		var genre = data.tags.tag[ 0 ].name;
-		if ( genre ) genre = '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre +'</p>';
+		if ( genre ) genre = '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre +'<i class="bioback fa fa-arrow-left hide"></i></p>';
 		var similar =  data.similar.artist;
 		if ( similar ) {
 			similars = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
@@ -456,6 +457,7 @@ function getBio( artist ) {
 				.removeClass( 'hide' )
 				.scrollTop( 0 );
 			$( '#biobanner, #bioimg' ).addClass( 'hide' );
+			$( '.bioback' ).toggleClass( 'hide', G.bioartist.length === 1 );
 			loaderHide();
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {

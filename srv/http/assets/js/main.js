@@ -3,6 +3,7 @@ var G = {
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, sharedsecret  : '390372d3a1f60d4030e2a612260060e0'
+	, bioartist     : []
 	, bookmarkedit  : 0
 	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
@@ -959,6 +960,11 @@ $( '.btn-cmd' ).click( function() {
 } );
 $( '#biocontent' ).on( 'click', '.biosimilar', function() {
 	getBio( $( this ).text() );
+} );
+$( '#biocontent' ).on( 'click', '.bioback', function() {
+	G.bioartist.pop();
+	var artist = G.bioartist.pop();
+	getBio( artist );
 } );
 $( '#bio' ).on( 'click', '.closebio', function() {
 	$( '#bio' ).addClass( 'hide' );

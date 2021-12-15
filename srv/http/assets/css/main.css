@@ -1029,12 +1029,18 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
-#biocontent .close-root {
+#biocontent .close-root,
+#biocontent .bioback {
 	float: right;
 	margin-top: 0;
 	font-size: 28px;
 	color: var( --cm ) !important;
 	z-index: 5;
+}
+#biocontent .bioback {
+	width: 24px;
+	line-height: 24px;
+	font-size: 24px;
 }
 #biocontent .genre {
 	text-transform: capitalize;
