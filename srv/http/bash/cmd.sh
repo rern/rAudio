@@ -280,7 +280,6 @@ addonsclose )
 	;;
 addonslist )
 	addonsListGet ${args[1]}
-	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
 	if [[ $bash ]]; then
 		eval "$bash" || exit
@@ -291,7 +290,6 @@ addonslist )
 	;;
 addonsupdates )
 	addonsListGet
-
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	for addon in $installed; do
 		verinstalled=$( cat $diraddons/$addon )
@@ -300,7 +298,12 @@ addonsupdates )
 			[[ $verinstalled != $verlist ]] && count=1 && break
 		fi
 	done
-	[[ $count ]] && touch $diraddons/update || rm -f $diraddons/update
+	if [[ $count ]]; then
+		pushstream option '{"addons":1}'
+		touch $diraddons/update
+	else
+		rm -f $diraddons/update
+	fi
 	;;
 albumignore )
 	album=${args[1]}

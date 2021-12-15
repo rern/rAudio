@@ -1322,7 +1322,7 @@ function setButtonOptions() {
 	setButtonUpdating();
 	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
-function setButtonUpdateAddons( updateaddons ) {
+function setButtonUpdateAddons() {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {

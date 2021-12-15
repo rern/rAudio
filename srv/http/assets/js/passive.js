@@ -391,6 +391,11 @@ function psNotify( data ) {
 function psOption( data ) {
 	if ( G.local ) return
 	
+	if ( 'addons' in data ) {
+		setButtonUpdateAddons();
+		return
+	}
+	
 	var option = Object.keys( data )[ 0 ];
 	G.status[ option ] = Object.values( data )[ 0 ];
 	setButtonOptions();
