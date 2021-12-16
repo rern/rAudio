@@ -269,6 +269,13 @@ volumeSet() {
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btclient ]] && alsactl store
 }
+webradioCount() {
+	count=$( find $dirdata/webradios -type f \
+					| grep -v '\.jpg$\|\.gif$' \
+					| wc -l )
+	pushstream webradio $count
+	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+}
 
 case ${args[0]} in
 
@@ -1069,9 +1076,7 @@ webradioadd )
 	
 	echo $name > "$file"
 	chown http:http "$file" # for edit in php
-	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) + 1 ))
-	pushstream webradio $count
-	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	webradioCount
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
@@ -1085,9 +1090,7 @@ webradiodelete )
 	urlname=${url//\//|}
 	[[ $dir ]] && dir="$dir/"
 	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
-	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
-	pushstream webradio $count
-	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	webradioCount
 	;;
 webradioedit ) # name, newname, url, newurl
 	name=${args[1]}
@@ -1114,20 +1117,20 @@ wrdirdelete )
 		echo -1
 	else
 		rm -rf "$dirwebradios/$path"
-		pushstream webradio $count -1
+		pushstream webradio -1
 	fi
 	;;
 wrdirnew )
 	path=${args[1]}
 	mkdir -p "$dirwebradios/$path"
-	pushstream webradio $count -1
+	pushstream webradio -1
 	;;
 wrdirrename )
 	path=${args[1]}
 	name=${args[2]}
 	newname=${args[3]}
 	mv -f "$dirwebradios/$path/$name" "$dirwebradios/$path/$newname"
-	pushstream webradio $count -1
+	pushstream webradio -1
 	;;
 	
 esac
