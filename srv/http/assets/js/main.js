@@ -1139,19 +1139,15 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
-		if ( G.mode === 'nas' ) {
-			var message = 'No network storage.';
-		} else if ( G.mode === 'playlists' ) {
-			var message = 'No saved playlists.';
-		} else {
-			var message = 'Database not available for this mode.'
-						 +'<br>To populate new data:'
-						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
-		}
+		var modeplaylists = G.mode === 'playlists';
 		info( {
 			  icon      : 'library'
 			, title     : 'Library Database'
-			, message   : message
+			, message   : modeplaylists
+							? 'No saved playlists.'
+							: 'This mode has no data.'
+							 +'<br>To populate Library database:'
+							 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
 		} );
 		return
 	}
