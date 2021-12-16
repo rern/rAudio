@@ -1069,7 +1069,7 @@ webradioadd )
 	
 	echo $name > "$file"
 	chown http:http "$file" # for edit in php
-	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
+	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) + 1 ))
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 	;;
