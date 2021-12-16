@@ -1138,7 +1138,7 @@ $( '.mode' ).click( function() {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( !G.status.counts[ G.mode ] ) {
+	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
 		if ( G.mode === 'nas' ) {
 			var message = 'No network storage.';
 		} else if ( G.mode === 'playlists' ) {
