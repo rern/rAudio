@@ -963,8 +963,7 @@ $( '#biocontent' ).on( 'click', '.biosimilar', function() {
 } );
 $( '#biocontent' ).on( 'click', '.bioback', function() {
 	G.bioartist.pop();
-	var artist = G.bioartist.pop();
-	getBio( artist );
+	getBio( G.bioartist.pop() );
 } );
 $( '#bio' ).on( 'click', '.closebio', function() {
 	G.bioartist = [];
