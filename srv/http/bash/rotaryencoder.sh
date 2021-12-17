@@ -14,10 +14,8 @@ b=$( gpio -1 read $pinb )
 triggerWait() {
 	gpio -1 wfi $pina falling
 	if [[ $b == 0 && $( gpio -1 read $pinb ) == 1 ]]; then
-		echo CW
 		volume +
 	elif [[ $b == 1 && $( gpio -1 read $pinb ) == 0 ]]; then
-		echo CCW
 		volume -
 	fi
 	gpio -1 write $pina 1
