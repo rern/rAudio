@@ -140,3 +140,7 @@ if [[ -e $dirsystem/hddspindown ]]; then
 		done
 	fi
 fi
+
+if [[ -e $dirsystem/brightness && -e /sys/class/backlight/rpi_backlight/brightness ]]; then
+	cat $dirsystem/brightness > /sys/class/backlight/rpi_backlight/brightness
+fi

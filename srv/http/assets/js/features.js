@@ -152,6 +152,7 @@ $( '#setting-autoplay' ).click( function() {
 		}
 	} );
 } );
+var brightness = G.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div>' : '';
 var content = `
 <table>
 <tr><td style="width:130px">Rotation</td>
@@ -182,6 +183,7 @@ var content = `
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr style="height: 10px"></tr>
 </table>
+${ brightness }
 <div class="btnbottom">
 	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
@@ -189,7 +191,7 @@ var content = `
 $( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
 	info( {
-		  icon         : G.browser
+		  icon         : 'chromium'
 		, title        : 'Browser Display'
 		, content      : content
 		, boxwidth     : 100
@@ -219,13 +221,20 @@ $( '#setting-localbrowser' ).click( function() {
 			$( '.screenoff' ).click( function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
+			if ( G.brightness ) {
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( 'echo '+ $( this ).val() +' > /srv/http/data/system/brightness' );
+				} );
+			}
 		}
 		, cancel       : function() {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
 			bash( [ 'localbrowserset', ...infoVal() ] );
-			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  G.browser );
+			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  'chromium' );
 		}
 	} );
 } );
