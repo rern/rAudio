@@ -152,7 +152,7 @@ $( '#setting-autoplay' ).click( function() {
 		}
 	} );
 } );
-var brightness = G.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div>' : '';
+var brightness = G.localbrowser && G.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div>' : '';
 var content = `
 <table>
 <tr><td style="width:130px">Rotation</td>
