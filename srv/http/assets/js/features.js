@@ -223,7 +223,7 @@ $( '#setting-localbrowser' ).click( function() {
 			} );
 			if ( G.brightness ) {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
+					bash( '/usr/bin/echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( 'echo '+ $( this ).val() +' > /srv/http/data/system/brightness' );
 				} );
