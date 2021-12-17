@@ -392,6 +392,39 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-rotaryencoder' ).click( function() {
+	var pin = '';
+	$.each( pin2gpio, function( k, v ) {
+		pin += '<option value='+ k +'>'+ k +'</option>';
+	} );
+	var inforotaryencoder = `\
+<table>
+<tr><td>Volume down</td>
+	<td><select >${ pin }</select></td>
+</tr>
+<tr><td>Volume up</td>
+	<td><select >${ pin }</select></td>
+</tr>
+<tr><td>Mute</td>
+	<td><select >${ pin }</select></td>
+</tr>
+</table>`;
+	info( {
+		  icon         : 'volume'
+		, title        : 'Rotary Encoder'
+		, content      : gpiosvg + inforotaryencoder
+		, boxwidth     : 80
+		, values       : G.rotaryencoderconf
+		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
+		, cancel       : function() {
+			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );
+		}
+		, ok           : function() {
+			bash( [ 'rotaryencoderset', ...infoVal() ] );
+			notify( 'Rotary Encoder', G.rotaryencoder ? 'Change ...' : 'Enable ...', 'volume' );
+		}
+	} );
+} );
 $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );

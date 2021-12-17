@@ -514,6 +514,19 @@ remove )
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
+rotaryencoderdisable )
+	systemctl disable --now rotaryencoder
+	pushRefresh
+	;;
+rotaryencoderset )
+	echo "\
+dn=${args[1]}
+up=${args[2]}
+mute=${args[3]}" > $dirsystem/rotaryencoder.conf
+	systemctl restart rotaryencoder
+	systemctl enable rotaryencoder
+	pushRefresh
+	;;
 servers )
 	ntp=${args[1]}
 	mirror=${args[2]}

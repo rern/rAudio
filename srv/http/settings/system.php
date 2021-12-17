@@ -200,6 +200,16 @@ On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays">
 HTML
 	],
 	[
+		  'label'    => 'Rotary Encoder'
+		, 'id'       => 'rotaryencoder'
+		, 'icon'     => 'volume'
+		, 'setting'  => true
+		, 'help'     => <<< HTML
+<a class="img" data-name="rotaryencoder">Rotary encoder module</a> - control audio volume
+HTML
+		, 'exist'   => false
+	]
+	,[
 		  'label'    => 'Spectrum OLED'
 		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'

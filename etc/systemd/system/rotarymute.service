@@ -1,0 +1,7 @@
+[Unit]
+Description=Rotary mute
+Requires=rotaryencoder.service
+After=rotaryencoder.service
+
+[Service]
+ExecStart=/srv/http/bash/rotarymute.sh
