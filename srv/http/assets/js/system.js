@@ -399,13 +399,13 @@ $( '#setting-rotaryencoder' ).click( function() {
 	} );
 	var inforotaryencoder = `\
 <table>
-<tr><td>Volume down</td>
+<tr><td>CLK</td>
 	<td><select >${ pin }</select></td>
 </tr>
-<tr><td>Volume up</td>
+<tr><td>DT</td>
 	<td><select >${ pin }</select></td>
 </tr>
-<tr><td>Mute</td>
+<tr><td>SW</td>
 	<td><select >${ pin }</select></td>
 </tr>
 </table>`;
