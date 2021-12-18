@@ -18,10 +18,10 @@ done &
 # volume
 $dirbin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=4
 sleep 3
-
 control_volume=$( $dirbash/cmd.sh volumecontrolget )
 control=${control_volume/^*}
 devinput=$( ls -1 /dev/input/event* | tail -1 )
+
 evtest $devinput | while read line; do
 	if [[ $line =~ '.*value 1' ]]; then
 		updn=+
