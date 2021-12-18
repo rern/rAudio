@@ -113,21 +113,6 @@ EOF
 	systemctl try-restart localbrowser
 fi
 
-#2021112
-[[ ! -e $dirsystem/spotify ]] && systemctl stop spotifyd
-systemctl disable --now mpdscribble@mpd 2> /dev/null
-
-file=/etc/systemd/system/bluetooth.service.d/override.conf
-grep -q battery $file || sed -i '/ExecStartPost/ i\
-ExecStart=\
-ExecStart=/usr/lib/bluetooth/bluetoothd -P battery' $file
-
-if ! grep -q bton /etc/udev/rules.d/bluetooth.rules; then
-	echo 'ACTION=="add", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh bton"
-ACTION=="remove", SUBSYSTEM=="bluetooth", RUN+="/srv/http/bash/mpd-conf.sh btoff"' > /etc/udev/rules.d/bluetooth.rules
-	udevadm control --reload-rules && udevadm trigger
-fi
-
 installstart "$1"
 
 getinstallzip

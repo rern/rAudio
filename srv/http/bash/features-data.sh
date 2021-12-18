@@ -65,7 +65,8 @@ if [[ -e $xinitrc ]]; then
 	fi
 	data+='
 , "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true )'
-, "localbrowserconf" : '$localbrowserconf
+, "localbrowserconf" : '$localbrowserconf'
+, "brightness"       : '$( cat /sys/class/backlight/rpi_backlight/brightness &> /dev/null )
 fi
 if [[ -e /usr/bin/smbd ]]; then
 	grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false

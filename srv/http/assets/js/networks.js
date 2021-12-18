@@ -387,9 +387,9 @@ function renderBluetooth() {
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
+		$( '#listbt' ).html( htmlbt );
 	}
 	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
-	$( '#listbt' ).html( htmlbt );
 }
 function renderPage( list ) {
 	if ( G.activebt ) {
@@ -415,8 +415,8 @@ function renderPage( list ) {
 					htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
 				}
 			} );
+			$( '#listwl' ).html( htmlwl );
 		}
-		$( '#listwl' ).html( htmlwl );
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
 		$( '#divwl' ).addClass( 'hide' );

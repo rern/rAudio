@@ -405,6 +405,7 @@ function displaySubMenu() {
 	return [ iso1, iso0 ];
 }*/
 function getBio( artist ) {
+	G.bioartist.push( artist );
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 		$( '#bio' ).removeClass( 'hide' );
@@ -432,7 +433,7 @@ function getBio( artist ) {
 		var data = data.artist;
 		var content = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
 		var genre = data.tags.tag[ 0 ].name;
-		if ( genre ) genre = '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre +'</p>';
+		if ( genre ) genre = '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre +'<i class="bioback fa fa-arrow-left hide"></i></p>';
 		var similar =  data.similar.artist;
 		if ( similar ) {
 			similars = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
@@ -456,6 +457,7 @@ function getBio( artist ) {
 				.removeClass( 'hide' )
 				.scrollTop( 0 );
 			$( '#biobanner, #bioimg' ).addClass( 'hide' );
+			$( '.bioback' ).toggleClass( 'hide', G.bioartist.length === 1 );
 			loaderHide();
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
@@ -463,15 +465,14 @@ function getBio( artist ) {
 				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) {
 					$( '#biobanner' )
-						.attr( 'src', data.musicbanner[ 0 ].url.replace( '//assets.', '//' ) )
+						.attr( 'src', data.musicbanner[ 0 ].url )
 						.removeClass( 'hide' );
 				}
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var url = '';
 					var images = '';
 					data.artistthumb.forEach( function( el ) {
-						url = el.url.replace( '//assets.', '//' );
-						images += '<a href="'+ url +'" target="_blank"><img src="'+ url.replace( '/fanart/', '/preview/' ) +'"></a>';
+						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
 					$( '#bioimg' )
 						.html( images )
@@ -481,8 +482,8 @@ function getBio( artist ) {
 		} );
 	} );
 }
-function getPlaybackStatus() {
-	bash( '/srv/http/bash/status.sh', function( list ) {
+function getPlaybackStatus( withdisplay ) {
+	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
 		if ( !list ) return
 		
 		try {
@@ -503,14 +504,20 @@ function getPlaybackStatus() {
 			return false
 		}
 		
+		if ( 'display' in status ) {
+			G.display = status.display;
+			G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
+			delete status.display;
+			delete G.coverTL;
+			displaySubMenu();
+			bannerHide();
+		}
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
 		displayBars();
 		if ( G.playback ) {
-			setButtonControl();
 			displayPlayback();
-			renderPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
 			if ( !G.librarylist && G.status.counts ) {
@@ -524,6 +531,8 @@ function getPlaybackStatus() {
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
+		renderPlayback();
+		setButtonControl();
 		setButtonUpdating();
 	} );
 }
@@ -1314,7 +1323,7 @@ function setButtonOptions() {
 	setButtonUpdating();
 	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
-function setButtonUpdateAddons( updateaddons ) {
+function setButtonUpdateAddons() {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
@@ -1633,16 +1642,6 @@ function setTrackCoverart() {
 		$( '.licover' ).addClass( 'nofixed' );
 		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
 	}
-}
-function statusRefresh() {
-	bash( [ 'displayget' ], data => {
-		delete G.coverTL;
-		G.display = data;
-		G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
-		displaySubMenu();
-	}, 'json' );
-	getPlaybackStatus();
-	bannerHide();
 }
 function stopAirplay() {
 	info( {

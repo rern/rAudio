@@ -147,6 +147,11 @@ if [[ -e $dirsystem/powerbutton.conf ]]; then
 else
 	powerbuttonconf='[ 5,40,5 ]'
 fi
+if [[ -e $dirsystem/rotaryencoder.conf ]]; then
+	rotaryencoderconf="[ $( cat $dirsystem/rotaryencoder.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
+else
+	rotaryencoderconf='[ 7,8,10 ]'
+fi
 if [[ -e $dirsystem/vuled.conf ]]; then
 	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"
 else
@@ -178,9 +183,11 @@ data+='
 , "mpdoledconf"      : '$mpdoledconf'
 , "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-, "powerbutton"      : '$( systemctl -q is-enabled powerbutton && echo true )'
+, "powerbutton"      : '$( systemctl -q is-active powerbutton && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
+, "rotaryencoder"    : '$( systemctl -q is-active rotaryencoder && echo true )'
+, "rotaryencoderconf": '$rotaryencoderconf'
 , "rpimodel"         : "'$rpimodel'"
 , "soc"              : "'$soc'"
 , "soccpu"           : "'$soccpu'"

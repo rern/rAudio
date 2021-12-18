@@ -3,6 +3,7 @@ var G = {
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, sharedsecret  : '390372d3a1f60d4030e2a612260060e0'
+	, bioartist     : []
 	, bookmarkedit  : 0
 	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
@@ -76,7 +77,7 @@ var icon_player = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-statusRefresh();
+getPlaybackStatus( 'withdisplay' );
 
 if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;
@@ -960,7 +961,12 @@ $( '.btn-cmd' ).click( function() {
 $( '#biocontent' ).on( 'click', '.biosimilar', function() {
 	getBio( $( this ).text() );
 } );
+$( '#biocontent' ).on( 'click', '.bioback', function() {
+	G.bioartist.pop();
+	getBio( G.bioartist.pop() );
+} );
 $( '#bio' ).on( 'click', '.closebio', function() {
+	G.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
 	displayBars();
 } );
@@ -1132,20 +1138,16 @@ $( '.mode' ).click( function() {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( !G.status.counts[ G.mode ] ) {
-		if ( G.mode === 'nas' ) {
-			var message = 'No network storage.';
-		} else if ( G.mode === 'playlists' ) {
-			var message = 'No saved playlists.';
-		} else {
-			var message = 'Database not available for this mode.'
-						 +'<br>To populate new data:'
-						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>';
-		}
+	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
+		var modeplaylists = G.mode === 'playlists';
 		info( {
 			  icon      : 'library'
 			, title     : 'Library Database'
-			, message   : message
+			, message   : modeplaylists
+							? 'No saved playlists.'
+							: 'This mode has no data.'
+							 +'<br>To populate Library database:'
+							 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
 		} );
 		return
 	}
@@ -1678,7 +1680,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : red
 			, ok          : function() {
 				bash( [ 'plremove' ] );
-				setPlaybackBlank();
+				banner( 'Playlist', 'Clear ...', 'playlist blink', -1 );
 			}
 		} );
 	} else {

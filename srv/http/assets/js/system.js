@@ -73,16 +73,16 @@ $( '#addnas' ).click( function() {
 $( '#list' ).on( 'click', 'li', function() {
 	var $this = $( this );
 	G.li = $this;
-	$( '#menu, #codehddinfo' ).addClass( 'hide' );
+	$( '#codehddinfo' ).addClass( 'hide' );
 	var mountpoint = $this.find( '.mountpoint' ).text();
-	if ( mountpoint === '/' ) return
-	
-	var active = $this.hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
-	$this.addClass( 'active' );
 	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) && active ) return
+	if ( !$menu.hasClass( 'hide' ) || mountpoint === '/' ) {
+		$( '#menu, #codehddinfo' ).addClass( 'hide' );
+		return
+	}
 	
+	$this.addClass( 'active' );
 	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
 	var menuH = $menu.height();
 	$menu
@@ -389,6 +389,39 @@ $( '#setting-powerbutton' ).click( function() {
 		, ok           : function() {
 			bash( [ 'powerbuttonset', ...infoVal().slice( 1 ) ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
+		}
+	} );
+} );
+$( '#setting-rotaryencoder' ).click( function() {
+	var pin = '';
+	$.each( pin2gpio, function( k, v ) {
+		pin += '<option value='+ k +'>'+ k +'</option>';
+	} );
+	var inforotaryencoder = `\
+<table>
+<tr><td>CLK</td>
+	<td><select >${ pin }</select></td>
+</tr>
+<tr><td>DT</td>
+	<td><select >${ pin }</select></td>
+</tr>
+<tr><td>SW</td>
+	<td><select >${ pin }</select></td>
+</tr>
+</table>`;
+	info( {
+		  icon         : 'volume'
+		, title        : 'Rotary Encoder'
+		, content      : gpiosvg + inforotaryencoder
+		, boxwidth     : 80
+		, values       : G.rotaryencoderconf
+		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
+		, cancel       : function() {
+			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );
+		}
+		, ok           : function() {
+			bash( [ 'rotaryencoderset', ...infoVal() ] );
+			notify( 'Rotary Encoder', G.rotaryencoder ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );
 } );

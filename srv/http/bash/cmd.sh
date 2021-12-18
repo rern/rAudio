@@ -269,6 +269,13 @@ volumeSet() {
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btclient ]] && alsactl store
 }
+webradioCount() {
+	count=$( find $dirdata/webradios -type f \
+					| grep -v '\.jpg$\|\.gif$' \
+					| wc -l )
+	pushstream webradio $count
+	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+}
 
 case ${args[0]} in
 
@@ -280,7 +287,6 @@ addonsclose )
 	;;
 addonslist )
 	addonsListGet ${args[1]}
-	
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
 	if [[ $bash ]]; then
 		eval "$bash" || exit
@@ -291,7 +297,6 @@ addonslist )
 	;;
 addonsupdates )
 	addonsListGet
-
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	for addon in $installed; do
 		verinstalled=$( cat $diraddons/$addon )
@@ -300,7 +305,12 @@ addonsupdates )
 			[[ $verinstalled != $verlist ]] && count=1 && break
 		fi
 	done
-	[[ $count ]] && touch $diraddons/update || rm -f $diraddons/update
+	if [[ $count ]]; then
+		pushstream option '{"addons":1}'
+		touch $diraddons/update
+	else
+		rm -f $diraddons/update
+	fi
 	;;
 albumignore )
 	album=${args[1]}
@@ -455,29 +465,6 @@ coversave )
 	coverfile="$path/cover.jpg"
 	jpgThumbnail coverart "$source" "$coverfile"
 	rm -f $dirshm/local/$covername*
-	;;
-displayget )
-	if [[ -e $dirshm/nosound ]]; then
-		volumenone=true
-	else
-		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-		volumenone=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
-					| grep -q 'mixer_type.*none' \
-					&& echo true || echo false )
-	fi
-	data=$( head -n -1 $dirsystem/display )
-	data+='
-, "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true || echo false )'
-, "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
-, "equalizer"  : '$( [[ -e $dirsystem/equalizer ]] && echo true || echo false )'
-, "lock"       : '$( [[ -e $dirsystem/login ]] && echo true || echo false )'
-, "order"      : '$( cat $dirsystem/order 2> /dev/null || echo false )'
-, "relays"     : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )'
-, "screenoff"  : '$( grep -q screenoff=0 $dirsystem/localbrowser.conf && echo false || echo true )'
-, "snapclient" : '$( [[ -e $dirsystem/snapclient ]] && echo true || echo false )'
-, "volumenone" : '$volumenone'
-}'
-	echo "$data"
 	;;
 displaysave )
 	data=${args[1]}
@@ -1089,9 +1076,7 @@ webradioadd )
 	
 	echo $name > "$file"
 	chown http:http "$file" # for edit in php
-	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
-	pushstream webradio $count
-	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	webradioCount
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
@@ -1105,9 +1090,7 @@ webradiodelete )
 	urlname=${url//\//|}
 	[[ $dir ]] && dir="$dir/"
 	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
-	count=$(( $( grep webradio $dirmpd/counts | cut -d: -f2 ) - 1 ))
-	pushstream webradio $count
-	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	webradioCount
 	;;
 webradioedit ) # name, newname, url, newurl
 	name=${args[1]}
@@ -1134,20 +1117,20 @@ wrdirdelete )
 		echo -1
 	else
 		rm -rf "$dirwebradios/$path"
-		pushstream webradio $count -1
+		pushstream webradio -1
 	fi
 	;;
 wrdirnew )
 	path=${args[1]}
 	mkdir -p "$dirwebradios/$path"
-	pushstream webradio $count -1
+	pushstream webradio -1
 	;;
 wrdirrename )
 	path=${args[1]}
 	name=${args[2]}
 	newname=${args[3]}
 	mv -f "$dirwebradios/$path/$name" "$dirwebradios/$path/$newname"
-	pushstream webradio $count -1
+	pushstream webradio -1
 	;;
 	
 esac

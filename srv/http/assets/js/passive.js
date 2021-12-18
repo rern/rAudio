@@ -96,7 +96,7 @@ streams.forEach( stream => {
 pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // suppress on 1st load
-		statusRefresh();
+		getPlaybackStatus( 'withdisplay' );
 		if ( O.title === 'Equalizer' ) {
 			bash( [ 'equalizerget' ], function( data ) {
 				psEqualizer( data );
@@ -391,6 +391,11 @@ function psNotify( data ) {
 function psOption( data ) {
 	if ( G.local ) return
 	
+	if ( 'addons' in data ) {
+		setButtonUpdateAddons();
+		return
+	}
+	
 	var option = Object.keys( data )[ 0 ];
 	G.status[ option ] = Object.values( data )[ 0 ];
 	setButtonOptions();
@@ -407,25 +412,19 @@ function psPlaylist( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		if ( data == -1 ) {
-			if ( G.playback ) {
-				getPlaybackStatus();
-			} else if ( G.playlist ) {
-				renderPlaylist( -1 );
-			}
+			setPlaybackBlank();
+			renderPlaylist( -1 );
+			bannerHide();
 		} else if ( 'autoplaycd' in data ) {
 			G.autoplaycd = 1;
 			setTimeout( function() { delete G.autoplaycd }, 5000 );
 		} else if ( 'html' in data ) {
-			if ( G.playback ) {
-				getPlaybackStatus();
-			} else if ( G.playlist ) {
-				if ( !G.plremove ) renderPlaylist( data );
-			}
-			$( '#previous, #next' ).toggleClass( 'hide', data.playlistlength === 1 );
+			if ( G.playlist && !G.plremove ) renderPlaylist( data );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
+		getPlaybackStatus();
 	}, G.debouncems );
 }
 function psPlaylists( data ) {
