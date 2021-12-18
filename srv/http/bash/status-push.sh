@@ -17,7 +17,7 @@ else
 		[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
-			[[ ! $trackchanged ]] && exit
+			[[ ! $trackchanged && $state == play ]] && exit
 			
 		else
 			compare='^state\|^elapsed'
