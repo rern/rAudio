@@ -23,9 +23,9 @@ control_volume=$( $dirbash/cmd.sh volumecontrolget )
 control=${control_volume/^*}
 devinput=$( ls -1 /dev/input/event* | tail -1 )
 evtest $devinput | while read line; do
-	if [[ $line =~ '.*value 1.*' ]]; then
+	if [[ $line =~ '.*value 1' ]]; then
 		updn=+
-	elif [[ $line =~ '.*value -1.*' ]]; then
+	elif [[ $line =~ '.*value -1' ]]; then
 		updn=-
 	fi
 	$dirbash/cmd.sh "volumeupdown
