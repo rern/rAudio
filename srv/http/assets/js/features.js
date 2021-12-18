@@ -152,8 +152,9 @@ $( '#setting-autoplay' ).click( function() {
 		}
 	} );
 } );
-var brightness = G.localbrowser && G.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div>' : '';
-var content = `
+$( '#setting-localbrowser' ).click( function() {
+	var brightness =  G.localbrowser && G.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var content = `
 <table>
 <tr><td style="width:130px">Rotation</td>
 	<td><select>
@@ -188,14 +189,13 @@ ${ brightness }
 	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
 </div>`;
-$( '#setting-localbrowser' ).click( function() {
 	var v = G.localbrowserconf;
 	info( {
 		  icon         : 'chromium'
 		, title        : 'Browser Display'
 		, content      : content
 		, boxwidth     : 100
-		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay ]
+		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
 		, checkchanged : ( G.localbrowser ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
