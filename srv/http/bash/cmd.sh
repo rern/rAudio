@@ -623,6 +623,13 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
 	systemctl stop radio
+	if [[ ! $command ]]; then
+		if mpc | grep -q '\[playing'; then
+			grep -q webradio=true /srv/http/data/shm/status && command=stop || command=pause
+		else
+			command=play
+		fi
+	fi
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos

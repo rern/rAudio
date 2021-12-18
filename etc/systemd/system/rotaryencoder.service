@@ -1,6 +1,5 @@
 [Unit]
 Description=Rotary encoder
-BindsTo=rotarymute.service
 
 [Service]
 ExecStart=/srv/http/bash/rotaryencoder.sh
