@@ -643,10 +643,18 @@ mpcplayback )
 	;;
 mpcprevnext )
 	command=${args[1]}
-	current=$(( ${args[2]} + 1 ))
-	length=${args[3]}
-	state=${args[4]}
-	elapsed=${args[5]}
+	if [[ ${args[2]} ]]; then
+		current=$(( ${args[2]} + 1 ))
+		length=${args[3]}
+		state=${args[4]}
+		elapsed=${args[5]}
+	else
+		status=( $( $dirbash/status.sh | jq -r .song,.playlistlength,.state,.elapsed ) )
+		current=${status[0]}
+		length=${status[1]}
+		state=${status[2]}
+		elapsed=${status[3]}
+	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
 	systemctl stop radio
