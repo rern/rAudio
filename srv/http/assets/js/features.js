@@ -153,7 +153,8 @@ $( '#setting-autoplay' ).click( function() {
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
-	var brightness =  G.localbrowser && G.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var v = G.localbrowserconf;
+	var brightness =  v.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
 	var content = `
 <table>
 <tr><td style="width:130px">Rotation</td>
@@ -189,7 +190,6 @@ ${ brightness }
 	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
 </div>`;
-	var v = G.localbrowserconf;
 	info( {
 		  icon         : 'chromium'
 		, title        : 'Browser Display'
@@ -221,7 +221,7 @@ ${ brightness }
 			$( '.screenoff' ).click( function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
-			if ( G.brightness ) {
+			if ( brightness ) {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( '/usr/bin/echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
 				} ).on( 'touchend mouseup keyup', function() {
