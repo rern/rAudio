@@ -9,25 +9,28 @@ dirbin=/opt/vc/bin
 $dirbin/dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
 sleep 3
 devinput=$( ls -1 /dev/input/event* | tail -1 )
+
 evtest $devinput | while read line; do
 	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
 done &
 
 # volume
-$dirbin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=4
-sleep 3
 control_volume=$( $dirbash/cmd.sh volumecontrolget )
 control=${control_volume/^*}
+volume() {
+	$dirbash/cmd.sh "volumeupdown
+$1
+$control"
+}
+
+$dirbin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=4
+sleep 3
 devinput=$( ls -1 /dev/input/event* | tail -1 )
 
 evtest $devinput | while read line; do
 	if [[ $line =~ '.*value 1' ]]; then
-		$dirbash/cmd.sh "volumeupdown
-+
-$control"
+		volume +
 	elif [[ $line =~ '.*value -1' ]]; then
-		$dirbash/cmd.sh "volumeupdown
--
-$control"
+		volume -
 	fi
 done
