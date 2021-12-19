@@ -11,6 +11,8 @@ dirsystem=/srv/http/data/system
 # 20211224
 rm -f /etc/systemd/system/rotarymute.service
 
+[[ ! -e /usr/bin/evtest ]] && pacman -Sy --noconfirm evtest
+
 #20211210
 revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 if [[ ${revision: -3:2} == 12 ]]; then
