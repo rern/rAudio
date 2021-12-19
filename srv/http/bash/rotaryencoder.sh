@@ -22,11 +22,12 @@ devinput=$( ls -1 /dev/input/event* | tail -1 )
 
 evtest $devinput | while read line; do
 	if [[ $line =~ '.*value 1' ]]; then
-		updn=+
-	elif [[ $line =~ '.*value -1' ]]; then
-		updn=-
-	fi
-	$dirbash/cmd.sh "volumeupdown
-$updn
+		$dirbash/cmd.sh "volumeupdown
++
 $control"
+	elif [[ $line =~ '.*value -1' ]]; then
+		$dirbash/cmd.sh "volumeupdown
+-
+$control"
+	fi
 done
