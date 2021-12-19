@@ -520,9 +520,9 @@ rotaryencoderdisable )
 	;;
 rotaryencoderset )
 	echo "\
-dn=${args[1]}
-up=${args[2]}
-mute=${args[3]}" > $dirsystem/rotaryencoder.conf
+pina=${args[1]}
+pinb=${args[2]}
+pins=${args[3]}" > $dirsystem/rotaryencoder.conf
 	systemctl restart rotaryencoder
 	systemctl enable rotaryencoder
 	pushRefresh
