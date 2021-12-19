@@ -2,8 +2,6 @@
 
 dirbash=/srv/http/bash
 dirbin=/opt/vc/bin
-$dirbin/dtoverlay -r gpio-key &> /dev/null
-$dirbin/dtoverlay -r rotary-encoder &> /dev/null
 
 . /srv/http/data/system/rotaryencoder.conf
 
