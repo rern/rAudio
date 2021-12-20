@@ -527,6 +527,10 @@ function psVolume( data ) {
 	if ( data.type === 'disable' ) {
 		$( '#volume-knob, #vol-group i' ).toggleClass( 'disabled', data.val );
 		return
+	} else if ( 'volumenone' in data ) {
+		G.display.volumenone = data.volumenone;
+		$( '#volume-knob' ).toggleClass( 'hide', data.volumenone )
+		return
 	}
 	
 	clearTimeout( G.debounce );
