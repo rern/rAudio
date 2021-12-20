@@ -252,7 +252,6 @@ function info( json ) {
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoContent input:eq( 0 )' ).focus();
 		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
