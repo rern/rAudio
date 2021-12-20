@@ -35,7 +35,7 @@ $.fn.press = function( arg1, arg2 ) {
 }
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
-<div id="infoOverlay" class="hide" tabindex="1">
+<div id="infoOverlay" class="hide">
 	<div id="infoBox">
 		<div id="infoTopBg">
 			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
@@ -49,7 +49,7 @@ $( 'body' ).prepend( `
 	<div id="bannerTitle"></div>
 	<div id="bannerMessage"></div>
 </div>
-` ); // enable keyup - #infoOverlay needs tabindex="1"
+` );
 
 $( '#banner' ).click( bannerHide );
 
@@ -488,7 +488,10 @@ function info( json ) {
 		// assign values
 		if ( 'values' in O && O.values !== '' ) infoSetValues();
 		
-		$( '#infoOverlay' ).removeClass( 'hide' );
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.attr( 'tabindex', -1 ) // for keyup event
+			.focus();
 		
 		// set width: button
 		if ( !O.buttonfit ) {
@@ -560,11 +563,6 @@ function info( json ) {
 		O.nochange = O.values && O.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
 		infoCheckSet();
-		if ( !( 'ontouchstart' in document.documentElement ) ) {
-			var $inputfocus = $( '#infoContent' ).find( 'input:not(:disabled), .selectric-wrapper:not(.disabled)' ).eq( 0 );
-			if ( $inputfocus.hasClass( 'selectric-wrapper' ) ) $inputfocus = $inputfocus.find( 'input' );
-			$inputfocus.focus();
-		}
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
