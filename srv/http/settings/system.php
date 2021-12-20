@@ -205,7 +205,9 @@ HTML
 		, 'icon'     => 'volume'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-<a class="img" data-name="rotaryencoder">Rotary encoder module</a> - Control audio volume and play/pause
+<a class="img" data-name="rotaryencoder">Rotary encoder module</a> for:
+ • Turn volume up/down
+ • Push to play/pause
 HTML
 		, 'exist'   => false
 	]
