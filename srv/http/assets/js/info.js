@@ -52,10 +52,11 @@ $( 'body' ).prepend( `
 ` ); // enable keyup - #infoOverlay needs tabindex="1"
 
 $( '#banner' ).click( bannerHide );
+
 $( '#infoOverlay' ).keyup( function( e ) {
 /*
 all:      [Tab]       - focus / next input
-          [Shift+Tab] - previous input
+		  [Shift+Tab] - previous input
 radio:    [L] [R]     - check
 checkbox: [space]     - check
 select:   [U] [D]     - check
@@ -559,9 +560,11 @@ function info( json ) {
 		O.nochange = O.values && O.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
 		infoCheckSet();
-		var $inputfocus = $( '#infoContent' ).find( 'input:not(:disabled), .selectric-wrapper:not(.disabled)' ).eq( 0 );
-		if ( $inputfocus.hasClass( 'selectric-wrapper' ) ) $inputfocus = $inputfocus.find( 'input' );
-		$inputfocus.focus();
+		if ( !( 'ontouchstart' in document.documentElement ) ) {
+			var $inputfocus = $( '#infoContent' ).find( 'input:not(:disabled), .selectric-wrapper:not(.disabled)' ).eq( 0 );
+			if ( $inputfocus.hasClass( 'selectric-wrapper' ) ) $inputfocus = $inputfocus.find( 'input' );
+			$inputfocus.focus();
+		}
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
