@@ -459,6 +459,9 @@ $( '#setting-mpdoled' ).click( function() {
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
 			} );
 		}
+		, cancel       : function() {
+			$( '#mpdoled' ).prop( 'checked', G.mpdoled );
+		}
 		, buttonlabel  : '<i class="fa fa-plus-r"></i>Logo'
 		, button       : !G.mpdoled ? '' : function() {
 			bash( '/srv/http/bash/cmd.sh mpdoledlogo' );

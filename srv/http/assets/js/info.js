@@ -49,7 +49,7 @@ $( 'body' ).prepend( `
 	<div id="bannerTitle"></div>
 	<div id="bannerMessage"></div>
 </div>
-` ); // enable e.which keypress (#infoOverlay needs tabindex="1")
+` ); // enable keyup - #infoOverlay needs tabindex="1"
 
 $( '#banner' ).click( bannerHide );
 $( '#infoOverlay' ).keyup( function( e ) {
@@ -488,7 +488,6 @@ function info( json ) {
 		if ( 'values' in O && O.values !== '' ) infoSetValues();
 		
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoContent input:eq( 0 )' ).focus();
 		
 		// set width: button
 		if ( !O.buttonfit ) {
@@ -560,6 +559,9 @@ function info( json ) {
 		O.nochange = O.values && O.checkchanged ? true : false;
 		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
 		infoCheckSet();
+		var $inputfocus = $( '#infoContent' ).find( 'input:not(:disabled), .selectric-wrapper:not(.disabled)' ).eq( 0 );
+		if ( $inputfocus.hasClass( 'selectric-wrapper' ) ) $inputfocus = $inputfocus.find( 'input' );
+		$inputfocus.focus();
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }
@@ -738,7 +740,8 @@ function selectricRender() {
 	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
 /*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
-}function setFileImage( file ) {
+}
+function setFileImage( file ) {
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
 	}, 1000 );
