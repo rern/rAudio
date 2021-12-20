@@ -489,7 +489,7 @@ function info( json ) {
 		
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoContent input:eq( 0 )' ).focus();
-			
+		
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;

@@ -851,7 +851,7 @@ function infoMount( values ) {
 		  icon       : 'networks'
 		, title      : 'Add Network Storage'
 		, content    : htmlmount
-		, values     : values
+		, values     : values || [ 'cifs', '', '192.168.1.', '', '', '', '', true ]
 		, beforeshow : function() {
 			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
 			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
