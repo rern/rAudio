@@ -79,6 +79,8 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 getPlaybackStatus( 'withdisplay' );
 
+if ( !( 'ontouchstart' in document.documentElement ) ) $.getScript( 'assets/js/shortcut.js' );
+
 if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
