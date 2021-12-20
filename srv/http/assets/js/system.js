@@ -251,7 +251,17 @@ $( '#gpioimgtxt' ).click( function() {
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-var infolcdchar = `\
+$( '#setting-lcdchar' ).click( function() {
+	var radioaddr = '<td>Address</td>';
+	G.lcdcharaddr.forEach( function( el ) {
+		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
+	} );
+	var optpins = '<select>';
+	$.each( pin2gpio, function( k, v ) {
+		optpins += '<option value='+ k +'>'+ k +'</option>';
+	} );
+	optpins += '</select>';
+	var infolcdchar = `\
 <table>
 <tr id="cols"><td width="135">Size</td>
 	<td width="80"><label><input type="radio" name="cols" value="20">20x4</label></td>
@@ -265,7 +275,7 @@ var infolcdchar = `\
 	<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
 	<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
 </tr>
-<tr id="i2caddress" class="i2c">ADDR</tr>
+<tr id="i2caddress" class="i2c">${ radioaddr }</tr>
 <tr class="i2c"><td>I&#178;C Chip</td>
 	<td colspan="2">
 	<select id="i2cchip">
@@ -277,28 +287,15 @@ var infolcdchar = `\
 </tr>
 </table>
 <table class="gpio">
-<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;"></td></tr>
-<tr><td>RS</td><td>PINS</td><td>RW</td><td>PINS</td><td>E</td><td>PINS</td><td></td><td></td></tr>
-<tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
+<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;">${ gpiosvg }</td></tr>
+<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
+<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
 </table>
 <table>
 <tr><td width="63"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>`;
-$( '#setting-lcdchar' ).click( function() {
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
-	var radioaddr = '<td>Address</td>';
-	G.lcdcharaddr.forEach( function( el ) {
-		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
-	} );
-	var optpins = '<select>';
-	$.each( pin2gpio, function( k, v ) {
-		optpins += '<option value='+ k +'>'+ k +'</option>';
-	} );
-	optpins += '</select>';
-	infolcdchar = infolcdchar
-					.replace( 'ADDR', radioaddr )
-					.replace( /PINS/g, optpins );
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
@@ -317,10 +314,7 @@ $( '#setting-lcdchar' ).click( function() {
 				, 'text-align'    : 'right'
 			} );
 			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
-			$( '#infoContent .gpiosvg' )
-				.css( 'text-align', 'right' )
-				.html( gpiosvg );
-			$( '.gpiosvg .power' ).remove();
+			$( '#infoContent svg .power' ).remove();
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -417,6 +411,9 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, boxwidth     : 80
 		, values       : G.rotaryencoderconf
 		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent svg .power' ).remove();
+		}
 		, cancel       : function() {
 			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );
 		}
