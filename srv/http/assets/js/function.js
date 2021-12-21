@@ -1157,7 +1157,7 @@ function renderPlayback() {
 	}
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
-	if ( !G.status.elapsed || !G.status.Time || !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
+	if ( G.status.elapsed === false || G.status.Time === false || !( 'elapsed' in G.status ) || G.status.elapsed > time ) {
 		$( '#elapsed' ).html( G.status.state === 'play' ? blinkdot : '' );
 		blinkDot();
 		return
@@ -1506,7 +1506,7 @@ function setPlaylistScroll() {
 	) return
 	
 	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
-	if ( !G.status.elapsed ) $( '#pl-list li .elapsed' ).empty();
+	if ( G.status.elapsed === false ) $( '#pl-list li .elapsed' ).empty();
 	$( '#menu-plaction' ).addClass( 'hide' );
 	var prevscrolltop = $( '#pl-list li.active' ).length ? $( '#pl-list li.active' ).offset().top : litop;
 	$( '#pl-list li' ).removeClass( 'active updn' );
@@ -1565,7 +1565,7 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( G.status.state !== 'play' || !G.status.elapsed ) clearInterval( G.intElapsed );
+	if ( G.status.state !== 'play' || G.status.elapsed === 0 ) clearInterval( G.intElapsed );
 	if ( position !== 0 ) position = G.status.elapsed;
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
@@ -1584,7 +1584,7 @@ function setProgressElapsed() {
 	if ( G.status.elapsed === false || G.status.state !== 'play' || 'autoplaycd' in G ) return // wait for cd cache on start
 	
 	var elapsedhms;
-	var $elapsed = !G.status.elapsed ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
+	var $elapsed = G.status.elapsed === false ? $( '#total, #progress span' ) : $( '#elapsed, #progress span' );
 	if ( G.status.elapsed ) $elapsed.text( second2HMS( G.status.elapsed ) );
 	if ( G.status.Time ) {
 		var time = G.status.Time;
