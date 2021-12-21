@@ -625,7 +625,7 @@ mpcplayback )
 	systemctl stop radio
 	if [[ ! $command ]]; then
 		player=$( cat $dirshm/player )
-		if [[ $( cat $dirshm/player ) !== mpd ]]; then
+		if [[ $( cat $dirshm/player ) != mpd ]]; then
 			$dirbash/cmd.sh "playerstop
 $player
 0"
