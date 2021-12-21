@@ -624,6 +624,14 @@ mpcplayback )
 	pos=${args[2]} # if stop = elapsed
 	systemctl stop radio
 	if [[ ! $command ]]; then
+		player=$( cat $dirshm/player )
+		if [[ $( cat $dirshm/player ) !== mpd ]]; then
+			$dirbash/cmd.sh "playerstop
+$player
+0"
+			exit
+		fi
+		
 		if mpc | grep -q '\[playing'; then
 			grep -q webradio=true /srv/http/data/shm/status && command=stop || command=pause
 		else
