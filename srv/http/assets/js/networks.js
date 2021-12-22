@@ -395,9 +395,13 @@ function infoWiFi( values ) {
 function renderBluetooth() {
 	G.btconnected = false;
 	var htmlbt = '';
+	$( '#divbt heading' ).removeClass( 'status' );
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
-			if ( list.connected ) G.btconnected = list.name;
+			if ( list.connected ) {
+				G.btconnected = list.name;
+				$( '#divbt heading' ).addClass( 'status' );
+			}
 			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
@@ -406,7 +410,6 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
-	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
 }
 function renderPage( list ) {
 	if ( G.activebt ) {
