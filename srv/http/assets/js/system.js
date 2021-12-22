@@ -388,31 +388,32 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 } );
 $( '#setting-rotaryencoder' ).click( function() {
-	var pin = '';
+	var pin = '<td colspan="3"><select >';
 	$.each( pin2gpio, function( k, v ) {
 		pin += '<option value='+ v +'>'+ k +'</option>';
 	} );
+	pin += '</select></td>';
+	var step = '';
+	[ 1, 2, 4 ].forEach( function( v ) {
+		step += '<td><label><input type="radio" name="step" value="'+ v +'">'+ v +'</label></td>'
+	} );
 	var inforotaryencoder = `\
 <table>
-<tr><td>CLK</td>
-	<td><select >${ pin }</select></td>
-</tr>
-<tr><td>DT</td>
-	<td><select >${ pin }</select></td>
-</tr>
-<tr><td>SW</td>
-	<td><select >${ pin }</select></td>
-</tr>
+<tr><td>CLK</td>${ pin }</tr>
+<tr><td>DT</td>${ pin }</tr>
+<tr><td>SW</td>${ pin }</tr>
+<tr><td>Each step <gr>(%)</gr></td>${ step }</tr>
 </table>`;
 	info( {
 		  icon         : 'volume'
 		, title        : 'Rotary Encoder'
 		, content      : gpiosvg + inforotaryencoder
-		, boxwidth     : 80
+		, boxwidth     : 90
 		, values       : G.rotaryencoderconf
 		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#infoContent svg .power' ).remove();
+			$( 'tr:last td' ).css( 'width', '55px' )
 		}
 		, cancel       : function() {
 			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );

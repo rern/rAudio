@@ -522,7 +522,8 @@ rotaryencoderset )
 	echo "\
 pina=${args[1]}
 pinb=${args[2]}
-pins=${args[3]}" > $dirsystem/rotaryencoder.conf
+pins=${args[3]}
+step=${args[4]}" > $dirsystem/rotaryencoder.conf
 	systemctl restart rotaryencoder
 	systemctl enable rotaryencoder
 	pushRefresh

@@ -207,7 +207,6 @@ HTML
  • Turn volume up/down
  • Push to play/pause
 HTML
-		, 'exist'   => false
 	]
 	,[
 		  'label'    => 'Spectrum OLED'
