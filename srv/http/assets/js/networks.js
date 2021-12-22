@@ -388,6 +388,8 @@ function renderBluetooth() {
 			htmlbt += list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
+	} else {
+		$( '#listbt' ).empty();
 	}
 	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
 }
@@ -416,6 +418,8 @@ function renderPage( list ) {
 				}
 			} );
 			$( '#listwl' ).html( htmlwl );
+		} else {
+			$( '#listwl' ).empty();
 		}
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {
