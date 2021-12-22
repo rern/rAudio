@@ -56,7 +56,11 @@ btpair )
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
 	bluetoothctl connect $mac
-	[[ $? == 0 ]] && pushRefresh || echo -1
+	[[ $? != 0 ]] && echo -1 && exit
+	
+	pushRefresh
+	sleep 2
+	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
 	;;
 btremove )
 	mac=${args[1]}
