@@ -245,6 +245,7 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page === page ) {
 		G = data;
+		if ( page === 'networks' ) $( '.back' ).click();
 		renderPage();
 		setSwitch();
 	}
@@ -291,7 +292,6 @@ G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
 var intervalcputime;
-var intervalscan;
 var local = 0;
 var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange = '#de810e';
@@ -354,7 +354,7 @@ $( document ).keyup( function( e ) {
 } );
 $( '#close' ).click( function() {
 	if ( page === 'networks' ) {
-		clearTimeout( intervalscan );
+		clearTimeout( G.timeoutScan );
 		bash( 'killall networks-scanbt.sh networks-scanwlan.sh &> /dev/null' );
 	}
 	bash( [ 'cmd', 'rebootlist' ], function( list ) {
