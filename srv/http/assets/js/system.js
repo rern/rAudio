@@ -8,18 +8,18 @@ var pin2gpio = {
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var txtlcdchar = `\
-<p><code>GND:(any black pin)</code>
+${ gpiosvg }<code>GND:(any black pin)</code>
 <wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>
-<wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code></p>`;
+<wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code>`;
 	var txtmpdoled = `\
-<p><code>GND:(any black pin)</code> <code>VCC:1</code>
+${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
-<wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code></p>`;
+<wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
 	var title = {
 		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar       : [ 'Character LCD', txtlcdchar ]
 		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', '<p><code>GND:(any black pin)</code><br><code>+: not use</code></p>', 'volume' ]
+		, rotaryencoder : [ 'Rorary Encoder', '<code>GND:(any black pin)</code><br><code>+: not use</code>', 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
 		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
@@ -31,7 +31,7 @@ $( '.img' ).click( function() {
 		, title       : d[ 0 ]
 		, message     : '<img src="/assets/img/'+ name +'.'+ Math.ceil( Date.now() / 1000 ) +'.'+ (d[ 4 ] || 'jpg' )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-		, footer      : d[ 1 ] ? '<br>'+ gpiosvg + d[ 1 ] : ''
+		, footer      : d[ 1 ]
 		, footeralign : 'left'
 		, beforeshow  : function() {
 			$( '.'+ name +'-no' ).addClass( 'hide' );
