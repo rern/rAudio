@@ -12,7 +12,7 @@ if systemctl -q is-active bluetooth; then
 		for line in "${lines[@]}"; do
 			mac=${line/ *}
 			info=$( bluetoothctl info $mac )
-			alias=$( echo "$info" | grep '^\s*Alias:' | cut -d: -f2- )
+			alias=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
 			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
 			listbt+=',{
