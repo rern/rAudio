@@ -198,13 +198,14 @@ $btoutput" > /etc/mpd.conf
 if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
-	[[ ! $name ]] && name='(No sound device)'
+	if [[ ! $name ]]; then
+		name='(No sound device)'
+		volumenone=true
+	else
+		volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
+	fi
+	pushstream display '{"volumenone":'$volumenone'}'
 	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
-	prevvolumenone=$( echo "$conf" \
-					| sed -n "$line,$ p" \
-					| grep -q 'mixer_type.*none' && echo true || echo false )
-	volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
-	[[ $volumenone != $prevvolumenone ]] && pushstream display '{"volumenone":'$volumenone'}'
 fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 

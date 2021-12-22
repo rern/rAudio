@@ -150,7 +150,7 @@ fi
 if [[ -e $dirsystem/rotaryencoder.conf ]]; then
 	rotaryencoderconf="[ $( cat $dirsystem/rotaryencoder.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else
-	rotaryencoderconf='[ 7,8,10 ]'
+	rotaryencoderconf='[ 27,22,23,1 ]'
 fi
 if [[ -e $dirsystem/vuled.conf ]]; then
 	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"

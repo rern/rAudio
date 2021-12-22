@@ -29,6 +29,7 @@ Audio player for all **Raspberry Pi**s:
 	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
 	- Power on/off button
 	- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
+	- [Rotary encoder](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/rotaryencoder.jpg)
 	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (7 LEDs+Rs)

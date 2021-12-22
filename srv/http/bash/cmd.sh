@@ -623,6 +623,21 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
 	systemctl stop radio
+	if [[ ! $command ]]; then
+		player=$( cat $dirshm/player )
+		if [[ $( cat $dirshm/player ) != mpd ]]; then
+			$dirbash/cmd.sh "playerstop
+$player
+0"
+			exit
+		fi
+		
+		if mpc | grep -q '\[playing'; then
+			grep -q webradio=true /srv/http/data/shm/status && command=stop || command=pause
+		else
+			command=play
+		fi
+	fi
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
@@ -636,10 +651,18 @@ mpcplayback )
 	;;
 mpcprevnext )
 	command=${args[1]}
-	current=$(( ${args[2]} + 1 ))
-	length=${args[3]}
-	state=${args[4]}
-	elapsed=${args[5]}
+	if [[ ${args[2]} ]]; then
+		current=$(( ${args[2]} + 1 ))
+		length=${args[3]}
+		state=${args[4]}
+		elapsed=${args[5]}
+	else
+		status=( $( $dirbash/status.sh | jq -r .song,.playlistlength,.state,.elapsed ) )
+		current=${status[0]}
+		length=${status[1]}
+		state=${status[2]}
+		elapsed=${status[3]}
+	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
 	systemctl stop radio

@@ -35,7 +35,7 @@ $.fn.press = function( arg1, arg2 ) {
 }
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
-<div id="infoOverlay" class="hide" tabindex="1">
+<div id="infoOverlay" class="hide">
 	<div id="infoBox">
 		<div id="infoTopBg">
 			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
@@ -49,13 +49,14 @@ $( 'body' ).prepend( `
 	<div id="bannerTitle"></div>
 	<div id="bannerMessage"></div>
 </div>
-` ); // enable e.which keypress (#infoOverlay needs tabindex="1")
+` );
 
 $( '#banner' ).click( bannerHide );
+
 $( '#infoOverlay' ).keyup( function( e ) {
 /*
 all:      [Tab]       - focus / next input
-          [Shift+Tab] - previous input
+		  [Shift+Tab] - previous input
 radio:    [L] [R]     - check
 checkbox: [space]     - check
 select:   [U] [D]     - check
@@ -252,7 +253,6 @@ function info( json ) {
 		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoContent input:eq( 0 )' ).focus();
 		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
@@ -488,9 +488,11 @@ function info( json ) {
 		// assign values
 		if ( 'values' in O && O.values !== '' ) infoSetValues();
 		
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( '#infoContent input:eq( 0 )' ).focus();
-			
+		$( '#infoOverlay' )
+			.removeClass( 'hide' )
+			.attr( 'tabindex', -1 ) // for keyup event
+			.focus();
+		
 		// set width: button
 		if ( !O.buttonfit ) {
 			var widest = 0;
@@ -739,7 +741,8 @@ function selectricRender() {
 	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
 /*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
 	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
-}function setFileImage( file ) {
+}
+function setFileImage( file ) {
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
 	}, 1000 );

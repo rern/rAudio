@@ -8,21 +8,22 @@ var pin2gpio = {
 $( '.img' ).click( function() {
 	var name = $( this ).data( 'name' );
 	var txtlcdchar = `\
-<p><code>GND:(any black pin)</code>
+${ gpiosvg }<code>GND:(any black pin)</code>
 <wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>
-<wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code></p>`;
+<wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code>`;
 	var txtmpdoled = `\
-<p><code>GND:(any black pin)</code> <code>VCC:1</code>
+${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
-<wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code></p>`;
+<wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
 	var title = {
-		  i2cbackpack : [ 'Character LCD', '', 'lcdchar' ]
-		, lcdchar     : [ 'Character LCD', txtlcdchar ]
-		, relays      : [ 'Relays Module' ]
-		, lcd         : [ 'TFT 3.5" LCD' ]
-		, mpdoled     : [ 'Spectrum OLED', txtmpdoled ]
-		, powerbutton : [ 'Power Button',  '', 'power', '300px', 'svg' ]
-		, vuled       : [ 'VU LED',        '', 'led',   '300px', 'svg' ]
+		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
+		, lcdchar       : [ 'Character LCD', txtlcdchar ]
+		, relays        : [ 'Relays Module' ]
+		, rotaryencoder : [ 'Rorary Encoder', '<code>GND:(any black pin)</code><br><code>+: not use</code>', 'volume' ]
+		, lcd           : [ 'TFT 3.5" LCD' ]
+		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
+		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
+		, vuled         : [ 'VU LED',        '', 'led',   '300px', 'svg' ]
 	}
 	var d = title[ name ];
 	info( {
@@ -30,7 +31,7 @@ $( '.img' ).click( function() {
 		, title       : d[ 0 ]
 		, message     : '<img src="/assets/img/'+ name +'.'+ Math.ceil( Date.now() / 1000 ) +'.'+ (d[ 4 ] || 'jpg' )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-		, footer      : d[ 1 ] ? '<br>'+ gpiosvg + d[ 1 ] : ''
+		, footer      : d[ 1 ]
 		, footeralign : 'left'
 		, beforeshow  : function() {
 			$( '.'+ name +'-no' ).addClass( 'hide' );
@@ -250,7 +251,17 @@ $( '#gpioimgtxt' ).click( function() {
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-var infolcdchar = `\
+$( '#setting-lcdchar' ).click( function() {
+	var radioaddr = '<td>Address</td>';
+	G.lcdcharaddr.forEach( function( el ) {
+		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
+	} );
+	var optpins = '<select>';
+	$.each( pin2gpio, function( k, v ) {
+		optpins += '<option value='+ k +'>'+ k +'</option>';
+	} );
+	optpins += '</select>';
+	var infolcdchar = `\
 <table>
 <tr id="cols"><td width="135">Size</td>
 	<td width="80"><label><input type="radio" name="cols" value="20">20x4</label></td>
@@ -264,7 +275,7 @@ var infolcdchar = `\
 	<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
 	<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
 </tr>
-<tr id="i2caddress" class="i2c">ADDR</tr>
+<tr id="i2caddress" class="i2c">${ radioaddr }</tr>
 <tr class="i2c"><td>I&#178;C Chip</td>
 	<td colspan="2">
 	<select id="i2cchip">
@@ -276,28 +287,15 @@ var infolcdchar = `\
 </tr>
 </table>
 <table class="gpio">
-<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;"></td></tr>
-<tr><td>RS</td><td>PINS</td><td>RW</td><td>PINS</td><td>E</td><td>PINS</td><td></td><td></td></tr>
-<tr><td>D4</td><td>PINS</td><td>D5</td><td>PINS</td><td>D6</td><td>PINS</td><td>D7</td><td>PINS</td></tr>
+<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;">${ gpiosvg }</td></tr>
+<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
+<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
 </table>
 <table>
 <tr><td width="63"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>`;
-$( '#setting-lcdchar' ).click( function() {
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
-	var radioaddr = '<td>Address</td>';
-	G.lcdcharaddr.forEach( function( el ) {
-		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
-	} );
-	var optpins = '<select>';
-	$.each( pin2gpio, function( k, v ) {
-		optpins += '<option value='+ k +'>'+ k +'</option>';
-	} );
-	optpins += '</select>';
-	infolcdchar = infolcdchar
-					.replace( 'ADDR', radioaddr )
-					.replace( /PINS/g, optpins );
 	info( {
 		  icon          : 'lcdchar'
 		, title         : 'Character LCD'
@@ -316,10 +314,7 @@ $( '#setting-lcdchar' ).click( function() {
 				, 'text-align'    : 'right'
 			} );
 			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
-			$( '#infoContent .gpiosvg' )
-				.css( 'text-align', 'right' )
-				.html( gpiosvg );
-			$( '.gpiosvg .power' ).remove();
+			$( '#infoContent svg .power' ).remove();
 			$( '.i2c' ).toggleClass( 'hide', !i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
@@ -393,29 +388,32 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 } );
 $( '#setting-rotaryencoder' ).click( function() {
-	var pin = '';
+	var pin = '<td colspan="3"><select >';
 	$.each( pin2gpio, function( k, v ) {
-		pin += '<option value='+ k +'>'+ k +'</option>';
+		pin += '<option value='+ v +'>'+ k +'</option>';
+	} );
+	pin += '</select></td>';
+	var step = '';
+	[ 1, 2, 4 ].forEach( function( v ) {
+		step += '<td style="width: 55px"><label><input type="radio" name="step" value="'+ v +'">'+ v +'</label></td>'
 	} );
 	var inforotaryencoder = `\
 <table>
-<tr><td>CLK</td>
-	<td><select >${ pin }</select></td>
-</tr>
-<tr><td>DT</td>
-	<td><select >${ pin }</select></td>
-</tr>
-<tr><td>SW</td>
-	<td><select >${ pin }</select></td>
-</tr>
+<tr><td>CLK</td>${ pin }</tr>
+<tr><td>DT</td>${ pin }</tr>
+<tr><td>SW</td>${ pin }</tr>
+<tr><td>Each step <gr>(%)</gr></td>${ step }</tr>
 </table>`;
 	info( {
 		  icon         : 'volume'
 		, title        : 'Rotary Encoder'
 		, content      : gpiosvg + inforotaryencoder
-		, boxwidth     : 80
+		, boxwidth     : 90
 		, values       : G.rotaryencoderconf
 		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent svg .power' ).remove();
+		}
 		, cancel       : function() {
 			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );
 		}
@@ -460,6 +458,9 @@ $( '#setting-mpdoled' ).click( function() {
 				var val = $( this ).val();
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
 			} );
+		}
+		, cancel       : function() {
+			$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 		}
 		, buttonlabel  : '<i class="fa fa-plus-r"></i>Logo'
 		, button       : !G.mpdoled ? '' : function() {
@@ -853,7 +854,7 @@ function infoMount( values ) {
 		  icon       : 'networks'
 		, title      : 'Add Network Storage'
 		, content    : htmlmount
-		, values     : values
+		, values     : values || [ 'cifs', '', '192.168.1.', '', '', '', '', true ]
 		, beforeshow : function() {
 			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
 			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );

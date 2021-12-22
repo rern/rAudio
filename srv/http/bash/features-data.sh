@@ -52,21 +52,21 @@ fi
 , "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
 , "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )'
 , "upmpdcliownqueue" : '$( grep -q 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
-# features
-xinitrc=/etc/X11/xinit/xinitrc
-if [[ -e $xinitrc ]]; then
+if [[ -e /etc/X11/xinit/xinitrc ]]; then
+	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
+	[[ -e $brightnessfile ]] && brightness=$( cat $brightnessfile )
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		conf=$( grep . $dirsystem/localbrowser.conf \
 				| sed 's/^/,"/; s/=/":/' \
 				| sed 's/\(.*rotate.*:\)\(.*\)/\1"\2"/' )
+		conf+=', "brightness" : '$brightness
 		localbrowserconf="{${conf:1}}"
 	else
-		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false }'
+		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
 	fi
 	data+='
 , "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true )'
-, "localbrowserconf" : '$localbrowserconf'
-, "brightness"       : '$( cat /sys/class/backlight/rpi_backlight/brightness &> /dev/null )
+, "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then
 	grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
