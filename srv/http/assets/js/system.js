@@ -395,7 +395,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 	pin += '</select></td>';
 	var step = '';
 	[ 1, 2, 4 ].forEach( function( v ) {
-		step += '<td><label><input type="radio" name="step" value="'+ v +'">'+ v +'</label></td>'
+		step += '<td style="width: 55px"><label><input type="radio" name="step" value="'+ v +'">'+ v +'</label></td>'
 	} );
 	var inforotaryencoder = `\
 <table>
@@ -413,7 +413,6 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#infoContent svg .power' ).remove();
-			$( 'tr:last td' ).css( 'width', '55px' )
 		}
 		, cancel       : function() {
 			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );
