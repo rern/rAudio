@@ -19,7 +19,7 @@ $( '.img' ).click( function() {
 		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar       : [ 'Character LCD', txtlcdchar ]
 		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', '', 'volume' ]
+		, rotaryencoder : [ 'Rorary Encoder', '<p><code>GND:(any black pin)</code><br><code>+: not use</code></p>', 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
 		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
