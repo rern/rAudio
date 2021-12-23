@@ -83,16 +83,15 @@ htmlHead( [ //////////////////////////////////
 	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Spindown
 
 Available sources, local USB and NAS mounts, for Library.
- • USB drive will be found and mounted automatically.
+ • USB drives will be found and mounted automatically.
  • Network shares must be manually configured.
  • If mount failed, try in SSH terminal:
 <pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
-
-# CIFS:
+<gr># CIFS:</gr>
 mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8
-# NFS:
+<gr># NFS:</gr>
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
