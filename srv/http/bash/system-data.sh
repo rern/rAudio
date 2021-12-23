@@ -34,7 +34,7 @@ speed=${cpu[2]/.*}
 (( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( cat /proc/device-tree/model | tr -d '\0' )
+rpimodel=$( cat /proc/device-tree/model | tr -d '\0' | sed 's/ Model //; s/ Plus/+/' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
