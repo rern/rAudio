@@ -97,8 +97,17 @@ mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
 <pre id="codehddinfo" class="hide"></pre>
-</div>
 <?php
+htmlSetting( [
+		  'label'    => 'Auto Update'
+		, 'id'       => 'usbautoupdate'
+		, 'sublabel' => 'USB Drives'
+		, 'icon'     => 'refresh-library'
+		, 'help'     => <<< HTML
+Auto update Library database on insert / remove USB drives.
+HTML
+	] );
+echo '</div>';
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
 // ----------------------------------------------------------------------------------

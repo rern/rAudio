@@ -630,14 +630,22 @@ unmount )
 	pushRefresh
 	;;
 usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
+	[[ ! -e $dirsystem/usbautoupdate ]] && exit
+	
 	pushstreamNotify 'USB Drive' Connected. usbdrive
 	pushRefresh
 	$dirbash/cmd.sh mpcupdate
 	;;
 usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+	[[ ! -e $dirsystem/usbautoupdate ]] && exit
+	
 	pushstreamNotify 'USB Drive' Removed. usbdrive
 	pushRefresh
 	$dirbash/cmd.sh mpcupdate
+	;;
+usbautoupdate )
+	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
+	pushRefresh
 	;;
 vuleddisable )
 	rm -f $dirsystem/vuled

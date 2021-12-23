@@ -8,6 +8,9 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+# 20121224
+touch $dirsystem/usbautoupdate
+
 # 20211222
 rm -f /etc/systemd/system/rotarymute.service
 

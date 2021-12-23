@@ -195,6 +195,7 @@ data+='
 , "socspeed"         : "'$socspeed'"
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
+, "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
 , "version"          : "'$version'"
 , "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
