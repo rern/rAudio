@@ -142,4 +142,7 @@ if [[ -e $dirsystem/hddspindown ]]; then
 fi
 
 file=/sys/class/backlight/rpi_backlight/brightness
-[[ -e $dirsystem/brightness && -e $file ]] && cat $dirsystem/brightness > $file
+if [[ -e $file ]]; then
+	chmod 666 $file
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
+fi
