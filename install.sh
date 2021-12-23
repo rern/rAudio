@@ -8,7 +8,7 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211224
+# 20211222
 rm -f /etc/systemd/system/rotarymute.service
 
 [[ ! -e /usr/bin/evtest ]] && pacman -Sy --noconfirm evtest
