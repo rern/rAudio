@@ -748,12 +748,14 @@ pkgstatus )
 		localbrowser )
 			conf=/srv/http/data/system/localbrowser.conf
 			pkg=chromium;;
-		snapclient|snapserver )
-			conf=/etc/default/$id
-			pkg=snapcast;;
 		smb )
 			conf=/etc/samba/smb.conf
 			pkg=samba;;
+		snapclient )
+			conf=/etc/default/snapclient
+			pkg=snapcast;;
+		snapserver )
+			pkg=snapcast;;
 		* )
 			conf=/etc/$id.conf;;
 	esac

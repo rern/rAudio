@@ -9,7 +9,10 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20121224
-touch $dirsystem/usbautoupdate
+if [[ -e /etc/default/snapserver ]]; then
+	touch $dirsystem/usbautoupdate
+	rm /etc/default/snapserver
+fi
 
 # 20211222
 rm -f /etc/systemd/system/rotarymute.service

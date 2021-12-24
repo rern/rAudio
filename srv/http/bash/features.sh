@@ -274,7 +274,7 @@ snapclientdisable )
 	pushstream display '{"submenu":"sanpclient","value":false}'
 	;;
 snapclientset )
-	echo SNAPCLIENT_OPTS="--latency=${args[1]}" > /etc/default/snapclient
+	echo 'SNAPCLIENT_OPTS="--latency='${args[1]}'"' > /etc/default/snapclient
 	touch $dirsystem/snapclient
 	systemctl try-restart snapclient
 	pushRefresh
