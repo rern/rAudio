@@ -115,7 +115,7 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
 						| grep -v UU \
-						| grep . \
+						| awk NF \
 						| sort -u )
 		i2caddress="[ $(( "0x$i2caddress" )) ]"
 	else

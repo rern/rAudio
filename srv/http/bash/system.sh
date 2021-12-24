@@ -370,7 +370,7 @@ mirrorlist )
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
 	fi
-	readarray -t lines <<< $( grep . $file \
+	readarray -t lines <<< $( awk NF $file \
 								| sed -n '/### A/,$ p' \
 								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
 	clist='"Auto (by Geo-IP)"'

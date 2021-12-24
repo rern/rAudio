@@ -74,16 +74,16 @@ fi
 for mode in album albumartist artist composer conductor genre date; do
 	dircount=$dirmpd/$mode
 	if [[ $mode == album ]]; then
-		album=$( grep . <<< "$album_artist_file" | sort -uf )
+		album=$( awk NF <<< "$album_artist_file" | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
 			readarray -t albumignore < $dirmpd/albumignore
 			for line in "${albumignore[@]}"; do
 				album=$( sed "/^$line^/ d" <<< "$album" )
 			done
 		fi
-		album=$( echo "$album" | grep . | tee $dirmpd/album | wc -l )
+		album=$( echo "$album" | awk NF | tee $dirmpd/album | wc -l )
 	else
-		printf -v $mode '%s' $( mpc list $mode | grep . | awk '{$1=$1};1' | tee $dircount | wc -l )
+		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $dircount | wc -l )
 	fi
 	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $dircount
 done
