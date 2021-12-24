@@ -15,11 +15,13 @@ ${ gpiosvg }<code>GND:(any black pin)</code>
 ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
 <wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
+	var txtrotaryencoder = `\
+${ gpiosvg }<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>`
 	var title = {
 		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar       : [ 'Character LCD', txtlcdchar ]
 		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', gpiosvg +'<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>', 'volume' ]
+		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
 		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
