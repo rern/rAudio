@@ -19,7 +19,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar       : [ 'Character LCD', txtlcdchar ]
 		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', '<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>', 'volume' ]
+		, rotaryencoder : [ 'Rorary Encoder', gpiosvg +'<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>', 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
 		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
