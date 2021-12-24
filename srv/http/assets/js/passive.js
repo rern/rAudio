@@ -549,8 +549,10 @@ function psVolume( data ) {
 		$( '#volume-text' )
 			.text( mute ? data.val : vol )
 			.toggleClass( 'bl', mute );
-		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
+		if ( $( '#time-knob' ).is( ':hidden' ) ) {
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
+		}
 	}, G.debouncems );
 }
 function psVUmeter( data ) {
