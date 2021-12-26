@@ -323,34 +323,25 @@ function scrollUpDown( e, $list, key ) {
 		classactive = 'updn';
 	}
 	var $linext = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
-	if ( !$linext.length ) {
-		var lilast = 1;
-		$linext = key === 'ArrowUp' ? $li.last() : $li.eq( 0 );
-	} else {
-		var lilast = 0;
-	}
+	var barH = G.display.bars ? 0 : 40;
+	if ( !$linext.length ) $linext = key === 'ArrowUp' ? $li.last() : $li.first();
 	$liactive.removeClass( classactive );
-	if ( !$linext.length ) {
-		if ( key === 'ArrowUp' ) {
-			$linext = $li.last();
-			$( 'html, body' ).scrollTop( $linext.offset().top );
-		} else {
-			$linext = $li.first();
-			$( 'html, body' ).scrollTop( 0 );
-		}
-		$linext.addClass( classactive );
+	$linext.addClass( classactive );
+	if ( $linext.is( ':first-child' ) ) {
+		$( 'html, body' ).scrollTop( 0 );
+		return
+	} else if ( $linext.is( ':last-of-type' ) ) {
+		$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 130 - barH );
 		return
 	}
 	
-	$linext.addClass( classactive );
 	var litop = $linext[ 0 ].getBoundingClientRect().top;
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
 	var liH = $( '.licover' ).length ? 230 : 0;
-	var barH = G.display.bars ? 0 : 40;
 	if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
 	if ( key === 'ArrowUp' ) {
-		if ( litop < 80 - barH || lilast ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 89 - barH );
+		if ( litop < 80 - barH ) {
+			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 130 - barH );
 		} else if ( libottom > G.wH - 40 - barH ) {
 			$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
 		}
@@ -358,7 +349,7 @@ function scrollUpDown( e, $list, key ) {
 		if ( libottom > G.wH - 40 - barH ) {
 			$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
 		} else if ( litop < 80 - barH ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 89 - barH );
+			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 90 - barH );
 		}
 	}
 }
