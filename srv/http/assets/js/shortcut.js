@@ -323,7 +323,12 @@ function scrollUpDown( e, $list, key ) {
 		classactive = 'updn';
 	}
 	var $linext = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
-	if ( !$linext.length ) $linext = key === 'ArrowUp' ? $( '#lib-list li:last' ) : $( '#lib-list li:eq( 0 )' );
+	if ( !$linext.length ) {
+		var lilast = 1;
+		$linext = key === 'ArrowUp' ? $list.find( 'li:last' ) : $li.eq( 0 );
+	} else {
+		var lilast = 0;
+	}
 	$liactive.removeClass( classactive );
 	if ( !$linext.length ) {
 		if ( key === 'ArrowUp' ) {
@@ -342,14 +347,18 @@ function scrollUpDown( e, $list, key ) {
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
 	var liH = $( '.licover' ).length ? 230 : 0;
 	var barH = G.display.bars ? 0 : 40;
+	if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
 	if ( key === 'ArrowUp' ) {
-		if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
-		if ( litop < 80 - barH ) {
+		if ( litop < 80 - barH || lilast ) {
 			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 89 - barH );
 		} else if ( libottom > G.wH - 40 - barH ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - 80 );
+			$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
 		}
 	} else {
-		if ( libottom > G.wH - 40 - barH ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
+		if ( libottom > G.wH - 40 - barH ) {
+			$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
+		} else if ( litop < 80 - barH ) {
+			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 89 - barH );
+		}
 	}
 }
