@@ -570,9 +570,6 @@ hr {
 }
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
-	#infoX:hover {
-		color: var( --cml );
-	}
 	#infoContent label,
 	input[type=checkbox],
 	input[type=radio],
@@ -580,13 +577,10 @@ hr {
 	.pointer {
 		cursor: pointer;
 	}
-	.infobtn-primary:hover {
-		color: var( --cw );
-		background-color: var( --cml );
-	}
+	#infoX:hover,
+	.infobtn-primary:hover,
 	.infobtn-default:hover {
-		color: var( --cw );
-		background-color: var( --cgl )
+		filter: brightness( 115% );
 	}
 	/* :active *********************************************************/
 	#infoX:active {
