@@ -4,9 +4,7 @@
 }
 #lib-list li:hover,
 #pl-savedlist li:hover,
-#pl-list li:hover {
-	background-color: var( --cga );
-}
+#pl-list li:hover,
 #lib-list li.updn:hover,
 #pl-savedlist li.updn:hover {
 	background-color: var( --cga );

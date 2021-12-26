@@ -264,8 +264,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 		
 		// list ///////////////////////////////////////
 		if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-			e.preventDefault();
-			scrollUpDown( $( '#lib-list' ), key );
+			scrollUpDown( e, $( '#lib-list' ), key );
 		} else if ( key === 'Enter' ) {
 			var $liactive = $( '#lib-list li.active' );
 			if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
@@ -281,7 +280,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 	} else if ( G.playlist ) {
 		if ( G.savedplaylist || G.savedlist ) {
 			if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-				scrollUpDown( $( '#pl-savedlist' ), key );
+				scrollUpDown( e, $( '#pl-savedlist' ), key );
 			} else if ( key === 'ArrowRight' ) {
 				$( '#pl-savedlist li.active .pl-icon' ).click();
 			} else if ( key === 'Enter' ) {
@@ -293,7 +292,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 			if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
 				var $liactive = $( '#pl-list li.updn' );
 				if ( !$liactive.length ) $( '#pl-list li.active' ).addClass( 'updn' );
-				scrollUpDown( $( '#pl-list' ), key );
+				scrollUpDown( e, $( '#pl-list' ), key );
 			} else if ( key === 'ArrowRight' ) {
 				$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .pl-icon' ).click() : $( '#pl-list li.active .pl-icon' ).click();
 			} else if ( key === 'Enter' ) {
@@ -304,9 +303,10 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 		}
 	}
 } );
-function scrollUpDown( $list, key ) {
+function scrollUpDown( e, $list, key ) {
 	if ( $( '.contextmenu' ).not( '.hide' ).length ) return
 	
+	e.preventDefault();
 	var $li = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
 	if ( !$liactive.length ) {
@@ -323,6 +323,7 @@ function scrollUpDown( $list, key ) {
 		classactive = 'updn';
 	}
 	var $linext = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
+	if ( !$linext.length ) $linext = key === 'ArrowUp' ? $( '#lib-list li:last' ) : $( '#lib-list li:eq( 0 )' );
 	$liactive.removeClass( classactive );
 	if ( !$linext.length ) {
 		if ( key === 'ArrowUp' ) {
@@ -340,9 +341,15 @@ function scrollUpDown( $list, key ) {
 	var litop = $linext[ 0 ].getBoundingClientRect().top;
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
 	var liH = $( '.licover' ).length ? 230 : 0;
+	var barH = G.display.bars ? 0 : 40;
 	if ( key === 'ArrowUp' ) {
-		if ( libottom > G.wH - 40 || litop < 80 + liH ) $( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 89 );
+		if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
+		if ( litop < 80 - barH ) {
+			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 89 - barH );
+		} else if ( libottom > G.wH - 40 - barH ) {
+			$( 'html, body' ).scrollTop( $linext.offset().top - 80 );
+		}
 	} else {
-		if ( libottom > G.wH - 40 ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 - liH );
+		if ( libottom > G.wH - 40 - barH ) $( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
 	}
 }
