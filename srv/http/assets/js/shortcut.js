@@ -325,7 +325,7 @@ function scrollUpDown( e, $list, key ) {
 	var $linext = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
 	if ( !$linext.length ) {
 		var lilast = 1;
-		$linext = key === 'ArrowUp' ? $list.find( 'li:last' ) : $li.eq( 0 );
+		$linext = key === 'ArrowUp' ? $li.last() : $li.eq( 0 );
 	} else {
 		var lilast = 0;
 	}
