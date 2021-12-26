@@ -1662,7 +1662,7 @@ i.map.disabled, .map.disabled i {
 	background: var( --cmd );
 }
 #pl-list li.active.updn {
-	background: var( --cm );
+	background: var( --cma );
 }
 .lib-icon,
 .pl-icon,
