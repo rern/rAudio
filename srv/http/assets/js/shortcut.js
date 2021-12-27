@@ -324,32 +324,20 @@ function scrollUpDown( e, $list, key ) {
 	}
 	var $linext = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
 	var barH = G.display.bars ? 0 : 40;
+	if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
 	if ( !$linext.length ) $linext = key === 'ArrowUp' ? $li.last() : $li.first();
 	$liactive.removeClass( classactive );
 	$linext.addClass( classactive );
-	if ( $linext.is( ':first-child' ) ) {
-		$( 'html, body' ).scrollTop( 0 );
-		return
-	} else if ( $linext.is( ':last-of-type' ) ) {
-		$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 130 - barH );
-		return
-	}
-	
 	var litop = $linext[ 0 ].getBoundingClientRect().top;
 	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
-	var liH = $( '.licover' ).length ? 230 : 0;
-	if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
-	if ( key === 'ArrowUp' ) {
-		if ( litop < 80 - barH ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 130 - barH );
-		} else if ( libottom > G.wH - 40 - barH ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
-		}
-	} else {
-		if ( libottom > G.wH - 40 - barH ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
-		} else if ( litop < 80 - barH ) {
-			$( 'html, body' ).scrollTop( $linext.offset().top - G.wH + 90 - barH );
-		}
+	var licount = Math.round( ( G.wH - 120 - ( barH * 2 ) ) / 49 );
+	if ( $linext.is( ':first-child' ) ) {
+		$( 'html, body' ).scrollTop( 0 );
+	} else if ( $linext.is( ':last-of-type' ) && libottom > G.wH - 40 - barH ) {
+		$( 'html, body' ).scrollTop( litop - 80 - barH - ( licount - 2 ) * 49 );
+	} else if ( litop < 80 - barH ) {
+		$( 'html, body' ).scrollTop( $( window ).scrollTop() - 120 - G.wH % 49 - barH - ( licount - 3 ) * 49 );
+	} else if ( libottom > G.wH - 40 - barH ) {
+		$( 'html, body' ).scrollTop( $linext.offset().top - 80 - barH );
 	}
 }
