@@ -51,17 +51,6 @@ for file in "${files[@]}"; do
 RequiredForOnline=no" >> $file
 done
 
-# 20211126
-rm -f $dirshm/local/*
-
-file=$dirsystem/lcdchar.conf
-if [[ -e $file ]] && ! grep -q inf $file; then
-	grep -q chip $file && inf=i2c || inf=gpio
-	sed -i -e 's/"//g; s/0x27/39/; s/0x3f/63/; s/\(true\|false\)/\u\1/
-' -e "3 a\inf=$inf
-" $dirsystem/lcdchar.conf
-fi
-
 installstart "$1"
 
 getinstallzip
