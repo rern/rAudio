@@ -31,16 +31,12 @@ data+='
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )'
 , "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
-if [[ -e /usr/bin/snapserver ]]; then
-	snapcastconf=$( grep latency /etc/default/snapclient | tr -d -c 0-9 )
-	[[ ! $snapcastconf ]] && snapcastconf=800
-	data+='
+[[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( systemctl -q is-active snapclient && echo true )'
-, "snapcastconf"     : '$snapcastconf
-fi
+, "snapcastconf"     : '$( grep -q latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
 , "spotifydactive"   : '$( [[ $( cat $dirshm/player ) == spotify ]] && echo true )'
