@@ -131,6 +131,8 @@ function setSwitch() {
 		} );
 		$( '.setting' ).each( function() {
 			var sw = this.id.replace( 'setting-', '' );
+			if ( sw === 'timezone' || sw === 'hwmixer' ) return
+			
 			$( this ).toggleClass( 'hide', !G[ sw ] );
 		} );
 	}
@@ -246,8 +248,8 @@ function psRefresh( data ) {
 	if ( data.page === page ) {
 		G = data;
 		if ( page === 'networks' ) $( '.back' ).click();
-		renderPage();
 		setSwitch();
+		renderPage();
 	}
 }
 function psReload() {
