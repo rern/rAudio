@@ -130,9 +130,9 @@ function setSwitch() {
 			$( this ).prop( 'checked', G[ this.id ] );
 		} );
 		$( '.setting' ).each( function() {
-			var sw = this.id.replace( 'setting-', '' );
-			if ( sw === 'timezone' || sw === 'hwmixer' ) return
+			if ( $( this ).prev().is( 'select' ) ) return // not switch
 			
+			var sw = this.id.replace( 'setting-', '' );
 			$( this ).toggleClass( 'hide', !G[ sw ] );
 		} );
 	}
