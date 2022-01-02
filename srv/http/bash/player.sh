@@ -300,6 +300,46 @@ replaygainset )
 restart )
 	restartMPD
 	;;
+shareddatabasedisable )
+	umount -l /srv/http/data/mpd
+	sed -i '\|/srv/http/data/mpd| d' /etc/fstab
+	restartMPD
+	;;
+shareddatabase )
+	protocol=${args[1]}
+	ip=${args[2]}
+	directory=${args[3]}
+	user=${args[4]}
+	password=${args[5]}
+	extraoptions=${args[6]}
+	
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
+	
+	if [[ $protocol == cifs ]]; then
+		source="//$ip/$directory"
+		options=noauto
+		if [[ ! $user ]]; then
+			options+=,username=guest
+		else
+			options+=",username=$user,password=$password"
+		fi
+		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
+	else
+		source="$ip:$directory"
+		options=defaults,noauto,bg,soft,timeo=5
+	fi
+	[[ $extraoptions ]] && options+=,$extraoptions
+	echo "${source// /\\040}  /srv/http/data/mpd  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	std=$( mount /srv/http/data/mpd )
+	if [[ $? == 0 ]]; then
+		echo 0
+		restartMPD
+	else
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		sed -i '\|/srv/http/data/mpd| d' /etc/fstab
+	fi
+	restartMPD
+	;;
 soxrdisable )
 	sed -i -e '/quality/,/}/ d
 ' -e '/soxr/ a\

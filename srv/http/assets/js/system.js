@@ -875,8 +875,8 @@ function infoMount( values ) {
 			} );
 		}
 		, ok         : function() {
-			// [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			bash( [ 'mount', ...infoVal() ], function( error ) {
+			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
+			bash( [ 'mount', ...values ], function( error ) {
 				if ( error != 0 ) {
 					info( {
 						  icon    : 'networks'

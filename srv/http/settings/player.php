@@ -259,3 +259,15 @@ HTML
 	] );
 	echo '</div>';
 }
+$head = [ 'title' => 'Shared Database' ]; //////////////////////////////////
+$body = [
+	[
+		  'label'    => 'Shared Database'
+		, 'id'       => 'shareddatabase'
+		, 'setting'  => 'none'
+		, 'help'     => <<< HTML
+Use Library database from network share.
+HTML
+	]
+];
+htmlSection( $head, $body );

@@ -331,6 +331,24 @@ $( '#setting-custom' ).click( function() {
 		} );
 	} );
 } );
+$( '#shareddatabase' ).click( function() {
+	if ( G.shareddatabase ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Library Database'
+			, message : 'Disable?'
+			, cancel  : function() {
+				$( '#shareddatabase' ).prop( 'checked', true );
+			}
+			, ok      : function() {
+				bash( [ 'shareddatabasedisable' ] );
+				notify( 'Shared Library Database', 'Disable ...', 'networks' );
+			}
+		} );
+	} else {
+		infoMount();
+	}
+} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -392,10 +410,81 @@ function renderPage( list ) {
 			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
+	$( '#shareddatabase' ).prop( 'checked', G.shareddatabase );
 	showContent();
 }
 function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
+}
+var htmlmount = `\
+<table id="tblinfomount">
+<tr><td>Type</td>
+	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
+	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+</tr>
+<tr><td>IP</td>
+	<td><input type="text"></td>
+</tr>
+<tr id="sharename"><td>Share name</td>
+	<td><input type="text"></td>
+</tr>
+<tr class="guest"><td>User</td>
+	<td><input type="text"></td>
+</tr>
+<tr class="guest"><td>Password</td>
+	<td><input type="password" checked></td><td><i class="fa fa-eye fa-lg"></i></td>
+</tr>
+<tr><td>Options</td>
+	<td><input type="text"></td>
+</tr>
+</table>`;
+function infoMount( values ) {
+	info( {
+		  icon       : 'networks'
+		, title      : 'Shared Library Database'
+		, content    : htmlmount
+		, values     : values || [ 'cifs', '192.168.1.', '', '', '', '' ]
+		, beforeshow : function() {
+			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
+			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
+			var $sharelabel = $( '#sharename td:eq( 0 )' );
+			var $share = $( '#sharename input' );
+			var $guest = $( '.guest' );
+			$( '#infoContent input:radio' ).change( function() {
+				if ( $( this ).val() === 'nfs' ) {
+					$sharelabel.text( 'Share path' );
+					$guest.addClass( 'hide' );
+					$share.val( '/'+ $share.val() );
+				} else {
+					$sharelabel.text( 'Share name' );
+					$guest.removeClass( 'hide' );
+					$share.val( $share.val().replace( /\//g, '' ) );
+				}
+			} );
+		}
+		, cancel     : function() {
+			$( '#shareddatabase' ).prop( 'checked', G.shareddatabase );
+		}
+		, ok         : function() {
+			var values = infoVal(); // [ protocol, ip, directory, user, password, options ]
+			bash( [ 'shareddatabase', ...values ], function( error ) {
+				if ( error != 0 ) {
+					info( {
+						  icon    : 'networks'
+						, title   : 'Mount Share'
+						, message : error
+						, ok      : function() {
+							infoMount( values );
+						}
+					} );
+					bannerHide();
+				} else {
+					refreshData();
+				}
+			} );
+			notify( 'Shared Library Database', 'Mount ...', 'networks' );
+		}
+	} );
 }

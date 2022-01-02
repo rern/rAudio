@@ -426,13 +426,14 @@ mount )
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	mount "$mountpoint" 2> /dev/null
+	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
 		echo 0
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+		sleep 2
 		pushRefresh
 	else
-		echo "Mount <code>$source</code> failed.<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
