@@ -625,10 +625,11 @@ var chklibrary2 = {
 	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
-	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
 	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
+	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
+	, audiocdplclear : 'AudioCD clear Playlist <gr>on load</gr>'
 }
 function infoLibrary( page2 ) {
 	var page1 = !page2;
@@ -643,7 +644,7 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home' : 'Library/Playlist Options'
+		, title        : page1 ? 'Library Home' : 'Library / Playlist'
 		, message      : page1 ? '1/2 - Show:' : '2/2 - Options:'
 		, messagealign : 'left'
 		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
@@ -653,7 +654,7 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent' ).css( 'height', 340 );
+			$( '#infoContent' ).css( 'height', 360 );
 			if ( page1 ) {
 				$( '#infoContent tr' ).last().before( '<tr><td style="height: 16px" colspan="2"><hr></td></tr>' );
 			} else {

@@ -70,6 +70,7 @@ cat << EOF > $dirsystem/display
 	"sd": true,
 	"usb": true,
 	"webradio": true,
+	"audiocdplclear": false,
 	"backonleft": false,
 	"count": true,
 	"fixedcover": true,
