@@ -90,7 +90,7 @@ Available sources, local USB and NAS mounts, for Library.
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
 <gr># CIFS:</gr>
 mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
-      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8
+      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr># NFS:</gr>
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
