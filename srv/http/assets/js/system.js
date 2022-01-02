@@ -920,10 +920,22 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
-	$( '#wlan' )
-		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
-		.parent().prev().toggleClass( 'single', !G.wlan );
+	if ( 'bluetooth' in G || 'wlan' in G ) {
+		if ( 'bluetooth' in G ) {
+			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
+		} else {
+			$( '#divbluetooth' ).addClass( 'hide' );
+		}
+		if ( 'wlan' in G ) {
+			$( '#wlan' )
+				.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
+				.parent().prev().toggleClass( 'single', !G.wlan );
+		} else {
+			$( '#divwlan' ).addClass( 'hide' );
+		}
+	} else {
+		$( '#divbluetooth' ).parent().addClass( 'hide' );
+	}
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
 		var $this = $( this );
