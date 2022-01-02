@@ -628,8 +628,6 @@ var chklibrary2 = {
 	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
-	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
-	, audiocdplclear : 'AudioCD clear Playlist <gr>on load</gr>'
 }
 function infoLibrary( page2 ) {
 	var page1 = !page2;
@@ -644,7 +642,7 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home' : 'Library / Playlist'
+		, title        : page1 ? 'Library Home' : 'Library'
 		, message      : page1 ? '1/2 - Show:' : '2/2 - Options:'
 		, messagealign : 'left'
 		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
@@ -654,10 +652,8 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent' ).css( 'height', 360 );
-			if ( page1 ) {
-				$( '#infoContent tr' ).last().before( '<tr><td style="height: 16px" colspan="2"><hr></td></tr>' );
-			} else {
+			$( '#infoContent' ).css( 'height', 300 );
+			if ( !page1 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
@@ -778,6 +774,30 @@ function infoPlayback() {
 				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( covervu, 1, 0 );
 			} );
 		}
+		, ok           : function () {
+			displaySave( keys );
+		}
+	} );
+}
+var chkplaylist = {
+	  plclear        : 'Confirm <gr>on replace Playlist</gr>'
+	, audiocdplclear : 'AudioCD clear Playlist <gr>on load</gr>'
+}
+function infoPlaylist() {
+	if ( 'coverTL' in G ) $( '#coverTL' ).click();
+	var keys = Object.keys( chkplaylist );
+	var values = [];
+	keys.forEach( function( k, i ) {
+		values.push( G.display[ k ] );
+	} );
+	info( {
+		  icon         : 'playlist'
+		, title        : 'Playlist'
+		, message      : 'Options:'
+		, messagealign : 'left'
+		, checkbox     : Object.values( chkplaylist )
+		, values       : values
+		, checkchanged : 1
 		, ok           : function () {
 			displaySave( keys );
 		}

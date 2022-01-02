@@ -227,9 +227,8 @@ $( '#power' ).click( function() {
 $( '#displaylibrary' ).click( function() {
 	infoLibrary();
 } );
-$( '#displayplayback' ).click( function() {
-	infoPlayback();
-} );
+$( '#displayplayback' ).click( infoPlayback );
+$( '#displayplaylist' ).click( infoPlaylist );
 $( '#colorok' ).click( function() {
 	var hsv = G.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
 	var s = hsv.s;

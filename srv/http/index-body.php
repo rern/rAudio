@@ -221,6 +221,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 		<i id="update" class="fa fa-refresh-library submenu"></i>
 	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
+	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
 	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
 		<i id="guide" class="fa fa-question-circle submenu"></i>
 </div>
