@@ -85,6 +85,10 @@ htmlHead( [ //////////////////////////////////
 Available sources, local USB and NAS mounts, for Library.
  • USB drives will be found and mounted automatically.
  • Network shares must be manually configured.
+ • Target IP must response to <code>ping <bll>IP</bll></code> command.
+ &emsp; Windows 11:
+ &emsp; • Windows Defender Firewall > Advanced Settings > Inbound Rules
+ &emsp; • Core Networking Diagnostics - ICMP Echo Request (ICMPv4-In) - enable
  • If mount failed, try in SSH terminal:
 <pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
