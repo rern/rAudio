@@ -174,6 +174,7 @@ data+='
 , "rotaryencoder"    : '$( systemctl -q is-active rotaryencoder && echo true )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "rpimodel"         : "'$rpimodel'"
+, "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
 , "soc"              : "'$soc'"
 , "soccpu"           : "'$soccpu'"
 , "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"

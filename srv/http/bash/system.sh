@@ -428,7 +428,6 @@ mount )
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
-		echo 0
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		sleep 2
 		pushRefresh
@@ -551,6 +550,60 @@ servers )
 			mirror+=.
 		fi
 		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
+	fi
+	;;
+shareddatadisable )
+	mountpoint=/srv/http/shareddata
+	umount -l $mountpoint
+	sed -i "\|$mountpoint| d" /etc/fstab
+	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+		rm -rf /srv/http/data/$dir
+		cp -rf $mountpoint/$dir /srv/http/data
+	done
+	rm -rf $mountpoint
+	chown -R http:http /srv/http/data
+	chown -R mpd:audio /srv/http/data/mpd
+	;;
+shareddata )
+	protocol=${args[1]}
+	ip=${args[2]}
+	directory=${args[3]}
+	user=${args[4]}
+	password=${args[5]}
+	extraoptions=${args[6]}
+	
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
+	
+	if [[ $protocol == cifs ]]; then
+		source="//$ip/$directory"
+		options=noauto
+		if [[ ! $user ]]; then
+			options+=,username=guest
+		else
+			options+=",username=$user,password=$password"
+		fi
+		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
+	else
+		source="$ip:$directory"
+		options=defaults,noauto,bg,soft,timeo=5
+	fi
+	[[ $extraoptions ]] && options+=,$extraoptions
+	mountpoint=/srv/http/shareddata
+	mkdir -p $mountpoint
+	echo "${source// /\\040}  $mountpoint  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	std=$( mount $mountpoint )
+	if [[ $? == 0 ]]; then
+		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+			mv -f /srv/http/data/$dir $mountpoint
+			ln -s $mountpoint/$dir /srv/http/data
+		done
+		chown -R http:http $mountpoint /srv/http/data
+		chown -R mpd:audio $mountpoint/mpd /srv/http/data/mpd
+	else
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		sed -i "\|$mountpoint| d" /etc/fstab
+		rm -rf $mountpoint
+		exit
 	fi
 	;;
 soundprofile )

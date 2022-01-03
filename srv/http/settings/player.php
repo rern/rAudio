@@ -259,20 +259,3 @@ HTML
 	] );
 	echo '</div>';
 }
-$head = [ 'title' => 'Library Database' ]; //////////////////////////////////
-$body = [
-	[
-		  'label'    => 'Shared Database'
-		, 'id'       => 'shareddatabase'
-		, 'setting'  => 'none'
-		, 'help'     => <<< HTML
-Share Library database for multiple rAudios with the same network storage.
- • Setup a network share for database.
- • Existing database: Copy all files in <code>/srv/http/data/mpd</code> to the share.
- • Enable Shared Database to connect the share.
- • New database: Run Library update from any rAudio that share the database.
- • If enabled, avoid using SD / USB on rAudio to store music files
-HTML
-	]
-];
-htmlSection( $head, $body );

@@ -291,6 +291,17 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
 $body = [
 	[
+		  'label'    => 'Shared Data'
+		, 'id'       => 'shareddata'
+		, 'setting'  => 'none'
+		, 'help'     => <<< HTML
+Share data for multiple rAudios.
+ • Setup a network share for data.
+ • Enable Shared Data to connect the share.
+ • If enabled, avoid using SD / USB on rAudio to store music files
+HTML
+	]
+	, [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'

@@ -33,7 +33,6 @@ data='
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true )'
 , "replaygain"       : '$( ! grep -q '^replaygain.*off' /etc/mpd.conf && echo true )'
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
-, "shareddatabase"   : '$( grep -q /srv/http/data/mpd /etc/fstab && echo true )'
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true )'
 , "soxrconf"         : '$soxrconf'
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'

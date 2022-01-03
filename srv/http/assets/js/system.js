@@ -671,6 +671,24 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 	} );
 } );
+$( '#shareddata' ).click( function() {
+	if ( G.shareddata ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, message : 'Disable?'
+			, cancel  : function() {
+				$( '#shareddata' ).prop( 'checked', true );
+			}
+			, ok      : function() {
+				bash( [ 'shareddatadisable' ] );
+				notify( 'Shared Data', 'Disable ...', 'networks' );
+			}
+		} );
+	} else {
+		infoMount( 'shareddata' );
+	}
+} );
 $( '#backup' ).click( function() {
 	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
@@ -822,15 +840,26 @@ $( '.list' ).on( 'click', 'bl', function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var htmlmount = `\
+function infoMount( values ) {
+	if ( values === 'shareddata' ) {
+		var values = [ 'cifs', '192.168.1.', '', '', '', '' ];
+		var shareddata = 1;
+	} else if ( values.length === 6 ) {
+		var shareddata = 1;
+	} else {
+		var shareddata = 0;
+	}
+	var htmlmount = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
 	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
 	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
-</tr>
+</tr>`;
+	if ( !shareddata ) htmlmount += `\
 <tr><td>Name</td>
 	<td><input type="text"></td>
-</tr>
+</tr>`;
+	htmlmount += `\
 <tr><td>IP</td>
 	<td><input type="text"></td>
 </tr>
@@ -845,15 +874,15 @@ var htmlmount = `\
 </tr>
 <tr><td>Options</td>
 	<td><input type="text"></td>
-</tr>
+</tr>`;
+	if ( !shareddata ) htmlmount += `\
 <tr><td></td>
 	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
-</tr>
-</table>`;
-function infoMount( values ) {
+</tr>`;
+	htmlmount += '</table>';
 	info( {
 		  icon       : 'networks'
-		, title      : 'Add Network Storage'
+		, title      : shareddata ? 'Shared Data' : 'Add Network Storage'
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', '192.168.1.', '', '', '', '', true ]
 		, beforeshow : function() {
@@ -874,13 +903,16 @@ function infoMount( values ) {
 				}
 			} );
 		}
+		, cancel     : function() {
+			$( '#shareddata' ).prop( 'checked', false );
+		}
 		, ok         : function() {
-			var values = infoVal(); // [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			bash( [ 'mount', ...values ], function( error ) {
-				if ( error != 0 ) {
+			var values = infoVal();
+			bash( [ shareddata ? 'shareddata' : 'mount', ...values ], function( error ) {
+				if ( error ) {
 					info( {
 						  icon    : 'networks'
-						, title   : 'Mount Share'
+						, title   : shareddata ? 'Shared Data' : 'Mount Share'
 						, message : error
 						, ok      : function() {
 							infoMount( values );
@@ -891,7 +923,7 @@ function infoMount( values ) {
 					refreshData();
 				}
 			} );
-			notify( 'Network Mount', 'Mount ...', 'networks' );
+			notify( shareddata ? 'Shared Data' : 'Network Mount', 'Mount ...', 'networks' );
 		}
 	} );
 }
@@ -948,6 +980,7 @@ function renderPage( list ) {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
+	$( '#shareddata' ).prop( 'checked', G.shareddata );
 	showContent();
 }
 function renderStatus() {
