@@ -841,25 +841,24 @@ $( '.list' ).on( 'click', 'bl', function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function infoMount( values ) {
-	if ( values === 'shareddata' ) {
-		var values = [ 'cifs', '192.168.1.', '', '', '', '' ];
-		var shareddata = 1;
-	} else if ( values.length === 6 ) {
-		var shareddata = 1;
-	} else {
-		var shareddata = 0;
+	if ( !values || values.length === 8 ) {
+		var htmlname = `\
+<tr><td>Name</td>
+	<td><input type="text"></td>
+</tr>`;
+		var chktext = 'Update Library on mount'
+	} else  {
+		if ( values === 'shareddata' ) values = [ 'cifs', '192.168.1.', '', '', '', '', false ];
+		var htmlname = '';
+		var chktext = 'Use data from this rAudio'
 	}
 	var htmlmount = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
 	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
 	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
-</tr>`;
-	if ( !shareddata ) htmlmount += `\
-<tr><td>Name</td>
-	<td><input type="text"></td>
-</tr>`;
-	htmlmount += `\
+</tr>
+${ htmlname }
 <tr><td>IP</td>
 	<td><input type="text"></td>
 </tr>
@@ -874,10 +873,9 @@ function infoMount( values ) {
 </tr>
 <tr><td>Options</td>
 	<td><input type="text"></td>
-</tr>`;
-	if ( !shareddata ) htmlmount += `\
+</tr>
 <tr><td></td>
-	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
+	<td><label><input type="checkbox" checked>${ chktext }</label></td>
 </tr>`;
 	htmlmount += '</table>';
 	info( {

@@ -572,6 +572,7 @@ shareddata )
 	user=${args[4]}
 	password=${args[5]}
 	extraoptions=${args[6]}
+	copydata=${args[7]}
 	
 	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
 	
@@ -595,8 +596,8 @@ shareddata )
 	std=$( mount $mountpoint )
 	if [[ $? == 0 ]]; then
 		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-			mv -f /srv/http/data/$dir $mountpoint
-			ln -s $mountpoint/$dir /srv/http/data
+			[[ $copydata ]] && mv -f /srv/http/data/$dir $mountpoint
+			ln -sf $mountpoint/$dir /srv/http/data
 		done
 		chown -R http:http $mountpoint /srv/http/data
 		chown -R mpd:audio $mountpoint/mpd /srv/http/data/mpd
