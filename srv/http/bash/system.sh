@@ -563,6 +563,7 @@ shareddatadisable )
 	rm -rf $mountpoint
 	chown -R http:http /srv/http/data
 	chown -R mpd:audio /srv/http/data/mpd
+	pushRefresh
 	;;
 shareddata )
 	protocol=${args[1]}
@@ -599,6 +600,7 @@ shareddata )
 		done
 		chown -R http:http $mountpoint /srv/http/data
 		chown -R mpd:audio $mountpoint/mpd /srv/http/data/mpd
+		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "\|$mountpoint| d" /etc/fstab
