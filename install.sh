@@ -9,7 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20220107
-grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's/^state_file.*/state_file             "/var/lib/mpd/mpdstate"' /etc/mpd.conf
+grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's|^\(state_file.* "\).*|\1/var/lib/mpd/mpdstate"|' /etc/mpd.conf
 
 # 20121224
 if [[ -e /etc/default/snapserver ]]; then
