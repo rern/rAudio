@@ -79,7 +79,7 @@ htmlHead( [ //////////////////////////////////
 	, 'button' => [ 'addnas', 'plus-circle wh' ]
 ] );
 ?>
-	<ul id="list" class="entries"></ul>
+	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Spindown
 
 Available sources, local USB and NAS mounts, for Library.

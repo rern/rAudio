@@ -841,6 +841,8 @@ $( '.list' ).on( 'click', 'bl', function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function infoMount( values ) {
+	var ip = $( '#list' ).data( 'ip' );
+	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
 	if ( !values || values.length === 8 ) {
 		var htmlname = `\
 <tr><td>Name</td>
@@ -848,7 +850,7 @@ function infoMount( values ) {
 </tr>`;
 		var chktext = 'Update Library on mount'
 	} else  {
-		if ( values === 'shareddata' ) values = [ 'cifs', '192.168.1.', '', '', '', '', false ];
+		if ( values === 'shareddata' ) values = [ 'cifs', ipsub, '', '', '', '', false ];
 		var htmlname = '';
 		var chktext = 'Use data from this rAudio'
 	}
@@ -882,7 +884,7 @@ ${ htmlname }
 		  icon       : 'networks'
 		, title      : shareddata ? 'Shared Data' : 'Add Network Storage'
 		, content    : htmlmount
-		, values     : values || [ 'cifs', '', '192.168.1.', '', '', '', '', true ]
+		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, beforeshow : function() {
 			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
 			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
