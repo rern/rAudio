@@ -596,7 +596,7 @@ shareddata )
 	std=$( mount $mountpoint )
 	if [[ $? == 0 ]]; then
 		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-			[[ $copydata ]] && mv -f /srv/http/data/$dir $mountpoint
+			[[ $copydata ]] && mv -f /srv/http/data/$dir $mountpoint || mkdir -p $mountpoint/$dir
 			ln -sf $mountpoint/$dir /srv/http/data
 		done
 		chown -R http:http $mountpoint /srv/http/data
