@@ -296,10 +296,10 @@ $body = [
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
 Share data across multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios.
- • Setup a network share for data with write permission.
- • Enable Shared Data to connect the share.
+ • On file server, setup a network share for data with write permission.
+ • On each rAudio, enable Shared Data to connect the share.
  • Initial shared data - <code>Use data from this rAudio</code>:
- &emsp; • Leave unchecked to use existing data in the share.
+ &emsp; • Leave unchecked to use existing data on the server.
  &emsp; • Check only on rAudio with data to be used or to overwrite existing.
  • Shared data and any changes will be available for all connected rAudio.
  • If enabled, music files should be on NAS only.
