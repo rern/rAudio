@@ -153,6 +153,7 @@ fi
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
+, "bootloader"       : "'$( pacman -Q raspberrypi-bootloader 2> /dev/null |  cut -d' ' -f2 )'"
 , "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
