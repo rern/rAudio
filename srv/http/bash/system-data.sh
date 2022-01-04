@@ -30,12 +30,12 @@ rpimodel=$( cat /proc/device-tree/model | tr -d '\000' | sed 's/ Model //; s/ Pl
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
-	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	case ${revision: -4:1} in
+	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	BB=${hwrevision: -3:2}
+	case ${hwrevision: -4:1} in
 		0 ) soc=BCM2835;;
 		1 ) soc=BCM2836;;
-		2 ) BB=${revision: -3:2}
-			if [[ $BB == 12 ]]; then
+		2 ) if [[ $BB == 12 ]]; then
 				soc=BCM2710A1
 			elif [[ $BB > 08 ]]; then
 				soc=BCM2837B0
@@ -200,10 +200,10 @@ if rfkill | grep -q bluetooth; then
 , "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
 fi
-if rfkill | grep -q wlan; then
+if [[ -e $dirsystem/wlan ]] || rfkill | grep -q wlan; then
 	data+='
 , "wlan"             : '$( rfkill | grep -q wlan && echo true )'
-, "wlanconf"         : [ '$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )', '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
+, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
 

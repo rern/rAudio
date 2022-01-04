@@ -21,8 +21,8 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	[[ ${revision: -3:2} =~ ^(00|01|02|03|04|09)$ ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	[[ ${hwrevision: -3:2} =~ ^(00|01|02|03|04|09)$ ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -58,6 +58,7 @@ $dirbash/mpd-conf.sh # mpd.service started by this script
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
+rfkill | grep -q wlan && touch $dirsystem/wlan
 if [[ ! $profiles && ! $hostapd ]] || (( $( rfkill | grep wlan | wc -l ) > 1 )); then
 	rmmod brcmfmac &> /dev/null
 fi
