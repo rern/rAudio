@@ -215,6 +215,8 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 		<i id="snapclient" class="fa fa-snapclient submenu"></i>
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
 		<i id="relays" class="fa fa-relays submenu"></i>
+	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
+		<i id="guide" class="fa fa-question-circle submenu"></i>
 	<a id="power" class="settings"><i class="fa fa-power"></i>Power</a>
 		<i id="screenoff" class="fa fa-screenoff submenu"></i>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
@@ -222,8 +224,6 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
 	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
-	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
-		<i id="guide" class="fa fa-question-circle submenu"></i>
 </div>
 <div id="page-playback" class="page">
 	<div id="reload"></div>
