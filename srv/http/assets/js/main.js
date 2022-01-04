@@ -330,7 +330,7 @@ $( '#displayplayback' ).click( function() {
 $( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
 		  plclear        : 'Confirm <gr>on replace Playlist</gr>'
-		, audiocdplclear : 'AudioCD clear Playlist <gr>on load</gr>'
+		, audiocdplclear : 'Audio CD - clear Playlist <gr>on load</gr>'
 	}
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys = Object.keys( chkplaylist );
