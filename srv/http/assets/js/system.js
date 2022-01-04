@@ -837,6 +837,9 @@ $( '.list' ).on( 'click', 'bl', function() {
 		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
 	}
 } );
+$( '.sub .help' ).click( function() {
+	$( this ).parent().next().toggleClass( 'hide' );
+} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

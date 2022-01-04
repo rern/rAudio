@@ -357,25 +357,29 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><gr>by</gr>&emsp;r e r n
 	<br>&nbsp;
 
-	<heading class="sub">Back End</heading>
+	<heading class="sub">Back End<i class="help fa fa-question-circle"></i></heading>
+	<div id="divbackend" class="hide">
 	<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
 	<br><a class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></a>
 	<div class="list hide"></div><br>&nbsp;
+	</div>
 
-	<heading class="sub">Front End</heading>
-	<br><a href="https://whatwg.org" target="_blank">HTML</a>
+	<heading class="sub">Front End<i class="help fa fa-question-circle"></i></heading>
+	<div id="divfrontend" class="hide">
+		<a href="https://whatwg.org" target="_blank">HTML</a>
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 	<br><a href="https://www.php.net" target="_blank">PHP</a>
 	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
 	<br><a class="listtitle">JS libraries and plugins&ensp;<i class="fa fa-chevron-down"></i></a>
 	<div class="list hide"><?=$uihtml?></div><br>&nbsp;
+	</div>
 
-	<heading class="sub">Data</heading>
-	<div class="gr">
-	<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
-	<a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts<br>
-	<a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations<br>
-	<a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
+	<heading class="sub">Data<i class="help fa fa-question-circle"></i></heading>
+	<div id="divdata" class="gr hide">
+		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
+	<br><a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts
+	<br><a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations
+	<br><a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 	</div>
 </div>
 
