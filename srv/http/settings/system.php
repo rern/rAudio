@@ -294,8 +294,8 @@ $body = [
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
-Share data across multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios.
- • On file server, setup a network share for data with write permission.
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations.
+ • On file server, setup a network share with write permission.
  • On each rAudio, enable Shared Data to connect the share.
  • Initial shared data - <code>Use data from this rAudio</code>:
  &emsp; • Leave unchecked to use existing data on the server.
