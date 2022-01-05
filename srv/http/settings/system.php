@@ -29,7 +29,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="systemlabel" class="col-l text gr">
 			Version
 		<br>Kernel
-		<br>FW • Bootloader
+		<br>FW • BL
 		<br>Hardware
 		<br>SoC
 		<br>CPU
