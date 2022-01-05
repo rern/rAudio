@@ -934,7 +934,6 @@ function renderPage( list ) {
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
-		+'<br>'+ G.firmware +' <gr>•</gr> '+ G.bootloader
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
 		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
 		+'<br>'+ G.soccpu
