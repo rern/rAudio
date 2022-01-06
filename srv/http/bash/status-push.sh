@@ -69,11 +69,11 @@ if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( echo "$status" \
-				| sed -e '1,/"single" *:/ d
-					' -e '/"icon" *:/ d
-					' -e '/, "file" *:/ s/^,/{/
-					' -e 's|\("stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
-					' -e 's|\("coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|' )
+				| sed -e '1,/^, "single" *:/ d
+					' -e '/^, "file" *:/ s/^,/{/
+					' -e '/^, "icon" *:/ d
+					' -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
+					' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|' )
 	clientip=( $( cat $dirshm/clientip ) )
 	for ip in "${clientip[@]}"; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
