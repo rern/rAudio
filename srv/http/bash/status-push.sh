@@ -71,6 +71,7 @@ if [[ -e $dirshm/clientip ]]; then
 	status=$( echo "$status" \
 				| sed -e '1,/"single" *:/ d
 					' -e '/, "file" *:/ s/^,/{/
+					' -e '/"icon" *:/ d
 					' -e 's|\("stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
 					' -e 's|\("coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|' )
 	clientip=( $( cat $dirshm/clientip ) )
