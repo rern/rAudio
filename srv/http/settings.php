@@ -173,18 +173,16 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
-	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
-			<?php if ( $page !== 'networks' ) { ?>
-<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
-	<?php		  }
-		  }
-		  if ( $page === 'networks' ) { ?>
-<script src="/assets/js/plugin/qrcode.min.js"></script>
-	<?php } else if ( $page === 'relays' ) { ?>
+	<?php if ( $page === 'relays' ) { ?>
 <link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
 <script src="/assets/js/relays.<?=$time?>.js"></script>
+	<?php } else if ( $page === 'networks' ) { ?>
+<script src="/assets/js/plugin/qrcode.min.js"></script>
+	<?php }
+		  if ( $page !== 'networks' ) { ?>
+<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 	<?php }
 		  if ( $localhost ) include 'keyboard.php';?>
 <script src="/assets/js/settings.<?=$time?>.js"></script>
