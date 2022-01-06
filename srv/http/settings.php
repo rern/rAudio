@@ -25,12 +25,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
-		<?php if ( in_array( $page, [ 'features', 'player', 'relays', 'system' ] ) ) { ?> 
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-		<?php }
-			  if ( $page === 'relays' ) { ?>
-	<link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
-		<?php } ?>
 </head>
 <body>
 <i id="button-data"></i>
@@ -179,16 +174,14 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
 	<?php }
-		  if ( in_array( $page, [ 'features', 'player', 'relays', 'system' ] ) ) { ?>
-<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
-	<?php }
 		  if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.js"></script>
-	<?php }
-		  if ( $page === 'relays' ) { ?>
+	<?php } else if ( $page === 'relays' ) { ?>
+<link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
 <script src="/assets/js/relays.<?=$time?>.js"></script>
 	<?php }
 		  if ( $localhost ) include 'keyboard.php';?>
