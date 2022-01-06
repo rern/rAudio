@@ -742,6 +742,7 @@ partexpand )
 pkgstatus )
 	id=${args[1]}
 	pkg=$id
+	service=$id
 	case $id in
 		hostapd )
 			conf=/etc/hostapd/hostapd.conf;;
@@ -751,28 +752,23 @@ pkgstatus )
 		smb )
 			conf=/etc/samba/smb.conf
 			pkg=samba;;
-		snapclient )
-			conf=/etc/default/snapclient
-			pkg=snapcast;;
-		snapserver )
-			pkg=snapcast;;
+		snapclient|snapserver )
+			[[ $id == snapclient ]] && conf=/etc/default/snapclient
+			pkg=snapcast
+			service=$id;;
 		* )
 			conf=/etc/$id.conf;;
 	esac
-	status="\
-$( systemctl status $id \
+	[[ -e $conf ]] && catconf="
+$( cat $conf )"
+	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
+	echo "\
+<code>$( pacman -Q $pkg )</code>$catconf
+
+$dot $( systemctl status $service \
 	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
 	| sed '/^\s*Active:/ s|\( active (.*)\)|<grn>\1</grn>|; s|\( inactive (.*)\)|<red>\1</red>|; s|\(failed\)|<red>\1</red>|ig' \
 	| grep -v 'Could not resolve keysym\|Address family not supported by protocol\|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
-	grep -q '<grn>' <<< "$status" && dot='<grn>●</grn>' || dot='<red>●</red>'
-	if [[ -e $conf ]]; then
-		status="\
-$dot <code>$( pacman -Q $pkg )</code>
-$( cat $conf )
-
-$dot $status"
-	fi
-	echo "$status"
 	;;
 pladd )
 	item=${args[1]}
