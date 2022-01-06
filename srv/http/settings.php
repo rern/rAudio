@@ -175,11 +175,11 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/info.<?=$time?>.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
-	<?php }
-		  if ( $page !== 'guide' && $page !== 'networks' ) { ?>
+			<?php if ( $page !== 'networks' ) { ?>
 <link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 <script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
-	<?php }
+	<?php		  }
+		  }
 		  if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.js"></script>
 	<?php } else if ( $page === 'relays' ) { ?>
