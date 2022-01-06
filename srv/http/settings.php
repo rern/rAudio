@@ -25,7 +25,6 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 </head>
 <body>
 <i id="button-data"></i>
@@ -174,9 +173,12 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="/assets/js/plugin/pushstream-0.5.4.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
-<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 	<?php if ( $page !== 'guide' ) { ?>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
+	<?php }
+		  if ( $page !== 'guide' && $page !== 'networks' ) { ?>
+<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
 	<?php }
 		  if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.js"></script>
