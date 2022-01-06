@@ -459,7 +459,7 @@ $( '.switch' ).click( function() {
 		}
 	} else {
 		notify( label, checked, icon );
-		bash( [ this.id, checked ] );
+		bash( [ id, checked ] );
 	}
 } );
 $( '#bar-bottom div' ).click( function() {
