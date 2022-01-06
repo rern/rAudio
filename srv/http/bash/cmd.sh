@@ -954,6 +954,12 @@ plsimilar )
 power )
 	reboot=${args[1]}
 	mpc -q stop
+	if [[ -e $dirshm/clientip ]]; then
+		clientip=( $( cat $dirshm/clientip ) )
+		for ip in "${clientip[@]}"; do
+			pushStream reload '{"type":"poweroff"}'
+		done
+	fi
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )

@@ -510,7 +510,11 @@ function psRelays( response ) {
 	}
 }
 function psReload( data ) {
-	location.href = '/';
+	if ( data.type === 'poweroff' ) { // snapserver power off
+		$( '#stop' ).click();
+	} else {
+		location.href = '/';
+	}
 }
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
