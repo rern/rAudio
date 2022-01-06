@@ -56,6 +56,7 @@ else
 		volume=$( echo $controlvolume | cut -d^ -f2 )
 	fi
 	scrobble=$( exists $dirsystem/scrobble )
+	volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 
 ########
 	status='
@@ -75,7 +76,7 @@ else
 , "updateaddons"   : '$updateaddons'
 , "updating_db"    : '$updating_db'
 , "volume"         : '$volume'
-, "volumemute"     : 0
+, "volumemute"     : '$volumemute'
 , "webradio"       : false'
 fi
 if [[ $1 == withdisplay ]]; then
@@ -140,8 +141,8 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( sshpass -p ros ssh -q root@$serverip $dirbash/status.sh snapclient \
-	| sed -e 's#"coverart" *: "\|"stationcover" *: "#&http://'$serverip'#
-		' -e 's|"http://'$serverip'"|""|
+	| sed -e 's|\("stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
+		' -e 's|\("coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|
 		' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
 		;;
 	spotify )
@@ -214,16 +215,13 @@ for line in "${lines[@]}"; do
 done
 
 [[ ! $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
-volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 ########
 status+='
 , "file"           : "'$file'"
 , "playlistlength" : '$playlistlength'
 , "song"           : '$song'
 , "state"          : "'$state'"
-, "timestamp"      : '$( date +%s%3N )'
-, "volumemute"     : '$volumemute
-
+, "timestamp"      : '$( date +%s%3N )
 if (( $playlistlength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
