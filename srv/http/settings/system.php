@@ -11,7 +11,7 @@ foreach( $timezonelist as $key => $zone ) {
 	$datetime = new DateTime( 'now', new DateTimeZone( $zone ) );
 	$offset = $datetime->format( 'P' );
 	$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
-	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>\n';
+	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
 
