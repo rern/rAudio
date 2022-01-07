@@ -587,7 +587,7 @@ function imageLoad( list ) {
 	}
 }
 function imageReplace( imagefilenoext, type, covername ) {
-	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';;
+	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';
 	var data = {
 		  cmd       : 'imagereplace'
 		, type      : type
