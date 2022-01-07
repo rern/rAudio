@@ -178,9 +178,6 @@ datarestore )
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
-	chown -R http:http /srv/http
-	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
-	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
@@ -189,7 +186,20 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
+	mountpoint=/srv/http/shareddata
+	if grep -q $mountpoint /etc/fstab; then
+		std=$( mount $mountpoint )
+		if [[ $? == 0 ]]; then
+			for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+				mkdir -p $mountpoint/$dir
+				ln -sf $mountpoint/$dir /srv/http/data
+			done
+		fi
+	fi
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	chown -R http:http /srv/http
+	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
+	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 fstabget )
