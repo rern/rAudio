@@ -149,7 +149,7 @@ $( '.forget' ).click( function() {
 	info( {
 		  icon    : 'wifi'
 		, title   : ssid
-		, message : G.ipeth || G.ipwlan ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+		, message : G.ipeth || G.ipwlan ? '' : '<i class="fa fa-warning wh"></i> Current Web interface will be dropped.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
