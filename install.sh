@@ -41,6 +41,21 @@ grep -q playlists $file || sed -i '/genre/ a\
   "playlists": '$( ls -1 $dirdata/playlists | wc -l )',
 ' $file
 
+# 20211203
+if [[ -e /srv/http/data/embedded ]]; then
+	rm -rf /srv/http/data/embedded
+	mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+
+	sed -i '/chromium/ d' /etc/pacman.conf
+
+	files=( $( ls /etc/systemd/network/eth* ) )
+	for file in "${files[@]}"; do
+		grep -q RequiredForOnline=no $file || echo "
+	[Link]
+	RequiredForOnline=no" >> $file
+	done
+fi
+
 installstart "$1"
 
 getinstallzip
