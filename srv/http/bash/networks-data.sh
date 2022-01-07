@@ -6,19 +6,19 @@
 if systemctl -q is-active bluetooth; then
 	readarray -t lines <<< $( bluetoothctl paired-devices \
 								| cut -d' ' -f2,3- \
-								| grep . \
+								| awk NF \
 								| sort -k2 -fh )
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do
 			mac=${line/ *}
-			name=${line#* }
 			info=$( bluetoothctl info $mac )
+			alias=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
 			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
 			listbt+=',{
   "connected" : '$connected'
 , "mac"       : "'$mac'"
-, "name"      : "'${name//\"/\\\"}'"
+, "name"      : "'${alias//\"/\\\"}'"
 , "sink"      : '$sink'
 }'
 		done

@@ -9,9 +9,6 @@ connectedCheck() {
 	done
 }
 
-revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-[[ ${revision: -3:2} =~ ^(08|0c|0d|0e|11|12)$ ]] && onboardwireless=1
-
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
@@ -24,7 +21,8 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	[[ ${hwrevision: -3:2} =~ ^(00|01|02|03|04|09)$ ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -60,14 +58,10 @@ $dirbash/mpd-conf.sh # mpd.service started by this script
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
-(( $( rfkill | grep wlan | wc -l ) > 1 )) && usbwifi=1
-if [[ ! $profiles && ! $hostapd ]] || [[ $usbwifi ]]; then
+rfkill | grep -q wlan && touch $dirsystem/wlan
+if [[ ! $profiles && ! $hostapd ]] || (( $( rfkill | grep wlan | wc -l ) > 1 )); then
 	rmmod brcmfmac &> /dev/null
 fi
-if [[ ! $onboardwireless ]]; then # usb bluetooth
-	rfkill | grep -q bluetooth && systemctl enable --now bluetooth || systemctl disable --now bluetooth
-fi
-
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
@@ -141,6 +135,8 @@ if [[ -e $dirsystem/hddspindown ]]; then
 	fi
 fi
 
-if [[ -e $dirsystem/brightness && -e /sys/class/backlight/rpi_backlight/brightness ]]; then
-	cat $dirsystem/brightness > /sys/class/backlight/rpi_backlight/brightness
+file=/sys/class/backlight/rpi_backlight/brightness
+if [[ -e $file ]]; then
+	chmod 666 $file
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi

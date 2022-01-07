@@ -33,7 +33,7 @@ readarray -t lines <<< $( iwlist wlan0 scan \
 							| sed 's/^"\|"$//g' \
 							| tr '\n' '^' \
 							| sed 's/=/\n/g' \
-							| grep . \
+							| awk NF \
 							| sort -V )
 for line in "${lines[@]}"; do
 	line=$( echo $line | tr '^' '\n' )

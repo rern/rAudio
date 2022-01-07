@@ -215,14 +215,15 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 		<i id="snapclient" class="fa fa-snapclient submenu"></i>
 	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
 		<i id="relays" class="fa fa-relays submenu"></i>
+	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
+		<i id="guide" class="fa fa-question-circle submenu"></i>
 	<a id="power" class="settings"><i class="fa fa-power"></i>Power</a>
 		<i id="screenoff" class="fa fa-screenoff submenu"></i>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
 		<i id="update" class="fa fa-refresh-library submenu"></i>
 	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
-	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
-		<i id="guide" class="fa fa-question-circle submenu"></i>
+	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
 </div>
 <div id="page-playback" class="page">
 	<div id="reload"></div>
@@ -384,7 +385,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 	<div id="divcolor">
 	<i id="colorcancel" class="fa fa-times"></i>
 	<a id="colorreset" class="infobtn"><i class="fa fa-set0"></i> Default</a>&ensp;
-	<a id="colorok" class="infobtn infobtn-primary"><i class="fa fa-check"></i> Set</a>
+	<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
 <div id="bio" class="hide">

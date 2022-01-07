@@ -8,7 +8,16 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20211224
+# 20220107
+grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's|^\(state_file.* "\).*|\1/var/lib/mpd/mpdstate"|' /etc/mpd.conf
+
+# 20121224
+if [[ -e /etc/default/snapserver ]]; then
+	touch $dirsystem/usbautoupdate
+	rm /etc/default/snapserver
+fi
+
+# 20211222
 rm -f /etc/systemd/system/rotarymute.service
 
 [[ ! -e /usr/bin/evtest ]] && pacman -Sy --noconfirm evtest
@@ -33,27 +42,18 @@ grep -q playlists $file || sed -i '/genre/ a\
 ' $file
 
 # 20211203
-rm -rf /srv/http/data/embedded
-mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+if [[ -e /srv/http/data/embedded ]]; then
+	rm -rf /srv/http/data/embedded
+	mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 
-sed -i '/chromium/ d' /etc/pacman.conf
+	sed -i '/chromium/ d' /etc/pacman.conf
 
-files=( $( ls /etc/systemd/network/eth* ) )
-for file in "${files[@]}"; do
-	grep -q RequiredForOnline=no $file || echo "
-[Link]
-RequiredForOnline=no" >> $file
-done
-
-# 20211126
-rm -f $dirshm/local/*
-
-file=$dirsystem/lcdchar.conf
-if [[ -e $file ]] && ! grep -q inf $file; then
-	grep -q chip $file && inf=i2c || inf=gpio
-	sed -i -e 's/"//g; s/0x27/39/; s/0x3f/63/; s/\(true\|false\)/\u\1/
-' -e "3 a\inf=$inf
-" $dirsystem/lcdchar.conf
+	files=( $( ls /etc/systemd/network/eth* ) )
+	for file in "${files[@]}"; do
+		grep -q RequiredForOnline=no $file || echo "
+	[Link]
+	RequiredForOnline=no" >> $file
+	done
 fi
 
 installstart "$1"

@@ -15,20 +15,20 @@ $( '#btscan' ).click( function() {
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
 	var list = G.listbtscan[ $( this ).index() ];
-	if ( !list.connected ) {
-		notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-		bash( [ 'btpair', list.mac ], function( data ) {
-			bannerHide();
-			if ( data != -1 ) {
-				$( '.back' ).click();
-			} else {
-				info( {
-					  icon      : 'bluetooth'
-					, title     : 'Bluetooth'
-					, message   : 'Pair <wh>'+ list.name +'</wh> failed'
-				} );
-			}
-		} );
+	if ( list.connected ) return
+	
+	if ( G.btconnected ) {
+			var quit = 0;
+			info( {
+				  icon    : 'bluetooth'
+				, title   : 'Bluetooth'
+				, message : 'Disconnect <wh>'+ G.btconnected +'</wh> ?'
+				, ok      : function() {
+					connectBluetooth( list );
+				}
+			} );
+	} else {
+		connectBluetooth( list );
 	}
 } );
 $( '#wladd' ).click( function() {
@@ -131,31 +131,30 @@ $( '.forget' ).click( function() {
 		var list = G.listbt[ G.li.index() ]
 		var name = list.name;
 		var mac = list.mac;
-		var icon = 'bluetooth';
 		info( {
-			  icon    : icon
+			  icon    : 'bluetooth'
 			, title   : name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
-				notify( name, 'Forget ...', icon );
-				bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
+				notify( name, 'Forget ...', 'bluetooth' );
+				bash( [ 'btremove', mac ] );
 			}
 		} );
 		return
 	}
 	
-	var name = G.li.data( 'ssid' );
-	var icon = 'wifi';
+	var ssid = G.li.data( 'ssid' );
+	var connected = G.listwl[ G.li.index() ].ip ? true : false;
 	info( {
-		  icon    : icon
-		, title   : name
-		, message : G.ipeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+		  icon    : 'wifi'
+		, title   : ssid
+		, message : G.ipeth || G.ipwlan ? '' : '<i class="fa fa-warning wh"></i> Current Web interface will be dropped.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
-			notify( name, 'Forget ...', icon );
-			bash( [ 'profileremove', name ] );
+			notify( ssid, 'Forget ...', 'wifi' );
+			bash( [ 'profileremove', ssid, connected ] );
 		}
 	} );
 } );
@@ -228,6 +227,21 @@ $( '#setting-accesspoint' ).click( function() {
 
 } );
 
+function connectBluetooth( list ) {
+	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
+	bash( [ 'btpair', list.mac ], function( data ) {
+		bannerHide();
+		if ( data != -1 ) {
+			$( '.back' ).click();
+		} else {
+			info( {
+				  icon      : 'bluetooth'
+				, title     : 'Bluetooth'
+				, message   : 'Pair <wh>'+ list.name +'</wh> failed'
+			} );
+		}
+	} );
+}
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;
@@ -380,16 +394,21 @@ function infoWiFi( values ) {
 function renderBluetooth() {
 	G.btconnected = false;
 	var htmlbt = '';
+	$( '#divbt heading' ).removeClass( 'status' );
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
-			if ( list.connected ) G.btconnected = true;
+			if ( list.connected ) {
+				G.btconnected = list.name;
+				$( '#divbt heading' ).addClass( 'status' );
+			}
 			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
+	} else {
+		$( '#listbt' ).empty();
 	}
-	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
 }
 function renderPage( list ) {
 	if ( G.activebt ) {
@@ -416,6 +435,8 @@ function renderPage( list ) {
 				}
 			} );
 			$( '#listwl' ).html( htmlwl );
+		} else {
+			$( '#listwl' ).empty();
 		}
 		$( '#divwl' ).removeClass( 'hide' );
 	} else {

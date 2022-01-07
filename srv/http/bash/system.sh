@@ -178,9 +178,6 @@ datarestore )
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
-	chown -R http:http /srv/http
-	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
-	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
@@ -189,7 +186,20 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
+	mountpoint=/srv/http/shareddata
+	if grep -q $mountpoint /etc/fstab; then
+		std=$( mount $mountpoint )
+		if [[ $? == 0 ]]; then
+			for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+				mkdir -p $mountpoint/$dir
+				ln -sf $mountpoint/$dir /srv/http/data
+			done
+		fi
+	fi
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	chown -R http:http /srv/http
+	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
+	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 fstabget )
@@ -370,7 +380,7 @@ mirrorlist )
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
 	fi
-	readarray -t lines <<< $( grep . $file \
+	readarray -t lines <<< $( awk NF $file \
 								| sed -n '/### A/,$ p' \
 								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
 	clist='"Auto (by Geo-IP)"'
@@ -426,13 +436,13 @@ mount )
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	mount "$mountpoint" 2> /dev/null
+	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
-		echo 0
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+		sleep 2
 		pushRefresh
 	else
-		echo "Mount <code>$source</code> failed.<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
 		rmdir "$mountpoint"
 	fi
@@ -552,6 +562,63 @@ servers )
 		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 	fi
 	;;
+shareddatadisable )
+	mountpoint=/srv/http/shareddata
+	umount -l $mountpoint
+	sed -i "\|$mountpoint| d" /etc/fstab
+	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+		rm -rf /srv/http/data/$dir
+		cp -rf $mountpoint/$dir /srv/http/data
+	done
+	rm -rf $mountpoint
+	chown -R http:http /srv/http/data
+	chown -R mpd:audio /srv/http/data/mpd
+	pushRefresh
+	;;
+shareddata )
+	protocol=${args[1]}
+	ip=${args[2]}
+	directory=${args[3]}
+	user=${args[4]}
+	password=${args[5]}
+	extraoptions=${args[6]}
+	copydata=${args[7]}
+	
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
+	
+	if [[ $protocol == cifs ]]; then
+		source="//$ip/$directory"
+		options=noauto
+		if [[ ! $user ]]; then
+			options+=,username=guest
+		else
+			options+=",username=$user,password=$password"
+		fi
+		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
+	else
+		source="$ip:$directory"
+		options=defaults,noauto,bg,soft,timeo=5
+	fi
+	[[ $extraoptions ]] && options+=,$extraoptions
+	mountpoint=/srv/http/shareddata
+	mkdir -p $mountpoint
+	echo "${source// /\\040}  $mountpoint  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	std=$( mount $mountpoint )
+	if [[ $? == 0 ]]; then
+		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+			[[ $copydata ]] && mv -f /srv/http/data/$dir $mountpoint || mkdir -p $mountpoint/$dir
+			ln -sf $mountpoint/$dir /srv/http/data
+		done
+		chown -R http:http $mountpoint /srv/http/data
+		chown -R mpd:audio $mountpoint/mpd /srv/http/data/mpd
+		pushRefresh
+	else
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		sed -i "\|$mountpoint| d" /etc/fstab
+		rm -rf $mountpoint
+		exit
+	fi
+	;;
 soundprofile )
 	soundprofile
 	;;
@@ -629,15 +696,15 @@ unmount )
 	fi
 	pushRefresh
 	;;
-usbconnect ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotify 'USB Drive' Connected. usbdrive
+usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed.
+	pushstreamNotify 'USB Drive' $action usbdrive
 	pushRefresh
-	$dirbash/cmd.sh mpcupdate
+	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate
 	;;
-usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	pushstreamNotify 'USB Drive' Removed. usbdrive
+usbautoupdate )
+	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
 	pushRefresh
-	$dirbash/cmd.sh mpcupdate
 	;;
 vuleddisable )
 	rm -f $dirsystem/vuled

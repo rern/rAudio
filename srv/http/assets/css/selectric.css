@@ -80,6 +80,7 @@
 	left: 0;
 	width: fit-content !important;
 	width: -moz-fit-content !important;
+	min-width: 100%;
 	background: var( --cga );
 	z-index: -1;
 	box-shadow: -2px 2px 5px #000000;

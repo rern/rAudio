@@ -510,7 +510,11 @@ function psRelays( response ) {
 	}
 }
 function psReload( data ) {
-	location.href = '/';
+	if ( data.type === 'poweroff' ) { // snapserver power off
+		$( '#stop' ).click();
+	} else {
+		location.href = '/';
+	}
 }
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
@@ -549,8 +553,10 @@ function psVolume( data ) {
 		$( '#volume-text' )
 			.text( mute ? data.val : vol )
 			.toggleClass( 'bl', mute );
-		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
+		if ( $( '#time-knob' ).is( ':hidden' ) ) {
+			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
+		}
 	}, G.debouncems );
 }
 function psVUmeter( data ) {

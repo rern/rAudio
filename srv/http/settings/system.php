@@ -11,7 +11,7 @@ foreach( $timezonelist as $key => $zone ) {
 	$datetime = new DateTime( 'now', new DateTimeZone( $zone ) );
 	$offset = $datetime->format( 'P' );
 	$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
-	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>\n';
+	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
 
@@ -29,7 +29,6 @@ htmlHead( [ //////////////////////////////////
 	<div id="systemlabel" class="col-l text gr">
 			Version
 		<br>Kernel
-		<br>Firmware
 		<br>Hardware
 		<br>SoC
 		<br>CPU
@@ -79,26 +78,34 @@ htmlHead( [ //////////////////////////////////
 	, 'button' => [ 'addnas', 'plus-circle wh' ]
 ] );
 ?>
-	<ul id="list" class="entries"></ul>
+	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Spindown
 
 Available sources, local USB and NAS mounts, for Library.
- • USB drive will be found and mounted automatically.
+ • USB drives will be found and mounted automatically.
  • Network shares must be manually configured.
  • If mount failed, try in SSH terminal:
 <pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
-
-# CIFS:
+<gr># CIFS:</gr>
 mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
-      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=UID,gid=GID,iocharset=utf8
-# NFS:
+      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
+<gr># NFS:</gr>
 mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
 <pre id="codehddinfo" class="hide"></pre>
-</div>
 <?php
+htmlSetting( [
+		  'label'    => 'Auto Update'
+		, 'id'       => 'usbautoupdate'
+		, 'sublabel' => 'USB Drives'
+		, 'icon'     => 'refresh-library'
+		, 'help'     => <<< HTML
+Auto update Library database on insert / remove USB drives.
+HTML
+	] );
+echo '</div>';
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
 // ----------------------------------------------------------------------------------
@@ -203,7 +210,7 @@ HTML
 		, 'icon'     => 'volume'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-<a class="img" data-name="rotaryencoder">Rotary encoder module</a> for:
+<a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  • Turn volume up/down
  • Push to play/pause
 HTML
@@ -283,6 +290,21 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
 $body = [
 	[
+		  'label'    => 'Shared Data'
+		, 'id'       => 'shareddata'
+		, 'setting'  => 'none'
+		, 'help'     => <<< HTML
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations.
+ • On file server, setup a network share with write permission.
+ • On each rAudio, enable Shared Data to connect the share.
+ • Initial shared data - <code>Use data from this rAudio</code>:
+ &emsp; • Leave unchecked to use existing data on the server.
+ &emsp; • Check only on rAudio with data to be used or to overwrite existing.
+ • Shared data and any changes will be available for all connected rAudio.
+ • If enabled, music files should be on NAS only.
+HTML
+	]
+	, [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
@@ -334,25 +356,29 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><gr>by</gr>&emsp;r e r n
 	<br>&nbsp;
 
-	<heading class="sub">Back End</heading>
+	<heading class="sub">Back End<i class="help fa fa-question-circle"></i></heading>
+	<div id="divbackend" class="hide">
 	<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
 	<br><a class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></a>
 	<div class="list hide"></div><br>&nbsp;
+	</div>
 
-	<heading class="sub">Front End</heading>
-	<br><a href="https://whatwg.org" target="_blank">HTML</a>
+	<heading class="sub">Front End<i class="help fa fa-question-circle"></i></heading>
+	<div id="divfrontend" class="hide">
+		<a href="https://whatwg.org" target="_blank">HTML</a>
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 	<br><a href="https://www.php.net" target="_blank">PHP</a>
 	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
 	<br><a class="listtitle">JS libraries and plugins&ensp;<i class="fa fa-chevron-down"></i></a>
 	<div class="list hide"><?=$uihtml?></div><br>&nbsp;
+	</div>
 
-	<heading class="sub">Data</heading>
-	<div class="gr">
-	<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies<br>
-	<a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts<br>
-	<a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations<br>
-	<a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
+	<heading class="sub">Data<i class="help fa fa-question-circle"></i></heading>
+	<div id="divdata" class="gr hide">
+		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
+	<br><a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts
+	<br><a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations
+	<br><a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
 	</div>
 </div>
 

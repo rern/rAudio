@@ -52,10 +52,15 @@ btdisconnect )
 	;;
 btpair )
 	mac=${args[1]}
+	bluetoothctl disconnect &> /dev/null
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
 	bluetoothctl connect $mac
-	[[ $? == 0 ]] && pushRefresh || echo -1
+	[[ $? != 0 ]] && echo -1 && exit
+	
+	pushRefresh
+	sleep 2
+	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
 	;;
 btremove )
 	mac=${args[1]}
@@ -145,13 +150,13 @@ editwifidhcp )
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-$( ifconfig eth0 | grep -v 'RX\\|TX' | grep . )"
+$( ifconfig eth0 | grep -v 'RX\\|TX' | awk NF )"
 	;;
 ifconfigwlan )
 	echo "\
 <bll># ifconfig wlan0</bll>
 $( ifconfig wlan0 | grep -v 'RX\\|TX')
-$( iwconfig wlan0 | grep . )"
+$( iwconfig wlan0 | awk NF )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
@@ -174,10 +179,13 @@ profileget )
 	;;
 profileremove )
 	ssid=${args[1]}
+	connected=${args[2]}
 	netctl disable "$ssid"
-	netctl stop "$ssid"
-	killall wpa_supplicant
-	ifconfig wlan0 up
+	if [[ $connected == true ]]; then
+		netctl stop "$ssid"
+		killall wpa_supplicant
+		ifconfig wlan0 up
+	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;

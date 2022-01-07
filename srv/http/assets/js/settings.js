@@ -130,6 +130,8 @@ function setSwitch() {
 			$( this ).prop( 'checked', G[ this.id ] );
 		} );
 		$( '.setting' ).each( function() {
+			if ( $( this ).prev().is( 'select' ) ) return // not switch
+			
 			var sw = this.id.replace( 'setting-', '' );
 			$( this ).toggleClass( 'hide', !G[ sw ] );
 		} );
@@ -245,8 +247,9 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page === page ) {
 		G = data;
-		renderPage();
+		if ( page === 'networks' ) $( '.back' ).click();
 		setSwitch();
+		renderPage();
 	}
 }
 function psReload() {
@@ -291,7 +294,6 @@ G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
 var intervalcputime;
-var intervalscan;
 var local = 0;
 var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange = '#de810e';
@@ -354,7 +356,7 @@ $( document ).keyup( function( e ) {
 } );
 $( '#close' ).click( function() {
 	if ( page === 'networks' ) {
-		clearTimeout( intervalscan );
+		clearTimeout( G.timeoutScan );
 		bash( 'killall networks-scanbt.sh networks-scanwlan.sh &> /dev/null' );
 	}
 	bash( [ 'cmd', 'rebootlist' ], function( list ) {
@@ -457,7 +459,7 @@ $( '.switch' ).click( function() {
 		}
 	} else {
 		notify( label, checked, icon );
-		bash( [ this.id, checked ] );
+		bash( [ id, checked ] );
 	}
 } );
 $( '#bar-bottom div' ).click( function() {

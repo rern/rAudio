@@ -18,6 +18,9 @@
 	width: 85px;
 	margin-bottom: 5px;
 }
+.selectric-delay .selectric-items {
+	min-width: 85px !important;
+}
 .sec {
 	display: inline-block;
 	margin-left: 5px;

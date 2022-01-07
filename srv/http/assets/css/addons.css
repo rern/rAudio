@@ -273,18 +273,6 @@ ul,
 	#list li:hover {
 		color: var( --cml );
 	}
-	.btn:hover {
-		color: var( --cw );
-	}
-	.btn-primary:hover {
-		background-color: var( --cml )
-	}
-	.btn-primary.red:hover {
-		background-color: #bb4040 ;
-	}
-	.btn-default:hover {
-		background-color: var( --cgl );
-	}
 	pre *:hover {
 		text-decoration: none;
 		cursor: text;

@@ -1,6 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );;
+var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
@@ -15,11 +15,12 @@ ${ gpiosvg }<code>GND:(any black pin)</code>
 ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
 <wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
+	var txtrotaryencoder = `${ gpiosvg }<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>`
 	var title = {
 		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
 		, lcdchar       : [ 'Character LCD', txtlcdchar ]
 		, relays        : [ 'Relays Module' ]
-		, rotaryencoder : [ 'Rorary Encoder', '<code>GND:(any black pin)</code><br><code>+: not use</code>', 'volume' ]
+		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
 		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
 		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
@@ -670,6 +671,24 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 	} );
 } );
+$( '#shareddata' ).click( function() {
+	if ( G.shareddata ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, message : 'Disable?'
+			, cancel  : function() {
+				$( '#shareddata' ).prop( 'checked', true );
+			}
+			, ok      : function() {
+				bash( [ 'shareddatadisable' ] );
+				notify( 'Shared Data', 'Disable ...', 'networks' );
+			}
+		} );
+	} else {
+		infoMount( 'shareddata' );
+	}
+} );
 $( '#backup' ).click( function() {
 	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
@@ -818,18 +837,33 @@ $( '.list' ).on( 'click', 'bl', function() {
 		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
 	}
 } );
+$( '.sub .help' ).click( function() {
+	$( this ).parent().next().toggleClass( 'hide' );
+} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var htmlmount = `\
+function infoMount( values ) {
+	var ip = $( '#list' ).data( 'ip' );
+	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
+	if ( !values || values.length === 8 ) {
+		var htmlname = `\
+<tr><td>Name</td>
+	<td><input type="text"></td>
+</tr>`;
+		var chktext = 'Update Library on mount'
+	} else  {
+		if ( values === 'shareddata' ) values = [ 'cifs', ipsub, '', '', '', '', false ];
+		var htmlname = '';
+		var chktext = 'Use data from this rAudio'
+	}
+	var htmlmount = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
 	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
 	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 </tr>
-<tr><td>Name</td>
-	<td><input type="text"></td>
-</tr>
+${ htmlname }
 <tr><td>IP</td>
 	<td><input type="text"></td>
 </tr>
@@ -846,15 +880,14 @@ var htmlmount = `\
 	<td><input type="text"></td>
 </tr>
 <tr><td></td>
-	<td><label><input type="checkbox" checked>Update Library on mount</label></td>
-</tr>
-</table>`;
-function infoMount( values ) {
+	<td><label><input type="checkbox" checked>${ chktext }</label></td>
+</tr>`;
+	htmlmount += '</table>';
 	info( {
 		  icon       : 'networks'
-		, title      : 'Add Network Storage'
+		, title      : shareddata ? 'Shared Data' : 'Add Network Storage'
 		, content    : htmlmount
-		, values     : values || [ 'cifs', '', '192.168.1.', '', '', '', '', true ]
+		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, beforeshow : function() {
 			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
 			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
@@ -873,13 +906,16 @@ function infoMount( values ) {
 				}
 			} );
 		}
+		, cancel     : function() {
+			$( '#shareddata' ).prop( 'checked', false );
+		}
 		, ok         : function() {
-			// [ protocol, mountpoint, ip, directory, user, password, options, update ]
-			bash( [ 'mount', ...infoVal() ], function( error ) {
-				if ( error != 0 ) {
+			var values = infoVal();
+			bash( [ shareddata ? 'shareddata' : 'mount', ...values ], function( error ) {
+				if ( error ) {
 					info( {
 						  icon    : 'networks'
-						, title   : 'Mount Share'
+						, title   : shareddata ? 'Shared Data' : 'Mount Share'
 						, message : error
 						, ok      : function() {
 							infoMount( values );
@@ -890,7 +926,7 @@ function infoMount( values ) {
 					refreshData();
 				}
 			} );
-			notify( 'Network Mount', 'Mount ...', 'networks' );
+			notify( shareddata ? 'Shared Data' : 'Network Mount', 'Mount ...', 'networks' );
 		}
 	} );
 }
@@ -898,7 +934,6 @@ function renderPage( list ) {
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
-		+'<br>'+ G.firmware
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
 		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
 		+'<br>'+ G.soccpu
@@ -919,10 +954,22 @@ function renderPage( list ) {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
-	$( '#wlan' )
-		.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
-		.parent().prev().toggleClass( 'single', !G.wlan );
+	if ( 'bluetooth' in G || 'wlan' in G ) {
+		if ( 'bluetooth' in G ) {
+			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
+		} else {
+			$( '#divbluetooth' ).addClass( 'hide' );
+		}
+		if ( 'wlan' in G ) {
+			$( '#wlan' )
+				.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
+				.parent().prev().toggleClass( 'single', !G.wlan );
+		} else {
+			$( '#divwlan' ).addClass( 'hide' );
+		}
+	} else {
+		$( '#divbluetooth' ).parent().addClass( 'hide' );
+	}
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( function() {
 		var $this = $( this );
@@ -935,6 +982,7 @@ function renderPage( list ) {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
+	$( '#shareddata' ).prop( 'checked', G.shareddata );
 	showContent();
 }
 function renderStatus() {

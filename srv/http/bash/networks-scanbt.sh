@@ -11,7 +11,7 @@ for line in "${lines[@]}"; do
 	devices+="
 ${line#* }^${line/ *}"
 done
-readarray -t lines <<< "$( echo "$devices" | sort -f | grep . )"
+readarray -t lines <<< "$( echo "$devices" | sort -f | awk NF )"
 for line in "${lines[@]}"; do
 	name=${line/^*}
 	dash=${name//[^-]}

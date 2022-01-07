@@ -587,7 +587,7 @@ function imageLoad( list ) {
 	}
 }
 function imageReplace( imagefilenoext, type, covername ) {
-	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';;
+	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';
 	var data = {
 		  cmd       : 'imagereplace'
 		, type      : type
@@ -625,7 +625,6 @@ var chklibrary2 = {
 	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
-	, plclear        : 'Confirm <gr>on replace Playlist</gr>'
 	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
@@ -643,7 +642,7 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home' : 'Library/Playlist Options'
+		, title        : page1 ? 'Library Home' : 'Library'
 		, message      : page1 ? '1/2 - Show:' : '2/2 - Options:'
 		, messagealign : 'left'
 		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
@@ -653,10 +652,7 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoContent' ).css( 'height', 340 );
-			if ( page1 ) {
-				$( '#infoContent tr' ).last().before( '<tr><td style="height: 16px" colspan="2"><hr></td></tr>' );
-			} else {
+			if ( !page1 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
@@ -676,106 +672,6 @@ function infoLibrary( page2 ) {
 				} );
 				$fixedcover.prop( 'disabled', G.display.hidecover );
 			}
-		}
-		, ok           : function () {
-			displaySave( keys );
-		}
-	} );
-}
-var chkplayback = {
-	  bars         : 'Top-Bottom bars'
-	, barsalways   : 'Bars always on'
-	, time         : 'Time'
-	, radioelapsed : 'WebRadio time'
-	, cover        : 'Coverart'
-	, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
-	, volume       : 'Volume'
-	, vumeter      : 'VU meter'
-	, buttons      : 'Buttons'
-	, noswipe      : 'Disable swipe'
-}
-function infoPlayback() {
-	if ( 'coverTL' in G ) $( '#coverTL' ).click();
-	var keys = Object.keys( chkplayback );
-	var values = [];
-	keys.forEach( function( k, i ) {
-		values.push( G.display[ k ] );
-	} );
-	info( {
-		  icon         : 'playback'
-		, title        : 'Playback'
-		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
-		, messagealign : 'left'
-		, checkbox     : Object.values( chkplayback )
-		, checkcolumn  : 1
-		, values       : values
-		, checkchanged : 1
-		, beforeshow   : function() {
-			var $chk = $( '#infoContent input' );
-			keys.forEach( function( k, i ) {
-				window[ '$'+ k ] = $chk.eq( i );
-				window[ k ] = i;
-			} );
-			function toggleBars( t, c ) {
-				if ( !t && !c ) {
-					displayCheckboxSet( bars, 0, 1 );
-					displayCheckboxSet( barsalways, 0, 1 );
-				} else {
-					displayCheckboxSet( bars, 1 );
-					displayCheckboxSet( barsalways, 1, 0 );
-				}
-			}
-			if ( !G.display.bars ) displayCheckboxSet( barsalways );
-			if ( !G.display.cover ) displayCheckboxSet( vumeter );
-			if ( G.display.volumenone ) displayCheckboxSet( volume, 0, 0 );
-			if ( !G.display.time && !G.display.volume ) {
-				displayCheckboxSet( cover );
-				displayCheckboxSet( buttons );
-			}
-			if ( !G.display.time && !G.display.cover ) displayCheckboxSet( bars, 0, 1 );
-			$time.add( $volume ).change( function() {
-				var t = $time.prop( 'checked' );
-				var c = $cover.prop( 'checked' );
-				var v = $volume.prop( 'checked' );
-				if ( t || v ) {
-					displayCheckboxSet( cover, 1 );
-					displayCheckboxSet( buttons, 1 );
-				} else {
-					displayCheckboxSet( cover, 0, 1 );
-					displayCheckboxSet( buttons, 0, 0 );
-				}
-				if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( cover, 1, 1 );
-				toggleBars( t, c );
-			} );
-			$bars.change( function() {
-				if ( $( this ).prop( 'checked' ) ) {
-					displayCheckboxSet( barsalways, 1 );
-				} else {
-					displayCheckboxSet( barsalways, 0, 0 );
-				}
-			} );
-			$cover.change( function() {
-				var t = $time.prop( 'checked' );
-				var c = $cover.prop( 'checked' );
-				var v = $volume.prop( 'checked' );
-				if ( c ) {
-					displayCheckboxSet( vumeter, 1, 0 );
-					$covervu.add( $vumeter ).prop( 'disabled', 0 );
-				} else {
-					displayCheckboxSet( vumeter, 0, 0 );
-					if ( !t && ( !v || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
-					displayCheckboxSet( covervu, 0, 0 );
-					displayCheckboxSet( vumeter, 0, 0 );
-					$covervu.add( $vumeter ).prop( 'disabled', 1 );
-				}
-				toggleBars( t, c );
-			} );
-			$covervu.change( function() {
-				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( vumeter, 1, 0 );
-			} );
-			$vumeter.change( function() {
-				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( covervu, 1, 0 );
-			} );
 		}
 		, ok           : function () {
 			displaySave( keys );

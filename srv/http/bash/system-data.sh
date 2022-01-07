@@ -17,14 +17,6 @@ data='
 # for interval refresh
 (( $# > 0 )) && echo {$data} && exit
 
-bluetooth=$( systemctl -q is-active bluetooth && echo true )
-btformat=$( exists $dirsystem/btformat )
-if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
-	discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
-else
-	discoverable=true
-fi
-bluetoothconf="[ $discoverable, $btformat ]"
 lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
@@ -34,16 +26,16 @@ speed=${cpu[2]/.*}
 (( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( cat /proc/device-tree/model | tr -d '\0' )
+rpimodel=$( cat /proc/device-tree/model | tr -d '\000' | sed 's/ Model //; s/ Plus/+/' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
-	revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	case ${revision: -4:1} in
+	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	BB=${hwrevision: -3:2}
+	case ${hwrevision: -4:1} in
 		0 ) soc=BCM2835;;
 		1 ) soc=BCM2836;;
-		2 ) BB=${revision: -3:2}
-			if [[ $BB == 12 ]]; then
+		2 ) if [[ $BB == 12 ]]; then
 				soc=BCM2710A1
 			elif [[ $BB > 08 ]]; then
 				soc=BCM2837B0
@@ -115,7 +107,7 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
 						| grep -v UU \
-						| grep . \
+						| awk NF \
 						| sort -u )
 		i2caddress="[ $(( "0x$i2caddress" )) ]"
 	else
@@ -157,18 +149,10 @@ if [[ -e $dirsystem/vuled.conf ]]; then
 else
 	vuledconf='[ 14,15,18,23,24,25,8 ]'
 fi
-wlanconf='[
-  "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'"
-, '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )'
-]'
 
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
-, "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
-, "bluetoothconf"    : '$bluetoothconf'
-, "firmware"         : "'$( pacman -Q raspberrypi-firmware 2> /dev/null |  cut -d' ' -f2 )'"
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
@@ -189,18 +173,36 @@ data+='
 , "rotaryencoder"    : '$( systemctl -q is-active rotaryencoder && echo true )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "rpimodel"         : "'$rpimodel'"
+, "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
 , "soc"              : "'$soc'"
 , "soccpu"           : "'$soccpu'"
 , "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 , "socspeed"         : "'$socspeed'"
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
+, "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
 , "version"          : "'$version'"
 , "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
-, "vuledconf"        : '$vuledconf'
+, "vuledconf"        : '$vuledconf
+
+if rfkill | grep -q bluetooth; then
+	bluetooth=$( systemctl -q is-active bluetooth && echo true )
+	if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
+		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
+	else
+		discoverable=true
+	fi
+	data+='
+, "bluetooth"        : '$bluetooth'
+, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
+, "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
+fi
+if [[ -e $dirsystem/wlan ]] || rfkill | grep -q wlan; then
+	data+='
 , "wlan"             : '$( rfkill | grep -q wlan && echo true )'
-, "wlanconf"         : '$wlanconf'
+, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
+fi
 
 data2json "$data"
