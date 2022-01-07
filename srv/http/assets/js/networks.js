@@ -131,30 +131,28 @@ $( '.forget' ).click( function() {
 		var list = G.listbt[ G.li.index() ]
 		var name = list.name;
 		var mac = list.mac;
-		var icon = 'bluetooth';
 		info( {
-			  icon    : icon
+			  icon    : 'bluetooth'
 			, title   : name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
-				notify( name, 'Forget ...', icon );
-				bash( "/srv/http/bash/networks.sh btremove$'\n'"+ mac );
+				notify( name, 'Forget ...', 'bluetooth' );
+				bash( [ 'btremove', mac ] );
 			}
 		} );
 		return
 	}
 	
 	var name = G.li.data( 'ssid' );
-	var icon = 'wifi';
 	info( {
-		  icon    : icon
+		  icon    : 'wifi'
 		, title   : name
 		, message : G.ipeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
-			notify( name, 'Forget ...', icon );
+			notify( name, 'Forget ...', 'wifi' );
 			bash( [ 'profileremove', name ] );
 		}
 	} );
