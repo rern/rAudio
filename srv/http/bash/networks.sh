@@ -179,10 +179,13 @@ profileget )
 	;;
 profileremove )
 	ssid=${args[1]}
+	connected=${args[2]}
 	netctl disable "$ssid"
-	netctl stop "$ssid"
-	killall wpa_supplicant
-	ifconfig wlan0 up
+	if [[ $connected == true ]]; then
+		netctl stop "$ssid"
+		killall wpa_supplicant
+		ifconfig wlan0 up
+	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;

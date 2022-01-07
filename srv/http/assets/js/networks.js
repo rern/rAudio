@@ -144,16 +144,17 @@ $( '.forget' ).click( function() {
 		return
 	}
 	
-	var name = G.li.data( 'ssid' );
+	var ssid = G.li.data( 'ssid' );
+	var connected = G.listwl[ G.li.index() ].ip ? true : false;
 	info( {
 		  icon    : 'wifi'
-		, title   : name
-		, message : G.ipeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+		, title   : ssid
+		, message : G.ipeth || G.ipwlan ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
-			notify( name, 'Forget ...', 'wifi' );
-			bash( [ 'profileremove', name ] );
+			notify( ssid, 'Forget ...', 'wifi' );
+			bash( [ 'profileremove', ssid, connected ] );
 		}
 	} );
 } );
