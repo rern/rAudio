@@ -62,6 +62,7 @@ rfkill | grep -q wlan && touch $dirsystem/wlan
 if [[ ! $profiles && ! $hostapd ]] || (( $( rfkill | grep wlan | wc -l ) > 1 )); then
 	rmmod brcmfmac &> /dev/null
 fi
+
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
@@ -83,6 +84,7 @@ if [[ $nas ]]; then
 		done
 	done
 fi
+grep -q /srv/http/shareddata /etc/fstab && mount /srv/http/shareddata
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
