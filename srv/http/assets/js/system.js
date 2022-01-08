@@ -846,6 +846,7 @@ $( '.sub .help' ).click( function() {
 function infoMount( values ) {
 	var ip = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
+	var shareddata = false;
 	if ( !values || values.length === 8 ) {
 		var htmlname = `\
 <tr><td>Name</td>
@@ -853,7 +854,10 @@ function infoMount( values ) {
 </tr>`;
 		var chktext = 'Update Library on mount'
 	} else  {
-		if ( values === 'shareddata' ) values = [ 'cifs', ipsub, '', '', '', '', false ];
+		if ( values === 'shareddata' ) {
+			var shareddata = true;
+			values = [ 'cifs', ipsub, '', '', '', '', false ];
+		}
 		var htmlname = '';
 		var chktext = 'Use data from this rAudio'
 	}
