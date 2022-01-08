@@ -53,7 +53,6 @@ fi
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
-$dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
@@ -84,20 +83,18 @@ if [[ $nas ]]; then
 		done
 	done
 fi
-grep -q /srv/http/shareddata /etc/fstab && mount /srv/http/shareddata
+if grep -q /srv/http/shareddata /etc/fstab; then
+	mount /srv/http/shareddata
+	for i in {1..5}; do
+		sleep 1
+		[[ -d $dirmpd ]] && break
+	done
+fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
-# after all sources connected
-if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
-	echo rescan > $dirsystem/updating
-	mpc -q rescan
-elif [[ -e $dirsystem/updating ]]; then
-	path=$( cat $dirsystem/updating )
-	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
-fi
+# mpd.service started by this script
+$dirbash/mpd-conf.sh
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
