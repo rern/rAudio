@@ -8,6 +8,9 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+# 20220114
+[[ -e /boot/kernel.img ]] && sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
+
 # 20220107
 grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's|^\(state_file.* "\).*|\1/var/lib/mpd/mpdstate"|' /etc/mpd.conf
 
@@ -40,21 +43,6 @@ file=/srv/http/data/mpd/counts
 grep -q playlists $file || sed -i '/genre/ a\
   "playlists": '$( ls -1 $dirdata/playlists | wc -l )',
 ' $file
-
-# 20211203
-if [[ -e /srv/http/data/embedded ]]; then
-	rm -rf /srv/http/data/embedded
-	mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
-
-	sed -i '/chromium/ d' /etc/pacman.conf
-
-	files=( $( ls /etc/systemd/network/eth* ) )
-	for file in "${files[@]}"; do
-		grep -q RequiredForOnline=no $file || echo "
-	[Link]
-	RequiredForOnline=no" >> $file
-	done
-fi
 
 installstart "$1"
 
