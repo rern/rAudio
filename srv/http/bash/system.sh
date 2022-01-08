@@ -439,7 +439,10 @@ mount )
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
-		sleep 2
+		for i in {1..5}; do
+			sleep 1
+			mount | grep -q "$mountpoint" && break
+		done
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
@@ -564,12 +567,12 @@ servers )
 	;;
 shareddatadisable )
 	mountpoint=/srv/http/shareddata
-	umount -l $mountpoint
-	sed -i "\|$mountpoint| d" /etc/fstab
 	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
 		rm -rf /srv/http/data/$dir
 		cp -rf $mountpoint/$dir /srv/http/data
 	done
+	umount -l $mountpoint
+	sed -i "\|$mountpoint| d" /etc/fstab
 	rm -rf $mountpoint
 	chown -R http:http /srv/http/data
 	chown -R mpd:audio /srv/http/data/mpd
@@ -594,7 +597,7 @@ shareddata )
 		else
 			options+=",username=$user,password=$password"
 		fi
-		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
+		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8,file_mode=0777,dir_mode=0777
 	else
 		source="$ip:$directory"
 		options=defaults,noauto,bg,soft,timeo=5
@@ -605,12 +608,22 @@ shareddata )
 	echo "${source// /\\040}  $mountpoint  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount $mountpoint )
 	if [[ $? == 0 ]]; then
+		for i in {1..5}; do
+			sleep 1
+			mount | grep -q "$mountpoint" && break
+		done
 		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-			[[ $copydata ]] && mv -f /srv/http/data/$dir $mountpoint || mkdir -p $mountpoint/$dir
-			ln -sf $mountpoint/$dir /srv/http/data
+			if [[ $copydata ]]; then
+				rm -rf $mountpoint/$dir
+				cp -rf /srv/http/data/$dir $mountpoint
+			else
+				mkdir -p $mountpoint/$dir
+			fi
+			rm -rf /srv/http/data/$dir
+			ln -s $mountpoint/$dir /srv/http/data
 		done
 		chown -R http:http $mountpoint /srv/http/data
-		chown -R mpd:audio $mountpoint/mpd /srv/http/data/mpd
+		chown mpd:audio $mountpoint/mpd /srv/http/data/mpd
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
