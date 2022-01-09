@@ -84,6 +84,7 @@ if [[ $nas ]]; then
 	done
 fi
 if grep -q /srv/http/shareddata /etc/fstab; then
+	shareddata=1
 	mount /srv/http/shareddata
 	for i in {1..5}; do
 		sleep 1
@@ -95,6 +96,17 @@ fi
 
 # mpd.service started by this script
 $dirbash/mpd-conf.sh
+
+# after all sources connected
+if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
+	echo rescan > $dirsystem/updating
+	mpc -q rescan
+elif [[ -e $dirsystem/updating ]]; then
+	path=$( cat $dirsystem/updating )
+	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
+	$dirbash/cmd-list.sh &> dev/null &
+fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
