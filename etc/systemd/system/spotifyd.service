@@ -6,7 +6,8 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/spotifyd --no-daemon
+ExecStart=/usr/bin/taskset -c 3 /usr/bin/spotifyd --no-daemon
+ExecStartPost=/srv/http/bash/cmd.sh nicespotify
 Restart=always
 RestartSec=12
 

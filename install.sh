@@ -9,7 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20220114
-[[ -e /boot/kernel.img ]] && sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
+rm -rf /etc/systemd/system/spotifyd.service.d
 
 # 20220107
 grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's|^\(state_file.* "\).*|\1/var/lib/mpd/mpdstate"|' /etc/mpd.conf
@@ -48,7 +48,11 @@ installstart "$1"
 
 getinstallzip
 
-[[ $( uname -m ) == armv6l ]] && sed -i -e 's|/usr/bin/taskset -c 3 ||' -e '/upnpnice/ d' /etc/systemd/system/upmpdcli.service
+if [[ -e /boot/kernel.img ]]; then
+	sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
+	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/spotifyd.service
+	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
+fi
 
 systemctl daemon-reload
 
