@@ -53,6 +53,7 @@ if [[ -e /boot/kernel.img ]]; then
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/spotifyd.service
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
 fi
+systemctl try-restart upmpdcli
 
 systemctl daemon-reload
 
