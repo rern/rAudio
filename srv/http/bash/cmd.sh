@@ -783,7 +783,6 @@ playerstart )
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	systemctl stop radio
-	rm -f $dirshm/{radio,status}
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
 	case $player in
