@@ -163,6 +163,12 @@ $Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
+stopRadio() {
+	if [[ -e $dirshm/radio ]]; then
+		systemctl stop radio
+		rm -f $dirshm/radio
+	fi
+}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -622,7 +628,6 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
-	systemctl stop radio
 	if [[ ! $command ]]; then
 		player=$( cat $dirshm/player )
 		if [[ $( cat $dirshm/player ) != mpd ]]; then
@@ -643,6 +648,7 @@ $player
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 	else
+		stopRadio
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
@@ -665,7 +671,7 @@ mpcprevnext )
 	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
-	systemctl stop radio
+	stopRadio
 	if [[ $state == play ]]; then
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
@@ -782,7 +788,7 @@ playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
-	systemctl stop radio
+	stopRadio
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
 	case $player in
