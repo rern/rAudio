@@ -304,7 +304,7 @@ elif [[ $stream ]]; then
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
 				[[ ! $id ]] && id=francemusique
 				stationname=${station/* - }
-				if [[ ! -e $dirshm/radio || ! $( head -3 $dirshm/status 2> /dev/null ) ]]; then
+				if [[ ! -e $dirshm/radio ]] || ! systemctl -q is-active radio; then
 					echo "\
 $file
 $stationname
@@ -313,11 +313,7 @@ $radiosampling" > $dirshm/radio
 					systemctl start radio
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
-					if [[ $Title ]]; then
-						[[ ! $displaycover ]] && coverart=
-					else # slow wi-fi might missed on start
-						systemctl start radio
-					fi
+					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)

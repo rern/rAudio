@@ -166,7 +166,7 @@ $Album" &> /dev/null &
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		systemctl stop radio
-		rm -f $dirshm/radio
+		rm -f $dirshm/{radio,status}
 	fi
 }
 urldecode() { # for webradio url to filename
@@ -657,6 +657,7 @@ $player
 	;;
 mpcprevnext )
 	command=${args[1]}
+	stopRadio
 	if [[ ${args[2]} ]]; then
 		current=$(( ${args[2]} + 1 ))
 		length=${args[3]}
@@ -671,7 +672,6 @@ mpcprevnext )
 	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
-	stopRadio
 	if [[ $state == play ]]; then
 		mpc -q stop
 		rm -f $dirshm/prevnextseek

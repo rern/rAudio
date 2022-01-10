@@ -309,6 +309,11 @@ function psEqualizer( data ) {
 	eqButtonSet();
 }
 function psMpdPlayer( data ) {
+	if ( ( data.icon === 'radiofrance' || data.icon === 'radioparadise' )
+		 && data.state === 'play'
+		 && !data.Title ) { // fix slow wi-fi - on station changed
+		bash( 'systemctl restart radio' );
+	}
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		var playlistlength = G.status.playlistlength;
