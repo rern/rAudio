@@ -313,7 +313,11 @@ $radiosampling" > $dirshm/radio
 					systemctl start radio
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
-					[[ ! $displaycover ]] && coverart=
+					if [[ $Title ]]; then
+						[[ ! $displaycover ]] && coverart=
+					else # slow wi-fi might missed on start
+						systemctl start radio
+					fi
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
