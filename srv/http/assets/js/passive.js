@@ -311,9 +311,7 @@ function psEqualizer( data ) {
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		if ( ( data.icon === 'radiofrance' || data.icon === 'radioparadise' )
-			 && data.state === 'play'
-			 && !data.Title ) {
+		if ( data.state === 'play' && !data.Title && [ 'radiofrance', 'radioparadise' ].indexOf( data.icon ) !== -1 ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
 		var playlistlength = G.status.playlistlength;
