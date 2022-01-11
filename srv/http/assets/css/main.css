@@ -2017,6 +2017,14 @@ li.active .li2 bl {
 @media ( max-height: 768px ) {
 	#page-playback { padding: 80px 0 60px }
 }
+@media ( max-height: 767px ) {
+	.licover { position: relative }
+	#lib-list li.track1 { margin-top: 0 }
+	#infoBox {
+		top: 0;
+		transform: translateY( 0 );
+	}
+}
 @media ( max-height: 590px) {
 	.emptyadd.barsalways { top: 90px }
 	#bar-bottom {
@@ -2113,10 +2121,6 @@ li.active .li2 bl {
 	@media ( max-width: 510px ) { #page-playback { --scale: 0.65 } }
 /*----------------------------------------------------------------------------------*/
 	#coverart-block, #divcover { max-width: 50vh }
-	@media ( max-height: 767px ) {
-		.licover { position: relative }
-		#lib-list li.track1 { margin-top: 0 }
-	}
 	@media ( max-height: 540px ) {
 		#page-playback.barshidden { padding: 60px 0 20px }
 	}

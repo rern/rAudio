@@ -172,7 +172,8 @@ function contextmenuLibrary( $li, $target ) {
 	G.color = 0; // reset to 0 once show
 }
 function contextmenuScroll( $menu, menutop ) {
-	var fixedmenu = G.library && G.list.licover && G.display.fixedcover ? true : false;
+	var fixedmenu = G.library && ( G.list.licover && G.wH < 769 ) && G.display.fixedcover ? true : false;
+	console.log(G.wH, fixedmenu)
 	$menu
 		.css( 'top',  menutop )
 		.toggleClass( 'fixed', fixedmenu )
