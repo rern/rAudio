@@ -15,7 +15,7 @@ control=$( amixer -c $card scontents \
 			| sed 's/^\s*Cap.*: /^/' \
 			| tr -d '\n' \
 			| sed 's/--/\n/g' \
-			| grep pvolume \
+			| grep 'volume.*pswitch\|Master.*volume' \
 			| head -1 \
 			| cut -d"'" -f2 )
 
