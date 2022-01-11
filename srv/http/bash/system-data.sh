@@ -128,7 +128,7 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then
 	fi
 	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
 else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	lcdcharconf='[ 20,"A00","i2c","0x27","PCF8574",15,18,16,21,22,23,24,false ]'
+	lcdcharconf='[ 20,"A00","i2c",39,"PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
