@@ -173,7 +173,6 @@ function contextmenuLibrary( $li, $target ) {
 }
 function contextmenuScroll( $menu, menutop ) {
 	var fixedmenu = G.library && ( G.list.licover && G.wH > 767 ) && G.display.fixedcover ? true : false;
-	console.log(G.wH, fixedmenu)
 	$menu
 		.css( 'top',  menutop )
 		.toggleClass( 'fixed', fixedmenu )
