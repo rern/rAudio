@@ -309,13 +309,13 @@ function psEqualizer( data ) {
 	eqButtonSet();
 }
 function psMpdPlayer( data ) {
-	if ( ( data.icon === 'radiofrance' || data.icon === 'radioparadise' )
-		 && data.state === 'play'
-		 && !data.Title ) { // fix slow wi-fi - on station changed
-		bash( 'systemctl restart radio' );
-	}
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
+		if ( ( data.icon === 'radiofrance' || data.icon === 'radioparadise' )
+			 && data.state === 'play'
+			 && !data.Title ) {
+			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
+		}
 		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;

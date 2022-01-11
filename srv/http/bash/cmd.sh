@@ -988,6 +988,14 @@ power )
 	[[ ! $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ $reboot ]] && reboot || poweroff
 	;;
+radiorestart )
+	[[ -e $disshm/radiorestart ]] && exit
+	
+	touch $disshm/radiorestart
+	systemctl -q is-active radio || systemctl start radio
+	sleep 1
+	rm $disshm/radiorestart
+	;;
 rebootlist )
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot \
 								| sort -u \
