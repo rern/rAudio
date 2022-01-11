@@ -155,9 +155,10 @@ $( '.settings:not( :last )' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
-		case 'relays':
-			$( '#stop' ).click();
-			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
+		case 'lock':
+			$.post( cmdphp, { cmd: 'logout' }, function() {
+				location.reload();
+			} );
 			break;
 		case 'equalizer':
 			equalizer();
@@ -180,17 +181,19 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			banner( 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), 'snapcast blink', -1 );
 			break;
-		case 'update':
-			infoUpdate( '' );
+		case 'relays':
+			$( '#stop' ).click();
+			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
 			break;
-		case 'lock':
-			$.post( cmdphp, { cmd: 'logout' }, function() {
-				location.reload();
-			} );
+		case 'guide':
+			location.href = 'settings/guide.php';
 			break;
 		case 'screenoff':
 			bash( [ 'screenoff', 'dpms force off' ] );
 			G.screenoff = 1;
+			break;
+		case 'update':
+			infoUpdate( '' );
 			break;
 		case 'displaycolor':
 			G.color = 1;
@@ -200,9 +203,6 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			} else {
 				colorSet();
 			}
-			break;
-		case 'guide':
-			location.href = 'settings/guide.php';
 			break;
 	}
 } );
