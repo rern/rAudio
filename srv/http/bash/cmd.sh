@@ -180,7 +180,8 @@ volume0dB(){
 volumeControls() {
 	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
-	amixer=$( amixer -c $1 scontents \
+	[[ $1 ]] && card=$1 || card=0
+	amixer=$( amixer -c $card scontents \
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
@@ -189,14 +190,11 @@ volumeControls() {
 	
 	controls=$( echo "$amixer" \
 					| grep 'volume.*pswitch\|Master.*volume' \
-					| grep -v Mic \
 					| cut -d"'" -f2 )
-	if [[ ! $controls ]]; then
-		controls=$( echo "$amixer" \
-						| grep volume \
-						| grep -v Mic \
-						| cut -d"'" -f2  )
-	fi
+	[[ ! $controls ]] && controls=$( echo "$amixer" \
+										| grep volume \
+										| grep -v Mic \
+										| cut -d"'" -f2 )
 }
 volumeGet() {
 	if [[ -e $dirshm/btclient ]]; then
@@ -215,8 +213,7 @@ volumeGet() {
 	if [[ $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		card=$( head -1 /etc/asound.conf | tail -c 2 )
-		volumeControls $card
+		volumeControls
 		if [[ ! $controls ]]; then
 			volume=100
 		else
