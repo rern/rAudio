@@ -23,7 +23,7 @@ scontrols() {
 		| sed 's/^\s*Cap.*: /^/' \
 		| tr -d '\n' \
 		| sed 's/--/\n/g' \
-		| grep pvolume
+		| grep 'volume.*pswitch\|Master.*volume'
 }
 update() { # for /etc/conf.d/devmon - devmon@http.service
 	if [[ -e $dirsystem/updating ]]; then
@@ -168,7 +168,7 @@ customset )
 devices )
 	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
 	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card  | grep -v Loopback )
-	devices+=$'\n\n<bll># amixer scontrols</bll>\n'$( $dirbash/player.sh amixer )
+	devices+=$'\n\n<bll># amixer scontrols</bll>\n'$( amixer scontrols )
 	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
 	echo "$devices"
 	;;

@@ -188,7 +188,7 @@ volumeControls() {
 	[[ ! $amixer ]] && control= && return
 	
 	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch' \
+					| grep 'volume.*pswitch\|Master.*volume' \
 					| grep -v Mic \
 					| cut -d"'" -f2 )
 	if [[ ! $controls ]]; then
