@@ -1015,7 +1015,8 @@ function renderPlayback() {
 	local();
 	if ( G.status.state === 'stop' ) setProgress( 0 );
 	$volumeRS.setValue( G.status.volume );
-	G.status.volumemute != 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
+	if ( G.status.volume === 0 ) $volumehandle.rsRotate( -310 );
+	G.status.volumemute !== 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	clearInterval( G.intBlinkDot );
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
@@ -1644,9 +1645,7 @@ function volumeColorMute() {
 	$volumetooltip
 		.text( G.status.volumemute )
 		.addClass( 'bl' );
-	$volumehandle
-		.addClass( 'bgr60' )
-		.rsRotate( - $volumeRS._handle1.angle );
+	$volumehandle.addClass( 'bgr60' );
 	$( '#volmute' )
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
