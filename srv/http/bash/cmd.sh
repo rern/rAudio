@@ -180,8 +180,8 @@ volume0dB(){
 volumeControls() {
 	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
-	[[ $1 ]] && card=$1 || card=0
-	amixer=$( amixer -c $card scontents \
+	[[ $1 ]] && param="-c $1 scontents"
+	amixer=$( amixer $param \
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
