@@ -9,6 +9,7 @@ dirsystem=/srv/http/data/system
 . $dirbash/addons.sh
 
 # 20220114
+[[ -e /lib/python3.10 && -e /lib/python3.9/site-packages/RPLCD ]] && mv -f /lib/python3.9/site-packages/{RPLCD,smbus2} /lib/python3.10/site-packages
 rm -rf /etc/systemd/system/spotifyd.service.d
 
 # 20220107
