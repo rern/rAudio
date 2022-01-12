@@ -304,8 +304,6 @@ lcdchardisable )
 	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
-	sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	conf="\
 [var]
 cols=${args[1]}
@@ -315,12 +313,17 @@ charmap=${args[2]}"
 inf=i2c
 address=${args[4]}
 chip=${args[5]}"
-		echo "\
+		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
+			echo "\
 dtparam=i2c_arm=on" >> $fileconfig
-		echo "\
+			reboot=1
+		fi
+		if ! grep -r i2c-bcm2708 $filemodule; then
+			echo "\
 i2c-bcm2708
 i2c-dev" >> $filemodule
-		! grep -q 'dtparam=i2c_arm=on' $fileconfig && reboot=1
+			reboot=1
+		fi
 	else
 		conf+="
 inf=gpio
@@ -330,6 +333,7 @@ pin_e=${args[8]}
 pins_data=[$( echo ${args[@]:9:4} | tr ' ' , )]"
 		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
 			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
+			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 		fi
 	fi
 	conf+="
