@@ -49,6 +49,9 @@ installstart "$1"
 
 getinstallzip
 
+# for working 3.5" TFT release which cannot be upgraded
+[[ $( pacman -Q chromium ) == 'chromium 95.0.4638.54-2.1' ]] && sed -i '/--disable/ d' $dirbash/xinitrc
+
 if [[ -e /boot/kernel.img ]]; then
 	sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/spotifyd.service
