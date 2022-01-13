@@ -475,6 +475,7 @@ mpdoledset )
 	chip=${args[1]}
 	baud=${args[2]}
 	sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
+	systemctl daemon-reload
 	if [[ $chip != 1 && $chip != 7 ]]; then
 		[[ $( grep dtparam=i2c_arm_baudrate | cut -d= -f3 ) != $baud ]] && reboot=1
 		! ls /dev/i2c* &> /dev/null && reboot=1
