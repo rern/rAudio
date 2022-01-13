@@ -17,6 +17,35 @@ pushRefresh() {
 	data=$( $dirbash/system-data.sh )
 	pushstream refresh "$data"
 }
+I2Cset() {
+	grep -q 'waveshare\|tft35a' $fileconfig && lcd=1
+	[[ -e $dirsystem/lcdchar ]] && grep -q inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
+	if [[ -e $dirsystem/mpdoled ]]; then
+		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+		if [[ $chip != 1 && $chip != 7 ]]; then
+			I2Cmpdoled=1
+			[[ $baud ]] && baud=$( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 )
+		else
+			SPImpdoled=1
+		fi
+	fi
+
+	# reset
+	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=i2c_arm_baudrate/ d' $fileconfig
+	sed -i '/i2c-bcm2708\|i2c-dev\|^\s*$/ d' $filemodule
+	[[ -s $filemodule ]] || rm -f $filemodule
+
+	# dtparam=i2c_arm=on
+	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo dtparam=i2c_arm=on >> $fileconfig
+	# dtparam=spi=on
+	[[ $lcd || $SPImpdoled ]] && echo dtparam=spi=on >> $fileconfig
+	# dtparam=i2c_arm_baudrate=$baud
+	[[ $I2Cmpdoled ]] && echo dtparam=i2c_arm_baudrate=$baud >> $fileconfig
+	# i2c-dev
+	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo i2c-dev >> $filemodule
+	# i2c-bcm2708
+	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
+}
 soundprofile() {
 	if [[ $1 == reset ]]; then
 		latency=18000000
@@ -294,12 +323,9 @@ lcdcalibrate )
 	fi
 	;;
 lcdchardisable )
-	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/mpdoled ]]; then
-		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on/ d' $fileconfig
-		sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-	fi
-	[[ -e $dirsystem/mpdoled ]] && sed -i '/i2c-bcm2708/ d' $filemodule
 	rm $dirsystem/lcdchar
+	I2Cset
+	$dirbash/lcdchar.py
 	pushRefresh
 	;;
 lcdcharset )
@@ -313,17 +339,7 @@ charmap=${args[2]}"
 inf=i2c
 address=${args[4]}
 chip=${args[5]}"
-		if ! grep -q 'dtparam=i2c_arm=on' $fileconfig; then
-			echo "\
-dtparam=i2c_arm=on" >> $fileconfig
-			reboot=1
-		fi
-		if ! grep -r i2c-bcm2708 $filemodule; then
-			echo "\
-i2c-bcm2708
-i2c-dev" >> $filemodule
-			reboot=1
-		fi
+		! ls /dev/i2c* &> /dev/null && reboot=1
 	else
 		conf+="
 inf=gpio
@@ -331,23 +347,24 @@ pin_rs=${args[6]}
 pin_rw=${args[7]}
 pin_e=${args[8]}
 pins_data=[$( echo ${args[@]:9:4} | tr ' ' , )]"
-		if ! grep -q 'waveshare\|tft35a' $fileconfig && [[ ! -e $dirsystem/mpdoled ]]; then
-			sed -i '/dtparam=i2c_arm=on/ d' $fileconfig
-			sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
-		fi
 	fi
 	conf+="
 backlight=${args[13]^}"
 	echo "$conf" > $dirsystem/lcdchar.conf
-	$dirbash/lcdcharinit.py
 	touch $dirsystem/lcdchar
-	[[ $reboot ]] && pushReboot 'Character LCD' lcdchar || pushRefresh
+	I2Cset
+	if [[ $reboot ]]; then
+		pushReboot 'Character LCD' lcdchar
+	else
+		$dirbash/lcdchar.py logo
+		pushRefresh
+	fi
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
+	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
 #	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+	I2Cset
 	pushRefresh
 	;;
 lcdset )
@@ -357,18 +374,12 @@ lcdset )
 	else
 		rm $dirsystem/lcdmodel
 	fi
-	sed -i '/hdmi_force_hotplug\|i2c_arm=on\|spi=on\|rotate=/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev/ d' $filemodule
 	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
 	echo "\
 hdmi_force_hotplug=1
-dtparam=spi=on
-dtoverlay=$model:rotate=0
-dtparam=i2c_arm=on" >> $fileconfig
-	echo -n "\
-i2c-bcm2708
-i2c-dev
-" >> $filemodule
+dtoverlay=$model:rotate=0" >> $fileconfig
+	I2Cset
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 #	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	systemctl enable localbrowser
@@ -455,12 +466,8 @@ mount )
 	fi
 	;;
 mpdoleddisable )
-	if [[ ! -e $dirsystem/lcd && ! -e $dirsystem/lcdchar ]]; then
-		sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on/ d' $fileconfig
-		sed -i '/i2c-dev/ d' $filemodule
-	fi
-	sed -i '/dtparam=.*_baudrate/ d' $fileconfig
 	rm $dirsystem/mpdoled
+	I2Cset
 	$dirbash/mpd-conf.sh
 	pushRefresh
 	;;
@@ -468,20 +475,19 @@ mpdoledset )
 	chip=${args[1]}
 	baud=${args[2]}
 	sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
-	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=.*_baudrate/ d' $fileconfig
-	sed -i '/i2c-dev/ d' $filemodule
 	if [[ $chip != 1 && $chip != 7 ]]; then
-		echo "\
-dtparam=i2c_arm=on
-dtparam=i2c_arm_baudrate=$baud" >> $fileconfig
-		echo "\
-i2c-dev" >> $filemodule
+		[[ $( grep dtparam=i2c_arm_baudrate | cut -d= -f3 ) != $baud ]] && reboot=1
+		! ls /dev/i2c* &> /dev/null && reboot=1
 	else
-		echo "\
-dtparam=spi=on" >> $fileconfig
+		! grep -q dtparam=spi=on $fileconfig && reboot=1
 	fi
 	touch $dirsystem/mpdoled
-	pushReboot 'Spectrum OLED' mpdoled
+	I2Cset
+	if [[ $reboot ]]; then
+		pushReboot 'Spectrum OLED' mpdoled
+	else
+		pushRefresh
+	fi
 	;;
 powerbuttondisable )
 	systemctl disable --now powerbutton
