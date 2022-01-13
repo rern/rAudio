@@ -394,10 +394,10 @@ function displaySave( keys ) {
 }
 function displaySubMenu() {
 	var submenu = [ 'lock', 'equalizer', 'snapclient', 'relays' ];
-	if ( G.localhost ) submenu.push( 'screenoff' );
 	submenu.forEach( function( el ) {
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );  // submenu toggled by css .settings + .submenu
+	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
