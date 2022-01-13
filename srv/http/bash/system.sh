@@ -325,7 +325,7 @@ lcdcalibrate )
 lcdchardisable )
 	rm $dirsystem/lcdchar
 	I2Cset
-	$dirbash/lcdchar.py
+	$dirbash/lcdchar.py clear
 	pushRefresh
 	;;
 lcdcharset )

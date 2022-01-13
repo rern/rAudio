@@ -4,11 +4,6 @@ from lcdcharconfig import *
 import sys
 import os
 
-argvL = len( sys.argv )
-if argvL == 1:
-    lcd.clear()
-    quit()
-
 icon = {
       'pause' : '\x00 '
     , 'play'  : '\x01 '
@@ -22,6 +17,7 @@ spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
 logo = rows > 2 and rn or ''
 logo += spaces + irr + rn + spaces +'rAudio'
 
+argvL = len( sys.argv )
 if argvL == 2: # 1 argument
     val = sys.argv[ 1 ]
     if val == 'off': # backlight off
@@ -29,6 +25,8 @@ if argvL == 2: # 1 argument
     elif val == 'logo':
         from lcdcharconfig import * # import again in case missing
         lcd.write_string( logo )
+    elif val == 'clear':
+        lcd.clear()
     else:            # string
         lcd.write_string( val.replace( '\n', rn ) )
     lcd.close()
