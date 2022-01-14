@@ -364,6 +364,7 @@ lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
 	sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
+	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
 	pushRefresh
 	;;
@@ -381,6 +382,7 @@ hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 	sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
+	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
 	systemctl enable localbrowser
 	pushReboot 'TFT 3.5" LCD' lcd
