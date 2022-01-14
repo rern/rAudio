@@ -363,10 +363,7 @@ backlight=${args[13]^}"
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
-	if [[ $( pacman -Q chromium ) == 'chromium 95.0.4638.69-2' ]]; then
-		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		! grep -q disable-software-rasterizer $dirbash/xinitrc && sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
-	fi
+	sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 	I2Cset
 	pushRefresh
 	;;
@@ -383,10 +380,7 @@ lcdset )
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-	if [[ $( pacman -Q chromium ) == 'chromium 95.0.4638.69-2' ]]; then
-		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
-	fi
+	sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 	I2Cset
 	systemctl enable localbrowser
 	pushReboot 'TFT 3.5" LCD' lcd
