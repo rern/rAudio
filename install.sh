@@ -49,8 +49,12 @@ installstart "$1"
 
 getinstallzip
 
-# for working 3.5" TFT release which cannot be upgraded
-[[ $( pacman -Q chromium ) == 'chromium 95.0.4638.54-2.1' ]] && sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
+# for working 3.5" TFT release
+if [[ $( pacman -Q chromium ) == 'chromium 95.0.4638.54-2.1' ]]; then
+	sed -i '/^#IgnorePkg/ a\
+IgnorePkg   = chromium xorg-server xf86-input-evdev xf86-video-fbdev xf86-video-vesa
+' $dirbash/xinitrc
+fi
 
 if [[ -e /boot/kernel.img ]]; then
 	sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
