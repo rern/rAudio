@@ -2020,10 +2020,6 @@ li.active .li2 bl {
 @media ( max-height: 767px ) {
 	.licover { position: relative }
 	#lib-list li.track1 { margin-top: 0 }
-	#infoBox {
-		top: 0;
-		transform: translateY( 0 );
-	}
 }
 @media ( max-height: 590px) {
 	.emptyadd.barsalways { top: 90px }

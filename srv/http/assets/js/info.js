@@ -211,8 +211,10 @@ function infoReset() {
 	
 	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoBox' ).css( {
-		  margin  : ''
-		, width   : ''
+		  margin    : ''
+		, width     : ''
+		, top       : ''
+		, transform : ''
 	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
 	$( '#infoIcon, #infoTitle' ).empty();
@@ -492,6 +494,7 @@ function info( json ) {
 			.removeClass( 'hide' )
 			.attr( 'tabindex', -1 ) // for keyup event
 			.focus();
+		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button
 		if ( !O.buttonfit ) {
