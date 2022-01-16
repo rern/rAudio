@@ -384,6 +384,9 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 	sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
+	if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
+		sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
+	fi
 	systemctl enable localbrowser
 	pushReboot 'TFT 3.5" LCD' lcd
 	;;
