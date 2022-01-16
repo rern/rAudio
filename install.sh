@@ -49,7 +49,6 @@ installstart "$1"
 
 getinstallzip
 
-[[ $( uname -m ) == armv7l ]] && sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
 grep -q 'waveshare\|tft35a' /boot/config.txt && sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 
 if [[ -e /boot/kernel.img ]]; then
