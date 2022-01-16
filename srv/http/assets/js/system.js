@@ -388,6 +388,9 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-relays' ).click( function() {
+	location.href = 'settings.php?p=relays';
+} );
 $( '#setting-rotaryencoder' ).click( function() {
 	var pin = '<td colspan="3"><select >';
 	$.each( pin2gpio, function( k, v ) {
@@ -423,9 +426,6 @@ $( '#setting-rotaryencoder' ).click( function() {
 			notify( 'Rotary Encoder', G.rotaryencoder ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );
-} );
-$( '#setting-relays' ).click( function() {
-	location.href = 'settings.php?p=relays';
 } );
 $( '#setting-mpdoled' ).click( function() {
 	info( {
