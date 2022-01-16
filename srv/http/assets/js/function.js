@@ -387,7 +387,7 @@ function displaySave( keys ) {
 	keys.forEach( function( k, i ) {
 		display[ k ] = values[ i ];
 	} );
-	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
+	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'volumenone' ].forEach( function( item ) {
 		delete display[ item ];
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
