@@ -15,6 +15,7 @@ restartMPD() {
 [[ $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
 
 if [[ $1 == on ]]; then
+	touch $dirshm/audiocd
 	sed -i '/^decoder/ i\
 input { #cdio0\
 	plugin         "cdio_paranoia"\
@@ -24,7 +25,6 @@ input { #cdio0\
 	restartMPD
 	exit
 elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
-	rm -f $dirshm/audiocd
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
 		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
@@ -43,13 +43,17 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 	elif [[ $1 == ejectwithicon ]]; then
 		eject
 	fi
+	( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	exit
 fi
 
 ! : >/dev/tcp/8.8.8.8/53 || [[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
-[[ ! $cddiscid ]] && exit
+if [[ ! $cddiscid ]]; then
+	pushstreamNotify 'Audio CD' 'ID of CD not found in database.' audiocd
+	exit
+fi
 
 discid=${cddiscid[0]}
 

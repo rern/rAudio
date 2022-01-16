@@ -304,7 +304,7 @@ elif [[ $stream ]]; then
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
 				[[ ! $id ]] && id=francemusique
 				stationname=${station/* - }
-				if [[ ! -e $dirshm/radio || ! $( head -3 $dirshm/status 2> /dev/null ) ]]; then
+				if [[ ! -e $dirshm/radio ]] || ! systemctl -q is-active radio; then
 					echo "\
 $file
 $stationname

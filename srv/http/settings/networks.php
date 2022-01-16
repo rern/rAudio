@@ -28,7 +28,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="help-block hide">Access points with less than -66dBm should not be used.
+	<div class="help-block hide">Avoid connecting to access points which signal less than 2 bars, audio quality and responsiveness are very likely to suffer.
 </div>
 </div>
 <div id="divlan" class="section">

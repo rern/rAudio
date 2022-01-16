@@ -46,6 +46,7 @@
     "Generic ESS ES90xx": "rpi-dac",
     "Generic RPi-DAC compatible": "rpi-dac",
     "HiFiBerry Amp": "hifiberry-amp",
+    "HiFiBerry Amp+": "hifiberry-amp",
     "HiFiBerry Amp2": "hifiberry-dacplus",
     "HiFiBerry DAC": "hifiberry-dac",
     "HiFiBerry DAC+": "hifiberry-dacplus",

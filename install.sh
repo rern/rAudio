@@ -8,6 +8,10 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
+# 20220114
+[[ -e /lib/python3.10 && -e /lib/python3.9/site-packages/RPLCD ]] && mv -f /lib/python3.9/site-packages/{RPLCD,smbus2} /lib/python3.10/site-packages
+rm -rf /etc/systemd/system/spotifyd.service.d
+
 # 20220107
 grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's|^\(state_file.* "\).*|\1/var/lib/mpd/mpdstate"|' /etc/mpd.conf
 
@@ -41,26 +45,18 @@ grep -q playlists $file || sed -i '/genre/ a\
   "playlists": '$( ls -1 $dirdata/playlists | wc -l )',
 ' $file
 
-# 20211203
-if [[ -e /srv/http/data/embedded ]]; then
-	rm -rf /srv/http/data/embedded
-	mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
-
-	sed -i '/chromium/ d' /etc/pacman.conf
-
-	files=( $( ls /etc/systemd/network/eth* ) )
-	for file in "${files[@]}"; do
-		grep -q RequiredForOnline=no $file || echo "
-	[Link]
-	RequiredForOnline=no" >> $file
-	done
-fi
-
 installstart "$1"
 
 getinstallzip
 
-[[ $( uname -m ) == armv6l ]] && sed -i -e 's|/usr/bin/taskset -c 3 ||' -e '/upnpnice/ d' /etc/systemd/system/upmpdcli.service
+grep -q 'waveshare\|tft35a' /boot/config.txt && sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
+
+if [[ -e /boot/kernel.img ]]; then
+	sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
+	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/spotifyd.service
+	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
+fi
+systemctl try-restart upmpdcli
 
 systemctl daemon-reload
 

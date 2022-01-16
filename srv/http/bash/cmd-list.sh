@@ -93,7 +93,7 @@ for mode in NAS SD USB; do
 done
 playlists=$( ls -1 $dirdata/playlists | wc -l )
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find $dirdata/webradios -type f \
+webradio=$( find -L $dirdata/webradios -type f \
 				| grep -v '\.jpg$\|\.gif$' \
 				| wc -l )
 counts='
@@ -122,6 +122,6 @@ if [[ $toolarge ]]; then
 fi
 
 (
-	list=$( find /mnt/MPD -name .mpdignore | sort -V )
+	list=$( find -L /mnt/MPD -name .mpdignore | sort -V )
 	[[ $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
 ) &

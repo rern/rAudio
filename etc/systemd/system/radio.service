@@ -1,0 +1,6 @@
+[Unit]
+Description=WebRadio metadata
+
+[Service]
+Type=simple
+ExecStart=/srv/http/bash/status-radio.sh

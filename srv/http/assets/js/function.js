@@ -172,7 +172,7 @@ function contextmenuLibrary( $li, $target ) {
 	G.color = 0; // reset to 0 once show
 }
 function contextmenuScroll( $menu, menutop ) {
-	var fixedmenu = G.library && G.list.licover && G.display.fixedcover ? true : false;
+	var fixedmenu = G.library && ( G.list.licover && G.wH > 767 ) && G.display.fixedcover ? true : false;
 	$menu
 		.css( 'top',  menutop )
 		.toggleClass( 'fixed', fixedmenu )
@@ -387,17 +387,17 @@ function displaySave( keys ) {
 	keys.forEach( function( k, i ) {
 		display[ k ] = values[ i ];
 	} );
-	[ 'color', 'order', 'update', 'updating_db', 'volumenone' ].forEach( function( item ) {
+	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'volumenone' ].forEach( function( item ) {
 		delete display[ item ];
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
 	var submenu = [ 'lock', 'equalizer', 'snapclient', 'relays' ];
-	if ( G.localhost ) submenu.push( 'screenoff' );
 	submenu.forEach( function( el ) {
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );  // submenu toggled by css .settings + .submenu
+	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
@@ -1015,7 +1015,8 @@ function renderPlayback() {
 	local();
 	if ( G.status.state === 'stop' ) setProgress( 0 );
 	$volumeRS.setValue( G.status.volume );
-	G.status.volumemute != 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
+	if ( G.status.volume === 0 ) $volumehandle.rsRotate( -310 );
+	G.status.volumemute !== 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	clearInterval( G.intBlinkDot );
 	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue

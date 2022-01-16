@@ -17,14 +17,6 @@ volumeBtGet() {
 restartMPD() {
 	$dirbash/mpd-conf.sh
 }
-scontrols() {
-	amixer scontents \
-		| grep -A1 ^Simple \
-		| sed 's/^\s*Cap.*: /^/' \
-		| tr -d '\n' \
-		| sed 's/--/\n/g' \
-		| grep pvolume
-}
 update() { # for /etc/conf.d/devmon - devmon@http.service
 	if [[ -e $dirsystem/updating ]]; then
 		$dirshm/updatingusb
@@ -39,19 +31,6 @@ update() { # for /etc/conf.d/devmon - devmon@http.service
 
 case ${args[0]} in
 
-amixer )
-	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
-	if [[ $aplayname != snd_rpi_wsp ]]; then
-		scontrols | cut -d^ -f1
-	else
-		echo "\
-Simple mixer control 'HPOUT1 Digital',0
-Simple mixer control 'HPOUT2 Digital',0
-Simple mixer control 'SPDIF Out',0
-Simple mixer control 'Speaker Digital',0"
-	fi
-	;;
 audiooutput )
 	aplayname=${args[1]}
 	card=${args[2]}
@@ -168,7 +147,18 @@ customset )
 devices )
 	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
 	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card  | grep -v Loopback )
-	devices+=$'\n\n<bll># amixer scontrols</bll>\n'$( $dirbash/player.sh amixer )
+	devices+=$'\n\n<bll># amixer scontrols</bll>\n'
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
+	if [[ $aplayname != snd_rpi_wsp ]]; then
+		devices+=$( amixer scontrols )
+	else
+		devices+="\
+Simple mixer control 'HPOUT1 Digital',0
+Simple mixer control 'HPOUT2 Digital',0
+Simple mixer control 'SPDIF Out',0
+Simple mixer control 'Speaker Digital',0"
+	fi
 	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
 	echo "$devices"
 	;;
@@ -214,8 +204,7 @@ hwmixer )
 	aplayname=${args[1]}
 	hwmixer=${args[2]}
 	if [[ $hwmixer == auto ]]; then
-		hwmixer=$( scontrols \
-					| cut -d"'" -f2 \
+		hwmixer=$( $dirbash/cmd.sh volumecontrols \
 					| sort -u \
 					| head -1 )
 		rm -f "$dirsystem/hwmixer-$aplayname"

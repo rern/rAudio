@@ -9,16 +9,6 @@ pushstreamAirplay() {
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$1"
 }
 
-card=$( head -1 /etc/asound.conf | tail -c 2 )
-control=$( amixer -c $card scontents \
-			| grep -A1 ^Simple \
-			| sed 's/^\s*Cap.*: /^/' \
-			| tr -d '\n' \
-			| sed 's/--/\n/g' \
-			| grep pvolume \
-			| head -1 \
-			| cut -d"'" -f2 )
-
 cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
 	

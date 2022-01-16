@@ -53,7 +53,6 @@ fi
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
-$dirbash/mpd-conf.sh # mpd.service started by this script
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
@@ -62,6 +61,7 @@ rfkill | grep -q wlan && touch $dirsystem/wlan
 if [[ ! $profiles && ! $hostapd ]] || (( $( rfkill | grep wlan | wc -l ) > 1 )); then
 	rmmod brcmfmac &> /dev/null
 fi
+
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
@@ -83,11 +83,22 @@ if [[ $nas ]]; then
 		done
 	done
 fi
+if grep -q /srv/http/shareddata /etc/fstab; then
+	shareddata=1
+	mount /srv/http/shareddata
+	for i in {1..5}; do
+		sleep 1
+		[[ -d $dirmpd ]] && break
+	done
+fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
+# mpd.service started by this script
+$dirbash/mpd-conf.sh
+
 # after all sources connected
-if [[ ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ]]; then
+if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
 	echo rescan > $dirsystem/updating
 	mpc -q rescan
 elif [[ -e $dirsystem/updating ]]; then

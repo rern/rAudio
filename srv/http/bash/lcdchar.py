@@ -23,7 +23,10 @@ if argvL == 2: # 1 argument
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
     elif val == 'logo':
+        from lcdcharconfig import * # import again in case missing
         lcd.write_string( logo )
+    elif val == 'clear':
+        lcd.clear()
     else:            # string
         lcd.write_string( val.replace( '\n', rn ) )
     lcd.close()

@@ -163,6 +163,12 @@ $Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
+stopRadio() {
+	if [[ -e $dirshm/radio ]]; then
+		systemctl stop radio
+		rm -f $dirshm/{radio,status}
+	fi
+}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -174,7 +180,8 @@ volume0dB(){
 volumeControls() {
 	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
-	amixer=$( amixer -c $1 scontents \
+	[[ $1 ]] && param="-c $1 scontents"
+	amixer=$( amixer $param \
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
@@ -182,15 +189,12 @@ volumeControls() {
 	[[ ! $amixer ]] && control= && return
 	
 	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch' \
-					| grep -v Mic \
+					| grep 'volume.*pswitch\|Master.*volume' \
 					| cut -d"'" -f2 )
-	if [[ ! $controls ]]; then
-		controls=$( echo "$amixer" \
-						| grep volume \
-						| grep -v Mic \
-						| cut -d"'" -f2  )
-	fi
+	[[ ! $controls ]] && controls=$( echo "$amixer" \
+										| grep volume \
+										| grep -v Mic \
+										| cut -d"'" -f2 )
 }
 volumeGet() {
 	if [[ -e $dirshm/btclient ]]; then
@@ -209,8 +213,7 @@ volumeGet() {
 	if [[ $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		card=$( head -1 /etc/asound.conf | tail -c 2 )
-		volumeControls $card
+		volumeControls
 		if [[ ! $controls ]]; then
 			volume=100
 		else
@@ -622,7 +625,6 @@ mpcoption )
 mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
-	systemctl stop radio
 	if [[ ! $command ]]; then
 		player=$( cat $dirshm/player )
 		if [[ $( cat $dirshm/player ) != mpd ]]; then
@@ -643,6 +645,7 @@ $player
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 	else
+		stopRadio
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
@@ -651,6 +654,7 @@ $player
 	;;
 mpcprevnext )
 	command=${args[1]}
+	stopRadio
 	if [[ ${args[2]} ]]; then
 		current=$(( ${args[2]} + 1 ))
 		length=${args[3]}
@@ -665,7 +669,6 @@ mpcprevnext )
 	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
-	systemctl stop radio
 	if [[ $state == play ]]; then
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
@@ -782,8 +785,7 @@ playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
-	systemctl stop radio
-	rm -f $dirshm/{radio,status}
+	stopRadio
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
 	case $player in
@@ -982,6 +984,14 @@ power )
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
 	[[ ! $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ $reboot ]] && reboot || poweroff
+	;;
+radiorestart )
+	[[ -e $disshm/radiorestart ]] && exit
+	
+	touch $disshm/radiorestart
+	systemctl -q is-active radio || systemctl start radio
+	sleep 1
+	rm $disshm/radiorestart
 	;;
 rebootlist )
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot \
