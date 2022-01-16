@@ -444,8 +444,8 @@ $( '#setting-mpdoled' ).click( function() {
 </select></td></tr>
 <tr class="baud"><td>Refresh <gr>(baud)</gr></td>
 <td><select>
-	<option value="400000">400000</option>
 	<option value="800000">800000</option>
+	<option value="1000000">1000000</option>
 	<option value="1200000">1200000</option>
 </select></td></tr>
 </table>`
