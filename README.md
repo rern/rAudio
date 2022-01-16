@@ -56,7 +56,7 @@ Audio player for all **Raspberry Pi**s:
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files
-- [**Release i20211203**](https://github.com/rern/rAudio-1/releases/tag/i20211203)
+- [**Release i20220116**](https://github.com/rern/rAudio-1/releases/tag/i20220116)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
