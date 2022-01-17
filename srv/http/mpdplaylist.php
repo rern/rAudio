@@ -227,16 +227,18 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$title = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
 			$ext = '';
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
-				$icon = 'music';
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
+				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.'.jpg' ; // replaced with icon on load error(faster than existing check)
+				$icon = 'music';
 				$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
-				$icon = 'audiocd';
 				$class = 'audiocd';
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
+				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
+				$icon = 'audiocd';
 				$htmlicon = '<i class="fa fa-audiocd pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'

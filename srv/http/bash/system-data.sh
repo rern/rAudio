@@ -132,7 +132,7 @@ else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
-[[ ! $baudrate ]] && baudrate=400000
+[[ ! $baudrate ]] && baudrate=800000
 mpdoledconf='[ "'$oledchip'", '$baudrate' ]'
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"

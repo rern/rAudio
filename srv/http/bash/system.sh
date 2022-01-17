@@ -18,13 +18,14 @@ pushRefresh() {
 	pushstream refresh "$data"
 }
 I2Cset() {
+	# parse finalized settings
 	grep -q 'waveshare\|tft35a' $fileconfig && lcd=1
 	[[ -e $dirsystem/lcdchar ]] && grep -q inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 		if [[ $chip != 1 && $chip != 7 ]]; then
 			I2Cmpdoled=1
-			[[ $baud ]] && baud=$( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 )
+			[[ ! $baud ]] && baud=$( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 )
 		else
 			SPImpdoled=1
 		fi
@@ -384,6 +385,9 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 	sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
+	if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
+		sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
+	fi
 	systemctl enable localbrowser
 	pushReboot 'TFT 3.5" LCD' lcd
 	;;
@@ -481,7 +485,7 @@ mpdoledset )
 		systemctl daemon-reload
 	fi
 	if [[ $chip != 1 && $chip != 7 ]]; then
-		[[ $( grep dtparam=i2c_arm_baudrate | cut -d= -f3 ) != $baud ]] && reboot=1
+		[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
 		! ls /dev/i2c* &> /dev/null && reboot=1
 	else
 		! grep -q dtparam=spi=on $fileconfig && reboot=1

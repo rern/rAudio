@@ -8,7 +8,10 @@ dirsystem=/srv/http/data/system
 
 . $dirbash/addons.sh
 
-# 20220114
+# 2022017
+chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+
+# 20220116
 [[ -e /lib/python3.10 && -e /lib/python3.9/site-packages/RPLCD ]] && mv -f /lib/python3.9/site-packages/{RPLCD,smbus2} /lib/python3.10/site-packages
 rm -rf /etc/systemd/system/spotifyd.service.d
 
@@ -26,32 +29,15 @@ rm -f /etc/systemd/system/rotarymute.service
 
 [[ ! -e /usr/bin/evtest ]] && pacman -Sy --noconfirm evtest
 
-#20211210
-revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-if [[ ${revision: -3:2} == 12 ]]; then
-	grep -q dtparam=krnbt=on /boot/config.txt || echo dtparam=krnbt=on >> /boot/config.txt
-fi
-
-file=/etc/samba/smb.conf
-if [[ -e $file ]] && ! grep -q 'force user' $file; then
-	sed -i '/map to guest/ a\
-	force user = mpd
-' $file
-	systemctl try-restart smb
-fi
-
-file=/srv/http/data/mpd/counts
-grep -q playlists $file || sed -i '/genre/ a\
-  "playlists": '$( ls -1 $dirdata/playlists | wc -l )',
-' $file
-
 installstart "$1"
 
 getinstallzip
 
+[[ $chip != 6 ]] && sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
+
 grep -q 'waveshare\|tft35a' /boot/config.txt && sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 
-if [[ -e /boot/kernel.img ]]; then
+if [[ $( nproc ) == 1 ]]; then
 	sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/spotifyd.service
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
