@@ -227,20 +227,20 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$title = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
 			$ext = '';
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
-				$icon = 'music';
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
+				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.'.jpg' ; // replaced with icon on load error(faster than existing check)
+				$icon = 'music';
 			} else {
-				$icon = 'audiocd';
 				$class = 'audiocd';
 				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-				$htmlicon = '<i class="fa fa-audiocd pl-icon" data-target="#menu-filesavedpl"></i>';
+				$thumbsrc = '/data/audiocd/'.$discid.'.'.$time.'.jpg';
+				$icon = 'audiocd';
 			}
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
-						.$htmlicon
+						.'<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">'
 						.'<a class="lipath">'.$file.'</a>'
 						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>'
