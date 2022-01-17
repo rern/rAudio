@@ -55,6 +55,7 @@ def second2hhmmss( sec ):
     
 sys.path.append( '/srv/http/data/shm' )
 from statuslcd import *
+if 'station' not in locals(): station=""
 
 if charmap == 'A00':
     import unicodedata
