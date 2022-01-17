@@ -220,7 +220,7 @@ if [[ -e $dirsystem/equalizer ]]; then
 		slavepcm='"plughw:'$card',0"'
 	fi
 	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
-	asoundeq="
+	asoundeq='
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -230,8 +230,8 @@ ctl.equal {
 }
 pcm.plugequal {
 	type equal
-	slave.pcm $slavepcm
-}"
+	slave.pcm '$slavepcm'
+}'
 fi
 
 asound="\
@@ -298,7 +298,7 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 EOF
 )
-	[[ $btmixer ]] && conf=$( echo "$conf" | grep -v '^mixer\|^control\|^volume' )
+	[[ $btmixer || $hwmixer == '( not available )' ]] && conf=$( echo "$conf" | grep -v '^mixer\|^control\|^volume' )
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
