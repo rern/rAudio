@@ -37,7 +37,7 @@ getinstallzip
 
 grep -q 'waveshare\|tft35a' /boot/config.txt && sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 
-if [[ -e /boot/kernel.img ]]; then
+if [[ $( nproc ) == 1 ]]; then
 	sed -i '/ExecStart=/ d'  /etc/systemd/system/shairport-sync.service.d/override.conf
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/spotifyd.service
 	sed -i -e 's|/usr/bin/taskset -c 3 ||' /etc/systemd/system/upmpdcli.service
