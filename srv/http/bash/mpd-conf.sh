@@ -39,15 +39,6 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	btalias=$( bluetoothctl info | grep 'Alias: ' | sed 's/.*: //' )
 	[[ ! $btalias ]] && btalias=$( bluetoothctl info | grep 'Name: ' | sed 's/.*: //' )
 	pushstreamNotify 'Bluetooth' "$btalias" 'bluetooth'
-	asoundbt='
-pcm.bluealsa {
-	type plug
-	slave.pcm {
-		type bluealsa
-		device 00:00:00:00:00:00
-		profile "a2dp"
-	}
-}'
 	btmixer=$( amixer -D bluealsa scontrols \
 				| head -1 \
 				| cut -d"'" -f2 )
@@ -210,6 +201,22 @@ fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
 [[ $Acard ]] && card=$card || card=0
+########
+asound="\
+defaults.pcm.card $card
+defaults.ctl.card $card"
+if [[ $btmixer ]]; then
+########
+	asound+='
+pcm.bluealsa {
+	type plug
+	slave.pcm {
+		type bluealsa
+		device 00:00:00:00:00:00
+		profile "a2dp"
+	}
+}'
+fi
 
 if [[ -e $dirsystem/equalizer ]]; then
 	filepresets=$dirsystem/equalizer.presets
@@ -220,7 +227,8 @@ if [[ -e $dirsystem/equalizer ]]; then
 		slavepcm='"plughw:'$card',0"'
 	fi
 	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
-	asoundeq='
+########
+	asound+='
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -234,13 +242,6 @@ pcm.plugequal {
 }'
 fi
 
-asound="\
-defaults.pcm.card $card
-defaults.ctl.card $card"
-[[ $asoundbt ]] && asound+="
-$asoundbt"
-[[ $asoundeq ]] && asound+="
-$asoundeq"
 echo "$asound" > /etc/asound.conf
 
 [[ $preset ]] && $dirbash/cmd.sh "equalizer
@@ -258,17 +259,21 @@ fi
 restartMPD
 
 if [[ -e /usr/bin/shairport-sync ]]; then
+########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
 	if [[ $btmixer ]]; then
+########
 		conf+='
 	output_device = "bluealsa";'
 	else
+########
 		conf+='
 	output_device = "hw:'$card'";'
 	[[ $hwmixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
 	fi
+########
 	conf+='
 }'
 	echo "$conf" > /etc/shairport-sync.conf
@@ -284,21 +289,22 @@ if [[ -e /usr/bin/spotifyd ]]; then
 						| grep "^card $card" \
 						| head -1 \
 						| cut -d' ' -f3 )
-		device=$( aplay -L | grep "^default.*$cardname" )
+		device=$( aplay -L | grep "^default.*$cardname" | head -1 )
 	fi
-	conf=$( cat << EOF
-[global]
-backend = "alsa"
-device = "$device"
-mixer = "$hwmixer"
-control = "hw:$card"
-volume_controller = "alsa"
+########
+	conf='[global]
 bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
-EOF
-)
-	[[ $btmixer || $hwmixer == '( not available )' ]] && conf=$( echo "$conf" | grep -v '^mixer\|^control\|^volume' )
-	echo "$conf" > /etc/spotifyd.conf
-	systemctl try-restart spotifyd
+backend = "alsa"
+device = "'$device'"'
+	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
+########
+		conf+='
+mixer = "'$hwmixer'"
+control = "hw:'$card'"
+volume_controller = "alsa"'
+		echo "$conf" > /etc/spotifyd.conf
+		systemctl try-restart spotifyd
+	fi
 fi
