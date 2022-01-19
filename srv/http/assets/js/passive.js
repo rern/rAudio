@@ -69,6 +69,7 @@ function statusUpdate( data ) {
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
+	if ( G.display.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( G.status ) ] );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
