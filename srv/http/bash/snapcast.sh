@@ -35,7 +35,7 @@ elif [[ $1 == serverstop ]]; then # server force stop clients
 	done
 	rm -f $clientfile
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
-	sed -i "$2 d" $clientfile
+	sed -i "/$2/ d" $clientfile
 	[[ $( awk NF $clientfile | wc -l ) == 0 ]] && rm -f $clientfile
 else # sshpass add clientip from connected client
 	clientip=$1
