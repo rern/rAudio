@@ -330,7 +330,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-screenoff"></i>Sleep' ]
 		, buttoncolor   : [ '', orange ]
 		, button        : !G.lcdchar ? '' : [ 
-			  function() { bash( '/srv/http/bash/lcdchar.py logo' ) }
+			  function() { bash( '/srv/http/bash/system.sh lcdcharlogo' ) }
 			, function() { bash( '/srv/http/bash/lcdchar.py off' ) }
 		]
 		, buttonnoreset : 1

@@ -329,6 +329,11 @@ lcdchardisable )
 	$dirbash/lcdchar.py clear
 	pushRefresh
 	;;
+lcdcharlogo )
+	kill -9 $( pgrep lcdchar ) &> /dev/null
+	$dirbash/lcdcharinit.py
+	$dirbash/lcdchar.py logo
+	;;
 lcdcharset )
 	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
 	conf="\
