@@ -215,6 +215,7 @@ for line in "${lines[@]}"; do
 done
 
 [[ ! $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
+status=$( echo "$status" | grep -v '^, "file"' )
 ########
 status+='
 , "file"           : "'$file'"
