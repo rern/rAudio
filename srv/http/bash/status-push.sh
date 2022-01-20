@@ -49,13 +49,6 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdchar.py &
 fi
 
-if [[ -e $dirshm/clientiplcdchar ]]; then
-	clientip=$( cat $dirshm/clientiplcdchar )
-	for ip in $clientip; do
-		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh lcdcharsnapclient"
-	done
-fi
-
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
@@ -85,6 +78,11 @@ if [[ -e $dirshm/clientip ]]; then
 	for ip in "${clientip[@]}"; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
+	if [[ -e $dirshm/clientiplcdchar ]]; then
+		for ip in $clientip; do
+			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh lcdcharsnapclient"
+		done
+	fi
 fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd-librandom.sh
