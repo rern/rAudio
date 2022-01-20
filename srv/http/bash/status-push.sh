@@ -9,7 +9,7 @@ else
 	statusnew=$( echo "$status" \
 		| sed '/^, "counts"/,/}/ d' \
 		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
-		|  sed 's/^,* *"//; s/" *: */=/' )
+		| sed 's/^,* *"//; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
@@ -47,6 +47,13 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
+fi
+
+if [[ -e $dirshm/clientiplcdchar ]]; then
+	clientip=$( cat $dirshm/clientiplcdchar )
+	for ip in $clientip; do
+		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh lcdcharsnapclient"
+	done
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then

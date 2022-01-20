@@ -556,12 +556,11 @@ ignoredir )
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
-lcdcharrefresh )
-	echo ${args[1]} \
-		| jq \
-		| sed '/^\s*"counts"/,/}/ d' \
-		| grep -E '^\s*"Artist|^\s*"Title|^\s*"Album|^\s*"station"|^\s*"file|^\s*"state|^\s*"Time|^\s*"elapsed|^\s*"timestamp|^\s*"webradio|^\s*"player"' \
-		|  sed 's/^\s*"//; s/" *: */=/; s/,$//; s/\(true\|false\)$/\u\1/' \
+lcdcharsnapclient )
+	$dirbash/status.sh \
+		| sed '/^, "counts"/,/}/ d' \
+		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
+		| sed 's/^,* *"//; s/" *: */=/; s/\(true\|false\)$/\u\1/' \
 		> $dirshm/statuslcd.py
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
