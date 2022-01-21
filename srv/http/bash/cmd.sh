@@ -958,9 +958,9 @@ power )
 	reboot=${args[1]}
 	mpc -q stop
 	if [[ -e $dirshm/clientip ]]; then
-		clientip=( $( cat $dirshm/clientip ) )
-		for ip in "${clientip[@]}"; do
-			pushStream reload '{"type":"poweroff"}'
+		clientip=$( cat $dirshm/clientip )
+		for ip in $clientip; do
+			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh playerstop$'\n'snapcast"
 		done
 	fi
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo

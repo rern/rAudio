@@ -28,14 +28,6 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl stop snapclient
 		echo -1
 	fi
-elif [[ $1 == serverstop ]]; then # server force stop clients
-	[[ ! -e $clientfile ]] && exit
-	
-	clientip=( $( cat $dirshm/clientip ) )
-	for ip in "${clientip[@]}"; do
-		curl -s -X POST http://$ip/pub?id=snapcast -d -1
-	done
-	rm -f $clientfile
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $clientfile

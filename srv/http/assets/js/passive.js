@@ -69,6 +69,7 @@ function statusUpdate( data ) {
 	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
+	if ( G.display.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( G.status ) ] );
 }
 function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
@@ -126,7 +127,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'order':     psOrder( data );     break;
 		case 'playlist':  psPlaylist( data );  break;
 		case 'playlists': psPlaylists( data ); break;
-		case 'reload':    psReload( data );    break;
+		case 'reload':    location.href = '/'; break;
 		case 'restore':   psRestore( data );   break;
 		case 'volume':    psVolume( data );    break;
 		case 'vumeter':   psVUmeter( data );   break;
@@ -510,13 +511,6 @@ function psRelays( response ) {
 			$( '.infobtn' ).addClass( 'hide' );
 			$( '.infofooter wh' ).html( devices );
 		}
-	}
-}
-function psReload( data ) {
-	if ( data.type === 'poweroff' ) { // snapserver power off
-		$( '#stop' ).click();
-	} else {
-		location.href = '/';
 	}
 }
 function psRestore( data ) {
