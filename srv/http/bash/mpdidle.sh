@@ -35,7 +35,7 @@ mpc idleloop | while read changed; do
 		player )
 			if [[ ! -e $dirshm/radio && ! -e $dirshm/prevnextseek ]]; then
 				kill -9 $( pgrep status-push ) &> /dev/null
-				$dirbash/status-push.sh
+				$dirbash/status-push.sh & # need to run in background for snapcast ssh
 			fi
 			;;
 		update )
