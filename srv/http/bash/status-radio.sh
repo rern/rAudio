@@ -123,7 +123,7 @@ timestamp=$( date +%s%3N )
 webradio=true
 player="mpd"
 EOF
-	$dirbash/status-push.sh statusradio # for: mpdoled, lcdchar, vumeter, snapclient
+	$dirbash/status-push.sh statusradio & # for: mpdoled, lcdchar, vumeter, snapclient
 	$dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
