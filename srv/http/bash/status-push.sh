@@ -74,11 +74,12 @@ if [[ -e $dirshm/clientip ]]; then
 					' -e '/^, "icon" *:/ d
 					' -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
 					' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|' )
-	clientip=( $( cat $dirshm/clientip ) )
-	for ip in "${clientip[@]}"; do
+	clientip=$( cat $dirshm/clientip )
+	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
 	if [[ -e $dirshm/clientiplcdchar ]]; then
+		[[ ! -e $dirsystem/lcdchar ]] && sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
 		for ip in $clientip; do
 			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh lcdcharsnapclient"
 		done

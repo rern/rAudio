@@ -557,11 +557,10 @@ ignoredir )
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 lcdcharsnapclient )
-	$dirbash/status.sh \
-		| sed '/^, "counts"/,/}/ d' \
-		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
-		| sed 's/^,* *"//; s/" *: */=/; s/\(true\|false\)$/\u\1/' \
-		> $dirshm/statuslcd.py
+	[[ ! -e $dirshm/serverip ]] && exit
+	
+	serverip=$( cat $dirshm/serverip )
+	sshpass -p ros scp root@$serverip:$dirshm/statuslcd.py $dirshm
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 	;;
