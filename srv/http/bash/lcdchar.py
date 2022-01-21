@@ -94,9 +94,9 @@ if rows == 2:
 else:
     lines = Artist + rn + Title + rn + Album
 
-if elapsed:
+if elapsed is not False:
     elapsed = round( float( elapsed ) )
-    elapsedhhmmss = elapsed > 0 and second2hhmmss( elapsed ) or ''
+    elapsedhhmmss = elapsed is not False and second2hhmmss( elapsed ) or ''
 else:
     elapsedhhmmss = ''
 
@@ -118,7 +118,7 @@ lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 if state == 'stop' or state == 'pause':
     backlightOff( backlight )
 # play
-if not elapsed: quit()
+if elapsed is False: quit()
 
 row = rows - 1
 starttime = time.time()
