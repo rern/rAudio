@@ -87,16 +87,16 @@ if not Artist: Artist = idots
 if not Title: Title = idots
 if not Album: Album = idots
 if rows == 2:
-    if state == 'stop' or state == 'pause':
-        backlightOff( backlight )
-    else:
+    if state == 'play':
         lines = Title
+    else:
+        backlightOff( backlight )
 else:
     lines = Artist + rn + Title + rn + Album
 
-if elapsed is not False:
+if elapsed:
     elapsed = round( float( elapsed ) )
-    elapsedhhmmss = elapsed is not False and second2hhmmss( elapsed ) or ''
+    elapsedhhmmss = second2hhmmss( elapsed )
 else:
     elapsedhhmmss = ''
 
@@ -110,14 +110,13 @@ if Time:
 else:
     Timehhmmss = ''
     
-progress = state == 'stop' and Timehhmmss or elapsedhhmmss + Timehhmmss
-progress = ( progress + ' ' * cols )[ :cols - 4 ]
+progress = ( elapsedhhmmss + Timehhmmss + ' ' * cols )[ :cols - 4 ]
 
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
 if state == 'stop' or state == 'pause':
     backlightOff( backlight )
-# play
+
 if elapsed is False: quit()
 
 row = rows - 1
