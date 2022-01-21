@@ -173,10 +173,6 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volume0dB(){
-	volumeGet
-	amixer -c $card -Mq sset "$control" 0dB
-}
 volumeControls() {
 	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
@@ -214,10 +210,10 @@ volumeGet() {
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
 		volumeControls
-		if [[ ! $controls ]]; then
+		if [[ ! -e $dirshm/control ]]; then
 			volume=100
 		else
-			control=$( echo "$controls" | sort -u | head -1 )
+			control=$( cat $dirshm/control )
 			voldb=$( amixer -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
@@ -1035,7 +1031,6 @@ upnpnice )
 volume )
 	current=${args[1]}
 	target=${args[2]}
-	control=${args[3]}
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1055,7 +1050,7 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet "$current" $target "$control" # $current may be blank
+	volumeSet "$current" $target "$( cat $dirshm/control )" # $current may be blank
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
@@ -1063,7 +1058,8 @@ volume0db )
 		volumeGet
 		echo $volume $db  > $dirshm/mpdvolume
 	fi
-	volume0dB
+	volumeGet
+	amixer -c $card -Mq sset "$control" 0dB
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -1092,7 +1088,11 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	[[ ! $control ]] && mpc -q volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
+	if [[ $control ]]; then
+		amixer -Mq sset "$control" 1%$updn
+	else
+		mpc -q volume ${updn}1
+	fi
 	volumeGet
 	pushstreamVolume updn $volume
 	;;

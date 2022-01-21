@@ -308,3 +308,6 @@ volume_controller = "alsa"'
 		systemctl try-restart spotifyd
 	fi
 fi
+
+control=$( $dirbash/cmd.sh volumecontrols | sort -u | head -1 )
+[[ $control ]] && echo $control > $dirshm/control || rm -f $dirshm/control

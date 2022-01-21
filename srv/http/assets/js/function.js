@@ -1621,7 +1621,7 @@ function volumeBarSet( pageX ) {
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		bash( [ 'volume', G.status.volume, vol ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}

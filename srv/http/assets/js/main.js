@@ -691,7 +691,7 @@ $( '#volume' ).roundSlider( {
 		if ( G.drag ) return
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
+		bash( [ 'volume', G.status.volume, e.value ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -729,13 +729,13 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
+	bash( [ 'volume', G.status.volume, 0 ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
-	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
+	bash( [ 'volumeupdown', voldn ? '-' : '+', G.status.control ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( G.volhold ) {
 		G.volhold = 0;

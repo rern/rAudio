@@ -52,7 +52,7 @@ else
 		done
 	else
 		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
-		control=$( echo $controlvolume | cut -d^ -f1 )
+		control=$( echo $controlvolume | cut -d^ -f1 ) # for volume drag
 		volume=$( echo $controlvolume | cut -d^ -f2 )
 	fi
 	scrobble=$( exists $dirsystem/scrobble )
