@@ -94,8 +94,7 @@ if rows == 2:
 else:
     lines = Artist + rn + Title + rn + Album
 
-Time = round( float( Time ) )
-Timehhmmss = second2hhmmss( Time )
+Timehhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 
 if state == 'stop':
     progress = ( Timehhmmss + ' ' * cols )[ :cols - 4 ]
@@ -107,7 +106,7 @@ else:
         elapsed = round( float( elapsed ) )
         elapsedhhmmss = second2hhmmss( elapsed )
         slash = cols > 16 and ' / ' or '/'
-    Timehhmmss = Time and slash + second2hhmmss( Time ) or ''
+    if Time: Timehhmmss = slash + Timehhmmss
     progress = ( elapsedhhmmss + Timehhmmss + ' ' * cols )[ :cols - 4 ]
 
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
