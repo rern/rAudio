@@ -24,6 +24,7 @@ echo '
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
+	, 'nohelp' => true
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
