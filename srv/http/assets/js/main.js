@@ -207,6 +207,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	}
 } );
 $( '#power' ).click( function() {
+	var delay = G.display.snapclient ? 1000 : 0;
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
@@ -214,13 +215,17 @@ $( '#power' ).click( function() {
 		, buttoncolor : orange
 		, button      : function() {
 			$( '#stop' ).click();
-			bash( [ 'power', 'reboot' ] );
+			setTimeout( function() {
+				bash( [ 'power', 'reboot' ] );
+			}, delay );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
 			$( '#stop' ).click();
-			bash( [ 'power' ] );
+			setTimeout( function() {
+				bash( [ 'power' ] );
+			}, delay );
 		}
 	} );
 } );
