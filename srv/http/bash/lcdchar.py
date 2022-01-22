@@ -23,7 +23,6 @@ if argvL == 2: # 1 argument
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
     elif val == 'logo':
-        from lcdcharconfig import * # import again in case missing
         lcd.write_string( logo )
     elif val == 'clear':
         lcd.clear()
@@ -56,6 +55,7 @@ def second2hhmmss( sec ):
 sys.path.append( '/srv/http/data/shm' )
 from statuslcd import *
 if 'station' not in locals(): station=""
+if 'webradio' not in locals(): webradio=False
 
 if charmap == 'A00':
     import unicodedata
@@ -87,38 +87,34 @@ if not Artist: Artist = idots
 if not Title: Title = idots
 if not Album: Album = idots
 if rows == 2:
-    if state == 'stop' or state == 'pause':
-        backlightOff( backlight )
-    else:
+    if state == 'play':
         lines = Title
+    else:
+        backlightOff( backlight )
 else:
     lines = Artist + rn + Title + rn + Album
 
-if elapsed:
-    elapsed = round( float( elapsed ) )
-    elapsedhhmmss = elapsed > 0 and second2hhmmss( elapsed ) or ''
-else:
-    elapsedhhmmss = ''
+Timehhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 
-if Time:
-    if elapsedhhmmss:
-        Timehhmmss = cols > 16 and ' / ' or '/'
-    else:
-        Timehhmmss = ''
-    Time = round( float( Time ) )
-    Timehhmmss += second2hhmmss( Time )
+if state == 'stop':
+    progress = ( Timehhmmss + ' ' * cols )[ :cols - 4 ]
 else:
-    Timehhmmss = ''
-    
-progress = state == 'stop' and Timehhmmss or elapsedhhmmss + Timehhmmss
-progress = ( progress + ' ' * cols )[ :cols - 4 ]
+    if elapsed is False: # can be 0
+        elapsedhhmmss = ''
+        slash = ''
+    else:
+        elapsed = round( float( elapsed ) )
+        elapsedhhmmss = second2hhmmss( elapsed )
+        slash = cols > 16 and ' / ' or '/'
+    if Time: Timehhmmss = slash + Timehhmmss
+    progress = ( elapsedhhmmss + Timehhmmss + ' ' * cols )[ :cols - 4 ]
 
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
-if state == 'stop' or state == 'pause':
+if state != 'play':
     backlightOff( backlight )
-# play
-if not elapsed: quit()
+
+if elapsed is False: quit()
 
 row = rows - 1
 starttime = time.time()

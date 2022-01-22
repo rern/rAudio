@@ -173,10 +173,6 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volume0dB(){
-	volumeGet
-	amixer -c $card -Mq sset "$control" 0dB
-}
 volumeControls() {
 	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
@@ -214,10 +210,10 @@ volumeGet() {
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
 		volumeControls
-		if [[ ! $controls ]]; then
+		if [[ ! -e $dirshm/control ]]; then
 			volume=100
 		else
-			control=$( echo "$controls" | sort -u | head -1 )
+			control=$( cat $dirshm/control )
 			voldb=$( amixer -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
@@ -556,12 +552,13 @@ ignoredir )
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
-lcdcharrefresh )
+lcdcharsnapclient )
+	[[ ! -e $dirshm/serverip ]] && exit
+	
+	serverip=$( cat $dirshm/serverip )
+	sshpass -p ros scp root@$serverip:$dirshm/statuslcd.py $dirshm
 	kill -9 $( pgrep lcdchar ) &> /dev/null
-	readarray -t data <<< $( $dirbash/status.sh \
-								| jq -r '.Artist, .Title, .Album, .station, .file, .state, .Time, .elapsed, .timestamp, .webradio' \
-								| sed 's/null//' )
-	$dirbash/lcdchar.py "${data[@]}" &
+	$dirbash/lcdchar.py &
 	;;
 librandom )
 	enable=${args[1]}
@@ -954,12 +951,12 @@ plsimilar )
 	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
-	reboot=${args[1]}
+	type=${args[1]}
 	mpc -q stop
 	if [[ -e $dirshm/clientip ]]; then
-		clientip=( $( cat $dirshm/clientip ) )
-		for ip in "${clientip[@]}"; do
-			pushStream reload '{"type":"poweroff"}'
+		clientip=$( cat $dirshm/clientip )
+		for ip in $clientip; do
+			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh playerstop$'\n'snapcast"
 		done
 	fi
 	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
@@ -970,7 +967,7 @@ power )
 		$dirbash/relays.sh
 		sleep 2
 	fi
-	if [[ $reboot ]]; then
+	if [[ $type == reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
 		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
@@ -982,8 +979,8 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ ! $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
-	[[ $reboot ]] && reboot || poweroff
+	[[ $type == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
+	[[ $type == reboot ]] && reboot || poweroff
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit
@@ -1034,7 +1031,6 @@ upnpnice )
 volume )
 	current=${args[1]}
 	target=${args[2]}
-	control=${args[3]}
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1054,7 +1050,7 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet "$current" $target "$control" # $current may be blank
+	volumeSet "$current" $target "$( cat $dirshm/control )" # $current may be blank
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
@@ -1062,7 +1058,8 @@ volume0db )
 		volumeGet
 		echo $volume $db  > $dirshm/mpdvolume
 	fi
-	volume0dB
+	volumeGet
+	amixer -c $card -Mq sset "$control" 0dB
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -1091,7 +1088,11 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	[[ ! $control ]] && mpc -q volume ${updn}1 || amixer -Mq sset "$control" 1%$updn
+	if [[ $control ]]; then
+		amixer -Mq sset "$control" 1%$updn
+	else
+		mpc -q volume ${updn}1
+	fi
 	volumeGet
 	pushstreamVolume updn $volume
 	;;

@@ -32,4 +32,4 @@ $dirbash/cmd.sh "volume
 0
 $control"
 
-[[ $poweroff ]] && $dirbash/cmd.sh power
+[[ $poweroff ]] && $dirbash/cmd.sh power$'\n'off

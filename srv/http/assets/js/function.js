@@ -1423,6 +1423,7 @@ function setPlaylistScroll() {
 	var $stationname = $this.find( '.li2 .stationname' );
 	$stationname.addClass( 'hide' );
 	if ( G.status.state === 'stop' ) {
+		$elapsed.empty();
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
@@ -1621,7 +1622,7 @@ function volumeBarSet( pageX ) {
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		bash( [ 'volume', G.status.volume, vol ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}

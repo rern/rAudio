@@ -52,7 +52,7 @@ else
 		done
 	else
 		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
-		control=$( echo $controlvolume | cut -d^ -f1 )
+		control=$( echo $controlvolume | cut -d^ -f1 ) # for volume drag
 		volume=$( echo $controlvolume | cut -d^ -f2 )
 	fi
 	scrobble=$( exists $dirsystem/scrobble )
@@ -215,6 +215,7 @@ for line in "${lines[@]}"; do
 done
 
 [[ ! $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
+status=$( echo "$status" | grep -v '^, "file"' )
 ########
 status+='
 , "file"           : "'$file'"

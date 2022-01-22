@@ -1,7 +1,7 @@
 .selectric-on,
 .selectric-off {
-	width: 170px;
-	margin-bottom: 5px;
+	width: 170px !important;
+	margin-bottom: 5px !important;
 }
 #on .selectric-items,
 #off .selectric-items {
@@ -15,8 +15,8 @@
 .selectric-pin,
 .selectric-timer,
 .selectric-delay {
-	width: 85px;
-	margin-bottom: 5px;
+	width: 85px !important;
+	margin-bottom: 5px !important;
 }
 .selectric-delay .selectric-items {
 	min-width: 85px !important;

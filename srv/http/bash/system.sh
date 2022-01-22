@@ -323,6 +323,11 @@ lcdcalibrate )
 		systemctl start localbrowser
 	fi
 	;;
+lcdchar )
+	kill -9 $( pgrep lcdchar ) &> /dev/null
+	$dirbash/lcdcharinit.py
+	$dirbash/lcdchar.py ${args[1]}
+	;;
 lcdchardisable )
 	rm $dirsystem/lcdchar
 	I2Cset

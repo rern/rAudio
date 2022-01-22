@@ -207,20 +207,24 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	}
 } );
 $( '#power' ).click( function() {
+	function power( type ) {
+		$( '#stop' ).click();
+		setTimeout( function() {
+			bash( [ 'power', type ] );
+		}, G.display.snapclient ? 1000 : 0 );
+	}
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
-			$( '#stop' ).click();
-			bash( [ 'power', 'reboot' ] );
+			power( 'reboot' );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
-			$( '#stop' ).click();
-			bash( [ 'power' ] );
+			power( 'off' );
 		}
 	} );
 } );
@@ -691,7 +695,7 @@ $( '#volume' ).roundSlider( {
 		if ( G.drag ) return
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
+		bash( [ 'volume', G.status.volume, e.value ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -729,13 +733,13 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
+	bash( [ 'volume', G.status.volume, 0 ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
-	bash( [ 'volumeupdown', ( voldn ? '-' : '+' ), G.status.control ] );
+	bash( [ 'volumeupdown', voldn ? '-' : '+', G.status.control ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( G.volhold ) {
 		G.volhold = 0;
@@ -1017,6 +1021,7 @@ $( '.btn-cmd' ).click( function() {
 		} else if ( cmd === 'stop' ) {
 			G.status.state = cmd;
 			clearInterval( G.intElapsed );
+			clearInterval( G.intElapsedPl );
 			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed;
 			if ( G.status.player !== 'mpd' ) {
 				bash( [ 'playerstop', G.status.player, elapsedscrobble ] );
