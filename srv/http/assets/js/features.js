@@ -393,6 +393,7 @@ function passwordWrong() {
 function renderPage( list ) {
 	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
 	$( '#snapclient' )
+		.data( 'disabled', G.snapclientactive ? 'SnapClient is currently active.' : 'SnapServer is currently enabled.' )
 		.toggleClass( 'disabled', G.snapserver || G.snapclientactive )
 		.parent().prev().toggleClass( 'single', !G.snapclientactive );
 	$( '#spotifyd' ).toggleClass( 'disabled', G.spotifydactive );

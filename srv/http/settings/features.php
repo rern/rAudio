@@ -23,7 +23,6 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
 		, 'setting'  => true
-		, 'disabled' => 'SnapServer is currently active/enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
 Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
