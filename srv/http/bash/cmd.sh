@@ -951,7 +951,7 @@ plsimilar )
 	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
-	reboot=${args[1]}
+	type=${args[1]}
 	mpc -q stop
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
@@ -967,7 +967,7 @@ power )
 		$dirbash/relays.sh
 		sleep 2
 	fi
-	if [[ $reboot ]]; then
+	if [[ $type == reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
 		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
@@ -979,8 +979,8 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ ! $reboot && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
-	[[ $reboot ]] && reboot || poweroff
+	[[ $type == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
+	[[ $type == reboot ]] && reboot || poweroff
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit

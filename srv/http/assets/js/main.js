@@ -207,25 +207,24 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	}
 } );
 $( '#power' ).click( function() {
-	var delay = G.display.snapclient ? 1000 : 0;
+	function power( type ) {
+		$( '#stop' ).click();
+		setTimeout( function() {
+			bash( [ 'power', type ] );
+		}, G.display.snapclient ? 1000 : 0 );
+	}
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
-			$( '#stop' ).click();
-			setTimeout( function() {
-				bash( [ 'power', 'reboot' ] );
-			}, delay );
+			power( 'reboot' );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
-			$( '#stop' ).click();
-			setTimeout( function() {
-				bash( [ 'power' ] );
-			}, delay );
+			power( 'off' );
 		}
 	} );
 } );
