@@ -35,9 +35,6 @@
 	line-height: 40px;
 	text-align: center;
 }
-.selectric .button:before {
-	content: '\25BE';
-}
 .selectric-wrapper.disabled .label {
 	padding-right: 10px;
 }
