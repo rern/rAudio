@@ -743,7 +743,7 @@ function selectricRender() {
 	} );
 	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
 /*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
-	$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
+	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
 function setFileImage( file ) {
 	var timeout = setTimeout( function() {

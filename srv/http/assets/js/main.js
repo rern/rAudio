@@ -79,8 +79,6 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 getPlaybackStatus( 'withdisplay' );
 
-if ( !( 'ontouchstart' in document.documentElement ) ) $.getScript( 'assets/js/shortcut.js' );
-
 if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
@@ -101,6 +99,7 @@ if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////
 	} );
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
+	$.getScript( 'assets/js/shortcut.js' );
 }
 	
 $( '.page' ).click( function( e ) {
