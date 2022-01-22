@@ -152,7 +152,7 @@ foreach( $arrayalias as $alias ) {
 }
 ?>
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
-<script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>
 	<?php if ( $localhost ) include 'keyboard.php';?>

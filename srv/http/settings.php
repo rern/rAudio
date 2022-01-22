@@ -182,7 +182,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	<?php }
 		  if ( $page !== 'networks' ) { ?>
 <link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-<script src="/assets/js/plugin/jquery.selectric.min.<?=$time?>.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 	<?php }
 		  if ( $localhost ) include 'keyboard.php';?>
 <script src="/assets/js/settings.<?=$time?>.js"></script>
