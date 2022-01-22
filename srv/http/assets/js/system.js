@@ -839,6 +839,7 @@ $( '.list' ).on( 'click', 'bl', function() {
 } );
 $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
+	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
