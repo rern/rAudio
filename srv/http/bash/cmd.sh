@@ -959,8 +959,6 @@ power )
 			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh playerstop$'\n'snapcast"
 		done
 	fi
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
-	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
@@ -973,7 +971,6 @@ power )
 		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	fi
 	pushstream notify "$data"
-	exit
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
