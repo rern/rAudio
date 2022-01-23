@@ -951,7 +951,7 @@ plsimilar )
 	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
-	type=${args[1]}
+	action=${args[1]}
 	mpc -q stop
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
@@ -967,20 +967,21 @@ power )
 		$dirbash/relays.sh
 		sleep 2
 	fi
-	if [[ $type == reboot ]]; then
+	if [[ $action == reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
 		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
 	fi
 	pushstream notify "$data"
+	exit
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ $type == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
-	[[ $type == reboot ]] && reboot || poweroff
+	[[ $action == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
+	[[ $action == reboot ]] && reboot || poweroff
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit
