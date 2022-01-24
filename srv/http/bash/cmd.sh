@@ -209,7 +209,6 @@ volumeGet() {
 	if [[ $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		volumeControls
 		if [[ ! -e $dirshm/control ]]; then
 			volume=100
 		else
