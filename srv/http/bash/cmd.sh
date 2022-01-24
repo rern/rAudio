@@ -193,23 +193,18 @@ volumeControls() {
 										| cut -d"'" -f2 )
 }
 volumeGet() {
-	if [[ -e $dirshm/btclient ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
-		return
-	fi
-	
 	if ! aplay -l 2> /dev/null | grep -q '^card'; then
 		volume=-1
 		return
 	fi
 	
-	volumeControls
-	mixertype=$( sed -n '/soxr/,/mixer_type/ p' /etc/mpd.conf \
+	mixertype=$( sed -n '/type *"alsa"/,/mixer_type/ p' /etc/mpd.conf \
 					| tail -1 \
 					| cut -d'"' -f2 )
-	if [[ $mixertype == software ]]; then
+	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
+		volumeControls
 		if [[ ! $controls ]]; then
 			volume=100
 		else
