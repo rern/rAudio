@@ -6,6 +6,13 @@ dirshm=/srv/http/data/shm
 
 . /srv/http/data/system/rotaryencoder.conf
 
+control=$( $dirbash/cmd.sh volumecontrolget | cut -d^ -f1 )
+volume() {
+	$dirbash/cmd.sh "volumeupdown
+$1
+$control"
+}
+
 lastevent=$( ls -1 /dev/input/event* 2> /dev/null | tail -c -2 )
 [[ ! $lastevent ]] && lastevent=-1
 # play/pause
@@ -27,17 +34,10 @@ for (( i=0; i < 3; i++ )); do
 	[[ -e $devinput ]] && break
 done
 
-[[ -e $dirshm/control ]] && control=$( cat $dirshm/control )
 evtest $devinput | while read line; do
 	if [[ $line =~ 'value 1'$ ]]; then
-		$dirbash/cmd.sh "\
-volumeupdown
-+
-$control"
+		volume +
 	elif [[ $line =~ 'value -1'$ ]]; then
-		$dirbash/cmd.sh "\
-volumeupdown
--
-$control"
+		volume -
 	fi
 done

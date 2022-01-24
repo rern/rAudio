@@ -203,16 +203,17 @@ volumeGet() {
 		return
 	fi
 	
+	volumeControls
 	mixertype=$( sed -n '/soxr/,/mixer_type/ p' /etc/mpd.conf \
 					| tail -1 \
 					| cut -d'"' -f2 )
 	if [[ $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		if [[ ! -e $dirshm/control ]]; then
+		if [[ ! $controls ]]; then
 			volume=100
 		else
-			control=$( cat $dirshm/control )
+			control=$( echo "$controls" | sort -u | head -1 )
 			voldb=$( amixer -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
@@ -1028,6 +1029,7 @@ upnpnice )
 volume )
 	current=${args[1]}
 	target=${args[2]}
+	control=${args[3]}
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1047,7 +1049,7 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet "$current" $target "$( cat $dirshm/control )" # $current may be blank
+	volumeSet "$current" $target "$control" # $current may be blank
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
