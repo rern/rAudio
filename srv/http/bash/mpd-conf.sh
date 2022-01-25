@@ -92,7 +92,7 @@ audio_output {
 	name           "'$btalias'"
 	device         "bluealsa"
 	type           "alsa"
-	mixer_type     "software"'
+	mixer_type     "hardware"'
 		if [[ -e $dirsystem/btformat ]]; then
 ########
 		output+='
