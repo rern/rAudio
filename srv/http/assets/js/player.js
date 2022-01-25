@@ -334,7 +334,7 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function renderPage( list ) {
+function renderPage() {
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '

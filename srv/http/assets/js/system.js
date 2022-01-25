@@ -934,7 +934,7 @@ ${ htmlname }
 		}
 	} );
 }
-function renderPage( list ) {
+function renderPage() {
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )

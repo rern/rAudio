@@ -410,7 +410,7 @@ function renderBluetooth() {
 		$( '#listbt' ).empty();
 	}
 }
-function renderPage( list ) {
+function renderPage() {
 	if ( G.activebt ) {
 		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );
