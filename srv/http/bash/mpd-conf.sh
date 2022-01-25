@@ -19,6 +19,7 @@ restartMPD() {
 	fi
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
+	systemctl try-restart rotaryencoder
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
