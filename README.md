@@ -119,7 +119,7 @@ Audio player for all **Raspberry Pi**s:
 	- RPi3: 50+ seconds
 	- RPi1, Zero: 80+ seconds
 - After initial boot:
-	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
+	- If there's a connected screen, IP address for connecting from remote devices will be displayed.
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
