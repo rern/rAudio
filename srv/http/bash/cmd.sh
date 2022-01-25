@@ -193,7 +193,16 @@ volumeControls() {
 										| cut -d"'" -f2 )
 }
 volumeGet() {
-	if ! aplay -l 2> /dev/null | grep -q '^card'; then
+	if [[ -e $dirshm/btclient ]]; then
+		for i in {1..5}; do # takes some seconds to be ready
+			volume=$( amixer -MD bluealsa | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
+			[[ $volume ]] && break
+			sleep 1
+		done
+		return
+	fi
+	
+	if [[ -e $dirshm/nosound ]]; then
 		volume=-1
 		return
 	fi
@@ -236,7 +245,9 @@ volumeReset() {
 }
 volumeSetAt() {
 	val=$1
-	if [[ ! $control ]]; then
+	if [[ -e $dirshm/btclient ]]; then
+		amixer -MD bluealsa sset "$( cat $dirshm/btclient )" $val%
+	elif [[ ! $control ]]; then
 		mpc -q volume $val
 	else
 		amixer -Mq sset "$control" $val%
@@ -1053,7 +1064,7 @@ volume0db )
 		echo $volume $db  > $dirshm/mpdvolume
 	fi
 	volumeGet
-	amixer -c $card -Mq sset "$control" 0dB
+	amixer -Mq sset "$control" 0dB
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -1082,7 +1093,9 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	if [[ $control ]]; then
+	if [[ -e $dirshm/btclient ]]; then
+		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn
+	elif [[ $control ]]; then
 		amixer -Mq sset "$control" 1%$updn
 	else
 		mpc -q volume ${updn}1
