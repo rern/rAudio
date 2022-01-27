@@ -246,7 +246,7 @@ volumeReset() {
 volumeSetAt() {
 	val=$1
 	if [[ -e $dirshm/btclient ]]; then
-		amixer -MD bluealsa sset "$( cat $dirshm/btclient )" $val%
+		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" $val%
 	elif [[ ! $control ]]; then
 		mpc -q volume $val
 	else
