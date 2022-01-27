@@ -231,32 +231,19 @@ volumeGet() {
 		fi
 	fi
 }
-volumeReset() {
-	file=$dirshm/mpdvolume
-	if [[ -e $file ]]; then
-		volumeGet
-		vol_db=( $( cat $file ) )
-		vol=${vol_db[0]}
-		db=${vol_db[1]}
-		volumeSet $volume $vol "$control"
-		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
-		rm -f $file
-	fi
-}
 volumeSetAt() {
 	val=$1
-	if [[ -e $dirshm/btclient ]]; then
-		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" $val%
-	elif [[ ! $control ]]; then
-		mpc -q volume $val
-	else
+	btclient=$( cat $dirshm/btclient 2> /dev/null )
+	if [[ $btclient ]]; then
+		amixer -MqD bluealsa sset "$btclient" $val%
+		echo $val > "$dirsystem/btvolume-$btclient"
+	elif [[ $control ]]; then
 		amixer -Mq sset "$control" $val%
+	else
+		mpc -q volume $val
 	fi
 }
 volumeSet() {
-	current=$1
-	target=$2
-	control=$3
 	diff=$(( $target - $current ))
 	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
@@ -840,7 +827,16 @@ playerstop )
 			;;
 	esac
 	[[ $service != snapclient ]] && systemctl restart $service
-	[[ -e $dirshm/mpdvolume ]] && volumeReset
+	file=$dirshm/mpdvolume
+	if [[ -e $file ]]; then
+		volumeGet
+		vol_db=( $( cat $file ) )
+		vol=${vol_db[0]}
+		db=${vol_db[1]}
+		volumeSet $volume $vol "$control"
+		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
+		rm -f $file
+	fi
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
@@ -1036,6 +1032,7 @@ volume )
 	current=${args[1]}
 	target=${args[2]}
 	control=${args[3]}
+	drag=${args[4]}
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1055,7 +1052,11 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet "$current" $target "$control" # $current may be blank
+	if [[ $drag ]]; then
+		volumeSetAt $target
+	else
+		volumeSet
+	fi
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
@@ -1083,9 +1084,6 @@ volumepushstream )
 	volumeGet
 	pushstream volume '{"val":'$volume'}'
 	[[ $control ]] && alsactl store
-	;;
-volumereset )
-	volumeReset
 	;;
 volumesave )
 	volumeGet save

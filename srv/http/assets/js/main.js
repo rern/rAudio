@@ -689,6 +689,7 @@ $( '#volume' ).roundSlider( {
 		G.status.volume = e.value;
 		volumeDrag( e.value );
 		$volumehandle.rsRotate( - this._handle1.angle );
+		bash( [ 'volume', G.status.volume, e.value, G.status.control, 'drag' ] );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return

@@ -44,13 +44,12 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 				| head -1 \
 				| cut -d"'" -f2 )
 	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
-	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" ${btvolume}%
+	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume%
 	echo $btmixer > $dirshm/btclient
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
 	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
 elif [[ $1 == btoff ]]; then
-	amixer -MD bluealsa | awk -F'[%[]' '/%.*dB/ {print $2; exit}' > "$dirsystem/btvolume-$( cat $dirshm/btclient )"
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	rm -f $dirshm/btclient
 	pushstream btclient false
