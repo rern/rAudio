@@ -1,9 +1,11 @@
 r A u d i o &ensp; 1
 ---
-Audio player for all **Raspberry Pi**s:
-- 64bit: `4` `3` `2` `Zero 2`
-- 32bit: `2 (BCM2836)`
-- Legacy: `1` `Zero`
+Audio player for 
+- **Raspberry Pi**s:
+	- 64bit: `4` `3` `2` `Zero 2`
+	- 32bit: `2 (BCM2836)`
+	- Legacy: `1` `Zero`
+- BeagleBone Black
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
@@ -57,6 +59,7 @@ Audio player for all **Raspberry Pi**s:
 
 ### Image files
 - [**Release i20220116**](https://github.com/rern/rAudio-1/releases/tag/i20220116)
+- BeagleBone Black - Need DIY: [rAudio-1 running on BeagleBone Black](https://github.com/rern/rAudio-1/discussions/299)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
