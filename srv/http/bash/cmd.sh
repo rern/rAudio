@@ -1032,7 +1032,11 @@ volume )
 	current=${args[1]}
 	target=${args[2]}
 	control=${args[3]}
-	drag=${args[4]}
+	if [[ $current == drag ]]; then
+		volumeSetAt $target
+		exit
+	fi
+	
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1052,11 +1056,7 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	if [[ $drag ]]; then
-		volumeSetAt $target
-	else
-		volumeSet
-	fi
+	volumeSet
 	;;
 volume0db )
 	player=$( cat $dirshm/player )

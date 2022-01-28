@@ -1608,7 +1608,7 @@ function volumeBarSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeDrag( vol );
+		bash( [ 'volume', 'drag', vol, G.status.control ] );
 	} else {
 		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
@@ -1662,13 +1662,6 @@ function volumeColorUnmute() {
 		.removeClass( 'fa-mute active' )
 		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
-}
-function volumeDrag( vol ) {
-	if ( G.status.control ) {
-		bash( 'amixer -Mq sset "'+ G.status.control +'" '+ vol +'%' );
-	} else {
-		bash( 'mpc volume '+ vol );
-	}
 }
 function vu() {
 	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).is( ':hidden' ) ) {

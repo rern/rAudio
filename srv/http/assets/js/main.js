@@ -687,9 +687,8 @@ $( '#volume' ).roundSlider( {
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
-		volumeDrag( e.value );
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', G.status.volume, e.value, G.status.control, 'drag' ] );
+		bash( [ 'volume', 'drag', e.value, G.status.control ] );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
@@ -758,7 +757,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		volumeDrag( vol );
+		bash( [ 'volume', 'drag', vol, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -797,7 +796,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		G.status.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeDrag( vol );
+		bash( [ 'volume', 'drag', vol, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute /unmute

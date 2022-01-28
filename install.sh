@@ -18,17 +18,11 @@ rm -rf /etc/systemd/system/spotifyd.service.d
 # 20220107
 grep -q /srv/http/data/mpd/mpdstate /etc/mpd.conf && sed -i 's|^\(state_file.* "\).*|\1/var/lib/mpd/mpdstate"|' /etc/mpd.conf
 
-# 20121224
-if [[ -e /etc/default/snapserver ]]; then
-	touch $dirsystem/usbautoupdate
-	rm /etc/default/snapserver
-fi
-
 installstart "$1"
 
 getinstallzip
 
-# 20220116
+# 20220117
 [[ $chip != 6 ]] && sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
 grep -q 'waveshare\|tft35a' /boot/config.txt && sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 if [[ $( nproc ) == 1 ]]; then
