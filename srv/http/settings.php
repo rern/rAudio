@@ -85,7 +85,7 @@ function htmlHead( $data ) {
 	$class = $status ? 'status' : '';
 	$class.= $subhead ? ' sub' : '';
 	
-	$html.= $status ? '<heading data-status="'.$status.'"' : '<heading';
+	$html = $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
 	$html.= '<span class="headtitle">'.$title.'</span>';
 	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
@@ -105,7 +105,7 @@ function htmlSetting( $data ) {
 	$icon = $data[ 'icon' ] ?? '';
 	$sublabel = $data[ 'sublabel' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
-	$id = $data[ 'id' ];
+	$id = $data[ 'id' ] ?? '';
 	$input = $data[ 'input' ] ?? '';
 	$setting = $data[ 'setting' ] ?? '';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
@@ -182,7 +182,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	<?php }
 		  if ( $page !== 'networks' ) { ?>
 <link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
-<script src="/assets/js/plugin/jquery.selectric-1.13.0.min.js"></script>
+<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 	<?php }
 		  if ( $localhost ) include 'keyboard.php';?>
 <script src="/assets/js/settings.<?=$time?>.js"></script>

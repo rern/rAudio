@@ -2,15 +2,18 @@ $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.gpio-no' ).addClass( 'hide' );
 
-renderPage = function( list ) {
-	D = { val : {}, key : {} };
-	D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-	D.keys.forEach( function( k ) {
-		D.val[ k ] = G[ k ];
-	} );
-	D.val.timer = G.timer;
-	D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
-	$( '.infobtn' ).addClass( 'disabled' )
+renderPage = function( changed ) {
+	if ( typeof D === 'undefined' ) {
+		D = { val : {}, key : {} };
+		D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+		D.keys.forEach( function( k ) {
+			D.val[ k ] = G[ k ];
+		} );
+		D.val.timer = G.timer;
+		D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
+	}
+	$( '#save' ).toggleClass( 'disabled', G.enabled && !changed )
+	$( '#undo' ).toggleClass( 'disabled', !changed )
 	var optnamepin = '<option value="0">--- none ---</option>';
 	for ( i = 0; i < 4; i++ ) optnamepin += '<option value="'+ D.val.pin[ i ] +'">'+ D.val.name[ i ] || '(no name)' +'</option>';
 	var htmlon = '';
@@ -39,7 +42,7 @@ renderPage = function( list ) {
 		$( '#ond'+ i ).val( D.val.ond[ i ] )
 		$( '#offd'+ i ).val( D.val.offd[ i ] )
 	}
-	if ( list ) {
+	if ( !$( '.selectric-input' ).length ) {
 		$( 'select' ).selectric();
 		$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 	} else {
@@ -55,7 +58,7 @@ renderPage = function( list ) {
 		$el0.prev().prev() // 1-prv: sec. suffix; 2-prev: selectric-wrapper delay
 			.addClass( 'disabled' );
 	}
-	if ( !G.enabled ) $( '#save' ).removeClass( 'disabled' );
+//	if ( !G.enabled ) $( '#undo' ).removeClass( 'disabled' );
 	showContent();
 }
 function renderUpdate() {
@@ -78,10 +81,9 @@ function renderUpdate() {
 		D.val.ond.push( D.val.on[ i + 1 ] ? +$( '#ond'+ i ).val() : 0 );
 		D.val.offd.push( D.val.off[ i + 1 ] ? +$( '#offd'+ i ).val() : 0 );
 	}
-	D.val.timer = $( '#timer' ).val();
+	D.val.timer = +$( '#timer' ).val();
 	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
-	if ( G.enabled ) $( '.infobtn' ).toggleClass( 'disabled', values === D.values );
-	renderPage();
+	renderPage( values !== D.values );
 }
 // disable default > re-enable
 $( '.container' )
@@ -93,8 +95,8 @@ $( '.back' ).click( function() {
 	location.href = 'settings.php?p=system';
 } );
 $( '#undo' ).click( function() {
-	renderPage( G );
-	$( '.infobtn' ).addClass( 'disabled' );
+	delete D;
+	renderPage( false );
 } );
 $( '#save' ).off( 'click' ).click( function() {
 	var names = {}

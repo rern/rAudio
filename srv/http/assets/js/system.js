@@ -397,16 +397,15 @@ $( '#setting-rotaryencoder' ).click( function() {
 		pin += '<option value='+ v +'>'+ k +'</option>';
 	} );
 	pin += '</select></td>';
-	var step = '';
-	[ 1, 2, 4 ].forEach( function( v ) {
-		step += '<td style="width: 55px"><label><input type="radio" name="step" value="'+ v +'">'+ v +'</label></td>'
-	} );
 	var inforotaryencoder = `\
 <table>
 <tr><td>CLK</td>${ pin }</tr>
 <tr><td>DT</td>${ pin }</tr>
 <tr><td>SW</td>${ pin }</tr>
-<tr><td>Each step <gr>(%)</gr></td>${ step }</tr>
+<tr><td>Each step <gr>(%)</gr></td>
+	<td style="width: 55px"><label><input type="radio" name="step" value="1">1</label></td>
+	<td style="width: 55px"><label><input type="radio" name="step" value="2">2</label></td>
+</tr>
 </table>`;
 	info( {
 		  icon         : 'volume'
@@ -839,6 +838,7 @@ $( '.list' ).on( 'click', 'bl', function() {
 } );
 $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
+	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -934,7 +934,7 @@ ${ htmlname }
 		}
 	} );
 }
-function renderPage( list ) {
+function renderPage() {
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )

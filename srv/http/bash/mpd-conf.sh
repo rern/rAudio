@@ -19,6 +19,7 @@ restartMPD() {
 	fi
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
+	systemctl try-restart rotaryencoder
 	if [[ -e $dirsystem/updating ]]; then
 		path=$( cat $dirsystem/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
@@ -42,8 +43,8 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	btmixer=$( amixer -D bluealsa scontrols \
 				| head -1 \
 				| cut -d"'" -f2 )
-	btvolumefile="$dirsystem/btvolume-$btmixer"
-	[[ -e $btvolumefile ]] && amixer -D bluealsa -q sset "$btmixer" $( cat "$btvolumefile" )%
+	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
+	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume%
 	echo $btmixer > $dirshm/btclient
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
@@ -91,7 +92,7 @@ audio_output {
 	name           "'$btalias'"
 	device         "bluealsa"
 	type           "alsa"
-	mixer_type     "software"'
+	mixer_type     "hardware"'
 		if [[ -e $dirsystem/btformat ]]; then
 ########
 		output+='
@@ -308,6 +309,3 @@ volume_controller = "alsa"'
 		systemctl try-restart spotifyd
 	fi
 fi
-
-control=$( $dirbash/cmd.sh volumecontrols | sort -u | head -1 )
-[[ $control ]] && echo $control > $dirshm/control || rm -f $dirshm/control

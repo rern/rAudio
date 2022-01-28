@@ -194,26 +194,30 @@ volumeControls() {
 }
 volumeGet() {
 	if [[ -e $dirshm/btclient ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
+		for i in {1..5}; do # takes some seconds to be ready
+			volume=$( amixer -MD bluealsa | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
+			[[ $volume ]] && break
+			sleep 1
+		done
 		return
 	fi
 	
-	if ! aplay -l 2> /dev/null | grep -q '^card'; then
+	if [[ -e $dirshm/nosound ]]; then
 		volume=-1
 		return
 	fi
 	
-	mixertype=$( sed -n '/soxr/,/mixer_type/ p' /etc/mpd.conf \
+	mixertype=$( sed -n '/type *"alsa"/,/mixer_type/ p' /etc/mpd.conf \
 					| tail -1 \
 					| cut -d'"' -f2 )
-	if [[ $mixertype == software ]]; then
+	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
 		volumeControls
-		if [[ ! -e $dirshm/control ]]; then
+		if [[ ! $controls ]]; then
 			volume=100
 		else
-			control=$( cat $dirshm/control )
+			control=$( echo "$controls" | sort -u | head -1 )
 			voldb=$( amixer -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
@@ -227,30 +231,19 @@ volumeGet() {
 		fi
 	fi
 }
-volumeReset() {
-	file=$dirshm/mpdvolume
-	if [[ -e $file ]]; then
-		volumeGet
-		vol_db=( $( cat $file ) )
-		vol=${vol_db[0]}
-		db=${vol_db[1]}
-		volumeSet $volume $vol "$control"
-		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
-		rm -f $file
-	fi
-}
 volumeSetAt() {
 	val=$1
-	if [[ ! $control ]]; then
-		mpc -q volume $val
-	else
+	btclient=$( cat $dirshm/btclient 2> /dev/null )
+	if [[ $btclient ]]; then
+		amixer -MqD bluealsa sset "$btclient" $val%
+		echo $val > "$dirsystem/btvolume-$btclient"
+	elif [[ $control ]]; then
 		amixer -Mq sset "$control" $val%
+	else
+		mpc -q volume $val
 	fi
 }
 volumeSet() {
-	current=$1
-	target=$2
-	control=$3
 	diff=$(( $target - $current ))
 	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
@@ -834,7 +827,16 @@ playerstop )
 			;;
 	esac
 	[[ $service != snapclient ]] && systemctl restart $service
-	[[ -e $dirshm/mpdvolume ]] && volumeReset
+	file=$dirshm/mpdvolume
+	if [[ -e $file ]]; then
+		volumeGet
+		vol_db=( $( cat $file ) )
+		vol=${vol_db[0]}
+		db=${vol_db[1]}
+		volumeSet $volume $vol "$control"
+		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
+		rm -f $file
+	fi
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
@@ -951,7 +953,7 @@ plsimilar )
 	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
-	type=${args[1]}
+	action=${args[1]}
 	mpc -q stop
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
@@ -959,15 +961,13 @@ power )
 			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh playerstop$'\n'snapcast"
 		done
 	fi
-	[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
-	[[ -e $dirsystem/mpdoled ]] && mpdoledLogo
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
 		$dirbash/relays.sh
 		sleep 2
 	fi
-	if [[ $type == reboot ]]; then
+	if [[ $action == reboot ]]; then
 		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
 	else
 		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
@@ -979,8 +979,8 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
-	[[ $type == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
-	[[ $type == reboot ]] && reboot || poweroff
+	[[ $action == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
+	[[ $action == reboot ]] && reboot || poweroff
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit
@@ -1031,6 +1031,8 @@ upnpnice )
 volume )
 	current=${args[1]}
 	target=${args[2]}
+	control=${args[3]}
+	drag=${args[4]}
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1050,7 +1052,11 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet "$current" $target "$( cat $dirshm/control )" # $current may be blank
+	if [[ $drag ]]; then
+		volumeSetAt $target
+	else
+		volumeSet
+	fi
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
@@ -1059,7 +1065,7 @@ volume0db )
 		echo $volume $db  > $dirshm/mpdvolume
 	fi
 	volumeGet
-	amixer -c $card -Mq sset "$control" 0dB
+	amixer -Mq sset "$control" 0dB
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -1079,16 +1085,15 @@ volumepushstream )
 	pushstream volume '{"val":'$volume'}'
 	[[ $control ]] && alsactl store
 	;;
-volumereset )
-	volumeReset
-	;;
 volumesave )
 	volumeGet save
 	;;
 volumeupdown )
 	updn=${args[1]}
 	control=${args[2]}
-	if [[ $control ]]; then
+	if [[ -e $dirshm/btclient ]]; then
+		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn
+	elif [[ $control ]]; then
 		amixer -Mq sset "$control" 1%$updn
 	else
 		mpc -q volume ${updn}1

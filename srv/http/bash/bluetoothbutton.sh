@@ -2,9 +2,16 @@
 
 sleep 3 # wait for eventX added to /dev/input/
 dirbash=/srv/http/bash
-devinput=$( ls -1d /dev/input/event* 2> /dev/null | tail -1 ) # latest connected
 
-evtest $devinput | while read line; do
+mac=$( bluetoothctl show \
+		| head -1 \
+		| cut -d' ' -f2 )
+event=$( cat /proc/bus/input/devices \
+			| sed -n "/Phys=${mac,,}/,/Handlers=/ p" \
+			| tail -1 \
+			| awk '{print $NF}' )
+
+evtest /dev/input/$event | while read line; do
 	if [[ $line =~ .*EV_KEY.*KEY_NEXT.*1 ]]; then
 		$dirbash/cmd.sh mpcprevnext$'\n'next
 	elif [[ $line =~ .*EV_KEY.*KEY_PREVIOUS.*1 ]]; then

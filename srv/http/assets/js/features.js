@@ -390,7 +390,7 @@ function passwordWrong() {
 	} );
 	$( '#login' ).prop( 'checked', G.login );
 }
-function renderPage( list ) {
+function renderPage() {
 	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
 	$( '#snapclient' )
 		.data( 'disabled', G.snapclientactive ? 'SnapClient is currently active.' : 'SnapServer is currently enabled.' )

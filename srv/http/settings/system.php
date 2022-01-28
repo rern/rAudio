@@ -24,6 +24,7 @@ echo '
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
+	, 'nohelp' => true
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
@@ -357,14 +358,14 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br>&nbsp;
 
 	<heading class="sub">Back End<i class="help fa fa-question-circle"></i></heading>
-	<div id="divbackend" class="hide">
+	<div id="divbackend" class="help-sub hide">
 	<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
 	<br><a class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></a>
 	<div class="list hide"></div><br>&nbsp;
 	</div>
 
 	<heading class="sub">Front End<i class="help fa fa-question-circle"></i></heading>
-	<div id="divfrontend" class="hide">
+	<div id="divfrontend" class="help-sub hide">
 		<a href="https://whatwg.org" target="_blank">HTML</a>
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 	<br><a href="https://www.php.net" target="_blank">PHP</a>
@@ -374,7 +375,7 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	</div>
 
 	<heading class="sub">Data<i class="help fa fa-question-circle"></i></heading>
-	<div id="divdata" class="gr hide">
+	<div id="divdata" class="gr help-sub hide">
 		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
 	<br><a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts
 	<br><a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations

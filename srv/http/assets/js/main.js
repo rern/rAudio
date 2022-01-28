@@ -79,8 +79,6 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 getPlaybackStatus( 'withdisplay' );
 
-if ( !( 'ontouchstart' in document.documentElement ) ) $.getScript( 'assets/js/shortcut.js' );
-
 if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
@@ -101,6 +99,7 @@ if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////
 	} );
 } else {
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
+	$.getScript( 'assets/js/shortcut.js' );
 }
 	
 $( '.page' ).click( function( e ) {
@@ -690,12 +689,13 @@ $( '#volume' ).roundSlider( {
 		G.status.volume = e.value;
 		volumeDrag( e.value );
 		$volumehandle.rsRotate( - this._handle1.angle );
+		bash( [ 'volume', G.status.volume, e.value, G.status.control, 'drag' ] );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, e.value ] );
+		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -733,7 +733,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0 ] );
+	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );

@@ -44,12 +44,6 @@ else
 	fi
 	if [[ -e $dirshm/nosound ]]; then
 		volume=false
-	elif [[ -e $dirshm/btclient ]]; then
-		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
-			[[ $volume ]] && break
-			sleep 1
-		done
 	else
 		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
 		control=$( echo $controlvolume | cut -d^ -f1 ) # for volume drag

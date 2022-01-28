@@ -1,43 +1,33 @@
 #!/bin/bash
 
 dirbash=/srv/http/bash
-dirbin=/opt/vc/bin
+diroptbin=/opt/vc/bin
 dirshm=/srv/http/data/shm
 
 . /srv/http/data/system/rotaryencoder.conf
 
-lastevent=$( ls -1 /dev/input/event* 2> /dev/null | tail -c -2 )
-[[ ! $lastevent ]] && lastevent=-1
-# play/pause
-$dirbin/dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
-devinput=/dev/input/event$(( lastevent + 1 ))
-for (( i=0; i < 3; i++ )); do
-	sleep 1
-	[[ -e $devinput ]] && break
-done
+control=$( $dirbash/cmd.sh volumecontrolget | cut -d^ -f1 )
+volume() {
+	$dirbash/cmd.sh "volumeupdown
+$1
+$control"
+}
 
-evtest $devinput | while read line; do
+# play/pause
+$diroptbin/dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
+sleep 1
+devinputbutton=$( realpath /dev/input/by-path/*button* )
+evtest $devinputbutton | while read line; do
 	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
 done &
 
-$dirbin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
-devinput=/dev/input/event$(( lastevent + 2 ))
-for (( i=0; i < 3; i++ )); do
-	sleep 1
-	[[ -e $devinput ]] && break
-done
-
-[[ -e $dirshm/control ]] && control=$( cat $dirshm/control )
-evtest $devinput | while read line; do
+$diroptbin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
+sleep 1
+devinputrotary=$( realpath /dev/input/by-path/*rotary* )
+evtest $devinputrotary | while read line; do
 	if [[ $line =~ 'value 1'$ ]]; then
-		$dirbash/cmd.sh "\
-volumeupdown
-+
-$control"
+		volume +
 	elif [[ $line =~ 'value -1'$ ]]; then
-		$dirbash/cmd.sh "\
-volumeupdown
--
-$control"
+		volume -
 	fi
 done
