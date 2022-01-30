@@ -225,7 +225,10 @@ volumeGet() {
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
-				volume=100
+				volume=$( amixer -M sget "$control" \
+							| grep -m1 '%]' \
+							| sed 's/.*\[\(.*\)%].*/\1/' )
+				[[ ! $volume ]] && volume=100
 			fi
 			echo $volume > $dirshm/mpdvolume
 		fi
