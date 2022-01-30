@@ -583,7 +583,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 	} );
 } );
 $( '#album, #guide-album' ).click( function() {
-	window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
+	if ( !G.localhost ) window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
 } );
 $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 	info( {
@@ -1614,7 +1614,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 		}
 		return
 	} else if ( $target.hasClass( 'lialbum' ) ) {
-		window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
+		if ( !G.localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
 		return
 	} else if ( $this.find( '.fa-music' ).length || $target.data( 'target' ) ) {
 		contextmenuLibrary( $this, $target );
