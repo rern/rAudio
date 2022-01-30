@@ -637,7 +637,7 @@ shareddata )
 			mount | grep -q "$mountpoint" && break
 		done
 		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-			if [[ $copydata ]]; then
+			if [[ $copydata == true ]]; then
 				rm -rf $mountpoint/$dir
 				cp -rf /srv/http/data/$dir $mountpoint
 			else
