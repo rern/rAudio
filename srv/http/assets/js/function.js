@@ -520,12 +520,6 @@ function getPlaybackStatus( withdisplay ) {
 			displayPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
-			if ( !G.librarylist && G.status.counts ) {
-				$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
-				$.each( G.status.counts, function( key, val ) {
-					$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
-				} );
-			}
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			$( '#pl-list .elapsed' ).empty();
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
@@ -937,6 +931,10 @@ function renderLibrary() {
 	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
+	$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
+	$.each( G.status.counts, function( key, val ) {
+		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
+	} );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
