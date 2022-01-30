@@ -592,20 +592,17 @@ servers )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	if [[ $copydata == true ]]; then
-		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-			rm -rf $dirdata/$dir
-			cp -rf $mountpoint/$dir $dirdata
-		done
-	else
-		$dirbash/cmd.sh mpcupdate
-	fi
+	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+		rm -rf $dirdata/$dir
+		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
+	done
 	umount -l $mountpoint
 	sed -i "\|$mountpoint| d" /etc/fstab
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirdata/mpd
 	pushRefresh
+	[[ $copydata == false ]] && $dirbash/cmd.sh mpcupdate
 	;;
 shareddata )
 	protocol=${args[1]}
