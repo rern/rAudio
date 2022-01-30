@@ -675,12 +675,15 @@ $( '#shareddata' ).click( function() {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
-			, message : 'Disable?'
+			, radio   : { 'Copy shared data to local': true, 'Rebuild entire database': false }
+			, values  : [ true ]
 			, cancel  : function() {
 				$( '#shareddata' ).prop( 'checked', true );
 			}
+			, okcolor : orange
+			, oklabel : 'Disable'
 			, ok      : function() {
-				bash( [ 'shareddatadisable' ] );
+				bash( [ 'shareddatadisable', infoVal() ] );
 				notify( 'Shared Data', 'Disable ...', 'networks' );
 			}
 		} );

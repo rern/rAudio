@@ -222,7 +222,7 @@ datarestore )
 		if [[ $? == 0 ]]; then
 			for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
 				mkdir -p $mountpoint/$dir
-				ln -sf $mountpoint/$dir /srv/http/data
+				ln -sf $mountpoint/$dir $dirdata
 			done
 		fi
 	fi
@@ -590,16 +590,21 @@ servers )
 	fi
 	;;
 shareddatadisable )
+	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-		rm -rf /srv/http/data/$dir
-		cp -rf $mountpoint/$dir /srv/http/data
-	done
+	if [[ $copydata == true ]]; then
+		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+			rm -rf $dirdata/$dir
+			cp -rf $mountpoint/$dir $dirdata
+		done
+	else
+		$dirbash/cmd.sh mpcupdate
+	fi
 	umount -l $mountpoint
 	sed -i "\|$mountpoint| d" /etc/fstab
 	rm -rf $mountpoint
-	chown -R http:http /srv/http/data
-	chown -R mpd:audio /srv/http/data/mpd
+	chown -R http:http $dirdata
+	chown -R mpd:audio $dirdata/mpd
 	pushRefresh
 	;;
 shareddata )
@@ -639,15 +644,15 @@ shareddata )
 		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
 			if [[ $copydata == true ]]; then
 				rm -rf $mountpoint/$dir
-				cp -rf /srv/http/data/$dir $mountpoint
+				cp -rf $dirdata/$dir $mountpoint
 			else
 				mkdir -p $mountpoint/$dir
 			fi
-			rm -rf /srv/http/data/$dir
-			ln -s $mountpoint/$dir /srv/http/data
+			rm -rf $dirdata/$dir
+			ln -s $mountpoint/$dir $dirdata
 		done
-		chown -R http:http $mountpoint /srv/http/data
-		chown mpd:audio $mountpoint/mpd /srv/http/data/mpd
+		chown -R http:http $mountpoint $dirdata
+		chown mpd:audio $mountpoint/mpd $dirmpd
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
