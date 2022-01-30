@@ -930,7 +930,11 @@ ${ htmlname }
 					refreshData();
 				}
 			} );
-			notify( shareddata ? 'Shared Data' : 'Network Mount', 'Mount ...', 'networks' );
+			if ( shareddata  ) {
+				notify( 'Shared Data', 'Enable ...', 'networks' );
+			} else {
+				notify( 'Network Mount', 'Mount ...', 'networks' );
+			}
 		}
 	} );
 }
