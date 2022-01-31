@@ -296,9 +296,9 @@ $body = [
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations.
- • On file server, setup a network share with permissions
- &emsp; • Directory: <code>chmod 777</code>
- &emsp; • NFS share: <code>rw</code>
+ • On file server, setup a network share with all permissions
+ &emsp; • Directory: <code>777</code> / <code>a+rwx</code>
+ &emsp; • Share: allow <code>read</code>, <code>write</code> and <code>execute</code> / <code>modify</code>
  • On each rAudio, enable Shared Data to connect the share.
  • Initial shared data - <code>Use data from this rAudio</code>:
  &emsp; • Leave unchecked to use existing data on the server.
