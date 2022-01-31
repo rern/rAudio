@@ -901,16 +901,20 @@ ${ htmlname }
 			var $sharelabel = $( '#sharename td:eq( 0 )' );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
-			$( '#infoContent input:radio' ).change( function() {
-				if ( $( this ).val() === 'nfs' ) {
+			function hideOptions( type ) {
+				if ( type === 'nfs' ) {
 					$sharelabel.text( 'Share path' );
 					$guest.addClass( 'hide' );
-					$share.val( '/'+ $share.val() );
+					$share.val( $share.val() || '/' );
 				} else {
 					$sharelabel.text( 'Share name' );
 					$guest.removeClass( 'hide' );
 					$share.val( $share.val().replace( /\//g, '' ) );
 				}
+			}
+			hideOptions( values ? values[ 0 ] : 'cifs' );
+			$( '#infoContent input:radio' ).change( function() {
+				hideOptions( $( this ).val() );
 			} );
 		}
 		, cancel     : function() {
