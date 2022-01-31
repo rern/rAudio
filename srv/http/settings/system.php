@@ -362,7 +362,7 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<heading class="sub">Back End<i class="help fa fa-question-circle"></i></heading>
 	<div id="divbackend" class="help-sub hide">
 	<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
-	<br><bl class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></bl>
+	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-down bl"></i></span>
 	<div class="list hide"></div><br>&nbsp;
 	</div>
 
@@ -372,7 +372,7 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 	<br><a href="https://www.php.net" target="_blank">PHP</a>
 	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
-	<br><bl class="listtitle">JS libraries and plugins&ensp;<i class="fa fa-chevron-down"></i></bl>
+	<br><span class="listtitle">JS libraries and plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
 	<div class="list hide"><?=$uihtml?></div><br>&nbsp;
 	</div>
 
