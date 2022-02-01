@@ -813,7 +813,11 @@ $( '.listtitle' ).click( function() {
 				var list = list.split( '\n' );
 				pkghtml = '';
 				list.forEach( function( pkg ) {
-					pkghtml += '<bl>'+ pkg +'</bl><br>';
+					if ( localhost ) {
+						pkghtml += '<bl>'+ pkg +'</bl><br>';
+					} else {
+						pkghtml += pkg +'<br>';
+					}
 				} );
 				$list
 					.html( pkghtml.slice( 0, -4 ) )
@@ -828,8 +832,6 @@ $( '.listtitle' ).click( function() {
 	}
 } );
 $( '.list' ).on( 'click', 'bl', function() {
-	if ( localhost ) return
-	
 	var pkg = $( this ).text();
 	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager'
 			, 'mpdscribble', 'nginx-mainline-pushstream', 'snapcast', 'upmpdcli' ].includes( pkg ) ) {
@@ -843,7 +845,7 @@ $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
+if ( !localhost ) $( 'a' ).removeAttr( 'href' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
