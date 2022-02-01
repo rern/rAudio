@@ -61,7 +61,7 @@ head,
 #bar-bottom .active {
 	background: var( --cm );
 }
-a,
+a[href^="http"],
 a:hover {
 	color: var( --cml );
 	text-decoration: none !important;
