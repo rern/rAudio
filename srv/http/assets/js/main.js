@@ -133,7 +133,7 @@ $( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // 
 	location.reload();
 } );
 $( '#logo' ).click( function() {
-	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+	if ( !G.localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
