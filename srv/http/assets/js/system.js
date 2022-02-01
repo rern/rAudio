@@ -813,7 +813,7 @@ $( '.listtitle' ).click( function() {
 				var list = list.split( '\n' );
 				pkghtml = '';
 				list.forEach( function( pkg ) {
-					if ( localhost ) {
+					if ( !localhost ) {
 						pkghtml += '<bl>'+ pkg +'</bl><br>';
 					} else {
 						pkghtml += pkg +'<br>';
@@ -845,7 +845,7 @@ $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-if ( !localhost ) $( 'a' ).removeAttr( 'href' );
+if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
