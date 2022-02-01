@@ -6,6 +6,16 @@ dirbash=/srv/http/bash
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
+# 20220204
+if ! grep -q 'for dir' $dirbash/addons.sh; then
+	sed -i -e '/chown/ d
+' -e '/chmod 755 .srv/ i\
+	for dir in assets bash settings; do\
+		chown -R http:http /srv/http/$dir\
+	done
+' $dirbash/addons.sh
+fi
+
 . $dirbash/addons.sh
 
 # 2022017
