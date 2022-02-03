@@ -366,18 +366,10 @@ function webRadioEdit() {
 		, width        : 500
 		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
-		, checkbox     : [ '<wh>ISO-8859-1</wh> <gr>(Latin 1) encoding<gr>' ]
-		, values       : [ name, url, url.indexOf( '#charset=8859-1' ) !== -1 ]
+		, values       : [ name, url ]
 		, checkchanged : 1
 		, checkblank   : 1
 		, boxwidth     : 'max'
-		, beforeshow   : function() {
-			var $url = $( '#infoContent input:text' ).eq( 1 );
-			$( '#infoContent input:checkbox' ).on( 'change', function() {
-				$url.val( $url.val().replace( /#charset=.*/, '' ) );
-				if ( $( this ).prop( 'checked' ) ) $url.val( $url.val() + '#charset=8859-1' );
-			} );
-		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
 			var values = infoVal();
@@ -414,8 +406,7 @@ function webRadioNew( name, url ) {
 		, title        : 'Add WebRadio'
 		, width        : 500
 		, textlabel    : [ 'Name', 'URL' ]
-		, checkbox     : [ '<wh>ISO-8859-1</wh> <gr>(Latin 1) encoding<gr>' ]
-		, values       : ( name || url ? [ name, url, url.indexOf( '#charset=8859-1' ) !== -1 ] : '' )
+		, values       : name || [ name, url ]
 		, checkblank   : 1
 		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
 		, footeralign  : 'right'
@@ -433,11 +424,6 @@ function webRadioNew( name, url ) {
 						bash( [ 'wrdirnew', path + infoVal() ] );
 					}
 				} );
-			} );
-			var $url = $( '#infoContent input:text' ).eq( 1 );
-			$( '#infoContent input:checkbox' ).on( 'change', function() {
-				$url.val( $url.val().replace( /#charset=.*/, '' ) );
-				if ( $( this ).prop( 'checked' ) ) $url.val( $url.val() + '#charset=8859-1' );
 			} );
 		}
 		, ok           : function() {
