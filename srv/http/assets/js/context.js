@@ -365,11 +365,18 @@ function webRadioEdit() {
 		, title        : 'Edit WebRadio'
 		, width        : 500
 		, message      : '<img src="'+ img +'">'
-		, textlabel    : [ 'Name', 'URL' ]
+		, textlabel    : [ 'Name', 'URL <gr>*</gr>' ]
 		, values       : [ name, url ]
 		, checkchanged : 1
 		, checkblank   : 1
 		, boxwidth     : 'max'
+		, beforeshow   : function() {
+			if ( url.indexOf( '#charset' ) === -1 ) {
+				$( '#infoContent table' ).append(
+					'<tr><td></td><td class="gr">* Add <code>#charset=xxx</code> after URL to fix <code>?</code> in title data (<code>xxx</code> = code)'
+				);
+			}
+		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
 			var values = infoVal();
@@ -406,11 +413,11 @@ function webRadioNew( name, url ) {
 		, title        : 'Add WebRadio'
 		, width        : 500
 		, textlabel    : [ 'Name', 'URL' ]
-		, values       : name || [ name, url ]
-		, checkblank   : 1
 		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
 		, footeralign  : 'right'
 		, boxwidth     : 'max'
+		, values       : name || [ name, url ]
+		, checkblank   : 1
 		, beforeshow   : function() {
 			$( '#infoContent .addwebradiodir' ).click( function() {
 				info( {
