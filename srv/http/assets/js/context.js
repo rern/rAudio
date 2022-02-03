@@ -366,7 +366,7 @@ function webRadioEdit() {
 		, width        : 500
 		, message      : '<img src="'+ img +'">'
 		, textlabel    : [ 'Name', 'URL' ]
-		, checkbox     : [ '<wh>ISO-8859-1</wh> <gr>(Latin1) encoding<gr>' ]
+		, checkbox     : [ '<wh>ISO-8859-1</wh> <gr>(Latin 1) encoding<gr>' ]
 		, values       : [ name, url, url.indexOf( '#charset=8859-1' ) !== -1 ]
 		, checkchanged : 1
 		, checkblank   : 1
@@ -414,7 +414,7 @@ function webRadioNew( name, url ) {
 		, title        : 'Add WebRadio'
 		, width        : 500
 		, textlabel    : [ 'Name', 'URL' ]
-		, checkbox     : [ '<wh>ISO-8859-1</wh> <gr>(Latin1) encoding<gr>' ]
+		, checkbox     : [ '<wh>ISO-8859-1</wh> <gr>(Latin 1) encoding<gr>' ]
 		, values       : ( name || url ? [ name, url, url.indexOf( '#charset=8859-1' ) !== -1 ] : '' )
 		, checkblank   : 1
 		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
