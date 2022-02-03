@@ -7,7 +7,7 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 # 20220204
-if ! grep -q 'for dir' $dirbash/addons.sh; then
+if ! grep -q 'assets,bash' $dirbash/addons.sh; then
 	sed -i -e '/chown/ d
 ' -e '/chmod 755 .srv/ i\
 	chown -R http:http /srv/http/{assets,bash,settings}
