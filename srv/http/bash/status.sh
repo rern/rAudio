@@ -338,7 +338,7 @@ $radiosampling" > $dirshm/radio
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
-, "stationcover" : "'$stationcover'"
+, "stationcover" : "'${stationcover/\#/%23}'"
 , "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"

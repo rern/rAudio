@@ -234,7 +234,7 @@ case 'webradio':
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
-			$urlname = str_replace( '/', '|', $each->url );
+			$urlname = str_replace( [ '/', '#' ], [ '|', '%23' ], $each->url );
 			$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
