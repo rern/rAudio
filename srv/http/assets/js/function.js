@@ -1283,15 +1283,16 @@ function setInfo() {
 			.toggleClass( 'gr', G.status.state === 'pause' );
 		$( '#album' ).text( G.status.Album || G.status.file );
 	} else { // webradio
+		var url = G.status.file.replace( /#charset=.*/, '' );
 		if ( G.status.state !== 'play' ) {
 			$( '#artist' ).text( G.status.station );
 			$( '#title' ).html( '·&ensp;·&ensp;·' );
-			$( '#album' ).text( G.status.file );
+			$( '#album' ).text( url );
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : '' ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
 			blinkDot();
-			$( '#album' ).text( G.status.Album || G.status.file );
+			$( '#album' ).text( G.status.Album || url );
 		}
 	}
 	$( '#artist' ).toggleClass( 'disabled', G.status.Artist === '' );
