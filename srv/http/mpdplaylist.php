@@ -281,7 +281,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<div class="li1"><span class="name">'.$stationname.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>'
-						.'<div class="li2">'.$i.' • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.$file.'</div>'
+						.'<div class="li2">'.$i.' • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.preg_replace( '/#charset=.*/', '', $file ).'</div>'
 					.'</li>';
 			$countradio++;
 		}
