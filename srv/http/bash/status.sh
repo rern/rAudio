@@ -280,13 +280,14 @@ elif [[ $stream ]]; then
 		ext=Radio
 		icon=webradio
 		# before webradios play: no 'Name:' - use station name from file instead
-		urlname=${file//\//|}
+		url=${file/\#charset*}
+		urlname=${url//\//|}
 		radiofile=$dirdata/webradios/$urlname
 		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradios -name "$urlname" )
 		if [[ -e $radiofile ]]; then
-			radiodata=$( cat "$radiofile" )
-			station=$( sed -n 1p <<< "$radiodata" )
-			radiosampling=$( sed -n 2p <<< "$radiodata" )
+			readarray -t radiodata < "$radiofile"
+			station=${radiodata[0]}
+			radiosampling=${radiodata[1]}
 		fi
 		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
 		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
@@ -325,7 +326,7 @@ $radiosampling" > $dirshm/radio
 			fi
 		fi
 		if [[ $displaycover ]]; then
-			filenoext=/data/webradiosimg/${urlname/\#charset*}
+			filenoext=/data/webradiosimg/$urlname
 			pathnoext=/srv/http$filenoext
 			if [[ -e $pathnoext.gif ]]; then
 				stationcover=$filenoext.$date.gif
