@@ -28,24 +28,24 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 			if ( G.albumlist ) {
 				$( '#lib-list .coverart.active' ).removeClass( 'active' );
 				if ( key !== '#' ) {
-					$( '#lib-list .coverart[data-index='+ key +']:eq( 0 )' ).addClass( 'active' );
+					$( '#lib-list .coverart[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
 				} else {
-					$( '#lib-list .coverart:eq( 0 )' ).addClass( 'active' );
+					$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
 				}
 			} else {
 				$( '#lib-list li.active' ).removeClass( 'active' );
 				if ( key !== '#' ) {
-					$( '#lib-list li[data-index='+ key +']:eq( 0 )' ).addClass( 'active' );
+					$( '#lib-list li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
 				} else {
-					$( '#lib-list li:eq( 0 )' ).addClass( 'active' );
+					$( '#lib-list li' ).eq( 0 ).addClass( 'active' );
 				}
 			}
 		} else if ( G.playlist && !$( '#pl-list .index' ).hasClass( 'hide' ) ) {
 			$( '#pl-savedlist li.active' ).removeClass( 'active' );
 			if ( key !== '#' ) {
-				$( '#pl-savedlist li[data-index='+ key +']:eq( 0 )' ).addClass( 'active' );
+				$( '#pl-savedlist li[data-index='+ key +']' ).eq( 0 ).addClass( 'active' );
 			} else {
-				$( '#pl-savedlist li:eq( 0 )' ).addClass( 'active' );
+				$( '#pl-savedlist li' ).eq( 0 ).addClass( 'active' );
 			}
 		}
 		return
@@ -122,7 +122,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 			}
 		}
 		var $menuactive = $contextmenu.find( 'a.active' );
-		var $menufirst = $contextmenu.find( 'a:not( .hide ):eq( 0 )' );
+		var $menufirst = $contextmenu.find( 'a:not( .hide )' ).eq( 0 );
 		var $menulast = $contextmenu.find( 'a:not( .hide )' ).last();
 		if ( key === 'ArrowLeft' ) {
 			if ( $( '.submenu.active' ).length ) {
@@ -146,10 +146,10 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 			if ( $( '.submenu.active' ).length ) {
 				$menuactive = $( '.submenu.active' );
 				if ( key === 'ArrowDown' ) {
-					$next = $menuactive.nextAll( 'a:not( .hide ):eq( 0 )' );
+					$next = $menuactive.nextAll( 'a:not( .hide )' ).eq( 0 );
 					if ( !$next.length ) $next = $menuactive.prevAll( 'a:not( .hide )' ).last();
 				} else {
-					$next = $menuactive.prevAll( 'a:not( .hide ):eq( 1 )' );
+					$next = $menuactive.prevAll( 'a:not( .hide )' ).eq( 1 );
 					if ( !$next.length ) $next = $menuactive.nextAll( 'a:not( .hide )' ).last();
 				}
 				$next.addClass( 'active' );
@@ -166,13 +166,13 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 					if ( $menuactive.is( $menulast ) ) {
 						$menufirst.addClass( 'active' );
 					} else {
-						$menuactive.nextAll( 'a:not( .hide ):eq( 0 )' ).addClass( 'active' );
+						$menuactive.nextAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
 					}
 				} else {
 					if ( $menuactive.is( $menufirst ) ) {
 						$menulast.addClass( 'active' );
 					} else {
-						$menuactive.prevAll( 'a:not( .hide ):eq( 0 )' ).addClass( 'active' );
+						$menuactive.prevAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
 					}
 				}
 			}
@@ -199,19 +199,19 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 		if ( !$( '#lib-mode-list' ).hasClass( 'hide' ) ) {
 			var $blupdn = $( '.lib-mode.updn' );
 			if ( !$blupdn.length ) {
-				$( '.lib-mode:not( .hide ):eq( 0 )' ).addClass( 'updn' );
+				$( '.lib-mode:not( .hide )' ).eq( 0 ).addClass( 'updn' );
 				return
 			}
 			
 			if ( key === 'ArrowLeft' ) {
-				var $div = $( '.lib-mode.updn' ).prevAll( ':not( .hide ):eq( 0 )' );
+				var $div = $( '.lib-mode.updn' ).prevAll( ':not( .hide )' ).eq( 0 );
 				$( '.lib-mode' ).removeClass( 'updn' );
 				if ( !$div.length ) $div = $( '.lib-mode:not( .hide )' ).last();
 				$div.addClass( 'updn' );
 			} else if ( key === 'ArrowRight' ) {
-				var $div = $( '.lib-mode.updn' ).nextAll( ':not( .hide ):eq( 0 )' );
+				var $div = $( '.lib-mode.updn' ).nextAll( ':not( .hide )' ).eq( 0 );
 				$( '.lib-mode' ).removeClass( 'updn' );
-				if ( !$div.length ) $div = $( '.lib-mode:not( .hide ):eq( 0 )' );
+				if ( !$div.length ) $div = $( '.lib-mode:not( .hide )' ).eq( 0 );
 				$div.addClass( 'updn' );
 			} else if ( key === 'Enter' ) {
 				$( '.lib-mode.updn .mode' ).click()
@@ -221,7 +221,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 		
 		if ( G.albumlist ) { // album
 			if ( !$( '#lib-list .coverart.active' ).length ) {
-				$( '#lib-list .coverart:eq( 0 )' ).addClass( 'active' );
+				$( '#lib-list .coverart' ).eq( 0 ).addClass( 'active' );
 				return
 			}
 			
@@ -270,7 +270,7 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 			if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
 				if ( $( '.menu:not(.hide)' ).length ) { // context menu
 					var menu = $liactive.find( '.lib-icon' ).data( 'target' );
-					$( menu ).find( 'a:eq( 1 )' ).click();
+					$( menu ).find( 'a' ).eq( 1 ).click();
 				}
 			} else {
 				$liactive.click();

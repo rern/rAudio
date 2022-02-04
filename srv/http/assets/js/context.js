@@ -202,9 +202,9 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				if ( cue && !G.list.licover ) $( '#infoContent input:eq( 2 )' ).prop( 'disabled', 1 );
+				if ( cue && !G.list.licover ) $( '#infoContent input' ).eq( 2 ).prop( 'disabled', 1 );
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
-				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
+				labelW = $( '#infoContent td' ).eq( 0 ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
 				var $text = $( '#infoContent input' );
 				setTimeout( function() {
@@ -371,6 +371,9 @@ function webRadioEdit() {
 		, boxwidth     : 'max'
 		, beforeshow   : function() {
 			$( '#addwebradiodir' ).empty();
+			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
+				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
+			}
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {

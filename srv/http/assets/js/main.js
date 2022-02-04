@@ -543,7 +543,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
 				$( '#infoContent input' ).change( function() {
-					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
 			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {

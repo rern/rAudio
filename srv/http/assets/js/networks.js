@@ -283,7 +283,7 @@ function editLAN() {
 		, checkblank   : 1
 		, beforeshow   : function() {
 			if ( !static ) {
-				$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
+				$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
 					$( '#infoContent gr' ).text( $( this ).val() === ip ? 'DHCP' : 'Static' );
 				} );
 			}
@@ -354,7 +354,7 @@ function infoWiFi( values ) {
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', !values[ 4 ] );
-			$( '#infoContent input:checkbox:eq( 0 )' ).change( function() {
+			$( '#infoContent input:checkbox' ).eq( 0 ).change( function() {
 				$static.toggleClass( 'hide', !$( this ).prop( 'checked' ) );
 			} );
 		}

@@ -375,7 +375,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
-			$( '#infoContent select:eq( 0 )' ).change( function() {
+			$( '#infoContent select' ).eq( 0 ).change( function() {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
@@ -544,7 +544,7 @@ $( '#ledcalc' ).click( function() {
 		, boxwidth   : 70
 		, beforeshow : function() {
 			$( '#infoContent input' ).prop( 'disabled', 1 );
-			$( '#infoContent input:eq( 2 )' )
+			$( '#infoContent input' ).eq( 2 )
 				.prop( 'disabled', 0 )
 				.keyup( function() {
 					var fv = $( this ).val();
@@ -553,7 +553,7 @@ $( '#ledcalc' ).click( function() {
 					} else {
 						var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
 					}
-					$( '#infoContent input:eq( 3 )' ).val( ohm );
+					$( '#infoContent input' ).eq( 3 ).val( ohm );
 				} );
 		}
 		, okno       : 1
@@ -643,7 +643,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, checkchanged : 1
 		, checkblank   : 1
 		, beforeshow   : function() {
-			for ( i = 4; i < 9; i++ ) $( '#infoContent tr:eq( '+ i +') td:first-child' ).remove();
+			for ( i = 4; i < 9; i++ ) $( '#infoContent tr' ).eq( i ).find( 'td:first-child' ).remove();
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );
@@ -899,9 +899,9 @@ ${ htmlname }
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, beforeshow : function() {
-			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
-			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
-			var $sharelabel = $( '#sharename td:eq( 0 )' );
+			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
+			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
+			var $sharelabel = $( '#sharename td' ).eq( 0 );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
 			function hideOptions( type ) {

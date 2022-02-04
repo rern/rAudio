@@ -90,7 +90,7 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
-	$( '#lib-list li:eq( 0 )' ).click();
+	$( '#lib-list li' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
@@ -149,7 +149,7 @@ function contextmenuLibrary( $li, $target ) {
 		&& G.status.player === 'mpd'
 	) {
 		var i = G.display.tapaddplay ? 0 : 1;
-		$menu.find( '.submenu:eq( '+ i +' )' ).click();
+		$menu.find( '.submenu' ).eq( i ).click();
 		$li.addClass( 'active' );
 		return
 	}
@@ -977,7 +977,7 @@ function renderLibraryList( data ) {
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
-			$( '#lib-list img:eq( 0 )' ).on( 'load', function() {
+			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
 			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
@@ -1537,7 +1537,7 @@ function setTrackCoverart() {
 	}
 	if ( !G.display.fixedcover ) {
 		$( '.licover' ).addClass( 'nofixed' );
-		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
+		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
 function stopAirplay() {
