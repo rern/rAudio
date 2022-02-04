@@ -412,7 +412,7 @@ var htmlwebradio = `\
 		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
 	</td>
 </tr>
-<tr><td></td><td colspan="2"><gr>&nbsp;(If encoding is not UTF-8.)</gr></td></tr>
+<tr><td></td><td colspan="2"><gr>&nbsp;(Blank: Default UTF-8)</gr></td></tr>
 </table>
 `;
 function webRadioNew( name, url, charset ) {
