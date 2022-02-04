@@ -325,7 +325,7 @@ $radiosampling" > $dirshm/radio
 			fi
 		fi
 		if [[ $displaycover ]]; then
-			filenoext=/data/webradiosimg/$urlname
+			filenoext=/data/webradiosimg/${urlname/\#charset*}
 			pathnoext=/srv/http$filenoext
 			if [[ -e $pathnoext.gif ]]; then
 				stationcover=$filenoext.$date.gif
@@ -427,13 +427,12 @@ elif [[ $state != stop ]]; then
 		bitdepth=dsd
 		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
 	fi
-	# save only webradio: update sampling database on each play
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
-	else
+	else # save only webradio: update sampling database on each play
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
+			[[ -e $radiofile ]] && sed -i "2 s/.*/$sampling/" $radiofile
 		else
 			sampling=$radiosampling
 		fi

@@ -1105,7 +1105,8 @@ volumeupdown )
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
-	dir=${args[3]}
+	charset=${args[3]}
+	dir=${args[4]}
 	urlname=${url//\//|}
 	file=$dirwebradios
 	[[ $dir ]] && file="$file/$dir"
@@ -1118,7 +1119,10 @@ webradioadd )
 	fi
 	[[ ! $url ]] && exit -1
 	
-	echo $name > "$file"
+	echo "\
+$name
+
+$charset" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
 	;;
@@ -1141,7 +1145,8 @@ webradioedit ) # name, newname, url, newurl
 	namenew=${args[2]}
 	url=${args[3]}
 	urlnew=$( urldecode ${args[4]} )
-	dir=${args[5]}
+	charset=${args[5]}
+	dir=${args[6]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
 	[[ $dir ]] && dir="$dir/"
@@ -1153,6 +1158,9 @@ webradioedit ) # name, newname, url, newurl
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
+	echo "\
+$( head -2 $filenew )
+$charset" > $filenew
 	pushstream webradio -1
 	;;
 wrdirdelete )

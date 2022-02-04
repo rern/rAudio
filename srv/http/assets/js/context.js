@@ -360,28 +360,24 @@ function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path.replace( /.*(http.*:)/, '$1' )
+	var charset = G.list.li.data( 'charset' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
-		, width        : 500
-		, message      : '<img src="'+ img +'">'
-		, textlabel    : [ 'Name', 'URL <gr>*</gr>' ]
-		, values       : [ name, url ]
+		, content      : htmlwebradio
+		, values       : [ name, url, charset ]
 		, checkchanged : 1
 		, checkblank   : 1
 		, boxwidth     : 'max'
 		, beforeshow   : function() {
-			if ( url.indexOf( '#charset' ) === -1 ) {
-				$( '#infoContent table' ).append(
-					'<tr><td></td><td class="gr">* Add <code>#charset=xxx</code> after URL to fix <code>?</code> in title data (<code>xxx</code> = code)'
-				);
-			}
+			$( '#addwebradiodir' ).empty();
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
+			var charset = values[ 2 ];
 			var $exist = $( '#lib-list .lipath:not( :eq( '+ G.list.li.index() +' ) )' ).filter( function() {
 				return $( this ).text() === newurl
 			} );
@@ -389,7 +385,7 @@ function webRadioEdit() {
 				webRadioExists( $exist.next().text(), newurl );
 			} else {
 				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioedit', name, newname, url, newurl, lipath ] );
+				bash( [ 'webradioedit', name, newname, url, newurl, charset, lipath ] );
 			}
 		}
 	} );
@@ -407,19 +403,27 @@ function webRadioExists( existname, existurl, name ) {
 		}
 	} );
 }
-function webRadioNew( name, url ) {
+var htmlwebradio = `\
+<table>
+<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>Charset</td><td><input type="text"></td>
+	<td id="addwebradiodir" style="width: 50%; text-align: right; cursor: pointer;">
+		<i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;
+	</td>
+</tr>
+</table>
+`;
+function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
-		, width        : 500
-		, textlabel    : [ 'Name', 'URL' ]
-		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
-		, footeralign  : 'right'
 		, boxwidth     : 'max'
-		, values       : name || [ name, url ]
+		, content      : htmlwebradio
+		, values       : name ? [ name, url, charset ] : ''
 		, checkblank   : 1
 		, beforeshow   : function() {
-			$( '#infoContent .addwebradiodir' ).click( function() {
+			$( '#addwebradiodir' ).click( function() {
 				info( {
 					  icon       : 'webradio'
 					, title      : 'Add New Folder'
@@ -437,6 +441,7 @@ function webRadioNew( name, url ) {
 			var values = infoVal();
 			var name = values[ 0 ];
 			var url = values[ 1 ];
+			var charset = values[ 2 ];
 			var $exist = $( '#lib-list .lipath' ).filter( function() {
 				return $( this ).text() === url
 			} );
@@ -445,14 +450,14 @@ function webRadioNew( name, url ) {
 			} else {
 				if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
 				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioadd', name, url, lipath ], function( data ) {
+				bash( [ 'webradioadd', name, url, charset, lipath ], function( data ) {
 					if ( data == -1 ) {
 						info( {
 							  icon    : 'webradio'
 							, title   : 'Add WebRadio'
 							, message : '<wh>'+ url +'</wh><br>contains no valid URL.'
 							, ok      : function() {
-								webRadioNew( name, url );
+								webRadioNew( name, url, charset );
 							}
 						} );
 					}
@@ -679,6 +684,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			break;
 		case 'wr':
 			cmd = cmd.slice( 2 );
+			var charset = G.list.li.data( 'charset' );
+			if ( charset ) path += '#charset='+ charset
 			mpccmd = [ 'pladd', path ];
 			break;
 		case 'pl':
