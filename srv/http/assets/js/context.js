@@ -408,10 +408,11 @@ var htmlwebradio = `\
 <tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>Charset</td><td><input type="text"></td>
-	<td id="addwebradiodir" style="width: 50%; text-align: right; cursor: pointer;">
-		<i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;
+	<td style="width: 50%; text-align: right">
+		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
 	</td>
 </tr>
+<tr><td></td><td colspan="2"><gr>* If encoding is not UTF-8.</gr></td></tr>
 </table>
 `;
 function webRadioNew( name, url, charset ) {
