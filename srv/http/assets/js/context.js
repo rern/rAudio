@@ -367,7 +367,7 @@ function webRadioEdit() {
 		, content      : htmlwebradio
 		, values       : [ name, url, charset ]
 		, checkchanged : 1
-		, checkblank   : 1
+		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : function() {
 			$( '#addwebradiodir' ).empty();
@@ -421,7 +421,7 @@ function webRadioNew( name, url, charset ) {
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
 		, values       : name ? [ name, url, charset ] : ''
-		, checkblank   : 1
+		, checkblank   : [ 0, 1 ]
 		, beforeshow   : function() {
 			$( '#addwebradiodir' ).click( function() {
 				info( {
