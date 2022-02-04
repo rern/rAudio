@@ -90,7 +90,7 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
-	$( '#lib-list li:eq( 0 )' ).click();
+	$( '#lib-list li' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
@@ -149,7 +149,7 @@ function contextmenuLibrary( $li, $target ) {
 		&& G.status.player === 'mpd'
 	) {
 		var i = G.display.tapaddplay ? 0 : 1;
-		$menu.find( '.submenu:eq( '+ i +' )' ).click();
+		$menu.find( '.submenu' ).eq( i ).click();
 		$li.addClass( 'active' );
 		return
 	}
@@ -520,12 +520,6 @@ function getPlaybackStatus( withdisplay ) {
 			displayPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
-			if ( !G.librarylist && G.status.counts ) {
-				$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
-				$.each( G.status.counts, function( key, val ) {
-					$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
-				} );
-			}
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			$( '#pl-list .elapsed' ).empty();
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
@@ -937,6 +931,10 @@ function renderLibrary() {
 	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
+	$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
+	$.each( G.status.counts, function( key, val ) {
+		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
+	} );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
@@ -979,7 +977,7 @@ function renderLibraryList( data ) {
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
-			$( '#lib-list img:eq( 0 )' ).on( 'load', function() {
+			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
 			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
@@ -1285,15 +1283,16 @@ function setInfo() {
 			.toggleClass( 'gr', G.status.state === 'pause' );
 		$( '#album' ).text( G.status.Album || G.status.file );
 	} else { // webradio
+		var url = G.status.file.replace( /#charset=.*/, '' );
 		if ( G.status.state !== 'play' ) {
 			$( '#artist' ).text( G.status.station );
 			$( '#title' ).html( '·&ensp;·&ensp;·' );
-			$( '#album' ).text( G.status.file );
+			$( '#album' ).text( url );
 		} else {
 			$( '#artist' ).text( G.status.Artist || ( !G.status.Artist && !G.status.Title ? G.status.station : '' ) );
 			$( '#title' ).html( G.status.Title || blinkdot );
 			blinkDot();
-			$( '#album' ).text( G.status.Album || G.status.file );
+			$( '#album' ).text( G.status.Album || url );
 		}
 	}
 	$( '#artist' ).toggleClass( 'disabled', G.status.Artist === '' );
@@ -1538,7 +1537,7 @@ function setTrackCoverart() {
 	}
 	if ( !G.display.fixedcover ) {
 		$( '.licover' ).addClass( 'nofixed' );
-		$( '#lib-list li:eq( 1 )' ).removeClass( 'track1' );
+		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
 function stopAirplay() {
@@ -1608,7 +1607,7 @@ function volumeBarSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeDrag( vol );
+		bash( [ 'volume', 'drag', vol, G.status.control ] );
 	} else {
 		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
@@ -1662,13 +1661,6 @@ function volumeColorUnmute() {
 		.removeClass( 'fa-mute active' )
 		.addClass( 'fa-volume' );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
-}
-function volumeDrag( vol ) {
-	if ( G.status.control ) {
-		bash( 'amixer -Mq sset "'+ G.status.control +'" '+ vol +'%' );
-	} else {
-		bash( 'mpc volume '+ vol );
-	}
 }
 function vu() {
 	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).is( ':hidden' ) ) {

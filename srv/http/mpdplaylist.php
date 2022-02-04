@@ -268,7 +268,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$stationname = $list->Name;
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				$urlname = $list->urlname ?: str_replace( '/', '|', $file );
+				$urlname = str_replace( '#', '%23', $list->urlname );
 				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg"'
 						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
@@ -281,7 +281,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<div class="li1"><span class="name">'.$stationname.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>'
-						.'<div class="li2">'.$i.' • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.$file.'</div>'
+						.'<div class="li2">'.$i.' • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.preg_replace( '/#charset=.*/', '', $file ).'</div>'
 					.'</li>';
 			$countradio++;
 		}
@@ -333,7 +333,8 @@ function playlist() { // current playlist
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$urlname = str_replace( '/', '|', $each->file );
+			$file = preg_replace( '/#charset=.*/', '', $each->file );
+			$urlname = str_replace( '/', '|', $file );
 			$radiofile = '/srv/http/data/webradios/'.$urlname;
 			if ( !file_exists( $radiofile ) ) {
 				$radiofile = '';

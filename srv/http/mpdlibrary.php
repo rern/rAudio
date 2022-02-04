@@ -221,10 +221,12 @@ case 'webradio':
 	if ( count( $files ) ) {
 		foreach( $files as $file ) {
 			$each = ( object )[];
-			$name = exec( "sed -n 1p '$dirwebradios/$file'" );
-			$each->name  = $name;
-			$each->url   = str_replace( '|', '/', $file );
-			$each->sort  = stripSort( $name );
+			$data = file( "$dirwebradios/$file", FILE_IGNORE_NEW_LINES );
+			$name = $data[ 0 ];
+			$each->charset = $data[ 2 ];
+			$each->name    = $name;
+			$each->url     = str_replace( '|', '/', $file );
+			$each->sort    = stripSort( $name );
 			$array[] = $each;
 		}
 		usort( $array, function( $a, $b ) {
@@ -234,16 +236,18 @@ case 'webradio':
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
-			$urlname = str_replace( '/', '|', $each->url );
+			$url = $each->url;
+			$urlname = str_replace( '/', '|', $url );
+			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
-			$html.= '<li class="file" data-index="'.$index.'">'
+			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">'
 						.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
-						.'<a class="lipath">'.$path.$each->url.'</a>'
+						.'<a class="lipath">'.$path.$url.'</a>'
 						.'<a class="liname">'.$liname.'</a>'
 						.'<div class="li1">'.$name.'</div>'
-						.'<div class="li2">'.$each->url.'</div>'
+						.'<div class="li2">'.$url.'</div>'
 					.'</li>';
 		}
 	}

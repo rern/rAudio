@@ -225,7 +225,10 @@ volumeGet() {
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
-				volume=100
+				volume=$( amixer -M sget "$control" \
+							| grep -m1 '%]' \
+							| sed 's/.*\[\(.*\)%].*/\1/' )
+				[[ ! $volume ]] && volume=100
 			fi
 			echo $volume > $dirshm/mpdvolume
 		fi
@@ -262,9 +265,7 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btclient ]] && alsactl store
 }
 webradioCount() {
-	count=$( find $dirdata/webradios -type f \
-					| grep -v '\.jpg$\|\.gif$' \
-					| wc -l )
+	count=$( find -L $dirdata/webradios -type f ! -name "*.jpg" ! -name "*.gif" | wc -l )
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
@@ -1032,7 +1033,11 @@ volume )
 	current=${args[1]}
 	target=${args[2]}
 	control=${args[3]}
-	drag=${args[4]}
+	if [[ $current == drag ]]; then
+		volumeSetAt $target
+		exit
+	fi
+	
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
@@ -1052,11 +1057,7 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	if [[ $drag ]]; then
-		volumeSetAt $target
-	else
-		volumeSet
-	fi
+	volumeSet
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
@@ -1104,7 +1105,8 @@ volumeupdown )
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
-	dir=${args[3]}
+	charset=$( echo ${args[3]} | sed 's/iso-*\|iso *//i' )
+	dir=${args[4]}
 	urlname=${url//\//|}
 	file=$dirwebradios
 	[[ $dir ]] && file="$file/$dir"
@@ -1117,7 +1119,10 @@ webradioadd )
 	fi
 	[[ ! $url ]] && exit -1
 	
-	echo $name > "$file"
+	echo "\
+$name
+
+$charset" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
 	;;
@@ -1135,23 +1140,27 @@ webradiodelete )
 	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
 	webradioCount
 	;;
-webradioedit ) # name, newname, url, newurl
+webradioedit )
 	name=${args[1]}
-	namenew=${args[2]}
-	url=${args[3]}
-	urlnew=$( urldecode ${args[4]} )
-	dir=${args[5]}
+	urlnew=${args[2]}
+	charset=$( echo ${args[3]} | sed 's/iso-*\|iso *//i' )
+	dir=${args[4]}
+	url=${args[5]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
 	[[ $dir ]] && dir="$dir/"
 	fileprev="$dirwebradios/$dir$urlname"
 	filenew="$dirwebradios/$dir$urlnamenew"
-	[[ $name != $namenew ]] && sed -i "1 c$namenew" "$fileprev"
 	if [[ $url != $urlnew ]]; then
 		mv "$fileprev" "$filenew"
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
+	sed -
+	echo "\
+$name
+$( sed -n 2p $filenew )
+$charset" > $filenew
 	pushstream webradio -1
 	;;
 wrdirdelete )

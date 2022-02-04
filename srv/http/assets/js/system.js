@@ -375,7 +375,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
 			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
-			$( '#infoContent select:eq( 0 )' ).change( function() {
+			$( '#infoContent select' ).eq( 0 ).change( function() {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
@@ -544,7 +544,7 @@ $( '#ledcalc' ).click( function() {
 		, boxwidth   : 70
 		, beforeshow : function() {
 			$( '#infoContent input' ).prop( 'disabled', 1 );
-			$( '#infoContent input:eq( 2 )' )
+			$( '#infoContent input' ).eq( 2 )
 				.prop( 'disabled', 0 )
 				.keyup( function() {
 					var fv = $( this ).val();
@@ -553,7 +553,7 @@ $( '#ledcalc' ).click( function() {
 					} else {
 						var ohm = fv ? Math.round( ( 3.3 - fv ) / 0.005 ) : '';
 					}
-					$( '#infoContent input:eq( 3 )' ).val( ohm );
+					$( '#infoContent input' ).eq( 3 ).val( ohm );
 				} );
 		}
 		, okno       : 1
@@ -643,7 +643,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, checkchanged : 1
 		, checkblank   : 1
 		, beforeshow   : function() {
-			for ( i = 4; i < 9; i++ ) $( '#infoContent tr:eq( '+ i +') td:first-child' ).remove();
+			for ( i = 4; i < 9; i++ ) $( '#infoContent tr' ).eq( i ).find( 'td:first-child' ).remove();
 			var values, val;
 			var $text = $( '#infoContent input:text' );
 			var $radio = $( '#infoContent input:radio' );
@@ -675,12 +675,15 @@ $( '#shareddata' ).click( function() {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
-			, message : 'Disable?'
+			, radio   : { 'Copy shared data to local': true, 'Rebuild entire database': false }
+			, values  : [ true ]
 			, cancel  : function() {
 				$( '#shareddata' ).prop( 'checked', true );
 			}
+			, okcolor : orange
+			, oklabel : 'Disable'
 			, ok      : function() {
-				bash( [ 'shareddatadisable' ] );
+				bash( [ 'shareddatadisable', infoVal() ] );
 				notify( 'Shared Data', 'Disable ...', 'networks' );
 			}
 		} );
@@ -810,7 +813,11 @@ $( '.listtitle' ).click( function() {
 				var list = list.split( '\n' );
 				pkghtml = '';
 				list.forEach( function( pkg ) {
-					pkghtml += '<bl>'+ pkg +'</bl><br>';
+					if ( !localhost ) {
+						pkghtml += '<bl>'+ pkg +'</bl><br>';
+					} else {
+						pkghtml += pkg +'<br>';
+					}
 				} );
 				$list
 					.html( pkghtml.slice( 0, -4 ) )
@@ -825,8 +832,6 @@ $( '.listtitle' ).click( function() {
 	}
 } );
 $( '.list' ).on( 'click', 'bl', function() {
-	if ( localhost ) return
-	
 	var pkg = $( this ).text();
 	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager'
 			, 'mpdscribble', 'nginx-mainline-pushstream', 'snapcast', 'upmpdcli' ].includes( pkg ) ) {
@@ -840,6 +845,7 @@ $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
+if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -893,21 +899,25 @@ ${ htmlname }
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, beforeshow : function() {
-			$( '#infoContent td:eq( 0 )' ).css( 'width', 90 );
-			$( '#infoContent td:eq( 1 )' ).css( 'width', 230 );
-			var $sharelabel = $( '#sharename td:eq( 0 )' );
+			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
+			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
+			var $sharelabel = $( '#sharename td' ).eq( 0 );
 			var $share = $( '#sharename input' );
 			var $guest = $( '.guest' );
-			$( '#infoContent input:radio' ).change( function() {
-				if ( $( this ).val() === 'nfs' ) {
+			function hideOptions( type ) {
+				if ( type === 'nfs' ) {
 					$sharelabel.text( 'Share path' );
 					$guest.addClass( 'hide' );
-					$share.val( '/'+ $share.val() );
+					$share.val( $share.val() || '/' );
 				} else {
 					$sharelabel.text( 'Share name' );
 					$guest.removeClass( 'hide' );
 					$share.val( $share.val().replace( /\//g, '' ) );
 				}
+			}
+			hideOptions( values ? values[ 0 ] : 'cifs' );
+			$( '#infoContent input:radio' ).change( function() {
+				hideOptions( $( this ).val() );
 			} );
 		}
 		, cancel     : function() {
@@ -930,7 +940,11 @@ ${ htmlname }
 					refreshData();
 				}
 			} );
-			notify( shareddata ? 'Shared Data' : 'Network Mount', 'Mount ...', 'networks' );
+			if ( shareddata  ) {
+				notify( 'Shared Data', 'Enable ...', 'networks' );
+			} else {
+				notify( 'Network Mount', 'Mount ...', 'networks' );
+			}
 		}
 	} );
 }

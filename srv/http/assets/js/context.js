@@ -202,9 +202,9 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				if ( cue && !G.list.licover ) $( '#infoContent input:eq( 2 )' ).prop( 'disabled', 1 );
+				if ( cue && !G.list.licover ) $( '#infoContent input' ).eq( 2 ).prop( 'disabled', 1 );
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
-				labelW = $( '#infoContent td:eq( 0 )' ).width() - 30; // less icon width
+				labelW = $( '#infoContent td' ).eq( 0 ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
 				var $text = $( '#infoContent input' );
 				setTimeout( function() {
@@ -360,21 +360,27 @@ function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
 	var url = G.list.path.replace( /.*(http.*:)/, '$1' )
+	var charset = G.list.li.data( 'charset' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
-		, width        : 500
-		, message      : '<img src="'+ img +'">'
-		, textlabel    : [ 'Name', 'URL' ]
-		, values       : [ name, url ]
+		, content      : htmlwebradio
+		, values       : [ name, url, charset ]
 		, checkchanged : 1
-		, checkblank   : 1
+		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
+		, beforeshow   : function() {
+			$( '#addwebradiodir' ).empty();
+			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
+				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
+			}
+		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
+			var newcharset = values[ 2 ];
 			var $exist = $( '#lib-list .lipath:not( :eq( '+ G.list.li.index() +' ) )' ).filter( function() {
 				return $( this ).text() === newurl
 			} );
@@ -382,7 +388,7 @@ function webRadioEdit() {
 				webRadioExists( $exist.next().text(), newurl );
 			} else {
 				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioedit', name, newname, url, newurl, lipath ] );
+				bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ] );
 			}
 		}
 	} );
@@ -400,19 +406,29 @@ function webRadioExists( existname, existurl, name ) {
 		}
 	} );
 }
-function webRadioNew( name, url ) {
+var htmlwebradio = `\
+<table>
+<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>Charset</td><td><input type="text">
+	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-question-circle fa-lg gr"></i></a></td>
+	<td style="width: 50%; text-align: right">
+		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
+	</td>
+</tr>
+<tr style="line-height: 20px"><td style="height: auto"></td><td colspan="2" style="height: auto"><gr>&nbsp;(Blank: UTF-8)</gr></td></tr>
+</table>
+`;
+function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
-		, width        : 500
-		, textlabel    : [ 'Name', 'URL' ]
-		, values       : ( name || url ? [ name, url ] : '' )
-		, checkblank   : 1
-		, footer       : '<div class="addwebradiodir btnbottom pointer"><i class="fa fa-folder-plus"></i>New folder</div>'
-		, footeralign  : 'right'
 		, boxwidth     : 'max'
+		, content      : htmlwebradio
+		, values       : name ? [ name, url, charset ] : ''
+		, checkblank   : [ 0, 1 ]
 		, beforeshow   : function() {
-			$( '#infoContent .addwebradiodir' ).click( function() {
+			$( '#addwebradiodir' ).click( function() {
 				info( {
 					  icon       : 'webradio'
 					, title      : 'Add New Folder'
@@ -430,6 +446,7 @@ function webRadioNew( name, url ) {
 			var values = infoVal();
 			var name = values[ 0 ];
 			var url = values[ 1 ];
+			var charset = values[ 2 ];
 			var $exist = $( '#lib-list .lipath' ).filter( function() {
 				return $( this ).text() === url
 			} );
@@ -438,14 +455,14 @@ function webRadioNew( name, url ) {
 			} else {
 				if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
 				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioadd', name, url, lipath ], function( data ) {
+				bash( [ 'webradioadd', name, url, charset, lipath ], function( data ) {
 					if ( data == -1 ) {
 						info( {
 							  icon    : 'webradio'
 							, title   : 'Add WebRadio'
 							, message : '<wh>'+ url +'</wh><br>contains no valid URL.'
 							, ok      : function() {
-								webRadioNew( name, url );
+								webRadioNew( name, url, charset );
 							}
 						} );
 					}
@@ -672,6 +689,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			break;
 		case 'wr':
 			cmd = cmd.slice( 2 );
+			var charset = G.list.li.data( 'charset' );
+			if ( charset ) path += '#charset='+ charset
 			mpccmd = [ 'pladd', path ];
 			break;
 		case 'pl':

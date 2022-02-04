@@ -280,13 +280,14 @@ elif [[ $stream ]]; then
 		ext=Radio
 		icon=webradio
 		# before webradios play: no 'Name:' - use station name from file instead
-		urlname=${file//\//|}
+		url=${file/\#charset*}
+		urlname=${url//\//|}
 		radiofile=$dirdata/webradios/$urlname
 		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradios -name "$urlname" )
 		if [[ -e $radiofile ]]; then
-			radiodata=$( cat "$radiofile" )
-			station=$( sed -n 1p <<< "$radiodata" )
-			radiosampling=$( sed -n 2p <<< "$radiodata" )
+			readarray -t radiodata < "$radiofile"
+			station=${radiodata[0]}
+			radiosampling=${radiodata[1]}
 		fi
 		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
 		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
@@ -338,7 +339,7 @@ $radiosampling" > $dirshm/radio
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
-, "stationcover" : "'$stationcover'"
+, "stationcover" : "'${stationcover/\#/%23}'"
 , "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"
@@ -427,13 +428,12 @@ elif [[ $state != stop ]]; then
 		bitdepth=dsd
 		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
 	fi
-	# save only webradio: update sampling database on each play
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
-	else
+	else # save only webradio: update sampling database on each play
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && echo $station$'\n'$sampling > $radiofile
+			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile
 		else
 			sampling=$radiosampling
 		fi

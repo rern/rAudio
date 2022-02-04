@@ -210,6 +210,8 @@ datarestore )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
+	chown -R http:http /srv/http
+	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
@@ -218,18 +220,20 @@ datarestore )
 	fi
 	mountpoint=/srv/http/shareddata
 	if grep -q $mountpoint /etc/fstab; then
+		mkdir -p $mountpoint
+		chown http:http $mountpoint
+		chmod 777 $mountpoint
 		std=$( mount $mountpoint )
 		if [[ $? == 0 ]]; then
 			for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-				mkdir -p $mountpoint/$dir
-				ln -sf $mountpoint/$dir /srv/http/data
+				rm -rf $dirdata/$dir
+				ln -s $mountpoint/$dir $dirdata
 			done
 		fi
 	fi
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-	chown -R http:http /srv/http
-	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
+	chown -R http:http /srv/http/{assets,bash,settings}
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 fstabget )
@@ -590,17 +594,19 @@ servers )
 	fi
 	;;
 shareddatadisable )
+	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
 	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-		rm -rf /srv/http/data/$dir
-		cp -rf $mountpoint/$dir /srv/http/data
+		rm -rf $dirdata/$dir
+		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
 	done
 	umount -l $mountpoint
 	sed -i "\|$mountpoint| d" /etc/fstab
 	rm -rf $mountpoint
-	chown -R http:http /srv/http/data
-	chown -R mpd:audio /srv/http/data/mpd
+	chown -R http:http $dirdata
+	chown -R mpd:audio $dirdata/mpd
 	pushRefresh
+	[[ $copydata == false ]] && $dirbash/cmd.sh mpcupdate
 	;;
 shareddata )
 	protocol=${args[1]}
@@ -637,17 +643,17 @@ shareddata )
 			mount | grep -q "$mountpoint" && break
 		done
 		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
-			if [[ $copydata ]]; then
+			if [[ $copydata == true ]]; then
 				rm -rf $mountpoint/$dir
-				cp -rf /srv/http/data/$dir $mountpoint
+				cp -rf $dirdata/$dir $mountpoint
 			else
 				mkdir -p $mountpoint/$dir
 			fi
-			rm -rf /srv/http/data/$dir
-			ln -s $mountpoint/$dir /srv/http/data
+			rm -rf $dirdata/$dir
+			ln -s $mountpoint/$dir $dirdata
 		done
-		chown -R http:http $mountpoint /srv/http/data
-		chown mpd:audio $mountpoint/mpd /srv/http/data/mpd
+		chown -R http:http $mountpoint $dirdata
+		chown mpd:audio $mountpoint/mpd $dirmpd
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )

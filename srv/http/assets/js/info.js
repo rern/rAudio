@@ -538,34 +538,35 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( O.beforeshow ) O.beforeshow();
+		if ( G.localhost ) $( 'a' ).removeAttr( 'href' );
 		$( 'html, body' ).scrollTop( 0 );
-		} );
-		$( '#infoContent' ).on( 'click', '.fa-eye', function() {
-			var $this = $( this );
-			var $pwd = $this.parent().prev().find( 'input' );
-			if ( $pwd.prop( 'type' ) === 'text' ) {
-				$this.removeClass( 'bl' );
-				$pwd.prop( 'type', 'password' );
-			} else {
-				$this.addClass( 'bl' );
-				$pwd.prop( 'type', 'text' );
-			}
-		} );
-		// check inputs: blank / length / change
-		if ( O.checkblank ) {
-			if ( typeof O.checkblank !== 'object' ) O.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
-			checkBlank();
+	} );
+	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
+		var $this = $( this );
+		var $pwd = $this.parent().prev().find( 'input' );
+		if ( $pwd.prop( 'type' ) === 'text' ) {
+			$this.removeClass( 'bl' );
+			$pwd.prop( 'type', 'password' );
 		} else {
-			O.blank = false;
+			$this.addClass( 'bl' );
+			$pwd.prop( 'type', 'text' );
 		}
-		if ( O.checklength ) {
-			checkLength();
-		} else {
-			O.short = false;
-		}
-		O.nochange = O.values && O.checkchanged ? true : false;
-		$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
-		infoCheckSet();
+	} );
+	// check inputs: blank / length / change
+	if ( O.checkblank ) {
+		if ( typeof O.checkblank !== 'object' ) O.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
+		checkBlank();
+	} else {
+		O.blank = false;
+	}
+	if ( O.checklength ) {
+		checkLength();
+	} else {
+		O.short = false;
+	}
+	O.nochange = O.values && O.checkchanged ? true : false;
+	$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
+	infoCheckSet();
 	//////////////////////////////////////////////////////////////////////////
 	}, 0 );
 }

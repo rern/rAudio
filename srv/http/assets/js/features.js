@@ -38,7 +38,7 @@ $( '#setting-spotifyd' ).click( function() {
 			, checklength  : { 0: 32, 1: 32 }
 			, beforeshow   : function() {
 				$( '#infoContent .help' ).click( function() {
-					$( '.container .help:eq( 0 )' ).click();
+					$( '.container .help' ).eq( 0 ).click();
 					$( '#infoX' ).click();
 				} );
 			}
@@ -81,7 +81,7 @@ $( '#setting-snapclient' ).click( function() {
 		, boxwidth     : 100
 		, checkchanged : ( G.snapclient ? 1 : 0 )
 		, beforeshow   : function() {
-			$( '#infoContent input:eq( 0 )' ).on( 'keyup paste cut', function() {
+			$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}

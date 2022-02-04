@@ -102,8 +102,7 @@ getinstallzip() {
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
-	chown -R http:http /srv/http
-	chown -R mpd:audio $dirmpd
+	chown -R http:http /srv/http/{assets,bash,settings}
 	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/* /usr/local/bin/* 2> /dev/null
 	chmod 777 $dirdata/tmp
 	

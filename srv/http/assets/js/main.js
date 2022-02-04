@@ -133,7 +133,7 @@ $( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // 
 	location.reload();
 } );
 $( '#logo' ).click( function() {
-	window.open( 'https://github.com/rern/rAudio-1/discussions' );
+	if ( !G.localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
@@ -543,7 +543,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
 				$( '#infoContent input' ).change( function() {
-					$( '#infoContent input:text:eq( 1 )' ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
+					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
 			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {
@@ -583,7 +583,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 	} );
 } );
 $( '#album, #guide-album' ).click( function() {
-	window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
+	if ( !G.localhost ) window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
 } );
 $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 	info( {
@@ -687,9 +687,8 @@ $( '#volume' ).roundSlider( {
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
-		volumeDrag( e.value );
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', G.status.volume, e.value, G.status.control, 'drag' ] );
+		bash( [ 'volume', 'drag', e.value, G.status.control ] );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
@@ -758,7 +757,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volT' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		volumeDrag( vol );
+		bash( [ 'volume', 'drag', vol, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -797,7 +796,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		G.status.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeDrag( vol );
+		bash( [ 'volume', 'drag', vol, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute /unmute
@@ -1615,7 +1614,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 		}
 		return
 	} else if ( $target.hasClass( 'lialbum' ) ) {
-		window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
+		if ( !G.localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
 		return
 	} else if ( $this.find( '.fa-music' ).length || $target.data( 'target' ) ) {
 		contextmenuLibrary( $this, $target );

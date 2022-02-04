@@ -296,7 +296,9 @@ $body = [
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations.
- • On file server, setup a network share with write permission.
+ • On file server, setup a network share with all permissions
+ &emsp; • Directory: <code>777</code> / <code>a+rwx</code>
+ &emsp; • Share: allow <code>read</code>, <code>write</code> and <code>execute</code> / <code>modify</code>
  • On each rAudio, enable Shared Data to connect the share.
  • Initial shared data - <code>Use data from this rAudio</code>:
  &emsp; • Leave unchecked to use existing data on the server.
@@ -360,7 +362,7 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<heading class="sub">Back End<i class="help fa fa-question-circle"></i></heading>
 	<div id="divbackend" class="help-sub hide">
 	<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
-	<br><a class="listtitle">Packages&ensp;<i class="fa fa-chevron-down"></i></a>
+	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-down bl"></i></span>
 	<div class="list hide"></div><br>&nbsp;
 	</div>
 
@@ -370,7 +372,7 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 	<br><a href="https://www.php.net" target="_blank">PHP</a>
 	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
-	<br><a class="listtitle">JS libraries and plugins&ensp;<i class="fa fa-chevron-down"></i></a>
+	<br><span class="listtitle">JS libraries and plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
 	<div class="list hide"><?=$uihtml?></div><br>&nbsp;
 	</div>
 

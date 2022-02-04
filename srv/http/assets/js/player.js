@@ -61,8 +61,8 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
 					$( '#infoContent' ).after( '<div class="infomessage warning hide"><br>'+ warning +'</div>' );
-					$( '#infoButtons a:eq( 0 )' ).addClass( 'hide' );
-					$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+					$( '#infoButtons a' ).eq( 0 ).addClass( 'hide' );
+					$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input keyup', function() {
 						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ $( this ).val() +'%' );
 					} ).on( 'touchend mouseup keyup', function() {
@@ -76,8 +76,8 @@ $( '#setting-hwmixer' ).click( function() {
 				  function() { bash( [ 'volume0db', device.hwmixer ] ) }
 				, function() {
 					$( '#infoContent' ).addClass( 'hide' );
-					$( '.warning, #infoButtons a:eq( 0 )' ).removeClass( 'hide' ); // ok
-					$( '#infoButtons a:eq( 1 )' ).addClass( 'hide' );              // 0dB
+					$( '.warning, #infoButtons a' ).eq( 0 ).removeClass( 'hide' ); // ok
+					$( '#infoButtons a' ).eq( 1 ).addClass( 'hide' );              // 0dB
 				}
 			]
 			, okno          : 1
@@ -263,7 +263,7 @@ $( '#setting-soxr' ).click( function() {
 		, checkchanged  : ( G.soxr ? 1 : 0 )
 		, checkblank    : 1
 		, beforeshow    : function() {
-			var $extra = $( '#infoContent tr:eq( 5 )' );
+			var $extra = $( '#infoContent tr' ).eq( 5 );
 			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
 			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
 		}
@@ -389,7 +389,7 @@ function renderPage() {
 			$( '#infoRange .value' ).text( vol );
 			$( '#infoRange input' ).val( vol );
 			$( '.infofooter' ).text( db +' dB' );
-			$( '#infoButtons a:eq( 1 )' ).toggleClass( 'hide', db === '0.00' );
+			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
 	showContent();
