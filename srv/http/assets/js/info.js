@@ -474,6 +474,7 @@ function info( json ) {
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
+		if ( G.localhost ) $( 'a' ).removeAttr( 'href' );
 		// get all input fields - omit .selectric-input for select
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
 		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
