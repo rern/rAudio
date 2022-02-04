@@ -1141,7 +1141,7 @@ webradiodelete )
 	webradioCount
 	;;
 webradioedit )
-	namenew=${args[1]}
+	name=${args[1]}
 	urlnew=${args[2]}
 	charset=$( echo ${args[3]} | sed 's/iso-*\|iso *//i' )
 	dir=${args[4]}
@@ -1151,14 +1151,15 @@ webradioedit )
 	[[ $dir ]] && dir="$dir/"
 	fileprev="$dirwebradios/$dir$urlname"
 	filenew="$dirwebradios/$dir$urlnamenew"
-	sed -i "1 c$namenew" "$fileprev"
 	if [[ $url != $urlnew ]]; then
 		mv "$fileprev" "$filenew"
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
 	fi
+	sed -
 	echo "\
-$( head -2 $filenew )
+$name
+$( sed -n 2p $filenew )
 $charset" > $filenew
 	pushstream webradio -1
 	;;
