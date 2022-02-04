@@ -377,7 +377,7 @@ function webRadioEdit() {
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
-			var charset = values[ 2 ];
+			var newcharset = values[ 2 ];
 			var $exist = $( '#lib-list .lipath:not( :eq( '+ G.list.li.index() +' ) )' ).filter( function() {
 				return $( this ).text() === newurl
 			} );
@@ -385,7 +385,7 @@ function webRadioEdit() {
 				webRadioExists( $exist.next().text(), newurl );
 			} else {
 				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioedit', name, newname, url, newurl, charset, lipath ] );
+				bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ] );
 			}
 		}
 	} );

@@ -1140,19 +1140,18 @@ webradiodelete )
 	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
 	webradioCount
 	;;
-webradioedit ) # name, newname, url, newurl
-	name=${args[1]}
-	namenew=${args[2]}
-	url=${args[3]}
-	urlnew=$( urldecode ${args[4]} )
-	charset=$( echo ${args[5]} | sed 's/iso-*//i' )
-	dir=${args[6]}
+webradioedit )
+	namenew=${args[1]}
+	urlnew=${args[2]}
+	charset=$( echo ${args[3]} | sed 's/iso-*//i' )
+	dir=${args[4]}
+	url=${args[5]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
 	[[ $dir ]] && dir="$dir/"
 	fileprev="$dirwebradios/$dir$urlname"
 	filenew="$dirwebradios/$dir$urlnamenew"
-	[[ $name != $namenew ]] && sed -i "1 c$namenew" "$fileprev"
+	sed -i "1 c$namenew" "$fileprev"
 	if [[ $url != $urlnew ]]; then
 		mv "$fileprev" "$filenew"
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
