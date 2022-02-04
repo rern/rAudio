@@ -1105,7 +1105,7 @@ volumeupdown )
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
-	charset=${args[3]}
+	charset=$( echo ${args[3]} | sed 's/iso-*//i' )
 	dir=${args[4]}
 	urlname=${url//\//|}
 	file=$dirwebradios
@@ -1145,7 +1145,7 @@ webradioedit ) # name, newname, url, newurl
 	namenew=${args[2]}
 	url=${args[3]}
 	urlnew=$( urldecode ${args[4]} )
-	charset=${args[5]}
+	charset=$( echo ${args[5]} | sed 's/iso-*//i' )
 	dir=${args[6]}
 	urlname=${url//\//|}
 	urlnamenew=${urlnew//\//|}
