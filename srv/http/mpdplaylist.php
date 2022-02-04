@@ -333,7 +333,8 @@ function playlist() { // current playlist
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$urlname = str_replace( '/', '|', $each->file );
+			$file = preg_replace( '/#charset=.*/', '', $each->file );
+			$urlname = str_replace( '/', '|', $file );
 			$radiofile = '/srv/http/data/webradios/'.$urlname;
 			if ( !file_exists( $radiofile ) ) {
 				$radiofile = '';
