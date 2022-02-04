@@ -434,7 +434,6 @@ elif [[ $state != stop ]]; then
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile
-#			echo xxx $radiofile xxx $sampling
 		else
 			sampling=$radiosampling
 		fi
