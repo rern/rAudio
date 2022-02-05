@@ -1159,8 +1159,8 @@ webradioedit )
 	sed -
 	echo "\
 $name
-$( sed -n 2p $filenew )
-$charset" > $filenew
+$( sed -n 2p "$filenew" )
+$charset" > "$filenew"
 	pushstream webradio -1
 	;;
 wrdirdelete )
