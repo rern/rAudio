@@ -1125,6 +1125,20 @@ $name
 $charset" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
+	(
+		timeout 3 wget -q $url -O /tmp/webradio
+		data=( $( ffprobe -v quiet -select_streams a:0 \
+					-show_entries stream=sample_rate \
+					-show_entries format=bit_rate \
+					-of default=noprint_wrappers=1:nokey=1 \
+					/tmp/webradio ) )
+		samplerate=${data[0]}
+		bitrate=${data[1]}
+		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
+		rate="$(( bitrate / 1000 )) kbit/s"
+		sed -i "2 s|.*|$sample $rate|" "$file"
+		rm /tmp/webradio
+	) &
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
