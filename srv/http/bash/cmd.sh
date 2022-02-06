@@ -1164,7 +1164,10 @@ webradiodelete )
 	dir=${args[2]}
 	urlname=${url//\//|}
 	[[ $dir ]] && dir="$dir/"
-	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
+	rm -f "$dirwebradios/$dir$urlname"
+	if (( $( find $dirdata/webradios -type f -name "$urlname" | wc -l ) == 0 )); then
+		rm -f "${dirwebradios}img/$urlname"{,-thumb}.*
+	fi
 	webradioCount
 	;;
 webradioedit )
