@@ -291,7 +291,8 @@ webRadioSampling() {
 	samplerate=${data[0]}
 	bitrate=${data[1]}
 	sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
-	rate="$(( bitrate / 1000 )) kbit/s"
+	kb=$(( bitrate / 1000 ))
+	rate="$(( ( ( kb + 4 ) / 8 ) * 8 )) kbit/s" # round to modulo 8
 	sed -i "2 s|.*|$sample $rate|" "$file"
 	rm /tmp/webradio
 }

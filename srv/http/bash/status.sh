@@ -430,10 +430,10 @@ elif [[ $state != stop ]]; then
 	fi
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
-	else # save only webradio: update sampling database on each play
+	else
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile
+#			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # save only webradio: update sampling database on each play
 		else
 			sampling=$radiosampling
 		fi
