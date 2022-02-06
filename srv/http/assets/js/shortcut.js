@@ -74,10 +74,10 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 	}
 		
 	var keyevent = {
-		  AudioVolumeDown    : 'voldn'
+/*		  AudioVolumeDown    : 'voldn'
 		, AudioVolumeMute    : 'volmute'
-		, AudioVolumeUp      : 'volup'
-		, MediaNextTrack     : 'next'
+		, AudioVolumeUp      : 'volup'*/
+		  MediaNextTrack     : 'next'
 		, MediaPause         : 'pause'
 		, MediaPlay          : 'play'
 		, MediaPreviousTrack : 'previous'
