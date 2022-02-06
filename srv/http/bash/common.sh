@@ -37,7 +37,8 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
 }
 pushstreamNotify() { # title text icon [hide]
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3'"}'
+	[[ $4 ]] && delay=',"delay":'$4
+	data='{"title":"'$1'","text":"'$2'","icon":"'$3'"'$delay'}'
 	pushstream notify "$data"
 }
 pushstreamNotifyBlink() { # title text icon [hide]
