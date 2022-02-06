@@ -597,6 +597,7 @@ function imageReplace( imagefilenoext, type, covername ) {
 						.pop();
 	}
 	$.post( cmdphp, data );
+	banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
