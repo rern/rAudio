@@ -197,7 +197,7 @@ if [[ $1 == add || $1 == remove ]]; then
 		volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	fi
 	pushstream display '{"volumenone":'$volumenone'}'
-	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
+	pushstreamNotify 'Audio Output' "$name" output
 fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 

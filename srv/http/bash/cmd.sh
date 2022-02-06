@@ -995,11 +995,10 @@ power )
 		sleep 2
 	fi
 	if [[ $action == reboot ]]; then
-		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
+		pushstreamNotifyBlink Power 'Reboot ...' reboot reboot
 	else
-		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
+		pushstreamNotifyBlink Power 'Off ...' power off
 	fi
-	pushstream notify "$data"
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
