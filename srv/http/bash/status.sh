@@ -76,7 +76,7 @@ fi
 if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/btclient ]]; then
 		volumenone=false
-	elif [[ $dirshm/nosound ]]; then
+	elif [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
 		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
