@@ -433,11 +433,11 @@ elif [[ $state != stop ]]; then
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
 	else
-		if [[ $bitrate && $bitrate != 0 ]]; then
-			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
-		else
+		if [[ $radiosampling ]]; then
 			sampling=$radiosampling
+		elif [[ $bitrate && $bitrate != 0 ]]; then
+			samplingLine $bitdepth $samplerate $bitrate $ext
+#			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
 		fi
 	fi
 	samplingSave &
