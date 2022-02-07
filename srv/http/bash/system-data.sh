@@ -51,7 +51,6 @@ if ifconfig | grep -q eth0; then
 		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
 	else
 		soundprofileconf="[ \
-$( cat /sys/kernel/debug/sched/latency_ns ), \
 $( sysctl vm.swappiness | awk '{print $NF}'  ), \
 $( ifconfig eth0 | awk '/mtu/ {print $NF}' ), \
 $( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \

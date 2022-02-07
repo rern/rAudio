@@ -46,9 +46,8 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
-soundprofile() {
+soundProfile() {
 	if [[ $1 == reset ]]; then
-		latency=18000000
 		swappiness=60
 		mtu=1500
 		txqueuelen=1000
@@ -57,8 +56,6 @@ soundprofile() {
 		. $dirsystem/soundprofile.conf
 		touch $dirsystem/soundprofile
 	fi
-
-	echo $latency > /sys/kernel/debug/sched/latency_ns
 	sysctl vm.swappiness=$swappiness
 	if ifconfig | grep -q eth0; then
 		ip link set eth0 mtu $mtu
@@ -662,36 +659,33 @@ shareddata )
 	fi
 	;;
 soundprofile )
-	soundprofile
+	soundProfile
 	;;
 soundprofiledisable )
-	soundprofile reset
+	soundProfile reset
 	pushRefresh
 	;;
 soundprofileget )
 	echo "\
-<bll># cat /sys/kernel/debug/sched/latency_ns
-# sysctl vm.swappiness
+<bll># sysctl vm.swappiness
 # ifconfig eth0 | grep 'mtu\\|txq'</bll>
 
-latency = $( cat /sys/kernel/debug/sched/latency_ns )
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
 	| grep 'mtu\|txq' \
 	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
-	if [[ ${args[@]:1:4} == '18000000 60 1500 1000' ]]; then
+	if [[ ${args[@]:1:4} == '60 1500 1000' ]]; then
 		rm -f $dirsystem/soundprofile.conf
-		soundprofile reset
+		soundProfile reset
 	else
 		echo -n "\
-latency=${args[1]}
 swappiness=${args[2]}
 mtu=${args[3]}
 txqueuelen=${args[4]}
 " > $dirsystem/soundprofile.conf
-		soundprofile
+		soundProfile
 	fi
 	pushRefresh
 	;;

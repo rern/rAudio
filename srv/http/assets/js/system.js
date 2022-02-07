@@ -611,56 +611,14 @@ $( '#setting-timezone' ).click( function() {
 	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
-	var textlabel = [
-		  'sched_latency_ns'
-		, 'vm.swappiness'
-		, 'eth0 mtu'
-		, 'eth0 txqueuelen'
-	];
-	var radio = {
-		  Default   : '18000000 60 1500 1000'
-		, RuneAudio : '1500000 0 1500 1000'
-		, ACX       : '850000 0 1500 4000'
-		, Orion     : '500000 20 1000 4000'
-		, OrionV2   : '120000 0 1000 4000'
-		, OrionV3   : '1500000 0 1000 4000'
-		, OrionV4   : '145655 60 1000 4000'
-		, Um3ggh1U  : '500000 0 1500 1000'
-		, Custom    : '0'
-	}
-	var soundprofileconf = G.soundprofileconf.join( ' ' );
-	var radioval = Object.values( radio );
-	var rchecked = radioval.includes( soundprofileconf ) ? soundprofileconf : '0';
-	G.soundprofileconf.push( rchecked );
 	info( {
 		  icon         : 'sliders'
 		, title        : 'Kernel Sound Profile'
-		, textlabel    : textlabel
+		, textlabel    : [ 'vm.swappiness', 'eth0 mtu', 'eth0 txqueuelen' ]
 		, boxwidth     : 110
-		, radio        : radio
-		, radiocolumn  : 1
 		, values       : G.soundprofileconf
 		, checkchanged : 1
 		, checkblank   : 1
-		, beforeshow   : function() {
-			for ( i = 4; i < 9; i++ ) $( '#infoContent tr' ).eq( i ).find( 'td:first-child' ).remove();
-			var values, val;
-			var $text = $( '#infoContent input:text' );
-			var $radio = $( '#infoContent input:radio' );
-			$radio.last().prop( 'disabled', true );
-			$text.keyup( function() {
-				var $this = $( this )
-				$this.val( $this.val().replace( /[^0-9]/, '' ) );
-				values = infoVal().slice( 0, -1 ).join( ' ' );
-				if ( !radioval.includes( values ) ) values = 0;
-				$radio.val( [ values ] );
-			} );
-			var iL = textlabel.length;
-			$radio.change( function() {
-				val = $( this ).val().split( ' ' );
-				for ( i = 0; i < iL; i++ ) $text.eq( i ).val( val[ i ] );
-			} );
-		}
 		, cancel       : function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
