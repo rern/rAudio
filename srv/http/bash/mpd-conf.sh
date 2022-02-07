@@ -49,13 +49,14 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
 	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
+	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 elif [[ $1 == btoff ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	rm -f $dirshm/btclient
 	pushstream btclient false
 	$dirbash/networks-data.sh bt
 	systemctl stop bluetoothbutton
-	[[ -e $shm/novolume ]] && pushstream display '{"volumenone":true}'
+	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":true}'
 fi
 
 . $dirbash/mpd-devices.sh
