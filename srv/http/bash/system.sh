@@ -58,7 +58,7 @@ soundprofile() {
 		touch $dirsystem/soundprofile
 	fi
 
-	sysctl kernel.sched_latency_ns=$latency
+	echo $latency > /sys/kernel/debug/sched/latency_ns
 	sysctl vm.swappiness=$swappiness
 	if ifconfig | grep -q eth0; then
 		ip link set eth0 mtu $mtu
@@ -670,11 +670,11 @@ soundprofiledisable )
 	;;
 soundprofileget )
 	echo "\
-<bll># sysctl kernel.sched_latency_ns
+<bll># cat /sys/kernel/debug/sched/latency_ns
 # sysctl vm.swappiness
 # ifconfig eth0 | grep 'mtu\\|txq'</bll>
 
-$( sysctl kernel.sched_latency_ns )
+latency = $( cat /sys/kernel/debug/sched/latency_ns )
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
 	| grep 'mtu\|txq' \
@@ -739,7 +739,7 @@ unmount )
 	pushRefresh
 	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ -e $dirshm/audiocd ]] && exit
+	[[ -e $dirshm/audiocd ]] || ! systemctl -q is-active mpd && exit
 	
 	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed.
 	pushstreamNotify 'USB Drive' $action usbdrive

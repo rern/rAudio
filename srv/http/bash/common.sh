@@ -21,10 +21,10 @@ $data
 ${data:1}
 ]"
 	fi
-	# "k": > "k":false # "k":} > "k":false} # [, > [false, # ,, > ,false, # ,] > ,false]
+	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
 	echo "$data" \
-		| sed  's/:\s*$/:false/
-				s/:\s*}$/:false }/
+		| sed  's/:\s*$/: false/
+				s/:\s*}$/: false }/
 				s/^,\s*$/, false/
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
