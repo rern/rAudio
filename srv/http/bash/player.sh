@@ -10,7 +10,7 @@ pushRefresh() {
 	pushstream refresh "$data"
 }
 volumeBtGet() {
-	voldb=$( amixer -D bluealsa \
+	voldb=$( amixer -MD bluealsa \
 		| grep -m1 '%.*dB' \
 		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 }
