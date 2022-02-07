@@ -55,6 +55,7 @@ elif [[ $1 == btoff ]]; then
 	pushstream btclient false
 	$dirbash/networks-data.sh bt
 	systemctl stop bluetoothbutton
+	[[ -e $shm/novolume ]] && pushstream display '{"volumenone":true}'
 fi
 
 . $dirbash/mpd-devices.sh
