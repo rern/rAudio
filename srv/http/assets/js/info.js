@@ -538,7 +538,7 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( O.beforeshow ) O.beforeshow();
-		if ( G.localhost ) $( 'a' ).removeAttr( 'href' );
+		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
 		$( 'html, body' ).scrollTop( 0 );
 	} );
 	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
