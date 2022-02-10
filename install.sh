@@ -7,7 +7,10 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 # 20220211
-[[ -e /boot/kernel.img ]] && sed -i '/\[core\]/,$ d' /etc/pacman.conf
+if [[ -e /boot/kernel.img ]]; then
+	sed -i '/\[core\]/,$ d' /etc/pacman.conf
+	echo 'Server = http://tardis.tiny-vps.com/aarm/repos/2022/01/08/$arch/$repo' > /etc/pacman.d/mirrorlist
+fi
 (( $( cat $dirsystem/soundprofile.conf 2> /dev/null | grep . | wc -l ) == 4 )) && sed -i 1d $dirsystem/soundprofile.conf
 
 # 20220204
