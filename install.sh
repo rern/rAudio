@@ -7,6 +7,15 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 # 20220211
+if ! grep -q +R /etc/pacman.conf; then
+	sed -i '/\[core/ i\
+[+R]\
+SigLevel = Optional TrustAll\
+Server = https://rern.github.io/$arch\
+
+' /etc/pacman.conf
+fi
+fi
 if [[ -e /boot/kernel.img ]]; then
 	sed -i '/\[core\]/,$ d' /etc/pacman.conf
 	echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
