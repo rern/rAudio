@@ -11,6 +11,8 @@ if systemctl -q is-active bluetooth; then
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do
 			mac=${line/ *}
+			[[ $mac == Device ]] && continue
+			
 			info=$( bluetoothctl info $mac )
 			alias=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
