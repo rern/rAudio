@@ -7,14 +7,8 @@ dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
 # 20220211
-grep -q +R /etc/pacman.conf || sed -i '/\[core/ i\
-[+R]\
-SigLevel = Optional TrustAll\
-Server = https://rern.github.io/$arch\
-
-' /etc/pacman.conf
 [[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
-(( $( cat $dirsystem/soundprofile.conf 2> /dev/null | grep . | wc -l ) == 4 )) && sed -i 1d $dirsystem/soundprofile.conf
+sed -i '/latency/ d' $dirsystem/soundprofile.conf &> /dev/null
 
 # 20220204
 if ! grep -q 'assets,bash' $dirbash/addons.sh; then
