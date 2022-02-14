@@ -269,6 +269,33 @@ webradioCount() {
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
+webRadioSampling() {
+	url=$1
+	file=$2
+	timeout 3 wget -q $url -O /tmp/webradio
+	if [[ ! -s /tmp/webradio ]]; then
+		pushstreamNotify WebRadio "URL cannot be streamed:<br>$url" warning 8000
+		exit
+	fi
+	
+	data=( $( ffprobe -v quiet -select_streams a:0 \
+				-show_entries stream=sample_rate \
+				-show_entries format=bit_rate \
+				-of default=noprint_wrappers=1:nokey=1 \
+				/tmp/webradio ) )
+	if [[ ! $data ]]; then
+		pushstreamNotify WebRadio "URL contains no stream data:<br>$url" webradio 8000
+		exit
+	fi
+	
+	samplerate=${data[0]}
+	bitrate=${data[1]}
+	sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
+	kb=$(( bitrate / 1000 ))
+	rate="$(( ( ( kb + 4 ) / 8 ) * 8 )) kbit/s" # round to modulo 8
+	sed -i "2 s|.*|$sample $rate|" "$file"
+	rm /tmp/webradio
+}
 
 case ${args[0]} in
 
@@ -969,11 +996,10 @@ power )
 		sleep 2
 	fi
 	if [[ $action == reboot ]]; then
-		data='{"title":"Power","text":"Reboot ...","icon":"reboot blink","delay":-1,"power":"reboot"}'
+		pushstreamNotifyBlink Power 'Reboot ...' reboot reboot
 	else
-		data='{"title":"Power","text":"Off ...","icon":"power blink","delay":-1,"power":"off"}'
+		pushstreamNotifyBlink Power 'Off ...' power off
 	fi
-	pushstream notify "$data"
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
@@ -1125,6 +1151,7 @@ $name
 $charset" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
+	webRadioSampling $url "$file" &
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
@@ -1137,7 +1164,10 @@ webradiodelete )
 	dir=${args[2]}
 	urlname=${url//\//|}
 	[[ $dir ]] && dir="$dir/"
-	rm -f "$dirwebradios/$dir$urlname" "${dirwebradios}img/$urlname"{,-thumb}.*
+	rm -f "$dirwebradios/$dir$urlname"
+	if (( $( find $dirdata/webradios -type f -name "$urlname" | wc -l ) == 0 )); then
+		rm -f "${dirwebradios}img/$urlname"{,-thumb}.*
+	fi
 	webradioCount
 	;;
 webradioedit )
@@ -1147,20 +1177,20 @@ webradioedit )
 	dir=${args[4]}
 	url=${args[5]}
 	urlname=${url//\//|}
-	urlnamenew=${urlnew//\//|}
 	[[ $dir ]] && dir="$dir/"
 	fileprev="$dirwebradios/$dir$urlname"
-	filenew="$dirwebradios/$dir$urlnamenew"
-	if [[ $url != $urlnew ]]; then
-		mv "$fileprev" "$filenew"
-		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg 
-		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg 
-	fi
-	sed -
 	echo "\
 $name
-$( sed -n 2p $filenew )
-$charset" > $filenew
+$( sed -n 2p "$fileprev" )
+$charset" > "$fileprev"
+	if [[ $url != $urlnew ]]; then
+		urlnamenew=${urlnew//\//|}
+		filenew="$dirwebradios/$dir$urlnamenew"
+		mv "$fileprev" "$filenew"
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg
+		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg
+		webRadioSampling $urlnew "$filenew" &
+	fi
 	pushstream webradio -1
 	;;
 wrdirdelete )

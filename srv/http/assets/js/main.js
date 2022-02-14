@@ -1256,9 +1256,9 @@ $( '#button-lib-back' ).click( function() {
 		}
 	}
 } );
-$( '#lib-mode-list' ).contextmenu( function( e ) { // disable default image context menu
+/*$( '#lib-mode-list' ).contextmenu( function( e ) { // touch device - on press - disable default image context menu
 	e.preventDefault();
-} );
+} );*/
 $( '.mode' ).click( function() {
 	var $this = $( this );
 	G.mode = $this.data( 'mode' );

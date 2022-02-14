@@ -33,7 +33,7 @@ else
 				| grep access_token \
 				| cut -d'"' -f4 )
 	if [[ ! $token ]]; then
-		pushstream notify '{"title":"Spotify","text":"Access token renewal failed.","icon":"spotify"}'
+		pushstreamNotify Spotify 'Access token renewal failed.' spotify
 		exit
 	fi
 	

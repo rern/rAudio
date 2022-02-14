@@ -42,7 +42,7 @@ else
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
-	if [[ -e $dirshm/nosound ]]; then
+	if [[ -e $dirshm/nosound && ! -e $dirshm/btclient ]]; then
 		volume=false
 	else
 		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
@@ -74,7 +74,9 @@ else
 , "webradio"       : false'
 fi
 if [[ $1 == withdisplay ]]; then
-	if [[ -e $dirshm/nosound ]]; then
+	if [[ -e $dirshm/btclient ]]; then
+		volumenone=false
+	elif [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
 		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
@@ -90,7 +92,7 @@ if [[ $1 == withdisplay ]]; then
 , "lock"       : '$( exists $dirsystem/login )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( exists $dirsystem/relays )'
-, "screenoff"  : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf && echo true )'
+, "screenoff"  : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'
 , "snapclient" : '$( exists $dirsystem/snapclient )'
 , "volumenone" : '$volumenone'
 }'
@@ -430,10 +432,10 @@ elif [[ $state != stop ]]; then
 	fi
 	if [[ $ext != Radio ]]; then
 		samplingLine $bitdepth $samplerate $bitrate $ext
-	else # save only webradio: update sampling database on each play
+	else
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
-			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile
+			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
 		else
 			sampling=$radiosampling
 		fi

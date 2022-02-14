@@ -74,16 +74,18 @@ $( document ).keydown( function( e ) { // no for 'keyup'
 	}
 		
 	var keyevent = {
-		  AudioVolumeDown    : 'voldn'
-		, AudioVolumeMute    : 'volmute'
-		, AudioVolumeUp      : 'volup'
-		, MediaNextTrack     : 'next'
+		  MediaNextTrack     : 'next'
 		, MediaPause         : 'pause'
 		, MediaPlay          : 'play'
 		, MediaPreviousTrack : 'previous'
 		, MediaStop          : 'stop'
 		, MediaTrackPrevious : 'previous'
 		, MediaTrackNext     : 'next'
+	}
+	if ( G.localhost ) {
+		keyevent.AudioVolumeDown = 'voldn';
+		keyevent.AudioVolumeMute = 'volmute';
+		keyevent.AudioVolumeUp   = 'volup';
 	}
 	if ( ( key === ' ' && ![ 'input', 'password', 'textarea' ].includes( e.target.localName ) ) || key === 'MediaPlayPause' ) {
 		var btn = G.status.state === 'play' ? ( G.status.webradio ? 'stop' : 'pause' ) : 'play';

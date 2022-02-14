@@ -9,8 +9,7 @@ readarray -t args <<< "$1"
 
 pushReboot() {
 	pushRefresh
-	data='{"title":"'${1//\"/\\\"}'","text":"Reboot required.","icon":"'$2'","hold":5000}'
-	pushstream notify "$data"
+	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' $2 5000
 	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
@@ -47,9 +46,8 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
-soundprofile() {
+soundProfile() {
 	if [[ $1 == reset ]]; then
-		latency=18000000
 		swappiness=60
 		mtu=1500
 		txqueuelen=1000
@@ -58,8 +56,6 @@ soundprofile() {
 		. $dirsystem/soundprofile.conf
 		touch $dirsystem/soundprofile
 	fi
-
-	sysctl kernel.sched_latency_ns=$latency
 	sysctl vm.swappiness=$swappiness
 	if ifconfig | grep -q eth0; then
 		ip link set eth0 mtu $mtu
@@ -663,36 +659,33 @@ shareddata )
 	fi
 	;;
 soundprofile )
-	soundprofile
+	soundProfile
 	;;
 soundprofiledisable )
-	soundprofile reset
+	soundProfile reset
 	pushRefresh
 	;;
 soundprofileget )
 	echo "\
-<bll># sysctl kernel.sched_latency_ns
-# sysctl vm.swappiness
+<bll># sysctl vm.swappiness
 # ifconfig eth0 | grep 'mtu\\|txq'</bll>
 
-$( sysctl kernel.sched_latency_ns )
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
 	| grep 'mtu\|txq' \
 	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
-	if [[ ${args[@]:1:4} == '18000000 60 1500 1000' ]]; then
+	if [[ ${args[@]:1:4} == '60 1500 1000' ]]; then
 		rm -f $dirsystem/soundprofile.conf
-		soundprofile reset
+		soundProfile reset
 	else
 		echo -n "\
-latency=${args[1]}
 swappiness=${args[2]}
 mtu=${args[3]}
 txqueuelen=${args[4]}
 " > $dirsystem/soundprofile.conf
-		soundprofile
+		soundProfile
 	fi
 	pushRefresh
 	;;
@@ -740,7 +733,7 @@ unmount )
 	pushRefresh
 	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ -e $dirshm/audiocd ]] && exit
+	[[ -e $dirshm/audiocd ]] || ! systemctl -q is-active mpd && exit # is-active mpd - suppress on startup
 	
 	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed.
 	pushstreamNotify 'USB Drive' $action usbdrive

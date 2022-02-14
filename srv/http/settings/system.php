@@ -283,7 +283,7 @@ HTML
 		, 'status'   => 'soundprofile'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-Tweak kernel parameters for <a href="https://www.runeaudio.com/forum/sound-signatures-t2849.html">sound profiles</a>.
+Tweak kernel parameters for sound profiles.
 HTML
 	]
 ];

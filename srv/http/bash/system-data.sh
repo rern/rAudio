@@ -50,11 +50,10 @@ if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
 	else
-		soundprofileconf="[
- $( sysctl kernel.sched_latency_ns | awk '{print $NF}' | tr -d '\0' )
-,$( sysctl vm.swappiness | awk '{print $NF}'  )
-,$( ifconfig eth0 | awk '/mtu/ {print $NF}' )
-,$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' )
+		soundprofileconf="[ \
+$( sysctl vm.swappiness | awk '{print $NF}'  ), \
+$( ifconfig eth0 | awk '/mtu/ {print $NF}' ), \
+$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \
 ]"
 	fi
 fi
@@ -133,7 +132,7 @@ fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baudrate ]] && baudrate=800000
-mpdoledconf='[ "'$oledchip'", '$baudrate' ]'
+mpdoledconf='[ '$oledchip', '$baudrate' ]'
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
 else

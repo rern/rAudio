@@ -49,12 +49,14 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	pushstream btclient true
 	$dirbash/networks-data.sh bt
 	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
+	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 elif [[ $1 == btoff ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	rm -f $dirshm/btclient
 	pushstream btclient false
 	$dirbash/networks-data.sh bt
 	systemctl stop bluetoothbutton
+	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":true}'
 fi
 
 . $dirbash/mpd-devices.sh
@@ -197,7 +199,7 @@ if [[ $1 == add || $1 == remove ]]; then
 		volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
 	fi
 	pushstream display '{"volumenone":'$volumenone'}'
-	pushstream notify '{"title":"Audio Output","text":"'"$name"'","icon": "output"}'
+	pushstreamNotify 'Audio Output' "$name" output
 fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
