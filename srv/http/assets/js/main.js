@@ -149,7 +149,7 @@ $( '#button-settings' ).click( function() {
 	}
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
-$( '.settings:not( :last )' ).click( function() {
+$( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
@@ -202,6 +202,17 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			} else {
 				colorSet();
 			}
+			break;
+		case 'ip':
+			info( {
+				  icon      : 'raudio'
+				, title     : 'IP Address'
+				, textlabel : 'IP'
+				, values    : window.location.host
+				, ok        : function() {
+					location.href = 'http://'+ infoVal();
+				}
+			} );
 			break;
 	}
 } );

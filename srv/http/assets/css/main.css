@@ -108,10 +108,10 @@ i.map.disabled, .map.disabled i {
 .menu .sub {
 	width: calc( 100% - 40px );
 }
-.settings + .submenu {
+.menu a + .submenu {
 	display: none;;
 }
-.settings.sub + .submenu {
+.menu a.sub + .submenu {
 	display: block;
 }
 .menu a {
