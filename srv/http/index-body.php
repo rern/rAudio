@@ -224,7 +224,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
 	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
-		<i id="ip" class="fa fa-refresh submenu"></i>
+		<i id="ip" class="fa fa-ip submenu"></i>
 </div>
 <div id="page-playback" class="page">
 	<div id="reload"></div>
