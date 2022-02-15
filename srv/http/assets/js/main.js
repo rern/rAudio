@@ -210,6 +210,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				, textlabel : 'IP'
 				, values    : window.location.host
 				, ok        : function() {
+					loader();
 					location.href = 'http://'+ infoVal();
 				}
 			} );
