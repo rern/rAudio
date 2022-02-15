@@ -129,7 +129,7 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // from info.js
+$( '#logo, #button-library, #button-playlist' ).press( function() { // from info.js
 	location.reload();
 } );
 $( '#logo' ).click( function() {
@@ -204,16 +204,20 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'ip':
-			info( {
-				  icon      : 'raudio'
-				, title     : 'IP Address'
-				, textlabel : 'IP'
-				, values    : window.location.host
-				, ok        : function() {
-					loader();
-					location.href = 'http://'+ infoVal();
-				}
-			} );
+			if ( window.innerHeight == screen.height ) { // fullscreen
+				location.reload();
+			} else {
+				info( {
+					  icon      : 'raudio'
+					, title     : 'IP Address'
+					, textlabel : 'IP'
+					, values    : window.location.host
+					, ok        : function() {
+						loader();
+						location.href = 'http://'+ infoVal();
+					}
+				} );
+			}
 			break;
 	}
 } );

@@ -217,12 +217,6 @@ i.map.disabled, .map.disabled i {
 	-webkit-user-select: none;
 }
 /* ---------------------- bars ----------------------*/
-#reload {
-	position: absolute;
-	top: 0;
-	width: 40px;
-	height: 40px;
-}
 #bar-top,
 #bar-bottom {
 	position: fixed;
@@ -2007,6 +2001,11 @@ li.active .li2 bl {
 	background-color: var( --cm );
 }
 /************************************************************************************/
+@media all and ( display-mode: fullscreen ) {
+	#displayplaylist { width: calc( 100% - 40px ) }
+	#ip { display: inline-block }
+	.fa-ip::before { content: '\f526' }
+}
 @media ( min-width: 900px ) {
 	#playback-row { align-items: center }
 }

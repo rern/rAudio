@@ -227,7 +227,6 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 		<i id="ip" class="fa fa-ip submenu"></i>
 </div>
 <div id="page-playback" class="page">
-	<div id="reload"></div>
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<i id="guide-bio" class="map guide fa fa-bio hide"></i>
 	<i id="guide-lyrics" class="map guide fa fa-lyrics hide"></i>
