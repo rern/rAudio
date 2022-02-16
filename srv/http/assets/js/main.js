@@ -208,11 +208,16 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				location.reload();
 			} else {
 				info( {
-					  icon      : 'raudio'
-					, title     : 'IP Address'
-					, textlabel : 'IP'
-					, values    : window.location.host
-					, ok        : function() {
+					  icon        : 'raudio'
+					, title       : 'IP Address'
+					, textlabel   : 'IP'
+					, values      : window.location.host
+					, buttonlabel : 'Reload'
+					, buttoncolor : orange
+					, button      : function() {
+						location.reload();
+					}
+					, ok          : function() {
 						loader();
 						location.href = 'http://'+ infoVal();
 					}
