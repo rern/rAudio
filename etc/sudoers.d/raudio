@@ -1,3 +1,0 @@
-http     ALL=(ALL) NOPASSWD: ALL
-mpd      ALL=(ALL) NOPASSWD: /usr/bin/xset
-upmpdcli ALL=(ALL) NOPASSWD: /srv/http/bash/*
