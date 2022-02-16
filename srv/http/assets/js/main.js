@@ -204,25 +204,16 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'ip':
-			if ( window.innerHeight == screen.height ) { // fullscreen
-				location.reload();
-			} else {
-				info( {
-					  icon        : 'raudio'
-					, title       : 'IP Address'
-					, textlabel   : 'IP'
-					, values      : window.location.host
-					, buttonlabel : 'Reload'
-					, buttoncolor : orange
-					, button      : function() {
-						location.reload();
-					}
-					, ok          : function() {
-						loader();
-						location.href = 'http://'+ infoVal();
-					}
-				} );
-			}
+			info( {
+				  icon        : 'raudio'
+				, title       : 'IP Address'
+				, textlabel   : 'IP'
+				, values      : window.location.host
+				, ok          : function() {
+					loader();
+					location.href = 'http://'+ infoVal();
+				}
+			} );
 			break;
 	}
 } );
@@ -847,6 +838,9 @@ $( '#divcover' ).press( function( e ) {
 	coverartSave();
 } ).on( 'click', '.iconcover', function() {
 	G.status.webradio ? webRadioCoverart () : coverartChange();
+} );
+$( '#coverT' ).press( function() {
+	location.reload();
 } );
 var btnctrl = {
 	  timeTL  : 'cover'
