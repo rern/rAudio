@@ -167,6 +167,15 @@ HTML
 HTML
 	]
 	, [
+		  'label'   => 'Multiple IPs'
+		, 'id'      => 'multipleip'
+		, 'icon'    => 'ip'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+ • Switch between multiple rAudio devices.
+HTML
+	]
+	, [
 		  'label'    => 'Password Login'
 		, 'id'       => 'login'
 		, 'sublabel' => 'password_hash'

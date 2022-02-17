@@ -204,15 +204,24 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'ip':
-			info( {
-				  icon        : 'raudio'
-				, title       : 'IP Address'
-				, textlabel   : 'IP'
-				, values      : window.location.host
-				, ok          : function() {
-					loader();
-					location.href = 'http://'+ infoVal();
+			bash( 'cat /srv/http/data/system/multipleip.conf', function( data ) {
+				var data = data.trim().split( '\n' );
+				var dataL = data.length;
+				var radio = {}
+				for ( i = 0; i < dataL; i++ ) {
+					radio[ data[ i ] ] = data[ i + 1 ];
+					i++
 				}
+				info( {
+					  icon    : 'ip'
+					, title   : 'Switch rAudio'
+					, radio   : radio
+					, values  : window.location.host
+					, ok      : function() {
+						loader();
+						location.href = 'http://'+ infoVal();
+					}
+				} );
 			} );
 			break;
 	}

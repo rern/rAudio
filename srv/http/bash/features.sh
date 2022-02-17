@@ -189,6 +189,20 @@ loginset )
 	pushRefresh
 	pushstream display '{"submenu":"lock","value":true}'
 	;;
+multipleipdisable )
+	rm -f $dirsystem/multipleip
+	pushRefresh
+	;;
+multipleipset )
+	data=$( printf "%s\n" "${args[@]:1}" | grep . )
+	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
+		touch $dirsystem/multipleip
+		echo "$data" > $dirsystem/multipleip.conf
+	else
+		rm -f $dirsystem/multipleip*
+	fi
+	pushRefresh
+	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi

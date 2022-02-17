@@ -255,6 +255,43 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-multipleip' ).click( function() {
+	var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) );
+	var trhtml = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'." spellcheck="false"></td>'
+			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg ipremove"></i></td></tr>';
+	var content = '<tr><td>&nbsp;Name</td><td>&nbsp;IP/URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh"></i></td></tr>'
+				 + trhtml.replace( 'NUM', 1 );
+	info( {
+		  icon         : 'ip'
+		, title        : 'Multiple IPs'
+		, content      : '<table>'+ content +'</table>'
+		, values       : G.multipleipconf.length ? G.multipleipconf : [ "rAudio", location.host ]
+		, checkchanged : ( G.multipleip ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent tr' ).find( 'td:eq( 0 )' ).css( 'width', '180px' );
+			$( '#infoContent tr' ).find( 'td:eq( 1 )' ).css( 'width', '130px' );
+			$( '#ipadd' ).click( function() {
+				$( '#infoContent tr:last' ).after( trhtml.replace( 'NUM', $( '#infoContent input' ).length + 1 ) );
+				$( '#infoOk' ).removeClass( 'disabled' );
+			} );
+			$( '#infoContent' ).on( 'click', '.ipremove', function() {
+				$( this ).parents( 'tr' ).remove();
+				O.inputs = $( '#infoContent input' );
+				var values = infoVal();
+				if ( typeof values === 'string' ) values = [ values ];
+				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === G.multipleipconf.join( ',' ) );
+			} );
+		}
+		, cancel       : function() {
+			$( '#multipleip' ).prop( 'checked', G.multipleip );
+		}
+		, ok           : function() {
+			O.inputs = $( '#infoContent input' );
+			bash( [ 'multipleipset', ...infoVal() ] );
+			notify( 'Multiple IPs', G.multipleip ? 'Change ...' : 'Enable ...', 'ip' );
+		}
+	} );
+} );
 $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();
