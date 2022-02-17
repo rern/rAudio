@@ -262,10 +262,16 @@ $( '#setting-multipleip' ).click( function() {
 		var ipsub = location.host;
 	}
 	var trhtml = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
-			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg ipremove"></i></td></tr>';
-	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh"></i></td></tr>'
+			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg pointer ipremove"></i></td></tr>';
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh pointer"></i></td></tr>'
 				 + trhtml.replace( 'NUM', 1 );
-	if ( !G.multipleipconf.length ) G.multipleipconf = [ "rAudio", location.host ];
+	var dataL = G.multipleipconf.length;
+	if ( dataL ) {
+		var iL = dataL / 2 - 1;
+		for ( i = 0; i < iL; i++ ) content += trhtml;
+	} else {
+		G.multipleipconf = [ "rAudio", location.host ];
+	}
 	info( {
 		  icon         : 'ip'
 		, title        : 'Multiple rAudios'

@@ -214,7 +214,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				}
 				info( {
 					  icon    : 'ip'
-					, title   : 'Switch rAudio'
+					, title   : 'Switch to rAudio'
 					, radio   : radio
 					, values  : window.location.host
 					, ok      : function() {
