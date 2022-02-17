@@ -167,7 +167,7 @@ HTML
 HTML
 	]
 	, [
-		  'label'   => 'Multiple IPs'
+		  'label'   => 'Multiple rAudios'
 		, 'id'      => 'multipleip'
 		, 'icon'    => 'ip'
 		, 'setting' => true

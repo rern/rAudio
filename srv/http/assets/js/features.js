@@ -259,15 +259,22 @@ $( '#setting-multipleip' ).click( function() {
 	var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) );
 	var trhtml = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'." spellcheck="false"></td>'
 			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg ipremove"></i></td></tr>';
-	var content = '<tr><td>&nbsp;Name</td><td>&nbsp;IP/URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh"></i></td></tr>'
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh"></i></td></tr>'
 				 + trhtml.replace( 'NUM', 1 );
+	if ( !G.multipleipconf.length ) G.multipleipconf = [ "rAudio", location.host ];
 	info( {
 		  icon         : 'ip'
-		, title        : 'Multiple IPs'
+		, title        : 'Multiple rAudios'
 		, content      : '<table>'+ content +'</table>'
-		, values       : G.multipleipconf.length ? G.multipleipconf : [ "rAudio", location.host ]
+		, values       : G.multipleipconf
 		, checkchanged : ( G.multipleip ? 1 : 0 )
 		, beforeshow   : function() {
+			if ( $( '#infoContent input' ).length === 2 ) {
+				setTimeout( function() {
+					$( '#infoOk' ).addClass( 'disabled' );
+				}, 0 );
+			}
+			$( '#infoContent td' ).css( 'padding', 0 );
 			$( '#infoContent tr' ).find( 'td:eq( 0 )' ).css( 'width', '180px' );
 			$( '#infoContent tr' ).find( 'td:eq( 1 )' ).css( 'width', '130px' );
 			$( '#ipadd' ).click( function() {
