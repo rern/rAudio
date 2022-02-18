@@ -601,10 +601,6 @@ shareddatadisable )
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirdata/mpd
-	sed -i -e '/^#db_file/ s/^#//
-' -e '/^database/,/^$/ d
-' /etc/mpd.conf
-	systemctl restart mpd
 	pushRefresh
 	[[ $copydata == false ]] && $dirbash/cmd.sh mpcupdate
 	;;
@@ -654,15 +650,6 @@ shareddata )
 		done
 		chown -R http:http $mountpoint $dirdata
 		chown mpd:audio $mountpoint/mpd $dirmpd
-		sed -i -e '/^db_file/ s/^/#/
-' -e '/^user/ a\
-\
-database {\
-\	plugin "proxy"\
-\	host "'$ip'"\
-}
-' /etc/mpd.conf
-		systemctl restart mpd
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
