@@ -2001,10 +2001,6 @@ li.active .li2 bl {
 	background-color: var( --cm );
 }
 /************************************************************************************/
-@media all and ( display-mode: fullscreen ) {
-	#displayplaylist { width: calc( 100% - 40px ) }
-	#ip { display: inline-block }
-}
 @media ( min-width: 900px ) {
 	#playback-row { align-items: center }
 }
