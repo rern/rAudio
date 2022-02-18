@@ -651,7 +651,7 @@ shareddata )
 		done
 		chown -R http:http $mountpoint $dirdata
 		chown mpd:audio $mountpoint/mpd $dirmpd
-		systemctl restart mpd
+		[[ $copydata == false ]] && systemctl restart mpd
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
