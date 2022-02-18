@@ -646,7 +646,16 @@ $( '#shareddata' ).click( function() {
 			}
 		} );
 	} else {
-		infoMount( 'shareddata' );
+		if ( $( '#list .fa-networks' ).length ) {
+			infoMount( 'shareddata' );
+		} else {
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : 'Connect <wh>music share</wh> before enable Shared Data.'
+			} );
+			$( '#shareddata' ).prop( 'checked', false );
+		}
 	}
 } );
 $( '#backup' ).click( function() {
