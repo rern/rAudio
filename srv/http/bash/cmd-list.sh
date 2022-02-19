@@ -9,7 +9,7 @@
 
 . /srv/http/bash/common.sh
 
-touch $dirsystem/listing
+touch $dirmpd/listing
 
 listAlbums() {
 	albums=$1
@@ -113,7 +113,7 @@ counts='
 echo { $counts } | jq > $dirmpd/counts
 curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "{$counts}"
 chown -R mpd:audio $dirmpd
-rm -f $dirsystem/{updating,listing}
+rm -f $dirmpd/{updating,listing}
 
 if [[ $toolarge ]]; then
 	sleep 3

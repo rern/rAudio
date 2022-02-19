@@ -20,8 +20,8 @@ restartMPD() {
 	pushstream mpdplayer "$( $dirbash/status.sh )"
 	pushstream refresh "$( $dirbash/player-data.sh )"
 	systemctl try-restart rotaryencoder
-	if [[ -e $dirsystem/updating ]]; then
-		path=$( cat $dirsystem/updating )
+	if [[ -e $dirmpd/updating ]]; then
+		path=$( cat $dirmpd/updating )
 		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 	fi
 	( sleep 2 && systemctl try-restart snapclient ) &> /dev/null &

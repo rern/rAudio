@@ -35,10 +35,10 @@ else
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
 	updateaddons=$( exists $dirdata/addons/update )
-	if [[ -e $dirsystem/updating ]]; then 
+	if [[ -e $dirmpd/updating ]]; then 
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
-			path=$( cat $dirsystem/updating )
+			path=$( cat $dirmpd/updating )
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi

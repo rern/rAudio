@@ -137,10 +137,10 @@ installfinish() {
 	
 	title -l '=' "$bar Done."
 	
-	if [[ -e $dirsystem/updating ]]; then
-		path=$( cat $dirsystem/updating )
+	if [[ -e $dirmpd/updating ]]; then
+		path=$( cat $dirmpd/updating )
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-	elif [[ -e $dirsystem/listing || ! -e $dirmpd/counts ]]; then
+	elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 		$dirbash/cmd-list.sh &> dev/null &
 	fi
 }

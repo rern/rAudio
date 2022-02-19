@@ -564,7 +564,7 @@ hashFiles )
 	done
 	;;
 ignoredir )
-	touch $dirsystem/updating
+	touch $dirmpd/updating
 	path=${args[1]}
 	dir=$( basename "$path" )
 	mpdpath=$( dirname "$path" )
@@ -730,10 +730,10 @@ mpcseek )
 mpcupdate )
 	path=${args[1]}
 	if [[ $path == rescan ]]; then
-		echo rescan > $dirsystem/updating
+		echo rescan > $dirmpd/updating
 		mpc -q rescan
 	else
-		echo $path > $dirsystem/updating
+		echo $path > $dirmpd/updating
 		mpc -q update "$path"
 	fi
 	pushstream mpdupdate 1
