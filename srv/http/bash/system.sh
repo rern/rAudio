@@ -592,6 +592,8 @@ servers )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
+	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	sed -i "/$ip/ d" $mountpoint/iplist
 	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
 		rm -rf $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
@@ -652,6 +654,7 @@ shareddata )
 			rm -rf $dirdata/$dir
 			ln -s $mountpoint/$dir $dirdata
 		done
+		ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' >> $mountpoint/iplist
 		chown -R http:http $mountpoint $dirdata
 		chown mpd:audio $mountpoint/mpd $dirmpd
 		pushRefresh

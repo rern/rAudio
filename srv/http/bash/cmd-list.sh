@@ -121,6 +121,14 @@ if [[ $toolarge ]]; then
 	exit
 fi
 
+if [[ -e /srv/http/shareddata ]]; then
+	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	iplist=$( cat /srv/http/shareddata/iplist | grep . | grep -v $ip )
+	for ip in $iplist; do
+		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip /usr/bin/systemctl restart mpd
+	done
+fi
+
 (
 	list=$( find -L /mnt/MPD -name .mpdignore | sort -V )
 	[[ $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
