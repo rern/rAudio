@@ -601,9 +601,11 @@ shareddatadisable )
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirdata/mpd
-	systemctl restart mpd
 	pushRefresh
-	[[ $copydata == false ]] && $dirbash/cmd.sh mpcupdate
+	if [[ $copydata == false ]]; then
+		systemctl restart mpd
+		$dirbash/cmd.sh mpcupdate
+	fi
 	;;
 shareddata )
 	protocol=${args[1]}
@@ -651,8 +653,8 @@ shareddata )
 		done
 		chown -R http:http $mountpoint $dirdata
 		chown mpd:audio $mountpoint/mpd $dirmpd
-		[[ $copydata == false ]] && systemctl restart mpd
 		pushRefresh
+		[[ $copydata == false ]] && systemctl restart mpd
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "\|$mountpoint| d" /etc/fstab
