@@ -1043,6 +1043,10 @@ ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
+shareddatareload )
+	systemctl restart mpd
+	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	;;
 thumbgif )
 	gifThumbnail "${args[@]:1}"
 	;;

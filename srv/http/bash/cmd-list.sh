@@ -96,7 +96,7 @@ song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 webradio=$( find -L $dirdata/webradios -type f \
 				| grep -v '\.jpg$\|\.gif$' \
 				| wc -l )
-counts='
+counts='{
   "album"       : '$album'
 , "albumartist" : '$albumartist'
 , "artist"      : '$artist'
@@ -109,9 +109,10 @@ counts='
 , "sd"          : '$SD'
 , "usb"         : '$USB'
 , "song"        : '$song'
-, "webradio"    : '$webradio
-echo { $counts } | jq > $dirmpd/counts
-curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d "{$counts}"
+, "webradio"    : '$webradio'
+}'
+echo $counts | jq > $dirmpd/counts
+pushstream mpdupdate "$counts"
 chown -R mpd:audio $dirmpd
 rm -f $dirmpd/{updating,listing}
 
@@ -121,11 +122,11 @@ if [[ $toolarge ]]; then
 	exit
 fi
 
-if [[ -e /srv/http/shareddata ]]; then
+if [[ -e /srv/http/shareddata/iplist ]]; then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
-	iplist=$( cat /srv/http/shareddata/iplist | grep . | grep -v $ip )
+	iplist=$( cat /srv/http/shareddata/iplist | grep -v $ip )
 	for ip in $iplist; do
-		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip /usr/bin/systemctl restart mpd
+		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip $dirbash/cmd.sh shareddatareload
 	done
 fi
 
