@@ -603,6 +603,7 @@ shareddatadisable )
 	chown -R mpd:audio $dirdata/mpd
 	pushRefresh
 	if [[ $copydata == false ]]; then
+		rm -f $dirmpd/{updating,listing}
 		systemctl restart mpd
 		$dirbash/cmd.sh mpcupdate
 	fi
