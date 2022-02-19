@@ -298,8 +298,9 @@ $body = [
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations. 
 If enabled, music files should be on NAS only.
  • On file server, setup a network share with all permissions
- &emsp; • Directory: <code>777</code> / <code>a+rwx</code>
- &emsp; • Share: <code>read</code>, <code>write</code> and <code>execute</code> / <code>modify</code>
+ &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
+ &emsp; • Samba: <code>read only = no</code>
+ &emsp; • Windows: <code>Everyone - Full Control</code>
  • On each rAudio
   &emsp; • Storage > <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
   &emsp; • Shared Data - Enable to connect the share.
