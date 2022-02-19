@@ -295,18 +295,17 @@ $body = [
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
-Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations.
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations. 
+If enabled, music files should be on NAS only.
  • On file server, setup a network share with all permissions
  &emsp; • Directory: <code>777</code> / <code>a+rwx</code>
- &emsp; • Share: allow <code>read</code>, <code>write</code> and <code>execute</code> / <code>modify</code>
+ &emsp; • Share: <code>read</code>, <code>write</code> and <code>execute</code> / <code>modify</code>
  • On each rAudio
-  &emsp; • Connect to shared music on the server: Storage > <i class="fa fa-plus-circle"></i> Add
-  &emsp; • Enable Shared Data to connect the share.
- • Initial shared data - <code>Use data from this rAudio</code>:
+  &emsp; • Storage > <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
+  &emsp; • Shared Data - Enable to connect the share.
+ • <code>Use data from this rAudio</code>:
  &emsp; • Check only on rAudio with data to be used or to overwrite existing.
  &emsp; • Leave unchecked to use existing data on the server.
- • Shared data and any changes will be available for all connected rAudio.
- • If enabled, music files should be on NAS only.
 HTML
 	]
 	, [
