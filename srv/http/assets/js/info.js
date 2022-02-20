@@ -63,8 +63,6 @@ select:   [U] [D]     - check
 */
 	var key = e.key;
 	if ( key == 'Enter' ) {
-		if ( G.local ) return // suppress local keyboard fires twice
-		
 		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 	} else if ( key === 'Escape' ) {
 		G.local = 1; // prevent toggle setting menu

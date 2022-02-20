@@ -1,5 +1,5 @@
 // keyboard controls
-$( document ).keyup( function( e ) {
+$( document ).keydown( function( e ) { // no for 'keyup' 
 	if ( G.local || !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
@@ -52,7 +52,6 @@ $( document ).keyup( function( e ) {
 	}
 	
 	if ( key === 'Enter' ) {
-		local( 1000 ); // suppress local keyboard fires twice
 		if ( !$( '#settings' ).hasClass( 'hide' ) ) {
 			var $menu = $( '#settings' ).find( 'a.active' );
 			if ( !$menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
