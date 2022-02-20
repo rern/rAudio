@@ -183,6 +183,6 @@ Audio player for
 		- Create and compress image file
 - Custom startup / shutdown script
 	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
-- App
-	- Full screen UI - Add to Home Screen (Android Chrome / iOS Safari)
-	- Google Play Store - rAudio
+- Full screen UI
+	- Google Play Store - rAudio app
+	- Add to Home Screen (Safari on iOS, Chrome on Android)
