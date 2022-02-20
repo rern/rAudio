@@ -889,7 +889,7 @@ ${ htmlname }
 			} );
 		}
 		, cancel     : function() {
-			$( '#shareddata' ).prop( 'checked', false );
+			if ( shareddata ) $( '#shareddata' ).prop( 'checked', false );
 		}
 		, ok         : function() {
 			var values = infoVal();
