@@ -156,7 +156,6 @@ input::-moz-focus-inner {
 .fa-i2saudio::before { content: '\f571' }
 .fa-info-circle::before { content: '\f561' }
 .fa-input::before { content: '\f529' }
-.fa-ip::before { content: '\f53B' }
 .fa-jigsaw::before { content: '\f50D' }
 .fa-lan::before { content: '\f552' }
 .fa-lastfm::before { content: '\f585' }
@@ -201,6 +200,7 @@ input::-moz-focus-inner {
 .fa-radioparadise::before {content: '\f593'; position: absolute; color: var( --cgl ); }
 .fa-radioparadise::after {content: '\f594'; position: relative; } /* position: relative - fix order */
 .fa-random::before { content: '\f512' }
+.fa-raudiobox::before { content: '\f53B' }
 .fa-reboot::before { content: '\f521' }
 .fa-redo::before { content: '\f524' }
 .fa-refresh::before { content: '\f526' }

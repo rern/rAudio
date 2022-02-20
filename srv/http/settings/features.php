@@ -168,8 +168,8 @@ HTML
 	]
 	, [
 		  'label'   => 'Multiple rAudios'
-		, 'id'      => 'multipleip'
-		, 'icon'    => 'ip'
+		, 'id'      => 'multiraudio'
+		, 'icon'    => 'raudiobox'
 		, 'setting' => true
 		, 'help'    => <<< HTML
  • Switch between multiple rAudio devices.

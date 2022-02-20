@@ -255,7 +255,7 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-multipleip' ).click( function() {
+$( '#setting-multiraudio' ).click( function() {
 	if ( location.host.slice( -5 ) !== 'local' ) {
 		var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) ) +'.';
 	} else {
@@ -265,19 +265,19 @@ $( '#setting-multipleip' ).click( function() {
 			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg pointer ipremove"></i></td></tr>';
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh pointer"></i></td></tr>'
 				 + trhtml.replace( 'NUM', 1 );
-	var dataL = G.multipleipconf.length;
+	var dataL = G.multiraudioconf.length;
 	if ( dataL ) {
 		var iL = dataL / 2 - 1;
 		for ( i = 0; i < iL; i++ ) content += trhtml;
 	} else {
-		G.multipleipconf = [ "rAudio", location.host ];
+		G.multiraudioconf = [ "rAudio", location.host ];
 	}
 	info( {
-		  icon         : 'ip'
+		  icon         : 'raudiobox'
 		, title        : 'Multiple rAudios'
 		, content      : '<table>'+ content +'</table>'
-		, values       : G.multipleipconf
-		, checkchanged : ( G.multipleip ? 1 : 0 )
+		, values       : G.multiraudioconf
+		, checkchanged : ( G.multiraudio ? 1 : 0 )
 		, beforeshow   : function() {
 			if ( $( '#infoContent input' ).length === 2 ) {
 				setTimeout( function() {
@@ -298,17 +298,17 @@ $( '#setting-multipleip' ).click( function() {
 				O.inputs = $( '#infoContent input' );
 				var values = infoVal();
 				if ( typeof values === 'string' ) values = [ values ];
-				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === G.multipleipconf.join( ',' ) );
+				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === G.multiraudioconf.join( ',' ) );
 				$( '.ipremove' ).toggleClass( 'hide', O.inputs.length === 2 );
 			} );
 		}
 		, cancel       : function() {
-			$( '#multipleip' ).prop( 'checked', G.multipleip );
+			$( '#multiraudio' ).prop( 'checked', G.multiraudio );
 		}
 		, ok           : function() {
 			O.inputs = $( '#infoContent input' );
-			bash( [ 'multipleipset', ...infoVal() ] );
-			notify( 'Multiple IPs', G.multipleip ? 'Change ...' : 'Enable ...', 'ip' );
+			bash( [ 'multiraudioset', ...infoVal() ] );
+			notify( 'Multiple rAudios', G.multiraudio ? 'Change ...' : 'Enable ...', 'raudiobox' );
 		}
 	} );
 } );
