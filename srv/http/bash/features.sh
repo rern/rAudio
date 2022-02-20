@@ -198,6 +198,14 @@ multipleipset )
 	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
 		touch $dirsystem/multipleip
 		echo "$data" > $dirsystem/multipleip.conf
+		ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
+		for ip in $iplist; do
+			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip << EOF
+echo "$data" > $dirsystem/multipleip.conf 
+touch $dirsystem/multipleip
+EOF
+		done
 	else
 		rm -f $dirsystem/multipleip*
 	fi
