@@ -823,7 +823,7 @@ function infoMount( values ) {
 	var shareddata = false;
 	if ( !values || values.length === 8 ) {
 		var htmlname = `\
-<tr><td><gr>mount:</gr> NAS/</td>
+<tr><td><gr>As:</gr> NAS/</td>
 	<td><input type="text"></td>
 </tr>`;
 		var chktext = 'Update Library on mount'
