@@ -822,7 +822,7 @@ function infoMount( values ) {
 	var shareddata = false;
 	if ( !values || values.length === 8 ) {
 		var htmlname = `\
-<tr><td>Name</td>
+<tr><td><gr>mount:</gr> NAS/</td>
 	<td><input type="text"></td>
 </tr>`;
 		var chktext = 'Update Library on mount'
@@ -841,7 +841,7 @@ function infoMount( values ) {
 	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 </tr>
 ${ htmlname }
-<tr><td>IP</td>
+<tr><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
 <tr id="sharename"><td>Share name</td>
