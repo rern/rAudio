@@ -184,5 +184,5 @@ Audio player for
 - Custom startup / shutdown script
 	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
 - Full screen UI
-	- Google Play Store - rAudio app
+	- Google Play Store - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
 	- Add to Home Screen (Safari on iOS, Chrome on Android)
