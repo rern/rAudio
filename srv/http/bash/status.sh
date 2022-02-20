@@ -90,7 +90,7 @@ if [[ $1 == withdisplay ]]; then
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"  : '$( exists $dirsystem/equalizer )'
 , "lock"       : '$( exists $dirsystem/login )'
-, "multipleip" : '$( exists $dirsystem/multipleip )'
+, "multiraudio" : '$( exists $dirsystem/multiraudio )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( exists $dirsystem/relays )'
 , "screenoff"  : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'

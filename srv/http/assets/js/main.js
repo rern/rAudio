@@ -203,8 +203,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				colorSet();
 			}
 			break;
-		case 'ip':
-			bash( 'cat /srv/http/data/system/multipleip.conf', function( data ) {
+		case 'switchraudio':
+			bash( 'cat /srv/http/data/system/multiraudio.conf', function( data ) {
 				var data = data.trim().split( '\n' );
 				var dataL = data.length;
 				var radio = {}
@@ -213,7 +213,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					i++
 				}
 				info( {
-					  icon    : 'ip'
+					  icon    : 'raudiobox'
 					, title   : 'Switch rAudio'
 					, radio   : radio
 					, values  : window.location.host
