@@ -217,9 +217,12 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					, title   : 'Switch rAudio'
 					, radio   : radio
 					, values  : window.location.host
-					, ok      : function() {
-						loader();
-						location.href = 'http://'+ infoVal();
+					, okno    : 1
+					, beforeshow : function() {
+						$( '#infoContent input' ).change( function() {
+							loader();
+							location.href = 'http://'+ $( '#infoContent input:checked' ).val();
+						} );
 					}
 				} );
 			} );
