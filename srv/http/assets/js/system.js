@@ -86,6 +86,7 @@ $( '#list' ).on( 'click', 'li', function() {
 	
 	$this.addClass( 'active' );
 	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
+	$menu.find( '.remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
 	var menuH = $menu.height();
 	$menu
 		.removeClass( 'hide' )
