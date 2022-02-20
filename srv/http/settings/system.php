@@ -125,7 +125,7 @@ $body = [
 		, 'disabled' => 'Bluetooth is currently active.'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
- • Pairing:&emsp;<i class="fa fa-networks"></i>Networks
+ • Pairing:&emsp;<i class="fa fa-networks"></i>Networks > Bluetooth&ensp;<i class="fa fa-search wh"></i>
  • Button on device can be used for play/pause
 HTML
 	]
@@ -200,7 +200,7 @@ HTML
 		, 'setting' => true
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
+On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays wh"></i>
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
