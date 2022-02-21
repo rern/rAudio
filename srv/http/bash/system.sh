@@ -120,6 +120,8 @@ databackup )
 	files=(
 /boot/cmdline.txt
 /boot/config.txt
+/boot/shutdown.sh
+/boot/startup.sh
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
