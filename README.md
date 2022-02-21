@@ -116,6 +116,9 @@ Audio player for
 	- RPi1, Zero: 80+ seconds
 - After initial boot:
 	- If there's a connected screen, IP address for connecting from remote devices will be displayed.
+	- Full screen UI
+		- Google Play Store - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
+		- Add to Home Screen (Safari on iOS, Chrome on Android)
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
@@ -137,9 +140,6 @@ Audio player for
 
 
 ### Tips
-- Full screen UI
-	- Google Play Store - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-	- Add to Home Screen (Safari on iOS, Chrome on Android)
 - Best sound quality:
 	- Settings > Player > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
