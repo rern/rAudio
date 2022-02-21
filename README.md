@@ -137,6 +137,9 @@ Audio player for
 
 
 ### Tips
+- Full screen UI
+	- Google Play Store - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
+	- Add to Home Screen (Safari on iOS, Chrome on Android)
 - Best sound quality:
 	- Settings > Player > Bit-perfect - Enable
 	- Use only amplifier volume (Unless quality of DAC hardware volume is better.)
@@ -183,6 +186,3 @@ Audio player for
 		- Create and compress image file
 - Custom startup / shutdown script
 	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
-- Full screen UI
-	- Google Play Store - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-	- Add to Home Screen (Safari on iOS, Chrome on Android)
