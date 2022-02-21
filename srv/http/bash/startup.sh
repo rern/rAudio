@@ -83,7 +83,7 @@ if grep -q /srv/http/shareddata /etc/fstab; then
 	done
 fi
 
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
+[[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
 # mpd.service started by this script
 $dirbash/mpd-conf.sh

@@ -1005,7 +1005,7 @@ power )
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3
 	fi
-	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
+	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
 	[[ $action == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ $action == reboot ]] && reboot || poweroff
 	;;
