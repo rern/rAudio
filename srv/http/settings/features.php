@@ -91,6 +91,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 Control clients:
+ • SSH passwords must be default.
  • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
  • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML

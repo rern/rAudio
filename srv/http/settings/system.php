@@ -296,7 +296,8 @@ $body = [
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations. 
-If enabled, music files should be on NAS only.
+ • SSH passwords must be default.
+ • Music files should be on NAS only.
  • On file server, setup a network share with all permissions
  &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
  &emsp; • Samba: <code>read only = no</code>
