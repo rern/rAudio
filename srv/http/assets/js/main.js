@@ -129,7 +129,7 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #reload, #button-library, #button-playlist' ).press( function() { // from info.js
+$( '#logo, #button-library, #button-playlist' ).press( function() { // from info.js
 	location.reload();
 } );
 $( '#logo' ).click( function() {
@@ -149,7 +149,7 @@ $( '#button-settings' ).click( function() {
 	}
 	$( '.contextmenu' ).addClass( 'hide' );
 } );
-$( '.settings:not( :last )' ).click( function() {
+$( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
@@ -202,6 +202,30 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			} else {
 				colorSet();
 			}
+			break;
+		case 'switchraudio':
+			bash( 'cat /srv/http/data/system/multiraudio.conf', function( data ) {
+				var data = data.trim().split( '\n' );
+				var dataL = data.length;
+				var radio = {}
+				for ( i = 0; i < dataL; i++ ) {
+					radio[ data[ i ] ] = data[ i + 1 ];
+					i++
+				}
+				info( {
+					  icon    : 'raudiobox'
+					, title   : 'Switch rAudio'
+					, radio   : radio
+					, values  : window.location.host
+					, okno    : 1
+					, beforeshow : function() {
+						$( '#infoContent input' ).change( function() {
+							loader();
+							location.href = 'http://'+ $( '#infoContent input:checked' ).val();
+						} );
+					}
+				} );
+			} );
 			break;
 	}
 } );
@@ -826,6 +850,9 @@ $( '#divcover' ).press( function( e ) {
 	coverartSave();
 } ).on( 'click', '.iconcover', function() {
 	G.status.webradio ? webRadioCoverart () : coverartChange();
+} );
+$( '#coverT' ).press( function() {
+	location.reload();
 } );
 var btnctrl = {
 	  timeTL  : 'cover'

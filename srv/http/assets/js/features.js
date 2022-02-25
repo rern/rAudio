@@ -255,6 +255,63 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-multiraudio' ).click( function() {
+	if ( location.host.slice( -5 ) !== 'local' ) {
+		var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) ) +'.';
+	} else {
+		var ipsub = location.host;
+	}
+	var trhtml = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
+			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg pointer ipremove"></i></td></tr>';
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh pointer"></i></td></tr>'
+				 + trhtml.replace( 'NUM', 1 );
+	var dataL = G.multiraudioconf.length;
+	if ( dataL ) {
+		var iL = dataL / 2 - 1;
+		for ( i = 0; i < iL; i++ ) content += trhtml;
+	} else {
+		G.multiraudioconf = [ "rAudio", location.host ];
+	}
+	info( {
+		  icon         : 'raudiobox'
+		, title        : 'Multiple rAudios'
+		, content      : '<table>'+ content +'</table>'
+		, values       : G.multiraudioconf
+		, checkchanged : ( G.multiraudio ? 1 : 0 )
+		, beforeshow   : function() {
+			if ( $( '#infoContent input' ).length === 2 ) {
+				setTimeout( function() {
+					$( '.ipremove' ).addClass( 'hide' );
+					$( '#infoOk' ).addClass( 'disabled' );
+				}, 0 );
+			}
+			$( '#infoContent td' ).css( 'padding', 0 );
+			$( '#infoContent tr' ).find( 'td:eq( 0 )' ).css( 'width', '180px' );
+			$( '#infoContent tr' ).find( 'td:eq( 1 )' ).css( 'width', '130px' );
+			$( '#ipadd' ).click( function() {
+				$( '#infoContent tr:last' ).after( trhtml.replace( 'NUM', $( '#infoContent input' ).length + 1 ) );
+				$( '.ipremove' ).removeClass( 'hide' );
+				$( '#infoOk' ).removeClass( 'disabled' );
+			} );
+			$( '#infoContent' ).on( 'click', '.ipremove', function() {
+				$( this ).parents( 'tr' ).remove();
+				O.inputs = $( '#infoContent input' );
+				var values = infoVal();
+				if ( typeof values === 'string' ) values = [ values ];
+				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === G.multiraudioconf.join( ',' ) );
+				$( '.ipremove' ).toggleClass( 'hide', O.inputs.length === 2 );
+			} );
+		}
+		, cancel       : function() {
+			$( '#multiraudio' ).prop( 'checked', G.multiraudio );
+		}
+		, ok           : function() {
+			O.inputs = $( '#infoContent input' );
+			bash( [ 'multiraudioset', ...infoVal() ] );
+			notify( 'Multiple rAudios', G.multiraudio ? 'Change ...' : 'Enable ...', 'raudiobox' );
+		}
+	} );
+} );
 $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();

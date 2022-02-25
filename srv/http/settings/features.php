@@ -91,6 +91,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
 Control clients:
+ • SSH passwords must be default.
  • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
  • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML
@@ -167,6 +168,16 @@ HTML
 HTML
 	]
 	, [
+		  'label'   => 'Multiple rAudios'
+		, 'id'      => 'multiraudio'
+		, 'icon'    => 'raudiobox'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Switch between multiple rAudio devices.
+Switch: &ensp;<i class="fa fa-playlist"></i>Playlist |&ensp;<i class="fa fa-raudiobox wh"></i>
+HTML
+	]
+	, [
 		  'label'    => 'Password Login'
 		, 'id'       => 'login'
 		, 'sublabel' => 'password_hash'
@@ -174,7 +185,7 @@ HTML
 		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock"></i>
+Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock wh"></i>
 HTML
 	]
 	, [

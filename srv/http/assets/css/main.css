@@ -108,10 +108,10 @@ i.map.disabled, .map.disabled i {
 .menu .sub {
 	width: calc( 100% - 40px );
 }
-.settings + .submenu {
+.menu a + .submenu {
 	display: none;;
 }
-.settings.sub + .submenu {
+.menu a.sub + .submenu {
 	display: block;
 }
 .menu a {
@@ -217,12 +217,6 @@ i.map.disabled, .map.disabled i {
 	-webkit-user-select: none;
 }
 /* ---------------------- bars ----------------------*/
-#reload {
-	position: absolute;
-	top: 0;
-	width: 40px;
-	height: 40px;
-}
 #bar-top,
 #bar-bottom {
 	position: fixed;

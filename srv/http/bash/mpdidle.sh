@@ -40,10 +40,10 @@ mpc idleloop | while read changed; do
 			;;
 		update )
 			sleep 1
-			if [[ -e $dirsystem/updating ]] && ! mpc | grep -q '^Updating'; then
+			if [[ -e $dirmpd/updating ]] && ! mpc | grep -q '^Updating'; then
 				if [[ -e $dirshm/updatingusb ]]; then
 					rm $dirshm/updatingusb
-					echo USB > $dirsystem/updating
+					echo USB > $dirmpd/updating
 					mpc update USB
 				else
 					$dirbash/cmd-list.sh

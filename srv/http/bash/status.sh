@@ -35,10 +35,10 @@ else
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
 	updateaddons=$( exists $dirdata/addons/update )
-	if [[ -e $dirsystem/updating ]]; then 
+	if [[ -e $dirmpd/updating ]]; then 
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
-			path=$( cat $dirsystem/updating )
+			path=$( cat $dirmpd/updating )
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
@@ -90,6 +90,7 @@ if [[ $1 == withdisplay ]]; then
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"  : '$( exists $dirsystem/equalizer )'
 , "lock"       : '$( exists $dirsystem/login )'
+, "multiraudio" : '$( exists $dirsystem/multiraudio )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'
 , "relays"     : '$( exists $dirsystem/relays )'
 , "screenoff"  : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'

@@ -18,10 +18,10 @@ restartMPD() {
 	$dirbash/mpd-conf.sh
 }
 update() { # for /etc/conf.d/devmon - devmon@http.service
-	if [[ -e $dirsystem/updating ]]; then
+	if [[ -e $dirmpd/updating ]]; then
 		$dirshm/updatingusb
 	else
-		echo USB > $dirsystem/updating
+		echo USB > $dirmpd/updating
 		mpc -q update USB
 	fi
 	sleep 1

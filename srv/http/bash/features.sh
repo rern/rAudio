@@ -189,6 +189,28 @@ loginset )
 	pushRefresh
 	pushstream display '{"submenu":"lock","value":true}'
 	;;
+multiraudiodisable )
+	rm -f $dirsystem/multiraudio
+	pushRefresh
+	;;
+multiraudioset )
+	data=$( printf "%s\n" "${args[@]:1}" | grep . )
+	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
+		touch $dirsystem/multiraudio
+		echo "$data" > $dirsystem/multiraudio.conf
+		ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
+		for ip in $iplist; do
+			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip << EOF
+echo "$data" > $dirsystem/multiraudio.conf 
+touch $dirsystem/multiraudio
+EOF
+		done
+	else
+		rm -f $dirsystem/multiraudio*
+	fi
+	pushRefresh
+	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi

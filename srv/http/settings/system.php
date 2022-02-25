@@ -125,7 +125,7 @@ $body = [
 		, 'disabled' => 'Bluetooth is currently active.'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
- • Pairing:&emsp;<i class="fa fa-networks"></i>Networks
+ • Pairing:&emsp;<i class="fa fa-networks"></i>Networks > Bluetooth&ensp;<i class="fa fa-search wh"></i>
  • Button on device can be used for play/pause
 HTML
 	]
@@ -200,7 +200,7 @@ HTML
 		, 'setting' => true
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays"></i>
+On/Off: &ensp;<i class="fa fa-plus-r"></i>System |&ensp;<i class="fa fa-relays wh"></i>
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
@@ -295,16 +295,19 @@ $body = [
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
-Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations.
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations. 
+ • SSH passwords must be default.
+ • Music files should be on NAS only.
  • On file server, setup a network share with all permissions
- &emsp; • Directory: <code>777</code> / <code>a+rwx</code>
- &emsp; • Share: allow <code>read</code>, <code>write</code> and <code>execute</code> / <code>modify</code>
- • On each rAudio, enable Shared Data to connect the share.
- • Initial shared data - <code>Use data from this rAudio</code>:
- &emsp; • Leave unchecked to use existing data on the server.
+ &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
+ &emsp; • Samba: <code>read only = no</code>
+ &emsp; • Windows: <code>Everyone - Full Control</code>
+ • On each rAudio
+  &emsp; • Storage > <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
+  &emsp; • Shared Data - Enable to connect the share.
+ • <code>Use data from this rAudio</code>:
  &emsp; • Check only on rAudio with data to be used or to overwrite existing.
- • Shared data and any changes will be available for all connected rAudio.
- • If enabled, music files should be on NAS only.
+ &emsp; • Leave unchecked to use existing data on the server.
 HTML
 	]
 	, [

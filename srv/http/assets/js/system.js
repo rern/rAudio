@@ -86,6 +86,7 @@ $( '#list' ).on( 'click', 'li', function() {
 	
 	$this.addClass( 'active' );
 	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
+	$menu.find( '.remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
 	var menuH = $menu.height();
 	$menu
 		.removeClass( 'hide' )
@@ -646,7 +647,16 @@ $( '#shareddata' ).click( function() {
 			}
 		} );
 	} else {
-		infoMount( 'shareddata' );
+		if ( $( '#list .fa-networks' ).length ) {
+			infoMount( 'shareddata' );
+		} else {
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : 'Connect <wh>music share</wh> before enable Shared Data.'
+			} );
+			$( '#shareddata' ).prop( 'checked', false );
+		}
 	}
 } );
 $( '#backup' ).click( function() {
@@ -813,7 +823,7 @@ function infoMount( values ) {
 	var shareddata = false;
 	if ( !values || values.length === 8 ) {
 		var htmlname = `\
-<tr><td>Name</td>
+<tr><td><gr>As:</gr> NAS/</td>
 	<td><input type="text"></td>
 </tr>`;
 		var chktext = 'Update Library on mount'
@@ -832,7 +842,7 @@ function infoMount( values ) {
 	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 </tr>
 ${ htmlname }
-<tr><td>IP</td>
+<tr><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
 <tr id="sharename"><td>Share name</td>
@@ -879,7 +889,7 @@ ${ htmlname }
 			} );
 		}
 		, cancel     : function() {
-			$( '#shareddata' ).prop( 'checked', false );
+			if ( shareddata ) $( '#shareddata' ).prop( 'checked', false );
 		}
 		, ok         : function() {
 			var values = infoVal();

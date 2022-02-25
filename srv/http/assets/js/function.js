@@ -398,6 +398,7 @@ function displaySubMenu() {
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );  // submenu toggled by css .settings + .submenu
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
+	if ( G.display.multiraudio ) $( '#displayplaylist' ).addClass( 'sub' );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;

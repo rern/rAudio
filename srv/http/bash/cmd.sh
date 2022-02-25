@@ -564,7 +564,7 @@ hashFiles )
 	done
 	;;
 ignoredir )
-	touch $dirsystem/updating
+	touch $dirmpd/updating
 	path=${args[1]}
 	dir=$( basename "$path" )
 	mpdpath=$( dirname "$path" )
@@ -730,10 +730,10 @@ mpcseek )
 mpcupdate )
 	path=${args[1]}
 	if [[ $path == rescan ]]; then
-		echo rescan > $dirsystem/updating
+		echo rescan > $dirmpd/updating
 		mpc -q rescan
 	else
-		echo $path > $dirsystem/updating
+		echo $path > $dirmpd/updating
 		mpc -q update "$path"
 	fi
 	pushstream mpdupdate 1
@@ -1005,7 +1005,7 @@ power )
 		umount -l /mnt/MPD/NAS/* &> /dev/null
 		sleep 3
 	fi
-	[[ -e /boot/shutdown.sh ]] && /boot/shutdown.sh
+	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
 	[[ $action == off && -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py off
 	[[ $action == reboot ]] && reboot || poweroff
 	;;
@@ -1042,6 +1042,10 @@ scrobble )
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
+	;;
+shareddatareload )
+	systemctl restart mpd
+	pushstream mpdupdate "$( cat $dirmpd/counts )"
 	;;
 thumbgif )
 	gifThumbnail "${args[@]:1}"

@@ -217,16 +217,16 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 		<i id="relays" class="fa fa-relays submenu"></i>
 	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
 		<i id="guide" class="fa fa-question-circle submenu"></i>
-	<a id="power" class="settings"><i class="fa fa-power"></i>Power</a>
+	<a id="power"><i class="fa fa-power"></i>Power</a>
 		<i id="screenoff" class="fa fa-screenoff submenu"></i>
 	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
 		<i id="update" class="fa fa-refresh-library submenu"></i>
 	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
 		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
 	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
+		<i id="switchraudio" class="fa fa-raudiobox submenu"></i>
 </div>
 <div id="page-playback" class="page">
-	<div id="reload"></div>
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<i id="guide-bio" class="map guide fa fa-bio hide"></i>
 	<i id="guide-lyrics" class="map guide fa fa-lyrics hide"></i>

@@ -120,6 +120,8 @@ databackup )
 	files=(
 /boot/cmdline.txt
 /boot/config.txt
+/boot/shutdown.sh
+/boot/startup.sh
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
@@ -592,6 +594,9 @@ servers )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
+	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	sed -i "/$ip/ d" $mountpoint/iplist
+	[[ $( grep . $mountpoint/iplist | wc -l ) == 0 ]] && rm $mountpoint/iplist
 	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
 		rm -rf $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
@@ -602,7 +607,11 @@ shareddatadisable )
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirdata/mpd
 	pushRefresh
-	[[ $copydata == false ]] && $dirbash/cmd.sh mpcupdate
+	if [[ $copydata == false ]]; then
+		rm -f $dirmpd/{updating,listing}
+		systemctl restart mpd
+		$dirbash/cmd.sh mpcupdate
+	fi
 	;;
 shareddata )
 	protocol=${args[1]}
@@ -648,9 +657,11 @@ shareddata )
 			rm -rf $dirdata/$dir
 			ln -s $mountpoint/$dir $dirdata
 		done
+		ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' >> $mountpoint/iplist
 		chown -R http:http $mountpoint $dirdata
 		chown mpd:audio $mountpoint/mpd $dirmpd
 		pushRefresh
+		[[ $copydata == false ]] && systemctl restart mpd
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		sed -i "\|$mountpoint| d" /etc/fstab
