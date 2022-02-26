@@ -175,6 +175,7 @@ HTML
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
 Switch: &ensp;<i class="fa fa-playlist"></i>Playlist |&ensp;<i class="fa fa-raudiobox wh"></i>
+ • SSH passwords must be default.
 HTML
 	]
 	, [
