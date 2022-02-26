@@ -53,6 +53,7 @@ Audio player for
 	
 ### Default root password
 - `ros`
+- If enable SnapClient, Multiple rAudios or Shared Data, do not change password from default.
 
 ### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
