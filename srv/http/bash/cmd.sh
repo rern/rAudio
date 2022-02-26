@@ -577,7 +577,7 @@ lcdcharsnapclient )
 	[[ ! -e $dirshm/serverip ]] && exit
 	
 	serverip=$( cat $dirshm/serverip )
-	sshpass -p ros scp root@$serverip:$dirshm/statuslcd.py $dirshm
+	sshpass -p ros scp StrictHostKeyChecking=no root@$serverip:$dirshm/statuslcd.py $dirshm
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 	;;
