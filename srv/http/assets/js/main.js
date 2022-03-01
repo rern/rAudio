@@ -1999,7 +1999,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
 	}
-	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp );
+	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || G.status.counts.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
