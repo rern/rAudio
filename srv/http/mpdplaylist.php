@@ -268,7 +268,11 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$stationname = $list->Name;
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				$urlname = str_replace( '#', '%23', $list->urlname );
+				if ( substr( $file, 0, 4 ) === 'http' ) { // webradio
+					$urlname = str_replace( '/', '|', $file );
+				} else {
+					$urlname = str_replace( '#', '%23', $list->urlname );
+				}
 				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg"'
 						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
