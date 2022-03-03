@@ -828,6 +828,7 @@ function playlistInsertTarget() {
 		, message : 'Select where to add:'
 				   +'<br><wh>'+ G.list.name +'</wh>'
 		, radio   : { First : 'first', Select: 'select', Last: 'last' }
+		, values  : 'last'
 		, cancel  : function() {
 			G.pladd = {};
 		}
