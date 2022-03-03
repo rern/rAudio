@@ -118,7 +118,7 @@ Audio player for
 - After initial boot:
 	- If there's a connected screen, IP address for connecting from remote devices will be displayed.
 	- Full screen UI
-		- Google Play Store - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
+		- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
 		- Add to Home Screen (Safari on iOS, Chrome on Android)
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
