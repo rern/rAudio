@@ -577,6 +577,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
 			} );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
+			$( '#infoContent .pladd' ).toggleClass( 'hide', G.status.player !== 'mpd' );
 			$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble || !G.status.webradio );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
