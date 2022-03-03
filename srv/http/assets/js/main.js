@@ -449,7 +449,7 @@ $( '#playback' ).click( function() {
 	}
 } );
 $( '#playlist' ).click( function() {
-	G.pladd = {};
+	G.pladd = {}
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) {
 			G.savedlist = 0;
@@ -553,12 +553,13 @@ $( '#title, #guide-lyrics' ).click( function() {
 <tr><td colspan="2" class="btnbottom">
 	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
 	<span class="bio">&emsp;<i class="fa fa-bio"></i> Bio</span>
+	<span class="pladd">&emsp;<i class="fa fa-file-playlist"></i> Add to</span>
 	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
 	</td></tr>
 </table>`;
 	info( {
-		  icon        : 'lyrics'
-		, title       : 'Lyrics'
+		  icon        : 'Music'
+		, title       : 'Track'
 		, content     : content
 		, boxwidth    : 320
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
@@ -596,8 +597,14 @@ $( '#title, #guide-lyrics' ).click( function() {
 						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 						$( '#bio' ).removeClass( 'hide' );
 					}
+				} else if ( $this.hasClass( 'pladd' ) ) {
+					$( '#button-pl-playlists' ).click();
+					$( '#button-playlist' ).click();
+					G.pladd.index = G.status.song;
+					G.pladd.name = G.status.Title;
+			banner( 'Add to a playlist', 'Select target playlist', 'file-playlist', -1 );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...infoVal() ] );
+					bash( [ 'scrobble', ...values ] );
 					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
 				}
 				$( '#infoX' ).click();

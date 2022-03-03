@@ -820,6 +820,7 @@ function playlistInsertSelect( $this ) {
 			playlistInsert( $this.index() )
 		}
 	} );
+	bannerHide();
 }
 function playlistInsertTarget() {
 	info( {
@@ -840,6 +841,7 @@ function playlistInsertTarget() {
 			}
 		}
 	} );
+	bannerHide();
 }
 function playlistFilter() {
 	var keyword = $( '#pl-search-input' ).val();

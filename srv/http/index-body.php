@@ -117,16 +117,16 @@ $menu = '<div id="contextmenu">';
 
 $htmlcommon = menucommon( 'add', 'replace' );
 
-$html = menuli( 'play',       'play',         'Play' );
-$html.= menuli( 'pause',      'pause',        'Pause' );
-$html.= menuli( 'stop',       'stop',         'Stop' );
-$html.= menuli( 'current',    'check',        'Current' );
-$html.= menuli( 'wrsave',     'save',         'Save to WebRadio' );
-$html.= menuli( 'savedpladd', 'save-plus',    'Add to saved <i class="fa fa-playlist gr"></i>' );
-$html.= menuli( 'remove',     'minus-circle', 'Remove' );
+$html = menuli( 'play',       'play',          'Play' );
+$html.= menuli( 'pause',      'pause',         'Pause' );
+$html.= menuli( 'stop',       'stop',          'Stop' );
+$html.= menuli( 'current',    'check',         'Current' );
+$html.= menuli( 'wrsave',     'save',          'Save to WebRadio' );
+$html.= menuli( 'savedpladd', 'file-playlist', 'Add to a playlist' );
+$html.= menuli( 'remove',     'minus-circle',  'Remove' );
 $html.= $menulisimilar;
-$html.= menuli( 'tag',        'info-circle',  'Track Info' );
-$html.= menuli( 'tagcd',      'tag',          'CD Tag Editor' );
+$html.= menuli( 'tag',        'info-circle',   'Track Info' );
+$html.= menuli( 'tagcd',      'tag',           'CD Tag Editor' );
 $menu.= menudiv( 'plaction', $html );
 
 $menudiv = '';

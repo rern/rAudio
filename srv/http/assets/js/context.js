@@ -539,17 +539,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			plRemove( G.list.li );
 			return
 		case 'savedpladd':
-			info( {
-				  icon    : 'playlist'
-				, title   : 'Add to playlist'
-				, message : 'Open target playlist to add:'
-						   +'<br><wh>'+ G.list.name +'</wh>'
-				, ok      : function() {
-					G.pladd.index = G.list.li.index();
-					G.pladd.name = G.list.name;
-					$( '#button-pl-playlists' ).click();
-				}
-			} );
+			G.pladd.index = G.list.li.index();
+			G.pladd.name = G.list.name;
+			$( '#button-pl-playlists' ).click();
+			banner( 'Add to a playlist', 'Select target playlist', 'file-playlist', -1 );
 			return
 		case 'savedplremove':
 			var plname = $( '#pl-path .lipath' ).text();
