@@ -149,6 +149,10 @@ case 'save':
 	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
 	pushstream( 'playlists', listPlaylists() );
 	break;
+case 'track':
+	$array = playlistInfo( $_POST[ 'track' ] );
+	echo json_encode( $array );
+	break;
 	
 }
 
@@ -357,7 +361,7 @@ function playlistInfo( $index = '' ) { // mpd protocol
 		.'; echo playlistinfo '.$index
 		.'; sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); }'
 		.' | telnet 127.0.0.1 6600 2> /dev/null'
-		.' | grep "^Album:\|^Artist\|^file\|^Range\|^Time\|^Title\|^Track"'
+		.' | grep "^Album\|^Artist\|^Composer\|^Conductor\|^Date\|^file\|^Genre\|^Range\|^Time\|^Title\|^Track"'
 		.' |  sed "s/^\(file:\)/---\n\1/"' // file: as start track set
 		, $lists );
 	if ( !count( $lists ) ) exit( '-1' );

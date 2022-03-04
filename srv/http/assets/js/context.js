@@ -142,38 +142,49 @@ function playlistSave( name, oldname ) {
 	}
 }
 function tagEditor() {
-	var file = G.list.path;
-	var cue = file.slice( -4 ) === '.cue';
 	var format = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
-	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
-	var fL = format.length;
-	if ( !G.list.licover ) {
-		if ( !cue ) {
-			format.push( 'title', 'track' );
-		} else {
-			format = [ 'artist', 'title', 'track' ];
+	if ( G.playlist ) {
+		format.push( 'title', 'track' );
+		var query = {
+			  cmd      : 'track'
+			, track    : G.list.index
 		}
+	} else {
+		var file = G.list.path;
+		var cue = file.slice( -4 ) === '.cue';
+		var fL = format.length;
+		if ( !G.list.licover ) {
+			if ( !cue ) {
+				format.push( 'title', 'track' );
+			} else {
+				format = [ 'artist', 'title', 'track' ];
+			}
+		}
+		var query = {
+			  query  : 'track'
+			, file   : file
+			, format : format
+		}
+		if ( cue ) query.track = G.list.track || 'cover';
 	}
-	var query = {
-		  query  : 'track'
-		, file   : file
-		, format : format
-	}
-	if ( cue ) query.track = G.list.track || 'cover';
-	if ( G.playlist ) query.coverart = 1;
+	var name = format.map( item => item.charAt( 0 ).toUpperCase() + item.substr( 1 ) );
 	list( query, function( values ) {
 		if ( G.playlist ) {
-			values.forEach( function( v, i ) {
-				if ( v === '' ) {
-					format.splice( i, 1 );
-					name.splice( i, 1 );
-					values.splice( i, 1 );
-				}
+			v = values[ 0 ];
+			file = v.file;
+			values = [];
+			name.forEach( function( k ) {
+				values.push( v[ k ] || '' );
 			} );
 		}
 		var mode, label = [];
 		format.forEach( function( el, i ) {
-			mode = el
+			if ( G.playlist && !values[ i ] ) {
+				delete values[ i ];
+				return
+			}
+			
+			mode = el;
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
@@ -182,6 +193,7 @@ function tagEditor() {
 			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
 		} else {
 			var $img =  G.list.li.find( 'img' );
+			values = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var message = '<img src="'+ ( $img.length ? $img.attr( 'src' ) : G.coverdefault ) +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
@@ -202,7 +214,11 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				if ( cue && !G.list.licover ) $( '#infoContent input' ).eq( 2 ).prop( 'disabled', 1 );
+				if ( G.playlist ) {
+					$( '#infoContent input' ).prop( 'disabled', 1 );
+				} else if ( cue && !G.list.licover ) {
+					$( '#infoContent input' ).eq( 2 ).prop( 'disabled', 1 );
+				}
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td' ).eq( 0 ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
