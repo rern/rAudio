@@ -1315,7 +1315,7 @@ $( '.mode' ).click( function() {
 			renderLibraryList( data );
 			bannerHide();
 		}, 'json' );
-		banner( 'Latest Tracks', 'Query ...', 'latest', -1 );
+		banner( 'Latest Tracks', 'Query ...', 'latest blink', -1 );
 		return
 	}
 	

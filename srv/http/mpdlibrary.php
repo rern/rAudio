@@ -434,16 +434,10 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	
 	$hidecover = exec( 'grep "hidecover.*true" /srv/http/data/system/display' );
 	$searchmode = $filemode === 'search';
-//	$cue = exec( 'mpc ls "'.dirname( $file0 ).'" | grep ".cue$" | wc -l' )
-//			|| substr( $file0, -14, 4 ) === '.cue'; // $file0 = '/path/to/file.cue/track0001'
-	$cuefile = exec( 'mpc ls "'.dirname( $file0 ).'" | grep ".cue$" | head -1' );
-	if ( $cuefile ) {
+	$cuefile = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
+	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue = true;
-		$file0 = $cuefile;
-	} else if ( substr( $file0, -14, 4 ) === '.cue' ) { // $file0 = '/path/to/file.cue/track0001'
-		$cue = true;
-		$file0 = dirname( $file0 );
-		$musicfile = exec( 'mpc ls "'.dirname( $file0 ).'" | grep -v ".cue$" | head -1' );
+		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" | grep -v ".cue$" | head -1' );
 		$ext = pathinfo( $musicfile, PATHINFO_EXTENSION );
 	} else {
 		$cue = false;
@@ -455,11 +449,18 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		if ( !$each->time ) continue;
 		
 		$path = $cue ? $file0 : $each->file;
+		$album = $each->album;
+		$artist = $each->artist;
+		if ( !$album && !$artist ) {
+			$cuefile = preg_replace( "/\.[^.]+$/", '.cue', $path );
+			if ( file_exists( '/mnt/MPD/'.$cuefile ) ) continue;
+		}
+		
 		$litime += HMS2second( $each->time );
 		$title = $each->title;
 		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
-			$name = $each->artist.' - '.$each->album;
+			$name = $artist.' - '.$album;
 			if ( $gmode !== 'file' ) {
 				$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
 				$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
