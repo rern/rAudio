@@ -459,13 +459,13 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$title = $each->title;
 		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
+			$name = $each->artist.' - '.$each->album;
 			if ( $gmode !== 'file' ) {
 				$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
 				$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
 			} else {
 				$trackname = $name;
 			}
-			$name = $each->artist.' - '.$each->album;
 		} else {
 			$trackname = basename( $path );
 		}
@@ -475,7 +475,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$html.= '<li data-mode="'.$gmode.'" '.$datatrack.$li0.'>'
 					.'<a class="lipath">'.$path.'</a>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-file"></i>'
-					.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>'
+					.'<div class="li1">'.$path.'<span class="time">'.$each->time.'</span></div>'
 					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
