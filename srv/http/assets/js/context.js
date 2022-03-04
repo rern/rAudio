@@ -142,9 +142,9 @@ function playlistSave( name, oldname ) {
 	}
 }
 function tagEditor() {
-	var format = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
+	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
+	var format = name.map( el => el.toLowerCase() );
 	if ( G.playlist ) {
-		format.push( 'title', 'track' );
 		var query = {
 			  cmd      : 'track'
 			, track    : G.list.index
@@ -153,12 +153,10 @@ function tagEditor() {
 		var file = G.list.path;
 		var cue = file.slice( -4 ) === '.cue';
 		var fL = format.length;
-		if ( !G.list.licover ) {
-			if ( !cue ) {
-				format.push( 'title', 'track' );
-			} else {
-				format = [ 'artist', 'title', 'track' ];
-			}
+		if ( G.list.licover ) {
+			format = format.slice( 0, -2 );
+		} else {
+			if ( cue ) format = [ 'artist', 'title', 'track' ];
 		}
 		var query = {
 			  query  : 'track'
@@ -167,11 +165,12 @@ function tagEditor() {
 		}
 		if ( cue ) query.track = G.list.track || 'cover';
 	}
-	var name = format.map( item => item.charAt( 0 ).toUpperCase() + item.substr( 1 ) );
 	list( query, function( values ) {
 		if ( G.playlist ) {
 			v = values[ 0 ];
 			file = v.file;
+			cue = 'Range' in v;
+			if ( cue ) file = file.replace( /\.[^/.]+$/, '.cue' );
 			values = [];
 			name.forEach( function( k ) {
 				values.push( v[ k ] || '' );
