@@ -534,7 +534,26 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			bash( [ 'plcurrent', G.list.index + 1 ] );
 			return
 		case 'directory':
-			$( '#lib-list .liinfopath' ).click();
+			if ( G.mode === 'latest' ) {
+				var path = G.list.path.substring( 0, G.list.path.lastIndexOf( '/' ) );
+				var query = {
+					  query  : 'ls'
+					, string : path
+					, format : [ 'file' ]
+				}
+				var modetitle = path;
+				query.gmode = G.mode;
+				list( query, function( data ) {
+					data.path = path;
+					data.modetitle = modetitle;
+					renderLibraryList( data );
+				}, 'json' );
+				query.path = path;
+				query.modetitle = modetitle;
+				G.query.push( query );
+			} else {
+				$( '#lib-list .liinfopath' ).click();
+			}
 			return
 		case 'exclude':
 			info( {

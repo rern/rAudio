@@ -142,6 +142,7 @@ $menu.= menudiv( 'folder', $html );
 $menudiv = '';
 $html = menucommon( 'add', 'replace' );
 $html.= $menulisimilar;
+$html.= menuli( 'directory', 'folder', 'Browse directory' );
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'file', $html );
 

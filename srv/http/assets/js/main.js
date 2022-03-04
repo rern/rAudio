@@ -1301,15 +1301,17 @@ $( '.mode' ).click( function() {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( G.mode = 'latest' ) {
+	if ( G.mode === 'latest' ) {
 		var query = {
 			  query  : 'latest'
 			, gmode  : G.mode
 			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 		}
+		var path = 'Latest Tracks';
+		query.modetitle = path;
+		G.query.push( query );
 		list( query, function( data ) {
-			data.modetitle = 'Latest Tracks';
-			delete data.count;
+			data.modetitle = path;
 			renderLibraryList( data );
 			bannerHide();
 		}, 'json' );
