@@ -82,7 +82,6 @@ case 'find':
 	}
 	break;
 case 'latest':
-	$gmode = 'file';
 	exec( 'mpc listall -f %mtime%^'.$format.' | sort -r | head -20 | cut -d^ -f2-'
 		, $lists );
 	$array = htmlTracks( $lists, $f, 'search' );
@@ -460,9 +459,13 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$title = $each->title;
 		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
-			$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
+			if ( $gmode !== 'file' ) {
+				$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
+				$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
+			} else {
+				$trackname = $name;
+			}
 			$name = $each->artist.' - '.$each->album;
-			$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
 		} else {
 			$trackname = basename( $path );
 		}

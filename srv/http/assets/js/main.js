@@ -1304,7 +1304,7 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'latest' ) {
 		var query = {
 			  query  : 'latest'
-			, gmode  : G.mode
+			, gmode  : 'file'
 			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 		}
 		var path = 'Latest Tracks';
