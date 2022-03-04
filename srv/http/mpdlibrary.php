@@ -82,7 +82,7 @@ case 'find':
 	}
 	break;
 case 'latest':
-	exec( 'mpc listall -f %mtime%^'.$format.' | sort -r | head -20 | cut -d^ -f2-'
+	exec( 'mpc listall -f %mtime%^'.$format.' | sort -r | head -'.$_POST[ 'length' ].' | cut -d^ -f2-'
 		, $lists );
 	$array = htmlTracks( $lists, $f, 'search' );
 	break;

@@ -1302,20 +1302,30 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	if ( G.mode === 'latest' ) {
-		var query = {
-			  query  : 'latest'
-			, gmode  : 'file'
-			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-		}
-		var path = 'Latest Tracks';
-		query.modetitle = path;
-		G.query.push( query );
-		list( query, function( data ) {
-			data.modetitle = path;
-			renderLibraryList( data );
-			bannerHide();
-		}, 'json' );
-		banner( 'Latest Tracks', 'Query ...', 'latest blink', -1 );
+		info( {
+			  icon    : 'latest'
+			, title   : 'Latest Tracks'
+			, message : 'Number of tracks to list:'
+			, radio   : { 20: 20, 30: 30, 50: 50, 100: 100 }
+			, values  : [ 20 ]
+			, ok      : function() {
+				var query = {
+					  query  : 'latest'
+					, gmode  : 'file'
+					, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
+					, length : infoVal()
+				}
+				var path = 'Latest Tracks';
+				query.modetitle = path;
+				G.query.push( query );
+				list( query, function( data ) {
+					data.modetitle = path;
+					renderLibraryList( data );
+					bannerHide();
+				}, 'json' );
+				banner( 'Latest Tracks', 'Query ...', 'latest blink', -1 );
+			}
+		} );
 		return
 	}
 	
