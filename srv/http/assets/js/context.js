@@ -190,11 +190,13 @@ function tagEditor() {
 		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
 		if ( G.library ) {
 			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
+			var src = $img.length ? $img.attr( 'src' ) : G.coverdefault;
 		} else {
 			var $img =  G.list.li.find( 'img' );
+			var src = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : G.coverdefault;
 			values = values.filter( val => val ); // reindex after deleting blank elements
 		}
-		var message = '<img src="'+ ( $img.length ? $img.attr( 'src' ) : G.coverdefault ) +'"><br>'
+		var message = '<img src="'+ src +'"><br>'
 					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
 		var footer = '';
 		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
