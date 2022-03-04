@@ -553,7 +553,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 <tr><td colspan="2" class="btnbottom">
 	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
 	<span class="bio">&emsp;<i class="fa fa-bio"></i> Bio</span>
-	<span class="pladd">&emsp;<i class="fa fa-file-playlist"></i> Add to</span>
+	<span class="pladd">&emsp;<i class="fa fa-file-playlist"></i> Add</span>
 	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
 	</td></tr>
 </table>`;
@@ -1197,6 +1197,7 @@ $( '#lib-search-btn' ).click( function() { // search
 				  query  : 'search'
 				, string : keyword
 				, gmode  : G.mode
+				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 			}
 		} else {
 			var query = {
@@ -1299,6 +1300,22 @@ $( '.mode' ).click( function() {
 	G.mode = $this.data( 'mode' );
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
+	
+	if ( G.mode = 'latest' ) {
+		var query = {
+			  query  : 'latest'
+			, gmode  : G.mode
+			, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
+		}
+		list( query, function( data ) {
+			data.modetitle = 'Latest Tracks';
+			delete data.count;
+			renderLibraryList( data );
+			bannerHide();
+		}, 'json' );
+		banner( 'Latest Tracks', 'Query ...', 'latest', -1 );
+		return
+	}
 	
 	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
 		var modeplaylists = G.mode === 'playlists';

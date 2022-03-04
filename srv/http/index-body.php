@@ -58,7 +58,7 @@ $color = file_exists( $dirsystem.'color' );
 $filecounts = $dirdata.'mpd/counts';
 $counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists' ];
+$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );

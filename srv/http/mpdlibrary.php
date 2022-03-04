@@ -81,6 +81,12 @@ case 'find':
 		$array = htmlFind( $lists, $f );
 	}
 	break;
+case 'latest':
+	$gmode = 'file';
+	exec( 'mpc listall -f %mtime%^'.$format.' | sort -r | head -20 | cut -d^ -f2-'
+		, $lists );
+	$array = htmlTracks( $lists, $f, 'search' );
+	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
 	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display' ) ) $filemode.= 'byartist';
@@ -265,7 +271,6 @@ echo json_encode( $array );
 //-------------------------------------------------------------------------------------
 function directoryList( $lists ) {
 	global $gmode;
-	global $mode;
 	foreach( $lists as $list ) {
 		$dir = basename( $list );
 		$each = ( object )[];
@@ -283,9 +288,14 @@ function directoryList( $lists ) {
 		$path = $each->path;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
+		if ( is_dir( '/mnt/MPD/'.$path ) ) {
+			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
+			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
+		} else {
+			$htmlicon = '<i class="lib-icon fa fa-music" data-target="#menu-file"></i>';
+		}
 		$html.=  '<li data-mode="'.$gmode.'" data-index="'.$index.'">'
-				.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">'
+				.$htmlicon
 				.'<a class="lipath">'.$path.'</a>'
 				.'<span class="single">'.$each->dir.'</span>'
 				.'</li>';
