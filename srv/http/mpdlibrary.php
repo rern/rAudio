@@ -484,10 +484,13 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	if ( $hidecover ) {
 		$coverhtml = '';
 	} else {
-		// fix - mpd cannot read albumartist from *.wav
-		if ( $ext === 'wav' ) $albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		if ( $ext !== 'wav' ) {
+			$albumartist = $each0->albumartist;
+		} else { // fix - mpd cannot read albumartist from *.wav
+			$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		}
 		$album = $each0->album;
-		$artist = $each0->albumartist ?: ( $albumartist ?? '' );
+		$artist = $albumartist ?: '';
 		$icon = 'albumartist';
 		if ( !$artist ) {
 			$artist = $each0->artist;

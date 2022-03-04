@@ -544,6 +544,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				var modetitle = path;
 				query.gmode = G.mode;
 				list( query, function( data ) {
+					G.mode = path.split( '/' )[ 0 ].toLowerCase();
+					G.gmode = 'latest';
 					data.path = path;
 					data.modetitle = modetitle;
 					renderLibraryList( data );

@@ -1265,7 +1265,7 @@ $( '#button-lib-back' ).click( function() {
 		return
 	}
 	
-	if ( bL && G.query[ 0 ] !== 'playlist' ) {
+	if ( bL && G.query[ 0 ] !== 'playlist' && G.mode !== 'latest' ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
