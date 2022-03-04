@@ -475,7 +475,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$html.= '<li data-mode="'.$gmode.'" '.$datatrack.$li0.'>'
 					.'<a class="lipath">'.$path.'</a>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-file"></i>'
-					.'<div class="li1">'.$path.'<span class="time">'.$each->time.'</span></div>'
+					.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>'
 					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
