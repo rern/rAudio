@@ -97,6 +97,7 @@ hostapdset )
 latestdisable )
 	rm $dirsystem/latest
 	pushRefresh
+	pushstream display '{"latest":false}'
 	;;
 latestset )
 	echo "\
@@ -104,6 +105,7 @@ nalbum=${args[1]}
 ntrack=${args[2]}" > $dirsystem/latest.conf
 	touch $dirsystem/latest
 	pushRefresh
+	pushstream display '{"latest":true}'
 	$dirbash/cmd-list.sh latest &
 	;;
 localbrowserdisable )
