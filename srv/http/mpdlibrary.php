@@ -452,7 +452,12 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	foreach( $array as $each ) {
 		if ( !$each->time ) continue;
 		
-		$path = $cue ? $file0 : $each->file;
+		if ( $gmode !== 'latest' ) {
+			$path = $cue ? $file0 : $each->file;
+		} else {
+			$path = $each->file;
+			$cue = str_contains( $path, '.cue/track' );
+		}
 		$album = $each->album;
 		$artist = $each->artist;
 		if ( !$album && !$artist ) {

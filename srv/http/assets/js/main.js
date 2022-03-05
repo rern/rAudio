@@ -1313,7 +1313,7 @@ $( '.mode' ).click( function() {
 				var query = {
 					  query  : 'latest'
 					, type   : type
-					, gmode  : type === 'track' ? 'file' : 'latest'
+					, gmode  : type === 'track' ? 'latest' : 'latest'
 					, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 					, length : infoVal()
 				}
@@ -1325,7 +1325,6 @@ $( '.mode' ).click( function() {
 					renderLibraryList( data );
 					bannerHide();
 				}, 'json' );
-				banner( 'Latest Tracks', 'Query ...', 'latest blink', -1 );
 			}
 		} );
 		return
