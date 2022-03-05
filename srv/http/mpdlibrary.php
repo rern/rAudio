@@ -82,9 +82,10 @@ case 'find':
 	}
 	break;
 case 'latest':
-	exec( 'mpc listall -f %mtime%^'.$format.' | sort -r | head -'.$_POST[ 'length' ].' | cut -d^ -f2-'
-		, $lists );
-	$array = htmlTracks( $lists, $f, 'search' );
+	$type = $_POST[ 'type' ];
+	$filemode = '/srv/http/data/mpd/latest'.$type;
+	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
+	$array = $type === 'album' ? htmlList( $lists ) : htmlTracks( $lists, $f, 'search' );
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
@@ -378,6 +379,8 @@ function htmlList( $lists ) { // non-file 'list' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
 	global $mode;
+	global $gmode;
+	if ( $gmode === 'latest' ) $mode = 'album';
 	$html = '';
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
@@ -387,7 +390,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$name = $data[ 1 ];
 			$html.= '<li data-mode="'.$mode.'" data-index="'.$index.'">'
 						.'<a class="lipath">'.$name.'</a>'
-						.'<i class="fa fa-'.$mode.' lib-icon" data-target="#menu-'.$mode.'"></i>'
+						.'<i class="fa fa-'.$gmode.' lib-icon" data-target="#menu-'.$mode.'"></i>'
 						.'<span class="single">'.$name.'</span>'
 					.'</li>';
 		}
@@ -398,6 +401,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
+			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' ); // replaced with icon on load error(faster than existing check)
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>

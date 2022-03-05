@@ -157,12 +157,12 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label'   => 'Latest Tracks'
+		  'label'   => 'Latest in Library'
 		, 'id'      => 'latest'
 		, 'icon'    => 'latest'
 		, 'setting' => true
 		, 'help'    => <<< HTML
-Library latest tracks and albums.
+Latest albums and tracks added to Library.
 HTML
 	]
 	, [

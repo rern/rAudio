@@ -1304,18 +1304,20 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'latest' ) {
 		info( {
 			  icon    : 'latest'
-			, title   : 'Latest Tracks'
-			, message : 'Number of tracks to list:'
-			, radio   : { 20: 20, 30: 30, 50: 50, 100: 100 }
-			, values  : [ 20 ]
+			, title   : 'Latest in Library'
+			, message : 'Type:'
+			, radio   : { Allbum: 'album', Track: 'track' }
+			, values  : [ 'album' ]
 			, ok      : function() {
+				var type = infoVal();
 				var query = {
 					  query  : 'latest'
-					, gmode  : 'file'
+					, type   : type
+					, gmode  : type === 'track' ? 'file' : 'latest'
 					, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 					, length : infoVal()
 				}
-				var path = 'Latest Tracks';
+				var path = type === 'album' ? 'Latest Albums' : 'Latest Tracks'
 				query.modetitle = path;
 				G.query.push( query );
 				list( query, function( data ) {
