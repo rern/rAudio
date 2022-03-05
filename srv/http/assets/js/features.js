@@ -257,30 +257,38 @@ $( '#setting-smb' ).click( function() {
 } );
 $( '#setting-latest' ).click( function() {
 	var content =`\
+<div class="infomessage">Number to entries:</div>
 <table>
-<tr><td>Tracks</td>
-	<td><select id="track">
+<tr><td class="lbl">Albums</td>
+	<td><select>
+		<option value="10">10</option>
 		<option value="20">20</option>
 		<option value="30">30</option>
-		<option value="50">50</option>
 	</select></td>
 </tr>
-<tr><td>Albums</td>
-	<td><select id="album">
-		<option value="20">20</option>
+<tr><td class="lbl">Tracks</td>
+	<td><select>
 		<option value="30">30</option>
-		<option value="50">50</option>
+		<option value="60">50</option>
+		<option value="100">100</option>
 	</select></td>
 </tr>
 </table>
 `;
 	info( {
 		  icon         : 'latest'
-		, title        : 'Latest Tracks / Albums'
+		, title        : 'Latest in Library'
 		, content      : content
 		, boxwidth     : 80
 		, values       : G.latestconf
 		, checkchanged : ( G.latest ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent .lbl' ).css( { 
+				  'width'         : '100px'
+				, 'padding-right' : '5px'
+				, 'text-align'    : 'right'
+			} );
+		}
 		, cancel       : function() {
 			$( '#latest' ).prop( 'checked', G.latest );
 		}

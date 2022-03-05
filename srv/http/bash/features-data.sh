@@ -7,7 +7,7 @@ file=$dirsystem/latest.conf
 if [[ -e $file ]]; then
 	latestconf=$( cut -d= -f2 $file | xargs | tr ' ' , )
 else
-	latestconf='20, 50'
+	latestconf='10, 30'
 fi
 
 dirscrobble=$dirsystem/scrobble.conf
