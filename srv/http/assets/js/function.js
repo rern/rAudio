@@ -902,6 +902,7 @@ function plRemove( $li ) {
 		} else {
 			var activenext = '';
 		}
+		local( 1000 );
 		bash( [ 'plremove', tracknum, activenext ] );
 		$li.remove();
 	}
