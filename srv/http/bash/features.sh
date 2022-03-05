@@ -94,6 +94,17 @@ hostapdset )
 	featureSet hostapd
 	pushRefreshNetworks
 	;;
+latestdisable )
+	rm $dirsystem/latest
+	pushRefresh
+	;;
+latestset )
+	echo "${args[1]}
+${args[2]}" > $dirsystem/latest.conf
+	touch $dirsystem/latest
+	pushRefresh
+	$dirbash/cmd-list.sh latest &
+	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser

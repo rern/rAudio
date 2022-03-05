@@ -157,6 +157,15 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
+		  'label'   => 'Latest Tracks'
+		, 'id'      => 'latest'
+		, 'icon'    => 'latest'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Library latest tracks and albums.
+HTML
+	]
+	, [
 		  'label' => 'Lyrics in File'
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'

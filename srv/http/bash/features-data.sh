@@ -14,6 +14,8 @@ data+='
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "hostname"         : "'$( hostname )'"
+, "latest"           : '$( exists $dirsystem/latest )'
+, "latestconf"       : ['$( cat $dirsystem/latest.conf | head -c -1 | tr '\n' , )']
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'

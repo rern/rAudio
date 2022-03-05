@@ -255,6 +255,41 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-latest' ).click( function() {
+	var content =`\
+<table>
+<tr><td>Tracks</td>
+	<td><select id="track">
+		<option value="20">20</option>
+		<option value="30">30</option>
+		<option value="50">50</option>
+	</select></td>
+</tr>
+<tr><td>Albums</td>
+	<td><select id="album">
+		<option value="20">20</option>
+		<option value="30">30</option>
+		<option value="50">50</option>
+	</select></td>
+</tr>
+</table>
+`;
+	info( {
+		  icon         : 'latest'
+		, title        : 'Latest Tracks / Albums'
+		, content      : content
+		, boxwidth     : 80
+		, values       : G.latestconf
+		, checkchanged : ( G.latest ? 1 : 0 )
+		, cancel       : function() {
+			$( '#latest' ).prop( 'checked', G.smb );
+		}
+		, ok           : function() {
+			bash( [ 'latestset', ...infoVal() ] );
+			notify( 'Latest Tracks', G.latest ? 'Change ...' : 'Enable ...', 'latest' );
+		}
+	} );
+} );
 $( '#setting-multiraudio' ).click( function() {
 	if ( location.host.slice( -5 ) !== 'local' ) {
 		var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) ) +'.';

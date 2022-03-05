@@ -9,6 +9,37 @@
 
 . /srv/http/bash/common.sh
 
+latest() {
+	n=( $( cat $dirsystem/latest.conf ) )
+	ntrack=${n[0]}
+	nalbum=${n[1]}
+	tracks=$( mpc listall -f %mtime%^%album%^^%artist%^^%file%^^%title%^^%time%^^%track% \
+		| sort -r \
+		| cut -d^ -f2- \
+		| grep -v '^\^\^\^\^' )
+	echo "$tracks" \
+		| head -$ntrack \
+		> $dirmpd/latesttrack
+	php $dirbash/cmd-listsort.php $dirmpd/latesttrack
+	readarray -t albums <<< $( echo "$tracks" \
+		| cut -d^ -f1 \
+		| awk '!seen[$0]++' \
+		| head -$nalbum )
+	for album in "${albums[@]}"; do
+		artist_file=$( echo "$tracks" | grep -m1 "^$album" | cut -d^ -f3,5 )
+		artist=$( echo $artist_file | cut -d^ -f1 )
+		file=$( echo $artist_file | cut -d^ -f2 )
+		latestalbum+="$album^^$artist^^$( dirname "$file" )"$'\n'
+	done
+	echo "$latestalbum" > $dirmpd/latestalbum
+	php $dirbash/cmd-listsort.php $dirmpd/latestalbum
+}
+
+if [[ $1 == latest ]]; then
+	latest
+	exit
+fi
+
 touch $dirmpd/listing
 
 listAlbums() {
@@ -116,10 +147,11 @@ pushstream mpdupdate "$counts"
 chown -R mpd:audio $dirmpd
 rm -f $dirmpd/{updating,listing}
 
+[[ -e $dirsystem/latest ]] && latest
+
 if [[ $toolarge ]]; then
 	sleep 3
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
-	exit
 fi
 
 if [[ -e /srv/http/shareddata/iplist ]]; then
