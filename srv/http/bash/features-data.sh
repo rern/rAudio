@@ -3,6 +3,13 @@
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
 
+file=$dirsystem/latest.conf
+if [[ -e $file ]]; then
+	latestconf=$( cut -d= -f2 $file | xargs | tr ' ' , )
+else
+	latestconf='20, 50'
+fi
+
 dirscrobble=$dirsystem/scrobble.conf
 for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
@@ -15,7 +22,7 @@ data+='
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'
-, "latestconf"       : ['$( cat $dirsystem/latest.conf | head -c -1 | tr '\n' , )']
+, "latestconf"       : ['$latestconf']
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'

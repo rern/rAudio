@@ -89,6 +89,7 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true )'
 , "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"  : '$( exists $dirsystem/equalizer )'
+, "latest"     : '$( exists $dirsystem/latest )'
 , "lock"       : '$( exists $dirsystem/login )'
 , "multiraudio" : '$( exists $dirsystem/multiraudio )'
 , "order"      : '$( cat $dirsystem/order 2> /dev/null )'

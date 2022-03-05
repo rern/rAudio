@@ -282,7 +282,7 @@ $( '#setting-latest' ).click( function() {
 		, values       : G.latestconf
 		, checkchanged : ( G.latest ? 1 : 0 )
 		, cancel       : function() {
-			$( '#latest' ).prop( 'checked', G.smb );
+			$( '#latest' ).prop( 'checked', G.latest );
 		}
 		, ok           : function() {
 			bash( [ 'latestset', ...infoVal() ] );

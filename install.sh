@@ -2,11 +2,6 @@
 
 alias=r1
 
-# 20220305
-file=/srv/http/data/system/display
-grep -q latest $file || sed -i '/nas/ i\
-  "latest": true,' $file
-
 # 20220211
 [[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
 sed -i '/latency/ d' /srv/http/data/system/soundprofile.conf &> /dev/null

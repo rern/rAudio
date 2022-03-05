@@ -99,8 +99,9 @@ latestdisable )
 	pushRefresh
 	;;
 latestset )
-	echo "${args[1]}
-${args[2]}" > $dirsystem/latest.conf
+	echo "\
+nalbum=${args[1]}
+ntrack=${args[2]}" > $dirsystem/latest.conf
 	touch $dirsystem/latest
 	pushRefresh
 	$dirbash/cmd-list.sh latest &

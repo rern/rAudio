@@ -10,9 +10,7 @@
 . /srv/http/bash/common.sh
 
 latest() {
-	n=( $( cat $dirsystem/latest.conf ) )
-	ntrack=${n[0]}
-	nalbum=${n[1]}
+	. $dirsystem/latest.conf
 	tracks=$( mpc listall -f %mtime%^%album%^^%artist%^^%file%^^%title%^^%time%^^%track% \
 		| sort -r \
 		| cut -d^ -f2- \
