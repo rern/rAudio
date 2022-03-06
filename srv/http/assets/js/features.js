@@ -255,49 +255,6 @@ $( '#setting-smb' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-latest' ).click( function() {
-	var content =`\
-<div class="infomessage">Number to entries:</div>
-<table>
-<tr><td class="lbl">Albums</td>
-	<td><select>
-		<option value="10">10</option>
-		<option value="20">20</option>
-		<option value="30">30</option>
-	</select></td>
-</tr>
-<tr><td class="lbl">Tracks</td>
-	<td><select>
-		<option value="30">30</option>
-		<option value="60">50</option>
-		<option value="100">100</option>
-	</select></td>
-</tr>
-</table>
-`;
-	info( {
-		  icon         : 'latest'
-		, title        : 'Latest in Library'
-		, content      : content
-		, boxwidth     : 80
-		, values       : G.latestconf
-		, checkchanged : ( G.latest ? 1 : 0 )
-		, beforeshow   : function() {
-			$( '#infoContent .lbl' ).css( { 
-				  'width'         : '100px'
-				, 'padding-right' : '5px'
-				, 'text-align'    : 'right'
-			} );
-		}
-		, cancel       : function() {
-			$( '#latest' ).prop( 'checked', G.latest );
-		}
-		, ok           : function() {
-			bash( [ 'latestset', ...infoVal() ] );
-			notify( 'Latest Tracks', G.latest ? 'Change ...' : 'Enable ...', 'latest' );
-		}
-	} );
-} );
 $( '#setting-multiraudio' ).click( function() {
 	if ( location.host.slice( -5 ) !== 'local' ) {
 		var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) ) +'.';
