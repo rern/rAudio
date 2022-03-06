@@ -1305,7 +1305,7 @@ $( '.mode' ).click( function() {
 		info( {
 			  icon    : 'latest'
 			, title   : 'Latest in Library'
-			, message : 'Type:'
+			, message : 'Mode:'
 			, radio   : { Allbum: 'album', Track: 'track' }
 			, values  : [ 'album' ]
 			, ok      : function() {
