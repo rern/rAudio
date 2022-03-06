@@ -470,7 +470,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
 			$name = $artist.' - '.$album;
-			if ( $gmode !== 'file' ) {
+			if ( $gmode !== 'latest' ) {
 				$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
 				$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
 			} else {

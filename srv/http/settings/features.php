@@ -161,7 +161,7 @@ HTML
 		, 'id'      => 'latest'
 		, 'icon'    => 'latest'
 		, 'help'    => <<< HTML
-Latest albums and tracks added to Library.
+Library mode for latest 20 albums or 100 tracks added to Library.
 HTML
 	]
 	, [

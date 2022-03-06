@@ -941,6 +941,7 @@ function renderLibrary() {
 	$.each( G.status.counts, function( key, val ) {
 		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 	} );
+	$( '#mode-latest i' ).toggleClass( 'blink', G.display.latest_updating );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;

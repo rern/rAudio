@@ -54,24 +54,24 @@ else
 
 ########
 	status='
-  "player"         : "'$player'"
-, "btclient"       : '$btclient'
-, "consume"        : '$consume'
-, "control"        : "'$control'"
-, "counts"         : '$counts'
-, "file"           : ""
-, "icon"           : "'$icon'"
-, "librandom"      : '$librandom'
-, "relays"         : '$relays'
-, "relayson"       : '$relayson'
-, "scrobble"       : '$scrobble'
-, "stoptimer"      : '$stoptimer'
-, "stream"         : false
-, "updateaddons"   : '$updateaddons'
-, "updating_db"    : '$updating_db'
-, "volume"         : '$volume'
-, "volumemute"     : '$volumemute'
-, "webradio"       : false'
+  "player"       : "'$player'"
+, "btclient"     : '$btclient'
+, "consume"      : '$consume'
+, "control"      : "'$control'"
+, "counts"       : '$counts'
+, "file"         : ""
+, "icon"         : "'$icon'"
+, "librandom"    : '$librandom'
+, "relays"       : '$relays'
+, "relayson"     : '$relayson'
+, "scrobble"     : '$scrobble'
+, "stoptimer"    : '$stoptimer'
+, "stream"       : false
+, "updateaddons" : '$updateaddons'
+, "updating_db"  : '$updating_db'
+, "volume"       : '$volume'
+, "volumemute"   : '$volumemute'
+, "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/btclient ]]; then
@@ -86,20 +86,21 @@ if [[ $1 == withdisplay ]]; then
 	fi
 	display=$( head -n -1 $dirsystem/display )
 	display+='
-, "audiocd"    : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true )'
-, "color"      : "'$( cat $dirsystem/color 2> /dev/null )'"
-, "equalizer"  : '$( exists $dirsystem/equalizer )'
-, "latest"     : '$( exists $dirsystem/latest )'
-, "lock"       : '$( exists $dirsystem/login )'
-, "multiraudio" : '$( exists $dirsystem/multiraudio )'
-, "order"      : '$( cat $dirsystem/order 2> /dev/null )'
-, "relays"     : '$( exists $dirsystem/relays )'
-, "screenoff"  : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'
-, "snapclient" : '$( exists $dirsystem/snapclient )'
-, "volumenone" : '$volumenone'
+, "audiocd"         : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true )'
+, "color"           : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "equalizer"       : '$( exists $dirsystem/equalizer )'
+, "latest"          : '$( exists $dirsystem/latest )'
+, "latest_updating" : '$( exists $dirsystem/latest_updating )'
+, "lock"            : '$( exists $dirsystem/login )'
+, "multiraudio"     : '$( exists $dirsystem/multiraudio )'
+, "order"           : '$( cat $dirsystem/order 2> /dev/null )'
+, "relays"          : '$( exists $dirsystem/relays )'
+, "screenoff"       : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'
+, "snapclient"      : '$( exists $dirsystem/snapclient )'
+, "volumenone"      : '$volumenone'
 }'
 	status+='
-, "display"        : '$display
+, "display"         : '$display
 fi
 
 if [[ $player != mpd && $player != upnp ]]; then

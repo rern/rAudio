@@ -98,7 +98,7 @@ latest )
 	if [[ ${args[1]} == true ]]; then
 		touch $dirsystem/latest
 		pushRefresh
-		pushstream display '{"latest":true}'
+		pushstream display '{"latest":true,"latest_updating":true}'
 		$dirbash/cmd-list.sh latest &
 	else
 		rm $dirsystem/latest

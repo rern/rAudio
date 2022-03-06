@@ -10,6 +10,7 @@
 . /srv/http/bash/common.sh
 
 latest() {
+	touch $dirsystem/latest_updating
 	tracks=$( mpc listall -f %mtime%^%album%^^%artist%^^%file%^^%title%^^%time%^^%track% \
 		| sort -r \
 		| cut -d^ -f2- \
@@ -30,6 +31,8 @@ latest() {
 	done
 	echo "$latestalbum" > $dirmpd/latestalbum
 	php $dirbash/cmd-listsort.php $dirmpd/latestalbum
+	rm $dirsystem/latest_updating
+	pushstream display '{"latest_updating":false}'
 }
 
 if [[ $1 == latest ]]; then

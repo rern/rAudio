@@ -1302,11 +1302,19 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	if ( G.mode === 'latest' ) {
+		if ( $this.find( 'i' ).hasClass( 'blink' ) ) {
+			info( {
+				  icon    : 'latest'
+				, title   : 'Latest in Library'
+				, message : 'Query in progress ...'
+			} );
+			return
+		}
 		info( {
 			  icon    : 'latest'
 			, title   : 'Latest in Library'
 			, message : 'Mode:'
-			, radio   : { Allbum: 'album', Track: 'track' }
+			, radio   : { Album: 'album', Track: 'track' }
 			, values  : [ 'album' ]
 			, ok      : function() {
 				var type = infoVal();
@@ -1770,7 +1778,7 @@ $( '.index' ).on( 'click', 'a', function() {
 		var scrollT = 0;
 	} else {
 		if ( G.library ) {
-			var el = G.mode === 'album' ? '.coverart' : '#lib-list li';
+			var el = G.mode === 'album' || G.mode === 'latest' ? '.coverart' : '#lib-list li';
 		} else {
 			var el = '#pl-savedlist li';
 		}
