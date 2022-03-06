@@ -10,19 +10,18 @@
 . /srv/http/bash/common.sh
 
 latest() {
-	. $dirsystem/latest.conf
 	tracks=$( mpc listall -f %mtime%^%album%^^%artist%^^%file%^^%title%^^%time%^^%track% \
 		| sort -r \
 		| cut -d^ -f2- \
 		| grep -v '^\^\^\^\^' )
 	echo "$tracks" \
-		| head -$ntrack \
+		| head -100 \
 		> $dirmpd/latesttrack
 	php $dirbash/cmd-listsort.php $dirmpd/latesttrack
 	readarray -t albums <<< $( echo "$tracks" \
 		| cut -d^ -f1 \
 		| awk '!seen[$0]++' \
-		| head -$nalbum )
+		| head -20 )
 	for album in "${albums[@]}"; do
 		artist_file=$( echo "$tracks" | grep -m1 "^$album" | cut -d^ -f3,5 )
 		artist=$( echo $artist_file | cut -d^ -f1 )

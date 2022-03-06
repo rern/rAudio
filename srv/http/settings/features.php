@@ -160,7 +160,6 @@ HTML
 		  'label'   => 'Latest in Library'
 		, 'id'      => 'latest'
 		, 'icon'    => 'latest'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 Latest albums and tracks added to Library.
 HTML
