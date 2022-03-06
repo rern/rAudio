@@ -471,8 +471,8 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		if ( $searchmode ) {
 			$name = $artist.' - '.$album;
 			if ( $gmode !== 'latest' ) {
-				$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
-				$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
+				$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
+				$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
 			} else {
 				$trackname = $name;
 			}
@@ -489,7 +489,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
-	if ( $searchmode ) return [ 'html' => $html, 'count' => count( $array ) ];
+	if ( $searchmode ) return $gmode === 'latest' ? [ 'html' => $html ] : [ 'html' => $html, 'count' => $i ];
 	
 	if ( $hidecover ) {
 		$coverhtml = '';
