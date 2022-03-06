@@ -1313,8 +1313,7 @@ $( '.mode' ).click( function() {
 		info( {
 			  icon    : 'latest'
 			, title   : 'Latest in Library'
-			, message : 'Mode:'
-			, radio   : { Album: 'album', Track: 'track' }
+			, radio   : { Albums: 'album', Tracks: 'track' }
 			, values  : [ 'album' ]
 			, ok      : function() {
 				var type = infoVal();
