@@ -849,6 +849,7 @@ $( '#divcover' ).press( function( e ) {
 		|| !G.status.playlistlength
 		|| G.guide
 		|| $( e.target ).hasClass( 'band' )
+		|| e.target.id === 'coverT'
 	) return
 	
 	$( '#coverart' )
@@ -860,7 +861,21 @@ $( '#divcover' ).press( function( e ) {
 	G.status.webradio ? webRadioCoverart () : coverartChange();
 } );
 $( '#coverT' ).press( function() {
-	location.reload();
+	if ( typeof JsToJava === 'object' ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'IP Address'
+			, message : 'Clear currently saved IP address?'
+			, oklabel : 'Clear'
+			, okcolor : orange
+			, ok      : function() {
+				JsToJava.clearData();
+				banner( 'Saved IP Address', 'Cleared.', 'networks' );
+			}
+		} );
+	} else {
+		location.reload();
+	}
 } );
 var btnctrl = {
 	  timeTL  : 'cover'
