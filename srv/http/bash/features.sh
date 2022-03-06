@@ -94,16 +94,17 @@ hostapdset )
 	featureSet hostapd
 	pushRefreshNetworks
 	;;
-latestdisable )
-	rm $dirsystem/latest
-	pushRefresh
-	pushstream display '{"latest":false}'
-	;;
-latestset )
-	touch $dirsystem/latest
-	pushRefresh
-	pushstream display '{"latest":true}'
-	$dirbash/cmd-list.sh latest &
+latest )
+	if [[ ${args[1]} == true ]]; then
+		touch $dirsystem/latest
+		pushRefresh
+		pushstream display '{"latest":true}'
+		$dirbash/cmd-list.sh latest &
+	else
+		rm $dirsystem/latest
+		pushRefresh
+		pushstream display '{"latest":false}'
+	fi
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
