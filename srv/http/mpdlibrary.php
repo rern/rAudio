@@ -489,7 +489,11 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
-	if ( $searchmode ) return $gmode === 'latest' ? [ 'html' => $html ] : [ 'html' => $html, 'count' => $i ];
+	if ( $searchmode ) {
+		$searchdata = [ 'html' => $html ];
+		if ( $gmode !== 'latest' ) $searchdata[ 'count' ] = $i;
+		return $searchdata;
+	}
 	
 	if ( $hidecover ) {
 		$coverhtml = '';
