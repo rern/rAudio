@@ -220,8 +220,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					, okno    : 1
 					, beforeshow : function() {
 						$( '#infoContent input' ).change( function() {
+							var ip = $( '#infoContent input:checked' ).val();
+							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
-							location.href = 'http://'+ $( '#infoContent input:checked' ).val();
+							location.href = 'http://'+ ip;
 						} );
 					}
 				} );
@@ -861,7 +863,7 @@ $( '#divcover' ).press( function( e ) {
 	G.status.webradio ? webRadioCoverart () : coverartChange();
 } );
 $( '#coverT' ).press( function() {
-	if ( typeof JsToJava === 'object' ) {
+	if ( typeof Android === 'object' ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'IP Address'
@@ -869,7 +871,7 @@ $( '#coverT' ).press( function() {
 			, oklabel : 'Clear'
 			, okcolor : orange
 			, ok      : function() {
-				JsToJava.clearData();
+				Android.changeIP( null );
 				banner( 'Saved IP Address', 'Cleared.', 'networks' );
 			}
 		} );
