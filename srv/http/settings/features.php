@@ -24,7 +24,8 @@ HTML
 		, 'status'   => 'snapclient'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
+SnapClient and SnapServer can be enable on the same device.
 Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
