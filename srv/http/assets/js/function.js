@@ -90,15 +90,12 @@ function changeIP() { // for android app
 		, beforeshow   : function() {
 			$( '#infoContent input' ).prop( 'type', 'tel' );
 		}
-		, buttonlabel  : '<i class="fa fa-redo"></i> Reload'
-		, buttoncolor  : orange
-		, button       : function() {
-			location.reload();
-		}
-		, oklabel      : '<i class="fa fa-raudiobox"></i> Switch'
 		, ok           : function() {
 			var ip = infoVal();
-			if ( ip === location.host ) return
+			if ( ip === location.host ) {
+				location.reload();
+				return
+			}
 			
 			var changed = Android.changeIP( ip );
 			if ( changed ) {
