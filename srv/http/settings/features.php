@@ -25,8 +25,9 @@ HTML
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
-SnapClient and SnapServer can be enable on the same device.
-Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
+ • SSH passwords must be default.
+ • SnapClient and SnapServer can be enable on the same device.
+ • Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -90,11 +91,12 @@ HTML
 		, 'status'   => 'snapserver'
 		, 'disabled' => 'SnapClient is currently enabled.'
 		, 'help'     => <<< HTML
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
-Control clients:
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
- • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
- • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
+ • SnapClient and SnapServer can be enable on the same device.
+ • Clients Controller:
+ &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
+ &emsp; • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
