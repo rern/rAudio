@@ -804,16 +804,20 @@ playerstart )
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	stopRadio
+	if [[ $newplayer == snapclient ]]; then
+		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
+		line0=$(( line - 5 ))
+		sed "$line0,/}/ d" /etc/mpd.conf
+	fi
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
 	case $player in
 		airplay )   restart=shairport-sync;;
 		bluetooth ) restart=bluezdbus;;
 		mpd|upnp )  restart=mpd;;
-		snapcast )  stop=snapclient;;
 		spotify )   restart=spotifyd;;
 	esac
-	[[ $stop ]] && systemctl stop $stop || systemctl restart $restart
+	[[ $restart ]] && systemctl restart $restart || $dirbash/mpd-conf.sh # snapclient
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )

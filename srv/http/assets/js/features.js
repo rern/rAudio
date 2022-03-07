@@ -449,14 +449,10 @@ function passwordWrong() {
 }
 function renderPage() {
 	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
-	$( '#snapclient' )
-		.data( 'disabled', G.snapclientactive ? 'SnapClient is currently active.' : 'SnapServer is currently enabled.' )
-		.toggleClass( 'disabled', G.snapserver || G.snapclientactive )
-		.parent().prev().toggleClass( 'single', !G.snapclientactive );
+	$( '#snapclient' ).parent().prev().toggleClass( 'single', !G.snapclientactive );
 	$( '#spotifyd' ).toggleClass( 'disabled', G.spotifydactive );
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
-	$( '#snapserver' ).toggleClass( 'disabled', G.snapclient || G.snapserveractive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	if ( ! /code|error/.test( window.location.href ) ) {
 		showContent();
