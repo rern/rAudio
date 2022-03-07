@@ -36,7 +36,7 @@ data+='
 , "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
-, "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
+, "snapserveractive" : '$( [[ -e $dirshm/clientip || -e $dirshm/snapclientactive ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( systemctl -q is-active snapclient && echo true )'
 , "snapcastconf"     : '$( grep -q latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )

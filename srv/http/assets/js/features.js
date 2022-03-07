@@ -450,6 +450,8 @@ function passwordWrong() {
 function renderPage() {
 	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
 	$( '#snapclient' ).parent().prev().toggleClass( 'single', !G.snapclientactive );
+	$( '#snapclient' ).toggleClass( 'disabled', G.snapclientactive );
+	$( '#snapserver' ).toggleClass( 'disabled', G.snapserveractive );
 	$( '#spotifyd' ).toggleClass( 'disabled', G.spotifydactive );
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
