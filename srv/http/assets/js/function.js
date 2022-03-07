@@ -79,7 +79,7 @@ function bookmarkeditClear() {
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', '' );
 }
-function changeIP() {
+function changeIP() { // for android app
 	info( {
 		  icon         : 'networks'
 		, title        : 'IP Address'
@@ -87,9 +87,13 @@ function changeIP() {
 		, textlabel    : 'New IP'
 		, boxwidth     : 170
 		, values       : location.host
-		, checkchanged : 1
+		, beforeshow   : function() {
+			$( '#infoContent input' ).prop( 'type', 'tel' );
+		}
 		, ok           : function() {
 			var ip = infoVal();
+			if ( ip === location.host ) return
+			
 			var changed = Android.changeIP( ip );
 			if ( changed ) {
 				location.href = 'http://'+ ip;
