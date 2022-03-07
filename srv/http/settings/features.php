@@ -23,6 +23,7 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
 		, 'setting'  => true
+		, 'disabled' => 'SnapClient is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
@@ -89,7 +90,7 @@ HTML
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapserver'
-		, 'disabled' => 'SnapClient is currently enabled.'
+		, 'disabled' => 'SnapClient is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
