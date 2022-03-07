@@ -812,11 +812,6 @@ playerstart )
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	stopRadio
-	if [[ $newplayer == snapcast ]]; then
-		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
-		line0=$(( line - 5 ))
-		sed -i "$line0,/}/ d" /etc/mpd.conf
-	fi
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
 	case $player in
@@ -1054,6 +1049,12 @@ ${args[3]}" &> /dev/null &
 shareddatareload )
 	systemctl restart mpd
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	;;
+snapclientserverstop )
+	systemctl stop snapclient
+	rm $dirshm/snapclientactive
+	$dirbash/mpd-conf.sh
+	pushstream display '{"snapclientactive":false}'
 	;;
 thumbgif )
 	gifThumbnail "${args[@]:1}"

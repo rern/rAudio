@@ -163,8 +163,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			equalizer();
 			break;
 		case 'snapclient':
-			var active = G.status.player === 'snapcast';
+			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
+				if ( G.display.snapclientactive ) {
+					bash( [ 'snapclientserverstop' ] );
+					return
+				}
+				
 				$( '#stop' ).click();
 			} else {
 				bash( '/srv/http/bash/snapcast.sh start', function( data ) {

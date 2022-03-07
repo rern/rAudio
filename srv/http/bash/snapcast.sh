@@ -13,6 +13,17 @@ clientfile=$dirshm/clientip
 lcdcharfile=$dirshm/clientiplcdchar
 
 if [[ $1 == start ]]; then # client start - save server ip
+	if systemctl -q is-active snapserver; then # server + client on same device
+		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
+		line0=$(( line - 5 ))
+		sed -i "$line0,/}/ d" /etc/mpd.conf
+		systemctl restart mpd
+		systemctl start snapclient
+		touch $dirshm/snapclientactive
+		pushstream display '{"snapclientactive":true}'
+		exit
+	fi
+	
 	mpc -q stop
 	systemctl start snapclient
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
