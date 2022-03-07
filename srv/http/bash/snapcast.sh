@@ -21,6 +21,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl start snapclient
 		touch $dirshm/snapclientactive
 		pushstream display '{"snapclientactive":true}'
+		data=$( $dirbash/player-data.sh )
+		pushstream refresh "$data"
 		exit
 	fi
 	
@@ -39,6 +41,14 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl stop snapclient
 		echo -1
 	fi
+elif [[ $1 == stop ]]; then # server + client on same device
+	systemctl stop snapclient
+	rm $dirshm/snapclientactive
+	$dirbash/mpd-conf.sh
+	pushstream display '{"snapclientactive":false}'
+	data=$( $dirbash/player-data.sh )
+	pushstream refresh "$data"
+
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $clientfile

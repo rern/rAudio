@@ -1050,12 +1050,6 @@ shareddatareload )
 	systemctl restart mpd
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
 	;;
-snapclientserverstop )
-	systemctl stop snapclient
-	rm $dirshm/snapclientactive
-	$dirbash/mpd-conf.sh
-	pushstream display '{"snapclientactive":false}'
-	;;
 thumbgif )
 	gifThumbnail "${args[@]:1}"
 	;;

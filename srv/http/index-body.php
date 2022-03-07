@@ -188,7 +188,7 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$menu.= menudiv( $mode, $html );
 }
 $menu.= '</div>';
-$ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btclient', 'libupdate', 'addons', 'relays', 'stoptimer' ];
+$ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btclient', 'snapclient', 'libupdate', 'addons', 'relays', 'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
 	$modeicon.= '<i id="i-'.$id.'" class="fa fa-'.$id.' hide"></i>';

@@ -166,11 +166,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
 				if ( G.display.snapclientactive ) {
-					bash( [ 'snapclientserverstop' ] );
-					return
+					bash( '/srv/http/bash/snapcast.sh stop' );
+				} else {
+					$( '#stop' ).click();
 				}
-				
-				$( '#stop' ).click();
 			} else {
 				bash( '/srv/http/bash/snapcast.sh start', function( data ) {
 					bannerHide();
