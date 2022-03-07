@@ -216,7 +216,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					  icon    : 'raudiobox'
 					, title   : 'Switch rAudio'
 					, radio   : radio
-					, values  : window.location.host
+					, values  : location.host
 					, okno    : 1
 					, beforeshow : function() {
 						$( '#infoContent input' ).change( function() {
@@ -864,17 +864,7 @@ $( '#divcover' ).press( function( e ) {
 } );
 $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'IP Address'
-			, message : 'Clear currently saved IP address?'
-			, oklabel : 'Clear'
-			, okcolor : orange
-			, ok      : function() {
-				Android.changeIP( null );
-				banner( 'Saved IP Address', 'Cleared.', 'networks' );
-			}
-		} );
+		changeIP();
 	} else {
 		location.reload();
 	}

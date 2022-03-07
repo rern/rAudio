@@ -79,6 +79,31 @@ function bookmarkeditClear() {
 		.find( '.fa-bookmark, .bklabel, img' )
 		.css( 'opacity', '' );
 }
+function changeIP() {
+	info( {
+		  icon         : 'networks'
+		, title        : 'IP Address'
+		, message      : 'Switch rAudio:'
+		, textlabel    : 'New IP'
+		, boxwidth     : 170
+		, values       : location.host
+		, checkchanged : 1
+		, ok           : function() {
+			var ip = infoVal();
+			var changed = Android.changeIP( ip );
+			if ( changed ) {
+				location.href = 'http://'+ ip;
+			} else {
+				info( {
+					  icon    : 'networks'
+					, title   : 'IP Address'
+					, message : 'Not found: '+ ip
+					, ok      : changeIP
+				} );
+			}
+		}
+	} );
+}
 function clearIntervalAll() {
 	// .btn-cmd[!play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
 	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
