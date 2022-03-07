@@ -94,8 +94,8 @@ HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapServer and SnapClient can be enabled on the same device.
- • Clients Controller:
- &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
+ • Snapcast control client and player:
+ &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a>
  &emsp; • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
