@@ -163,6 +163,14 @@ $Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
+snapclientStop() {
+	systemctl stop snapclient
+	$dirbash/mpd-conf.sh
+	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+	sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
+		"$dirbash/snapcast.sh remove $clientip"
+	rm $dirshm/serverip
+}
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		systemctl stop radio
@@ -577,7 +585,7 @@ lcdcharsnapclient )
 	[[ ! -e $dirshm/serverip ]] && exit
 	
 	serverip=$( cat $dirshm/serverip )
-	sshpass -p ros scp StrictHostKeyChecking=no root@$serverip:$dirshm/statuslcd.py $dirshm
+	sshpass -p ros scp -qo StrictHostKeyChecking=no root@$serverip:$dirshm/statuslcd.py $dirshm
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 	;;
@@ -804,10 +812,10 @@ playerstart )
 	[[ $newplayer == bluetooth ]] && volumeGet save
 	mpc -q stop
 	stopRadio
-	if [[ $newplayer == snapclient ]]; then
+	if [[ $newplayer == snapcast ]]; then
 		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
 		line0=$(( line - 5 ))
-		sed "$line0,/}/ d" /etc/mpd.conf
+		sed -i "$line0,/}/ d" /etc/mpd.conf
 	fi
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
@@ -817,7 +825,7 @@ playerstart )
 		mpd|upnp )  restart=mpd;;
 		spotify )   restart=spotifyd;;
 	esac
-	[[ $restart ]] && systemctl restart $restart || $dirbash/mpd-conf.sh # snapclient
+	[[ $restart ]] && systemctl restart $restart || snapclientStop
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )
@@ -838,11 +846,7 @@ playerstop )
 			;;
 		snapcast )
 			service=snapclient
-			systemctl stop snapclient
-			clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
-				"/srv/http/bash/snapcast.sh remove $clientip"
-			rm $dirshm/serverip
+			snapclientStop
 			;;
 		spotify )
 			service=spotifyd
