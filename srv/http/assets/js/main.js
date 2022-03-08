@@ -609,7 +609,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 					$( '#button-playlist' ).click();
 					G.pladd.index = G.status.song;
 					G.pladd.name = G.status.Title;
-			banner( 'Add to a playlist', 'Select target playlist', 'file-playlist', -1 );
+			banner( 'Add to a playlist', 'Select target playlist', 'file-playlist blink', -1 );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
 					bash( [ 'scrobble', ...values ] );
 					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
