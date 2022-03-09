@@ -152,8 +152,12 @@ function colorSet() {
 	$( '#colorpicker' ).removeClass( 'hide' );
 	$( 'body' ).addClass( 'disablescroll' );
 }
-function contextmenuLibrary( $li, $target ) {
+function contextMenuHide() {
 	$( '.menu' ).addClass( 'hide' );
+	$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
+}
+function contextmenuLibrary( $li, $target ) {
+	contextMenuHide();
 	var $menu = $( $li.find( '.lib-icon' ).data( 'target' ) );
 	G.list = {};
 	G.list.li = $li; // for contextmenu
@@ -1178,7 +1182,7 @@ function renderPlaylistList( data ) {
 	} );
 }
 function renderSavedPlaylist( name ) {
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	list( { cmd: 'get', name: name }, function( data ) {
 		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
