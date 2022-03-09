@@ -455,7 +455,7 @@ $( '#playback' ).click( function() {
 	}
 } );
 $( '#playlist' ).click( function() {
-	G.pladd = {}
+	if ( !G.local ) G.pladd = {}
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) {
 			G.savedlist = 0;
@@ -2067,7 +2067,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	$this = $( this );
 	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
 	
-	var pladd = 'index' in G.pladd;
+	var pladd = 'file' in G.pladd;
 	var plicon = $target.hasClass( 'pl-icon' );
 	if ( G.savedplaylist || plicon ) {
 		if ( pladd ) {

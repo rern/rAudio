@@ -580,20 +580,19 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			if ( G.playlist ) {
 				var album = G.list.li.find( '.album' ).text();
 				var file = G.list.path;
-				var track = G.list.li.find( '.track' ).text();
 			} else {
 				var album = $( '.licover .lialbum' ).text();
 				var file = G.list.li.find( '.lipath' ).text();
-				var track = G.list.li.data( 'track' );
 			}
 			saveToPlaylist( G.list.name, album, file );
 			return
 		case 'savedplremove':
+			local();
 			var plname = $( '#pl-path .lipath' ).text();
 			list( {
 				  cmd    : 'edit'
 				, name   : plname
-				, remove : G.list.li.index()
+				, remove : G.list.li.index() + 1
 			} );
 			G.list.li.remove();
 			return

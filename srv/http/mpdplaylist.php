@@ -30,7 +30,7 @@ case 'edit':
 	$remove = $_POST[ 'remove' ] ?? '';
 	$indextarget = $_POST[ 'indextarget' ] ?? '';
 	if ( $remove ) { // remove
-		exec( 'sed -i "/'.$file.'/ d" "'.$plfile.'"' );
+		exec( 'sed -i "'.$remove.'d" "'.$plfile.'"' );
 	} else if ( $indextarget ) { // insert
 		if ( $indextarget === 'first' ) {
 			exec( 'sed -i "1 i'.$file.'" "'.$plfile.'"' );

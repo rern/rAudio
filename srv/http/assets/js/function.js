@@ -818,61 +818,73 @@ function orderLibrary() {
 }
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
-	list( {
+	var command = {
 		  cmd         : 'edit'
 		, name        : plname
 		, file        : G.pladd.file
 		, indextarget : indextarget
-	}, function() {
+	}
+	list( command, function() {
 		renderSavedPlaylist( plname );
-		if ( G.pladd.select === 'last' ) {
+		if ( indextarget === 'last' ) {
 			setTimeout( function() {
 				$( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } );
 			}, 300 );
 		}
-		G.pladd = {};
+		G.pladd = {}
 	} );
 }
 function playlistInsertSelect( $this ) {
+	var track = '<gr>'+ ( $this.index() + 1 ) +' - </gr>'+ $this.find( '.name' ).text();
+	var content = `\
+${ G.pladd.title }
+<br><gr>${ G.pladd.album }</gr>
+<br><br>
+<input type="radio" name="inforadio" value="1">Before</label>
+<hr>
+${ track }
+<hr>
+<input type="radio" name="inforadio" value="2">After</label>
+`;
 	info( {
 		  icon        : 'playlist'
-		, title       : 'Add to playlist'
-		, message     : 'Insert'
-				   +'<br><wh>'+ G.pladd.name +'</wh>'
-				   +'<br>before'
-				   +'<br><wh># '+ ( $this.index() + 1 ) +' - '+ $this.find( '.name' ).text() +'</wh>'
-		, buttonlabel : '<i class="fa fa-undo"></i>Reselect'
+		, title       : 'Insert'
+		, content     : content
+		, values      : [ 1 ]
+		, buttonlabel : '<i class="fa fa-undo"></i>Select'
 		, button  : function() {
 			playlistInsertTarget();
 		}
 		, cancel      : function() {
-			G.plappend = {};
+			G.pladd = {}
 		}
 		, ok          : function() {
-			playlistInsert( $this.index() )
+			playlistInsert( +infoVal() + $this.index() )
 		}
 	} );
 	bannerHide();
 }
 function playlistInsertTarget() {
 	info( {
-		  icon    : 'playlist'
-		, title   : 'Add to playlist'
-		, message : '<wh>'+ G.pladd.title +'</wh>'
-				   +'<br>'+ G.pladd.album
-				   +'<hr>'
-				   +'Select where to add:'
-		, radio   : { First : 'first', Select: 'select', Last: 'last' }
-		, values  : 'last'
-		, cancel  : function() {
-			G.pladd = {};
+		  icon       : 'playlist'
+		, title      : 'Add to a playlist'
+		, message    : '<wh>'+ G.pladd.title +'</wh>'
+					  +'<br>'+ G.pladd.album
+					  +'<hr>'
+					  +'Select where to add:'
+		, radio      : { First : 'first', Select: 'select', Last: 'last' }
+		, values     : 'last'
+		, beforeshow : function() {
+			$( '#infoContent input' ).eq( 1 ).click( function() {
+				local();
+				$( '#infoX' ).click();
+			} );
 		}
-		, ok      : function() {
-			var target = infoVal();
-			G.pladd.select = target;
-			if ( target !== 'select' ) {
-				playlistInsert( target );
-			}
+		, cancel     : function() {
+			if ( !G.local ) G.pladd = {}
+		}
+		, ok         : function() {
+			playlistInsert( infoVal() );
 		}
 	} );
 	bannerHide();
@@ -1184,6 +1196,7 @@ function saveToPlaylist( title, album, file ) {
 	G.pladd.title = title;
 	G.pladd.album = album;
 	G.pladd.file = file;
+	local();
 	$( '#button-pl-playlists' ).click();
 	if ( !G.playlist ) $( '#button-playlist' ).click();
 	banner( 'Add to a playlist', 'Select target playlist', 'file-playlist blink', 5000 );
