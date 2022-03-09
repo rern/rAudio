@@ -17,44 +17,50 @@ case 'current':
 	echo json_encode( $array );
 	break;
 case 'delete':
-	$name = $_POST[ 'name' ];
-	unlink( $dirplaylists.$name );
-	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
+	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
+	exec( 'mpc -q rm "'.$name.'"; /srv/http/bash/cmd.sh plcount' );
 	$array = listPlaylists();
 	$array[ 'delete' ] = $name;
 	pushstream( 'playlists', $array );
 	break;
 case 'edit':
-	$name = $_POST[ 'name' ];
-	$file = $dirplaylists.$name;
-	$contents = file_get_contents( $file );
-	$list = json_decode( $contents );
-	
-	$remove = $_POST[ 'remove' ] ?? null;
-	$index = $_POST[ 'index' ] ?? null;
-	if ( $remove !== null ) { // remove
-		array_splice( $list, $remove, 1 );
-	} else if ( $index !== null ) { // insert
-		$trackdata = playlistInfo( $index );
-		$indextarget = $_POST[ 'indextarget' ];
+	$file = $_POST[ 'file' ] ?? '';
+	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
+	$plfile = $dirplaylists.$name.'.m3u';
+	$remove = $_POST[ 'remove' ] ?? '';
+	$indextarget = $_POST[ 'indextarget' ] ?? '';
+	if ( $remove ) { // remove
+		exec( 'sed -i "/'.$file.'/ d" "'.$plfile.'"' );
+	} else if ( $indextarget ) { // insert
 		if ( $indextarget === 'first' ) {
-			array_unshift( $list, $trackdata[ 0 ] );
+			exec( 'sed -i "1 i'.$file.'" "'.$plfile.'"' );
 		} else if ( $indextarget === 'last' ) {
-			$list[] = $trackdata[ 0 ];
+			file_put_contents( $plfile, $file, FILE_APPEND );
 		} else {
-			array_splice( $list, $indextarget, 0, $trackdata );
+			exec( 'sed -i "'.$indextarget.' i'.$file.'" "'.$plfile.'"' );
 		}
 	} else { // arrange
-		$data = array_splice( $list, $_POST[ 'old' ], 1 );
-		array_splice( $list, $_POST[ 'new' ], 0, $data );
+		$from = $_POST[ 'from' ] + 1;
+		$to = $_POST[ 'to' ];
+		$file = exec( 'sed -n '.$from.'p "'.$plfile.'"' );
+		exec( 'sed -i "'.$from.'d" "'.$plfile.'"; sed -i "'.$to.'a'.$file.'" "'.$plfile.'"' );
 	}
-	$newlist = json_encode( $list, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
-	file_put_contents( $file, $newlist );
 	pushstream( 'playlist', [ 'playlist' => $name ] );
 	break;
 case 'get':
 	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
-	$lists = json_decode( file_get_contents( $dirplaylists.$name ) );
+	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$name.'"', $values );
+	foreach( $values as $value ) {
+		$v = explode( '^^', $value );
+		$each = ( object )[];
+		$each->file   = $v[ 0 ];
+		$each->Title  = $v[ 1 ];
+		$each->Artist = $v[ 2 ];
+		$each->Album  = $v[ 3 ];
+		$each->Track  = $v[ 4 ];
+		$each->Time   = $v[ 5 ];
+		$lists[] = $each;
+	}
 	$array = htmlPlaylist( $lists, $name );
 	echo json_encode( $array );
 	break;
@@ -63,80 +69,15 @@ case 'list':
 	echo json_encode( $array );
 	break;
 case 'load': // load saved playlist to current
-	// load normal and individual cue tracks - use only file and track
-	// 1. alternate cue <-> normal
-	// 2. exec cumulative commands
-	// 3. append commands while in the same type
-	//   3.1  cue:
-	//     change file extension to cue
-	//     mpc --range=RANGE load mpd/path/file.cue (N = track# - 1)
-	//     $RANGE = 'N0:N1'; - increment consecutive tracks to single command
-	//     $RANGE = N;       - each track per command
-	//   3.2  normal:
-	//     echo -e $FILES | mpd add
-	//     $FILES = 'mpd/path/file.ext\n'; - each track per line
-	// 4. increment exec if cumulative commands reach limit to avoid errors
-	
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
 	
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
-	$lines = file_get_contents( $dirplaylists.$name );
-	$lines = json_decode( $lines );
-	$list = $range = $fileprev = '';
-	$track0prev = $trackprev = $i = $j = 0;
-	foreach( $lines as $line ) {
-		$file = $line->file;
-		if ( !empty( $line->Range ) ) { // cue
-			if ( $list ) { // alternate exec cumulative commands
-				exec( 'echo -e "'.rtrim( $list, '\n' ).'" | mpc add' );
-				$list = '';
-				$i = 0;
-			}
-			$file = substr_replace( $file , 'cue', strrpos( $file , '.' ) + 1 ); // replace ext
-			$track = $line->Track;
-			if ( $track === $trackprev + 1 && $file === $fileprev ) {
-				$track0 = $track0prev;
-				$ranges = explode( ';', $range );
-				array_pop( $ranges );
-				$range = implode( ';', $ranges );
-			} else {
-				$track0 = $track - 1;
-			}
-			$rangetrack = $track0 === $track - 1 ? $track0 : "$track0:$track";
-			$range.= ';mpc --range='.$rangetrack.' load "'.$file.'"';
-			$track0prev = $track0;
-			$trackprev = $track;
-			$fileprev = $file;
-			$j++;
-			if ( $j === 100 ) { // limit exec commands length
-				exec( ltrim( $range, ';' ) );
-				$range = $fileprev = '';
-				$track0prev = $trackprev = 0;
-				$j = 0;
-			}
-		} else {
-			if ( $range ) { // alternate exec cumulative commands
-				exec( ltrim( $range, ';' ) );
-				$range = $fileprev = '';
-				$track0prev = $trackprev = $j = 0;
-			}
-			$list.= $file.'\n';
-			$i++;
-			if ( $i === 500 ) { // limit list commands length
-				exec( 'echo -e "'.rtrim( $list, '\n' ).'" | mpc add' );
-				$list = '';
-				$i = 0;
-			}
-		}
-	}
-	if( $list ) exec( 'echo -e "'.rtrim( $list, '\n' ).'" | mpc add' );
-	if ( $range ) exec( ltrim( $range, ';' ) );
-	
+	exec( 'mpc -q load "'.$name.'"' );
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
 	break;
 case 'rename':
-	exec( '/usr/bin/sudo /usr/bin/mv /srv/http/data/playlists/{"'.$_POST[ 'oldname' ].'","'.$_POST[ 'name' ].'"}' );
+	exec( 'mv /srv/http/data/playlists/{"'.$_POST[ 'oldname' ].'","'.$_POST[ 'name' ].'"}.m3u' );
 	pushstream( 'playlists', listPlaylists() );
 	break;
 case 'save':
@@ -144,9 +85,7 @@ case 'save':
 	$file = $dirplaylists.$name;
 	if ( file_exists( $file ) ) exit( '-1' );
 	
-	$list = json_encode( playlistInfo(), JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT );
-	file_put_contents( $file, $list );
-	exec( '/usr/bin/sudo /srv/http/bash/cmd.sh plcount' );
+	exec( 'mpc -q save "'.$name.'"; /srv/http/bash/cmd.sh plcount' );
 	pushstream( 'playlists', listPlaylists() );
 	break;
 case 'track':
@@ -160,7 +99,7 @@ case 'track':
 function listPlaylists() {
 	include '/srv/http/bash/cmd-listsort.php';
 	global $dirplaylists;
-	$lists = array_slice( scandir( $dirplaylists ), 2 );
+	exec( 'mpc lsplaylists', $lists );
 	$count = count( $lists );
 	if ( !$count ) return [ 'count' => 0 ];
 	
@@ -269,14 +208,16 @@ function htmlPlaylist( $lists, $plname = '' ) {
 					.'</li>';
 			$countupnp++;
 		} else {
-			$stationname = $list->Name;
+			if ( substr( $file, 0, 4 ) === 'http' ) { // webradio
+				$urlname = str_replace( '/', '|', $file );
+				$fileradio = '/srv/http/data/webradios/'.$urlname;
+				if ( file_exists( $fileradio ) ) $stationname = exec( 'head -1 "'.$fileradio.'"' );
+			} else {
+				$urlname = str_replace( '#', '%23', $list->urlname );
+				$stationname = '';
+			}
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				if ( substr( $file, 0, 4 ) === 'http' ) { // webradio
-					$urlname = str_replace( '/', '|', $file );
-				} else {
-					$urlname = str_replace( '#', '%23', $list->urlname );
-				}
 				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg"'
 						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {

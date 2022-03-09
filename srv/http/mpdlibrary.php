@@ -122,7 +122,8 @@ case 'ls':
 			$ext = end( $path );
 			$lists = [];
 			foreach( $plfiles as $file ) {
-				exec( 'mpc -f "'.$format.'" playlist "'.$file.'"'
+				$type = $ext === 'cue' ? 'ls' : 'playlist';
+				exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
 					, $lists ); // exec appends to existing array
 			}
 			$array = htmlTracks( $lists, $f, $ext, $file );
@@ -441,48 +442,49 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	$cuefile = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
 	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue = true;
+		$cuename = pathinfo( $cuefile, PATHINFO_BASENAME );
 		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" | grep -v ".cue$" | head -1' );
 		$ext = pathinfo( $musicfile, PATHINFO_EXTENSION );
 	} else {
 		$cue = false;
 	}
 	$time = time();
+	$latest = $gmode === 'latest';
 	$i = 0;
 	$html = '';
 	foreach( $array as $each ) {
 		if ( !$each->time ) continue;
 		
-		if ( $gmode !== 'latest' ) {
-			$path = $cue ? $file0 : $each->file;
-		} else {
+		if ( $latest ) {
 			$path = $each->file;
 			$cue = str_contains( $path, '.cue/track' );
+		} else {
+			$path = $each->file;
 		}
 		$album = $each->album;
 		$artist = $each->artist;
-		if ( !$album && !$artist ) {
+		if ( !$album && !$artist ) { // for latest
 			$cuefile = preg_replace( "/\.[^.]+$/", '.cue', $path );
 			if ( file_exists( '/mnt/MPD/'.$cuefile ) ) continue;
 		}
 		
 		$litime += HMS2second( $each->time );
 		$title = $each->title;
-		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
 			$name = $artist.' - '.$album;
-			if ( $gmode !== 'latest' ) {
+			if ( $latest ) {
+				$trackname = $name;
+			} else {
 				$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
 				$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
-			} else {
-				$trackname = $name;
 			}
 		} else {
-			$trackname = basename( $path );
+			$trackname = $cue ? $cuename : basename( $path );
 		}
 		if ( !$title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$li0 = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
 		$i++;
-		$html.= '<li data-mode="'.$gmode.'" '.$datatrack.$li0.'>'
+		$html.= '<li data-mode="'.$gmode.'" '.$li0.'>'
 					.'<a class="lipath">'.$path.'</a>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-file"></i>'
 					.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>'
@@ -491,7 +493,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	}
 	if ( $searchmode ) {
 		$searchdata = [ 'html' => $html ];
-		if ( $gmode !== 'latest' ) $searchdata[ 'count' ] = $i;
+		if ( !$latest ) $searchdata[ 'count' ] = $i;
 		return $searchdata;
 	}
 	

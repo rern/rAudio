@@ -577,10 +577,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			plRemove( G.list.li );
 			return
 		case 'savedpladd':
-			G.pladd.index = G.list.li.index();
-			G.pladd.name = G.list.name;
-			$( '#button-pl-playlists' ).click();
-			banner( 'Add to a playlist', 'Select target playlist', 'file-playlist', -1 );
+			if ( G.playlist ) {
+				var album = G.list.li.find( '.album' ).text();
+				var file = G.list.path;
+				var track = G.list.li.find( '.track' ).text();
+			} else {
+				var album = $( '.licover .lialbum' ).text();
+				var file = G.list.li.find( '.lipath' ).text();
+				var track = G.list.li.data( 'track' );
+			}
+			saveToPlaylist( G.list.name, album, file );
 			return
 		case 'savedplremove':
 			var plname = $( '#pl-path .lipath' ).text();
@@ -703,14 +709,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
 	switch( mode ) {
 		case '':
-			if ( path.slice( -4 ) === '.cue' ) {
-				if ( G.list.track ) { // only cue has data-track
-					// individual with 'mpc --range=N load file.cue'
-					mpccmd = [ 'plloadrange', ( G.list.track - 1 ), path ];
-				} else {
-					mpccmd = [ 'plload', path ];
-				}
-			} else if ( G.list.singletrack || G.mode === 'webradio' ) { // single track
+			if ( G.list.singletrack || G.mode === 'webradio' ) { // single track
 				mpccmd = [ 'pladd', path ];
 			} else if ( $( '.licover' ).length && !$( '.licover .lipath' ).length ) {
 				mpccmd = [ 'plfindadd', 'multi', G.mode, path, 'album', G.list.album ];
@@ -718,6 +717,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'plls', path ];
 			}
 			break;
+		case 'nextplay':
+			mpccmd = [ 'pladdnextplay', path ];
+			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
 			var charset = G.list.li.data( 'charset' );
@@ -753,14 +755,19 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var sleep = G.mode === 'webradio' ? 1 : 0.2;
 	var contextCommand = {
 		  add         : mpccmd
+		, nextplay    : mpccmd
 		, addplay     : mpccmd.concat( [ 'addplay', sleep ] )
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
 	cmd = cmd.replace( /album|albumartist|artist|composer|conductor|date|genre/, '' );
 	var command = contextCommand[ cmd ];
-	if ( [ 'add', 'addplay' ].includes( cmd ) ) {
-		var title = 'Add to Playlist'+ ( cmd === 'add' ? '' : ' and play' )
+	if ( cmd === 'add' ) {
+		var title = 'Add to Playlist';
+	} else if ( cmd === 'addplay' ) {
+		var title = 'Add to Playlist and play';
+	} else if ( cmd === 'nextplay' ) {
+		var title = 'Add to Playlist to play next';
 	} else {
 		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
 	}

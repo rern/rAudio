@@ -807,6 +807,10 @@ pladd )
 	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
+pladdnextplay )
+	mpc -q insert "${args[1]}"
+	pushstreamPlaylist
+	;;
 playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save

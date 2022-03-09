@@ -158,7 +158,7 @@ function contextmenuLibrary( $li, $target ) {
 	G.list = {};
 	G.list.li = $li; // for contextmenu
 	G.list.licover = $li.hasClass( 'licover' );
-	G.list.album = $li.find( '.lialbum' ).text()
+//	G.list.album = $( '.licover .lialbum' ).text();
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
 	// file modes  - path > path ... > tracks
 	// album mode  - path > tracks
@@ -821,7 +821,7 @@ function playlistInsert( indextarget ) {
 	list( {
 		  cmd         : 'edit'
 		, name        : plname
-		, index       : G.pladd.index
+		, file        : G.pladd.file
 		, indextarget : indextarget
 	}, function() {
 		renderSavedPlaylist( plname );
@@ -858,8 +858,10 @@ function playlistInsertTarget() {
 	info( {
 		  icon    : 'playlist'
 		, title   : 'Add to playlist'
-		, message : 'Select where to add:'
-				   +'<br><wh>'+ G.list.name +'</wh>'
+		, message : '<wh>'+ G.pladd.title +'</wh>'
+				   +'<br>'+ G.pladd.album
+				   +'<hr>'
+				   +'Select where to add:'
 		, radio   : { First : 'first', Select: 'select', Last: 'last' }
 		, values  : 'last'
 		, cancel  : function() {
@@ -1177,6 +1179,14 @@ function renderSavedPlaylist( name ) {
 			$( 'html, body' ).scrollTop( 0 );
 		} );
 	}, 'json' );
+}
+function saveToPlaylist( title, album, file ) {
+	G.pladd.title = title;
+	G.pladd.album = album;
+	G.pladd.file = file;
+	$( '#button-pl-playlists' ).click();
+	if ( !G.playlist ) $( '#button-playlist' ).click();
+	banner( 'Add to a playlist', 'Select target playlist', 'file-playlist blink', 5000 );
 }
 function second2HMS( second ) {
 	if ( !second || second < 1 ) return ''

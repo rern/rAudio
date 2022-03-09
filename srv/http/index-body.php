@@ -107,6 +107,7 @@ function menudiv( $id, $html ) {
 }
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon.= '<a data-cmd="nextplay" class="add sub"><i class="fa fa-plus-o"></i>Play next</a>';
 	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
@@ -142,6 +143,7 @@ $menu.= menudiv( 'folder', $html );
 $menudiv = '';
 $html = menucommon( 'add', 'replace' );
 $html.= $menulisimilar;
+$html.= menuli( 'savedpladd', 'file-playlist', 'Add to a playlist' );
 $html.= menuli( 'directory', 'folder', 'Browse directory' );
 if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
 $menu.= menudiv( 'file', $html );

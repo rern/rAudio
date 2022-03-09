@@ -605,11 +605,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 						$( '#bio' ).removeClass( 'hide' );
 					}
 				} else if ( $this.hasClass( 'pladd' ) ) {
-					$( '#button-pl-playlists' ).click();
-					$( '#button-playlist' ).click();
-					G.pladd.index = G.status.song;
-					G.pladd.name = G.status.Title;
-			banner( 'Add to a playlist', 'Select target playlist', 'file-playlist blink', -1 );
+					saveToPlaylist( G.status.Title, G.status.Album, G.status.file );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
 					bash( [ 'scrobble', ...values ] );
 					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
@@ -1959,13 +1955,13 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 		if ( !$( '#pl-path .lipath' ).length ) return
 		G.sortable = 1;
 		setTimeout( function() { G.sortable = 0 }, 500 );
-		
+		local();
 		var plname = $( '#pl-path .lipath' ).text();
 		list( {
 			  cmd  : 'edit'
 			, name : plname
-			, old  : e.oldIndex
-			, new  : e.newIndex
+			, from : e.oldIndex
+			, to   : e.newIndex
 		} );
 	}
 } );
@@ -2071,10 +2067,12 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	$this = $( this );
 	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
 	
-	var pladd = Object.keys( G.pladd ).length;
+	var pladd = 'index' in G.pladd;
 	var plicon = $target.hasClass( 'pl-icon' );
 	if ( G.savedplaylist || plicon ) {
-		if ( !pladd ) {
+		if ( pladd ) {
+			playlistInsertSelect( $this );
+		} else {
 			var datatarget = $target.data( 'target' ) || $this.find( '.pl-icon' ).data ( 'target' );
 			var $menu = $( datatarget );
 			G.list = {};
@@ -2107,8 +2105,6 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 			$this.addClass( 'active' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 			contextmenuScroll( $menu, $this.position().top + 48 );
-		} else {
-			playlistInsertSelect( $this );
 		}
 	} else {
 		G.savedlist = 0;
