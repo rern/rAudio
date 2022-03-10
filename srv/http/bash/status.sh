@@ -207,6 +207,7 @@ for line in "${lines[@]}"; do
 			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
 		file )
 			file0=$val           # no escape " for coverart and ffprobe
+			[[ $file0 == *".cue/track"* ]] && file0=$( dirname "$file0" )
 			file=${val//\"/\\\"};; # escape " for json
 		# string
 		* ) # state | updating_db
