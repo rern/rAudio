@@ -119,6 +119,8 @@ $kid3 = file_exists( '/usr/bin/kid3-cli' );
 $menulisimilar = '<a data-cmd="similar" class="similar sub"><i class="fa fa-lastfm"></i>Add similar</a><i class="fa fa-play-plus submenu" data-cmd="similar"></i>';
 $menu = '<div id="contextmenu">';
 
+$html = '';
+
 $htmlcommon = menucommon( 'add', 'replace' );
 $menulist = [
 	  [ 'play',       'play',          'Play' ]
