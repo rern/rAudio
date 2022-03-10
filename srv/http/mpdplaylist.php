@@ -155,7 +155,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 		if ( !in_array( $fileheader, $headers ) ) {
 			$sec = HMS2Second( $list->Time );
 			$track = preg_replace( '/^#*0*/', '', $list->Track );
-			$li2 = $i.' • ';
+			$li2 = '<a class="pos">'.$i.'</a> • ';
 			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
 			$artist = $list->Artist ?: $list->Albumartist;
 			$album = $list->Album;
@@ -194,7 +194,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			$countsong++;
 			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
-			$li2 = $i.' • ';
+			$li2 = '<a class="pos">'.$i.'</a> • ';
 			$artist = $list->Artist;
 			$album = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
@@ -230,7 +230,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 						.'<a class="liname">'.$stationname.'</a>'
 						.'<div class="li1"><span class="name">'.$stationname.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>'
-						.'<div class="li2">'.$i.' • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.preg_replace( '/#charset=.*/', '', $file ).'</div>'
+						.'<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.preg_replace( '/#charset=.*/', '', $file ).'</div>'
 					.'</li>';
 			$countradio++;
 		}

@@ -951,6 +951,10 @@ function plRemove( $li ) {
 		}
 		local( 1000 );
 		bash( [ 'plremove', tracknum, activenext ] );
+		$( '#pl-list li .pos' ).slice( tracknum ).each( function() {
+			$( this ).text( tracknum );
+			tracknum++
+		} );
 		$li.remove();
 	}
 }
