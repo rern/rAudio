@@ -807,7 +807,7 @@ pladd )
 	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
-pladdnextplay )
+pladdplaynext )
 	mpc -q insert "${args[1]}"
 	pushstreamPlaylist
 	;;

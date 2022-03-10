@@ -99,6 +99,12 @@ if ( count( $files ) ) {
 	}
 }
 // context menus
+function menucommon( $add, $replace ) {
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext"><i class="fa fa-plus-o"></i>Play next</a>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
+	return $htmlcommon;
+}
 function menuli( $list ) {
 	$command = $list[ 0 ];
 	$icon = $list[ 1 ];
@@ -109,39 +115,41 @@ function menuli( $list ) {
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
 }
-function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="nextplay" class="nextplay"><i class="fa fa-plus-o"></i>Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
-	return $htmlcommon;
+$kid3 = file_exists( '/usr/bin/kid3-cli' );
+function htmlmenu( $menulist, $mode ) {
+	global $html;
+	global $kid3;
+	global $menu;
+	if ( !$kid3 ) array_pop( $menulist );
+	foreach( $menulist as $list ) $html.= menuli( $list );
+	$menu.= menudiv( $mode, $html );
 }
 
-$kid3 = file_exists( '/usr/bin/kid3-cli' );
-$menulisimilar = '<a data-cmd="similar" class="similar sub"><i class="fa fa-lastfm"></i>Add similar</a><i class="fa fa-play-plus submenu" data-cmd="similar"></i>';
 $menu = '<div id="contextmenu">';
-
-$html = '';
-
 $htmlcommon = menucommon( 'add', 'replace' );
+// file
+$html = $htmlcommon;
 $menulist = [
-	  [ 'play',       'play',          'Play' ]
-	, [ 'pause',      'pause',         'Pause' ]
-	, [ 'stop',       'stop',          'Stop' ]
-	, [ 'current',    'check',         'Current' ]
-	, [ 'wrsave',     'save',          'Save to WebRadio' ]
+	  [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'remove',     'minus-circle',  'Remove' ]
+	, [ 'directory',  'folder',        'Browse directory' ]
+	, [ 'tag',        'tag',           'Tag Editor' ]
 ];
-foreach( $menulist as $list ) $html.= menuli( $list );
-$html.= $menulisimilar;
+htmlmenu( $menulist, 'file' );
+// filepl
+$html = $htmlcommon;
+$menu.= menudiv( 'filepl', $html );
+// filesavedpl
+$html = $htmlcommon;
 $menulist = [
-	  [ 'tag',        'info-circle',   'Track Info' ]
-	, [ 'tagcd',      'tag',           'CD Tag Editor' ]
+	  [ 'similar',       'lastfm',        'Add similar' ]
+	, [ 'wrsave',        'save',          'Save to WebRadio' ]
+	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
+	, [ 'savedplremove', 'minus-circle',  'Remove' ]
+	, [ 'tag',           'tag',           'Tag Editor' ]
 ];
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'plaction', $html );
-
-$menudiv = '';
+htmlmenu( $menulist, 'filesavedpl' );
+// folder
 $html = $htmlcommon;
 $menulist = [
 	  [ 'bookmark',  'star',            'Bookmark' ]
@@ -151,74 +159,50 @@ $menulist = [
 	, [ 'directory', 'folder',          'Browse directory' ]
 	, [ 'tag',       'tag',             'Tag Editor' ]
 ];
-if ( !$kid3 ) array_pop( $menulist );
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'folder', $html );
-
-$menudiv = '';
-$html = menucommon( 'add', 'replace' );
-$html.= $menulisimilar;
+htmlmenu( $menulist, 'folder' );
+// plaction
+$html = '';
 $menulist = [
-	  [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'directory',  'folder',        'Browse directory' ]
-	, [ 'tag',        'tag',           'Tag Editor' ]
+	  [ 'play',       'play',          'Play' ]
+	, [ 'pause',      'pause',         'Pause' ]
+	, [ 'stop',       'stop',          'Stop' ]
+	, [ 'current',    'check',         'Current' ]
+	, [ 'wrsave',     'save',          'Save to WebRadio' ]
+	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
+	, [ 'remove',     'minus-circle',  'Remove' ]
+	, [ 'similar',    'lastfm',        'Add similar' ]
+	, [ 'tag',        'info-circle',   'Track Info' ]
+	, [ 'tagcd',      'tag',           'CD Tag Editor' ]
 ];
-if ( !$kid3 ) array_pop( $menulist );
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'file', $html );
-
-$menudiv = '';
-$html = $htmlcommon;
-$menu.= menudiv( 'filepl', $html );
-
-$menudiv = '';
-$html = $htmlcommon;
+htmlmenu( $menulist, 'plaction' );
+// playlist
+$html = menucommon( 'pladd', 'plreplace' );
 $menulist = [
-	  [ 'similar',       'lastfm',        'Add similar' ]
-	, [ 'wrsave',        'save',          'Save to WebRadio' ]
-	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
-	, [ 'savedplremove', 'minus-circle',  'Remove' ]
-	, [ 'tag',           'tag',           'Tag Editor' ]
+	  [ 'plrename', 'edit-circle',  'Rename' ]
+	, [ 'pldelete', 'minus-circle', 'Delete' ]
 ];
-if ( !$kid3 ) array_pop( $menulist );
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'filesavedpl', $html );
-
-$menudiv = '';
+htmlmenu( $menulist, 'playlist' );
+// radio
 $html = menucommon( 'add', 'replace' );
 $menu.= menudiv( 'radio', $html );
-
-$menudiv = '';
+// webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'wredit',     'edit-circle',  'Edit' ]
 	, [ 'wrcoverart', 'iconcover',    'Change coverart' ]
 	, [ 'wrdelete',   'minus-circle', 'Delete' ]
 ];
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'webradio', $html );
-
-$menudiv = '';
-$html = menucommon( 'pladd', 'plreplace' );
-$menulist = [
-	  [ 'plrename', 'edit-circle',  'Rename' ]
-	, [ 'pldelete', 'minus-circle', 'Delete' ]
-];
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'playlist', $html );
-
-$menudiv = '';
+htmlmenu( $menulist, 'webradio' );
+// wrdir
 $html = '';
 $menulist = [
 	  [ 'bookmark',      'star',         'Bookmark' ]
 	, [ 'wrdirdelete',   'minus-circle', 'Delete' ]
 	, [ 'wrdirrename',   'edit-circle',  'Rename' ]
 ];
-foreach( $menulist as $list ) $html.= menuli( $list );
-$menu.= menudiv( 'wrdir', $html );
+htmlmenu( $menulist, 'wrdir' );
 
 foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {
-	$menudiv = '';
 	$html = menucommon( $mode.'add', $mode.'replace' );
 	$menu.= menudiv( $mode, $html );
 }

@@ -716,8 +716,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'plls', path ];
 			}
 			break;
-		case 'nextplay':
-			mpccmd = [ 'pladdnextplay', path ];
+		case 'playnext':
+			mpccmd = [ 'pladdplaynext', path ];
 			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
@@ -754,7 +754,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var sleep = G.mode === 'webradio' ? 1 : 0.2;
 	var contextCommand = {
 		  add         : mpccmd
-		, nextplay    : mpccmd
+		, playnext    : mpccmd
 		, addplay     : mpccmd.concat( [ 'addplay', sleep ] )
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
@@ -765,7 +765,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		var title = 'Add to Playlist';
 	} else if ( cmd === 'addplay' ) {
 		var title = 'Add to Playlist and play';
-	} else if ( cmd === 'nextplay' ) {
+	} else if ( cmd === 'playnext' ) {
 		var title = 'Add to Playlist to play next';
 	} else {
 		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
