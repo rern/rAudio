@@ -937,23 +937,23 @@ function plRemove( $li ) {
 				$count.prev().addBack().remove();
 			}
 		}
-		var tracknum = $li.index() + 1;
+		var i = $li.index() + 1;
 		if ( $li.hasClass( 'active' ) ) {
-			if ( tracknum < G.status.playlistlength ) {
-				var activenext = tracknum;
+			if ( i < G.status.playlistlength ) {
+				var activenext = i;
 				$li.next().addClass( 'active' );
 			} else {
-				var activenext = tracknum - 1;
+				var activenext = i - 1;
 				$li.prev().addClass( 'active' );
 			}
 		} else {
 			var activenext = '';
 		}
 		local( 1000 );
-		bash( [ 'plremove', tracknum, activenext ] );
-		$( '#pl-list li .pos' ).slice( tracknum ).each( function() {
-			$( this ).text( tracknum );
-			tracknum++
+		bash( [ 'plremove', i, activenext ] );
+		$( '#pl-list li .pos' ).slice( i ).each( function() {
+			$( this ).text( i );
+			i++
 		} );
 		$li.remove();
 	}
