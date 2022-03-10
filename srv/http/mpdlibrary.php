@@ -230,7 +230,7 @@ case 'webradio':
 			$each = ( object )[];
 			$data = file( "$dirwebradios/$file", FILE_IGNORE_NEW_LINES );
 			$name = $data[ 0 ];
-			$each->charset = $data[ 2 ];
+			$each->charset = $data[ 2 ] ?? '';
 			$each->name    = $name;
 			$each->url     = str_replace( '|', '/', $file );
 			$each->sort    = stripSort( $name );

@@ -62,12 +62,13 @@ $modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Co
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );
+	$count = $counts && $mode !== 'Latest' ? number_format( $counts->$modeLC ) : '';
 	$modehtml.= '
 		<div class="lib-mode">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
-				'.( $counts && $counts->$modeLC ? '<gr>'.number_format( $counts->$modeLC ).'</gr>' : '<gr></gr>' ).'
+				<gr>'.$count.'</gr>
 				<a class="label">'.$mode.'</a>
 			</div>
 		</div>
