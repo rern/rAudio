@@ -1,6 +1,6 @@
 // $.fn.press(), info(), banner()
 
-// $.fn.press(), $fn.swipe() --------------------------------------------------------
+// $.fn.press() ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
 	// ELEMENT: '#id' or '.class'

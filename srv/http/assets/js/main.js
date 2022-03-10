@@ -79,7 +79,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 getPlaybackStatus( 'withdisplay' );
 
-if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
+if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
