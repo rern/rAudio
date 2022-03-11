@@ -5,9 +5,10 @@ alias=r1
 # 20220312
 dirplaylists=/srv/http/data/playlists
 if ! ls $dirplaylists/*.m3u &> /dev/null; then
-	echo Convert saved playlists ...
+	echo -e "\n\e[38;5;6m\e[48;5;6m . \e[0m Convert saved playlists ..."
 	readarray -t plfile <<< $( ls -d1 $dirplaylists/* )
 	for plfile in "${plfile[@]}"; do
+		basename "$plfile"
 		list=$( grep '"file":' "$plfile" | sed 's/^\s*"file": "//; s/",$//; s/\\//g' )
 		readarray -t file_track <<< $( grep -B1 -A5 '"Range":' "$plfile" \
 										| grep '"file":\|"Track":' \
