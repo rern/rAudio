@@ -19,7 +19,6 @@ if ! ls $dirplaylists/*.m3u &> /dev/null; then
 			list=$( sed "s|$file|$filecue|" <<< "$list" )
 			(( i++ ))
 		done
-		echo "$list"
 		echo "$list" > "$plfile.m3u"
 	   rm "$plfile"
 	done
