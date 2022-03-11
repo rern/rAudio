@@ -1,5 +1,5 @@
 // keyboard controls
-$( document ).keyup( function( e ) {
+$( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page scroll
 	if ( G.local || !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
