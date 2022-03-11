@@ -411,7 +411,7 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( G.local || G.plremove ) return
+	if ( G.local || G.plremove || G.sortable ) return
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {

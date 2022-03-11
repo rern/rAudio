@@ -1611,6 +1611,26 @@ function setTrackCoverart() {
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
+function sortPlaylist( pl, iold, inew ) {
+	G.sortable = 1;
+	setTimeout( function() { G.sortable = 0 }, 500 );
+	if ( pl === 'pl-list' ) {
+		bash( [ 'plorder', iold + 1, inew + 1 ] );
+	} else {
+		list( {
+			  cmd  : 'edit'
+			, name : $( '#pl-path .lipath' ).text()
+			, from : iold
+			, to   : inew
+		} );
+	}
+	var i = Math.min( iold, inew );
+	var imax = Math.max( iold, inew ) + 1;
+	$( '#'+ pl +' li .pos' ).slice( i, imax ).each( function() {
+		i++
+		$( this ).text( i );
+	} );
+}
 function stopAirplay() {
 	info( {
 		  icon    : 'airplay'

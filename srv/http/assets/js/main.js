@@ -1940,11 +1940,7 @@ new Sortable( document.getElementById( 'pl-list' ), {
 	, onUpdate      : function ( e ) {
 		G.status.song = $( '#pl-list li.sortactive' ).index();
 		$( '#pl-list li.sortactive' ).removeClass( 'sortactive' );
-		G.sortable = 1;
-		setTimeout( function() { G.sortable = 0 }, 500 );
-		bash( [ 'plorder', ( e.oldIndex + 1 ), ( e.newIndex + 1 ) ], function() {
-			setTimeout( setPlaylistScroll, 600 );
-		} );
+		sortPlaylist( 'pl-list', e.oldIndex, e.newIndex );
 	}
 } );
 new Sortable( document.getElementById( 'pl-savedlist' ), {
@@ -1952,17 +1948,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
 	, onUpdate      : function ( e ) {
-		if ( !$( '#pl-path .lipath' ).length ) return
-		G.sortable = 1;
-		setTimeout( function() { G.sortable = 0 }, 500 );
-		local();
-		var plname = $( '#pl-path .lipath' ).text();
-		list( {
-			  cmd  : 'edit'
-			, name : plname
-			, from : e.oldIndex
-			, to   : e.newIndex
-		} );
+		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
