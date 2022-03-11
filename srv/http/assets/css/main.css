@@ -1520,6 +1520,7 @@ i.map.disabled, .map.disabled i {
 	flex-direction:column;
 	align-items:center;
 	background: var( --cga );
+	box-shadow: 0 0 10px 4px #000000;
 	z-index: 5;
 }
 .index1 {
