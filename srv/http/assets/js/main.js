@@ -409,10 +409,10 @@ $( '#colorreset' ).click( function() {
 } );
 $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
-	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
-		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top, #lib-index \
-		#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, \
-		#lib-list li, #lib-list i' ).removeAttr( 'style' );
+	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
+	  , .content-top, #button-library, #mode-title, #button-lib-back \
+	  , #lib-list li, #lib-list li.active, #lib-list i, #lib-list .li2 \
+	  , .menu a, .submenu, #colorcancel, #colorok' ).removeAttr( 'style' );
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
 	G.colorpicker.destroy();
