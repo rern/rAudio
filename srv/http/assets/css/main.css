@@ -171,7 +171,7 @@ i.map.disabled, .map.disabled i {
 #settings .gr {
 	font-size: 22px;
 }
-#iconrainbow {
+.submenu.fa-color canvas {
 	width: 20px;
 	height: 20px;
 	vertical-align: -2px;
@@ -1633,7 +1633,6 @@ i.map.disabled, .map.disabled i {
 	line-height: 20px;
 	border-bottom: 1px solid var( --cga );
 	font-size: 15px;
-	background: #10161c
 }
 #lib-list p,
 #pl-list p,

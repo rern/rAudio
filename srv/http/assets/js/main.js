@@ -50,7 +50,8 @@ var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
 var red = '#bb2828';
-var canvas = document.getElementById( 'iconrainbow' );
+$( '.submenu.fa-color' ).html( '<canvas></canvas>' );
+var canvas = $( '.submenu.fa-color canvas' )[ 0 ];
 var ctx = canvas.getContext( '2d' );
 var cw = canvas.width / 2;
 var ch = canvas.height / 2;
@@ -409,11 +410,9 @@ $( '#colorreset' ).click( function() {
 $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
 	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
-		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
-	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, \
-		#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', '' );
-	$( '.menu a' ).css( 'border-top', '' );
-	$( '#lib-list li' ).css( 'border-bottom', '' );
+		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top, #lib-index \
+		#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, \
+		#lib-list li, #lib-list i' ).removeAttr( 'style' );
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
 	G.colorpicker.destroy();

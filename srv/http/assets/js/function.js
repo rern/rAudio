@@ -138,13 +138,13 @@ function colorSet() {
 				var hsg = 'hsl('+ h +',3%,';
 				var rgb = Object.values( e.getCurColorRgb() ).join( ' ' );
 				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
-				$( '.content-top, #playback, #colorcancel' ).css( 'background', hsg +'20%)' );
-				$( '.lib-icon, gr' ).css( 'cssText', 'color: '+ hsg +'60%) !important;' );
-				$( '#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', hsg +'30%)' );
-				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );
-				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
 				$( '#playback-controls .active, #library, #button-library, #lib-list li.active, #colorok' ).css( 'background-color', hex );
+				$( '.content-top, #lib-index, #playback, #colorcancel' ).css( 'background-color', hsg +'20%)' );
 				$( '#button-lib-back, .lialbum, #colorcancel' ).css( 'color', hex );
+				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
+				$( '#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', hsg +'30%)' );
+				$( '.lib-icon, gr' ).css( 'cssText', 'color: '+ hsg +'60%) !important;' );
+				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );
 				$( '#colorok' ).toggleClass( 'disabled', rgb === rgb0 );
 			}
 		}

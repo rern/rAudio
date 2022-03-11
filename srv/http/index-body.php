@@ -236,12 +236,8 @@ $settinglist = [
 ];
 $htmlsettings = '';
 foreach( $settinglist as $l ) {
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>';
-	if ( $l[ 5 ] !== 'color' ) {
-		$htmlsettings.= '<i id="'.$l[ 4 ].'"  class="submenu fa fa-'.$l[ 5 ].'"></i>';
-	} else {
-		$htmlsettings.= '<i id="'.$l[ 4 ].'"  class="submenu"><canvas id="iconrainbow"></canvas></i>';
-	}
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>
+					 <i id="'.$l[ 4 ].'" class="submenu fa fa-'.$l[ 5 ].'"></i>';
 }
 ?>
 <div id="bar-top" class="hide">
