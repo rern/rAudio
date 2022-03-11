@@ -2,9 +2,10 @@
 
 alias=r1
 
-# 20220310
+# 20220312
 dirplaylists=/srv/http/data/playlists
 if ! ls $dirplaylists/*.m3u &> /dev/null; then
+	echo Convert saved playlists ...
 	readarray -t plfile <<< $( ls -d1 $dirplaylists/* )
 	for plfile in "${plfile[@]}"; do
 		list=$( grep '"file":' "$plfile" | sed 's/^\s*"file": "//; s/",$//; s/\\//g' )
@@ -24,10 +25,6 @@ if ! ls $dirplaylists/*.m3u &> /dev/null; then
 	done
 	sed -i "s|/var/lib/mpd/playlists|$dirplaylists|" /etc/mpd.conf
 fi
-
-# 20220211
-[[ -e /boot/kernel.img ]] && echo 'Server = http://alaa.ad24.cz/repos/2022/02/06/$arch/$repo' > /etc/pacman.d/mirrorlist
-sed -i '/latency/ d' /srv/http/data/system/soundprofile.conf &> /dev/null
 
 . /srv/http/bash/addons.sh
 
