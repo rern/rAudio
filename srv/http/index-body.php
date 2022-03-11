@@ -125,7 +125,7 @@ function htmlmenu( $menulist, $mode ) {
 	$menu.= menudiv( $mode, $html );
 }
 
-$menu = '<div id="contextmenu">';
+$menu = '';
 $htmlcommon = menucommon( 'add', 'replace' );
 // file
 $html = $htmlcommon;
@@ -206,7 +206,7 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$html = menucommon( $mode.'add', $mode.'replace' );
 	$menu.= menudiv( $mode, $html );
 }
-$menu.= '</div>';
+$menu = '<div id="contextmenu">'.$menu.'</div>';
 $ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btclient', 'snapclient', 'libupdate', 'addons', 'relays', 'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
@@ -214,6 +214,36 @@ foreach( $ids as $id ) {
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
+$settinglist = [
+	  [ 'features', 'settings', 'features', 'Features',
+		'lock', 'lock' ]
+	, ['player', 'settings', 'player', 'Player',
+		'equalizer', 'equalizer' ]
+	, ['networks', 'settings', 'networks', 'Networks',
+		'snapclient', 'snapclient' ]
+	, [ 'system', 'settings', 'plus-r', 'System',
+		'relays', 'relays' ]
+	, [ 'addons', 'sub', 'jigsaw', 'Addons',
+		'guide', 'question-circle' ]
+	, [ 'power', '', 'power', 'Power',
+		'screenoff', 'screenoff' ]
+	, [ 'displaylibrary', 'sub', 'library', 'Library',
+		'update', 'refresh-library' ]
+	, [ 'displayplayback', 'sub', 'playback', 'Playback',
+		'displaycolor', 'color' ]
+	, [ 'displayplaylist', '', 'playlist', 'Playlist',
+		'switchraudio', 'raudiobox' ]
+];
+$htmlsettings = '';
+foreach( $settinglist as $l ) {
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>';
+	$htmlsettings.= '<i id="'.$l[ 4 ].'"  class="submenu';
+	if ( $l[ 5 ] !== 'color' ) {
+		$htmlsettings.= ' fa fa-'.$l[ 5 ].'"></i>';
+	} else {
+		$htmlsettings.= '"><canvas id="iconrainbow"></canvas></i>';
+	}
+}
 ?>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
@@ -227,24 +257,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 	</div>
 </div>
 <div id="settings" class="menu hide">
-	<a id="features" class="settings"><i class="fa fa-features"></i>Features</a>
-		<i id="lock" class="fa fa-lock submenu"></i>
-	<a id="player" class="settings"><i class="fa fa-player"></i>Player</a>
-		<i id="equalizer" class="fa fa-equalizer submenu"></i>
-	<a id="networks" class="settings"><i class="fa fa-networks"></i>Networks</a>
-		<i id="snapclient" class="fa fa-snapclient submenu"></i>
-	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
-		<i id="relays" class="fa fa-relays submenu"></i>
-	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
-		<i id="guide" class="fa fa-question-circle submenu"></i>
-	<a id="power"><i class="fa fa-power"></i>Power</a>
-		<i id="screenoff" class="fa fa-screenoff submenu"></i>
-	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
-		<i id="update" class="fa fa-refresh-library submenu"></i>
-	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
-		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
-	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
-		<i id="switchraudio" class="fa fa-raudiobox submenu"></i>
+	<?=$htmlsettings?>
 </div>
 <div id="page-playback" class="page">
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
