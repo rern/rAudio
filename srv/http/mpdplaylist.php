@@ -173,7 +173,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.'.jpg' ; // replaced with icon on load error(faster than existing check)
+				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg' ; // replaced with icon on load error(faster than existing check)
 				$icon = 'music';
 				$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
@@ -218,7 +218,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			}
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg"'
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$urlname.'-thumb.jpg"'
 						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
@@ -243,7 +243,10 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
-	return [ 'html' => $html, 'counthtml' => $counthtml, 'playlistlength' => $count ];
+	$song = exec( "{ echo status; sleep 0.05; } \
+								| telnet 127.0.0.1 6600 2> /dev/null \
+								| awk '/^song:/ {print \$NF}'" );
+	return [ 'html' => $html, 'counthtml' => $counthtml, 'playlistlength' => $count, 'song' => $song ];
 }
 function playlist() { // current playlist
 	global $headers;

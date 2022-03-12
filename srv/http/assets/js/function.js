@@ -1142,9 +1142,13 @@ function renderPlayback() {
 	}
 }
 function renderPlaylist( data ) {
+	if ( data.html === G.htmlplaylist ) return
+
+	G.htmlplaylist = data.html;
 	G.savedlist = 0;
 	G.status.playlistlength = data.playlistlength;
 	G.status.elapsed = data.elapsed;
+	G.status.song = data.song;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', G.status.counts.playlists === 0 );
@@ -1168,7 +1172,9 @@ function renderPlaylist( data ) {
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
 		.toggleClass( 'disabled', G.status.counts.song === 0 );
-	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
+	var timestamp = Math.floor( Date.now() / 1000 );
+	var html = data.html.replaceAll( 'thumb.jpg', 'thumb.'+ timestamp +'.jpg' );
+	$( '#pl-list' ).html( html +'<p></p>' ).promise().done( function() {
 		setPlaylistScroll();
 		imageLoad( 'pl-list' );
 		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
@@ -1474,7 +1480,7 @@ function setPlaylistScroll() {
 		|| G.sortable
 		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
 		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
-		|| $( '#pl-list li' ).length < G.status.song + 1 // on eject cd G.status.song not yet refreshed
+		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) return
 	
 	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
