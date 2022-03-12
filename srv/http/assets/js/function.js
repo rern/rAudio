@@ -827,13 +827,7 @@ function orderLibrary() {
 }
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
-	var command = {
-		  cmd         : 'edit'
-		, name        : plname
-		, file        : G.pladd.file
-		, indextarget : indextarget
-	}
-	list( command, function() {
+	bash( [ 'savedpledit', plname, 'add', indextarget, G.pladd.file ], function() {
 		renderSavedPlaylist( plname );
 		if ( indextarget === 'last' ) {
 			setTimeout( function() {
@@ -1142,7 +1136,9 @@ function renderPlayback() {
 	}
 }
 function renderPlaylist( data ) {
+	G.savedplaylist = 0;
 	if ( !G.savedlist && data.html === G.htmlplaylist ) {
+		G.savedlist = 0;
 		setPlaylistScroll();
 		return
 	}
@@ -1631,12 +1627,7 @@ function sortPlaylist( pl, iold, inew ) {
 	if ( pl === 'pl-list' ) {
 		bash( [ 'plorder', iold + 1, inew + 1 ] );
 	} else {
-		list( {
-			  cmd  : 'edit'
-			, name : $( '#pl-path .lipath' ).text()
-			, from : iold
-			, to   : inew
-		} );
+		bash( [ 'savedpledit', $( '#pl-path .lipath' ).text(), 'move', iold, inew ] );
 	}
 	var i = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

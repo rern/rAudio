@@ -875,10 +875,6 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
 	;;
-plcount )
-	playlists=$( ls -1 $dirdata/playlists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
-	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
 		mpc -q crop
@@ -1038,8 +1034,59 @@ relaystimerreset )
 	$dirbash/relaystimer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
-rotateSplash )
+rotatesplash )
 	rotateSplash ${args[1]}
+	;;
+savedpldelete )
+	name=${args[1]}
+	rm "$dirplaylists/$name.m3u"
+	playlists=$( ls -1 $dirplaylists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
+	pushstream playlists '{"delete":"'${name//\"/\\\"}'"}'
+	;;
+savedpledit )
+	name=${args[1]}
+	type=${args[2]}
+	data=${args[3]} # remove - file, add - position-file, move - from-to
+	plfile="$dirplaylists/$name.m3u"
+	if [[ $type == remove ]]; then
+		sed -i "$data d" "$plfile"
+	elif [[ $type == add ]]; then
+		file=${args[4]}
+		if [[ $data == first ]]; then
+			sed -i "1 i$file" "$plfile"
+		elif [[ $data == last ]]; then
+			echo $file >> "$plfile"
+		else
+			sed -i "$data i$file" "$plfile"
+		fi
+	else
+		from=$(( $data + 1 ))
+		to=${args[4]}
+		file=$( sed -n "$from p" "$plfile" )
+		sed -i "$from d" "$plfile"
+		sed -i "$to a$file" "$plfile"
+	fi
+	pushstream playlist '{"playlist":"'${name//\"/\\\"}'"}'
+	;;
+savedplrename )
+	oldname=${args[1]}
+	name=${args[2]}
+	mv "$dirplaylists/$oldname.m3u" "$dirplaylists/$name.m3u"
+	list=$( php /srv/http/mpdplaylist.php list )
+	pushstream playlists "$list"
+	;;
+savedplsave )
+	name=${args[1]}
+	plfile="$dirplaylists/$name.m3u"
+	[[ -e "$plfile" ]] && echo -1 && exit
+	
+	mpc -q save "$name"
+	chmod 777 "$plfile"
+	playlists=$( ls -1 $dirplaylists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
+	list=$( php /srv/http/mpdplaylist.php list )
+	pushstream playlists "$list"
 	;;
 screenoff )
 	DISPLAY=:0 xset ${args[1]}

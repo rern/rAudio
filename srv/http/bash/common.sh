@@ -2,11 +2,9 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
-diraddons=$dirdata/addons
-dirmpd=$dirdata/mpd
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
-dirwebradios=$dirdata/webradios
+for dir in addons mpd playlists shm system webradios; do
+	printf -v dir$dir '%s' /srv/http/data/$dir
+done
 
 data2json() {
 	data="$1"

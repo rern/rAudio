@@ -69,7 +69,7 @@ function playlistDelete() {
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
 		, ok      : function() {
-			list( { cmd: 'delete', name: G.list.name } );
+			bash( [ 'savedpldelete',G.list.name ] );
 		}
 	} );
 }
@@ -119,9 +119,9 @@ function playlistRename() {
 }
 function playlistSave( name, oldname ) {
 	if ( oldname ) {
-		list( { cmd: 'rename', oldname: oldname, name: name } );
+		bash( [ 'savedplrename', oldname, name ] );
 	} else {
-		list( { cmd: 'save', name: name }, function( data ) {
+		bash( [ 'savedplsave', name ], function( data ) {
 			if ( data == -1 ) {
 				info( {
 					  icon        : 'playlist'
@@ -589,11 +589,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'savedplremove':
 			local();
 			var plname = $( '#pl-path .lipath' ).text();
-			list( {
-				  cmd    : 'edit'
-				, name   : plname
-				, remove : G.list.li.index() + 1
-			} );
+			bash( [ 'savedpledit', plname, 'remove', G.list.li.index() + 1 ] );
 			G.list.li.remove();
 			return
 		case 'similar':

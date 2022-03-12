@@ -24,7 +24,6 @@ if ! ls $dirplaylists/*.m3u &> /dev/null; then
 		echo "$list" > "$plfile.m3u"
 	    rm "$plfile"
 	done
-	chmod -R 777 $dirplaylists
 	chown mpd:audio $dirplaylists
 	sed -i "s|/var/lib/mpd/playlists|$dirplaylists|" /etc/mpd.conf
 fi

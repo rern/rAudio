@@ -456,11 +456,7 @@ $( '#playback' ).click( function() {
 $( '#playlist' ).click( function() {
 	if ( !G.local ) G.pladd = {}
 	if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) {
-			G.savedlist = 0;
-			G.savedplaylist = 0;
-			getPlaylist();
-		}
+		if ( G.savedlist || G.savedplaylist ) getPlaylist();
 		contextMenuHide();
 	} else {
 		switchPage( 'playlist' );

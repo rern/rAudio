@@ -16,37 +16,6 @@ case 'current':
 	$array[ 'elapsed' ] = $elapsed !== '' ? round( substr( $elapsed, 9 ) ) : false;
 	echo json_encode( $array );
 	break;
-case 'delete':
-	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
-	exec( 'mpc -q rm "'.$name.'"; /srv/http/bash/cmd.sh plcount' );
-	$array = listPlaylists();
-	$array[ 'delete' ] = $name;
-	pushstream( 'playlists', $array );
-	break;
-case 'edit':
-	$file = $_POST[ 'file' ] ?? '';
-	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
-	$plfile = $dirplaylists.$name.'.m3u';
-	$remove = $_POST[ 'remove' ] ?? '';
-	$indextarget = $_POST[ 'indextarget' ] ?? '';
-	if ( $remove ) { // remove
-		exec( 'sed -i "'.$remove.'d" "'.$plfile.'"' );
-	} else if ( $indextarget ) { // insert
-		if ( $indextarget === 'first' ) {
-			exec( 'sed -i "1 i'.$file.'" "'.$plfile.'"' );
-		} else if ( $indextarget === 'last' ) {
-			file_put_contents( $plfile, $file, FILE_APPEND );
-		} else {
-			exec( 'sed -i "'.$indextarget.' i'.$file.'" "'.$plfile.'"' );
-		}
-	} else { // arrange
-		$from = $_POST[ 'from' ] + 1;
-		$to = $_POST[ 'to' ];
-		$file = exec( 'sed -n '.$from.'p "'.$plfile.'"' );
-		exec( 'sed -i "'.$from.'d" "'.$plfile.'"; sed -i "'.$to.'a'.$file.'" "'.$plfile.'"' );
-	}
-	pushstream( 'playlist', [ 'playlist' => $name ] );
-	break;
 case 'get':
 	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
 	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$name.'"', $values );
@@ -75,18 +44,6 @@ case 'load': // load saved playlist to current
 	exec( 'mpc -q load "'.$name.'"' );
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
-	break;
-case 'rename':
-	exec( 'mv /srv/http/data/playlists/{"'.$_POST[ 'oldname' ].'","'.$_POST[ 'name' ].'"}.m3u' );
-	pushstream( 'playlists', listPlaylists() );
-	break;
-case 'save':
-	$name = $_POST[ 'name' ] ?? $argv[ 2 ];
-	$file = $dirplaylists.$name;
-	if ( file_exists( $file ) ) exit( '-1' );
-	
-	exec( 'mpc -q save "'.$name.'"; /srv/http/bash/cmd.sh plcount' );
-	pushstream( 'playlists', listPlaylists() );
 	break;
 case 'track':
 	$array = playlistInfo( $_POST[ 'track' ] );
@@ -186,7 +143,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			}
 			$html.= '<li class="'.$class.'" '.$datatrack.'>'
 						.$htmlicon
-						.'<a class="lipath">'.$file.'</a>'
+						.'<a class="lipath">'.$list->file.'</a>' // keep *.cue/track* if any
 						.'<div class="li1"><span class="name">'.$list->Title.'</span>'
 						.'<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>'
 						.'<div class="li2">'.$li2.'</div>'
