@@ -143,7 +143,7 @@ cursor=$newcursor
 	fi
 
 	if [[ $changedrotate ]]; then
-		$dirbash/cmd.sh rotateSplash$'\n'$newrotate # after set new data in conf file
+		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
