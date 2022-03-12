@@ -22,7 +22,7 @@ if ! ls $dirplaylists/*.m3u &> /dev/null; then
 			(( i++ ))
 		done
 		echo "$list" > "$plfile.m3u"
-	   rm "$plfile"
+	    rm "$plfile"
 	done
 	chmod -R 777 $dirplaylists
 	chown mpd:audio $dirplaylists
