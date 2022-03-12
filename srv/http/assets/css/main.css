@@ -1735,6 +1735,7 @@ i.map.disabled, .map.disabled i {
 .pl-icon {
 	float: left;
 	display: block;
+	min-height: 20px;
 	text-align: center;
 }
 .iconthumb {
