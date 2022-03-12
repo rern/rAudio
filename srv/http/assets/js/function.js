@@ -1142,7 +1142,7 @@ function renderPlayback() {
 	}
 }
 function renderPlaylist( data ) {
-	if ( data.html === G.htmlplaylist ) {
+	if ( !G.savedlist && data.html === G.htmlplaylist ) {
 		setPlaylistScroll();
 		return
 	}
