@@ -1483,18 +1483,15 @@ function setPlaylistScroll() {
 	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
 	if ( G.status.elapsed === false ) $( '#pl-list li .elapsed' ).empty();
 	$( '#menu-plaction' ).addClass( 'hide' );
-	var prevscrolltop = $( '#pl-list li.active' ).length ? $( '#pl-list li.active' ).offset().top : litop;
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
-	var scrolltop = $liactive.offset().top;
-	if ( scrolltop !== prevscrolltop ) {
-		if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
-			$( 'html, body' ).scrollTop( 0 );
-		} else {
-			$( 'html, body' ).scrollTop( scrolltop - litop - ( 49 * 3 ) );
-		}
+	if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
+		var top = 0;
+	} else {
+		var top = $liactive.offset().top - litop - ( 49 * 3 );
 	}
+	$( 'html, body' ).scrollTop( top );
 	var $this = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed = $this.find( '.elapsed' );
 	var $name = $this.find( '.name' );
