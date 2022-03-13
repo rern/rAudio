@@ -140,6 +140,7 @@ function playlistSaveExist( type, name, oldname ) {
 		, message     : 'Playlist: <wh>'+ name +'</wh>'
 					   +'<br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
+		, buttoncolor : orange
 		, button      : rename ? playlistRename : playlistNew
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : function() {
