@@ -489,7 +489,7 @@ function info( json ) {
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.attr( 'tabindex', -1 ); // for keyup event
-		$inputs_txt.length ? $inputs_txt[ 0 ].focus() : $( '#infoOverlay' ).focus();
+		$inputs_txt.length ? $( '#infoContent' ).find( 'input, textarea' ).eq( 0 ).focus() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button
