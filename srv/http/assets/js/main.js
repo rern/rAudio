@@ -475,7 +475,7 @@ $( '#page-playback' ).click( function( e ) {
 		}
 	}
 } );
-$( '#bar-top, #bar-bottom, #button-library' ).click( function() {
+$( '#bar-top, #bar-bottom, #page-library' ).click( function() {
 	if ( G.guide ) hideGuide();
 	if ( !$( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
 } );

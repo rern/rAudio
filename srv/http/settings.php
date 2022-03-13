@@ -1,7 +1,4 @@
 <?php
-$svg = preg_grep( '/<rect|<path/', file( '/srv/http/assets/img/icon.svg' ) );
-$logo = '<svg viewBox="0 0 180 180">'.implode( '', $svg ).'</svg>';
-
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
 	if ( !isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
@@ -165,9 +162,6 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 </div>
 <div id="bar-bottom">
 	<?=$htmlbar?>
-</div>
-<div id="loader">
-	<?=$logo?>
 </div>
 
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>

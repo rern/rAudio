@@ -1,14 +1,11 @@
 <?php
-$svg = preg_grep( '/<rect|<path/', file( '/srv/http/assets/img/icon.svg' ) );
-$logo = '<svg viewBox="0 0 180 180">'.implode( '', $svg ).'</svg>';
-
 if ( $login && !$_SESSION[ 'login' ] ) { ?>
 <style>
 	#divlogin rect { fill: var( --cm ); }
 	#divlogin path { fill: var( --cg75 ); }
 </style>
 <div id="divlogin">
-	<?=$logo?><br>
+	<img src="/assets/img/icon.svg" style="width: 60px"><br>
 	<input type="password" id="pwd"><i class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
@@ -444,7 +441,4 @@ foreach( $settinglist as $l ) {
 </div>
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
-</div>
-<div id="loader" class="splash">
-	<?=$logo?>
 </div>

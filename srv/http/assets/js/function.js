@@ -122,7 +122,7 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
-	$( '#lib-list li' ).eq( 0 ).click();
+	$( '#lib-list .lib-icon' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', G.display.color === '' )
