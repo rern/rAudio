@@ -4,11 +4,12 @@ alias=r1
 
 # 20220312
 dirplaylists=/srv/http/data/playlists
-if ! ls $dirplaylists/*.m3u &> /dev/null; then
+readarray -t plfiles <<< $( ls -I '*.*' $dirplaylists )
+if [[ $plfiles ]]; then
 	echo -e "\n\e[38;5;6m\e[48;5;6m . \e[0m Convert saved playlists ..."
-	readarray -t plfile <<< $( ls -d1 $dirplaylists/* )
-	for plfile in "${plfile[@]}"; do
-		basename "$plfile"
+	for name in "${plfiles[@]}"; do
+		echo $name
+		plfile="$dirplaylists/$name"
 		list=$( grep '"file":' "$plfile" | sed 's/^\s*"file": "//; s/",$//; s/\\//g' )
 		if grep -q '^\s*"Range": ' "$plfile"; then
 			readarray -t file_track <<< $( grep -B1 -A5 '"Range":' "$plfile" \
@@ -27,7 +28,14 @@ if ! ls $dirplaylists/*.m3u &> /dev/null; then
 		rm "$plfile"
 	done
 	chown mpd:audio $dirplaylists
-	sed -i "s|/var/lib/mpd/playlists|$dirplaylists|" /etc/mpd.conf
+	dirmpdpl=/var/lib/mpd/playlists
+	readarray -t mpdplfile <<< $( ls -1 $dirmpdpl )
+	if [[ $mpdplfile ]]; then
+		for name in "${mpdplfile[@]}"; do
+			cp "$dirmpdpl/$name" "$dirplaylists/_$name"
+		done
+	fi
+	sed -i "s|$dirmpdpl|$dirplaylists|" /etc/mpd.conf
 fi
 
 . /srv/http/bash/addons.sh

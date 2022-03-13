@@ -62,7 +62,7 @@ function infoReplace( callback ) {
 }
 function playlistDelete() {
 	info( {
-		  icon    : 'playlist'
+		  icon    : 'file-playlist'
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><wh>'+ G.list.name +'</wh>'
@@ -75,7 +75,7 @@ function playlistDelete() {
 }
 function playlistLoad( path, play, replace ) {
 	G.local = 1;
-	banner( 'Saved Playlist', 'Load ...', 'playlist blink', -1 );
+	banner( 'Saved Playlist', 'Load ...', 'file-playlist blink', -1 );
 	list( {
 		  cmd     : 'load'
 		, name    : path
@@ -90,7 +90,7 @@ function playlistLoad( path, play, replace ) {
 }
 function playlistNew() {
 	info( {
-		  icon         : 'playlist'
+		  icon         : 'file-playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
@@ -103,7 +103,7 @@ function playlistNew() {
 function playlistRename() {
 	var name = G.list.name;
 	info( {
-		  icon         : 'playlist'
+		  icon         : 'file-playlist'
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
 		, textlabel    : 'To'
@@ -119,27 +119,33 @@ function playlistRename() {
 }
 function playlistSave( name, oldname ) {
 	if ( oldname ) {
-		bash( [ 'savedplrename', oldname, name ] );
+		bash( [ 'savedplrename', oldname, name ], function( data ) {
+			if ( data == -1 ) playlistSaveExist( 'rename', name, oldname );
+		} );
 	} else {
 		bash( [ 'savedplsave', name ], function( data ) {
 			if ( data == -1 ) {
-				info( {
-					  icon        : 'playlist'
-					, title       : oldname ? 'Rename Playlist' : 'Save Playlist'
-					, message     : '<i class="fa fa-warning fa-lg"></i> <wh>'+ name +'</wh>'
-								   +'<br>Already exists.'
-					, buttonlabel : '<i class="fa fa-arrow-left"></i>Back'
-					, button      : playlistNew
-					, oklabel     : '<i class="fa fa-flash"></i>Replace'
-					, ok          : function() {
-						oldname ? playlistSave( name, oldname ) : playlistSave( name );
-					}
-				} );
+				playlistSaveExist( 'save', name );
 			} else {
 				banner( 'Playlist Saved', name, 'playlist' );
 			}
 		} );
 	}
+}
+function playlistSaveExist( type, name, oldname ) {
+	var rename = type === 'rename';
+	info( {
+		  icon        : 'file-playlist'
+		, title       : rename ? 'Rename Playlist' : 'Save Playlist'
+		, message     : 'Playlist: <wh>'+ name +'</wh>'
+					   +'<br>Already exists.'
+		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
+		, button      : rename ? playlistRename : playlistNew
+		, oklabel     : '<i class="fa fa-flash"></i>Replace'
+		, ok          : function() {
+			rename ? playlistSave( name, oldname ) : playlistSave( name );
+		}
+	} );
 }
 function tagEditor() {
 	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];

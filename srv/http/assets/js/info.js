@@ -217,23 +217,20 @@ function infoReset() {
 		, transform : ''
 	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
-	$( '#infoIcon, #infoTitle' ).empty();
 	$( '#infoX' ).removeClass( 'hide' );
 	$( '#infoArrow' ).remove();
 	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
 	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
 	$( '#infoContent' ).find( 'input' ).prop( 'disabled', 0 );
 	$( '#infoContent' )
-		.empty()
 		.css( { width: '', height: '' } )
 		.removeClass( 'hide' );   // extra appended message toggle
 	$( '.infomessage' ).remove(); // extra appended message toggle
 	$( '.infobtn' )
 		.removeClass( 'active' )
 		.css( 'background-color', '' );
-	$( '#infoButtons' )
-		.addClass( 'hide' )
-		.empty();
+	$( '#infoButtons' ).addClass( 'hide' );
+	$( '#infoIcon, #infoTitle, #infoContent, #infoButtons' ).empty();
 }
 
 O = {}
@@ -303,8 +300,7 @@ function info( json ) {
 						.removeClass( 'hide' );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-		$( '#infoButtons' )
-			.on( 'click', '.infobtn.extrabtn', function() {
+		$( '#infoButtons' ).one( 'click', '.infobtn.extrabtn', function() {
 			var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 			if ( fn ) fn();
 			if ( !O.buttonnoreset ) infoReset();
@@ -492,8 +488,8 @@ function info( json ) {
 		
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
-			.attr( 'tabindex', -1 ) // for keyup event
-			.focus();
+			.attr( 'tabindex', -1 ); // for keyup event
+		$inputs_txt.length ? $inputs_txt[ 0 ].focus() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button

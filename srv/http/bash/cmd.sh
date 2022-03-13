@@ -1072,6 +1072,8 @@ savedpledit )
 savedplrename )
 	oldname=${args[1]}
 	name=${args[2]}
+	[[ -e "$dirplaylists/$name.m3u" ]] && echo -1 && exit
+	
 	mv "$dirplaylists/$oldname.m3u" "$dirplaylists/$name.m3u"
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
