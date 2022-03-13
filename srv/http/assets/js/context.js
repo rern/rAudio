@@ -117,13 +117,13 @@ function playlistRename() {
 		}
 	} );
 }
-function playlistSave( name, oldname ) {
+function playlistSave( name, oldname, replace ) {
 	if ( oldname ) {
-		bash( [ 'savedplrename', oldname, name ], function( data ) {
+		bash( [ 'savedplrename', oldname, name, replace ], function( data ) {
 			if ( data == -1 ) playlistSaveExist( 'rename', name, oldname );
 		} );
 	} else {
-		bash( [ 'savedplsave', name ], function( data ) {
+		bash( [ 'savedplsave', name, replace ], function( data ) {
 			if ( data == -1 ) {
 				playlistSaveExist( 'save', name );
 			} else {
@@ -144,7 +144,7 @@ function playlistSaveExist( type, name, oldname ) {
 		, button      : rename ? playlistRename : playlistNew
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : function() {
-			rename ? playlistSave( name, oldname ) : playlistSave( name );
+			rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' );
 		}
 	} );
 }

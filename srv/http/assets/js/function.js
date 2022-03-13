@@ -1136,15 +1136,8 @@ function renderPlayback() {
 	}
 }
 function renderPlaylist( data ) {
-	G.savedplaylist = 0;
-	if ( !G.savedlist && data.html === G.htmlplaylist ) {
-		G.savedlist = 0;
-		setPlaylistScroll();
-		return
-	}
-
-	G.htmlplaylist = data.html;
 	G.savedlist = 0;
+	G.savedplaylist = 0;
 	G.status.playlistlength = data.playlistlength;
 	G.status.elapsed = data.elapsed;
 	G.status.song = data.song;
@@ -1171,13 +1164,18 @@ function renderPlaylist( data ) {
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
 		.toggleClass( 'disabled', G.status.counts.song === 0 );
-	var timestamp = Math.floor( Date.now() / 1000 );
-	var html = data.html.replaceAll( 'thumb.jpg', 'thumb.'+ timestamp +'.jpg' );
-	$( '#pl-list' ).html( html +'<p></p>' ).promise().done( function() {
+	if ( data.html === G.htmlplaylist ) {
 		setPlaylistScroll();
-		imageLoad( 'pl-list' );
-		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
-	} );
+	} else {
+		G.htmlplaylist = data.html;
+		var timestamp = Math.floor( Date.now() / 1000 );
+		var html = data.html.replaceAll( 'thumb.jpg', 'thumb.'+ timestamp +'.jpg' );
+		$( '#pl-list' ).html( html +'<p></p>' ).promise().done( function() {
+			setPlaylistScroll();
+			imageLoad( 'pl-list' );
+			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+		} );
+	}
 }
 function renderPlaylistList( data ) {
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );

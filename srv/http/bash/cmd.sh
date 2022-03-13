@@ -1072,16 +1072,29 @@ savedpledit )
 savedplrename )
 	oldname=${args[1]}
 	name=${args[2]}
-	[[ -e "$dirplaylists/$name.m3u" ]] && echo -1 && exit
+	replace=${args[3]}
+	plfile="$dirplaylists/$name.m3u"
+	if [[ $replace ]]; then
+		rm -f "$plfile"
+	elif [[ -e "$plfile" ]]; then
+		echo -1
+		exit
+	fi
 	
-	mv "$dirplaylists/$oldname.m3u" "$dirplaylists/$name.m3u"
+	mv "$dirplaylists/$oldname.m3u" "$plfile"
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
 	;;
 savedplsave )
 	name=${args[1]}
+	replace=${args[2]}
 	plfile="$dirplaylists/$name.m3u"
-	[[ -e "$plfile" ]] && echo -1 && exit
+	if [[ $replace ]]; then
+		rm -f "$plfile"
+	elif [[ -e "$plfile" ]]; then
+		echo -1
+		exit
+	fi
 	
 	mpc -q save "$name"
 	chmod 777 "$plfile"
