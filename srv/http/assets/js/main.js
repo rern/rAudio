@@ -1812,7 +1812,7 @@ $( '#button-pl-save' ).click( function() {
 	var notsavedL = $( '#pl-list .notsaved' ).length;
 	if ( audiocdL || upnpL ) {
 		info( {
-			  icon    : 'playlist'
+			  icon    : 'file-playlist'
 			, title   : 'Save Playlist'
 			, message : '<i class="fa fa-warning wh"></i> Saved playlist cannot contain:<br>'
 						+ audiocdL ? audiocdL +'<i class="fa fa-audiocd wh"></i>' : ''

@@ -850,7 +850,7 @@ ${ track }
 <input type="radio" name="inforadio" value="2">After</label>
 `;
 	info( {
-		  icon        : 'playlist'
+		  icon        : 'file-playlist'
 		, title       : 'Insert'
 		, content     : content
 		, values      : [ 1 ]
@@ -869,7 +869,7 @@ ${ track }
 }
 function playlistInsertTarget() {
 	info( {
-		  icon       : 'playlist'
+		  icon       : 'file-playlist'
 		, title      : 'Add to a playlist'
 		, message    : '<wh>'+ G.pladd.title +'</wh>'
 					  +'<br>'+ G.pladd.album
