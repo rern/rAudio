@@ -205,32 +205,9 @@ function infoReset() {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
 	}
-	$( '#infoContent, #infoArrow i, #infoButtons .infobtn, #infoFileLabel' ).off( 'click' );
-	$( '#infoContent input, #infoFileBox' ).off( 'change keyup paste cut' );
-	$( '#infoRange input' ).off( 'click input mouseup touchend' );
-	
 	$( '#infoOverlay' ).addClass( 'hide' );
-	$( '#infoBox' ).css( {
-		  margin    : ''
-		, width     : ''
-		, top       : ''
-		, transform : ''
-	} );
 	$( '#infoIcon' ).removeAttr( 'class' );
-	$( '#infoX' ).removeClass( 'hide' );
-	$( '#infoArrow' ).remove();
-	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
-	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input' ).prop( 'disabled', 0 );
-	$( '#infoContent' )
-		.css( { width: '', height: '' } )
-		.removeClass( 'hide' );   // extra appended message toggle
-	$( '.infomessage' ).remove(); // extra appended message toggle
-	$( '.infobtn' )
-		.removeClass( 'active' )
-		.css( 'background-color', '' );
-	$( '#infoButtons' ).addClass( 'hide' );
-	$( '#infoIcon, #infoTitle, #infoContent, #infoButtons' ).empty();
+	$( '#infoTitle, #infoContent, #infoButtons' ).empty();
 }
 
 O = {}
@@ -249,7 +226,6 @@ function info( json ) {
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
-		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( 'html, body' ).scrollTop( 0 );
@@ -489,7 +465,8 @@ function info( json ) {
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.attr( 'tabindex', -1 ); // for keyup event
-		$inputs_txt.length ? $( '#infoContent' ).find( 'input, textarea' ).eq( 0 ).focus() : $( '#infoOverlay' ).focus();
+		var $input0 = $( '#infoContent' ).find( 'input, select').eq( 0 );
+		$input0.is( 'input[type=text]' ) ? $input0.focus() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button
