@@ -17,8 +17,9 @@ case 'current':
 	echo json_encode( $array );
 	break;
 case 'get':
-	$name = str_replace( '"', '\"', $_POST[ 'name' ] );
-	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$name.'"', $values );
+	$name = $_POST[ 'name' ];
+	$nameesc = str_replace( '"', '\"', $name );
+	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$nameesc.'"', $values );
 	foreach( $values as $value ) {
 		$v = explode( '^^', $value );
 		$each = ( object )[];
