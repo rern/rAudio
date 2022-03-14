@@ -35,15 +35,7 @@ $.fn.press = function( arg1, arg2 ) {
 }
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
-<div id="infoOverlay" class="hide">
-	<div id="infoBox">
-		<div id="infoTopBg">
-			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
-		</div>
-		<div id="infoContent"></div>
-		<div id="infoButtons"></div>
-	</div>
-</div>
+<div id="infoOverlay" class="hide"></div>
 <div id="banner" class="hide">
 	<div id="bannerIcon"></div>
 	<div id="bannerTitle"></div>
@@ -211,16 +203,22 @@ function infoReset() {
 		$( 'html, body' ).scrollTop( O.infoscroll );
 		O.infoscroll = 0;
 	}
-	$( '#infoOverlay' ).addClass( 'hide' );
-	$( '#infoIcon' ).removeAttr( 'class' );
-	$( '#infoTitle, #infoContent, #infoButtons' ).empty();
+	$( '#infoOverlay' ).addClass( 'hide' ).empty();
 }
 
 O = {}
 
 function info( json ) {
 	O = json;
-	infoReset();
+	$( '#infoOverlay' ).html(`
+<div id="infoBox">
+	<div id="infoTopBg">
+		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
+	</div>
+	<div id="infoContent"></div>
+	<div id="infoButtons"></div>
+</div>
+`);
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos
@@ -278,8 +276,8 @@ function info( json ) {
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
 	}
 	if ( htmlbutton ) $( '#infoButtons' )
-						.html( htmlbutton )
-						.removeClass( 'hide' );
+							.html( htmlbutton )
+							.removeClass( 'hide' );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		$( '#infoButtons' ).one( 'click', '.infobtn.extrabtn', function() {
