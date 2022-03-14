@@ -5,13 +5,18 @@ if ( $login && !$_SESSION[ 'login' ] ) { ?>
 	#divlogin path { fill: var( --cg75 ); }
 </style>
 <div id="divlogin">
-	<img src="/assets/img/icon.svg" style="width: 60px"><br>
-	<input type="password" id="pwd"><i class="fa fa-eye"></i>
+	<svg class="logo" viewBox="0 0 180 180">
+		<rect width="180" height="180" rx="9"/>
+		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
+	</svg>
+	<br><a style="margin-left: 20px;font-weight: 300; letter-spacing: 20px">rAudio</a>
+	<br><input type="password" id="pwd"><i class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
 <script src="assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="assets/js/info.<?=$time?>.js"></script>
 <script>
+$( '#loader' ).remove();
 $( '#pwd' ).focus();
 $( '#divlogin i' ).click( function() {
 	$this = $( this );

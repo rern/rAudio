@@ -83,10 +83,10 @@ input::-moz-focus-inner {
 	width: 50px;
 	animation: blinkopaque 1.5s linear infinite;
 }
-#loader rect {
+.logo rect {
 	fill: var( --cm );
 }
-#loader path {
+.logo path {
 	fill: var( --cg75 );
 }
 #loader pre {
