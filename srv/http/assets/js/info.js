@@ -36,11 +36,7 @@ $.fn.press = function( arg1, arg2 ) {
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide"></div>
-<div id="banner" class="hide">
-	<div id="bannerIcon"></div>
-	<div id="bannerTitle"></div>
-	<div id="bannerMessage"></div>
-</div>
+<div id="banner" class="hide"></div>
 <div id="loader">
 	<svg viewBox="0 0 180 180">
 	<rect class="box" width="180" height="180" rx="9"/>
@@ -80,10 +76,11 @@ function banner( title, message, icon, delay ) {
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
 					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
-	$( '#bannerIcon' ).html( iconhtml );
-	$( '#bannerTitle' ).html( title );
-	$( '#bannerMessage' ).html( message );
-	$( '#banner' ).removeClass( 'hide' );
+	$( '#banner' ).html( `
+<div id="bannerIcon">${ iconhtml }</div>
+<div id="bannerTitle">${ title }</div>
+<div id="bannerMessage">${ message }</div>
+` ).removeClass( 'hide' );
 	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
@@ -99,8 +96,7 @@ function bannerHide() {
 	clearTimeout( G.timeoutbanner );
 	$( '#banner' )
 		.addClass( 'hide' )
-		.removeAttr( 'style' );
-	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
+		.empty();
 }
 // ------------------------------------------------------------------------------------
 function infoUsage() {
@@ -199,14 +195,12 @@ Note:
 ` );
 }
 function infoReset() {
-	if ( O.infoscroll ) {
-		$( 'html, body' ).scrollTop( O.infoscroll );
-		O.infoscroll = 0;
-	}
-	$( '#infoOverlay' ).addClass( 'hide' ).empty();
+	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
+	$( '#infoOverlay' )
+		.addClass( 'hide' )
+		.empty();
+	O = {}
 }
-
-O = {}
 
 function info( json ) {
 	O = json;
