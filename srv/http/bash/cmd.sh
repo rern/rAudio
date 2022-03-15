@@ -1040,9 +1040,10 @@ rotatesplash )
 savedpldelete )
 	name=${args[1]}
 	rm "$dirplaylists/$name.m3u"
-	playlists=$( ls -1 $dirplaylists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
-	pushstream playlists '{"delete":"'${name//\"/\\\"}'"}'
+	count=$( ls -1 $dirplaylists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	list=$( php /srv/http/mpdplaylist.php list )
+	pushstream playlists "$list"
 	;;
 savedpledit )
 	name=${args[1]}
@@ -1098,8 +1099,8 @@ savedplsave )
 	
 	mpc -q save "$name"
 	chmod 777 "$plfile"
-	playlists=$( ls -1 $dirplaylists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
+	count=$( ls -1 $dirplaylists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
 	;;
