@@ -78,7 +78,7 @@ if [[ $i != -1 ]]; then
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
-########
+#---------------
 		output+='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
@@ -88,20 +88,20 @@ if [[ $i != -1 ]]; then
 	
 	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
-########
+#---------------
 		output+='
 	name           "'$btalias'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "hardware"'
 		if [[ -e $dirsystem/btformat ]]; then
-########
+#---------------
 			output+='
 	format         "44100:16:2"'
 		fi
 		
 	elif [[ ! -e $dirshm/snapclientactive ]]; then
-########
+#---------------
 		output+='
 	name           "'$name'"
 	device         "'$hw'"
@@ -110,26 +110,27 @@ if [[ $i != -1 ]]; then
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-########
+#---------------
 			output+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$card'"'
 		fi
 		if [[ $dop == 1 ]]; then
-########
+#---------------
 			output+='
 	dop            "yes"'
 		fi
 		mpdcustom=$dirsystem/custom
 		customfile="$mpdcustom-output-$aplayname"
 		if [[ -e $mpdcustom && -e "$customfile" ]]; then
-########
+#---------------
 			output+="
 $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
 		fi
 	fi
 fi
 if [[ $output ]]; then
+########
 	output="
 audio_output {\
 $output
