@@ -71,7 +71,9 @@ if [[ $dirwav ]]; then
 	done
 fi
 
-cp -f $dirmpd/album{,prev} &> /dev/null
+filealbum=$dirmpd/album
+filealbumprev=$dirmpd/albumprev
+[[ -e $dirmpd/album ]] && cp -f $filealbum{,prev} || touch $dirmpd/latest
 
 for mode in album albumartist artist composer conductor genre date; do
 	dircount=$dirmpd/$mode
@@ -83,7 +85,7 @@ for mode in album albumartist artist composer conductor genre date; do
 				album=$( sed "/^$line^/ d" <<< "$album" )
 			done
 		fi
-		album=$( echo "$album" | awk NF | tee $dirmpd/album | wc -l )
+		album=$( echo "$album" | awk NF | tee $filealbum | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $dircount | wc -l )
 	fi
@@ -91,25 +93,19 @@ for mode in album albumartist artist composer conductor genre date; do
 done
 
 ##### latest album #############################################
-if [[ -e $dirmpd/albumprev ]]; then # latest
-	difflatest=$( diff $dirmpd/album $dirmpd/albumprev | grep '^<' | cut -c 3- )
-	if [[ $difflatest ]]; then
-		echo "$difflatest" > $dirmpd/latestnew
-		if [[ -e $dirmpd/latest ]]; then
-			if diff $dirmpd/latest $dirmpd/latestnew &> /dev/null; then # no diff - return 0
-				rm -f $dirmpd/latestnew
-			else
-				mv -f $dirmpd/latest{new,}
-			fi
+if [[ -e $filealbumprev ]]; then # latest
+	latestnew=$( diff $filealbum $filealbumprev | grep '^<' | cut -c 3- )
+	rm -f $filealbumprev
+	if [[ $latestnew ]]; then
+		echo "$latestnew" > $dirmpd/latestnew
+		if diff $dirmpd/latest $dirmpd/latestnew &> /dev/null; then # no diff - return 0
+			rm -f $dirmpd/latestnew
 		else
 			mv -f $dirmpd/latest{new,}
 		fi
 	fi
-	latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
-	rm -f $dirmpd/albumprev
-else
-	latest=0
 fi
+latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
 ##### count #############################################
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
