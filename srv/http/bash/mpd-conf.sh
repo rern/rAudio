@@ -100,7 +100,7 @@ audio_output {
 		output+='
 	format         "44100:16:2"'
 		fi
-	else
+	elif [[ ! -e $dirshm/snapclientactive ]]; then
 ########
 		output+='
 audio_output {
@@ -130,7 +130,7 @@ $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
 		fi
 	fi
 ########
-	output+='
+	[[ $output ]] && output+='
 }'
 fi
 
