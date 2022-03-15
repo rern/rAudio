@@ -97,8 +97,6 @@ elif [[ -e $dirmpd/updating ]]; then
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
-elif [[ -e $dirmpd/latest_updating ]]; then
-	$dirbash/cmd-list.sh latest &> dev/null &
 fi
 
 if [[ -e $dirsystem/lcdchar ]]; then

@@ -81,12 +81,6 @@ case 'find':
 		$array = htmlFind( $lists, $f );
 	}
 	break;
-case 'latest':
-	$type = $_POST[ 'type' ];
-	$filemode = '/srv/http/data/mpd/latest'.$type;
-	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
-	$array = $type === 'album' ? htmlList( $lists ) : htmlTracks( $lists, $f, 'search' );
-	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
 	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display' ) ) $filemode.= 'byartist';
@@ -381,7 +375,7 @@ function htmlList( $lists ) { // non-file 'list' command
 	
 	global $mode;
 	global $gmode;
-	if ( $gmode === 'latest' ) $mode = 'album';
+	if ( $mode === 'latest' ) $mode = 'album';
 	$html = '';
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
@@ -449,35 +443,20 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$cue = false;
 	}
 	$time = time();
-	$latest = $gmode === 'latest';
 	$i = 0;
 	$html = '';
 	foreach( $array as $each ) {
 		if ( !$each->time ) continue;
 		
-		if ( $latest ) {
-			$path = $each->file;
-			$cue = str_contains( $path, '.cue/track' );
-		} else {
-			$path = $each->file;
-		}
+		$path = $each->file;
 		$album = $each->album;
 		$artist = $each->artist;
-		if ( !$album && !$artist ) { // for latest
-			$cuefile = preg_replace( "/\.[^.]+$/", '.cue', $path );
-			if ( file_exists( '/mnt/MPD/'.$cuefile ) ) continue;
-		}
-		
 		$litime += HMS2second( $each->time );
 		$title = $each->title;
 		if ( $searchmode ) {
 			$name = $artist.' - '.$album;
-			if ( $latest ) {
-				$trackname = $name;
-			} else {
-				$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
-				$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
-			}
+			$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
+			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
 		} else {
 			$trackname = $cue ? $cuename : basename( $path );
 		}
@@ -491,11 +470,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
-	if ( $searchmode ) {
-		$searchdata = [ 'html' => $html ];
-		if ( !$latest ) $searchdata[ 'count' ] = $i;
-		return $searchdata;
-	}
+	if ( $searchmode ) return [ 'html' => $html ];
 	
 	if ( $hidecover ) {
 		$coverhtml = '';
@@ -519,13 +494,14 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
+		if ( $cue ) $mpdpath = dirname( $mpdpath );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
-		$args = escape( implode( "\n", [ $artist, $album, $file0 ] ) );
+		$args = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
 		$coverhtml = '<li data-mode="'.$gmode.'" class="licover">'
-					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
+					.'<a class="lipath">'.$mpdpath.'</a>'
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo '.$mode.'">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'

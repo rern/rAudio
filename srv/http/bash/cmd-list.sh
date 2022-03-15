@@ -9,37 +9,6 @@
 
 . /srv/http/bash/common.sh
 
-latest() {
-	touch $dirsystem/latest_updating
-	tracks=$( mpc listall -f %mtime%^%album%^^%artist%^^%file%^^%title%^^%time%^^%track% \
-		| sort -r \
-		| cut -d^ -f2- \
-		| grep -v '^\^\^\^\^' )
-	echo "$tracks" \
-		| head -100 \
-		> $dirmpd/latesttrack
-	php $dirbash/cmd-listsort.php $dirmpd/latesttrack
-	readarray -t albums <<< $( echo "$tracks" \
-		| cut -d^ -f1 \
-		| awk '!seen[$0]++' \
-		| head -20 )
-	for album in "${albums[@]}"; do
-		artist_file=$( echo "$tracks" | grep -m1 "^$album" | cut -d^ -f3,5 )
-		artist=$( echo $artist_file | cut -d^ -f1 )
-		file=$( echo $artist_file | cut -d^ -f2 )
-		latestalbum+="$album^^$artist^^$( dirname "$file" )"$'\n'
-	done
-	echo "$latestalbum" > $dirmpd/latestalbum
-	php $dirbash/cmd-listsort.php $dirmpd/latestalbum
-	rm $dirsystem/latest_updating
-	pushstream display '{"latest_updating":false}'
-}
-
-if [[ $1 == latest ]]; then
-	latest
-	exit
-fi
-
 touch $dirmpd/listing
 
 listAlbums() {
@@ -102,6 +71,8 @@ if [[ $dirwav ]]; then
 	done
 fi
 
+cp -f $dirmpd/album{,prev} &> /dev/null
+
 for mode in album albumartist artist composer conductor genre date; do
 	dircount=$dirmpd/$mode
 	if [[ $mode == album ]]; then
@@ -118,6 +89,27 @@ for mode in album albumartist artist composer conductor genre date; do
 	fi
 	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $dircount
 done
+
+##### latest album #############################################
+if [[ -e $dirmpd/albumprev ]]; then # latest
+	difflatest=$( diff $dirmpd/album $dirmpd/albumprev | grep '^<' | cut -c 3- )
+	if [[ $difflatest ]]; then
+		echo "$difflatest" > $dirmpd/latestnew
+		if [[ -e $dirmpd/latest ]]; then
+			if diff $dirmpd/latest $dirmpd/latestnew &> /dev/null; then # no diff - return 0
+				rm -f $dirmpd/latestnew
+			else
+				mv -f $dirmpd/latest{new,}
+			fi
+		else
+			mv -f $dirmpd/latest{new,}
+		fi
+	fi
+	latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
+	rm -f $dirmpd/albumprev
+else
+	latest=0
+fi
 ##### count #############################################
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
@@ -136,6 +128,7 @@ counts='{
 , "date"        : '$date'
 , "genre"       : '$genre'
 , "playlists"   : '$playlists'
+, "latest"      : '$latest'
 , "nas"         : '$NAS'
 , "sd"          : '$SD'
 , "usb"         : '$USB'
@@ -146,8 +139,6 @@ echo $counts | jq > $dirmpd/counts
 pushstream mpdupdate "$counts"
 chown -R mpd:audio $dirmpd
 rm -f $dirmpd/{updating,listing}
-
-[[ -e $dirsystem/latest ]] && latest
 
 if [[ $toolarge ]]; then
 	sleep 3

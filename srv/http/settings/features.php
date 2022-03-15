@@ -163,14 +163,6 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label'   => 'Latest in Library'
-		, 'id'      => 'latest'
-		, 'icon'    => 'latest'
-		, 'help'    => <<< HTML
-Library mode for latest 20 albums or 100 tracks added to Library.
-HTML
-	]
-	, [
 		  'label' => 'Lyrics in File'
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'

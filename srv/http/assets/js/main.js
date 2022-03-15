@@ -1303,41 +1303,6 @@ $( '.mode' ).click( function() {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( G.mode === 'latest' ) {
-		if ( $this.find( 'i' ).hasClass( 'blink' ) ) {
-			info( {
-				  icon    : 'latest'
-				, title   : 'Latest in Library'
-				, message : 'Query in progress ...'
-			} );
-			return
-		}
-		info( {
-			  icon    : 'latest'
-			, title   : 'Latest in Library'
-			, radio   : { Albums: 'album', Tracks: 'track' }
-			, values  : [ 'album' ]
-			, ok      : function() {
-				var type = infoVal();
-				var query = {
-					  query  : 'latest'
-					, type   : type
-					, gmode  : 'latest'
-					, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-				}
-				var path = type === 'album' ? 'Latest Albums' : 'Latest Tracks'
-				query.modetitle = path;
-				G.query.push( query );
-				list( query, function( data ) {
-					data.modetitle = path;
-					renderLibraryList( data );
-					bannerHide();
-				}, 'json' );
-			}
-		} );
-		return
-	}
-	
 	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
 		var modeplaylists = G.mode === 'playlists';
 		info( {

@@ -146,15 +146,9 @@ if ( isset( $argv[ 1 ] ) ) {
 		return strnatcasecmp( $a, $b );
 	} );
 	$array = [];
-	if ( basename( $file ) === 'latesttrack' ) {
-		foreach( $sort as $line ) {
-			$array[] = explode( '^x^', $line )[ 1 ];
-		}
-	} else {
-		foreach( $sort as $line ) {
-			$index = mb_substr( $line, 0, 1, 'UTF-8' );
-			$array[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
-		}
+	foreach( $sort as $line ) {
+		$index = mb_substr( $line, 0, 1, 'UTF-8' );
+		$array[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 	}
 	file_put_contents( $file, implode( "\n", $array ) );
 }

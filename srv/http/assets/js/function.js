@@ -602,7 +602,7 @@ function imageLoad( list ) {
 	if ( !$lazyload.length ) return
 	
 	if ( list === 'lib-list' ) {
-		if ( G.mode === 'album' ) {
+		if ( G.mode === 'album' || G.mode === 'latest' ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
 				var src = $this.attr( 'src' );
@@ -654,6 +654,8 @@ var chklibrary = {
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
 	, playlists      : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
+	, latest         : '<i class="fa fa-latest wh"></i><gr>Latest</gr>'
+	, '-'            : ''
 	, count          : 'Count'
 	, label          : 'Label'
 }
@@ -663,6 +665,7 @@ var chklibrary2 = {
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
 	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
+	, '-'            : ''
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
@@ -994,7 +997,6 @@ function renderLibrary() {
 	$.each( G.status.counts, function( key, val ) {
 		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 	} );
-	$( '#mode-latest i' ).toggleClass( 'blink', G.display.latest_updating );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
