@@ -494,7 +494,6 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		if ( $cue ) $mpdpath = dirname( $mpdpath );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$args = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';

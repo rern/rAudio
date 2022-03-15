@@ -158,19 +158,13 @@ function tagEditor() {
 		}
 	} else {
 		var file = G.list.path;
-		var cue = file.slice( -4 ) === '.cue';
 		var fL = format.length;
-		if ( G.list.licover ) {
-			format = format.slice( 0, -2 );
-		} else {
-			if ( cue ) format = [ 'artist', 'title', 'track' ];
-		}
+		if ( G.list.licover ) format = format.slice( 0, -2 );
 		var query = {
 			  query  : 'track'
 			, file   : file
 			, format : format
 		}
-		if ( cue ) query.track = G.list.track || 'cover';
 	}
 	list( query, function( values ) {
 		if ( G.playlist ) {
@@ -182,6 +176,8 @@ function tagEditor() {
 			name.forEach( function( k ) {
 				values.push( v[ k ] || '' );
 			} );
+		} else {
+			cue = file.includes( '.cue/track' );
 		}
 		var mode, label = [];
 		format.forEach( function( el, i ) {
@@ -222,11 +218,7 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				if ( G.playlist ) {
-					$( '#infoContent input' ).prop( 'disabled', 1 );
-				} else if ( cue && !G.list.licover ) {
-					$( '#infoContent input' ).eq( 2 ).prop( 'disabled', 1 );
-				}
+				if ( !G.list.licover ) $( '#infoContent input' ).slice( 0, 2 ).prop( 'disabled', 1 );
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td' ).eq( 0 ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
