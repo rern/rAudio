@@ -1304,15 +1304,19 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
-		var modeplaylists = G.mode === 'playlists';
+		if ( G.mode === 'playlists' ) {
+			var message = 'No saved playlists found.';
+		} else if ( G.mode === 'latest' ) {
+			var message = 'No new albums added since last update.';
+		} else {
+			var message = 'This mode has no data.'
+						 +'<br>To populate Library database:'
+						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
+		}
 		info( {
-			  icon      : 'library'
-			, title     : 'Library Database'
-			, message   : modeplaylists
-							? 'No saved playlists.'
-							: 'This mode has no data.'
-							 +'<br>To populate Library database:'
-							 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
+			  icon    : 'library'
+			, title   : 'Library Database'
+			, message : message
 		} );
 		return
 	}
