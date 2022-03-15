@@ -61,7 +61,7 @@ fi
 
 . $dirbash/mpd-devices.sh
 
-output=
+output= # reset var from mpd-devices.sh
 if [[ $i != -1 ]]; then
 	if [[ $1 == add ]]; then
 		i=-1
@@ -80,30 +80,29 @@ if [[ $i != -1 ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
 ########
 		output+='
-audio_output {
 	name           "ALSAEqual"
 	device         "plug:plugequal"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
+	
 	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
 ########
 		output+='
-audio_output {
 	name           "'$btalias'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "hardware"'
 		if [[ -e $dirsystem/btformat ]]; then
 ########
-		output+='
+			output+='
 	format         "44100:16:2"'
 		fi
+		
 	elif [[ ! -e $dirshm/snapclientactive ]]; then
 ########
 		output+='
-audio_output {
 	name           "'$name'"
 	device         "'$hw'"
 	type           "alsa"
@@ -129,9 +128,12 @@ audio_output {
 $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
 		fi
 	fi
-########
-	[[ $output ]] && output+='
-}'
+fi
+if [[ $output ]]; then
+	output="
+audio_output {\
+$output
+}"
 fi
 
 if systemctl -q is-active snapserver; then
