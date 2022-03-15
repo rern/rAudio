@@ -69,7 +69,7 @@ function playlistDelete() {
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
 		, ok      : function() {
-			bash( [ 'savedpldelete',G.list.name ] );
+			bash( [ 'savedpldelete', G.list.name ] );
 		}
 	} );
 }
