@@ -23,6 +23,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 		pushstream display '{"snapclientactive":true}'
 		data=$( $dirbash/features-data.sh )
 		pushstream refresh "$data"
+		data=$( $dirbash/player-data.sh )
+		pushstream refresh "$data"
 		exit
 	fi
 	
