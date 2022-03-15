@@ -218,7 +218,11 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				if ( !G.list.licover ) $( '#infoContent input' ).slice( 0, 2 ).prop( 'disabled', 1 );
+				if ( G.playlist ) {
+					$( '#infoContent input' ).prop( 'disabled', 1 );
+				} else if ( !G.list.licover ) {
+					$( '#infoContent input' ).slice( 0, 2 ).prop( 'disabled', 1 );
+				}
 				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
 				labelW = $( '#infoContent td' ).eq( 0 ).width() - 30; // less icon width
 				$( '.taglabel' ).addClass( 'hide' );
@@ -239,6 +243,32 @@ function tagEditor() {
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
+				$( '.infomessage' ).click( function() {
+					var path = $( this ).find( '.tagpath' ).text();
+					path = path.substring( 0, path.lastIndexOf( '/' ) );
+					if ( !path || ( G.library && mode === 'album' ) ) {
+						banner( 'Browse Mode', 'Already here', 'library' );
+						$( '#infoX' ).click();
+						return
+					}
+					
+					if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
+					var query = {
+						  query  : 'ls'
+						, string : path
+						, format : [ 'file' ]
+					}
+					G.mode = path.split( '/' )[ 0 ].toLowerCase();
+					list( query, function( data ) {
+						data.path = path;
+						data.modetitle = path;
+						renderLibraryList( data );
+						$( '#library' ).click();
+						$( '#infoX' ).click();
+					}, 'json' );
+					return
+				} );
+				
 				var $td = $( '#infoContent td:first-child' );
 				$td.click( function() {
 					var mode = $( this ).find( 'i' ).data( 'mode' );
@@ -249,13 +279,6 @@ function tagEditor() {
 						} else {
 							$td.find( '.fa-album' ).click();
 						}
-						return
-					}
-					
-					var path = $text.eq( $( this ).parents( 'tr' ).index() ).val();
-					if ( !path || ( G.library && mode === 'album' ) ) {
-						banner( 'Browse Mode', 'Already here', 'library' );
-						$( '#infoX' ).click();
 						return
 					}
 					
