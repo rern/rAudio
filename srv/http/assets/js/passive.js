@@ -279,11 +279,8 @@ function psDisplay( data ) {
 	} else if ( G.library ) {
 		if ( !G.librarylist ) {
 			renderLibrary();
-		} else if ( G.albumlist && G.albumbyartist !== G.display.albumbyartist ) {
-			G.query = [];
-			$( '#mode-album' ).click();
 		} else if ( G.display.hidecover ) {
-				$( '.licover' ).remove();
+			$( '.licover' ).remove();
 		} else if ( !G.display.hidecover ) {
 			var query = G.query[ G.query.length - 1 ];
 			list( query, function( data ) {
