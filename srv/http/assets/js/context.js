@@ -282,6 +282,7 @@ function tagEditor() {
 						return
 					}
 					
+					var path = $( this ).next().find( 'input' ).val();
 					if ( mode !== 'album' ) {
 						var query = {
 							  query  : 'find'
