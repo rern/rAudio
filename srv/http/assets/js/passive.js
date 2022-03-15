@@ -266,7 +266,6 @@ function psDisplay( data ) {
 		return
 	}
 	
-	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
@@ -279,7 +278,7 @@ function psDisplay( data ) {
 	} else if ( G.library ) {
 		if ( !G.librarylist ) {
 			renderLibrary();
-		} else {
+		} else if ( $( '.lib-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
 			if ( G.display.hidecover ) {
 				$( '.licover' ).remove();
 			} else {
