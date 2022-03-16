@@ -311,7 +311,6 @@ function tagEditor() {
 						G.query.push( query );
 					} else {
 						$( '#library' ).click();
-						G.query = [ 'playlist', 'playlist', query ];
 					}
 					list( query, function( data ) {
 						data.path = path;

@@ -1264,10 +1264,9 @@ $( '#button-lib-back' ).click( function() {
 		|| ( !bL && G.query.length === 1 )
 	) {
 		$( '#button-library' ).click();
-		return
-	}
-	
-	if ( bL && G.query[ 0 ] !== 'playlist' && G.mode !== 'latest' ) {
+	} else if ( !G.query.length ) {
+		$( '#mode-'+ G.mode ).click();
+	} else if ( bL && G.query[ 0 ] !== 'playlist' && G.mode !== 'latest' ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
