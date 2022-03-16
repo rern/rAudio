@@ -340,6 +340,16 @@ function tagEditor() {
 					banner( 'Tag Editor', 'Update Library ...', 'tag blink' );
 				}, 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
+				if ( G.list.licover ) {
+					var tags = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
+					for ( i = 0; i < 7; i++ ) {
+						var v = newvalues[ i ];
+						if ( v !== '*' ) $( '.li'+ tags[ i ] ).text( v );
+					}
+				} else {
+					G.list.li.find( '.li1' ).text( newvalues[ 7 ] );
+					G.list.li.find( '.track' ).text( newvalues[ 8 ] );
+				}
 			}
 		} );
 	}, 'json' );
