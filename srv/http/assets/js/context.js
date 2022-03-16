@@ -259,6 +259,7 @@ function tagEditor() {
 						, format : [ 'file' ]
 					}
 					G.mode = path.split( '/' )[ 0 ].toLowerCase();
+					G.query = [ 'playlist' ];
 					list( query, function( data ) {
 						data.path = path;
 						data.modetitle = path;
@@ -310,6 +311,7 @@ function tagEditor() {
 					if ( G.library ) {
 						G.query.push( query );
 					} else {
+						G.query = [];
 						$( '#library' ).click();
 					}
 					list( query, function( data ) {

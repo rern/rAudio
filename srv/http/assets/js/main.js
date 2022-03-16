@@ -1266,15 +1266,13 @@ $( '#button-lib-back' ).click( function() {
 		$( '#button-library' ).click();
 	} else if ( !G.query.length ) {
 		$( '#mode-'+ G.mode ).click();
-	} else if ( bL && G.query[ 0 ] !== 'playlist' && G.mode !== 'latest' ) {
+	} else if ( bL && G.mode !== 'latest' ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
 		var query = G.query[ G.query.length - 1 ];
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
-		} else if ( query === 'playlist' ) {
-			$( '#playlist' ).click();
 		} else {
 			list( query, function( data ) {
 				if ( data != -1 ) {
