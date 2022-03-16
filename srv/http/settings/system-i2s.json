@@ -3,6 +3,7 @@
     "Adafruit MAX98357": "hifiberry-dac",
     "Adafruit UDA1334A": "hifiberry-dac,i2s-mmap",
     "Allo Boss DAC": "allo-boss-dac-pcm512x-audio",
+    "Allo Boss2 DAC": "allo-boss2-dac-audio",
     "Allo DigiOne": "allo-digione",
     "Allo DigiOne Signature": "allo-digione",
     "Allo Katana DAC": "allo-katana-dac-audio",
