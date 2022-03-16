@@ -179,6 +179,15 @@ function tagEditor() {
 		} else {
 			cue = file.includes( '.cue/track' );
 		}
+		var parts = file.split( '/' );
+		var filename = parts.pop();
+		var filepath = parts.join( '/' );
+		if ( file.includes( '.cue/track' ) ) {
+			file = filepath;
+			parts = file.split( '/' );
+			filename = parts.pop();
+			filepath = parts.join( '/' );
+		}
 		var mode, label = [];
 		format.forEach( function( el, i ) {
 			if ( G.playlist && !values[ i ] ) {
@@ -187,10 +196,8 @@ function tagEditor() {
 			}
 			
 			mode = el;
-			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="tagicon fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
-		var filepath = '<span class="tagpath"><ib>'+ file.replace( /\//g, '</ib>/<ib>' ) +'</ib></span>';
-		var fileicon = cue ? 'file-playlist' : ( G.list.licover ? 'folder' : 'file-music' );
 		if ( G.library ) {
 			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
 			var src = $img.length ? $img.attr( 'src' ) : G.coverdefault;
@@ -199,12 +206,18 @@ function tagEditor() {
 			var src = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : G.coverdefault;
 			values = values.filter( val => val ); // reindex after deleting blank elements
 		}
-		var message = '<img src="'+ src +'"><br>'
-					 +'<i class="fa fa-'+ fileicon +' wh"></i> '+ filepath;
+		var fileicon = file.slice( -4 ) !== '.cue' ? 'file-music' : 'file-playlist';
+		var message = '<img src="'+ src +'" style="float: left"><a class="tagpath hide">'+ file +'</a>'
+					 +'<div style="margin-left: 10px"><i class="fa fa-folder wh"></i>';
+		if ( G.list.licover ) {
+			message += file;
+		} else {
+			message += filepath +'<br><i class="fa fa-'+ fileicon +' wh"></i>'+ filename;
+		}
+		message += '</div>';
 		var footer = '';
-		if ( G.list.licover ) footer += '<code>*</code>&ensp;Various values<br>';
-		footer += 'Tap icons: Browse by that mode - value';
-		footer += '<br><span id="taglabel"><i class="fa fa-question-circle fa-lg wh"></i>&ensp;Tag label</span>';
+		footer += '<span id="taglabel"><i class="fa fa-question-circle fa-lg"></i>&ensp;Label</span>';
+		if ( G.list.licover ) footer += '<br><code style="width: 19px; text-align: center">*</code>&ensp;Various values';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
@@ -212,118 +225,50 @@ function tagEditor() {
 			, message      : message
 			, messagealign : 'left'
 			, footer       : footer
-			, footeralign  : 'right'
+			, footeralign  : 'left'
 			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
+				$( '#infoContent .infomessage' ).css( {
+					  display         : 'flex'
+					, 'align-items'   : 'flex-end'
+					, 'margin-bottom' : '10px'
+					, cursor          : 'pointer'
+				} );
 				if ( G.playlist ) {
 					$( '#infoContent input' ).prop( 'disabled', 1 );
 				} else if ( !G.list.licover ) {
 					$( '#infoContent input' ).slice( 0, 2 ).prop( 'disabled', 1 );
 				}
-				$( '.taglabel' ).removeClass( 'hide' ); // hide = 0 width
-				labelW = $( '#infoContent td' ).eq( 0 ).width() - 30; // less icon width
-				$( '.taglabel' ).addClass( 'hide' );
-				var $text = $( '#infoContent input' );
-				setTimeout( function() {
-					var boxW = parseInt( $text.css( 'width' ) );
-					var boxS = boxW - labelW - 5;
-					$( '#infoContent' ).on( 'click', '#taglabel', function() {
-						if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
-							$( '.taglabel' ).removeClass( 'hide' );
-							$text.css( 'width', boxS );
-						} else {
-							$( '.taglabel' ).addClass( 'hide' );
-							$text.css( 'width', boxW );
-						}
-					} );
-				}, 600 );
+				var tableW = $( '#infoContent table' ).width();
+				$( '#infoContent' ).on( 'click', '#taglabel', function() {
+					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
+						$( '.taglabel' ).removeClass( 'hide' );
+						$( '#infoContent table' ).width( tableW );
+					} else {
+						$( '.taglabel' ).addClass( 'hide' );
+					}
+				} );
 				$( '.infomessage' )
 					.css( 'width', 'calc( 100% - 40px )' )
 					.find( 'img' ).css( 'margin', 0 );
 				$( '.infomessage' ).click( function() {
-					var path = $( this ).find( '.tagpath' ).text();
-					path = path.substring( 0, path.lastIndexOf( '/' ) );
-					if ( !path || ( G.library && mode === 'album' ) ) {
-						banner( 'Browse Mode', 'Already here', 'library' );
-						$( '#infoX' ).click();
-						return
-					}
+					if ( G.library ) return
 					
-					if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
 					var query = {
 						  query  : 'ls'
-						, string : path
+						, string : filepath
 						, format : [ 'file' ]
 					}
-					G.mode = path.split( '/' )[ 0 ].toLowerCase();
-					G.query = [ 'playlist' ];
+					G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
+					if ( filepath.slice( -4 ) === '.cue' ) filepath = filepath.substring( 0, filepath.lastIndexOf( '/' ) );
 					list( query, function( data ) {
-						data.path = path;
-						data.modetitle = path;
+						data.path = filepath;
 						renderLibraryList( data );
 						$( '#library' ).click();
 						$( '#infoX' ).click();
-					}, 'json' );
-					return
-				} );
-				
-				var $td = $( '#infoContent td:first-child' );
-				$td.click( function() {
-					var mode = $( this ).find( 'i' ).data( 'mode' );
-					if ( [ 'title', 'track' ].includes( mode ) ) {
-						if ( G.library ) {
-							banner( 'Browse Mode', 'Already here', 'library' );
-							$( '#infoX' ).click();
-						} else {
-							$td.find( '.fa-album' ).click();
-						}
-						return
-					}
-					
-					var path = $( this ).next().find( 'input' ).val();
-					if ( mode !== 'album' ) {
-						var query = {
-							  query  : 'find'
-							, mode   : mode
-							, string : path
-							, format : [ 'genre', 'composer', 'conductor', 'date' ].includes( mode ) ? [ 'album', 'artist' ] : [ 'album' ]
-						}
-					} else {
-						if ( G.library ) {
-							$( '#infoX' ).click();
-							return
-						}
-						
-						var albumartist = $text.eq( 1 ).val();
-						var artist = $text.eq( 2 ).val();
-						var query = {
-							  query  : 'find'
-							, mode   : [ 'album', albumartist ? 'albumartist' : 'artist' ]
-							, string : [ path, albumartist || artist ]
-						}
-					}
-					G.mode = mode;
-					query.path = path;
-					query.modetitle = mode.toUpperCase() +'<gr> • </gr><wh>'+ path +'</wh>';
-					if ( G.library ) {
-						G.query.push( query );
-					} else {
-						G.query = [];
-						$( '#library' ).click();
-					}
-					list( query, function( data ) {
-						data.path = path;
-						data.modetitle = mode.toUpperCase();
-						if ( mode !== 'album' ) {
-							data.modetitle += '<gr> • </gr><wh>'+ path +'</wh>';
-						} else { // fix - no title from playlist
-							$( '#lib-breadcrumbs' ).html( '<i class="fa fa-album"></i> <span id="mode-title">ALBUM</span>' );
-						}
-						$( '#infoX' ).click();
-						renderLibraryList( data );
 					}, 'json' );
 				} );
 			}
