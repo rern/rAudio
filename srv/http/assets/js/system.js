@@ -49,6 +49,22 @@ $( 'body' ).on( 'click touchstart', function( e ) {
 		$( '#divi2smodule' ).addClass( 'hide' );
 	}
 } );
+$( '#power' ).click( function() {
+	info( {
+		  icon        : 'power'
+		, title       : 'Power'
+		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttoncolor : orange
+		, button      : function() {
+			bash( [ 'cmd', 'power', 'reboot' ] );
+		}
+		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, okcolor     : red
+		, ok          : function() {
+			bash( [ 'cmd', 'power', 'off' ] );
+		}
+	} );
+} );
 $( '#refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	

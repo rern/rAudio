@@ -24,6 +24,7 @@ echo '
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
+	, 'button' => [ 'power', 'power' ]
 	, 'nohelp' => true
 ] );
 ?>
