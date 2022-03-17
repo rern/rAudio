@@ -965,7 +965,6 @@ plshuffle )
 plsimilar )
 	plLprev=$( mpc playlist | wc -l )
 	linesL=${#args[@]}
-	[[ ${args[1]} == addplay ]] && pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	for (( i=1; i < linesL; i++ )); do
 		artist=${args[$i]}
 		(( i++ ))
@@ -981,7 +980,6 @@ plsimilar )
 	echo "$list" | awk 'NF' | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
-	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
 	action=${args[1]}

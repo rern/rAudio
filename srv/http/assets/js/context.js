@@ -153,6 +153,34 @@ function playlistSaveExist( type, name, oldname ) {
 		}
 	} );
 }
+function addSimilar() {
+	banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
+	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
+			+'&artist='+ encodeURI( G.list.artist )
+			+'&track='+ encodeURI( G.list.name )
+			+'&api_key='+ G.apikeylastfm
+			+'&format=json'
+			+'&autocorrect=1';
+	$.post( url, function( data ) {
+		var title = 'Playlist - Add Similar';
+		if ( 'error' in data || !data.similartracks.track.length ) {
+			banner( title, 'Track not found.', 'lastfm' );
+		} else {
+			var val = data.similartracks.track;
+			var iL = val.length;
+			var similar = '';
+			for ( i = 0; i < iL; i++ ) {
+				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+			}
+			banner( title, 'Find similar tracks from Library ...', 'library blink',  -1 );
+			bash( [ 'plsimilar', similar ], function( count ) {
+				getPlaylist();
+				setButtonControl();
+				banner( title, count +' tracks added.', 'library' );
+			} );
+		}
+	}, 'json' );
+}
 function tagEditor() {
 	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
@@ -577,33 +605,18 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			G.list.li.remove();
 			return
 		case 'similar':
-			banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
-			var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-					+'&artist='+ encodeURI( G.list.artist )
-					+'&track='+ encodeURI( G.list.name )
-					+'&api_key='+ G.apikeylastfm
-					+'&format=json'
-					+'&autocorrect=1';
-			$.post( url, function( data ) {
-				var title = 'Playlist - Add Similar';
-				var addplay = $this.hasClass( 'submenu' ) ? 1 : 0;
-				if ( 'error' in data || !data.similartracks.track.length ) {
-					banner( title, 'Track not found.', 'lastfm' );
-				} else {
-					var val = data.similartracks.track;
-					var iL = val.length;
-					var similar = addplay ? 'addplay\n0\n' : '';
-					for ( i = 0; i < iL; i++ ) {
-						similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+			if ( G.display.similarprompt ) {
+				info( {
+					  icon    : 'lastfm'
+					, title   : 'Add Similar'
+					, message : 'Search and add similar tracks from Library?'
+					, ok      : function() {
+						addSimilar();
 					}
-					banner( title, 'Find similar tracks from Library ...', 'library blink',  -1 );
-					bash( [ 'plsimilar', similar ], function( count ) {
-						getPlaylist();
-						setButtonControl();
-						banner( title, count +' tracks added.', 'library' );
-					} );
-				}
-			}, 'json' );
+				} );
+			} else {
+				addSimilar();
+			}
 			return
 		case 'tag':
 			tagEditor();
