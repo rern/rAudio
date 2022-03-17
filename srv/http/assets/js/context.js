@@ -88,12 +88,13 @@ function playlistLoad( path, play, replace ) {
 		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
 	} );
 }
-function playlistNew() {
+function playlistNew( name ) {
 	info( {
 		  icon         : 'file-playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
+		, values       : name
 		, checkblank   : 1
 		, ok           : function() {
 			playlistSave( infoVal() );
@@ -141,7 +142,11 @@ function playlistSaveExist( type, name, oldname ) {
 					   +'<br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
-		, button      : rename ? playlistRename : playlistNew
+		, button      : function() {
+			setTimeout( function() { // fix error on repeating
+				rename ? playlistRename() : playlistNew( name );
+			}, 0 );
+		}
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : function() {
 			rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' );

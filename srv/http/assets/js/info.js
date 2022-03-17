@@ -544,6 +544,8 @@ function info( json ) {
 }
 
 function checkBlank() {
+	if ( !O.checkblank ) return // suppress error on repeating
+	
 	O.blank = false;
 	O.blank = O.checkblank.some( function( i ) {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
