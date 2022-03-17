@@ -7,7 +7,7 @@ $time = time();
 $sh = $_POST[ 'sh' ]; // [ alias, type, branch, opt1, opt2, ... ]
 $alias = $sh[ 0 ];
 $type = $sh[ 1 ];
-$branch = $sh[ 2 ];
+$branch = $sh[ 2 ] ?? '';
 $addon = $addons[ $alias ];
 if ( $alias !== 'cove' ) {
 	$heading = 'Addons Progress';
@@ -33,7 +33,7 @@ $postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle
 $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
-if ( $branch && $branch !== 'main' ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
+if ( $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
 <!DOCTYPE html>
 <html>
@@ -169,7 +169,7 @@ echo $fillbuffer;          // fill buffer to force start output
 echo $commandtxt.'<br>';
 if ( $type === 'Uninstall' ) sleep( 1 );
 
-$popencmd = popen( "$command", 'r' );                   // start bash
+$popencmd = popen( "$command 2>&1", 'r' );              // start bash
 while ( !feof( $popencmd ) ) {                          // each line
 	$std = fread( $popencmd, 4096 );                    // read
 
