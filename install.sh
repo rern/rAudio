@@ -6,7 +6,8 @@ alias=r1
 file=/srv/http/data/system/display
 if ! grep -q latest $file; then
 	sed -i '/playlists/ a\
-  "latest": true,' $file
+  "latest": true,
+' $file
 fi
 
 dirplaylists=/srv/http/data/playlists
