@@ -169,7 +169,7 @@ echo $fillbuffer;          // fill buffer to force start output
 echo $commandtxt.'<br>';
 if ( $type === 'Uninstall' ) sleep( 1 );
 
-$popencmd = popen( "$command 2>&1", 'r' );              // start bash
+$popencmd = popen( "$command", 'r' );                   // start bash
 while ( !feof( $popencmd ) ) {                          // each line
 	$std = fread( $popencmd, 4096 );                    // read
 
