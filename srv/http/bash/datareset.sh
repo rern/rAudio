@@ -144,7 +144,7 @@ systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spoti
 
 # set permissions and ownership
 chown -R http:http /srv/http
-chown -R mpd:audio $dirmpd /mnt/MPD
+chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
 chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
 chmod 777 $dirdata/tmp
 

@@ -71,6 +71,10 @@ if [[ $dirwav ]]; then
 	done
 fi
 
+filealbum=$dirmpd/album
+filealbumprev=$dirmpd/albumprev
+[[ -e $dirmpd/album ]] && cp -f $filealbum{,prev} || touch $dirmpd/latest
+
 for mode in album albumartist artist composer conductor genre date; do
 	dircount=$dirmpd/$mode
 	if [[ $mode == album ]]; then
@@ -81,12 +85,27 @@ for mode in album albumartist artist composer conductor genre date; do
 				album=$( sed "/^$line^/ d" <<< "$album" )
 			done
 		fi
-		album=$( echo "$album" | awk NF | tee $dirmpd/album | wc -l )
+		album=$( echo "$album" | awk NF | tee $filealbum | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $dircount | wc -l )
 	fi
 	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $dircount
 done
+
+##### latest album #############################################
+if [[ -e $filealbumprev ]]; then # latest
+	latestnew=$( diff $filealbum $filealbumprev | grep '^<' | cut -c 3- )
+	rm -f $filealbumprev
+	if [[ $latestnew ]]; then
+		echo "$latestnew" > $dirmpd/latestnew
+		if diff $dirmpd/latest $dirmpd/latestnew &> /dev/null; then # no diff - return 0
+			rm -f $dirmpd/latestnew
+		else
+			mv -f $dirmpd/latest{new,}
+		fi
+	fi
+fi
+latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
 ##### count #############################################
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
@@ -105,6 +124,7 @@ counts='{
 , "date"        : '$date'
 , "genre"       : '$genre'
 , "playlists"   : '$playlists'
+, "latest"      : '$latest'
 , "nas"         : '$NAS'
 , "sd"          : '$SD'
 , "usb"         : '$USB'
@@ -119,7 +139,6 @@ rm -f $dirmpd/{updating,listing}
 if [[ $toolarge ]]; then
 	sleep 3
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
-	exit
 fi
 
 if [[ -e /srv/http/shareddata/iplist ]]; then

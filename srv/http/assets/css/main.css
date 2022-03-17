@@ -171,7 +171,7 @@ i.map.disabled, .map.disabled i {
 #settings .gr {
 	font-size: 22px;
 }
-#iconrainbow {
+.submenu.fa-color canvas {
 	width: 20px;
 	height: 20px;
 	vertical-align: -2px;
@@ -1520,6 +1520,7 @@ i.map.disabled, .map.disabled i {
 	flex-direction:column;
 	align-items:center;
 	background: var( --cga );
+	box-shadow: 0 0 10px 4px #000000;
 	z-index: 5;
 }
 .index1 {
@@ -1633,7 +1634,6 @@ i.map.disabled, .map.disabled i {
 	line-height: 20px;
 	border-bottom: 1px solid var( --cga );
 	font-size: 15px;
-	background: #10161c
 }
 #lib-list p,
 #pl-list p,
@@ -1735,6 +1735,7 @@ i.map.disabled, .map.disabled i {
 .pl-icon {
 	float: left;
 	display: block;
+	min-height: 20px;
 	text-align: center;
 }
 .iconthumb {
@@ -1983,7 +1984,7 @@ li.active .li2 bl {
 }
 #pwd {
 	height: 40px;
-	margin: 10px;
+	margin: 30px 10px 10px 25px;
 	padding: 10px;
 	font-family: "Lato";
 	font-size: 15px;

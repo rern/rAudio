@@ -131,7 +131,7 @@ cursor=$newcursor
 	fi
 
 	if [[ $changedrotate ]]; then
-		$dirbash/cmd.sh rotateSplash$'\n'$newrotate # after set new data in conf file
+		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
@@ -303,6 +303,16 @@ snapclientset )
 	;;
 snapserver )
 	if [[ ${args[1]} == true ]]; then
+		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep '.*\;1704\;$' )
+		if [[ $avahi ]]; then
+			echo '{
+  "icon"    : "snapcast"
+, "title"   : "SnapServer"
+, "message" : "Already running on: '$( echo $avahi | cut -d';' -f8 )'"
+}'
+			exit
+		fi
+		
 		systemctl enable --now snapserver
 	else
 		systemctl disable --now snapserver

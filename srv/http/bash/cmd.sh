@@ -163,6 +163,14 @@ $Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
+snapclientStop() {
+	systemctl stop snapclient
+	$dirbash/mpd-conf.sh
+	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+	sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
+		"$dirbash/snapcast.sh remove $clientip"
+	rm $dirshm/serverip
+}
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		systemctl stop radio
@@ -577,7 +585,7 @@ lcdcharsnapclient )
 	[[ ! -e $dirshm/serverip ]] && exit
 	
 	serverip=$( cat $dirshm/serverip )
-	sshpass -p ros scp root@$serverip:$dirshm/statuslcd.py $dirshm
+	sshpass -p ros scp -qo StrictHostKeyChecking=no root@$serverip:$dirshm/statuslcd.py $dirshm
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 	;;
@@ -799,6 +807,10 @@ pladd )
 	mpc -q add "$item"
 	pladdPlay $cmd $delay
 	;;
+pladdplaynext )
+	mpc -q insert "${args[1]}"
+	pushstreamPlaylist
+	;;
 playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
@@ -810,10 +822,9 @@ playerstart )
 		airplay )   restart=shairport-sync;;
 		bluetooth ) restart=bluezdbus;;
 		mpd|upnp )  restart=mpd;;
-		snapcast )  stop=snapclient;;
 		spotify )   restart=spotifyd;;
 	esac
-	[[ $stop ]] && systemctl stop $stop || systemctl restart $restart
+	[[ $restart ]] && systemctl restart $restart || snapclientStop
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )
@@ -834,11 +845,7 @@ playerstop )
 			;;
 		snapcast )
 			service=snapclient
-			systemctl stop snapclient
-			clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
-				"/srv/http/bash/snapcast.sh remove $clientip"
-			rm $dirshm/serverip
+			snapclientStop
 			;;
 		spotify )
 			service=spotifyd
@@ -867,10 +874,6 @@ playerstop )
 	fi
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
-	;;
-plcount )
-	playlists=$( ls -1 $dirdata/playlists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$playlists',/' $dirmpd/counts
 	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
@@ -1031,8 +1034,75 @@ relaystimerreset )
 	$dirbash/relaystimer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
-rotateSplash )
+rotatesplash )
 	rotateSplash ${args[1]}
+	;;
+savedpldelete )
+	name=${args[1]}
+	rm "$dirplaylists/$name.m3u"
+	count=$( ls -1 $dirplaylists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	list=$( php /srv/http/mpdplaylist.php list )
+	pushstream playlists "$list"
+	;;
+savedpledit )
+	name=${args[1]}
+	type=${args[2]}
+	data=${args[3]} # remove - file, add - position-file, move - from-to
+	plfile="$dirplaylists/$name.m3u"
+	if [[ $type == remove ]]; then
+		sed -i "$data d" "$plfile"
+	elif [[ $type == add ]]; then
+		file=${args[4]}
+		if [[ $data == first ]]; then
+			sed -i "1 i$file" "$plfile"
+		elif [[ $data == last ]]; then
+			echo $file >> "$plfile"
+		else
+			sed -i "$data i$file" "$plfile"
+		fi
+	else
+		from=$(( $data + 1 ))
+		to=${args[4]}
+		file=$( sed -n "$from p" "$plfile" )
+		sed -i "$from d" "$plfile"
+		sed -i "$to a$file" "$plfile"
+	fi
+	pushstream playlist '{"playlist":"'${name//\"/\\\"}'"}'
+	;;
+savedplrename )
+	oldname=${args[1]}
+	name=${args[2]}
+	replace=${args[3]}
+	plfile="$dirplaylists/$name.m3u"
+	if [[ $replace ]]; then
+		rm -f "$plfile"
+	elif [[ -e "$plfile" ]]; then
+		echo -1
+		exit
+	fi
+	
+	mv "$dirplaylists/$oldname.m3u" "$plfile"
+	list=$( php /srv/http/mpdplaylist.php list )
+	pushstream playlists "$list"
+	;;
+savedplsave )
+	name=${args[1]}
+	replace=${args[2]}
+	plfile="$dirplaylists/$name.m3u"
+	if [[ $replace ]]; then
+		rm -f "$plfile"
+	elif [[ -e "$plfile" ]]; then
+		echo -1
+		exit
+	fi
+	
+	mpc -q save "$name"
+	chmod 777 "$plfile"
+	count=$( ls -1 $dirplaylists | wc -l )
+	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	list=$( php /srv/http/mpdplaylist.php list )
+	pushstream playlists "$list"
 	;;
 screenoff )
 	DISPLAY=:0 xset ${args[1]}

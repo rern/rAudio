@@ -178,6 +178,7 @@ function sendcommand() {
 }
 
 //---------------------------------------------------------------------------
+$( '#loader' ).addClass( 'hide' );
 G = {}
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
 $( '#close' ).click( function() {

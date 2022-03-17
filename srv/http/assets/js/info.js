@@ -1,6 +1,6 @@
-// $.fn.press(), info(), banner()
+// $.fn.press(), info(), banner(), loader
 
-// $.fn.press(), $fn.swipe() --------------------------------------------------------
+// $.fn.press() ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
 	// ELEMENT: '#id' or '.class'
@@ -35,19 +35,13 @@ $.fn.press = function( arg1, arg2 ) {
 }
 // banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
-<div id="infoOverlay" class="hide">
-	<div id="infoBox">
-		<div id="infoTopBg">
-			<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
-		</div>
-		<div id="infoContent"></div>
-		<div id="infoButtons"></div>
-	</div>
-</div>
-<div id="banner" class="hide">
-	<div id="bannerIcon"></div>
-	<div id="bannerTitle"></div>
-	<div id="bannerMessage"></div>
+<div id="infoOverlay" class="hide"></div>
+<div id="banner" class="hide"></div>
+<div id="loader">
+	<svg class="logo" viewBox="0 0 180 180">
+		<rect width="180" height="180" rx="9"/>
+		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
+	</svg>
 </div>
 ` );
 
@@ -82,10 +76,11 @@ function banner( title, message, icon, delay ) {
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
 					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
-	$( '#bannerIcon' ).html( iconhtml );
-	$( '#bannerTitle' ).html( title );
-	$( '#bannerMessage' ).html( message );
-	$( '#banner' ).removeClass( 'hide' );
+	$( '#banner' ).html( `
+<div id="bannerIcon">${ iconhtml }</div>
+<div id="bannerTitle">${ title }</div>
+<div id="bannerMessage">${ message }</div>
+` ).removeClass( 'hide' );
 	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
@@ -101,8 +96,7 @@ function bannerHide() {
 	clearTimeout( G.timeoutbanner );
 	$( '#banner' )
 		.addClass( 'hide' )
-		.removeAttr( 'style' );
-	$( '#bannerIcon, #bannerTitle, #bannerMessage' ).empty();
+		.empty();
 }
 // ------------------------------------------------------------------------------------
 function infoUsage() {
@@ -201,46 +195,25 @@ Note:
 ` );
 }
 function infoReset() {
-	if ( O.infoscroll ) {
-		$( 'html, body' ).scrollTop( O.infoscroll );
-		O.infoscroll = 0;
-	}
-	$( '#infoContent, #infoArrow i, #infoButtons .infobtn, #infoFileLabel' ).off( 'click' );
-	$( '#infoContent input, #infoFileBox' ).off( 'change keyup paste cut' );
-	$( '#infoRange input' ).off( 'click input mouseup touchend' );
-	
-	$( '#infoOverlay' ).addClass( 'hide' );
-	$( '#infoBox' ).css( {
-		  margin    : ''
-		, width     : ''
-		, top       : ''
-		, transform : ''
-	} );
-	$( '#infoIcon' ).removeAttr( 'class' );
-	$( '#infoIcon, #infoTitle' ).empty();
-	$( '#infoX' ).removeClass( 'hide' );
-	$( '#infoArrow' ).remove();
-	$( '#infoContent' ).find( 'table, input, .selectric, .selectric-wrapper' ).css( 'width', '' );
-	$( '#infoContent .selectric-items' ).css( 'min-width', '' );
-	$( '#infoContent' ).find( 'input' ).prop( 'disabled', 0 );
-	$( '#infoContent' )
-		.empty()
-		.css( { width: '', height: '' } )
-		.removeClass( 'hide' );   // extra appended message toggle
-	$( '.infomessage' ).remove(); // extra appended message toggle
-	$( '.infobtn' )
-		.removeClass( 'active' )
-		.css( 'background-color', '' );
-	$( '#infoButtons' )
+	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
+	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.empty();
+	O = {}
 }
 
 O = {}
-
 function info( json ) {
 	O = json;
-	infoReset();
+	$( '#infoOverlay' ).html(`
+<div id="infoBox">
+	<div id="infoTopBg">
+		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
+	</div>
+	<div id="infoContent"></div>
+	<div id="infoButtons"></div>
+</div>
+`);
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos
@@ -252,7 +225,6 @@ function info( json ) {
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
-		$( '#infoX' ).removeClass( 'hide' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ O +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( 'html, body' ).scrollTop( 0 );
@@ -299,12 +271,11 @@ function info( json ) {
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
 	}
 	if ( htmlbutton ) $( '#infoButtons' )
-						.html( htmlbutton )
-						.removeClass( 'hide' );
+							.html( htmlbutton )
+							.removeClass( 'hide' );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-		$( '#infoButtons' )
-			.on( 'click', '.infobtn.extrabtn', function() {
+		$( '#infoButtons' ).one( 'click', '.infobtn.extrabtn', function() {
 			var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 			if ( fn ) fn();
 			if ( !O.buttonnoreset ) infoReset();
@@ -492,8 +463,9 @@ function info( json ) {
 		
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
-			.attr( 'tabindex', -1 ) // for keyup event
-			.focus();
+			.attr( 'tabindex', -1 ); // for keyup event
+		var $input0 = $( '#infoContent' ).find( 'input, select').eq( 0 );
+		$input0.is( 'input[type=text]' ) ? $input0.focus() : $( '#infoOverlay' ).focus();
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button

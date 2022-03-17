@@ -1,20 +1,15 @@
 <?php
-$svg = preg_grep( '/<rect|<path/', file( '/srv/http/assets/img/icon.svg' ) );
-$logo = '<svg viewBox="0 0 180 180">'.implode( '', $svg ).'</svg>';
-
 if ( $login && !$_SESSION[ 'login' ] ) { ?>
-<style>
-	#divlogin rect { fill: var( --cm ); }
-	#divlogin path { fill: var( --cg75 ); }
-</style>
 <div id="divlogin">
-	<?=$logo?><br>
-	<input type="password" id="pwd"><i class="fa fa-eye"></i>
+	<br><a style="margin-left: 20px;font-weight: 300; letter-spacing: 20px">rAudio</a>
+	<br><input type="password" id="pwd"><i class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
 <script src="assets/js/plugin/jquery-3.6.0.min.js"></script>
 <script src="assets/js/info.<?=$time?>.js"></script>
 <script>
+$( '#divlogin' ).prepend( $( '#loader' ).html() );
+$( '#loader' ).remove();
 $( '#pwd' ).focus();
 $( '#divlogin i' ).click( function() {
 	$this = $( this );
@@ -58,16 +53,17 @@ $color = file_exists( $dirsystem.'color' );
 $filecounts = $dirdata.'mpd/counts';
 $counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists' ];
+$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );
+	$count = $counts && $mode !== 'Latest' ? number_format( $counts->$modeLC ) : '';
 	$modehtml.= '
 		<div class="lib-mode">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
-				'.( $counts && $counts->$modeLC ? '<gr>'.number_format( $counts->$modeLC ).'</gr>' : '<gr></gr>' ).'
+				<gr>'.$count.'</gr>
 				<a class="label">'.$mode.'</a>
 			</div>
 		</div>
@@ -98,102 +94,146 @@ if ( count( $files ) ) {
 	}
 }
 // context menus
-function menuli( $command, $icon, $label ) {
+function menucommon( $add, $replace ) {
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext"><i class="fa fa-plus-o"></i>Play next</a>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
+	return $htmlcommon;
+}
+function menuli( $list ) {
+	$command = $list[ 0 ];
+	$icon = $list[ 1 ];
+	$label = $list[ 2 ];
 	if ( $icon !== 'iconcover' ) $icon = 'fa fa-'.$icon;
 	return '<a data-cmd="'.$command.'" class="'.$command.'"><i class="'.$icon.'"></i>'.$label.'</a>';
 }
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
 }
-function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
-	return $htmlcommon;
+$kid3 = file_exists( '/usr/bin/kid3-cli' );
+function htmlmenu( $menulist, $mode ) {
+	global $html;
+	global $kid3;
+	global $menu;
+	if ( !$kid3 ) array_pop( $menulist );
+	foreach( $menulist as $list ) $html.= menuli( $list );
+	$menu.= menudiv( $mode, $html );
 }
 
-$kid3 = file_exists( '/usr/bin/kid3-cli' );
-$menulisimilar = '<a data-cmd="similar" class="similar sub"><i class="fa fa-lastfm"></i>Add similar</a><i class="fa fa-play-plus submenu" data-cmd="similar"></i>';
-$menu = '<div id="contextmenu">';
-
+$menu = '';
 $htmlcommon = menucommon( 'add', 'replace' );
-
-$html = menuli( 'play',       'play',         'Play' );
-$html.= menuli( 'pause',      'pause',        'Pause' );
-$html.= menuli( 'stop',       'stop',         'Stop' );
-$html.= menuli( 'current',    'check',        'Current' );
-$html.= menuli( 'wrsave',     'save',         'Save to WebRadio' );
-$html.= menuli( 'savedpladd', 'save-plus',    'Add to saved <i class="fa fa-playlist gr"></i>' );
-$html.= menuli( 'remove',     'minus-circle', 'Remove' );
-$html.= $menulisimilar;
-$html.= menuli( 'tag',        'info-circle',  'Track Info' );
-$html.= menuli( 'tagcd',      'tag',          'CD Tag Editor' );
-$menu.= menudiv( 'plaction', $html );
-
-$menudiv = '';
+// file
 $html = $htmlcommon;
-$html.= menuli( 'bookmark',  'star',            'Bookmark' );
-$html.= menuli( 'exclude',   'folder-forbid',   'Exclude directory' );
-$html.= menuli( 'update',    'refresh-library', 'Update database' );
-$html.= menuli( 'thumb',     'iconcover',       'Update thumbnails' );
-$html.= menuli( 'directory', 'folder',          'Browse directory' );
-if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
-$menu.= menudiv( 'folder', $html );
-
-$menudiv = '';
-$html = menucommon( 'add', 'replace' );
-$html.= $menulisimilar;
-if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
-$menu.= menudiv( 'file', $html );
-
-$menudiv = '';
+$menulist = [
+	  [ 'similar',    'lastfm',        'Add similar' ]
+	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
+	, [ 'directory',  'folder',        'Browse directory' ]
+	, [ 'tag',        'tag',           'Tag Editor' ]
+];
+htmlmenu( $menulist, 'file' );
+// filepl
 $html = $htmlcommon;
 $menu.= menudiv( 'filepl', $html );
-
-$menudiv = '';
+// filesavedpl
 $html = $htmlcommon;
-$html.= menuli( 'similar',       'lastfm',       'Add similar' );
-$html.= menuli( 'wrsave',        'save',         'Save to WebRadio' );
-$html.= menuli( 'savedplremove', 'minus-circle', 'Remove' );
-if ( $kid3 ) $html.= menuli( 'tag', 'tag', 'Tag Editor' );
-$menu.= menudiv( 'filesavedpl', $html );
-
-$menudiv = '';
+$menulist = [
+	  [ 'similar',       'lastfm',        'Add similar' ]
+	, [ 'wrsave',        'save',          'Save to WebRadio' ]
+	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
+	, [ 'savedplremove', 'minus-circle',  'Remove' ]
+	, [ 'tag',           'tag',           'Tag Editor' ]
+];
+htmlmenu( $menulist, 'filesavedpl' );
+// folder
+$html = $htmlcommon;
+$menulist = [
+	  [ 'bookmark',  'star',            'Bookmark' ]
+	, [ 'exclude',   'folder-forbid',   'Exclude directory' ]
+	, [ 'update',    'refresh-library', 'Update database' ]
+	, [ 'thumb',     'iconcover',       'Update thumbnails' ]
+	, [ 'directory', 'folder',          'Browse directory' ]
+	, [ 'tag',       'tag',             'Tag Editor' ]
+];
+htmlmenu( $menulist, 'folder' );
+// plaction
+$html = '';
+$menulist = [
+	  [ 'play',       'play',          'Play' ]
+	, [ 'pause',      'pause',         'Pause' ]
+	, [ 'stop',       'stop',          'Stop' ]
+	, [ 'current',    'check',         'Current' ]
+	, [ 'wrsave',     'save',          'Save to WebRadio' ]
+	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
+	, [ 'remove',     'minus-circle',  'Remove' ]
+	, [ 'similar',    'lastfm',        'Add similar' ]
+	, [ 'tag',        'info-circle',   'Track Info' ]
+	, [ 'tagcd',      'tag',           'CD Tag Editor' ]
+];
+htmlmenu( $menulist, 'plaction' );
+// playlist
+$html = menucommon( 'pladd', 'plreplace' );
+$menulist = [
+	  [ 'plrename', 'edit-circle',  'Rename' ]
+	, [ 'pldelete', 'minus-circle', 'Delete' ]
+];
+htmlmenu( $menulist, 'playlist' );
+// radio
 $html = menucommon( 'add', 'replace' );
 $menu.= menudiv( 'radio', $html );
-
-$menudiv = '';
+// webradio
 $html = menucommon( 'wradd', 'wrreplace' );
-$html.= menuli( 'wredit',     'edit-circle',  'Edit' );
-$html.= menuli( 'wrcoverart', 'iconcover',    'Change coverart' );
-$html.= menuli( 'wrdelete',   'minus-circle', 'Delete' );
-$menu.= menudiv( 'webradio', $html );
-
-$menudiv = '';
-$html = menucommon( 'pladd', 'plreplace' );
-$html.= menuli( 'plrename', 'edit-circle',  'Rename' );
-$html.= menuli( 'pldelete', 'minus-circle', 'Delete' );
-$menu.= menudiv( 'playlist', $html );
-
-$menudiv = '';
+$menulist = [
+	  [ 'wredit',     'edit-circle',  'Edit' ]
+	, [ 'wrcoverart', 'iconcover',    'Change coverart' ]
+	, [ 'wrdelete',   'minus-circle', 'Delete' ]
+];
+htmlmenu( $menulist, 'webradio' );
+// wrdir
 $html = '';
-$html.= menuli( 'bookmark', 'star',         'Bookmark' );
-$html.= menuli( 'wrdirdelete',   'minus-circle', 'Delete' );
-$html.= menuli( 'wrdirrename',   'edit-circle',  'Rename' );
-$menu.= menudiv( 'wrdir', $html );
+$menulist = [
+	  [ 'bookmark',      'star',         'Bookmark' ]
+	, [ 'wrdirdelete',   'minus-circle', 'Delete' ]
+	, [ 'wrdirrename',   'edit-circle',  'Rename' ]
+];
+htmlmenu( $menulist, 'wrdir' );
 
 foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ] as $mode ) {
-	$menudiv = '';
 	$html = menucommon( $mode.'add', $mode.'replace' );
 	$menu.= menudiv( $mode, $html );
 }
-$menu.= '</div>';
-$ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btclient', 'libupdate', 'addons', 'relays', 'stoptimer' ];
+$menu = '<div id="contextmenu">'.$menu.'</div>';
+$ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btclient', 'snapclient', 'libupdate', 'addons', 'relays', 'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
 	$modeicon.= '<i id="i-'.$id.'" class="fa fa-'.$id.' hide"></i>';
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
+$settinglist = [
+	  [ 'features', 'settings', 'features', 'Features',
+		'lock', 'lock' ]
+	, ['player', 'settings', 'player', 'Player',
+		'equalizer', 'equalizer' ]
+	, ['networks', 'settings', 'networks', 'Networks',
+		'snapclient', 'snapclient' ]
+	, [ 'system', 'settings', 'plus-r', 'System',
+		'relays', 'relays' ]
+	, [ 'addons', 'sub', 'jigsaw', 'Addons',
+		'guide', 'question-circle' ]
+	, [ 'power', '', 'power', 'Power',
+		'screenoff', 'screenoff' ]
+	, [ 'displaylibrary', 'sub', 'library', 'Library',
+		'update', 'refresh-library' ]
+	, [ 'displayplayback', 'sub', 'playback', 'Playback',
+		'displaycolor', 'color' ]
+	, [ 'displayplaylist', '', 'playlist', 'Playlist',
+		'switchraudio', 'raudiobox' ]
+];
+$htmlsettings = '';
+foreach( $settinglist as $l ) {
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>
+					 <i id="'.$l[ 4 ].'" class="submenu fa fa-'.$l[ 5 ].'"></i>';
+}
 ?>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-plus-r-nobox"></i>
@@ -207,24 +247,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 	</div>
 </div>
 <div id="settings" class="menu hide">
-	<a id="features" class="settings"><i class="fa fa-features"></i>Features</a>
-		<i id="lock" class="fa fa-lock submenu"></i>
-	<a id="player" class="settings"><i class="fa fa-player"></i>Player</a>
-		<i id="equalizer" class="fa fa-equalizer submenu"></i>
-	<a id="networks" class="settings"><i class="fa fa-networks"></i>Networks</a>
-		<i id="snapclient" class="fa fa-snapclient submenu"></i>
-	<a id="system" class="settings"><i class="fa fa-plus-r"></i>System</a>
-		<i id="relays" class="fa fa-relays submenu"></i>
-	<a id="addons" class="sub"><i class="fa fa-jigsaw"></i>Addons</a>
-		<i id="guide" class="fa fa-question-circle submenu"></i>
-	<a id="power"><i class="fa fa-power"></i>Power</a>
-		<i id="screenoff" class="fa fa-screenoff submenu"></i>
-	<a id="displaylibrary" class="sub"><i class="fa fa-library"></i>Library</a>
-		<i id="update" class="fa fa-refresh-library submenu"></i>
-	<a id="displayplayback" class="sub"><i class="fa fa-playback"></i>Playback</a>
-		<i id="displaycolor" class="submenu"><canvas id="iconrainbow"></canvas></i>
-	<a id="displayplaylist"><i class="fa fa-playlist"></i>Playlist</a>
-		<i id="switchraudio" class="fa fa-raudiobox submenu"></i>
+	<?=$htmlsettings?>
 </div>
 <div id="page-playback" class="page">
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
@@ -416,7 +439,4 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 </div>
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
-</div>
-<div id="loader" class="splash">
-	<?=$logo?>
 </div>

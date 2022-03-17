@@ -466,6 +466,7 @@ hr {
 	white-space: pre;
 }
 #infoContent input[type=text],
+#infoContent input[type=tel],
 #infoContent input[type=number],
 #infoContent input[type=password] {
 	display: inline-block;
@@ -480,7 +481,9 @@ hr {
 	font-size: 16px;
 	font-family: "Lato";
 }
-#infoContent input[type=text]:disabled {
+#infoContent input[type=text]:disabled,
+#infoContent input[type=tel]:disabled,
+#infoContent input[type=number]:disabled {
 	background: none !important;
 	outline: none;
 	opacity: 1;
@@ -587,9 +590,12 @@ hr {
 		color: var( --cma );
 	}
 	input[type=text]:focus,
+	input[type=tel]:focus,
+	input[type=number]:focus,
 	input[type=password]:focus,
 	input[type=radio]:focus,
-	input[type=checkbox]:focus {
+	input[type=checkbox]:focus,
+	#infoContent textarea:focus {
 		outline: 2px solid var( --cgl ) !important;
 	}
 	input[type=radio]:focus,

@@ -13,6 +13,21 @@ clientfile=$dirshm/clientip
 lcdcharfile=$dirshm/clientiplcdchar
 
 if [[ $1 == start ]]; then # client start - save server ip
+	if systemctl -q is-active snapserver; then # server + client on same device
+		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
+		line0=$(( line - 5 ))
+		sed -i "$line0,/}/ d" /etc/mpd.conf
+		systemctl restart mpd
+		systemctl start snapclient
+		touch $dirshm/snapclientactive
+		pushstream display '{"snapclientactive":true}'
+		data=$( $dirbash/features-data.sh )
+		pushstream refresh "$data"
+		data=$( $dirbash/player-data.sh )
+		pushstream refresh "$data"
+		exit
+	fi
+	
 	mpc -q stop
 	systemctl start snapclient
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
@@ -28,6 +43,14 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl stop snapclient
 		echo -1
 	fi
+elif [[ $1 == stop ]]; then # server + client on same device
+	systemctl stop snapclient
+	rm $dirshm/snapclientactive
+	$dirbash/mpd-conf.sh
+	pushstream display '{"snapclientactive":false}'
+	data=$( $dirbash/features-data.sh )
+	pushstream refresh "$data"
+
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $clientfile

@@ -50,7 +50,8 @@ var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
 var red = '#bb2828';
-var canvas = document.getElementById( 'iconrainbow' );
+$( '.submenu.fa-color' ).html( '<canvas></canvas>' );
+var canvas = $( '.submenu.fa-color canvas' )[ 0 ];
 var ctx = canvas.getContext( '2d' );
 var cw = canvas.width / 2;
 var ch = canvas.height / 2;
@@ -79,7 +80,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 getPlaybackStatus( 'withdisplay' );
 
-if ( navigator.maxTouchPoints ) { // swipe /////////////////////////////////////////////
+if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
@@ -163,9 +164,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			equalizer();
 			break;
 		case 'snapclient':
-			var active = G.status.player === 'snapcast';
+			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
-				$( '#stop' ).click();
+				if ( G.display.snapclientactive ) {
+					bash( '/srv/http/bash/snapcast.sh stop' );
+				} else {
+					$( '#stop' ).click();
+				}
 			} else {
 				bash( '/srv/http/bash/snapcast.sh start', function( data ) {
 					bannerHide();
@@ -216,12 +221,14 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					  icon    : 'raudiobox'
 					, title   : 'Switch rAudio'
 					, radio   : radio
-					, values  : window.location.host
+					, values  : location.host
 					, okno    : 1
 					, beforeshow : function() {
 						$( '#infoContent input' ).change( function() {
+							var ip = $( '#infoContent input:checked' ).val();
+							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
-							location.href = 'http://'+ $( '#infoContent input:checked' ).val();
+							location.href = 'http://'+ ip;
 						} );
 					}
 				} );
@@ -402,12 +409,10 @@ $( '#colorreset' ).click( function() {
 } );
 $( '#colorcancel' ).click( function() {
 	$( '#colorpicker, .menu' ).addClass( 'hide' );
-	$( '#playback-controls i, #button-library, #lib-list li.active, #colorok,  \
-		#bar-top, #bar-bottom i, .menu a, .submenu, .content-top' ).css( 'background-color', '' );
-	$( '#colorcancel, #mode-title, #button-lib-back, .lib-icon, gr, \
-		#lib-list li.active i, #lib-list li.active .time, #lib-list li.active .li2' ).css( 'color', '' );
-	$( '.menu a' ).css( 'border-top', '' );
-	$( '#lib-list li' ).css( 'border-bottom', '' );
+	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
+	  , .content-top, #button-library, #mode-title, #button-lib-back \
+	  , #lib-list li, #lib-list li.active, #lib-list i, #lib-list .li2 \
+	  , .menu a, .submenu, #colorcancel, #colorok' ).removeAttr( 'style' );
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( G.status.player !== 'mpd' ) switchPage( 'playback' );
 	G.colorpicker.destroy();
@@ -423,7 +428,7 @@ $( '#addons' ).click( function () {
 	loader();
 } );
 $( '#library, #button-library' ).click( function() {
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
@@ -449,14 +454,10 @@ $( '#playback' ).click( function() {
 	}
 } );
 $( '#playlist' ).click( function() {
-	G.pladd = {};
+	if ( !G.local ) G.pladd = {}
 	if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) {
-			G.savedlist = 0;
-			G.savedplaylist = 0;
-			getPlaylist();
-		}
-		$( '.menu' ).addClass( 'hide' );
+		if ( G.savedlist || G.savedplaylist ) getPlaylist();
+		contextMenuHide();
 	} else {
 		switchPage( 'playlist' );
 		if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
@@ -474,7 +475,7 @@ $( '#page-playback' ).click( function( e ) {
 		}
 	}
 } );
-$( '#bar-top, #bar-bottom, #button-library' ).click( function() {
+$( '#bar-top, #bar-bottom, #page-library' ).click( function() {
 	if ( G.guide ) hideGuide();
 	if ( !$( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
 } );
@@ -485,7 +486,7 @@ $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
 } );
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	if ( G.library ) {
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
@@ -553,12 +554,13 @@ $( '#title, #guide-lyrics' ).click( function() {
 <tr><td colspan="2" class="btnbottom">
 	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
 	<span class="bio">&emsp;<i class="fa fa-bio"></i> Bio</span>
+	<span class="pladd">&emsp;<i class="fa fa-file-playlist"></i> Add</span>
 	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
 	</td></tr>
 </table>`;
 	info( {
-		  icon        : 'lyrics'
-		, title       : 'Lyrics'
+		  icon        : 'Music'
+		, title       : 'Track'
 		, content     : content
 		, boxwidth    : 320
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
@@ -576,6 +578,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
 			} );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
+			$( '#infoContent .pladd' ).toggleClass( 'hide', G.status.player !== 'mpd' );
 			$( '#infoContent .scrobble' ).toggleClass( 'hide', !G.status.scrobble || !G.status.webradio );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
@@ -596,8 +599,10 @@ $( '#title, #guide-lyrics' ).click( function() {
 						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 						$( '#bio' ).removeClass( 'hide' );
 					}
+				} else if ( $this.hasClass( 'pladd' ) ) {
+					saveToPlaylist( G.status.Title, G.status.Album, G.status.file );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...infoVal() ] );
+					bash( [ 'scrobble', ...values ] );
 					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
 				}
 				$( '#infoX' ).click();
@@ -841,6 +846,7 @@ $( '#divcover' ).press( function( e ) {
 		|| !G.status.playlistlength
 		|| G.guide
 		|| $( e.target ).hasClass( 'band' )
+		|| e.target.id === 'coverT'
 	) return
 	
 	$( '#coverart' )
@@ -852,7 +858,11 @@ $( '#divcover' ).press( function( e ) {
 	G.status.webradio ? webRadioCoverart () : coverartChange();
 } );
 $( '#coverT' ).press( function() {
-	location.reload();
+	if ( typeof Android === 'object' ) {
+		changeIP();
+	} else {
+		location.reload();
+	}
 } );
 var btnctrl = {
 	  timeTL  : 'cover'
@@ -1189,6 +1199,7 @@ $( '#lib-search-btn' ).click( function() { // search
 				  query  : 'search'
 				, string : keyword
 				, gmode  : G.mode
+				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 			}
 		} else {
 			var query = {
@@ -1245,7 +1256,7 @@ $( '#button-lib-back' ).click( function() {
 		G.mode = G.gmode;
 		delete G.gmode;
 	}
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
 	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
@@ -1253,18 +1264,13 @@ $( '#button-lib-back' ).click( function() {
 		|| ( !bL && G.query.length === 1 )
 	) {
 		$( '#button-library' ).click();
-		return
-	}
-	
-	if ( bL && G.query[ 0 ] !== 'playlist' ) {
+	} else if ( bL && G.mode !== 'latest' ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
 		var query = G.query[ G.query.length - 1 ];
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
-		} else if ( query === 'playlist' ) {
-			$( '#playlist' ).click();
 		} else {
 			list( query, function( data ) {
 				if ( data != -1 ) {
@@ -1293,15 +1299,19 @@ $( '.mode' ).click( function() {
 	if ( G.mode === 'bookmark' ) return
 	
 	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
-		var modeplaylists = G.mode === 'playlists';
+		if ( G.mode === 'playlists' ) {
+			var message = 'No saved playlists found.';
+		} else if ( G.mode === 'latest' ) {
+			var message = 'No new albums added since last update.';
+		} else {
+			var message = 'This mode has no data.'
+						 +'<br>To populate Library database:'
+						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
+		}
 		info( {
-			  icon      : 'library'
-			, title     : 'Library Database'
-			, message   : modeplaylists
-							? 'No saved playlists.'
-							: 'This mode has no data.'
-							 +'<br>To populate Library database:'
-							 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
+			  icon    : 'library'
+			, title   : 'Library Database'
+			, message : message
 		} );
 		return
 	}
@@ -1581,7 +1591,7 @@ $( '#lib-list' ).press( '.licoverimg',  function( e ) {
 	$this.find( 'img' )
 		.css( 'opacity', '0.33' )
 		.after( icoveredit );
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 } );
 $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	if ( G.press ) return
@@ -1598,7 +1608,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
 		if ( $this.hasClass( 'active' ) && menushow ) {
-			$( '.menu' ).addClass( 'hide' );
+			contextMenuHide();
 		} else {
 			$( '#lib-list li' ).removeClass( 'active' );
 			contextmenuLibrary( $this, $target );
@@ -1606,7 +1616,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	if ( menushow ) return
 	
 	$( '#lib-list li' ).removeClass( 'active' );
@@ -1733,7 +1743,7 @@ $( '.index' ).on( 'click', 'a', function() {
 		var scrollT = 0;
 	} else {
 		if ( G.library ) {
-			var el = G.mode === 'album' ? '.coverart' : '#lib-list li';
+			var el = G.mode === 'album' || G.mode === 'latest' ? '.coverart' : '#lib-list li';
 		} else {
 			var el = '#pl-savedlist li';
 		}
@@ -1746,7 +1756,7 @@ $( '#button-playlist' ).click( function() {
 	$( '#playlist' ).click();
 } );
 $( '#button-pl-back' ).click( function() {
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	if ( G.savedplaylist ) {
 		$( '#button-pl-playlists' ).click();
 	} else {
@@ -1766,7 +1776,7 @@ $( '#button-pl-save' ).click( function() {
 	var notsavedL = $( '#pl-list .notsaved' ).length;
 	if ( audiocdL || upnpL ) {
 		info( {
-			  icon    : 'playlist'
+			  icon    : 'file-playlist'
 			, title   : 'Save Playlist'
 			, message : '<i class="fa fa-warning wh"></i> Saved playlist cannot contain:<br>'
 						+ audiocdL ? audiocdL +'<i class="fa fa-audiocd wh"></i>' : ''
@@ -1889,11 +1899,7 @@ new Sortable( document.getElementById( 'pl-list' ), {
 	, onUpdate      : function ( e ) {
 		G.status.song = $( '#pl-list li.sortactive' ).index();
 		$( '#pl-list li.sortactive' ).removeClass( 'sortactive' );
-		G.sortable = 1;
-		setTimeout( function() { G.sortable = 0 }, 500 );
-		bash( [ 'plorder', ( e.oldIndex + 1 ), ( e.newIndex + 1 ) ], function() {
-			setTimeout( setPlaylistScroll, 600 );
-		} );
+		sortPlaylist( 'pl-list', e.oldIndex, e.newIndex );
 	}
 } );
 new Sortable( document.getElementById( 'pl-savedlist' ), {
@@ -1901,17 +1907,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
 	, onUpdate      : function ( e ) {
-		if ( !$( '#pl-path .lipath' ).length ) return
-		G.sortable = 1;
-		setTimeout( function() { G.sortable = 0 }, 500 );
-		
-		var plname = $( '#pl-path .lipath' ).text();
-		list( {
-			  cmd  : 'edit'
-			, name : plname
-			, old  : e.oldIndex
-			, new  : e.newIndex
-		} );
+		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
@@ -1999,7 +1995,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
 	}
-	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp );
+	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || G.status.counts.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', !audiocd );
@@ -2009,17 +2005,19 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	plRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
-	$( '.menu' ).addClass( 'hide' );
+	contextMenuHide();
 	var $target = $( e.target );
 	if ( $target.hasClass( 'savewr' ) ) return
 	
 	$this = $( this );
 	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
 	
-	var pladd = Object.keys( G.pladd ).length;
+	var pladd = 'file' in G.pladd;
 	var plicon = $target.hasClass( 'pl-icon' );
 	if ( G.savedplaylist || plicon ) {
-		if ( !pladd ) {
+		if ( pladd ) {
+			playlistInsertSelect( $this );
+		} else {
 			var datatarget = $target.data( 'target' ) || $this.find( '.pl-icon' ).data ( 'target' );
 			var $menu = $( datatarget );
 			G.list = {};
@@ -2045,15 +2043,13 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 					return
 				}
 				
-				$( '.replace' ).toggleClass( 'hide', !G.status.playlistlength );
-				$( '.similar' ).toggleClass( 'hide', G.list.path.slice( 0, 4 ) === 'http' );
+				$menu.find( '.replace' ).toggleClass( 'hide', !G.status.playlistlength );
+				$menu.find( '.similar' ).toggleClass( 'hide', G.list.path.slice( 0, 4 ) === 'http' );
 				$menu.find( '.wrsave' ).toggleClass( 'hide', !$this.hasClass( 'notsaved' ) );
 			}
 			$this.addClass( 'active' );
 			$menu.find( '.submenu' ).toggleClass( 'disabled', G.status.player !== 'mpd' );
 			contextmenuScroll( $menu, $this.position().top + 48 );
-		} else {
-			playlistInsertSelect( $this );
 		}
 	} else {
 		G.savedlist = 0;

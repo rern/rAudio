@@ -14,6 +14,7 @@ data+='
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "hostname"         : "'$( hostname )'"
+, "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
@@ -35,7 +36,7 @@ data+='
 , "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
-, "snapserveractive" : '$( [[ -e $dirshm/clientip ]] && echo true )'
+, "snapserveractive" : '$( [[ -e $dirshm/clientip || -e $dirshm/snapclientactive ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( systemctl -q is-active snapclient && echo true )'
 , "snapcastconf"     : '$( grep -q latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )

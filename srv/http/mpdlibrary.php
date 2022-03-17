@@ -116,7 +116,8 @@ case 'ls':
 			$ext = end( $path );
 			$lists = [];
 			foreach( $plfiles as $file ) {
-				exec( 'mpc -f "'.$format.'" playlist "'.$file.'"'
+				$type = $ext === 'cue' ? 'ls' : 'playlist';
+				exec( 'mpc -f "'.$format.'" '.$type.' "'.$file.'"'
 					, $lists ); // exec appends to existing array
 			}
 			$array = htmlTracks( $lists, $f, $ext, $file );
@@ -223,7 +224,7 @@ case 'webradio':
 			$each = ( object )[];
 			$data = file( "$dirwebradios/$file", FILE_IGNORE_NEW_LINES );
 			$name = $data[ 0 ];
-			$each->charset = $data[ 2 ];
+			$each->charset = $data[ 2 ] ?? '';
 			$each->name    = $name;
 			$each->url     = str_replace( '|', '/', $file );
 			$each->sort    = stripSort( $name );
@@ -265,7 +266,6 @@ echo json_encode( $array );
 //-------------------------------------------------------------------------------------
 function directoryList( $lists ) {
 	global $gmode;
-	global $mode;
 	foreach( $lists as $list ) {
 		$dir = basename( $list );
 		$each = ( object )[];
@@ -283,9 +283,14 @@ function directoryList( $lists ) {
 		$path = $each->path;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
+		if ( is_dir( '/mnt/MPD/'.$path ) ) {
+			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
+			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
+		} else {
+			$htmlicon = '<i class="lib-icon fa fa-music" data-target="#menu-file"></i>';
+		}
 		$html.=  '<li data-mode="'.$gmode.'" data-index="'.$index.'">'
-				.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">'
+				.$htmlicon
 				.'<a class="lipath">'.$path.'</a>'
 				.'<span class="single">'.$each->dir.'</span>'
 				.'</li>';
@@ -369,6 +374,8 @@ function htmlList( $lists ) { // non-file 'list' command
 	if ( !count( $lists ) ) exit( '-1' );
 	
 	global $mode;
+	global $gmode;
+	if ( $mode === 'latest' ) $mode = 'album';
 	$html = '';
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
@@ -378,7 +385,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$name = $data[ 1 ];
 			$html.= '<li data-mode="'.$mode.'" data-index="'.$index.'">'
 						.'<a class="lipath">'.$name.'</a>'
-						.'<i class="fa fa-'.$mode.' lib-icon" data-target="#menu-'.$mode.'"></i>'
+						.'<i class="fa fa-'.$gmode.' lib-icon" data-target="#menu-'.$mode.'"></i>'
 						.'<span class="single">'.$name.'</span>'
 					.'</li>';
 		}
@@ -389,6 +396,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
+			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' ); // replaced with icon on load error(faster than existing check)
 			$html.= '<div class="coverart" data-index="'.$index.'">
 						<a class="lipath">'.$path.'</a>
@@ -425,16 +433,11 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	
 	$hidecover = exec( 'grep "hidecover.*true" /srv/http/data/system/display' );
 	$searchmode = $filemode === 'search';
-//	$cue = exec( 'mpc ls "'.dirname( $file0 ).'" | grep ".cue$" | wc -l' )
-//			|| substr( $file0, -14, 4 ) === '.cue'; // $file0 = '/path/to/file.cue/track0001'
-	$cuefile = exec( 'mpc ls "'.dirname( $file0 ).'" | grep ".cue$" | head -1' );
-	if ( $cuefile ) {
+	$cuefile = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
+	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue = true;
-		$file0 = $cuefile;
-	} else if ( substr( $file0, -14, 4 ) === '.cue' ) { // $file0 = '/path/to/file.cue/track0001'
-		$cue = true;
-		$file0 = dirname( $file0 );
-		$musicfile = exec( 'mpc ls "'.dirname( $file0 ).'" | grep -v ".cue$" | head -1' );
+		$cuename = pathinfo( $cuefile, PATHINFO_BASENAME );
+		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" | grep -v ".cue$" | head -1' );
 		$ext = pathinfo( $musicfile, PATHINFO_EXTENSION );
 	} else {
 		$cue = false;
@@ -445,36 +448,40 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 	foreach( $array as $each ) {
 		if ( !$each->time ) continue;
 		
-		$path = $cue ? $file0 : $each->file;
+		$path = $each->file;
+		$album = $each->album;
+		$artist = $each->artist;
 		$litime += HMS2second( $each->time );
 		$title = $each->title;
-		$datatrack = $cue ? 'data-track="'.$each->track.'"' : '';
 		if ( $searchmode ) {
-			$title = preg_replace( "/($string)/i", '<bl>$1</bl>', $title );
-			$name = $each->artist.' - '.$each->album;
-			$trackname = preg_replace( "/($string)/i", '<bl>$1</bl>', $name );
+			$name = $artist.' - '.$album;
+			$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
+			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
 		} else {
-			$trackname = basename( $path );
+			$trackname = $cue ? $cuename : basename( $path );
 		}
 		if ( !$title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$li0 = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
 		$i++;
-		$html.= '<li data-mode="'.$gmode.'" '.$datatrack.$li0.'>'
+		$html.= '<li data-mode="'.$gmode.'" '.$li0.'>'
 					.'<a class="lipath">'.$path.'</a>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-file"></i>'
 					.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>'
 					.'<div class="li2">'.$i.' • '.$trackname.'</div>'
 				.'</li>';
 	}
-	if ( $searchmode ) return [ 'html' => $html, 'count' => count( $array ) ];
+	if ( $searchmode ) return [ 'html' => $html ];
 	
 	if ( $hidecover ) {
 		$coverhtml = '';
 	} else {
-		// fix - mpd cannot read albumartist from *.wav
-		if ( $ext === 'wav' ) $albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		if ( $ext !== 'wav' ) {
+			$albumartist = $each0->albumartist;
+		} else { // fix - mpd cannot read albumartist from *.wav
+			$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file0.'"' );
+		}
 		$album = $each0->album;
-		$artist = $each0->albumartist ?: ( $albumartist ?? '' );
+		$artist = $albumartist ?: '';
 		$icon = 'albumartist';
 		if ( !$artist ) {
 			$artist = $each0->artist;
@@ -488,12 +495,12 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
-		$args = escape( implode( "\n", [ $artist, $album, $file0 ] ) );
+		$args = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
 		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
 		$coverart = exec( $script );
 		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
 		$coverhtml = '<li data-mode="'.$gmode.'" class="licover">'
-					.'<a class="lipath">'.( $cue ? $file0 : $mpdpath ).'</a>'
+					.'<a class="lipath">'.$mpdpath.'</a>'
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'
 					.'<div class="liinfo '.$mode.'">'
 					.'<div class="lialbum'.$hidealbum.'">'.$album.'</div>'

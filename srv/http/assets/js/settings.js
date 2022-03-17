@@ -460,7 +460,13 @@ $( '.switch' ).click( function() {
 		}
 	} else {
 		notify( label, checked, icon );
-		bash( [ id, checked ] );
+		bash( [ id, checked ], function( error ) {
+			if ( error ) {
+				bannerHide();
+				$( '#'+ id ).prop( 'checked', false );
+				info( error );
+			}
+		}, 'json' );
 	}
 } );
 $( '#bar-bottom div' ).click( function() {

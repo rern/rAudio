@@ -266,7 +266,6 @@ function psDisplay( data ) {
 		return
 	}
 	
-	var hidecover = G.display.hidecover;
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
@@ -279,20 +278,17 @@ function psDisplay( data ) {
 	} else if ( G.library ) {
 		if ( !G.librarylist ) {
 			renderLibrary();
-		} else if ( $( '.licover' ).length ) {
-			if ( hidecover && !G.display.hidecover ) {
+		} else if ( $( '.lib-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
+			if ( G.display.hidecover ) {
+				$( '.licover' ).remove();
+			} else {
 				var query = G.query[ G.query.length - 1 ];
 				list( query, function( data ) {
 					data.path = query.path;
 					data.modetitle = query.modetitle;
 					renderLibraryList( data );
 				}, 'json' );
-			} else {
-				setTrackCoverart();
 			}
-		} else if ( G.albumlist && G.albumbyartist !== G.display.albumbyartist ) {
-			G.query = [];
-			$( '#mode-album' ).click();
 		}
 	}
 }
@@ -365,6 +361,8 @@ function psMpdUpdate( data ) {
 				var query = G.query[ G.query.length - 1 ];
 				if ( query ) {
 					list( query, function( data ) {
+						data.path = query.path;
+						data.modetitle = query.modetitle;
 						renderLibraryList( data );
 					}, 'json' );
 				}
@@ -411,7 +409,7 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( G.local || G.plremove ) return
+	if ( G.local || G.plremove || G.sortable ) return
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {

@@ -23,9 +23,12 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
 		, 'setting'  => true
+		, 'disabled' => 'SnapClient is currently active.'
 		, 'help'     => <<< HTML
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player
-Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast"></i>
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
+ • SSH passwords must be default.
+ • SnapClient and SnapServer can be enabled on the same device.
+ • Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast wh"></i>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -87,13 +90,16 @@ HTML
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapserver'
-		, 'disabled' => 'SnapClient is currently enabled.'
+		, 'disabled' => 'SnapClient is currently connected.'
 		, 'help'     => <<< HTML
-<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player. SnapServer - Clients can be either between RPis or with Snapcast capable devices.
-Control clients:
+<a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
- • <a href="https://github.com/badaix/snapweb">Snapweb</a> via <code>http://$ip:1780</code>
- • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
+ • Set SnapServer as a client to sync:
+ &emsp; • Enable SnapClient
+ &emsp; • Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast wh"></i>
+ • Snapcast control client and player:
+ &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a>
+ &emsp; • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -175,6 +181,7 @@ HTML
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
 Switch: &ensp;<i class="fa fa-playlist"></i>Playlist |&ensp;<i class="fa fa-raudiobox wh"></i>
+ • SSH passwords must be default.
 HTML
 	]
 	, [
