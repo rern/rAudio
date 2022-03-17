@@ -358,7 +358,7 @@ $( '#displayplayback' ).click( function() {
 $( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
 		  plclear        : 'Confirm on replace'
-		, similarprompt  : 'Prompt on Add similar'
+		, plsimilar      : 'Confirm on add similar'
 		, audiocdplclear : 'Clear on load Audio CD'
 	}
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();

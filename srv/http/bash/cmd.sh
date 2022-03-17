@@ -497,7 +497,7 @@ coversave )
 displaysave )
 	data=${args[1]}
 	pushstream display "$data"
-	jq <<< $data > $dirsystem/display
+	jq -S . <<< $data > $dirsystem/display
 	grep -q '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit

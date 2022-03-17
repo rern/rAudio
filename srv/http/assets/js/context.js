@@ -605,7 +605,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			G.list.li.remove();
 			return
 		case 'similar':
-			if ( G.display.similarprompt ) {
+			if ( G.display.plsimilar ) {
 				info( {
 					  icon    : 'lastfm'
 					, title   : 'Add Similar'
