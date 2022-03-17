@@ -4,7 +4,7 @@ alias=r1
 
 # 20220312
 file=/srv/http/data/system/display
-grep -r latest $file || sed -i '/playlists/ a\  "latest": true,' $file
+grep -q latest $file || sed -i '/playlists/ a\  "latest": true,' $file
 
 dirplaylists=/srv/http/data/playlists
 readarray -t plfiles <<< $( ls -I '*.*' $dirplaylists )
