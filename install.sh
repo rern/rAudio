@@ -3,8 +3,6 @@
 alias=r1
 
 # 20220312
-sed -i 's/ 2>&1//' /srv/http/settings/addons-progress.php
-
 file=/srv/http/data/system/display
 grep -q latest $file || sed -i '/playlists/ a\  "latest": true,' $file
 
