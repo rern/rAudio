@@ -4,7 +4,7 @@
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluetooth'
-	, 'button' => [ 'btscan', 'search wh' ]
+	, 'button' => [ 'btscan' => 'search wh' ]
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
@@ -23,8 +23,7 @@ rAudio as receiver:
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
 	, 'status'  => 'wlan'
-	, 'button'  => [ 'wladd', 'plus-circle wh' ]
-	, 'button1' => [ 'wlscan', 'search wh' ]
+	, 'button'  => [ 'wladd' => 'plus-circle wh', 'wlscan' => 'search wh' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
@@ -36,7 +35,7 @@ htmlHead( [ //////////////////////////////////
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
-	, 'button' => [ 'lanadd', 'plus-circle wh' ]
+	, 'button' => [ 'lanadd' => 'plus-circle wh' ]
 	, 'nohelp'  => true
 ] );
 ?>
@@ -58,7 +57,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
-	, 'button' => [ 'setting-accesspoint', 'gear' ]
+	, 'button' => [ 'setting-accesspoint' => 'gear' ]
 ] );
 ?>
 	<div id="boxqr" class="hide">
@@ -84,7 +83,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'button' => [ 'scanning-bt', 'bluetooth blink' ]
+	, 'button' => [ 'scanning-bt' => 'bluetooth blink' ]
 	, 'back'   => true
 	, 'nohelp' => true
 ] );
@@ -95,7 +94,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
-	, 'button' => [ 'scanning-wifi', 'wifi blink' ]
+	, 'button' => [ 'scanning-wifi' => 'wifi blink' ]
 	, 'back'   => true
 	, 'nohelp' => true
 ] );
