@@ -263,6 +263,7 @@ function tagEditor() {
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : 1
+			, nofocus      : 1
 			, beforeshow   : function() {
 				$( '#infoContent .infomessage' ).css( {
 					  display         : 'flex'
