@@ -126,7 +126,7 @@ DNSSEC=no
 DHCP=yes
 "
 	else
-		ping -c 1 -w 1 $ip &> /dev/null && exit -1
+		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 		
 		eth0+="\
 Address=$ip/24

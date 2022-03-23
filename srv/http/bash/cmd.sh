@@ -7,10 +7,10 @@ dirimg=/srv/http/assets/img
 readarray -t args <<< "$1"
 
 addonsListGet() {
-	: >/dev/tcp/8.8.8.8/53 || exit -2 # online check
+	: >/dev/tcp/8.8.8.8/53 || ( echo -2 && exit ) # online check
 	
 	[[ ! $1 ]] && branch=main || branch=$1
-	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
+	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || ( echo -1 && exit )
 }
 equalizerGet() {
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
@@ -303,6 +303,16 @@ webRadioSampling() {
 	rate="$(( ( ( kb + 4 ) / 8 ) * 8 )) kbit/s" # round to modulo 8
 	sed -i "2 s|.*|$sample $rate|" "$file"
 	rm /tmp/webradio
+}
+webradioPlaylistVerify() {
+	ext=$1
+	url=$2
+	if [[ $ext == m3u ]]; then
+		url=$( curl -s $url | grep ^http | head -1 )
+	elif [[ $ext == pls ]]; then
+		url=$( curl -s $url | grep ^File | head -1 | cut -d= -f2 )
+	fi
+	[[ ! $url ]] && echo -2 && exit
 }
 
 case ${args[0]} in
@@ -1205,17 +1215,14 @@ webradioadd )
 	url=$( urldecode ${args[2]} )
 	charset=$( echo ${args[3]} | sed 's/UTF-8\|iso-*\|iso *//i' )
 	dir=${args[4]}
+	ext=${url/*.}
+	[[ $ext ]] && webradioPlaylistVerify $ext $url
+	
 	urlname=${url//\//|}
 	file=$dirwebradios
 	[[ $dir ]] && file="$file/$dir"
 	file="$file/$urlname"
-	ext=${url/*.}
-	if [[ $ext == m3u ]]; then
-		url=$( curl -s $url | grep ^http | head -1 )
-	elif [[ $ext == pls ]]; then
-		url=$( curl -s $url | grep ^File | head -1 | cut -d= -f2 )
-	fi
-	[[ ! $url ]] && exit -1
+	[[ -e "$file" ]] && echo -1 && exit
 	
 	echo "\
 $name
@@ -1247,18 +1254,25 @@ webradioedit )
 	urlnew=${args[2]}
 	charset=$( echo ${args[3]} | sed 's/UTF-8\|iso-*\|iso *//i' )
 	dir=${args[4]}
-	url=${args[5]}
-	urlname=${url//\//|}
-	[[ $dir ]] && dir="$dir/"
-	fileprev="$dirwebradios/$dir$urlname"
+	urlprev=${args[5]}
+	ext=${urlnew/*.}
+	[[ $ext ]] && webradioPlaylistVerify $ext $urlnew
+	
+	urlname=${urlprev//\//|}
+	file=$dirwebradios
+	[[ $dir ]] && file="$file/$dir"
+	fileprev="$file/$urlname"
+	[[ -e "$fileprev" ]] && echo -1 && exit
+	
+	urlnamenew=${urlnew//\//|}
+	filenew="$file/$urlnamenew"
+	sampling=$( sed -n 2p "$fileprev" )
 	echo "\
 $name
-$( sed -n 2p "$fileprev" )
-$charset" > "$fileprev"
-	if [[ $url != $urlnew ]]; then
-		urlnamenew=${urlnew//\//|}
-		filenew="$dirwebradios/$dir$urlnamenew"
-		mv "$fileprev" "$filenew"
+$sampling
+$charset" > "$filenew"
+	if [[ $urlprev != $urlnew ]]; then
+		rm "$fileprev"
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg
 		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg
 		webRadioSampling $urlnew "$filenew" &

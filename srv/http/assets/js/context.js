@@ -425,32 +425,25 @@ function webRadioEdit() {
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
 			var newcharset = values[ 2 ];
-			var $exist = $( '#lib-list .lipath:not( :eq( '+ G.list.li.index() +' ) )' ).filter( function() {
-				return $( this ).text() === newurl
+			var lipath = $( '#lib-path .lipath' ).text();
+			bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ], function( error ) {
+				if ( error ) webRadioExists( error, '', newurl );
 			} );
-			if ( $exist.length ) {
-				webRadioExists( $exist.next().text(), newurl );
-			} else {
-				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ] );
-			}
 		}
 	} );
 }
-function webRadioExists( existname, existurl, name ) {
-	setTimeout( function() {
-		info( {
-			  icon    : 'webradio'
-			, title   : 'Add WebRadio'
-			, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
-					   +'<br><wh>'+ existurl +'</wh>'
-					   +'<br>Already exists as:'
-					   +'<br><wh>'+ existname +'</wh>'
-			, ok      : function() {
-				name ? webRadioNew( name, existurl ) : webRadioEdit();
-			}
-		} );
-	}, 300 );
+function webRadioExists( error, name, url, charset ) {
+	var message = error == -1 ? 'already exists.' : 'contains no valid URL.';
+	info( {
+		  icon    : 'webradio'
+		, title   : 'Add WebRadio'
+		, message : '<wh>'+ url +'</wh><br>'+ message
+		, ok      : function() {
+			setTimeout( function() {
+				name ? webRadioNew( name, url, charset ) : webRadioEdit();
+			}, 300 );
+		}
+	} );
 }
 function webRadioNew( name, url, charset ) {
 	info( {
@@ -482,28 +475,12 @@ function webRadioNew( name, url, charset ) {
 			var name = values[ 0 ];
 			var url = values[ 1 ];
 			var charset = values[ 2 ];
-			var $exist = $( '#lib-list .lipath' ).filter( function() {
-				return $( this ).text() === url
+			var lipath = $( '#lib-path .lipath' ).text();
+			bash( [ 'webradioadd', name, url, charset, lipath ], function( error ) {
+				if ( error ) webRadioExists( error, name, url, charset );
+				bannerHide();
 			} );
-			if ( $exist.length ) {
-				webRadioExists( $exist.next().text(), url, name );
-			} else {
-				if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
-				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioadd', name, url, charset, lipath ], function( data ) {
-					if ( data == -1 ) {
-						info( {
-							  icon    : 'webradio'
-							, title   : 'Add WebRadio'
-							, message : '<wh>'+ url +'</wh><br>contains no valid URL.'
-							, ok      : function() {
-								webRadioNew( name, url, charset );
-							}
-						} );
-					}
-					bannerHide();
-				} );
-			}
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
 		}
 	} );
 }
