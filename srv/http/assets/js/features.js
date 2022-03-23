@@ -77,6 +77,7 @@ $( '#setting-snapclient' ).click( function() {
 		, title        : 'SnapClient'
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
+		, focus        : 0
 		, checkblank   : 1
 		, values       : G.snapcastconf
 		, boxwidth     : 100
