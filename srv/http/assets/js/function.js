@@ -566,7 +566,6 @@ function getPlaybackStatus( withdisplay ) {
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			$( '#pl-list .elapsed' ).empty();
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
@@ -1483,7 +1482,6 @@ function setPlaylistScroll() {
 	) return
 	
 	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
-	if ( G.status.elapsed === false ) $( '#pl-list li .elapsed' ).empty();
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
@@ -1504,6 +1502,11 @@ function setPlaylistScroll() {
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
+		if ( G.status.elapsed === false ) {
+			$elapsed.empty();
+			return
+		}
+		
 		var slash = G.status.Time ? ' <gr>/</gr>' : '';
 		if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
 		if ( G.status.state === 'pause' ) {
