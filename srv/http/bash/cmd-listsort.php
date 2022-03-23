@@ -2,7 +2,7 @@
 function stripSort( $str ) {
 	// usort: <spcae> ! " # $ % & ' ( ) * + , - . / 0 : ; < = > ? @ A [ \ ] ^ _ ` a { | }
 	$string = preg_replace(
-		  [ '/^The\s+|^A\s+|^An\s+|"|^[^\w\p{L}\p{N}\p{Pd} ~]/ui',
+		  [ '/^The +|^A +|^An +|"|^[^\w\p{L}\p{N}\p{Pd} ~]/ui',
 			'/^_/',
 			'/\^\^/',
 			'/\s+/'
