@@ -1572,7 +1572,7 @@ Exclude this thumbnail?`
 	var album = $thisli.find( '.lialbum' ).text();
 	var artist = $thisli.find( '.liartist' ).text();
 	var lipath = $thisli.next().find( '.lipath' ).text();
-	var path = '/mnt/MPD/'+ lipath.substr( 0, lipath.lastIndexOf( '/' ) );
+	var path = '/mnt/MPD/'+ getDirectory( lipath );
 	if ( $this.hasClass( 'fa-save' ) ) {
 		coverartSave();
 	} else {

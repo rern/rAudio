@@ -12,7 +12,7 @@ function bookmarkNew() {
 	// #2 - dir list   - show image from server
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
-	if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
+	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	if ( G.mode === 'webradio' ) path = 'webradios/'+ path;
 	var bkpath = path.slice( 0, 9 ) === 'webradios' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	bash( [ 'coverartget', bkpath ], function( coverart ) {
@@ -296,7 +296,7 @@ function tagEditor() {
 						, format : [ 'file' ]
 					}
 					G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
-					if ( filepath.slice( -4 ) === '.cue' ) filepath = filepath.substring( 0, filepath.lastIndexOf( '/' ) );
+					if ( filepath.slice( -4 ) === '.cue' ) filepath = getDirectory( filepath );
 					list( query, function( data ) {
 						data.path = filepath;
 						renderLibraryList( data );
@@ -547,7 +547,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'directory':
 			if ( G.mode === 'latest' ) {
-				var path = G.list.path.substring( 0, G.list.path.lastIndexOf( '/' ) );
+				var path = getDirectory( G.list.path );
 				var query = {
 					  query  : 'ls'
 					, string : path
@@ -633,7 +633,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'update':
-			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
+			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = getDirectory( G.list.path );
 			infoUpdate( G.list.path );
 			return
 		case 'wrdirdelete':

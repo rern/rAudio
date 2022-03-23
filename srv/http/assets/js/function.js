@@ -226,13 +226,13 @@ function contextmenuScroll( $menu, menutop ) {
 function coverartChange() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
-		var path = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+		var path = getDirectory( G.status.file );
 		var album = G.status.Album;
 		var artist = G.status.Artist;
 	} else {
 		var src = $( '#liimg' ).attr( 'src' );
 		var path = $( '.licover .lipath' ).text();
-		if ( path.split( '.' ).pop() === 'cue' ) path = path.substr( 0, path.lastIndexOf( '/' ) );
+		if ( path.split( '.' ).pop() === 'cue' ) path = getDirectory( path );
 		var album = $( '.licover .lialbum' ).text();
 		var artist = $( '.licover .liartist' ).text();
 	}
@@ -304,13 +304,13 @@ function coverartSave() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
 		var file = G.status.file;
-		var path = '/mnt/MPD/'+ file.substr( 0, file.lastIndexOf( '/' ) );
+		var path = '/mnt/MPD/'+ getDirectory( file );
 		var artist = G.status.Artist;
 		var album = G.status.Album;
 	} else {
 		var src = $( '.licover img' ).attr( 'src' );
 		var path = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
-		if ( path.slice( -4 ) === '.cue' ) path = path.substr( 0, path.lastIndexOf( '/' ) );
+		if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 		var artist = $( '.licover .liartist' ).text();
 		var album = $( '.licover .lialbum' ).text();
 	}
@@ -524,6 +524,9 @@ function getBio( artist ) {
 		} );
 	} );
 }
+function getDirectory( path ) {
+	return path.substring( 0, path.lastIndexOf( '/' ) )
+}	
 function getPlaybackStatus( withdisplay ) {
 	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
 		if ( !list ) return
@@ -1473,12 +1476,9 @@ function setPlaylistInfoWidth() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
-	if ( !G.playlist
-		|| !G.status.playlistlength
-		|| G.plremove
-		|| G.sortable
+	if ( !G.playlist || G.savedlist || G.savedplaylist
+		|| !G.status.playlistlength || G.plremove || G.sortable
 		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
-		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) return
 	
