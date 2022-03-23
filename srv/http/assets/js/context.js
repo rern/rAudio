@@ -388,6 +388,18 @@ function webRadioDelete() {
 		}
 	} );
 }
+var htmlwebradio = `\
+<table>
+<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>Charset</td><td><input type="text">
+	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-question-circle fa-lg gr"></i></a></td>
+	<td style="width: 50%; text-align: right">
+		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
+	</td>
+</tr>
+</table>
+`;
 function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
@@ -397,7 +409,7 @@ function webRadioEdit() {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
 		, content      : htmlwebradio
-		, values       : [ name, url, charset ]
+		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkchanged : 1
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
@@ -438,19 +450,6 @@ function webRadioExists( existname, existurl, name ) {
 		}
 	} );
 }
-var htmlwebradio = `\
-<table>
-<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>Charset</td><td><input type="text">
-	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-question-circle fa-lg gr"></i></a></td>
-	<td style="width: 50%; text-align: right">
-		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
-	</td>
-</tr>
-<tr style="line-height: 20px"><td style="height: auto"></td><td colspan="2" style="height: auto"><gr>&nbsp;(Blank: UTF-8)</gr></td></tr>
-</table>
-`;
 function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
@@ -458,7 +457,7 @@ function webRadioNew( name, url, charset ) {
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
 		, focus        : 0
-		, values       : name ? [ name, url, charset ] : ''
+		, values       : name ? [ name, url, charset ] : [ '', '', 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : function() {
 			$( '#addwebradiodir' ).click( function() {
