@@ -557,6 +557,7 @@ $( '#ledcalc' ).click( function() {
 		  icon       : 'led'
 		, title      : 'LED Resister Calculator'
 		, textlabel  : [ 'GPIO <gr>(V)</gr>', 'Current <gr>(mA)</gr>', 'LED forward voltage <gr>(V)</gr>', 'Resister <gr>(&#8486;)</gr>' ]
+		, focus      : 0
 		, values     : [ 3.3, 5 ]
 		, boxwidth   : 70
 		, beforeshow : function() {
@@ -581,6 +582,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		  icon         : 'plus-r'
 		, title        : 'Player Name'
 		, textlabel    : 'Name'
+		, focus        : 0
 		, values       : G.hostname
 		, checkblank   : 1
 		, checkchanged : 1

@@ -141,7 +141,7 @@ info( {                                       // default
 	
 	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
 	textalign     : 'CSS'                     // 'left'         (input text alignment)
-	nofocus       : 1                         // (none)
+	focus         : N                         // (none)         (focused input)
 	
 	passwordlabel : 'LABEL'                   // (blank)        (password input label)
 	
@@ -465,9 +465,8 @@ function info( json ) {
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.attr( 'tabindex', -1 ); // for keyup event
-		var $input0 = $( '#infoContent' ).find( 'input, select').eq( 0 );
-		if ( !O.nofocus && $input0.is( 'input[type=text]' ) ) {
-			$input0.focus();
+		if ( 'focus' in O ) {
+			$( '#infoContent' ).find( 'input:text, input:password').eq( O.focus ).focus();
 		} else {
 			$( '#infoOverlay' ).focus();
 		}

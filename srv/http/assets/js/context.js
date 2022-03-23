@@ -23,6 +23,7 @@ function bookmarkNew() {
 			, message    : icon
 						  +'<br><wh>'+ path +'</wh>'
 			, textlabel  : 'As:'
+			, focus      : 0
 			, values     : path.split( '/' ).pop()
 			, checkblank : coverart ? '' : 1
 			, beforeshow : function() {
@@ -94,6 +95,7 @@ function playlistNew( name ) {
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
+		, focus        : 0
 		, values       : name
 		, checkblank   : 1
 		, ok           : function() {
@@ -108,6 +110,7 @@ function playlistRename() {
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
 		, textlabel    : 'To'
+		, focus        : 0
 		, values       : name
 		, checkchanged : 1
 		, checkblank   : 1
@@ -263,7 +266,6 @@ function tagEditor() {
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : 1
-			, nofocus      : 1
 			, beforeshow   : function() {
 				$( '#infoContent .infomessage' ).css( {
 					  display         : 'flex'
@@ -455,6 +457,7 @@ function webRadioNew( name, url, charset ) {
 		, title        : 'Add WebRadio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
+		, focus        : 0
 		, values       : name ? [ name, url, charset ] : ''
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : function() {
@@ -463,6 +466,7 @@ function webRadioNew( name, url, charset ) {
 					  icon       : 'webradio'
 					, title      : 'Add New Folder'
 					, textlabel  : 'Name'
+					, focus      : 0
 					, checkblank : 1
 					, ok         : function() {
 						var path = $( '#lib-path .lipath' ).text().replace( 'WEBRADIO', '' );
@@ -504,12 +508,13 @@ function webRadioNew( name, url, charset ) {
 }
 function webRadioSave( url ) {
 	info( {
-		  icon         : 'webradio'
-		, title        : 'Save WebRadio'
-		, message      : url
-		, textlabel    : 'Name'
-		, checkblank   : 1
-		, ok           : function() {
+		  icon       : 'webradio'
+		, title      : 'Save WebRadio'
+		, message    : url
+		, textlabel  : 'Name'
+		, focus      : 0
+		, checkblank : 1
+		, ok         : function() {
 			G.local = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', newname, url ], function() {
@@ -667,6 +672,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				  icon        : 'webradio'
 				, title       : 'WebRadio Rename'
 				, textlabel   : 'Name'
+				, focus       : 0
 				, values      : name
 				, checkblank  : 1
 				, checkchange : 1
