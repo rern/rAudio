@@ -122,7 +122,7 @@ if ( isset( $argv[ 1 ] ) ) {
 	if ( $file === '/srv/http/data/mpd/album' ) {
 		$sort1 = [];
 		foreach( $lines as $line ) {
-			if ( substr( $line, -14, 10 ) === '.cue/track' ) $line = dirname( dirname( $line ) );
+			if ( substr( $line, -4 ) === '.cue' ) $line = dirname( $line );
 			$sort[] = stripSort( $line ).'^x^'.$line;
 			$data1 = explode( '^^', $line );
 			$line1 = $data1[ 1 ].'^^'.$data1[ 0 ].'^^'.$data1[ 2 ];
