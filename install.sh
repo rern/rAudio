@@ -4,8 +4,8 @@ alias=r1
 
 # 20220325
 file=/srv/http/bash/cmd-listsort.php
-if ! grep -q '\^The ' $file; then
-	sed -i 's/The\\s+|A\\s+|An\\s+/^The +|^A +|^An +/' $file
+if grep -q '/The' $file; then
+	sed -i 's/The.*s+/^The +|^A +|^An +/' $file
 	for mode in album albumartist artist composer conductor genre date; do
 		file=/srv/http/data/mpd/$mode
 		if [[ -s $file ]]; then
