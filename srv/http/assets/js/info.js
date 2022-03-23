@@ -141,6 +141,7 @@ info( {                                       // default
 	
 	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
 	textalign     : 'CSS'                     // 'left'         (input text alignment)
+	nofocus       : 1                         // (none)
 	
 	passwordlabel : 'LABEL'                   // (blank)        (password input label)
 	
@@ -465,7 +466,11 @@ function info( json ) {
 			.removeClass( 'hide' )
 			.attr( 'tabindex', -1 ); // for keyup event
 		var $input0 = $( '#infoContent' ).find( 'input, select').eq( 0 );
-		$input0.is( 'input[type=text]' ) ? $input0.focus() : $( '#infoOverlay' ).focus();
+		if ( !O.nofocus && $input0.is( 'input[type=text]' ) ) {
+			$input0.focus();
+		} else {
+			$( '#infoOverlay' ).focus();
+		}
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button

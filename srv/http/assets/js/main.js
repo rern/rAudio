@@ -559,6 +559,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 		, content     : content
 		, boxwidth    : 320
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
+		, nofocus     : 1
 		, beforeshow  : function() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
