@@ -438,17 +438,19 @@ function webRadioEdit() {
 	} );
 }
 function webRadioExists( existname, existurl, name ) {
-	info( {
-		  icon    : 'webradio'
-		, title   : 'Add WebRadio'
-		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
-				   +'<br><wh>'+ existurl +'</wh>'
-				   +'<br>Already exists as:'
-				   +'<br><wh>'+ existname +'</wh>'
-		, ok      : function() {
-			name ? webRadioNew( name, existurl ) : webRadioEdit();
-		}
-	} );
+	setTimeout( function() {
+		info( {
+			  icon    : 'webradio'
+			, title   : 'Add WebRadio'
+			, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
+					   +'<br><wh>'+ existurl +'</wh>'
+					   +'<br>Already exists as:'
+					   +'<br><wh>'+ existname +'</wh>'
+			, ok      : function() {
+				name ? webRadioNew( name, existurl ) : webRadioEdit();
+			}
+		} );
+	}, 300 );
 }
 function webRadioNew( name, url, charset ) {
 	info( {
