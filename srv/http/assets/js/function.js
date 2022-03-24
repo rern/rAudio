@@ -1478,7 +1478,8 @@ function setPlaylistInfoWidth() {
 function setPlaylistScroll() {
 	clearIntervalAll();
 	if ( !G.playlist || G.savedlist || G.savedplaylist
-		|| !G.status.playlistlength || G.plremove || G.sortable
+		|| !G.status.playlistlength || G.sortable
+		|| $( '.pl-remove' ).length
 		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) return
@@ -1664,7 +1665,7 @@ function switchPage( page ) {
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
-	G.library = G.playback = G.playlist = G.plremove = 0;
+	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
 	G.page = page;
 	displayBottom();

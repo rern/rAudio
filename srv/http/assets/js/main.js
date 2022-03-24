@@ -492,10 +492,6 @@ $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
 		$( '#pl-list li' ).removeClass( 'updn' );
 		$( '#pl-list .name' ).css( 'max-width', '' );
 		if ( !$( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
-		if ( G.plremove ) {
-			G.plremove = 0;
-			getPlaybackStatus();
-		}
 	}
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
@@ -1828,12 +1824,6 @@ $( '#button-pl-shuffle' ).click( function() {
 	} );
 } );
 $( '#button-pl-clear' ).click( function() {
-	if ( G.plremove ) {
-		G.plremove = 0;
-		getPlaybackStatus();
-		return
-	}
-	
 	if ( G.status.playlistlength === 1 ) {
 		info( {
 			  icon        : 'playlist'
@@ -1853,7 +1843,6 @@ $( '#button-pl-clear' ).click( function() {
 			, buttoncolor : [ orange ]
 			, button      : [
 				  function() {
-					G.plremove = 1;
 					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
@@ -1910,7 +1899,6 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );
-	if ( G.plremove ) G.plremove = 0;
 	if ( $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
 	
 	var $this = $( this );
