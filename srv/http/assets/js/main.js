@@ -148,7 +148,7 @@ $( '#button-settings' ).click( function() {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-	$( '.contextmenu' ).addClass( 'hide' );
+	menuHide();
 } );
 $( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
@@ -423,7 +423,7 @@ $( '#addons' ).click( function () {
 	loader();
 } );
 $( '#library, #button-library' ).click( function() {
-	contextMenuHide();
+	menuHide();
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
@@ -452,7 +452,7 @@ $( '#playlist' ).click( function() {
 	if ( !G.local ) G.pladd = {}
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) getPlaylist();
-		contextMenuHide();
+		menuHide();
 	} else {
 		switchPage( 'playlist' );
 		if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
@@ -481,7 +481,7 @@ $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
 } );
 $( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
-	contextMenuHide();
+	menuHide();
 	if ( G.library ) {
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
@@ -1251,7 +1251,7 @@ $( '#button-lib-back' ).click( function() {
 		G.mode = G.gmode;
 		delete G.gmode;
 	}
-	contextMenuHide();
+	menuHide();
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
 	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
@@ -1586,7 +1586,7 @@ $( '#lib-list' ).press( '.licoverimg',  function( e ) {
 	$this.find( 'img' )
 		.css( 'opacity', '0.33' )
 		.after( icoveredit );
-	contextMenuHide();
+	menuHide();
 } );
 $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	if ( G.press ) return
@@ -1603,7 +1603,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
 		if ( $this.hasClass( 'active' ) && menushow ) {
-			contextMenuHide();
+			menuHide();
 		} else {
 			$( '#lib-list li' ).removeClass( 'active' );
 			contextmenuLibrary( $this, $target );
@@ -1611,7 +1611,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	contextMenuHide();
+	menuHide();
 	if ( menushow ) return
 	
 	$( '#lib-list li' ).removeClass( 'active' );
@@ -1750,8 +1750,11 @@ $( '.index' ).on( 'click', 'a', function() {
 $( '#button-playlist' ).click( function() {
 	$( '#playlist' ).click();
 } );
+$( '#pl-manage i' ).click( function() {
+	menuHide();
+} );
 $( '#button-pl-back' ).click( function() {
-	contextMenuHide();
+	menuHide();
 	if ( G.savedplaylist ) {
 		$( '#button-pl-playlists' ).click();
 	} else {
@@ -1907,14 +1910,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );
-	if ( G.plremove ) {
-		if ( !$target.hasClass( 'pl-remove' ) ) {
-			G.plremove = 0;
-			getPlaybackStatus();
-		}
-		return
-	}
-	
+	if ( G.plremove ) G.plremove = 0;
 	if ( $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
 	
 	var $this = $( this );
@@ -1950,7 +1946,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.savewr', function() {
 	G.list.li = $( this ).parent();
 	webRadioSave( $( this ).next().next().text() );
-	$( '.contextmenu' ).addClass( 'hide' );
+	menuHide();
 } ).on( 'click', '.pl-icon', function() {
 	var $this = $( this );
 	var $thisli = $this.parent();
@@ -1962,6 +1958,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	G.list.index = $thisli.index();
 	var $menu = $( '#menu-plaction' );
 	$( '#pl-list li' ).removeClass( 'updn' );
+	$( '.pl-remove' ).remove();
 	$thisli.addClass( 'updn' );
 	if ( !$menu.hasClass( 'hide' ) && $menu.css( 'top' ) === ( $thisli.position().top + 48 ) +'px' ) {
 		$menu.addClass( 'hide' );
@@ -1999,7 +1996,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	plRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
-	contextMenuHide();
+	menuHide();
 	var $target = $( e.target );
 	if ( $target.hasClass( 'savewr' ) ) return
 	
@@ -2054,7 +2051,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.savewr', function() {
 	G.list.li = $( this ).parent();
 	webRadioSave( $( this ).next().next().text() );
-	$( '.contextmenu' ).addClass( 'hide' );
+	menuHide();
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {

@@ -509,7 +509,7 @@ function webRadioSave( url ) {
 $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var $this = $( this );
 	var cmd = $this.data( 'cmd' );
-	contextMenuHide();
+	menuHide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
