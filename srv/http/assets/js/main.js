@@ -138,6 +138,7 @@ $( '#logo' ).click( function() {
 } );
 $( '#button-settings' ).click( function() {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
+		menuHide();
 		$( '#settings' )
 			.css( 'top', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
@@ -148,7 +149,6 @@ $( '#button-settings' ).click( function() {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-	menuHide();
 } );
 $( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
