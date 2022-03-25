@@ -10,7 +10,6 @@
 . /srv/http/bash/common.sh
 serverfile=$dirshm/serverip
 clientfile=$dirshm/clientip
-lcdcharfile=$dirshm/clientiplcdchar
 
 if [[ $1 == start ]]; then # client start - save server ip
 	if systemctl -q is-active snapserver; then # server + client on same device
@@ -36,9 +35,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/status-push.sh
 		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-		[[ -e $dirsystem/lcdchar ]] && lcdchar=1
-		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$serverip \
-			"$dirbash/snapcast.sh $clientip $lcdchar"
+		sshCommand $serverip $dirbash/snapcast.sh $clientip
 	else
 		systemctl stop snapclient
 		echo -1
@@ -55,21 +52,10 @@ elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $clientfile
 	[[ $( awk NF $clientfile | wc -l ) == 0 ]] && rm -f $clientfile
-	[[ ! -e $lcdcharfile ]] && exit
-	
-	sed -i "/$clientip/ d" $lcdcharfile
-	[[ $( awk NF $lcdcharfile | wc -l ) == 0 ]] && rm -f $lcdcharfile
 else # sshpass add clientip from connected client
 	clientip=$1
-	lcdchar=$2
 	iplist="\
-$( cat $clientfile )
+$( cat $clientfile 2> /dev/null )
 $clientip"
 	echo "$iplist" | sort -u | awk NF > $clientfile
-	[[ ! $lcdchar ]] && exit
-	
-	iplist="\
-$( cat $lcdcharfile )
-$clientip"
-	echo "$iplist" | sort -u | awk NF > $lcdcharfile
 fi

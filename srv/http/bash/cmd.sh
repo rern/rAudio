@@ -167,8 +167,7 @@ snapclientStop() {
 	systemctl stop snapclient
 	$dirbash/mpd-conf.sh
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-	sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
-		"$dirbash/snapcast.sh remove $clientip"
+	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/serverip
 }
 stopRadio() {
@@ -591,14 +590,6 @@ ignoredir )
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
-lcdcharsnapclient )
-	[[ ! -e $dirshm/serverip ]] && exit
-	
-	serverip=$( cat $dirshm/serverip )
-	sshpass -p ros scp -qo StrictHostKeyChecking=no root@$serverip:$dirshm/statuslcd.py $dirshm
-	kill -9 $( pgrep lcdchar ) &> /dev/null
-	$dirbash/lcdchar.py &
-	;;
 librandom )
 	enable=${args[1]}
 	if [[ $enable == false ]]; then
@@ -997,7 +988,7 @@ power )
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
-			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh playerstop$'\n'snapcast"
+			sshCommand $ip $dirbash/cmd.sh playerstop$'\n'snapcast
 		done
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )

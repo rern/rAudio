@@ -145,7 +145,7 @@ if [[ -e /srv/http/shareddata/iplist ]]; then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	iplist=$( cat /srv/http/shareddata/iplist | grep -v $ip )
 	for ip in $iplist; do
-		sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip $dirbash/cmd.sh shareddatareload
+		sshCommand $ip $dirbash/cmd.sh shareddatareload
 	done
 fi
 
