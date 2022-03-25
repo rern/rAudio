@@ -19,7 +19,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl restart mpd
 		systemctl start snapclient
 		touch $dirshm/snapclientactive
-		pushstream display '{"snapclientactive":true}'
+		pushstream display '{"snapclientactive":true,"volumenone":false}'
 		data=$( $dirbash/features-data.sh )
 		pushstream refresh "$data"
 		data=$( $dirbash/player-data.sh )
@@ -44,7 +44,12 @@ elif [[ $1 == stop ]]; then # server + client on same device
 	systemctl stop snapclient
 	rm $dirshm/snapclientactive
 	$dirbash/mpd-conf.sh
-	pushstream display '{"snapclientactive":false}'
+	if [[ -e $dirshm/nosound ]]; then
+		volumenone=true
+	else
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btclient ]] && volumenone=false || volumenone=true
+	fi
+	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
 	data=$( $dirbash/features-data.sh )
 	pushstream refresh "$data"
 
