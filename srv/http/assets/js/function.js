@@ -307,11 +307,10 @@ function coverartSave() {
 	} else {
 		var src = $( '.licover img' ).attr( 'src' );
 		var path = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
-		if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 		var artist = $( '.licover .liartist' ).text();
 		var album = $( '.licover .lialbum' ).text();
 	}
-	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
+	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	info( {
 		  icon    : '<i class="iconcover"></i>'
 		, title   : 'Save Album CoverArt'
@@ -319,7 +318,7 @@ function coverartSave() {
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
 		, ok      : function() {
-			bash( [ 'coversave', '/srv/http'+ src, path, covername ] );
+			bash( [ 'coverartsave', '/srv/http'+ src, path ] );
 		}
 	} );
 }
@@ -1038,7 +1037,11 @@ function renderLibraryList( data ) {
 						.html( htmlpath )
 						.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		imageLoad( 'lib-list' );
+		if ( $( '.licover' ).length ) {
+			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg' ).append( icoversave );
+		} else {
+			imageLoad( 'lib-list' );
+		}
 		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {

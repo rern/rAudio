@@ -494,19 +494,18 @@ $mpdpath" )
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;
+coverartsave )
+	source=${args[1]}
+	path=${args[2]}
+	coverfile="$path/cover.jpg"
+	jpgThumbnail coverart "$source" "$coverfile"
+	rm -f "$source"
+	;;
 coverfileslimit )
 	for type in local online webradio; do
 		files=$( ls -1t $dirshm/$type )
 		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 	done
-	;;
-coversave )
-	source=${args[1]}
-	path=${args[2]}
-	covername=${args[3]}
-	coverfile="$path/cover.jpg"
-	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f $dirshm/local/$covername*
 	;;
 displaysave )
 	data=${args[1]}
