@@ -4,6 +4,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	
 	G.wH = window.innerHeight;
 	G.wW = window.innerWidth;
+	displayBars();
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
