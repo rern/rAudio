@@ -410,7 +410,7 @@ input.disabled + .switchlabel:after {
 	text-align: left;
 }
 .qr {
-	margin: 5px 0;
+	margin: 15px 0;
 	width: 130px;
 	height: 130px;
 }
