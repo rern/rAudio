@@ -424,7 +424,7 @@ function webRadioEdit() {
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
-			var newcharset = values[ 2 ];
+			var newcharset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
 			var lipath = $( '#lib-path .lipath' ).text();
 			bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ], function( error ) {
 				if ( error ) webRadioExists( error, '', newurl );
@@ -474,7 +474,7 @@ function webRadioNew( name, url, charset ) {
 			var values = infoVal();
 			var name = values[ 0 ];
 			var url = values[ 1 ];
-			var charset = values[ 2 ];
+			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
 			var lipath = $( '#lib-path .lipath' ).text();
 			bash( [ 'webradioadd', name, url, charset, lipath ], function( error ) {
 				if ( error ) webRadioExists( error, name, url, charset );

@@ -1209,7 +1209,7 @@ volumeupdown )
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
-	charset=$( echo ${args[3]} | sed 's/UTF-8\|iso-*\|iso *//i' )
+	charset=${args[3]}
 	dir=${args[4]}
 	urlname=${url//\//|}
 	ext=${url/*.}
@@ -1244,13 +1244,13 @@ webradiodelete )
 webradioedit )
 	name=${args[1]}
 	url=${args[2]}
-	charset=$( echo ${args[3]} | sed 's/UTF-8\|iso-*\|iso *//i' )
+	charset=${args[3]}
 	dir=${args[4]}
 	urlprev=${args[5]}
 	urlname=${url//\//|}
 	[[ $url != $urlprev ]] && urlchanged=1
 	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
-	if [[ $urlchange ]]; then
+	if [[ $urlchanged ]]; then
 		ext=${url/*.}
 		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 		
@@ -1262,9 +1262,9 @@ webradioedit )
 $name
 $sampling
 $charset" > "$file"
-	if [[ $urlchange ]]; then
+	if [[ $urlchanged ]]; then
 		urlprevname=${urlprev//\//|}
-		rm "$dirwebradios/$dir$urlprevname"
+		[[ $dir ]] && rm "$dirwebradios/$dir/$urlprevname" || rm "$dirwebradios/$urlprevname"
 		mv ${dirwebradios}img/{$urlprevname,$urlname}.jpg
 		mv ${dirwebradios}img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
