@@ -1207,17 +1207,17 @@ volumeupdown )
 	pushstreamVolume updn $volume
 	;;
 webradioadd )
+	name=${args[1]}
 	url=$( urldecode ${args[2]} )
+	charset=$( echo ${args[3]} | sed 's/UTF-8\|iso-*\|iso *//i' )
+	dir=${args[4]}
 	urlname=${url//\//|}
-	[[ -n $( find $dirwebradios -name $urlname ) ]] && echo -1 && exit
-	
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	
-	name=${args[1]}
-	charset=$( echo ${args[3]} | sed 's/UTF-8\|iso-*\|iso *//i' )
-	dir=${args[4]}
 	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	[[ -e "$file" ]] && echo -1 && exit
+	
 	echo "\
 $name
 
@@ -1251,12 +1251,12 @@ webradioedit )
 	[[ $url != $urlprev ]] && urlchanged=1
 	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
 	if [[ $urlchange ]]; then
-		[[ -n $( find $dirwebradios -name $urlname ) ]] && echo -1 && exit
-	
 		ext=${url/*.}
 		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+		
+		[[ -e "$file" ]] && echo -1 && exit
+		
 	fi
-	
 	sampling=$( sed -n 2p "$file" 2> /dev/null )
 	echo "\
 $name
