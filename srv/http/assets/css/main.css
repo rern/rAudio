@@ -2121,7 +2121,6 @@ li.active .li2 bl {
 		#time-knob,
 		#coverart-block,
 		#volume-knob {
-			width: 30%;
 			min-width: 30%;
 			margin: 0 10px;
 		}
