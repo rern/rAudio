@@ -366,7 +366,7 @@ else
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
 		cuefile=$( dirname "$file" )
-		cuesrc=$( grep ^FILE "/mnt/MPD/$cuefile" | head -1 | sed 's/FILE "\|" WAVE.*//g' )
+		cuesrc=$( grep ^FILE "/mnt/MPD/$cuefile" | head -1 | cut -d'"' -f2 )
 		ext=${cuesrc/*.}
 	fi
 	ext=${ext^^}
