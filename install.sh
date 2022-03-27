@@ -2,15 +2,17 @@
 
 alias=r1
 
-# 20220325
+# 20220327
+sed -i '/chromium/ d' /etc/pacman.conf
+
 file=/srv/http/bash/cmd-listsort.php
 if grep -q '/The' $file; then
 	sed -i 's/The.*s+/^The +|^A +|^An +/' $file
 	for mode in album albumartist artist composer conductor genre date; do
-		file=/srv/http/data/mpd/$mode
-		if [[ -s $file ]]; then
-			sed -i 's/^.^^//' $file
-			php $dirbash/cmd-listsort.php $file
+		filemode=/srv/http/data/mpd/$mode
+		if [[ -s $filemode ]]; then
+			sed -i 's/^.^^//' $filemode
+			php $file $filemode
 		fi
 	done
 fi

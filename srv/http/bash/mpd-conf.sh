@@ -173,6 +173,9 @@ audio_output {
 }'
 fi
 
+linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
+[[ $linecdio ]] && sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
+
 conf=$( cat /etc/mpd.conf )
 line=$( echo "$conf" \
 			| awk '/^resampler/,/}/ {print NR}' \
