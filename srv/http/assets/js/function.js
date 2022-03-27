@@ -1037,11 +1037,7 @@ function renderLibraryList( data ) {
 						.html( htmlpath )
 						.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		if ( $( '.licover' ).length ) {
-			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg' ).append( icoversave );
-		} else {
-			imageLoad( 'lib-list' );
-		}
+		imageLoad( 'lib-list' );
 		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
