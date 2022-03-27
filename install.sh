@@ -2,10 +2,9 @@
 
 alias=r1
 
-# 20220328
+# 20220327
 sed -i '/chromium/ d' /etc/pacman.conf
 
-# 20220327
 file=/srv/http/bash/cmd-listsort.php
 if grep -q '/The' $file; then
 	sed -i 's/The.*s+/^The +|^A +|^An +/' $file
