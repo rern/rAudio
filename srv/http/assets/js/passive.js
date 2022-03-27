@@ -187,7 +187,7 @@ function psCoverart( data ) {
 				if ( $( '.licover' ).length ) {
 					var covername = url.split( '/' ).pop().slice( 0, -4 );
 					var artistalbum = $( '.liinfo .liartist' ).text() + $( '.liinfo .lialbum' ).text();
-					artistalbum = artistalbum.replace( /[ "`?\/#&']/g, '' );
+					artistalbum = artistalbum.replace( /[ '"`?/#&]/g, '' );
 					if ( covername === artistalbum ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
