@@ -278,7 +278,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 				$liactive.click();
 			}
 		}
-		$( '.contextmenu' ).addClass( 'hide' );
+		menuHide();
 	} else if ( G.playlist ) {
 		if ( G.savedplaylist || G.savedlist ) {
 			if ( key === 'ArrowUp' || key === 'ArrowDown' ) {

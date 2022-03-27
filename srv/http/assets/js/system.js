@@ -49,6 +49,22 @@ $( 'body' ).on( 'click touchstart', function( e ) {
 		$( '#divi2smodule' ).addClass( 'hide' );
 	}
 } );
+$( '#power' ).click( function() {
+	info( {
+		  icon        : 'power'
+		, title       : 'Power'
+		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttoncolor : orange
+		, button      : function() {
+			bash( [ 'cmd', 'power', 'reboot' ] );
+		}
+		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, okcolor     : red
+		, ok          : function() {
+			bash( [ 'cmd', 'power', 'off' ] );
+		}
+	} );
+} );
 $( '#refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	
@@ -541,6 +557,7 @@ $( '#ledcalc' ).click( function() {
 		  icon       : 'led'
 		, title      : 'LED Resister Calculator'
 		, textlabel  : [ 'GPIO <gr>(V)</gr>', 'Current <gr>(mA)</gr>', 'LED forward voltage <gr>(V)</gr>', 'Resister <gr>(&#8486;)</gr>' ]
+		, focus      : 0
 		, values     : [ 3.3, 5 ]
 		, boxwidth   : 70
 		, beforeshow : function() {
@@ -565,6 +582,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		  icon         : 'plus-r'
 		, title        : 'Player Name'
 		, textlabel    : 'Name'
+		, focus        : 0
 		, values       : G.hostname
 		, checkblank   : 1
 		, checkchanged : 1

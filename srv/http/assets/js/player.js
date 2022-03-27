@@ -139,6 +139,7 @@ $( '#setting-crossfade' ).click( function() {
 		  icon         : 'mpd'
 		, title        : 'Crossfade'
 		, textlabel    : 'Seconds'
+		, focus        : 0
 		, boxwidth     : 60
 		, values       : G.crossfadeconf
 		, checkchanged : ( G.crossfade ? 1 : 0 )
@@ -184,6 +185,7 @@ $( '#setting-buffer' ).click( function() {
 		  icon         : 'mpd'
 		, title        : 'Custom Audio Buffer'
 		, textlabel    : 'audio_buffer_size <gr>(kB)</gr>'
+		, focus        : 0
 		, footer       : '(default: 4096)'
 		, footeralign  : 'right'
 		, boxwidth     : 110
@@ -204,6 +206,7 @@ $( '#setting-bufferoutput' ).click( function() {
 		  icon         : 'mpd'
 		, title        : 'Custom Output Buffer'
 		, textlabel    : 'max_output_buffer_size <gr>(kB)</gr>'
+		, focus        : 0
 		, footer       : '(default: 8192)'
 		, footeralign  : 'right'
 		, boxwidth     : 110

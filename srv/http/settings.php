@@ -35,12 +35,11 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <?php
 /*
 $head = [
-	  'title'   => 'TITLE'           // REQUIRED
-	, 'subhead' => true              // with no help icon
-	, 'status'  => 'COMMAND'         // include status icon and status box
-	, 'button'  => [ 'ID', 'ICON' ]  // icon button
-	, 'button1' => [ 'ID', 'ICON' ]  // icon button2
-	, 'back'    => true              // back button
+	  'title'   => 'TITLE'                  // REQUIRED
+	, 'subhead' => true                     // with no help icon
+	, 'status'  => 'COMMAND'                // include status icon and status box
+	, 'button'  => [ 'ID' => 'ICON', ... ]  // icon button
+	, 'back'    => true                     // back button
 	, 'nohelp'  => true
 	, 'help'    => <<<html
 HELP
@@ -77,7 +76,6 @@ function htmlHead( $data ) {
 	$subhead = $data[ 'subhead' ] ?? '';
 	$status = $data[ 'status' ] ?? '';
 	$button = $data[ 'button' ] ?? '';
-	$button1 = $data[ 'button1' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$class = $status ? 'status' : '';
 	$class.= $subhead ? ' sub' : '';
@@ -85,8 +83,7 @@ function htmlHead( $data ) {
 	$html = $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
 	$html.= '<span class="headtitle">'.$title.'</span>';
-	$html.= $button ? '<i id="'.$button[ 0 ].'" class="fa fa-'.$button[ 1 ].'"></i>' : '';
-	$html.= $button1 ? '<i id="'.$button1[ 0 ].'" class="fa fa-'.$button1[ 1 ].'"></i>' : '';
+	if ( $button ) foreach( $button as $id => $icon ) $html.= '<i id="'.$id.'" class="fa fa-'.$icon.'"></i>';
 	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
 	$html.= isset( $data[ 'back' ] ) ? '<i class="fa fa-arrow-left back"></i>' : '';
 	$html.= '</heading>';

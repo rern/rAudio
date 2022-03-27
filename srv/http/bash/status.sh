@@ -74,15 +74,10 @@ else
 , "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then
-	if [[ -e $dirshm/btclient ]]; then
-		volumenone=false
-	elif [[ -e $dirshm/nosound ]]; then
+	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-		volumenone=$( sed -n "/^\s*device.*hw:$card/,/mixer_type/ p" /etc/mpd.conf \
-					| grep -q 'mixer_type.*none' \
-					&& echo true )
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btclient || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
 	fi
 	display=$( head -n -1 $dirsystem/display )
 	display+='
@@ -138,7 +133,7 @@ $( $dirbash/status-bluetooth.sh )"
 		serverip=$( cat $dirshm/serverip )
 ########
 		status+="
-$( sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$serverip $dirbash/status.sh snapclient \
+$( sshCommand $serverip $dirbash/status.sh snapclient \
 	| sed -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
 		' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|
 		' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"

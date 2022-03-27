@@ -496,9 +496,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
 		$args = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
-		$script = '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"';
-		$coverart = exec( $script );
-		if ( !$coverart ) $coverart = '/assets/img/coverart.'.$time.'.svg';
+		$coverart = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		$coverhtml = '<li data-mode="'.$gmode.'" class="licover">'
 					.'<a class="lipath">'.$mpdpath.'</a>'
 					.'<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>'

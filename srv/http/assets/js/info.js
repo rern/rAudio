@@ -141,6 +141,7 @@ info( {                                       // default
 	
 	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
 	textalign     : 'CSS'                     // 'left'         (input text alignment)
+	focus         : N                         // (none)         (focused input)
 	
 	passwordlabel : 'LABEL'                   // (blank)        (password input label)
 	
@@ -464,8 +465,11 @@ function info( json ) {
 		$( '#infoOverlay' )
 			.removeClass( 'hide' )
 			.attr( 'tabindex', -1 ); // for keyup event
-		var $input0 = $( '#infoContent' ).find( 'input, select').eq( 0 );
-		$input0.is( 'input[type=text]' ) ? $input0.focus() : $( '#infoOverlay' ).focus();
+		if ( 'focus' in O ) {
+			$( '#infoContent' ).find( 'input:text, input:password').eq( O.focus ).focus();
+		} else {
+			$( '#infoOverlay' ).focus();
+		}
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		
 		// set width: button
@@ -544,6 +548,8 @@ function info( json ) {
 }
 
 function checkBlank() {
+	if ( !O.checkblank ) return // suppress error on repeating
+	
 	O.blank = false;
 	O.blank = O.checkblank.some( function( i ) {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true

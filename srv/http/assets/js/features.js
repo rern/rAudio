@@ -33,6 +33,7 @@ $( '#setting-spotifyd' ).click( function() {
 			  icon         : 'spotify'
 			, title        : 'Spotify Client'
 			, textlabel    : [ 'ID', 'Secret' ]
+			, focus        : 0
 			, footer       : 'Keys from private app: <i class="help fa fa-question-circle"></i>'
 			, boxwidth     : 320
 			, checklength  : { 0: 32, 1: 32 }
@@ -76,6 +77,7 @@ $( '#setting-snapclient' ).click( function() {
 		, title        : 'SnapClient'
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
+		, focus        : 0
 		, checkblank   : 1
 		, values       : G.snapcastconf
 		, boxwidth     : 100
@@ -321,6 +323,7 @@ $( '#login' ).click( function() {
 			, title         : 'Password Login'
 			, message       : 'Disable:'
 			, passwordlabel : 'Password'
+			, focus         : 0
 			, pwdrequired   : 1
 			, ok            : function() {
 				notify( 'Password Login', 'Disable ...', 'lock' );
@@ -341,6 +344,7 @@ $( '#setting-login' ).click( function() {
 		, title         : 'Password Login'
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
+		, focus         : 0
 		, checkblank    : 1
 		, cancel        : function() {
 			$( '#login' ).prop( 'checked', G.login );

@@ -4,6 +4,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	
 	G.wH = window.innerHeight;
 	G.wW = window.innerWidth;
+	displayBars();
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
@@ -165,7 +166,7 @@ function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
 	var src = data.url;
 	var url = decodeURIComponent( data.url );
-	var path = url.substr( 0, url.lastIndexOf( '/' ) ).replace( '/mnt/MPD/', '' );
+	var path = getDirectory( url ).replace( '/mnt/MPD/', '' );
 	switch( data.type ) {
 		case 'bookmark':
 			bookmarkCover( url, path );
@@ -186,11 +187,13 @@ function psCoverart( data ) {
 				if ( $( '.licover' ).length ) {
 					var covername = url.split( '/' ).pop().slice( 0, -4 );
 					var artistalbum = $( '.liinfo .liartist' ).text() + $( '.liinfo .lialbum' ).text();
-					artistalbum = artistalbum.replace( / "`?\/#&'/g, '' );
+					artistalbum = artistalbum.replace( /[ '"`?/#&]/g, '' );
 					if ( covername === artistalbum ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
-						$( '.licoverimg ' ).css( 'opacity', '' );
+						$( '.licoverimg ' )
+							.css( 'opacity', '' )
+							.append( icoversave );
 					}
 				} else {
 					$( '#lib-list li' ).each( function() {
@@ -215,7 +218,7 @@ function psCoverart( data ) {
 				var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
 				$li.each( function() {
 					var lipath = $( this ).find( '.lipath' ).text()
-					if ( lipath.substr( 0, lipath.lastIndexOf( '/' ) ) === path ) {
+					if ( getDirectory( lipath ) === path ) {
 						if ( url.slice( -4 ) !== 'none' ) {
 							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
 						} else {
@@ -308,7 +311,7 @@ function psEqualizer( data ) {
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		if ( data.state === 'play' && !data.Title && [ 'radiofrance', 'radioparadise' ].indexOf( data.icon ) !== -1 ) {
+		if ( data.state === 'play' && !data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
 		var playlistlength = G.status.playlistlength;

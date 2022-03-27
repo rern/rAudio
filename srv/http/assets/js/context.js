@@ -12,7 +12,7 @@ function bookmarkNew() {
 	// #2 - dir list   - show image from server
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
-	if ( path.slice( -4 ) === '.cue' ) path = path.substring( 0, path.lastIndexOf( '/' ) );
+	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	if ( G.mode === 'webradio' ) path = 'webradios/'+ path;
 	var bkpath = path.slice( 0, 9 ) === 'webradios' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	bash( [ 'coverartget', bkpath ], function( coverart ) {
@@ -23,6 +23,7 @@ function bookmarkNew() {
 			, message    : icon
 						  +'<br><wh>'+ path +'</wh>'
 			, textlabel  : 'As:'
+			, focus      : 0
 			, values     : path.split( '/' ).pop()
 			, checkblank : coverart ? '' : 1
 			, beforeshow : function() {
@@ -88,12 +89,14 @@ function playlistLoad( path, play, replace ) {
 		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
 	} );
 }
-function playlistNew() {
+function playlistNew( name ) {
 	info( {
 		  icon         : 'file-playlist'
 		, title        : 'Save Playlist'
 		, message      : 'Save current playlist as:'
 		, textlabel    : 'Name'
+		, focus        : 0
+		, values       : name
 		, checkblank   : 1
 		, ok           : function() {
 			playlistSave( infoVal() );
@@ -107,6 +110,7 @@ function playlistRename() {
 		, title        : 'Rename Playlist'
 		, message      : 'From: <wh>'+ name +'</wh>'
 		, textlabel    : 'To'
+		, focus        : 0
 		, values       : name
 		, checkchanged : 1
 		, checkblank   : 1
@@ -141,12 +145,44 @@ function playlistSaveExist( type, name, oldname ) {
 					   +'<br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
-		, button      : rename ? playlistRename : playlistNew
+		, button      : function() {
+			setTimeout( function() { // fix error on repeating
+				rename ? playlistRename() : playlistNew( name );
+			}, 0 );
+		}
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : function() {
 			rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' );
 		}
 	} );
+}
+function addSimilar() {
+	banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
+	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
+			+'&artist='+ encodeURI( G.list.artist )
+			+'&track='+ encodeURI( G.list.name )
+			+'&api_key='+ G.apikeylastfm
+			+'&format=json'
+			+'&autocorrect=1';
+	$.post( url, function( data ) {
+		var title = 'Playlist - Add Similar';
+		if ( 'error' in data || !data.similartracks.track.length ) {
+			banner( title, 'Track not found.', 'lastfm' );
+		} else {
+			var val = data.similartracks.track;
+			var iL = val.length;
+			var similar = '';
+			for ( i = 0; i < iL; i++ ) {
+				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+			}
+			banner( title, 'Find similar tracks from Library ...', 'library blink',  -1 );
+			bash( [ 'plsimilar', similar ], function( count ) {
+				getPlaylist();
+				setButtonControl();
+				banner( title, count +' tracks added.', 'library' );
+			} );
+		}
+	}, 'json' );
 }
 function tagEditor() {
 	var name = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
@@ -263,7 +299,7 @@ function tagEditor() {
 						, format : [ 'file' ]
 					}
 					G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
-					if ( filepath.slice( -4 ) === '.cue' ) filepath = filepath.substring( 0, filepath.lastIndexOf( '/' ) );
+					if ( filepath.slice( -4 ) === '.cue' ) filepath = getDirectory( filepath );
 					list( query, function( data ) {
 						data.path = filepath;
 						renderLibraryList( data );
@@ -352,6 +388,18 @@ function webRadioDelete() {
 		}
 	} );
 }
+var htmlwebradio = `\
+<table>
+<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
+<tr><td>Charset</td><td><input type="text">
+	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-question-circle fa-lg gr"></i></a></td>
+	<td style="width: 50%; text-align: right">
+		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
+	</td>
+</tr>
+</table>
+`;
 function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
@@ -361,7 +409,7 @@ function webRadioEdit() {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
 		, content      : htmlwebradio
-		, values       : [ name, url, charset ]
+		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkchanged : 1
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
@@ -376,52 +424,35 @@ function webRadioEdit() {
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
-			var newcharset = values[ 2 ];
-			var $exist = $( '#lib-list .lipath:not( :eq( '+ G.list.li.index() +' ) )' ).filter( function() {
-				return $( this ).text() === newurl
+			var newcharset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
+			var lipath = $( '#lib-path .lipath' ).text();
+			bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ], function( error ) {
+				if ( error ) webRadioExists( error, '', newurl );
 			} );
-			if ( $exist.length ) {
-				webRadioExists( $exist.next().text(), newurl );
-			} else {
-				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ] );
-			}
 		}
 	} );
 }
-function webRadioExists( existname, existurl, name ) {
+function webRadioExists( error, name, url, charset ) {
+	var message = error == -1 ? 'already exists.' : 'contains no valid URL.';
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add WebRadio'
-		, message : '<i class="fa fa-webradio" style="font-size: 36px"></i>'
-				   +'<br><wh>'+ existurl +'</wh>'
-				   +'<br>Already exists as:'
-				   +'<br><wh>'+ existname +'</wh>'
+		, message : '<wh>'+ url +'</wh><br>'+ message
 		, ok      : function() {
-			name ? webRadioNew( name, existurl ) : webRadioEdit();
+			setTimeout( function() {
+				name ? webRadioNew( name, url, charset ) : webRadioEdit();
+			}, 300 );
 		}
 	} );
 }
-var htmlwebradio = `\
-<table>
-<tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
-<tr><td>Charset</td><td><input type="text">
-	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-question-circle fa-lg gr"></i></a></td>
-	<td style="width: 50%; text-align: right">
-		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
-	</td>
-</tr>
-<tr style="line-height: 20px"><td style="height: auto"></td><td colspan="2" style="height: auto"><gr>&nbsp;(Blank: UTF-8)</gr></td></tr>
-</table>
-`;
 function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Add WebRadio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
-		, values       : name ? [ name, url, charset ] : ''
+		, focus        : 0
+		, values       : name ? [ name, url, charset ] : [ '', '', 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : function() {
 			$( '#addwebradiodir' ).click( function() {
@@ -429,6 +460,7 @@ function webRadioNew( name, url, charset ) {
 					  icon       : 'webradio'
 					, title      : 'Add New Folder'
 					, textlabel  : 'Name'
+					, focus      : 0
 					, checkblank : 1
 					, ok         : function() {
 						var path = $( '#lib-path .lipath' ).text().replace( 'WEBRADIO', '' );
@@ -442,40 +474,25 @@ function webRadioNew( name, url, charset ) {
 			var values = infoVal();
 			var name = values[ 0 ];
 			var url = values[ 1 ];
-			var charset = values[ 2 ];
-			var $exist = $( '#lib-list .lipath' ).filter( function() {
-				return $( this ).text() === url
+			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
+			var lipath = $( '#lib-path .lipath' ).text();
+			bash( [ 'webradioadd', name, url, charset, lipath ], function( error ) {
+				if ( error ) webRadioExists( error, name, url, charset );
+				bannerHide();
 			} );
-			if ( $exist.length ) {
-				webRadioExists( $exist.next().text(), url, name );
-			} else {
-				if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
-				var lipath = $( '#lib-path .lipath' ).text();
-				bash( [ 'webradioadd', name, url, charset, lipath ], function( data ) {
-					if ( data == -1 ) {
-						info( {
-							  icon    : 'webradio'
-							, title   : 'Add WebRadio'
-							, message : '<wh>'+ url +'</wh><br>contains no valid URL.'
-							, ok      : function() {
-								webRadioNew( name, url, charset );
-							}
-						} );
-					}
-					bannerHide();
-				} );
-			}
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
 		}
 	} );
 }
 function webRadioSave( url ) {
 	info( {
-		  icon         : 'webradio'
-		, title        : 'Save WebRadio'
-		, message      : url
-		, textlabel    : 'Name'
-		, checkblank   : 1
-		, ok           : function() {
+		  icon       : 'webradio'
+		, title      : 'Save WebRadio'
+		, message    : url
+		, textlabel  : 'Name'
+		, focus      : 0
+		, checkblank : 1
+		, ok         : function() {
 			G.local = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', newname, url ], function() {
@@ -492,7 +509,7 @@ function webRadioSave( url ) {
 $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var $this = $( this );
 	var cmd = $this.data( 'cmd' );
-	contextMenuHide();
+	menuHide();
 	$( 'li.updn' ).removeClass( 'updn' );
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
@@ -514,7 +531,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'directory':
 			if ( G.mode === 'latest' ) {
-				var path = G.list.path.substring( 0, G.list.path.lastIndexOf( '/' ) );
+				var path = getDirectory( G.list.path );
 				var query = {
 					  query  : 'ls'
 					, string : path
@@ -572,33 +589,18 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			G.list.li.remove();
 			return
 		case 'similar':
-			banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
-			var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-					+'&artist='+ encodeURI( G.list.artist )
-					+'&track='+ encodeURI( G.list.name )
-					+'&api_key='+ G.apikeylastfm
-					+'&format=json'
-					+'&autocorrect=1';
-			$.post( url, function( data ) {
-				var title = 'Playlist - Add Similar';
-				var addplay = $this.hasClass( 'submenu' ) ? 1 : 0;
-				if ( 'error' in data || !data.similartracks.track.length ) {
-					banner( title, 'Track not found.', 'lastfm' );
-				} else {
-					var val = data.similartracks.track;
-					var iL = val.length;
-					var similar = addplay ? 'addplay\n0\n' : '';
-					for ( i = 0; i < iL; i++ ) {
-						similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+			if ( G.display.plsimilar ) {
+				info( {
+					  icon    : 'lastfm'
+					, title   : 'Add Similar'
+					, message : 'Search and add similar tracks from Library?'
+					, ok      : function() {
+						addSimilar();
 					}
-					banner( title, 'Find similar tracks from Library ...', 'library blink',  -1 );
-					bash( [ 'plsimilar', similar ], function( count ) {
-						getPlaylist();
-						setButtonControl();
-						banner( title, count +' tracks added.', 'library' );
-					} );
-				}
-			}, 'json' );
+				} );
+			} else {
+				addSimilar();
+			}
 			return
 		case 'tag':
 			tagEditor();
@@ -615,7 +617,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'update':
-			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = G.list.path.substr( 0, G.list.path.lastIndexOf( '/' ) )
+			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = getDirectory( G.list.path );
 			infoUpdate( G.list.path );
 			return
 		case 'wrdirdelete':
@@ -648,6 +650,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				  icon        : 'webradio'
 				, title       : 'WebRadio Rename'
 				, textlabel   : 'Name'
+				, focus       : 0
 				, values      : name
 				, checkblank  : 1
 				, checkchange : 1

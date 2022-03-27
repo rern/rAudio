@@ -24,6 +24,7 @@ echo '
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
+	, 'button' => [ 'power' => 'power' ]
 	, 'nohelp' => true
 ] );
 ?>
@@ -43,7 +44,7 @@ htmlHead( [ //////////////////////////////////
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'journalctl'
-	, 'button' => [ 'refresh', 'refresh' ]
+	, 'button' => [ 'refresh' => 'refresh' ]
 ] );
 ?>
 	<div id="statuslabel" class="col-l text gr">
@@ -76,7 +77,7 @@ CPU temperature:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
-	, 'button' => [ 'addnas', 'plus-circle wh' ]
+	, 'button' => [ 'addnas' => 'plus-circle wh' ]
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>

@@ -42,6 +42,7 @@ $( '#lanadd' ).click( function() {
 		  icon          : 'lan'
 		, title         : 'New LAN Connection'
 		, textlabel     : [ 'IP', 'Gateway' ]
+		, focus         : 0
 		, ok           : function() {
 			editLANSet( infoVal() );
 		}
@@ -171,6 +172,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				  icon          : 'wifi'
 				, title         : ssid
 				, passwordlabel : 'Password'
+				, focus         : 0
 				, oklabel       : 'Connect'
 				, ok            : function() {
 					data.Security = list.wep ? 'wep' : 'wpa';
@@ -278,6 +280,7 @@ function editLAN() {
 		  icon         : 'lan'
 		, title        : 'Edit LAN Connection'
 		, textlabel    : [ ( static ? '<gr>Static</gr> IP' : '<gr>DHCP</gr> IP' ), 'Gateway' ]
+		, focus        : 0
 		, values       : [ ip, gw ]
 		, checkchanged : 1
 		, checkblank   : 1
@@ -345,6 +348,7 @@ function infoWiFi( values ) {
 		  icon          : 'wifi'
 		, title         : add ? 'New Wi-Fi Connection' : 'Edit Saved Connection'
 		, textlabel     : [ 'SSID', 'IP', 'Gateway' ]
+		, focus         : 0
 		, boxwidth      : 180
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'

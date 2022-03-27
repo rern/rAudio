@@ -2,6 +2,19 @@
 
 alias=r1
 
+# 20220325
+file=/srv/http/bash/cmd-listsort.php
+if grep -q '/The' $file; then
+	sed -i 's/The.*s+/^The +|^A +|^An +/' $file
+	for mode in album albumartist artist composer conductor genre date; do
+		file=/srv/http/data/mpd/$mode
+		if [[ -s $file ]]; then
+			sed -i 's/^.^^//' $file
+			php $dirbash/cmd-listsort.php $file
+		fi
+	done
+fi
+
 # 20220312
 file=/srv/http/data/system/display
 grep -q latest $file || sed -i '1 a\  "latest": true,' $file

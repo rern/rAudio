@@ -85,6 +85,7 @@ function changeIP() { // for android app
 		, title        : 'IP Address'
 		, message      : 'Switch rAudio:'
 		, textlabel    : 'New IP'
+		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
 		, beforeshow   : function() {
@@ -157,12 +158,8 @@ function colorSet() {
 	$( '#colorpicker' ).removeClass( 'hide' );
 	$( 'body' ).addClass( 'disablescroll' );
 }
-function contextMenuHide() {
-	$( '.menu' ).addClass( 'hide' );
-	$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
-}
 function contextmenuLibrary( $li, $target ) {
-	contextMenuHide();
+	menuHide();
 	var $menu = $( $li.find( '.lib-icon' ).data( 'target' ) );
 	G.list = {};
 	G.list.li = $li; // for contextmenu
@@ -226,13 +223,13 @@ function contextmenuScroll( $menu, menutop ) {
 function coverartChange() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
-		var path = G.status.file.substr( 0, G.status.file.lastIndexOf( '/' ) );
+		var path = getDirectory( G.status.file );
 		var album = G.status.Album;
 		var artist = G.status.Artist;
 	} else {
 		var src = $( '#liimg' ).attr( 'src' );
 		var path = $( '.licover .lipath' ).text();
-		if ( path.split( '.' ).pop() === 'cue' ) path = path.substr( 0, path.lastIndexOf( '/' ) );
+		if ( path.split( '.' ).pop() === 'cue' ) path = getDirectory( path );
 		var album = $( '.licover .lialbum' ).text();
 		var artist = $( '.licover .liartist' ).text();
 	}
@@ -304,17 +301,16 @@ function coverartSave() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
 		var file = G.status.file;
-		var path = '/mnt/MPD/'+ file.substr( 0, file.lastIndexOf( '/' ) );
+		var path = '/mnt/MPD/'+ getDirectory( file );
 		var artist = G.status.Artist;
 		var album = G.status.Album;
 	} else {
 		var src = $( '.licover img' ).attr( 'src' );
 		var path = '/mnt/MPD/'+ $( '.licover .lipath' ).text();
-		if ( path.slice( -4 ) === '.cue' ) path = path.substr( 0, path.lastIndexOf( '/' ) );
 		var artist = $( '.licover .liartist' ).text();
 		var album = $( '.licover .lialbum' ).text();
 	}
-	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
+	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	info( {
 		  icon    : '<i class="iconcover"></i>'
 		, title   : 'Save Album CoverArt'
@@ -322,7 +318,7 @@ function coverartSave() {
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
 		, ok      : function() {
-			bash( [ 'coversave', '/srv/http'+ src, path, covername ] );
+			bash( [ 'coverartsave', '/srv/http'+ src, path ] );
 		}
 	} );
 }
@@ -524,6 +520,9 @@ function getBio( artist ) {
 		} );
 	} );
 }
+function getDirectory( path ) {
+	return path.substring( 0, path.lastIndexOf( '/' ) )
+}	
 function getPlaybackStatus( withdisplay ) {
 	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
 		if ( !list ) return
@@ -563,7 +562,6 @@ function getPlaybackStatus( withdisplay ) {
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
-			$( '#pl-list .elapsed' ).empty();
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
@@ -786,6 +784,11 @@ function lyricsHide() {
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
 	$( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
+}
+function menuHide() {
+	$( '.menu' ).addClass( 'hide' );
+	$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
+	$( '.pl-remove' ).remove();
 }
 function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
@@ -1034,7 +1037,11 @@ function renderLibraryList( data ) {
 						.html( htmlpath )
 						.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		imageLoad( 'lib-list' );
+		if ( $( '.licover' ).length ) {
+			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
+		} else {
+			imageLoad( 'lib-list' );
+		}
 		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
@@ -1196,7 +1203,7 @@ function renderPlaylistList( data ) {
 	} );
 }
 function renderSavedPlaylist( name ) {
-	contextMenuHide();
+	menuHide();
 	list( { cmd: 'get', name: name }, function( data ) {
 		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
@@ -1473,17 +1480,14 @@ function setPlaylistInfoWidth() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
-	if ( !G.playlist
-		|| !G.status.playlistlength
-		|| G.plremove
-		|| G.sortable
+	if ( !G.playlist || G.savedlist || G.savedplaylist
+		|| !G.status.playlistlength || G.sortable
+		|| $( '.pl-remove' ).length
 		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
-		|| !$( '#pl-savedlist' ).hasClass( 'hide' )
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) return
 	
 	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
-	if ( G.status.elapsed === false ) $( '#pl-list li .elapsed' ).empty();
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
@@ -1504,6 +1508,11 @@ function setPlaylistScroll() {
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
+		if ( G.status.elapsed === false ) {
+			$elapsed.empty();
+			return
+		}
+		
 		var slash = G.status.Time ? ' <gr>/</gr>' : '';
 		if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
 		if ( G.status.state === 'pause' ) {
@@ -1659,7 +1668,7 @@ function switchPage( page ) {
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
-	G.library = G.playback = G.playlist = G.plremove = 0;
+	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
 	G.page = page;
 	displayBottom();

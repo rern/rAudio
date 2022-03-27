@@ -201,7 +201,7 @@ multiraudioset )
 		ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
 		for ip in $iplist; do
-			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip << EOF
+			sshCommand $ip << EOF
 echo "$data" > $dirsystem/multiraudio.conf 
 touch $dirsystem/multiraudio
 EOF

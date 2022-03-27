@@ -127,6 +127,7 @@ if [[ $i != -1 ]]; then
 			output+="
 $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
 		fi
+		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
 fi
 if [[ $output ]]; then

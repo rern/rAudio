@@ -78,12 +78,6 @@ if [[ -e $dirshm/clientip ]]; then
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done
-	if [[ -e $dirshm/clientiplcdchar ]]; then
-		[[ ! -e $dirsystem/lcdchar ]] && sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
-		for ip in $clientip; do
-			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh lcdcharsnapclient"
-		done
-	fi
 fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd-librandom.sh

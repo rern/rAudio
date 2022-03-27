@@ -7,10 +7,10 @@ dirimg=/srv/http/assets/img
 readarray -t args <<< "$1"
 
 addonsListGet() {
-	: >/dev/tcp/8.8.8.8/53 || exit -2 # online check
+	: >/dev/tcp/8.8.8.8/53 || ( echo -2 && exit ) # online check
 	
 	[[ ! $1 ]] && branch=main || branch=$1
-	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || exit -1
+	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || ( echo -1 && exit )
 }
 equalizerGet() {
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
@@ -167,8 +167,7 @@ snapclientStop() {
 	systemctl stop snapclient
 	$dirbash/mpd-conf.sh
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-	sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$( cat $dirshm/serverip ) \
-		"$dirbash/snapcast.sh remove $clientip"
+	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/serverip
 }
 stopRadio() {
@@ -276,6 +275,21 @@ webradioCount() {
 	count=$( find -L $dirdata/webradios -type f ! -name "*.jpg" ! -name "*.gif" | wc -l )
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+}
+webradioPlaylistVerify() {
+	ext=$1
+	url=$2
+	if [[ $ext == m3u ]]; then
+		url=$( curl -s $url 2> /dev/null | grep ^http | head -1 )
+	elif [[ $ext == pls ]]; then
+		url=$( curl -s $url 2> /dev/null | grep ^File | head -1 | cut -d= -f2 )
+	fi
+	if [[ $url ]]; then
+		urlname=${url//\//|}
+	else
+		echo -2
+		exit
+	fi
 }
 webRadioSampling() {
 	url=$1
@@ -480,24 +494,23 @@ $mpdpath" )
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;
+coverartsave )
+	source=${args[1]}
+	path=${args[2]}
+	coverfile="$path/cover.jpg"
+	jpgThumbnail coverart "$source" "$coverfile"
+	rm -f "$source"
+	;;
 coverfileslimit )
 	for type in local online webradio; do
 		files=$( ls -1t $dirshm/$type )
 		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
 	done
 	;;
-coversave )
-	source=${args[1]}
-	path=${args[2]}
-	covername=${args[3]}
-	coverfile="$path/cover.jpg"
-	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f $dirshm/local/$covername*
-	;;
 displaysave )
 	data=${args[1]}
 	pushstream display "$data"
-	jq <<< $data > $dirsystem/display
+	jq -S . <<< $data > $dirsystem/display
 	grep -q '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
@@ -580,14 +593,6 @@ ignoredir )
 	pushstream mpdupdate 1
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
-	;;
-lcdcharsnapclient )
-	[[ ! -e $dirshm/serverip ]] && exit
-	
-	serverip=$( cat $dirshm/serverip )
-	sshpass -p ros scp -qo StrictHostKeyChecking=no root@$serverip:$dirshm/statuslcd.py $dirshm
-	kill -9 $( pgrep lcdchar ) &> /dev/null
-	$dirbash/lcdchar.py &
 	;;
 librandom )
 	enable=${args[1]}
@@ -965,7 +970,6 @@ plshuffle )
 plsimilar )
 	plLprev=$( mpc playlist | wc -l )
 	linesL=${#args[@]}
-	[[ ${args[1]} == addplay ]] && pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	for (( i=1; i < linesL; i++ )); do
 		artist=${args[$i]}
 		(( i++ ))
@@ -981,7 +985,6 @@ plsimilar )
 	echo "$list" | awk 'NF' | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
-	[[ $pos ]] && mpc -q play $pos
 	;;
 power )
 	action=${args[1]}
@@ -989,7 +992,7 @@ power )
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
-			sshpass -p ros ssh -qo StrictHostKeyChecking=no root@$ip "$dirbash/cmd.sh playerstop$'\n'snapcast"
+			sshCommand $ip $dirbash/cmd.sh playerstop$'\n'snapcast
 		done
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
@@ -1205,19 +1208,14 @@ volumeupdown )
 webradioadd )
 	name=${args[1]}
 	url=$( urldecode ${args[2]} )
-	charset=$( echo ${args[3]} | sed 's/iso-*\|iso *//i' )
+	charset=${args[3]}
 	dir=${args[4]}
 	urlname=${url//\//|}
-	file=$dirwebradios
-	[[ $dir ]] && file="$file/$dir"
-	file="$file/$urlname"
 	ext=${url/*.}
-	if [[ $ext == m3u ]]; then
-		url=$( curl -s $url | grep ^http | head -1 )
-	elif [[ $ext == pls ]]; then
-		url=$( curl -s $url | grep ^File | head -1 | cut -d= -f2 )
-	fi
-	[[ ! $url ]] && exit -1
+	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+	
+	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	[[ -e "$file" ]] && echo -1 && exit
 	
 	echo "\
 $name
@@ -1237,33 +1235,38 @@ webradiodelete )
 	url=${args[1]}
 	dir=${args[2]}
 	urlname=${url//\//|}
-	[[ $dir ]] && dir="$dir/"
-	rm -f "$dirwebradios/$dir$urlname"
-	if (( $( find $dirdata/webradios -type f -name "$urlname" | wc -l ) == 0 )); then
-		rm -f "${dirwebradios}img/$urlname"{,-thumb}.*
-	fi
+	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	rm -f "$file"
+	[[ -z $( find $dirwebradios -name $urlname ) ]] && rm -f "${dirwebradios}img/$urlname"{,-thumb}.*
 	webradioCount
 	;;
 webradioedit )
 	name=${args[1]}
-	urlnew=${args[2]}
-	charset=$( echo ${args[3]} | sed 's/iso-*\|iso *//i' )
+	url=${args[2]}
+	charset=${args[3]}
 	dir=${args[4]}
-	url=${args[5]}
+	urlprev=${args[5]}
 	urlname=${url//\//|}
-	[[ $dir ]] && dir="$dir/"
-	fileprev="$dirwebradios/$dir$urlname"
+	[[ $url != $urlprev ]] && urlchanged=1
+	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	if [[ $urlchanged ]]; then
+		ext=${url/*.}
+		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+		
+		[[ -e "$file" ]] && echo -1 && exit
+		
+	fi
+	sampling=$( sed -n 2p "$file" 2> /dev/null )
 	echo "\
 $name
-$( sed -n 2p "$fileprev" )
-$charset" > "$fileprev"
-	if [[ $url != $urlnew ]]; then
-		urlnamenew=${urlnew//\//|}
-		filenew="$dirwebradios/$dir$urlnamenew"
-		mv "$fileprev" "$filenew"
-		mv ${dirwebradios}img/{$urlname,$urlnamenew}.jpg
-		mv ${dirwebradios}img/{$urlname,$urlnamenew}-thumb.jpg
-		webRadioSampling $urlnew "$filenew" &
+$sampling
+$charset" > "$file"
+	if [[ $urlchanged ]]; then
+		urlprevname=${urlprev//\//|}
+		[[ $dir ]] && rm "$dirwebradios/$dir/$urlprevname" || rm "$dirwebradios/$urlprevname"
+		mv ${dirwebradios}img/{$urlprevname,$urlname}.jpg
+		mv ${dirwebradios}img/{$urlprevname,$urlname}-thumb.jpg
+		webRadioSampling $url "$file" &
 	fi
 	pushstream webradio -1
 	;;

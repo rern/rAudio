@@ -44,3 +44,10 @@ pushstreamNotifyBlink() { # title text icon [hide]
 	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1'$power'}'
 	pushstream notify "$data"
 }
+sshCommand() {
+	sshpass -p ros ssh -q \
+		-o UserKnownHostsFile=/dev/null \
+		-o StrictHostKeyChecking=no \
+		root@$1 \
+		"${@:2}"
+}
