@@ -17,10 +17,10 @@ restartMPD() {
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
 	sed -i '/^decoder/ i\
-input { #cdio0\
+input {\
 	plugin         "cdio_paranoia"\
-	speed          "12" \
-} \
+	speed          "12"\
+}\
 ' /etc/mpd.conf
 	restartMPD
 	exit
@@ -38,7 +38,8 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 		pushstreamPlaylist
 	fi
 	if [[ $1 == off ]]; then
-		sed -i '/#cdio/,/^$/ d' /etc/mpd.conf
+		linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
+		sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
 		restartMPD
 	elif [[ $1 == ejectwithicon ]]; then
 		eject

@@ -81,7 +81,7 @@ if [[ $1 == withdisplay ]]; then
 	fi
 	display=$( head -n -1 $dirsystem/display )
 	display+='
-, "audiocd"          : '$( grep -q 'plugin.*cdio_paranoia' /etc/mpd.conf && echo true )'
+, "audiocd"          : '$( exists $dirshm/audiocd )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
