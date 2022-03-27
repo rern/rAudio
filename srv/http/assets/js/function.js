@@ -1038,7 +1038,7 @@ function renderLibraryList( data ) {
 						.removeClass( 'hide' );
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
-			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/dtat' ) $( '.licoverimg ' ).append( icoversave );
+			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
 		} else {
 			imageLoad( 'lib-list' );
 		}
