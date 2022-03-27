@@ -1498,20 +1498,17 @@ function setPlaylistScroll() {
 		var top = $liactive.offset().top - litop - ( 49 * 3 );
 	}
 	$( 'html, body' ).scrollTop( top );
+	$( '#pl-list .elapsed' ).empty();
 	var $this = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed = $this.find( '.elapsed' );
 	var $name = $this.find( '.name' );
 	var $stationname = $this.find( '.li2 .stationname' );
 	$stationname.addClass( 'hide' );
 	if ( G.status.state === 'stop' ) {
-		$elapsed.empty();
 		if ( G.status.webradio ) $name.text( $this.find( '.liname' ).text() );
 		$stationname.addClass( 'hide' );
 	} else {
-		if ( G.status.elapsed === false ) {
-			$elapsed.empty();
-			return
-		}
+		if ( G.status.elapsed === false ) return
 		
 		var slash = G.status.Time ? ' <gr>/</gr>' : '';
 		if ( G.status.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( G.status.Time ) );
