@@ -458,7 +458,8 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
 			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
 		} else {
-			$trackname = $cue ? $cuename : basename( $path );
+			$trackname = $cue ? $cuename.'/' : '';
+			$trackname.= basename( $path );
 		}
 		if ( !$title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$li0 = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
