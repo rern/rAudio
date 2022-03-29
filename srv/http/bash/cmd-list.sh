@@ -73,7 +73,7 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-[[ -s $dirmpd/album ]] && cp -f $filealbum{,prev} || touch $dirmpd/latest
+[[ -s $dirmpd/album ]] && cp -f $filealbum{,prev} || > $dirmpd/latest
 
 for mode in album albumartist artist composer conductor genre date; do
 	dircount=$dirmpd/$mode
