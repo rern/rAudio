@@ -1304,7 +1304,7 @@ $( '.mode' ).click( function() {
 		} else if ( G.mode === 'latest' ) {
 			var message = 'No new albums added since last update.';
 		} else {
-			var message = 'This mode has no data.'
+			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not found.' 
 						 +'<br>To populate Library database:'
 						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
 		}
