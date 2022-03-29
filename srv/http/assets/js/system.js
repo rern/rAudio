@@ -998,13 +998,12 @@ function renderStatus() {
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
-	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		status += '<br><i class="fa fa-warning';
+	if ( G.throttled !== '0x0' ) {                        // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
-		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
-		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
-			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
+		if ( bits[ 19 ] == 1 ) {                          // bit# 0  - undervoltage now
+			status += '<br><i class="fa fa-warning blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
+		} else if ( bits[ 0 ] == 1 ) {                    // bit# 19 - undervoltage occured
+			status += '<br><i class="fa fa-warning"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
 	}
 	$( '#status' ).html( status );
