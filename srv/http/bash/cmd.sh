@@ -594,6 +594,11 @@ ignoredir )
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
+latestclear )
+	> /srv/http/data/mpd/latest
+	sed -i 's/\("latest": \).*/\10,/' /srv/http/data/mpd/counts
+	pushstreamNotify Latest Cleared. latest
+	;;
 librandom )
 	enable=${args[1]}
 	if [[ $enable == false ]]; then

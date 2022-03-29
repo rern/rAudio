@@ -1154,6 +1154,15 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
+} ).on( 'click', '.button-latest-clear', function() {
+	info( {
+		  icon         : 'latest'
+		, title        : 'Latest'
+		, message      : 'Clear Latest albums list?'
+		, ok           : function() {
+			bash( [ 'latestclear' ] );
+		}
+	} );
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 	if ( $( this ).find( 'img' ).length ) {

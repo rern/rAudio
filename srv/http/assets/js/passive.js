@@ -391,6 +391,10 @@ function psNotify( data ) {
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
+	} else if ( data.title === 'Latest' ) {
+		G.status.counts.latest = 0;
+		$( '#mode-latest gr' ).empty();
+		if ( G.mode === 'latest' ) $( '#button-library' ).click();
 	}
 }
 function psOption( data ) {
