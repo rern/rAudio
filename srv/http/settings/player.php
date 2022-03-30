@@ -94,6 +94,7 @@ HTML
 		, 'help'    => <<< HTML
 Loopback device
 HTML
+		, 'exist'   => 0
 	]
 ];
 htmlSection( $head, $body );
