@@ -253,6 +253,7 @@ pcm.plugequal {
 fi
 
 if [[ -e $dirsystem/loopback ]]; then
+	modprobe snd-aloop
 	deviceloopback=$( aplay -l \
 						| grep Loopback \
 						| head -1 \
@@ -261,8 +262,8 @@ if [[ -e $dirsystem/loopback ]]; then
 ########
 	asound+='
 pcm.!default { 
-   type plug 
-   slave.pcm '$name'
+	type plug 
+	slave.pcm '$name'
 }
 pcm.'$name' {
 	slave {

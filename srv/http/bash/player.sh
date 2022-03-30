@@ -229,7 +229,6 @@ channel=${args[2]}
 format=${args[3]}
 rate=${args[4]}" > $dirsystem/loopback.conf
 	touch $dirsystem/loopback
-	modprobe snd-aloop
 	touch $dirshm/loopbackset
 	restartMPD
 	rm $dirshm/loopbackset
