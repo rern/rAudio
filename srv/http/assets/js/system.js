@@ -175,8 +175,7 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
-	var active = infoPlayerActive( $( this ) );
-	if ( active ) return
+	if ( infoPlayerActive( $( this ) ) ) return
 	
 	info( {
 		  icon         : 'bluetooth'

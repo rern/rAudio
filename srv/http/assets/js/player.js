@@ -104,6 +104,26 @@ $( '#mixertype' ).change( function() {
 		setMixerType( mixertype );
 	}
 } );
+$( '#setting-loopback' ).click( function() {
+	info( {
+		  icon         : 'volume'
+		, title        : 'Loopback'
+		, textlabel    : [ 'Name', 'Channel', 'Format', 'Rate <gr>(Hz)</gr>' ]
+		, values       : G.loopbackconf || [ "", 2, "S32_LE", 44100 ]
+		, checkblank   : 1
+		, checkchanged : ( G.loopback ? 1 : 0 )
+		, beforeshow   : function() {
+			if ( !G.loopbackconf[ 0 ] ) $( '#infoContent input' ).eq( 0 ).focus();
+		}
+		, cancel       : function() {
+			$( '#loopback' ).prop( 'checked', G.loopback );
+		}
+		, ok           : function() {
+			notify( 'Loopback', G.loopback ? 'Change ...' : 'Enable ...', 'volume' );
+			bash( [ 'loopbackset', ...infoVal() ] );
+		}
+	} );
+} );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {

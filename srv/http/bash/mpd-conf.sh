@@ -196,7 +196,7 @@ $output
 $btoutput" > /etc/mpd.conf
 
 # usbdac.rules
-if [[ $1 == add || $1 == remove ]]; then
+if [[ ! -e $dirshm/loopbackset && ( $1 == add || $1 == remove ) ]]; then
 	mpc -q stop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	if [[ ! $name ]]; then
@@ -249,6 +249,40 @@ ctl.equal {
 pcm.plugequal {
 	type equal
 	slave.pcm '$slavepcm'
+}'
+fi
+
+if [[ -e $dirsystem/loopback ]]; then
+	deviceloopback=$( aplay -l \
+						| grep Loopback \
+						| head -1 \
+						| sed 's/^card \(.\): .*/\1/' )
+	. $dirsystem/loopback.conf
+########
+	asound+='
+pcm.!default { 
+   type plug 
+   slave.pcm '$name'
+}
+pcm.'$name' {
+	slave {
+		pcm {
+			type     hw
+			card     Loopback
+			device   '$deviceloopback'
+			channels '$channel'
+			format   '$format'
+			rate     '$rate'
+		}
+	}
+}
+ctl.!default {
+	type hw
+	card Loopback
+}
+ctl.'$name' {
+	type hw
+	card Loopback
 }'
 fi
 

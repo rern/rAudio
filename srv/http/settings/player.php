@@ -87,6 +87,14 @@ Presets:
  • If distortions occurred, lower all bands collectively and increase volume to fix distortions
 HTML
 	]
+	, [
+		  'label'   => 'Loopback'
+		, 'id'      => 'loopback'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+Loopback device
+HTML
+	]
 ];
 htmlSection( $head, $body );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////

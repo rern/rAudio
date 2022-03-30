@@ -215,6 +215,25 @@ hwmixer )
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
 	;;
+loopbackdisable )
+	rm $dirsystem/loopback
+	rmmod snd-aloop
+	touch $dirshm/loopbackset
+	restartMPD
+	rm $dirshm/loopbackset
+	;;
+loopbackset )
+	echo "\
+name=${args[1]}
+channel=${args[2]}
+format=${args[3]}
+rate=${args[4]}" > $dirsystem/loopback.conf
+	touch $dirsystem/loopback
+	modprobe snd-aloop
+	touch $dirshm/loopbackset
+	restartMPD
+	rm $dirshm/loopbackset
+	;;
 mixertype )
 	mixertype=${args[1]}
 	aplayname=${args[2]}

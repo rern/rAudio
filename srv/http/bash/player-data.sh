@@ -5,6 +5,7 @@
 . $dirbash/mpd-devices.sh
 
 active=$( mpc &> /dev/null && echo true )
+[[ -e $dirsystem/loopback.conf ]] && loopbackconf='[ "'$( cut -d= -f2 $dirsystem/loopback.conf | xargs | sed 's/ /","/g' )'" ]'
 if [[ -e $dirsystem/soxr.conf ]]; then
 	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
 else
@@ -30,6 +31,8 @@ data='
 , "custom"           : '$( exists $dirsystem/custom )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true )'
+, "loopback"         : '$( exists $dirsystem/loopback )'
+, "loopbackconf"     : '$loopbackconf'
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true )'
 , "replaygain"       : '$( ! grep -q '^replaygain.*off' /etc/mpd.conf && echo true )'
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
