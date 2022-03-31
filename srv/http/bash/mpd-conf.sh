@@ -14,6 +14,7 @@
 
 restartMPD() {
 	systemctl restart mpd
+	[[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp camillagui
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -77,11 +78,18 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/camilladsp ]]; then
+		cardloopback=$( aplay -l \
+							| grep ^card.*Loopback \
+							| head -1 \
+							| cut -d: -f1 \
+							| cut -d' ' -f2 )
+		hw=hw:$cardloopback,1
 #---------------
 		output+='
 	name           "CamillaDSP"
-	device         "plug:camilladsp"
-	type           "alsa"'
+	device         "'$hw'"
+	type           "alsa"
+	mixer_type     "none"'
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
 #---------------

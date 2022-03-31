@@ -94,6 +94,16 @@ rate=${args[3]}" > $dirsystem/camilladsp.conf
 	restartMPD
 	rm $dirshm/camilladspset
 	;;
+camillaguiset )
+	camillafile=/srv/http/camillagui/configs/camilladsp.yml
+	echo "\
+channel=$( sed -n '/capture:/,/channels:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
+format=$( sed -n '/capture:/,/format:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
+rate=$( grep '^\s*samplerate:' $camillafile | sed 's/^.* \(.*\)/\1/' )
+" > $dirsystem/camilladsp.conf
+
+	restartMPD
+	;;
 count )
 	albumartist=$( mpc list albumartist | awk NF | wc -l )
 	composer=$( mpc list composer | awk NF | wc -l )
