@@ -196,7 +196,7 @@ $output
 $btoutput" > /etc/mpd.conf
 
 # usbdac.rules
-if [[ ! -e $dirshm/loopbackset && ( $1 == add || $1 == remove ) ]]; then
+if [[ ! -e $dirshm/camilladspset && ( $1 == add || $1 == remove ) ]]; then
 	mpc -q stop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	if [[ ! $name ]]; then
