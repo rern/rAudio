@@ -163,7 +163,7 @@ customset )
 	;;
 devices )
 	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card  | grep -v Loopback )
+	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
 	devices+=$'\n\n<bll># amixer scontrols</bll>\n'
 	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
