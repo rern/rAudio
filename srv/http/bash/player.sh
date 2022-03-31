@@ -77,6 +77,23 @@ bufferoutputset )
 	fi
 	restartMPD
 	;;
+camilladspdisable )
+	rm $dirsystem/camilladsp
+	rmmod snd-aloop
+	touch $dirshm/camilladspset
+	restartMPD
+	rm $dirshm/camilladspset
+	;;
+camilladspset )
+	echo "\
+channel=${args[1]}
+format=${args[2]}
+rate=${args[3]}" > $dirsystem/camilladsp.conf
+	touch $dirsystem/camilladsp
+	touch $dirshm/camilladspset
+	restartMPD
+	rm $dirshm/camilladspset
+	;;
 count )
 	albumartist=$( mpc list albumartist | awk NF | wc -l )
 	composer=$( mpc list composer | awk NF | wc -l )
@@ -214,24 +231,6 @@ hwmixer )
 	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
-	;;
-loopbackdisable )
-	rm $dirsystem/loopback
-	rmmod snd-aloop
-	touch $dirshm/loopbackset
-	restartMPD
-	rm $dirshm/loopbackset
-	;;
-loopbackset )
-	echo "\
-name=${args[1]}
-channel=${args[2]}
-format=${args[3]}
-rate=${args[4]}" > $dirsystem/loopback.conf
-	touch $dirsystem/loopback
-	touch $dirshm/loopbackset
-	restartMPD
-	rm $dirshm/loopbackset
 	;;
 mixertype )
 	mixertype=${args[1]}

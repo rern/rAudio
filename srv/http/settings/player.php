@@ -73,10 +73,19 @@ Volume control for each device.
 HTML
 	]
 	, [
+		  'label'   => 'CamillaDSP'
+		, 'id'      => 'camilladsp'
+		, 'setting' => true
+		, 'help'    => <<< HTML
+<a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
+HTML
+		, 'exixts'  => file_exists( '/usr/bin/camilladsp' )
+	]
+	, [
 		  'label'   => 'Equalizer'
 		, 'id'      => 'equalizer'
 		, 'help'    => <<< HTML
-10 band graphic equalizer with user presets.
+<a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control:&emsp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
@@ -86,15 +95,6 @@ Presets:
  • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
  • If distortions occurred, lower all bands collectively and increase volume to fix distortions
 HTML
-	]
-	, [
-		  'label'   => 'Loopback'
-		, 'id'      => 'loopback'
-		, 'setting' => true
-		, 'help'    => <<< HTML
-Loopback device
-HTML
-		, 'exist'   => 0
 	]
 ];
 htmlSection( $head, $body );

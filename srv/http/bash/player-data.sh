@@ -5,7 +5,7 @@
 . $dirbash/mpd-devices.sh
 
 active=$( mpc &> /dev/null && echo true )
-[[ -e $dirsystem/loopback.conf ]] && loopbackconf='[ "'$( cut -d= -f2 $dirsystem/loopback.conf | xargs | sed 's/ /","/g' )'" ]'
+[[ -e $dirsystem/camilladsp.conf ]] && camilladspconf='[ "'$( cut -d= -f2 $dirsystem/camilladsp.conf | xargs | sed 's/ /","/g' )'" ]'
 if [[ -e $dirsystem/soxr.conf ]]; then
 	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
 else
@@ -25,14 +25,14 @@ data='
 , "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
 , "bufferoutput"     : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true )'
 , "bufferoutputconf" : '$( cat $dirsystem/bufferoutput.conf 2> /dev/null || echo 8192 )'
+, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camilladspconf"   : '$camilladspconf'
 , "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
 , "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
 , "custom"           : '$( exists $dirsystem/custom )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true )'
-, "loopback"         : '$( exists $dirsystem/loopback )'
-, "loopbackconf"     : '$loopbackconf'
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true )'
 , "replaygain"       : '$( ! grep -q '^replaygain.*off' /etc/mpd.conf && echo true )'
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
