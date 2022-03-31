@@ -76,7 +76,13 @@ if [[ $i != -1 ]]; then
 	hwmixer=${Ahwmixer[$i]}
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
-	if [[ -e $dirsystem/equalizer ]]; then
+	if [[ -e $dirsystem/camilladsp ]]; then
+#---------------
+		output+='
+	name           "CamillaDSP"
+	device         "plug:camilladsp"
+	type           "alsa"'
+	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
 #---------------
 		output+='
@@ -254,10 +260,6 @@ fi
 
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd-aloop
-	deviceloopback=$( aplay -l \
-						| grep Loopback \
-						| head -1 \
-						| sed 's/^card \(.\): .*/\1/' )
 	. $dirsystem/camilladsp.conf
 ########
 	asound+='
@@ -270,7 +272,7 @@ pcm.camilladsp {
 		pcm {
 			type     hw
 			card     Loopback
-			device   '$deviceloopback'
+			device   0
 			channels '$channel'
 			format   '$format'
 			rate     '$rate'
