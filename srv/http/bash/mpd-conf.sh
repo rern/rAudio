@@ -252,20 +252,20 @@ pcm.plugequal {
 }'
 fi
 
-if [[ -e $dirsystem/loopback ]]; then
+if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd-aloop
 	deviceloopback=$( aplay -l \
 						| grep Loopback \
 						| head -1 \
 						| sed 's/^card \(.\): .*/\1/' )
-	. $dirsystem/loopback.conf
+	. $dirsystem/camilladsp.conf
 ########
 	asound+='
 pcm.!default { 
 	type plug 
-	slave.pcm '$name'
+	slave.pcm camilladsp
 }
-pcm.'$name' {
+pcm.camilladsp {
 	slave {
 		pcm {
 			type     hw
@@ -281,7 +281,7 @@ ctl.!default {
 	type hw
 	card Loopback
 }
-ctl.'$name' {
+ctl.camilladsp {
 	type hw
 	card Loopback
 }'
