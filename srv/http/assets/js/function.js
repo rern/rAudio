@@ -430,10 +430,11 @@ function displaySave( keys ) {
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
-	var submenu = [ 'lock', 'equalizer', 'snapclient', 'relays' ];
+	var submenu = [ 'lock', 'snapclient', 'relays' ];
 	submenu.forEach( function( el ) {
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );  // submenu toggled by css .settings + .submenu
+	$( '#features' ).toggleClass( 'sub', G.display.camilladsp || G.display.equalizer );
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 	if ( G.display.multiraudio ) $( '#displayplaylist' ).addClass( 'sub' );
 }

@@ -161,7 +161,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			} );
 			break;
 		case 'equalizer':
-			equalizer();
+			G.equalizer ? equalizer() : location.href = 'http://'+ location.host +':5005';
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );

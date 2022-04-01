@@ -211,9 +211,9 @@ if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 $settinglist = [
 	  [ 'features', 'settings', 'features', 'Features',
-		'lock', 'lock' ]
-	, ['player', 'settings', 'player', 'Player',
 		'equalizer', 'equalizer' ]
+	, ['player', 'settings', 'player', 'Player',
+		'lock', 'lock' ]
 	, ['networks', 'settings', 'networks', 'Networks',
 		'snapclient', 'snapclient' ]
 	, [ 'system', 'settings', 'plus-r', 'System',

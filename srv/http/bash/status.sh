@@ -82,6 +82,7 @@ if [[ $1 == withdisplay ]]; then
 	display=$( head -n -1 $dirsystem/display )
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
+, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
