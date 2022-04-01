@@ -44,6 +44,16 @@ case ${args[0]} in
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
+asoundconf )
+	camilladspyml=/srv/http/camillagui/configs/camilladsp.yml
+	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
+	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
+	rate=$( grep '^\s*samplerate:' $camilladspyml | sed 's/^.* \(.*\)/\1/' )
+	values=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	[[ $channels != ${values[0]} ]] && sed -i 's/^\(\s*channels\s*\).*/\1'${values[0]}'/' /etc/asound.conf
+	[[ $format != ${values[1]} ]] && sed -i 's/^\(\s*format\s*\).*/\1'${values[1]}'/' /etc/asound.conf
+	[[ $rate != ${values[2]} ]] && sed -i 's/^\(\s*rate\s*\).*/\1'${values[2]}'/' /etc/asound.conf
+	;;
 autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
@@ -62,26 +72,14 @@ autoplayset )
 	pushRefresh
 	;;
 camilladspdisable )
-	rm $dirsystem/camilladsp
-	rmmod snd-aloop
-	touch $dirshm/camilladspset
-	restartMPD
-	rm $dirshm/camilladspset
+	systemctl disable --now camilladsp
+	pushRefresh
+	$dirbash/mpd-conf.sh
 	;;
-camilladspset )
-	touch $dirsystem/camilladsp
-	touch $dirshm/camilladspset
-	restartMPD
-	rm $dirshm/camilladspset
-	;;
-camillaguiset )
-	camillafile=/srv/http/camillagui/configs/camilladsp.yml
-	echo "\
-channel=$( sed -n '/capture:/,/channels:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
-format=$( sed -n '/capture:/,/format:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
-rate=$( grep '^\s*samplerate:' $camillafile | sed 's/^.* \(.*\)/\1/' )
-" > $dirsystem/camilladsp.conf
-	restartMPD
+camilladsp )
+	systemctl enable --now camilladsp
+	pushRefresh
+	$dirbash/mpd-conf.sh
 	;;
 hostapddisable )
 	systemctl disable --now hostapd

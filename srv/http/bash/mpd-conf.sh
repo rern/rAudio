@@ -14,11 +14,7 @@
 
 restartMPD() {
 	systemctl restart mpd
-	if [[ -e $dirsystem/camilladsp ]]; then
-		systemctl restart camilladsp camillagui
-	else
-		systemctl stop camilladsp camillagui
-	fi
+	[[ $camilladsp ]] && systemctl restart camilladsp
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -66,6 +62,7 @@ fi
 
 . $dirbash/mpd-devices.sh
 
+systemctl -q is-active camilladsp && camilladsp=1
 output= # reset var from mpd-devices.sh
 if [[ $i != -1 ]]; then
 	if [[ $1 == add ]]; then
@@ -81,7 +78,7 @@ if [[ $i != -1 ]]; then
 	hwmixer=${Ahwmixer[$i]}
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
-	if [[ -e $dirsystem/camilladsp ]]; then
+	if [[ $camilladsp ]]; then
 		cardloopback=$( aplay -l \
 							| grep ^card.*Loopback \
 							| head -1 \
@@ -214,7 +211,7 @@ $output
 $btoutput" > /etc/mpd.conf
 
 # usbdac.rules
-if [[ ! -e $dirshm/camilladspset && ( $1 == add || $1 == remove ) ]]; then
+if [[ $1 == add || $1 == remove ]]; then
 	mpc -q stop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	if [[ ! $name ]]; then
@@ -270,9 +267,12 @@ pcm.plugequal {
 }'
 fi
 
-if [[ -e $dirsystem/camilladsp ]]; then
+if [[ $camilladsp ]]; then
 	modprobe snd-aloop
-	. $dirsystem/camilladsp.conf
+	camillafile=/srv/http/camillagui/configs/camilladsp.yml
+	channel=$( sed -n '/capture:/,/channels:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
+	format=$( sed -n '/capture:/,/format:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
+	rate=$( grep '^\s*samplerate:' $camillafile | sed 's/^.* \(.*\)/\1/' )
 ########
 	asound+='
 pcm.!default { 

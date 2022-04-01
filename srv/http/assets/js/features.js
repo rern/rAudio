@@ -113,7 +113,12 @@ $( '#setting-upmpdcli' ).click( function() {
 	} );
 } );
 $( '#setting-camilladsp' ).click( function() {
-	location.href = 'http://'+ location.host +':5000';
+	if ( G.camilladsp ) {
+		location.href = 'http://'+ location.host +':5000';
+	} else {
+		bash( [ 'camilladsp' ] );
+		notify( 'CamillaDSP', 'Enable ...', 'equalizer' );
+	}
 } );
 $( '#setting-hostapd' ).click( function() {
 	info( {
