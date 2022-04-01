@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern.2022030600.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern.2022040100.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -121,6 +121,7 @@ input::-moz-focus-inner {
 .fa-bluetooth::before { content: '\f595' }
 .fa-btclient::before { content: '\f596' }
 .fa-brush::before { content: '\f536' }
+.fa-camilladsp::before { content: '\f589' }
 .fa-capslock:before { content: '\f607' }
 .fa-check::before { content: '\f51B' }
 .fa-chevron-down::before { content: '\f605' }
