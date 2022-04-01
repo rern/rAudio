@@ -272,10 +272,10 @@ fi
 
 if [[ -e $dirsystem/camilladsp ]]; then
 	modprobe snd-aloop
-	camillafile=/srv/http/camillagui/configs/camilladsp.yml
-	channel=$( sed -n '/capture:/,/channels:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
-	format=$( sed -n '/capture:/,/format:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
-	rate=$( grep '^\s*samplerate:' $camillafile | sed 's/^.* \(.*\)/\1/' )
+	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
+	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
+	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
+	rate=$( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' )
 ########
 	asound+='
 pcm.!default { 
@@ -288,7 +288,7 @@ pcm.camilladsp {
 			type     hw
 			card     Loopback
 			device   0
-			channels '$channel'
+			channels '$channels'
 			format   '$format'
 			rate     '$rate'
 		}

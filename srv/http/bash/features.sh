@@ -67,14 +67,18 @@ camilladsp )
 	$dirbash/mpd-conf.sh
 	;;
 camilladspasound )
-	camilladspyml=/srv/http/camillagui/configs/camilladsp.yml
-	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
-	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
-	rate=$( grep '^\s*samplerate:' $camilladspyml | sed 's/^.* \(.*\)/\1/' )
-	values=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
-	[[ $channels != ${values[0]} ]] && sed -i 's/^\(\s*channels\s*\).*/\1'${values[0]}'/' /etc/asound.conf
-	[[ $format != ${values[1]} ]] && sed -i 's/^\(\s*format\s*\).*/\1'${values[1]}'/' /etc/asound.conf
-	[[ $rate != ${values[2]} ]] && sed -i 's/^\(\s*rate\s*\).*/\1'${values[2]}'/' /etc/asound.conf
+	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
+	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
+	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
+	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )
+	old=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	[[ "${new[@]}" == "${old[@]}" ]] && exit
+	
+	list=( channels format rate )
+	for (( i=0; i < 3; i++ )); do
+		[[ ${new[i]} != ${old[i]} ]] && sed -i 's/^\(\s*'${list[i]}'\s*\).*/\1'${new[i]}'/' /etc/asound.conf
+	done
+	alsactl nrestore &> /dev/null
 	;;
 camilladspdisable )
 	rm $dirsystem/camilladsp
