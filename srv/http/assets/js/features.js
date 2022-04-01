@@ -114,7 +114,7 @@ $( '#setting-upmpdcli' ).click( function() {
 } );
 $( '#setting-camilladsp' ).click( function() {
 	if ( G.camilladsp ) {
-		location.href = 'http://'+ location.host +':5000';
+		location.href = 'http://'+ location.host +':5005';
 	} else {
 		bash( [ 'camilladsp' ] );
 		notify( 'CamillaDSP', 'Enable ...', 'equalizer' );
