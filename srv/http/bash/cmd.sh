@@ -783,6 +783,8 @@ pkgstatus )
 	pkg=$id
 	service=$id
 	case $id in
+		camilladsp )
+			conf=/srv/http/camillagui/configs/camilladsp.yml;;
 		hostapd )
 			conf=/etc/hostapd/hostapd.conf;;
 		localbrowser )
@@ -801,8 +803,9 @@ pkgstatus )
 	[[ -e $conf ]] && catconf="
 $( cat $conf )"
 	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
+	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
 	echo "\
-<code>$( pacman -Q $pkg )</code>$catconf
+<code>$version</code>$catconf
 
 $dot $( systemctl status $service \
 	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \

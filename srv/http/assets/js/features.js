@@ -112,6 +112,9 @@ $( '#setting-upmpdcli' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-camilladsp' ).click( function() {
+	location.href = 'http://'+ location.host +':5000';
+} );
 $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'

@@ -61,6 +61,28 @@ autoplayset )
 	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
+camilladspdisable )
+	rm $dirsystem/camilladsp
+	rmmod snd-aloop
+	touch $dirshm/camilladspset
+	restartMPD
+	rm $dirshm/camilladspset
+	;;
+camilladspset )
+	touch $dirsystem/camilladsp
+	touch $dirshm/camilladspset
+	restartMPD
+	rm $dirshm/camilladspset
+	;;
+camillaguiset )
+	camillafile=/srv/http/camillagui/configs/camilladsp.yml
+	echo "\
+channel=$( sed -n '/capture:/,/channels:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
+format=$( sed -n '/capture:/,/format:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
+rate=$( grep '^\s*samplerate:' $camillafile | sed 's/^.* \(.*\)/\1/' )
+" > $dirsystem/camilladsp.conf
+	restartMPD
+	;;
 hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0

@@ -77,33 +77,6 @@ bufferoutputset )
 	fi
 	restartMPD
 	;;
-camilladspdisable )
-	rm $dirsystem/camilladsp
-	rmmod snd-aloop
-	touch $dirshm/camilladspset
-	restartMPD
-	rm $dirshm/camilladspset
-	;;
-camilladspset )
-	echo "\
-channel=${args[1]}
-format=${args[2]}
-rate=${args[3]}" > $dirsystem/camilladsp.conf
-	touch $dirsystem/camilladsp
-	touch $dirshm/camilladspset
-	restartMPD
-	rm $dirshm/camilladspset
-	;;
-camillaguiset )
-	camillafile=/srv/http/camillagui/configs/camilladsp.yml
-	echo "\
-channel=$( sed -n '/capture:/,/channels:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
-format=$( sed -n '/capture:/,/format:/ p' $camillafile | tail -1 | sed 's/^.* \(.*\)/\1/' )
-rate=$( grep '^\s*samplerate:' $camillafile | sed 's/^.* \(.*\)/\1/' )
-" > $dirsystem/camilladsp.conf
-
-	restartMPD
-	;;
 count )
 	albumartist=$( mpc list albumartist | awk NF | wc -l )
 	composer=$( mpc list composer | awk NF | wc -l )
@@ -299,7 +272,7 @@ novolume )
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
+	rm -f $dirsystem/{camilladsp,crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;

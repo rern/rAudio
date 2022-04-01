@@ -5,7 +5,6 @@
 . $dirbash/mpd-devices.sh
 
 active=$( mpc &> /dev/null && echo true )
-[[ -e $dirsystem/camilladsp.conf ]] && camilladspconf='[ "'$( cut -d= -f2 $dirsystem/camilladsp.conf | xargs | sed 's/ /","/g' )'" ]'
 if [[ -e $dirsystem/soxr.conf ]]; then
 	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
 else
@@ -25,8 +24,6 @@ data='
 , "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
 , "bufferoutput"     : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true )'
 , "bufferoutputconf" : '$( cat $dirsystem/bufferoutput.conf 2> /dev/null || echo 8192 )'
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "camilladspconf"   : '$camilladspconf'
 , "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
 , "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'

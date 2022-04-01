@@ -104,27 +104,6 @@ $( '#mixertype' ).change( function() {
 		setMixerType( mixertype );
 	}
 } );
-$( '#setting-camilladsp' ).click( function() {
-	info( {
-		  icon         : 'volume'
-		, title        : 'CamillaDSP'
-		, message      : 'Loopback device settings:'
-		, textlabel    : [ 'Channel', 'Format', 'Rate <gr>(Hz)</gr>' ]
-		, values       : G.camilladspconf || [ 2, "S32_LE", 44100 ]
-		, checkblank   : 1
-		, checkchanged : ( G.camilladsp ? 1 : 0 )
-		, beforeshow   : function() {
-			if ( !G.camilladspconf[ 0 ] ) $( '#infoContent input' ).eq( 0 ).focus();
-		}
-		, cancel       : function() {
-			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
-		}
-		, ok           : function() {
-			notify( 'CamillaDSP', G.camilladsp ? 'Change ...' : 'Enable ...', 'volume' );
-			bash( [ 'camilladspset', ...infoVal() ] );
-		}
-	} );
-} );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {

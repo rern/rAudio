@@ -72,30 +72,6 @@ Volume control for each device.
  • <code>MPD software</code> Software volume.
 HTML
 	]
-	, [
-		  'label'   => 'CamillaDSP'
-		, 'id'      => 'camilladsp'
-		, 'setting' => true
-		, 'help'    => <<< HTML
-<a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-HTML
-		, 'exixts'  => file_exists( '/usr/bin/camilladsp' )
-	]
-	, [
-		  'label'   => 'Equalizer'
-		, 'id'      => 'equalizer'
-		, 'help'    => <<< HTML
-<a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control:&emsp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
-Presets:
- • <code>Flat</code>: All bands at <code>0dB</code>
- • New: adjust ➤ <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
- • Existing: adjust ➤ <i class="fa fa-save"></i>
- • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
- • If distortions occurred, lower all bands collectively and increase volume to fix distortions
-HTML
-	]
 ];
 htmlSection( $head, $body );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
@@ -108,7 +84,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
  • Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
- • Equalizer: Disabled
+ • CamillaDSP, Equalizer: Disabled
  • Crossfade, Normalization and Replay Gain: Disabled
 HTML
 	]
