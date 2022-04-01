@@ -108,7 +108,7 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Audio' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'CamillaDSP'
+		  'label'    => 'DSP'
 		, 'id'       => 'camilladsp'
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
@@ -124,7 +124,7 @@ HTML
 		  'label'    => 'Equalizer'
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
-		, 'disabled' => 'CamillaDSP is currently enabled.'
+		, 'disabled' => 'DSP is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control:&emsp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>

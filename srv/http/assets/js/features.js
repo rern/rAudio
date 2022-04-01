@@ -468,6 +468,8 @@ function renderPage() {
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
+	$( '#camilladsp' ).toggleClass( 'disabled', G.equalizer );
+	$( '#equalizer' ).toggleClass( 'disabled', G.camilladsp );
 	if ( ! /code|error/.test( window.location.href ) ) {
 		showContent();
 		return
