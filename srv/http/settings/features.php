@@ -114,7 +114,6 @@ $body = [
 		, 'icon'     => 'camilladsp'
 		, 'status'   => 'camilladsp'
 		, 'disabled' => 'Equalizer is currently enabled.'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 HTML

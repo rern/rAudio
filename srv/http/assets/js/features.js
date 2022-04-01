@@ -112,14 +112,6 @@ $( '#setting-upmpdcli' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-camilladsp' ).click( function() {
-	if ( G.camilladsp ) {
-		location.href = 'http://'+ location.host +':5005';
-	} else {
-		bash( [ 'camilladsp' ] );
-		notify( 'CamillaDSP', 'Enable ...', 'equalizer' );
-	}
-} );
 $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'
