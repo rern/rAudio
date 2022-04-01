@@ -44,16 +44,6 @@ case ${args[0]} in
 aplaydevices )
 	aplay -L | grep -v '^\s\|^null' | head -c -1
 	;;
-asoundconf )
-	camilladspyml=/srv/http/camillagui/configs/camilladsp.yml
-	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
-	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
-	rate=$( grep '^\s*samplerate:' $camilladspyml | sed 's/^.* \(.*\)/\1/' )
-	values=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
-	[[ $channels != ${values[0]} ]] && sed -i 's/^\(\s*channels\s*\).*/\1'${values[0]}'/' /etc/asound.conf
-	[[ $format != ${values[1]} ]] && sed -i 's/^\(\s*format\s*\).*/\1'${values[1]}'/' /etc/asound.conf
-	[[ $rate != ${values[2]} ]] && sed -i 's/^\(\s*rate\s*\).*/\1'${values[2]}'/' /etc/asound.conf
-	;;
 autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
@@ -71,13 +61,23 @@ autoplayset )
 	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
-camilladspdisable )
-	systemctl disable --now camilladsp
+camilladsp )
+	touch $dirsystem/camilladsp
 	pushRefresh
 	$dirbash/mpd-conf.sh
 	;;
-camilladsp )
-	systemctl enable --now camilladsp
+camilladspasound )
+	camilladspyml=/srv/http/camillagui/configs/camilladsp.yml
+	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
+	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | sed 's/^.* \(.*\)/\1/' )
+	rate=$( grep '^\s*samplerate:' $camilladspyml | sed 's/^.* \(.*\)/\1/' )
+	values=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	[[ $channels != ${values[0]} ]] && sed -i 's/^\(\s*channels\s*\).*/\1'${values[0]}'/' /etc/asound.conf
+	[[ $format != ${values[1]} ]] && sed -i 's/^\(\s*format\s*\).*/\1'${values[1]}'/' /etc/asound.conf
+	[[ $rate != ${values[2]} ]] && sed -i 's/^\(\s*rate\s*\).*/\1'${values[2]}'/' /etc/asound.conf
+	;;
+camilladspdisable )
+	rm $dirsystem/camilladsp
 	pushRefresh
 	$dirbash/mpd-conf.sh
 	;;
