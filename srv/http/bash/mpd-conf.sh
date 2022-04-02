@@ -88,38 +88,39 @@ if [[ $i != -1 ]]; then
 							| cut -d: -f1 \
 							| cut -d' ' -f2 )
 		hw=hw:$cardloopback,1
-#---------------
+#---------------<
 		output+='
 	name           "CamillaDSP"
 	device         "'$hw'"
 	type           "alsa"
-	mixer_type     "hardware"'
+	auto_resample  "no"
+	mixer_type     "'$mixertype'"'
+#--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
-#---------------
+#---------------<
 		output+='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
-	
+#--------------->
 	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
-#---------------
+#---------------<
 		output+='
 	name           "'$btalias'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "hardware"'
 		if [[ -e $dirsystem/btformat ]]; then
-#---------------
 			output+='
 	format         "44100:16:2"'
 		fi
-		
+#--------------->
 	elif [[ ! -e $dirshm/snapclientactive ]]; then
-#---------------
+#---------------<
 		output+='
 	name           "'$name'"
 	device         "'$hw'"
@@ -128,23 +129,21 @@ if [[ $i != -1 ]]; then
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-#---------------
 			output+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$card'"'
 		fi
 		if [[ $dop == 1 ]]; then
-#---------------
 			output+='
 	dop            "yes"'
 		fi
 		mpdcustom=$dirsystem/custom
 		customfile="$mpdcustom-output-$aplayname"
 		if [[ -e $mpdcustom && -e "$customfile" ]]; then
-#---------------
 			output+="
 $( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
 		fi
+#--------------->
 		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
 fi
@@ -154,6 +153,7 @@ if [[ $output ]]; then
 audio_output {\
 $output
 }"
+#-------
 fi
 
 if systemctl -q is-active snapserver; then
@@ -166,6 +166,7 @@ audio_output {
 	format         "48000:16:2"
 	mixer_type     "software"
 }'
+#-------
 fi
 if [[ -e $dirsystem/streaming ]]; then
 ########
@@ -179,6 +180,7 @@ audio_output {
 	format         "44100:16:2"
 	always_on      "yes"
 }'
+#-------
 fi
 if [[ ! $output || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
 ########
@@ -189,6 +191,7 @@ audio_output {
 	path           "/tmp/mpd.fifo"
 	format         "44100:16:1"
 }'
+#-------
 fi
 
 linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
@@ -233,6 +236,7 @@ fi
 asound="\
 defaults.pcm.card $card
 defaults.ctl.card $card"
+#-------
 if [[ $btmixer ]]; then
 ########
 	asound+='
@@ -244,6 +248,7 @@ pcm.bluealsa {
 		profile "a2dp"
 	}
 }'
+#-------
 fi
 
 if [[ -e $dirsystem/equalizer ]]; then
@@ -268,6 +273,7 @@ pcm.plugequal {
 	type equal
 	slave.pcm '$slavepcm'
 }'
+#-------
 fi
 
 if [[ -e $dirsystem/camilladsp ]]; then
@@ -302,6 +308,7 @@ ctl.camilladsp {
 	type hw
 	card Loopback
 }'
+#-------
 fi
 
 echo "$asound" > /etc/asound.conf
@@ -325,19 +332,17 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
 	if [[ $btmixer ]]; then
-########
 		conf+='
 	output_device = "bluealsa";'
 	else
-########
 		conf+='
 	output_device = "hw:'$card'";'
 	[[ $hwmixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
 	fi
-########
 	conf+='
 }'
+#-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
 	systemctl try-restart shairport-sync
@@ -361,12 +366,12 @@ use_mpris = false
 backend = "alsa"
 device = "'$device'"'
 	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
-########
 		conf+='
 mixer = "'$hwmixer'"
 control = "hw:'$card'"
 volume_controller = "alsa"'
-		echo "$conf" > /etc/spotifyd.conf
-		systemctl try-restart spotifyd
+#-------
 	fi
+	echo "$conf" > /etc/spotifyd.conf
+	systemctl try-restart spotifyd
 fi

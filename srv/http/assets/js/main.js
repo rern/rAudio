@@ -155,13 +155,16 @@ $( '.settings' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
+		case 'camilladsp':
+			location.href = 'http://'+ location.host +':5005';
+			break;
+		case 'equalizer':
+			equalizer();
+			break;
 		case 'lock':
 			$.post( cmdphp, { cmd: 'logout' }, function() {
 				location.reload();
 			} );
-			break;
-		case 'equalizer':
-			G.equalizer ? equalizer() : location.href = 'http://'+ location.host +':5005';
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
@@ -208,7 +211,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				colorSet();
 			}
 			break;
-		case 'switchraudio':
+		case 'multiraudio':
 			bash( 'cat /srv/http/data/system/multiraudio.conf', function( data ) {
 				var data = data.trim().split( '\n' );
 				var dataL = data.length;
