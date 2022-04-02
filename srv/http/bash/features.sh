@@ -62,7 +62,7 @@ autoplayset )
 	pushRefresh
 	;;
 camilladsp )
-	touch $dirsystem/camilladsp
+	[[ ${args[1]} == true ]] && touch $dirsystem/camilladsp || rm $dirsystem/camilladsp
 	pushRefresh
 	$dirbash/mpd-conf.sh
 	;;
@@ -79,11 +79,6 @@ camilladspasound )
 		[[ ${new[i]} != ${old[i]} ]] && sed -i 's/^\(\s*'${list[i]}'\s*\).*/\1'${new[i]}'/' /etc/asound.conf
 	done
 	alsactl nrestore &> /dev/null
-	;;
-camilladspdisable )
-	rm $dirsystem/camilladsp
-	pushRefresh
-	$dirbash/mpd-conf.sh
 	;;
 hostapddisable )
 	systemctl disable --now hostapd
