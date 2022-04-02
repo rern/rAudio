@@ -45,7 +45,7 @@ over_voltage=2"
 	echo "$config" > /boot/config.txt
 fi
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 # addons - new/restore
 if [[ $version ]]; then # from create-ros.sh
@@ -54,6 +54,54 @@ if [[ $version ]]; then # from create-ros.sh
 else
 	mv /tmp/addons $dirdata
 fi
+# camilladsp
+mkdir -p $dirsystem/camilladsp/coeffs
+cat << EOF > $dirsystem/camilladsp/configs/camilladsp.yml
+---
+devices:
+  adjust_period: 10
+  capture:
+    avoid_blocking_read: false
+    channels: 2
+    device: hw:Loopback,0
+    format: S32LE
+    retry_on_error: false
+    type: Alsa
+  capture_samplerate: 0
+  chunksize: 2048
+  enable_rate_adjust: false
+  enable_resampling: false
+  playback:
+    channels: 2
+    device: hw:0,0
+    format: S16LE
+    type: Alsa
+  queuelimit: 4
+  rate_measure_interval: 1
+  resampler_type: Synchronous
+  samplerate: 44100
+  silence_threshold: -60
+  silence_timeout: 3
+  stop_on_rate_change: false
+  target_level: 0
+filters:
+  Volume:
+    parameters:
+      ramp_time: 200
+    type: Volume
+mixers: {}
+pipeline:
+- channel: 0
+  names:
+  - Volume
+  type: Filter
+- channel: 1
+  names:
+  - Volume
+  type: Filter
+EOF
+cp $dircamilladsp/configs/{default_config,camilladsp}.yml
+ln -s $dircamilladsp/configs/{camilladsp,active_config}.yml
 # display
 cat << EOF > $dirsystem/display
 {
