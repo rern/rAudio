@@ -784,7 +784,7 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			conf=/srv/http/camillagui/configs/camilladsp.yml;;
+			conf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
 		hostapd )
 			conf=/etc/hostapd/hostapd.conf;;
 		localbrowser )
