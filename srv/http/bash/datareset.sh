@@ -45,7 +45,7 @@ over_voltage=2"
 	echo "$config" > /boot/config.txt
 fi
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 # addons - new/restore
 if [[ $version ]]; then # from create-ros.sh
@@ -56,8 +56,8 @@ else
 fi
 # camilladsp
 if [[ -e /usr/bin/camilladsp ]]; then
-	mkdir -p $dirsystem/camilladsp/coeffs
-	cat << EOF > $dirsystem/camilladsp/configs/camilladsp.yml
+	mkdir -p $dirsystem/camilladsp/{coeffs,configs}
+	cat << EOF > $dirsystem/camilladsp/configs/default_config.yml
 ---
 devices:
   adjust_period: 10
