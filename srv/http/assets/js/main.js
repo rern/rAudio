@@ -156,7 +156,9 @@ $( '.settings' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'camilladsp':
-			location.href = 'http://'+ location.host +':5005';
+			bash( 'systemctl start camillagui', function() {
+				location.href = 'http://'+ location.host +':5005';
+			} );
 			break;
 		case 'equalizer':
 			equalizer();

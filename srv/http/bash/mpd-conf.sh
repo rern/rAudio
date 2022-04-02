@@ -15,9 +15,9 @@
 restartMPD() {
 	systemctl restart mpd
 	if [[ -e $dirsystem/camilladsp ]]; then
-		systemctl restart camilladsp camillagui
+		systemctl restart camilladsp
 	else
-		systemctl stop camilladsp camillagui
+		systemctl stop camilladsp
 	fi
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
