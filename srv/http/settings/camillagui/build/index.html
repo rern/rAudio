@@ -1,97 +1,30 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="./static/media/icon.png"/><link rel="stylesheet" href="./css-variables.css"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="GUI for CamillaDSP"/><link rel="apple-touch-icon" href="./logo192.png"/><link rel="manifest" href="./manifest.json"/><title>CamillaDSP</title><link href="./static/css/2.975d6916.chunk.css" rel="stylesheet"><link href="./static/css/main.56bdf14e.chunk.css" rel="stylesheet"></head><body class="css-variables"><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div>
-<style>
-@font-face {
-	font-family: rern;
-	src: url( './static/fonts/rern.woff2' ) format( 'woff2' );
-	font-display: block;
-	font-style: normal;
-	font-weight: normal;
-}
-@font-face {
-	font-family: Lato;
-	src: url( './static/fonts/Lato-Regular.woff2' ) format( 'woff2' );
-	font-weight: normal;
-	font-style: normal;
-}
-@font-face {
-	font-family: Lato;
-	src: url( './static/fonts/Lato-Light.woff2' ) format( 'woff2' );
-	font-weight: 300;
-	font-style: normal;
-}
-.fa {
-	display: inline-block;
-	font-family: rern;
-	font-style: normal;
-}
-.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg75 ); }
-.fa-camilladsp::after {content: '\f59C'; position: relative; }
-.fa-times::before { content: '\f51A' }
-:root {
-	--cd   : hsl(200,100%,35%); /* default main */
-	--cw   : hsl(0,0%,90%);     /* white */
-	--cml  : hsl(200,100%,40%); /* main-light */
-	--cm   : hsl(200,100%,35%); /* main */
-	--cma  : hsl(200,100%,30%); /* main-active */
-	--cmd  : hsl(200,100%,20%); /* main-dark */
-	--cg75 : hsl(200,3%,75%);   /* gray-75% */
-	--cg70 : hsl(200,3%,70%);   /* gray-70% */
-	--cg60 : hsl(200,3%,60%);   /* gray-60% */
-	--cgl  : hsl(200,3%,40%);   /* gray-light */
-	--cg   : hsl(200,3%,30%);   /* gray */
-	--cga  : hsl(200,3%,20%);   /* gray-active */
-	--cgd  : hsl(200,3%,10%);   /* gray-dark */
-}
-body {
-	padding-top: 40px;
-	background: #000000;
-	font-family: Lato;
-	color: var( --cw );
-}
-.head {
-	position: fixed;
-	top: 0;
-	height: 40px;
-	width: 100%;
-	line-height: 40px;
-	background: var( --cga );
-	box-shadow: 0px 4px 10px #000000;
-}
-.head .page-icon {
-	width: 40px;
-	height: 40px;
-	background: var( --cm );
-	font-size: 24px;
-	line-height: 38px;
-	text-align: center;
-}
-.head span {
-	margin-left: 15px;
-	font-size: 26px;
-	font-weight: 300;
-	letter-spacing: 20px;
-}
-#close {
-	position: absolute;
-	width: 40px;
-	height: 40px;
-	right: 2px;
-	font-size: 30px;
-	color: var( --cm );
-	cursor: pointer;
-}
-.head i {
-	text-shadow: -1px 0 2px #000000;
-}
-</style>
-<div class="head"><i class="page-icon fa fa-camilladsp"></i><span>CamillaDSP</span><i id="close" class="fa fa-times"></i></div>
+<!DOCTYPE html>
+<head>
+	<title>CamillaDSP</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+	<link rel="icon" href="./static/media/icon.png">
+	<link rel="stylesheet" href="./css-variables.css">
+	<link rel="stylesheet" href="./static/css/2.975d6916.chunk.css">
+	<link rel="stylesheet" href="./static/css/main.56bdf14e.chunk.css">
+	<link rel="stylesheet" href="./static/css/custom.css">
+</head>
+<body class="css-variables">
+
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="root"></div>
+<div class="head">
+	<i class="page-icon fa fa-camilladsp"></i>
+	<span>CamillaDSP</span>
+	<i id="close" class="fa fa-times"></i>
+</div>
 <script>
-document.getElementById('close').onclick = function() {
-	var hostname = location.hostname;
-	var http = new XMLHttpRequest();
-	http.open('POST', 'http://'+ hostname +'/cmd.php', true);
-	http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-	http.send('cmd=bash&bash=systemctl%20stop%20camillagui');
-	location.href = 'http://'+ hostname;
-}
+	document.getElementById('close').onclick = function() {
+		var hostname = location.hostname;
+		var http = new XMLHttpRequest();
+		http.open('POST', 'http://' + hostname + '/cmd.php', true);
+		http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		http.send('cmd=bash&bash=systemctl%20stop%20camillagui');
+		location.href = 'http://' + hostname;
+	}
 !function(e){function r(r){for(var n,l,i=r[0],a=r[1],f=r[2],p=0,s=[];p<i.length;p++)l=i[p],Object.prototype.hasOwnProperty.call(o,l)&&o[l]&&s.push(o[l][0]),o[l]=0;for(n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n]);for(c&&c(r);s.length;)s.shift()();return u.push.apply(u,f||[]),t()}function t(){for(var e,r=0;r<u.length;r++){for(var t=u[r],n=!0,i=1;i<t.length;i++){var a=t[i];0!==o[a]&&(n=!1)}n&&(u.splice(r--,1),e=l(l.s=t[0]))}return e}var n={},o={1:0},u=[];function l(r){if(n[r])return n[r].exports;var t=n[r]={i:r,l:!1,exports:{}};return e[r].call(t.exports,t,t.exports,l),t.l=!0,t.exports}l.m=e,l.c=n,l.d=function(e,r,t){l.o(e,r)||Object.defineProperty(e,r,{enumerable:!0,get:t})},l.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},l.t=function(e,r){if(1&r&&(e=l(e)),8&r)return e;if(4&r&&"object"==typeof e&&e&&e.__esModule)return e;var t=Object.create(null);if(l.r(t),Object.defineProperty(t,"default",{enumerable:!0,value:e}),2&r&&"string"!=typeof e)for(var n in e)l.d(t,n,function(r){return e[r]}.bind(null,n));return t},l.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return l.d(r,"a",r),r},l.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},l.p="./";var i=this.webpackJsonpcamillagui=this.webpackJsonpcamillagui||[],a=i.push.bind(i);i.push=r,i=i.slice();for(var f=0;f<i.length;f++)r(i[f]);var c=a;t()}([])</script><script src="./static/js/2.fd49ece5.chunk.js"></script><script src="./static/js/main.1b3ac690.chunk.js"></script></body></html>
