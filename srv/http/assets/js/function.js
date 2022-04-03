@@ -1697,6 +1697,27 @@ function thumbUpdate( path ) {
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 }
+function urlReachable( url, sec ) {
+	if ( !sec ) {
+		var sec = 0;
+	} else if ( sec === 5 ) {
+		info( {
+			  icon    : 'camilladsp'
+			, title   : 'CamillaDSP'
+			, message : 'CamillaDSP settings not available.'
+		} );
+		return
+	}
+	
+	fetch( url, { mode: 'no-cors' } ).then( function() {
+		location.href = url;
+	} ).catch( function() {
+		sec++
+		setTimeout( function() {
+			urlReachable( url, sec );
+		}, 1000 );
+	} );
+}
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );

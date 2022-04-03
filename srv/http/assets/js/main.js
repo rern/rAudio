@@ -157,11 +157,9 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'camilladsp':
 			bash( 'systemctl start camillagui', function() {
-				setTimeout( function() {
-					location.href = 'http://'+ location.host +':5005';
-				}, 1000 );
+				urlReachable( 'http://'+ location.host +':5005' );
 			} );
-			banner( 'CamillaDSP GUI', 'Start ...', 'camilladsp' );
+			loader();
 			break;
 		case 'equalizer':
 			equalizer();
