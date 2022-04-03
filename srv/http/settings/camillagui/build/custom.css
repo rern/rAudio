@@ -129,6 +129,11 @@ body {
 .configapp>:last-child {
 	margin: 0;
 }
+.configtabs .tabpanel {
+	width: calc( 100vw - 300px );
+	min-width: 400px;
+	max-width: 450px;
+}
 .tabpanel img { display:none }
 .react-tabs__tab-list .react-tabs__tab--selected {
 	border: none;
@@ -143,6 +148,7 @@ legend { font-size: 18px }
 input,
 select {
 	margin: 3px 0;
+	width: unset !important;
 	font-family: Lato;
 	font-size: 16px;
 	border: solid 1px var( --cg ) !important;
@@ -155,10 +161,14 @@ input[type=checkbox] { vertical-align: -2px }
 	font-size: 14px;
 	color: var( --cg60 );
 }
-@media (max-width: 740px) { .versions { display: none } }
+@media (max-width: 700px) {
+	.configtabs .tabpanel { width: 100% }
+	.versions { display: none }
+}
 @media (max-width: 450px) { .head span { letter-spacing: 12px; } }
 @media (max-width: 400px) {
 	.head span {
 		margin-left: 10px;
 		letter-spacing: 5px;
 	}
+}
