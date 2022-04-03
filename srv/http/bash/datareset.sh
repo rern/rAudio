@@ -56,8 +56,9 @@ else
 fi
 # camilladsp
 if [[ -e /usr/bin/camilladsp ]]; then
-	mkdir -p $dirsystem/camilladsp/{coeffs,configs}
-	cat << EOF > $dirsystem/camilladsp/configs/default_config.yml
+	dircamilladsp=$dirsystem/camilladsp
+	mkdir -p $dircamilladsp/{coeffs,configs}
+	cat << EOF > $dircamilladsp/configs/default_config.yml
 ---
 devices:
   adjust_period: 10
@@ -101,8 +102,8 @@ pipeline:
   - Volume
   type: Filter
 EOF
-	cp $dircamilladsp/configs/{default_config,camilladsp}.yml
-	ln -s $dircamilladsp/configs/{camilladsp,active_config}.yml
+	[[ ! -e $dircamilladsp/configs/camilladsp.yml ]] && cp $dircamilladsp/configs/{default_config,camilladsp}.yml
+	ln -sf $dircamilladsp/configs/{camilladsp,active_config}.yml
 fi
 # display
 cat << EOF > $dirsystem/display

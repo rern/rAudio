@@ -27,21 +27,6 @@
 .fa-times::before { content: '\f51A' }
 .fa-help::before { content: '\f560' }
 
-:root {
-	--cd : hsl(200,100%,35%);
-	--cw : hsl(0,0%,90%);
-	--cml : hsl(200,100%,40%);
-	--cm : hsl(200,100%,35%);
-	--cma : hsl(200,100%,30%);
-	--cmd : hsl(200,100%,20%);
-	--cg75 : hsl(200,3%,75%);
-	--cg70 : hsl(200,3%,70%);
-	--cg60 : hsl(200,3%,60%);
-	--cgl : hsl(200,3%,40%);
-	--cg : hsl(200,3%,30%);
-	--cga : hsl(200,3%,20%);
-	--cgd : hsl(200,3%,10%);
-}
 .css-variables {
 	--background-color: hsl(200,3%,20%);
 	--border-radius: 3px;
