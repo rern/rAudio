@@ -22,18 +22,11 @@
 	font-family: rern;
 	font-style: normal;
 }
-.fa-camilladsp::before {
-	content: '\f59D';
-	position: absolute;
-	color: var( --cg75 );
-}
-.fa-camilladsp::after {
-	content: '\f59C';
-	position: relative;
-}
-.fa-times::before {
-	content: '\f51A'
-}
+.fa-camilladsp::before { content: '\f59D'; position: absolute; color: var( --cg75 ); }
+.fa-camilladsp::after { content: '\f59C'; position: relative; }
+.fa-times::before { content: '\f51A' }
+.fa-help::before { content: '\f560' }
+
 :root {
 	--cd : hsl(200,100%,35%);
 	--cw : hsl(0,0%,90%);
@@ -48,6 +41,9 @@
 	--cg : hsl(200,3%,30%);
 	--cga : hsl(200,3%,20%);
 	--cgd : hsl(200,3%,10%);
+}
+.css-variables {
+	--background-color: hsl(200,3%,20%);
 }
 body {
 	padding-top: 40px;
@@ -67,6 +63,7 @@ body {
 	line-height: 40px;
 	background: var( --cga );
 	box-shadow: 0px 4px 10px #000000;
+	z-index: 10;
 }
 .head .page-icon {
 	width: 40px;
@@ -82,17 +79,55 @@ body {
 	font-weight: 300;
 	letter-spacing: 20px;
 }
+#help {
+	float: right;
+	margin-right: 5px;
+	font-size: 24px;
+	color: var( --cg60 );
+}
 #close {
 	float: right;
-	width: 40px;
-	height: 40px;
 	font-size: 30px;
 	color: var( --cm );
+}
+.head i {
+	width: 40px;
+	height: 40px;
+	text-shadow: -1px 0 2px #000000;
 	cursor: pointer;
 }
-.head i { text-shadow: -1px 0 2px #000000 }
-img:first-of-type { display:none }
-input[type="checkbox"] { vertical-align: middle }
+#divhelp {
+	margin: 10px 65px 0 0;
+	text-align: right;
+}
+#divhelp a {
+	text-decoration: none;
+	color: var( --cw );
+}
+#divhelp i {
+	color: var( --cg60 );
+	cursor: pointer;
+}
+#divhelp img {
+	float: left;
+	margin: 15px 0 0 20px;
+}
+.tabpanel { margin-top: 15px }
+.tabpanel img { display:none }
+input, select {
+	margin: 3px 0;
+	font-family: Lato;
+	font-size: 16px;
+	border: solid 1px var( --cg ) !important;
+}
+input[type=text]:focus { outline: solid 2px var( --cg60 ) }
+input[type=checkbox] { vertical-align: -2px }
+.versions {
+	display: block;
+	margin: 0;
+	font-size: 14px;
+	color: var( --cg60 );
+}
 @media (max-width: 440px) { .head span { letter-spacing: 18px } }
 @media (max-width: 410px) { .head span { letter-spacing: 15px } }
 @media (max-width: 380px) { .head span { letter-spacing: 12px } }
