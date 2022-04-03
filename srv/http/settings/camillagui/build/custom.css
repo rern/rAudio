@@ -66,6 +66,7 @@ body {
 	z-index: 10;
 }
 .head .page-icon {
+	float: left;
 	width: 40px;
 	height: 40px;
 	background: var( --cm );
@@ -74,7 +75,7 @@ body {
 	text-align: center;
 }
 .head span {
-	margin-left: 10px;
+	margin-left: 15px;
 	font-size: 26px;
 	font-weight: 300;
 	letter-spacing: 20px;
@@ -112,9 +113,35 @@ body {
 	float: left;
 	margin: 15px 0 0 20px;
 }
-.tabpanel { margin-top: 15px }
+.configapp {
+	display: block;
+}
+.tabpanel {
+	float: left;
+	margin-top: 15px !important;
+}
+.tabpanel,
+.configtabs {
+	display: block;
+	margin: 0 5px 0 0;
+	padding: 5px;
+}
+.configapp>:last-child {
+	margin: 0;
+}
 .tabpanel img { display:none }
-input, select {
+.react-tabs__tab-list .react-tabs__tab--selected {
+	border: none;
+	background: var( --cg );
+}
+.box {
+	border: 1px solid var( --cga );
+}
+legend { font-size: 18px }
+.setting,
+.alignRight { color: var( --cg75 ) }
+input,
+select {
 	margin: 3px 0;
 	font-family: Lato;
 	font-size: 16px;
@@ -128,6 +155,10 @@ input[type=checkbox] { vertical-align: -2px }
 	font-size: 14px;
 	color: var( --cg60 );
 }
-@media (max-width: 440px) { .head span { letter-spacing: 18px } }
-@media (max-width: 410px) { .head span { letter-spacing: 15px } }
-@media (max-width: 380px) { .head span { letter-spacing: 12px } }
+@media (max-width: 740px) { .versions { display: none } }
+@media (max-width: 450px) { .head span { letter-spacing: 12px; } }
+@media (max-width: 400px) {
+	.head span {
+		margin-left: 10px;
+		letter-spacing: 5px;
+	}
