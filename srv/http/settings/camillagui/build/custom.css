@@ -156,6 +156,7 @@ input,
 select {
 	margin: 3px 0;
 	width: unset !important;
+	min-width: 99px !important;
 	padding: 0 8px !important;
 	font-family: Lato;
 	font-size: 16px;
