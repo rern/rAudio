@@ -1,19 +1,19 @@
 @font-face {
 	font-family: rern;
-	src: url( '../../static/fonts/rern.woff2' ) format( 'woff2' );
+	src: url( './fonts/rern.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
 }
 @font-face {
 	font-family: Lato;
-	src: url( '../../static/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	src: url( './fonts/Lato-Regular.woff2' ) format( 'woff2' );
 	font-weight: normal;
 	font-style: normal;
 }
 @font-face {
 	font-family: Lato;
-	src: url( '../../static/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	src: url( './fonts/Lato-Light.woff2' ) format( 'woff2' );
 	font-weight: 300;
 	font-style: normal;
 }
@@ -90,12 +90,9 @@ body {
 	color: var( --cm );
 	cursor: pointer;
 }
-.head i {
-	text-shadow: -1px 0 2px #000000;
-}
-input[type="checkbox"] {
-	vertical-align: middle;
-}
+.head i { text-shadow: -1px 0 2px #000000 }
+img:first-of-type { display:none }
+input[type="checkbox"] { vertical-align: middle }
 @media (max-width: 440px) { .head span { letter-spacing: 18px } }
 @media (max-width: 410px) { .head span { letter-spacing: 15px } }
 @media (max-width: 380px) { .head span { letter-spacing: 12px } }
