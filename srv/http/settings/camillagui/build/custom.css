@@ -112,7 +112,8 @@ body {
 }
 #divhelp img {
 	float: left;
-	margin: 15px 0 0 20px;
+	margin: 60px 0 0 20px;
+	width: 120px;
 }
 .configapp {
 	display: block;
