@@ -1,9 +1,90 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="./favicon.ico"/><link rel="stylesheet" href="./css-variables.css"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="GUI for CamillaDSP"/><link rel="apple-touch-icon" href="./logo192.png"/><link rel="manifest" href="./manifest.json"/><title>CamillaDSP</title><link href="./static/css/2.975d6916.chunk.css" rel="stylesheet"><link href="./static/css/main.56bdf14e.chunk.css" rel="stylesheet"></head><body class="css-variables"><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div>
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><link rel="icon" href="./static/media/icon.png"/><link rel="stylesheet" href="./css-variables.css"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="theme-color" content="#000000"/><meta name="description" content="GUI for CamillaDSP"/><link rel="apple-touch-icon" href="./logo192.png"/><link rel="manifest" href="./manifest.json"/><title>CamillaDSP</title><link href="./static/css/2.975d6916.chunk.css" rel="stylesheet"><link href="./static/css/main.56bdf14e.chunk.css" rel="stylesheet"></head><body class="css-variables"><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div>
 <style>
-body { background: #000000 }
-#close { position: absolute; right: 25px; top: 0; font-size: 40px; color: #0077b3; font-weight: bold; cursor: pointer; }
+@font-face {
+	font-family: rern;
+	src: url( './static/fonts/rern.woff2' ) format( 'woff2' );
+	font-display: block;
+	font-style: normal;
+	font-weight: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( './static/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( './static/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	font-weight: 300;
+	font-style: normal;
+}
+.fa {
+	display: inline-block;
+	font-family: rern;
+	font-style: normal;
+}
+.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg75 ); }
+.fa-camilladsp::after {content: '\f59C'; position: relative; }
+.fa-times::before { content: '\f51A' }
+:root {
+	--cd   : hsl(200,100%,35%); /* default main */
+	--cw   : hsl(0,0%,90%);     /* white */
+	--cml  : hsl(200,100%,40%); /* main-light */
+	--cm   : hsl(200,100%,35%); /* main */
+	--cma  : hsl(200,100%,30%); /* main-active */
+	--cmd  : hsl(200,100%,20%); /* main-dark */
+	--cg75 : hsl(200,3%,75%);   /* gray-75% */
+	--cg70 : hsl(200,3%,70%);   /* gray-70% */
+	--cg60 : hsl(200,3%,60%);   /* gray-60% */
+	--cgl  : hsl(200,3%,40%);   /* gray-light */
+	--cg   : hsl(200,3%,30%);   /* gray */
+	--cga  : hsl(200,3%,20%);   /* gray-active */
+	--cgd  : hsl(200,3%,10%);   /* gray-dark */
+}
+body {
+	padding-top: 40px;
+	background: #000000;
+	font-family: Lato;
+	color: var( --cw );
+}
+.head {
+	position: fixed;
+	top: 0;
+	height: 40px;
+	width: 100%;
+	line-height: 40px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+}
+.head .page-icon {
+	width: 40px;
+	height: 40px;
+	background: var( --cm );
+	font-size: 24px;
+	line-height: 38px;
+	text-align: center;
+}
+.head span {
+	margin-left: 15px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#close {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+	right: 2px;
+	font-size: 30px;
+	color: var( --cm );
+	cursor: pointer;
+}
+.head i {
+	text-shadow: -1px 0 2px #000000;
+}
 </style>
-<div id="close">×</div>
+<div class="head"><i class="page-icon fa fa-camilladsp"></i><span>CamillaDSP</span><i id="close" class="fa fa-times"></i></div>
 <script>
 document.getElementById('close').onclick = function() {
 	var hostname = location.hostname;

@@ -121,9 +121,8 @@ input::-moz-focus-inner {
 .fa-bluetooth::before { content: '\f595' }
 .fa-btclient::before { content: '\f596' }
 .fa-brush::before { content: '\f536' }
-.fa-camilladsp::before { content: '\f589' }
-.fa-camilladsp::before {content: '\f59C'; position: absolute; color: var( --cg60 ); }
-.fa-camilladsp::after {content: '\f59D'; position: relative; } /* position: relative - fix order */
+.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg75 ); }
+.fa-camilladsp::after {content: '\f59C'; position: relative; } /* position: relative - fix order */
 .fa-capslock:before { content: '\f607' }
 .fa-check::before { content: '\f51B' }
 .fa-chevron-down::before { content: '\f605' }
