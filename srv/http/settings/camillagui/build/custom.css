@@ -193,6 +193,7 @@ input[type=range]::-moz-range-thumb {
 }
 input[type=range]::-webkit-slider-runnable-track {
 	width: 100%;
+	margin: -10px;
 	height: 4px;
 	background: var( --track );
 	border: var( --trackborder );
