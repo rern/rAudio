@@ -124,19 +124,23 @@ body {
 .tabpanel,
 .configtabs {
 	display: block;
-	margin: 0 5px 0 0;
+	margin: 5px;
 	padding: 5px;
 }
 .configapp>:last-child {
 	margin: 0;
 }
 .configtabs .tabpanel {
-	width: calc( 100vw - 300px );
-	min-width: 400px;
-	max-width: 450px;
+	width: 400px !important;
 }
 .tabpanel img {
 	display: none;
+}
+.react-tabs__tab {
+	width: 83px;
+	padding: 0;
+	line-height: 30px;
+	text-align: center;
 }
 .react-tabs__tab-list .react-tabs__tab--selected {
 	border: none;
@@ -152,21 +156,31 @@ legend {
 .alignRight {
 	color: var( --cg75 );
 }
+.setting-label {
+	width: 50%;
+}
 input,
 select {
 	margin: 3px 0;
-	width: unset !important;
-	min-width: 99px !important;
 	padding: 0 8px !important;
 	font-family: Lato;
 	font-size: 16px;
 	border: solid 1px var( --cg ) !important;
 }
-input[type=text]:focus {
-	outline: solid 2px var( --cg60 );
+input[type=text] {
+	width: 150px !important;
+}
+select {
+	width: 170px !important;
+}
+input[type=number] {
+	width: 75px !important;
 }
 input[type=checkbox] {
 	vertical-align: -2px;
+}
+input[type=text]:focus {
+	outline: solid 2px var( --cg60 );
 }
 input[type=range] {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
