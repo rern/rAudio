@@ -29,13 +29,22 @@
 
 <script>
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-setTimeout( function() {
-	var buttons = document.getElementsByClassName( 'button-with-text' );
-	buttons[ 0 ].innerText = 'Fetch';
-	buttons[ 1 ].innerText = 'Apply';
-	buttons[ 0 ].style.display = 'inline-block';
-	buttons[ 1 ].style.display = 'inline-block';
-}, 600 );
+function setButtons() {
+	setTimeout( function() {
+		var buttons = document.getElementsByClassName( 'button-with-text' );
+		if ( !buttons.length ) {
+			setButtons();
+			return
+		}
+		
+		buttons[ 0 ].innerText = 'Fetch';
+		buttons[ 1 ].innerText = 'Apply';
+		buttons[ 0 ].style.display = 'inline-block';
+		buttons[ 1 ].style.display = 'inline-block';
+	}, 50 );
+}
+setButtons();
+
 document.getElementById( 'help' ).onclick = function() {
 	var divhelp = document.getElementById( 'divhelp' );
 	divhelp.style.display = divhelp.style.display === 'none' ? 'block' : 'none';
