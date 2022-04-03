@@ -93,6 +93,9 @@ body {
 .head i {
 	text-shadow: -1px 0 2px #000000;
 }
+input[type="checkbox"] {
+	vertical-align: middle;
+}
 @media (max-width: 440px) { .head span { letter-spacing: 18px } }
 @media (max-width: 410px) { .head span { letter-spacing: 15px } }
 @media (max-width: 380px) { .head span { letter-spacing: 12px } }
