@@ -225,6 +225,7 @@ input[type=range]::-moz-range-track {
 	text-shadow: -1px 1px 2px #000000;
 }
 section:first-of-type .button-with-text {
+	display: none;
 	width: 70px;
 	height: 34px;
 	margin-top: 5px;

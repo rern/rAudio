@@ -33,7 +33,9 @@ setTimeout( function() {
 	var buttons = document.getElementsByClassName( 'button-with-text' );
 	buttons[ 0 ].innerText = 'Fetch';
 	buttons[ 1 ].innerText = 'Apply';
-}, 100 );
+	buttons[ 0 ].style.display = 'flex';
+	buttons[ 1 ].style.display = 'flex';
+}, 600 );
 document.getElementById( 'help' ).onclick = function() {
 	var divhelp = document.getElementById( 'divhelp' );
 	divhelp.style.display = divhelp.style.display === 'none' ? 'block' : 'none';
