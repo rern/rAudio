@@ -13,7 +13,7 @@
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
-aplay=$( aplay -l 2> /dev/null | grep '^card' | grep -v Loopback )
+aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btclient ]] && i=0 || i=-1
 	devices=false

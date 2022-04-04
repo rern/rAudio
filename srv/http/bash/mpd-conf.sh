@@ -90,7 +90,7 @@ if [[ $i != -1 ]]; then
 	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
-	mixer_type     "'$mixertype'"'
+	mixer_type     "none"'
 #--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
@@ -227,7 +227,7 @@ if [[ $1 == add || $1 == remove ]]; then
 fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
-[[ $Acard ]] && card=$card || card=0
+[[ !$card ]] && card=0
 ########
 asound="\
 defaults.pcm.card $card
