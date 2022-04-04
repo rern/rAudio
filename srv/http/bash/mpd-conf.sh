@@ -89,8 +89,7 @@ if [[ $i != -1 ]]; then
 	name           "CamillaDSP"
 	device         "'$hw'"
 	type           "alsa"
-	auto_resample  "no"
-	mixer_type     "none"'
+	auto_resample  "no"'
 #--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
