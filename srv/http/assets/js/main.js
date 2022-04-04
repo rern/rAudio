@@ -714,13 +714,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		G.status.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', 'drag', e.value, G.status.control ] );
+		bash( [ 'volume', 'drag', e.value, G.status.card, G.status.control ] );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
+		bash( [ 'volume', G.status.volume, e.value, G.status.card, G.status.control ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -758,13 +758,13 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
+	bash( [ 'volume', G.status.volume, 0, G.status.card, G.status.control ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '-' : '+', G.status.control ] );
+	bash( [ 'volumeupdown', voldn ? '-' : '+', G.status.card, G.status.control ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( G.volhold ) {
 		G.volhold = 0;
@@ -783,7 +783,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		bash( [ 'volume', 'drag', vol, G.status.control ] );
+		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -822,7 +822,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		G.status.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, G.status.control ] );
+		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute /unmute

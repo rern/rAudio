@@ -228,6 +228,7 @@ fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
 [[ !$card ]] && card=0
+echo $card > $dirshm/asoundcard
 ########
 asound="\
 defaults.pcm.card $card

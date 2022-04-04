@@ -1731,7 +1731,7 @@ function volumeBarSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, G.status.control ] );
+		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	} else {
 		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
@@ -1745,7 +1745,7 @@ function volumeBarSet( pageX ) {
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		bash( [ 'volume', G.status.volume, vol, G.status.card, G.status.control ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}

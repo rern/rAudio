@@ -25,6 +25,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 	player=mpd
 else
 	btclient=$( exists $dirshm/btclient )
+	card=$( cat $dirshm/asoundcard )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
@@ -56,6 +57,7 @@ else
 	status='
   "player"       : "'$player'"
 , "btclient"     : '$btclient'
+, "card"         : '$card'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$counts'
@@ -205,7 +207,7 @@ for line in "${lines[@]}"; do
 			file=${val//\"/\\\"};; # escape " for json
 		# string
 		* ) # state | updating_db
-			printf -v $key '%s' "$val";;
+			[[ $key ]] && printf -v $key '%s' "$val";;
 	esac
 done
 
