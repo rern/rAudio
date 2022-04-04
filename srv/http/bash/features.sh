@@ -62,10 +62,11 @@ autoplayset )
 	pushRefresh
 	;;
 camilladsp )
-	if [[ ${args[1]} == true ]]; then
+	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh
 		modprobe snd-aloop
 		touch $dirsystem/camilladsp
 	else
+		systemctl stop camilladsp
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
