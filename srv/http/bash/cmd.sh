@@ -419,10 +419,6 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 " $dirimg/icon.svg
 	sed "s|\(path{fill:hsl\).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
-	if [[ -e /usr/bin/camilladsp ]]; then
-		cp /srv/http/assets/css/colors.css /srv/http/settings/camillagui/build
-		cp $dirimg/icon.png /srv/http/settings/camillagui/build
-	fi
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate

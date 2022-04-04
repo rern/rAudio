@@ -28,7 +28,8 @@
 .fa-help::before { content: '\f560' }
 
 .css-variables {
-	--background-color: hsl(200,3%,20%);
+	--background-color: var( --cga );
+	--button-background-color: var( --cg );
 	--border-radius: 3px;
 }
 body {
@@ -41,6 +42,7 @@ body {
 	max-width: 750px;
 	margin: auto;
 }
+/* ---------------------------------------------------------------------------- */
 .head {
 	position: fixed;
 	top: 0;
@@ -102,6 +104,7 @@ body {
 	margin: 60px 0 0 20px;
 	width: 120px;
 }
+/* ---------------------------------------------------------------------------- */
 .configapp {
 	display: block;
 }
@@ -147,6 +150,16 @@ legend {
 .setting-label {
 	width: 50%;
 }
+.config-status {
+	margin: 0;
+}
+.versions {
+	display: block;
+	margin: 0;
+	font-size: 14px;
+	color: var( --cg60 );
+}
+/* ---------------------------------------------------------------------------- */
 input,
 select {
 	margin: 3px 0;
@@ -220,57 +233,74 @@ input[type=range]::-moz-range-track {
 	background: var( --track );
 	border: var( --trackborder );
 }
+/* ---------------------------------------------------------------------------- */
 .split-20-80 div:nth-child( 1 ) {
-	width: 30px;
+	width: 28px;
 	text-align: right;
 }
 .split-20-80 div:nth-child( 2 ) {
 	margin: 0 6px 0 -16px;
 }
 .rc-progress-line-path {
+	stroke-width: 2;
 	stroke: var( --cm );
 }
 .rc-progress-line-trail {
+	stroke-width: 2;
 	stroke: var( --cg60 );
 }
+/* ---------------------------------------------------------------------------- */
 .button {
 	border: none;
-}
-.button-with-text {
-	height: 36px;
-	padding: 0px 10px;
-	font-size: 16px;
+	background-color: var( --cg ) !important;
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	text-shadow: -1px 1px 2px #000000;
 }
-.two-column-grid:nth-of-type( 2 ) {
+.button:nth-of-type( 2 ),
+.button:nth-of-type( 3 ) {
+	width:36px;
+	height: 36px;
+}
+.smallbutton {
+	margin-top: 3px;
+}
+.button-with-text {
+	padding: 0px 10px;
+	font-size: 16px;
+	justify-content: left;
+	text-shadow: -1px 1px 2px #000000;
+}
+.configtabs .button-with-text {
+	width: 225px !important;
+	height: 36px;
+	background: none;
+}
+.two-column-grid:nth-of-type( 2 ) { /* Fetch and Apply button */
 	display: block;
 	text-align: center;
 }
-section:first-of-type .button-with-text {
+section:first-of-type .button-with-text { /* Fetch and Apply button */
 	display: none;
-	width: 70px;
+	width: 70px !important;
 	height: 34px;
 	margin: 5px;
 	line-height: 34px;
 	font-size: 14px;
 	text-align: center;
+}
+section:first-of-type .button-with-text:nth-of-type( 2 ) { /* Apply button */
 	background-color: var( --cm ) !important;
-	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
-section:first-of-type .button-with-text:first-of-type {
-	background-color: var( --cg ) !important;
+.highlighted-button,
+.highlighted-button:active {
+	background-color: var( --cm ) !important;
 }
-.config-status {
-	margin: 0;
+svg {
+	-webkit-filter: drop-shadow( -1px 1px 2px #000000 );
+	filter: drop-shadow( -1px 1px 2px #000000 );
 }
-.versions {
-	display: block;
-	margin: 0;
-	font-size: 14px;
-	color: var( --cg60 );
-}
-
+/* ---------------------------------------------------------------------------- */
 @media (max-width: 700px) {
 	.configtabs .tabpanel { width: 100% }
 	.versions { display: none }
@@ -283,4 +313,13 @@ section:first-of-type .button-with-text:first-of-type {
 		margin-left: 10px;
 		letter-spacing: 5px;
 	}
+}
+
+.button:hover {
+	background-color: var( --cga ) !important;
+	border: none;
+}
+.highlighted-button:hover,
+section:first-of-type .button-with-text:nth-of-type( 2 ):hover {
+	background-color: var( --cma ) !important;
 }
