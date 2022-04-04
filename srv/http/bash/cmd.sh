@@ -1192,8 +1192,15 @@ volumecontrolget )
 	echo $control^$volume # place $control first to keep trailing space if any
 	;;
 volumeget )
+	type=${args[1]}
 	volumeGet
-	[[ ${args[1]} == db ]] && echo $volume $db || echo $volume
+	if [[ $type == db ]]; then
+		echo $volume $db
+	elif [[ $type == push ]]; then
+		pushstream volume '{"val":'$volume',"db":"'$db'"}'
+	else
+		echo $volume
+	fi
 	;;
 volumepushstream )
 	[[ -e $dirshm/btclient ]] && sleep 1

@@ -288,7 +288,7 @@ function info( json ) {
 	} );
 	$( '#infoOk' ).one( 'click', function() {
 		if ( typeof O.ok === 'function' ) O.ok();
-		infoReset();
+		if ( !O.buttonnoreset ) infoReset();
 	} );
 	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'

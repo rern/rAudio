@@ -50,10 +50,12 @@ $( '#setting-hwmixer' ).click( function() {
 		var voldb = voldb.split( ' ' );
 		var vol = voldb[ 0 ];
 		var db = voldb[ 1 ];
+		var card = G.asoundcard;
+		var control = device.hwmixer;
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
-			, message       : device.hwmixer
+			, message       : control
 			, rangevalue    : vol
 			, footer        : ( novolume ? '0dB (No Volume)' : db +' dB' )
 			, beforeshow    : function() {
@@ -61,26 +63,25 @@ $( '#setting-hwmixer' ).click( function() {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				} else {
 					$( '#infoContent' ).after( '<div class="infomessage warning hide"><br>'+ warning +'</div>' );
-					$( '#infoButtons a' ).eq( 0 ).addClass( 'hide' );
-					$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
+					$( '#infoOk' ).addClass( 'hide' );
+					$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
 					$( '#infoRange input' ).on( 'click input keyup', function() {
-						bash( 'amixer -Mq sset "'+ device.hwmixer +'" '+ $( this ).val() +'%' );
+						bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
 					} ).on( 'touchend mouseup keyup', function() {
 						bash( [ 'volumeget', 'push' ] );
 					} );
 				}
 			}
 			, buttonnoreset : 1
-			, buttonlabel   : novolume ? '' : [ 'OK', '<i class="fa fa-set0"></i>0dB' ]
-			, button        : novolume ? '' : [ 
-				  function() { bash( [ 'volume0db', device.hwmixer ] ) }
-				, function() {
-					$( '#infoContent' ).addClass( 'hide' );
-					$( '.warning, #infoButtons a' ).eq( 0 ).removeClass( 'hide' ); // ok
-					$( '#infoButtons a' ).eq( 1 ).addClass( 'hide' );              // 0dB
-				}
-			]
-			, okno          : 1
+			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
+			, button        : function() {
+				$( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' );
+			}
+			, oklabel       : 'OK'
+			, ok            : function() {
+				bash( [ 'volume0db', card, control ] );
+				$( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' );
+			}
 		} );
 	} );
 } );

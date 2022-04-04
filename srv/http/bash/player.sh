@@ -312,7 +312,7 @@ soxrset )
 	restartMPD
 	;;
 volume0db )
-	amixer -Mq sset "${args[1]}" 0dB
+	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	rm -f $dirshm/mpdvolume
@@ -332,11 +332,7 @@ volumebtsave )
 	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
-	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )
-	vol=${vol_db[0]}
-	db=${vol_db[1]}
-	echo $vol $db
-	[[ ${args[1]} == push ]] && pushstream volume '{"val":'$vol',"db":"'$db'"}'
+	$dirbash/cmd.sh volumeget$'\n'${args[1]}
 	;;
 	
 esac
