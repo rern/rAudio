@@ -183,8 +183,8 @@ urldecode() { # for webradio url to filename
 volumeControls() {
 	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
 	
-	[[ $1 ]] && card=$1 || card=0
-	amixer=$( amixer -c $card \
+	[[ $1 ]] && param="-c $1 scontents"
+	amixer=$( amixer $param \
 				| grep -A1 ^Simple \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
@@ -225,7 +225,7 @@ volumeGet() {
 			volume=100
 		else
 			control=$( echo "$controls" | sort -u | head -1 )
-			voldb=$( amixer -c 0 -M sget "$control" \
+			voldb=$( amixer -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 			if [[ $voldb ]]; then
@@ -248,7 +248,7 @@ volumeSetAt() {
 		amixer -MqD bluealsa sset "$btclient" $val%
 		echo $val > "$dirsystem/btvolume-$btclient"
 	elif [[ $control ]]; then
-		amixer -c 0 -Mq sset "$control" $val%
+		amixer -Mq sset "$control" $val%
 	else
 		mpc -q volume $val
 	fi
@@ -882,7 +882,7 @@ playerstop )
 		vol=${vol_db[0]}
 		db=${vol_db[1]}
 		volumeSet $volume $vol "$control"
-		[[ $db == 0.00 ]] && amixer -c 0 -Mq sset "$control" 0dB
+		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
 		rm -f $file
 	fi
 	pushstream player '{"player":"'$player'","active":false}'
@@ -1177,7 +1177,7 @@ volume0db )
 		echo $volume $db  > $dirshm/mpdvolume
 	fi
 	volumeGet
-	amixer -c 0 -Mq sset "$control" 0dB
+	amixer -Mq sset "$control" 0dB
 	;;
 volumecontrols )
 	volumeControls ${args[1]}
@@ -1206,7 +1206,7 @@ volumeupdown )
 	if [[ -e $dirshm/btclient ]]; then
 		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn
 	elif [[ $control ]]; then
-		amixer -c 0 -Mq sset "$control" 1%$updn
+		amixer -Mq sset "$control" 1%$updn
 	else
 		mpc -q volume ${updn}1
 	fi

@@ -14,11 +14,7 @@
 
 restartMPD() {
 	systemctl restart mpd
-	if [[ -e $dirsystem/camilladsp ]]; then
-		systemctl restart camilladsp
-	else
-		systemctl stop camilladsp
-	fi
+	[[ -e $dirsystem/camilladsp ]] && systemctl restart camilladsp || systemctl stop camilladsp
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -277,7 +273,6 @@ pcm.plugequal {
 fi
 
 if [[ -e $dirsystem/camilladsp ]]; then
-	modprobe snd-aloop
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
 	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
