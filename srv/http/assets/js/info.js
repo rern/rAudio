@@ -245,7 +245,7 @@ function info( json ) {
 			$( '#infoIcon' ).html( O.icon );
 		}
 	} else {
-		$( '#infoIcon' ).addClass( 'fa fa-question-circle' );
+		$( '#infoIcon' ).addClass( 'fa fa-help' );
 	}
 	var title = O.title || 'Information';
 	$( '#infoTitle' ).html( title );

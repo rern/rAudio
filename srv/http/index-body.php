@@ -220,7 +220,7 @@ $settinglist = [
 	, [ 'system', 'settings', 'plus-r', 'System',
 		'relays', 'relays' ]
 	, [ 'addons', 'sub', 'jigsaw', 'Addons',
-		'guide', 'question-circle' ]
+		'guide', 'help' ]
 	, [ 'power', '', 'power', 'Power',
 		'screenoff', 'screenoff' ]
 	, [ 'displaylibrary', 'sub', 'library', 'Library',

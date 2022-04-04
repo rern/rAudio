@@ -165,7 +165,7 @@ heading i.fa-status {
 heading.status i.fa-status {
 	display: inline-block;
 }
-heading i.fa-question-circle {
+heading i.fa-help {
 	float: right;
 	width: 40px;
 	font-size: 20px;

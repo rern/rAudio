@@ -19,7 +19,7 @@ include 'logosvg.php';
 </head>
 <body style="height: 100%; user-select: none;">
 <div class="head" style="top: 0">
-	<i class="page-icon fa fa-question-circle"></i><span class='title'>USER GUIDE</span>
+	<i class="page-icon fa fa-help"></i><span class='title'>USER GUIDE</span>
 	<a href="/"><i id="close" class="fa fa-times"></i></a>
 </div>
 <div id="guide" style="user-select: none;">

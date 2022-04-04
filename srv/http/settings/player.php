@@ -164,7 +164,7 @@ HTML
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
+Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-help"></i>
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 HTML
 	]

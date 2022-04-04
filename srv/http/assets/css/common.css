@@ -121,7 +121,7 @@ input::-moz-focus-inner {
 .fa-bluetooth::before { content: '\f595' }
 .fa-btclient::before { content: '\f596' }
 .fa-brush::before { content: '\f536' }
-.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg75 ); }
+.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg60 ); }
 .fa-camilladsp::after {content: '\f59C'; position: relative; } /* position: relative - fix order */
 .fa-capslock:before { content: '\f607' }
 .fa-check::before { content: '\f51B' }
@@ -154,6 +154,7 @@ input::-moz-focus-inner {
 .fa-gpiopins::before { content: '\f572' }
 .fa-guide::before { content: '\f579' }
 .fa-hdmi::after { content: '\f58B' }
+.fa-help::before { content: '\f560' }
 .fa-hide:before { content: '\f575' }
 .fa-i2saudio::before { content: '\f571' }
 .fa-info-circle::before { content: '\f561' }
@@ -198,7 +199,6 @@ input::-moz-focus-inner {
 .fa-plus-r-nobox::before { content: '\f500' }
 .fa-power::before { content: '\f520' }
 .fa-previous::before { content: '\f501' }
-.fa-question-circle::before { content: '\f560' }
 .fa-radiofrance::before { content: '\f586' }
 .fa-radioparadise::before {content: '\f593'; position: absolute; color: var( --cgl ); }
 .fa-radioparadise::after {content: '\f594'; position: relative; }

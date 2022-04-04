@@ -29,7 +29,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <div class="head hide">
 	<?php $pagehead = $page !== 'relays' ? $page : 'system';?>
 	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=( strtoupper( $pagehead ) )?></span>
-	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-question-circle"></i>
+	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-help"></i>
 </div>
 <div class="container hide">
 <?php
@@ -84,7 +84,7 @@ function htmlHead( $data ) {
 	$html.= $class ? ' class="'.$class.'">' : '>';
 	$html.= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $id => $icon ) $html.= '<i id="'.$id.'" class="fa fa-'.$icon.'"></i>';
-	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-question-circle"></i>';
+	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-help"></i>';
 	$html.= isset( $data[ 'back' ] ) ? '<i class="fa fa-arrow-left back"></i>' : '';
 	$html.= '</heading>';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
