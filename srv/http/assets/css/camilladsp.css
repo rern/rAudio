@@ -89,46 +89,65 @@ body {
 	text-align: right;
 	max-width: 700px;
 	margin: auto;
-	padding: 20px 40px 0 0;
+	padding: 20px 0;
 }
 #divhelp a {
 	text-decoration: none;
-	color: var( --cw );
+	color: var( --cg60 );
 }
 #divhelp i {
 	color: var( --cg60 );
 	cursor: pointer;
 }
-#divhelp img {
+#logo {
 	float: left;
-	margin: 60px 0 0 20px;
-	width: 120px;
+	font-size: 14px;
+	text-align: left;
+	color: var( --cg60 );
+}
+#logo img {
+	width: 145px;
+	margin-bottom: 5px;
+}
+#version {
+	font-size: 12px;
 }
 /* ---------------------------------------------------------------------------- */
+section.tabpanel {
+	margin-bottom: 10px;
+}
+.react-tabs__tab-list {
+	margin-block-end: 0;
+}
 .configapp {
 	display: block;
+	width: fit-content;
+	margin: auto;
 }
 .tabpanel {
 	float: left;
-	margin-top: 15px !important;
+	width: 300px !important;
+	padding-top: 10px !important;
 }
 .tabpanel,
 .configtabs {
 	display: block;
-	margin: 5px;
-	padding: 5px;
+	padding: 0 5px 0 5px;
 }
 .configapp>:last-child {
 	margin: 0;
 }
 .configtabs .tabpanel {
 	width: 400px !important;
+	min-height: calc( 100vh - 130px );
+	background: var( --cgd );
+	padding-bottom: 40px;
 }
 .tabpanel img {
 	display: none;
 }
 .react-tabs__tab {
-	width: 83px;
+	width: 80px;
 	padding: 0;
 	line-height: 30px;
 	text-align: center;
@@ -138,26 +157,33 @@ body {
 	background: var( --cg );
 }
 .box {
-	border: 1px solid var( --cga );
+	border: 1px solid var( --cg );
+}
+.configtabs .box div {
+	max-width: 240px;
+}
+.horizontally-spaced-content:first-of-type div:first-child {
+	width: 110px !important;
+}
+.horizontally-spaced-content {
+	letter-spacing: 2px;
 }
 legend {
 	font-size: 18px;
 }
+.two-column-grid .alignRight {
+	width: 170px;
+	text-align: right;
+}
 .setting,
 .alignRight {
-	color: var( --cg75 );
+	color: var( --cg60 );
 }
 .setting-label {
 	width: 50%;
 }
 .config-status {
 	margin: 0;
-}
-.versions {
-	display: block;
-	margin: 0;
-	font-size: 14px;
-	color: var( --cg60 );
 }
 /* ---------------------------------------------------------------------------- */
 input,
@@ -196,11 +222,11 @@ input[type=range] {
 	cursor: pointer;
 }
 input[type=range]::-webkit-slider-thumb {
-	height: 40px;
-	width: 40px;
-	margin-top: -20px;
+	height: 36px;
+	width: 36px;
+	margin-top: -18px;
 	border: none;
-	border-radius: 4px;
+	border-radius: 3px;
 	background: var( --gloss );
 	background: var( --wkgloss );
 	background-color: var( --cm );
@@ -208,10 +234,10 @@ input[type=range]::-webkit-slider-thumb {
 	box-shadow: -2px 2px 4px #000000;
 }
 input[type=range]::-moz-range-thumb {
-	height: 40px;
-	width: 40px;
+	height: 36px;
+	width: 36px;
 	border: none;
-	border-radius: 4px;
+	border-radius: 3px;
 	background: var( --gloss );
 	background: var( --wkgloss );
 	background-color: var( --cm );
@@ -239,7 +265,7 @@ input[type=range]::-moz-range-track {
 	text-align: right;
 }
 .split-20-80 div:nth-child( 2 ) {
-	margin: 0 6px 0 -16px;
+	margin: 0 6px 0 -20px;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
@@ -301,8 +327,7 @@ svg {
 	filter: drop-shadow( -1px 1px 2px #000000 );
 }
 /* ---------------------------------------------------------------------------- */
-@media (max-width: 700px) {
-	.configtabs .tabpanel { width: 100% }
+@media (max-width: 710px) {
 	.versions { display: none }
 }
 @media (max-width: 450px) {

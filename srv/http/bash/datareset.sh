@@ -104,6 +104,21 @@ pipeline:
 EOF
 	[[ ! -e $dircamilladsp/configs/camilladsp.yml ]] && cp $dircamilladsp/configs/{default_config,camilladsp}.yml
 	ln -sf $dircamilladsp/configs/{camilladsp,active_config}.yml
+	cat << EOF > /srv/http/settings/camillagui/config/camillagui.yml
+---
+camilla_host: "0.0.0.0"
+camilla_port: 1234
+port: 5005
+config_dir: "$dircamilladsp/configs"
+coeff_dir: "$dircamilladsp/coeffs"
+default_config: "$dircamilladsp/configs/default_config.yml"
+active_config: "$dircamilladsp/configs/active_config.yml"
+update_symlink: true
+on_set_active_config: "/srv/http/bash/features.sh camilladspasound"
+on_get_active_config: null
+supported_capture_types: null
+supported_playback_types: null
+EOF
 fi
 # display
 cat << EOF > $dirsystem/display
