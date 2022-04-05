@@ -1183,6 +1183,12 @@ volumepushstream )
 volumesave )
 	volumeGet save
 	;;
+volumetempmute )
+	volumeGet
+	volumeSetAt 0 $card $control
+	( sleep 5
+	volumeSetAt $volume $card $control ) &
+	;;
 volumeupdown )
 	updn=${args[1]}
 	if [[ -e $dirshm/btclient ]]; then

@@ -2,23 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-volume() {
-	card=$1
-	control=$2
-	target=$3
-	if [[ $control ]]; then
-		amixer -c $card -Mq sset "$control" $target%
-	else
-		mpc -q volume $target
-	fi
-}
-
-ccv=$( $dirbash/cmd.sh volumecontrolget )
-card=${ccv/^*}
-control=$( echo $ccv | cut -d^ -f2 )
-current=${ccv/*^}
-
-volume $card "$control" 0 # mute
+$dirbash/cmd.sh volumetempmute
 mpc -q play
 
 loopbackcard=$( aplay -l \
@@ -31,7 +15,6 @@ format=$( grep -r ^format: /proc/asound/card$loopbackcard/pcm*p \
 			| tr -d _ )
 
 mpc -q stop
-volume $card "$control" $current # restore
 [[ ! $format ]] && exit
 
 fileyml=$dirdata/camilladsp/configs/camilladsp.yml
