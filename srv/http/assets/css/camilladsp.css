@@ -83,7 +83,6 @@ body {
 	width: 40px;
 	height: 40px;
 	text-shadow: -1px 0 2px #000000;
-	cursor: pointer;
 }
 #divhelp {
 	text-align: right;
@@ -97,7 +96,6 @@ body {
 }
 #divhelp i {
 	color: var( --cg60 );
-	cursor: pointer;
 }
 #logo {
 	float: left;
@@ -219,7 +217,6 @@ input[type=range] {
 	margin: 23px 0 20px 0 !important;
 	background: var( --cga );
 	-webkit-appearance: none;
-	cursor: pointer;
 }
 input[type=range]::-webkit-slider-thumb {
 	height: 36px;
@@ -348,3 +345,10 @@ svg {
 section:first-of-type .button-with-text:nth-of-type( 2 ):hover {
 	background-color: var( --cma ) !important;
 }
+.head i,
+#divhelp i,
+#logo,
+input[type=range] {
+	cursor: pointer;
+}
+

@@ -19,7 +19,8 @@
 </div>
 <div id="divhelp" style="display: none">
 	<div id="logo"><img src="./static/media/camilladsp.95719842.svg"><div id="version"></div></div>
-    <a href="https://henquist.github.io/0.6.3/#introduction" target="_blank">Introduction&ensp;<i class="fa fa-help"></i></a>
+	<a id="logohref" href="https://github.com/HEnquist/camilladsp" target="_blank"></a>
+	<a href="https://henquist.github.io/0.6.3/#introduction" target="_blank" style="color: var( --cw )">User Manual&ensp;<i class="fa fa-help"></i></a>
 <br><a href="https://henquist.github.io/0.6.3/#devices" target="_blank">Devices&ensp;<i class="fa fa-help"></i></a>
 <br><a href="https://henquist.github.io/0.6.3/#filters" target="_blank">Filters&ensp;<i class="fa fa-help"></i></a>
 <br><a href="https://henquist.github.io/0.6.3/#mixers" target="_blank">Mixers&ensp;<i class="fa fa-help"></i></a>
@@ -45,6 +46,9 @@ document.getElementById( 'close' ).onclick = function() {
 	http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 	http.send('cmd=bash&bash=systemctl%20stop%20camillagui');
 	location.href = 'http://' + hostname;
+}
+document.getElementById( 'logo' ).onclick = function() {
+	document.getElementById( 'logohref' ).click();
 }
 setTimeout( function() { // tooltip delay and versions
 	var versions = document.getElementsByClassName( 'versions' )[ 0 ];
