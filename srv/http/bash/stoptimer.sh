@@ -6,6 +6,9 @@ dirshm=/srv/http/data/shm
 min=$1
 poweroff=$2
 
+rm -f /srv/http/data/shm/relaystimer
+kill -9 $( pgrep relaystimer ) &> /dev/null
+
 sleep $(( min * 60 ))
 
 rm -f $dirshm/stoptimer
@@ -28,4 +31,8 @@ $volume
 $card
 $control"
 
-[[ $poweroff ]] && $dirbash/cmd.sh power$'\n'off
+if [[ $poweroff ]]; then
+	$dirbash/cmd.sh power$'\n'off
+elif [[ -e $dirshm/relayson ]]; then
+	$dirbash/relays.sh off
+fi

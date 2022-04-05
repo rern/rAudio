@@ -38,16 +38,6 @@ getControls() {
 										| cut -d"'" -f2 )
 }
 
-if [[ $1 ]]; then
-	getControls $1
-	if [[ $controls ]]; then
-		echo "$controls" | sort -u | head -1 > $dirshm/amixercontrol
-	else
-		rm -f $dirshm/amixercontrol
-	fi
-	exit
-fi
-
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
@@ -126,11 +116,21 @@ for line in "${lines[@]}"; do
 	Aname+=( "$name" )
 done
 
-if [[ -e /etc/asound.conf ]]; then
-	i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	(( $i > $card )) && i=$card
+i=$( aplay -l 2> /dev/null \
+			| grep ^card \
+			| grep -v Loopback \
+			| cut -d: -f1 \
+			| tail -c 2 )
+[[ ! $i ]] && i=0
+echo $i > $dirshm/asoundcard
+getControls $i
+if [[ $controls ]]; then
+	echo "$controls" \
+		| sort -u \
+		| head -1 \
+		> $dirshm/amixercontrol
 else
-	i=0
+	rm -f $dirshm/amixercontrol
 fi
 
 devices="[ ${devices:1} ]"

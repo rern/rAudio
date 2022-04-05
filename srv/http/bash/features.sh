@@ -379,6 +379,11 @@ spotifytokenreset )
 stoptimerdisable )
 	killall stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
+	if [[ -e $dirshm/relayson ]]; then
+		. $dirsystem/relays.conf
+		echo $timer > $timerfile
+		$dirbash/relaystimer.sh &> /dev/null &
+	fi
 	pushRefresh
 	;;
 stoptimerset )

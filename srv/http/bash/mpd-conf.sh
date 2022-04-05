@@ -66,7 +66,7 @@ output= # reset var from mpd-devices.sh
 if [[ $i != -1 ]]; then
 	if [[ $1 == add ]]; then
 		i=-1
-		head -1 /etc/asound.conf | cut -d' ' -f2 > $dirshm/asound
+		cp $dirshm/asound{card,}
 	elif [[ $1 == remove ]]; then
 		i=$( cat $dirshm/asound )
 	fi
@@ -226,9 +226,7 @@ if [[ $1 == add || $1 == remove ]]; then
 fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
-[[ !$card ]] && card=0
-echo $card > $dirshm/asoundcard
-$dirbash/mpd-devices.sh $card
+card=$( cat $dirshm/asoundcard )
 ########
 asound="\
 defaults.pcm.card $card
