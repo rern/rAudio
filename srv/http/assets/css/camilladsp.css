@@ -329,6 +329,9 @@ svg {
 	filter: drop-shadow( -1px 1px 2px #000000 );
 }
 /* ---------------------------------------------------------------------------- */
+@media (max-width: 740px) {
+	#divhelp { margin: 0 20px }
+}
 @media (max-width: 710px) {
 	.versions { display: none }
 }
