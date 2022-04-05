@@ -487,8 +487,7 @@ coverartsave )
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		files=$( ls -1t $dirshm/$type )
-		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
 	;;
 displaysave )
@@ -1173,17 +1172,6 @@ volumeget )
 	else
 		echo $volume
 	fi
-	;;
-volumemute )
-	volumeGet
-	volumeSetAt 0 $card $control
-	echo $volume > $dirshm/volumetemp
-	;;
-volumemuterestore )
-	target=$( cat $dirshm/volumetemp )
-	volumeGet
-	volumeSetAt $target $card $control
-	rm $dirshm/volumetemp
 	;;
 volumepushstream )
 	[[ -e $dirshm/btclient ]] && sleep 1
