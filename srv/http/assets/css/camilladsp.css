@@ -157,10 +157,10 @@ section.tabpanel {
 .box {
 	border: 1px solid var( --cg );
 }
-.configtabs .box div {
+.configtabs .box div div {
 	max-width: 240px;
 }
-.horizontally-spaced-content:first-of-type div:first-child {
+section .horizontally-spaced-content:first-of-type div:first-child {
 	width: 110px !important;
 }
 .horizontally-spaced-content {
@@ -168,6 +168,10 @@ section.tabpanel {
 }
 legend {
 	font-size: 18px;
+}
+legend label {
+	letter-spacing: 0;
+	font-size: 16px;
 }
 .two-column-grid .alignRight {
 	width: 170px;
@@ -179,6 +183,7 @@ legend {
 }
 .setting-label {
 	width: 50%;
+	min-width: 145px;
 }
 .config-status {
 	margin: 0;
@@ -280,8 +285,8 @@ input[type=range]::-moz-range-track {
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	text-shadow: -1px 1px 2px #000000;
 }
-.button:nth-of-type( 2 ),
-.button:nth-of-type( 3 ) {
+section .button:nth-of-type( 2 ),
+section .button:nth-of-type( 3 ) {
 	width:36px;
 	height: 36px;
 }
