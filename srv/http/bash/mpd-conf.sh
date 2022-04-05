@@ -64,12 +64,6 @@ fi
 
 output= # reset var from mpd-devices.sh
 if [[ $i != -1 ]]; then
-	if [[ $1 == add ]]; then
-		i=-1
-		cp $dirshm/asound{card,}
-	elif [[ $1 == remove ]]; then
-		i=$( cat $dirshm/asound )
-	fi
 	aplayname=${Aaplayname[$i]}
 	card=${Acard[$i]}
 	dop=${Adop[$i]}
