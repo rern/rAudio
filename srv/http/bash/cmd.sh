@@ -1174,6 +1174,17 @@ volumeget )
 		echo $volume
 	fi
 	;;
+volumemute )
+	volumeGet
+	volumeSetAt 0 $card $control
+	echo $volume > $dirshm/volumetemp
+	;;
+volumemuterestore )
+	target=$( cat $dirshm/volumetemp )
+	volumeGet
+	volumeSetAt $target $card $control
+	rm $dirshm/volumetemp
+	;;
 volumepushstream )
 	[[ -e $dirshm/btclient ]] && sleep 1
 	volumeGet
@@ -1182,12 +1193,6 @@ volumepushstream )
 	;;
 volumesave )
 	volumeGet save
-	;;
-volumetempmute )
-	volumeGet
-	volumeSetAt 0 $card $control
-	( sleep 5
-	volumeSetAt $volume $card $control ) &
 	;;
 volumeupdown )
 	updn=${args[1]}
