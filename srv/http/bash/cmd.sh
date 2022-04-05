@@ -227,7 +227,7 @@ volumeSetAt() {
 	if [[ $btclient ]]; then
 		amixer -MqD bluealsa sset "$btclient" $target%
 		echo $target > "$dirsystem/btvolume-$btclient"
-	elif [[ $card ]]; then
+	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
 	else
 		mpc -q volume $target
@@ -1192,8 +1192,7 @@ volumeupdown )
 	else
 		card=${args[2]}
 		control=${args[3]}
-		if [[ $card ]]; then
-			card=$( cat $dirshm/asoundcard )
+		if [[ $control ]]; then
 			amixer -c $card -Mq sset "$control" 1%$updn
 		else
 			mpc -q volume ${updn}1
