@@ -266,11 +266,11 @@ input[type=range]::-moz-range-track {
 }
 .rc-progress-line-path {
 	stroke-width: 2;
-	stroke: var( --cm );
+	stroke: var( --cml );
 }
 .rc-progress-line-trail {
 	stroke-width: 2;
-	stroke: var( --cg60 );
+	stroke: var( --cg );
 }
 /* ---------------------------------------------------------------------------- */
 .button {
