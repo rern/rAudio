@@ -1057,7 +1057,7 @@ $( '.btn-cmd' ).click( function() {
 			clearInterval( G.intElapsedPl );
 			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed;
 			if ( G.status.player !== 'mpd' ) {
-				bash( [ 'playerstop', G.status.player, elapsedscrobble ] );
+				bash( [ 'playerstop', elapsedscrobble ] );
 				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}

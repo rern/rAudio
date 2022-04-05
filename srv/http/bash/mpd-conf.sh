@@ -14,10 +14,7 @@
 
 restartMPD() {
 	systemctl restart mpd
-	if [[ -e $dirsystem/camilladsp ]]; then
-		# set playback device and format in camilladsp.yml
-		systemctl restart camilladsp
-	fi
+	[[ -e $dirsystem/camilladsp ]] && $dirbash/camilladsp.sh
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -210,7 +207,7 @@ $btoutput" > /etc/mpd.conf
 
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then
-	mpc -q stop
+	$dirbash/cmd.sh playerstop
 	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	if [[ ! $name ]]; then
 		name='(No sound device)'
@@ -300,6 +297,7 @@ ctl.camilladsp {
 	card Loopback
 }'
 #-------
+	
 fi
 
 echo "$asound" > /etc/asound.conf

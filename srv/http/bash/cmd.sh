@@ -648,9 +648,7 @@ mpcplayback )
 	if [[ ! $command ]]; then
 		player=$( cat $dirshm/player )
 		if [[ $( cat $dirshm/player ) != mpd ]]; then
-			$dirbash/cmd.sh "playerstop
-$player
-0"
+			$dirbash/cmd.sh playerstop
 			exit
 		fi
 		
@@ -825,8 +823,8 @@ playerstart )
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )
-	player=${args[1]}
-	elapsed=${args[2]}
+	elapsed=${args[1]}
+	player=$dirshm/player
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
@@ -870,7 +868,7 @@ playerstop )
 		rm -f $file
 	fi
 	pushstream player '{"player":"'$player'","active":false}'
-	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
+	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
@@ -984,7 +982,7 @@ power )
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
-			sshCommand $ip $dirbash/cmd.sh playerstop$'\n'snapcast
+			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )

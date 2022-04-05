@@ -21,7 +21,7 @@ player=$( cat $dirshm/player )
 if [[ $player == mpd ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 else
-	$dirbash/cmd.sh playerstop$'\n'$player
+	$dirbash/cmd.sh playerstop
 fi
 
 sleep 2

@@ -265,8 +265,8 @@ function psVolume( data ) {
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
 		$( '#infoContent' ).removeClass( 'hide' );
-		$( '.warning, #infoOk' ).addClass( 'hide' );                // ok
-		$( '.extrabtn' ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
+		$( '.warning, .extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );     // ok
+		$( '.extrabtn' ).eq( 1 ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
 	}, 300 );
 }
 function psVolumeBt( data ) {
