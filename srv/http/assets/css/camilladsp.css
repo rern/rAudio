@@ -202,6 +202,7 @@ input[type=text] {
 }
 select {
 	width: 170px !important;
+	min-width: 170px;
 }
 input[type=number] {
 	width: 75px !important;
