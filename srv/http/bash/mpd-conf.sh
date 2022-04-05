@@ -228,6 +228,7 @@ fi
 
 [[ !$card ]] && card=0
 echo $card > $dirshm/asoundcard
+$dirbash/mpd-devices.sh $card
 ########
 asound="\
 defaults.pcm.card $card

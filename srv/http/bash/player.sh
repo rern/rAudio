@@ -203,14 +203,7 @@ filetype )
 hwmixer )
 	aplayname=${args[1]}
 	hwmixer=${args[2]}
-	if [[ $hwmixer == auto ]]; then
-		hwmixer=$( $dirbash/cmd.sh volumecontrols \
-					| sort -u \
-					| head -1 )
-		rm -f "$dirsystem/hwmixer-$aplayname"
-	else
-		echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
-	fi
+	echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
 	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD

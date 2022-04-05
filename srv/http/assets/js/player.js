@@ -52,35 +52,46 @@ $( '#setting-hwmixer' ).click( function() {
 		var db = voldb[ 1 ];
 		var card = G.asoundcard;
 		var control = device.hwmixer;
+		if ( novolume ) {
+			info( {
+				  icon       : 'volume'
+				, title      : 'Mixer Device Volume'
+				, message    : control
+				, rangevalue : vol
+				, footer     : '0dB (No Volume)'
+				, beforeshow    : function() {
+					$( '#infoRange input' ).prop( 'disabled', 1 );
+				}
+				, okno       : 1
+			} );
+			return
+		}
+		
+		var toggle = function() { $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' ) }
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : control
 			, rangevalue    : vol
-			, footer        : ( novolume ? '0dB (No Volume)' : db +' dB' )
+			, footer        : db +' dB'
 			, beforeshow    : function() {
-				if ( novolume ) {
-					$( '#infoRange input' ).prop( 'disabled', 1 );
-				} else {
-					$( '#infoContent' ).after( '<div class="infomessage warning hide"><br>'+ warning +'</div>' );
-					$( '#infoOk' ).addClass( 'hide' );
-					$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
-					$( '#infoRange input' ).on( 'click input keyup', function() {
-						bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
-					} ).on( 'touchend mouseup keyup', function() {
-						bash( [ 'volumeget', 'push' ] );
-					} );
-				}
+				$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
+				$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ 'volumeget', 'push' ] );
+				} );
+				$( '.extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );
 			}
 			, buttonnoreset : 1
-			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
-			, button        : function() {
-				$( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' );
-			}
+			, buttonlabel   : [ 'Back', '<i class="fa fa-set0"></i>0dB' ]
+			, buttoncolor   : [ $( '.switchlabel' ).css( 'background-color' ), '' ]
+			, button        : [ toggle, toggle ]
 			, oklabel       : 'OK'
 			, ok            : function() {
 				bash( [ 'volume0db', card, control ] );
-				$( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' );
+				toggle();
 			}
 		} );
 	} );

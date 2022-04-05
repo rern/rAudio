@@ -276,7 +276,7 @@ function info( json ) {
 							.removeClass( 'hide' );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-		$( '#infoButtons' ).one( 'click', '.infobtn.extrabtn', function() {
+		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
 			var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 			if ( fn ) fn();
 			if ( !O.buttonnoreset ) infoReset();

@@ -25,7 +25,6 @@ if [[ $1 == snapclient ]]; then # snapclient
 	player=mpd
 else
 	btclient=$( exists $dirshm/btclient )
-	card=$( cat $dirshm/asoundcard )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
@@ -46,9 +45,10 @@ else
 	if [[ -e $dirshm/nosound && ! -e $dirshm/btclient ]]; then
 		volume=false
 	else
-		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
-		control=$( echo $controlvolume | cut -d^ -f1 ) # for volume drag
-		volume=$( echo $controlvolume | cut -d^ -f2 )
+		ccv=$( $dirbash/cmd.sh volumecontrolget )
+		card=${ccv/^*}
+		control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
+		volume=${ccv/*^}
 	fi
 	scrobble=$( exists $dirsystem/scrobble )
 	volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )

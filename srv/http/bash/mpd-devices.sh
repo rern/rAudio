@@ -21,6 +21,33 @@ if [[ ! $aplay ]]; then
 	return
 fi
 
+getControls() {
+	amixer=$( amixer -c $1 scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' )
+	[[ ! $amixer ]] && return
+	
+	controls=$( echo "$amixer" \
+					| grep 'volume.*pswitch\|Master.*volume' \
+					| cut -d"'" -f2 )
+	[[ ! $controls ]] && controls=$( echo "$amixer" \
+										| grep volume \
+										| grep -v Mic \
+										| cut -d"'" -f2 )
+}
+
+if [[ $1 ]]; then
+	getControls $1
+	if [[ $controls ]]; then
+		echo "$controls" | sort -u | head -1 > $dirshm/amixercontrol
+	else
+		rm -f $dirshm/amixercontrol
+	fi
+	exit
+fi
+
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
@@ -41,7 +68,7 @@ for line in "${lines[@]}"; do
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	controls=$( /srv/http/bash/cmd.sh volumecontrols$'\n'$card )
+	getControls $card
 	if [[ ! $controls ]]; then
 		mixerdevices=['"( not available )"']
 		mixers=0
