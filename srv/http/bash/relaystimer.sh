@@ -4,7 +4,8 @@ timerfile=/srv/http/data/shm/relaystimer
 timer=$( cat $timerfile )
 i=$timer
 while sleep 60; do
-	if grep -q RUNNING /proc/asound/card*/pcm*/sub*/status; then # state: RUNNING
+	card=$( cat /srv/http/data/shm/asoundcard )
+	if grep -q RUNNING /proc/asound/card$card/pcm*/sub*/status; then # state: RUNNING
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( cat $timerfile )

@@ -36,7 +36,7 @@ if [[ $cmd == true ]]; then
 		(( $i > 0 )) && pushstreamRelays '{"on": '$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
-	if [[ $timer > 0 ]]; then
+	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 		echo $timer > $timerfile
 		$dirbash/relaystimer.sh &> /dev/null &
 	fi
