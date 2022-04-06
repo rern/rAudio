@@ -13,7 +13,7 @@ data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
-, "camilladsp"       : '$( exists $dirsystem/ )'
+, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'

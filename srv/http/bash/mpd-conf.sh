@@ -208,7 +208,6 @@ $btoutput" > /etc/mpd.conf
 # usbdac.rules
 if [[ $1 == add || $1 == remove ]]; then
 	$dirbash/cmd.sh playerstop
-	[[ $1 == add && $mixertype == hardware ]] && alsactl restore
 	if [[ ! $name ]]; then
 		name='(No sound device)'
 		volumenone=true
@@ -301,6 +300,7 @@ ctl.camilladsp {
 fi
 
 echo "$asound" > /etc/asound.conf
+alsactl nrestore &> /dev/null # notify changes to running daemons
 
 [[ $preset ]] && $dirbash/cmd.sh "equalizer
 preset
