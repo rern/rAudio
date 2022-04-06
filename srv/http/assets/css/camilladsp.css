@@ -31,7 +31,7 @@
 	--background-color: var( --cga );
 	--button-background-color: var( --cg );
 	--button-remove-icon-color: #bb2828;
-	--error-field-background-color: var( --cg );
+	--error-field-background-color: #bb2828;
 	--error-text-color: transparent;
 	--border-radius: 3px;
 }
@@ -160,6 +160,9 @@ section.tabpanel {
 	border: none;
 	background: var( --cg );
 }
+.react-tabs__tab-list span {
+	display: none;
+}
 .box {
 	border: 1px solid var( --cg );
 }
@@ -187,6 +190,9 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 }
 .horizontally-spaced-content {
 	letter-spacing: 2px;
+}
+.horizontally-spaced-content span {
+	max-height: 36px;
 }
 legend {
 	margin-left: -2px;
