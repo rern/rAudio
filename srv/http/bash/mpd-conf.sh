@@ -14,7 +14,7 @@
 
 restartMPD() {
 	systemctl restart mpd
-	[[ -e $dirsystem/camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
+	[[ $camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -72,11 +72,8 @@ if [[ $i != -1 ]]; then
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
 	if [[ -e $dirsystem/camilladsp ]]; then
-		cardloopback=$( aplay -l \
-							| grep ^card.*Loopback \
-							| head -1 \
-							| cut -d: -f1 \
-							| cut -d' ' -f2 )
+		camilladsp=1
+		cardloopback=$( cat $dirshm/asoundloopback )
 		hw=hw:$cardloopback,1
 #---------------<
 		output+='
@@ -264,7 +261,7 @@ pcm.plugequal {
 #-------
 fi
 
-if [[ -e $dirsystem/camilladsp ]]; then
+if [[ $camilladsp ]]; then
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
 	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
@@ -320,7 +317,10 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ $btmixer ]]; then
+	if [[ $camilladsp ]]; then
+		conf+='
+	output_device = "hw:'$cardloopback',0";'
+	elif [[ $btmixer ]]; then
 		conf+='
 	output_device = "bluealsa";'
 	else
@@ -338,7 +338,9 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $btmixer ]]; then
+	if [[ $camilladsp ]]; then
+		device='sysdefault:CARD=Loopback'
+	elif [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
 		cardname=$( aplay -l \
@@ -354,7 +356,7 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
 device = "'$device'"'
-	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
+	if [[ ! $camilladsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
 		conf+='
 mixer = "'$hwmixer'"
 control = "hw:'$card'"
