@@ -30,7 +30,10 @@
 .css-variables {
 	--background-color: var( --cga );
 	--button-background-color: var( --cg );
+	--error-field-background-color: var( --cg );
+	--error-text-color: transparent;
 	--border-radius: 3px;
+	--red  : hsl(0,65%,25%);
 }
 body {
 	padding-top: 40px;
@@ -41,6 +44,9 @@ body {
 #root {
 	max-width: 750px;
 	margin: auto;
+}
+hr {
+	border: none;
 }
 /* ---------------------------------------------------------------------------- */
 .head {
@@ -157,7 +163,23 @@ section.tabpanel {
 .box {
 	border: 1px solid var( --cg );
 }
-.configtabs .box div div {
+#react-tabs-5 legend .setting-label {
+	min-width: 35px;
+}
+#react-tabs-5 .horizontally-spaced-content legend .setting-label {
+	min-width: 130px;
+}
+#react-tabs-5 .box div:not(.button) {
+	justify-content: left !important;
+}
+#react-tabs-5 .setting-label {
+	min-width: 50px;
+	letter-spacing: 0;
+}
+#react-tabs-5 .horizontally-spaced-content div svg {
+	width: 36px !important;
+}
+.configtabs .box div div:not(.button) {
 	max-width: 240px;
 }
 section .horizontally-spaced-content:first-of-type div:first-child {
@@ -167,6 +189,7 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 	letter-spacing: 2px;
 }
 legend {
+	margin-left: -2px;
 	font-size: 18px;
 }
 legend label {
@@ -199,6 +222,12 @@ select {
 }
 input[type=text] {
 	width: 150px !important;
+}
+input[data-tip='Mixer name, must be unique'] {
+	width: 150px !important;
+}
+#react-tabs-5 input:not([data-tip='Mixer name, must be unique']) {
+	width: 55px !important;
 }
 select {
 	width: 170px !important;
@@ -292,7 +321,11 @@ section .button:nth-of-type( 3 ) {
 	height: 36px;
 }
 .smallbutton {
-	margin-top: 3px;
+	width: 36px !important;
+	height: 36px !important;
+}
+.smallbutton svg {
+	width: 36px !important;
 }
 .button-with-text {
 	padding: 0px 10px;
@@ -328,6 +361,27 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) { /* Apply button */
 svg {
 	-webkit-filter: drop-shadow( -1px 1px 2px #000000 );
 	filter: drop-shadow( -1px 1px 2px #000000 );
+}
+/* ---------------------------------------------------------------------------- */
+[data-tip='Delete selected files<br>Select at least one file first!'],
+[data-tip='Delete this filter'],
+[data-tip='Delete this mapping'],
+[data-tip='Delete this mixer'],
+[data-tip='Delete this source'],
+[data-tip='Delete this step'],
+[data-tip='Remove this filter from the list'] {
+	background-color: var( --red ) !important;
+}
+[data-tip='Add a filter to the list'],
+[data-tip='Add a mapping'],
+[data-tip='Add a new filter'],
+[data-tip='Add a new mixer'],
+[data-tip='Add a pipeline step'],
+[data-tip='Add a source to this mapping'] {
+	background-color: var( --cg ) !important;
+}
+[data-tip] svg {
+	color: var( --cw );
 }
 /* ---------------------------------------------------------------------------- */
 @media (max-width: 740px) {
