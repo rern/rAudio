@@ -30,10 +30,10 @@
 .css-variables {
 	--background-color: var( --cga );
 	--button-background-color: var( --cg );
+	--button-remove-icon-color: #bb2828;
 	--error-field-background-color: var( --cg );
 	--error-text-color: transparent;
 	--border-radius: 3px;
-	--red  : #bb2828;
 }
 body {
 	padding-top: 40px;
@@ -363,15 +363,6 @@ svg {
 	filter: drop-shadow( -1px 1px 2px #000000 );
 }
 /* ---------------------------------------------------------------------------- */
-[data-tip='Delete selected files<br>Select at least one file first!'],
-[data-tip='Delete this filter'],
-[data-tip='Delete this mapping'],
-[data-tip='Delete this mixer'],
-[data-tip='Delete this source'],
-[data-tip='Delete this step'],
-[data-tip='Remove this filter from the list'] {
-	color: var( --red ) !important;
-}
 .button[data-tip]:not(.highlighted-button) {
 	background-color: var( --cg ) !important;
 }
