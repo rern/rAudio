@@ -33,7 +33,7 @@
 	--error-field-background-color: var( --cg );
 	--error-text-color: transparent;
 	--border-radius: 3px;
-	--red  : hsl(0,65%,25%);
+	--red  : #bb2828;
 }
 body {
 	padding-top: 40px;
@@ -370,18 +370,10 @@ svg {
 [data-tip='Delete this source'],
 [data-tip='Delete this step'],
 [data-tip='Remove this filter from the list'] {
-	background-color: var( --red ) !important;
+	color: var( --red ) !important;
 }
-[data-tip='Add a filter to the list'],
-[data-tip='Add a mapping'],
-[data-tip='Add a new filter'],
-[data-tip='Add a new mixer'],
-[data-tip='Add a pipeline step'],
-[data-tip='Add a source to this mapping'] {
+.button[data-tip]:not(.highlighted-button) {
 	background-color: var( --cg ) !important;
-}
-[data-tip] svg {
-	color: var( --cw );
 }
 /* ---------------------------------------------------------------------------- */
 @media (max-width: 740px) {
