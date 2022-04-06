@@ -40,7 +40,7 @@ var cmd = {
 }
 var services = [ 'camilladsp', 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
-function status( id, refresh ) {
+function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
 	if ( !refresh && !$el.hasClass( 'hide' ) ) {
 		$el.addClass( 'hide' );
@@ -141,7 +141,7 @@ function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
 	$( 'pre.status' ).each( function( el ) {
-		if ( !$( this ).hasClass( 'hide' ) ) status( this.id.replace( 'code', '' ), 'refresh' );
+		if ( !$( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
 	} );
 	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
@@ -433,7 +433,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );
-	if ( !$this.hasClass( 'single' ) ) status( $this.data( 'status' ) );
+	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;

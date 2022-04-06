@@ -70,8 +70,8 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	pushRefresh
 	$dirbash/mpd-conf.sh
+	pushRefresh
 	;;
 camilladspasound )
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
