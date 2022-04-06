@@ -191,9 +191,6 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 .horizontally-spaced-content {
 	letter-spacing: 2px;
 }
-.horizontally-spaced-content span {
-	max-height: 36px;
-}
 legend {
 	margin-left: -2px;
 	font-size: 18px;
@@ -213,6 +210,9 @@ legend label {
 .setting-label {
 	width: 50%;
 	min-width: 145px;
+}
+#react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
+	display: none;
 }
 .config-status {
 	margin: 0;
