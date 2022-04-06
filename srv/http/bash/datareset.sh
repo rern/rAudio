@@ -76,7 +76,7 @@ devices:
   playback:
     channels: 2
     device: hw:0,0
-    format: S16LE
+    format: S32LE
     type: Alsa
   queuelimit: 4
   rate_measure_interval: 1
