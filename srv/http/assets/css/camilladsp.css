@@ -242,7 +242,19 @@ input[type=number] {
 	width: 75px !important;
 }
 input[type=checkbox] {
-	vertical-align: -2px;
+	-webkit-appearance: none;
+	width: 24px;
+	height: 24px;
+	margin: 4px 0 !important;
+	vertical-align: -12px;
+	border-radius: 3px;
+	background-color: var( --cg );
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	box-shadow: -1px 1px 2px 1px #000000;
+}
+input:checked {
+	background-color: var( --cm );
 }
 input[type=text]:focus {
 	outline: solid 2px var( --cg60 );
