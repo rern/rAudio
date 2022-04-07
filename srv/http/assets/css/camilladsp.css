@@ -115,22 +115,18 @@ hr {
 	font-size: 12px;
 }
 /* ---------------------------------------------------------------------------- */
-section.tabpanel {
-	margin-bottom: 10px;
-}
 .react-tabs__tab-list {
 	margin-block-end: 0;
 }
 .configapp {
 	display: block;
-	width: fit-content;
-	margin: auto;
 }
 section.tabpanel {
 	float: left;
 	width: 300px !important;
-	padding-top: 3px !important;
 	margin-left: calc( 50% - 155px );
+	margin-bottom: 10px;
+	padding-top: 3px !important;
 }
 section.tabpanel .box {
 	margin-bottom: 20px;
@@ -142,9 +138,12 @@ section.tabpanel legend .horizontally-spaced-content {
 	border-bottom: 1px solid var( --cg );
 }
 section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
-    /* display: none; */
-    border: none !important;
-}.tabpanel,
+	border: none !important;
+}
+section.tabpanel .split-20-80 {
+	width: 276px;
+}
+.tabpanel,
 .configtabs {
 	display: block;
 	padding: 0 5px 0 5px;
@@ -193,7 +192,7 @@ section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
 #react-tabs-5 .horizontally-spaced-content div svg {
 	width: 36px !important;
 }
-.configtabs .box div div:not(.button) {
+#react-tabs-8 .configtabs .box div div:not(.button) {
 	max-width: 240px;
 }
 section .horizontally-spaced-content:first-of-type div:first-child {
@@ -275,7 +274,7 @@ input[type=range] {
 	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--track: linear-gradient( 90deg, transparent 10px, var( --cgl ) 10px, var( --cgl ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
-	width: 100% !important;
+	width: 270px !important;
 	height: 4px;
 	margin: 23px 0 20px 0 !important;
 	background: var( --cga );
@@ -325,7 +324,7 @@ input[type=range]::-moz-range-track {
 	text-align: right;
 }
 .split-20-80 div:nth-child( 2 ) {
-	margin: 0 6px 0 -20px;
+	margin: 0 10px 0 -20px;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
