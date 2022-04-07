@@ -30,9 +30,7 @@
 .css-variables {
 	--background-color: var( --cga );
 	--button-background-color: var( --cg );
-	--button-remove-icon-color: #bb2828;
 	--error-field-background-color: #bb2828;
-	--error-text-color: transparent;
 	--border-radius: 3px;
 }
 body {
@@ -128,10 +126,11 @@ section.tabpanel {
 	width: fit-content;
 	margin: auto;
 }
-.tabpanel {
+section.tabpanel {
 	float: left;
 	width: 300px !important;
-	padding-top: 10px !important;
+	padding-top: 4px !important;
+	margin-left: calc( 50% - 155px );
 }
 .tabpanel,
 .configtabs {
@@ -139,13 +138,13 @@ section.tabpanel {
 	padding: 0 5px 0 5px;
 }
 .configapp>:last-child {
-	margin: 0;
+	margin-left: calc( 50% - 210px );
 }
 .configtabs .tabpanel {
 	width: 400px !important;
 	min-height: calc( 100vh - 130px );
 	background: var( --cgd );
-	padding-bottom: 40px;
+	padding: 10px 5px 40px 5px;
 }
 .tabpanel img {
 	display: none;
@@ -373,8 +372,24 @@ svg {
 	background-color: var( --cg ) !important;
 }
 /* ---------------------------------------------------------------------------- */
+@media (min-width: 740px) {
+	section.tabpanel {
+		position: fixed;
+		margin: auto;
+	}
+	.configtabs { margin-left: 305px !important }
+	.react-tabs__tab-list {
+		position: fixed;
+		margin-top: -5px;
+		padding-top: 10px;
+		background: #000000;
+		box-shadow: 0px 4px 10px #000000;
+	}
+	.configtabs .tabpanel { padding-top: 50px }
+}
 @media (max-width: 740px) {
 	#divhelp { margin: 0 20px }
+	
 }
 @media (max-width: 710px) {
 	.versions { display: none }
