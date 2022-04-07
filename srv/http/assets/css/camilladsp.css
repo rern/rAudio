@@ -132,7 +132,19 @@ section.tabpanel {
 	padding-top: 4px !important;
 	margin-left: calc( 50% - 155px );
 }
-.tabpanel,
+section.tabpanel .box {
+	margin-bottom: 20px;
+	border: none;
+}
+section.tabpanel legend .horizontally-spaced-content {
+	width: 270px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid var( --cg );
+}
+section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
+    /* display: none; */
+    border: none !important;
+}.tabpanel,
 .configtabs {
 	display: block;
 	padding: 0 5px 0 5px;
@@ -144,7 +156,7 @@ section.tabpanel {
 	width: 400px !important;
 	min-height: calc( 100vh - 130px );
 	background: var( --cgd );
-	padding: 10px 5px 40px 5px;
+	padding: 10px 0 40px 0;
 }
 .tabpanel img {
 	display: none;
@@ -185,13 +197,12 @@ section.tabpanel {
 	max-width: 240px;
 }
 section .horizontally-spaced-content:first-of-type div:first-child {
-	width: 110px !important;
+	width: 100% !important;
 }
 .horizontally-spaced-content {
 	letter-spacing: 2px;
 }
 legend {
-	margin-left: -2px;
 	font-size: 18px;
 }
 legend label {
@@ -397,7 +408,9 @@ svg {
 		background: #000000;
 		box-shadow: 0px 4px 10px #000000;
 	}
-	.configtabs .tabpanel { padding-top: 50px }
+	.configtabs .tabpanel {
+		padding: 50px 5px 40px 5px;
+	}
 }
 @media (max-width: 740px) {
 	#divhelp { margin: 0 20px }
