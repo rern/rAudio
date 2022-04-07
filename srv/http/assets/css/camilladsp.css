@@ -129,7 +129,7 @@ section.tabpanel {
 section.tabpanel {
 	float: left;
 	width: 300px !important;
-	padding-top: 4px !important;
+	padding-top: 3px !important;
 	margin-left: calc( 50% - 155px );
 }
 section.tabpanel .box {
