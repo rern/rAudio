@@ -413,18 +413,43 @@ svg {
 }
 @media (max-width: 740px) {
 	#divhelp { margin: 0 20px }
-	
+	section.tabpanel {
+		width: 390px !important;
+		margin-left: calc( 50% - 200px );
+	}
+	input[type=range] {
+		margin-left: 50px !important;
+	}
+	section.tabpanel .split-20-80 {
+		width: 276px;
+		margin-left: 50px;
+	}
+	section.tabpanel legend .horizontally-spaced-content {
+		width: 375px;
+	}
+	.two-column-grid .alignRight {
+		width: 210px;
+	}
+	.configtabs .tabpanel {
+		width: 408px !important;
+	}
 }
 @media (max-width: 710px) {
 	.versions { display: none }
 }
-@media (max-width: 450px) {
-	.head span { letter-spacing: 12px; }
-}
-@media (max-width: 400px) {
+@media (max-width: 490px) {
 	.head span {
 		margin-left: 10px;
-		letter-spacing: 5px;
+		letter-spacing: calc( 100vw / 30 - 1px );
+	}
+}
+@media (max-width: 440px) {
+	.head span {
+		letter-spacing: calc( 100vw / 50 - 3px );
+	}
+	section.tabpanel,
+	.configapp>:last-child {
+		margin-left: 0;
 	}
 }
 
