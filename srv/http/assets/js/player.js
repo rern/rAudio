@@ -390,7 +390,7 @@ function renderPage() {
 				.html( htmlmixertype )
 				.val( device.mixertype );
 			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
+			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
 		}
