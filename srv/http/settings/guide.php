@@ -35,7 +35,7 @@ include 'logosvg.php';
 var nlibrary = 23;
 var nplaylist = 40;
 var nsettings = 48;
-var ntotal = 59;
+var ntotal = 60;
 var n = 1;
 
 var $ = function( id ) { return document.getElementById( id ) }
