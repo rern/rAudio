@@ -34,9 +34,9 @@
 .fa-help::before { content: '\f560' }
 
 .css-variables {
-	--background-color: var( --cga );
+	--background-color: var( --cg );
 	--button-background-color: var( --cg );
-	--error-field-background-color: #bb2828;
+	--error-field-background-color: #bb2828 !important;
 	--border-radius: 3px;
 }
 body {
@@ -132,6 +132,11 @@ hr {
 	display: block;
 	padding: 5px 0;
 }
+.configapp:after {
+	content: '';
+	clear: both;
+	display: block;
+}
 section.tabpanel {
 	display: block;
 	float: left;
@@ -174,14 +179,6 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	margin-top: 15px;
 	text-align: center;
 }
-#react-tabs-1 input:not[type=checkbox] {
-	width: 100% !important;
-	max-width: 150px;
-}
-#react-tabs-1 select {
-	width: 100% !important;
-	max-width: 175px;
-}
 .configtabs {
 	display: block;
 	max-width: 100vw;
@@ -218,6 +215,16 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	max-width: 100vw;
 	border: 1px solid var( --cg );
 }
+/* Devices ----------------------------------------------------------------- */
+#react-tabs-1 input:not[type=checkbox] {
+	width: 100% !important;
+	max-width: 150px;
+}
+#react-tabs-1 select {
+	width: 100% !important;
+	max-width: 175px;
+}
+/* Mixers ----------------------------------------------------------------- */
 #react-tabs-5 legend .setting-label {
 	min-width: 35px;
 }
@@ -234,15 +241,17 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 #react-tabs-5 .horizontally-spaced-content div svg {
 	width: 36px !important;
 }
+/* Pipeline ----------------------------------------------------------------- */
 #react-tabs-7 select {
 	width: 170px !important;
 }
 #react-tabs-7 input[type=number] {
 	width: 50px !important;
 }
-#react-tabs-8 .configtabs .box div div:not(.button) {
-	max-width: 100px;
+#react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
+	display: none;
 }
+
 section .horizontally-spaced-content:first-of-type div:first-child {
 	width: 100% !important;
 }
@@ -271,9 +280,6 @@ legend label {
 	width: 50%;
 	min-width: 160px;
 }
-#react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
-	display: none;
-}
 .config-status {
 	position: absolute;
 	width: calc( 100% - 30px );
@@ -288,7 +294,6 @@ select {
 	padding: 0 5px !important;
 	font-family: Lato;
 	font-size: 16px;
-	background-color: var(--cg) !important;
 	border: solid 1px var( --cgl ) !important;
 }
 input[type=text] {
@@ -499,7 +504,14 @@ svg {
 	.configtabs .tabpanel {
 		width: 408px !important;
 		max-width: 100%;
-		padding: 0;
+		min-height: 0;
+		padding: 0 5px;
+	}
+	.react-tabs__tab-list {
+		position: sticky;
+		top: 40px;
+		background: #000;
+		padding-top: 10px;
 	}
 }
 @media (max-width: 710px) {
