@@ -490,7 +490,7 @@ svg {
 		padding: 50px 5px 40px 5px;
 	}
 }
-@media (max-width: 740px) {
+@media (max-width: 739px) {
 	#divhelp { margin: 0 20px }
 	section.tabpanel {
 		float: none;
@@ -505,7 +505,7 @@ svg {
 		width: 408px !important;
 		max-width: 100%;
 		min-height: 0;
-		padding: 0 5px;
+		padding: 15px 0 5px;
 	}
 	.react-tabs__tab-list {
 		position: sticky;
