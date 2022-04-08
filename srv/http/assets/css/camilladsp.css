@@ -388,7 +388,7 @@ section .button:nth-of-type( 3 ) {
 	text-shadow: -1px 1px 2px #000000;
 }
 #react-tabs-9 div:not([class]) {
-	max-width: 220px !important;
+	max-width: 230px !important;
 }
 #react-tabs-9 div:not([class]) .button-with-text {
 	display: block;
