@@ -84,7 +84,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
  • Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
- • CamillaDSP, Equalizer: Disabled
+ • Signal Processors: Disabled
  • Crossfade, Normalization and Replay Gain: Disabled
 HTML
 	]

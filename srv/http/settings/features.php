@@ -105,7 +105,7 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
-$head = [ 'title' => 'Signal Processing' ]; //////////////////////////////////
+$head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'DSP'
@@ -122,7 +122,7 @@ HTML
 	]
 	, [
 		  'label'    => 'Equalizer'
-		, 'sublabel' => 'Alsaequal'
+		, 'sublabel' => 'alsaequal'
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
 		, 'disabled' => 'DSP is currently enabled.'
