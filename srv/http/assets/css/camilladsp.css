@@ -398,7 +398,7 @@ section .button:nth-of-type( 3 ) {
 	line-height: 36px;
 	text-align: center;
 }
-#react-tabs-9 div:not([class]) input {
+#react-tabs-9 div:not([class]) input[type=text] {
 	width: 100% !important;
 }
 .configtabs .button-with-text {
