@@ -125,6 +125,9 @@ hr {
 	margin-block-end: 0;
 	border-bottom: 1px solid var( --cg );
 }
+.react-tabs__tab {
+	position: static;
+}
 .configapp {
 	display: block;
 }
@@ -133,7 +136,6 @@ section.tabpanel {
 	width: 300px !important;
 	margin-left: calc( 50% - 155px );
 	margin-bottom: 10px;
-	padding-top: 3px !important;
 }
 section.tabpanel .box {
 	position: relative;
@@ -441,7 +443,7 @@ svg {
 	.configtabs { margin-left: 305px !important }
 	.react-tabs__tab-list {
 		position: fixed;
-		margin-top: -5px;
+		margin-top: -6px;
 		padding-top: 10px;
 		background: #000000;
 		box-shadow: 0px 4px 10px #000000;
