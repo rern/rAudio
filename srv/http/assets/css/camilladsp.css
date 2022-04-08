@@ -142,9 +142,11 @@ section.tabpanel .box {
 	margin-bottom: 20px;
 	border: none;
 }
+section.tabpanel legend {
+	height: 40px;
+}
 section.tabpanel legend .horizontally-spaced-content {
 	width: 270px;
-	margin-bottom: 10px;
 	border-bottom: 1px solid var( --cg );
 }
 section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
@@ -157,7 +159,7 @@ section.tabpanel .box:nth-of-type(3) div:not([class]) {
 	font-family: Inconsolata;
 	width: fit-content !important;
 	min-width: 130px;
-	line-height: 36px;
+	line-height: 26px;
 	padding: 0 10px;
 	background: var( --cg );
 	border-radius: 3px;
@@ -251,7 +253,7 @@ legend label {
 .config-status {
 	margin: 0;
 	position: absolute;
-	top: -30px;
+	top: -38px;
 	right: 17px;
 }
 /* ---------------------------------------------------------------------------- */
@@ -261,8 +263,8 @@ select {
 	padding: 0 5px !important;
 	font-family: Lato;
 	font-size: 16px;
-	background-color: var(--cga) !important;
-	border: solid 1px var( --cg ) !important;
+	background-color: var(--cg) !important;
+	border: solid 1px var( --cgl ) !important;
 }
 input[type=text] {
 	width: 150px !important;
@@ -287,10 +289,11 @@ input[type=checkbox] {
 	height: 24px;
 	margin: 4px 0 !important;
 	vertical-align: -12px;
+	border: none;
 	border-radius: 3px;
+	background-color: var(--cg) !important;
 	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	box-shadow: -1px 1px 2px 1px #000000;
 }
 input:checked {
 	background-color: var( --cm ) !important;
@@ -390,7 +393,7 @@ section .button:nth-of-type( 3 ) {
 	text-shadow: -1px 1px 2px #000000;
 }
 #react-tabs-9 div:not([class]) {
-	max-width: 220px !important;
+	max-width: 215px !important;
 }
 #react-tabs-9 div:not([class]) .button-with-text {
 	display: block;
