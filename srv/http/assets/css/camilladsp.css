@@ -17,6 +17,12 @@
 	font-weight: 300;
 	font-style: normal;
 }
+@font-face {
+	font-family: Inconsolata;
+	src: url('../fonts/Inconsolata.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
 .fa {
 	display: inline-block;
 	font-family: rern;
@@ -117,6 +123,7 @@ hr {
 /* ---------------------------------------------------------------------------- */
 .react-tabs__tab-list {
 	margin-block-end: 0;
+	border-bottom: 1px solid var( --cg );
 }
 .configapp {
 	display: block;
@@ -129,6 +136,7 @@ section.tabpanel {
 	padding-top: 3px !important;
 }
 section.tabpanel .box {
+	position: relative;
 	margin-bottom: 20px;
 	border: none;
 }
@@ -142,6 +150,20 @@ section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
 }
 section.tabpanel .split-20-80 {
 	width: 276px;
+}
+section.tabpanel .box:nth-of-type(3) div:not([class]) {
+	font-family: Inconsolata;
+	width: fit-content !important;
+	min-width: 130px;
+	line-height: 36px;
+	padding: 0 10px;
+	background: var( --cg );
+	border-radius: 3px;
+}
+section.tabpanel .box:nth-of-type(3) .two-column-grid {
+	display: block;
+	margin-top: 15px;
+	text-align: center;
 }
 .tabpanel,
 .configtabs {
@@ -165,6 +187,7 @@ section.tabpanel .split-20-80 {
 	padding: 0;
 	line-height: 30px;
 	text-align: center;
+	text-shadow: -1px 1px 2px #000000;
 }
 .react-tabs__tab-list .react-tabs__tab--selected {
 	border: none;
@@ -209,7 +232,7 @@ legend label {
 	font-size: 16px;
 }
 .two-column-grid .alignRight {
-	width: 170px;
+	width: 150px;
 	text-align: right;
 }
 .setting,
@@ -225,14 +248,18 @@ legend label {
 }
 .config-status {
 	margin: 0;
+	position: absolute;
+	top: -30px;
+	right: 17px;
 }
 /* ---------------------------------------------------------------------------- */
 input,
 select {
-	margin: 3px 0;
-	padding: 0 8px !important;
+	margin: 4px 0;
+	padding: 0 5px !important;
 	font-family: Lato;
 	font-size: 16px;
+	background-color: var(--cga) !important;
 	border: solid 1px var( --cg ) !important;
 }
 input[type=text] {
@@ -247,6 +274,7 @@ input[data-tip='Mixer name, must be unique'] {
 select {
 	width: 170px !important;
 	min-width: 170px;
+	padding: 0 !important;
 }
 input[type=number] {
 	width: 75px !important;
@@ -258,13 +286,12 @@ input[type=checkbox] {
 	margin: 4px 0 !important;
 	vertical-align: -12px;
 	border-radius: 3px;
-	background-color: var( --cg );
 	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	box-shadow: -1px 1px 2px 1px #000000;
 }
 input:checked {
-	background-color: var( --cm );
+	background-color: var( --cm ) !important;
 }
 input[type=text]:focus {
 	outline: solid 2px var( --cg60 );
@@ -360,8 +387,20 @@ section .button:nth-of-type( 3 ) {
 	justify-content: left;
 	text-shadow: -1px 1px 2px #000000;
 }
+#react-tabs-9 div:not([class]) {
+	max-width: 220px !important;
+}
+#react-tabs-9 div:not([class]) .button-with-text {
+	display: block;
+	font-family: Inconsolata;
+	line-height: 36px;
+	text-align: center;
+}
+#react-tabs-9 div:not([class]) input {
+	width: 100% !important;
+}
 .configtabs .button-with-text {
-	width: 225px !important;
+	width: 100% !important;
 	height: 36px;
 	background: none;
 }
@@ -373,7 +412,7 @@ section:first-of-type .button-with-text { /* Fetch and Apply button */
 	display: none;
 	width: 70px !important;
 	height: 34px;
-	margin: 5px;
+	margin: 0 5px;
 	line-height: 34px;
 	font-size: 14px;
 	text-align: center;
