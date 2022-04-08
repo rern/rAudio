@@ -130,15 +130,19 @@ hr {
 }
 .configapp {
 	display: block;
+	padding: 5px 0;
 }
 section.tabpanel {
+	display: block;
 	float: left;
 	width: 300px !important;
 	margin-left: calc( 50% - 155px );
 	margin-bottom: 10px;
+	padding: 0 5px 0 5px;
 }
 section.tabpanel .box {
 	position: relative;
+	max-width: calc( 100vw - 50px );
 	margin-bottom: 20px;
 	border: none;
 }
@@ -154,6 +158,7 @@ section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
 }
 section.tabpanel .split-20-80 {
 	width: 276px;
+	margin: auto;
 }
 section.tabpanel .box:nth-of-type(3) div:not([class]) {
 	font-family: Inconsolata;
@@ -169,10 +174,18 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	margin-top: 15px;
 	text-align: center;
 }
-.tabpanel,
+#react-tabs-1 input:not[type=checkbox] {
+	width: 100% !important;
+	max-width: 150px;
+}
+#react-tabs-1 select {
+	width: 100% !important;
+	max-width: 175px;
+}
 .configtabs {
 	display: block;
-	padding: 0 5px 0 5px;
+	max-width: 100vw;
+	padding: 0;
 }
 .configapp>:last-child {
 	margin-left: calc( 50% - 210px );
@@ -180,14 +193,15 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 .configtabs .tabpanel {
 	width: 398px !important;
 	min-height: calc( 100vh - 130px );
+	padding: 10px 5px 40px;
 	background: var( --cgd );
-	padding: 10px 0 40px 0;
 }
 .tabpanel img {
 	display: none;
 }
 .react-tabs__tab {
 	width: 80px;
+	max-width: calc( 100vw / 5 - 2px );
 	padding: 0;
 	line-height: 30px;
 	text-align: center;
@@ -201,6 +215,7 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	display: none;
 }
 .box {
+	max-width: 100vw;
 	border: 1px solid var( --cg );
 }
 #react-tabs-5 legend .setting-label {
@@ -219,6 +234,12 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 #react-tabs-5 .horizontally-spaced-content div svg {
 	width: 36px !important;
 }
+#react-tabs-7 select {
+	width: 170px !important;
+}
+#react-tabs-7 input[type=number] {
+	width: 50px !important;
+}
 #react-tabs-8 .configtabs .box div div:not(.button) {
 	max-width: 100px;
 }
@@ -235,26 +256,30 @@ legend label {
 	letter-spacing: 0;
 	font-size: 16px;
 }
-.two-column-grid .alignRight {
-	width: 150px;
-	text-align: right;
+.two-column-grid {
+	width: fit-content;
+	margin: auto;
 }
 .setting,
 .alignRight {
 	color: var( --cg60 );
 }
 .setting-label {
+	width: 35%;
+}
+#react-tabs-1 .setting-label {
 	width: 50%;
-	min-width: 145px;
+	min-width: 160px;
 }
 #react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
 	display: none;
 }
 .config-status {
-	margin: 0;
 	position: absolute;
+	width: calc( 100% - 30px );
+	margin: 0;
 	top: -38px;
-	right: 17px;
+	text-align: right;
 }
 /* ---------------------------------------------------------------------------- */
 input,
@@ -276,12 +301,12 @@ input[data-tip='Mixer name, must be unique'] {
 	width: 55px !important;
 }
 select {
-	width: 170px !important;
-	min-width: 170px;
+	width: 100% !important;
+	max-width: 175px;
 	padding: 0 !important;
 }
 input[type=number] {
-	width: 75px !important;
+	width: 70px !important;
 }
 input[type=checkbox] {
 	-webkit-appearance: none;
@@ -304,13 +329,18 @@ input[type=text]:focus {
 input[type=range] {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--track: linear-gradient( 90deg, transparent 10px, var( --cgl ) 10px, var( --cgl ) calc( 100% - 10px ), transparent 10px );
+	--track: linear-gradient( 90deg, transparent 10px, var( --cg ) 10px, var( --cg ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
+	display: block;
 	width: 270px !important;
 	height: 4px;
-	margin: 23px 0 20px 0 !important;
-	background: var( --cga );
+	margin: 24px auto !important;
+	padding: 0 9px !important;
+	background-color: var( --cga ) !important;
 	-webkit-appearance: none;
+}
+@supports (-moz-appearance:none) {
+	input[type=range] { padding: 0 !important } 
 }
 input[type=range]::-webkit-slider-thumb {
 	height: 36px;
@@ -458,24 +488,18 @@ svg {
 @media (max-width: 740px) {
 	#divhelp { margin: 0 20px }
 	section.tabpanel {
-		width: 390px !important;
-		margin-left: calc( 50% - 200px );
-	}
-	input[type=range] {
-		margin-left: 50px !important;
-	}
-	section.tabpanel .split-20-80 {
-		width: 276px;
-		margin-left: 50px;
+		float: none;
+		min-width: 390px !important;
+		margin: auto;
 	}
 	section.tabpanel legend .horizontally-spaced-content {
-		width: 375px;
-	}
-	.two-column-grid .alignRight {
-		width: 210px;
+		width: calc( 100vw - 50px );
+		max-width: 375px;
 	}
 	.configtabs .tabpanel {
 		width: 408px !important;
+		max-width: 100%;
+		padding: 0;
 	}
 }
 @media (max-width: 710px) {
@@ -491,9 +515,14 @@ svg {
 	.head span {
 		letter-spacing: calc( 100vw / 50 - 3px );
 	}
-	section.tabpanel,
 	.configapp>:last-child {
-		margin-left: 0;
+		margin: auto;
+	}
+	.two-column-grid .alignRight {
+		width: fit-content;
+	}
+	#react-tabs-9 div:not([class]) {
+		max-width: calc( 100vw - 180px ) !important;
 	}
 }
 
