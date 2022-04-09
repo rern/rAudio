@@ -193,9 +193,6 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	padding: 10px 5px 40px;
 	background: var( --cgd );
 }
-.tabpanel img {
-	display: none;
-}
 .react-tabs__tab {
 	width: 80px;
 	max-width: calc( 100vw / 5 - 2px );
@@ -240,7 +237,9 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	min-width: 130px;
 }
 #react-tabs-5 div[style*='display: flex; justify-content: space-evenly;'] {
-	margin: 10px 70px 20px 15px;
+	margin-bottom: 10px;
+	padding: 0 70px 0 15px;
+	background: var( --cga );
 }
 #react-tabs-5 .setting-label {
 	min-width: 50px;
@@ -268,7 +267,7 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	margin: 10px auto;
 	line-height: 26px;
 	letter-spacing: 2px;
-	background: var( --cg );
+	background: var( --cga );
 }
 
 section .horizontally-spaced-content:first-of-type div:first-child {
@@ -529,9 +528,6 @@ svg {
 		background: #000;
 		padding-top: 10px;
 	}
-}
-@media (max-width: 710px) {
-	.versions { display: none }
 }
 @media (max-width: 490px) {
 	.head span {

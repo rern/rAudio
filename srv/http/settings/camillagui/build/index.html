@@ -28,7 +28,7 @@
 <br>
 </div>
 
-<div id="root"></div>
+<div id="root" style="display: none"></div>
 
 <script>
 [ 'colors', 'camilladsp' ].forEach( function( file ) { // cache busting
@@ -54,11 +54,7 @@ document.getElementById( 'close' ).onclick = function() {
 document.getElementById( 'logo' ).onclick = function() {
 	document.getElementById( 'logohref' ).click();
 }
-setTimeout( function() { // tooltip delay and versions
-	var versions = document.getElementsByClassName( 'versions' )[ 0 ];
-	document.getElementById( 'version' ).innerHTML = versions.innerHTML;
-}, 2000 );
-function setButtons() { // Fetch / Apply buttons
+function setButtons() { // Fetch / Apply buttons + versions
 	setTimeout( function() {
 		var buttons = document.getElementsByClassName( 'button-with-text' );
 		if ( !buttons.length ) {
@@ -70,9 +66,14 @@ function setButtons() { // Fetch / Apply buttons
 		buttons[ 1 ].innerText = 'Apply';
 		buttons[ 0 ].style.display = 'inline-block';
 		buttons[ 1 ].style.display = 'inline-block';
-		var versions = document.getElementsByClassName( 'versions' )[ 0 ];
-		versions.style.display = 'none';
-	}, 50 );
+		document.getElementsByTagName( 'section' )[ 0 ].getElementsByTagName( 'img' )[ 0 ].remove();
+		setTimeout( function() {
+			var versions = document.getElementsByClassName( 'versions' )[ 0 ];
+			document.getElementById( 'version' ).innerHTML = versions.innerHTML;
+			versions.remove();
+			document.getElementById( 'root' ).removeAttribute( 'style' );
+		}, 200 );
+	}, 100 );
 }
 setButtons();
 
