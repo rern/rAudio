@@ -249,7 +249,18 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	width: 50px !important;
 }
 #react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
-	display: none;
+    position: absolute;
+    top: 9px;
+    left: 35px;
+	letter-spacing: normal;
+    color: var( --cw ) !important;
+}
+#react-tabs-7 .pipeline-channel {
+	width: 100%;
+	margin: 10px auto;
+	line-height: 26px;
+	letter-spacing: 2px;
+	background: var( --cg );
 }
 
 section .horizontally-spaced-content:first-of-type div:first-child {
@@ -260,6 +271,7 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 }
 legend {
 	font-size: 18px;
+	padding: 0;
 }
 legend label {
 	letter-spacing: 0;
