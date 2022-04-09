@@ -37,19 +37,21 @@ Audio player for
 	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
-	- Bluetooth audio (receiver)
-	- Snapcast
+	- Bluetooth audio receiver
+	- Snapcast - Multiroom audio client
 	- Spotify Connect
 	- UPnP
 - Streamers
-	- Bluetooth audio (sender)
+	- Bluetooth audio sender
 	- HTTP (no metadata)
-	- Snapcast (multiroom)
+	- Snapcast - Multiroom audio server
+- Digital Signal Processors
+	- CamillaDSP
+	- Alsaequal - Graphic equalizer
 - Support boot from USB drive without SD card
 - USB drive
 	- Plug and play
 	- Audio CD (with metadata and coverarts)
-- 10 band graphic equalizer - support custom presets
 	
 ### Default root password
 - `ros`
