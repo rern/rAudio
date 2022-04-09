@@ -1,6 +1,11 @@
 r A u d i o &ensp; 1
 ---
-Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
+Audio player for 
+- **Raspberry Pi**s:
+	- 64bit: `4` `3` `2` `Zero 2`
+	- 32bit: `2 (BCM2836)`
+	- Legacy: `1` `Zero`
+- BeagleBone Black
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
@@ -32,28 +37,32 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay
-	- Bluetooth audio (receiver)
-	- Snapcast
+	- Bluetooth audio receiver
+	- Snapcast - Multiroom audio client
 	- Spotify Connect
 	- UPnP
 - Streamers
-	- Bluetooth audio (sender)
+	- Bluetooth audio sender
 	- HTTP (no metadata)
-	- Snapcast (multiroom)
+	- Snapcast - Multiroom audio server
+- Digital Signal Processors
+	- CamillaDSP
+	- Alsaequal - Graphic equalizer
 - Support boot from USB drive without SD card
 - USB drive
 	- Plug and play
 	- Audio CD (with metadata and coverarts)
-- 10 band graphic equalizer - support custom presets
 	
 ### Default root password
 - `ros`
+- If enable SnapClient, Multiple rAudios or Shared Data, do not change password from default.
 
 ### Q&A
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files
-- [**Release i20211122**](https://github.com/rern/rAudio-1/releases/tag/i20211122)
+- [**Release i20220317**](https://github.com/rern/rAudio-1/releases/tag/i20220317)
+- BeagleBone Black - Need DIY: [rAudio-1 running on BeagleBone Black](https://github.com/rern/rAudio-1/discussions/299)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
@@ -103,20 +112,13 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 		- Expand `root` partition:
 			- By default, `root` partition will be expaned on initial boot.
 			- SD card backup with shrunken `root` partition - Create a blank file `expand` in `BOOT` before backup
-		- GPIO 3.5" LCD display (Not for Zero and 1)
-			- Create a blank file in `BOOT` named as:
-				- Generic display - `lcd`
-				- Waveshare 35a   - `lcd35a`
-				- Waveshare 35b   - `lcd35b`
-				- Waveshare 35b v2   - `lcd35b-v2`
-				- Waveshare 35c   - `lcd35c`
 
 - Boot duration
 	- RPi4: 20+ seconds
 	- RPi3: 50+ seconds
 	- RPi1, Zero: 80+ seconds
 - After initial boot:
-	- If connected to a screen, IP address and QR code for connecting from remote devices displayed.
+	- If there's a connected screen, IP address for connecting from remote devices will be displayed.
 	- Before setup anything: Settings > Addons > rAudio > Update (if available)
 	- Restore settings and database:
 		- If not pre-configured, Settings > System > Backup/Restore Settings
@@ -146,6 +148,9 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 	- Disable `Browser on RPi` might cause audio glitches on refresh / switch page
 		- After system upgrade `pacman -Syu` which kernel `linux-raspberrypi` also upgraded.
 		- On 64bit version - Very likely, kernel upgraded or not.
+- Full screen UI
+	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
+	- Add to Home Screen (Safari on iOS, Chrome on Android)
 - Coverart as large playback control buttons
 	- Tap top of coverart to see controls guide.
 - Hide top and bottom bars
@@ -179,10 +184,8 @@ Audio player for all Raspberry Pis: Zero, 1, 2, 3 and 4
 - Connect to rAudio with IP address instead of raudio.local
 	- Get IP address: Menu > Network > Network Interfaces list
 - Backup SD card which already setup
-	- On Linux: `bash <( wget -qO - https://github.com/rern/rOS/raw/main/imagecreate.sh )`
+	- On Linux: `bash <( curl -sL https://github.com/rern/rOS/raw/main/imagecreate.sh )`
 		- Shrink ROOT partition to minimum
 		- Create and compress image file
 - Custom startup / shutdown script
 	- Copy custom script named `startup.sh` / `shutdown.sh` to `BOOT`
-- App icon (Full screen UI) - Add to Home Screen
-	- Android Chrome / iOS Safari
