@@ -34,7 +34,7 @@ $( '#setting-spotifyd' ).click( function() {
 			, title        : 'Spotify Client'
 			, textlabel    : [ 'ID', 'Secret' ]
 			, focus        : 0
-			, footer       : 'Keys from private app: <i class="help fa fa-question-circle"></i>'
+			, footer       : 'Keys from private app: <i class="help fa fa-help"></i>'
 			, boxwidth     : 320
 			, checklength  : { 0: 32, 1: 32 }
 			, beforeshow   : function() {
@@ -460,6 +460,13 @@ function renderPage() {
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
+	if ( G.nosound ) {
+		$( '#divdsp' ).addClass( 'hide' );
+	} else {
+		$( '#divdsp' ).removeClass( 'hide' );
+		$( '#camilladsp' ).toggleClass( 'disabled', G.equalizer );
+		$( '#equalizer' ).toggleClass( 'disabled', G.camilladsp );
+	}
 	if ( ! /code|error/.test( window.location.href ) ) {
 		showContent();
 		return

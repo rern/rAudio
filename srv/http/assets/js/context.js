@@ -252,7 +252,7 @@ function tagEditor() {
 		}
 		message += '</div>';
 		var footer = '';
-		footer += '<span id="taglabel"><i class="fa fa-question-circle fa-lg"></i>&ensp;Label</span>';
+		footer += '<span id="taglabel"><i class="fa fa-help fa-lg"></i>&ensp;Label</span>';
 		if ( G.list.licover ) footer += '<br><code style="width: 19px; text-align: center">*</code>&ensp;Various values';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
@@ -393,7 +393,7 @@ var htmlwebradio = `\
 <tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>Charset</td><td><input type="text">
-	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-question-circle fa-lg gr"></i></a></td>
+	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank"><i class="fa fa-help fa-lg gr"></i></a></td>
 	<td style="width: 50%; text-align: right">
 		<a id="addwebradiodir" style="cursor: pointer"><i class="fa fa-folder-plus" style="vertical-align: 0"></i>&ensp;New folder&ensp;</a>
 	</td>

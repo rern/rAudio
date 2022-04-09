@@ -13,6 +13,8 @@ data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
+, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
@@ -20,6 +22,7 @@ data+='
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
+, "nosound"          : '$( exists $dirshm/nosound )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'

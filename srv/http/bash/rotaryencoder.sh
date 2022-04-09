@@ -6,10 +6,12 @@ dirshm=/srv/http/data/shm
 
 . /srv/http/data/system/rotaryencoder.conf
 
-control=$( $dirbash/cmd.sh volumecontrolget | cut -d^ -f1 )
+card=$( cat $dirshm/asoundcard )
+control=$( cat $dirshm/amixercontrol )
 volume() {
 	$dirbash/cmd.sh "volumeupdown
 $1
+$card
 $control"
 }
 

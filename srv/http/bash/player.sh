@@ -145,13 +145,12 @@ customset )
 	fi
 	;;
 devices )
-	devices=$'<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
-	devices+=$'\n\n<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card  | grep -v Loopback )
+	devices+=$'<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
 	devices+=$'\n\n<bll># amixer scontrols</bll>\n'
-	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+	card=$( cat $dirshm/asoundcard )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
-		devices+=$( amixer scontrols )
+		devices+=$( amixer -c $card scontrols )
 	else
 		devices+="\
 Simple mixer control 'HPOUT1 Digital',0
@@ -160,6 +159,7 @@ Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0"
 	fi
 	[[ -e $dirshm/btclient ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
+	devices+=$'\n\n<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
 	echo "$devices"
 	;;
 dop )
@@ -203,14 +203,7 @@ filetype )
 hwmixer )
 	aplayname=${args[1]}
 	hwmixer=${args[2]}
-	if [[ $hwmixer == auto ]]; then
-		hwmixer=$( $dirbash/cmd.sh volumecontrols \
-					| sort -u \
-					| head -1 )
-		rm -f "$dirsystem/hwmixer-$aplayname"
-	else
-		echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
-	fi
+	echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
 	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync shairport-meta
 	restartMPD
@@ -272,7 +265,7 @@ novolume )
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
+	rm -f $dirsystem/{camilladsp,crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
@@ -312,7 +305,7 @@ soxrset )
 	restartMPD
 	;;
 volume0db )
-	amixer -Mq sset "${args[1]}" 0dB
+	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	rm -f $dirshm/mpdvolume
@@ -332,11 +325,7 @@ volumebtsave )
 	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
-	vol_db=( $( $dirbash/cmd.sh volumeget$'\n'db ) )
-	vol=${vol_db[0]}
-	db=${vol_db[1]}
-	echo $vol $db
-	[[ ${args[1]} == push ]] && pushstream volume '{"val":'$vol',"db":"'$db'"}'
+	$dirbash/cmd.sh volumeget$'\n'${args[1]}
 	;;
 	
 esac

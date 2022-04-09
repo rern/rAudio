@@ -155,13 +155,19 @@ $( '.settings' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
+		case 'camilladsp':
+			bash( 'systemctl start camillagui', function() {
+				urlReachable( 'http://'+ location.host +':5005' );
+			} );
+			loader();
+			break;
+		case 'equalizer':
+			equalizer();
+			break;
 		case 'lock':
 			$.post( cmdphp, { cmd: 'logout' }, function() {
 				location.reload();
 			} );
-			break;
-		case 'equalizer':
-			equalizer();
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
@@ -208,7 +214,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				colorSet();
 			}
 			break;
-		case 'switchraudio':
+		case 'multiraudio':
 			bash( 'cat /srv/http/data/system/multiraudio.conf', function( data ) {
 				var data = data.trim().split( '\n' );
 				var dataL = data.length;
@@ -708,13 +714,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		G.status.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', 'drag', e.value, G.status.control ] );
+		bash( [ 'volume', 'drag', e.value, G.status.card, G.status.control ] );
 	}
 	, change            : function( e ) {
 		if ( G.drag ) return
 		
 		$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, e.value, G.status.control ] );
+		bash( [ 'volume', G.status.volume, e.value, G.status.card, G.status.control ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -752,13 +758,13 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0, G.status.control ] );
+	bash( [ 'volume', G.status.volume, 0, G.status.card, G.status.control ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( G.status.volume === 0 && voldn ) || ( G.status.volume === 100 && !voldn ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '-' : '+', G.status.control ] );
+	bash( [ 'volumeupdown', voldn ? '-' : '+', G.status.card, G.status.control ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( G.volhold ) {
 		G.volhold = 0;
@@ -777,7 +783,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		bash( [ 'volume', 'drag', vol, G.status.control ] );
+		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -816,7 +822,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		G.status.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, G.status.control ] );
+		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute /unmute
@@ -1051,7 +1057,7 @@ $( '.btn-cmd' ).click( function() {
 			clearInterval( G.intElapsedPl );
 			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed;
 			if ( G.status.player !== 'mpd' ) {
-				bash( [ 'playerstop', G.status.player, elapsedscrobble ] );
+				bash( [ 'playerstop', elapsedscrobble ] );
 				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
 				return
 			}
@@ -1154,6 +1160,15 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
+} ).on( 'click', '.button-latest-clear', function() {
+	info( {
+		  icon         : 'latest'
+		, title        : 'Latest'
+		, message      : 'Clear Latest albums list?'
+		, ok           : function() {
+			bash( [ 'latestclear' ] );
+		}
+	} );
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 	if ( $( this ).find( 'img' ).length ) {
@@ -1295,7 +1310,7 @@ $( '.mode' ).click( function() {
 		} else if ( G.mode === 'latest' ) {
 			var message = 'No new albums added since last update.';
 		} else {
-			var message = 'This mode has no data.'
+			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.' 
 						 +'<br>To populate Library database:'
 						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
 		}

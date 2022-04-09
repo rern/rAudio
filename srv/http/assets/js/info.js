@@ -245,7 +245,7 @@ function info( json ) {
 			$( '#infoIcon' ).html( O.icon );
 		}
 	} else {
-		$( '#infoIcon' ).addClass( 'fa fa-question-circle' );
+		$( '#infoIcon' ).addClass( 'fa fa-help' );
 	}
 	var title = O.title || 'Information';
 	$( '#infoTitle' ).html( title );
@@ -276,7 +276,7 @@ function info( json ) {
 							.removeClass( 'hide' );
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
-		$( '#infoButtons' ).one( 'click', '.infobtn.extrabtn', function() {
+		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
 			var fn = O.button[ $( this ).index( '.extrabtn' ) ];
 			if ( fn ) fn();
 			if ( !O.buttonnoreset ) infoReset();
@@ -288,7 +288,7 @@ function info( json ) {
 	} );
 	$( '#infoOk' ).one( 'click', function() {
 		if ( typeof O.ok === 'function' ) O.ok();
-		infoReset();
+		if ( !O.buttonnoreset ) infoReset();
 	} );
 	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'

@@ -38,9 +38,9 @@ var cmd = {
 	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [ 'camilladsp', 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
 
-function status( id, refresh ) {
+function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
 	if ( !refresh && !$el.hasClass( 'hide' ) ) {
 		$el.addClass( 'hide' );
@@ -141,7 +141,7 @@ function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
 	$( 'pre.status' ).each( function( el ) {
-		if ( !$( this ).hasClass( 'hide' ) ) status( this.id.replace( 'code', '' ), 'refresh' );
+		if ( !$( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
 	} );
 	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
@@ -265,8 +265,8 @@ function psVolume( data ) {
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
 		$( '#infoContent' ).removeClass( 'hide' );
-		$( '.warning, #infoButtons a' ).eq( 0 ).addClass( 'hide' );              // ok
-		$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
+		$( '.warning, .extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );     // ok
+		$( '.extrabtn' ).eq( 1 ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
 	}, 300 );
 }
 function psVolumeBt( data ) {
@@ -433,7 +433,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );
-	if ( !$this.hasClass( 'single' ) ) status( $this.data( 'status' ) );
+	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;

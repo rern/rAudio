@@ -105,6 +105,41 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
+$head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
+$body = [
+	[
+		  'label'    => 'DSP'
+		, 'id'       => 'camilladsp'
+		, 'sublabel' => 'camilladsp'
+		, 'icon'     => 'camilladsp'
+		, 'status'   => 'camilladsp'
+		, 'disabled' => 'Equalizer is currently enabled.'
+		, 'help'     => <<< HTML
+<a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
+Settings:&emsp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-camilladsp"></i>
+HTML
+		, 'exixts'   => file_exists( '/usr/bin/camilladsp' )
+	]
+	, [
+		  'label'    => 'Equalizer'
+		, 'sublabel' => 'alsaequal'
+		, 'id'       => 'equalizer'
+		, 'icon'     => 'equalizer'
+		, 'disabled' => 'DSP is currently enabled.'
+		, 'help'     => <<< HTML
+<a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
+Control:&emsp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-equalizer"></i>
+Presets:
+ • <code>Flat</code>: All bands at <code>0dB</code>
+ • New: adjust ➤ <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
+ • Existing: adjust ➤ <i class="fa fa-save"></i>
+ • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
+ • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
+ • If distortions occurred, lower all bands collectively and increase volume to fix distortions
+HTML
+	]
+];
+htmlSection( $head, $body, 'dsp' );
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
@@ -192,7 +227,7 @@ HTML
 		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: &ensp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-lock wh"></i>
+Lock: &ensp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-lock wh"></i>
 HTML
 	]
 	, [

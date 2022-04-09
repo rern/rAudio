@@ -6,30 +6,33 @@ dirshm=/srv/http/data/shm
 min=$1
 poweroff=$2
 
+rm -f /srv/http/data/shm/relaystimer
+kill -9 $( pgrep relaystimer ) &> /dev/null
+
 sleep $(( min * 60 ))
 
 rm -f $dirshm/stoptimer
 
-control_volume=( $( $dirbash/cmd.sh volumecontrolget | tr ^ ' ' ) )
-volume=${control_volume[1]}
-control=${control_volume[0]}
-
-$dirbash/cmd.sh "volume
-$volume
-0
-$control"
-
+ccv=$( $dirbash/cmd.sh volumecontrolget )
+card=${ccv/^*}
+control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
+volume=${ccv/*^}
 player=$( cat $dirshm/player )
 if [[ $player == mpd ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 else
-	$dirbash/cmd.sh playerstop$'\n'$player
+	$dirbash/cmd.sh playerstop
 fi
 
 sleep 2
 $dirbash/cmd.sh "volume
+$volume
 0
-0
+$card
 $control"
 
-[[ $poweroff ]] && $dirbash/cmd.sh power$'\n'off
+if [[ $poweroff ]]; then
+	$dirbash/cmd.sh power$'\n'off
+elif [[ -e $dirshm/relayson ]]; then
+	$dirbash/relays.sh off
+fi

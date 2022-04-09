@@ -1,10 +1,17 @@
 #!/bin/bash
 
-timerfile=/srv/http/data/shm/relaystimer
+dirshm=/srv/http/data/shm
+timerfile=$dirshm/relaystimer
 timer=$( cat $timerfile )
 i=$timer
 while sleep 60; do
-	if grep -q RUNNING /proc/asound/card*/pcm*/sub*/status; then # state: RUNNING
+	playing=
+	if [[ -e $dirshm/camilladsp ]]; then
+		grep -q 'state="playing"' $dirshm/status && playing=1
+	elif grep -q RUNNING /proc/asound/card*/pcm*p/sub*/status; then # state: RUNNING
+		playing=1
+	fi
+	if [[ $playing ]]; then
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( cat $timerfile )

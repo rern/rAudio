@@ -180,25 +180,6 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volumeControls() {
-	[[ ! $( aplay -l 2> /dev/null | grep '^card' ) ]] && return
-	
-	[[ $1 ]] && param="-c $1 scontents"
-	amixer=$( amixer $param \
-				| grep -A1 ^Simple \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' )
-	[[ ! $amixer ]] && control= && return
-	
-	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch\|Master.*volume' \
-					| cut -d"'" -f2 )
-	[[ ! $controls ]] && controls=$( echo "$amixer" \
-										| grep volume \
-										| grep -v Mic \
-										| cut -d"'" -f2 )
-}
 volumeGet() {
 	if [[ -e $dirshm/btclient ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
@@ -209,10 +190,7 @@ volumeGet() {
 		return
 	fi
 	
-	if [[ -e $dirshm/nosound ]]; then
-		volume=-1
-		return
-	fi
+	[[ -e $dirshm/nosound ]] && volume=-1 && return
 	
 	mixertype=$( sed -n '/type *"alsa"/,/mixer_type/ p' /etc/mpd.conf \
 					| tail -1 \
@@ -220,19 +198,19 @@ volumeGet() {
 	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		volumeControls
-		if [[ ! $controls ]]; then
+		card=$( cat $dirshm/asoundcard )
+		if [[ ! -e $dirshm/amixercontrol ]]; then
 			volume=100
 		else
-			control=$( echo "$controls" | sort -u | head -1 )
-			voldb=$( amixer -M sget "$control" \
+			control=$( cat $dirshm/amixercontrol )
+			voldb=$( amixer -c $card -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 			if [[ $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
-				volume=$( amixer -M sget "$control" \
+				volume=$( amixer -c $card -M sget "$control" \
 							| grep -m1 '%]' \
 							| sed 's/.*\[\(.*\)%].*/\1/' )
 				[[ ! $volume ]] && volume=100
@@ -242,30 +220,36 @@ volumeGet() {
 	fi
 }
 volumeSetAt() {
-	val=$1
+	target=$1
+	card=$2
+	control=$3
 	btclient=$( cat $dirshm/btclient 2> /dev/null )
 	if [[ $btclient ]]; then
-		amixer -MqD bluealsa sset "$btclient" $val%
-		echo $val > "$dirsystem/btvolume-$btclient"
+		amixer -MqD bluealsa sset "$btclient" $target%
+		echo $target > "$dirsystem/btvolume-$btclient"
 	elif [[ $control ]]; then
-		amixer -Mq sset "$control" $val%
+		amixer -c $card -Mq sset "$control" $target%
 	else
-		mpc -q volume $val
+		mpc -q volume $target
 	fi
 }
 volumeSet() {
+	current=$1
+	target=$2
+	card=$3
+	control=$4
 	diff=$(( $target - $current ))
 	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
-		volumeSetAt $target
+		volumeSetAt $target $card "$control"
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		for i in $( seq $current $incr $target ); do
-			volumeSetAt $i
+			volumeSetAt $i $card "$control"
 			sleep 0.2
 		done
 		if (( $i != $target )); then
-			volumeSetAt $target
+			volumeSetAt $target $card "$control"
 		fi
 	fi
 	pushstreamVolume disable false
@@ -503,8 +487,7 @@ coverartsave )
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		files=$( ls -1t $dirshm/$type )
-		(( $( echo "$files" | wc -l ) > 10 )) && rm -f "$( echo "$files" | tail -1 )"
+		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
 	;;
 displaysave )
@@ -594,6 +577,11 @@ ignoredir )
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
+latestclear )
+	> /srv/http/data/mpd/latest
+	sed -i 's/\("latest": \).*/\10,/' /srv/http/data/mpd/counts
+	pushstreamNotify Latest Cleared. latest
+	;;
 librandom )
 	enable=${args[1]}
 	if [[ $enable == false ]]; then
@@ -659,9 +647,7 @@ mpcplayback )
 	if [[ ! $command ]]; then
 		player=$( cat $dirshm/player )
 		if [[ $( cat $dirshm/player ) != mpd ]]; then
-			$dirbash/cmd.sh "playerstop
-$player
-0"
+			$dirbash/cmd.sh playerstop
 			exit
 		fi
 		
@@ -778,6 +764,8 @@ pkgstatus )
 	pkg=$id
 	service=$id
 	case $id in
+		camilladsp )
+			conf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
 		hostapd )
 			conf=/etc/hostapd/hostapd.conf;;
 		localbrowser )
@@ -796,8 +784,9 @@ pkgstatus )
 	[[ -e $conf ]] && catconf="
 $( cat $conf )"
 	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
+	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
 	echo "\
-<code>$( pacman -Q $pkg )</code>$catconf
+<code>$version</code>$catconf
 
 $dot $( systemctl status $service \
 	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
@@ -833,8 +822,8 @@ playerstart )
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )
-	player=${args[1]}
-	elapsed=${args[2]}
+	elapsed=${args[1]}
+	player=$dirshm/player
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
@@ -873,12 +862,12 @@ playerstop )
 		vol_db=( $( cat $file ) )
 		vol=${vol_db[0]}
 		db=${vol_db[1]}
-		volumeSet $volume $vol "$control"
+		volumeSet $volume $vol $card "$control"
 		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
 		rm -f $file
 	fi
 	pushstream player '{"player":"'$player'","active":false}'
-	[[ -e $dirshm/scrobble ]] && scrobbleOnStop $elapsed
+	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
@@ -992,7 +981,7 @@ power )
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
-			sshCommand $ip $dirbash/cmd.sh playerstop$'\n'snapcast
+			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
@@ -1135,9 +1124,10 @@ upnpnice )
 volume )
 	current=${args[1]}
 	target=${args[2]}
-	control=${args[3]}
+	card=${args[3]}
+	control=${args[4]}
 	if [[ $current == drag ]]; then
-		volumeSetAt $target
+		volumeSetAt $target $card "$control"
 		exit
 	fi
 	
@@ -1160,28 +1150,28 @@ volume )
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet
+	volumeSet $current $target $card "$control"
 	;;
 volume0db )
 	player=$( cat $dirshm/player )
-	if [[ $player == airplay || $player == spotify ]]; then
-		volumeGet
-		echo $volume $db  > $dirshm/mpdvolume
-	fi
 	volumeGet
-	amixer -Mq sset "$control" 0dB
-	;;
-volumecontrols )
-	volumeControls ${args[1]}
-	echo "$controls"
+	[[ $player == airplay || $player == spotify ]] && echo $volume $db  > $dirshm/mpdvolume
+	amixer -c $card -Mq sset "$control" 0dB
 	;;
 volumecontrolget )
 	volumeGet
-	echo $control^$volume # place $control first to keep trailing space if any
+	echo $card^$control^$volume # $control not last - keep trailing space if any
 	;;
 volumeget )
+	type=${args[1]}
 	volumeGet
-	[[ ${args[1]} == db ]] && echo $volume $db || echo $volume
+	if [[ $type == db ]]; then
+		echo $volume $db
+	elif [[ $type == push ]]; then
+		pushstream volume '{"val":'$volume',"db":"'$db'"}'
+	else
+		echo $volume
+	fi
 	;;
 volumepushstream )
 	[[ -e $dirshm/btclient ]] && sleep 1
@@ -1194,13 +1184,16 @@ volumesave )
 	;;
 volumeupdown )
 	updn=${args[1]}
-	control=${args[2]}
 	if [[ -e $dirshm/btclient ]]; then
 		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn
-	elif [[ $control ]]; then
-		amixer -Mq sset "$control" 1%$updn
 	else
-		mpc -q volume ${updn}1
+		card=${args[2]}
+		control=${args[3]}
+		if [[ $control ]]; then
+			amixer -c $card -Mq sset "$control" 1%$updn
+		else
+			mpc -q volume ${updn}1
+		fi
 	fi
 	volumeGet
 	pushstreamVolume updn $volume

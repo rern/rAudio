@@ -209,17 +209,18 @@ foreach( $ids as $id ) {
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
+$dsp = file_exists( '/srv/http/data/system/equalizer' ) ? 'equalizer' : 'camilladsp';
 $settinglist = [
 	  [ 'features', 'settings', 'features', 'Features',
-		'lock', 'lock' ]
+		$dsp, $dsp ]
 	, ['player', 'settings', 'player', 'Player',
-		'equalizer', 'equalizer' ]
+		'lock', 'lock' ]
 	, ['networks', 'settings', 'networks', 'Networks',
 		'snapclient', 'snapclient' ]
 	, [ 'system', 'settings', 'plus-r', 'System',
 		'relays', 'relays' ]
 	, [ 'addons', 'sub', 'jigsaw', 'Addons',
-		'guide', 'question-circle' ]
+		'guide', 'help' ]
 	, [ 'power', '', 'power', 'Power',
 		'screenoff', 'screenoff' ]
 	, [ 'displaylibrary', 'sub', 'library', 'Library',
@@ -227,7 +228,7 @@ $settinglist = [
 	, [ 'displayplayback', 'sub', 'playback', 'Playback',
 		'displaycolor', 'color' ]
 	, [ 'displayplaylist', '', 'playlist', 'Playlist',
-		'switchraudio', 'raudiobox' ]
+		'multiraudio', 'raudiobox' ]
 ];
 $htmlsettings = '';
 foreach( $settinglist as $l ) {

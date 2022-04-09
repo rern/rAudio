@@ -430,12 +430,13 @@ function displaySave( keys ) {
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
-	var submenu = [ 'lock', 'equalizer', 'snapclient', 'relays' ];
+	var submenu = [ 'camilladsp', 'equalizer', 'lock', 'relays', 'snapclient', 'multiraudio' ];
 	submenu.forEach( function( el ) {
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );  // submenu toggled by css .settings + .submenu
+	//$( '#features' ).toggleClass( 'sub', G.display.camilladsp || G.display.equalizer );
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
-	if ( G.display.multiraudio ) $( '#displayplaylist' ).addClass( 'sub' );
+	//if ( G.display.multiraudio ) $( '#displayplaylist' ).addClass( 'sub' );
 }
 /*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
 	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
@@ -1003,7 +1004,6 @@ function renderLibrary() {
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
-	var radiobtn = '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
@@ -1014,7 +1014,7 @@ function renderLibraryList( data ) {
 		var htmlpath = '';
 	} else if ( data.path === 'WEBRADIO' ) {
 		$( '#lib-path .lipath' ).empty();
-		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>'+ radiobtn;
+		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>';
 	} else if ( ![ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
@@ -1023,7 +1023,7 @@ function renderLibraryList( data ) {
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
-		if ( G.mode === 'webradio' ) htmlpath += '<a>WebRadio: </a>'
+		if ( G.mode === 'webradio' ) htmlpath += '<a>WebRadio: </a>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
@@ -1031,7 +1031,11 @@ function renderLibraryList( data ) {
 			lidir += '/'+ dir[ i ];
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
-		if ( G.mode === 'webradio' ) htmlpath += radiobtn;
+	}
+	if ( G.mode === 'webradio' ) {
+		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
+	} else if ( G.mode === 'latest' ) {
+		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
 	if ( htmlpath ) $( '#lib-breadcrumbs' )
 						.html( htmlpath )
@@ -1693,6 +1697,27 @@ function thumbUpdate( path ) {
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 }
+function urlReachable( url, sec ) {
+	if ( !sec ) {
+		var sec = 0;
+	} else if ( sec === 5 ) {
+		info( {
+			  icon    : 'camilladsp'
+			, title   : 'CamillaDSP'
+			, message : 'CamillaDSP settings not available.'
+		} );
+		return
+	}
+	
+	fetch( url, { mode: 'no-cors' } ).then( function() {
+		location.href = url;
+	} ).catch( function() {
+		sec++
+		setTimeout( function() {
+			urlReachable( url, sec );
+		}, 1000 );
+	} );
+}
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480
 	$( '#volume-bar, #volume-text' ).addClass( 'hide' );
@@ -1706,7 +1731,7 @@ function volumeBarSet( pageX ) {
 	var vol = Math.round( posX / bandW * 100 );
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, G.status.control ] );
+		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	} else {
 		var ms = Math.ceil( Math.abs( vol - G.status.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
@@ -1720,7 +1745,7 @@ function volumeBarSet( pageX ) {
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.control ], function() {
+		bash( [ 'volume', G.status.volume, vol, G.status.card, G.status.control ], function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}

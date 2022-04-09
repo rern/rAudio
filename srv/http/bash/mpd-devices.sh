@@ -13,13 +13,32 @@
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
-aplay=$( aplay -l 2> /dev/null | grep '^card' | grep -v Loopback )
+[[ -e $dirsystem/camilladsp ]] && modprobe snd-aloop
+
+aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btclient ]] && i=0 || i=-1
 	devices=false
 	touch $dirshm/nosound
 	return
 fi
+
+getControls() {
+	amixer=$( amixer -c $1 scontents \
+				| grep -A1 ^Simple \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' )
+	[[ ! $amixer ]] && return
+	
+	controls=$( echo "$amixer" \
+					| grep 'volume.*pswitch\|Master.*volume' \
+					| cut -d"'" -f2 )
+	[[ ! $controls ]] && controls=$( echo "$amixer" \
+										| grep volume \
+										| grep -v Mic \
+										| cut -d"'" -f2 )
+}
 
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
@@ -34,14 +53,18 @@ for line in "${lines[@]}"; do
 	aplayname=$( echo $line \
 					| awk -F'[][]' '{print $2}' \
 					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
-	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
+	if [[ $aplayname == Loopback ]]; then
+		echo $card > $dirshm/asoundloopback
+	elif [[ $aplayname == wsp || $aplayname == RPi-Cirrus ]]; then
+		aplayname=rpi-cirrus-wm5102
+	fi
 	if [[ $aplayname == $audioaplayname ]]; then
 		name=$( cat $dirsystem/audio-output )
 	else
 		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 	fi
 	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	controls=$( /srv/http/bash/cmd.sh volumecontrols$'\n'$card )
+	getControls $card
 	if [[ ! $controls ]]; then
 		mixerdevices=['"( not available )"']
 		mixers=0
@@ -99,11 +122,21 @@ for line in "${lines[@]}"; do
 	Aname+=( "$name" )
 done
 
-if [[ -e /etc/asound.conf ]]; then
-	i=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
-	(( $i > $card )) && i=$card
+i=$( aplay -l 2> /dev/null \
+			| grep ^card \
+			| grep -v Loopback \
+			| cut -d: -f1 \
+			| tail -c 2 )
+[[ ! $i ]] && i=0
+echo $i > $dirshm/asoundcard
+getControls $i
+if [[ $controls ]]; then
+	echo "$controls" \
+		| sort -u \
+		| head -1 \
+		> $dirshm/amixercontrol
 else
-	i=0
+	rm -f $dirshm/amixercontrol
 fi
 
 devices="[ ${devices:1} ]"

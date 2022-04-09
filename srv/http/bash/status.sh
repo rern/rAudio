@@ -45,9 +45,10 @@ else
 	if [[ -e $dirshm/nosound && ! -e $dirshm/btclient ]]; then
 		volume=false
 	else
-		controlvolume=$( $dirbash/cmd.sh volumecontrolget )
-		control=$( echo $controlvolume | cut -d^ -f1 ) # for volume drag
-		volume=$( echo $controlvolume | cut -d^ -f2 )
+		ccv=$( $dirbash/cmd.sh volumecontrolget )
+		card=${ccv/^*}
+		control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
+		volume=${ccv/*^}
 	fi
 	scrobble=$( exists $dirsystem/scrobble )
 	volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
@@ -56,6 +57,7 @@ else
 	status='
   "player"       : "'$player'"
 , "btclient"     : '$btclient'
+, "card"         : '$card'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$counts'
@@ -82,6 +84,7 @@ if [[ $1 == withdisplay ]]; then
 	display=$( head -n -1 $dirsystem/display )
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
+, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
@@ -204,7 +207,7 @@ for line in "${lines[@]}"; do
 			file=${val//\"/\\\"};; # escape " for json
 		# string
 		* ) # state | updating_db
-			printf -v $key '%s' "$val";;
+			[[ $key ]] && printf -v $key '%s' "$val";;
 	esac
 done
 

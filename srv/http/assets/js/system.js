@@ -175,8 +175,7 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
-	var active = infoPlayerActive( $( this ) );
-	if ( active ) return
+	if ( infoPlayerActive( $( this ) ) ) return
 	
 	info( {
 		  icon         : 'bluetooth'
@@ -819,9 +818,11 @@ $( '.listtitle' ).click( function() {
 } );
 $( '.list' ).on( 'click', 'bl', function() {
 	var pkg = $( this ).text();
-	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs', 'matchbox-window-manager'
-			, 'mpdscribble', 'nginx-mainline-pushstream', 'snapcast', 'upmpdcli' ].includes( pkg ) ) {
-		if ( pkg === 'bluez-alsa' ) pkg = pkg.replace( 'bluez-alsa', 'bluez-alsa-git' );
+	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs'
+		, 'matchbox-window-manager', 'nginx-mainline-pushstream'
+		, 'plymouth-lite-rbp-git', 'python-rpi-gpio', 'python-rplcd', 'python-smbus2'
+		, 'raspberrypi-stop-initramfs', 'snapcast', 'upmpdcli', 'xf86-video-fbturbo-git' ].includes( pkg ) ) {
+		if ( pkg === 'bluez-alsa' ) pkg = 'bluez-alsa-git';
 		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
 	} else {
 		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
@@ -996,13 +997,13 @@ function renderStatus() {
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
 			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
-	if ( G.throttled !== '0x0' ) { // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		status += '<br><i class="fa fa-warning';
-		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits: 19..0 ( hex > decimal > binary )
-		if ( bits.slice( -1 ) == 1 ) {                    // bit# 0  - undervoltage now
-			status += ' blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
-		} else if ( bits.slice( -19, 1 ) == 1 ) {         // bit# 19 - undervoltage occured
-			status += '"></i>&ensp;Voltage under 4.7V - occurred.';
+	if ( G.throttled !== '0x0' ) {                       // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
+		var bits = parseInt( G.throttled ).toString( 2 ) // 20 bits ( hex > decimal > binary )
+					.split( '' ).reverse();              // 19..0 > 0..19
+		if ( bits[ 0 ] == 1 ) {                          // bit# 0  - undervoltage now
+			status += '<br><i class="fa fa-warning blink red"></i>&ensp;<red>Voltage under 4.7V</red> - currently detected.';
+		} else if ( bits[ 19 ] == 1 ) {                  // bit# 19 - undervoltage occured
+			status += '<br><i class="fa fa-warning"></i>&ensp;Voltage under 4.7V - occurred.';
 		}
 	}
 	$( '#status' ).html( status );

@@ -72,21 +72,6 @@ Volume control for each device.
  • <code>MPD software</code> Software volume.
 HTML
 	]
-	, [
-		  'label'   => 'Equalizer'
-		, 'id'      => 'equalizer'
-		, 'help'    => <<< HTML
-10 band graphic equalizer with user presets.
-Control:&emsp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-equalizer"></i>
-Presets:
- • <code>Flat</code>: All bands at <code>0dB</code>
- • New: adjust ➤ <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
- • Existing: adjust ➤ <i class="fa fa-save"></i>
- • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
- • If distortions occurred, lower all bands collectively and increase volume to fix distortions
-HTML
-	]
 ];
 htmlSection( $head, $body );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
@@ -99,7 +84,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
  • Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
- • Equalizer: Disabled
+ • Signal Processors: Disabled
  • Crossfade, Normalization and Replay Gain: Disabled
 HTML
 	]
@@ -179,7 +164,7 @@ HTML
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-question-circle"></i>
+Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-help"></i>
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 HTML
 	]

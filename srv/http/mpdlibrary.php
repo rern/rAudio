@@ -458,7 +458,8 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 			$title = preg_replace( "/($string)/i", '<bll>$1</bll>', $title );
 			$trackname = preg_replace( "/($string)/i", '<bll>$1</bll>', $name );
 		} else {
-			$trackname = $cue ? $cuename : basename( $path );
+			$trackname = $cue ? $cuename.'/' : '';
+			$trackname.= basename( $path );
 		}
 		if ( !$title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$li0 = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
@@ -494,7 +495,13 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".cue$\|.m3u$\|.m3u8$\|.pls$"' );
+		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".m3u$\|.m3u8$\|.pls$"' );
+		if ( $cue || $plfile ) {
+			$plicon = '&emsp;<i class="fa fa-file-playlist"></i><gr>'
+					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
+		} else {
+			$plicon = '';
+		}
 		$args = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
 		$coverart = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		$coverhtml = '<li data-mode="'.$gmode.'" class="licover">'
@@ -510,9 +517,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 					.( !$hidegenre || !$hidedate ? '<br>' : '' )
 					.'<div class="liinfopath"><i class="fa fa-folder"></i>'.str_replace( '\"', '"', $mpdpath ).'</div>'
 					.'<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>'.( count( $array ) )
-					.'<gr> • </gr>'.second2HMS( $litime )
-					.'<gr> • </gr>'.strtoupper( $ext )
-					.( $plfile ? '&emsp;<i class="fa fa-file-playlist"></i><gr>'.pathinfo( $plfile, PATHINFO_EXTENSION ).'</gr>' : '' )
+					.'<gr> • </gr>'.second2HMS( $litime ).'<gr> • </gr>'.strtoupper( $ext ).$plicon
 					.'</div></li>';
 	}
 	return [ 'html' => $coverhtml.$html ];

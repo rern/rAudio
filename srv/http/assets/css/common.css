@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern.2022030600.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern.2022040300.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -121,6 +121,8 @@ input::-moz-focus-inner {
 .fa-bluetooth::before { content: '\f595' }
 .fa-btclient::before { content: '\f596' }
 .fa-brush::before { content: '\f536' }
+.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg60 ); }
+.fa-camilladsp::after {content: '\f59C'; position: relative; } /* position: relative - fix order */
 .fa-capslock:before { content: '\f607' }
 .fa-check::before { content: '\f51B' }
 .fa-chevron-down::before { content: '\f605' }
@@ -152,6 +154,7 @@ input::-moz-focus-inner {
 .fa-gpiopins::before { content: '\f572' }
 .fa-guide::before { content: '\f579' }
 .fa-hdmi::after { content: '\f58B' }
+.fa-help::before { content: '\f560' }
 .fa-hide:before { content: '\f575' }
 .fa-i2saudio::before { content: '\f571' }
 .fa-info-circle::before { content: '\f561' }
@@ -196,10 +199,9 @@ input::-moz-focus-inner {
 .fa-plus-r-nobox::before { content: '\f500' }
 .fa-power::before { content: '\f520' }
 .fa-previous::before { content: '\f501' }
-.fa-question-circle::before { content: '\f560' }
 .fa-radiofrance::before { content: '\f586' }
 .fa-radioparadise::before {content: '\f593'; position: absolute; color: var( --cgl ); }
-.fa-radioparadise::after {content: '\f594'; position: relative; } /* position: relative - fix order */
+.fa-radioparadise::after {content: '\f594'; position: relative; }
 .fa-random::before { content: '\f512' }
 .fa-raudiobox::before { content: '\f53B' }
 .fa-reboot::before { content: '\f521' }

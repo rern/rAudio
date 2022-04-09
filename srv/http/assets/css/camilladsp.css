@@ -1,0 +1,567 @@
+@font-face {
+	font-family: rern;
+	src: url( '../fonts/rern.woff2' ) format( 'woff2' );
+	font-display: block;
+	font-style: normal;
+	font-weight: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( '../fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( '../fonts/Lato-Light.woff2' ) format( 'woff2' );
+	font-weight: 300;
+	font-style: normal;
+}
+@font-face {
+	font-family: Inconsolata;
+	src: url('../fonts/Inconsolata.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+.fa {
+	display: inline-block;
+	font-family: rern;
+	font-style: normal;
+}
+.fa-camilladsp::before { content: '\f59D'; position: absolute; color: var( --cg75 ); }
+.fa-camilladsp::after { content: '\f59C'; position: relative; }
+.fa-times::before { content: '\f51A' }
+.fa-help::before { content: '\f560' }
+
+.css-variables {
+	--background-color: var( --cg );
+	--button-background-color: var( --cg );
+	--error-field-background-color: #bb2828 !important;
+	--border-radius: 3px;
+}
+body {
+	padding-top: 40px;
+	background: #000000;
+	font-family: Lato;
+	color: var( --cw );
+}
+#root {
+	max-width: 750px;
+	margin: auto;
+}
+hr {
+	border: none;
+}
+/* ---------------------------------------------------------------------------- */
+.head {
+	position: fixed;
+	top: 0;
+	height: 40px;
+	width: 100%;
+	line-height: 40px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+	z-index: 10;
+}
+.head .page-icon {
+	float: left;
+	width: 40px;
+	height: 40px;
+	background: var( --cm );
+	font-size: 24px;
+	line-height: 38px;
+	text-align: center;
+}
+.head span {
+	margin-left: 15px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#help {
+	float: right;
+	margin-right: 5px;
+	font-size: 24px;
+	color: var( --cg60 );
+}
+#close {
+	float: right;
+	font-size: 30px;
+	color: var( --cm );
+}
+.head i {
+	width: 40px;
+	height: 40px;
+	text-shadow: -1px 0 2px #000000;
+}
+#divhelp {
+	text-align: right;
+	max-width: 700px;
+	margin: auto;
+	padding: 20px 0;
+}
+#divhelp a {
+	text-decoration: none;
+	color: var( --cg60 );
+}
+#divhelp i {
+	color: var( --cg60 );
+}
+#logo {
+	float: left;
+	font-size: 14px;
+	text-align: left;
+	color: var( --cg60 );
+}
+#logo img {
+	width: 145px;
+	margin-bottom: 5px;
+}
+#version {
+	font-size: 12px;
+}
+/* ---------------------------------------------------------------------------- */
+.react-tabs__tab-list {
+	margin-block-end: 0;
+	border-bottom: 1px solid var( --cg );
+}
+.react-tabs__tab {
+	position: static;
+}
+.configapp {
+	display: block;
+	padding: 5px 0;
+}
+.configapp:after {
+	content: '';
+	clear: both;
+	display: block;
+}
+section.tabpanel {
+	display: block;
+	float: left;
+	width: 300px !important;
+	margin-left: calc( 50% - 155px );
+	margin-bottom: 10px;
+	padding: 0 5px 0 5px;
+}
+section.tabpanel .box {
+	position: relative;
+	max-width: calc( 100vw - 50px );
+	margin-bottom: 20px;
+	border: none;
+}
+section.tabpanel legend {
+	height: 40px;
+}
+section.tabpanel legend .horizontally-spaced-content {
+	width: 270px;
+	border-bottom: 1px solid var( --cg );
+}
+section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
+	border: none !important;
+}
+section.tabpanel .split-20-80 {
+	width: 276px;
+	margin: auto;
+}
+section.tabpanel .box:nth-of-type(3) div:not([class]) {
+	font-family: Inconsolata;
+	width: fit-content !important;
+	min-width: 130px;
+	line-height: 26px;
+	padding: 0 10px;
+	background: var( --cg );
+	border-radius: 3px;
+}
+section.tabpanel .box:nth-of-type(3) .two-column-grid {
+	display: block;
+	margin-top: 15px;
+	text-align: center;
+}
+.configtabs {
+	display: block;
+	max-width: 100vw;
+	padding: 0;
+}
+.configapp>:last-child {
+	margin-left: calc( 50% - 210px );
+}
+.configtabs .tabpanel {
+	width: 398px !important;
+	min-height: calc( 100vh - 130px );
+	padding: 10px 5px 40px;
+	background: var( --cgd );
+}
+.react-tabs__tab {
+	width: 80px;
+	max-width: calc( 100vw / 5 - 2px );
+	padding: 0;
+	line-height: 30px;
+	text-align: center;
+	text-shadow: -1px 1px 2px #000000;
+}
+.react-tabs__tab-list .react-tabs__tab--selected {
+	border: none;
+	background: var( --cg );
+}
+.react-tabs__tab-list span {
+	display: none;
+}
+.box {
+	max-width: 100vw;
+	padding: 10px;
+	border: 1px solid var( --cg );
+}
+/* Devices ----------------------------------------------------------------- */
+#react-tabs-1 .setting-label {
+	width: 50%;
+	min-width: 160px;
+}
+#react-tabs-1 input:not[type=checkbox] {
+	width: 100% !important;
+	max-width: 150px;
+}
+#react-tabs-1 select {
+	width: 100% !important;
+	max-width: 170px;
+}
+/* Mixers ----------------------------------------------------------------- */
+#react-tabs-3 select {
+	max-width: 200px;
+}
+#react-tabs-5 legend .setting-label {
+	min-width: 35px;
+}
+#react-tabs-5 .horizontally-spaced-content legend .setting-label {
+	min-width: 130px;
+}
+#react-tabs-5 div[style*='display: flex; justify-content: space-evenly;'] {
+	margin-bottom: 10px;
+	padding: 0 70px 0 15px;
+	background: var( --cga );
+}
+#react-tabs-5 .setting-label {
+	min-width: 50px;
+	letter-spacing: 0;
+}
+#react-tabs-5 .horizontally-spaced-content div svg {
+	width: 36px !important;
+}
+/* Pipeline ----------------------------------------------------------------- */
+#react-tabs-7 select {
+	width: 170px !important;
+}
+#react-tabs-7 input[type=number] {
+	width: 50px !important;
+}
+#react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
+    position: absolute;
+    top: 9px;
+    left: 35px;
+	letter-spacing: normal;
+    color: var( --cw ) !important;
+}
+#react-tabs-7 .pipeline-channel {
+	width: 100%;
+	margin: 10px auto;
+	line-height: 26px;
+	letter-spacing: 2px;
+	background: var( --cga );
+}
+
+section .horizontally-spaced-content:first-of-type div:first-child {
+	width: 100% !important;
+}
+.horizontally-spaced-content {
+	letter-spacing: 2px;
+}
+legend {
+	font-size: 18px;
+	padding: 0;
+}
+legend label {
+	letter-spacing: 0;
+	font-size: 16px;
+}
+.two-column-grid {
+	width: fit-content;
+	margin: auto;
+}
+.setting,
+.alignRight {
+	color: var( --cg60 );
+}
+.setting-label {
+	width: 35%;
+}
+.config-status {
+	position: absolute;
+	width: calc( 100% - 30px );
+	margin: 0;
+	top: -38px;
+	text-align: right;
+}
+/* ---------------------------------------------------------------------------- */
+input,
+select {
+	margin: 4px 0;
+	padding: 0 5px !important;
+	font-family: Lato;
+	font-size: 16px;
+	border: solid 1px var( --cgl ) !important;
+}
+input[type=text] {
+	width: 150px !important;
+}
+input[data-tip='Mixer name, must be unique'] {
+	width: 150px !important;
+}
+#react-tabs-5 input:not([data-tip='Mixer name, must be unique']) {
+	width: 55px !important;
+}
+select {
+	width: 100% !important;
+	max-width: 175px;
+	padding: 0 !important;
+}
+input[type=number] {
+	width: 70px !important;
+}
+input[type=checkbox] {
+	-webkit-appearance: none;
+	width: 24px;
+	height: 24px;
+	margin: 4px 0 !important;
+	vertical-align: -12px;
+	border: none;
+	border-radius: 3px;
+	background-color: var(--cg) !important;
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+}
+input:checked {
+	background-color: var( --cm ) !important;
+}
+input[type=text]:focus {
+	outline: solid 2px var( --cg60 );
+}
+input[type=range] {
+	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--track: linear-gradient( 90deg, transparent 10px, var( --cg ) 10px, var( --cg ) calc( 100% - 10px ), transparent 10px );
+	--trackborder : 1px solid var( --cgd );
+	display: block;
+	width: 270px !important;
+	height: 4px;
+	margin: 24px auto !important;
+	padding: 0 9px !important;
+	background-color: var( --cga ) !important;
+	-webkit-appearance: none;
+}
+@supports (-moz-appearance:none) {
+	input[type=range] { padding: 0 !important } 
+}
+input[type=range]::-webkit-slider-thumb {
+	height: 36px;
+	width: 36px;
+	margin-top: -18px;
+	border: none;
+	border-radius: 3px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	-webkit-appearance: none;
+	box-shadow: -2px 2px 4px #000000;
+}
+input[type=range]::-moz-range-thumb {
+	height: 36px;
+	width: 36px;
+	border: none;
+	border-radius: 3px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	box-shadow: -2px 2px 4px #000000;
+}
+input[type=range]::-webkit-slider-runnable-track {
+	width: 100%;
+	margin: -10px;
+	height: 4px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+	background: var( --track );
+}
+input[type=range]::-moz-range-track {
+	width: 100%;
+	height: 2px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+/* ---------------------------------------------------------------------------- */
+.split-20-80 div:nth-child( 1 ) {
+	width: 28px;
+	text-align: right;
+}
+.split-20-80 div:nth-child( 2 ) {
+	margin: 0 10px 0 -20px;
+}
+.rc-progress-line-path {
+	stroke-width: 2;
+	stroke: var( --cml );
+}
+.rc-progress-line-trail {
+	stroke-width: 2;
+	stroke: var( --cg );
+}
+/* ---------------------------------------------------------------------------- */
+.button {
+	border: none;
+	background-color: var( --cg ) !important;
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	text-shadow: -1px 1px 2px #000000;
+}
+section .button:nth-of-type( 2 ),
+section .button:nth-of-type( 3 ) {
+	width:36px;
+	height: 36px;
+}
+.smallbutton {
+	width: 36px !important;
+	height: 36px !important;
+}
+.smallbutton svg {
+	width: 36px !important;
+}
+.button-with-text {
+	padding: 0px 10px;
+	font-size: 16px;
+	justify-content: left;
+	text-shadow: -1px 1px 2px #000000;
+}
+#react-tabs-9 div:not([class]) {
+	max-width: 215px !important;
+}
+#react-tabs-9 div:not([class]) .button-with-text {
+	display: block;
+	font-family: Inconsolata;
+	line-height: 36px;
+	text-align: center;
+}
+#react-tabs-9 div:not([class]) input[type=text] {
+	width: 100% !important;
+}
+.configtabs .button-with-text {
+	width: 100% !important;
+	height: 36px;
+	background: none;
+}
+.two-column-grid:nth-of-type( 2 ) { /* Fetch and Apply button */
+	display: block;
+	text-align: center;
+}
+section:first-of-type .button-with-text { /* Fetch and Apply button */
+	display: none;
+	width: 70px !important;
+	height: 34px;
+	margin: 0 5px;
+	line-height: 34px;
+	font-size: 14px;
+	text-align: center;
+}
+section:first-of-type .button-with-text:nth-of-type( 2 ) { /* Apply button */
+	background-color: var( --cm ) !important;
+}
+.highlighted-button,
+.highlighted-button:active {
+	background-color: var( --cm ) !important;
+}
+svg {
+	-webkit-filter: drop-shadow( -1px 1px 2px #000000 );
+	filter: drop-shadow( -1px 1px 2px #000000 );
+}
+/* ---------------------------------------------------------------------------- */
+.button[data-tip]:not(.highlighted-button) {
+	background-color: var( --cg ) !important;
+}
+/* ---------------------------------------------------------------------------- */
+@media (min-width: 740px) {
+	section.tabpanel {
+		position: fixed;
+		margin: auto;
+	}
+	.configtabs { margin-left: 305px !important }
+	.react-tabs__tab-list {
+		position: fixed;
+		margin-top: -6px;
+		padding-top: 10px;
+		background: #000000;
+		box-shadow: 0px 4px 10px #000000;
+	}
+	.configtabs .tabpanel {
+		padding: 50px 5px 40px 5px;
+	}
+}
+@media (max-width: 739px) {
+	#divhelp { margin: 0 20px }
+	section.tabpanel {
+		float: none;
+		min-width: 390px !important;
+		margin: auto;
+	}
+	section.tabpanel legend .horizontally-spaced-content {
+		width: calc( 100vw - 50px );
+		max-width: 375px;
+	}
+	.configtabs .tabpanel {
+		width: 408px !important;
+		max-width: 100%;
+		min-height: 0;
+		padding: 15px 0 5px;
+	}
+	.react-tabs__tab-list {
+		position: sticky;
+		top: 40px;
+		background: #000;
+		padding-top: 10px;
+	}
+}
+@media (max-width: 490px) {
+	.head span {
+		margin-left: 10px;
+		letter-spacing: calc( 100vw / 30 - 1px );
+	}
+}
+@media (max-width: 440px) {
+	.head span {
+		letter-spacing: calc( 100vw / 50 - 3px );
+	}
+	.configapp>:last-child {
+		margin: auto;
+	}
+	.two-column-grid .alignRight {
+		width: fit-content;
+	}
+	#react-tabs-9 div:not([class]) {
+		max-width: calc( 100vw - 180px ) !important;
+	}
+}
+
+.button:hover {
+	background-color: var( --cga ) !important;
+	border: none;
+}
+.highlighted-button:hover,
+section:first-of-type .button-with-text:nth-of-type( 2 ):hover {
+	background-color: var( --cma ) !important;
+}
+.head i,
+#divhelp i,
+#logo,
+input[type=range] {
+	cursor: pointer;
+}
+

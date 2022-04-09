@@ -61,6 +61,31 @@ autoplayset )
 	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
+camilladsp )
+	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh
+		touch $dirsystem/camilladsp
+	else
+		systemctl stop camilladsp
+		rm $dirsystem/camilladsp
+		rmmod snd-aloop &> /dev/null
+		pushRefresh
+	fi
+	$dirbash/mpd-conf.sh
+	;;
+camilladspasound )
+	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
+	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
+	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
+	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )
+	old=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	[[ "${new[@]}" == "${old[@]}" ]] && exit
+	
+	list=( channels format rate )
+	for (( i=0; i < 3; i++ )); do
+		[[ ${new[i]} != ${old[i]} ]] && sed -i 's/^\(\s*'${list[i]}'\s*\).*/\1'${new[i]}'/' /etc/asound.conf
+	done
+	alsactl nrestore &> /dev/null
+	;;
 hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0
@@ -353,6 +378,11 @@ spotifytokenreset )
 stoptimerdisable )
 	killall stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
+	if [[ -e $dirshm/relayson ]]; then
+		. $dirsystem/relays.conf
+		echo $timer > $timerfile
+		$dirbash/relaystimer.sh &> /dev/null &
+	fi
 	pushRefresh
 	;;
 stoptimerset )

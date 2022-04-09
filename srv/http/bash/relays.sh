@@ -36,16 +36,13 @@ if [[ $cmd == true ]]; then
 		(( $i > 0 )) && pushstreamRelays '{"on": '$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
-	if [[ $timer > 0 ]]; then
+	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 		echo $timer > $timerfile
 		$dirbash/relaystimer.sh &> /dev/null &
 	fi
 else
-	rm -f $dirshm/relayson
-	if [[ -e $timerfile ]]; then
-		rm $timerfile
-		kill -9 $( pgrep relaystimer ) &> /dev/null
-	fi
+	rm -f $dirshm/relayson $timerfile
+	kill -9 $( pgrep relaystimer ) &> /dev/null
 	pushstreamRelays '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
