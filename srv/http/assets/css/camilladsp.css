@@ -217,6 +217,10 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	border: 1px solid var( --cg );
 }
 /* Devices ----------------------------------------------------------------- */
+#react-tabs-1 .setting-label {
+	width: 50%;
+	min-width: 160px;
+}
 #react-tabs-1 input:not[type=checkbox] {
 	width: 100% !important;
 	max-width: 150px;
@@ -291,10 +295,6 @@ legend label {
 }
 .setting-label {
 	width: 35%;
-}
-#react-tabs-1 .setting-label {
-	width: 50%;
-	min-width: 160px;
 }
 .config-status {
 	position: absolute;
