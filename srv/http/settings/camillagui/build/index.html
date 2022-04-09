@@ -57,10 +57,6 @@ document.getElementById( 'logo' ).onclick = function() {
 setTimeout( function() { // tooltip delay and versions
 	var versions = document.getElementsByClassName( 'versions' )[ 0 ];
 	document.getElementById( 'version' ).innerHTML = versions.innerHTML;
-	var datatip = document.querySelectorAll( '[data-tip]' );
-	datatip.forEach( function( el ) {
-		el.setAttribute( 'data-delay-show', 1000 );
-	} );
 }, 2000 );
 function setButtons() { // Fetch / Apply buttons
 	setTimeout( function() {

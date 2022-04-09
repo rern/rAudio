@@ -213,6 +213,7 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 }
 .box {
 	max-width: 100vw;
+	padding: 10px;
 	border: 1px solid var( --cg );
 }
 /* Devices ----------------------------------------------------------------- */
@@ -225,14 +226,17 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	max-width: 175px;
 }
 /* Mixers ----------------------------------------------------------------- */
+#react-tabs-3 select {
+	max-width: 200px;
+}
 #react-tabs-5 legend .setting-label {
 	min-width: 35px;
 }
 #react-tabs-5 .horizontally-spaced-content legend .setting-label {
 	min-width: 130px;
 }
-#react-tabs-5 .box div:not(.button) {
-	justify-content: left !important;
+#react-tabs-5 div[style*='display: flex; justify-content: space-evenly;'] {
+	margin: 10px 70px 20px 15px;
 }
 #react-tabs-5 .setting-label {
 	min-width: 50px;
