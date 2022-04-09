@@ -223,7 +223,7 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 }
 #react-tabs-1 select {
 	width: 100% !important;
-	max-width: 175px;
+	max-width: 170px;
 }
 /* Mixers ----------------------------------------------------------------- */
 #react-tabs-3 select {
