@@ -133,11 +133,12 @@ Address=$ip/24
 Gateway=$gw
 "
 	fi
+	[[ -e /boot/kernel8.img ]] && eth=eth || eth=eth0
 	echo "\
 $conf
 
 [Link]
-RequiredForOnline=no" > /etc/systemd/network/eth.network
+RequiredForOnline=no" > /etc/systemd/network/$eth.network
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;

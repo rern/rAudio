@@ -117,6 +117,7 @@ databackup )
 	backupfile=$dirdata/tmp/backup.gz
 	rm -f $backupfile
 	alsactl store
+	[[ -e /boot/kernel8.img ]] && eth=eth || eth=eth0
 	files=(
 /boot/cmdline.txt
 /boot/config.txt
@@ -126,7 +127,7 @@ databackup )
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
 /etc/samba/smb.conf
-/etc/systemd/network/eth.network
+/etc/systemd/network/$eth.network
 /etc/systemd/timesyncd.conf
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
