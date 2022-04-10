@@ -126,7 +126,7 @@ databackup )
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
 /etc/samba/smb.conf
-/etc/systemd/network/eth0.network
+/etc/systemd/network/eth.network
 /etc/systemd/timesyncd.conf
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf

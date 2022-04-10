@@ -115,25 +115,29 @@ disconnect )
 editlan )
 	ip=${args[1]}
 	gw=${args[2]}
-	eth0="\
+	conf="\
 [Match]
-Name=eth0
+Name=eth*
 [Network]
 DNSSEC=no
 "
 	if [[ ! $ip ]];then
-		eth0+="\
+		conf+="\
 DHCP=yes
 "
 	else
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 		
-		eth0+="\
+		conf+="\
 Address=$ip/24
 Gateway=$gw
 "
 	fi
-	echo "$eth0" > /etc/systemd/network/eth0.network
+	echo "\
+$conf
+
+[Link]
+RequiredForOnline=no" > /etc/systemd/network/eth.network
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
