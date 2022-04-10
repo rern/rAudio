@@ -56,7 +56,7 @@ else
 fi
 # camilladsp
 if [[ -e /usr/bin/camilladsp ]]; then
-	dircamilladsp=$dirsystem/camilladsp
+	dircamilladsp=$dirdata/camilladsp
 	mkdir -p $dircamilladsp/{coeffs,configs}
 	cat << EOF > $dircamilladsp/configs/default_config.yml
 ---
