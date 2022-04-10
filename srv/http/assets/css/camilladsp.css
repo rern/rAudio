@@ -324,7 +324,7 @@ section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content:af
 	display: block;
 	width: 100%;
 	border-bottom: 1px solid var( --cg );
-	top: 30px;
+	top: -6px;
 	z-index: -1;
 }
 section.tabpanel .smallbutton {
