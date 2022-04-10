@@ -298,7 +298,7 @@ section.tabpanel {
 	width: 270px !important;
 	margin-left: calc( 50% - 155px );
 	margin-bottom: 10px;
-	padding: 5px 10px;
+	padding: 28px 10px 0 10px;
 }
 section.tabpanel .box {
 	position: relative;
@@ -315,25 +315,24 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 	width: 100% !important;
 	min-width: 112px;
 }
-section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
+section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
 	border: none !important;
+}
+section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content:after {
+	content: '';
+	position: absolute;
+	display: block;
+	width: 100%;
+	border-bottom: 1px solid var( --cg );
+	top: 30px;
+	z-index: -1;
+}
+section.tabpanel .smallbutton {
+	outline: 5px solid #000000;
 }
 section.tabpanel .split-20-80 {
 	width: 276px;
 	margin: 0 auto;
-}
-section.tabpanel .box:nth-of-type(3) div:not([class]) {
-	font-family: Inconsolata;
-	width: fit-content !important;
-	min-width: 250px;
-	line-height: 26px;
-	padding: 0 10px;
-	background: var( --cga );
-}
-section.tabpanel .box:nth-of-type(3) .two-column-grid {
-	display: block;
-	margin-top: 15px;
-	text-align: center;
 }
 /* vu + volume bar  */
 .split-20-80 div:nth-child( 1 ) {
@@ -350,6 +349,19 @@ section.tabpanel .box:nth-of-type(3) .two-column-grid {
 .rc-progress-line-trail {
 	stroke-width: 2;
 	stroke: var( --cg );
+}
+section.tabpanel .box:nth-of-type(3) div:not([class]) {
+	font-family: Inconsolata;
+	width: fit-content !important;
+	min-width: 250px;
+	line-height: 26px;
+	padding: 0 10px;
+	background: var( --cga );
+}
+section.tabpanel .box:nth-of-type(3) .two-column-grid {
+	display: block;
+	margin-top: 15px;
+	text-align: center;
 }
 /* Fetch and Apply button */
 section .two-column-grid:nth-of-type( 2 ) {
@@ -480,12 +492,12 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	font-family: Inconsolata;
 }
 /* ---------------------------------------------------------------------------- */
-@media (min-width: 700px) {
+@media (min-width: 720px) {
 	section.tabpanel {
 		position: fixed;
 		margin: auto;
 	}
-	.configtabs { margin-left: 290px !important }
+	.configtabs { margin-left: 300px !important }
 	.react-tabs__tab-list {
 		position: fixed;
 		width: 410px;
@@ -498,16 +510,17 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 		padding: 50px 5px 40px 5px;
 	}
 }
-@media (max-width: 699px) {
+@media (max-width: 719px) {
 	#divhelp { margin: 0 20px }
 	section.tabpanel {
 		float: none;
-		min-width: 390px !important;
+		min-width: 380px !important;
 		margin: auto;
 	}
+	section.tabpanel { padding: 0 }
 	section.tabpanel legend .horizontally-spaced-content {
 		width: calc( 100vw - 50px );
-		max-width: 375px;
+		max-width: 380px;
 	}
 	.configtabs .tabpanel {
 		width: 408px !important;
