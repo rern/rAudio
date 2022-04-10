@@ -130,7 +130,7 @@ body {
 }
 .box {
 	max-width: 100vw;
-	margin: 0;
+	margin: 5px 0;
 	padding: 10px;
 	border: 1px solid var( --cg );
 }
@@ -316,6 +316,7 @@ section.tabpanel legend .horizontally-spaced-content {
 }
 section .horizontally-spaced-content:first-of-type div:first-child {
 	width: 100% !important;
+	min-width: 112px;
 }
 section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
 	border: none !important;
@@ -330,8 +331,7 @@ section.tabpanel .box:nth-of-type(3) div:not([class]) {
 	min-width: 130px;
 	line-height: 26px;
 	padding: 0 10px;
-	background: var( --cg );
-	border-radius: 3px;
+	background: var( --cga );
 }
 section.tabpanel .box:nth-of-type(3) .two-column-grid {
 	display: block;
@@ -373,10 +373,8 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 }
 .config-status {
 	position: absolute;
-	width: calc( 100% - 30px );
-	margin: 0;
-	top: -38px;
-	text-align: right;
+	top: -48px;
+	right: 0;
 }
 /* config ----------------------------------------------------------------- */
 .configtabs {
@@ -387,7 +385,7 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 }
 .configtabs .tabpanel {
 	width: 400px !important;
-	min-height: calc( 100vh - 130px );
+	min-height: calc( 100vh - 140px );
 	padding: 10px 5px 40px;
 	background: var( --cgd );
 }
