@@ -3,6 +3,7 @@
 camillaStart() {
 	camilladsp /srv/http/data/camilladsp/configs/camilladsp.yml &> /dev/null &
 	if pgrep -x camilladsp &> /dev/null; then
+		sleep 1
 		pkill -x camilladsp &> /dev/null
 		systemctl restart camilladsp
 		pushRefresh
