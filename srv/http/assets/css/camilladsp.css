@@ -307,9 +307,6 @@ section.tabpanel .box {
 	padding: 10px 0;
 	border: none;
 }
-section.tabpanel legend {
-	height: 40px;
-}
 section.tabpanel legend .horizontally-spaced-content {
 	width: 270px;
 	border-bottom: 1px solid var( --cg );
@@ -328,7 +325,7 @@ section.tabpanel .split-20-80 {
 section.tabpanel .box:nth-of-type(3) div:not([class]) {
 	font-family: Inconsolata;
 	width: fit-content !important;
-	min-width: 130px;
+	min-width: 250px;
 	line-height: 26px;
 	padding: 0 10px;
 	background: var( --cga );
@@ -373,7 +370,7 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 }
 .config-status {
 	position: absolute;
-	top: -48px;
+	top: -31px;
 	right: 0;
 }
 /* config ----------------------------------------------------------------- */
@@ -468,7 +465,6 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 #react-tabs-9 .button-with-text {
 	width: 100% !important;
 	height: 36px;
-	background: none;
 }
 #react-tabs-9 div:not([class]) {
 	max-width: 215px !important;
@@ -479,8 +475,9 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	line-height: 36px;
 	text-align: center;
 }
-#react-tabs-9 div:not([class]) input[type=text] {
+#react-tabs-9 input[type=text] {
 	width: 100% !important;
+	font-family: Inconsolata;
 }
 /* ---------------------------------------------------------------------------- */
 @media (min-width: 700px) {

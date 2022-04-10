@@ -118,7 +118,7 @@ $body = [
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings:&emsp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-camilladsp"></i>
 HTML
-		, 'exixts'   => file_exists( '/usr/bin/camilladsp' )
+		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
 	, [
 		  'label'    => 'Equalizer'
