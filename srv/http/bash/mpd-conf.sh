@@ -71,7 +71,7 @@ if [[ $i != -1 ]]; then
 	hwmixer=${Ahwmixer[$i]}
 	mixertype=${Amixertype[$i]}
 	name=${Aname[$i]}
-	if [[ -f $dirsystem/camilladsp ]]; then
+	if [[ -e $dirsystem/camilladsp ]]; then
 		camilladsp=1
 		cardloopback=$( cat $dirshm/asoundloopback )
 		hw=hw:$cardloopback,1
