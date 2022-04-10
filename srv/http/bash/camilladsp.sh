@@ -22,7 +22,7 @@ sed -i "$linedevice s/\(device: hw:\).*/\1$card,0/" $fileyml
 camillaStart
 
 lineformat=$( sed -n '/playback:/,/format:/=' $fileyml | tail -1 )
-for format in S16LE S24LE S24LE3 S32LE FLOAT32LE FLOAT64LE; do
+for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 	sed -i "$lineformat s/\(format: \).*/\1$format/" $fileyml
 	camillaStart
 done
