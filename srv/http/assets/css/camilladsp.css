@@ -298,7 +298,7 @@ section.tabpanel {
 	width: 270px !important;
 	margin-left: calc( 50% - 155px );
 	margin-bottom: 10px;
-	padding: 5px 10px;
+	padding: 0 10px;
 }
 section.tabpanel .box {
 	position: relative;
