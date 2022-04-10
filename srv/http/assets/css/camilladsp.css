@@ -298,7 +298,7 @@ section.tabpanel {
 	float: left;
 	width: 270px !important;
 	margin: auto;
-	padding: 17px 10px 0 10px;
+	padding: 15px 10px 0 10px;
 }
 section.tabpanel .box {
 	position: relative;
@@ -321,7 +321,7 @@ section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
 	height: 24px;
 }
 section.tabpanel .smallbutton {
-	margin-top: -25px;
+	margin-top: -20px;
 }
 /* vu + volume bar  */
 section.tabpanel .split-20-80 {
@@ -399,7 +399,7 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 }
 .react-tabs__tab {
 	position: static;
-	width: calc( 100% / 5 );
+	width: calc( 100% / 5 - 1px );
 	padding: 0;
 	line-height: 36px;
 	text-align: center;
@@ -407,7 +407,11 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	background: var( --cga);
 	border: none;
 	border-radius: 5px 5px 0 0;
-	outline: 1px solid #000000;
+	border-right: 1px solid #000000;
+}
+#react-tabs-8 {
+	width: calc( 100% / 5 );
+	border: none;
 }
 .react-tabs__tab-list .react-tabs__tab--selected {
 	background: var( --cgl );
