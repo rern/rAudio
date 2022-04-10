@@ -315,7 +315,7 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 	width: 100% !important;
 	min-width: 112px;
 }
-section.tabpanel .box:first-of-type legend .horizontally-spaced-content {
+section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
 	border: none !important;
 }
 section.tabpanel .split-20-80 {
@@ -480,12 +480,12 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	font-family: Inconsolata;
 }
 /* ---------------------------------------------------------------------------- */
-@media (min-width: 700px) {
+@media (min-width: 720px) {
 	section.tabpanel {
 		position: fixed;
 		margin: auto;
 	}
-	.configtabs { margin-left: 290px !important }
+	.configtabs { margin-left: 300px !important }
 	.react-tabs__tab-list {
 		position: fixed;
 		width: 410px;
@@ -498,16 +498,16 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 		padding: 50px 5px 40px 5px;
 	}
 }
-@media (max-width: 699px) {
+@media (max-width: 719px) {
 	#divhelp { margin: 0 20px }
 	section.tabpanel {
 		float: none;
-		min-width: 390px !important;
+		min-width: 380px !important;
 		margin: auto;
 	}
 	section.tabpanel legend .horizontally-spaced-content {
 		width: calc( 100vw - 50px );
-		max-width: 375px;
+		max-width: 380px;
 	}
 	.configtabs .tabpanel {
 		width: 408px !important;
