@@ -43,10 +43,10 @@ elif rfkill | grep -q wlan0; then
 fi
 
 if [[ -e /boot/wifi ]]; then
-	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+	[[ $wlandev != wlan0 ]] && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
-	mv /boot/wifi "/etc/netctl/$ssid"
+	mv -f /boot/wifi "/etc/netctl/$ssid"
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	netctl enable "$ssid"
