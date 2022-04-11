@@ -511,13 +511,20 @@ function scanWlan() {
 		if ( data ) {
 			G.listwlscan = data;
 			var htmlwl = '';
-			G.listwlscan.forEach( function( list ) {
-				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+			data.forEach( function( list ) {
+				if ( !list.ssid ) return
+				
+				if ( list.signal.slice( -3 ) === 'dBm' ) {
+					var dbm = list.signal.slice( 0, -4 );
+					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );
+				} else {
+					var signal = '';
+				}
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
 				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
-				htmlwl += list.dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
+				htmlwl += dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
-				htmlwl += '<gr>'+ list.dbm +' dBm</gr>';
+				htmlwl += signal ? '<gr>'+ dbm +' dBm</gr>' : '';
 				if ( list.profile && !list.connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlwl += '</li>';
 			} );
