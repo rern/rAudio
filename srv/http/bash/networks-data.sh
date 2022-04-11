@@ -53,13 +53,14 @@ if [[ $ipeth ]]; then
 }'
 fi
 
-ifconfig wlan0 up &> /dev/null # force up
-ipr=$( ip r | grep "^default.*wlan0" )
+wlandev=$( cat $dirshm/wlan )
+ifconfig $wlandev up &> /dev/null # force up
+ipr=$( ip r | grep "^default.*$wlandev" )
 if [[ $ipr ]]; then
 	gateway=$( echo $ipr | cut -d' ' -f3 )
-	ipwlan=$( ifconfig wlan0 | awk '/^\s*inet / {print $2}' )
-	ssid=$( iwgetid wlan0 -r )
-	dbm=$( awk '/wlan0/ {print $4}' /proc/net/wireless | tr -d . )
+	ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
+	ssid=$( iwgetid $wlandev -r )
+	dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ ! $dbm ]] && dbm=0
 	listwl=',{
   "dbm"      : '$dbm'
@@ -110,7 +111,7 @@ data='
   "page"       : "networks"
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
-, "activewlan" : '$( rfkill | grep -q wlan && echo true )'
+, "activewlan" : '$( exists $dirshm/wlan )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"
 , "listbt"     : '$listbt'

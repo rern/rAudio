@@ -12,8 +12,9 @@ pushRefresh() {
 }
 netctlSwitch() {
 	ssid=$1
+	wlandev=$2
 	connected=$( netctl list | grep ^* | sed 's/^\* //' )
-	ifconfig wlan0 down
+	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
@@ -73,8 +74,9 @@ connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )
 	Key=$( jq -r .Key <<< $data )
+	wlandev=$( cat $dirshm/wlan )
 	profile="\
-Interface=wlan0
+Interface=$wlandev
 Connection=wireless
 ESSID=\"$ESSID\"
 IP=$( jq -r .IP <<< $data )
@@ -104,41 +106,37 @@ Gateway=$( jq -r .Gateway <<< $data )
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	netctlSwitch "$ESSID"
+	netctlSwitch "$ESSID" $wlandev
 	;;
 disconnect )
+	wlandev=$( cat $dirshm/wlan )
 	netctl stop-all
 	killall wpa_supplicant
-	ifconfig wlan0 up
+	ifconfig $wlandev up
 	pushRefresh
 	;;
 editlan )
 	ip=${args[1]}
 	gw=${args[2]}
-	conf="\
+	eth0="\
 [Match]
-Name=eth*
+Name=eth0
 [Network]
 DNSSEC=no
 "
 	if [[ ! $ip ]];then
-		conf+="\
+		eth0+="\
 DHCP=yes
 "
 	else
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 		
-		conf+="\
+		eth0+="\
 Address=$ip/24
 Gateway=$gw
 "
 	fi
-	[[ -e /boot/kernel8.img ]] && eth=eth || eth=eth0
-	echo "\
-$conf
-
-[Link]
-RequiredForOnline=no" > /etc/systemd/network/$eth.network
+	echo "$eth0" > /etc/systemd/network/eth0.network
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
@@ -158,21 +156,23 @@ ifconfigeth )
 $( ifconfig eth0 | grep -v 'RX\\|TX' | awk NF )"
 	;;
 ifconfigwlan )
+	wlandev=$( cat $dirshm/wlan )
 	echo "\
-<bll># ifconfig wlan0</bll>
-$( ifconfig wlan0 | grep -v 'RX\\|TX')
-$( iwconfig wlan0 | awk NF )"
+<bll># ifconfig $wlandev</bll>
+$( ifconfig $wlandev | grep -v 'RX\\|TX')
+$( iwconfig $wlandev | awk NF )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profileconnect )
+	wlandev=$( cat $dirshm/wlan )
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
-		ifconfig wlan0 0.0.0.0
+		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch ${args[1]}
+	netctlSwitch "${args[1]}" $wlandev
 	;;
 profileget )
 	netctl=$( cat "/etc/netctl/${args[1]}" )
@@ -185,11 +185,12 @@ profileget )
 profileremove )
 	ssid=${args[1]}
 	connected=${args[2]}
+	wlandev=$( cat $dirshm/wlan )
 	netctl disable "$ssid"
 	if [[ $connected == true ]]; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
-		ifconfig wlan0 up
+		ifconfig $wlandev up
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh

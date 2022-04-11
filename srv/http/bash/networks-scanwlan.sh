@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-ifconfig wlan0 up
+wlandev=$( cat $dirshm/wlan )
+ifconfig $wlandev up
 
 listProfile() {
 	netctllist=$( netctl list | grep -v eth | sed 's/^\s*\**\s*//' )
@@ -21,13 +22,13 @@ if [[ $netctllist ]]; then
 	readarray -t netctllist_ar <<<"$netctllist"
 	# pre-scan saved profile to force display hidden ssid
 	for name in "${netctllist_ar[@]}"; do
-		grep -q '^Hidden=yes' "/etc/netctl/$name" && iwlist wlan0 scan essid "$name" &> /dev/null
+		grep -q '^Hidden=yes' "/etc/netctl/$name" && iwlist $wlandev scan essid "$name" &> /dev/null
 	done
 fi
 
-connectedssid=$( iwgetid wlan0 -r )
+connectedssid=$( iwgetid $wlandev -r )
 
-readarray -t lines <<< $( iwlist wlan0 scan \
+readarray -t lines <<< $( iwlist $wlandev scan \
 							| grep -E '^\s*Quality|^\s*Encryption|^\s*ESSID|WPA |WPA2' \
 							| sed 's/^\s*Quality.*level\| dBm *$\|^\s*Encryption.*:\|^\s*ESSID.*:\|\\x00//g; s/IE: .*\(WPA.*\) .* .*/\1/' \
 							| sed 's/^"\|"$//g' \

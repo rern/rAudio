@@ -815,12 +815,9 @@ wlanset )
 	regdom=${args[1]}
 	apauto=${args[2]}
 	rfkill | grep -q wlan || modprobe brcmfmac
+	echo wlan0 > $dirshm/wlan
 	iw wlan0 set power_save off
-	if [[ $apauto == false ]]; then
-		touch $dirsystem/wlannoap
-	else
-		rm -f $dirsystem/wlannoap
-	fi
+	[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
 	if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
 		sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
 		iw reg set $regdom

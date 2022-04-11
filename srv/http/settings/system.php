@@ -112,7 +112,7 @@ $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
-	  'title'  => 'Wireless'
+	  'title'  => 'On-board Wireless'
 	, 'status' => 'rfkill'
 ];
 $body = [

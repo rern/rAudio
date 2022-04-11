@@ -31,12 +31,23 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
+usbwifi=$( ip link \
+			| grep ': wl.* <BROADCAST' \
+			| grep -v wlan0 \
+			| sed 's/.*: \(.*\): .*/\1/' )
+if [[ $usbwifi ]]; then
+	wlandev=$usbwifi
+	echo $usbwifi > $dirshm/wlan
+elif rfkill | grep -q wlan0; then
+	echo wlan0 > $dirshm/wlan
+fi
+
 if [[ -e /boot/wifi ]]; then
 	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv /boot/wifi "/etc/netctl/$ssid"
-	ifconfig wlan0 down
+	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	netctl enable "$ssid"
 fi
@@ -48,10 +59,7 @@ chmod -R 777 $dirshm
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
-rfkill | grep -q wlan && touch $dirsystem/wlan
-if [[ ! $profiles && ! $hostapd ]] || (( $( rfkill | grep wlan | wc -l ) > 1 )); then
-	rmmod brcmfmac &> /dev/null
-fi
+[[ ! $profiles && ! $hostapd || $usbwifi ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
 connectedCheck 5 1
@@ -113,7 +121,7 @@ fi
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
 if [[ $connected ]]; then
-	rfkill | grep -q wlan && iw wlan0 set power_save off
+	rfkill | grep -q wlan && iw $wlandev set power_save off
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
 else
 	if [[ ! -e $dirsystem/wlannoap ]]; then
