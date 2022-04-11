@@ -136,7 +136,8 @@ Address=$ip/24
 Gateway=$gw
 "
 	fi
-	echo "$eth0" > /etc/systemd/network/eth0.network
+	[[ -e /etc/systemd/network/eth0.network ]] && n=0
+	echo "$eth0" > /etc/systemd/network/eth$n.network
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
