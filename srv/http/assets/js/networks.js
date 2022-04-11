@@ -166,7 +166,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
-	if ( 'profile' in list ) {
+	if ( list.profile ) {
 		var ip = list.ip;
 		info( {
 			  icon    : 'wifi'
@@ -524,13 +524,12 @@ function scanWlan() {
 					var dbm = '';
 					var signal = '';
 				}
-				var connected = 'connected' in list;
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
-				if ( connected ) htmlwl += '<grn>•</grn>&ensp;';
+				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
 				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
-				if ( dbm ) htmlwl += '<gr>'+ dbm +' dBm</gr>';
-				if ( 'profile' in list && !connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
+				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';
+				if ( list.profile && !list.connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlwl += '</li>';
 			} );
 		} else {
