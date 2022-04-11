@@ -195,5 +195,13 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
+usbwifi )
+	usbwifi=$( ip link \
+			| grep ': wl.* <BROADCAST' \
+			| grep -v wlan0 \
+			| sed 's/.*: \(.*\): .*/\1/' )
+	[[ $usbwifi ]] && echo $usbwifi > $dirshm/wlan || rm -f $dirshm/wlan
+	pushRefresh
+	;;
 	
 esac
