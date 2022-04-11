@@ -19,13 +19,14 @@ fi
 # IE: IEEE 802.11i/WPA2 Version 1
 # IE: WPA Version 1
 scan=$( iwlist $wlandev scan \
-							| sed 's/^\s*\|\s*$//g' \
-							| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
-							| sed -e 's/^Cell.*/,{/
-									  s/^ESSID:/ "ssid":/
-									  s/^Encryption key:\(.*\)/,"encrypt":"\1"/
-									  s/^IE.*WPA.*/,"wpa":true/
-									  s/^Quality.*level.\(.*\)/,"signal":"\1"\n}/' )
+			| sed 's/^\s*\|\s*$//g' \
+			| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
+			| sed -e 's/^Cell.*/},{/
+					  s/^ESSID:/,"ssid":/
+					  s/^Encryption key:\(.*\)/,"encrypt":"\1"/
+					  s/^IE.*WPA.*/,"wpa":true/
+					  s/^Quality.*level.\(.*\)/,"signal":"\1"/' \
+			| sed '/},{/ {n;s/^,/ /}' )
 # save profile
 readarray -t ssids <<< $( grep '"ssid":' <<< "$scan" \
 			| sed 's/^.*:"\(.*\)"/\1/' \
@@ -37,4 +38,5 @@ done
 connectedssid=$( iwgetid $wlandev -r )
 scan=$( sed '/"ssid":"'$connectedssid'"/ a\,"connected":true' <<< "$scan" )
 
-echo "[ ${scan:1} ]" | jq
+# },{... > [ {...} ]
+echo "[ ${scan:2} } ]" | jq

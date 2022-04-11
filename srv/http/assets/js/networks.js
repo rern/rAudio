@@ -166,24 +166,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
-	if ( !list.profile ) {
-		if ( list.encrypt ) {
-			info( {
-				  icon          : 'wifi'
-				, title         : ssid
-				, passwordlabel : 'Password'
-				, focus         : 0
-				, oklabel       : 'Connect'
-				, ok            : function() {
-					data.Security = list.wep ? 'wep' : 'wpa';
-					data.Key      = infoVal();
-					connectWiFi( data );
-				}
-			} );
-		} else {
-			connectWiFi( data );
-		}
-	} else {
+	if ( 'profile' in list ) {
 		var ip = list.ip;
 		info( {
 			  icon    : 'wifi'
@@ -201,6 +184,23 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				}
 			}
 		} );
+	} else {
+		if ( list.encrypt ) {
+			info( {
+				  icon          : 'wifi'
+				, title         : ssid
+				, passwordlabel : 'Password'
+				, focus         : 0
+				, oklabel       : 'Connect'
+				, ok            : function() {
+					data.Security = 'wpa' in list ? 'wpa' : 'wep';
+					data.Key      = infoVal();
+					connectWiFi( data );
+				}
+			} );
+		} else {
+			connectWiFi( data );
+		}
 	}
 } );
 $( '#setting-accesspoint' ).click( function() {
@@ -515,17 +515,19 @@ function scanWlan() {
 				if ( !list.ssid ) return
 				
 				if ( list.signal.slice( -3 ) === 'dBm' ) {
-					var dbm = list.signal.slice( 0, -4 );
+					var dbm = parseInt( list.signal.slice( 0, -4 ) );
 					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );
 				} else {
+					var dbm = '';
 					var signal = '';
 				}
+				var connected = 'connected' in list;
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
-				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
-				htmlwl += dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
+				if ( connected ) htmlwl += '<grn>•</grn>&ensp;';
+				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
-				htmlwl += signal ? '<gr>'+ dbm +' dBm</gr>' : '';
-				if ( list.profile && !list.connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
+				if ( dbm ) htmlwl += '<gr>'+ dbm +' dBm</gr>';
+				if ( 'profile' in list && !connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlwl += '</li>';
 			} );
 		} else {
