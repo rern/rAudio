@@ -509,6 +509,9 @@ function scanBluetooth() {
 function scanWlan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh', function( data ) {
 		if ( data ) {
+			data.sort( function( a, b ) {
+				return a.signal.localeCompare( b.signal )
+			} );
 			G.listwlscan = data;
 			var htmlwl = '';
 			data.forEach( function( list ) {
