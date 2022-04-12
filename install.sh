@@ -3,12 +3,15 @@
 alias=r1
 
 # 20220416
-wlandev=$( ip -br link \
-				| grep ^w \
-				| grep -v wlan \
-				| cut -d' ' -f1 )
-[[ ! $wlandev ]] && wlandev=wlan0
-echo $wlandev > /srv/http/data/shm/wlan
+file=/srv/http/data/shm/wlan
+if [[ ! -e $file ]]; then
+	wlandev=$( ip -br link \
+					| grep ^w \
+					| grep -v wlan \
+					| cut -d' ' -f1 )
+	[[ ! $wlandev ]] && wlandev=wlan0
+	echo $wlandev > /srv/http/data/shm/wlan
+fi
 
 file=/etc/udev/rules.d/wifi.rules
 if [[ ! -e $file ]]; then
