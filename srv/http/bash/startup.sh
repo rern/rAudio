@@ -33,7 +33,7 @@ fi
 
 usbwifi=$( ip -br link \
 				| grep ^w \
-				| grep -v wlan0 \
+				| grep -v wlan \
 				| cut -d' ' -f1 )
 if [[ $usbwifi ]]; then
 	wlandev=$usbwifi
