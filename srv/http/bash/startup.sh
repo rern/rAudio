@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-touch $dirshm/startup # suppress usbwifi.rules
-
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
@@ -139,6 +137,3 @@ if [[ -e $file ]]; then
 	chmod 666 $file
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
-
-sleep 3
-rm $dirshm/startup

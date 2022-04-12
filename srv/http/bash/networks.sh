@@ -226,6 +226,8 @@ profileremove )
 	pushRefresh
 	;;
 usbwifi )
+	! systemctl -q is-active mpd && exit
+	
 	startup=${args[1]}
 	wlandev=$( ip -br link \
 					| grep ^w \
