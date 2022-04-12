@@ -197,6 +197,9 @@ profileremove )
 	pushRefresh
 	;;
 usbwifi )
+	startup=${args[1]}
+	[[ ! $startup ]] && ! systemctl -q is-active mpd && exit
+	
 	wlandev=$( ip -br link \
 					| grep ^w \
 					| grep -v wlan \
@@ -214,7 +217,7 @@ usbwifi )
 	# hostapd
 	file=/etc/hostapd/hostapd.conf
 	! grep -q "interface=$wlandev" $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
-	[[ ${args[1]} == startup ]] && echo $wlandev && exit
+	[[ $startup ]] && echo $wlandev && exit
 	
 	systemctl -q is-active hostapd && hostapdactive=1
 	if [[ $wlandev ]]; then
