@@ -198,7 +198,7 @@ profileremove )
 	;;
 usbwifi )
 	startup=${args[1]}
-	[[ ! $startup ]] && ! systemctl -q is-active mpd && exit
+	[[ ! $startup ]] && ! systemctl -q is-active mpd && exit # skip on startup
 	
 	wlandev=$( ip -br link \
 					| grep ^w \
@@ -219,17 +219,8 @@ usbwifi )
 	! grep -q "interface=$wlandev" $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
 	[[ $startup ]] && echo $wlandev && exit
 	
-	systemctl -q is-active hostapd && hostapdactive=1
-	if [[ $wlandev ]]; then
-		rmmod brcmfmac &> /dev/null
-	else
-		if [[ $hostapdactive ]]; then
-			modprobe brcmfmac &> /dev/null
-			! lsmod | grep -q brcmfmac && hostapdactive=
-		fi
-	fi
-	ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off &> /dev/null
-	[[ $hostapdactive ]] && systemctl restart hostapd
+	[[ $wlandev == wlan0 ]] && action=Removed. || action=Inserted.
+	pushstreamNotify 'USB Wi-Fi' $action wifi
 	pushRefresh
 	;;
 	
