@@ -196,11 +196,21 @@ profileremove )
 	pushRefresh
 	;;
 usbwifi )
-	usbwifi=$( ip link \
+	wlandev=$( ip link \
 			| grep ': wl.* <BROADCAST' \
 			| grep -v wlan0 \
 			| sed 's/.*: \(.*\): .*/\1/' )
-	[[ $usbwifi ]] && echo $usbwifi > $dirshm/wlan || rm -f $dirshm/wlan
+	if [[ $wlandev ]]; then
+		echo $wlandev > $dirshm/wlan
+	else
+		wlandev=wlan0
+	fi
+	sed -i -e "s/^\(interface=\).*/\1$wlandev/" /etc/hostapd/hostapd.conf
+	if systemctl -q is-active hostapd && ! lsmod | grep -q brcmfmac; then
+		modprobe brcmfmac
+	fi
+	ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off
+	systemctl try-restart hostapd
 	pushRefresh
 	;;
 	

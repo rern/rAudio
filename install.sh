@@ -2,6 +2,15 @@
 
 alias=r1
 
+# 20220416
+file=/etc/udev/rules.d/wifi.rules
+if [[ ! -e $file ]]; then
+	echo 'ACTION=="add", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh usbwifi"
+ACTION=="remove", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh usbwifi"' > $file
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
 # 20220327
 sed -i '/chromium/ d' /etc/pacman.conf
 

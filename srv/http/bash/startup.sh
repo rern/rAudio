@@ -31,14 +31,15 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
-usbwifi=$( ip link \
-			| grep ': wl.* <BROADCAST' \
-			| grep -v wlan0 \
-			| sed 's/.*: \(.*\): .*/\1/' )
+usbwifi=$( ip -br link \
+				| grep ^w \
+				| grep -v wlan0 \
+				| cut -d' ' -f1 )
 if [[ $usbwifi ]]; then
 	wlandev=$usbwifi
 	echo $usbwifi > $dirshm/wlan
 elif rfkill | grep -q wlan0; then
+	wlandev=wlan0
 	echo wlan0 > $dirshm/wlan
 fi
 
@@ -111,25 +112,21 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py logo
 fi
-if [[ -e $dirsystem/mpdoled ]]; then
-	$dirbash/cmd.sh mpdoledlogo
-#	modprobe snd-aloop
-fi
+[[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
 if [[ $connected ]]; then
-	rfkill | grep -q wlan && iw $wlandev set power_save off
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
-else
-	if [[ ! -e $dirsystem/wlannoap ]]; then
-		modprobe brcmfmac &> /dev/null 
-		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-		systemctl -q disable hostapd
-	fi
+elif [[ ! -e $dirsystem/wlannoap ]]; then
+	modprobe brcmfmac &> /dev/null 
+	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+	systemctl -q disable hostapd
 fi
+
+ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )

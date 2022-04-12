@@ -111,7 +111,7 @@ data='
   "page"       : "networks"
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
-, "activewlan" : '$( exists $dirshm/wlan )'
+, "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"
 , "listbt"     : '$listbt'

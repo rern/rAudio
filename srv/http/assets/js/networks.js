@@ -509,13 +509,25 @@ function scanBluetooth() {
 function scanWlan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh', function( data ) {
 		if ( data ) {
+			var signals = '';
+			data.forEach( function( list ) {
+				if ( list.signal != 0 ) signals += list.signal;
+			} );
 			data.sort( function( a, b ) {
-				return a.signal.localeCompare( b.signal )
+				if ( signals ) {
+					var ab = signals.includes( 'dBm' ) ? [ a.signal, b.signal ] : [ b.signal, a.signal ];
+				} else {
+					var ab = [ a.ssid, b.ssid ];
+				}
+				return  ab[ 0 ].localeCompare( ab[ 1 ] )
 			} );
 			G.listwlscan = data;
 			var htmlwl = '';
-			data.forEach( function( list ) {
-				if ( !list.ssid ) return
+			data.forEach( function( list, i ) {
+				if ( !list.ssid ) {
+					G.listwlscan.splice( i, 1 );
+					return
+				}
 				
 				if ( list.signal.slice( -3 ) === 'dBm' ) {
 					var dbm = parseInt( list.signal.slice( 0, -4 ) );
