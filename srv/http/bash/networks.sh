@@ -32,6 +32,35 @@ netctlSwitch() {
 		pushstream refresh "$data"
 	fi
 }
+wlDeviceSet() {
+	wlandev=$1
+	startup=$2
+	# profiles
+	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
+	if [[ $profile ]]; then
+		for name in "${profiles[@]}"; do
+			file="/etc/netctl/$name"
+			sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
+		done
+	fi
+	# hostapd
+	file=/etc/hostapd/hostapd.conf
+	sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
+	
+	[[ $startup ]] && echo $wlandev && exit
+	
+	pushRefresh
+	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
+	if [[ $connectedssid ]]; then
+		pushstreamNotify 'USB Wi-Fi' "Reconnect to $connectedssid ..." wifi
+		netctl restart "$connectedssid"
+	elif systemctl -q is-active hostapd; then
+		pushstreamNotify 'USB Wi-Fi' 'Restart Access Point ...' wifi
+		systemctl restart hostapd
+	else
+		pushstreamNotify 'USB Wi-Fi' Detected. wifi
+	fi
+}
 
 case ${args[0]} in
 
@@ -197,42 +226,18 @@ profileremove )
 	pushRefresh
 	;;
 usbwifi )
-	type=${args[1]}
-	if [[ $type == remove ]]; then
-		wlandev=wlan0
-	else
-		wlandev=$( ip -br link \
-						| grep ^w \
-						| grep -v wlan \
-						| cut -d' ' -f1 )
-	fi
+	startup=${args[1]}
+	wlandev=$( ip -br link \
+					| grep ^w \
+					| grep -v wlan \
+					| cut -d' ' -f1 )
 	echo $wlandev > $dirshm/wlan
-	# profiles
-	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
-	if [[ $profile ]]; then
-		for name in "${profiles[@]}"; do
-			file="/etc/netctl/$name"
-			sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
-		done
-	fi
-	# hostapd
-	file=/etc/hostapd/hostapd.conf
-	sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
-	
-	[[ $type == startup ]] && echo $wlandev && exit
-	
-	pushRefresh
-	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
-	if [[ $connectedssid ]]; then
-		pushstreamNotify 'USB Wi-Fi' "Reconnect to $connectedssid ..." wifi
-		netctl restart "$connectedssid"
-	elif systemctl -q is-active hostapd; then
-		pushstreamNotify 'USB Wi-Fi' 'Restart Access Point ...' wifi
-		systemctl restart hostapd
-	else
-		[[ $wlandev == wlan0 ]] && action=Removed. || action=Detected.
-		pushstreamNotify 'USB Wi-Fi' $action wifi
-	fi
+	wlDeviceSet $wlandev $startup
+	;;
+usbwifiremove )
+	echo wlan0 > $dirshm/wlan
+	wlDeviceSet wlan0
+	pushstreamNotify 'USB Wi-Fi' Removed. wifi
 	;;
 	
 esac
