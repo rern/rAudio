@@ -197,36 +197,40 @@ profileremove )
 	pushRefresh
 	;;
 usbwifi )
-	startup=${args[1]}
-	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
-	wlandev=$( ip -br link \
-					| grep ^w \
-					| grep -v wlan \
-					| cut -d' ' -f1 )
-	[[ ! $wlandev ]] && wlandev=wlan0
+	type=${args[1]}
+	if [[ $type == remove ]]; then
+		wlandev=wlan0
+	else
+		wlandev=$( ip -br link \
+						| grep ^w \
+						| grep -v wlan \
+						| cut -d' ' -f1 )
+	fi
 	echo $wlandev > $dirshm/wlan
 	# profiles
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profile ]]; then
 		for name in "${profiles[@]}"; do
 			file="/etc/netctl/$name"
-			! grep -q "Interface=$wlandev" "$file" && sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
+			sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
 		done
 	fi
 	# hostapd
 	file=/etc/hostapd/hostapd.conf
-	! grep -q "interface=$wlandev" $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
-	[[ $startup ]] && echo $wlandev && exit
+	sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
+	
+	[[ $type == startup ]] && echo $wlandev && exit
 	
 	pushRefresh
+	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
 	if [[ $connectedssid ]]; then
 		pushstreamNotify 'USB Wi-Fi' "Reconnect to $connectedssid ..." wifi
 		netctl restart "$connectedssid"
-	elif systemctl -q is-active; then
-		pushstreamNotify 'USB Wi-Fi' 'Restart Acces Point ...' wifi
+	elif systemctl -q is-active hostapd; then
+		pushstreamNotify 'USB Wi-Fi' 'Restart Access Point ...' wifi
 		systemctl restart hostapd
 	else
-		[[ $wlandev == wlan0 ]] && action=Removed. || action=Inserted.
+		[[ $wlandev == wlan0 ]] && action=Removed. || action=Detected.
 		pushstreamNotify 'USB Wi-Fi' $action wifi
 	fi
 	;;

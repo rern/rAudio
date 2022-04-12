@@ -601,6 +601,23 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
+	if ( G.soc === 'BCM2835' || G.soc === 'BCM2836' ) { // rpi 0, 1
+		info( {
+			  icon         : 'globe'
+			, title        : 'Servers'
+			, textlabel    : 'NTP'
+			, boxwidth     : 240
+			, values       : G.ntp
+			, checkchanged : 1
+			, checkblank   : 1
+			, ok           : function() {
+				notify( 'NTP', 'Sync ...', 'globe' );
+				bash( [ 'servers', infoVal() ], bannerHide );
+			}
+		} );
+		return
+	}
+	
 	bash( [ 'mirrorlist' ], function( list ) {
 		var lL = list.code.length;
 		var selecthtml = '<select>';

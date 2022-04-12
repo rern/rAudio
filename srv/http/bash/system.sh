@@ -605,20 +605,23 @@ servers )
 		sed -i "s/^\(NTP=\).*/\1$ntp/" $file
 		ntpdate $ntp
 	fi
-	file=/etc/pacman.d/mirrorlist
-	prevmirror=$( grep ^Server $file \
-					| head -1 \
-					| sed 's|\.*mirror.*||; s|.*//||' )
-	if [[ $mirror != $prevmirror ]]; then
-		if [[ $mirror == 0 ]]; then
-			mirror=
-			rm $dirsystem/mirror
-		else
-			echo $mirror > $dirsystem/mirror
-			mirror+=.
+	if [[ $mirror ]]; then
+		file=/etc/pacman.d/mirrorlist
+		prevmirror=$( grep ^Server $file \
+						| head -1 \
+						| sed 's|\.*mirror.*||; s|.*//||' )
+		if [[ $mirror != $prevmirror ]]; then
+			if [[ $mirror == 0 ]]; then
+				mirror=
+				rm $dirsystem/mirror
+			else
+				echo $mirror > $dirsystem/mirror
+				mirror+=.
+			fi
+			sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 		fi
-		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 	fi
+	pushRefresh
 	;;
 shareddatadisable )
 	copydata=${args[1]}
