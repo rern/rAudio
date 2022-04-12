@@ -157,10 +157,11 @@ ifconfigeth )
 $( ifconfig eth0 | grep -v 'RX\\|TX' | awk NF )"
 	;;
 ifconfigwlan )
+	wlandev=$( cat $dirshm/wlan )
 	echo "\
-<bll># ifconfig wlan0</bll>
-$( ifconfig wlan0 | grep -v 'RX\\|TX')
-$( iwconfig wlan0 | awk NF )"
+<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
+$( ifconfig $wlandev | grep -v 'RX\|TX')
+$( iwconfig $wlandev | awk NF )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
