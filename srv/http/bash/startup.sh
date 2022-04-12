@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+touch $dirshm/startup # suppress usbwifi.rules
+
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
@@ -116,7 +118,7 @@ elif [[ ! -e $dirsystem/wlannoap ]]; then
 	systemctl -q disable hostapd
 fi
 
-ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off
+ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off &> /dev/null
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
@@ -137,3 +139,6 @@ if [[ -e $file ]]; then
 	chmod 666 $file
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
+
+sleep 3
+rm $dirshm/startup
