@@ -204,16 +204,28 @@ usbwifi )
 	echo $wlandev > $dirshm/wlan
 	# profiles
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
-	for name in "${profiles[@]}"; do
-		sed -i "s/^\(Interface=\).*/\1$wlandev/" "/etc/netctl/$name"
-	done
+	if [[ $profile ]]; then
+		for name in "${profiles[@]}"; do
+			file="/etc/netctl/$name"
+			! grep -q "Interface=$wlandev" "$file" && sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
+		done
+	fi
 	# hostapd
-	sed -i -e "s/^\(interface=\).*/\1$wlandev/" /etc/hostapd/hostapd.conf
-	if systemctl -q is-active hostapd; then
-		$wlandev == wlan0 && ! lsmod | grep -q brcmfmac && modprobe brcmfmac
-		ip -br link | grep -q ^w && systemctl restart hostapd
+	file=/etc/hostapd/hostapd.conf
+	! grep -q "interface=$wlandev" $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
+	[[ ${args[1]} == startup ]] && echo $wlandev && exit
+	
+	systemctl -q is-active hostapd && hostapdactive=1
+	if [[ $wlandev ]]; then
+		rmmod brcmfmac &> /dev/null
+	else
+		if [[ $hostapdactive ]]; then
+			modprobe brcmfmac &> /dev/null
+			! lsmod | grep -q brcmfmac && hostapdactive=
+		fi
 	fi
 	ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off &> /dev/null
+	[[ $hostapdactive ]] && systemctl restart hostapd
 	pushRefresh
 	;;
 	

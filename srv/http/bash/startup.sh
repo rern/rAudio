@@ -31,17 +31,7 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
-usbwifi=$( ip -br link \
-				| grep ^w \
-				| grep -v wlan \
-				| cut -d' ' -f1 )
-if [[ $usbwifi ]]; then
-	wlandev=$usbwifi
-	echo $usbwifi > $dirshm/wlan
-elif rfkill | grep -q wlan0; then
-	wlandev=wlan0
-	echo wlan0 > $dirshm/wlan
-fi
+wlandev=$( $dirbash/networks.sh usbwifi$'\n'startup )
 
 if [[ -e /boot/wifi ]]; then
 	[[ $wlandev != wlan0 ]] && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
