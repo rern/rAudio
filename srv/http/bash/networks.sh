@@ -200,6 +200,7 @@ usbwifi )
 	startup=${args[1]}
 	[[ ! $startup ]] && ! systemctl -q is-active mpd && exit # skip on startup
 	
+	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
 	wlandev=$( ip -br link \
 					| grep ^w \
 					| grep -v wlan \
@@ -219,9 +220,17 @@ usbwifi )
 	! grep -q "interface=$wlandev" $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
 	[[ $startup ]] && echo $wlandev && exit
 	
-	[[ $wlandev == wlan0 ]] && action=Removed. || action=Inserted.
-	pushstreamNotify 'USB Wi-Fi' $action wifi
 	pushRefresh
+	if [[ $connectedssid ]]; then
+		pushstreamNotify 'USB Wi-Fi' "Reconnect to $connectedssid ..." wifi
+		netctl restart "$connectedssid"
+	elif systemctl -q is-active; then
+		pushstreamNotify 'USB Wi-Fi' 'Restart Acces Point ...' wifi
+		systemctl restart hostapd
+	else
+		[[ $wlandev == wlan0 ]] && action=Removed. || action=Inserted.
+		pushstreamNotify 'USB Wi-Fi' $action wifi
+	fi
 	;;
 	
 esac
