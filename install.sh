@@ -19,7 +19,7 @@ fi
 file=/etc/udev/rules.d/wifi.rules
 if [[ ! -e $file ]]; then
 	cat << EOF > $file
-ACTION=="add", SUBSYSTEM=="net", RUN+="t/srv/http/bash/networks.sh usbwifi"
+ACTION=="add", SUBSYSTEM=="net", RUN+="t/srv/http/bash/networks.sh wldevice"
 ACTION=="remove", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh usbwifiremove"
 EOF
 	udevadm control --reload-rules

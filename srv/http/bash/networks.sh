@@ -34,7 +34,6 @@ netctlSwitch() {
 }
 wlDeviceSet() {
 	wlandev=$1
-	startup=$2
 	# profiles
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profile ]]; then
@@ -46,11 +45,22 @@ wlDeviceSet() {
 	# hostapd
 	file=/etc/hostapd/hostapd.conf
 	sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
+	echo $wlandev > $dirshm/wlan
 	
-	[[ $startup ]] && echo $wlandev && exit
+	! systemctl -q is-active mpd && exit # on startup exit here
 	
 	pushRefresh
 	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
+	if [[ $wlandev == wlan0 ]]; then
+		modprobe brcmfmac &> /dev/null
+		if ! lsmod | grep -q brcmfmac; then # no on-board wifi
+			pushstreamNotify 'USB Wi-Fi' Removed wifi
+			exit
+		fi
+		
+	else
+		rmmod brcmfmac &> /dev/null
+	fi
 	if [[ $connectedssid ]]; then
 		pushstreamNotify 'USB Wi-Fi' "Reconnect to $connectedssid ..." wifi
 		netctl restart "$connectedssid"
@@ -58,8 +68,10 @@ wlDeviceSet() {
 		pushstreamNotify 'USB Wi-Fi' 'Restart Access Point ...' wifi
 		systemctl restart hostapd
 	else
-		pushstreamNotify 'USB Wi-Fi' Detected. wifi
+		[[ $wlandev == wlan0 ]] && status=Removed || status=Ready
+		pushstreamNotify 'USB Wi-Fi' $status wifi
 	fi
+	iw $wlandev set power_save off &> /dev/null
 }
 
 case ${args[0]} in
@@ -225,21 +237,16 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
-usbwifi )
-	! systemctl -q is-active mpd && exit
-	
-	startup=${args[1]}
+usbwifiremove )
+	wlDeviceSet wlan0
+	;;
+wldevice ) # run by wifi.rules on startup
 	wlandev=$( ip -br link \
 					| grep ^w \
 					| grep -v wlan \
 					| cut -d' ' -f1 )
-	echo $wlandev > $dirshm/wlan
-	wlDeviceSet $wlandev $startup
-	;;
-usbwifiremove )
-	echo wlan0 > $dirshm/wlan
-	wlDeviceSet wlan0
-	pushstreamNotify 'USB Wi-Fi' Removed. wifi
+	[[ ! $wlandev ]] && wlandev=wlan0
+	wlDeviceSet $wlandev
 	;;
 	
 esac

@@ -31,8 +31,7 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
-wlandev=$( $dirbash/networks.sh usbwifi$'\n'startup )
-
+wlandev=$( cat $dirshm/wlan )
 if [[ -e /boot/wifi ]]; then
 	[[ $wlandev != wlan0 ]] && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
@@ -50,7 +49,7 @@ chmod -R 777 $dirshm
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
-[[ ! $profiles && ! $hostapd || $usbwifi ]] && rmmod brcmfmac &> /dev/null
+[[ ! $profiles && ! $hostapd || $wlandev != wlan0 ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
 connectedCheck 5 1
@@ -116,7 +115,7 @@ elif [[ ! -e $dirsystem/wlannoap ]]; then
 	systemctl -q disable hostapd
 fi
 
-ip -br link | grep -q ^$wlandev && iw $wlandev set power_save off &> /dev/null
+iw $wlandev set power_save off &> /dev/null
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
