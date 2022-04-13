@@ -3,9 +3,6 @@
 alias=r1
 
 # 20220416
-file=/etc/udev/rules.d/usbdac.rules
-! grep -q usb $file && sed -i 's/RUN/SUBSYSTEMS=="usb", RUN/' $file
-
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
 	wlandev=$( ip -br link \
@@ -16,12 +13,18 @@ if [[ ! -e $file ]]; then
 	echo $wlandev > /srv/http/data/shm/wlan
 fi
 
-file=/etc/udev/rules.d/wifi.rules
+file=/etc/udev/rules.d/usbwifi.rules
 if [[ ! -e $file ]]; then
 	cat << EOF > $file
-ACTION=="add", SUBSYSTEMS=="usb", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh wldevice"
-ACTION=="remove", SUBSYSTEMS=="usb", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh usbwifiremove"
+ACTION=="add", SUBSYSTEMS=="usb", SUBSYSTEM=="net", RUN+="/srv/http/bash/usbwifi.sh add"
+ACTION=="remove", SUBSYSTEMS=="usb", SUBSYSTEM=="net", RUN+="/srv/http/bash/usbwifi.sh remove"
 EOF
+	file=/etc/udev/rules.d/usbdac.rules
+	cat << EOF > $file
+ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="card*", SUBSYSTEM=="sound", RUN+="/srv/http/bash/mpd-conf.sh add"
+ACTION=="remove", SUBSYSTEMS=="usb", KERNEL=="card*", SUBSYSTEM=="sound", RUN+="/srv/http/bash/mpd-conf.sh remove"
+EOF
+	rm -f /etc/udev/rules.d/wifi.rules
 	udevadm control --reload-rules
 	udevadm trigger
 fi
