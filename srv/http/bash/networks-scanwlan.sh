@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 wlandev=$( cat $dirshm/wlan )
-ifconfig $wlandev up
+ip link set $wlandev up
 
 # pre-scan hidden ssid to force responding to scan
 readarray -t hiddenprofiles <<< $( grep -rl --exclude-dir=examples ^Hidden=yes /etc/netctl )
