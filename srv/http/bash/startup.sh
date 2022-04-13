@@ -31,7 +31,14 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
-wlandev=$( cat /dev/shm/wlan )
+# wifi - on-board or usb
+wlandev=$( ip -br link \
+				| grep ^w \
+				| grep -v wlan \
+				| cut -d' ' -f1 )
+[[ ! $wlandev ]] && wlandev=wlan0
+echo $wlandev > /dev/shm/wlan
+
 if [[ -e /boot/wifi ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
@@ -45,6 +52,7 @@ fi
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
+
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
