@@ -326,7 +326,6 @@ function psMpdPlayer( data ) {
 		} else if ( G.playlist ) {
 			setPlaylistScroll();
 		}
-		bannerHide();
 	}, G.debouncems );
 }
 function psMpdRadio( data ) {

@@ -214,12 +214,11 @@ mixertype )
 	hwmixer=${args[3]}
 	if [[ $hwmixer ]]; then # set 0dB
 		mpc -q stop
-		vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 		if [[ $mixertype == hardware ]];then
+			vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
 			amixer -Mq sset "$hwmixer" $vol%
 		else
 			amixer -Mq sset "$hwmixer" 0dB
-			rm -f $dirshm/mpdvolume
 		fi
 	fi
 	if [[ $mixertype == hardware ]]; then
@@ -228,7 +227,6 @@ mixertype )
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
 	restartMPD
-	[[ $mixertype == software ]] && mpc -q volume $vol
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
 	;;
 mpdignorelist )
@@ -265,7 +263,7 @@ novolume )
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{camilladsp,crossfade,equalizer,replaygain,normalization} $dirshm/mpdvolume
+	rm -f $dirsystem/{camilladsp,crossfade,equalizer,replaygain,normalization}
 	restartMPD
 	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
 	;;
@@ -308,7 +306,6 @@ volume0db )
 	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
-	rm -f $dirshm/mpdvolume
 	;;
 volumebt0db )
 	amixer -D bluealsa -q sset "${args[1]}" 0dB

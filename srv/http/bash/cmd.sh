@@ -215,7 +215,6 @@ volumeGet() {
 							| sed 's/.*\[\(.*\)%].*/\1/' )
 				[[ ! $volume ]] && volume=100
 			fi
-			echo $volume > $dirshm/mpdvolume
 		fi
 	fi
 }
@@ -856,16 +855,6 @@ playerstop )
 			;;
 	esac
 	[[ $service != snapclient ]] && systemctl restart $service
-	file=$dirshm/mpdvolume
-	if [[ -e $file ]]; then
-		volumeGet
-		vol_db=( $( cat $file ) )
-		vol=${vol_db[0]}
-		db=${vol_db[1]}
-		volumeSet $volume $vol $card "$control"
-		[[ $db == 0.00 ]] && amixer -c $card -Mq sset "$control" 0dB
-		rm -f $file
-	fi
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
@@ -1155,7 +1144,6 @@ volume )
 volume0db )
 	player=$( cat $dirshm/player )
 	volumeGet
-	[[ $player == airplay || $player == spotify ]] && echo $volume $db  > $dirshm/mpdvolume
 	amixer -c $card -Mq sset "$control" 0dB
 	;;
 volumecontrolget )

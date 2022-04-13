@@ -3,6 +3,9 @@
 alias=r1
 
 # 20220416
+file=/etc/udev/rules.d/usbdac.rules
+! grep -q usb $file && sed -i 's/RUN/SUBSYSTEMS=="usb", RUN/' $file
+
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
 	wlandev=$( ip -br link \
@@ -15,8 +18,8 @@ fi
 
 file=/etc/udev/rules.d/wifi.rules
 if [[ ! -e $file ]]; then
-	echo 'ACTION=="add", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh usbwifi"
-ACTION=="remove", SUBSYSTEM=="net", RUN+="/srv/http/bash/networks.sh usbwifi"' > $file
+	echo 'ACTION=="add", SUBSYSTEM=="net", SUBSYSTEMS=="usb", RUN+="/srv/http/bash/networks.sh usbwifi"
+ACTION=="remove", SUBSYSTEM=="net", SUBSYSTEMS=="usb", RUN+="/srv/http/bash/networks.sh usbwifi"' > $file
 	udevadm control --reload-rules
 	udevadm trigger
 fi

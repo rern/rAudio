@@ -198,8 +198,6 @@ profileremove )
 	;;
 usbwifi )
 	startup=${args[1]}
-	[[ ! $startup ]] && ! systemctl -q is-active mpd && exit # skip on startup
-	
 	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
 	wlandev=$( ip -br link \
 					| grep ^w \
