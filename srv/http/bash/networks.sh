@@ -45,7 +45,7 @@ wlDeviceSet() {
 	# hostapd
 	file=/etc/hostapd/hostapd.conf
 	! grep -q $wlandev $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
-	echo $wlandev > $dirshm/wlan
+	echo $wlandev > /dev/shm/wlan
 	
 	! systemctl -q is-active mpd && exit # exit here on startup
 	

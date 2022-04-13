@@ -31,7 +31,7 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
-wlandev=$( cat $dirshm/wlan )
+wlandev=$( cat /dev/shm/wlan )
 if [[ -e /boot/wifi ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
