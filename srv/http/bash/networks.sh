@@ -39,15 +39,15 @@ wlDeviceSet() {
 	if [[ $profile ]]; then
 		for name in "${profiles[@]}"; do
 			file="/etc/netctl/$name"
-			sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
+			! grep -q $wlandev $file && sed -i "s/^\(Interface=\).*/\1$wlandev/" "$file"
 		done
 	fi
 	# hostapd
 	file=/etc/hostapd/hostapd.conf
-	sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
+	! grep -q $wlandev $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
 	echo $wlandev > $dirshm/wlan
 	
-	! systemctl -q is-active mpd && exit # on startup exit here
+	! systemctl -q is-active mpd && exit # exit here on startup
 	
 	pushRefresh
 	connectedssid=$( iwgetid $( cat $dirshm/wlan ) -r )
@@ -237,10 +237,10 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
-usbwifiremove )
-	wlDeviceSet wlan0
+usbwifiremove ) # wifi.rules (also run on startup)
+	systemctl -q is-active mpd && wlDeviceSet wlan0 # skip on startup
 	;;
-wldevice ) # run by wifi.rules on startup
+wldevice )      # wifi.rules (also run on startup)
 	wlandev=$( ip -br link \
 					| grep ^w \
 					| grep -v wlan \

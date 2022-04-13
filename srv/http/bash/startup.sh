@@ -33,7 +33,7 @@ fi
 
 wlandev=$( cat $dirshm/wlan )
 if [[ -e /boot/wifi ]]; then
-	[[ $wlandev != wlan0 ]] && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
+	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv -f /boot/wifi "/etc/netctl/$ssid"
