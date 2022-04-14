@@ -43,9 +43,20 @@ $( timeout 1 avahi-browse -arp \
 	| sed 's/;/ : /' \
 	| sort -u )"
 	;;
+btconnect )
+	mac=${args[1]}
+	bluetoothctl connect $mac
+	for i in {1..10}; do
+		bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
+	done
+	pushRefresh
+	;;
 btdisconnect )
-	bluetoothctl disconnect ${args[1]}
-	sleep 2
+	mac=${args[1]}
+	bluetoothctl disconnect $mac
+	for i in {1..10}; do
+		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
+	done
 	pushRefresh
 	;;
 btpair )
@@ -54,17 +65,19 @@ btpair )
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
 	bluetoothctl connect $mac
-	[[ $? != 0 ]] && echo -1 && exit
-	
+	for i in {1..10}; do
+		bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
+	done
 	pushRefresh
-	sleep 2
 	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
 	;;
 btremove )
 	mac=${args[1]}
 	bluetoothctl disconnect $mac
 	bluetoothctl remove $mac
-	sleep 2
+	for i in {1..10}; do
+		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
+	done
 	pushRefresh
 	;;
 connect )

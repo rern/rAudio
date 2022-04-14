@@ -62,6 +62,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
+		$( '#menu .connect' ).toggleClass( 'hide', G.li.data( 'connected' ) );
 		$( '#menu .disconnect' ).toggleClass( 'hide', !G.li.data( 'connected' ) );
 		$( '#menu .forget' ).removeClass( 'hide' );
 	} else if ( G.list === 'listlan' ) {
@@ -89,21 +90,26 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
+	if ( G.list === 'listbt' ) {
+		var list = G.listbt[ G.li.index() ];
+		notify( list.name, 'Connect ...', 'bluetooth' );
+		bash( [ 'btconnect', list.mac ] )
+		return
+	}
+	
 	var name = G.li.data( 'ssid' );
 	notify( name, 'Connect ...', 'wifi' );
 	bash( [ 'profileconnect', name ] )
 } );
 $( '.disconnect' ).click( function() {
 	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.li.index() ]
-		var name = list.name;
-		var icon = 'bluetooth';
+		var list = G.listbt[ G.li.index() ];
 		notify( list.name, 'Disconnect ...', 'bluetooth' );
 		bash( [ 'btdisconnect' ] )
 		return
 	}
 		
-	var name = G.li.data( 'ssid' );
+	var name = list.ssid;
 	var icon = 'wifi';
 	if ( G.ipeth ) {
 		notify( name, 'Disconnect ...', icon );
@@ -405,7 +411,7 @@ function renderBluetooth() {
 				G.btconnected = list.name;
 				$( '#divbt heading' ).addClass( 'status' );
 			}
-			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
