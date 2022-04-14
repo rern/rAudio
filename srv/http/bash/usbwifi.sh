@@ -22,8 +22,7 @@ if [[ $profiles ]]; then
 			pushstreamWiFi "Disconnect $activessid ..." -1
 			netctl stop "$profile" &> /dev/null
 			wlandevprev=$( grep ^Interface "/etc/netctl/$profile" | cut -d= -f2 )
-			sleep 5
-			ifconfig $wlandevprev down &> /dev/null
+			ifconfig $wlandevprev down
 			break
 		fi
 	done
@@ -45,6 +44,7 @@ else
 			exit
 			
 		fi
+		
 	fi
 fi
 echo $wlandev > /dev/shm/wlan
@@ -61,9 +61,7 @@ file=/etc/hostapd/hostapd.conf
 
 if [[ $activessid ]]; then
 	pushstreamWiFi "Reconnect to $activessid ..." -1
-	ifconfig $wlandev down
-	sleep 5
-	netctl start "$ssid"
+	/srv/http/bash/networks.sh profileconnect$'\n'"$activessid"
 elif [[ $activehostapd ]]; then
 	pushstreamWiFi 'Restart Access Point ...' -1
 	systemctl restart hostapd
