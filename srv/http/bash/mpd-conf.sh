@@ -39,7 +39,7 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	btalias=$( bluetoothctl info | grep 'Alias: ' | sed 's/.*: //' )
 	[[ ! $btalias ]] && btalias=$( bluetoothctl info | grep 'Name: ' | sed 's/.*: //' )
 	pushstreamNotify 'Bluetooth' "$btalias" 'bluetooth'
-	btmixer=$( amixer -D bluealsa scontrols \
+	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
 				| head -1 \
 				| cut -d"'" -f2 )
 	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
