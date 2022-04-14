@@ -109,6 +109,7 @@ $( '.disconnect' ).click( function() {
 		return
 	}
 		
+	var list = G.listwl[ G.li.index() ];
 	var name = list.ssid;
 	var icon = 'wifi';
 	if ( G.ipeth ) {
