@@ -12,7 +12,7 @@ pushRefresh() {
 }
 netctlSwitch() {
 	ssid=$1
-	wlandev=$2
+	wlandev=$( cat $dirshm/wlan )
 	connected=$( netctl list | grep ^* | sed 's/^\* //' )
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"
@@ -106,7 +106,7 @@ Gateway=$( jq -r .Gateway <<< $data )
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	netctlSwitch "$ESSID" $wlandev
+	netctlSwitch "$ESSID"
 	;;
 disconnect )
 	wlandev=$( cat $dirshm/wlan )
@@ -173,7 +173,7 @@ profileconnect )
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch "${args[1]}" $wlandev
+	netctlSwitch "${args[1]}"
 	;;
 profileget )
 	netctl=$( cat "/etc/netctl/${args[1]}" )

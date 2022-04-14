@@ -51,7 +51,9 @@ file=/etc/hostapd/hostapd.conf
 
 if [[ $activessid ]]; then
 	pushstreamWiFi "Reconnect to $activessid ..."
-	netctl restart "$activessid"
+	netctl stop "$ssid" &> /dev/null
+	ifconfig $wlandev down
+	netctl start "$ssid"
 elif [[ $activehostapd ]]; then
 	pushstreamWiFi 'Restart Access Point ...'
 	systemctl restart hostapd
