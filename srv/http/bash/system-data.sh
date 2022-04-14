@@ -152,6 +152,7 @@ fi
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
+, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
@@ -194,7 +195,7 @@ if rfkill | grep -q bluetooth; then
 	fi
 	data+='
 , "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
+, "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
 fi
 if [[ -e $dirsystem/wlan ]] || rfkill | grep -q wlan; then

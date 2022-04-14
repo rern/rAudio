@@ -1000,6 +1000,7 @@ function renderPage() {
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
+	$( '#bluetooth' ).toggleClass( 'disabled', G.camilladsp );
 	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
