@@ -30,8 +30,9 @@
 }
 .fa-camilladsp::before { content: '\f59D'; position: absolute; color: var( --cg75 ); }
 .fa-camilladsp::after { content: '\f59C'; position: relative; }
-.fa-times::before { content: '\f51A' }
 .fa-help::before { content: '\f560' }
+.fa-info-circle::before { content: '\f561' }
+.fa-times::before { content: '\f51A' }
 
 .css-variables {
 	--background-color: var( --cg );
@@ -103,6 +104,9 @@ body {
 }
 #divhelp i {
 	color: var( --cg60 );
+}
+#divhelp i {
+	margin: 0 2px
 }
 #logo {
 	float: left;
