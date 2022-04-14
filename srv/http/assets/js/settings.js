@@ -245,7 +245,6 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page === page ) {
 		G = data;
-		if ( page === 'networks' && $( '#divinterface' ).hasClass( 'hide' ) ) $( '.back' ).click();
 		setSwitch();
 		renderPage();
 	}
