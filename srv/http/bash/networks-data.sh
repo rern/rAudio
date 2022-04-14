@@ -55,43 +55,33 @@ fi
 
 wlandev=$( cat $dirshm/wlan )
 ifconfig $wlandev up &> /dev/null # force up
-ipr=$( ip r | grep "^default.*$wlandev" )
-if [[ $ipr ]]; then
-	gateway=$( echo $ipr | cut -d' ' -f3 )
-	ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
-	ssid=$( iwgetid $wlandev -r | sed 's/^* \|^+ //' )
-	dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
-	[[ ! $dbm ]] && dbm=0
-	listwl=',{
+
+readarray -t profiles <<< $( netctl list | sed 's/^. //' )
+if [[ $profiles ]]; then
+	for profile in "${profiles[@]}"; do
+		if netctl is-active "$profile" &> /dev/null; then
+			for i in {1..10}; do
+				ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
+				[[ $ipwlan ]] && break
+				sleep 1
+			done
+			gateway=$( ip r | grep "^default.*$wlandev" | cut -d' ' -f3 )
+			dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
+			[[ ! $dbm ]] && dbm=0
+			listwl=',{
   "dbm"      : '$dbm'
 , "gateway"  : "'$gateway'"
 , "ip"       : "'$ipwlan'"
-, "ssid"     : "'${ssid//\"/\\\"}'"
+, "ssid"     : "'${profile//\"/\\\"}'"
 }'
-fi
-
-readarray -t notconnected <<< $( netctl list | grep -v '^\s*\*' | sed 's/^\s*//' )
-if [[ $notconnected ]]; then
-	for ssid in "${notconnected[@]}"; do
-		if [[ $static == true ]]; then
-			gateway=$( echo "$netctl" \
-						| grep ^Gateway \
-						| cut -d= -f2 )
-			ip=$( echo "$netctl" \
-					| grep ^Address \
-					| cut -d= -f2 \
-					| cut -d/ -f1 )
 		else
-			gateway=
-			ip=
-		fi
-		listwl+=',{
-  "gateway"  : "'$gateway'"
-, "ip"       : "'$ip'"
-, "ssid"     : "'${ssid//\"/\\\"}'"
+			listwlnotconnected=',{
+  "ssid"     : "'${profile//\"/\\\"}'"
 }'
+		fi
 	done
 fi
+listwl+="$listwlnotconnected"
 [[ $listwl ]] && listwl="[ ${listwl:1} ]"
 
 # hostapd

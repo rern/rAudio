@@ -13,28 +13,28 @@ pushRefresh() {
 netctlSwitch() {
 	ssid=$1
 	wlandev=$( cat $dirshm/wlan )
-	connected=$( netctl list | grep ^* | sed 's/^\* //' )
+	connected=$( iwgetid $wlandev -r )
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
-		if [[ $( netctl is-active "$ssid" ) == active ]]; then
+		if netctl is-active "$ssid" &> /dev/null; then
 			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
 			active=1
 			break
 		fi
 	done
-	[[ ! $active ]] && netctl switch-to "$connected" && sleep 2
+	[[ ! $active ]] && netctl switch-to "$connected"
+	sleep 3
 	pushRefresh
-	if systemctl -q is-active hostapd; then
-		data=$( $dirbash/features-data.sh )
-		pushstream refresh "$data"
-	fi
 }
 
 case ${args[0]} in
 
+pushrefresh )
+	pushRefresh
+	;;
 avahi )
 	hostname=$( hostname )
 	echo "\

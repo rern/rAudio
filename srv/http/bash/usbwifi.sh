@@ -9,13 +9,23 @@ pushRefresh() {
 	pushstream refresh "$data"
 }
 pushstreamWiFi() {
-	pushstream notify '{"title":"USB Wi-Fi","text":"'$1'","icon":"wifi"}'
+	[[ $2 ]] && delay=',"delay":'$2
+	data='{"title":"USB Wi-Fi","text":"'$1'","icon":"wifi"'$delay'}'
+	pushstream notify "$data"
 }
 
-readarray -t profiles <<< $( netctl list | sed 's/^* \|^+ //' )
+readarray -t profiles <<< $( netctl list | sed 's/^. //' )
 if [[ $profiles ]]; then
 	for profile in "${profiles[@]}"; do
-		netctl is-enabled "$profile" && activessid=$profile && break
+		if netctl is-enabled "$profile"; then
+			activessid=$profile
+			pushstreamWiFi "Disconnect $activessid ..." -1
+			netctl stop "$profile" &> /dev/null
+			wlandevprev=$( grep ^Interface "/etc/netctl/$profile" | cut -d= -f2 )
+			sleep 5
+			ifconfig $wlandevprev down &> /dev/null
+			break
+		fi
 	done
 fi
 systemctl -q is-enabled hostapd && activehostapd=1
@@ -50,12 +60,12 @@ file=/etc/hostapd/hostapd.conf
 ! grep -q "interface=$wlandev" $file && sed -i -e "s/^\(interface=\).*/\1$wlandev/" $file
 
 if [[ $activessid ]]; then
-	pushstreamWiFi "Reconnect to $activessid ..."
-	netctl stop "$ssid" &> /dev/null
+	pushstreamWiFi "Reconnect to $activessid ..." -1
 	ifconfig $wlandev down
+	sleep 5
 	netctl start "$ssid"
 elif [[ $activehostapd ]]; then
-	pushstreamWiFi 'Restart Access Point ...'
+	pushstreamWiFi 'Restart Access Point ...' -1
 	systemctl restart hostapd
 else
 	[[ $wlandev == wlan0 ]] && state=Removed || state=Ready
