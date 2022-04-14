@@ -62,8 +62,7 @@ if [[ $profiles ]]; then
 		if netctl is-active "$profile" &> /dev/null; then
 			for i in {1..10}; do
 				ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
-				[[ $ipwlan ]] && break
-				sleep 1
+				[[ $ipwlan ]] && break || sleep 1
 			done
 			gateway=$( ip r | grep "^default.*$wlandev" | cut -d' ' -f3 )
 			dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
