@@ -109,7 +109,7 @@ body {
 	margin: 0 2px
 }
 #logo {
-	float: left;
+	position: absolute;
 	font-size: 14px;
 	text-align: left;
 	color: var( --cg60 );
