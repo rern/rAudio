@@ -32,9 +32,6 @@ netctlSwitch() {
 
 case ${args[0]} in
 
-pushrefresh )
-	pushRefresh
-	;;
 avahi )
 	hostname=$( hostname )
 	echo "\
