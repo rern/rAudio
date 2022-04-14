@@ -59,14 +59,14 @@ ipr=$( ip r | grep "^default.*$wlandev" )
 if [[ $ipr ]]; then
 	gateway=$( echo $ipr | cut -d' ' -f3 )
 	ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
-	ssid=$( iwgetid $wlandev -r )
+	ssid=$( iwgetid $wlandev -r | sed 's/^* \|^+ //' )
 	dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
 	[[ ! $dbm ]] && dbm=0
 	listwl=',{
   "dbm"      : '$dbm'
 , "gateway"  : "'$gateway'"
 , "ip"       : "'$ipwlan'"
-, "ssid"     : "'$ssid'"
+, "ssid"     : "'${ssid//\"/\\\"}'"
 }'
 fi
 
@@ -88,7 +88,7 @@ if [[ $notconnected ]]; then
 		listwl+=',{
   "gateway"  : "'$gateway'"
 , "ip"       : "'$ip'"
-, "ssid"     : "'$ssid'"
+, "ssid"     : "'${ssid//\"/\\\"}'"
 }'
 	done
 fi
