@@ -528,9 +528,16 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 }
 .popup-content div:not([class]) {
 	float: right;
-	width: 40px;
-	font-size: 24px;
 	text-align: center !important;
+	color: transparent;
+}
+.popup-content div:not([class]):after {
+	content: '\f51A';
+	position: absolute;
+	right: 0;
+	width: 40px;
+	font-family: rern;
+	font-size: 30px;
 	color: var( --cm );
 }
 /* ---------------------------------------------------------------------------- */
