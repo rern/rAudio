@@ -141,12 +141,9 @@ body {
 	padding: 10px;
 	border: 1px solid var( --cg );
 }
-.horizontally-spaced-content {
-	letter-spacing: 2px;
-}
 legend {
-	padding: 0;
 	font-size: 18px;
+	letter-spacing: 2px;
 }
 legend label {
 	font-size: 16px;
@@ -317,6 +314,9 @@ section.tabpanel .box {
 	padding: 10px 0;
 	border: none;
 }
+section.tabpanel legend {
+	padding: 0;
+}
 section.tabpanel legend .horizontally-spaced-content {
 	width: 270px;
 	border-bottom: 1px solid var( --cg );
@@ -394,7 +394,7 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 .config-status {
 	position: absolute;
 	top: -31px;
-	right: 0;
+	right: -4px;
 }
 /* config ----------------------------------------------------------------- */
 .configtabs {
@@ -477,6 +477,13 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	width: 36px !important;
 }
 /* Pipeline ----------------------------- */
+#react-tabs-7 legend {
+	margin-bottom: 5px;
+	padding-left: 0;
+}
+#react-tabs-7 legend label {
+	margin-left: -4px;
+}
 #react-tabs-7 select {
 	width: 170px !important;
 }
@@ -496,6 +503,9 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	line-height: 26px;
 	letter-spacing: 2px;
 	background: var( --cga );
+}
+#react-tabs-7 .box > div > .horizontally-spaced-content:last-of-type {
+	margin-top: 10px;
 }
 /* Files -------------------------------- */
 #react-tabs-9 .button-with-text {
