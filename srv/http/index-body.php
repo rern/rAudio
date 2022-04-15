@@ -46,9 +46,7 @@ $( '#pwd' ).keypress( function( e ) {
 <?php
 	exit;
 }
-$dirdata = '/srv/http/data/';
-$dirsystem = '/srv/http/data/system/';
-$color = file_exists( $dirsystem.'color' );
+$color = file_exists( '/srv/http/data/system/color' );
 // library home blocks
 $modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
 $modehtml = '';
@@ -66,7 +64,7 @@ foreach( $modes as $mode ) {
 	';
 }
 // bookmarks
-$dir = $dirdata.'bookmarks';
+$dir = '/srv/http/data/bookmarks';
 $files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 if ( count( $files ) ) {
 	foreach( $files as $name ) {
