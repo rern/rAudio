@@ -57,6 +57,7 @@ chmod -R 777 $dirshm
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
 [[ ! $profiles && ! $hostapd || $wlandev != wlan0 ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
