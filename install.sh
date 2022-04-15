@@ -4,7 +4,7 @@ alias=r1
 
 # 20220416
 v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
-(( $v && $v < 106 )) && pacman -Sy --noconfirm bluez-alsa
+[[ $v ]] && (( $v < 106 )) && pacman -Sy --noconfirm bluez-alsa
 
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
