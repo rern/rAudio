@@ -145,7 +145,6 @@ cat << EOF > $dirsystem/display
 	"latest": true,
 	"nas": true,
 	"noswipe": false,
-	"noswipe": false,
 	"playbackswitch": true,
 	"playlists": true,
 	"plclear": true,
