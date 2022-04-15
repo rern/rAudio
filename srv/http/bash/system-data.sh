@@ -198,7 +198,7 @@ if rfkill | grep -q bluetooth; then
 , "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
 fi
-if [[ -e $dirsystem/wlan ]] || rfkill | grep -q wlan; then
+if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
 , "wlan"             : '$( rfkill | grep -q wlan && echo true )'
 , "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]

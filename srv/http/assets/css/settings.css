@@ -108,6 +108,9 @@ pre {
 .help-block p {
 	margin: 0 0 0 10px;
 }
+.help-block .img {
+	color: var( --cml );
+}
 div.help-block {
 	margin-left: 0;
 }
