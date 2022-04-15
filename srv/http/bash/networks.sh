@@ -43,22 +43,6 @@ $( timeout 1 avahi-browse -arp \
 	| sed 's/;/ : /' \
 	| sort -u )"
 	;;
-btconnect )
-	mac=${args[1]}
-	bluetoothctl connect $mac
-	for i in {1..10}; do
-		bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
-	done
-	pushRefresh
-	;;
-btdisconnect )
-	mac=${args[1]}
-	bluetoothctl disconnect $mac
-	for i in {1..10}; do
-		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
-	done
-	pushRefresh
-	;;
 btpair )
 	mac=${args[1]}
 	bluetoothctl disconnect &> /dev/null

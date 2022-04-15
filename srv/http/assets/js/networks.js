@@ -62,8 +62,6 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
-		$( '#menu .connect' ).toggleClass( 'hide', G.li.data( 'connected' ) );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !G.li.data( 'connected' ) );
 		$( '#menu .forget' ).removeClass( 'hide' );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -90,25 +88,11 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
-	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.li.index() ];
-		notify( list.name, 'Connect ...', 'bluetooth' );
-		bash( [ 'btconnect', list.mac ] )
-		return
-	}
-	
 	var name = G.li.data( 'ssid' );
 	notify( name, 'Connect ...', 'wifi' );
 	bash( [ 'profileconnect', name ] )
 } );
 $( '.disconnect' ).click( function() {
-	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.li.index() ];
-		notify( list.name, 'Disconnect ...', 'bluetooth' );
-		bash( [ 'btdisconnect' ] )
-		return
-	}
-		
 	var list = G.listwl[ G.li.index() ];
 	var name = list.ssid;
 	var icon = 'wifi';
