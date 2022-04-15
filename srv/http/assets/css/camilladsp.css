@@ -39,6 +39,8 @@
 	--button-background-color: var( --cg );
 	--error-field-background-color: #bb2828 !important;
 	--border-radius: 3px;
+	--gain-color: hsl( 200 100% 45% );
+	--phase-color: hsl( 0 40% 55% );
 }
 body {
 	padding-top: 40px;
@@ -513,6 +515,24 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	width: 100% !important;
 	font-family: Inconsolata;
 }
+/* popup --------------------------------- */
+.popup-overlay {
+	background: rgba( 0, 0, 0, .85 );
+}
+.popup-content {
+	min-width: 720px;
+	border: none !important;
+	border-radius: 6px !important;
+	background-color: var( --cgd ) !important;
+	box-shadow: 0px 0px 5px var( --cgl );
+}
+.popup-content div:not([class]) {
+	float: right;
+	width: 40px;
+	font-size: 24px;
+	text-align: center !important;
+	color: var( --cm );
+}
 /* ---------------------------------------------------------------------------- */
 @media (max-width: 719px) {
 	.configapp {
@@ -544,6 +564,10 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 		top: 40px;
 		background: #000;
 		padding-top: 10px;
+	}
+	.popup-content {
+		width: 100% !important;
+		min-width: 100%;
 	}
 }
 @media (max-width: 490px) {
