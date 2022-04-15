@@ -305,6 +305,9 @@ section.tabpanel {
 	margin: auto;
 	padding: 15px 10px 0 10px;
 }
+section.tabpanel .smallbutton {
+	margin-top: -20px;
+}
 section.tabpanel .box {
 	position: relative;
 	max-width: calc( 100vw - 50px );
@@ -322,27 +325,30 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 	font-weight: 300;
 	letter-spacing: 0;
 }
+section.tabpanel .box:nth-last-of-type(3) legend {
+	margin-bottom: 10px;
+}
 section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
 	height: 24px;
-	margin-bottom: 5px;
-}
-section.tabpanel .smallbutton {
-	margin-top: -20px;
 }
 /* vu + volume bar  */
 section.tabpanel .split-20-80 {
-	grid-template-columns: 14% 86%;
+	grid-template-columns: 14% 85%;
 	column-gap: 0;
+	line-height: 15px;
 }
 .split-20-80 div:first-child {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	justify-content: right;
 	padding-right: 5px;
-	line-height: 26px;
-	text-align: right;
 	background: #000000;
 	z-index: 1;
 }
-section.tabpanel svg {
-	margin-left: -3px;
+section.tabpanel .split-20-80 svg {
+	position: relative;
+	margin: 0 -1px 0 -3px;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
@@ -352,6 +358,7 @@ section.tabpanel svg {
 	stroke-width: 2;
 	stroke: var( --cg );
 }
+
 section.tabpanel .box:nth-of-type(3) div:not([class]) {
 	width: fit-content !important;
 	min-width: 250px;

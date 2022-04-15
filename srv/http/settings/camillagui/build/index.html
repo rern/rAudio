@@ -51,7 +51,6 @@ document.getElementById( 'close' ).onclick = function() {
 	var http = new XMLHttpRequest();
 	http.open( 'POST', 'http://' + hostname + '/cmd.php', true );
 	http.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
-	http.setRequestHeader( 'Access-Control-Allow-Origin', '*' );
 	http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
 	location.href = 'http://' + hostname;
 }
