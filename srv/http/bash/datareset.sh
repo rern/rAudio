@@ -142,6 +142,7 @@ cat << EOF > $dirsystem/display
 	"genre": true,
 	"hidecover": false,
 	"label": true,
+	"latest": true,
 	"nas": true,
 	"noswipe": false,
 	"noswipe": false,
