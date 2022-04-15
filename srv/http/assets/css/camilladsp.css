@@ -323,6 +323,7 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 }
 section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
 	height: 24px;
+	margin-bottom: 5px;
 }
 section.tabpanel .smallbutton {
 	margin-top: -20px;
@@ -332,9 +333,6 @@ section.tabpanel .split-20-80 {
 	grid-template-columns: 14% 86%;
 	column-gap: 0;
 }
-section.tabpanel .split-20-80:first-of-type {
-	margin-top: 10px !important;
-}
 .split-20-80 div:first-child {
 	padding-right: 5px;
 	line-height: 26px;
@@ -342,8 +340,8 @@ section.tabpanel .split-20-80:first-of-type {
 	background: #000000;
 	z-index: 1;
 }
-section.tabpanel .split-20-80 svg {
-	margin-left: -2px;
+section.tabpanel svg {
+	margin-left: -3px;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
