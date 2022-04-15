@@ -999,7 +999,9 @@ function renderLibrary() {
 	$( 'html, body' ).scrollTop( G.modescrolltop );
 	$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
 	$.each( G.status.counts, function( key, val ) {
-		$( '#mode-'+ key ).find( 'gr' ).text( val && val != 0 ? val.toLocaleString() : '' );
+		$( '#mode-'+ key ).find( 'gr' )
+			.text( val.toLocaleString() )
+			.toggleClass( 'hide', !val || val == 0 );
 	} );
 }
 function renderLibraryList( data ) {

@@ -49,21 +49,17 @@ $( '#pwd' ).keypress( function( e ) {
 $dirdata = '/srv/http/data/';
 $dirsystem = '/srv/http/data/system/';
 $color = file_exists( $dirsystem.'color' );
-// counts
-$filecounts = $dirdata.'mpd/counts';
-$counts = file_exists( $filecounts ) ? json_decode( file_get_contents( $filecounts ) ) : '';
 // library home blocks
 $modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );
-	$count = $counts && $mode !== 'Latest' ? number_format( $counts->$modeLC ) : '';
 	$modehtml.= '
 		<div class="lib-mode">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$mode.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
-				<gr>'.$count.'</gr>
+				<gr></gr>
 				<a class="label">'.$mode.'</a>
 			</div>
 		</div>
@@ -360,7 +356,7 @@ foreach( $settinglist as $l ) {
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
-			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><?=( number_format( $counts->song ) )?><i class="fa fa-music gr"></i></span></div>
+			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><i class="fa fa-music gr"></i></span></div>
 			<div id="lib-breadcrumbs">
 			</div>
 			<span class="lipath"></span>
