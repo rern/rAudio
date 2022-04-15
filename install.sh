@@ -3,7 +3,9 @@
 alias=r1
 
 # 20220416
-[[ $( pacman -Q bluez-alsa ) < 'bluez-alsa 3.1.0.r106.g177e163-1' ]] && pacman -Sy bluez-alsa
+if [[ -e /etc/systemd/system/bluealsa-aplay.service && $( pacman -Q bluez-alsa ) < 'bluez-alsa 3.1.0.r106.g177e163-1' ]]; then
+	pacman -Sy --noconfirm bluez-alsa
+fi
 
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
