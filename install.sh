@@ -3,10 +3,8 @@
 alias=r1
 
 # 20220416
-if [[ -e /etc/systemd/system/bluealsa-aplay.service ]]; then
-	v=$( pacman -Q bluez-alsa | cut -d. -f4 | tr -d r )
-	(( $v < 106 )) && pacman -Sy --noconfirm bluez-alsa
-fi
+v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
+[[ $v ]] && (( $v < 106 )) && pacman -Sy --noconfirm bluez-alsa
 
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
