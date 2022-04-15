@@ -329,11 +329,21 @@ section.tabpanel .smallbutton {
 }
 /* vu + volume bar  */
 section.tabpanel .split-20-80 {
-	grid-template-columns: 13% 85%;
-	text-align: right;
+	grid-template-columns: 14% 86%;
+	column-gap: 0;
 }
 section.tabpanel .split-20-80:first-of-type {
 	margin-top: 10px !important;
+}
+.split-20-80 div:first-child {
+	padding-right: 5px;
+	line-height: 26px;
+	text-align: right;
+	background: #000000;
+	z-index: 1;
+}
+section.tabpanel .split-20-80 svg {
+	margin-left: -2px;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
