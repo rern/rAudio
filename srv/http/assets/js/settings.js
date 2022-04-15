@@ -119,10 +119,8 @@ function refreshData() {
 	} );
 }
 function resetLocal() {
-	if ( $( '#bannerTitle' ).text() === 'USB Drive' ) return
-	
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	setTimeout( bannerHide, 1000 );
+	setTimeout( bannerHide, 3000 );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
@@ -247,7 +245,6 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page === page ) {
 		G = data;
-		if ( page === 'networks' ) $( '.back' ).click();
 		setSwitch();
 		renderPage();
 	}

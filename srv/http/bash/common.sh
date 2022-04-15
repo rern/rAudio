@@ -36,12 +36,12 @@ pushstream() {
 }
 pushstreamNotify() { # title text icon [hide]
 	[[ $4 ]] && delay=',"delay":'$4
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3'"'$delay'}'
+	data='{"title":"'$1'","text":"'${2//\"/\\\"}'","icon":"'$3'"'$delay'}'
 	pushstream notify "$data"
 }
 pushstreamNotifyBlink() { # title text icon [hide]
 	[[ $4 ]] && power=',"power":"'$4'"'
-	data='{"title":"'$1'","text":"'$2'","icon":"'$3' blink","delay":-1'$power'}'
+	data='{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1'$power'}'
 	pushstream notify "$data"
 }
 sshCommand() {

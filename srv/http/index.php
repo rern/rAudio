@@ -36,7 +36,7 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <script src="/assets/js/plugin/pica-9.0.1.min.js"></script>
 <script src="/assets/js/plugin/qrcode.min.js"></script>
 <script src="/assets/js/plugin/roundslider-1.6.1.min.js"></script>
-<script src="/assets/js/plugin/Sortable-1.14.0.min.js"></script>
+<script src="/assets/js/plugin/Sortable-1.15.0.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>
@@ -49,7 +49,13 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <script src="/assets/js/equalizer.<?=$time?>.js"></script>
 <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 <?php }
-	  if ( $localhost ) include 'keyboard.php';?>
+	  if ( $localhost ) {?>
+<link rel="stylesheet" href="/assets/css/simple-keyboard-3.4.81.min.css">
+<link rel="stylesheet" href="/assets/css/keyboard.<?=$time?>.css">
+<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>
+<script src="/assets/js/plugin/simple-keyboard-3.4.81.min.js"></script>
+<script src="/assets/js/keyboard.<?=$time?>.js"></script>
+	  <?php }?>
 	
 </body>
 </html>

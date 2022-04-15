@@ -30,8 +30,9 @@
 }
 .fa-camilladsp::before { content: '\f59D'; position: absolute; color: var( --cg75 ); }
 .fa-camilladsp::after { content: '\f59C'; position: relative; }
-.fa-times::before { content: '\f51A' }
 .fa-help::before { content: '\f560' }
+.fa-info-circle::before { content: '\f561' }
+.fa-times::before { content: '\f51A' }
 
 .css-variables {
 	--background-color: var( --cg );
@@ -104,8 +105,11 @@ body {
 #divhelp i {
 	color: var( --cg60 );
 }
+#divhelp i {
+	margin: 0 2px
+}
 #logo {
-	float: left;
+	position: absolute;
 	font-size: 14px;
 	text-align: left;
 	color: var( --cg60 );
@@ -289,16 +293,16 @@ svg {
 	text-shadow: -1px 1px 2px #000000;
 }
 .button[data-tip]:not(.highlighted-button) {
-	background-color: var( --cg ) !important;
+	background-color: var( --cg );
 }
 /* volume + status ------------------------------------------------------------ */
 section.tabpanel {
+	position: fixed;
 	display: block;
 	float: left;
 	width: 270px !important;
-	margin-left: calc( 50% - 155px );
-	margin-bottom: 10px;
-	padding: 28px 10px 0 10px;
+	margin: auto;
+	padding: 15px 10px 0 10px;
 }
 section.tabpanel .box {
 	position: relative;
@@ -313,34 +317,23 @@ section.tabpanel legend .horizontally-spaced-content {
 }
 section .horizontally-spaced-content:first-of-type div:first-child {
 	width: 100% !important;
-	min-width: 112px;
+	font-size: 16px;
+	font-weight: 300;
+	letter-spacing: 0;
 }
 section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
-	border: none !important;
-}
-section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content:after {
-	content: '';
-	position: absolute;
-	display: block;
-	width: 100%;
-	border-bottom: 1px solid var( --cg );
-	top: -6px;
-	z-index: -1;
+	height: 24px;
 }
 section.tabpanel .smallbutton {
-	outline: 5px solid #000000;
-}
-section.tabpanel .split-20-80 {
-	width: 276px;
-	margin: 0 auto;
+	margin-top: -20px;
 }
 /* vu + volume bar  */
-.split-20-80 div:nth-child( 1 ) {
-	width: 28px;
+section.tabpanel .split-20-80 {
+	grid-template-columns: 13% 85%;
 	text-align: right;
 }
-.split-20-80 div:nth-child( 2 ) {
-	margin: 0 10px 0 -20px;
+section.tabpanel .split-20-80:first-of-type {
+	margin-top: 10px !important;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
@@ -390,29 +383,42 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	display: block;
 	width: 410px;
 	max-width: 100vw;
+	margin-left: 300px !important;
 	padding: 0;
 }
 .configtabs .tabpanel {
 	width: 400px !important;
 	min-height: calc( 100vh - 140px );
-	padding: 10px 5px 40px;
+	padding: 50px 5px 40px 5px;
 	background: var( --cgd );
 }
 .react-tabs__tab-list {
-	margin-block-end: 0;
-	border-bottom: 1px solid var( --cg );
+	position: fixed;
+	width: 410px;
+	margin-top: -6px;
+	padding-top: 10px;
+	background: #000000;
+	box-shadow: 0px 4px 10px #000000;
+	border: none;
 }
 .react-tabs__tab {
 	position: static;
-	width: calc( 100% / 5 );
+	width: calc( 100% / 5 - 1px );
 	padding: 0;
-	line-height: 30px;
+	line-height: 36px;
 	text-align: center;
 	text-shadow: -1px 1px 2px #000000;
+	background: var( --cga);
+	border: none;
+	border-radius: 5px 5px 0 0;
+	border-right: 1px solid #000000;
+}
+#react-tabs-8 {
+	width: calc( 100% / 5 );
 	border: none;
 }
 .react-tabs__tab-list .react-tabs__tab--selected {
-	background: var( --cg );
+	background: var( --cgl );
 }
 .react-tabs__tab-list span {
 	display: none;
@@ -492,44 +498,30 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	font-family: Inconsolata;
 }
 /* ---------------------------------------------------------------------------- */
-@media (min-width: 720px) {
-	section.tabpanel {
-		position: fixed;
-		margin: auto;
-	}
-	.configtabs { margin-left: 300px !important }
-	.react-tabs__tab-list {
-		position: fixed;
-		width: 410px;
-		margin-top: -6px;
-		padding-top: 10px;
-		background: #000000;
-		box-shadow: 0px 4px 10px #000000;
-	}
-	.configtabs .tabpanel {
-		padding: 50px 5px 40px 5px;
-	}
-}
 @media (max-width: 719px) {
+	.configapp {
+		padding: 22px 0;
+	}
 	#divhelp { margin: 0 20px }
 	section.tabpanel {
+		position: relative;
 		float: none;
 		min-width: 380px !important;
 		margin: auto;
+		padding: 0;
 	}
-	section.tabpanel { padding: 0 }
 	section.tabpanel legend .horizontally-spaced-content {
 		width: calc( 100vw - 50px );
 		max-width: 380px;
 	}
 	.configtabs .tabpanel {
-		width: 408px !important;
+		width: 400px !important;
 		max-width: 100%;
 		min-height: 0;
-		padding: 15px 0 5px;
+		padding: 15px 5px 5px 5px;
 	}
 	.configapp > :last-child {
-		margin-left: calc( 50% - 210px );
+		margin-left: calc( 50% - 210px ) !important;
 	}
 	.react-tabs__tab-list {
 		position: sticky;

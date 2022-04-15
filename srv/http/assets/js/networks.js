@@ -62,7 +62,6 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !G.li.data( 'connected' ) );
 		$( '#menu .forget' ).removeClass( 'hide' );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -94,16 +93,8 @@ $( '.connect' ).click( function() {
 	bash( [ 'profileconnect', name ] )
 } );
 $( '.disconnect' ).click( function() {
-	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.li.index() ]
-		var name = list.name;
-		var icon = 'bluetooth';
-		notify( list.name, 'Disconnect ...', 'bluetooth' );
-		bash( [ 'btdisconnect' ] )
-		return
-	}
-		
-	var name = G.li.data( 'ssid' );
+	var list = G.listwl[ G.li.index() ];
+	var name = list.ssid;
 	var icon = 'wifi';
 	if ( G.ipeth ) {
 		notify( name, 'Disconnect ...', icon );
@@ -166,24 +157,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
-	if ( !list.profile ) {
-		if ( list.encrypt ) {
-			info( {
-				  icon          : 'wifi'
-				, title         : ssid
-				, passwordlabel : 'Password'
-				, focus         : 0
-				, oklabel       : 'Connect'
-				, ok            : function() {
-					data.Security = list.wep ? 'wep' : 'wpa';
-					data.Key      = infoVal();
-					connectWiFi( data );
-				}
-			} );
-		} else {
-			connectWiFi( data );
-		}
-	} else {
+	if ( list.profile ) {
 		var ip = list.ip;
 		info( {
 			  icon    : 'wifi'
@@ -201,6 +175,23 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 				}
 			}
 		} );
+	} else {
+		if ( list.encrypt ) {
+			info( {
+				  icon          : 'wifi'
+				, title         : ssid
+				, passwordlabel : 'Password'
+				, focus         : 0
+				, oklabel       : 'Connect'
+				, ok            : function() {
+					data.Security = 'wpa' in list ? 'wpa' : 'wep';
+					data.Key      = infoVal();
+					connectWiFi( data );
+				}
+			} );
+		} else {
+			connectWiFi( data );
+		}
 	}
 } );
 $( '#setting-accesspoint' ).click( function() {
@@ -405,7 +396,7 @@ function renderBluetooth() {
 				G.btconnected = list.name;
 				$( '#divbt heading' ).addClass( 'status' );
 			}
-			htmlbt += '<li class="bt" data-name="'+ list.name +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
@@ -509,15 +500,38 @@ function scanBluetooth() {
 function scanWlan() {
 	bash( '/srv/http/bash/networks-scanwlan.sh', function( data ) {
 		if ( data ) {
+			var signals = '';
+			data.forEach( function( list, i, obj ) {
+				if ( !list.ssid ) { // remove blank ssid
+					obj.splice( i, 1 );
+					return
+				}
+				
+				if ( list.signal != 0 ) signals += list.signal;
+			} );
+			data.sort( function( a, b ) {
+				if ( signals ) {
+					var ab = signals.includes( 'dBm' ) ? [ a.signal, b.signal ] : [ b.signal, a.signal ];
+				} else {
+					var ab = [ a.ssid, b.ssid ];
+				}
+				return  ab[ 0 ].localeCompare( ab[ 1 ] )
+			} );
 			G.listwlscan = data;
 			var htmlwl = '';
-			G.listwlscan.forEach( function( list ) {
-				var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+			data.forEach( function( list, i ) {
+				if ( list.signal.slice( -3 ) === 'dBm' ) {
+					var dbm = parseInt( list.signal.slice( 0, -4 ) );
+					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );
+				} else {
+					var dbm = '';
+					var signal = '';
+				}
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
 				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
-				htmlwl += list.dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
+				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
-				htmlwl += '<gr>'+ list.dbm +' dBm</gr>';
+				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';
 				if ( list.profile && !list.connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlwl += '</li>';
 			} );

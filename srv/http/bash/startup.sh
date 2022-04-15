@@ -31,12 +31,20 @@ if [[ -e /boot/backup.gz ]]; then
 	reboot=1
 fi
 
+# wifi - on-board or usb
+wlandev=$( ip -br link \
+				| grep ^w \
+				| grep -v wlan \
+				| cut -d' ' -f1 )
+[[ ! $wlandev ]] && wlandev=wlan0
+echo $wlandev > /dev/shm/wlan
+
 if [[ -e /boot/wifi ]]; then
-	readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
-	mv /boot/wifi "/etc/netctl/$ssid"
-	ifconfig wlan0 down
+	mv -f /boot/wifi "/etc/netctl/$ssid"
+	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	netctl enable "$ssid"
 fi
@@ -45,13 +53,11 @@ echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 
+
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
-rfkill | grep -q wlan && touch $dirsystem/wlan
-if [[ ! $profiles && ! $hostapd ]] || (( $( rfkill | grep wlan | wc -l ) > 1 )); then
-	rmmod brcmfmac &> /dev/null
-fi
+[[ ! $profiles && ! $hostapd || $wlandev != wlan0 ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
 connectedCheck 5 1
@@ -103,25 +109,21 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py logo
 fi
-if [[ -e $dirsystem/mpdoled ]]; then
-	$dirbash/cmd.sh mpdoledlogo
-#	modprobe snd-aloop
-fi
+[[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
 if [[ $connected ]]; then
-	rfkill | grep -q wlan && iw wlan0 set power_save off
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
-else
-	if [[ ! -e $dirsystem/wlannoap ]]; then
-		modprobe brcmfmac &> /dev/null 
-		systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
-		systemctl -q disable hostapd
-	fi
+elif [[ ! -e $dirsystem/wlannoap ]]; then
+	modprobe brcmfmac &> /dev/null 
+	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+	systemctl -q disable hostapd
 fi
+
+iw $wlandev set power_save off &> /dev/null
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )

@@ -126,7 +126,7 @@ databackup )
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
 /etc/samba/smb.conf
-/etc/systemd/network/eth0.network
+/etc/systemd/network/eth.network
 /etc/systemd/timesyncd.conf
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
@@ -604,20 +604,23 @@ servers )
 		sed -i "s/^\(NTP=\).*/\1$ntp/" $file
 		ntpdate $ntp
 	fi
-	file=/etc/pacman.d/mirrorlist
-	prevmirror=$( grep ^Server $file \
-					| head -1 \
-					| sed 's|\.*mirror.*||; s|.*//||' )
-	if [[ $mirror != $prevmirror ]]; then
-		if [[ $mirror == 0 ]]; then
-			mirror=
-			rm $dirsystem/mirror
-		else
-			echo $mirror > $dirsystem/mirror
-			mirror+=.
+	if [[ $mirror ]]; then
+		file=/etc/pacman.d/mirrorlist
+		prevmirror=$( grep ^Server $file \
+						| head -1 \
+						| sed 's|\.*mirror.*||; s|.*//||' )
+		if [[ $mirror != $prevmirror ]]; then
+			if [[ $mirror == 0 ]]; then
+				mirror=
+				rm $dirsystem/mirror
+			else
+				echo $mirror > $dirsystem/mirror
+				mirror+=.
+			fi
+			sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 		fi
-		sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
 	fi
+	pushRefresh
 	;;
 shareddatadisable )
 	copydata=${args[1]}
@@ -814,12 +817,9 @@ wlanset )
 	regdom=${args[1]}
 	apauto=${args[2]}
 	rfkill | grep -q wlan || modprobe brcmfmac
+	echo wlan0 > $dirshm/wlan
 	iw wlan0 set power_save off
-	if [[ $apauto == false ]]; then
-		touch $dirsystem/wlannoap
-	else
-		rm -f $dirsystem/wlannoap
-	fi
+	[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
 	if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
 		sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
 		iw reg set $regdom

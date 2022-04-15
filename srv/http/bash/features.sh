@@ -113,9 +113,13 @@ hostapdset )
 		router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
 		sed -i -e '/^wpa\|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
 	fi
-	ifconfig wlan0 &> /dev/null || $dirbash/system.sh wlanset$'\n'true
 	netctl stop-all
-	ifconfig wlan0 $router
+	wlandev=$( cat $dirshm/wlan )
+	if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q brcmfmac; then
+		modprobe brcmfmac
+		iw wlan0 set power_save off
+	fi
+	ifconfig $wlandev $router
 	featureSet hostapd
 	pushRefreshNetworks
 	;;

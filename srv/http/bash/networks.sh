@@ -12,24 +12,22 @@ pushRefresh() {
 }
 netctlSwitch() {
 	ssid=$1
-	connected=$( netctl list | grep ^* | sed 's/^\* //' )
-	ifconfig wlan0 down
+	wlandev=$( cat $dirshm/wlan )
+	connected=$( iwgetid $wlandev -r )
+	ifconfig $wlandev down
 	netctl switch-to "$ssid"
 	for i in {1..10}; do
 		sleep 1
-		if [[ $( netctl is-active "$ssid" ) == active ]]; then
+		if netctl is-active "$ssid" &> /dev/null; then
 			[[ $connected ]] && netctl disable "$connected"
 			netctl enable "$ssid"
 			active=1
 			break
 		fi
 	done
-	[[ ! $active ]] && netctl switch-to "$connected" && sleep 2
+	[[ ! $active ]] && netctl switch-to "$connected"
+	sleep 3
 	pushRefresh
-	if systemctl -q is-active hostapd; then
-		data=$( $dirbash/features-data.sh )
-		pushstream refresh "$data"
-	fi
 }
 
 case ${args[0]} in
@@ -45,36 +43,34 @@ $( timeout 1 avahi-browse -arp \
 	| sed 's/;/ : /' \
 	| sort -u )"
 	;;
-btdisconnect )
-	bluetoothctl disconnect ${args[1]}
-	sleep 2
-	pushRefresh
-	;;
 btpair )
 	mac=${args[1]}
 	bluetoothctl disconnect &> /dev/null
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
 	bluetoothctl connect $mac
-	[[ $? != 0 ]] && echo -1 && exit
-	
+	for i in {1..10}; do
+		bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
+	done
 	pushRefresh
-	sleep 2
 	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
 	;;
 btremove )
 	mac=${args[1]}
 	bluetoothctl disconnect $mac
 	bluetoothctl remove $mac
-	sleep 2
+	for i in {1..10}; do
+		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
+	done
 	pushRefresh
 	;;
 connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )
 	Key=$( jq -r .Key <<< $data )
+	wlandev=$( cat $dirshm/wlan )
 	profile="\
-Interface=wlan0
+Interface=$wlandev
 Connection=wireless
 ESSID=\"$ESSID\"
 IP=$( jq -r .IP <<< $data )
@@ -107,9 +103,10 @@ Gateway=$( jq -r .Gateway <<< $data )
 	netctlSwitch "$ESSID"
 	;;
 disconnect )
+	wlandev=$( cat $dirshm/wlan )
 	netctl stop-all
 	killall wpa_supplicant
-	ifconfig wlan0 up
+	ifconfig $wlandev up
 	pushRefresh
 	;;
 editlan )
@@ -133,7 +130,8 @@ Address=$ip/24
 Gateway=$gw
 "
 	fi
-	echo "$eth0" > /etc/systemd/network/eth0.network
+	[[ -e /etc/systemd/network/eth0.network ]] && n=0
+	echo "$eth0" > /etc/systemd/network/eth$n.network
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
@@ -153,21 +151,23 @@ ifconfigeth )
 $( ifconfig eth0 | grep -v 'RX\\|TX' | awk NF )"
 	;;
 ifconfigwlan )
+	wlandev=$( cat $dirshm/wlan )
 	echo "\
-<bll># ifconfig wlan0</bll>
-$( ifconfig wlan0 | grep -v 'RX\\|TX')
-$( iwconfig wlan0 | awk NF )"
+<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
+$( ifconfig $wlandev | grep -v 'RX\|TX')
+$( iwconfig $wlandev | awk NF )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
 profileconnect )
+	wlandev=$( cat $dirshm/wlan )
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
-		ifconfig wlan0 0.0.0.0
+		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch ${args[1]}
+	netctlSwitch "${args[1]}"
 	;;
 profileget )
 	netctl=$( cat "/etc/netctl/${args[1]}" )
@@ -180,11 +180,12 @@ profileget )
 profileremove )
 	ssid=${args[1]}
 	connected=${args[2]}
+	wlandev=$( cat $dirshm/wlan )
 	netctl disable "$ssid"
 	if [[ $connected == true ]]; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
-		ifconfig wlan0 up
+		ifconfig $wlandev up
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh

@@ -13,6 +13,7 @@ data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
+, "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"

@@ -54,6 +54,7 @@ else
 	done
 fi
 
+alsactl store
 sleep 1
 $dirbash/status-push.sh
 pushstreamRelays '{"done":1}'

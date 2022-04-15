@@ -1706,6 +1706,7 @@ function urlReachable( url, sec ) {
 			, title   : 'CamillaDSP'
 			, message : 'CamillaDSP settings not available.'
 		} );
+		loaderHide();
 		return
 	}
 	

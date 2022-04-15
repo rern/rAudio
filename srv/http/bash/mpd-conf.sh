@@ -10,8 +10,6 @@
 
 . /srv/http/bash/common.sh
 
-! systemctl -q is-active nginx && exit 0 # udev rule trigger on startup
-
 restartMPD() {
 	systemctl restart mpd
 	[[ $camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
@@ -41,7 +39,7 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	btalias=$( bluetoothctl info | grep 'Alias: ' | sed 's/.*: //' )
 	[[ ! $btalias ]] && btalias=$( bluetoothctl info | grep 'Name: ' | sed 's/.*: //' )
 	pushstreamNotify 'Bluetooth' "$btalias" 'bluetooth'
-	btmixer=$( amixer -D bluealsa scontrols \
+	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
 				| head -1 \
 				| cut -d"'" -f2 )
 	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
@@ -63,14 +61,13 @@ fi
 . $dirbash/mpd-devices.sh
 
 output= # reset var from mpd-devices.sh
-if [[ $i != -1 ]]; then
-	aplayname=${Aaplayname[$i]}
-	card=${Acard[$i]}
-	dop=${Adop[$i]}
-	hw=${Ahw[$i]}
-	hwmixer=${Ahwmixer[$i]}
-	mixertype=${Amixertype[$i]}
-	name=${Aname[$i]}
+if [[ $i != -1 ]]; then # $i - current card number
+	aplayname=${Aaplayname[i]}
+	dop=${Adop[i]}
+	hw=${Ahw[i]}
+	hwmixer=${Ahwmixer[i]}
+	mixertype=${Amixertype[i]}
+	name=${Aname[i]}
 	if [[ -e $dirsystem/camilladsp ]]; then
 		camilladsp=1
 		cardloopback=$( cat $dirshm/asoundloopback )
@@ -117,7 +114,7 @@ if [[ $i != -1 ]]; then
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			output+='
 	mixer_control  "'$hwmixer'"
-	mixer_device   "hw:'$card'"'
+	mixer_device   "hw:'$i'"'
 		fi
 		if [[ $dop == 1 ]]; then
 			output+='
@@ -216,11 +213,10 @@ if [[ $1 == add || $1 == remove ]]; then
 fi
 [[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
-card=$( cat $dirshm/asoundcard )
 ########
 asound="\
-defaults.pcm.card $card
-defaults.ctl.card $card"
+defaults.pcm.card $i
+defaults.ctl.card $i"
 #-------
 if [[ $btmixer ]]; then
 ########
@@ -242,7 +238,7 @@ if [[ -e $dirsystem/equalizer ]]; then
 		slavepcm=bluealsa
 		filepresets+="-$btalias"
 	else
-		slavepcm='"plughw:'$card',0"'
+		slavepcm='"plughw:'$i',0"'
 	fi
 	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
 ########
@@ -325,7 +321,7 @@ alsa = {"
 	output_device = "bluealsa";'
 	else
 		conf+='
-	output_device = "hw:'$card'";'
+	output_device = "hw:'$i'";'
 	[[ $hwmixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
 	fi
@@ -344,7 +340,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
 		cardname=$( aplay -l \
-						| grep "^card $card" \
+						| grep "^card $i" \
 						| head -1 \
 						| cut -d' ' -f3 )
 		device=$( aplay -L | grep "^default.*$cardname" | head -1 )
@@ -359,7 +355,7 @@ device = "'$device'"'
 	if [[ ! $camilladsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
 		conf+='
 mixer = "'$hwmixer'"
-control = "hw:'$card'"
+control = "hw:'$i'"
 volume_controller = "alsa"'
 #-------
 	fi

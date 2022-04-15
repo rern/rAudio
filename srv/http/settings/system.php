@@ -112,7 +112,7 @@ $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
-	  'title'  => 'Wireless'
+	  'title'  => 'On-board Wireless'
 	, 'status' => 'rfkill'
 ];
 $body = [
@@ -123,7 +123,7 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetoothctl'
 		, 'setting'  => true
-		, 'disabled' => 'Bluetooth is currently active.'
+		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP' : 'Bluetooth' ).' is currently active.'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
  • Pairing:&emsp;<i class="fa fa-networks"></i>Networks > Bluetooth&ensp;<i class="fa fa-search wh"></i>

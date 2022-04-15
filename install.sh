@@ -2,6 +2,35 @@
 
 alias=r1
 
+# 20220416
+[[ $( pacman -Q bluez-alsa ) < 'bluez-alsa 3.1.0.r106.g177e163-1' ]] && pacman -Sy bluez-alsa
+
+file=/srv/http/data/shm/wlan
+if [[ ! -e $file ]]; then
+	wlandev=$( ip -br link \
+					| grep ^w \
+					| grep -v wlan \
+					| cut -d' ' -f1 )
+	[[ ! $wlandev ]] && wlandev=wlan0
+	echo $wlandev > /srv/http/data/shm/wlan
+fi
+
+file=/etc/udev/rules.d/usbwifi.rules
+if [[ ! -e $file ]]; then
+	cat << EOF > $file
+ACTION=="add", SUBSYSTEMS=="usb", SUBSYSTEM=="net", RUN+="/srv/http/bash/usbwifi.sh add"
+ACTION=="remove", SUBSYSTEMS=="usb", SUBSYSTEM=="net", RUN+="/srv/http/bash/usbwifi.sh remove"
+EOF
+	file=/etc/udev/rules.d/usbdac.rules
+	cat << EOF > $file
+ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="card*", SUBSYSTEM=="sound", RUN+="/srv/http/bash/mpd-conf.sh add"
+ACTION=="remove", SUBSYSTEMS=="usb", KERNEL=="card*", SUBSYSTEM=="sound", RUN+="/srv/http/bash/mpd-conf.sh remove"
+EOF
+	rm -f /etc/udev/rules.d/wifi.rules
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
 # 20220327
 sed -i '/chromium/ d' /etc/pacman.conf
 
