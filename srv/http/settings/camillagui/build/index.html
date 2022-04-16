@@ -34,7 +34,7 @@
 <div id="root" style="display: none"></div>
 
 <script>
-[ 'colors', 'camilladsp' ].forEach( function( file ) { // cache busting
+[ 'colors', 'camillagui' ].forEach( function( file ) { // cache busting
 	var filecss = document.querySelector( 'link[href="./static/assets/css/'+ file +'.css"]' );
 	filecss.href = './static/assets/css/'+ file +'.css?v='+ Date.now();
 } );
