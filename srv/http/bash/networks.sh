@@ -43,26 +43,27 @@ $( timeout 1 avahi-browse -arp \
 	| sed 's/;/ : /' \
 	| sort -u )"
 	;;
-btpair )
+btconnect )
 	mac=${args[1]}
+	action=${args[2]}
 	bluetoothctl disconnect &> /dev/null
-	bluetoothctl trust $mac
-	bluetoothctl pair $mac
-	bluetoothctl connect $mac
-	for i in {1..10}; do
-		bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
-	done
+	if [[ $action == pair ]]; then
+		bluetoothctl trust $mac &> /dev/null
+		bluetoothctl pair $mac &> /dev/null
+	elif [[ $action == remove ]]; then
+		bluetoothctl remove $mac &> /dev/null
+		for i in {1..10}; do
+			bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
+		done
+	fi
+	if [[ $action == connect || $action == pair ]]; then # pair / connect
+		bluetoothctl connect $mac &> /dev/null
+		for i in {1..10}; do
+			bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
+		done
+	fi
 	pushRefresh
 	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
-	;;
-btremove )
-	mac=${args[1]}
-	bluetoothctl disconnect $mac
-	bluetoothctl remove $mac
-	for i in {1..10}; do
-		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
-	done
-	pushRefresh
 	;;
 connect )
 	data=${args[1]}

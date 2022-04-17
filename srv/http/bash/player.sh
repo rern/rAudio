@@ -10,7 +10,7 @@ pushRefresh() {
 	pushstream refresh "$data"
 }
 volumeBtGet() {
-	voldb=$( amixer -MD bluealsa \
+	voldb=$( amixer -MD bluealsa 2> /dev/null \
 		| grep -m1 '%.*dB' \
 		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 }
@@ -308,7 +308,7 @@ volume0db )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
 volumebt0db )
-	amixer -D bluealsa -q sset "${args[1]}" 0dB
+	amixer -D bluealsa -q sset "${args[1]}" 0dB 2> /dev/null
 	volumeBtGet
 	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
 	;;

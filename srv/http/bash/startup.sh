@@ -92,6 +92,9 @@ fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
+# temp fix
+systemctl -q is-enabled bluetooth && systemctl start bluetooth
+
 # mpd.service started by this script
 $dirbash/mpd-conf.sh
 

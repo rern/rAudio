@@ -183,7 +183,7 @@ urldecode() { # for webradio url to filename
 volumeGet() {
 	if [[ -e $dirshm/btclient ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
+			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
 			[[ $volume ]] && break
 			sleep 1
 		done
@@ -224,7 +224,7 @@ volumeSetAt() {
 	control=$3
 	btclient=$( cat $dirshm/btclient 2> /dev/null )
 	if [[ $btclient ]]; then
-		amixer -MqD bluealsa sset "$btclient" $target%
+		amixer -MqD bluealsa sset "$btclient" $target% 2> /dev/null
 		echo $target > "$dirsystem/btvolume-$btclient"
 	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
@@ -1173,7 +1173,7 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	if [[ -e $dirshm/btclient ]]; then
-		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn
+		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn 2> /dev/null
 	else
 		card=${args[2]}
 		control=${args[3]}

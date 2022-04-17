@@ -130,7 +130,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( [ 'btremove', mac ] );
+				bash( [ 'btconnect', mac, 'remove' ] );
 			}
 		} );
 		return
@@ -222,7 +222,7 @@ $( '#setting-accesspoint' ).click( function() {
 
 function connectBluetooth( list ) {
 	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bash( [ 'btpair', list.mac ], function( data ) {
+	bash( [ 'btconnect', list.mac, 'pair' ], function( data ) {
 		bannerHide();
 		if ( data != -1 ) {
 			$( '.back' ).click();
