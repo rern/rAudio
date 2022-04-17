@@ -7,7 +7,10 @@ Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
 
 $( '#playback' ).click( function() {
-	bash( '/srv/http/bash/cmd.sh mpcplayback' );
+	if ( !$( this ).hasClass( 'disabled' ) ) {
+		var cmd = G.stateplayer === 'mpd' ? 'mpcplayback' : 'playerstop';
+		bash( '/srv/http/bash/cmd.sh '+ cmd );
+	}
 } );
 $( '#setting-btclient' ).click( function() {
 	bash( [ 'volumebtget' ], function( voldb ) {
@@ -422,5 +425,6 @@ function setMixerType( mixertype ) {
 function playbackState( state ) {
 	$( '#playback' )
 		.removeAttr( 'class' )
+		.toggleClass( 'disabled', G.stateplayer !== 'mpd' && G.state !== 'play' )
 		.addClass( 'fa fa-'+ ( state === 'play' ? 'pause' : 'play' ) );
 }

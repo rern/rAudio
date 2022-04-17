@@ -173,6 +173,9 @@ heading i.fa-help {
 	width: 40px;
 	font-size: 20px;
 }
+heading .disabled {
+	color: var( --cg );
+}
 .head {
 	position: fixed;
 	width: 100%;
