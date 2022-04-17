@@ -5,6 +5,10 @@ var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
+
+$( '#playback' ).click( function() {
+	bash( '/srv/http/bash/cmd.sh mpcplayback' );
+} );
 $( '#setting-btclient' ).click( function() {
 	bash( [ 'volumebtget' ], function( voldb ) {
 		var voldb = voldb.split( ' ' );
@@ -350,6 +354,7 @@ $( '#setting-custom' ).click( function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function renderPage() {
+	playbackState( G.state );
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
@@ -413,4 +418,9 @@ function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
+}
+function playbackState( state ) {
+	$( '#playback' )
+		.removeAttr( 'class' )
+		.addClass( 'fa fa-'+ ( state === 'play' ? 'pause' : 'play' ) );
 }

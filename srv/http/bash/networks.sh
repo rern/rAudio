@@ -63,7 +63,6 @@ btconnect )
 		done
 	fi
 	pushRefresh
-	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
 	;;
 connect )
 	data=${args[1]}

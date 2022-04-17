@@ -667,6 +667,7 @@ mpcplayback )
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
+	pushstream state '{"state":"'$command'"}'
 	;;
 mpcprevnext )
 	command=${args[1]}

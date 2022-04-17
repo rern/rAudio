@@ -190,7 +190,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'state', 'volume', 'volumebt', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -210,6 +210,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
+		case 'state':     psState( data );     break;
 		case 'volume':    psVolume( data );    break;
 		case 'volumebt':  psVolumeBt( data );  break;
 		case 'wifi':      psWifi( data );      break;
@@ -248,6 +249,9 @@ function psRefresh( data ) {
 		setSwitch();
 		renderPage();
 	}
+}
+function psState( data ) {
+	if ( page === 'player' ) playbackState( data.state );
 }
 function psReload() {
 	if ( localhost ) location.reload();

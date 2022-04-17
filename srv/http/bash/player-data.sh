@@ -36,6 +36,7 @@ data='
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true )'
 , "soxrconf"         : '$soxrconf'
+, "state"            : "'$( grep ^state $dirshm/status | cut -d'"' -f2 )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data"

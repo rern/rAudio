@@ -3,6 +3,7 @@
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Music Player Daemon'
 	, 'status' => 'mpd'
+	, 'button' => [ 'playback' => 'play' ]
 ] );
 ?>
 	<div class="col-l text gr">
