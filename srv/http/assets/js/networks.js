@@ -94,9 +94,8 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		var mac = list.mac;
-		notify( name, 'Connect ...', 'bluetooth' );
-		bash( [ 'btconnect', mac, 'connect' ] );
+		notify( list.name, 'Connect ...', 'bluetooth' );
+		bash( [ 'btconnect', list.mac, 'connect' ] );
 		return
 	}
 	
@@ -107,8 +106,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		var mac = list.mac;
-		notify( name, 'Disonnect ...', 'bluetooth' );
+		notify( list.name, 'Disonnect ...', 'bluetooth' );
 		bash( [ 'btconnect' ] );
 		return
 	}
