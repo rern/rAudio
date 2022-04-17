@@ -20,7 +20,7 @@ $( '#setting-btclient' ).click( function() {
 		info( {
 			  icon          : 'volume'
 			, title         : 'Bluetooth Volume'
-			, message       : G.btaplayname
+			, message       : G.btaplayname.replace( / - A2DP$/, '' )
 			, rangevalue    : vol
 			, footer        : db +' dB'
 			, beforeshow    : function() {
@@ -377,7 +377,8 @@ function renderPage() {
 		if ( G.btaplayname ) {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
 			$( '#divbtclient' ).removeClass( 'hide' );
-			$( '#btaplayname' ).html( '<option>'+ G.btaplayname +'</option>' );
+			$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
+			$( '#setting-btclient' ).removeClass( 'hide' );
 		} else {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
 			$( '#divbtclient' ).addClass( 'hide' );
