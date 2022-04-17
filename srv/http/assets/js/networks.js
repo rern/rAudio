@@ -50,6 +50,7 @@ $( '#lanadd' ).click( function() {
 } );
 $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	G.li = $( this );
+	G.liindex = G.li.index();
 	G.list = G.li.parent().prop( 'id' );
 	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
@@ -63,6 +64,9 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .forget' ).removeClass( 'hide' );
+		var list = G.listbt[ G.liindex ];
+//		$( '#menu .connect' ).toggleClass( 'hide', list.connected ); // bug: connect from rAudio - alsa error
+		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -88,17 +92,33 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
+	if ( G.listbt ) {
+		var list = G.listbt[ G.liindex ];
+		var mac = list.mac;
+		notify( name, 'Connect ...', 'bluetooth' );
+		bash( [ 'btconnect', mac, 'connect' ] );
+		return
+	}
+	
 	var name = G.li.data( 'ssid' );
 	notify( name, 'Connect ...', 'wifi' );
-	bash( [ 'profileconnect', name ] )
+	bash( [ 'profileconnect', name ] );
 } );
 $( '.disconnect' ).click( function() {
-	var list = G.listwl[ G.li.index() ];
+	if ( G.listbt ) {
+		var list = G.listbt[ G.liindex ];
+		var mac = list.mac;
+		notify( name, 'Disonnect ...', 'bluetooth' );
+		bash( [ 'btconnect' ] );
+		return
+	}
+	
+	var list = G.listwl[ G.liindex ];
 	var name = list.ssid;
 	var icon = 'wifi';
 	if ( G.ipeth ) {
 		notify( name, 'Disconnect ...', icon );
-		bash( [ 'disconnect' ] )
+		bash( [ 'disconnect' ] );
 		return
 	}
 	
