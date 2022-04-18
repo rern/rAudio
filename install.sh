@@ -103,7 +103,8 @@ installstart "$1"
 
 getinstallzip
 
-chmod -R 755 $dirbash
+chmod -R 755 /srv/http/bash
+rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
 
 systemctl restart mpd
 
