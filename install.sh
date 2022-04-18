@@ -103,6 +103,8 @@ installstart "$1"
 
 getinstallzip
 
+chmod -R 755 $dirbash
+
 systemctl restart mpd
 
 installfinish

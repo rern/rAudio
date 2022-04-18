@@ -103,7 +103,7 @@ getinstallzip() {
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
 	chown -R http:http /srv/http/{assets,bash,settings}
-	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/* /usr/local/bin/* 2> /dev/null
+	chmod 755 /srv/http/* $dirbash/* $dirbash/settings/* /srv/http/settings/* 2> /dev/null
 	chmod 777 $dirdata/tmp
 	
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
