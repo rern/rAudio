@@ -443,6 +443,12 @@ function info( json ) {
 		htmlcontent += htmls.range || '';
 		htmlcontent += htmls.footer || '';
 	}
+	if ( !htmlcontent ) {
+		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		return
+	}
+	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );

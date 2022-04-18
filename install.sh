@@ -3,20 +3,43 @@
 alias=r1
 
 # 20220422
-if modinfo ntfs3 &> /dev/null; then
-	echo ntfs3 > /etc/modules-load.d/ntfs3.conf
-	cat << EOF > /etc/udev/rules.d/ntfs3.rules
+
+file=/etc/conf.d/devmon
+if ! grep -q settings/system.sh $file; then
+	cat << EOF > $file
+ARGS='--exec-on-drive "/srv/http/bash/settings/system.sh usbconnect" --exec-on-remove "/srv/http/bash/settings/system.sh usbremove"'
+EOF
+	if modinfo ntfs3 &> /dev/null; then
+		modprobe ntfs3
+		echo ntfs3 > /etc/modules-load.d/ntfs3.conf
+		cat << EOF > /etc/udev/rules.d/ntfs3.rules
 ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbconnect"
 ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbremove"
 EOF
-	modprobe ntfs3
+	fi
 fi
 
-for file in /etc/conf.d/devmon /etc/systemd/system/bluetooth.service.d/override.conf; do
-	grep -q settings/system.sh $file || sed -i 's|bash/system.sh|bash/settings/system.sh|g' $file
-done
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+if ! grep -q settings $file; then
+	systemctl -q is-enabled bluetooth && enabled=1
+	[[ $enabled ]] && systemctl disable bluetooth
+	cat << EOF > $file
+[Unit]
+After=nginx.service
+BindsTo=bluealsa.service bluealsa-aplay.service bluezdbus.service
 
-udevadm control --reload-rules && udevadm trigger
+[Service]
+ExecStart=
+ExecStart=/usr/lib/bluetooth/bluetoothd -P battery
+ExecStartPost=/srv/http/bash/settings/system.sh bluetooth
+
+[Install]
+WantedBy=
+WantedBy=multi-user.target
+EOF
+	systemctl daemon-reload
+	[[ $enabled ]] && systemctl enable bluetooth
+fi
 
 # 20220415
 v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
@@ -44,8 +67,6 @@ ACTION=="add", SUBSYSTEMS=="usb", KERNEL=="card*", SUBSYSTEM=="sound", RUN+="/sr
 ACTION=="remove", SUBSYSTEMS=="usb", KERNEL=="card*", SUBSYSTEM=="sound", RUN+="/srv/http/bash/mpd-conf.sh remove"
 EOF
 	rm -f /etc/udev/rules.d/wifi.rules
-	udevadm control --reload-rules
-	udevadm trigger
 fi
 
 # 20220327
@@ -117,6 +138,8 @@ if [[ -e /srv/http/bash/features.sh ]]; then
 	chmod -R 755 /srv/http
 fi
 
+udevadm control --reload-rules
+udevadm trigger
 systemctl daemon-reload
 systemctl restart mpd
 

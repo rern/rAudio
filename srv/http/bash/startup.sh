@@ -52,6 +52,7 @@ fi
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
+touch $dirshm/status
 
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
@@ -91,9 +92,6 @@ if grep -q /srv/http/shareddata /etc/fstab; then
 fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
-
-# temp fix
-systemctl -q is-enabled bluetooth && systemctl start bluetooth
 
 # mpd.service started by this script
 $dirbash/mpd-conf.sh
