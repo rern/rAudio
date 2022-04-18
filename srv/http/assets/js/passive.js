@@ -345,39 +345,41 @@ function psMpdRadio( data ) {
 	}
 }	
 function psMpdUpdate( data ) {
-	var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
-	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
-	if ( typeof data === 'number' ) {
-		G.status.updating_db = true;
-	} else {
-		G.status.updating_db = false;
-		$( '#li-count' ).html( data.song.toLocaleString() );
-		G.status.counts = data;
-		$.each( data, function( key, val ) {
-			$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
-		} );
-		if ( G.library ) {
-			if ( G.mode === 'webradio' ) {
-				data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
-			} else {
-				var query = G.query[ G.query.length - 1 ];
-				if ( query ) {
-					list( query, function( data ) {
-						data.path = query.path;
-						data.modetitle = query.modetitle;
-						renderLibraryList( data );
-					}, 'json' );
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
+		var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
+		$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
+		if ( typeof data === 'number' ) {
+			G.status.updating_db = true;
+		} else {
+			G.status.updating_db = false;
+			G.status.counts = data;
+			renderLibraryCounts();
+			if ( G.library ) {
+				if ( !G.librarylist ) return
+				
+				if ( G.mode === 'webradio' ) {
+					data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
+				} else {
+					var query = G.query[ G.query.length - 1 ];
+					if ( query ) {
+						list( query, function( data ) {
+							data.path = query.path;
+							data.modetitle = query.modetitle;
+							renderLibraryList( data );
+						}, 'json' );
+					}
 				}
+			} else if ( G.playlist && !G.savedlist ) {
+				$( '#playlist' ).click();
 			}
-		} else if ( G.playlist && !G.savedlist ) {
-			$( '#playlist' ).click();
+			setTimeout( function() {
+				$( '#library, #button-library' ).removeClass( 'blink' );
+				banner( 'Library Update', 'Done', 'library' );
+			}, 2000 );
 		}
-		setTimeout( function() {
-			$( '#library, #button-library' ).removeClass( 'blink' );
-			banner( 'Library Update', 'Done', 'library' );
-		}, 2000 );
-	}
-	setButtonUpdating();
+		setButtonUpdating();
+	}, 3000 );
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );

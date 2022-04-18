@@ -780,7 +780,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed.
 	pushstreamNotify 'USB Drive' $action usbdrive
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate
+	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate

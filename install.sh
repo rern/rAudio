@@ -2,7 +2,18 @@
 
 alias=r1
 
-# 20220416
+# 20220422
+if modinfo ntfs3 &> /dev/null && [[ ! -e /etc/modules-load.d/ntfs3.conf ]]; then
+	echo ntfs3 > /etc/modules-load.d/ntfs3.conf
+	cat << EOF > /etc/udev/rules.d/ntfs3.rules
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/system.sh usbconnect"
+ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/system.sh usbremove"
+EOF
+	modprobe ntfs3
+	udevadm control --reload-rules && udevadm trigger
+fi
+
+# 20220415
 v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
 [[ $v ]] && (( $v < 106 )) && pacman -Sy --noconfirm bluez-alsa
 

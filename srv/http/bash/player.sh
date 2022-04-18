@@ -17,17 +17,6 @@ volumeBtGet() {
 restartMPD() {
 	$dirbash/mpd-conf.sh
 }
-update() { # for /etc/conf.d/devmon - devmon@http.service
-	if [[ -e $dirmpd/updating ]]; then
-		$dirshm/updatingusb
-	else
-		echo USB > $dirmpd/updating
-		mpc -q update USB
-	fi
-	sleep 1
-	pushRefresh
-	pushstream mpdupdate 1
-}
 
 case ${args[0]} in
 
@@ -76,29 +65,6 @@ bufferoutputset )
 		echo $buffer > $dirsystem/bufferoutput.conf
 	fi
 	restartMPD
-	;;
-count )
-	albumartist=$( mpc list albumartist | awk NF | wc -l )
-	composer=$( mpc list composer | awk NF | wc -l )
-	genre=$( mpc list genre | awk NF | wc -l )
-	count="$count $( mpc stats | head -n3 | awk '{print $2,$4,$6}' )"
-
-	data='
-		  "album"       : '$( echo $count | cut -d' ' -f2 )'
-		, "albumartist" : '$albumartist'
-		, "artist"      : '$( echo $count | cut -d' ' -f1 )'
-		, "composer"    : '$composer'
-		, "coverart"    : '$( ls -1q $dirdata/coverarts | wc -l )'
-		, "date"        : '$( mpc list date | awk NF | wc -l )'
-		, "genre"       : '$genre'
-		, "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
-		, "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
-		, "song"        : '$( echo $count | cut -d' ' -f3 )'
-		, "usb"         : '$( mpc ls USB 2> /dev/null | wc -l )'
-		, "webradio"    : '$( ls -U $dirwebradios/* 2> /dev/null | wc -l )
-	mpc | grep -q Updating && data+=', "updating_db":1'
-	echo {$data}
-	echo $albumartist $composer $genre > $dirsystem/mpddb
 	;;
 crossfadedisable )
 	mpc -q crossfade 0
