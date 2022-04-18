@@ -4,7 +4,7 @@ export XDG_CACHE_HOME="/tmp/.cache"
 
 . /srv/http/data/system/localbrowser.conf
 
-/srv/http/bash/features.sh localbrowserxset
+/srv/http/bash/settings/features.sh localbrowserxset
 
 if ifconfig | grep -q broadcast; then
 	[[ $cursor == false ]] && cursor=no || cursor=yes

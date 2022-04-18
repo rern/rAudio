@@ -193,7 +193,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).click();
-			bash( '/srv/http/bash/relays.sh '+ !G.status.relayson );
+			bash( '/srv/http/bash/settings/relays.sh '+ !G.status.relayson );
 			break;
 		case 'guide':
 			location.href = 'settings/guide.php';

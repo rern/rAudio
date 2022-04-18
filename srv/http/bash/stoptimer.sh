@@ -34,5 +34,5 @@ $control"
 if [[ $poweroff ]]; then
 	$dirbash/cmd.sh power$'\n'off
 elif [[ -e $dirshm/relayson ]]; then
-	$dirbash/relays.sh off
+	$dirbash/settings/relays.sh off
 fi

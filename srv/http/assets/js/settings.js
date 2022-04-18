@@ -6,7 +6,7 @@ function bash( command, callback, json ) {
 			var filesh = 'cmd';
 			command.shift();
 		} else {
-			var filesh = page;
+			var filesh = 'settings/'+ page;
 		}
 		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
@@ -17,7 +17,7 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
-var dirbash = '/srv/http/bash/';
+var dirbash = '/srv/http/bash/settings/';
 var playersh = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
 var systemsh = dirbash +'system.sh ';
@@ -438,6 +438,8 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
+	if ( id === 'novolume' ) return
+	
 	var $this = $( this );
 	var checked = $this.prop( 'checked' );
 	var label = $this.data( 'label' );

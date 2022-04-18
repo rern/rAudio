@@ -468,7 +468,7 @@ function psRelays( response ) {
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
-				bash( '/srv/http/bash/relays.sh' );
+				bash( '/srv/http/bash/settings/relays.sh' );
 			}
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {

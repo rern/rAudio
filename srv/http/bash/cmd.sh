@@ -977,7 +977,7 @@ power )
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
-		$dirbash/relays.sh
+		$dirbash/settings/relays.sh
 		sleep 2
 	fi
 	if [[ $action == reboot ]]; then

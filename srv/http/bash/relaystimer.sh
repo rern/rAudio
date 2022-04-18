@@ -15,7 +15,7 @@ while sleep 60; do
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( cat $timerfile )
-		(( $i == 1 )) && /srv/http/bash/relays.sh && exit
+		(( $i == 1 )) && /srv/http/bash/settings/relays.sh && exit
 		
 		(( i-- ))
 		echo $i > $timerfile

@@ -27,7 +27,7 @@ fi
 
 if [[ -e /boot/backup.gz ]]; then
 	mv /boot/backup.gz $dirdata/tmp
-	$dirbash/system.sh datarestore
+	$dirbash/settings/system.sh datarestore
 	reboot=1
 fi
 
@@ -115,7 +115,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 [[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
 
-[[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
+[[ -e $dirsystem/soundprofile ]] && $dirbash/settings/system.sh soundprofile
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
@@ -123,7 +123,7 @@ if [[ $connected ]]; then
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
 elif [[ ! -e $dirsystem/wlannoap ]]; then
 	modprobe brcmfmac &> /dev/null 
-	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+	systemctl -q is-enabled hostapd || $dirbash/settings/features.sh hostapdset
 	systemctl -q disable hostapd
 fi
 

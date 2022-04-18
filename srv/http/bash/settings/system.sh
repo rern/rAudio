@@ -13,7 +13,7 @@ pushReboot() {
 	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
-	data=$( $dirbash/system-data.sh )
+	data=$( $dirbash/settings/system-data.sh )
 	pushstream refresh "$data"
 }
 I2Cset() {
@@ -809,7 +809,7 @@ vuledset )
 	pushRefresh
 	;;
 wlandisable )
-	systemctl -q is-active hostapd && $dirbash/features.sh hostapddisable
+	systemctl -q is-active hostapd && $dirbash/settings/features.sh hostapddisable
 	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;

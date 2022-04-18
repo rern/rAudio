@@ -91,7 +91,7 @@ case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirdata.'tmp/backup.gz' );
-	exec( $sudo.'/srv/http/bash/system.sh datarestore' );
+	exec( $sudo.'/srv/http/bash/settings/system.sh datarestore' );
 	break;
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
@@ -129,7 +129,7 @@ case 'login':
 	}
 	
 	if ( isset( $_POST[ 'disable' ] ) ) {
-		exec( $sudo.'/srv/http/bash/features.sh logindisable' );
+		exec( $sudo.'/srv/http/bash/settings/features.sh logindisable' );
 		exit();
 	}
 	
@@ -137,7 +137,7 @@ case 'login':
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		echo file_put_contents( $passwordfile, $hash );
-		exec( $sudo.'/srv/http/bash/features.sh loginset' );
+		exec( $sudo.'/srv/http/bash/settings/features.sh loginset' );
 	} else {
 		echo 1;
 		session_start();

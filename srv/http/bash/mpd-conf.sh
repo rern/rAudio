@@ -17,7 +17,7 @@ restartMPD() {
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
 	pushstream mpdplayer "$( $dirbash/status.sh )"
-	pushstream refresh "$( $dirbash/player-data.sh )"
+	pushstream refresh "$( $dirbash/settings/player-data.sh )"
 	systemctl try-restart rotaryencoder
 	if [[ -e $dirmpd/updating ]]; then
 		path=$( cat $dirmpd/updating )
@@ -46,14 +46,14 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
 	echo $btmixer > $dirshm/btclient
 	pushstream btclient true
-	$dirbash/networks-data.sh bt
+	$dirbash/settings/networks-data.sh bt
 	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
 	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 elif [[ $1 == btoff ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	rm -f $dirshm/btclient
 	pushstream btclient false
-	$dirbash/networks-data.sh bt
+	$dirbash/settings/networks-data.sh bt
 	systemctl stop bluetoothbutton
 	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":true}'
 fi

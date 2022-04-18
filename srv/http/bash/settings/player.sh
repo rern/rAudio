@@ -6,7 +6,7 @@
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	data=$( $dirbash/player-data.sh )
+	data=$( $dirbash/settings/player-data.sh )
 	pushstream refresh "$data"
 }
 volumeBtGet() {

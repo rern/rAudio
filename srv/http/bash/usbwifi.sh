@@ -19,5 +19,5 @@ iw $wlandev set power_save off &> /dev/null
 data='{"title":"USB Wi-Fi","text":"'$state'","icon":"wifi"}'
 pushstream notify "$data"
 
-data=$( /srv/http/bash/networks-data.sh )
+data=$( /srv/http/bash/settings/networks-data.sh )
 pushstream refresh "$data"
