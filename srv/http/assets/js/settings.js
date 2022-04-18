@@ -120,7 +120,7 @@ function refreshData() {
 }
 function resetLocal() {
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	setTimeout( bannerHide, 3000 );
+	setTimeout( bannerHide, 1000 );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
