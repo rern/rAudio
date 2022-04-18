@@ -345,40 +345,36 @@ function psMpdRadio( data ) {
 	}
 }	
 function psMpdUpdate( data ) {
+	G.status.updating_db = data === 1;
+	if ( G.status.updating_db ) {
+		setButtonUpdating();
+		return
+	}
+	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
-		$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
-		if ( typeof data === 'number' ) {
-			G.status.updating_db = true;
-		} else {
-			G.status.updating_db = false;
-			G.status.counts = data;
-			renderLibraryCounts();
-			if ( G.library ) {
-				if ( !G.librarylist ) return
-				
-				if ( G.mode === 'webradio' ) {
-					data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
-				} else {
-					var query = G.query[ G.query.length - 1 ];
-					if ( query ) {
-						list( query, function( data ) {
-							data.path = query.path;
-							data.modetitle = query.modetitle;
-							renderLibraryList( data );
-						}, 'json' );
-					}
-				}
-			} else if ( G.playlist && !G.savedlist ) {
-				$( '#playlist' ).click();
-			}
-			setTimeout( function() {
-				$( '#library, #button-library' ).removeClass( 'blink' );
-				banner( 'Library Update', 'Done', 'library' );
-			}, 2000 );
-		}
+		G.status.counts = data;
+		renderLibraryCounts();
 		setButtonUpdating();
+		banner( 'Library Update', 'Done', 'library' );
+		if ( G.library ) {
+			if ( !G.librarylist ) return
+			
+			if ( G.mode === 'webradio' ) {
+				data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
+			} else {
+				var query = G.query[ G.query.length - 1 ];
+				if ( query ) {
+					list( query, function( data ) {
+						data.path = query.path;
+						data.modetitle = query.modetitle;
+						renderLibraryList( data );
+					}, 'json' );
+				}
+			}
+		} else if ( G.playlist && !G.savedlist ) {
+			$( '#playlist' ).click();
+		}
 	}, 3000 );
 }
 function psNotify( data ) {

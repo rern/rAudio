@@ -777,7 +777,7 @@ unmount )
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ -e $dirshm/audiocd ]] || ! systemctl -q is-active mpd && exit # is-active mpd - suppress on startup
 	
-	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed.
+	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed
 	pushstreamNotify 'USB Drive' $action usbdrive
 	pushRefresh
 	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
