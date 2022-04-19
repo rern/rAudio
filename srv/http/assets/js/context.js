@@ -1,5 +1,6 @@
 function addReplace( cmd, command, title, msg ) {
 	if ( cmd === 'addplay' || cmd === 'replaceplay' || cmd === 'replace' ) $( '#stop' ).click();
+	console.log(command);
 	bash( command, function() {
 		if ( !G.display.playbackswitch ) return
 		
@@ -737,7 +738,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
-	cmd = cmd.replace( /album|albumartist|artist|composer|conductor|date|genre/, '' );
+	cmd = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
 	var command = contextCommand[ cmd ];
 	if ( cmd === 'add' ) {
 		var title = 'Add to Playlist';
