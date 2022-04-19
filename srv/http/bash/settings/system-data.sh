@@ -196,7 +196,8 @@ if rfkill | grep -q bluetooth; then
 	data+='
 , "bluetooth"        : '$bluetooth'
 , "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
-, "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
+, "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
+, "btconnected"      : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )
 fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='

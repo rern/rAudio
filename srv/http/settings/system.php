@@ -123,7 +123,7 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetoothctl'
 		, 'setting'  => true
-		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP' : 'Bluetooth' ).' is currently active.'
+		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP is currently active.' : 'Bluetooth is currently connected.' )
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
  • Pairing:&emsp;<i class="fa fa-networks"></i>Networks > Bluetooth&ensp;<i class="fa fa-search wh"></i>

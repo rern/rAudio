@@ -119,8 +119,9 @@ function refreshData() {
 	} );
 }
 function resetLocal() {
-	$( '#bannerIcon i' ).removeClass( 'blink' );
-	setTimeout( bannerHide, 1000 );
+	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
+	$( '#bannerIcon i' ).removeClass( 'blink' )
+	setTimeout( bannerHide, delay );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
