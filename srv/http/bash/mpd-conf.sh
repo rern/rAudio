@@ -38,6 +38,9 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
 				| grep ' - A2DP' \
 				| cut -d"'" -f2 )
+	[[ ! $btmixer ]] && btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
+									| head -1 \
+									| cut -d"'" -f2 )
 	pushstreamNotify "${btmixer/ - A2DP}" Ready bluetooth
 	echo $btmixer > $dirshm/btclient
 	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
