@@ -953,6 +953,9 @@ ${ htmlname }
 	} );
 }
 function renderPage() {
+	$( '#codehddinfo' )
+		.empty()
+		.addClass( 'hide' );
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
