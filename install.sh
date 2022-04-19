@@ -3,15 +3,19 @@
 alias=r1
 
 # 20220422
-if modinfo ntfs3 &> /dev/null && [[ ! -e /etc/modules-load.d/ntfs3.conf ]]; then
+if modinfo ntfs3 &> /dev/null; then
 	echo ntfs3 > /etc/modules-load.d/ntfs3.conf
 	cat << EOF > /etc/udev/rules.d/ntfs3.rules
-ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/system.sh usbconnect"
-ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/system.sh usbremove"
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbconnect"
+ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbremove"
 EOF
 	modprobe ntfs3
 	udevadm control --reload-rules && udevadm trigger
 fi
+
+for file in /etc/conf.d/devmon /etc/systemd/system/bluetooth.service.d/override.conf; do
+	grep -q settings/system.sh $file || sed -i 's|bash/system.sh|bash/settings/system.sh|g' $file
+done
 
 # 20220415
 v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
@@ -103,9 +107,12 @@ installstart "$1"
 
 getinstallzip
 
+# 20220422
 chmod -R 755 /srv/http/bash
 rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
+echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 
+systemctl daemon-reload
 systemctl restart mpd
 
 installfinish
