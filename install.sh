@@ -10,12 +10,13 @@ ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntf
 ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbremove"
 EOF
 	modprobe ntfs3
-	udevadm control --reload-rules && udevadm trigger
 fi
 
 for file in /etc/conf.d/devmon /etc/systemd/system/bluetooth.service.d/override.conf; do
 	grep -q settings/system.sh $file || sed -i 's|bash/system.sh|bash/settings/system.sh|g' $file
 done
+
+udevadm control --reload-rules && udevadm trigger
 
 # 20220415
 v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
@@ -108,9 +109,13 @@ installstart "$1"
 getinstallzip
 
 # 20220422
-chmod -R 755 /srv/http/bash
-rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
-echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
+if [[ -e /srv/http/bash/features.sh ]]; then
+	echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
+	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
+	chown -R http:http /srv/http
+	chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
+	chmod -R 755 /srv/http
+fi
 
 systemctl daemon-reload
 systemctl restart mpd

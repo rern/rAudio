@@ -211,11 +211,10 @@ curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.ta
 # services
 systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spotifyd upmpdcli
 
-# set permissions and ownership
+# set ownership and permissions
 chown -R http:http /srv/http
 chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
-chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
-chmod 777 $dirdata/tmp
+chmod -R 755 /srv/http
 
 # symlink /mnt for coverart files
 ln -sf /mnt /srv/http/

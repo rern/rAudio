@@ -102,9 +102,9 @@ getinstallzip() {
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
-	chown -R http:http /srv/http/{assets,bash,settings}
-	chmod 755 /srv/http/* $dirbash/* $dirbash/settings/* /srv/http/settings/* 2> /dev/null
-	chmod 777 $dirdata/tmp
+	chown -R http:http /srv/http
+	chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
+	chmod -R 755 /srv/http
 	
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 }
