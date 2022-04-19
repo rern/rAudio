@@ -65,7 +65,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .forget' ).removeClass( 'hide' );
 		var list = G.listbt[ G.liindex ];
-		$( '#menu .connect' ).toggleClass( 'hide', list.connected ); // bug: connect from rAudio - alsa error
+//		$( '#menu .connect' ).toggleClass( 'hide', list.connected ); // bug: connect from rAudio - alsa error
 		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );

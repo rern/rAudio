@@ -446,6 +446,7 @@ function info( json ) {
 	if ( !htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
+		setButoonWidth();
 		return
 	}
 	
@@ -477,16 +478,7 @@ function info( json ) {
 			$( '#infoOverlay' ).focus();
 		}
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
-		
-		// set width: button
-		if ( !O.buttonfit ) {
-			var widest = 0;
-			$( '#infoButtons a' ).each( function() {
-				var w = $( this ).outerWidth();
-				if ( w > widest ) widest = w;
-			} );
-			if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
-		}
+		setButoonWidth();
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
@@ -729,6 +721,16 @@ function selectricRender() {
 	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
 /*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
+}
+function setButoonWidth() {
+	if ( O.buttonfit ) return
+	
+	var widest = 0;
+	$( '#infoButtons a' ).each( function() {
+		var w = $( this ).outerWidth();
+		if ( w > widest ) widest = w;
+	} );
+	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
 function setFileImage( file ) {
 	var timeout = setTimeout( function() {
