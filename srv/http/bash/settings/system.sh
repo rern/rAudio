@@ -780,6 +780,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	if [[ ${args[0]} == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
+		[[ ! $name ]] && name='USB Drive'
 	else
 		action=Removed
 		name='USB Drive'
