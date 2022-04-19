@@ -215,11 +215,11 @@ done
 status=$( echo "$status" | grep -v '^, "file"' )
 ########
 status+='
-, "file"           : "'$file'"
-, "pllength" : '$pllength'
-, "song"           : '$song'
-, "state"          : "'$state'"
-, "timestamp"      : '$( date +%s%3N )
+, "file"      : "'$file'"
+, "pllength"  : '$pllength'
+, "song"      : '$song'
+, "state"     : "'$state'"
+, "timestamp" : '$( date +%s%3N )
 if (( $pllength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
