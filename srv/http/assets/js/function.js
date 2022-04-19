@@ -164,7 +164,6 @@ function contextmenuLibrary( $li, $target ) {
 	G.list = {};
 	G.list.li = $li; // for contextmenu
 	G.list.licover = $li.hasClass( 'licover' );
-//	G.list.album = $( '.licover .lialbum' ).text();
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
 	// file modes  - path > path ... > tracks
 	// album mode  - path > tracks
@@ -191,10 +190,10 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	
 	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].includes( G.mode );
-	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
-	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
+	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', !G.status.playlistlength );
+	$menu.find( '.replace' ).next().toggleClass( 'hide', !G.status.playlistlength );
+	$menu.find( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && !filemode && G.mode !== 'album' );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
