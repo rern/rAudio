@@ -211,16 +211,16 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-[[ ! $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
+[[ ! $pllength ]] && pllength=$( mpc playlist | wc -l )
 status=$( echo "$status" | grep -v '^, "file"' )
 ########
 status+='
 , "file"           : "'$file'"
-, "playlistlength" : '$playlistlength'
+, "pllength" : '$pllength'
 , "song"           : '$song'
 , "state"          : "'$state'"
 , "timestamp"      : '$( date +%s%3N )
-if (( $playlistlength  == 0 )); then
+if (( $pllength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
@@ -350,7 +350,7 @@ $radiosampling" > $dirshm/radio
 , "Title"        : "'$Title'"
 , "webradio"     : true'
 	if [[ $id ]]; then
-		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
+		sampling="$(( song + 1 ))/$pllength &bull; $radiosampling"
 		elapsedGet
 ########
 		status+='
@@ -475,7 +475,7 @@ else
 fi
 
 ########
-pos="$(( song + 1 ))/$playlistlength"
+pos="$(( song + 1 ))/$pllength"
 sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"

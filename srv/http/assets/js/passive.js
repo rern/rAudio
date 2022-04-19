@@ -314,7 +314,6 @@ function psMpdPlayer( data ) {
 		if ( data.state === 'play' && !data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
-		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;

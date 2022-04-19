@@ -840,7 +840,7 @@ $( '#volume-text' ).click( function() { // mute /unmute
 $( '#divcover' ).press( function( e ) {
 	if (
 		( G.status.stream && G.status.state === 'play' )
-		|| !G.status.playlistlength
+		|| !G.status.pllength
 		|| G.guide
 		|| $( e.target ).hasClass( 'band' )
 		|| e.target.id === 'coverT'
@@ -913,11 +913,11 @@ $( '.map' ).click( function() {
 		var volume = $( '#volume-knob' ).is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.covermap, .guide' ).addClass( 'mapshow' );
-		$( '.guide' ).toggleClass( 'hide', !G.status.playlistlength && G.status.player === 'mpd' );
+		$( '.guide' ).toggleClass( 'hide', !G.status.pllength && G.status.player === 'mpd' );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', !G.status.playlistlength );
-		$( '#coverTL, #coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.playlistlength );
+		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', !G.status.pllength );
+		$( '#coverTL, #coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.pllength );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
@@ -949,7 +949,7 @@ $( '.map' ).click( function() {
 	hideGuide();
 	if ( cmd === 'cover' ) {
 		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( G.status.player === 'mpd' && !G.status.playlistlength
+		if ( G.status.player === 'mpd' && !G.status.pllength
 			|| $( '#page-playback' ).css( 'transform' ) !== 'none'
 		) return
 		
@@ -1063,7 +1063,7 @@ $( '.btn-cmd' ).click( function() {
 			}
 			
 			$( '#title' ).removeClass( 'gr' );
-			if ( !G.status.playlistlength ) return
+			if ( !G.status.pllength ) return
 			
 			bash( [ 'mpcplayback', 'stop', elapsedscrobble ] );
 			$( '#pl-list .elapsed' ).empty();
@@ -1098,7 +1098,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#total' ).addClass( 'wh' );
 			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-pause' );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
-			var pllength = G.status.playlistlength;
+			var pllength = G.status.pllength;
 			var song = G.status.song;
 			if ( pllength < 2 ) return
 			
@@ -1839,7 +1839,7 @@ $( '#button-pl-shuffle' ).click( function() {
 	} );
 } );
 $( '#button-pl-clear' ).click( function() {
-	if ( G.status.playlistlength === 1 ) {
+	if ( G.status.pllength === 1 ) {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Clear Playlist'
@@ -2025,7 +2025,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				G.list.name = $this.find( '.name' ).text().trim();
 				G.list.path = $this.find( '.lipath' ).text().trim() || G.list.name;
 				G.list.track = $this.data( 'track' );
-				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', !G.status.playlistlength );
+				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', !G.status.pllength );
 				$( '.minus-circle' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( G.display.tapaddplay || G.display.tapreplaceplay )
@@ -2037,7 +2037,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 					return
 				}
 				
-				$menu.find( '.replace' ).toggleClass( 'hide', !G.status.playlistlength );
+				$menu.find( '.replace' ).toggleClass( 'hide', !G.status.pllength );
 				$menu.find( '.similar' ).toggleClass( 'hide', G.list.path.slice( 0, 4 ) === 'http' );
 				$menu.find( '.wrsave' ).toggleClass( 'hide', !$this.hasClass( 'notsaved' ) );
 			}

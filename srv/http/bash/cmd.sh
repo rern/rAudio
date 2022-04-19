@@ -684,7 +684,7 @@ mpcprevnext )
 		state=${args[4]}
 		elapsed=${args[5]}
 	else
-		status=( $( $dirbash/status.sh | jq -r .song,.playlistlength,.state,.elapsed ) )
+		status=( $( $dirbash/status.sh | jq -r .song,.pllength,.state,.elapsed ) )
 		current=${status[0]}
 		length=${status[1]}
 		state=${status[2]}

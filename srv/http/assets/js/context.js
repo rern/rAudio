@@ -85,7 +85,7 @@ function playlistLoad( path, play, replace ) {
 		, replace : replace
 	}, function( data ) {
 		G.local = 0;
-		G.status.playlistlength = +data;
+		G.status.pllength = +data;
 		G.savedlist = 0;
 		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
 	} );
@@ -711,7 +711,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} else { // saved playlist
 				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
 				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
-				if ( replace && G.display.plclear && G.status.playlistlength ) {
+				if ( replace && G.display.plclear && G.status.pllength ) {
 					infoReplace( function() {
 						playlistLoad( path, play, replace );
 					} );
