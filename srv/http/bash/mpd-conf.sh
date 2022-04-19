@@ -38,7 +38,7 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
 				| grep ' - A2DP' \
 				| cut -d"'" -f2 )
-	pushstreamNotify Bluetooth "Ready - ${btmixer/ - A2DP}" bluetooth
+	pushstreamNotify "${btmixer/ - A2DP}" Ready bluetooth
 	echo $btmixer > $dirshm/btclient
 	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
 	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
@@ -49,7 +49,7 @@ elif [[ $1 == btoff ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	pushstream btclient false
 	btmixer=$( cat $dirshm/btclient )
-	pushstreamNotify Bluetooth "Disconneced - ${btmixer/ - A2DP}" bluetooth
+	pushstreamNotify "${btmixer/ - A2DP}" Disconneced bluetooth
 	rm -f $dirshm/btclient
 	$dirbash/settings/networks-data.sh bt
 	systemctl stop bluetoothbutton
