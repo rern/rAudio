@@ -31,7 +31,7 @@ BindsTo=bluealsa.service bluealsa-aplay.service bluezdbus.service
 
 [Service]
 ExecStart=
-ExecStart=/usr/lib/bluetooth/bluetoothd -P battery
+ExecStart=/usr/lib/bluetooth/bluetoothd
 ExecStartPost=/srv/http/bash/settings/system.sh bluetooth
 
 [Install]
@@ -44,7 +44,7 @@ fi
 
 # 20220415
 v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
-[[ $v ]] && (( $v < 106 )) && pacman -Sy --noconfirm bluez-alsa
+[[ $v ]] && (( $v < 106 )) && pacman -Sy --needed --noconfirm bluez-alsa
 
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
