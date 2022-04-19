@@ -102,10 +102,7 @@ getinstallzip() {
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
-	chown -R http:http /srv/http
-	chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
-	chmod -R 755 /srv/http
-	
+	$dirbash/cmd.sh dirpermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 }
 installstart() { # $1-'u'=update

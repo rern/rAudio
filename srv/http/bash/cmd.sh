@@ -489,6 +489,12 @@ coverfileslimit )
 		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
 	;;
+dirpermissions )
+	chmod -R 755 /srv/http
+	chown -R http:http /srv/http
+	chown -R mpd:audio $dirplaylists /mnt/MPD
+	chown mpd:audio $dirmpd/mpd.db
+	;;
 displaysave )
 	data=${args[1]}
 	pushstream display "$data"
