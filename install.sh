@@ -10,6 +10,7 @@ if ! grep -q settings/system.sh $file; then
 ARGS='--exec-on-drive "/srv/http/bash/settings/system.sh usbconnect" --exec-on-remove "/srv/http/bash/settings/system.sh usbremove"'
 EOF
 	if modinfo ntfs3 &> /dev/null; then
+		pacman -R --noconfirm ntfs-3g 2> /dev/null
 		modprobe ntfs3
 		echo ntfs3 > /etc/modules-load.d/ntfs3.conf
 		cat << EOF > /etc/udev/rules.d/ntfs3.rules
