@@ -134,9 +134,8 @@ getinstallzip
 if [[ -e /srv/http/bash/features.sh ]]; then
 	echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
-	chown -R http:http /srv/http
-	chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
-	chmod -R 755 /srv/http
+	chmod 777 /srv/http/bash/settings/cmd.sh
+	/srv/http/bash/settings/cmd.sh dirpermissions
 fi
 
 udevadm control --reload-rules
