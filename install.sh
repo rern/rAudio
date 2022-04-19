@@ -134,9 +134,9 @@ getinstallzip
 if [[ -e /srv/http/bash/features.sh ]]; then
 	echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
-	chmod 777 /srv/http/bash/settings/cmd.sh
-	/srv/http/bash/settings/cmd.sh dirpermissions
 fi
+chmod 777 /srv/http/bash/cmd.sh
+/srv/http/bash/cmd.sh dirpermissions
 
 udevadm control --reload-rules
 udevadm trigger
