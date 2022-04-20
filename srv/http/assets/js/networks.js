@@ -65,7 +65,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .forget' ).removeClass( 'hide' );
 		var list = G.listbt[ G.liindex ];
-//		$( '#menu .connect' ).toggleClass( 'hide', list.connected ); // bug: connect from rAudio - alsa error
+		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -95,7 +95,7 @@ $( '.connect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', 'bluetooth' );
-		bash( [ 'btconnect', list.mac, 'connect' ] );
+		bash( [ 'btconnect', 'connect', list.sink, list.mac ] );
 		return
 	}
 	
@@ -107,7 +107,7 @@ $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Disonnect ...', 'bluetooth' );
-		bash( [ 'btconnect' ] );
+		bash( [ 'btconnect', 'disconnect', list.sink, list.mac ] );
 		return
 	}
 	
@@ -414,7 +414,7 @@ function renderBluetooth() {
 				G.btconnected = list.name;
 				$( '#divbt heading' ).addClass( 'status' );
 			}
-			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );

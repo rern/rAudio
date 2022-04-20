@@ -1,0 +1,5 @@
+[Unit]
+Description=Dbus for Bluetooth audio receiver
+
+[Service]
+ExecStart=/srv/http/bash/bluezdbus.py

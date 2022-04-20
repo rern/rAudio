@@ -44,23 +44,36 @@ $( timeout 1 avahi-browse -arp \
 	| sort -u )"
 	;;
 btconnect )
-	mac=${args[1]}
-	action=${args[2]}
-	bluetoothctl disconnect &> /dev/null
+	action=${args[1]} # connect, disconnect, pair, remove
+	sink=${args[2]}
+	mac=${args[3]}
 	if [[ $action == pair ]]; then
 		bluetoothctl trust $mac &> /dev/null
 		bluetoothctl pair $mac &> /dev/null
-	elif [[ $action == remove ]]; then
-		bluetoothctl remove $mac &> /dev/null
+	elif [[ $action == disconnect || $action == remove ]]; then
+		[[ $action == disconnect ]] && bluetoothctl disconnect &> /dev/null || bluetoothctl remove $mac &> /dev/null
 		for i in {1..10}; do
 			bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
 		done
 	fi
 	if [[ $action == connect || $action == pair ]]; then # pair / connect
+		[[ $sink == true ]] && systemctl start bluealsa || systemctl start bluealsa-aplay
 		bluetoothctl connect $mac &> /dev/null
 		for i in {1..10}; do
-			bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
+			if bluetoothctl info $mac | grep -q 'Connected: no'; then
+				sleep 1
+			else
+				connected=1
+				break
+			fi
 		done
+		if [[ ! $connected ]]; then
+			pushstreamNotify Bluetooth "${action^} failed!" bluetooth
+			systemctl stop bluealsa bluealsa-aplay
+		fi
+	elif [[ $action == disconnect ]]; then
+		bluetoothctl disconnect $mac &> /dev/null
+		[[ $sink == true ]] && systemctl stop bluealsa || systemctl stop bluealsa-aplay
 	fi
 	pushRefresh
 	;;

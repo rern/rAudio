@@ -71,9 +71,11 @@ bluetooth )
 	bluetoothctl discoverable $yesno &
 	bluetoothctl discoverable-timeout 0 &
 	bluetoothctl pairable yes &
+	systemctl start bluezdbus
 	;;
 bluetoothdisable )
 	systemctl disable --now bluetooth
+	systemctl stop bluezdbus
 	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
 	pushRefresh
 	;;
@@ -93,23 +95,11 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
+	! systemctl -q is-active bluetooth && systemctl enable --now bluetooth
+	bluetoothctl discoverable $yesno &
+	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	if ! systemctl -q is-active bluetooth; then
-		systemctl enable --now bluetooth
-		sleep 3
-		btshow=$( timeout 1 bluetoothctl list )
-		if [[ ! $btshow || $btshow == 'No default controller available' ]]; then
-			reboot=1
-			pushReboot Bluetooth bluetooth
-		else
-			mpdrestart=1
-		fi
-	fi
-	if [[ ! $reboot ]]; then
-		bluetoothctl discoverable $yesno &
-		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
-		[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
-	fi
+	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
 	pushRefresh
 	;;
 databackup )

@@ -3,31 +3,68 @@
 . /srv/http/bash/common.sh
 
 # bluetooth
-if systemctl -q is-active bluetooth; then
-	readarray -t lines <<< $( bluetoothctl paired-devices \
-								| cut -d' ' -f2,3- \
-								| awk NF \
-								| sort -k2 -fh )
-	if [[ $lines ]]; then
-		for line in "${lines[@]}"; do
-			mac=${line/ *}
-			[[ $mac == Device ]] && continue
-			
-			info=$( bluetoothctl info $mac )
-			alias=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
-			listbt+=',{
-  "connected" : '$connected'
-, "mac"       : "'$mac'"
-, "name"      : "'${alias//\"/\\\"}'"
-, "sink"      : '$sink'
-}'
-		done
-		listbt="[ ${listbt:1} ]"
+listBluetooth() {
+	if systemctl -q is-active bluetooth; then
+		readarray -t lines <<< $( bluetoothctl paired-devices \
+									| cut -d' ' -f2,3- \
+									| awk NF \
+									| sort -k2 -fh )
+		if [[ $lines ]]; then
+			for line in "${lines[@]}"; do
+				mac=${line/ *}
+				[[ $mac == Device ]] && continue
+				
+				info=$( bluetoothctl info $mac )
+				alias=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+				connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
+				sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
+				listbt+=',{
+	  "connected" : '$connected'
+	, "mac"       : "'$mac'"
+	, "name"      : "'${alias//\"/\\\"}'"
+	, "sink"      : '$sink'
+	}'
+			done
+			listbt="[ ${listbt:1} ]"
+		fi
 	fi
+}
+
+if [[ $1 ]]; then
+	if [[ $1 == btclient ]]; then # receiver from mpd-conf.sh
+		listBluetooth
+		curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+	elif [[ $1 == 1 ]]; then # sender: 1 = connect - from bluezdbus.py
+		[[ -e $dirshm/btsender ]] && exit
+		
+		for i in {1..5}; do
+			btsender=$( bluetoothctl info 2> /dev/null | grep '^\s*Name: ' | sed 's/.*Name: //' )
+			[[ ! $btsender ]] && sleep 1 || break
+		done
+		if [[ $btsender ]]; then
+			echo $btsender > $dirshm/btsender
+			pushstreamNotify "$btsender" Ready bluetooth
+			listBluetooth
+			curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+		fi
+	else # sender: 0 = disconnect - from bluezdbus.py
+		[[ ! -e $dirshm/btsender ]] && exit
+		
+		btsender=$( cat $dirshm/btsender )
+		rm -f $dirshm/btsender
+		pushstreamNotify "$btsender" Disconnected bluetooth
+		for i in {1..5}; do
+			bluetoothctl info &> /dev/null && sleep 1 || break
+		done
+		listBluetooth
+		curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+		sleep 3
+		rm -f $dirshm/{bluetoothdest,btsender}
+	fi
+	exit
 fi
-[[ $1 == bt ]] && curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt" && exit
+
+listBluetooth
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ $ipeth ]]; then
