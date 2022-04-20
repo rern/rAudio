@@ -59,12 +59,12 @@ btconnect )
 	fi
 	if [[ $action == connect || $action == pair ]]; then # pair / connect
 		if [[ $sink == true ]]; then
-			systemctl stop bluezdbus bluealsa-aplay
+			systemctl stop bluezdbus
 			systemctl restart bluetooth
 			systemctl start bluealsa
 		else
 			systemctl stop bluealsa
-			systemctl start bluezdbus bluealsa-aplay
+			systemctl start bluezdbus
 		fi
 		bluetoothctl connect $mac &> /dev/null
 		for i in {1..10}; do
@@ -80,7 +80,7 @@ btconnect )
 			systemctl stop bluealsa bluezdbus
 		fi
 	elif [[ $action == disconnect ]]; then
-		systemctl stop bluealsa bluezdbus bluealsa-aplay
+		systemctl stop bluealsa bluezdbus
 	fi
 	pushRefresh
 	;;
