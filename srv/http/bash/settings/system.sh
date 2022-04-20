@@ -71,11 +71,10 @@ bluetooth )
 	bluetoothctl discoverable $yesno &
 	bluetoothctl discoverable-timeout 0 &
 	bluetoothctl pairable yes &
-	systemctl start bluezdbus
 	;;
 bluetoothdisable )
 	systemctl disable --now bluetooth
-	systemctl stop bluezdbus
+	systemctl stop bluealsa bluezdbus bluealsa-play
 	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
 	pushRefresh
 	;;
