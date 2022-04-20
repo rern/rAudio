@@ -414,7 +414,8 @@ function renderBluetooth() {
 				G.btconnected = list.name;
 				$( '#divbt heading' ).addClass( 'status' );
 			}
-			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'"><i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
+					 +'<i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
