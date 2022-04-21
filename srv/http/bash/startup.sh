@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+touch $dirshm/startup
+
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
@@ -152,8 +154,8 @@ if [[ -e $dirsystem/btreconnect ]]; then
 	name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	pushstreamNotify "$name" 'Connect ...' bluetooth
 	bluetoothctl info $mac | grep -q 'UUID: Audio Sink' && sink=true
-	$dirbash/settings/networks.sh "btconnect
-connect
-$sink
-$mac"
+	$dirbash/bluetoothconnect.sh connect $mac $sink "$name"
 fi
+
+rm -f $dirshm/startup
+

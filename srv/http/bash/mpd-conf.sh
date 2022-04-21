@@ -37,8 +37,11 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
 		[[ $btaplay ]] && break
 	done
-	[[ ! $btmixer ]] && pushstreamNotify Bluetooth 'BlueALSA mixers not found.' bluetooth && exit
-	
+	if [[ ! $btmixer && ! -e $dirshm/startup ]]; then
+		pushstreamNotify Bluetooth 'BlueALSA mixers not found.' bluetooth
+		$dirbash/bluetoothconnect.sh disconnect
+		exit
+	fi
 	btmixer=$( echo "$btmixer" \
 				| grep ' - A2DP' \
 				| cut -d"'" -f2 )

@@ -95,7 +95,7 @@ $( '.connect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', 'bluetooth', -1 );
-		bash( [ 'btconnect', 'connect', list.sink, list.mac, list.name ] );
+		bash( '/srv/http/bash/bluetoothconnect.sh connect '+ list.mac +' '+ list.sink +' '+ list.name )
 		return
 	}
 	
@@ -106,7 +106,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bash( [ 'btconnect', 'disconnect', list.sink, list.mac, list.name ] );
+		bash( '/srv/http/bash/bluetoothconnect.sh disconnect '+ list.mac +' '+ list.sink +' '+ list.name )
 		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
 		return
 	}
@@ -148,7 +148,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( [ 'btconnect', mac, 'remove' ] );
+				bash( '/srv/http/bash/bluetoothconnect.sh remove '+ list.mac )
 			}
 		} );
 		return
