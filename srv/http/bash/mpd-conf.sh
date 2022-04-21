@@ -27,22 +27,22 @@ restartMPD() {
 }
 
 if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
-	[[ -e $dirshm/bluetoothdest ]] && exit
+	[[ -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit
 	
+	pushstream btclient true
 	systemctl stop bluezdbus
 	systemctl start bluealsa
 	for i in {1..5}; do # wait for list available
 		sleep 1
-		btaplay=$( bluealsa-aplay -L 2> /dev/null )
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
 		[[ $btaplay ]] && break
 	done
-	[[ ! $btaplay ]] && exit # no bluealsa device found
+	[[ ! $btmixer ]] && pushstreamNotify Bluetooth 'BlueALSA mixers not found.' bluetooth && exit
 	
-	pushstream btclient true
-	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
+	btmixer=$( echo "$btmixer" \
 				| grep ' - A2DP' \
 				| cut -d"'" -f2 )
-	[[ ! $btmixer ]] && btmixer=$( amixer -D bluealsa scontrols 2> /dev/null \
+	[[ ! $btmixer ]] && btmixer=$( echo "$btmixer" \
 									| head -1 \
 									| cut -d"'" -f2 )
 	pushstreamNotify "${btmixer/ - A2DP}" Ready bluetooth
@@ -53,12 +53,12 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
 	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 elif [[ $1 == btoff ]]; then
-	[[ -e $dirshm/bluetoothdest ]] && exit
+	[[ -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit
 	
+	pushstream btclient false
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	systemctl stop bluealsa
 	systemctl start bluezdbus
-	pushstream btclient false
 	btmixer=$( cat $dirshm/btclient )
 	pushstreamNotify "${btmixer/ - A2DP}" Disconnected bluetooth
 	rm -f $dirshm/btclient

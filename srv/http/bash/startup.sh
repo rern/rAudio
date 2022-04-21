@@ -93,8 +93,7 @@ fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
-# mpd.service started by this script
-$dirbash/mpd-conf.sh
+$dirbash/mpd-conf.sh # mpd.service started by this script
 
 # after all sources connected
 if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
@@ -145,4 +144,16 @@ file=/sys/class/backlight/rpi_backlight/brightness
 if [[ -e $file ]]; then
 	chmod 666 $file
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
+fi
+
+if [[ -e $dirsystem/btreconnect ]]; then
+	sleep 15
+	mac=$( cat $dirsystem/btreconnect )
+	name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+	pushstreamNotify "$name" 'Connect ...' bluetooth
+	bluetoothctl info $mac | grep -q 'UUID: Audio Sink' && sink=true
+	$dirbash/settings/networks.sh "btconnect
+connect
+$sink
+$mac"
 fi

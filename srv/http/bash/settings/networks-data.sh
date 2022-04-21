@@ -19,10 +19,10 @@ listBluetooth() {
 				connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
 				sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
 				listbt+=',{
-	  "connected" : '$connected'
+	  "name"      : "'${alias//\"/\\\"}'"
 	, "mac"       : "'$mac'"
-	, "name"      : "'${alias//\"/\\\"}'"
 	, "sink"      : '$sink'
+	, "connected" : '$connected'
 	}'
 			done
 			listbt="[ ${listbt:1} ]"
@@ -31,36 +31,44 @@ listBluetooth() {
 }
 
 if [[ $1 ]]; then
-	if [[ $1 == btclient ]]; then # receiver from mpd-conf.sh
-		listBluetooth
-		curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
-	elif [[ $1 == 1 ]]; then # sender: 1 = connect - from bluezdbus.py
-		[[ -e $dirshm/btsender ]] && exit
-		
-		for i in {1..5}; do
-			btsender=$( bluetoothctl info 2> /dev/null | grep '^\s*Name: ' | sed 's/.*Name: //' )
-			[[ ! $btsender ]] && sleep 1 || break
-		done
-		if [[ $btsender ]]; then
-			echo $btsender > $dirshm/btsender
-			pushstreamNotify "$btsender" Ready bluetooth
+	case $1 in
+		list )
+			listBluetooth
+			echo $listbt
+			;;
+		btclient ) # receiver from mpd-conf.sh
 			listBluetooth
 			curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
-		fi
-	else # sender: 0 = disconnect - from bluezdbus.py
-		[[ ! -e $dirshm/btsender ]] && exit
-		
-		btsender=$( cat $dirshm/btsender )
-		rm -f $dirshm/btsender
-		pushstreamNotify "$btsender" Disconnected bluetooth
-		for i in {1..5}; do
-			bluetoothctl info &> /dev/null && sleep 1 || break
-		done
-		listBluetooth
-		curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
-		sleep 3
-		rm -f $dirshm/{bluetoothdest,btsender}
-	fi
+			;;
+		1 ) # sender: 1 = connect - from bluezdbus.py
+			[[ -e $dirshm/btsender ]] && exit
+			
+			for i in {1..5}; do
+				btsender=$( bluetoothctl info 2> /dev/null | grep '^\s*Name: ' | sed 's/.*Name: //' )
+				[[ ! $btsender ]] && sleep 1 || break
+			done
+			if [[ $btsender ]]; then
+				echo $btsender > $dirshm/btsender
+				pushstreamNotify "$btsender" Ready bluetooth
+				listBluetooth
+				curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+			fi
+			;;
+		* ) # sender: 0 = disconnect - from bluezdbus.py
+			[[ ! -e $dirshm/btsender ]] && exit
+			
+			btsender=$( cat $dirshm/btsender )
+			rm -f $dirshm/btsender
+			pushstreamNotify "$btsender" Disconnected bluetooth
+			for i in {1..5}; do
+				bluetoothctl info &> /dev/null && sleep 1 || break
+			done
+			listBluetooth
+			curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+			sleep 3
+			rm -f $dirshm/{bluetoothdest,btsender}
+			;;
+	esac
 	exit
 fi
 

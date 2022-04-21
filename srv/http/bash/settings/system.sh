@@ -87,6 +87,8 @@ $( bluetoothctl show )"
 bluetoothset )
 	btdiscoverable=${args[1]}
 	btformat=${args[2]}
+	btreconnect=${args[3]}
+	mac=${args[4]}
 	if [[ $btdiscoverable == true ]]; then
 		yesno=yes
 		touch $dirsystem/btdiscoverable
@@ -98,6 +100,7 @@ bluetoothset )
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
+	[[ $btreconnect == true ]] && echo $mac > $dirsystem/btreconnect || rm -f $dirsystem/btreconnect
 	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
 	pushRefresh
 	;;

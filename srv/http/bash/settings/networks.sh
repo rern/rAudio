@@ -47,6 +47,8 @@ btconnect )
 	action=${args[1]} # connect, disconnect, pair, remove
 	sink=${args[2]}
 	mac=${args[3]}
+	name=${args[4]}
+	[[ ! $name ]] && name=Bluetooth
 	bluetoothctl disconnect &> /dev/null
 	if [[ $action == pair ]]; then
 		bluetoothctl trust $mac &> /dev/null
@@ -60,8 +62,7 @@ btconnect )
 	if [[ $action == connect || $action == pair ]]; then # pair / connect
 		if [[ $sink == true ]]; then
 			systemctl stop bluezdbus
-			systemctl restart bluetooth
-			systemctl start bluealsa
+			systemctl restart bluetooth bluealsa
 		else
 			systemctl stop bluealsa
 			systemctl start bluezdbus
@@ -75,11 +76,14 @@ btconnect )
 				break
 			fi
 		done
-		if [[ ! $connected ]]; then
-			pushstreamNotify Bluetooth "${action^} failed!" bluetooth
+		if [[ $connected ]]; then
+			pushstream btclient true
+		else
+			pushstreamNotify "$name" 'Connecting failed!' bluetooth
 			systemctl stop bluealsa bluezdbus
 		fi
 	elif [[ $action == disconnect ]]; then
+		pushstreamNotify "$name" 'Disconnected' bluetooth
 		systemctl stop bluealsa bluezdbus
 	fi
 	pushRefresh

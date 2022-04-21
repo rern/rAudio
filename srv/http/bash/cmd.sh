@@ -973,7 +973,9 @@ plsimilar )
 	;;
 power )
 	action=${args[1]}
+	touch $dirshm/power
 	mpc -q stop
+	[[ -e $dirshm/btclient || -e $dirshm/bluetoothdest ]] && $dirbash/settings/networks.sh btconnect$'\n'disconnect
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
