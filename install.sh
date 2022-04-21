@@ -50,6 +50,9 @@ installstart "$1"
 getinstallzip
 
 # 20220422
+if ! modinfo ntfs3 &> /dev/null; then
+	rm -f /etc/modules-load.d/ntfs3.conf /etc/udev/rules.d/ntfs3.rules
+fi
 if [[ -e /srv/http/bash/features.sh ]]; then
 	echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
